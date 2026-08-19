@@ -79,10 +79,10 @@ public class ImmersiveVideoFormatMediator implements Destroyable {
         mModel.set(ImmersiveVideoFormatProperties.SELECTED_PROJECTION_TYPE, projectionType);
     }
 
-    /** Sets the spatial height of the format panel in the model. */
-    public void setSpatialHeight(float height) {
+    /** Sets the height of the format panel in the model. */
+    public void setHeight(int heightDp) {
         if (mDestroyChecker.isDestroyed()) return;
-        mModel.set(ImmersiveVideoFormatProperties.SPATIAL_HEIGHT, height);
+        mModel.set(ImmersiveVideoFormatProperties.HEIGHT_DP, heightDp);
     }
 
     /** Sets the recommended format options in the model. */

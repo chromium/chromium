@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.media.immersive_playback.components;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.xr.scenecore.XrPixelDensity;
 import org.chromium.ui.xr.scenecore.XrPose;
 import org.chromium.ui.xr.scenecore.XrSpace;
 
@@ -39,13 +40,17 @@ public class ImmersiveVideoControlViewBinder {
         } else if (propertyKey == ImmersiveVideoControlProperties.FORMAT_BUTTON_SELECTED) {
             view.androidView.setFormatButtonSelected(
                     model.get(ImmersiveVideoControlProperties.FORMAT_BUTTON_SELECTED));
-        } else if (propertyKey == ImmersiveVideoControlProperties.DEFAULT_SPATIAL_WIDTH
-                || propertyKey == ImmersiveVideoControlProperties.DEFAULT_SPATIAL_HEIGHT) {
-            Float width = model.get(ImmersiveVideoControlProperties.DEFAULT_SPATIAL_WIDTH);
-            Float height = model.get(ImmersiveVideoControlProperties.DEFAULT_SPATIAL_HEIGHT);
-            if (width != null && height != null && width > 0f && height > 0f) {
-                view.spatialEntityHolder.setEntitySize(width, height);
-                view.spatialEntityHolder.setEntityCornerRadius(height / 2f);
+        } else if (propertyKey == ImmersiveVideoControlProperties.DEFAULT_WIDTH_DP
+                || propertyKey == ImmersiveVideoControlProperties.DEFAULT_HEIGHT_DP) {
+            int widthDp = model.get(ImmersiveVideoControlProperties.DEFAULT_WIDTH_DP);
+            int heightDp = model.get(ImmersiveVideoControlProperties.DEFAULT_HEIGHT_DP);
+            XrPixelDensity pixelDensity =
+                    model.get(ImmersiveVideoControlProperties.DEFAULT_PIXEL_DENSITY);
+            if (widthDp > 0 && heightDp > 0 && pixelDensity != null) {
+                float widthMeters = pixelDensity.convertDpToMeters(widthDp);
+                float heightMeters = pixelDensity.convertDpToMeters(heightDp);
+                view.spatialEntityHolder.setEntitySize(widthMeters, heightMeters);
+                view.spatialEntityHolder.setEntityCornerRadius(heightMeters / 2f);
             }
         } else if (propertyKey == ImmersiveVideoControlProperties.IS_MOVABLE) {
             view.spatialEntityHolder

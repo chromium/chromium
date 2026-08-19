@@ -21,6 +21,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.xr.scenecore.XrEntityHolder;
 import org.chromium.ui.xr.scenecore.XrMovableComponent;
 import org.chromium.ui.xr.scenecore.XrPanelEntityHolder;
+import org.chromium.ui.xr.scenecore.XrPixelDensity;
 import org.chromium.ui.xr.scenecore.XrPose;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 import org.chromium.ui.xr.scenecore.XrSpace;
@@ -46,18 +47,8 @@ public class ImmersiveVideoControlCoordinator {
         void onControlPanelAccessibilityFocusChanged(boolean focused);
     }
 
-    private final PropertyModel mModel =
-            new PropertyModel.Builder(ImmersiveVideoControlProperties.ALL_KEYS)
-                    .with(ImmersiveVideoControlProperties.DEFAULT_SPATIAL_WIDTH, 0.7f)
-                    .with(ImmersiveVideoControlProperties.DEFAULT_SPATIAL_HEIGHT, 0.08f)
-                    .with(ImmersiveVideoControlProperties.DURATION_MS, 0L)
-                    .with(ImmersiveVideoControlProperties.POSITION_MS, 0L)
-                    .with(ImmersiveVideoControlProperties.PLAYBACK_RATE, 1.0)
-                    .with(ImmersiveVideoControlProperties.IS_PLAYING, false)
-                    .with(ImmersiveVideoControlProperties.FORMAT_BUTTON_SELECTED, false)
-                    .with(ImmersiveVideoControlProperties.IS_MOVABLE, false)
-                    .build();
-
+    private final PropertyModel mModel;
+    private final XrPixelDensity mPixelDensity;
     private final Activity mActivity;
     private final XrSceneCoreSessionManager mSessionManager;
     private final Delegate mVideoControlDelegate;
@@ -103,6 +94,20 @@ public class ImmersiveVideoControlCoordinator {
         mActivity = activity;
         mSessionManager = sessionManager;
         mVideoControlDelegate = videoControlDelegate;
+        mPixelDensity = sessionManager.getPixelDensity();
+
+        mModel =
+                new PropertyModel.Builder(ImmersiveVideoControlProperties.ALL_KEYS)
+                        .with(ImmersiveVideoControlProperties.DEFAULT_PIXEL_DENSITY, mPixelDensity)
+                        .with(ImmersiveVideoControlProperties.DEFAULT_WIDTH_DP, 700)
+                        .with(ImmersiveVideoControlProperties.DEFAULT_HEIGHT_DP, 80)
+                        .with(ImmersiveVideoControlProperties.DURATION_MS, 0L)
+                        .with(ImmersiveVideoControlProperties.POSITION_MS, 0L)
+                        .with(ImmersiveVideoControlProperties.PLAYBACK_RATE, 1.0)
+                        .with(ImmersiveVideoControlProperties.IS_PLAYING, false)
+                        .with(ImmersiveVideoControlProperties.FORMAT_BUTTON_SELECTED, false)
+                        .with(ImmersiveVideoControlProperties.IS_MOVABLE, false)
+                        .build();
         mMediator = new ImmersiveVideoControlMediator(mModel, mVideoControlDelegate);
     }
 
@@ -214,14 +219,16 @@ public class ImmersiveVideoControlCoordinator {
         return mHolder;
     }
 
-    /** Returns the size of the control panel in spatial units. */
+    /** Returns the size of the control panel in meters. */
     public SizeF getSize() {
         if (mHolder != null) {
             return mHolder.getEntitySize();
         }
+        int widthDp = mModel.get(ImmersiveVideoControlProperties.DEFAULT_WIDTH_DP);
+        int heightDp = mModel.get(ImmersiveVideoControlProperties.DEFAULT_HEIGHT_DP);
         return new SizeF(
-                mModel.get(ImmersiveVideoControlProperties.DEFAULT_SPATIAL_WIDTH),
-                mModel.get(ImmersiveVideoControlProperties.DEFAULT_SPATIAL_HEIGHT));
+                mPixelDensity.convertDpToMeters(widthDp),
+                mPixelDensity.convertDpToMeters(heightDp));
     }
 
     /**

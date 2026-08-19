@@ -28,6 +28,7 @@ import org.chromium.ui.xr.scenecore.XrCurvedSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrFloatSize3d;
 import org.chromium.ui.xr.scenecore.XrInteractableComponent;
 import org.chromium.ui.xr.scenecore.XrMovableComponent;
+import org.chromium.ui.xr.scenecore.XrPixelDensity;
 import org.chromium.ui.xr.scenecore.XrPose;
 import org.chromium.ui.xr.scenecore.XrResizableComponent;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
@@ -59,20 +60,8 @@ public class ImmersiveVideoPlayerCoordinator {
         void onPlayerPanelDragEnd(XrVector3 origin, XrVector3 direction);
     }
 
-    private final PropertyModel mModel =
-            new PropertyModel.Builder(ImmersiveVideoPlayerProperties.ALL_KEYS)
-                    .with(ImmersiveVideoPlayerProperties.DEFAULT_SPATIAL_WIDTH, 1f)
-                    .with(ImmersiveVideoPlayerProperties.DEFAULT_MIN_WIDTH, 1f)
-                    .with(ImmersiveVideoPlayerProperties.DEFAULT_MAX_WIDTH, 3f)
-                    .with(ImmersiveVideoPlayerProperties.DEFAULT_CURVE_RADIUS, 5f)
-                    .with(ImmersiveVideoPlayerProperties.DEFAULT_ASPECT_RATIO, 16f / 9f)
-                    .with(ImmersiveVideoPlayerProperties.DEFAULT_FEATHER_RADIUS, 0.1f)
-                    .with(
-                            ImmersiveVideoPlayerProperties.STEREO_MODE,
-                            XrSurfaceEntityStereoMode.MONO)
-                    .with(ImmersiveVideoPlayerProperties.SHAPE, XrSurfaceEntityShape.QUAD)
-                    .build();
-
+    private final PropertyModel mModel;
+    private final XrPixelDensity mPixelDensity;
     private final Activity mActivity;
     private final WindowAndroid mWindowAndroid;
     private final XrSceneCoreSessionManager mSessionManager;
@@ -172,6 +161,23 @@ public class ImmersiveVideoPlayerCoordinator {
         mWindowAndroid = windowAndroid;
         mSessionManager = sessionManager;
         mDelegate = delegate;
+        mPixelDensity = sessionManager.getPixelDensity();
+
+        mModel =
+                new PropertyModel.Builder(ImmersiveVideoPlayerProperties.ALL_KEYS)
+                        .with(ImmersiveVideoPlayerProperties.DEFAULT_PIXEL_DENSITY, mPixelDensity)
+                        .with(ImmersiveVideoPlayerProperties.DEFAULT_WIDTH_DP, 1000)
+                        .with(ImmersiveVideoPlayerProperties.DEFAULT_MIN_WIDTH_DP, 1000)
+                        .with(ImmersiveVideoPlayerProperties.DEFAULT_MAX_WIDTH_DP, 3000)
+                        .with(ImmersiveVideoPlayerProperties.DEFAULT_CURVE_RADIUS_DP, 5000)
+                        .with(ImmersiveVideoPlayerProperties.DEFAULT_ASPECT_RATIO, 16f / 9f)
+                        .with(ImmersiveVideoPlayerProperties.DEFAULT_FEATHER_RADIUS_DP, 100)
+                        .with(
+                                ImmersiveVideoPlayerProperties.STEREO_MODE,
+                                XrSurfaceEntityStereoMode.MONO)
+                        .with(ImmersiveVideoPlayerProperties.SHAPE, XrSurfaceEntityShape.QUAD)
+                        .build();
+
         mMediator = new ImmersiveVideoPlayerMediator(mModel);
     }
 
@@ -312,15 +318,19 @@ public class ImmersiveVideoPlayerCoordinator {
         if (mHolder != null && mHolder instanceof XrCurvedSurfaceEntityHolder) {
             return ((XrCurvedSurfaceEntityHolder) mHolder).getEntityRadius();
         }
-        Float defaultRadius = mModel.get(ImmersiveVideoPlayerProperties.DEFAULT_CURVE_RADIUS);
-        return defaultRadius != null ? defaultRadius : 0f;
+        int defaultRadiusDp = mModel.get(ImmersiveVideoPlayerProperties.DEFAULT_CURVE_RADIUS_DP);
+        if (defaultRadiusDp > 0) {
+            return mPixelDensity.convertDpToMeters(defaultRadiusDp);
+        }
+        return 0f;
     }
 
     private float getDefaultLayoutHeight() {
-        Float defaultWidth = mModel.get(ImmersiveVideoPlayerProperties.DEFAULT_SPATIAL_WIDTH);
+        int defaultWidthDp = mModel.get(ImmersiveVideoPlayerProperties.DEFAULT_WIDTH_DP);
         Float defaultAspectRatio = mModel.get(ImmersiveVideoPlayerProperties.DEFAULT_ASPECT_RATIO);
-        if (defaultWidth != null && defaultAspectRatio != null && defaultAspectRatio > 0) {
-            return defaultWidth / defaultAspectRatio;
+        if (defaultWidthDp > 0 && defaultAspectRatio != null && defaultAspectRatio > 0) {
+            float defaultWidthMeters = mPixelDensity.convertDpToMeters(defaultWidthDp);
+            return defaultWidthMeters / defaultAspectRatio;
         }
         return 0f;
     }

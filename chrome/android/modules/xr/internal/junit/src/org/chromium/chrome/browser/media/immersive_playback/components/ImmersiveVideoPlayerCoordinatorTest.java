@@ -25,6 +25,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.xr.scenecore.XrModuleProviderImpl;
+import org.chromium.chrome.browser.xr.scenecore.XrPixelDensityImpl;
 import org.chromium.components.thinwebview.CompositorView;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.xr.scenecore.XrInteractableComponent;
@@ -65,6 +66,8 @@ public class ImmersiveVideoPlayerCoordinatorTest {
         when(mHolder.getResizableComponent()).thenReturn(mResizableComponent);
         when(mHolder.getMovableComponent()).thenReturn(mMovableComponent);
         when(mSessionManager.getMainPanelEntity()).thenReturn(mMainPanelEntity);
+        when(mSessionManager.getPixelDensity())
+                .thenReturn(XrPixelDensityImpl.createForTesting(1000f, 1000f));
 
         mCoordinator =
                 new TestImmersiveVideoPlayerCoordinator(

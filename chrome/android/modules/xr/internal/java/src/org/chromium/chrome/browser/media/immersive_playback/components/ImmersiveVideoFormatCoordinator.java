@@ -22,13 +22,12 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.xr.scenecore.XrEntityHolder;
 import org.chromium.ui.xr.scenecore.XrPanelEntityHolder;
+import org.chromium.ui.xr.scenecore.XrPixelDensity;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 
 /** Coordinator for the format selection panel. */
 @NullMarked
 public class ImmersiveVideoFormatCoordinator {
-    private static final float PIXELS_PER_METER = 1000.0f;
-
     /** Delegate for receiving format selection and hover lifecycle events. */
     public interface Delegate extends ImmersiveVideoFormatMediator.FormatListener {
         /** Called when hover state of the format panel changes. */
@@ -38,19 +37,8 @@ public class ImmersiveVideoFormatCoordinator {
         void onFormatPanelAccessibilityFocusChanged(boolean focused);
     }
 
-    private final PropertyModel mModel =
-            new PropertyModel.Builder(ImmersiveVideoFormatProperties.ALL_KEYS)
-                    .with(ImmersiveVideoFormatProperties.DEFAULT_SPATIAL_WIDTH, 0.25f)
-                    .with(ImmersiveVideoFormatProperties.SPATIAL_HEIGHT, 0.25f)
-                    .with(ImmersiveVideoFormatProperties.DEFAULT_CORNER_RADIUS, 0.024f)
-                    .with(
-                            ImmersiveVideoFormatProperties.SELECTED_STEREO_MODE,
-                            ImmersiveStereoMode.MONO)
-                    .with(
-                            ImmersiveVideoFormatProperties.SELECTED_PROJECTION_TYPE,
-                            ImmersiveProjectionType.QUAD)
-                    .build();
-
+    private final PropertyModel mModel;
+    private final XrPixelDensity mPixelDensity;
     private final Activity mActivity;
     private final XrSceneCoreSessionManager mSessionManager;
     private final Delegate mFormatControlDelegate;
@@ -80,6 +68,22 @@ public class ImmersiveVideoFormatCoordinator {
         mActivity = activity;
         mSessionManager = sessionManager;
         mFormatControlDelegate = formatControlDelegate;
+        mPixelDensity = sessionManager.getPixelDensity();
+
+        mModel =
+                new PropertyModel.Builder(ImmersiveVideoFormatProperties.ALL_KEYS)
+                        .with(ImmersiveVideoFormatProperties.DEFAULT_PIXEL_DENSITY, mPixelDensity)
+                        .with(ImmersiveVideoFormatProperties.DEFAULT_WIDTH_DP, 250)
+                        .with(ImmersiveVideoFormatProperties.HEIGHT_DP, 250)
+                        .with(ImmersiveVideoFormatProperties.DEFAULT_CORNER_RADIUS_DP, 24)
+                        .with(
+                                ImmersiveVideoFormatProperties.SELECTED_STEREO_MODE,
+                                ImmersiveStereoMode.MONO)
+                        .with(
+                                ImmersiveVideoFormatProperties.SELECTED_PROJECTION_TYPE,
+                                ImmersiveProjectionType.QUAD)
+                        .build();
+
         mMediator = new ImmersiveVideoFormatMediator(mFormatControlDelegate, mModel);
     }
 
@@ -119,20 +123,20 @@ public class ImmersiveVideoFormatCoordinator {
                         new ImmersiveVideoFormatSpatialView(mView, mHolder),
                         ImmersiveVideoFormatViewBinder::bind);
 
-        updateSpatialHeight();
+        updateHeight();
     }
 
-    @RequiresNonNull("mView")
-    private void updateSpatialHeight() {
+    @RequiresNonNull({"mView"})
+    private void updateHeight() {
         mView.measure(
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
 
-        int heightPixels = mView.getMeasuredHeight();
-        if (heightPixels > 0) {
+        int heightPx = mView.getMeasuredHeight();
+        if (heightPx > 0) {
             float density = mActivity.getResources().getDisplayMetrics().density;
-            float panelHeight = (heightPixels / density) / PIXELS_PER_METER;
-            mMediator.setSpatialHeight(panelHeight);
+            int heightDp = Math.round(heightPx / density);
+            mMediator.setHeight(heightDp);
         }
     }
 

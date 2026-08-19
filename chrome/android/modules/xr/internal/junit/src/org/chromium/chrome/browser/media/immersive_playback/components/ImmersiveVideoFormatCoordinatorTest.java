@@ -27,6 +27,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.media.immersive_playback.ImmersiveVideoFormatRadioGroup;
 import org.chromium.chrome.browser.modules.xr.R;
 import org.chromium.chrome.browser.xr.scenecore.XrModuleProviderImpl;
+import org.chromium.chrome.browser.xr.scenecore.XrPixelDensityImpl;
 import org.chromium.content_public.browser.ImmersiveProjectionType;
 import org.chromium.content_public.browser.ImmersiveStereoMode;
 import org.chromium.ui.xr.scenecore.XrEntityHolder;
@@ -54,6 +55,8 @@ public class ImmersiveVideoFormatCoordinatorTest {
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
 
         when(mSessionManager.createPanelEntity(any(), any())).thenReturn(mHolder);
+        when(mSessionManager.getPixelDensity())
+                .thenReturn(XrPixelDensityImpl.createForTesting(1000f, 1000f));
         when(mFormatView.getRadioGroup()).thenReturn(mFormatRadioGroup);
         when(mFormatView.findViewById(R.id.format_radio_group)).thenReturn(mFormatRadioGroup);
 

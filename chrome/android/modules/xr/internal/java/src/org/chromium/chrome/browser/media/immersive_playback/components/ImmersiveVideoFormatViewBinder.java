@@ -9,7 +9,7 @@ import org.chromium.chrome.browser.media.immersive_playback.ImmersiveVideoFormat
 import org.chromium.chrome.browser.media.immersive_playback.ImmersiveVideoFormatRadioGroup.FormatOption;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.xr.scenecore.XrPanelEntityHolder;
+import org.chromium.ui.xr.scenecore.XrPixelDensity;
 import org.chromium.ui.xr.scenecore.XrPose;
 import org.chromium.ui.xr.scenecore.XrSpace;
 import org.chromium.ui.xr.scenecore.XrVector3;
@@ -42,21 +42,28 @@ public class ImmersiveVideoFormatViewBinder {
                     radioGroup.checkOption(stereoMode, projectionType);
                 }
             }
-        } else if (propertyKey == ImmersiveVideoFormatProperties.DEFAULT_SPATIAL_WIDTH
-                || propertyKey == ImmersiveVideoFormatProperties.SPATIAL_HEIGHT) {
-            Float width = model.get(ImmersiveVideoFormatProperties.DEFAULT_SPATIAL_WIDTH);
-            Float height = model.get(ImmersiveVideoFormatProperties.SPATIAL_HEIGHT);
-            if (width != null && height != null && width > 0f && height > 0f) {
-                view.spatialEntityHolder.setEntitySize(width, height);
-                updatePose(model, view.spatialEntityHolder);
+        } else if (propertyKey == ImmersiveVideoFormatProperties.DEFAULT_WIDTH_DP
+                || propertyKey == ImmersiveVideoFormatProperties.HEIGHT_DP) {
+            int widthDp = model.get(ImmersiveVideoFormatProperties.DEFAULT_WIDTH_DP);
+            int heightDp = model.get(ImmersiveVideoFormatProperties.HEIGHT_DP);
+            XrPixelDensity pixelDensity =
+                    model.get(ImmersiveVideoFormatProperties.DEFAULT_PIXEL_DENSITY);
+            if (widthDp > 0 && heightDp > 0 && pixelDensity != null) {
+                float widthMeters = pixelDensity.convertDpToMeters(widthDp);
+                float heightMeters = pixelDensity.convertDpToMeters(heightDp);
+                view.spatialEntityHolder.setEntitySize(widthMeters, heightMeters);
+                updatePose(model, view);
             }
         } else if (propertyKey == ImmersiveVideoFormatProperties.PARENT_WIDTH
                 || propertyKey == ImmersiveVideoFormatProperties.PARENT_HEIGHT) {
-            updatePose(model, view.spatialEntityHolder);
-        } else if (propertyKey == ImmersiveVideoFormatProperties.DEFAULT_CORNER_RADIUS) {
-            Float radius = model.get(ImmersiveVideoFormatProperties.DEFAULT_CORNER_RADIUS);
-            if (radius != null) {
-                view.spatialEntityHolder.setEntityCornerRadius(radius);
+            updatePose(model, view);
+        } else if (propertyKey == ImmersiveVideoFormatProperties.DEFAULT_CORNER_RADIUS_DP) {
+            int radiusDp = model.get(ImmersiveVideoFormatProperties.DEFAULT_CORNER_RADIUS_DP);
+            XrPixelDensity pixelDensity =
+                    model.get(ImmersiveVideoFormatProperties.DEFAULT_PIXEL_DENSITY);
+            if (radiusDp > 0 && pixelDensity != null) {
+                view.spatialEntityHolder.setEntityCornerRadius(
+                        pixelDensity.convertDpToMeters(radiusDp));
             }
         } else if (propertyKey == ImmersiveVideoFormatProperties.RECOMMENDED_STEREO_MODE
                 || propertyKey == ImmersiveVideoFormatProperties.RECOMMENDED_PROJECTION_TYPE) {
@@ -71,27 +78,36 @@ public class ImmersiveVideoFormatViewBinder {
         }
     }
 
-    private static void updatePose(PropertyModel model, XrPanelEntityHolder<?> holder) {
-        Float width = model.get(ImmersiveVideoFormatProperties.DEFAULT_SPATIAL_WIDTH);
-        Float height = model.get(ImmersiveVideoFormatProperties.SPATIAL_HEIGHT);
+    /**
+     * Updates the pose of the format selection panel relative to its parent entity.
+     *
+     * <p>Positions the panel directly above and aligned with the right edge of the parent entity
+     * (e.g., the media control panel).
+     */
+    private static void updatePose(PropertyModel model, ImmersiveVideoFormatSpatialView view) {
+        int widthDp = model.get(ImmersiveVideoFormatProperties.DEFAULT_WIDTH_DP);
+        int heightDp = model.get(ImmersiveVideoFormatProperties.HEIGHT_DP);
         Float parentWidth = model.get(ImmersiveVideoFormatProperties.PARENT_WIDTH);
         Float parentHeight = model.get(ImmersiveVideoFormatProperties.PARENT_HEIGHT);
+        XrPixelDensity pixelDensity =
+                model.get(ImmersiveVideoFormatProperties.DEFAULT_PIXEL_DENSITY);
 
-        if (width != null
-                && height != null
+        if (widthDp > 0
+                && heightDp > 0
                 && parentWidth != null
                 && parentHeight != null
-                && width > 0f
-                && height > 0f
                 && parentWidth > 0f
-                && parentHeight > 0f) {
+                && parentHeight > 0f
+                && pixelDensity != null) {
+            float widthMeters = pixelDensity.convertDpToMeters(widthDp);
+            float heightMeters = pixelDensity.convertDpToMeters(heightDp);
             XrPose pose =
                     XrPose.create(
                             XrVector3.create(
-                                    parentWidth / 2 - width / 2,
-                                    parentHeight / 2 + height / 2,
+                                    parentWidth / 2 - widthMeters / 2,
+                                    parentHeight / 2 + heightMeters / 2,
                                     0f));
-            holder.setEntityPose(pose, XrSpace.PARENT);
+            view.spatialEntityHolder.setEntityPose(pose, XrSpace.PARENT);
         }
     }
 }

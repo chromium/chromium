@@ -6,18 +6,20 @@ package org.chromium.chrome.browser.media.immersive_playback.components;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+import org.chromium.ui.xr.scenecore.XrPixelDensity;
 import org.chromium.ui.xr.scenecore.XrPose;
 
 /** Properties for the immersive video control panel. */
 @NullMarked
 public class ImmersiveVideoControlProperties {
-    public static final ReadableObjectPropertyKey<Float> DEFAULT_SPATIAL_HEIGHT =
+    public static final ReadableObjectPropertyKey<XrPixelDensity> DEFAULT_PIXEL_DENSITY =
             new ReadableObjectPropertyKey<>();
-    public static final ReadableObjectPropertyKey<Float> DEFAULT_SPATIAL_WIDTH =
-            new ReadableObjectPropertyKey<>();
+    public static final ReadableIntPropertyKey DEFAULT_HEIGHT_DP = new ReadableIntPropertyKey();
+    public static final ReadableIntPropertyKey DEFAULT_WIDTH_DP = new ReadableIntPropertyKey();
     public static final WritableObjectPropertyKey<Long> DURATION_MS =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> DURATION_TEXT =
@@ -40,8 +42,9 @@ public class ImmersiveVideoControlProperties {
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                DEFAULT_SPATIAL_HEIGHT,
-                DEFAULT_SPATIAL_WIDTH,
+                DEFAULT_PIXEL_DENSITY,
+                DEFAULT_HEIGHT_DP,
+                DEFAULT_WIDTH_DP,
                 DURATION_MS,
                 DURATION_TEXT,
                 FORMAT_BUTTON_SELECTED,
