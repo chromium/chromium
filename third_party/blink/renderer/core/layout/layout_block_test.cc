@@ -21,7 +21,7 @@ TEST_F(LayoutBlockTest, LayoutNameCalledWithNullStyle) {
   auto* element = MakeGarbageCollected<Element>(
       QualifiedName(AtomicString("div")), &GetDocument());
   auto* obj = MakeGarbageCollected<LayoutBlockFlow>(element);
-  EXPECT_FALSE(obj->Style());
+  EXPECT_FALSE(obj->HasStyle());
   EXPECT_EQ(obj->DecoratedName().Ascii(), "LayoutBlockFlow (inline)");
   obj->Destroy();
 }

@@ -218,7 +218,7 @@ TEST_F(InlineLayoutAlgorithmTest, BreakToken) {
   ConstraintSpace constraint_space = builder.ToConstraintSpace();
 
   BoxFragmentBuilder container_builder(
-      block_flow, block_flow->Style(), constraint_space,
+      block_flow, &block_flow->StyleRef(), constraint_space,
       block_flow->StyleRef().GetWritingDirection());
   SimpleInlineChildLayoutContext context(inline_node, &container_builder);
   const LayoutResult* layout_result =
