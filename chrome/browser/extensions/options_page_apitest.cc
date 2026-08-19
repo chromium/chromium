@@ -35,7 +35,7 @@ namespace {
 // is permitted), the feature is defined locally here so it can be enabled via
 // `base::test::ScopedFeatureList` and propagated to renderer processes.
 BASE_FEATURE(kPreventExtensionResourceFetchAcrossIsolatedWorlds,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Waits for a tab to be added to the tab list. Proceeds immediately if the tab
 // was added before the call to Wait().
@@ -177,8 +177,9 @@ class ExtensionOptionsPreloadTest : public ExtensionBrowserTest {
 };
 
 // Verifies that preloading a script resource in an extension page (such as an
-// options page) via `<link rel="modulepreload">` triggers a cross-world
-// extension resource mismatch console warning when
+// options page) via `<link rel="modulepreload">` executes the script
+// successfully and does not trigger a cross-world extension resource mismatch
+// console warning when
 // `kPreventExtensionResourceFetchAcrossIsolatedWorlds` is enabled.
 IN_PROC_BROWSER_TEST_F(ExtensionOptionsPreloadTest,
                        ModulePreloadMismatchWarningInOptionsPage) {
@@ -196,27 +197,31 @@ IN_PROC_BROWSER_TEST_F(ExtensionOptionsPreloadTest,
       R"(<!DOCTYPE html>
          <html>
          <head>
-             <title>Preload Mismatch</title>
+             <title>Preload Test</title>
              <!-- Preloading an extension resource -->
              <link rel="modulepreload" href="script.js">
              <!-- Executing the script -->
              <script type="module" src="script.js"></script>
          </head>
          <body>
-             <h1>Preload Mismatch Repro</h1>
+             <h1>Preload Test</h1>
          </body>
          </html>)";
+  static constexpr char kScriptJs[] =
+      R"(chrome.test.sendMessage("script executed");)";
   test_dir.WriteManifest(kManifest);
   test_dir.WriteFile(FILE_PATH_LITERAL("options.html"), kOptionsHtml);
-  test_dir.WriteFile(FILE_PATH_LITERAL("script.js"), "");
+  test_dir.WriteFile(FILE_PATH_LITERAL("script.js"), kScriptJs);
+
+  // Set up a message listener to wait for the script to execute.
+  ExtensionTestMessageListener listener("script executed");
 
   // Load the unpacked extension into the browser.
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  // Set up a `content::WebContentsConsoleObserver` on the active
-  // `content::WebContents` to watch for the cross-world extension resource
-  // mismatch warning.
+  // Set up a console observer on the active web contents to monitor for any
+  // cross-world extension resource mismatch warning.
   content::WebContents* web_contents = GetActiveWebContents();
   content::WebContentsConsoleObserver console_observer(web_contents);
   console_observer.SetPattern(
@@ -227,15 +232,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionOptionsPreloadTest,
   ASSERT_TRUE(
       NavigateToURL(web_contents, extension->GetResourceURL("options.html")));
 
-  // Verify that the preload mismatch warning was logged to the console with
-  // the exact expected message.
-  ASSERT_TRUE(console_observer.Wait());
-  ASSERT_EQ(1u, console_observer.messages().size());
-  std::string expected_message = base::StringPrintf(
-      "A preload for '%s' is found, but is not used because it is a "
-      "cross-world extension resource mismatch.",
-      extension->GetResourceURL("script.js").spec().c_str());
-  EXPECT_EQ(expected_message, console_observer.GetMessageAt(0));
+  // Verify that the script successfully executes.
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+
+  // Verify that no cross-world mismatch warning was logged to the console.
+  EXPECT_TRUE(console_observer.messages().empty());
 }
 
 }  // namespace extensions

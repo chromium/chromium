@@ -79,7 +79,7 @@ namespace blink {
 // Feature that prevents an extension resource (chrome-extension://...) from
 // being fetched across isolated worlds.
 BASE_FEATURE(kPreventExtensionResourceFetchAcrossIsolatedWorlds,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature that prevents resources fetched via a Service Worker from being
 // reused across different script worlds.
@@ -193,6 +193,18 @@ constexpr base::MemoryConsumerTraits kResourceTraits(
     base::MemoryConsumerTraits::IsStateful::kNo,
     // Re-decoding from the encoded payload is computationally expensive.
     base::MemoryConsumerTraits::RecreateMemoryCost::kExpensive);
+
+// Returns true if `world1` and `world2` represent the same execution world.
+// A null `DOMWrapperWorld` pointer represents the default/main world.
+bool AreSameWorld(const DOMWrapperWorld* world1,
+                  const DOMWrapperWorld* world2) {
+  if (world1 == world2) {
+    return true;
+  }
+  const bool world1_is_main = !world1 || world1->IsMainWorld();
+  const bool world2_is_main = !world2 || world2->IsMainWorld();
+  return world1_is_main && world2_is_main;
+}
 
 }  // namespace
 
@@ -889,7 +901,8 @@ Resource::MatchStatus Resource::CanReuse(const FetchParameters& params) const {
           kPreventExtensionResourceFetchAcrossIsolatedWorlds) &&
       CommonSchemeRegistry::IsExtensionScheme(
           current_request.Url().Protocol().Ascii()) &&
-      options_.world_for_csp != new_options.world_for_csp) {
+      !AreSameWorld(options_.world_for_csp.Get(),
+                    new_options.world_for_csp.Get())) {
     return MatchStatus::kCrossWorldExtensionResourceMismatch;
   }
 
@@ -903,7 +916,8 @@ Resource::MatchStatus Resource::CanReuse(const FetchParameters& params) const {
   if (base::FeatureList::IsEnabled(
           kPreventCrossWorldServiceWorkerResourceReuse) &&
       GetResponse().WasFetchedViaServiceWorker() &&
-      options_.world_for_csp != new_options.world_for_csp) {
+      !AreSameWorld(options_.world_for_csp.Get(),
+                    new_options.world_for_csp.Get())) {
     return MatchStatus::kCrossWorldServiceWorkerResourceMismatch;
   }
 
