@@ -514,16 +514,18 @@ void ConfirmChangeProfileWithCompletion(
 // Shows an alert letting the user know that switching profiles will cancel the
 // current file picker operation and asking them to confirm.
 - (void)confirmChangeProfileWithCompletion:(void (^)(BOOL))completion {
-  // TODO(crbug.com/484897335): Replace placeholders with the localized string.
-  NSString* message = @"THIS_IS_A_PLACEHOLDER";
   if (_alertController) {
     [_alertController dismissViewControllerAnimated:NO completion:nil];
     _alertController = nil;
   }
-  _alertController =
-      [UIAlertController alertControllerWithTitle:@"THIS_IS_A_PLACEHOLDER"
-                                          message:message
-                                   preferredStyle:UIAlertControllerStyleAlert];
+  _alertController = [UIAlertController
+      alertControllerWithTitle:
+          l10n_util::GetNSString(
+              IDS_IOS_CHOOSE_FROM_DRIVE_CONFIRM_CHANGE_PROFILE_TITLE)
+                       message:
+                           l10n_util::GetNSString(
+                               IDS_IOS_CHOOSE_FROM_DRIVE_CONFIRM_CHANGE_PROFILE_MESSAGE)
+                preferredStyle:UIAlertControllerStyleAlert];
   __weak __typeof(self) weakSelf = self;
   UIAlertAction* cancelAction = [UIAlertAction
       actionWithTitle:l10n_util::GetNSString(IDS_CANCEL)
@@ -531,9 +533,10 @@ void ConfirmChangeProfileWithCompletion(
               handler:^(UIAlertAction* action) {
                 HandleConfirmChangeProfile(weakSelf, completion, NO);
               }];
-  // TODO(crbug.com/484897335): Replace placeholder with the localized string.
   UIAlertAction* confirmChangeProfileAction = [UIAlertAction
-      actionWithTitle:@"THIS_IS_A_PLACEHOLDER"
+      actionWithTitle:
+          l10n_util::GetNSString(
+              IDS_IOS_CHOOSE_FROM_DRIVE_CONFIRM_CHANGE_PROFILE_BUTTON)
                 style:UIAlertActionStyleDestructive
               handler:^(UIAlertAction* action) {
                 HandleConfirmChangeProfile(weakSelf, completion, YES);

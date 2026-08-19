@@ -1645,6 +1645,15 @@
       <message name="IDS_IOS_CHOOSE_FROM_DRIVE_ACTION_NAME" desc="Title for an action to choose a file from Google Drive. 'Google Drive' is the name of the 'Google Drive' app." meaning="Title for an action to choose a file from Google Drive. 'Google Drive' is the name of the 'Google Drive' app.">
         Google Drive
       </message>
+      <message name="IDS_IOS_CHOOSE_FROM_DRIVE_CONFIRM_CHANGE_PROFILE_BUTTON" desc="Button label for a confirmation dialog that appears when a user tries to sign-in to an account associated with a different profile, while in the process of choosing a file from Google Drive. [Length: 25em] [iOS only]" meaning="User is in the process of choosing a file from Google Drive, and then tries to sign-in to an account associated with a different profile. This dialog is shown to confirm the profile switch.">
+        Switch Profiles
+      </message>
+      <message name="IDS_IOS_CHOOSE_FROM_DRIVE_CONFIRM_CHANGE_PROFILE_MESSAGE" desc="Message for a confirmation dialog that appears when a user tries to sign-in to an account associated with a different profile, while in the process of choosing a file from Google Drive. [Length: 25em] [iOS only]" meaning="User is in the process of choosing a file from Google Drive, and then tries to switch profiles. This dialog is shown to confirm the profile switch.">
+        This means you'll lose your current progress
+      </message>
+      <message name="IDS_IOS_CHOOSE_FROM_DRIVE_CONFIRM_CHANGE_PROFILE_TITLE" desc="Title for a confirmation dialog that appears when a user tries to sign-in to an account associated with a different profile, while in the process of choosing a file from Google Drive. [Length: 25em] [iOS only]" meaning="User is in the process of choosing a file from Google Drive, and then tries to sign-in to an account associated with a different profile. This dialog is shown to confirm the profile switch.">
+        You're about to switch profiles
+      </message>
       <message name="IDS_IOS_CLEAR_AUTOFILL" desc="Label for the option in settings to clear form data. [Length: 20em] [iOS only]">
         Autofill data
       </message>
