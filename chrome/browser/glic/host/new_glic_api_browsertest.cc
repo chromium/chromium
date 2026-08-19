@@ -229,6 +229,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "NewGlicApiTestWithSkillsDisabled",
       "NewGlicApiTestWithMqlsIdGetterEnabled",
       "NewGlicApiTestWithCachedUserProfile",
+      "NewGlicApiTestRuntimeFeatureOff",
       "NewGlicOnboardingApiTest",
       "NewGlicApiTestSystemSettingsTest",
       "NewGlicGetHostCapabilityApiTest",
@@ -1618,6 +1619,59 @@ class NewGlicApiTestWithCachedUserProfile : public NewGlicApiTest {
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithCachedUserProfile,
                        testGetUserProfileInfoCached) {
   ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
+class NewGlicApiTestRuntimeFeatureOff : public NewGlicApiTest {
+ public:
+  NewGlicApiTestRuntimeFeatureOff() {
+    with_feature_off_.InitAndDisableFeature(
+        mojom::features::kGlicAppendModelQualityClientId);
+  }
+
+ private:
+  base::test::ScopedFeatureList with_feature_off_;
+};
+
+// This tests what happens when a mojom RuntimeFeature method is called by
+// the host.
+// DONT DELETE THIS TEST when the method being called here is removed,
+// but instead update this test to call any other RuntimeFeature-protected
+// method.
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestRuntimeFeatureOff,
+                       testErrorShownOnMojoPipeError) {
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  glic::GlicHistogramTester histogram_tester;
+  ExecuteJsTest();
+
+  auto* web_contents = instance->host().webui_contents();
+  ASSERT_TRUE(web_contents);
+
+  // Reach in to `GlicApiHost`'s handler to call a function that's gated by
+  // a disabled feature.
+  const char* script = R"js(
+(()=>{
+  const appController = appRouter.glicController;
+  if (!appController.webview.host.handler.getModelQualityClientId) {
+    return "Method not found";
+  }
+  appController.webview.host.handler.getModelQualityClientId();
+  return "Method called";
+})()
+)js";
+  auto result = content::EvalJs(web_contents->GetPrimaryMainFrame(), script);
+  ASSERT_EQ("Method called", result.ExtractString());
+
+  ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kError));
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Host.WebClientState.OnDestroy",
+      11 /*MOJO_PIPE_CLOSED_UNEXPECTEDLY_AFTER_INITIALIZE*/, 1);
+
+  // Verify the reload button works.
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "document.querySelector('#reload').click();"));
+
+  ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kReady));
   ExecuteJsTest();
 }
 
@@ -5039,6 +5093,10 @@ INSTANTIATE_TEST_SUITE_P(,
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          NewGlicApiTestWithCachedUserProfile,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestRuntimeFeatureOff,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,

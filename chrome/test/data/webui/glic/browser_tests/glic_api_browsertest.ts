@@ -38,13 +38,6 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testHibernateAllOnMemoryPressure() {}
 
-
-
-
-
-
-  async testErrorShownOnMojoPipeError() {}
-
   async testPanelActiveWithMicrophone() {
     await this.advanceToNextStep();
     await this.advanceToNextStep();

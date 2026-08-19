@@ -1019,6 +1019,8 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
+  async testErrorShownOnMojoPipeError() {}
+
   async testRequestHeader() {
     const rpcUrls: string[] = this.testParams.rpcUrls;
     await Promise.all(rpcUrls.map(url => fetch(url)));

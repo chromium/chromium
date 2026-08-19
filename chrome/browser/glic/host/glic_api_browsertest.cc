@@ -178,7 +178,6 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestUserStatusCheckTest",
       "GlicApiTestWithOneTabMoreDebounceDelay",
       "GlicGetHostCapabilityApiTest",
-      "GlicApiTestRuntimeFeatureOff",
       "GlicApiTestWithWebContentsWarming",
       "GlicApiTestHibernateAllOnMemoryPressure",
       "GlicApiTestWithDaisyChain",
@@ -545,55 +544,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
                GlicSwitchConversationTarget::kSwitchedToExistingInstance) == 1;
   }));
   ContinueJsTest();
-}
-
-class GlicApiTestRuntimeFeatureOff : public GlicApiTestWithOneTab {
- public:
-  GlicApiTestRuntimeFeatureOff() {
-    with_feature_off_.InitAndDisableFeature(
-        mojom::features::kGlicAppendModelQualityClientId);
-  }
-
- private:
-  base::test::ScopedFeatureList with_feature_off_;
-};
-
-// This tests what happens when a mojom RuntimeFeature method is called by
-// the host.
-// DONT DELETE THIS TEST when the method being called here is removed,
-// but instead update this test to call any other RuntimeFeature-protected
-// method.
-IN_PROC_BROWSER_TEST_P(GlicApiTestRuntimeFeatureOff,
-                       testErrorShownOnMojoPipeError) {
-  ExecuteJsTest();
-
-  auto* web_contents = FindGlicWebUIContents();
-  // Reach in to `GlicApiHost`'s handler to call a function that's gated by
-  // a disabled feature.
-  const char* script = R"js(
-(()=>{
-  const appController = appRouter.glicController;
-  if (!appController.webview.host.handler.getModelQualityClientId) {
-    return "Method not found";
-  }
-  appController.webview.host.handler.getModelQualityClientId();
-  return "Method called";
-})()
-)js";
-  auto result = content::EvalJs(web_contents->GetPrimaryMainFrame(), script);
-  ASSERT_EQ("Method called", result.ExtractString());
-
-  WaitForWebUiState(mojom::WebUiState::kError);
-  histogram_tester->ExpectUniqueSample(
-      "Glic.Host.WebClientState.OnDestroy",
-      11 /*MOJO_PIPE_CLOSED_UNEXPECTEDLY_AFTER_INITIALIZE*/, 1);
-
-  // Verify the reload button works.
-  RunTestSequence(
-      ClickWebElement(TargetWebContents::kGlicWebUi, "#reload", false));
-
-  WaitForWebUiState(mojom::WebUiState::kReady);
-  ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelActiveWithMicrophone) {
@@ -984,11 +934,6 @@ INSTANTIATE_TEST_SUITE_P(
     &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTest,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
-
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestRuntimeFeatureOff,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 
