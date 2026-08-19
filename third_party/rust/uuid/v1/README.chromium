@@ -1,7 +1,7 @@
 Name: uuid
 URL: https://crates.io/crates/uuid
-Version: 1.24.0
-Revision: 6a8aeab3d02838f6fef71e69cdfda963e8c4158b
+Version: 1.24.1
+Revision: 2ea38af9f226cad4b50b560cbc18e38927a0a58d
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/uuid-v1/LICENSE-APACHE

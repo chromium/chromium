@@ -104,17 +104,15 @@ impl<'a> InvalidUuid<'a> {
         let mut group_bounds = [0; 4];
 
         for (index, character) in input_str[bounds.clone()].char_indices() {
-            let byte = character as u8;
-
-            match (format, byte.to_ascii_lowercase()) {
-                (_, b'0'..=b'9' | b'a'..=b'f') => (),
-                (RequestedUuid::Simple, b'-') => {
+            match (format, character) {
+                (_, character) if character.is_ascii_hexdigit() => (),
+                (RequestedUuid::Simple, '-') => {
                     return Error(ErrorKind::ParseChar {
                         character: '-',
                         index: index + bounds.start,
                     })
                 }
-                (_, b'-') => {
+                (_, '-') => {
                     if format == RequestedUuid::Any {
                         format = RequestedUuid::Hyphenated;
                     }

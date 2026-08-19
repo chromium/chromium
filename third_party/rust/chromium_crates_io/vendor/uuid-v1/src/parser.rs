@@ -540,6 +540,14 @@ mod tests {
         );
 
         assert_eq!(
+            Uuid::parse_str("\u{130}"),
+            Err(Error(ErrorKind::ParseChar {
+                character: '\u{130}',
+                index: 0,
+            }))
+        );
+
+        assert_eq!(
             Err(Error(ErrorKind::ParseLength { len: 0 })),
             Hyphenated::from_str("")
         );
