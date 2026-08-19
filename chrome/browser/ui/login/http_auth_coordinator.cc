@@ -17,9 +17,9 @@
 #include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "content/public/browser/guest_page_holder.h"
-#include "extensions/browser/api/web_request/web_request_api.h"  // nogncheck
+#include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #endif
 
@@ -140,7 +140,7 @@ bool HttpAuthCoordinator::Flow::ForwardToEnterpriseProxy(
 bool HttpAuthCoordinator::Flow::ForwardToExtension(
     content::GuestPageHolder* guest,
     content::BrowserContext* browser_context) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // If the WebRequest API wants to take a shot at intercepting this, we can
   // return immediately. |continuation| will eventually be invoked if the
   // request isn't cancelled.

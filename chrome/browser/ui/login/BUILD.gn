@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("login") {
@@ -46,13 +48,15 @@ source_set("impl") {
     "//ui/base",
     "//ui/gfx",
   ]
-  if (!is_android) {
+  if (enable_extensions_core) {
     deps += [
       "//components/guest_view/browser",
-      "//components/web_modal",
       "//extensions/browser",
       "//extensions/common:mojom",
     ]
+  }
+  if (!is_android) {
+    deps += [ "//components/web_modal" ]
   }
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

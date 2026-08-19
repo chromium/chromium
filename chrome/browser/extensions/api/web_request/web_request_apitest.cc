@@ -1356,6 +1356,9 @@ struct ARTestParams {
   ContextType context_type;
 };
 
+// TODO(crbug.com/371324825): Port to desktop Android. Blocked because the test
+// extensions use `declarativeWebRequest` (unavailable on desktop Android) and
+// `CreateIncognitoBrowser()` is desktop-only.
 class ExtensionWebRequestApiAuthRequiredTest
     : public ExtensionWebRequestApiTest,
       public testing::WithParamInterface<ARTestParams> {
@@ -1484,6 +1487,7 @@ INSTANTIATE_TEST_SUITE_P(
     ExtensionWebRequestApiAuthRequiredTest,
     ::testing::Values(ARTestParams(ProfileMode::kIncognito,
                                    ContextType::kServiceWorkerMV2)));
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 struct AuthRequiredServiceWorkerTestParams {
   bool under_service_worker_control;
@@ -1631,6 +1635,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTestVariousContext,
   RunAuthRequiredTestForSubResource();
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiDispatchModeTestWithContextType,
                        WebRequestBlocking) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -8235,12 +8240,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_NE(*previous_service_worker_id, *new_instance_service_worker_id);
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that an MV3 extension can use the `webRequestAuthProvider` permission
 // to intercept and handle `onAuthRequired` events coming from a tab.
-// TODO(crbug.com/371324825): Port to desktop Android. The navigation to the
-// auth URL fails. Perhaps the webRequestAuthProvider permission isn't working,
-// or Android handles http auth differently than desktop platforms.
 IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestApiDispatchModeTest,
                        TestOnAuthRequiredTab) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -8293,7 +8294,6 @@ IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestApiDispatchModeTest,
   EXPECT_EQ(auth_url, web_contents->GetLastCommittedURL());
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class ManifestV3WebRequestApiTestWithBypassRedirectChecksPerRequest
     : public ManifestV3WebRequestApiTest,
@@ -8443,7 +8443,6 @@ class OnAuthRequiredApiTest : public ExtensionApiTest {
   base::ScopedTempDir service_worker_dir_;
 };
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that an MV3 extension can use the `webRequestAuthProvider` permission
 // to intercept and handle `onAuthRequired` events coming from an extension
 // service worker. This test does the following:
@@ -8452,7 +8451,6 @@ class OnAuthRequiredApiTest : public ExtensionApiTest {
 //   (3) The extension attempts to fetch a resource that requires http auth.
 //   (4) This triggers the listener in (3), which supplies credentials
 //   (5) Checks that the fetch succeeded.
-// Fails on Android crbug.com/371324825
 IN_PROC_BROWSER_TEST_F(OnAuthRequiredApiTest,
                        TestOnAuthRequiredExtensionServiceWorker) {
   // After the extension loads, trigger an async request to fetch an http auth
@@ -8481,7 +8479,6 @@ IN_PROC_BROWSER_TEST_F(OnAuthRequiredApiTest,
 
   ASSERT_TRUE(result_catcher.GetNextResult());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // This test is similar to TestOnAuthRequiredExtensionServiceWorker but the
 // service worker is hosted by a website instead of the extension istelf.
