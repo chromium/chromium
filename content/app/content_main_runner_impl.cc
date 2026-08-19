@@ -162,9 +162,13 @@
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include <fcntl.h>
+
 #include "base/environment.h"
 #include "base/files/file_path_watcher_inotify.h"
+#include "base/files/scoped_file.h"
 #include "base/native_library.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/rand_util.h"
 #include "content/public/common/zygote/sandbox_support_linux.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
@@ -386,6 +390,35 @@ void PreloadLibraryCdms() {
   }
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+// The kernel starts every process with a 64-entry file descriptor table and
+// grows it in powers of two on demand (see alloc_fdtable() in fs/file.c). Once
+// the process has more than one thread, each growth goes through
+// synchronize_rcu() in expand_fdtable(), which blocks the thread allocating the
+// descriptor - and any other thread of the process that allocates a descriptor
+// in the meantime - for a full RCU grace period. That is typically 10-50 ms and
+// has been measured at over 100 ms on large, busy machines. The browser process
+// crosses 64 and 128 descriptors during startup (the first crossing has been
+// observed on the main thread, with several other threads' openat(), recvmsg()
+// and dup() calls stalled behind it), and the GPU and network processes cross
+// 64 under load.
+//
+// Zygote-forked children avoid this by growing the table right after fork(),
+// while they are still single-threaded (see Zygote::ReadArgsAndFork()). This
+// does the same for the browser process and exec'ed children before their first
+// thread is created: asking for a descriptor >= 512 makes the kernel allocate a
+// 1024-entry table (8 KiB) once, without RCU synchronization. This is purely a
+// performance optimization, so failures (e.g. a soft RLIMIT_NOFILE of 512 or
+// less) are ignored.
+void PreallocateFileDescriptorTable() {
+  base::ScopedFD dev_null(
+      HANDLE_EINTR(open("/dev/null", O_RDONLY | O_CLOEXEC)));
+  if (!dev_null.is_valid()) {
+    return;
+  }
+  base::ScopedFD high_fd(
+      HANDLE_EINTR(fcntl(dev_null.get(), F_DUPFD_CLOEXEC, 512)));
+}
 
 void PreSandboxInit() {
   // Ensure the /dev/urandom is opened.
@@ -816,6 +849,16 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
       *base::CommandLine::ForCurrentProcess();
   std::string process_type =
       command_line.GetSwitchValueASCII(switches::kProcessType);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Must run while the process is still single-threaded, i.e. before the
+  // thread pool (and, in Chrome, the stack sampling profiler) is created below.
+  // Zygotes fork their children with a right-sized copy of the table and grow
+  // it themselves after fork().
+  if (process_type != switches::kZygoteProcess) {
+    PreallocateFileDescriptorTable();
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
   // Initialize the background threadpool field trial before creating the
