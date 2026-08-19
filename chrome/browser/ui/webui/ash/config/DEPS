@@ -79,6 +79,5 @@ include_rules = [
 specific_include_rules = {
   "chrome_web_ui_configs_chromeos\\.cc": [
     "+chrome/browser/consent_auditor/consent_auditor_factory.h",
-    "+chrome/browser/signin/identity_manager_factory.h",
   ]
 }
