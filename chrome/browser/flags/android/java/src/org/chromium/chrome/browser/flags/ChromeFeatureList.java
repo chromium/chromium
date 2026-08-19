@@ -1337,7 +1337,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabClosureCommittedMethodRefactor =
             newCachedFlag(TAB_CLOSURE_COMMITTED_METHOD_REFACTOR, false);
     public static final CachedFlag sTabClosureMethodRefactor =
-            newCachedFlag(TAB_CLOSURE_METHOD_REFACTOR, false);
+            newCachedFlag(TAB_CLOSURE_METHOD_REFACTOR, true);
     public static final CachedFlag sTabSharingToolbarAndroid =
             newCachedFlag(
                     TAB_SHARING_TOOLBAR_ANDROID,
