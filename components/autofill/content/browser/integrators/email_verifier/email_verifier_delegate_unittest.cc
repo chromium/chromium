@@ -1141,10 +1141,66 @@ TEST_F(EmailVerifierDelegateTest, DriverInactiveBeforeResponse) {
                                       1);
 }
 
+// Verifies that if a page navigation completes while a CheckIfVerifiable
+// request is in-flight, kPageNavigatedDuringCheckIfVerifiable is recorded.
+TEST_F(EmailVerifierDelegateTest, PageNavigatedDuringCheckIfVerifiable) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  FormStructure* form = SetUpValidForm();
+
+  // Capture the CheckIfVerifiable callback and keep it in-flight.
+  EmailVerifier::IsVerifiableCallback saved_is_verifiable_callback;
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable("johndoe@hades.com", _))
+      .WillOnce([&](const std::string&,
+                    EmailVerifier::IsVerifiableCallback callback) {
+        saved_is_verifiable_callback = std::move(callback);
+      });
+
+  EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
+  EXPECT_CALL(email_verifier(), Verify).Times(0);
+
+  TriggerDefaultFormFill(*form);
+
+  ASSERT_TRUE(saved_is_verifiable_callback);
+
+  // Simulate primary main frame navigation committing while CheckIfVerifiable
+  // is in-flight.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://other-example.com"));
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Autofill.FlowResult",
+      EvpAutofillFlowResult::kPageNavigatedDuringCheckIfVerifiable, 1);
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::Blink_EmailVerificationProtocol::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Blink_EmailVerificationProtocol::kAutofill_FlowResultName,
+      static_cast<int64_t>(
+          EvpAutofillFlowResult::kPageNavigatedDuringCheckIfVerifiable));
+
+  // If the network response returns after navigation, running the callback
+  // should be a no-op because pending_request_metrics_ was reset.
+  std::move(saved_is_verifiable_callback)
+      .Run(CreateVerifiableResult(),
+           blink::mojom::EmailVerificationRequestResult::kSuccess,
+           base::Milliseconds(100));
+
+  // Verify no additional metric was logged.
+  histogram_tester.ExpectTotalCount("Blink.Evp.Autofill.FlowResult", 1);
+  EXPECT_EQ(1u,
+            ukm_recorder
+                .GetEntriesByName(
+                    ukm::builders::Blink_EmailVerificationProtocol::kEntryName)
+                .size());
+}
+
 // Verifies that if a page navigation completes while a verification request is
 // in-flight, kPageNavigatedDuringVerification is recorded.
 TEST_F(EmailVerifierDelegateTest, PageNavigatedDuringVerification) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   FormStructure* form = SetUpValidForm();
 
   EXPECT_CALL(email_verifier(), CheckIfVerifiable("johndoe@hades.com", _))
@@ -1177,9 +1233,17 @@ TEST_F(EmailVerifierDelegateTest, PageNavigatedDuringVerification) {
   histogram_tester.ExpectUniqueSample(
       "Blink.Evp.Autofill.FlowResult",
       EvpAutofillFlowResult::kPageNavigatedDuringVerification, 1);
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::Blink_EmailVerificationProtocol::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Blink_EmailVerificationProtocol::kAutofill_FlowResultName,
+      static_cast<int64_t>(
+          EvpAutofillFlowResult::kPageNavigatedDuringVerification));
 
   // If the network response returns after navigation, running the callback
-  // should be a no-op because in_flight_verify_count_ was reset.
+  // should be a no-op because pending_request_metrics_ was reset.
   std::move(saved_response_callback)
       .Run(std::optional<std::string>("test_token"),
            blink::mojom::EmailVerificationRequestResult::kSuccess,
@@ -1187,6 +1251,11 @@ TEST_F(EmailVerifierDelegateTest, PageNavigatedDuringVerification) {
 
   // Verify no additional metric was logged.
   histogram_tester.ExpectTotalCount("Blink.Evp.Autofill.FlowResult", 1);
+  EXPECT_EQ(1u,
+            ukm_recorder
+                .GetEntriesByName(
+                    ukm::builders::Blink_EmailVerificationProtocol::kEntryName)
+                .size());
 }
 
 // Verifies that filling a form without an EVP token field does not populate

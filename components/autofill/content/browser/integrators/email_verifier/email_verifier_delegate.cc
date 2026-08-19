@@ -278,7 +278,7 @@ void EmailVerifierDelegate::OnIsVerifiable(
   auto it = pending_request_metrics_.find(email_field_id);
   if (it == pending_request_metrics_.end()) {
     // Navigation already completed this flow and recorded
-    // kPageNavigatedDuringVerification.
+    // kPageNavigatedDuringCheckIfVerifiable.
     return;
   }
   RequestMetrics& metrics = it->second;
@@ -419,6 +419,7 @@ void EmailVerifierDelegate::NotifyFlowCompleted(AutofillManager* manager,
       case EvpAutofillFlowResult::kManagerDestroyed:
       case EvpAutofillFlowResult::kDriverInactive:
       case EvpAutofillFlowResult::kPageNavigatedDuringVerification:
+      case EvpAutofillFlowResult::kPageNavigatedDuringCheckIfVerifiable:
         // Reset to none in case we had a previous request and this new request
         // was declined by the user or otherwise did not end in success.
         state = mojom::EmailVerificationState::kNone;
@@ -437,16 +438,20 @@ void EmailVerifierDelegate::DidFinishNavigation(
       navigation_handle->HasCommitted()) {
     if (!navigation_handle->IsSameDocument() &&
         !pending_request_metrics_.empty()) {
-      // Create a copy of keys because NotifyFlowCompleted erases from the map.
-      std::vector<FieldGlobalId> pending_field_ids;
-      pending_field_ids.reserve(pending_request_metrics_.size());
+      // Create a copy of keys and flow results because NotifyFlowCompleted
+      // erases from the map.
+      std::vector<std::pair<FieldGlobalId, EvpAutofillFlowResult>>
+          pending_requests;
+      pending_requests.reserve(pending_request_metrics_.size());
       for (const auto& [email_field_id, metrics] : pending_request_metrics_) {
-        pending_field_ids.push_back(email_field_id);
+        EvpAutofillFlowResult flow_result =
+            metrics.is_verifiable_status.has_value()
+                ? EvpAutofillFlowResult::kPageNavigatedDuringVerification
+                : EvpAutofillFlowResult::kPageNavigatedDuringCheckIfVerifiable;
+        pending_requests.emplace_back(email_field_id, flow_result);
       }
-      for (const FieldGlobalId& email_field_id : pending_field_ids) {
-        NotifyFlowCompleted(
-            nullptr, email_field_id,
-            EvpAutofillFlowResult::kPageNavigatedDuringVerification);
+      for (const auto& [email_field_id, flow_result] : pending_requests) {
+        NotifyFlowCompleted(nullptr, email_field_id, flow_result);
       }
     }
     // `HasCommitted` returns true even for same document commits, e.g.

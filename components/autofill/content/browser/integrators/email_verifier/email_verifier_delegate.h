@@ -47,7 +47,8 @@ enum class EvpAutofillFlowResult {
   kTokenSentToRenderer = 10,
   kDriverInactive = 11,
   kPageNavigatedDuringVerification = 12,
-  kMaxValue = kPageNavigatedDuringVerification,
+  kPageNavigatedDuringCheckIfVerifiable = 13,
+  kMaxValue = kPageNavigatedDuringCheckIfVerifiable,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:EvpAutofillFlowResult)
 
