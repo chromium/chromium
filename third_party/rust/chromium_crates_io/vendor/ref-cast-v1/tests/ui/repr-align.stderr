@@ -11,10 +11,10 @@ error: aligned repr on struct that implements RefCast is not supported
   |                     ^^^^^^^^^^^
 
 error[E0539]: malformed `repr` attribute input
- --> tests/ui/repr-align.rs:4:1
+ --> tests/ui/repr-align.rs:4:3
   |
 4 | #[repr(align(2), C, align = "2")]
-  | ^^^^^^^^^^^^^^^^^^^^^^^^^^-----^^
+  |   ^^^^^^^^^^^^^^^^^^^^^^^^-----^
   |                           |
   |                           expected this to be a list
   |

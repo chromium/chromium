@@ -384,6 +384,7 @@ fn expand_function_body(function: Function) -> TokenStream2 {
         #vis #constness #asyncness #unsafety #abi
         #fn_token #ident #generics #args #arrow_token #to_type {
             // check lifetime
+            #[allow(clippy::let_underscore_must_use)]
             let _ = || {
                 ::ref_cast::#private::ref_cast_custom::<#from_type, #to_type>(#arg);
             };

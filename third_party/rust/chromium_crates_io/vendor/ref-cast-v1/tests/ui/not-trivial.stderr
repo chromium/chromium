@@ -14,7 +14,7 @@ help: the following other types implement trait `ref_cast::trivial::Trivial`
 ...
   | impl Trivial for PhantomPinned {}
   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `PhantomPinned`
-note: required by a bound in `ref_cast::__private25::assert_trivial`
+note: required by a bound in `ref_cast::__private26::assert_trivial`
  --> src/trivial.rs
   |
   | pub fn assert_trivial<T: Trivial>() {}
