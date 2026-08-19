@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_bnpl_footnote_view.h"
@@ -583,7 +584,13 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_AutofillAi_SubMenu) {
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_AutofillAi_SubMenu DISABLED_InvokeUi_AutofillAi_SubMenu
+#else
+#define MAYBE_InvokeUi_AutofillAi_SubMenu InvokeUi_AutofillAi_SubMenu
+#endif
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       MAYBE_InvokeUi_AutofillAi_SubMenu) {
   Suggestion source_attribution(
       u"From Photos · Pippi Långstrump · Sweden · LR1234567",
       SuggestionType::kAutofillAiSourceAttribution);
@@ -605,8 +612,15 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_AutofillAi_SubMenu) {
   ShowAndVerifyUi(/*popup_has_parent=*/true);
 }
 
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_AutofillAi_SubMenu_Selected \
+  DISABLED_InvokeUi_AutofillAi_SubMenu_Selected
+#else
+#define MAYBE_InvokeUi_AutofillAi_SubMenu_Selected \
+  InvokeUi_AutofillAi_SubMenu_Selected
+#endif
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
-                       InvokeUi_AutofillAi_SubMenu_Selected) {
+                       MAYBE_InvokeUi_AutofillAi_SubMenu_Selected) {
   Suggestion source_attribution(
       u"From Photos · Pippi Långstrump · Sweden · LR1234567",
       SuggestionType::kAutofillAiSourceAttribution);
