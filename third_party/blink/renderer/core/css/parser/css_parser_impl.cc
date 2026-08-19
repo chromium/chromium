@@ -1744,6 +1744,18 @@ StyleRuleFontFeatureValues* CSSParserImpl::ConsumeFontFeatureValuesRule(
     ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleFontFeatureValues);
     return nullptr;
   }
+
+  Vector<AtomicString> families;
+  families.ReserveInitialCapacity(family_list->length());
+  for (const auto& family_entry : *family_list) {
+    const CSSFontFamilyValue* family_value =
+        DynamicTo<CSSFontFamilyValue>(*family_entry);
+    if (!family_value) {
+      ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleFontFeatureValues);
+      return nullptr;
+    }
+    families.push_back(family_value->Value());
+  }
   wtf_size_t prelude_offset_end = stream.LookAheadOffset();
   if (!ConsumeEndOfPreludeForAtRuleWithBlock(
           stream, CSSAtRuleID::kCSSAtRuleFontFeatureValues)) {
@@ -1815,16 +1827,6 @@ StyleRuleFontFeatureValues* CSSParserImpl::ConsumeFontFeatureValuesRule(
           break;
       }
     }
-  }
-
-  Vector<AtomicString> families;
-  for (const auto& family_entry : *family_list) {
-    const CSSFontFamilyValue* family_value =
-        DynamicTo<CSSFontFamilyValue>(*family_entry);
-    if (!family_value) {
-      return nullptr;
-    }
-    families.push_back(family_value->Value());
   }
 
   auto* feature_values_rule = MakeGarbageCollected<StyleRuleFontFeatureValues>(

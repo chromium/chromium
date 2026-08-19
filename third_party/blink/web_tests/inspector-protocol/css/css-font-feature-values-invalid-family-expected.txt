@@ -1,0 +1,4 @@
+Verify that an @font-feature-values rule with an invalid generic family name does not corrupt the source data of the rules following it.
+selector: body
+has source range: true
+

@@ -226,6 +226,27 @@ TEST_F(InspectorCSSParserObserverTest, MixinWithNestedDeclarations) {
   EXPECT_EQ("green", result_rule->child_rules[0]->property_data[0].value);
 }
 
+TEST_F(InspectorCSSParserObserverTest, FontFeatureValuesInvalidFamily) {
+  String text =
+      "@font-feature-values serif { @styleset { preserve: 9; } } "
+      ".after { color: green; }";
+  CSSRuleSourceDataList data = Parse(text);
+  ASSERT_EQ(1u, data.size());
+  EXPECT_EQ(StyleRule::kStyle, data[0]->type);
+  EXPECT_EQ(".after", Substring(text, data[0]->rule_header_range));
+}
+
+TEST_F(InspectorCSSParserObserverTest, FontFeatureValuesValidFamily) {
+  String text =
+      "@font-feature-values Bixa { @styleset { preserve: 9; } } "
+      ".after { color: green; }";
+  CSSRuleSourceDataList data = Parse(text);
+  ASSERT_EQ(2u, data.size());
+  EXPECT_EQ(StyleRule::kFontFeatureValues, data[0]->type);
+  EXPECT_EQ(StyleRule::kStyle, data[1]->type);
+  EXPECT_EQ(".after", Substring(text, data[1]->rule_header_range));
+}
+
 TEST_F(InspectorCSSParserObserverTest, MixinApplyWithNoBlock) {
   String text = "div { @apply --m1; color: green; }";
   CSSRuleSourceDataList data = Parse(text);
