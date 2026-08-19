@@ -219,6 +219,9 @@ InputStateModel::InputStateModel(
     // Initialize allowed tools, models, inputs in `state_`.
     state_.allowed_tools.reserve(mutable_config.tool_configs().size());
     for (const auto& tool_config : mutable_config.tool_configs()) {
+      if (tool_config.hide_from_menu()) {
+        continue;
+      }
       if (tool_config.tool() == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD) {
         continue;
       }

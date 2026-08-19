@@ -308,6 +308,28 @@ TEST_F(InputStateModelTest, ParsesActiveToolFromUrl) {
             omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
 }
 
+TEST_F(InputStateModelTest, HidesToolsFromMenu) {
+  omnibox::SearchboxConfig config;
+  auto* tool_config = config.add_tool_configs();
+  tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  tool_config->set_hide_from_menu(true);
+
+  auto* tool_config2 = config.add_tool_configs();
+  tool_config2->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  tool_config2->set_hide_from_menu(false);
+
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config, active_url_, /*is_off_the_record=*/false,
+      /*browser_identity_matches_aim_identity=*/true);
+
+  const auto& state = input_state_model_->get_state_for_testing();
+
+  // `TOOL_MODE_CANVAS` should be hidden, only `TOOL_MODE_IMAGE_GEN` should be
+  // allowed.
+  EXPECT_THAT(state.allowed_tools, testing::UnorderedElementsAre(
+                                       omnibox::ToolMode::TOOL_MODE_IMAGE_GEN));
+}
+
 TEST_F(InputStateModelTest, UpdateToolFromUrl) {
   omnibox::SearchboxConfig config;
 
