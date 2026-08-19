@@ -25,6 +25,7 @@ class HeadlessCommandHandler : public content::WebContentsObserver {
  public:
   enum class Result {
     kSuccess,
+    kPageLoadError,
     kPageLoadTimeout,
     kWriteFileError,
   };

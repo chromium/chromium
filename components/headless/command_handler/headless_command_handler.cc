@@ -397,6 +397,12 @@ void HeadlessCommandHandler::OnTargetCrashed(const base::DictValue&) {
 }
 
 void HeadlessCommandHandler::OnCommandsResult(base::DictValue result) {
+  if (std::string* page_load_error =
+          result.FindStringByDottedPath("result.result.value.pageLoadError")) {
+    result_ = Result::kPageLoadError;
+    LOG(ERROR) << "Page load failed: " << *page_load_error;
+  }
+
   if (result.FindBoolByDottedPath("result.result.value.pageLoadTimedOut")
           .value_or(false)) {
     result_ = Result::kPageLoadTimeout;

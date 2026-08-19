@@ -214,6 +214,30 @@ IN_PROC_BROWSER_TEST_F(HeadlessDumpDomVirtualTimeBudgetCommandBrowserTest,
   EXPECT_THAT(captured_lines, testing::Contains(R"(<div id="box">5</div>)"));
 }
 
+class HeadlessDumpDomNonExistingPageCommandBrowserTest
+    : public HeadlessDumpDomCommandBrowserTest {
+ public:
+  HeadlessDumpDomNonExistingPageCommandBrowserTest() = default;
+
+  GURL GetTargetUrl() override {
+    return GURL("http://does-not-exist.test/hello.html");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HeadlessDumpDomNonExistingPageCommandBrowserTest,
+                       DumpDomNonExistingPage) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  CaptureStdOut capture_stdout;
+  capture_stdout.StartCapture();
+  RunTest();
+  capture_stdout.StopCapture();
+
+  EXPECT_THAT(result(),
+              testing::Eq(HeadlessCommandHandler::Result::kPageLoadError));
+  EXPECT_THAT(capture_stdout.TakeCapturedData(), testing::IsEmpty());
+}
+
 class HeadlessDumpDomTimeoutCommandBrowserTestBase
     : public HeadlessDumpDomCommandBrowserTest {
  public:
@@ -615,6 +639,45 @@ IN_PROC_BROWSER_TEST_F(HeadlessPrintToPdfSvgEllipseWithStyleCommandBrowserTest,
   // Verify the center pixel on the page to be inside the red ellipse.
   const gfx::Rect bounds(page_bitmap_.size());
   EXPECT_EQ(page_bitmap_.GetPixelRGB(bounds.CenterPoint()), 0xff0000u);
+}
+
+class HeadlessPrintToPdfPdfCommandBrowserTest
+    : public HeadlessPrintToPdfCommandBrowserTest {
+ public:
+  HeadlessPrintToPdfPdfCommandBrowserTest() = default;
+
+  GURL GetTargetUrl() override {
+    return embedded_test_server()->GetURL("/test.pdf");
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url == "/test.pdf") {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("application/pdf");
+      response->set_content("%PDF-1.4");
+      return response;
+    }
+
+    return nullptr;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HeadlessPrintToPdfPdfCommandBrowserTest, PrintToPdfPdf) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &HeadlessPrintToPdfPdfCommandBrowserTest::RequestHandler,
+      base::Unretained(this)));
+
+  RunTest();
+
+  // Navigation to a PDF file is aborted and converted to a download in
+  // headless shell.
+  EXPECT_THAT(result(),
+              testing::Eq(HeadlessCommandHandler::Result::kPageLoadError));
+  EXPECT_FALSE(base::PathExists(print_to_pdf_filename_));
 }
 
 #endif  // BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(ENABLE_PDF)

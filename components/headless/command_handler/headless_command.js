@@ -200,7 +200,11 @@ class TargetPage {
     const dp = this._session.protocol();
     await dp.Page.enable();
     await dp.Page.setLifecycleEventsEnabled({enabled: true});
-    const frameId = (await dp.Page.navigate({url})).result.frameId;
+    const {frameId, errorText, isDownload} =
+        (await dp.Page.navigate({url})).result;
+    if (errorText || isDownload) {
+      return errorText || 'net::ERR_ABORTED (download)';
+    }
     await dp.Page.onceLifecycleEvent(
         event =>
             event.params.name === 'load' && event.params.frameId === frameId);
@@ -326,7 +330,12 @@ async function executeCommands(commands) {
   }
 
   promises.push(targetPage.load(commands.targetUrl));
-  await Promise.race(promises);
+  const pageLoadError = await Promise.race(promises);
+
+  if (pageLoadError) {
+    await targetPage.close();
+    return {pageLoadError};
+  }
 
   if (pageLoadTimedOut === undefined) {
     pageLoadTimedOut = false;
