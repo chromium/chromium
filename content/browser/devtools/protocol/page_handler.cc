@@ -862,6 +862,7 @@ void PageHandler::Reload(std::optional<bool> bypassCache,
     have_pending_reload_ = true;
     pending_script_to_evaluate_on_load_ =
         script_to_evaluate_on_load.value_or("");
+    initiating_origin_ = outermost_main_frame->GetLastCommittedOrigin();
     navigation_controller.Reload(reload_type, false);
     callback->sendSuccess();
   } else {
@@ -2668,6 +2669,11 @@ void PageHandler::ReadyToCommitNavigation(
     have_pending_reload_ = false;
     pending_script_to_evaluate_on_load_.clear();
   } else if (have_pending_reload_) {
+    if (navigation_request->WasServerRedirect() &&
+        !initiating_origin_.IsSameOriginWith(
+            navigation_request->GetOriginToCommit().value_or(url::Origin()))) {
+      pending_script_to_evaluate_on_load_.clear();
+    }
     prepare_for_reload_callback_.Run(
         std::move(pending_script_to_evaluate_on_load_));
     have_pending_reload_ = false;

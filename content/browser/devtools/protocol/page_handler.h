@@ -32,6 +32,7 @@
 #include "content/public/common/javascript_dialog_type.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 class SkBitmap;
 
@@ -308,6 +309,7 @@ class PageHandler : public DevToolsDomainHandler,
   base::RepeatingCallback<void(std::string)> prepare_for_reload_callback_;
   bool have_pending_reload_ = false;
   std::string pending_script_to_evaluate_on_load_;
+  url::Origin initiating_origin_;
 
   Response AddScriptToEvaluateOnNewDocumentInternal(
       const std::string& source,

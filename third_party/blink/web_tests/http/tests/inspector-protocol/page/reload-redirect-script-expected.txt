@@ -1,0 +1,11 @@
+Tests that Page.reload with scriptToEvaluateOnLoad drops the script on cross-origin redirects.
+
+--- Direct reload (no redirect) ---
+window.__injected: direct
+
+--- Same-origin redirect ---
+window.__injected: same-origin
+
+--- Cross-origin redirect ---
+window.__injected: undefined
+
