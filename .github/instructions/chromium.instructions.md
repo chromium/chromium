@@ -15,3 +15,12 @@ You can navigate and understand this codebase effectively.
   issue, create a fixup commit using `git commit --fixup=<commit-hash>`.
 - For all other changes, create a new commit with a clear, meaningful message.
 - You may suggest `git rebase --autosquash`, but do not run it.
+
+## C++ includes
+
+- Prefer forward declarations over adding header includes whenever possible.
+
+## Line endings
+
+- Use **LF (Unix, `\n`)** line endings when creating or editing files unless
+  `.gitattributes` specifies otherwise.

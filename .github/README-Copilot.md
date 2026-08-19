@@ -15,13 +15,13 @@ https://github.com/chromium/chromium. See
 [github readme documentation](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes)
 
 ## Where is copilot-instructions.md?
-[`copilot-instructions.md`](../copilot-instructions.md) is typically a single
+[`copilot-instructions.md`](copilot-instructions.md) is typically a single
 instruction file that contains default instructions for a workspace. These
 instructions are automatically included in every chat request.
 
 Until the prompt in `copilot-instructions.md` is generally agreed upon for the
 chromium repo, this file is intentionally excluded from the repo, and added to
-the [.gitignore](../.gitignore) for your customization.
+the [.gitignore](.gitignore) for your customization.
 
 ## Code Layout
 - [.github/instructions](./instructions/): Custom instructions for specific
@@ -32,11 +32,19 @@ the [.gitignore](../.gitignore) for your customization.
 - [.github/skills](./skills/): Toggleable and composable capabilities that AI
   agents can invoke to perform specific tasks.
 
-## User Specific Prompts
-Users can create their own prompts or instructions that match the regex
-`.github/**/user_.md` which is captured in the [.gitignore](../.gitignore).
+## Shared and personal skills
 
-## Contributing Guidelines
-- [.github/instructions](./instructions/): Instructions that are automatically
-  picked up using `applyTo` syntax will have a much higher review bar than those
-  without it.
+[.github/skills](./skills/) is for shared, tracked Copilot project skills such as
+[style-guide](./skills/style-guide/SKILL.md).
+
+Repository-local **personal** skills should not be placed under
+`.github/skills/`. Instead, place them under `.agents/skills/`.
+These will not be tracked by git.
+
+## Documentation
+
+Official documentation:
+- Custom instructions:
+  <https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions>
+- Agent skills:
+  <https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-skills>
