@@ -70,6 +70,7 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
 
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey clearBookmarks];
+  [BookmarkEarlGrey clearBookmarksPositionCache];
 }
 
 // Tear down called once per test.
@@ -1419,6 +1420,8 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
 // Tests that the default folder bookmarks are saved in is updated to the last
 // used folder.
 - (void)testStickyDefaultSignedOut {
+  [BookmarkEarlGrey setLastUsedBookmarkFolderToMobileBookmarksInStorageType:
+                        BookmarkStorageType::kLocalOrSyncable];
   [self util_testStickyDefaultFolder:KindOfTest::kSignedOut];
 }
 
@@ -1686,6 +1689,8 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
 // used folder.
 - (void)testStickyDefaultFolderAccount {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [BookmarkEarlGrey setLastUsedBookmarkFolderToMobileBookmarksInStorageType:
+                        BookmarkStorageType::kAccount];
   [self util_testStickyDefaultFolder:KindOfTest::kAccount];
 }
 
