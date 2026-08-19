@@ -239,14 +239,18 @@ public class VerticalTabHoverCardController {
             TabHoverCardView hoverCardView,
             boolean isPinnedTab,
             boolean isRailCollapsed) {
-        // 1. Calculate relative coordinates of the hovered tab view relative to the root view.
+        // 1. Calculate relative coordinates of the tab view and rail container relative to the root
+        // view.
         View root = containerView.getRootView();
         int[] tabViewLocation = new int[2];
+        int[] containerLocation = new int[2];
         int[] rootLocation = new int[2];
         tabView.getLocationOnScreen(tabViewLocation);
+        containerView.getLocationOnScreen(containerLocation);
         root.getLocationOnScreen(rootLocation);
         float relativeX = tabViewLocation[0] - rootLocation[0];
         float relativeY = tabViewLocation[1] - rootLocation[1];
+        float containerRelativeX = containerLocation[0] - rootLocation[0];
 
         // 2. Determine initial hover card position based on pinned and rail state.
         float hoverCardX;
@@ -255,7 +259,7 @@ public class VerticalTabHoverCardController {
             hoverCardX = relativeX;
             hoverCardY = relativeY + tabView.getHeight();
         } else {
-            hoverCardX = relativeX + tabView.getWidth();
+            hoverCardX = containerRelativeX + containerView.getWidth();
             hoverCardY = relativeY;
         }
 
