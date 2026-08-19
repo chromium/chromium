@@ -46,14 +46,18 @@ export function getHtml(this: UserEducationInternalsCardElement) {
   <div id="data" ?hidden="${!this.dataExpanded_}">
     ${this.promo.data.map(item => html`
       <p><b>${item.name}</b> ${item.value}</p>`)}
-    <cr-button id="clear" @click="${this.onClearDataClick_}">
-      Clear Data
-    </cr-button>
+      ${this.getAdditionalActions_().map(action => html`
+        <cr-button actionKey="${action.key}"
+            @click="${this.onPromoActionClick_}">
+          ${action.caption}
+        </cr-button>
+      `)}
   </div>
 </div>
-<cr-button class="action-button" ?hidden="${!this.showAction}" id="launch"
-    @click="${this.onLaunchPromoClick_}">
-  Launch
+<cr-button actionKey="${this.getLaunchKey_()}" class="action-button"
+    ?hidden="${!this.showLaunch_()}" id="launch"
+    @click="${this.onPromoActionClick_}">
+  ${this.getLaunchCaption_()}
 </cr-button>
 `;
   // clang-format on

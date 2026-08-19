@@ -915,6 +915,7 @@ void UserEducationInternalsPageHandlerImpl::ClearNewBadgeData(
   }
 
   auto data = storage_service->ReadNewBadgeData(*feature);
+  data.feature_enabled_time = base::Time::Now();
   data.show_count = 0;
   data.used_count = 0;
   storage_service->SaveNewBadgeData(*feature, data);

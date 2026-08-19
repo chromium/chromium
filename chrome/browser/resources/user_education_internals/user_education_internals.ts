@@ -27,6 +27,7 @@ import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/h
 import type {CrMenuSelectorElement} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import type {CrPageSelectorElement} from 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {TrackedElementManager} from 'chrome://resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -36,6 +37,69 @@ import {getCss} from './user_education_internals.css.js';
 import {getHtml} from './user_education_internals.html.js';
 import type {FeaturePromoDemoPageData, FeaturePromoDemoPageInfo, UserEducationInternalsPageHandlerInterface, WhatsNewEditionDemoPageInfo, WhatsNewModuleDemoPageInfo} from './user_education_internals.mojom-webui.js';
 import {UserEducationInternalsPageHandler} from './user_education_internals.mojom-webui.js';
+import type {PromoAction, PromoActionDescription} from './user_education_internals_card.js';
+
+const CLEAR_PROMO_DATA_WARNING =
+    'Clear all data associated with this promo?\n' +
+    'Note: because of session tracking and event constraints, ' +
+    'Feature Engagement may still disallow some promos.';
+
+const CLEAR_NEW_BADGE_DATA_WARNING =
+    'Clear all data associated with this "New" Badge?';
+
+const CLEAR_NTP_PROMO_WARNING =
+    'Clear all data associated with this NTP promo?';
+
+enum PromoActions {
+  LAUNCH_PROMO,
+  LAUNCH_TUTORIAL,
+  CLEAR_FEATURE_PROMO_DATA,
+  CLEAR_NEW_BADGE_DATA,
+  CLEAR_NON_IPH_PROMO_DATA,
+  CLEAR_NTP_PROMO_DATA,
+}
+
+const PROMO_ACTIONS: PromoActionDescription[] = [
+  {
+    caption: 'Launch',
+    isLaunch: true,
+    key: PromoActions.LAUNCH_PROMO,
+  },
+  {
+    caption: 'Clear Promo Data',
+    isLaunch: false,
+    key: PromoActions.CLEAR_FEATURE_PROMO_DATA,
+    warning: CLEAR_PROMO_DATA_WARNING,
+  },
+];
+
+const TUTORIAL_ACTIONS: PromoActionDescription[] = [{
+  caption: 'Launch',
+  isLaunch: true,
+  key: PromoActions.LAUNCH_TUTORIAL,
+}];
+
+const NON_IPH_PROMO_ACTIONS: PromoActionDescription[] = [{
+  caption: 'Clear Promo Data',
+  isLaunch: false,
+  key: PromoActions.CLEAR_NON_IPH_PROMO_DATA,
+  warning: CLEAR_PROMO_DATA_WARNING,
+}];
+
+const NTP_PROMO_ACTIONS: PromoActionDescription[] = [{
+  caption: 'Clear Promo Data',
+  isLaunch: false,
+  key: PromoActions.CLEAR_NTP_PROMO_DATA,
+  warning: CLEAR_NTP_PROMO_WARNING,
+}];
+
+const NEW_BADGE_ACTIONS: PromoActionDescription[] = [{
+  caption: 'Clear New Badge Data',
+  isLaunch: false,
+  key: PromoActions.CLEAR_NEW_BADGE_DATA,
+  warning: CLEAR_NEW_BADGE_DATA_WARNING,
+}];
+
 
 export interface UserEducationInternalsElement {
   $: {
@@ -238,12 +302,56 @@ export class UserEducationInternalsElement extends
     }
   }
 
+  protected getPromoActions_() {
+    return PROMO_ACTIONS;
+  }
+
+  protected getTutorialActions_() {
+    return TUTORIAL_ACTIONS;
+  }
+
+  protected getNonIphPromoActions_() {
+    return NON_IPH_PROMO_ACTIONS;
+  }
+
+  protected getNtpPromoActions_() {
+    return NTP_PROMO_ACTIONS;
+  }
+
+  protected getNewBadgeActions_() {
+    return NEW_BADGE_ACTIONS;
+  }
+
   protected onSearchChanged_(e: CustomEvent<string>) {
     this.filter = e.detail.toLowerCase();
   }
 
-  protected onTutorialPromoLaunch_(e: CustomEvent<string>) {
-    const id = e.detail;
+  protected onPromoAction_(e: CustomEvent<PromoAction>) {
+    switch (e.detail.key) {
+      case PromoActions.LAUNCH_PROMO:
+        this.onFeaturePromoLaunch_(e.detail.promo);
+        break;
+      case PromoActions.CLEAR_FEATURE_PROMO_DATA:
+        this.onFeaturePromoClearPromoData_(e.detail.promo);
+        break;
+      case PromoActions.LAUNCH_TUTORIAL:
+        this.onTutorialLaunch_(e.detail.promo);
+        break;
+      case PromoActions.CLEAR_NON_IPH_PROMO_DATA:
+        this.onNonIphClearPromoData_(e.detail.promo);
+        break;
+      case PromoActions.CLEAR_NEW_BADGE_DATA:
+        this.onNewBadgeClearPromoData_(e.detail.promo);
+        break;
+      case PromoActions.CLEAR_NTP_PROMO_DATA:
+        this.onNtpPromoClearPromoData_(e.detail.promo);
+        break;
+      default:
+        assertNotReached('Unexpected enum value: ' + e.detail.key);
+    }
+  }
+
+  protected onTutorialLaunch_(id: string) {
     this.featurePromoErrorMessage_ = '';
 
     this.handler_.startTutorial(id).then(({errorMessage}) => {
@@ -254,8 +362,7 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected onFeaturePromoPromoLaunch_(e: CustomEvent<string>) {
-    const id = e.detail;
+  protected onFeaturePromoLaunch_(id: string) {
     this.featurePromoErrorMessage_ = '';
 
     // Promos may go into a queue, so notify the user that the promo is waiting
@@ -268,23 +375,6 @@ export class UserEducationInternalsElement extends
       this.featurePromoErrorMessage_ = errorMessage;
       if (errorMessage !== '') {
         this.$.errorMessageToast.show();
-      }
-    });
-  }
-
-  protected onFeaturePromoClearPromoData_(e: CustomEvent<string>) {
-    const id = e.detail;
-    this.featurePromoErrorMessage_ = '';
-
-    this.handler_.clearFeaturePromoData(id).then(({errorMessage}) => {
-      this.featurePromoErrorMessage_ = errorMessage;
-      if (errorMessage !== '') {
-        this.$.errorMessageToast.show();
-      } else {
-        this.handler_.getFeaturePromos().then(({featurePromos}) => {
-          this.featurePromos_ = featurePromos;
-          this.requestUpdate();
-        });
       }
     });
   }
@@ -336,8 +426,23 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected onNewBadgeClearPromoData_(e: CustomEvent<string>) {
-    const id = e.detail;
+  protected onFeaturePromoClearPromoData_(id: string) {
+    this.featurePromoErrorMessage_ = '';
+
+    this.handler_.clearFeaturePromoData(id).then(({errorMessage}) => {
+      this.featurePromoErrorMessage_ = errorMessage;
+      if (errorMessage !== '') {
+        this.$.errorMessageToast.show();
+      } else {
+        this.handler_.getFeaturePromos().then(({featurePromos}) => {
+          this.featurePromos_ = featurePromos;
+          this.requestUpdate();
+        });
+      }
+    });
+  }
+
+  protected onNewBadgeClearPromoData_(id: string) {
     this.featurePromoErrorMessage_ = '';
 
     this.handler_.clearNewBadgeData(id).then(({errorMessage}) => {
@@ -353,8 +458,7 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected onNonIphClearPromoData_(e: CustomEvent<string>) {
-    const id = e.detail;
+  protected onNonIphClearPromoData_(id: string) {
     this.featurePromoErrorMessage_ = '';
 
     this.handler_.clearNonIphPromoData(id).then(({errorMessage}) => {
@@ -364,6 +468,21 @@ export class UserEducationInternalsElement extends
       } else {
         this.handler_.getNonIphPromos().then(({nonIphPromos}) => {
           this.nonIphPromos_ = nonIphPromos;
+          this.requestUpdate();
+        });
+      }
+    });
+  }
+
+  protected onNtpPromoClearPromoData_(id: string) {
+    this.featurePromoErrorMessage_ = '';
+    this.handler_.clearNtpPromoData(id).then(({errorMessage}) => {
+      this.featurePromoErrorMessage_ = errorMessage;
+      if (errorMessage !== '') {
+        this.$.errorMessageToast.show();
+      } else {
+        this.handler_.getNtpPromos().then(({ntpPromos}) => {
+          this.ntpPromos_ = ntpPromos;
           this.requestUpdate();
         });
       }
@@ -384,22 +503,6 @@ export class UserEducationInternalsElement extends
         });
         this.handler_.getWhatsNewEditions().then(({whatsNewEditions}) => {
           this.whatsNewEditions_ = whatsNewEditions;
-          this.requestUpdate();
-        });
-      }
-    });
-  }
-
-  protected onNtpPromoClearPromoData_(e: CustomEvent<string>) {
-    const id = e.detail;
-    this.featurePromoErrorMessage_ = '';
-    this.handler_.clearNtpPromoData(id).then(({errorMessage}) => {
-      this.featurePromoErrorMessage_ = errorMessage;
-      if (errorMessage !== '') {
-        this.$.errorMessageToast.show();
-      } else {
-        this.handler_.getNtpPromos().then(({ntpPromos}) => {
-          this.ntpPromos_ = ntpPromos;
           this.requestUpdate();
         });
       }
