@@ -5768,7 +5768,7 @@
       "cuianthony@google.com",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "glic-handoff-button-hide-when-modal-ui-shown",
