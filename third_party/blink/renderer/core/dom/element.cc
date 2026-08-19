@@ -3471,12 +3471,10 @@ DOMRect* Element::GetBoundingClientRectForBinding() {
 ContainerQueryList* Element::matchContainer(const String& query) {
   CSSParserContext* context =
       MakeGarbageCollected<CSSParserContext>(GetDocument());
-  ContainerQueryParser parser(*context);
-  auto* conditional = parser.ParseCondition(query);
-  auto* container_query = MakeGarbageCollected<ContainerQuery>(
-      ContainerSelector(AtomicString(), conditional), conditional);
+  auto* container_queries =
+      ContainerQueryParser::ParseContainerQuerySet(query, *context);
   return MakeGarbageCollected<ContainerQueryList>(
-      GetDocument().GetExecutionContext(), container_query, this);
+      GetDocument().GetExecutionContext(), container_queries, this);
 }
 
 const AtomicString& Element::computedRole() {

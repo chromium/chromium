@@ -10,4 +10,5 @@
     Exposed=Window
 ] interface ContainerQueryList : EventTarget {
     readonly attribute boolean matches;
+    readonly attribute DOMString query;
 };

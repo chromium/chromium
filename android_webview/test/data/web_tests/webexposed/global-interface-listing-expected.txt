@@ -1445,6 +1445,7 @@ interface ContactsManager
 interface ContainerQueryList : EventTarget
     attribute @@toStringTag
     getter matches
+    getter query
     method constructor
 interface ContentIndex
     attribute @@toStringTag
