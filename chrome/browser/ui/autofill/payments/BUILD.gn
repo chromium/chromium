@@ -329,6 +329,7 @@ source_set("unit_tests") {
       "save_card_bubble_controller_impl_unittest.cc",
       "wallet_reminder_notice_bubble_controller_unittest.cc",
       "wallet_reminder_notice_page_action_controller_unittest.cc",
+      "wallet_reminder_notice_ui_delegate_desktop_unittest.cc",
     ]
     deps += [
       ":payments",

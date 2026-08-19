@@ -5,9 +5,13 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_WALLET_REMINDER_NOTICE_UI_DELEGATE_DESKTOP_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_WALLET_REMINDER_NOTICE_UI_DELEGATE_DESKTOP_H_
 
+#include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/ui/payments/wallet_reminder_notice_ui_delegate.h"
 
-namespace autofill::payments {
+namespace autofill {
+class ContentAutofillClient;
+
+namespace payments {
 
 // Desktop implementation of the WalletReminderNoticeUiDelegate interface.
 // This class handles the UI for the Wallet reminder notice on the Desktop
@@ -15,7 +19,7 @@ namespace autofill::payments {
 class WalletReminderNoticeUiDelegateDesktop
     : public WalletReminderNoticeUiDelegate {
  public:
-  WalletReminderNoticeUiDelegateDesktop();
+  explicit WalletReminderNoticeUiDelegateDesktop(ContentAutofillClient* client);
   WalletReminderNoticeUiDelegateDesktop(
       const WalletReminderNoticeUiDelegateDesktop& other) = delete;
   WalletReminderNoticeUiDelegateDesktop& operator=(
@@ -24,8 +28,12 @@ class WalletReminderNoticeUiDelegateDesktop
 
   // WalletReminderNoticeUiDelegate:
   void ShowWalletReminderNotice(LegalMessageLines legal_message_lines) override;
+
+ private:
+  const raw_ref<ContentAutofillClient> client_;
 };
 
-}  // namespace autofill::payments
+}  // namespace payments
+}  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_WALLET_REMINDER_NOTICE_UI_DELEGATE_DESKTOP_H_
