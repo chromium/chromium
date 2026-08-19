@@ -27,6 +27,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
 #include "base/location.h"
@@ -36,6 +37,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
@@ -496,14 +498,26 @@ void AutofillManager::OnAskForValuesToFill(
                   field_id, form);
   auto scoped_on_after_ask_for_values_to_fill =
       base::ScopedClosureRunner(base::BindOnce(
-          [](base::WeakPtr<AutofillManager> self, FormGlobalId form_id,
-             FieldGlobalId field_id) {
-            if (self) {
-              self->NotifyObservers(&Observer::OnAfterAskForValuesToFill,
-                                    form_id, field_id);
+          [](base::WeakPtr<AutofillManager> self,
+             scoped_refptr<base::SequencedTaskRunner> task_runner,
+             FormGlobalId form_id, FieldGlobalId field_id) {
+            base::OnceClosure notify = base::BindOnce(
+                [](base::WeakPtr<AutofillManager> self, FormGlobalId form_id,
+                   FieldGlobalId field_id) {
+                  if (self) {
+                    self->NotifyObservers(&Observer::OnAfterAskForValuesToFill,
+                                          form_id, field_id);
+                  }
+                },
+                self, form_id, field_id);
+            if (task_runner->RunsTasksInCurrentSequence()) {
+              std::move(notify).Run();
+            } else {
+              task_runner->PostTask(FROM_HERE, std::move(notify));
             }
           },
-          GetWeakPtr(), form.global_id(), field_id));
+          GetWeakPtr(), base::SequencedTaskRunner::GetCurrentDefault(),
+          form.global_id(), field_id));
   ParseFormAsync(
       form,
       base::BindOnce(

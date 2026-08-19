@@ -13,6 +13,9 @@ namespace autofill {
 class MockAutocompleteHistoryManager : public AutocompleteHistoryManager {
  public:
   MockAutocompleteHistoryManager();
+  explicit MockAutocompleteHistoryManager(
+      scoped_refptr<AutofillWebDataService> profile_database,
+      PrefService* pref_service = nullptr);
   ~MockAutocompleteHistoryManager() override;
 
   MOCK_METHOD(void,
