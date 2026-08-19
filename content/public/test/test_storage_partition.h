@@ -232,12 +232,12 @@ class TestStoragePartition : public StoragePartition {
   void Flush() override;
 
   void ResetURLLoaderFactories() override;
+  void ClearBluetoothAllowedDevicesMap() override;
 
   void AddObserver(DataRemovalObserver* observer) override;
   void RemoveObserver(DataRemovalObserver* observer) override;
   int GetDataRemovalObserverCount();
 
-  void ClearBluetoothAllowedDevicesMapForTesting() override;
   void FlushNetworkInterfaceForTesting() override;
   void FlushCertVerifierInterfaceForTesting() override;
   void WaitForDeletionTasksForTesting() override;

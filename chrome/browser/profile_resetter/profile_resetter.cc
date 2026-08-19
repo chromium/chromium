@@ -51,6 +51,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/storage_partition.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/management_policy.h"
@@ -324,6 +325,11 @@ void ProfileResetter::ResetContentSettings() {
           FileSystemAccessPermissionContextFactory::GetForProfile(profile_)) {
     permission_context->RevokeAllActiveGrants();
   }
+
+  profile_->ForEachLoadedStoragePartition(
+      [](content::StoragePartition* partition) {
+        partition->ClearBluetoothAllowedDevicesMap();
+      });
 
   MarkAsDone(CONTENT_SETTINGS);
 }

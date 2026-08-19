@@ -237,7 +237,7 @@ class CONTENT_EXPORT StoragePartitionImpl
       base::OnceClosure callback) override;
   void Flush() override;
   void ResetURLLoaderFactories() override;
-  void ClearBluetoothAllowedDevicesMapForTesting() override;
+  void ClearBluetoothAllowedDevicesMap() override;
   void AddObserver(DataRemovalObserver* observer) override;
   void RemoveObserver(DataRemovalObserver* observer) override;
   void FlushNetworkInterfaceForTesting() override;

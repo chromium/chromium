@@ -51,6 +51,7 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/test_storage_partition.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
@@ -582,6 +583,17 @@ TEST_F(ProfileResetterTest, ResetContentSettings) {
         host_content_settings_map->GetSettingsForOneType(content_type);
     EXPECT_EQ(1U, host_settings.size());
   }
+}
+
+TEST_F(ProfileResetterTest, ResetContentSettings_BluetoothAllowedDevicesMap) {
+  content::StoragePartition* partition =
+      profile()->GetDefaultStoragePartition();
+  ASSERT_TRUE(partition);
+
+  // Verifies that resetting content settings invokes
+  // ClearBluetoothAllowedDevicesMap across loaded storage partitions
+  // without crashing.
+  ResetAndWait(ProfileResetter::CONTENT_SETTINGS);
 }
 
 TEST_F(ProfileResetterTest, ResetExtensionsByDisabling) {

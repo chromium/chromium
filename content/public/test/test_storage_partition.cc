@@ -230,6 +230,8 @@ void TestStoragePartition::Flush() {}
 
 void TestStoragePartition::ResetURLLoaderFactories() {}
 
+void TestStoragePartition::ClearBluetoothAllowedDevicesMap() {}
+
 void TestStoragePartition::AddObserver(DataRemovalObserver* observer) {
   data_removal_observer_count_++;
 }
@@ -241,8 +243,6 @@ void TestStoragePartition::RemoveObserver(DataRemovalObserver* observer) {
 int TestStoragePartition::GetDataRemovalObserverCount() {
   return data_removal_observer_count_;
 }
-
-void TestStoragePartition::ClearBluetoothAllowedDevicesMapForTesting() {}
 
 void TestStoragePartition::FlushNetworkInterfaceForTesting() {}
 

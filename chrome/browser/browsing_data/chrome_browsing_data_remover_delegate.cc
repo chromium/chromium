@@ -752,6 +752,19 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     browsing_data::RemoveSiteSettingsData(delete_begin, delete_end,
                                           host_content_settings_map_);
 
+    if (filter_builder->GetStoragePartitionConfig().has_value()) {
+      if (content::StoragePartition* partition = profile_->GetStoragePartition(
+              *filter_builder->GetStoragePartitionConfig(),
+              /*can_create=*/false)) {
+        partition->ClearBluetoothAllowedDevicesMap();
+      }
+    } else {
+      profile_->ForEachLoadedStoragePartition(
+          [](content::StoragePartition* partition) {
+            partition->ClearBluetoothAllowedDevicesMap();
+          });
+    }
+
     // The active permission does not have timestamps, so the all active grants
     // will be revoked regardless of the time range because all the are expected
     // to be recent.

@@ -3283,8 +3283,9 @@ void StoragePartitionImpl::ResetURLLoaderFactories() {
       ->Reset();
 }
 
-void StoragePartitionImpl::ClearBluetoothAllowedDevicesMapForTesting() {
-  DCHECK(initialized_);
+void StoragePartitionImpl::ClearBluetoothAllowedDevicesMap() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(initialized_);
   bluetooth_allowed_devices_map_->Clear();
 }
 

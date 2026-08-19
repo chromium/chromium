@@ -1308,7 +1308,7 @@ void WebTestControlHost::OnTestFinished() {
       browser_context->GetDefaultStoragePartition();
   storage_partition->GetServiceWorkerContext()->ClearAllServiceWorkersForTest(
       barrier_closure);
-  storage_partition->ClearBluetoothAllowedDevicesMapForTesting();
+  storage_partition->ClearBluetoothAllowedDevicesMap();
 
   // Clear all site-related storage APIs to ensure tests are hermetic.
   // Use an "opt-out" (or "blacklist") approach for future-proofing. This

@@ -20,7 +20,10 @@
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate_impl_client.h"
 #include "chrome/browser/bluetooth/web_bluetooth_test_utils.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/chooser_bubble_testapi.h"
@@ -28,10 +31,13 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/bluetooth_delegate_impl.h"
 #include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "components/variations/variations_associated_data.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -42,6 +48,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -219,6 +226,82 @@ class WebBluetoothTest : public InProcessBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   content::ContentMockCertVerifier mock_cert_verifier_;
 };
+
+// Verifies that the legacy Web Bluetooth per-device grant store
+// (StoragePartitionImpl::bluetooth_allowed_devices_map_) is cleared by
+// "Clear browsing data -> Site settings" (DATA_TYPE_CONTENT_SETTINGS).
+//
+// The default (production) permissions backend records the user's chooser
+// grant in an in-memory BluetoothAllowedDevicesMap on the StoragePartition,
+// outside HostContentSettingsMap. ChromeBrowsingDataRemoverDelegate
+// (DATA_TYPE_CONTENT_SETTINGS) and ProfileResetter::ResetContentSettings()
+// clear this map so that clearing site permissions revokes Web Bluetooth
+// device access.
+IN_PROC_BROWSER_TEST_F(WebBluetoothTest,
+                       LegacyGrantRevokedByClearSiteSettings) {
+  // Legacy backend must be in use (this is the shipping default).
+  ASSERT_FALSE(base::FeatureList::IsEnabled(
+      features::kWebBluetoothNewPermissionsBackend));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
+  CheckLastCommitedOrigin(kExampleUrl);
+
+  AddFakeDevice(kDeviceAddress);
+  SetDeviceToSelect(kDeviceAddress);
+
+  // 1) User grants a device via the chooser. On the legacy backend this is
+  //    recorded via allowed_devices().AddDevice() into the storage-partition
+  //    scoped BluetoothAllowedDevicesMap.
+  EXPECT_EQ("granted", content::EvalJs(web_contents_.get(), R"((async () => {
+      window.pocDevice = await navigator.bluetooth.requestDevice(
+          {filters: [{name: 'Test Device', services: ['heart_rate']}]});
+      return window.pocDevice ? 'granted' : 'no-device';
+  })())"));
+
+  // Control: write a per-origin BLUETOOTH_GUARD exception into
+  // HostContentSettingsMap so we can prove the CBD wipe below actually ran
+  // and cleared HCSM-backed data.
+  HostContentSettingsMap* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
+  hcsm->SetContentSettingDefaultScope(GURL(kExampleUrl), GURL(kExampleUrl),
+                                      ContentSettingsType::BLUETOOTH_GUARD,
+                                      CONTENT_SETTING_BLOCK);
+  ASSERT_EQ(CONTENT_SETTING_BLOCK,
+            hcsm->GetContentSetting(GURL(kExampleUrl), GURL(kExampleUrl),
+                                    ContentSettingsType::BLUETOOTH_GUARD));
+
+  // 2) User performs "Clear browsing data -> Site settings, All time"
+  //    (chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS).
+  content::BrowsingDataRemover* remover =
+      browser()->GetProfile()->GetBrowsingDataRemover();
+  content::BrowsingDataRemoverCompletionObserver observer(remover);
+  remover->RemoveAndReply(
+      base::Time(), base::Time::Max(),
+      chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS,
+      chrome_browsing_data_remover::ALL_ORIGIN_TYPES, &observer);
+  observer.BlockUntilCompletion();
+
+  // Control passes: HCSM-backed BLUETOOTH_GUARD exception was wiped
+  // (back to the registry default of ASK).
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            hcsm->GetContentSetting(GURL(kExampleUrl), GURL(kExampleUrl),
+                                    ContentSettingsType::BLUETOOTH_GUARD));
+
+  // 3) Verify that the grant was revoked along with all other site
+  //    permissions, causing gatt.connect() to reject with SecurityError
+  //    (GATT_NOT_AUTHORIZED).
+  EXPECT_EQ("SecurityError: GATT operation not authorized.",
+            content::EvalJs(web_contents_.get(), R"((async () => {
+      try {
+        const gatt = await window.pocDevice.gatt.connect();
+        const svc = await gatt.getPrimaryService('heart_rate');
+        return svc.uuid;
+      } catch (e) {
+        return e.toString();
+      }
+  })())"));
+}
 
 IN_PROC_BROWSER_TEST_F(WebBluetoothTest, WebBluetoothAfterCrash) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
