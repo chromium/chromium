@@ -3368,12 +3368,12 @@
   {
     "name": "enable-bound-session-credentials",
     "owners": [ "alexilin@chromium.org", "ahijazi@chromium.org", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 153
+    "expiry_milestone": 160
   },
   {
     "name": "enable-bound-session-credentials-software-keys-for-manual-testing",
     "owners": [ "alexilin@chromium.org", "ahijazi@chromium.org", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 153
+    "expiry_milestone": 160
   },
   {
     "name": "enable-brightness-control-in-settings",
@@ -3436,7 +3436,7 @@
   {
     "name": "enable-chrome-refresh-token-binding",
     "owners": ["alexilin@chromium.org", "chrome-signin-team@google.com"],
-    "expiry_milestone": 153
+    "expiry_milestone": 160
   },
   {
     "name": "enable-chrome-refresh-token-binding-upgrade",
@@ -4427,17 +4427,17 @@
   {
     "name": "enable-standard-device-bound-session-credentials",
     "owners": [ "alexilin@chromium.org", "drubery@chromium.org",  "thefrog@chromium.org"],
-    "expiry_milestone": 153
+    "expiry_milestone": 160
   },
   {
     "name": "enable-standard-device-bound-session-credentials-federated-sessions",
     "owners": [ "drubery@chromium.org",  "thefrog@chromium.org"],
-    "expiry_milestone": 153
+    "expiry_milestone": 160
   },
   {
     "name": "enable-standard-device-bound-session-google",
     "owners": [ "alexilin@chromium.org", "drubery@chromium.org",  "thefrog@chromium.org"],
-    "expiry_milestone": 153
+    "expiry_milestone": 160
   },
   {
     "name": "enable-start-surface-return-time",
