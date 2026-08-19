@@ -1,0 +1,60 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.actor;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+
+/**
+ * Standalone entity representing a live in-memory background Actor tab in {@link
+ * BackgroundTabPool}.
+ */
+@NullMarked
+public class LiveBackgroundTab implements BackgroundPoolTab {
+    private final Tab mTab;
+    private final @TabId int mPlaceholderTabId;
+    private final @Nullable Integer mTaskId;
+
+    /**
+     * Constructs a {@link LiveBackgroundTab}.
+     *
+     * @param tab The live in-memory {@link Tab} instance.
+     * @param placeholderTabId The placeholder tab ID associated with this background tab.
+     * @param taskId The task ID associated with the background session, or null if none.
+     */
+    public LiveBackgroundTab(Tab tab, @TabId int placeholderTabId, @Nullable Integer taskId) {
+        assert !tab.hasParentCollection() : "LiveBackgroundTab must not have a parent collection.";
+        mTab = tab;
+        mPlaceholderTabId = placeholderTabId;
+        mTaskId = taskId;
+    }
+
+    @Override
+    public @TabId int getPlaceholderTabId() {
+        return mPlaceholderTabId;
+    }
+
+    @Override
+    public Tab attachTabImpl(TabModel tabModel, int index) {
+        tabModel.addTab(
+                mTab, index, TabLaunchType.FROM_RESTORE, TabCreationState.LIVE_IN_BACKGROUND);
+        return mTab;
+    }
+
+    /** Returns the underlying live Tab instance. */
+    public Tab getTab() {
+        return mTab;
+    }
+
+    /** Returns the task ID associated with the background session, or null if none. */
+    public @Nullable Integer getTaskId() {
+        return mTaskId;
+    }
+}
