@@ -386,3 +386,60 @@ suite('GlicThemeTest', () => {
     }
   });
 });
+
+suite('WebviewLoadCommitTest', () => {
+  let controller: WebviewController;
+  let lastCommittedPageType: string|undefined;
+
+  setup(() => {
+    configureLoadTimeData({
+      glicGuestURL: 'https://cat.fun/party',
+      glicApiAllowedOrigins: '',
+      devMode: false,
+    });
+
+    const delegate = new FakeWebviewDelegate();
+    delegate.webviewPageCommit = (pageType) => {
+      lastCommittedPageType = pageType;
+    };
+
+    const container = document.createElement('div');
+    controller = new WebviewController(
+        container,
+        new FakeBrowserProxy(),
+        delegate,
+        new FakeApiHostEmbedder(),
+        new WebviewPersistentState(),
+    );
+  });
+
+  test('login page committed without host reports login not loadError', () => {
+    const loadStartEvent =
+        Object.assign(new Event('loadstart'), {isTopLevel: true}) as
+        chrome.webviewTag.LoadStartEvent;
+    controller.webview.dispatchEvent(loadStartEvent);
+
+    const loadCommitEvent = Object.assign(new Event('loadcommit'), {
+      url: 'https://accounts.google.com/signin',
+      isTopLevel: true,
+    }) as chrome.webviewTag.LoadCommitEvent;
+    controller.webview.dispatchEvent(loadCommitEvent);
+
+    assertEquals('login', lastCommittedPageType);
+  });
+
+  test('unauthorized page committed without host reports loadError', () => {
+    const loadStartEvent =
+        Object.assign(new Event('loadstart'), {isTopLevel: true}) as
+        chrome.webviewTag.LoadStartEvent;
+    controller.webview.dispatchEvent(loadStartEvent);
+
+    const loadCommitEvent = Object.assign(new Event('loadcommit'), {
+      url: 'https://unknown.com/',
+      isTopLevel: true,
+    }) as chrome.webviewTag.LoadCommitEvent;
+    controller.webview.dispatchEvent(loadCommitEvent);
+
+    assertEquals('loadError', lastCommittedPageType);
+  });
+});

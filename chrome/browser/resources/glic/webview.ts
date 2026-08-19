@@ -505,16 +505,16 @@ export class WebviewController {
 
     this.browserProxy.pageHandler.webviewCommitted(url);
 
-    if (!this.host) {
-      this.delegate.webviewPageCommit('loadError');
-      return;
-    }
-
     if (url.startsWith('https://login.corp.google.com/') ||
         url.startsWith('https://accounts.google.com/') ||
         url.startsWith('https://accounts.googlers.com/') ||
         url.startsWith('https://gaiastaging.corp.google.com/')) {
       this.delegate.webviewPageCommit('login');
+      return;
+    }
+
+    if (!this.host) {
+      this.delegate.webviewPageCommit('loadError');
       return;
     }
 
