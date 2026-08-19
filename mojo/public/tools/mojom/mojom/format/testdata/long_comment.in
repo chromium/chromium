@@ -9,6 +9,8 @@
 
 // All data are parsed from user-defined media data. The consumer of this API should filter special
 // characters if needed. The encoding of strings may be UTF-8 that ffmpeg library assumes strings to
-// be UTF-8 but does not validate the encoding.
+// be UTF-8 but does not validate the encoding. The next line ensures that leading whitespace, if
+// any, is preserved:
+//   https://example.com/some/long/url/to/some/very/important/documentation/about/stuff
 struct MediaMetadata {
 };

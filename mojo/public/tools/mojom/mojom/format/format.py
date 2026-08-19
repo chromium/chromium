@@ -20,6 +20,7 @@ Internally, there are two kinds of function invariants:
 """
 
 from io import StringIO
+import re
 import sys
 
 from mojom.parse import ast, parser
@@ -206,11 +207,17 @@ def _write_comment(comment, state, indent=None):
         if indent + len(line) <= LINE_LENGTH:
             state.write_line(f'{leader}{line}')
             continue
-        if line.startswith('//'):
-            line = line[2:].lstrip()
+        if line.startswith('// '):
+            line = line[3:]
+        elif line.startswith('//'):
+            line = line[2:]
         if not line:
             state.write_line(f'{leader}//')
             continue
+
+        m = re.match(r'^(\s*)', line)
+        inner_indent = m.group(1) if m else ''
+
         while len(line) > 0:
             state.write(f'{leader}// ')
 
@@ -221,14 +228,16 @@ def _write_comment(comment, state, indent=None):
 
             # Find a place to break the comment and wrap. The +2 is for
             # offsetting `col` by 1 and being <= `LINE_LENGTH`.
-            subline = line[: LINE_LENGTH - state.col + 2]
-            last_space = subline.rfind(' ')
-            if last_space == -1:
-                # No such break exists, so just let the line continue.
+            subline = line[len(inner_indent) : LINE_LENGTH - state.col + 2]
+            last_space_rel = subline.rfind(' ')
+            if last_space_rel == -1:
+                # No such break exists after leading whitespace, so just let
+                # the line continue.
                 state.write_line(line)
                 break
+            last_space = len(inner_indent) + last_space_rel
             state.write_line(line[:last_space])
-            line = line[last_space + 1 :]
+            line = inner_indent + line[last_space + 1 :].lstrip()
 
 
 def _write_body(keyword, node, state, bodyattr='body'):
