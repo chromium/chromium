@@ -4566,6 +4566,13 @@ void TabStripModel::AddToNewGroupImpl(
     return true;
   }());
 
+  if (selection_model_.focused_group().has_value()) {
+    base::UmaHistogramEnumeration(
+        "TabGroups.Focus.ExitReason",
+        TabGroupFocusExitReason::kActiveTabGroupOperation);
+    SetFocusedGroup(std::nullopt);
+  }
+
   TabGroupDesktop::Factory factory(profile());
   std::unique_ptr<tabs::TabGroupTabCollection> group_collection =
       std::make_unique<tabs::TabGroupTabCollection>(
@@ -4852,6 +4859,8 @@ void TabStripModel::MoveTabToIndexImpl(
   CHECK_LT(initial_index, count());
   CHECK_LT(final_index, count());
 
+  const std::optional<tab_groups::TabGroupId> initial_focused_group =
+      GetFocusedGroup();
   tabs::TabInterface* const tab = GetTabAtIndex(initial_index);
   const bool initial_pinned_state = tab->IsPinned();
   const std::optional<tab_groups::TabGroupId> initial_group = tab->GetGroup();
@@ -4922,15 +4931,8 @@ void TabStripModel::MoveTabToIndexImpl(
     }
   }
 
-  // Unpinning an active pinned tab exits focus mode.
-  if (initial_pinned_state && !tab->IsPinned() &&
-      tab == selection_model_.active_tab()) {
-    if (GetFocusedGroup().has_value()) {
-      base::UmaHistogramEnumeration("TabGroups.Focus.ExitReason",
-                                    TabGroupFocusExitReason::kUnpinActiveTab);
-      SetFocusedGroup(std::nullopt);
-    }
-  }
+  MaybeUpdateFocusModeForMovedTab(tab, initial_pinned_state,
+                                  initial_focused_group);
 }
 
 void TabStripModel::MoveTabsToIndexImpl(
@@ -5025,6 +5027,46 @@ void TabStripModel::TabGroupStateChanged(
       TabGroupChange::VisualsChange visuals;
       NotifyTabGroupVisualsChanged(new_group.value(), visuals);
     }
+  }
+}
+
+void TabStripModel::MaybeUpdateFocusModeForMovedTab(
+    tabs::TabInterface* tab,
+    bool initial_pinned_state,
+    const std::optional<tab_groups::TabGroupId>& initial_focused_group) {
+  if (tab != selection_model_.active_tab()) {
+    return;
+  }
+
+  if (!initial_focused_group.has_value()) {
+    return;
+  }
+
+  // If the active tab is still valid in the focused group (in the group or
+  // pinned), do not exit focus mode.
+  if (tabs::TabStripModelSelectionState::IsTabValidInFocusedGroup(
+          tab, initial_focused_group)) {
+    return;
+  }
+
+  // 1. Unpinning an active pinned tab without adding to a group exits focus
+  // mode.
+  if (initial_pinned_state && !tab->IsPinned() &&
+      !tab->GetGroup().has_value()) {
+    if (GetFocusedGroup().has_value()) {
+      base::UmaHistogramEnumeration("TabGroups.Focus.ExitReason",
+                                    TabGroupFocusExitReason::kUnpinActiveTab);
+      SetFocusedGroup(std::nullopt);
+    }
+    return;
+  }
+
+  // 2. Active tab was moved to another group or ungrouped.
+  if (GetFocusedGroup().has_value()) {
+    base::UmaHistogramEnumeration(
+        "TabGroups.Focus.ExitReason",
+        TabGroupFocusExitReason::kActiveTabGroupOperation);
+    SetFocusedGroup(std::nullopt);
   }
 }
 
@@ -5327,6 +5369,8 @@ void TabStripModel::MoveTabsWithNotifications(
     std::vector<int> tab_indices,
     int destination_index,
     base::OnceClosure execute_tabs_move_operation) {
+  const std::optional<tab_groups::TabGroupId> initial_focused_group =
+      GetFocusedGroup();
   const std::vector<MoveNotification> notifications =
       PrepareTabsToMoveToIndex(tab_indices, destination_index);
 
@@ -5361,15 +5405,8 @@ void TabStripModel::MoveTabsWithNotifications(
       }
     }
 
-    // Unpinning an active pinned tab exits focus mode.
-    if (notification.initial_pinned && !tab->IsPinned() &&
-        tab == selection_model_.active_tab()) {
-      if (GetFocusedGroup().has_value()) {
-        base::UmaHistogramEnumeration("TabGroups.Focus.ExitReason",
-                                      TabGroupFocusExitReason::kUnpinActiveTab);
-        SetFocusedGroup(std::nullopt);
-      }
-    }
+    MaybeUpdateFocusModeForMovedTab(tab, notification.initial_pinned,
+                                    initial_focused_group);
   }
 }
 

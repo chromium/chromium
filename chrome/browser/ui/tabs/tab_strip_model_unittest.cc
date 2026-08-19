@@ -1707,12 +1707,13 @@ TEST_F(TabStripModelTest, RemovingLastTabOfFocusedGroupUnsetsFocus) {
   ASSERT_TRUE(model.empty());
 
   model.AppendWebContents(CreateWebContents(), true);
-  model.AppendWebContents(CreateWebContents(), true);
+  model.AppendWebContents(CreateWebContents(), false);
 
   const tab_groups::TabGroupId group = model.AddToNewGroup({0, 1});
   model.SetFocusedGroup(group);
   EXPECT_EQ(model.GetFocusedGroup(), group);
 
+  // Removing the inactive tab keeps focus mode on the group.
   model.RemoveFromGroup({1});
   EXPECT_EQ(model.GetFocusedGroup(), group);
 
@@ -2921,6 +2922,167 @@ TEST_F(TabStripModelTest, UnpinningInactivePinnedTabPreservesFocusMode) {
   EXPECT_EQ(group_id, tabstrip()->GetFocusedGroup());
   EXPECT_EQ(group_id,
             tabstrip()->GetTabGroupForTab(tabstrip()->active_index()));
+  histogram_tester.ExpectTotalCount("TabGroups.Focus.ExitReason", 0);
+}
+
+TEST_F(TabStripModelTest, AddingActiveTabToNewGroupExitsFocusMode) {
+  base::HistogramTester histogram_tester;
+  PrepareTabs(tabstrip(), 4);
+  tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0, 1});
+  tabstrip()->SetFocusedGroup(group_a);
+  ASSERT_EQ(group_a, tabstrip()->GetFocusedGroup());
+
+  tabstrip()->ActivateTabAt(0);
+  ASSERT_EQ(0, tabstrip()->active_index());
+
+  // Add the active tab (index 0) to a new group.
+  tabstrip()->AddToNewGroup({0});
+
+  // Focus mode should exit so the new group and its editor bubble are visible.
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.ExitReason",
+      TabGroupFocusExitReason::kActiveTabGroupOperation, 1);
+}
+
+TEST_F(TabStripModelTest, AddingInactiveTabToNewGroupExitsFocusMode) {
+  base::HistogramTester histogram_tester;
+  PrepareTabs(tabstrip(), 4);
+  tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0, 1});
+  tabstrip()->SetFocusedGroup(group_a);
+  ASSERT_EQ(group_a, tabstrip()->GetFocusedGroup());
+
+  tabstrip()->ActivateTabAt(0);
+  ASSERT_EQ(0, tabstrip()->active_index());
+
+  // Add the inactive tab (index 1) to a new group.
+  tabstrip()->AddToNewGroup({1});
+
+  // Focus mode should exit so the new group and its editor bubble are visible.
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.ExitReason",
+      TabGroupFocusExitReason::kActiveTabGroupOperation, 1);
+}
+
+TEST_F(TabStripModelTest, RemovingActiveTabFromGroupExitsFocusMode) {
+  base::HistogramTester histogram_tester;
+  PrepareTabs(tabstrip(), 3);
+  tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0, 1, 2});
+  tabstrip()->SetFocusedGroup(group_a);
+  ASSERT_EQ(group_a, tabstrip()->GetFocusedGroup());
+
+  tabstrip()->ActivateTabAt(0);
+  ASSERT_EQ(0, tabstrip()->active_index());
+
+  // Remove the active tab (index 0) from the group.
+  tabstrip()->RemoveFromGroup({0});
+
+  // Focus mode should be exited since the active tab is now ungrouped.
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+  EXPECT_EQ(std::nullopt,
+            tabstrip()->GetTabGroupForTab(tabstrip()->active_index()));
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.ExitReason",
+      TabGroupFocusExitReason::kActiveTabGroupOperation, 1);
+}
+
+TEST_F(TabStripModelTest, AddingActiveTabToExistingGroupExitsFocusMode) {
+  base::HistogramTester histogram_tester;
+  PrepareTabs(tabstrip(), 4);
+  tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0, 1});
+  tab_groups::TabGroupId group_b = tabstrip()->AddToNewGroup({2, 3});
+  tabstrip()->SetFocusedGroup(group_a);
+  ASSERT_EQ(group_a, tabstrip()->GetFocusedGroup());
+
+  tabstrip()->ActivateTabAt(0);
+  ASSERT_EQ(0, tabstrip()->active_index());
+
+  // Add the active tab (index 0) to group_b.
+  tabstrip()->AddToExistingGroup({0}, group_b);
+
+  // Focus mode should exit when active tab leaves the focused group.
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+  EXPECT_EQ(group_b, tabstrip()->GetTabGroupForTab(tabstrip()->active_index()));
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.ExitReason",
+      TabGroupFocusExitReason::kActiveTabGroupOperation, 1);
+}
+
+TEST_F(TabStripModelTest, AddingInactiveTabToExistingGroupPreservesFocusMode) {
+  base::HistogramTester histogram_tester;
+  PrepareTabs(tabstrip(), 4);
+  tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0, 1});
+  tab_groups::TabGroupId group_b = tabstrip()->AddToNewGroup({2, 3});
+  tabstrip()->SetFocusedGroup(group_a);
+  ASSERT_EQ(group_a, tabstrip()->GetFocusedGroup());
+
+  tabstrip()->ActivateTabAt(0);
+  ASSERT_EQ(0, tabstrip()->active_index());
+
+  // Move inactive tab 1 from group_a to group_b.
+  tabstrip()->AddToExistingGroup({1}, group_b);
+
+  // Focus mode should be preserved on group_a.
+  EXPECT_EQ(group_a, tabstrip()->GetFocusedGroup());
+  EXPECT_EQ(group_a, tabstrip()->GetTabGroupForTab(tabstrip()->active_index()));
+  histogram_tester.ExpectTotalCount("TabGroups.Focus.ExitReason", 0);
+}
+
+TEST_F(TabStripModelTest, RemovingInactiveTabFromGroupPreservesFocusMode) {
+  base::HistogramTester histogram_tester;
+  PrepareTabs(tabstrip(), 3);
+  tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0, 1, 2});
+  tabstrip()->SetFocusedGroup(group_a);
+  ASSERT_EQ(group_a, tabstrip()->GetFocusedGroup());
+
+  tabstrip()->ActivateTabAt(0);
+  ASSERT_EQ(0, tabstrip()->active_index());
+
+  // Remove inactive tab 1 from group_a.
+  tabstrip()->RemoveFromGroup({1});
+
+  // Focus mode should be preserved on group_a.
+  EXPECT_EQ(group_a, tabstrip()->GetFocusedGroup());
+  EXPECT_EQ(group_a, tabstrip()->GetTabGroupForTab(tabstrip()->active_index()));
+  histogram_tester.ExpectTotalCount("TabGroups.Focus.ExitReason", 0);
+}
+
+TEST_F(TabStripModelTest, PinningActiveTabInFocusedGroupPreservesFocusMode) {
+  base::HistogramTester histogram_tester;
+  PrepareTabs(tabstrip(), 4);
+  tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0, 1});
+  tabstrip()->SetFocusedGroup(group_a);
+  ASSERT_EQ(group_a, tabstrip()->GetFocusedGroup());
+
+  tabstrip()->ActivateTabAt(0);
+  ASSERT_EQ(0, tabstrip()->active_index());
+
+  // Pin the active tab.
+  tabstrip()->SetTabPinned(0, true);
+
+  // Focus mode should be preserved on group_a.
+  EXPECT_EQ(group_a, tabstrip()->GetFocusedGroup());
+  EXPECT_TRUE(tabstrip()->IsTabPinned(tabstrip()->active_index()));
+  histogram_tester.ExpectTotalCount("TabGroups.Focus.ExitReason", 0);
+}
+
+TEST_F(TabStripModelTest, PinningInactiveTabInFocusedGroupPreservesFocusMode) {
+  base::HistogramTester histogram_tester;
+  PrepareTabs(tabstrip(), 4);
+  tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0, 1});
+  tabstrip()->SetFocusedGroup(group_a);
+  ASSERT_EQ(group_a, tabstrip()->GetFocusedGroup());
+
+  tabstrip()->ActivateTabAt(0);
+  ASSERT_EQ(0, tabstrip()->active_index());
+
+  // Pin inactive tab 1.
+  tabstrip()->SetTabPinned(1, true);
+
+  // Focus mode should be preserved on group_a.
+  EXPECT_EQ(group_a, tabstrip()->GetFocusedGroup());
+  EXPECT_EQ(group_a, tabstrip()->GetTabGroupForTab(tabstrip()->active_index()));
   histogram_tester.ExpectTotalCount("TabGroups.Focus.ExitReason", 0);
 }
 
