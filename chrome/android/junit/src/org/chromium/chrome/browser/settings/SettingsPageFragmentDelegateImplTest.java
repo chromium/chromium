@@ -172,6 +172,7 @@ public class SettingsPageFragmentDelegateImplTest {
         SettingsContainmentHelper mockContainmentHelper = mock(SettingsContainmentHelper.class);
         when(mMockSettingsHostFragment.getContainmentHelper()).thenReturn(mockContainmentHelper);
         when(mMockSettingsHostFragment.containsChild(mMultiColumnSettings)).thenReturn(true);
+        when(mMockSettingsHostFragment.getMultiColumnSettings()).thenReturn(mMultiColumnSettings);
         when(mTab.getId()).thenReturn(TAB_ID);
 
         mDelegate =
@@ -322,7 +323,7 @@ public class SettingsPageFragmentDelegateImplTest {
 
         Fragment mockFragment = mock(Fragment.class);
         when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
-        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mockFragment);
+        when(mMockSettingsHostFragment.getMainFragment()).thenReturn(mockFragment);
 
         assertEquals(mockFragment, mDelegate.getMainFragment());
     }
@@ -332,7 +333,7 @@ public class SettingsPageFragmentDelegateImplTest {
         mDelegate.initSettings(mContainerView, "");
 
         when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
-        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
+        when(mMockSettingsHostFragment.getMultiColumnSettings()).thenReturn(mMultiColumnSettings);
 
         assertEquals(mMultiColumnSettings, mDelegate.getMultiColumnSettings());
     }

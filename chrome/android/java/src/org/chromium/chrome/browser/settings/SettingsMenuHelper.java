@@ -93,6 +93,27 @@ public class SettingsMenuHelper {
     }
 
     /**
+     * Helper to update the options menu on a toolbar for the current main fragment.
+     *
+     * @param toolbar The Toolbar containing the menu to update.
+     * @param activity The Activity hosting the menu.
+     * @param delegate The Delegate to provide the main fragment.
+     */
+    public static void updateOptionsMenu(Toolbar toolbar, Activity activity, Delegate delegate) {
+        Menu menu = toolbar.getMenu();
+        menu.clear();
+        onCreateOptionsMenu(menu, activity);
+
+        Fragment mainFragment = delegate.getMainFragment();
+        if (mainFragment != null && mainFragment.isAdded() && mainFragment.hasOptionsMenu()) {
+            mainFragment.onCreateOptionsMenu(menu, activity.getMenuInflater());
+            mainFragment.onPrepareOptionsMenu(menu);
+        }
+
+        onPrepareOptionsMenu(menu);
+    }
+
+    /**
      * Helper to handle menu item selection.
      *
      * @param item The selected MenuItem.

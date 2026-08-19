@@ -399,6 +399,12 @@ public class SettingsHostFragment extends Fragment
     public @Nullable Fragment getMainFragment() {
         Fragment activeFragment = getActiveFragment();
         if (activeFragment instanceof MultiColumnSettings multiColumnSettings) {
+            // In single-column mode when the detail pane is closed, the user is viewing the
+            // top-level MainSettings header rather than the detail pane. Return MainSettings
+            // instead of a possibly-stale detail fragment.
+            if (!multiColumnSettings.isTwoColumn() && !multiColumnSettings.isLayoutOpen()) {
+                return multiColumnSettings.getMainSettings();
+            }
             return multiColumnSettings
                     .getChildFragmentManager()
                     .findFragmentById(R.id.preferences_detail);

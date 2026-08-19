@@ -208,8 +208,7 @@ public class SettingsPageFragmentDelegateImpl
         mToolbar.setTitle(R.string.settings);
 
         // Set up Help Menu on Toolbar.
-        SettingsMenuHelper.onCreateOptionsMenu(mToolbar.getMenu(), mActivity);
-        SettingsMenuHelper.onPrepareOptionsMenu(mToolbar.getMenu());
+        updateOptionsMenu();
         mToolbar.setOnMenuItemClickListener(
                 item -> SettingsMenuHelper.onOptionsItemSelected(item, mActivity, this));
 
@@ -420,12 +419,15 @@ public class SettingsPageFragmentDelegateImpl
         if (mSettingsHostFragment == null || !mSettingsHostFragment.isAttachedToActivity()) {
             return null;
         }
-        return mSettingsHostFragment.getActiveFragment();
+        return mSettingsHostFragment.getMainFragment();
     }
 
     @Override
     public @Nullable MultiColumnSettings getMultiColumnSettings() {
-        return (MultiColumnSettings) getMainFragment();
+        if (mSettingsHostFragment == null || !mSettingsHostFragment.isAttachedToActivity()) {
+            return null;
+        }
+        return mSettingsHostFragment.getMultiColumnSettings();
     }
 
     @Override
@@ -533,12 +535,14 @@ public class SettingsPageFragmentDelegateImpl
     @Override
     public void onTitleUpdated() {
         updateNavigationIcon();
+        updateOptionsMenu();
         updateBackPressState();
     }
 
     @Override
     public void onSlideStateUpdated(int newState) {
         updateNavigationIcon();
+        updateOptionsMenu();
         updateBackPressState();
     }
 
@@ -548,7 +552,17 @@ public class SettingsPageFragmentDelegateImpl
             mSettingsHostFragment.updateContainmentForAttachedFragments();
         }
         updateNavigationIcon();
+        updateOptionsMenu();
         updateBackPressState();
+    }
+
+    private void updateOptionsMenu() {
+        if (mToolbar != null) {
+            SettingsMenuHelper.updateOptionsMenu(mToolbar, mActivity, this);
+            if (mSearchCoordinator != null) {
+                mSearchCoordinator.updateHelpMenuVisibility();
+            }
+        }
     }
 
     private void updateNavigationIcon() {

@@ -60,7 +60,7 @@ public class SettingsMenuHelperUnitTest {
     @Mock private SettingsMenuHelper.Delegate mDelegate;
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
-    private Activity mActivity;
+    private TestActivity mActivity;
 
     // Some tests require a real (non-mock) Toolbar.
     private Toolbar mToolbar;
@@ -105,6 +105,85 @@ public class SettingsMenuHelperUnitTest {
         SettingsMenuHelper.onPrepareOptionsMenu(menu);
 
         verify(menuItem).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+    }
+
+    public static class TestMenuFragment extends Fragment {
+        boolean mCreateOptionsMenuCalled;
+        boolean mPrepareOptionsMenuCalled;
+
+        public TestMenuFragment(boolean hasOptionsMenu) {
+            setHasOptionsMenu(hasOptionsMenu);
+        }
+
+        @Override
+        public void onCreateOptionsMenu(Menu menu, android.view.MenuInflater inflater) {
+            mCreateOptionsMenuCalled = true;
+            MenuItem item = menu.add(Menu.NONE, 999, Menu.NONE, "Test Item");
+            item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        }
+
+        @Override
+        public void onPrepareOptionsMenu(Menu menu) {
+            mPrepareOptionsMenuCalled = true;
+        }
+    }
+
+    @Test
+    public void testUpdateOptionsMenu_NoFragment() {
+        when(mDelegate.getMainFragment()).thenReturn(null);
+
+        SettingsMenuHelper.updateOptionsMenu(mToolbar, mActivity, mDelegate);
+
+        Menu menu = mToolbar.getMenu();
+        assertEquals(1, menu.size());
+        assertNotNull(menu.findItem(R.id.menu_id_general_help));
+    }
+
+    @Test
+    public void testUpdateOptionsMenu_FragmentWithoutOptionsMenu() {
+        TestMenuFragment fragment = new TestMenuFragment(false);
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(fragment, "no_menu")
+                .commitNow();
+        when(mDelegate.getMainFragment()).thenReturn(fragment);
+
+        SettingsMenuHelper.updateOptionsMenu(mToolbar, mActivity, mDelegate);
+
+        Menu menu = mToolbar.getMenu();
+        assertEquals(1, menu.size());
+        assertNotNull(menu.findItem(R.id.menu_id_general_help));
+        assertFalse(fragment.mCreateOptionsMenuCalled);
+        assertFalse(fragment.mPrepareOptionsMenuCalled);
+    }
+
+    @Test
+    public void testUpdateOptionsMenu_FragmentWithOptionsMenu() {
+        TestMenuFragment fragment = new TestMenuFragment(true);
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(fragment, "with_menu")
+                .commitNow();
+        when(mDelegate.getMainFragment()).thenReturn(fragment);
+
+        SettingsMenuHelper.updateOptionsMenu(mToolbar, mActivity, mDelegate);
+
+        Menu menu = mToolbar.getMenu();
+        assertNotNull(menu.findItem(999));
+        assertTrue(fragment.mCreateOptionsMenuCalled);
+        assertTrue(fragment.mPrepareOptionsMenuCalled);
+    }
+
+    @Test
+    public void testUpdateOptionsMenu_FragmentNotAdded() {
+        TestMenuFragment fragment = new TestMenuFragment(true);
+        when(mDelegate.getMainFragment()).thenReturn(fragment);
+
+        SettingsMenuHelper.updateOptionsMenu(mToolbar, mActivity, mDelegate);
+
+        assertFalse(fragment.mCreateOptionsMenuCalled);
     }
 
     @Test
