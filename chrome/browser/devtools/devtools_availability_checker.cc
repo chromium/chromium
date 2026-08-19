@@ -85,10 +85,15 @@ bool IsRestrictedExtension(const extensions::Extension* extension,
 
 bool IsInspectionAllowed(Profile* profile,
                          content::DevToolsAgentHost* agent_host) {
+  GURL target_url = agent_host->GetURL();
+  if (!IsInspectionAllowed(profile, target_url)) {
+    return false;
+  }
+
   if (content::WebContents* web_contents = agent_host->GetWebContents()) {
     return IsInspectionAllowed(profile, web_contents);
   }
-  return IsInspectionAllowed(profile, agent_host->GetURL());
+  return true;
 }
 
 bool IsInspectionAllowed(Profile* profile, content::WebContents* web_contents) {
@@ -98,27 +103,10 @@ bool IsInspectionAllowed(Profile* profile, content::WebContents* web_contents) {
         profile, static_cast<const extensions::Extension*>(nullptr));
   }
 
-  policy::DeveloperToolsPolicyChecker* checker =
-      policy::DeveloperToolsPolicyCheckerFactory::GetForBrowserContext(profile);
-  if (checker) {
-    if (content::RenderFrameHost* main_frame =
-            web_contents->GetPrimaryMainFrame()) {
-      bool is_blocked = false;
-      main_frame->ForEachRenderFrameHost([&](content::RenderFrameHost* frame) {
-        if (frame->GetLastCommittedURL().is_empty() ||
-            frame->GetLastCommittedURL().SchemeIs(url::kAboutScheme)) {
-          return;
-        }
-        auto frame_availability = checker->GetDevToolsAvailabilityForUrl(
-            frame->GetLastCommittedURL());
-        if (frame_availability == policy::DeveloperToolsPolicyChecker::
-                                      DevToolsAvailability::kDisallowed) {
-          is_blocked = true;
-        }
-      });
-      if (is_blocked) {
-        return false;
-      }
+  if (content::RenderFrameHost* main_frame =
+          web_contents->GetPrimaryMainFrame()) {
+    if (!IsInspectionAllowed(profile, main_frame->GetLastCommittedURL())) {
+      return false;
     }
   }
 
@@ -147,6 +135,8 @@ bool IsInspectionAllowed(Profile* profile, content::WebContents* web_contents) {
   }
 #endif
 
+  policy::DeveloperToolsPolicyChecker* checker =
+      policy::DeveloperToolsPolicyCheckerFactory::GetForBrowserContext(profile);
   if (checker) {
     auto url_availability =
         checker->GetDevToolsAvailabilityForUrl(web_contents->GetURL());

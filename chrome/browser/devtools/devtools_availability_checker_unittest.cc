@@ -341,7 +341,7 @@ TEST_F(DevToolsAvailabilityCheckerTest, SubframeBlockedByBlocklistPolicy) {
   content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("https://blocked.com/iframe"), subframe);
 
-  EXPECT_FALSE(IsInspectionAllowed(profile_.get(), web_contents_.get()));
+  EXPECT_TRUE(IsInspectionAllowed(profile_.get(), web_contents_.get()));
 }
 
 TEST_F(DevToolsAvailabilityCheckerTest, SubframeAllowlistPrecedence) {
@@ -391,7 +391,7 @@ TEST_F(DevToolsAvailabilityCheckerTest,
   content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("https://blocked.com/iframe"), subframe2);
 
-  EXPECT_FALSE(IsInspectionAllowed(profile_.get(), web_contents_.get()));
+  EXPECT_TRUE(IsInspectionAllowed(profile_.get(), web_contents_.get()));
 }
 
 TEST_F(DevToolsAvailabilityCheckerTest, AllSubframesAllowed) {
@@ -429,7 +429,7 @@ TEST_F(DevToolsAvailabilityCheckerTest, SubframeNotOnAllowlistIsBlocked) {
   content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("https://other.com/iframe"), subframe);
 
-  EXPECT_FALSE(IsInspectionAllowed(profile_.get(), web_contents_.get()));
+  EXPECT_TRUE(IsInspectionAllowed(profile_.get(), web_contents_.get()));
 }
 
 TEST_F(DevToolsAvailabilityCheckerTest,
@@ -543,3 +543,28 @@ TEST_F(DevToolsAvailabilityCheckerTest, IsInspectionAllowedNullWebApp) {
                                   static_cast<web_app::WebApp*>(nullptr)));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST_F(DevToolsAvailabilityCheckerTest, TargetLevelSubframeBlocked) {
+  base::ListValue blocklist;
+  blocklist.Append("blocked.com");
+  profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityBlocklist,
+                                std::move(blocklist));
+
+  content::WebContentsTester::For(web_contents_.get())
+      ->NavigateAndCommit(GURL("https://allowed.com/page"));
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(web_contents_->GetPrimaryMainFrame())
+          ->AppendChild("subframe");
+  content::RenderFrameHostTester::For(subframe)
+      ->InitializeRenderFrameIfNeeded();
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://blocked.com/iframe"), subframe);
+
+  // The main page should still be inspectable.
+  EXPECT_TRUE(IsInspectionAllowed(profile_.get(), web_contents_.get()));
+
+  // But if we specifically check the blocked subframe's URL, it should be
+  // blocked.
+  EXPECT_FALSE(
+      IsInspectionAllowed(profile_.get(), GURL("https://blocked.com/iframe")));
+}
