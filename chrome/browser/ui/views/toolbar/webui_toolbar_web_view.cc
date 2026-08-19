@@ -299,10 +299,16 @@ class WebUIToolbarInternalWebView : public views::WebView {
 
   std::optional<GURL> ConsumeDroppedUrl(const gfx::PointF& point) {
     std::optional<GURL> url;
-    if (cached_dragged_file_position_.has_value() &&
-        point == *cached_dragged_file_position_ &&
+    if (GetLocalBounds().Contains(gfx::ToRoundedPoint(point)) &&
+        cached_dragged_file_position_.has_value() &&
         cached_dragged_file_path_.has_value()) {
-      url = net::FilePathToFileURL(*cached_dragged_file_path_);
+      // Allow 1.0f DIP tolerance to account for floating-point differences.
+      constexpr float kMaxAllowedDelta = 1.0f;
+      const gfx::Vector2dF delta = *cached_dragged_file_position_ - point;
+      if (std::abs(delta.x()) <= kMaxAllowedDelta &&
+          std::abs(delta.y()) <= kMaxAllowedDelta) {
+        url = net::FilePathToFileURL(*cached_dragged_file_path_);
+      }
     }
     cached_dragged_file_path_.reset();
     cached_dragged_file_position_.reset();
