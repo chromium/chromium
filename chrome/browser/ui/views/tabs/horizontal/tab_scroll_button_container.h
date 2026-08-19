@@ -15,6 +15,10 @@
 
 class BrowserWindowInterface;
 
+namespace actions {
+class ActionItem;
+}
+
 namespace views {
 class MenuRunner;
 }
@@ -61,6 +65,8 @@ class TabScrollButtonContainer : public views::View,
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
+
+  actions::ActionItem* GetToggleScrollPinAction();
 
   // This `animation_` is used to animate the scroll view animations
   // by scrolling the `scroll_view_` with many smaller offsets

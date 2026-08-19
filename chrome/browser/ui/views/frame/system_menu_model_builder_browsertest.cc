@@ -141,6 +141,21 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderTabStripUnificationTest,
                               IDS_TAB_SCROLL_UNPIN_BUTTONS_SYSTEM_MENU));
 }
 
+// Verify that executing the tab scroll buttons toggle command actually changes
+// the pref.
+IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderTabStripUnificationTest,
+                       ExecuteTabScrollButtonsToggleCommand) {
+  PrefService* profile_prefs = browser()->GetProfile()->GetPrefs();
+
+  profile_prefs->SetBoolean(prefs::kTabScrollButtonsPinnedToTabstrip, false);
+  chrome::ExecuteCommand(browser(), IDC_TAB_SCROLL_BUTTONS_TOGGLE_PIN);
+  EXPECT_TRUE(
+      profile_prefs->GetBoolean(prefs::kTabScrollButtonsPinnedToTabstrip));
+  chrome::ExecuteCommand(browser(), IDC_TAB_SCROLL_BUTTONS_TOGGLE_PIN);
+  EXPECT_FALSE(
+      profile_prefs->GetBoolean(prefs::kTabScrollButtonsPinnedToTabstrip));
+}
+
 class SystemMenuModelBuilderSimplificationTest : public InProcessBrowserTest {
  protected:
   void SetUp() override {

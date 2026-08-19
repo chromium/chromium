@@ -26,6 +26,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -521,6 +522,34 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
             prefs::kTabScrollButtonsPinnedToTabstrip, true);
       }),
       WaitForShow(TabScrollButtonContainer::kTabScrollButtonContainer));
+}
+
+// Disabled on macOS as context menu kombucha tests are flaky on that platform.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_UnpinScrollButtonsFromContextMenu \
+  DISABLED_UnpinScrollButtonsFromContextMenu
+#else
+#define MAYBE_UnpinScrollButtonsFromContextMenu \
+  UnpinScrollButtonsFromContextMenu
+#endif
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
+                       MAYBE_UnpinScrollButtonsFromContextMenu) {
+  AddTabsUntilScrollable(10);
+
+  RunTestSequence(
+      EnsurePresent(kTabStripRegionElementId),
+      WaitForShow(TabScrollButtonContainer::kTabScrollButtonContainer),
+      MoveMouseTo(TabScrollButtonContainer::kStartScrollButton),
+      ClickMouse(ui_controls::RIGHT),
+      WaitForShow(TabScrollButtonContainer::kUnpinMenuItem),
+      SelectMenuItem(TabScrollButtonContainer::kUnpinMenuItem),
+      WaitForHide(TabScrollButtonContainer::kTabScrollButtonContainer),
+      CheckResult(
+          [this]() {
+            return browser()->GetProfile()->GetPrefs()->GetBoolean(
+                prefs::kTabScrollButtonsPinnedToTabstrip);
+          },
+          false));
 }
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewRTLInteractiveUiTest,

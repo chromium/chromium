@@ -8,10 +8,14 @@
 
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/scroll_view.h"
@@ -90,9 +94,6 @@ void TabScrollButtonContainer::ShowContextMenuForViewImpl(
     ui::mojom::MenuSourceType source_type) {
   context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
 
-  // TODO(b/523328731): Implement IDC_TAB_SCROLL_BUTTONS_TOGGLE_PIN
-  // as a browser action and execute this command with the action item
-  // framework.
   context_menu_model_->AddItemWithIcon(
       IDC_TAB_SCROLL_BUTTONS_TOGGLE_PIN,
       l10n_util::GetStringUTF16(IDS_TAB_SCROLL_UNPIN_BUTTONS),
@@ -115,8 +116,21 @@ void TabScrollButtonContainer::ShowContextMenuForViewImpl(
 
 void TabScrollButtonContainer::ExecuteCommand(int command_id, int event_flags) {
   if (command_id == IDC_TAB_SCROLL_BUTTONS_TOGGLE_PIN) {
-    chrome::ExecuteCommand(browser_window_interface_, command_id);
+    if (actions::ActionItem* toggle_scroll_pin_action =
+            GetToggleScrollPinAction()) {
+      CHECK(toggle_scroll_pin_action);
+      toggle_scroll_pin_action->InvokeAction();
+    }
   }
+}
+
+actions::ActionItem* TabScrollButtonContainer::GetToggleScrollPinAction() {
+  if (const BrowserActions* browser_actions =
+          BrowserActions::From(browser_window_interface_)) {
+    return actions::ActionManager::Get().FindAction(
+        kActionTabScrollTogglePin, browser_actions->root_action_item());
+  }
+  return nullptr;
 }
 
 bool TabScrollButtonContainer::IsPositionInWindowCaption(const gfx::Point& p) {
