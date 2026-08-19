@@ -14733,6 +14733,7 @@ from previous Chrome versions.
   <int value="29212695" label="OfflineIndicator:enabled"/>
   <int value="29769995" label="DataSharingNonProductionEnvironment:enabled"/>
   <int value="29924596" label="AiModeOmniboxEntryPoint:enabled"/>
+  <int value="30466163" label="DesktopAndroidTWADisclosures:disabled"/>
   <int value="30668734" label="CanvasDrawElement:enabled"/>
   <int value="30914609" label="DisablePartnerHomepageAndroid:enabled"/>
   <int value="31258497"
@@ -17883,6 +17884,7 @@ from previous Chrome versions.
   <int value="1021266345" label="NearbySharingWifiLan:disabled"/>
   <int value="1021573543" label="QuickSettingsPWA:disabled"/>
   <int value="1021848000" label="SharedHighlightingUseBlocklist:disabled"/>
+  <int value="1022006626" label="DesktopAndroidTWADisclosures:enabled"/>
   <int value="1022424308" label="SignedExchangeSubresourcePrefetch:enabled"/>
   <int value="1022504679" label="UseMultipleOverlays:enabled"/>
   <int value="1022853086"
