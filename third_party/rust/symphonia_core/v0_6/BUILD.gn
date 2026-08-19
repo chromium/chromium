@@ -41,6 +41,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/symphonia-core-v0_6/src/errors.rs",
     "//third_party/rust/chromium_crates_io/vendor/symphonia-core-v0_6/src/formats/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/symphonia-core-v0_6/src/formats/probe.rs",
+    "//third_party/rust/chromium_crates_io/vendor/symphonia-core-v0_6/src/formats/util.rs",
     "//third_party/rust/chromium_crates_io/vendor/symphonia-core-v0_6/src/io/bit.rs",
     "//third_party/rust/chromium_crates_io/vendor/symphonia-core-v0_6/src/io/buf_reader.rs",
     "//third_party/rust/chromium_crates_io/vendor/symphonia-core-v0_6/src/io/media_source_stream.rs",
@@ -64,7 +65,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "Project Symphonia shared structs, traits, and features."
   cargo_pkg_repository = "https://github.com/pdeljanov/Symphonia"
-  cargo_pkg_version = "0.6.0"
+  cargo_pkg_version = "0.6.1"
 
   allow_unsafe = false
 

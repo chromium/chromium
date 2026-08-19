@@ -8,7 +8,7 @@
 use crate::io::Monitor;
 
 #[rustfmt::skip]
-const CRC32: [[u32; 256]; 8] =
+static CRC32: [[u32; 256]; 8] =
 [
     [
         0x00000000, 0x04c11db7, 0x09823b6e, 0x0d4326d9,

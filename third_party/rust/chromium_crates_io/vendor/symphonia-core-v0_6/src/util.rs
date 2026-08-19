@@ -460,8 +460,12 @@ pub mod text {
     /// a conversion function from `[u8; 2]` to `u16`.
     fn decode_utf16_bytes(buf: &[u8], f: fn([u8; 2]) -> u16) -> impl Iterator<Item = char> + '_ {
         // TODO: Use `buf.array_chunks::<2>()` when stabilized.
-        char::decode_utf16(buf.chunks_exact(2).map(move |bytes| f(bytes.try_into().unwrap())))
-            .map(|r| r.unwrap_or(char::REPLACEMENT_CHARACTER))
+        char::decode_utf16(
+            buf.chunks_exact(2).map(move |bytes| {
+                f(bytes.try_into().expect("chunks_exact(2) yields exactly 2 bytes"))
+            }),
+        )
+        .map(|r| r.unwrap_or(char::REPLACEMENT_CHARACTER))
     }
 
     pub mod filter {

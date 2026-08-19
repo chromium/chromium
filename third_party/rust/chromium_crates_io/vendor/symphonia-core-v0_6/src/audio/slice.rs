@@ -16,6 +16,7 @@ use super::{
 };
 
 /// An immutable slice of planar audio.
+#[derive(Clone)]
 pub struct AudioSlice<'a, S: Sample> {
     spec: &'a AudioSpec,
     planes: &'a [Vec<S>],
@@ -116,7 +117,7 @@ impl<S: Sample> std::ops::Index<Position> for AudioSlice<'_, S> {
     type Output = [S];
 
     fn index(&self, index: Position) -> &Self::Output {
-        self.plane_by_position(index).unwrap()
+        self.plane_by_position(index).expect("index out of bounds")
     }
 }
 
@@ -124,7 +125,7 @@ impl<S: Sample> std::ops::Index<usize> for AudioSlice<'_, S> {
     type Output = [S];
 
     fn index(&self, index: usize) -> &Self::Output {
-        self.plane(index).unwrap()
+        self.plane(index).expect("index out of bounds")
     }
 }
 
@@ -258,13 +259,13 @@ impl<S: Sample> std::ops::Index<Position> for AudioSliceMut<'_, S> {
     type Output = [S];
 
     fn index(&self, index: Position) -> &Self::Output {
-        self.plane_by_position(index).unwrap()
+        self.plane_by_position(index).expect("index out of bounds")
     }
 }
 
 impl<S: Sample> std::ops::IndexMut<Position> for AudioSliceMut<'_, S> {
     fn index_mut(&mut self, index: Position) -> &mut Self::Output {
-        self.plane_by_position_mut(index).unwrap()
+        self.plane_by_position_mut(index).expect("index out of bounds")
     }
 }
 
@@ -272,12 +273,12 @@ impl<S: Sample> std::ops::Index<usize> for AudioSliceMut<'_, S> {
     type Output = [S];
 
     fn index(&self, index: usize) -> &Self::Output {
-        self.plane(index).unwrap()
+        self.plane(index).expect("index out of bounds")
     }
 }
 
 impl<S: Sample> std::ops::IndexMut<usize> for AudioSliceMut<'_, S> {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        self.plane_mut(index).unwrap()
+        self.plane_mut(index).expect("index out of bounds")
     }
 }

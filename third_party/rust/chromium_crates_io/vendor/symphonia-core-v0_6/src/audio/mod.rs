@@ -207,11 +207,10 @@ pub trait Audio<S: Sample> {
 
         let channels = self.spec().channels();
 
-        let idx0 = channels.get_canonical_index_for_positioned_channel(pos0);
-        let idx1 = channels.get_canonical_index_for_positioned_channel(pos1);
+        let idx0 = channels.get_canonical_index_for_positioned_channel(pos0)?;
+        let idx1 = channels.get_canonical_index_for_positioned_channel(pos1)?;
 
-        idx0.and_then(|idx0| idx1.map(|idx1| (idx0, idx1)))
-            .and_then(|(idx0, idx1)| self.plane_pair(idx0, idx1))
+        self.plane_pair(idx0, idx1)
     }
 
     /// Iterate over immutable slices to all planes.
@@ -361,11 +360,10 @@ pub trait AudioMut<S: Sample>: Audio<S> {
 
         let channels = self.spec().channels();
 
-        let idx0 = channels.get_canonical_index_for_positioned_channel(pos0);
-        let idx1 = channels.get_canonical_index_for_positioned_channel(pos1);
+        let idx0 = channels.get_canonical_index_for_positioned_channel(pos0)?;
+        let idx1 = channels.get_canonical_index_for_positioned_channel(pos1)?;
 
-        idx0.and_then(|idx0| idx1.map(|idx1| (idx0, idx1)))
-            .and_then(move |(idx0, idx1)| self.plane_pair_mut(idx0, idx1))
+        self.plane_pair_mut(idx0, idx1)
     }
 
     /// Iterate over mutable slices to all planes.

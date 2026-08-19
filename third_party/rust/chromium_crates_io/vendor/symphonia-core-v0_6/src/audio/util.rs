@@ -195,8 +195,9 @@ pub fn copy_from_slice_interleaved<Sin, Sout, Src, Dst>(
     while num_planes - i > 1 {
         let (l, r) = dst.split_at_mut(i + 1);
 
-        let dst0 = &mut l.last_mut().unwrap().as_mut()[bound.clone()];
-        let dst1 = &mut r.first_mut().unwrap().as_mut()[bound.clone()];
+        let dst0 = &mut l.last_mut().expect("l has i+1 elements").as_mut()[bound.clone()];
+        let dst1 =
+            &mut r.first_mut().expect("r has num_planes-i-1 elements").as_mut()[bound.clone()];
 
         for ((d0, d1), s) in dst0.iter_mut().zip(dst1).zip(src.chunks_exact(num_planes)) {
             *d0 = s[i + 0].into_sample();

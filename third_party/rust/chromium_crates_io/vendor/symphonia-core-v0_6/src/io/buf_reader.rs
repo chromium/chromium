@@ -72,7 +72,9 @@ impl<'a> BufReader<'a> {
             i += align;
         }
 
-        self.pos = cmp::min(j, self.buf.len());
+        // When the pattern is not matched, `j` may have advanced past `end` by up to `align - 1`
+        // bytes. Clamp to `end` so the scan never consumes more than `scan_len` bytes.
+        self.pos = cmp::min(j, end);
         Ok(&self.buf[start..self.pos])
     }
 
@@ -164,6 +166,34 @@ impl ReadBytes for BufReader<'_> {
         Ok(())
     }
 
+    fn read_boxed_slice(&mut self, len: usize) -> io::Result<Box<[u8]>> {
+        let len = cmp::min(self.buf.len() - self.pos, len);
+
+        // The boxed slice will always have a length <= the length of the inner buffer. Therefore,
+        // preallocating the entire boxed slice buffer is safe because it can't be maliciously
+        // large.
+        let mut buf = vec![0u8; len];
+        buf[..len].copy_from_slice(&self.buf[self.pos..self.pos + len]);
+        self.pos += len;
+
+        Ok(buf.into_boxed_slice())
+    }
+
+    fn read_boxed_slice_exact(&mut self, len: usize) -> io::Result<Box<[u8]>> {
+        if self.buf.len() - self.pos < len {
+            return underrun_error();
+        }
+
+        // The boxed slice will always have a length <= the length of the inner buffer. Therefore,
+        // preallocating the entire boxed slice buffer is safe because it can't be maliciously
+        // large.
+        let mut buf = vec![0u8; len];
+        buf.copy_from_slice(&self.buf[self.pos..self.pos + len]);
+        self.pos += len;
+
+        Ok(buf.into_boxed_slice())
+    }
+
     fn scan_bytes_aligned<'b>(
         &mut self,
         pattern: &[u8],
@@ -205,5 +235,47 @@ impl FiniteStream for BufReader<'_> {
     #[inline(always)]
     fn bytes_available(&self) -> u64 {
         (self.buf.len() - self.pos) as u64
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::BufReader;
+    use crate::io::ReadBytes;
+
+    #[test]
+    fn verify_scan_bytes_aligned_ref_finds_pattern() {
+        let mut reader = BufReader::new(b"AB\0\0CD");
+        let scanned = reader.scan_bytes_aligned_ref(&[0x00, 0x00], 2, 6).unwrap();
+        assert_eq!(scanned, b"AB\0\0");
+        assert_eq!(reader.pos(), 4);
+    }
+
+    #[test]
+    fn verify_scan_bytes_aligned_ref_no_match_returns_remainder() {
+        let mut reader = BufReader::new(b"ABCDEF");
+        let scanned = reader.scan_bytes_aligned_ref(&[0x00, 0x00], 2, 6).unwrap();
+        assert_eq!(scanned, b"ABCDEF");
+        assert_eq!(reader.pos(), 6);
+    }
+
+    #[test]
+    fn verify_scan_bytes_aligned_ref_respects_scan_len() {
+        // No match, scan_len smaller than the remaining bytes, alignment greater than one. The
+        // scan must not consume or return more than scan_len bytes.
+        let mut reader = BufReader::new(b"ABCDEF");
+        let scanned = reader.scan_bytes_aligned_ref(&[0x00, 0x00], 2, 3).unwrap();
+        assert_eq!(scanned, b"ABC");
+        assert_eq!(reader.pos(), 3);
+    }
+
+    #[test]
+    fn verify_scan_bytes_aligned_into_smaller_buffer() {
+        // No match and a destination buffer smaller than the remaining input must not panic.
+        let mut reader = BufReader::new(b"ABCDEF");
+        let mut buf = [0u8; 3];
+        let scanned = reader.scan_bytes_aligned(&[0x00, 0x00], 2, &mut buf).unwrap();
+        assert_eq!(scanned, b"ABC");
+        assert_eq!(reader.pos(), 3);
     }
 }

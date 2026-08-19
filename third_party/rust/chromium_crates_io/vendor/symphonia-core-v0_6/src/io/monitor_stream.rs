@@ -112,6 +112,18 @@ impl<B: ReadBytes, M: Monitor> ReadBytes for MonitorStream<B, M> {
         Ok(())
     }
 
+    fn read_boxed_slice(&mut self, len: usize) -> io::Result<Box<[u8]>> {
+        let data = self.inner.read_boxed_slice(len)?;
+        self.monitor.process_buf_bytes(&data);
+        Ok(data)
+    }
+
+    fn read_boxed_slice_exact(&mut self, len: usize) -> io::Result<Box<[u8]>> {
+        let data = self.inner.read_boxed_slice_exact(len)?;
+        self.monitor.process_buf_bytes(&data);
+        Ok(data)
+    }
+
     fn scan_bytes_aligned<'a>(
         &mut self,
         pattern: &[u8],

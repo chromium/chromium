@@ -9,7 +9,7 @@ use crate::io::Monitor;
 
 // Credit: This table was extracted from the reference FLAC decoder.
 #[rustfmt::skip]
-const CRC16_ANSI: [[u16; 256]; 8] =
+static CRC16_ANSI: [[u16; 256]; 8] =
 [
     [
         0x0000,  0x8005,  0x800f,  0x000a,  0x801b,  0x001e,  0x0014,  0x8011,
@@ -338,7 +338,7 @@ impl Monitor for Crc16Ansi {
 }
 
 #[rustfmt::skip]
-const CRC16_ANSI_LE: [u16; 256] =
+static CRC16_ANSI_LE: [u16; 256] =
 [
     0x0000, 0xc0c1, 0xc181, 0x0140, 0xc301, 0x03c0, 0x0280, 0xc241,
     0xc601, 0x06c0, 0x0780, 0xc741, 0x0500, 0xc5c1, 0xc481, 0x0440,

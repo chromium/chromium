@@ -46,9 +46,9 @@ impl Default for MediaSourceStreamOptions {
 /// excess data buffered on consecutive `seek()` calls.
 ///
 /// Second, to better support non-seekable sources, `MediaSourceStream` implements a configurable
-/// length buffer cache. By default, the buffer caches allows backtracking by up-to the minimum of
-/// either `buffer_len - 32kB` or the total number of bytes read since instantiation or the last
-/// buffer cache invalidation. Note that regular a `seek()` will invalidate the buffer cache.
+/// length buffer. By default, the buffer allows backtracking by up-to the minimum of either
+/// `buffer_len - 32kB` or the total number of bytes read since instantiation or the last buffer
+/// invalidation. Note that regular a `seek()` will invalidate the buffer.
 pub struct MediaSourceStream<'s> {
     /// The source reader.
     inner: Box<dyn MediaSource + 's>,
@@ -90,17 +90,17 @@ impl<'s> MediaSourceStream<'s> {
         }
     }
 
-    /// Returns if the buffer has been exhausted This is a marginally more efficient way of checking
-    /// if `unread_buffer_len() == 0`.
+    /// Returns if the ring buffer has been exhausted. This is a marginally more efficient way of
+    /// checking if `unread_buffer_len() == 0`.
     #[inline(always)]
-    fn is_buffer_exhausted(&self) -> bool {
+    fn is_buffer_empty(&self) -> bool {
         self.read_pos == self.write_pos
     }
 
-    /// If the buffer has been exhausted, fetch a new block of data to replenish the buffer.
-    fn fetch(&mut self) -> io::Result<()> {
+    /// If the ring buffer has been exhausted, fetch a new block of data to replenish the buffer.
+    fn refill_buffer(&mut self) -> io::Result<()> {
         // Only fetch when the ring buffer is empty.
-        if self.is_buffer_exhausted() {
+        if self.is_buffer_empty() {
             // Split the vector at the write position to get slices of the two contiguous regions of
             // the ring buffer.
             let (vec1, vec0) = self.ring.split_at_mut(self.write_pos);
@@ -135,33 +135,127 @@ impl<'s> MediaSourceStream<'s> {
         Ok(())
     }
 
-    /// If the buffer has been exhausted, fetch a new block of data to replenish the buffer. If
-    /// no more data could be fetched, return an end-of-stream error.
-    fn fetch_or_eof(&mut self) -> io::Result<()> {
-        self.fetch()?;
+    /// If the ring buffer has been exhausted, fetch a new block of data to replenish the buffer. If
+    /// no more data could be fetched, return an UnexpectedEof error.
+    fn refill_buffer_or_eof(&mut self) -> io::Result<()> {
+        self.refill_buffer()?;
 
-        if self.is_buffer_exhausted() {
+        if self.is_buffer_empty() {
             return unexpected_eof_error();
         }
 
         Ok(())
     }
 
-    /// Advances the read position by `len` bytes, taking into account wrap-around.
-    #[inline(always)]
-    fn consume(&mut self, len: usize) {
-        self.read_pos = (self.read_pos + len) & self.ring_mask;
+    /// Read as much as possible from the ring buffer to fill `buf`.
+    fn read_from_buffer<'b>(&mut self, mut buf: &'b mut [u8]) -> &'b mut [u8] {
+        // Keep reading from the ring buffer until either the ring buffer is exhausted, or `buf` has
+        // been filled.
+        while !buf.is_empty() {
+            let Some(src) = self.maybe_get_readable_slice()
+            else {
+                break;
+            };
+
+            let count = buf.len().min(src.len());
+            let (dst, rest) = buf.split_at_mut(count);
+            dst.copy_from_slice(&src[..count]);
+            buf = rest;
+            self.consume(count);
+        }
+
+        // Return unwritten portion of `buf`.
+        buf
     }
 
-    /// Gets the largest contiguous slice of buffered data starting from the read position.
+    /// Read from the inner source directly to fill `buf`, and then writeback only the required
+    /// amount into the ring buffer. For large reads, this removes most redundant copies through
+    /// the ring buffer.
+    ///
+    /// Panics if the ring buffer is not empty.
+    fn read_from_source<'b>(&mut self, buf: &'b mut [u8]) -> io::Result<&'b mut [u8]> {
+        assert!(self.is_buffer_empty());
+
+        let read_len = self.inner.read(buf)?;
+
+        // Update the read and write positions, taking into account wrap-around. Since the ring
+        // buffer was exhausted these are equal.
+        let ring_pos = self.write_pos.wrapping_add(read_len) & self.ring_mask;
+        self.write_pos = ring_pos;
+        self.read_pos = ring_pos;
+
+        // Update the stream position accounting.
+        self.abs_pos += read_len as u64;
+        self.rel_pos += read_len as u64;
+
+        // Clamp to the largest possible block size that fits best for the amount read.
+        self.read_block_len = read_len.min(Self::MAX_BLOCK_LEN).next_power_of_two();
+
+        // Now, writeback into the ring buffer using what was read into `buf`.
+
+        // The amount of bytes to writeback into the ring buffer.
+        let wb_len = read_len.min(self.ring.len());
+        // The write position at which the writeback will start.
+        let wb_pos = ring_pos.wrapping_sub(wb_len) & self.ring_mask;
+
+        // Split the ring buffer into the two continguous write regions.
+        let (wb1, wb0) = self.ring.split_at_mut(wb_pos);
+
+        let src = &buf[read_len - wb_len..read_len];
+
+        if wb0.len() >= wb_len {
+            wb0[..wb_len].copy_from_slice(src);
+        }
+        else {
+            let (src0, src1) = src.split_at(wb0.len());
+
+            let rem = wb_len - wb0.len();
+            wb0.copy_from_slice(src0);
+            wb1[..rem].copy_from_slice(&src1[..rem]);
+        };
+
+        // Return unwritten portion of `buf`.
+        Ok(&mut buf[read_len..])
+    }
+
+    /// Returns `true` if an operation of length `len` is considered large and eligible for
+    /// optimizations that bypass the ring buffer.
     #[inline(always)]
-    fn continguous_buf(&self) -> &[u8] {
+    fn is_large_operation(&self, len: u64) -> bool {
+        len > 2 * self.ring.len() as u64
+    }
+
+    /// Try to get the current contiguous slice of readable data from the ring buffer. Returns
+    /// `None` if the ring buffer is empty.
+    #[inline(always)]
+    fn maybe_get_readable_slice(&self) -> Option<&[u8]> {
+        if self.write_pos > self.read_pos {
+            Some(&self.ring[self.read_pos..self.write_pos])
+        }
+        else if self.write_pos < self.read_pos {
+            Some(&self.ring[self.read_pos..])
+        }
+        else {
+            None
+        }
+    }
+
+    /// Get the current contiguous slice of readable data from the ring buffer. Returns an empty
+    /// slice if the ring buffer is empty.
+    #[inline(always)]
+    fn get_readable_slice(&self) -> &[u8] {
         if self.write_pos >= self.read_pos {
             &self.ring[self.read_pos..self.write_pos]
         }
         else {
             &self.ring[self.read_pos..]
         }
+    }
+
+    /// Advances the read position by `len` bytes, taking into account wrap-around.
+    #[inline(always)]
+    fn consume(&mut self, len: usize) {
+        self.read_pos = (self.read_pos + len) & self.ring_mask;
     }
 
     /// Resets the read-ahead buffer, and sets the absolute stream position to `pos`.
@@ -190,20 +284,36 @@ impl io::Read for MediaSourceStream<'_> {
     fn read(&mut self, mut buf: &mut [u8]) -> io::Result<usize> {
         let read_len = buf.len();
 
-        while !buf.is_empty() {
-            // Refill the the buffer cache if required.
-            self.fetch()?;
+        // First, read as much as possible from the ring buffer.
+        buf = self.read_from_buffer(buf);
 
-            // Consume bytes from the readable portion of the buffer cache and copy them into the
-            // remaining portion of the caller's buffer.
-            match self.continguous_buf().read(buf) {
-                Ok(0) => break,
-                Ok(count) => {
-                    buf = &mut buf[count..];
-                    self.consume(count);
+        // Then, if the remainder is large optimizible, read directly from the source into the
+        // remaining portion of `buf`. Note, to be true, `buf` must have length significantly larger
+        // than 0, which means the ring buffer was emptied in the first step. Therefore, it is safe
+        // to call `read_from_source` which panics if ring buffer is not empty.
+        if self.is_large_operation(buf.len() as u64) {
+            buf = self.read_from_source(buf)?;
+        }
+        else {
+            // Or, continuously buffer data into the ring buffer from the source, and then read from
+            // the ring buffer.
+            while !buf.is_empty() {
+                // Refill the the ring buffer as required.
+                self.refill_buffer()?;
+
+                // Consume bytes from the readable portion of the ring buffer and copy them into the
+                // remaining portion of the caller's buffer.
+                match self.maybe_get_readable_slice() {
+                    Some(src) => {
+                        let count = buf.len().min(src.len());
+                        let (dst, rest) = buf.split_at_mut(count);
+                        dst.copy_from_slice(&src[..count]);
+                        buf = rest;
+                        self.consume(count);
+                    }
+                    // The fetch operation did not buffer anything. There is no more to read.
+                    None => break,
                 }
-                Err(ref e) if e.kind() == io::ErrorKind::Interrupted => {}
-                Err(e) => return Err(e),
             }
         }
 
@@ -240,8 +350,8 @@ impl ReadBytes for MediaSourceStream<'_> {
         // This function, read_byte, is inlined for performance. To reduce code bloat, place the
         // read-ahead buffer replenishment in a seperate function. Call overhead will be negligible
         // compared to the actual underlying read.
-        if self.is_buffer_exhausted() {
-            self.fetch_or_eof()?;
+        if self.is_buffer_empty() {
+            self.refill_buffer_or_eof()?;
         }
 
         let value = self.ring[self.read_pos];
@@ -253,7 +363,7 @@ impl ReadBytes for MediaSourceStream<'_> {
     fn read_double_bytes(&mut self) -> io::Result<[u8; 2]> {
         let mut bytes = [0; 2];
 
-        let buf = self.continguous_buf();
+        let buf = self.get_readable_slice();
 
         if buf.len() >= 2 {
             bytes.copy_from_slice(&buf[..2]);
@@ -271,7 +381,7 @@ impl ReadBytes for MediaSourceStream<'_> {
     fn read_triple_bytes(&mut self) -> io::Result<[u8; 3]> {
         let mut bytes = [0; 3];
 
-        let buf = self.continguous_buf();
+        let buf = self.get_readable_slice();
 
         if buf.len() >= 3 {
             bytes.copy_from_slice(&buf[..3]);
@@ -288,7 +398,7 @@ impl ReadBytes for MediaSourceStream<'_> {
     fn read_quad_bytes(&mut self) -> io::Result<[u8; 4]> {
         let mut bytes = [0; 4];
 
-        let buf = self.continguous_buf();
+        let buf = self.get_readable_slice();
 
         if buf.len() >= 4 {
             bytes.copy_from_slice(&buf[..4]);
@@ -341,18 +451,15 @@ impl ReadBytes for MediaSourceStream<'_> {
         // If the stream is seekable and the number of bytes to ignore is large, perform a seek
         // first. Note that ignored bytes are rewindable. Therefore, ensure the ring-buffer is
         // full after the seek just like if bytes were ignored by consuming them instead.
-        let ring_len = self.ring.len() as u64;
-
-        // Only apply the optimization if seeking 2x or more than the ring-buffer size.
-        while count >= 2 * ring_len && self.is_seekable() {
-            let delta = count.clamp(0, i64::MAX as u64).sub(ring_len);
+        while self.is_large_operation(count) && self.is_seekable() {
+            let delta = count.min(i64::MAX as u64).sub(self.ring.len() as u64);
             self.seek(io::SeekFrom::Current(delta as i64))?;
             count -= delta;
         }
 
         // Ignore the remaining bytes be consuming samples from the ring-buffer.
         while count > 0 {
-            self.fetch_or_eof()?;
+            self.refill_buffer_or_eof()?;
             let discard_count = cmp::min(self.unread_buffer_len() as u64, count);
             self.consume(discard_count as usize);
             count -= discard_count;

@@ -331,19 +331,39 @@ pub trait ReadBytes {
 
     /// Reads up-to the number of bytes requested, and returns a boxed slice of the data or an
     /// error.
+    ///
+    /// # For Implementations
+    ///
+    /// The provided implementation is hardened against untrusted length inputs. Rather than
+    /// preallocating a buffer of length `len` at the start and potentially causing a panic or
+    /// system memory exhaustion for obscenely large lengths, the hardened implementation will
+    /// progressively grow the buffer. This comes with the usual cost of growing a large vector,
+    /// potentially many times. Reads <= 4 MB are preallocated immediately and avoid this overhead.
+    /// Implementers of this trait that are passive observers of an inner reader, or are able to
+    /// bound the allocation to a reasonable size through other means, should consider providing
+    /// their own implementation.
     fn read_boxed_slice(&mut self, len: usize) -> io::Result<Box<[u8]>> {
-        let mut buf = vec![0u8; len];
-        let actual_len = self.read_buf(&mut buf)?;
-        buf.truncate(actual_len);
-        Ok(buf.into_boxed_slice())
+        safe_read_into_boxed_slice(len, |buf| self.read_buf(buf))
     }
 
     /// Reads exactly the number of bytes requested, and returns a boxed slice of the data or an
     /// error.
+    ///
+    /// # For Implementations
+    ///
+    /// The provided implementation is hardened against untrusted length inputs. Rather than
+    /// preallocating a buffer of length `len` at the start and potentially causing a panic or
+    /// system memory exhaustion for obscenely large lengths, the hardened implementation will
+    /// progressively grow the buffer. This comes with the usual cost of growing a large vector,
+    /// potentially many times. Reads <= 4 MB are preallocated immediately and avoid this overhead.
+    /// Implementers of this trait that are passive observers of an inner reader, or are able to
+    /// bound the allocation to a reasonable size through other means, should consider providing
+    /// their own implementation.
     fn read_boxed_slice_exact(&mut self, len: usize) -> io::Result<Box<[u8]>> {
-        let mut buf = vec![0u8; len];
-        self.read_buf_exact(&mut buf)?;
-        Ok(buf.into_boxed_slice())
+        safe_read_into_boxed_slice(len, |buf| {
+            self.read_buf_exact(buf)?;
+            Ok(buf.len())
+        })
     }
 
     /// Reads bytes from the stream into a supplied buffer until a byte pattern is matched. Returns
@@ -504,4 +524,67 @@ pub trait FiniteStream {
 
     /// Returns the number of bytes available for reading.
     fn bytes_available(&self) -> u64;
+}
+
+/// Safely read an untrusted amount of bytes into a boxed slice using a given read function.
+///
+/// This helper avoids pre-allocating the entire requested read length to avoid out-of-memory
+/// panics by reading progressively larger chunks.
+fn safe_read_into_boxed_slice<R>(len: usize, mut read: R) -> io::Result<Box<[u8]>>
+where
+    R: FnMut(&mut [u8]) -> io::Result<usize>,
+{
+    // The initial maximum amount of bytes to read.
+    //
+    // Given a large enough requested read length, this will serve as a upper bound on the size
+    // of the buffer preallocation. This limit protects against malicious (impossibly large)
+    // read requests from causing a panic by triggering a failure within the allocator. However,
+    // this will also cause valid large reads to reallocate the buffer atleast once, resulting
+    // in extra copies and overhead. Therefore, a fairly liberal initial upper bound is chosen.
+    const INIT_MAX_READ_LEN: usize = 4 * 1024 * 1024; // 4 MB.
+
+    // The absolute maximum read length for any given iteration.
+    const ABS_MAX_READ_LEN: usize = 1 * 1024 * 1024 * 1024; // 1 GB.
+
+    let mut next_max_read_len = INIT_MAX_READ_LEN;
+
+    let mut buf = Vec::new();
+
+    while buf.len() < len {
+        // The amount of bytes already read.
+        let have_len = buf.len();
+        // The capped amount of bytes to read this iteration.
+        let will_read_len = next_max_read_len.min(len - have_len);
+
+        // Read double the amount of bytes next iteration. Clamp to the absolute maximum read
+        // length.
+        next_max_read_len = (2 * next_max_read_len).min(ABS_MAX_READ_LEN);
+
+        // Try to reserve memory for the amount being read. Return an error instead of panicing.
+        // Use try_reserve_exact as an optimistic optimization for the single iteration case (the
+        // vast majority of cases). If the underlying buffer is the exact size of the read, then
+        // the implicit shrink_to_fit operation in into_boxed_slice should be a no-op.
+        buf.try_reserve_exact(will_read_len)
+            .map_err(|_| io::Error::from(io::ErrorKind::OutOfMemory))?;
+
+        // Resize the buffer into the newly reserved space and initialize the new bytes to 0.
+        buf.resize(have_len + will_read_len, 0);
+
+        // Try to read the number of bytes into the buffer or return an error. For exact variants,
+        // this function will return an error if the amount read not exactly as than requested. That
+        // error will then be returned. For non-exact variants, the amount actually read will be
+        // returned.
+        let did_read_len = read(&mut buf[have_len..])?;
+
+        // For exact variants, this will always evaluate to false. Each iteration will read exactly
+        // the amount of bytes requested, resulting in the overall read returning the exact amount
+        // requested or an error. For non-exact variants, if less bytes are read than requested,
+        // truncate the buffer to the total read and do not attempt to read anymore.
+        if did_read_len < will_read_len {
+            buf.truncate(have_len + did_read_len);
+            break;
+        }
+    }
+
+    Ok(buf.into_boxed_slice())
 }

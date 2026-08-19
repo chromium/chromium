@@ -14,10 +14,28 @@ use crate::audio::{
 
 use super::{Audio, AudioBuffer, AudioBytes, AudioMut, AudioSlice, AudioSpec};
 
+macro_rules! impl_generic_subslice_func {
+    ($own:expr, $own_type:ident, $buf:ident, $expr:expr) => {
+        match $own {
+            $own_type::U8($buf) => GenericAudioSlice::U8($expr),
+            $own_type::U16($buf) => GenericAudioSlice::U16($expr),
+            $own_type::U24($buf) => GenericAudioSlice::U24($expr),
+            $own_type::U32($buf) => GenericAudioSlice::U32($expr),
+            $own_type::S8($buf) => GenericAudioSlice::S8($expr),
+            $own_type::S16($buf) => GenericAudioSlice::S16($expr),
+            $own_type::S24($buf) => GenericAudioSlice::S24($expr),
+            $own_type::S32($buf) => GenericAudioSlice::S32($expr),
+            $own_type::F32($buf) => GenericAudioSlice::F32($expr),
+            $own_type::F64($buf) => GenericAudioSlice::F64($expr),
+        }
+    };
+}
+
 /// An owning wrapper for an [`AudioBuffer`] of any standard sample format.
 ///
 /// Calls on this wrapper are dispatched to the underlying, wrapped, buffer and are semantically
 /// identical.
+#[derive(Clone)]
 pub enum GenericAudioBuffer {
     /// An unsigned 8-bit integer audio buffer.
     U8(AudioBuffer<u8>),
@@ -158,18 +176,7 @@ impl GenericAudioBuffer {
 
     /// Get an immutable slice of the buffer over `range`.
     pub fn slice<R: RangeBounds<usize>>(&self, range: R) -> GenericAudioSlice<'_> {
-        match self {
-            GenericAudioBuffer::U8(buf) => GenericAudioSlice::U8(buf.slice(range)),
-            GenericAudioBuffer::U16(buf) => GenericAudioSlice::U16(buf.slice(range)),
-            GenericAudioBuffer::U24(buf) => GenericAudioSlice::U24(buf.slice(range)),
-            GenericAudioBuffer::U32(buf) => GenericAudioSlice::U32(buf.slice(range)),
-            GenericAudioBuffer::S8(buf) => GenericAudioSlice::S8(buf.slice(range)),
-            GenericAudioBuffer::S16(buf) => GenericAudioSlice::S16(buf.slice(range)),
-            GenericAudioBuffer::S24(buf) => GenericAudioSlice::S24(buf.slice(range)),
-            GenericAudioBuffer::S32(buf) => GenericAudioSlice::S32(buf.slice(range)),
-            GenericAudioBuffer::F32(buf) => GenericAudioSlice::F32(buf.slice(range)),
-            GenericAudioBuffer::F64(buf) => GenericAudioSlice::F64(buf.slice(range)),
-        }
+        impl_generic_subslice_func!(self, Self, buf, buf.slice(range))
     }
 
     /// Truncates the buffer to the number of frames specified. If the number of frames in the
@@ -455,6 +462,11 @@ impl GenericAudioBufferRef<'_> {
         self.frames()
     }
 
+    /// Get an immutable slice of the referenced buffer over `range`.
+    pub fn slice<R: RangeBounds<usize>>(&self, range: R) -> GenericAudioSlice<'_> {
+        impl_generic_subslice_func!(self, Self, buf, buf.slice(range))
+    }
+
     /// Copy audio to a mutable audio slice while doing any necessary sample format conversions.
     pub fn copy_to<Sout, Dst>(&self, dst: &mut Dst)
     where
@@ -722,6 +734,7 @@ impl_from_converions!(f64, GenericAudioBuffer::F64, GenericAudioBufferRef::F64);
 ///
 /// Calls on this wrapper are dispatched to the underlying, wrapped, slice and are semantically
 /// identical.
+#[derive(Clone)]
 pub enum GenericAudioSlice<'a> {
     /// An unsigned 8-bit integer audio slice.
     U8(AudioSlice<'a, u8>),
@@ -791,6 +804,11 @@ impl<'a> GenericAudioSlice<'a> {
     /// Get the total number of samples contained in each audio plane.
     pub fn samples_planar(&self) -> usize {
         self.frames()
+    }
+
+    /// Get an immutable sub-slice of this slice over `range`.
+    pub fn slice<R: RangeBounds<usize>>(&'a self, range: R) -> GenericAudioSlice<'a> {
+        impl_generic_subslice_func!(self, Self, slice, slice.slice(range))
     }
 
     /// Copy audio to a mutable audio slice while doing any necessary sample format conversions.

@@ -261,12 +261,9 @@ pub mod vlc {
             }
 
             // Traverse the tree in breadth-first order.
-            while !queue.is_empty() {
+            while let Some(block_id) = queue.pop_front() {
                 // Count of the total number of entries added to the table by this block.
                 let mut entry_count = 0;
-
-                // Get the block id at the front of the queue.
-                let block_id = queue.pop_front().unwrap();
 
                 // Get the block at the front of the queue.
                 let block = &blocks[block_id];
