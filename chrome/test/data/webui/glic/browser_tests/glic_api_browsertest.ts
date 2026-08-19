@@ -4,7 +4,7 @@
 import {HostCapability, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {FocusedTabData, TabData, UserProfileInfo} from '/glic/glic_api/glic_api.js';
 
-import {ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, readStream, runUntil, sleep, testMain} from './browser_test_base.js';
+import {ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, sleep, testMain} from './browser_test_base.js';
 import type {SequencedSubscriber} from './browser_test_base.js';
 
 // Test cases here correspond to test cases in glic_api_browsertest.cc.
@@ -48,38 +48,6 @@ class ApiTests extends ApiTestFixtureBase {
   async testPanelActiveWithMicrophone() {
     await this.advanceToNextStep();
     await this.advanceToNextStep();
-  }
-
-  async testGetContextFromFocusedTabWithPdfFile() {
-    await this.host.setTabContextPermissionState(true);
-
-    // Pdf pages have two loads: one of the WebContents, and another of the
-    // element within an iframe that contains the actual pdf. We need to wait
-    // for both to be finished before running the test. The cpp side waits for
-    // the WebContents to be loaded, but we must still wait here.
-    const result = await runUntil(async () => {
-      const result =
-          await this.host.getContextFromFocusedTab?.({pdfData: true});
-      if (!result || !result.pdfDocumentData ||
-          !result.pdfDocumentData.pdfData) {
-        return undefined;
-      }
-      return result;
-    });
-
-    assertEquals(
-        new URL(result.tabData.url).pathname, '/pdf/test.pdf',
-        `Tab data has unexpected url ${result.tabData.url}`);
-    assertFalse(!!result.webPageData);
-
-    // Original PDF size is 7984 bytes, because Chrome reserializes the PDF,
-    // the size can change, but it shouldn't be too small.
-    const pdfData = await readStream(result.pdfDocumentData!.pdfData!);
-    assertTrue(
-        pdfData.byteLength > 5000,
-        `PDF data is too short. length=${pdfData.byteLength}`);
-    assertEquals('%PDF', new TextDecoder().decode(pdfData.slice(0, 4)));
-    assertFalse(result.pdfDocumentData!.pdfSizeLimitExceeded);
   }
 
   async testGetContextFromFocusedTabWithUnFocusablePage() {

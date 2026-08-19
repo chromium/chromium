@@ -1879,6 +1879,29 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
       "Glic.Api.GetContextForActorFromTab.Error.Text", 1);
 }
 
+// Note: PDF support is a necessary precondition for this test.
+#if BUILDFLAG(ENABLE_PDF)
+#define MAYBE_testGetContextFromFocusedTabWithPdfFile \
+  testGetContextFromFocusedTabWithPdfFile
+#else
+#define MAYBE_testGetContextFromFocusedTabWithPdfFile \
+  DISABLED_testGetContextFromFocusedTabWithPdfFile
+#endif
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       MAYBE_testGetContextFromFocusedTabWithPdfFile) {
+  tabs::TabInterface* tab0 = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab0);
+  NavigateTab(*tab0, embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_OK(OpenGlicForActiveTab());
+  glic::GlicHistogramTester histogram_tester;
+  ExecuteJsTest();
+
+  // No context error should have been recorded.
+  EXPECT_THAT(histogram_tester.GetAllSamplesForPrefix(
+                  "Glic.Api.GetContextFromFocusedTab.Error"),
+              testing::IsEmpty());
+}
+
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
                        testGetContextFromFocusedTabWithNoRequestedData) {
   tabs::TabInterface* tab0 = GetTabListInterface()->GetActiveTab();
