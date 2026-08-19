@@ -17,7 +17,7 @@ suite('GoogleServicesPage', function() {
   let googleServicesPage: SettingsGoogleServicesPageElement;
   let testSyncBrowserProxy: TestSyncBrowserProxy;
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
@@ -35,7 +35,7 @@ suite('GoogleServicesPage', function() {
     document.body.appendChild(googleServicesPage);
     Router.getInstance().navigateTo(routes.GOOGLE_SERVICES);
 
-    return microtasksFinished();
+    await microtasksFinished();
   });
 
   // Tests that all elements are visible.
@@ -43,7 +43,7 @@ suite('GoogleServicesPage', function() {
     assertEquals(
         routes.GOOGLE_SERVICES, Router.getInstance().getCurrentRoute());
 
-    assertTrue(!!googleServicesPage.shadowRoot!.querySelector(
+    assertTrue(!!googleServicesPage.shadowRoot.querySelector(
         'settings-personalization-options'));
   });
 

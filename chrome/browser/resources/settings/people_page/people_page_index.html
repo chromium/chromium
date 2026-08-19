@@ -1,45 +1,34 @@
-<style include="settings-shared">
-  cr-view-manager [hidden-by-search],
-  cr-view-manager[show-all] [slot=view][data-parent-view-id] {
-    display: none;
-  }
-</style>
-
 <cr-view-manager id="viewManager" class="cr-centered-card-container"
-    show-all$="[[shouldShowAll]]">
+    ?show-all="${this.shouldShowAll}">
   <settings-people-page slot="view" id="parent"
-      route-path$="[[routes_.PEOPLE.path]]">
+      route-path="${this.routes_.PEOPLE.path}">
   </settings-people-page>
 
   <settings-sync-page slot="view" id="sync"
       data-parent-view-id="parent"
-      route-path$="[[routes_.SYNC.path]]">
+      route-path="${this.routes_.SYNC.path}">
   </settings-sync-page>
 
   <settings-sync-controls-page slot="view" id="syncControls"
-      data-parent-view-id="parent" route-path$="[[routes_.SYNC_ADVANCED.path]]">
+      data-parent-view-id="parent"
+      route-path="${this.routes_.SYNC_ADVANCED.path}">
   </settings-sync-controls-page>
 
 <if expr="not is_chromeos">
    <settings-manage-profile slot="view" id="manageProfile"
-       data-parent-view-id="parent" profile-name="[[profileName_]]"
-       route-path$="[[routes_.MANAGE_PROFILE.path]]">
+       data-parent-view-id="parent"
+       route-path="${this.routes_.MANAGE_PROFILE.path}">
    </settings-manage-profile>
 </if>
 
-   <template is="dom-if" if="[[replaceSyncPromosWithSignInPromos_]]"
-      restamp>
-     <settings-account-page slot="view" id="account"
-         data-parent-view-id="parent"
-         route-path$="[[routes_.ACCOUNT.path]]">
-     </settings-account-page>
-   </template>
-
-   <template is="dom-if" if="[[replaceSyncPromosWithSignInPromos_]]"
-      restamp>
-     <settings-google-services-page slot="view" id="googleServices"
-         data-parent-view-id="parent"
-         route-path$="[[routes_.GOOGLE_SERVICES.path]]">
-     </settings-google-services-page>
-   </template>
+  ${this.replaceSyncPromosWithSignInPromos_ ? html`
+    <settings-account-page slot="view" id="account"
+        data-parent-view-id="parent"
+        route-path="${this.routes_.ACCOUNT.path}">
+    </settings-account-page>
+    <settings-google-services-page slot="view" id="googleServices"
+        data-parent-view-id="parent"
+        route-path="${this.routes_.GOOGLE_SERVICES.path}">
+    </settings-google-services-page>
+  ` : ''}
 </cr-view-manager>
