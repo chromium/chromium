@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/remote_commands/device_command_reset_euicc_job.h"
 
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -15,6 +16,8 @@
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,6 +63,50 @@ void VerifyJobResult(const RemoteCommandJob& job,
   VerifyEuiccProfileCount(expected_profile_count);
 }
 
+// Helper that waits until NetworkStateHandler has registered the expected
+// number of Shill cellular services for the test EUICC.
+//
+// Adding fake eSIM profiles asynchronously creates backing services in Shill.
+// We need to wait for these services to appear in NetworkStateHandler before
+// running the reset job, which requires them to be present to remove them.
+class ESimServiceListWaiter : public ash::NetworkStateHandlerObserver {
+ public:
+  explicit ESimServiceListWaiter(size_t expected_service_count)
+      : expected_service_count_(expected_service_count) {
+    observation_.Observe(ash::NetworkHandler::Get()->network_state_handler());
+  }
+
+  ESimServiceListWaiter(const ESimServiceListWaiter&) = delete;
+  ESimServiceListWaiter& operator=(const ESimServiceListWaiter&) = delete;
+
+  ~ESimServiceListWaiter() override = default;
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  void NetworkListChanged() override {
+    ash::NetworkStateHandler::NetworkStateList networks;
+    ash::NetworkHandler::Get()->network_state_handler()->GetNetworkListByType(
+        ash::NetworkTypePattern::Cellular(),
+        /*configured_only=*/false,
+        /*visible_only=*/false, /*limit=*/0, &networks);
+
+    size_t service_count = 0;
+    for (const ash::NetworkState* network : networks) {
+      if (network->eid() == kTestEid && !network->IsNonShillCellularNetwork()) {
+        ++service_count;
+      }
+    }
+    if (service_count == expected_service_count_) {
+      run_loop_.Quit();
+    }
+  }
+
+  const size_t expected_service_count_;
+  base::RunLoop run_loop_;
+  ash::NetworkStateHandlerScopedObservation observation_{this};
+};
+
 }  // namespace
 
 class DeviceCommandResetEuiccJobTest : public ChromeAshTestBase {
@@ -81,12 +128,13 @@ class DeviceCommandResetEuiccJobTest : public ChromeAshTestBase {
         dbus::ObjectPath(kTestEuiccPath), kTestEid,
         /*is_active=*/true, /*physical_slot=*/0);
 
+    ESimServiceListWaiter service_list_waiter(/*expected_service_count=*/2u);
     AddFakeESimProfile();
     AddFakeESimProfile();
 
-    // Wait for all pending Hermes and Shill change notifications to be handled
-    // so that new EUICC and profile states are reflected correctly.
-    base::RunLoop().RunUntilIdle();
+    // The reset needs both profile services in the network list before
+    // it can remove them.
+    service_list_waiter.Wait();
 
     VerifyEuiccProfileCount(/*expected_count=*/2u);
   }
