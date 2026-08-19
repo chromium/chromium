@@ -254,3 +254,15 @@ source_set("immersive_mode_controller_stub") {
 source_set("web_contents_close_handler_delegate") {
   public = [ "web_contents_close_handler_delegate.h" ]
 }
+
+if (is_win) {
+  source_set("minimize_button_metrics_win") {
+    public = [ "minimize_button_metrics_win.h" ]
+    sources = [ "minimize_button_metrics_win.cc" ]
+    deps = [
+      "//base",
+      "//ui/display",
+      "//ui/gfx/geometry",
+    ]
+  }
+}

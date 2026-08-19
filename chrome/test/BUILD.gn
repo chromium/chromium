@@ -6488,6 +6488,7 @@ test("unit_tests") {
       "//chrome/browser/ui/user_education:unit_tests",
       "//chrome/browser/ui/views/accessibility:unit_tests",
       "//chrome/browser/ui/views/app_menu:unit_tests",
+      "//chrome/browser/ui/views/autofill:address_editor_view",
       "//chrome/browser/ui/views/autofill/autofill_ai",
       "//chrome/browser/ui/views/autofill/popup/email_verifier",
       "//chrome/browser/ui/views/data_sharing:unit_tests",
@@ -9395,6 +9396,7 @@ if (!is_android && !is_chromeos_device) {
       deps += [
         "//chrome/browser/enterprise/idle:interactive_ui_tests",
         "//chrome/browser/ui/startup:test_support_ui",
+        "//chrome/browser/ui/views/profiles:profile_picker_toolbar",
         "//chrome/browser/ui/webui/intro",
         "//chrome/browser/ui/webui/whats_new",
         "//components/enterprise/idle",

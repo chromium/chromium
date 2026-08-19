@@ -2304,13 +2304,12 @@ static_library("ui") {
         "views/profiles/profile_picker_reauth_provider.h",
         "views/profiles/profile_picker_sign_in_provider.cc",
         "views/profiles/profile_picker_sign_in_provider.h",
-        "views/profiles/profile_picker_toolbar.cc",
-        "views/profiles/profile_picker_toolbar.h",
         "views/profiles/profile_picker_utils.cc",
         "views/profiles/profile_picker_utils.h",
       ]
       deps += [
         "webui/signin/batch_upload:mojo_bindings",
+        "//chrome/browser/ui/views/profiles:profile_picker_toolbar",
         "//chrome/browser/ui/views/profiles/feature_showcase",
         "//chrome/browser/ui/views/profiles/feature_showcase:metrics",
         "//chrome/browser/ui/webui/feature_showcase",
@@ -2418,8 +2417,6 @@ static_library("ui") {
       "views/frame/browser_native_widget_factory_aura.cc",
       "views/frame/browser_window_property_manager_win.cc",
       "views/frame/browser_window_property_manager_win.h",
-      "views/frame/minimize_button_metrics_win.cc",
-      "views/frame/minimize_button_metrics_win.h",
       "views/frame/system_menu_insertion_delegate_win.cc",
       "views/frame/system_menu_insertion_delegate_win.h",
       "views/frame/windows_caption_button.cc",
@@ -2443,6 +2440,7 @@ static_library("ui") {
       "//chrome/browser/taskbar",
       "//chrome/browser/ui/views:critical_notification_bubble_view",
       "//chrome/browser/ui/views:uninstall_browser_prompt",
+      "//chrome/browser/ui/views/frame:minimize_button_metrics_win",
       "//chrome/browser/win:impl",
       "//components/search_engines",
       "//third_party/wtl",
@@ -2517,8 +2515,6 @@ static_library("ui") {
   if (toolkit_views) {
     sources += [
       "views/autofill/address_bubble_base_view.cc",
-      "views/autofill/address_editor_view.cc",
-      "views/autofill/address_editor_view.h",
       "views/autofill/at_memory_promo_bubble_view.cc",
       "views/autofill/at_memory_promo_bubble_view.h",
       "views/autofill/autofill_bubble_handler_impl.cc",
@@ -2968,6 +2964,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/apps:impl",
       "//chrome/browser/ui/views/apps/app_info_dialog",
       "//chrome/browser/ui/views/apps/app_info_dialog:impl",
+      "//chrome/browser/ui/views/autofill:address_editor_view",
       "//chrome/browser/ui/views/autofill:autofill_bubble_utils",
       "//chrome/browser/ui/views/autofill:delete_address_profile_dialog_view",
       "//chrome/browser/ui/views/autofill/payments:autofill_error_dialog_view_native_views",

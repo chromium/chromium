@@ -288,3 +288,25 @@ if (toolkit_views) {
     ]
   }
 }
+
+if (enable_dice_support) {
+  source_set("profile_picker_toolbar") {
+    public = [ "profile_picker_toolbar.h" ]
+    sources = [ "profile_picker_toolbar.cc" ]
+    public_deps = [
+      "//base",
+      "//ui/base",
+      "//ui/views",
+    ]
+    deps = [
+      "//chrome/app:generated_resources",
+      "//chrome/app/vector_icons",
+      "//chrome/browser/ui/views/toolbar",
+      "//components/vector_icons",
+      "//skia",
+      "//ui/base:features",
+      "//ui/color",
+      "//ui/compositor",
+    ]
+  }
+}
