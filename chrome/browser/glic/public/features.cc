@@ -105,7 +105,7 @@ BASE_FEATURE(kGlicContextMenu,
 #endif
 );
 const base::FeatureParam<std::string> kGlicContextMenuArm{&kGlicContextMenu,
-                                                          "variant", "arm1"};
+                                                          "variant", "arm3"};
 const base::FeatureParam<bool> kGlicContextMenuWithOnboarding{
     &kGlicContextMenu, "WithOnboarding", false};
 

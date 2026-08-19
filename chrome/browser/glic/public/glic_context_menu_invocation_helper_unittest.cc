@@ -117,6 +117,27 @@ TEST_F(GlicContextMenuInvocationHelperUnittest, HandleClickStandard) {
 
   EXPECT_CALL(*mock_service_,
               Invoke(TargetTabAndFreOverride(
+                  &mock_tab, glic::mojom::FreOverride::kTrustFirstClick)))
+      .Times(1);
+  GlicContextMenuInvocationHelper::HandleContextualMenuClick(&mock_tab);
+}
+
+TEST_F(GlicContextMenuInvocationHelperUnittest, HandleClickArm1) {
+  feature_list_.InitWithFeaturesAndParameters(
+      {{features::kGlic, {}},
+       {features::kGlicContextMenu,
+        {{features::kGlicContextMenuArm.name, "arm1"}}}},
+      {});
+
+  tabs::MockTabInterface mock_tab;
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile_.get()));
+  ON_CALL(mock_tab, GetContents())
+      .WillByDefault(testing::Return(web_contents.get()));
+
+  EXPECT_CALL(*mock_service_,
+              Invoke(TargetTabAndFreOverride(
                   &mock_tab, glic::mojom::FreOverride::kTrustFirstInline)))
       .Times(1);
   GlicContextMenuInvocationHelper::HandleContextualMenuClick(&mock_tab);
