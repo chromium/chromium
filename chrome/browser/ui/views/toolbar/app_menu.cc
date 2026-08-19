@@ -473,13 +473,10 @@ void AddSignedInChipToProfileMenuItem(
                           ? ui::kColorAppMenuProfileRowChipHovered
                           : ui::kColorAppMenuProfileRowChipBackground,
                       profile_chip_corner_radii))
-                  // Add additional horizontal padding. Vertical
-                  // padding depends on menu margins to get alignment
-                  // with other items in the menu.
-                  .SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
-                      0, views::LayoutProvider::Get()
-                             ->GetInsetsMetric(views::INSETS_LABEL_BUTTON)
-                             .left()))))
+                  .SetBorder(views::CreateEmptyBorder(
+                      ChromeLayoutProvider::Get()
+                          ->GetInsetsMetric(
+                              INSETS_PROFILE_SIGNIN_STATUS_CHIP))))
           .Build();
 
   // MenuItemView has specific layout logic for child views which does not work

@@ -31,6 +31,8 @@ enum ChromeInsetsMetric {
   INSETS_ACTION_APP_MENU_POPUP,
   // Border insets for Block-style Action App Menu items.
   INSETS_ACTION_APP_MENU_ITEM,
+  // Padding for the profile sign-in status chip in the app menu.
+  INSETS_PROFILE_SIGNIN_STATUS_CHIP,
 };
 
 enum ChromeDistanceMetric {
