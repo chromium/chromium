@@ -49,16 +49,16 @@ void TabHandleLayer::SetProperties(
     bool shouldShowTabOutline,
     bool close_pressed,
     bool should_hide_favicon,
-    bool should_show_media_indicator,
-    ui::Resource* media_indicator_resource,
-    float media_indicator_width,
-    float media_indicator_spacing,
-    float media_indicator_internal_padding,
-    float title_to_media_indicator_spacing,
-    float media_indicator_opacity,
-    ui::Resource* tab_indicator_overlay_resource,
+    bool should_show_alert_indicator,
+    ui::Resource* alert_indicator_resource,
+    float alert_indicator_width,
+    float alert_indicator_spacing,
+    float alert_indicator_internal_padding,
+    float title_to_alert_indicator_spacing,
+    float alert_indicator_opacity,
+    ui::Resource* alert_indicator_overlay_resource,
     float target_rotation,
-    float tab_indicator_overlay_width,
+    float alert_indicator_overlay_width,
     float toolbar_width,
     float x,
     float y,
@@ -190,11 +190,11 @@ void TabHandleLayer::SetProperties(
     close_width = 0.f;
   }
 
-  // Spacing between the media indicator and the close button.
-  float media_close_spacing =
+  // Spacing between the alert indicator and the close button.
+  float alert_close_spacing =
       (close_button_alpha > 0.f)
-          ? (media_indicator_spacing - close_button_padding -
-             media_indicator_internal_padding)
+          ? (alert_indicator_spacing - close_button_padding -
+             alert_indicator_internal_padding)
           : 0.f;
 
   int divider_y = content_offset_y;
@@ -222,39 +222,39 @@ void TabHandleLayer::SetProperties(
     end_divider_->SetPosition(gfx::PointF(divider_x, divider_y));
   }
 
-  float media_indicator_size = 0.f;
-  if (should_show_media_indicator && media_indicator_resource) {
-    media_indicator_size = media_indicator_width;
-    media_indicator_layer_->SetIsDrawable(true);
-    media_indicator_layer_->SetUIResourceId(
-        media_indicator_resource->ui_resource()->id());
-    media_indicator_layer_->SetBounds(
-        gfx::Size(media_indicator_size, media_indicator_size));
-    media_indicator_layer_->SetOpacity(media_indicator_opacity);
+  float alert_indicator_size = 0.f;
+  if (should_show_alert_indicator && alert_indicator_resource) {
+    alert_indicator_size = alert_indicator_width;
+    alert_indicator_layer_->SetIsDrawable(true);
+    alert_indicator_layer_->SetUIResourceId(
+        alert_indicator_resource->ui_resource()->id());
+    alert_indicator_layer_->SetBounds(
+        gfx::Size(alert_indicator_size, alert_indicator_size));
+    alert_indicator_layer_->SetOpacity(alert_indicator_opacity);
   } else {
-    media_indicator_layer_->SetIsDrawable(false);
+    alert_indicator_layer_->SetIsDrawable(false);
   }
 
-  if (should_show_media_indicator && tab_indicator_overlay_resource) {
-    tab_indicator_overlay_layer_->SetIsDrawable(true);
-    tab_indicator_overlay_layer_->SetUIResourceId(
-        tab_indicator_overlay_resource->ui_resource()->id());
-    float overlay_size = tab_indicator_overlay_width;
-    tab_indicator_overlay_layer_->SetBounds(
+  if (should_show_alert_indicator && alert_indicator_overlay_resource) {
+    alert_indicator_overlay_layer_->SetIsDrawable(true);
+    alert_indicator_overlay_layer_->SetUIResourceId(
+        alert_indicator_overlay_resource->ui_resource()->id());
+    float overlay_size = alert_indicator_overlay_width;
+    alert_indicator_overlay_layer_->SetBounds(
         gfx::Size(overlay_size, overlay_size));
-    tab_indicator_overlay_layer_->SetOpacity(media_indicator_opacity);
+    alert_indicator_overlay_layer_->SetOpacity(alert_indicator_opacity);
 
     // Apply spinning animation.
-    tab_indicator_overlay_layer_->SetTransformOrigin(
+    alert_indicator_overlay_layer_->SetTransformOrigin(
         gfx::PointF(overlay_size / 2, overlay_size / 2));
-    float diff = target_rotation - tab_indicator_overlay_rotation_;
-    tab_indicator_overlay_rotation_ = target_rotation;
+    float diff = target_rotation - alert_indicator_overlay_rotation_;
+    alert_indicator_overlay_rotation_ = target_rotation;
     if (diff != 0) {
       transform_->RotateAboutZAxis(diff);
     }
-    tab_indicator_overlay_layer_->SetTransform(*transform_.get());
+    alert_indicator_overlay_layer_->SetTransform(*transform_.get());
   } else {
-    tab_indicator_overlay_layer_->SetIsDrawable(false);
+    alert_indicator_overlay_layer_->SetIsDrawable(false);
   }
 
   if (title_layer) {
@@ -267,31 +267,31 @@ void TabHandleLayer::SetProperties(
 
     // Hide tab title text when it reached threshold.
     float hide_title_threshold = desktop_min_tab_width;
-    if (media_indicator_size > 0) {
-      hide_title_threshold += media_indicator_size +
-                              title_to_media_indicator_spacing +
-                              media_close_spacing;
+    if (alert_indicator_size > 0) {
+      hide_title_threshold += alert_indicator_size +
+                              title_to_alert_indicator_spacing +
+                              alert_close_spacing;
     }
     title_layer->SetShouldHideTitleText(width <= hide_title_threshold);
 
     // Hide tab favicon if necessary.
     title_layer->SetShouldHideIcon(should_hide_favicon);
 
-    int title_x = is_rtl ? padding_left + close_width + media_indicator_size
+    int title_x = is_rtl ? padding_left + close_width + alert_indicator_size
                          : padding_left;
     int title_width = width - padding_left - padding_right - close_width -
-                      media_indicator_size;
+                      alert_indicator_size;
 
-    if (media_indicator_size > 0) {
-      // Account for the spacing between the title and the media indicator.
-      title_width -= title_to_media_indicator_spacing;
+    if (alert_indicator_size > 0) {
+      // Account for the spacing between the title and the alert indicator.
+      title_width -= title_to_alert_indicator_spacing;
 
-      // Account for the spacing between the media indicator and the close
+      // Account for the spacing between the alert indicator and the close
       // button.
-      title_width -= media_close_spacing;
+      title_width -= alert_close_spacing;
 
       if (is_rtl) {
-        title_x += title_to_media_indicator_spacing + media_close_spacing;
+        title_x += title_to_alert_indicator_spacing + alert_close_spacing;
       }
     }
     title_layer->setBounds(gfx::Size(title_width, height));
@@ -362,30 +362,30 @@ void TabHandleLayer::SetProperties(
     }
   }
 
-  if (media_indicator_size > 0) {
+  if (alert_indicator_size > 0) {
     float right_aligned_icon_x = is_rtl ? padding_left - close_button_padding
                                         : width - padding_right - close_width;
     if (close_button_alpha == 0.f) {
       right_aligned_icon_x = is_rtl ? padding_left : width - padding_right;
     }
 
-    float media_x_spacing = media_close_spacing;
+    float alert_x_spacing = alert_close_spacing;
     if (is_rtl && close_button_alpha > 0.f) {
-      media_x_spacing += close_button_padding;
+      alert_x_spacing += close_button_padding;
     }
 
-    float media_x =
-        is_rtl ? right_aligned_icon_x + close_width + media_x_spacing
-               : right_aligned_icon_x - media_indicator_size - media_x_spacing;
-    float media_y =
+    float alert_x =
+        is_rtl ? right_aligned_icon_x + close_width + alert_x_spacing
+               : right_aligned_icon_x - alert_indicator_size - alert_x_spacing;
+    float alert_y =
         close_y + std::round((close_button_resource->size().height() -
-                              media_indicator_size) /
+                              alert_indicator_size) /
                              2);
-    media_indicator_layer_->SetPosition(gfx::PointF(media_x, media_y));
-    float overlay_size = tab_indicator_overlay_width;
-    float overlay_x = media_x + (media_indicator_size - overlay_size) / 2;
-    float overlay_y = media_y + (media_indicator_size - overlay_size) / 2;
-    tab_indicator_overlay_layer_->SetPosition(
+    alert_indicator_layer_->SetPosition(gfx::PointF(alert_x, alert_y));
+    float overlay_size = alert_indicator_overlay_width;
+    float overlay_x = alert_x + (alert_indicator_size - overlay_size) / 2;
+    float overlay_y = alert_y + (alert_indicator_size - overlay_size) / 2;
+    alert_indicator_overlay_layer_->SetPosition(
         gfx::PointF(overlay_x, overlay_y));
   }
 
@@ -503,8 +503,8 @@ TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
       close_keyboard_focus_ring_(cc::slim::UIResourceLayer::Create()),
       start_divider_(cc::slim::UIResourceLayer::Create()),
       end_divider_(cc::slim::UIResourceLayer::Create()),
-      media_indicator_layer_(cc::slim::UIResourceLayer::Create()),
-      tab_indicator_overlay_layer_(cc::slim::UIResourceLayer::Create()),
+      alert_indicator_layer_(cc::slim::UIResourceLayer::Create()),
+      alert_indicator_overlay_layer_(cc::slim::UIResourceLayer::Create()),
       decoration_tab_(cc::slim::NinePatchLayer::Create()),
       tab_outline_(cc::slim::NinePatchLayer::Create()),
       underline_end_layer_(cc::slim::SolidColorLayer::Create()),
@@ -516,8 +516,8 @@ TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
   tab_->AddChild(decoration_tab_);
   tab_->AddChild(tab_outline_);
   tab_->AddChild(close_button_hover_highlight_);
-  tab_->AddChild(media_indicator_layer_);
-  tab_->AddChild(tab_indicator_overlay_layer_);
+  tab_->AddChild(alert_indicator_layer_);
+  tab_->AddChild(alert_indicator_overlay_layer_);
   close_button_hover_highlight_->AddChild(close_button_);
 
   decoration_tab_->SetPosition(gfx::PointF(0, 0));

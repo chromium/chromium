@@ -3805,7 +3805,7 @@ public class StripLayoutHelper
                 tabHasSpinner = true;
             }
             if (tab.getAlertState() != null && tab.getAlertState() == TabAlert.ACTOR_ACCESSING) {
-                tab.addTabIndicatorOverlayRotation(degrees);
+                tab.addAlertIndicatorOverlayRotation(degrees);
                 tabHasSpinner = true;
             }
         }
