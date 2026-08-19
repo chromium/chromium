@@ -1861,6 +1861,41 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       1);
 }
 
+// Tests that `Autofill.Ai.PersonalContext.NonEligibilityReason` is logged on
+// settings toggle updates after the startup delay has elapsed.
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       LogsAmbientNonEligibilityReasonOnToggleChange) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kAutofillAmbientAutofill,
+        {{"ambient_autofill_eligible_tiers", "1,2"}}}},
+      {});
+
+  pref_service_.SetInteger(subscription_eligibility::prefs::kAiSubscriptionTier,
+                           1);
+  FastForwardBy(base::Seconds(31));
+
+  histogram_tester().ExpectBucketCount(
+      "Autofill.Ai.PersonalContext.NonEligibilityReason",
+      personal_context::PersonalContextNonEligibilityReason::kEligible, 1);
+
+  pref_service_.SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      false);
+  histogram_tester().ExpectBucketCount(
+      "Autofill.Ai.PersonalContext.NonEligibilityReason",
+      personal_context::PersonalContextNonEligibilityReason::
+          kPersonalIntelligencePrefDisabled,
+      1);
+
+  pref_service_.SetBoolean(
+      personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+      true);
+  histogram_tester().ExpectBucketCount(
+      "Autofill.Ai.PersonalContext.NonEligibilityReason",
+      personal_context::PersonalContextNonEligibilityReason::kEligible, 2);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // Tests that `Autofill.Ai.PersonalContext.NonEligibilityReason` logs
 // `kEligible` when the Android device is supported, even if the user's

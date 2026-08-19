@@ -563,6 +563,7 @@ void AutofillAiPersonalContextAccessManagerImpl::OnAiSubscriptionTierUpdated(
 
 void AutofillAiPersonalContextAccessManagerImpl::
     OnPersonalContextSettingsToggleChanged() {
+  ComputeAndMaybeLogNonEligibilityReason();
   if (pref_service_ &&
       !pref_service_->GetBoolean(
           personal_context::prefs::
@@ -574,7 +575,7 @@ void AutofillAiPersonalContextAccessManagerImpl::
 void AutofillAiPersonalContextAccessManagerImpl::
     ComputeAndMaybeLogNonEligibilityReason() {
   using personal_context::PersonalContextNonEligibilityReason;
-  if (!is_non_eligibility_startup_delay_elapsed_) {
+  if (!pref_service_ || !is_non_eligibility_startup_delay_elapsed_) {
     return;
   }
 
@@ -587,6 +588,15 @@ void AutofillAiPersonalContextAccessManagerImpl::
           subscription_eligibility_observation_.GetSource())) {
     non_eligibility_reason = PersonalContextNonEligibilityReason::
         kNotG1SubscriberOrAndroidPremiumDevice;
+  }
+
+  if (non_eligibility_reason ==
+          PersonalContextNonEligibilityReason::kEligible &&
+      !pref_service_->GetBoolean(
+          personal_context::prefs::
+              kPersonalContextInAutofillSettingsToggleStatus)) {
+    non_eligibility_reason =
+        PersonalContextNonEligibilityReason::kPersonalIntelligencePrefDisabled;
   }
 
   if (last_non_eligibility_reason_ == non_eligibility_reason) {
