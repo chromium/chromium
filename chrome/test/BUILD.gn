@@ -3501,6 +3501,7 @@ if (!is_android) {
         "//chrome/browser/mac:browser_tests",
         "//chrome/browser/renderer_host:history_swiper",
         "//chrome/browser/shortcuts",
+        "//chrome/browser/ui:fullscreen_util_mac",
         "//chrome/browser/webshare:browser_tests",
         "//components/enterprise/platform_auth:enterprise_platform_auth",
         "//components/onc",

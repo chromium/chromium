@@ -102,5 +102,8 @@ source_set("download") {
       "//components/safe_browsing/core/common:safe_browsing_prefs",
       "//ui/strings:ui_strings_grit",
     ]
+    if (is_mac) {
+      deps += [ "//chrome/browser/ui:fullscreen_util_mac" ]
+    }
   }
 }

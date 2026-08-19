@@ -487,6 +487,9 @@ if (!is_android) {
           "//ui/views",
           "//url",
         ]
+        if (is_mac) {
+          deps += [ "//chrome/browser/ui:fullscreen_util_mac" ]
+        }
       }
     }
   }

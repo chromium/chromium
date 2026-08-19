@@ -32,6 +32,7 @@ if (chrome_root_store_cert_management_ui) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/resources/certificate_manager:mojom",
       "//chrome/browser/resources/certificate_manager:resources",
+      "//chrome/browser/ui:certificate_dialogs",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/select_file_policy",
       "//chrome/browser/ui/webui:plural_string_handler",

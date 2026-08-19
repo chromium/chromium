@@ -21,6 +21,7 @@ if (enable_webui_certificate_viewer) {
       "//chrome/browser:primitives",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/resources/certificate_viewer:resources",
+      "//chrome/browser/ui:certificate_dialogs",
       "//chrome/browser/ui/webui",
       "//chrome/common",
       "//chrome/common/net",

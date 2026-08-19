@@ -149,6 +149,7 @@ source_set("cocoa") {
     "//chrome/browser/status_icons",
     "//chrome/browser/themes",
     "//chrome/browser/ui:accelerator_utils_headers",
+    "//chrome/browser/ui:fullscreen_util_mac",
     "//chrome/browser/ui:recently_audible_helper",
     "//chrome/browser/ui:simple_message_box_headers",
     "//chrome/browser/ui:simple_message_box_internal",

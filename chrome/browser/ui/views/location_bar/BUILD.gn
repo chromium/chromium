@@ -196,6 +196,9 @@ source_set("impl") {
       "//ui/native_theme",
       "//ui/strings:ui_strings_grit",
     ]
+    if (is_mac) {
+      deps += [ "//chrome/browser/ui:fullscreen_util_mac" ]
+    }
   }
 }
 

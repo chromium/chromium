@@ -192,7 +192,10 @@ if (!is_android) {
       deps += [ "//chrome/browser:global_keyboard_shortcuts_mac" ]
     }
     if (is_chromeos) {
-      deps += [ "//chrome/browser/ui/ash/multi_user" ]
+      deps += [
+        ":browser_commands_chromeos",
+        "//chrome/browser/ui/ash/multi_user",
+      ]
     }
     if (is_win || is_mac || is_linux) {
       deps += [ "//chrome/browser/ui/startup/default_browser_prompt" ]
@@ -1858,8 +1861,6 @@ static_library("ui") {
     assert(enable_supervised_users)
     assert(toolkit_views)
     sources += [
-      "browser_commands_chromeos.cc",
-      "browser_commands_chromeos.h",
       "platform_keys_certificate_selector_chromeos.h",
       "settings_window_manager_chromeos.cc",
       "settings_window_manager_chromeos.h",
@@ -1890,6 +1891,7 @@ static_library("ui") {
     ]
 
     deps += [
+      ":browser_commands_chromeos",
       "//ash",
       "//ash/keyboard/ui",
       "//ash/public/cpp",
@@ -2352,10 +2354,6 @@ static_library("ui") {
     sources += [
       "browser_commands_mac.h",
       "browser_commands_mac.mm",
-      "browser_mac.cc",
-      "browser_mac.h",
-      "fullscreen_util_mac.cc",
-      "fullscreen_util_mac.h",
       "views/certificate_viewer_mac_views.mm",
       "views/frame/browser_frame_view_factory_mac.mm",
       "views/frame/browser_frame_view_mac.h",
@@ -2370,6 +2368,8 @@ static_library("ui") {
     ]
 
     deps += [
+      ":browser_mac",
+      ":fullscreen_util_mac",
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/ui/cocoa",
     ]
@@ -2501,16 +2501,11 @@ static_library("ui") {
         [ "//chrome/browser/ui/views/device_signals_consent:impl" ]
   }
   if (enable_webui_certificate_viewer) {
-    sources += [
-      "certificate_dialogs.cc",
-      "certificate_dialogs.h",
-    ]
     deps += [
+      ":certificate_dialogs",
       "//chrome/browser/ui/webui/certificate_viewer",
       "//third_party/boringssl",
     ]
-    allow_circular_includes_from +=
-        [ "//chrome/browser/ui/webui/certificate_viewer" ]
   }
 
   if (is_linux || is_chromeos) {
@@ -4209,4 +4204,69 @@ source_set("status_bubble") {
 source_set("storage_pressure_bubble") {
   public = [ "storage_pressure_bubble.h" ]
   public_deps = [ "//url" ]
+}
+
+if (enable_webui_certificate_viewer) {
+  source_set("certificate_dialogs") {
+    public = [ "certificate_dialogs.h" ]
+    sources = [ "certificate_dialogs.cc" ]
+    public_deps = [
+      "//chrome/common:buildflags",
+      "//net",
+      "//third_party/boringssl",
+      "//ui/gfx",
+      "//ui/shell_dialogs",
+    ]
+    deps = [
+      "//base",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/download",
+      "//chrome/browser/ui/select_file_policy",
+      "//content/public/browser",
+      "//crypto",
+      "//ui/base",
+      "//url",
+    ]
+  }
+}
+
+if (is_chromeos) {
+  source_set("browser_commands_chromeos") {
+    public = [ "browser_commands_chromeos.h" ]
+    sources = [ "browser_commands_chromeos.cc" ]
+    public_deps = [ "//base" ]
+    deps = [ "//ash" ]
+  }
+}
+
+if (is_mac) {
+  source_set("fullscreen_util_mac") {
+    public = [ "fullscreen_util_mac.h" ]
+    sources = [ "fullscreen_util_mac.cc" ]
+    public_deps = [ "//base" ]
+    deps = [
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/exclusive_access",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/common:constants",
+      "//components/prefs",
+      "//ui/base",
+    ]
+  }
+
+  source_set("browser_mac") {
+    public = [ "browser_mac.h" ]
+    sources = [ "browser_mac.cc" ]
+    public_deps = [
+      ":chrome_pages",
+      "//base",
+      "//ui/gfx",
+    ]
+    deps = [
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window:create_browser_window",
+      "//ui/base",
+    ]
+  }
 }

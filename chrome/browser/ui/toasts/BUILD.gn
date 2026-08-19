@@ -81,6 +81,10 @@ source_set("impl") {
     "//ui/menus",
     "//ui/strings:ui_strings_grit",
   ]
+
+  if (is_mac) {
+    deps += [ "//chrome/browser/ui:fullscreen_util_mac" ]
+  }
 }
 
 source_set("interactive_ui_tests") {
