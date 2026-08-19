@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_INITIAL_WEBUI_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include <optional>
+#include <string_view>
 
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
@@ -82,6 +83,13 @@ class InitialWebUIPageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
  private:
+  // If the MetricsManager cannot be resolved (e.g. during background prewarming
+  // or when the paint event arrives before the native window hierarchy is
+  // attached), record the dropped paint timing relative to navigation start for
+  // diagnostic purposes.
+  void RecordDroppedPaintMetric(std::string_view metric_suffix,
+                                base::TimeTicks paint_time);
+
   void RecordNavigationTimingMetrics();
   void RecordTimingMetrics(
       const page_load_metrics::mojom::PageLoadTiming& timing);

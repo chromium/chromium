@@ -5,6 +5,8 @@
 #include "chrome/browser/page_load_metrics/observers/initial_webui_page_load_metrics_observer.h"
 
 #include "base/barrier_closure.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -48,6 +50,18 @@ const char* InitialWebUIPageLoadMetricsObserver::GetObserverName() const {
   return "InitialWebUIPageLoadMetricsObserver";
 }
 
+void InitialWebUIPageLoadMetricsObserver::RecordDroppedPaintMetric(
+    std::string_view metric_suffix,
+    base::TimeTicks paint_time) {
+  base::TimeTicks nav_start = GetDelegate().GetNavigationStart();
+  if (!paint_time.is_null() && !nav_start.is_null()) {
+    base::UmaHistogramLongTimes100(
+        base::StrCat({"InitialWebUI.ReloadButton.Dropped", metric_suffix,
+                      "FromNavigationStart"}),
+        paint_time - nav_start);
+  }
+}
+
 void InitialWebUIPageLoadMetricsObserver::OnMonotonicFirstPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (!timing.monotonic_paint_timing ||
@@ -58,6 +72,9 @@ void InitialWebUIPageLoadMetricsObserver::OnMonotonicFirstPaintInPage(
   if (auto* manager = GetMetricsManager()) {
     manager->OnReloadButtonFirstPaint(
         timing.monotonic_paint_timing->first_paint.value());
+  } else {
+    RecordDroppedPaintMetric(
+        "FirstPaint", timing.monotonic_paint_timing->first_paint.value());
   }
 }
 
@@ -70,6 +87,10 @@ void InitialWebUIPageLoadMetricsObserver::OnMonotonicFirstContentfulPaintInPage(
 
   if (auto* manager = GetMetricsManager()) {
     manager->OnReloadButtonFirstContentfulPaint(
+        timing.monotonic_paint_timing->first_contentful_paint.value());
+  } else {
+    RecordDroppedPaintMetric(
+        "FirstContentfulPaint",
         timing.monotonic_paint_timing->first_contentful_paint.value());
   }
 }
