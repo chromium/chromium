@@ -38,6 +38,7 @@
 #define IDR_X005_BETA                   128
 #define IDR_X006_HTML_DOC               129
 #define IDR_X007_PDF_DOC                130
+#define IDR_X008_ISOLATED               131
 
 // clang-format on
 

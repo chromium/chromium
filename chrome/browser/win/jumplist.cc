@@ -202,7 +202,7 @@ bool UpdateTaskCategory(
     base::ReplaceSubstringsAfterOffset(&isolated_title, 0, u"&",
                                        std::u16string_view());
     isolated->set_title(isolated_title);
-    isolated->set_icon(chrome_path, icon_resources::kIncognitoIndex);
+    isolated->set_icon(chrome_path, icon_resources::kIsolatedIndex);
     items.push_back(isolated);
   } else if (incognito_availability !=
              policy::IncognitoModeAvailability::kDisabled) {

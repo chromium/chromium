@@ -45,6 +45,9 @@ enum {
   // The Chrome PDF doc icon.
   kPDFDocIndex = 11,
 
+  // The Chrome Isolated Mode icon.
+  kIsolatedIndex = 12,
+
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // The Chromium App Launcher icon.
   kAppLauncherIndex = 1,
@@ -57,6 +60,9 @@ enum {
 
   // The Chromium PDF doc icon.
   kPDFDocIndex = 4,
+
+  // The Chromium Isolated Mode icon.
+  kIsolatedIndex = 5,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 };
 
