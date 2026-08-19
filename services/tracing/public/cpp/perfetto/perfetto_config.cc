@@ -255,12 +255,12 @@ base::ByteSize GetDefaultTraceBufferSize() {
   size_t switch_kilobytes;
   if (!switch_value.empty() &&
       base::StringToSizeT(switch_value, &switch_kilobytes)) {
-    return base::KiBU(switch_kilobytes);
+    return base::KiB(switch_kilobytes);
   } else {
     // TODO(eseckler): Reduce the default buffer size after benchmarks set
     // what they require. Should also invest some time to reduce the overhead
     // of begin/end pairs further.
-    return base::MiBU(200);
+    return base::MiB(200);
   }
 }
 

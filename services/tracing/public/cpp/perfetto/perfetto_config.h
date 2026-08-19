@@ -21,7 +21,7 @@ class TraceConfig;
 
 namespace tracing {
 
-inline constexpr base::ByteSize kMetadataBufferSize = base::KiBU(256);
+inline constexpr base::ByteSize kMetadataBufferSize = base::KiB(256);
 
 base::ByteSize COMPONENT_EXPORT(TRACING_CPP) GetDefaultTraceBufferSize();
 
