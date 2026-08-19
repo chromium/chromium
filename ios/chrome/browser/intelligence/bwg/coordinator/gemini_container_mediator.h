@@ -94,11 +94,13 @@ class WebStateList;
 - (BOOL)shouldShowSuggestionChipsForEntryPoint:
     (gemini::EntryPoint)entryPoint;
 
+// TODO(crbug.com/509898861): Move to private after migration is complete.
 // Returns whether query submission should be blocked while page context is
 // loading for the given entry point.
 - (BOOL)shouldBlockQuerySubmissionWhileLoadingForEntryPoint:
     (gemini::EntryPoint)entryPoint;
 
+// TODO(crbug.com/509898861): Move to private after migration is complete.
 // Returns whether the page loading snackbar should be displayed on opening
 // invocation for the given entry point.
 - (BOOL)shouldShowPageLoadingSnackbarOnOpeningInvocationForEntryPoint:

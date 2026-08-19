@@ -752,5 +752,4 @@ TEST_F(GeminiContainerMediatorTest, TestAssistantContainerDidRequestDismissal) {
   [mediator_ assistantContainerDidRequestDismissal:nil];
   EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
 }
-
 }  // namespace

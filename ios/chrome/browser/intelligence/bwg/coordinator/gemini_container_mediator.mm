@@ -161,14 +161,14 @@
 
 - (BOOL)shouldBlockQuerySubmissionWhileLoadingForEntryPoint:
     (gemini::EntryPoint)entryPoint {
-  return IsAppSwitcherAISummarizationEnabled() &&
-         entryPoint == gemini::EntryPoint::AppSwitcherAISummarization;
+  return entryPoint == gemini::EntryPoint::AppSwitcherAISummarization &&
+         IsAppSwitcherAISummarizationEnabled();
 }
 
 - (BOOL)shouldShowPageLoadingSnackbarOnOpeningInvocationForEntryPoint:
     (gemini::EntryPoint)entryPoint {
-  return IsAppSwitcherAISummarizationEnabled() &&
-         entryPoint == gemini::EntryPoint::AppSwitcherAISummarization;
+  return entryPoint == gemini::EntryPoint::AppSwitcherAISummarization &&
+         IsAppSwitcherAISummarizationEnabled();
 }
 
 - (void)onFloatyDismiss {

@@ -1099,6 +1099,14 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
     bool should_show_suggestion_chips = [gemini_container_mediator_
         shouldShowSuggestionChipsForEntryPoint:entry_point];
     ios::provider::SetShouldShowSuggestionChips(should_show_suggestion_chips);
+    bool block_query_submission = [gemini_container_mediator_
+        shouldBlockQuerySubmissionWhileLoadingForEntryPoint:entry_point];
+    ios::provider::SetBlockQuerySubmissionWhileLoading(block_query_submission);
+    bool show_page_loading_snackbar = [gemini_container_mediator_
+        shouldShowPageLoadingSnackbarOnOpeningInvocationForEntryPoint:
+            entry_point];
+    ios::provider::SetShowPageLoadingSnackbarOnOpeningInvocation(
+        show_page_loading_snackbar);
     if (IsChromeNextIaEnabled() && IsFullscreenRefactoringEnabled()) {
       [HandlerForProtocol(browser_->GetCommandDispatcher(), FullscreenCommands)
           exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::
