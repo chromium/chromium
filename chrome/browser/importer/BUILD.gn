@@ -96,6 +96,7 @@ source_set("browser_tests") {
     deps += [
       ":importer",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
       "//chrome/common:constants",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

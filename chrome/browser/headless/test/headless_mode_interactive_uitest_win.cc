@@ -17,8 +17,8 @@
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_select_object.h"
 #include "chrome/browser/headless/headless_mode_init.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -273,12 +273,12 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeInteractiveUiTest,
       << " non-uniform pixels in the baseline screen work area!";
 
   // Create a new headless browser window and wait for it to be active.
-  Browser* new_browser =
+  BrowserWindowInterface* new_browser =
       ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(GetProfile());
   ASSERT_TRUE(new_browser);
 
   content::WebContents* web_contents =
-      new_browser->tab_strip_model()->GetActiveWebContents();
+      new_browser->GetTabStripModel()->GetActiveWebContents();
   content::WaitForLoadStop(web_contents);
   content::WaitForCopyableViewInWebContents(web_contents);
 

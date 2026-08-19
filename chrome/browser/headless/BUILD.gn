@@ -160,6 +160,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/profiles",
         "//chrome/browser/ui",
+        "//chrome/browser/ui/browser_window",
         "//chrome/browser/ui/views/frame:toolbar_button_provider",
         "//components/devtools/simple_devtools_protocol_client",
         "//components/headless/command_handler",
@@ -216,6 +217,7 @@ source_set("interactive_ui_tests") {
     ":initializer",
     "//base",
     "//chrome/browser",
+    "//chrome/browser/ui/browser_window",
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//skia",

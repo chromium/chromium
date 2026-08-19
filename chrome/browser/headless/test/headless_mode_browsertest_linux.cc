@@ -5,8 +5,8 @@
 #include "chrome/browser/headless/test/headless_mode_browsertest.h"
 
 #include "chrome/browser/headless/test/headless_mode_browsertest_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host_platform.h"
@@ -56,7 +56,7 @@ gfx::Rect GetPlatformWindowExpectedBounds(views::Widget* widget) {
 
 namespace {
 
-ui::PlatformWindow* GetPlatformWindow(Browser* browser) {
+ui::PlatformWindow* GetPlatformWindow(BrowserWindowInterface* browser) {
   DCHECK(browser);
   auto* window_tree_host_platform =
       aura::WindowTreeHostPlatform::GetHostForWindow(

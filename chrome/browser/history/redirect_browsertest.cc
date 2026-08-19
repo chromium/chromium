@@ -25,7 +25,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, Client) {
 
   // The address bar should display the final URL.
   EXPECT_EQ(final_url, browser()
-                           ->tab_strip_model()
+                           ->GetTabStripModel()
                            ->GetActiveWebContents()
                            ->GetLastCommittedURL());
 
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, Client) {
 
   // The address bar should still display the final URL.
   EXPECT_EQ(final_url, browser()
-                           ->tab_strip_model()
+                           ->GetTabStripModel()
                            ->GetActiveWebContents()
                            ->GetLastCommittedURL());
 }
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, ClientCancelled) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::TestNavigationObserver navigation_observer(web_contents);
 
   // Simulate a click to force to make a user-initiated location change;
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, ServerReference) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   EXPECT_EQ(ref, browser()
-                     ->tab_strip_model()
+                     ->GetTabStripModel()
                      ->GetActiveWebContents()
                      ->GetLastCommittedURL()
                      .GetRef());
@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, NoHttpToFile) {
   // We make sure the title doesn't match the title from the file, because the
   // nav should not have taken place.
   EXPECT_NE(u"File!",
-            browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
+            browser()->GetTabStripModel()->GetActiveWebContents()->GetTitle());
 }
 
 // Ensures that non-user initiated location changes (within page) are
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest,
       embedded_test_server()->GetURL("/client-redirect?" + slow.spec());
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::TestNavigationObserver observer(web_contents, 2);
 
   ui_test_utils::NavigateToURLWithDisposition(
@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest,
   // Check to make sure the navigation did in fact take place and we are
   // at the expected page.
   EXPECT_EQ(u"Title Of Awesomeness",
-            browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
+            browser()->GetTabStripModel()->GetActiveWebContents()->GetTitle());
 
   bool final_navigation_not_redirect = true;
   std::vector<GURL> redirects = GetRedirects(first_url);

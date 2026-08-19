@@ -32,8 +32,8 @@
 #include "chrome/browser/headless/test/headless_mode_browsertest_utils.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/exclusive_access/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -121,7 +121,7 @@ void HeadlessModeBrowserTest::AppendHeadlessCommandLineSwitches(
 }
 
 content::WebContents* HeadlessModeBrowserTest::GetActiveWebContents() {
-  return browser()->tab_strip_model()->GetActiveWebContents();
+  return browser()->GetTabStripModel()->GetActiveWebContents();
 }
 
 void HeadlessModeBrowserTest::FlushPostedTasks() {
@@ -437,7 +437,7 @@ class TestBubbleDelegate : public ui::DialogModelDelegate {
   void OnOkButton() { dialog_model()->host()->Close(); }
 };
 
-Widget* ShowTestBubble(Browser* browser) {
+Widget* ShowTestBubble(BrowserWindowInterface* browser) {
   views::BubbleAnchor anchor = BrowserView::GetBrowserViewForBrowser(browser)
                                    ->toolbar_button_provider()
                                    ->GetAppMenuControl()
