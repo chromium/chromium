@@ -18,7 +18,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.prefs.PrefService;
@@ -30,8 +30,8 @@ import org.chromium.ui.base.DeviceFormFactor;
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // explicitly not supported.
 public class ContextualSearchSettingsFragmentTest {
     @Rule
-    public SettingsActivityTestRule<ContextualSearchSettingsFragment> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(ContextualSearchSettingsFragment.class);
+    public SettingsTestRule<ContextualSearchSettingsFragment> mSettingsActivityTestRule =
+            new SettingsTestRule<>(ContextualSearchSettingsFragment.class);
 
     private ContextualSearchSettingsFragment mSettings;
     private ChromeSwitchPreference mContextualSearchSwitchPreference;
