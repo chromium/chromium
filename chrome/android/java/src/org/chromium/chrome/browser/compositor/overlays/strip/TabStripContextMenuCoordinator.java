@@ -213,27 +213,27 @@ public class TabStripContextMenuCoordinator {
         // Add "Reopen closed tab/tabs/group" option.
         @RecentlyClosedEntryType
         int recentlyClosedEntryType = mTabModel.getMostRecentlyClosedEntryType();
-        if (recentlyClosedEntryType != RecentlyClosedEntryType.NONE) {
-            int titleRes = R.string.menu_reopen_closed_tab;
-            if (recentlyClosedEntryType == RecentlyClosedEntryType.TABS) {
-                titleRes = R.string.menu_reopen_closed_tabs;
-            } else if (recentlyClosedEntryType == RecentlyClosedEntryType.GROUP) {
-                titleRes = R.string.menu_reopen_closed_group;
-            }
-            itemList.add(
-                    new ListItemBuilder()
-                            .withTitleRes(titleRes)
-                            .withMenuId(R.id.reopen_closed_entry)
-                            .withIsIncognito(false)
-                            .build());
+        int titleRes = R.string.menu_reopen_closed_tab;
+        if (recentlyClosedEntryType == RecentlyClosedEntryType.TABS) {
+            titleRes = R.string.menu_reopen_closed_tabs;
+        } else if (recentlyClosedEntryType == RecentlyClosedEntryType.GROUP) {
+            titleRes = R.string.menu_reopen_closed_group;
         }
+        itemList.add(
+                new ListItemBuilder()
+                        .withTitleRes(titleRes)
+                        .withMenuId(R.id.reopen_closed_entry)
+                        .withIsIncognito(false)
+                        .withEnabled(recentlyClosedEntryType != RecentlyClosedEntryType.NONE)
+                        .build());
         // Add "Bookmark all tabs" option.
-        if (!isIncognito && mTabModel.getCount() > 1) {
+        if (!isIncognito) {
             itemList.add(
                     new ListItemBuilder()
                             .withTitleRes(R.string.menu_bookmark_all_tabs)
                             .withMenuId(R.id.bookmark_all_tabs)
                             .withIsIncognito(false)
+                            .withEnabled(mTabModel.getCount() > 1)
                             .build());
         }
         // Add "Name window" option.

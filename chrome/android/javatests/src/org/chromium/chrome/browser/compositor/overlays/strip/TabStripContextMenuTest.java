@@ -9,7 +9,11 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.not;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -52,15 +56,16 @@ public class TabStripContextMenuTest {
 
     @Test
     @LargeTest
-    public void testBookmarkAllTabs_ShownWithMultipleTabs() {
+    public void testBookmarkAllTabs_EnabledWithMultipleTabs() {
         // 1. Create 2 tabs to ensure we have multiple tabs (count > 1).
         mPage.openNewTabFast().loadAboutBlank();
 
         // 2. Perform a long press on the empty space of the tab strip.
         longPressOnEmptySpace();
 
-        // 3. Verify the "Bookmark all tabs" menu item is displayed.
-        onView(withText(R.string.menu_bookmark_all_tabs)).check(matches(isDisplayed()));
+        // 3. Verify the "Bookmark all tabs" menu item is displayed and enabled.
+        onView(withText(R.string.menu_bookmark_all_tabs))
+                .check(matches(allOf(isDisplayed(), isEnabled())));
 
         // 4. Click the menu item to ensure it's actionable and closes the menu.
         onView(withText(R.string.menu_bookmark_all_tabs)).perform(click());
@@ -72,13 +77,14 @@ public class TabStripContextMenuTest {
 
     @Test
     @LargeTest
-    public void testBookmarkAllTabs_NotShownWithSingleTab() {
+    public void testBookmarkAllTabs_DisabledWithSingleTab() {
         // 1. Start with 1 tab.
         // Perform a long press on the empty space of the tab strip.
         longPressOnEmptySpace();
 
-        // 2. Verify the "Bookmark all tabs" menu item is NOT displayed.
-        onView(withText(R.string.menu_bookmark_all_tabs)).check(doesNotExist());
+        // 2. Verify the "Bookmark all tabs" menu item is displayed but disabled.
+        onView(withText(R.string.menu_bookmark_all_tabs))
+                .check(matches(allOf(isDisplayed(), not(isEnabled()))));
 
         // 3. Close menu
         InstrumentationRegistry.getInstrumentation()

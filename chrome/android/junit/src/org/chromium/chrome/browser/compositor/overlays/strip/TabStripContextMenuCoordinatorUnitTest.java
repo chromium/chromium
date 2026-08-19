@@ -335,14 +335,18 @@ public class TabStripContextMenuCoordinatorUnitTest {
         // Act.
         mCoordinator.showMenu(mRectProvider, true, mActivity);
 
-        // Verify: Expected items: New tab, Name window.
-        verifyMenuState(/* expectedNumItems= */ 2);
+        // Verify: Expected items: New tab, Reopen closed tab (disabled), Name window.
+        verifyMenuState(/* expectedNumItems= */ 3);
         assertEquals(
                 R.string.menu_new_tab,
                 getItemModelAtPosition(0).get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.string.menu_name_window,
+                R.string.menu_reopen_closed_tab,
                 getItemModelAtPosition(1).get(ListMenuItemProperties.TITLE_ID));
+        assertFalse(getItemModelAtPosition(1).get(ListMenuItemProperties.ENABLED));
+        assertEquals(
+                R.string.menu_name_window,
+                getItemModelAtPosition(2).get(ListMenuItemProperties.TITLE_ID));
     }
 
     @Test
@@ -386,6 +390,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
         assertEquals(
                 R.string.menu_reopen_closed_tab,
                 getItemModelAtPosition(1).get(ListMenuItemProperties.TITLE_ID));
+        assertTrue(getItemModelAtPosition(1).get(ListMenuItemProperties.ENABLED));
 
         // Act: Select "Reopen closed tab" option.
         mCoordinator
@@ -398,6 +403,57 @@ public class TabStripContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    public void showMenu_verifyReopenClosedEntryOption_Disabled() {
+        // Arrange.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        when(mTabModel.getMostRecentlyClosedEntryType()).thenReturn(RecentlyClosedEntryType.NONE);
+
+        // Act.
+        mCoordinator.showMenu(mRectProvider, false, mActivity);
+
+        // Verify.
+        verifyMenuState(/* expectedNumItems= */ 4);
+        assertEquals(
+                R.string.menu_reopen_closed_tab,
+                getItemModelAtPosition(1).get(ListMenuItemProperties.TITLE_ID));
+        assertFalse(getItemModelAtPosition(1).get(ListMenuItemProperties.ENABLED));
+    }
+
+    @Test
+    public void showMenu_verifyReopenClosedEntryOption_Tabs() {
+        // Arrange.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        when(mTabModel.getMostRecentlyClosedEntryType()).thenReturn(RecentlyClosedEntryType.TABS);
+
+        // Act.
+        mCoordinator.showMenu(mRectProvider, false, mActivity);
+
+        // Verify.
+        verifyMenuState(/* expectedNumItems= */ 4);
+        assertEquals(
+                R.string.menu_reopen_closed_tabs,
+                getItemModelAtPosition(1).get(ListMenuItemProperties.TITLE_ID));
+        assertTrue(getItemModelAtPosition(1).get(ListMenuItemProperties.ENABLED));
+    }
+
+    @Test
+    public void showMenu_verifyReopenClosedEntryOption_Group() {
+        // Arrange.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        when(mTabModel.getMostRecentlyClosedEntryType()).thenReturn(RecentlyClosedEntryType.GROUP);
+
+        // Act.
+        mCoordinator.showMenu(mRectProvider, false, mActivity);
+
+        // Verify.
+        verifyMenuState(/* expectedNumItems= */ 4);
+        assertEquals(
+                R.string.menu_reopen_closed_group,
+                getItemModelAtPosition(1).get(ListMenuItemProperties.TITLE_ID));
+        assertTrue(getItemModelAtPosition(1).get(ListMenuItemProperties.ENABLED));
+    }
+
+    @Test
     public void showMenu_verifyBookmarkAllTabs() {
         // Arrange.
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
@@ -406,6 +462,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
         assertEquals(
                 R.string.menu_bookmark_all_tabs,
                 getItemModelAtPosition(2).get(ListMenuItemProperties.TITLE_ID));
+        assertTrue(getItemModelAtPosition(2).get(ListMenuItemProperties.ENABLED));
 
         // Act: Select "Bookmark all tabs" option.
         mCoordinator
@@ -414,6 +471,23 @@ public class TabStripContextMenuCoordinatorUnitTest {
 
         // Verify.
         assertFalse(mMenuWindow.isShowing());
+    }
+
+    @Test
+    public void showMenu_verifyBookmarkAllTabs_Disabled() {
+        // Arrange.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        when(mTabModel.getCount()).thenReturn(1);
+
+        // Act.
+        mCoordinator.showMenu(mRectProvider, false, mActivity);
+
+        // Verify.
+        verifyMenuState(/* expectedNumItems= */ 4);
+        assertEquals(
+                R.string.menu_bookmark_all_tabs,
+                getItemModelAtPosition(2).get(ListMenuItemProperties.TITLE_ID));
+        assertFalse(getItemModelAtPosition(2).get(ListMenuItemProperties.ENABLED));
     }
 
     @Test
@@ -554,11 +628,12 @@ public class TabStripContextMenuCoordinatorUnitTest {
         // Act.
         mCoordinator.showMenu(mRectProvider, true, mActivity);
 
-        // Verify: Expected items: New tab, Name window, divider, layout option, Send feedback.
-        verifyMenuState(/* expectedNumItems= */ 5);
+        // Verify: Expected items: New tab, Reopen closed tab, Name window, divider, layout option,
+        // Send feedback.
+        verifyMenuState(/* expectedNumItems= */ 6);
 
-        // Index 4 is feedback option.
-        PropertyModel feedbackItemModel = getItemModelAtPosition(4);
+        // Index 5 is feedback option.
+        PropertyModel feedbackItemModel = getItemModelAtPosition(5);
         assertEquals(
                 R.id.send_feedback_about_tab_strip_menu_id,
                 feedbackItemModel.get(ListMenuItemProperties.MENU_ITEM_ID));
