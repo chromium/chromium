@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/core/dom/geometry_utils.h"
 
-#include <optional>
-
 #include "third_party/blink/renderer/bindings/core/v8/v8_box_quad_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_convert_coordinate_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_css_box_type.h"
@@ -25,9 +23,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/paint/fragment_data.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink::geometry_utils {
@@ -146,52 +142,6 @@ gfx::QuadF MapFrameQuadToGeometryNode(const gfx::QuadF& frame_quad,
                               target_layout ? target_layout : source_layout);
 }
 
-bool CanUseGeometryMapper(const LayoutObject& object) {
-  LayoutView* layout_view = object.GetDocument().GetLayoutView();
-  return layout_view && !layout_view->NeedsPaintPropertyUpdate() &&
-         !layout_view->DescendantNeedsPaintPropertyUpdate();
-}
-
-std::optional<gfx::QuadF> TryMapLocalQuadWithGeometryMapper(
-    const gfx::QuadF& local_quad,
-    LayoutObject* source_layout,
-    LayoutObject* target_layout,
-    V8CSSBoxType::Enum to_box) {
-  if (!target_layout || IsA<LayoutView>(target_layout) ||
-      source_layout->GetFrameView() != target_layout->GetFrameView()) {
-    return std::nullopt;
-  }
-
-  if (!CanUseGeometryMapper(*source_layout) || source_layout->IsFragmented() ||
-      target_layout->IsFragmented()) {
-    return std::nullopt;
-  }
-
-  PropertyTreeStateOrAlias source_properties(PropertyTreeState::kUninitialized);
-  if (!source_layout->GetPropertyContainer(nullptr, &source_properties)) {
-    return std::nullopt;
-  }
-
-  const FragmentData& target_fragment = target_layout->FirstFragment();
-  if (!target_fragment.HasLocalBorderBoxProperties()) {
-    return std::nullopt;
-  }
-
-  gfx::Transform projection;
-  if (!GeometryMapper::SourceToDestinationProjection(
-          source_properties.Transform(),
-          target_fragment.ContentsProperties().Transform(), projection)) {
-    return std::nullopt;
-  }
-
-  gfx::QuadF target_quad = local_quad;
-  target_quad += gfx::Vector2dF(source_layout->FirstFragment().PaintOffset());
-  target_quad = projection.MapQuad(target_quad);
-  target_quad -= gfx::Vector2dF(target_fragment.PaintOffset());
-  target_quad -= BoxTopLeftOffset(target_layout, to_box);
-  return ScaleQuadToCSSPixels(target_quad, target_layout);
-}
-
 gfx::QuadF MapLocalQuadToGeometryNode(const gfx::QuadF& local_quad,
                                       LayoutObject* source_layout,
                                       LayoutObject* target_layout,
@@ -200,11 +150,6 @@ gfx::QuadF MapLocalQuadToGeometryNode(const gfx::QuadF& local_quad,
     gfx::QuadF target_quad = local_quad;
     target_quad -= BoxTopLeftOffset(target_layout, to_box);
     return ScaleQuadToCSSPixels(target_quad, target_layout);
-  }
-
-  if (std::optional<gfx::QuadF> target_quad = TryMapLocalQuadWithGeometryMapper(
-          local_quad, source_layout, target_layout, to_box)) {
-    return *target_quad;
   }
 
   if (target_layout && !IsA<LayoutView>(target_layout) &&
