@@ -78,12 +78,15 @@ std::atomic<base::ThreadLocalOwnedPointer<LockMetricsRecorder>*> g_tls_slot{
 
 constexpr int kHistogramBucketCount = 100;
 
-base::HistogramBase* CreateLockHistogram(std::string_view lock_name,
+base::HistogramBase* CreateLockHistogram(const LockMetricTag& lock_tag,
                                          std::string_view histogram_suffix) {
+  // TODO(crbug.com/545219041): Update the histogram name to better reflect what
+  // is being measured.
+  std::string name = StrCat({"Scheduling.ContendedLockAcquisitionTime.",
+                             lock_tag.name(), ".", histogram_suffix});
+
   return base::Histogram::FactoryMicrosecondsTimeGet(
-      StrCat({"Scheduling.ContendedLockAcquisitionTime.", lock_name, ".",
-              histogram_suffix}),
-      Microseconds(1), Seconds(1), kHistogramBucketCount,
+      name, Microseconds(1), Seconds(1), kHistogramBucketCount,
       base::HistogramBase::kUmaTargetedHistogramFlag);
 }
 
@@ -122,27 +125,31 @@ LockMetricsRecorder* LockMetricsRecorder::GetForCurrentThread() {
 }
 
 base::HistogramBase* LockMetricsRecorder::GetOrCreateHistogram(
-    const LockMetricTag* lock_tag) {
+    const LockMetricTag& lock_tag) {
   DCHECK(CalledOnValidThread());
-  CHECK(lock_tag);
 
-  const uint64_t hash = lock_tag->hash();
+  const uint64_t hash = lock_tag.hash();
   const auto it = tagged_lock_histograms_.find(hash);
   if (it != tagged_lock_histograms_.end()) {
     return it->second;
   }
 
   base::HistogramBase* const histogram =
-      CreateLockHistogram(lock_tag->name(), histogram_suffix_);
+      CreateLockHistogram(lock_tag, histogram_suffix_);
   tagged_lock_histograms_.insert({hash, histogram});
   return histogram;
 }
 
 void LockMetricsRecorder::ReportLockHistogram(const LockMetricSample& sample) {
   DCHECK(CalledOnValidThread());
-  base::HistogramBase* histogram_pointer =
-      GetOrCreateHistogram(sample.lock_type);
-  histogram_pointer->AddTimeMicrosecondsGranularity(sample.wait_time);
+  DCHECK_LE(sample.tags.size(), LockMetricTagList::kMaxTags);
+
+  for (size_t i = 0; i < sample.tags.size(); ++i) {
+    if (const LockMetricTag* lock_tag = sample.tags[i]) {
+      GetOrCreateHistogram(*lock_tag)->AddTimeMicrosecondsGranularity(
+          sample.wait_time);
+    }
+  }
 }
 
 bool LockMetricsRecorder::ShouldRecordLockAcquisitionTime() const {
@@ -227,8 +234,8 @@ LockMetricsRecorder::~LockMetricsRecorder() = default;
 LockMetricsRecorder::ScopedLockAcquisitionTimer
 LockMetricsRecorder::ScopedLockAcquisitionTimer::CreateForTest(
     LockMetricsRecorder* recorder,
-    const LockMetricTag& lock_type) {
-  return LockMetricsRecorder::ScopedLockAcquisitionTimer(recorder, lock_type);
+    const LockMetricTagList& tags) {
+  return LockMetricsRecorder::ScopedLockAcquisitionTimer(recorder, tags);
 }
 
 // static

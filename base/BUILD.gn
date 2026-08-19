@@ -758,6 +758,7 @@ component("base") {
     "synchronization/lock_impl.h",
     "synchronization/lock_metrics_recorder.cc",
     "synchronization/lock_metrics_recorder.h",
+    "synchronization/lock_metrics_recorder_tags.h",
     "synchronization/lock_subtle.h",
     "synchronization/waitable_event.cc",
     "synchronization/waitable_event.h",

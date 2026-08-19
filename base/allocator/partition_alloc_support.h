@@ -24,12 +24,12 @@
 #endif
 
 namespace base {
-class LockMetricTag;
+class LockMetricTagList;
 }
 
 namespace base::allocator {
 
-BASE_EXPORT const LockMetricTag& GetPartitionAllocLockMetricTag();
+BASE_EXPORT const LockMetricTagList& GetPartitionAllocLockMetricTagList();
 
 // Starts a periodic timer on the current thread to purge all thread caches.
 BASE_EXPORT void StartThreadCachePeriodicPurge();

@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/rand_util.h"
+#include "base/synchronization/lock_metrics_recorder_tags.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -26,63 +27,6 @@
 namespace base {
 
 class HistogramBase;
-
-// A tag that can be used to apply unique identifiers to a lock.
-//
-// Creation:
-// Instances must be created as `static constinit` objects with a unique name
-// for each different lock type, as the tag name is used as part of the suffix
-// in UMA histogram names. It is recommended to create a static function getter
-// for the `LockMetricTag`, and use the same getter throughout the subsystem:
-//   const base::LockMetricTag& GetMyFeatureLockMetricTag() {
-//     static constinit base::LockMetricTag tag("MyFeatureLock");
-//     return tag;
-//   }
-//
-// Usage:
-// Pass a `LockMetricTag` to `ScopedLockAcquisitionTimer` prior to
-// acquiring a lock. The acquisition duration will be recorded in the histogram
-// associated with that tag.
-//
-// Example usage:
-//     base::LockMetricsRecorder::ScopedLockAcquisitionTimer timer(
-//         GetMyFeatureLockMetricTag());
-//
-// If creating a new `LockMetricTag` in a subsystem, add a histogram
-// in the appropriate histograms.xml file to capture the lock acquisition times.
-
-class BASE_EXPORT LockMetricTag {
- public:
-  LockMetricTag(const LockMetricTag&) = delete;
-  LockMetricTag& operator=(const LockMetricTag&) = delete;
-  ~LockMetricTag() = default;
-
-  consteval explicit LockMetricTag(std::string_view name)
-      : name_(name), hash_(HashName(name)) {}
-
-  constexpr std::string_view name() const { return name_; }
-  constexpr uint64_t hash() const { return hash_; }
-
- private:
-  // Generates a precomputed 64-bit hash key for tag names using FNV-1a hashing.
-  // Standard Chromium hashing helpers such as `base::FastHash` and
-  // `base::PersistentHash` are non-constexpr and cannot be evaluated in
-  // consteval constructors required for `LockMetricTag` instances.
-  static constexpr uint64_t HashName(std::string_view name) {
-    constexpr uint64_t kFnvOffsetBasis = 14695981039346656037ULL;
-    constexpr uint64_t kFnvPrime = 1099511628211ULL;
-
-    uint64_t hash = kFnvOffsetBasis;
-    for (char c : name) {
-      hash ^= static_cast<uint8_t>(c);
-      hash *= kFnvPrime;
-    }
-    return hash;
-  }
-
-  const std::string_view name_;
-  const uint64_t hash_;
-};
 
 // This class is a thread-local object that uses TLS to store samples of metrics
 // related to locks, which are then reported to UMA histograms when the thread
@@ -100,7 +44,7 @@ class BASE_EXPORT LockMetricsRecorder {
   // Samples of lock acquisition times and types stored in a ring buffer.
   struct LockMetricSample {
     base::TimeDelta wait_time;
-    raw_ptr<const LockMetricTag> lock_type;
+    LockMetricTagList tags;
   };
 
   // The internal buffer size is a trade-off between memory usage and the number
@@ -148,15 +92,9 @@ class BASE_EXPORT LockMetricsRecorder {
 
    public:
     // Constructs a timer to measure lock acquisition duration.
-    //
-    // `tagged_lock_type`: The metric tag identifying the lock type. Must be a
-    // valid reference (non-optional). The caller is responsible for ensuring
-    // that the lifetime of `tagged_lock_type` outlives the
-    // `ScopedLockAcquisitionTimer` object and any recorded samples until they
-    // are reported.
-    explicit ScopedLockAcquisitionTimer(const LockMetricTag& tagged_lock_type)
+    explicit ScopedLockAcquisitionTimer(const LockMetricTagList& tags)
         : ScopedLockAcquisitionTimer(LockMetricsRecorder::GetForCurrentThread(),
-                                     tagged_lock_type) {}
+                                     tags) {}
 
     ScopedLockAcquisitionTimer(const ScopedLockAcquisitionTimer&) = delete;
     ScopedLockAcquisitionTimer& operator=(const ScopedLockAcquisitionTimer&) =
@@ -168,18 +106,17 @@ class BASE_EXPORT LockMetricsRecorder {
       }
 
       lock_metrics_->RecordLockAcquisitionTime(LockMetricSample{
-          subtle::TimeTicksNowIgnoringOverride() - *start_time_,
-          tagged_lock_type_});
+          subtle::TimeTicksNowIgnoringOverride() - *start_time_, tags_});
     }
 
     static ScopedLockAcquisitionTimer CreateForTest(
         LockMetricsRecorder* lock_metrics,
-        const LockMetricTag& tagged_lock_type);
+        const LockMetricTagList& tags);
 
    private:
     ScopedLockAcquisitionTimer(LockMetricsRecorder* lock_metrics,
-                               const LockMetricTag& tagged_lock_type)
-        : lock_metrics_(lock_metrics), tagged_lock_type_(&tagged_lock_type) {
+                               const LockMetricTagList& tags)
+        : lock_metrics_(lock_metrics), tags_(tags) {
       if (!lock_metrics_ || !lock_metrics_->ShouldRecordLockAcquisitionTime())
           [[likely]] {
         return;
@@ -196,9 +133,7 @@ class BASE_EXPORT LockMetricsRecorder {
     // it points to a thread-local variable.
     const raw_ptr<LockMetricsRecorder> lock_metrics_;
 
-    // The caller must ensure `tagged_lock_type_` outlives this timer and any
-    // samples recorded until reported.
-    const LockMetricTag* tagged_lock_type_;
+    LockMetricTagList tags_;
   };
 
  private:
@@ -210,7 +145,7 @@ class BASE_EXPORT LockMetricsRecorder {
 
   const std::string histogram_suffix_;
 
-  base::HistogramBase* GetOrCreateHistogram(const LockMetricTag* lock_tag);
+  base::HistogramBase* GetOrCreateHistogram(const LockMetricTag& lock_tag);
 
   void ReportLockHistogram(const LockMetricSample& sample);
 

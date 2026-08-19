@@ -36,11 +36,6 @@ int __attribute__((weak)) pthread_mutexattr_setprotocol(
 
 namespace base {
 
-const LockMetricTag& GetBaseLockMetricTag() {
-  static constinit LockMetricTag tag("BaseLock");
-  return tag;
-}
-
 namespace internal {
 namespace {
 
@@ -138,14 +133,14 @@ LockImpl::~LockImpl() {
   DCHECK_EQ(rv, 0) << ". " << SystemErrorCodeToString(rv);
 }
 
-void LockImpl::LockInternal() {
+void LockImpl::LockInternal(const LockMetricTagList& tags) {
 #if BUILDFLAG(IS_POSIX)
   if (TrySpin()) {
     return;
   }
 #endif  // BUILDFLAG(IS_POSIX)
 
-  LockMetricsRecorder::ScopedLockAcquisitionTimer timer(GetBaseLockMetricTag());
+  LockMetricsRecorder::ScopedLockAcquisitionTimer timer(tags);
   int rv = pthread_mutex_lock(&native_handle_);
   DCHECK_EQ(rv, 0) << ". " << SystemErrorCodeToString(rv);
 }

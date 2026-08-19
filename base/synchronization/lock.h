@@ -19,11 +19,17 @@
 
 namespace base {
 
+class LockMetricTag;
+class LockMetricTagList;
+
 // A convenient wrapper for an OS specific critical section.  The only real
 // intelligence in this class is in debug mode for the support for the
 // AssertAcquired() method.
 class LOCKABLE BASE_EXPORT Lock {
  public:
+  static const LockMetricTag& GetBaseLockMetricTag();
+  static const LockMetricTagList& GetBaseLockMetricTagList();
+
   Lock() = default;
 
   Lock(const Lock&) = delete;
@@ -40,7 +46,13 @@ class LOCKABLE BASE_EXPORT Lock {
 
   void Acquire(subtle::LockTracking tracking = subtle::LockTracking::kDisabled)
       EXCLUSIVE_LOCK_FUNCTION() {
-    lock_.Lock();
+    Acquire(GetBaseLockMetricTagList(), tracking);
+  }
+
+  void Acquire(const LockMetricTagList& tags,
+               subtle::LockTracking tracking = subtle::LockTracking::kDisabled)
+      EXCLUSIVE_LOCK_FUNCTION() {
+    lock_.Lock(tags);
   }
   void Release() UNLOCK_FUNCTION() { lock_.Unlock(); }
 
@@ -62,6 +74,9 @@ class LOCKABLE BASE_EXPORT Lock {
   // Note: Acquiring a lock that is already held by the calling thread is not
   // supported and results in a CHECK() failure.
   void Acquire(subtle::LockTracking tracking = subtle::LockTracking::kDisabled)
+      EXCLUSIVE_LOCK_FUNCTION();
+  void Acquire(const LockMetricTagList& tags,
+               subtle::LockTracking tracking = subtle::LockTracking::kDisabled)
       EXCLUSIVE_LOCK_FUNCTION();
   void Release() UNLOCK_FUNCTION();
   bool Try(subtle::LockTracking tracking = subtle::LockTracking::kDisabled)
@@ -126,6 +141,14 @@ class LOCKABLE BASE_EXPORT Lock {
   // Platform specific underlying lock implementation.
   internal::LockImpl lock_;
 };
+
+// Out-of-line definition for the zero-argument `LockImpl::Lock()`.
+// This is defined here in `lock.h` rather than `lock_impl.h` because it
+// references `Lock::GetBaseLockMetricTagList()`, which requires `class Lock`
+// to be fully defined.
+inline void internal::LockImpl::Lock() {
+  Lock(Lock::GetBaseLockMetricTagList());
+}
 
 // A helper class that acquires the given Lock while the AutoLock is in scope.
 using AutoLock = internal::BasicAutoLock<Lock>;

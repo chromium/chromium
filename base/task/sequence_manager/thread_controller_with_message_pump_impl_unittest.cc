@@ -2285,9 +2285,9 @@ TEST_F(ThreadControllerWithMessagePumpTest, LockMetricsReportedOnIdle) {
   HistogramTester histogram_tester;
 
   const LockMetricsRecorder::LockMetricSample base_lock_metric_sample = {
-      test_sample1, &GetBaseLockMetricTag()};
+      test_sample1, Lock::GetBaseLockMetricTagList()};
   const LockMetricsRecorder::LockMetricSample pa_lock_metric_sample = {
-      test_sample2, &allocator::GetPartitionAllocLockMetricTag()};
+      test_sample2, allocator::GetPartitionAllocLockMetricTagList()};
 
   base::LockMetricsRecorder::GetForCurrentThread()->RecordLockAcquisitionTime(
       base_lock_metric_sample);
