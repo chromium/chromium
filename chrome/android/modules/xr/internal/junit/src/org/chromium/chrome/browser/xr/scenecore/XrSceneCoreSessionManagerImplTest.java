@@ -40,6 +40,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.xr.scenecore.XrCurvedSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrPanelEntityHolder;
+import org.chromium.ui.xr.scenecore.XrPixelDensity;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
 
@@ -217,5 +218,12 @@ public class XrSceneCoreSessionManagerImplTest {
 
         mManager.setHeadTrackingEnabled(true);
         assertTrue(mManager.startHeadPoseTracking());
+    }
+
+    @Test
+    public void testGetPixelDensity() {
+        XrPixelDensity density = mManager.getPixelDensity();
+        assertNotNull(density);
+        assertTrue(density.getPixelsPerMeter() > 0f);
     }
 }

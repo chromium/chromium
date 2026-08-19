@@ -638,6 +638,7 @@ android_library("ui_no_recycler_view_java") {
     "java/src/org/chromium/ui/xr/scenecore/XrMovableComponent.java",
     "java/src/org/chromium/ui/xr/scenecore/XrMovableEntityHolder.java",
     "java/src/org/chromium/ui/xr/scenecore/XrPanelEntityHolder.java",
+    "java/src/org/chromium/ui/xr/scenecore/XrPixelDensity.java",
     "java/src/org/chromium/ui/xr/scenecore/XrPose.java",
     "java/src/org/chromium/ui/xr/scenecore/XrQuaternion.java",
     "java/src/org/chromium/ui/xr/scenecore/XrResizableComponent.java",

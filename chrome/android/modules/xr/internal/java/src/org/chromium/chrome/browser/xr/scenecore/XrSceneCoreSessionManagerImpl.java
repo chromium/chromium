@@ -39,6 +39,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.xr.scenecore.XrEntityHolder;
 import org.chromium.ui.xr.scenecore.XrFactory;
 import org.chromium.ui.xr.scenecore.XrPanelEntityHolder;
+import org.chromium.ui.xr.scenecore.XrPixelDensity;
 import org.chromium.ui.xr.scenecore.XrPose;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityHolder;
@@ -79,6 +80,7 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
             ObservableSuppliers.createNullable();
     private final SettableNonNullObservableSupplier<Boolean> mIsFullSpaceModeNowSupplier;
     private final Consumer<FloatSize3d> mBoundsChangedListener = this::boundsChangeCallback;
+    private final XrPixelDensity mPixelDensity;
 
     public XrSceneCoreSessionManagerImpl(Activity activity) {
         this(activity, createSession(activity));
@@ -95,6 +97,8 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
         boolean isXrFullSpaceMode =
                 mActivitySpace.getBounds().getWidth() == Float.POSITIVE_INFINITY;
         mIsFullSpaceModeNowSupplier = ObservableSuppliers.createNonNull(isXrFullSpaceMode);
+        mPixelDensity =
+                XrPixelDensityImpl.create(activity.getResources().getDisplayMetrics().density);
     }
 
     private static Session createSession(Activity activity) {
@@ -266,6 +270,11 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
         } else {
             scene.setKeyEntity(null);
         }
+    }
+
+    @Override
+    public XrPixelDensity getPixelDensity() {
+        return mPixelDensity;
     }
 
     @SuppressWarnings("NullAway")

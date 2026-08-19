@@ -114,4 +114,7 @@ public interface XrSceneCoreSessionManager extends Destroyable {
 
     /** Returns the head pose observable supplier. */
     NullableObservableSupplier<XrPose> getHeadPoseObservableSupplier();
+
+    /** Returns the {@link XrPixelDensity} for the session. */
+    XrPixelDensity getPixelDensity();
 }
