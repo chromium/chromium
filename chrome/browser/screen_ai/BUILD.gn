@@ -171,6 +171,7 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/screen_ai/public:optical_character_recognizer",
+    "//chrome/browser/ui/browser_window",
     "//components/metrics:content",
     "//services/screen_ai/buildflags",
     "//services/screen_ai/public/cpp:utilities",

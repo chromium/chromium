@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -29,7 +29,7 @@ class SpellingBubbleModelTest : public InProcessBrowserTest {
 
   std::unique_ptr<SpellingBubbleModel> CreateSpellingBubble() {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     auto model = std::make_unique<SpellingBubbleModel>(browser()->GetProfile(),
                                                        web_contents);
     return model;
@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(SpellingBubbleModelTest,
   ASSERT_TRUE(AddTabAtIndex(0, GURL("data:text/html,<p>puppies!</p>"),
                             ui::PAGE_TRANSITION_TYPED));
   std::unique_ptr<SpellingBubbleModel> model = CreateSpellingBubble();
-  browser()->tab_strip_model()->GetActiveWebContents()->Close();
+  browser()->GetTabStripModel()->GetActiveWebContents()->Close();
   ui_test_utils::AllBrowserTabAddedWaiter waiter;
   model->OpenHelpPage();
   content::WebContents* web_contents = waiter.Wait();

@@ -101,7 +101,6 @@
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -967,13 +966,13 @@ bool IsPrintPreviewContent(const GURL& current_url) {
 #if !BUILDFLAG(IS_ANDROID)
 std::pair<int, const gfx::VectorIcon*> GetOpenLinkInSplitStringAndIcon(
     tabs::TabInterface* tab,
-    Browser* const browser) {
+    BrowserWindowInterface* const browser) {
   int string_id = IDS_CONTENT_CONTEXT_OPENLINKSPLITVIEW;
   const gfx::VectorIcon* icon = &(
       features::IsRoundedIconsEnabled() ? kSplitSceneIcon : kSplitSceneOldIcon);
   if (tab && tab->IsSplit()) {
     split_tabs::SplitTabData* split_data =
-        browser->tab_strip_model()->GetSplitData(tab->GetSplit().value());
+        browser->GetTabStripModel()->GetSplitData(tab->GetSplit().value());
     switch (split_data->visual_data()->split_layout()) {
       case split_tabs::SplitTabLayout::kSideBySide:
         if (split_data->ListTabs()[base::i18n::IsRTL() ? 1 : 0] == tab) {
@@ -1976,8 +1975,8 @@ void RenderViewContextMenu::AppendLinkItems() {
       if (IsNormalBrowser()) {
         tabs::TabInterface* tab =
             tabs::TabInterface::MaybeGetFromContents(GetWebContents());
-        auto [string_id, icon] = GetOpenLinkInSplitStringAndIcon(
-            tab, GetBrowser()->GetBrowserForMigrationOnly());
+        auto [string_id, icon] =
+            GetOpenLinkInSplitStringAndIcon(tab, GetBrowser());
 
         if (tabs::kSplitViewHorizontalDirectAccess.Get() &&
             !(tab && tab->IsSplit())) {
@@ -4206,8 +4205,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
         return;
       }
 
-      Browser* browser =
-          GetBrowser() ? GetBrowser()->GetBrowserForMigrationOnly() : nullptr;
+      BrowserWindowInterface* browser = GetBrowser();
       if (browser) {
         // TODO(crbug.com/514547038): Move this to BrowserWindowFeatures.
         BrowserWindow::FromBrowser(browser)->ShowEmojiPanel();

@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -31,7 +31,7 @@ class AccessibilityLabelsBubbleModelTest : public InProcessBrowserTest {
 
   std::unique_ptr<AccessibilityLabelsBubbleModel> CreateConfirmBubble() {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     auto model = std::make_unique<AccessibilityLabelsBubbleModel>(
         browser()->GetProfile(), web_contents, /*enable_always=*/true);
     return model;
@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBubbleModelTest,
   ASSERT_TRUE(AddTabAtIndex(0, GURL("data:text/html,<p>kittens!</p>"),
                             ui::PAGE_TRANSITION_TYPED));
   std::unique_ptr<AccessibilityLabelsBubbleModel> model = CreateConfirmBubble();
-  browser()->tab_strip_model()->GetActiveWebContents()->Close();
+  browser()->GetTabStripModel()->GetActiveWebContents()->Close();
   ui_test_utils::AllBrowserTabAddedWaiter waiter;
   model->OpenHelpPage();
   content::WebContents* web_contents = waiter.Wait();

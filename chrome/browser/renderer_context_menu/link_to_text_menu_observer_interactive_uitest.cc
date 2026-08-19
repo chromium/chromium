@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/renderer_context_menu/link_to_text_menu_observer.h"
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -9,10 +11,9 @@
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/renderer_context_menu/link_to_text_menu_observer.h"
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -148,7 +149,7 @@ class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest {
 
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
     menu()->set_web_contents(web_contents);
     content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
     EXPECT_TRUE(ExecJs(main_frame, "window.focus();"));
@@ -179,7 +180,7 @@ class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest {
   MockLinkToTextMenuObserver* observer() { return observer_.get(); }
 
   content::GlobalRenderFrameHostId getRenderFrameHostId() {
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
     return web_contents->GetPrimaryMainFrame()->GetGlobalId();
   }
 
@@ -290,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, InvalidSelectorForIframe) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::RenderFrameHost* main_frame_a = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* child_frame_b = ChildFrameAt(main_frame_a, 0);
   EXPECT_TRUE(ExecJs(child_frame_b, "window.focus();"));
@@ -313,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, HiddenForExtensions) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), extension->GetResourceURL("file.html")));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   menu()->set_web_contents(web_contents);
 
   std::unique_ptr<MockLinkToTextMenuObserver> observer =
@@ -754,7 +755,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, RemovesGlicHighlight) {
       mock_annotation_agent_container =
           MockAnnotationAgentContainer::InstallMockAnnotationAgentContainer(
               browser()
-                  ->tab_strip_model()
+                  ->GetTabStripModel()
                   ->GetActiveWebContents()
                   ->GetPrimaryMainFrame());
   EXPECT_CALL(*mock_annotation_agent_container,
