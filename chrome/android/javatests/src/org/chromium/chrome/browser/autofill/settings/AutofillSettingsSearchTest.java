@@ -410,6 +410,46 @@ public class AutofillSettingsSearchTest {
                 .check(matches(isDisplayed()));
     }
 
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_ONLINE_MODEL_TOGGLE_NEW_TITLE,
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
+    public void testSearchAutofillSettingsChildren_yourSavedInfoSettingsPageEnabled() {
+        testSearchAutofillAiSwitch();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_ONLINE_MODEL_TOGGLE_NEW_TITLE)
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    public void testSearchAutofillSettingsChildren_yourSavedInfoSettingsPageDisabled() {
+        testSearchAutofillAiSwitch();
+    }
+
+    private void testSearchAutofillAiSwitch() {
+        searchSettings("Smarter form understanding");
+
+        onViewWaiting( // Wait for debounce and Search results to appear.
+                        allOf(
+                                withId(android.R.id.title),
+                                withText(R.string.settings_autofill_ai_page_title_v2)))
+                .perform(click());
+
+        onView(
+                        allOf(
+                                withText(R.string.autofill_settings_title),
+                                withParent(withId(R.id.action_bar))))
+                .check(matches(isDisplayed()));
+        onView(
+                        allOf(
+                                hasDescendant(
+                                        withText(R.string.settings_autofill_ai_page_title_v2)),
+                                isHighlighted()))
+                .check(matches(isDisplayed()));
+    }
+
     private void searchSettings(String query) {
         mSettingsActivityTestRule.startSettingsActivity();
 

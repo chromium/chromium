@@ -774,9 +774,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
             assumeNonNull(activity);
             showDefaultBrowserSettings(activity);
             return false;
-        } else if (key.equals(PREF_AUTOFILL_OPTIONS)) {
-            openAutofillOptions(context);
-            return false;
         }
         // TODO(crbug.com/469676538): Handle the rest of preferences.
         return false;
@@ -1049,8 +1046,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     } else {
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_AND_PASSWORDS));
 
-                        // TODO(crbug.com/440022435): Remove the PREF_AUTOFILL_OPTIONS index update
-                        // once Autofill AI is launched.
                         String autofillOptionsEntryId = getUniqueId(PREF_AUTOFILL_OPTIONS);
                         SettingsIndexData.Entry autofillOptionsEntry =
                                 indexData.getEntry(autofillOptionsEntryId);
@@ -1058,9 +1053,16 @@ public class MainSettings extends ChromeBaseSettingsFragment
                             indexData.updateEntry(
                                     autofillOptionsEntryId,
                                     new SettingsIndexData.Entry.Builder(autofillOptionsEntry)
+                                            // TODO(crbug.com/440022435): Remove the
+                                            // PREF_AUTOFILL_OPTIONS title index update
+                                            // once Autofill AI is launched.
                                             .setTitle(
                                                     AutofillOptionsMediator.getFragmentTitle(
                                                             context))
+                                            .setFragment(AutofillOptionsFragment.class.getName())
+                                            .setArguments(
+                                                    AutofillOptionsFragment.createRequiredArgs(
+                                                            AutofillOptionsReferrer.SETTINGS))
                                             .build());
                         }
                     }

@@ -414,8 +414,6 @@ public class AutofillAndPasswordsFragment extends ChromeBaseSettingsFragment {
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_SHOPPING));
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_PERSONAL_CONTEXT));
                     } else {
-                        // TODO(crbug.com/440022435): Remove the PREF_AUTOFILL_SETTINGS index update
-                        // once Autofill AI is launched.
                         String autofillSettingsEntryId = getUniqueId(PREF_AUTOFILL_SETTINGS);
                         SettingsIndexData.Entry autofillSettingsEntry =
                                 indexData.getEntry(autofillSettingsEntryId);
@@ -423,9 +421,16 @@ public class AutofillAndPasswordsFragment extends ChromeBaseSettingsFragment {
                             indexData.updateEntry(
                                     autofillSettingsEntryId,
                                     new SettingsIndexData.Entry.Builder(autofillSettingsEntry)
+                                            // TODO(crbug.com/440022435): Remove the title update
+                                            // once Autofill AI is launched.
                                             .setTitle(
                                                     AutofillOptionsMediator.getFragmentTitle(
                                                             context))
+                                            .setFragment(AutofillOptionsFragment.class.getName())
+                                            .setArguments(
+                                                    AutofillOptionsFragment.createRequiredArgs(
+                                                            AutofillOptionsReferrer
+                                                                    .AUTOFILL_AND_PASSWORDS_FRAGMENT))
                                             .build());
                         }
 

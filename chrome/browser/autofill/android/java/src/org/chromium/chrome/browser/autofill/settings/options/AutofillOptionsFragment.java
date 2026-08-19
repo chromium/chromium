@@ -227,6 +227,15 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_AI_AUTHENTICATION_SWITCH));
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_SERVICE_PROVIDER_CETEGORY));
                     } else {
+                        // TODO(crbug.com/440022435): Remove the title update
+                        // once Autofill AI is launched.
+                        if (ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.AUTOFILL_AI_ONLINE_MODEL_TOGGLE_NEW_TITLE)) {
+                            indexData.updateEntryForKey(
+                                    getPrefFragmentName(),
+                                    PREF_AUTOFILL_AI_SWITCH,
+                                    R.string.settings_autofill_ai_page_title_v2);
+                        }
                         if (!isAutofillAiReauthEnabled()) {
                             indexData.removeEntry(
                                     getUniqueId(PREF_AUTOFILL_AI_AUTHENTICATION_SWITCH));
