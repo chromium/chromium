@@ -1407,6 +1407,20 @@ public class PdfCoordinator
     }
 
     /**
+     * Resets the zoom level of the PDF page to the default zoom level.
+     *
+     * @return True if the PDF page was zoomed to the default zoom level, false otherwise.
+     */
+    @Override
+    public boolean resetZoomLevel() {
+        if (mToolbarCoordinator == null) return false;
+        float defaultZoomLevel = mToolbarCoordinator.getDefaultZoomLevel();
+        if (defaultZoomLevel <= 0f) return false;
+        changeZoomLevel(defaultZoomLevel);
+        return true;
+    }
+
+    /**
      * Sets the zoom level to a specified amount.
      *
      * @param zoomLevel The new value of the zoom.
@@ -1731,7 +1745,6 @@ public class PdfCoordinator
                 .show();
     }
 
-    @VisibleForTesting
     @Nullable PdfToolbarCoordinator getToolbarCoordinatorForTesting() {
         return mToolbarCoordinator;
     }

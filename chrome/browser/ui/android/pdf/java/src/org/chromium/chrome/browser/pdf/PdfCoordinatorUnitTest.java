@@ -262,6 +262,34 @@ public class PdfCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(shadows = {ShadowPdfView.class})
+    public void testResetZoomLevel() {
+        createPdfCoordinator();
+        ShadowPdfView shadowPdfView = Shadow.extract(mPdfView);
+
+        // Set default zoom level.
+        mPdfCoordinator.getToolbarCoordinatorForTesting().setDefaultZoomLevel(1.5f);
+
+        // Zoom into some other level.
+        mPdfCoordinator.changeZoomLevel(2.0f);
+        assertEquals(2.0f, shadowPdfView.mZoom, 0.001f);
+
+        // Reset zoom level.
+        assertTrue(mPdfCoordinator.resetZoomLevel());
+        assertEquals(1.5f, shadowPdfView.mZoom, 0.001f);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(shadows = {ShadowPdfView.class})
+    public void testResetZoomLevel_ToolbarNull() {
+        createPdfCoordinator();
+        assertNull(mPdfCoordinator.getToolbarCoordinatorForTesting());
+        assertFalse(mPdfCoordinator.resetZoomLevel());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     public void testOnLinkClicked_RejectsDangerousSchemes() {
         when(mProfile.isOffTheRecord()).thenReturn(false);
         createPdfCoordinator();

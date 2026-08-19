@@ -98,22 +98,29 @@ public class ZoomController {
     public static boolean zoomReset(
             @Nullable WebContents webContents,
             @Nullable BrowserContextHandle browserContextHandle) {
-        return zoomResetPage(webContents, browserContextHandle);
+        if (webContents == null || browserContextHandle == null) return false;
+        double defaultZoomFactor = HostZoomMap.getDefaultZoomLevel(browserContextHandle);
+        HostZoomMap.setZoomLevel(webContents, defaultZoomFactor);
+        return true;
     }
 
     /**
      * Resets the zoom factor of the WebContents using Page Zoom (layout reflow).
      *
-     * @param webContents {@link WebContents} to reset the zoom of.
+     * @param tab {@link Tab} to reset the zoom of.
+     * @param browserContextHandle {@link BrowserContextHandle} to get the default zoom level from.
      * @return True if there was a zoom change, false otherwise.
      */
     public static boolean zoomResetPage(
-            @Nullable WebContents webContents,
-            @Nullable BrowserContextHandle browserContextHandle) {
-        if (webContents == null || browserContextHandle == null) return false;
-        double defaultZoomFactor = HostZoomMap.getDefaultZoomLevel(browserContextHandle);
-        HostZoomMap.setZoomLevel(webContents, defaultZoomFactor);
-        return true;
+            @Nullable Tab tab, @Nullable BrowserContextHandle browserContextHandle) {
+        if (tab == null) return false;
+        if (tab.isNativePage()) {
+            if (tab.getNativePage() instanceof PdfPage pdfPage) {
+                return pdfPage.resetZoomLevel();
+            }
+            return false;
+        }
+        return zoomReset(tab.getWebContents(), browserContextHandle);
     }
 
     /**

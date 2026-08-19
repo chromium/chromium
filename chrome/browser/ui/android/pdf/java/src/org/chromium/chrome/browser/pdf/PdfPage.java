@@ -256,6 +256,10 @@ public class PdfPage extends BasicNativePage {
         return mPdfCoordinator.changeZoomLevel(decrease);
     }
 
+    public boolean resetZoomLevel() {
+        return mPdfCoordinator.resetZoomLevel();
+    }
+
     private static boolean isLoadingAfterActivityRestarted(
             @Nullable String curl, String nurl, boolean preferReuse) {
         if (preferReuse) return false;

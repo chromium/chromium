@@ -1289,7 +1289,7 @@ public class KeyboardShortcuts {
                     ZoomController.zoomOutPage(currentTab);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.ZOOM_RESET:
-                    ZoomController.zoomResetPage(currentWebContents, browserContextHandle);
+                    ZoomController.zoomResetPage(currentTab, browserContextHandle);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.RELOAD_TAB:
                     if (currentTab != null) {

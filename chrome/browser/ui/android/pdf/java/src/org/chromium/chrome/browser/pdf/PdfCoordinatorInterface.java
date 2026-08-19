@@ -50,4 +50,11 @@ public interface PdfCoordinatorInterface {
      * @return True if the PDF page can be zoomed out, false otherwise.
      */
     boolean changeZoomLevel(boolean decrease);
+
+    /**
+     * Resets the zoom level of the PDF page to the default zoom level.
+     *
+     * @return True if the PDF page was zoomed to the default zoom level, false otherwise.
+     */
+    boolean resetZoomLevel();
 }

@@ -345,7 +345,6 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
         return displayZoomLevel * mDefaultZoomLevel;
     }
 
-    @VisibleForTesting
     float getDefaultZoomLevel() {
         return mDefaultZoomLevel;
     }

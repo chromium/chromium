@@ -412,6 +412,34 @@ public class PdfPageUnitTest {
     }
 
     @Test
+    public void testResetZoomLevel() {
+        String encodedUrl = PdfUtils.encodePdfPageUrl(CONTENT_URL);
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        encodedUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+        Assert.assertNotNull(pdfPage);
+
+        PdfCoordinator pdfCoordinator = (PdfCoordinator) pdfPage.mPdfCoordinator;
+        PdfToolbarCoordinator toolbar = pdfCoordinator.getToolbarCoordinatorForTesting();
+        Assert.assertNotNull(toolbar);
+
+        // Initially no default zoom level set.
+        Assert.assertFalse(pdfPage.resetZoomLevel());
+
+        // Set default zoom level.
+        toolbar.setDefaultZoomLevel(1.5f);
+
+        // Zoom should reset successfully.
+        Assert.assertTrue(pdfPage.resetZoomLevel());
+    }
+
+    @Test
     public void testCreatePdfPage_WithPdfLink_Https() throws Exception {
         testCreatePdfPage_WithPdfLink(mPdfPageUrl);
     }
