@@ -1552,6 +1552,13 @@ class AutocompleteMediator
             // user tapped the URL bar to dismiss the suggestions, then pressed enter. This can
             // also happen if the user presses enter before any suggestions have been received
             // from the autocomplete controller.
+            // For Tab Search Overlay, do nothing if there are no matching suggestions so that
+            // focus is not cleared and no web search navigation is performed.
+            if (mAutocompleteInput != null
+                    && mAutocompleteInput.getPageClassification()
+                            == PageClassification.ANDROID_TAB_SEARCH_OVERLAY) {
+                return null;
+            }
             return mAutocomplete != null ? mAutocomplete.classify(urlText) : null;
             // If urlText couldn't be classified, bail.
         }

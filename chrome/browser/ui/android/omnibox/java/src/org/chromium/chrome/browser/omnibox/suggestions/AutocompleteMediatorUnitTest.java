@@ -2304,6 +2304,52 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void loadTypedOmniboxText_tabSearchOverlay_noSuggestions_doesNotLoadUrl() {
+        var session = createEmptySession();
+        var autocompleteInput = session.getAutocompleteInput();
+        autocompleteInput
+                .setUserText("query")
+                .setPageClassification(PageClassification.ANDROID_TAB_SEARCH_OVERLAY);
+        when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("query");
+        mMediator.beginInput(session);
+
+        mMediator.loadTypedOmniboxText(
+                TEST_EVENT_TIME, AutocompleteCoordinator.NavigationTarget.CURRENT_TAB);
+
+        verify(mAutocompleteDelegate, never()).loadUrl(any());
+        verify(mAutocompleteDelegate, never()).clearOmniboxFocus();
+    }
+
+    @Test
+    @SmallTest
+    public void loadTypedOmniboxText_tabSearchOverlay_withSuggestions_loadsUrl() {
+        var session = createEmptySession();
+        var autocompleteInput = session.getAutocompleteInput();
+        autocompleteInput
+                .setUserText("tab")
+                .setPageClassification(PageClassification.ANDROID_TAB_SEARCH_OVERLAY);
+        when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("tab");
+        mMediator.beginInput(session);
+
+        AutocompleteMatch tabMatch =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.OPEN_TAB)
+                        .setDisplayText("tab match")
+                        .setInlineAutocompletion("")
+                        .setAllowedToBeDefaultMatch(true)
+                        .setUrl(JUnitTestGURLs.URL_1)
+                        .build();
+        mSuggestionsList.add(0, tabMatch);
+        mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
+
+        mMediator.loadTypedOmniboxText(
+                TEST_EVENT_TIME, AutocompleteCoordinator.NavigationTarget.CURRENT_TAB);
+
+        verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
+        assertEquals(JUnitTestGURLs.URL_1.getSpec(), mOmniboxLoadUrlParamsCaptor.getValue().url);
+    }
+
+    @Test
+    @SmallTest
     public void loadUrlFromVoice_conventionalRequest_loadsUrl() {
         mMediator.beginInput(createSession(AutocompleteRequestType.SEARCH));
         doReturn(JUnitTestGURLs.BLUE_1).when(mTemplateUrlService).getUrlForVoiceSearchQuery(any());
