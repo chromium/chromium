@@ -8,6 +8,7 @@
 #include <cmath>
 
 #include "base/command_line.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -104,7 +105,7 @@ int min_x(double angle, const SkSize& bounds, int block_width) {
   // -X also needs to be a factor of `block_width_offset()` so that there is no
   // sliding of the watermark blocks when `bounds` resize and there's always a
   // text block drawn at X=0.
-  int min = cos(90 - angle) * bounds.height();
+  int min = std::cos(base::DegToRad(90.0 - angle)) * bounds.height();
   return -((min / block_width_offset(block_width)) + 1) *
          block_width_offset(block_width);
 }
@@ -129,7 +130,8 @@ int max_x(double angle, const SkSize& bounds, int block_width) {
   //
   // An extra `block_width_offset()` length is added so that the last column for
   // staggered rows doesn't appear on resizes.
-  return cos(angle) * bounds.width() + block_width_offset(block_width);
+  return std::cos(base::DegToRad(angle)) * bounds.width() +
+         block_width_offset(block_width);
 }
 
 int max_y(double angle, const SkSize& bounds) {
@@ -165,7 +167,9 @@ int max_y(double angle, const SkSize& bounds) {
   //                           │ ╱
   //                           │╱
   //
-  return sin(angle) * bounds.width() + cos(angle) * bounds.height();
+  double angle_radians = base::DegToRad(angle);
+  return std::sin(angle_radians) * bounds.width() +
+         std::cos(angle_radians) * bounds.height();
 }
 
 class WatermarkBlockRenderer {
