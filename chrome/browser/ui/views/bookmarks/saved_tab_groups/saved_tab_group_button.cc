@@ -42,6 +42,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/label_button_border.h"
@@ -334,13 +335,19 @@ void SavedTabGroupButton::ShowContextMenuForViewImpl(
       base::BindRepeating(&SavedTabGroupButton::GetAndIncrementLatestCommandId,
                           base::Unretained(this)));
 
+  context_menu_highlight_ = AddAnchorHighlight();
   context_menu_runner_ = std::make_unique<views::MenuRunner>(
       menu_model_.get(),
-      views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED);
+      views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED,
+      base::BindRepeating(&SavedTabGroupButton::OnContextMenuClosed,
+                          base::Unretained(this)));
   context_menu_runner_->RunMenuAt(
-      source->GetWidget(),
-      /*button_controller=*/nullptr, gfx::Rect(point, gfx::Size()),
+      source->GetWidget(), button_controller(), gfx::Rect(point, gfx::Size()),
       views::MenuAnchorPosition::kTopLeft, source_type);
+}
+
+void SavedTabGroupButton::OnContextMenuClosed() {
+  context_menu_highlight_.reset();
 }
 
 BEGIN_METADATA(SavedTabGroupButton)

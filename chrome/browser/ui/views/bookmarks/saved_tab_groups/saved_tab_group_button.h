@@ -106,6 +106,7 @@ class SavedTabGroupButton : public views::MenuButton,
   void UpdateAccessibleName();
   void SetText(std::u16string_view text) override;
   int GetAndIncrementLatestCommandId();
+  void OnContextMenuClosed();
 
   raw_ptr<BrowserWindowInterface> browser_;
 
@@ -130,6 +131,9 @@ class SavedTabGroupButton : public views::MenuButton,
 
   // Menu model used by the context menu.
   std::unique_ptr<STGTabsMenuModel> menu_model_;
+
+  // Keeps the button highlighted while its context menu is showing.
+  std::optional<views::Button::ScopedAnchorHighlight> context_menu_highlight_;
 
   // Context menu runner used for this View.
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
