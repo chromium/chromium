@@ -35,7 +35,7 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.settings.MainSettings;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.settings.PreferenceFacility;
 import org.chromium.chrome.test.transit.settings.SettingsActivityPublicTransitEntryPoints;
@@ -59,13 +59,13 @@ public class PasswordsPreferenceTest {
     private static final int RENDER_TEST_REVISION = 2;
 
     @ClassRule
-    public static SettingsActivityTestRule<MainSettings> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(MainSettings.class);
+    public static SettingsTestRule<MainSettings> mSettingsActivityTestRule =
+            new SettingsTestRule<>(MainSettings.class);
 
     @ClassRule
-    public static SettingsActivityTestRule<AutofillAndPasswordsFragment>
+    public static SettingsTestRule<AutofillAndPasswordsFragment>
             mAutofillSettingsActivityTestRule =
-                    new SettingsActivityTestRule<>(AutofillAndPasswordsFragment.class);
+                    new SettingsTestRule<>(AutofillAndPasswordsFragment.class);
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
