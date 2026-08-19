@@ -252,7 +252,7 @@ class ContentWebState : public WebState,
   // The unique identifier. Stable across application restarts.
   const WebStateID unique_identifier_;
   base::ObserverList<WebStatePolicyDecider, true> policy_deciders_;
-  base::ObserverList<WebStateObserver, true> observers_;
+  WebStateObserverList observers_;
   std::unique_ptr<ContentNavigationManager> navigation_manager_;
   std::map<ContentWorld, std::unique_ptr<ContentWebFramesManager>> managers_;
   FaviconStatus favicon_status_;
