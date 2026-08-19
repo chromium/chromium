@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.isOnlyArchivedMsg;
 
 import android.graphics.Bitmap;
+import android.view.View;
 
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
@@ -155,6 +156,14 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
 
         mModelList.removeAt(index);
     }
+
+    /**
+     * Prepares layout-specific view properties and animation tags prior to tab closure animation.
+     *
+     * @param view The clicked close button {@link View}, or null.
+     * @param closingTabIndex The UI index of the tab being closed in {@link #mModelList}.
+     */
+    void prepareTabCloseAnimation(@Nullable View view, int closingTabIndex) {}
 
     /**
      * Handles UI model updates when a tab is moved in the tab model.

@@ -20,6 +20,11 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB_GROUP;
 
+import android.view.View;
+import android.widget.FrameLayout;
+
+import androidx.test.core.app.ApplicationProvider;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,6 +43,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -240,6 +246,40 @@ public class NestedLayoutDelegateUnitTest {
         mDelegate.onTabClose(mTab1);
 
         assertEquals(0, mModelList.size());
+    }
+
+    @Test
+    public void testPrepareTabCloseAnimation_LastTab() {
+        addTabToModelList(TAB1_ID, null);
+        addTabToModelList(TAB2_ID, null);
+
+        View parentView = new FrameLayout(ApplicationProvider.getApplicationContext());
+        View closeButton = new View(ApplicationProvider.getApplicationContext());
+        ((FrameLayout) parentView).addView(closeButton);
+
+        mDelegate.prepareTabCloseAnimation(closeButton, 1);
+
+        assertEquals(true, parentView.getTag(R.id.tab_clip_from_top));
+    }
+
+    @Test
+    public void testPrepareTabCloseAnimation_NotLastTab() {
+        addTabToModelList(TAB1_ID, null);
+        addTabToModelList(TAB2_ID, null);
+
+        View parentView = new FrameLayout(ApplicationProvider.getApplicationContext());
+        View closeButton = new View(ApplicationProvider.getApplicationContext());
+        ((FrameLayout) parentView).addView(closeButton);
+
+        mDelegate.prepareTabCloseAnimation(closeButton, 0);
+
+        assertEquals(false, parentView.getTag(R.id.tab_clip_from_top));
+    }
+
+    @Test
+    public void testPrepareTabCloseAnimation_NullView() {
+        mDelegate.prepareTabCloseAnimation(null, 0);
+        // Verify no crash on null view.
     }
 
     @Test
