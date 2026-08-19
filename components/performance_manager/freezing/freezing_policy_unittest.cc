@@ -1995,10 +1995,10 @@ TEST_F(FreezingPolicyOptOutTest, OptOutPolicyChanges) {
 
 namespace {
 
-class FreezingPolicyInfiniteTabsTest
+class FreezingPolicyPeriodicUnfreezeTestBase
     : public FreezingPolicyTest_BaseWithNoPage {
  protected:
-  FreezingPolicyInfiniteTabsTest() = default;
+  FreezingPolicyPeriodicUnfreezeTestBase() = default;
 
   void OnGraphCreated(GraphImpl* graph) override {
     FreezingPolicyTest_BaseWithNoPage::OnGraphCreated(graph);
@@ -2031,12 +2031,152 @@ class FreezingPolicyInfiniteTabsTest
 
   std::vector<TestNodeWrapper<PageNodeImpl>> pages_;
   std::vector<TestNodeWrapper<FrameNodeImpl>> frames_;
+};
+
+// Tests with only the always-active Infinite Tabs feature enabled.
+class FreezingPolicyInfiniteTabsTest
+    : public FreezingPolicyPeriodicUnfreezeTestBase {
+ protected:
+  FreezingPolicyInfiniteTabsTest() {
+    feature_list_.InitWithFeatures(
+        {features::kInfiniteTabsFreezing},
+        {features::kInfiniteTabsFreezingOnMemoryPressure});
+  }
 
  private:
-  base::test::ScopedFeatureList feature_list_{features::kInfiniteTabsFreezing};
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class FreezingPolicyPeriodicUnfreezeDisabledTest
+    : public FreezingPolicyPeriodicUnfreezeTestBase {
+ protected:
+  FreezingPolicyPeriodicUnfreezeDisabledTest() {
+    feature_list_.InitWithFeatures(
+        {}, {features::kInfiniteTabsFreezing,
+             features::kInfiniteTabsFreezingOnMemoryPressure});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests with only the memory-pressure-gated Infinite Tabs feature enabled.
+class FreezingPolicyInfiniteTabsMemoryPressureTest
+    : public FreezingPolicyPeriodicUnfreezeTestBase {
+ protected:
+  FreezingPolicyInfiniteTabsMemoryPressureTest() {
+    // Keep the Windows-only automatic memory check from overriding pressure
+    // transitions injected by this fixture.
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kInfiniteTabsFreezingOnMemoryPressure,
+          {{features::kInfiniteTabsFreezingOnMemoryPressureInterval.name,
+            "1d"}}}},
+        {features::kInfiniteTabsFreezing});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class FreezingPolicyInfiniteTabsBothFeaturesTest
+    : public FreezingPolicyPeriodicUnfreezeTestBase {
+ protected:
+  FreezingPolicyInfiniteTabsBothFeaturesTest() {
+    feature_list_.InitWithFeatures(
+        {features::kInfiniteTabsFreezing,
+         features::kInfiniteTabsFreezingOnMemoryPressure},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace
+
+TEST_F(FreezingPolicyPeriodicUnfreezeDisabledTest, TimerIsNotStarted) {
+  auto [page, frame] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+  ASSERT_FALSE(page->IsVisible());
+
+  EXPECT_FALSE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
+
+  AdvanceClock(features::kInfiniteTabsFreezing_UnfreezeInterval.Get() * 2);
+  VerifyFreezerExpectations();
+}
+
+TEST_F(FreezingPolicyInfiniteTabsMemoryPressureTest, PressureTransitions) {
+  auto [page, frame] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+  ASSERT_FALSE(page->IsVisible());
+
+  EXPECT_FALSE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
+
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  policy()->SetIsUnderMemoryPressureForTesting(true);
+  VerifyFreezerExpectations();
+  EXPECT_TRUE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
+
+  EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
+  policy()->SetIsUnderMemoryPressureForTesting(false);
+  VerifyFreezerExpectations();
+  EXPECT_FALSE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
+
+  // Enter pressure at the beginning of an unfreeze period. The page should
+  // remain unfrozen until the end of the window.
+  AdvanceToAlignedTime(features::kInfiniteTabsFreezing_UnfreezeInterval.Get());
+  policy()->SetIsUnderMemoryPressureForTesting(true);
+  EXPECT_TRUE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
+
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  AdvanceClock(features::kInfiniteTabsFreezing_UnfreezeDuration.Get());
+  VerifyFreezerExpectations();
+  EXPECT_TRUE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
+
+  EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
+  policy()->SetIsUnderMemoryPressureForTesting(false);
+  VerifyFreezerExpectations();
+  EXPECT_FALSE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
+}
+
+TEST_F(FreezingPolicyInfiniteTabsBothFeaturesTest,
+       TimerRemainsRunningAcrossPressureTransitions) {
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  auto [page, frame] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+  ASSERT_FALSE(page->IsVisible());
+  VerifyFreezerExpectations();
+
+  // A page that never had a reason change doesn't have a timer. Pressure
+  // transitions shouldn't start one because the always-active feature already
+  // controls periodic unfreezing.
+  auto page_without_timer = CreateNode<PageNodeImpl>(
+      /*web_contents=*/nullptr,
+      /*browsing_context_id=*/base::UnguessableToken());
+
+  EXPECT_TRUE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
+  EXPECT_FALSE(policy()->IsPeriodicUnfreezeTimerRunningForTesting(
+      page_without_timer.get()));
+  policy()->SetIsUnderMemoryPressureForTesting(true);
+  EXPECT_TRUE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
+  EXPECT_FALSE(policy()->IsPeriodicUnfreezeTimerRunningForTesting(
+      page_without_timer.get()));
+  policy()->SetIsUnderMemoryPressureForTesting(false);
+  EXPECT_TRUE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
+  EXPECT_FALSE(policy()->IsPeriodicUnfreezeTimerRunningForTesting(
+      page_without_timer.get()));
+  VerifyFreezerExpectations();
+}
 
 // Verify that under "Infinite Tabs Freezing", tabs are frozen if not in the
 // list of most recently used.
@@ -2217,29 +2357,39 @@ TEST_F(FreezingPolicyInfiniteTabsTest, PeriodicUnfreeze) {
   auto [page, frame] =
       CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
   ASSERT_FALSE(page->IsVisible());
+  EXPECT_TRUE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 
   // Advance to the end of the periodic unfreeze period. `pages_[0]` should be
   // frozen.
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
   AdvanceClock(features::kInfiniteTabsFreezing_UnfreezeDuration.Get());
   VerifyFreezerExpectations();
+  EXPECT_TRUE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 
   // Advance to the beginning of the next periodic unfreeze period. `pages_[0]`
   // should be unfrozen.
   EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
   AdvanceClock(kTimeBetweenUnfreezePeriods);
   VerifyFreezerExpectations();
+  EXPECT_TRUE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 
   // Advance to the end of the periodic unfreeze period. `pages_[0]` should be
   // frozen again.
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
   AdvanceClock(features::kInfiniteTabsFreezing_UnfreezeDuration.Get());
   VerifyFreezerExpectations();
+  EXPECT_TRUE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 
   // Add a `CannotFreezeReason`. `pages_[0]` is unfrozen.
   EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
   pages_[0]->SetUsesWebRTCForTesting(true);
   VerifyFreezerExpectations();
+  EXPECT_FALSE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 
   // At the next periodic unfreeze period, `pages_[0]` remains unfrozen.
   AdvanceClock(kTimeBetweenUnfreezePeriods);
@@ -2250,6 +2400,55 @@ TEST_F(FreezingPolicyInfiniteTabsTest, PeriodicUnfreeze) {
   // When the `CannotFreezeReason` is removed, `pages_[0]` is frozen.
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
   pages_[0]->SetUsesWebRTCForTesting(false);
+  VerifyFreezerExpectations();
+  EXPECT_TRUE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
+
+  // The restarted timer keeps the page's original phase.
+  EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
+  AdvanceClock(kTimeBetweenUnfreezePeriods);
+  VerifyFreezerExpectations();
+}
+
+TEST_F(FreezingPolicyInfiniteTabsTest, ConnectedPagesPeriodicUnfreeze) {
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  auto [page, frame] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+  VerifyFreezerExpectations();
+
+  auto connected_page = CreateNode<PageNodeImpl>(
+      /*web_contents=*/nullptr,
+      /*browsing_context_id=*/base::UnguessableToken());
+  connected_page->SetType(PageType::kExtension);
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(connected_page.get()));
+  auto connected_frame = CreateFrameNodeAutoId(
+      process_node(), connected_page.get(),
+      /*parent_frame_node=*/nullptr, frames_[0]->GetBrowsingInstanceId());
+  VerifyFreezerExpectations();
+
+  EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
+  EXPECT_CALL(*freezer(), UnfreezePageNode(connected_page.get()));
+  AdvanceToAlignedTime(features::kInfiniteTabsFreezing_UnfreezeInterval.Get());
+  VerifyFreezerExpectations();
+
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(connected_page.get()));
+  AdvanceClock(features::kInfiniteTabsFreezing_UnfreezeDuration.Get());
+  VerifyFreezerExpectations();
+}
+
+TEST_F(FreezingPolicyInfiniteTabsTest, DestroyPageWithArmedTimer) {
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
+  auto [page, frame] =
+      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
+  VerifyFreezerExpectations();
+
+  EXPECT_TRUE(
+      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
+  frames_[0].reset();
+  pages_[0].reset();
+
+  AdvanceClock(features::kInfiniteTabsFreezing_UnfreezeInterval.Get() * 2);
   VerifyFreezerExpectations();
 }
 

@@ -273,11 +273,21 @@ FreezingPolicy::FreezingPolicy(
 
 FreezingPolicy::~FreezingPolicy() = default;
 
+bool FreezingPolicy::IsPeriodicUnfreezeTimerRunningForTesting(
+    const PageNode* page_node) const {
+  return GetFreezingState(page_node).periodic_unfreeze_timer.IsRunning();
+}
+
+void FreezingPolicy::SetIsUnderMemoryPressureForTesting(
+    bool is_under_memory_pressure) {
+  OnMemoryPressureStateChanged(is_under_memory_pressure);
+}
+
 void FreezingPolicy::ToggleFreezingOnBatterySaverMode(bool is_enabled) {
   is_battery_saver_active_ = is_enabled;
   // Update frozen state for all connected sets of pages (toggling the state of
   // battery saver mode can affect the frozen state of any connected set).
-  UpdateAllPagesFrozenState();
+  UpdateAllPagesFrozenState(base::LiveTicks::Now());
 }
 
 void FreezingPolicy::AddFreezeVote(PageNode* page_node) {
@@ -523,16 +533,7 @@ void FreezingPolicy::OnCannotFreezeReasonChange(const PageNode* page_node,
   after_tracker.PopulateWithPageFreezingState(state);
 
   const base::LiveTicks now = base::LiveTicks::Now();
-
-  if (!after_tracker.CanFreeze(FreezingType::kInfiniteTabs)) {
-    // No need to run the periodic unfreeze timer when the tab isn't eligible
-    // for infinite tabs freezing.
-    state.periodic_unfreeze_timer.Stop();
-  } else if (!state.periodic_unfreeze_timer.IsRunning()) {
-    // Start a timer which fires when entering or exiting a periodic unfreeze
-    // period.
-    StartPeriodicUnfreezeTimer(page_node, now);
-  }
+  UpdatePeriodicUnfreezeTimer(page_node, now);
 
   if (before_tracker != after_tracker) {
     UpdateFrozenState(page_node, now);
@@ -1252,6 +1253,34 @@ void FreezingPolicy::CheckMostRecentlyUsedListSize() {
       base::NotFatalUntil::M140);
 }
 
+bool FreezingPolicy::IsPeriodicUnfreezingActive() const {
+  return base::FeatureList::IsEnabled(features::kInfiniteTabsFreezing) ||
+         (base::FeatureList::IsEnabled(
+              features::kInfiniteTabsFreezingOnMemoryPressure) &&
+          is_under_memory_pressure_);
+}
+
+void FreezingPolicy::UpdatePeriodicUnfreezeTimer(const PageNode* page_node,
+                                                 base::LiveTicks now) {
+  auto& state = GetFreezingState(page_node);
+  if (!IsPeriodicUnfreezingActive() ||
+      HasCannotFreezeReasonForType(state.cannot_freeze_reasons,
+                                   FreezingType::kInfiniteTabs)) {
+    state.periodic_unfreeze_timer.Stop();
+    return;
+  }
+
+  if (!state.periodic_unfreeze_timer.IsRunning()) {
+    StartPeriodicUnfreezeTimer(page_node, now);
+  }
+}
+
+void FreezingPolicy::UpdateAllPeriodicUnfreezeTimers(base::LiveTicks now) {
+  for (const PageNode* page_node : GetOwningGraph()->GetAllPageNodes()) {
+    UpdatePeriodicUnfreezeTimer(page_node, now);
+  }
+}
+
 void FreezingPolicy::StartPeriodicUnfreezeTimer(const PageNode* page_node,
                                                 base::LiveTicks now) {
   auto& state = GetFreezingState(page_node);
@@ -1265,7 +1294,7 @@ void FreezingPolicy::StartPeriodicUnfreezeTimer(const PageNode* page_node,
 void FreezingPolicy::OnPeriodicUnfreezeTimer(const PageNode* page_node) {
   const base::LiveTicks now = base::LiveTicks::Now();
   UpdateFrozenState(page_node, now);
-  StartPeriodicUnfreezeTimer(page_node, now);
+  UpdatePeriodicUnfreezeTimer(page_node, now);
 }
 
 void FreezingPolicy::RecordFreezingEligibilityUKM() {
@@ -1446,21 +1475,28 @@ void FreezingPolicy::CheckMemoryPressureForFreezing() {
 
   bool is_now_under_pressure = available_percent < kPressureThresholdPercent;
 
-  // If the pressure state hasn't changed, there's nothing to do.
-  if (is_now_under_pressure == is_under_memory_pressure_) {
-    return;
-  }
-
-  // The state has changed. Update the flag and re-evaluate all pages.
-  is_under_memory_pressure_ = is_now_under_pressure;
-  UpdateAllPagesFrozenState();
+  OnMemoryPressureStateChanged(is_now_under_pressure);
 
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-void FreezingPolicy::UpdateAllPagesFrozenState() {
-  const base::LiveTicks now = base::LiveTicks::Now();
+void FreezingPolicy::OnMemoryPressureStateChanged(
+    bool is_under_memory_pressure) {
+  // If the pressure state hasn't changed, no transition work is needed.
+  if (is_under_memory_pressure == is_under_memory_pressure_) {
+    return;
+  }
 
+  const bool was_periodic_unfreezing_active = IsPeriodicUnfreezingActive();
+  const base::LiveTicks now = base::LiveTicks::Now();
+  is_under_memory_pressure_ = is_under_memory_pressure;
+  if (was_periodic_unfreezing_active != IsPeriodicUnfreezingActive()) {
+    UpdateAllPeriodicUnfreezeTimers(now);
+  }
+  UpdateAllPagesFrozenState(now);
+}
+
+void FreezingPolicy::UpdateAllPagesFrozenState(base::LiveTicks now) {
   base::flat_set<raw_ptr<const PageNode>> visited_pages;
   for (auto& [id, state] : browsing_instance_states_) {
     if (!visited_pages.contains(*state.pages.begin())) {
