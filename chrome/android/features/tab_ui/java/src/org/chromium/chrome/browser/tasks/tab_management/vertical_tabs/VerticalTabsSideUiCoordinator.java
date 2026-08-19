@@ -138,6 +138,25 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
         mIsVerticalTabsActiveSupplier.set(false);
     }
 
+    /** Requests keyboard focus on the Vertical Tabs rail. */
+    public void requestKeyboardFocus() {
+        mTabListCoordinator.requestKeyboardFocus();
+    }
+
+    /** Returns whether the Vertical Tabs rail contains keyboard focus. */
+    public boolean containsKeyboardFocus() {
+        View view = mTabListCoordinator.getView();
+        return view != null && view.hasFocus();
+    }
+
+    /**
+     * Returns whether or not Tab layout toggle menu can be activated. Used to grey out the menu
+     * item if it cannot be activated due to conditions such as a narrow app Window width.
+     */
+    public boolean canActivateTabLayoutToggleMenu() {
+        return mSideUiCoordinator.canShowSideUi(SideUiId.VERTICAL_TABS);
+    }
+
     private void releasePersistentShowingToken() {
         if (mBrowserControlsToken != TokenHolder.INVALID_TOKEN) {
             mBrowserControlsVisibilityDelegate.releasePersistentShowingToken(mBrowserControlsToken);
@@ -182,14 +201,6 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     @Override
     public boolean hasContentToShow() {
         return mManualVisible;
-    }
-
-    /**
-     * Returns whether or not Tab layout toggle menu can be activated. Used to grey out the menu
-     * item if it cannot be activated due to conditions such as a narrow app Window width.
-     */
-    public boolean canActivateTabLayoutToggleMenu() {
-        return mSideUiCoordinator.canShowSideUi(SideUiId.VERTICAL_TABS);
     }
 
     @Override

@@ -71,6 +71,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     private VerticalTabsSideUiCoordinator mCoordinator;
     private ActivityController<Activity> mActivityController;
     private Activity mActivity;
+    private View mTabListView;
     private @Px int mWideWindowWidth;
     private @Px int mMediumWindowWidth;
     private @Px int mNarrowWindowWidth;
@@ -92,8 +93,8 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         // Initialize window width to wide before mCoordinator creation to avoid
         // triggering a layout change event during constructor setup.
         setWindowWidthPx(mWideWindowWidth);
-        View mockView = new View(mActivity);
-        when(mMockTabListCoordinator.getView()).thenReturn(mockView);
+        mTabListView = new View(mActivity);
+        when(mMockTabListCoordinator.getView()).thenReturn(mTabListView);
         mCollapseController =
                 new VerticalTabRailCollapseController(
                         mMockTabListCoordinator::setRailCollapseState);
@@ -558,6 +559,26 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         assertShowableWidth(0, hiddenWindowWidth);
         verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.COLLAPSED);
         verify(mMockTabListCoordinator).setCollapseButtonEnabled(false);
+    }
+
+    @Test
+    @SmallTest
+    public void testRequestKeyboardFocus_DelegatesToTabListCoordinator() {
+        mCoordinator.requestKeyboardFocus();
+        verify(mMockTabListCoordinator).requestKeyboardFocus();
+    }
+
+    @Test
+    @SmallTest
+    public void testContainsKeyboardFocus() {
+        assertFalse(mCoordinator.containsKeyboardFocus());
+
+        mTabListView.setFocusableInTouchMode(true);
+        mTabListView.requestFocus();
+        assertTrue(mCoordinator.containsKeyboardFocus());
+
+        when(mMockTabListCoordinator.getView()).thenReturn(null);
+        assertFalse(mCoordinator.containsKeyboardFocus());
     }
 
     private void assertShowableWidth(@Px int expectedWidth, @Px int windowWidth) {

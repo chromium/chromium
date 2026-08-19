@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabsSideUiCoordinator;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelContainerCoordinator;
@@ -31,7 +32,8 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * Controls the keyboard focus location for tab strip, toolbar, bookmarks bar on Chrome for Android.
+ * Controls the keyboard focus location for top controls and side UI (tab strip, omnibox, bookmarks
+ * bar, vertical tabs, side panel) on Chrome for Android.
  *
  * <p>See {@link org.chromium.chrome.browser.KeyboardShortcuts.KeyboardShortcutsSemanticMeaning}
  */
@@ -48,10 +50,12 @@ import java.util.function.Supplier;
     private final TabObscuringHandler mTabObscuringHandler;
     private final Supplier<@Nullable ToolbarManager> mToolbarManagerSupplier;
     private final Supplier<Boolean> mUrlBarVisibleSupplier;
+    private final Supplier<@Nullable VerticalTabsSideUiCoordinator>
+            mVerticalTabsSideUiCoordinatorSupplier;
 
     /**
      * Constructs a {@link KeyboardFocusRowManager}, which controls the keyboard focus location for
-     * tab strip, omnibox, bookmarks bar on Chrome for Android.
+     * tab strip, omnibox, bookmarks bar, vertical tabs, and side panel on Chrome for Android.
      *
      * <p>See {@link org.chromium.chrome.browser.KeyboardShortcuts.KeyboardShortcutsSemanticMeaning}
      *
@@ -77,6 +81,9 @@ import java.util.function.Supplier;
      *     not visible) that will be used to get/set keyboard focus on the omnibox.
      * @param urlBarVisibleSupplier Supplies a boolean indicating whether the URL bar is currently
      *     visible, used to determine if it can receive keyboard focus.
+     * @param verticalTabsSideUiCoordinatorSupplier Supplies the {@link
+     *     VerticalTabsSideUiCoordinator} (or null, if vertical tabs is not initialized or
+     *     supported) that will be used to get/set keyboard focus on vertical tabs.
      */
     KeyboardFocusRowManager(
             Supplier<@Nullable BookmarkBarCoordinator> bookmarkBarCoordinatorSupplier,
@@ -87,7 +94,9 @@ import java.util.function.Supplier;
             Supplier<@Nullable StripLayoutHelperManager> stripLayoutHelperManagerSupplier,
             TabObscuringHandler tabObscuringHandler,
             Supplier<@Nullable ToolbarManager> toolbarManagerSupplier,
-            Supplier<Boolean> urlBarVisibleSupplier) {
+            Supplier<Boolean> urlBarVisibleSupplier,
+            Supplier<@Nullable VerticalTabsSideUiCoordinator>
+                    verticalTabsSideUiCoordinatorSupplier) {
         mBookmarkBarCoordinatorSupplier = bookmarkBarCoordinatorSupplier;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
@@ -97,6 +106,7 @@ import java.util.function.Supplier;
         mTabObscuringHandler = tabObscuringHandler;
         mToolbarManagerSupplier = toolbarManagerSupplier;
         mUrlBarVisibleSupplier = urlBarVisibleSupplier;
+        mVerticalTabsSideUiCoordinatorSupplier = verticalTabsSideUiCoordinatorSupplier;
     }
 
     /** Called when the user switches which row of the top controls should have keyboard focus. */
@@ -138,6 +148,12 @@ import java.util.function.Supplier;
                     stripLayoutHelperManager.requestKeyboardFocus();
                 }
             }
+            case KeyboardFocusRow.VERTICAL_TABS -> {
+                var verticalTabsCoordinator = mVerticalTabsSideUiCoordinatorSupplier.get();
+                if (verticalTabsCoordinator != null) {
+                    verticalTabsCoordinator.requestKeyboardFocus();
+                }
+            }
             case KeyboardFocusRow.BOOKMARKS_BAR -> {
                 var bookmarkBarCoordinator = mBookmarkBarCoordinatorSupplier.get();
                 if (bookmarkBarCoordinator != null) bookmarkBarCoordinator.requestFocus();
@@ -164,6 +180,11 @@ import java.util.function.Supplier;
         var stripLayoutHelperManager = mStripLayoutHelperManagerSupplier.get();
         if (stripLayoutHelperManager != null && stripLayoutHelperManager.containsKeyboardFocus()) {
             return KeyboardFocusRow.TAB_STRIP;
+        }
+
+        var verticalTabsCoordinator = mVerticalTabsSideUiCoordinatorSupplier.get();
+        if (verticalTabsCoordinator != null && verticalTabsCoordinator.containsKeyboardFocus()) {
+            return KeyboardFocusRow.VERTICAL_TABS;
         }
 
         var bookmarkBarCoordinator = mBookmarkBarCoordinatorSupplier.get();
@@ -210,6 +231,13 @@ import java.util.function.Supplier;
             keyboardFocusRows.add(KeyboardFocusRow.TAB_STRIP);
         }
 
+        // The next item in the focus cycle order is VERTICAL_TABS, if it is present.
+        var sideUiStateProvider = mSideUiStateProviderSupplier.get();
+        if (sideUiStateProvider != null
+                && sideUiStateProvider.isSideUiShowing(SideUiId.VERTICAL_TABS)) {
+            keyboardFocusRows.add(KeyboardFocusRow.VERTICAL_TABS);
+        }
+
         // The next item in the focus cycle order is BOOKMARKS_BAR, if it is present.
         var bookmarkBarCoordinator = mBookmarkBarCoordinatorSupplier.get();
         if (bookmarkBarCoordinator != null && bookmarkBarCoordinator.isVisible()) {
@@ -218,7 +246,6 @@ import java.util.function.Supplier;
 
         // The next item in the focus cycle order is the SIDE_PANEL, if it is shown.
         if (AndroidSidePanelEnabledFn.isEnabled()) {
-            var sideUiStateProvider = mSideUiStateProviderSupplier.get();
             if (sideUiStateProvider != null
                     && sideUiStateProvider.isSideUiShowing(SideUiId.SIDE_PANEL)) {
                 keyboardFocusRows.add(KeyboardFocusRow.SIDE_PANEL);

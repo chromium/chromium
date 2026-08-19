@@ -207,6 +207,8 @@ public class VerticalTabListCoordinatorUnitTest {
     private static final int PINNED_TAB_ID = 3;
     private static final int NON_EXISTENT_TAB_ID = 999;
     private static final GURL MOCK_URL = new GURL("https://google.com");
+    private static final int TEST_CONTAINER_WIDTH_PX = 800;
+    private static final int TEST_CONTAINER_HEIGHT_PX = 1000;
 
     private Activity mActivity;
     private final SettableMonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier =
@@ -2301,6 +2303,87 @@ public class VerticalTabListCoordinatorUnitTest {
         View.OnDragListener newTabButtonListener =
                 ReflectionHelpers.getField(newTabListenerInfo, "mOnDragListener");
         assertEquals(mMainTabSwitcherDragHandler, newTabButtonListener);
+    }
+
+    @Test
+    @SmallTest
+    public void testRequestKeyboardFocus_WithPinnedTabs() {
+        Tab pinnedTab = prepareMockTab(mMockTab1, PINNED_TAB_ID);
+        when(pinnedTab.getIsPinned()).thenReturn(true);
+        when(mTabModel.getRepresentativeTabList()).thenReturn(List.of(pinnedTab));
+        when(mTabModel.iterator()).thenReturn(List.of(pinnedTab).iterator());
+        when(mTabModel.getTabById(PINNED_TAB_ID)).thenReturn(pinnedTab);
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.getTabAt(0)).thenReturn(pinnedTab);
+
+        createCoordinator();
+        View containerView = mCoordinator.getView();
+        containerView.measure(
+                View.MeasureSpec.makeMeasureSpec(TEST_CONTAINER_WIDTH_PX, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(
+                        TEST_CONTAINER_HEIGHT_PX, View.MeasureSpec.EXACTLY));
+        containerView.layout(0, 0, TEST_CONTAINER_WIDTH_PX, TEST_CONTAINER_HEIGHT_PX);
+
+        mCoordinator.requestKeyboardFocus();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        RecyclerView recyclerView =
+                mCoordinator.getView().findViewById(R.id.pinned_tabs_recycler_view);
+        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(0);
+        assertNotNull(holder);
+        assertEquals(holder.itemView, mCoordinator.getView().findFocus());
+    }
+
+    @Test
+    @SmallTest
+    public void testRequestKeyboardFocus_WithUnpinnedTabs() {
+        Tab unpinnedTab = prepareMockTab(mMockTab1, TAB_ID_1);
+        when(mTabModel.getRepresentativeTabList()).thenReturn(List.of(unpinnedTab));
+        when(mTabModel.iterator()).thenReturn(List.of(unpinnedTab).iterator());
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(unpinnedTab);
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.getTabAt(0)).thenReturn(unpinnedTab);
+
+        createCoordinator();
+        View containerView = mCoordinator.getView();
+        containerView.measure(
+                View.MeasureSpec.makeMeasureSpec(TEST_CONTAINER_WIDTH_PX, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(
+                        TEST_CONTAINER_HEIGHT_PX, View.MeasureSpec.EXACTLY));
+        containerView.layout(0, 0, TEST_CONTAINER_WIDTH_PX, TEST_CONTAINER_HEIGHT_PX);
+
+        mCoordinator.requestKeyboardFocus();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        RecyclerView recyclerView =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(0);
+        assertNotNull(holder);
+        assertEquals(holder.itemView, mCoordinator.getView().findFocus());
+    }
+
+    @Test
+    @SmallTest
+    public void testRequestKeyboardFocus_EmptyList_FallsBackToCollapseButton() {
+        when(mTabModel.getRepresentativeTabList()).thenReturn(List.of());
+        when(mTabModel.iterator()).thenReturn(Collections.emptyIterator());
+        when(mTabModel.getCount()).thenReturn(0);
+
+        createCoordinator();
+        View containerView = mCoordinator.getView();
+        containerView.measure(
+                View.MeasureSpec.makeMeasureSpec(TEST_CONTAINER_WIDTH_PX, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(
+                        TEST_CONTAINER_HEIGHT_PX, View.MeasureSpec.EXACTLY));
+        containerView.layout(0, 0, TEST_CONTAINER_WIDTH_PX, TEST_CONTAINER_HEIGHT_PX);
+
+        View collapseButton = mCoordinator.getView().findViewById(R.id.collapse_button);
+        assertNotNull(collapseButton);
+
+        mCoordinator.requestKeyboardFocus();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertTrue(collapseButton.isFocused());
     }
 
     // =============================================================================================

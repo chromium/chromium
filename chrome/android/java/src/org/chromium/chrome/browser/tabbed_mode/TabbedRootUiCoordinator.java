@@ -756,7 +756,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         () -> assumeNonNull(mLayoutManager).getStripLayoutHelperManager(),
                         mTabObscuringHandlerSupplier.get(),
                         () -> mToolbarManager, // Gets current value of mToolbarManager
-                        urlBarVisibleSupplier);
+                        urlBarVisibleSupplier,
+                        () -> mVerticalTabsSideUiCoordinator);
 
         mInactivityObserver =
                 new InactivityObserver() {

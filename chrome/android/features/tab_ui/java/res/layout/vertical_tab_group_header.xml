@@ -42,6 +42,7 @@ found in the LICENSE file.
         android:src="@drawable/ic_more_vert_24dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/accessibility_toolbar_btn_menu"
+        android:focusable="true"
         android:visibility="gone" />
 
     <!-- Expand/Collapse Arrow (Points down naturally by default for Collapsed state) -->
