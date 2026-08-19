@@ -548,8 +548,9 @@
 
 #define SUBMENU_ACTION_IDS                                                     \
   E(kActionAppMenuRoot)                                                        \
-  E(kActionBookmarksSubmenu, IDC_BOOKMARKS_MENU)                           \
-  E(kActionPasswordsAndAutofillSubmenu, IDC_PASSWORDS_AND_AUTOFILL_MENU)   \
+  E(kActionBookmarksSubmenu, IDC_BOOKMARKS_MENU)                               \
+  E(kActionBookmarkBarSubmenu, IDC_BOOKMARK_BAR_SUBMENU)                       \
+  E(kActionPasswordsAndAutofillSubmenu, IDC_PASSWORDS_AND_AUTOFILL_MENU)       \
   E(kActionReadingListSubmenu, IDC_READING_LIST_MENU)                      \
   E(kActionZoomSubmenu, IDC_ZOOM_MENU)                                     \
   E(kActionProfileSubmenu, IDC_PROFILE_MENU_IN_APP_MENU)                   \

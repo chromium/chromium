@@ -3995,6 +3995,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(base::UserMetricsAction(
+                    "WrenchMenu_Bookmarks_AlwaysShowBookmarkBar"));
                 chrome::SetBookmarkBarVisibilityState(
                     bwi, bookmarks::BookmarkBarVisibilityState::kAlwaysShow);
               },
@@ -4008,6 +4010,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(base::UserMetricsAction(
+                    "WrenchMenu_Bookmarks_AlwaysHideBookmarkBar"));
                 chrome::SetBookmarkBarVisibilityState(
                     bwi, bookmarks::BookmarkBarVisibilityState::kAlwaysHide);
               },
@@ -4021,6 +4025,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                base::RecordAction(base::UserMetricsAction(
+                    "WrenchMenu_Bookmarks_OnlyShowBookmarkBarOnNtp"));
                 chrome::SetBookmarkBarVisibilityState(
                     bwi, bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp);
               },
@@ -4661,6 +4667,19 @@ void BrowserActions::InitializeSubmenuActions() {
               bwi),
           kActionBookmarksSubmenu, IDS_BOOKMARKS_AND_LISTS_MENU,
           IDS_BOOKMARKS_AND_LISTS_MENU,
+          features::IsRoundedIconsEnabled() ? kStarIcon
+                                            : kBookmarksListsMenuOldIcon,
+          /*is_pinnable=*/false)
+          .Build());
+
+  root_action_item_->AddChild(
+      ChromeMenuAction(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {},
+              bwi),
+          kActionBookmarkBarSubmenu, IDS_BOOKMARK_BAR_SUBMENU_LABEL,
+          IDS_BOOKMARK_BAR_SUBMENU_LABEL,
           features::IsRoundedIconsEnabled() ? kStarIcon
                                             : kBookmarksListsMenuOldIcon,
           /*is_pinnable=*/false)
