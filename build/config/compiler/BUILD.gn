@@ -2072,9 +2072,6 @@ config("default_clippy_lints") {
     # coming from a Chromium engineer would get a lint disabled):
     "-Aclippy::needless_return",
 
-    # TODO(crbug.com/545173254): Fix and re-enable.
-    "-Aclippy::clone_on_copy",
-
     # TODO(crbug.com/534628766): Fix and re-enable.
     "-Aclippy::chunks_exact_to_as_chunks",
   ]
