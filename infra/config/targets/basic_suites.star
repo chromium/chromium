@@ -161,7 +161,6 @@ targets.legacy_basic_suite(
             args = [
                 "-retries=2",
             ],
-            experiment_percentage = 100,
         ),
     },
 )

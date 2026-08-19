@@ -504,7 +504,6 @@
             'chromeos/tast_control_flaky_tests.txt',
           ],
         },
-        'experiment_percentage': 100,
       },
     },
 

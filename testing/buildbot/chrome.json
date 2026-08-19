@@ -110,13 +110,13 @@
           "chromeos/tast_control_flaky_tests.txt"
         ],
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "module_name": "//chromeos:chrome_flaky_tast_tests",
         "module_scheme": "tast",
         "name": "chrome_flaky_tast_tests LKGM",
         "resultdb": {
           "result_format": "tast"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "chrome_flaky_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_flaky_tast_tests/",
         "timeout_sec": 7200,
@@ -192,13 +192,13 @@
           "chromeos/tast_control_flaky_tests.txt"
         ],
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "module_name": "//chromeos:chrome_flaky_tast_tests",
         "module_scheme": "tast",
         "name": "chrome_flaky_tast_tests LKGM",
         "resultdb": {
           "result_format": "tast"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "chrome_flaky_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_flaky_tast_tests/",
         "timeout_sec": 7200,
@@ -384,13 +384,13 @@
           "chromeos/tast_control_flaky_tests.txt"
         ],
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "module_name": "//chromeos:chrome_flaky_tast_tests",
         "module_scheme": "tast",
         "name": "chrome_flaky_tast_tests LKGM",
         "resultdb": {
           "result_format": "tast"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "chrome_flaky_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_flaky_tast_tests/",
         "timeout_sec": 7200,
@@ -1513,13 +1513,13 @@
           "chromeos/tast_control_flaky_tests.txt"
         ],
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "module_name": "//chromeos:chrome_flaky_tast_tests",
         "module_scheme": "tast",
         "name": "chrome_flaky_tast_tests LKGM",
         "resultdb": {
           "result_format": "tast"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "chrome_flaky_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_flaky_tast_tests/",
         "timeout_sec": 7200,
@@ -1706,13 +1706,13 @@
         "cros_test_names_from_file": [
           "chromeos/tast_control_flaky_tests.txt"
         ],
-        "experiment_percentage": 100,
         "module_name": "//chromeos:chrome_flaky_tast_tests",
         "module_scheme": "tast",
         "name": "chrome_flaky_tast_tests LKGM",
         "resultdb": {
           "result_format": "tast"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "chrome_flaky_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_flaky_tast_tests/",
         "timeout_sec": 7200,
@@ -2299,13 +2299,13 @@
         "cros_test_names_from_file": [
           "chromeos/tast_control_flaky_tests.txt"
         ],
-        "experiment_percentage": 100,
         "module_name": "//chromeos:chrome_flaky_tast_tests",
         "module_scheme": "tast",
         "name": "chrome_flaky_tast_tests LKGM",
         "resultdb": {
           "result_format": "tast"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "chrome_flaky_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_flaky_tast_tests/",
         "timeout_sec": 7200,
@@ -2837,13 +2837,13 @@
         "cros_test_names_from_file": [
           "chromeos/tast_control_flaky_tests.txt"
         ],
-        "experiment_percentage": 100,
         "module_name": "//chromeos:chrome_flaky_tast_tests",
         "module_scheme": "tast",
         "name": "chrome_flaky_tast_tests LKGM",
         "resultdb": {
           "result_format": "tast"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "chrome_flaky_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_flaky_tast_tests/",
         "timeout_sec": 7200,
@@ -3025,13 +3025,13 @@
           "chromeos/tast_control_flaky_tests.txt"
         ],
         "dut_pool": "vmlab",
-        "experiment_percentage": 100,
         "module_name": "//chromeos:chrome_flaky_tast_tests",
         "module_scheme": "tast",
         "name": "chrome_flaky_tast_tests LKGM",
         "resultdb": {
           "result_format": "tast"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "chrome_flaky_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_flaky_tast_tests/",
         "timeout_sec": 7200,
@@ -3175,13 +3175,13 @@
         "cros_test_names_from_file": [
           "chromeos/tast_control_flaky_tests.txt"
         ],
-        "experiment_percentage": 100,
         "module_name": "//chromeos:chrome_flaky_tast_tests",
         "module_scheme": "tast",
         "name": "chrome_flaky_tast_tests LKGM",
         "resultdb": {
           "result_format": "tast"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "chrome_flaky_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_flaky_tast_tests/",
         "timeout_sec": 7200,
@@ -3324,13 +3324,13 @@
         "cros_test_names_from_file": [
           "chromeos/tast_control_flaky_tests.txt"
         ],
-        "experiment_percentage": 100,
         "module_name": "//chromeos:chrome_flaky_tast_tests",
         "module_scheme": "tast",
         "name": "chrome_flaky_tast_tests LKGM",
         "resultdb": {
           "result_format": "tast"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "chrome_flaky_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_flaky_tast_tests/",
         "timeout_sec": 7200,
@@ -3465,13 +3465,13 @@
         "cros_test_names_from_file": [
           "chromeos/tast_control_flaky_tests.txt"
         ],
-        "experiment_percentage": 100,
         "module_name": "//chromeos:chrome_flaky_tast_tests",
         "module_scheme": "tast",
         "name": "chrome_flaky_tast_tests LKGM",
         "resultdb": {
           "result_format": "tast"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "chrome_flaky_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_flaky_tast_tests/",
         "timeout_sec": 7200,
