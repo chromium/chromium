@@ -10705,6 +10705,21 @@
             ]
         }
     ],
+    "EraseLegacyQueueOnDataLoss": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EraseLegacyQueueOnDataLoss"
+                    ]
+                }
+            ]
+        }
+    ],
     "EstimateNewSignInUsersWithFinchAvailablePopulation": [
         {
             "platforms": [
