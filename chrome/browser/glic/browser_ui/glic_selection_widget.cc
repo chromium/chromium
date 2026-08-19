@@ -769,7 +769,8 @@ class GlicSelectionContentsView : public views::View,
       auto elements = ParseMarkdownElements(
           markdown_output, is_complete, query_button_regex_,
           inline_query_regex_);
-      auto scroll_view = std::make_unique<views::ScrollView>();
+      auto scroll_view = std::make_unique<views::ScrollView>(
+          views::ScrollView::ScrollWithLayers::kEnabled);
       scroll_view->SetHorizontalScrollBarMode(
           views::ScrollView::ScrollBarMode::kDisabled);
       scroll_view->SetVerticalScrollBarMode(
