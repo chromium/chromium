@@ -34,7 +34,7 @@ void InMemoryMemoryBank::SaveMemoryBankEntry(
   int64_t entry_id = entry.id;
   entries_.Put(entry_id, std::move(entry));
   if (callback) {
-    std::move(callback).Run();
+    std::move(callback).Run(/*success=*/true);
   }
 }
 
@@ -71,7 +71,7 @@ void InMemoryMemoryBank::DeleteEntries(base::span<const int64_t> ids,
     }
   }
   if (callback) {
-    std::move(callback).Run();
+    std::move(callback).Run(/*success=*/true);
   }
 }
 

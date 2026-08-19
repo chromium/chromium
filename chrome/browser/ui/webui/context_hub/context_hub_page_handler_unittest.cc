@@ -897,14 +897,14 @@ TEST_F(ContextHubPageHandlerTest, GetAllMemoryBankEntries_Success) {
       ContextHubServiceFactory::GetForProfile(&profile_);
   ASSERT_TRUE(service);
 
-  base::test::TestFuture<void> save_tab_future;
+  base::test::TestFuture<bool> save_tab_future;
   service->SaveMemoryBankEntry(
       MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com/tab"),
                       "Tab Title", "Page text"),
       save_tab_future.GetCallback());
   ASSERT_TRUE(save_tab_future.Wait());
 
-  base::test::TestFuture<void> save_selection_future;
+  base::test::TestFuture<bool> save_selection_future;
   service->SaveMemoryBankEntry(
       MemoryBankEntry(MemoryBankType::kTextSelection,
                       GURL("https://example.com/select"), "Selection Title",
@@ -950,14 +950,14 @@ TEST_F(ContextHubPageHandlerTest, DeleteMemoryBankEntries_Success) {
       ContextHubServiceFactory::GetForProfile(&profile_);
   ASSERT_TRUE(service);
 
-  base::test::TestFuture<void> save_tab_future1;
+  base::test::TestFuture<bool> save_tab_future1;
   service->SaveMemoryBankEntry(
       MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com/tab1"),
                       "Tab Title 1", "Page text 1"),
       save_tab_future1.GetCallback());
   ASSERT_TRUE(save_tab_future1.Wait());
 
-  base::test::TestFuture<void> save_tab_future2;
+  base::test::TestFuture<bool> save_tab_future2;
   service->SaveMemoryBankEntry(
       MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com/tab2"),
                       "Tab Title 2", "Page text 2"),
@@ -1386,7 +1386,7 @@ TEST_F(ContextHubPageHandlerTest, AskGeminiWithContext_WithSelectedEntries) {
       ContextHubServiceFactory::GetForProfile(&profile_);
   ASSERT_TRUE(service);
 
-  base::test::TestFuture<void> save_future;
+  base::test::TestFuture<bool> save_future;
   service->SaveMemoryBankEntry(
       MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com/test"),
                       "Test Page", "Page content"),

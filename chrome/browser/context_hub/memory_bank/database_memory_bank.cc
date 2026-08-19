@@ -26,16 +26,13 @@ void DatabaseMemoryBank::SaveMemoryBankEntry(
   if (entry.timestamp.is_null()) {
     entry.timestamp = base::Time::Now();
   }
-  // TODO(crbug.com/534780677): Use the return value of
-  // AddOrUpdateMemoryBankEntry.
-  context_hub_backend_->AddOrUpdateMemoryBankEntry(
-      std::move(entry), base::IgnoreArgs<bool>(std::move(callback)));
+  context_hub_backend_->AddOrUpdateMemoryBankEntry(std::move(entry),
+                                                   std::move(callback));
 }
 
 void DatabaseMemoryBank::DeleteEntries(base::span<const int64_t> ids,
                                        OperationCompleteCallback callback) {
-  context_hub_backend_->DeleteMemoryBankEntries(
-      ids, base::IgnoreArgs<bool>(std::move(callback)));
+  context_hub_backend_->DeleteMemoryBankEntries(ids, std::move(callback));
 }
 
 void DatabaseMemoryBank::GetAllEntries(GetEntriesCallback callback) const {

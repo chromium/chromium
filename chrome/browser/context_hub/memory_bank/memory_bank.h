@@ -18,7 +18,7 @@ class MemoryBank {
  public:
   virtual ~MemoryBank() = default;
 
-  using OperationCompleteCallback = base::OnceClosure;
+  using OperationCompleteCallback = base::OnceCallback<void(bool)>;
   // Saves or updates an entry in the memory bank.
   virtual void SaveMemoryBankEntry(MemoryBankEntry entry,
                                    OperationCompleteCallback callback) = 0;

@@ -923,12 +923,12 @@ TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_EmptyTitleSkipped) {
 }
 
 TEST_F(ContextHubServiceTest, SaveMemoryBankEntry_Tab) {
-  base::test::TestFuture<void> save_tab_future;
+  base::test::TestFuture<bool> save_tab_future;
   service_.SaveMemoryBankEntry(
       MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com"),
                       "Title", "Page text"),
       save_tab_future.GetCallback());
-  EXPECT_TRUE(save_tab_future.Wait());
+  EXPECT_TRUE(save_tab_future.Get());
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> get_entries_future;
   service_.GetAllEntries(get_entries_future.GetCallback());
@@ -940,12 +940,12 @@ TEST_F(ContextHubServiceTest, SaveMemoryBankEntry_Tab) {
 }
 
 TEST_F(ContextHubServiceTest, SaveMemoryBankEntry_TextSelection) {
-  base::test::TestFuture<void> save_selection_future;
+  base::test::TestFuture<bool> save_selection_future;
   service_.SaveMemoryBankEntry(
       MemoryBankEntry(MemoryBankType::kTextSelection,
                       GURL("https://example.com"), "Title", "Selection"),
       save_selection_future.GetCallback());
-  EXPECT_TRUE(save_selection_future.Wait());
+  EXPECT_TRUE(save_selection_future.Get());
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> get_entries_future;
   service_.GetAllEntries(get_entries_future.GetCallback());
@@ -970,10 +970,10 @@ TEST_F(ContextHubServiceTest, DeleteEntries) {
   auto entries = get_entries_future.Get();
   ASSERT_EQ(2u, entries.size());
 
-  base::test::TestFuture<void> delete_future;
+  base::test::TestFuture<bool> delete_future;
   std::vector<int64_t> ids_to_delete = {entries[0].id, entries[1].id};
   service_.DeleteEntries(ids_to_delete, delete_future.GetCallback());
-  EXPECT_TRUE(delete_future.Wait());
+  EXPECT_TRUE(delete_future.Get());
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> get_entries_future2;
   service_.GetAllEntries(get_entries_future2.GetCallback());
@@ -1277,19 +1277,19 @@ TEST_F(ContextHubServiceTest, DeleteTodoFeedback) {
 }
 
 TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_Success) {
-  base::test::TestFuture<void> save_tab_future1;
+  base::test::TestFuture<bool> save_tab_future1;
   service_.SaveMemoryBankEntry(
       MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com/1"),
                       "Title 1", "Page text 1"),
       save_tab_future1.GetCallback());
-  ASSERT_TRUE(save_tab_future1.Wait());
+  EXPECT_TRUE(save_tab_future1.Get());
 
-  base::test::TestFuture<void> save_tab_future2;
+  base::test::TestFuture<bool> save_tab_future2;
   service_.SaveMemoryBankEntry(MemoryBankEntry(MemoryBankType::kTextSelection,
                                                GURL("https://example.com/2"),
                                                "Title 2", "Some selected text"),
                                save_tab_future2.GetCallback());
-  ASSERT_TRUE(save_tab_future2.Wait());
+  EXPECT_TRUE(save_tab_future2.Get());
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> entries_future;
   service_.GetAllEntries(entries_future.GetCallback());

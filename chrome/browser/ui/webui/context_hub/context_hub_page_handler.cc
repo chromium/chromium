@@ -224,7 +224,7 @@ void ContextHubPageHandler::DeleteMemoryBankEntries(
     return;
   }
 
-  service->DeleteEntries(ids, std::move(callback));
+  service->DeleteEntries(ids, base::IgnoreArgs<bool>(std::move(callback)));
 }
 
 namespace {

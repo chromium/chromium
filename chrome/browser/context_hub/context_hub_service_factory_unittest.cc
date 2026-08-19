@@ -97,12 +97,12 @@ TEST_F(ContextHubServiceFactoryTest,
       ContextHubServiceFactory::GetForProfile(&profile);
   ASSERT_NE(nullptr, service);
 
-  base::test::TestFuture<void> save_future;
+  base::test::TestFuture<bool> save_future;
   service->SaveMemoryBankEntry(
       MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com"),
                       "Title", "Page text"),
       save_future.GetCallback());
-  ASSERT_TRUE(save_future.Wait());
+  ASSERT_FALSE(save_future.Get());
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> get_entries_future;
   service->GetAllEntries(get_entries_future.GetCallback());
@@ -119,12 +119,12 @@ TEST_F(ContextHubServiceFactoryTest,
       ContextHubServiceFactory::GetForProfile(&profile);
   ASSERT_NE(nullptr, service);
 
-  base::test::TestFuture<void> save_future;
+  base::test::TestFuture<bool> save_future;
   service->SaveMemoryBankEntry(
       MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com"),
                       "Title", "Page text"),
       save_future.GetCallback());
-  ASSERT_TRUE(save_future.Wait());
+  ASSERT_TRUE(save_future.Get());
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> get_entries_future;
   service->GetAllEntries(get_entries_future.GetCallback());
@@ -146,12 +146,12 @@ TEST_F(ContextHubServiceFactoryTest,
       ContextHubServiceFactory::GetForProfile(&profile);
   ASSERT_NE(nullptr, service);
 
-  base::test::TestFuture<void> save_future;
+  base::test::TestFuture<bool> save_future;
   service->SaveMemoryBankEntry(
       MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com"),
                       "Title", "Page text"),
       save_future.GetCallback());
-  ASSERT_TRUE(save_future.Wait());
+  ASSERT_TRUE(save_future.Get());
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> get_entries_future;
   service->GetAllEntries(get_entries_future.GetCallback());
@@ -173,12 +173,12 @@ TEST_F(ContextHubServiceFactoryTest,
       ContextHubServiceFactory::GetForProfile(&profile);
   ASSERT_NE(nullptr, service);
 
-  base::test::TestFuture<void> save_future;
+  base::test::TestFuture<bool> save_future;
   service->SaveMemoryBankEntry(
       MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com"),
                       "Title", "Page text"),
       save_future.GetCallback());
-  ASSERT_TRUE(save_future.Wait());
+  ASSERT_FALSE(save_future.Get());
 
   // Memory Banks feature is disabled so NoOpMemoryBank returns empty entries.
   base::test::TestFuture<std::vector<MemoryBankEntry>> get_entries_future;
