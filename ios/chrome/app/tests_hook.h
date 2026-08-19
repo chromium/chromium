@@ -72,6 +72,9 @@ namespace tests_hook {
 // not have the required identity internal state to perform the verification.
 bool DisableGeminiEligibilityCheck();
 
+// Returns true if the passage embedder GPU execution should be enabled.
+bool EnablePassageEmbedderGpuExecution();
+
 // Returns true if app group access should be disabled as tests don't have the
 // required entitlements.
 // This is used by internal code.

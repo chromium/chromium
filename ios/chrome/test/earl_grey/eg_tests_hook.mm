@@ -72,6 +72,10 @@ bool DisableGeminiEligibilityCheck() {
   return true;
 }
 
+bool EnablePassageEmbedderGpuExecution() {
+  return false;
+}
+
 bool DisableAppGroupAccess() {
   return true;
 }

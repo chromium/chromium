@@ -24,6 +24,7 @@ source_set("on_device_category_classifier") {
     "//components/page_content_annotations/core",
     "//components/passage_embeddings/core",
     "//components/ukm/ios:ukm_url_recorder",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/intelligence/actor/tools/model:page_stability",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/proto_wrappers",
