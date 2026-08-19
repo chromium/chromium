@@ -29,6 +29,7 @@
 #include "base/nix/xdg_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/themes/theme_properties.h"  // nogncheck
@@ -339,9 +340,26 @@ bool GtkUi::Initialize() {
   // do it once it is ready.
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   env->SetVar("NO_AT_BRIDGE", "1");
+
+  // When GDK opens the display during gtk_init() it probes it for OpenGL
+  // support (GLX/EGL version and extension queries), which loads the GL
+  // driver into this process and costs tens of milliseconds on the main
+  // thread during startup. GTK 3 is only used here to render theme parts
+  // through cairo and for dialogs, neither of which uses GdkGLContext, so
+  // skip the probe. GDK reads the variable once during initialization; it is
+  // restored afterwards so that processes launched from the browser are not
+  // affected, and left alone if the user set it.
+  constexpr char kGdkGl[] = "GDK_GL";
+  std::optional<base::ScopedEnvironmentVariableOverride> disable_gdk_gl_probe;
+  if (!GtkCheckVersion(4) && !env->HasVar(kGdkGl)) {
+    disable_gdk_gl_probe.emplace(kGdkGl, "disable");
+  }
   // gtk_init_check() modifies argv, so make a copy first.
   CmdLineArgs cmd_line = CopyCmdLine(*base::CommandLine::ForCurrentProcess());
-  if (!GtkInitFromCommandLine(&cmd_line.argc, cmd_line.argv.data())) {
+  const bool initialized =
+      GtkInitFromCommandLine(&cmd_line.argc, cmd_line.argv.data());
+  disable_gdk_gl_probe.reset();
+  if (!initialized) {
     return false;
   }
 
