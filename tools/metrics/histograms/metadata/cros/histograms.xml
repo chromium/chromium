@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisks.ArchiveType" enum="CrosDisksArchiveType"
     expires_after="2027-02-07">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Archive type that the ChromeOS cros-disks daemon is requested to mount.
@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisks.DeviceMediaType" enum="CrosDisksDeviceMediaType"
     expires_after="2026-12-27">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Media type of removable device that the ChromeOS cros-disks daemon is
@@ -55,7 +55,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisks.Error.Fuse.PrematureTermination.{FileSystem}"
     enum="DaemonError" expires_after="2027-02-07">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Error returned by the FUSE daemon serving the {FileSystem} filesystem when
@@ -77,7 +77,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisks.Error.Fuse.Start.archive" enum="FuseArchiveError"
     expires_after="2027-02-07">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Error returned by the archive FUSE program when it starts or fails to
@@ -87,7 +87,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisks.Error.Fuse.Start.rar" enum="Rar2fsError"
     expires_after="2027-07-21">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Error returned by the RAR FUSE program when it starts or fails to daemonize.
@@ -96,7 +96,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisks.Error.Fuse.Start.zip" enum="FuseZipError"
     expires_after="2027-02-07">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Error returned by the ZIP FUSE program when it starts or fails to daemonize.
@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisks.Error.Fuse.Start.{FileSystem}" enum="DaemonError"
     expires_after="2027-07-21">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Error returned by the {FileSystem} FUSE program when it starts or fails to
@@ -123,7 +123,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisks.Error.{Action}.{FileSystem}" enum="DaemonError"
     expires_after="2027-07-21">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Error returned by the program {Action} {FileSystem} partition.
@@ -141,7 +141,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisks.Error.{SysCall}.{FileSystem}" enum="PopularOSErrno"
     expires_after="2027-02-07">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Error encountered by the ChromeOS cros-disks daemon when it tried to
@@ -177,7 +177,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisks.FilesystemType" enum="CrosDisksFilesystemType"
     expires_after="2027-02-07">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     File system type of external media that the ChromeOS cros-disks daemon is
@@ -187,7 +187,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisks.ReadOnlyFileSystemAfterError"
     enum="CrosDisksFilesystemType" expires_after="2027-02-07">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     File system type of external media that the ChromeOS cros-disks daemon had
@@ -198,7 +198,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisks.StillUnmountingWhenWakingUp" units="items"
     expires_after="2027-07-21">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Number of removable drives that are still in the process of being unmounted
@@ -208,7 +208,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisks.Time.BlockSuspend" units="ms"
     expires_after="2027-07-21">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Time taken to unmount all the removable drives before the system goes to
@@ -218,7 +218,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisks.Time.Fuse.PrematureTermination.{FileSystem}"
     units="ms" expires_after="2027-07-21">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Time after which the FUSE daemon serving the {FileSystem} filesystem
@@ -240,7 +240,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisks.Time.Fuse.Start.{FileSystem}" units="ms"
     expires_after="2027-07-21">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Time taken by the {FileSystem} FUSE daemon to start and daemonize.
@@ -260,7 +260,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisks.Time.{Action}.{FileSystem}" units="ms"
     expires_after="2027-07-21">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>Time taken by the program {Action} {FileSystem} partition.</summary>
   <token key="Action">
@@ -276,7 +276,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisks.Time.{SysCall}.{FileSystem}" units="ms"
     expires_after="2027-07-21">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Time taken by the ChromeOS cros-disks daemon when it tried to {SysCall}
@@ -331,7 +331,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisksClient.MountCompletedError"
     enum="CrosDisksClientMountError" expires_after="2027-02-07">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Error returned by the ChromeOS cros-disks daemon when mounting a file
@@ -341,7 +341,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisksClient.MountErrorMountType"
     enum="CrosDisksMountTypeError" expires_after="2027-02-07">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Combination of (mount type, mount error) returned by the ChromeOS cros-disks
@@ -351,7 +351,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisksClient.MountTime" units="ms"
     expires_after="2027-02-07">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Time taken by the ChromeOS cros-disks daemon to mount a file system.
@@ -360,7 +360,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisksClient.UnmountError" enum="CrosDisksClientMountError"
     expires_after="2027-02-07">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Error returned by the ChromeOS cros-disks daemon when unmounting a file
@@ -370,7 +370,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisksClient.UnmountTime" units="ms"
     expires_after="2027-02-07">
-  <owner>fdegros@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Time taken by the ChromeOS cros-disks daemon to unmount a file system.
