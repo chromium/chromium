@@ -1862,6 +1862,24 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
 }
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       testGetContextForActorFromTabWithRestrictedUrl) {
+  // Navigate to an un-focusable internal page.
+  tabs::TabInterface* tab0 = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab0);
+  NavigateTab(*tab0, GURL(chrome::kChromeUIVersionURL));
+  ASSERT_OK(OpenGlicForActiveTab());
+  glic::GlicHistogramTester histogram_tester;
+  ExecuteJsTest();
+
+  // Checks that the correct error was reported.
+  histogram_tester.ExpectBucketCount(
+      "Glic.Api.GetContextForActorFromTab.Error.Text",
+      GlicGetContextFromTabError::kPermissionDenied, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Api.GetContextForActorFromTab.Error.Text", 1);
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
                        testGetContextFromFocusedTabWithNoRequestedData) {
   tabs::TabInterface* tab0 = GetTabListInterface()->GetActiveTab();
   ASSERT_TRUE(tab0);

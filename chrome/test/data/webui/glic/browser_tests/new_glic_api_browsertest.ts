@@ -448,6 +448,20 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(result);
   }
 
+  async testGetContextForActorFromTabWithRestrictedUrl() {
+    assertDefined(this.host.getContextForActorFromTab);
+    assertDefined(this.host.getFocusedTabStateV2);
+    await this.host.setTabContextPermissionState(true);
+    const focusSequence =
+        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
+    const focus = await focusSequence.next();
+    const tabId: string =
+        checkDefined(focus?.hasNoFocus?.tabFocusCandidateData?.tabId);
+    await assertRejects(this.host.getContextForActorFromTab(tabId, {}), {
+      withErrorMessage: 'tabContext failed: permission denied',
+    });
+  }
+
   async testIsOnboardingCompleted() {
     assertDefined(this.host.isOnboardingCompleted);
     const completedSequence =

@@ -751,22 +751,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithMqlsIdGetterEnabled,
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testGetContextForActorFromTabWithRestrictedUrl) {
-  // Navigate to an un-focusable internal page.
-  RunTestSequence(NavigateWebContents(kFirstTab, chrome::GetSettingsUrl("")));
-
-  ExecuteJsTest();
-
-  // Checks that the correct error was reported.
-  EXPECT_THAT(histogram_tester->GetAllSamplesForPrefix(
-                  "Glic.Api.GetContextForActorFromTab.Error"),
-              UnorderedElementsAre(Pair(
-                  "Glic.Api.GetContextForActorFromTab.Error.Text",
-                  BucketsAre(Bucket(
-                      GlicGetContextFromTabError::kPermissionDenied, 1)))));
-}
-
 // Note: PDF support is a necessary preconition for this test.
 #if BUILDFLAG(ENABLE_PDF)
 #define MAYBE_testGetContextFromFocusedTabWithPdfFile \
