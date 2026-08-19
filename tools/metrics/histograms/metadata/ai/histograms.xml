@@ -374,8 +374,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-chia-dev@google.com</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
   <summary>
-    Measures the size of the prompt in tokens. This is recorded each time a
-    prompt is added.
+    Measures the total number of tokens in the session context window. Recorded
+    each time model execution completes when context info is available.
   </summary>
   <token key="SessionType" variants="SessionType"/>
 </histogram>

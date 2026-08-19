@@ -323,8 +323,6 @@ class AILanguageModel::PromptState
 
   // on_device_model::mojom::ContextClient:
   void OnComplete(uint32_t tokens_processed) override {
-    base::UmaHistogramCounts10000("AI.Session.LanguageModel.ContextTokens",
-                                  tokens_processed);
     CHECK(telemetry_logger_.has_value());
     telemetry_logger_->RecordContextTime();
     base::UmaHistogramMediumTimes(
