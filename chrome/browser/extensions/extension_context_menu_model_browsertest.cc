@@ -16,14 +16,17 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/context_menu_matcher.h"
+#include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
 #include "chrome/browser/extensions/permissions_url_constants.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/context_menus.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -35,6 +38,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/cws_info_service.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
@@ -2512,6 +2516,85 @@ IN_PROC_BROWSER_TEST_P(
                 CommandState::kAbsent);
     }
   }
+}
+
+class ExtensionContextMenuModelRateExtensionTest
+    : public ExtensionContextMenuModelTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      extensions_features::kCWSReviewPromptingNativeUI};
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuModelRateExtensionTest,
+                       RateExtensionCommand) {
+  scoped_refptr<const Extension> unpacked_extension =
+      ExtensionBuilder("Unpacked Extension")
+          .SetLocation(mojom::ManifestLocation::kUnpacked)
+          .Build();
+  InitializeAndAddExtension(*unpacked_extension);
+
+  ExtensionContextMenuModel unpacked_menu(
+      unpacked_extension.get(), browser_window_interface(),
+      /*is_pinned=*/true, nullptr,
+      /*can_show_icon_in_toolbar=*/true, ContextMenuSource::kMenuItem);
+
+  EXPECT_EQ(GetCommandState(unpacked_menu,
+                            ExtensionContextMenuModel::REVIEW_EXTENSION),
+            CommandState::kAbsent);
+
+  scoped_refptr<const Extension> cws_extension =
+      ExtensionBuilder("CWS Extension")
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .AddFlags(Extension::FROM_WEBSTORE)
+          .Build();
+  InitializeAndAddExtension(*cws_extension);
+
+  base::DictValue cws_info_dict;
+  cws_info_dict.Set("is-present", true);
+  cws_info_dict.Set("is-live", true);
+  cws_info_dict.Set("violation-type", 0);
+  ExtensionPrefs::Get(profile())->UpdateExtensionPref(
+      cws_extension->id(), "cws-info", base::Value(std::move(cws_info_dict)));
+
+  EXPECT_EQ(GetTabCount(), 1);
+
+  // Test Extensions Menu source (kMenuItem)
+  ExtensionContextMenuModel menu_item(
+      cws_extension.get(), browser_window_interface(),
+      /*is_pinned=*/true, nullptr,
+      /*can_show_icon_in_toolbar=*/true, ContextMenuSource::kMenuItem);
+
+  EXPECT_EQ(
+      GetCommandState(menu_item, ExtensionContextMenuModel::REVIEW_EXTENSION),
+      CommandState::kEnabled);
+  menu_item.ExecuteCommand(ExtensionContextMenuModel::REVIEW_EXTENSION, 0);
+
+  content::WebContents* web_contents = GetActiveWebContents();
+  content::WaitForLoadStop(web_contents);
+  EXPECT_EQ(GetTabCount(), 2);
+  EXPECT_EQ(web_contents->GetLastCommittedURL(),
+            extensions::util::GetCWSWritingReviewUrl(
+                cws_extension->id(),
+                extensions::util::CWSReviewSource::kExtensionsMenu));
+
+  // Test Context Menu source (kToolbarAction)
+  ExtensionContextMenuModel menu_toolbar(
+      cws_extension.get(), browser_window_interface(),
+      /*is_pinned=*/true, nullptr,
+      /*can_show_icon_in_toolbar=*/true, ContextMenuSource::kToolbarAction);
+
+  EXPECT_EQ(GetCommandState(menu_toolbar,
+                            ExtensionContextMenuModel::REVIEW_EXTENSION),
+            CommandState::kEnabled);
+  menu_toolbar.ExecuteCommand(ExtensionContextMenuModel::REVIEW_EXTENSION, 0);
+
+  web_contents = GetActiveWebContents();
+  content::WaitForLoadStop(web_contents);
+  EXPECT_EQ(GetTabCount(), 3);
+  EXPECT_EQ(web_contents->GetLastCommittedURL(),
+            extensions::util::GetCWSWritingReviewUrl(
+                cws_extension->id(),
+                extensions::util::CWSReviewSource::kContextMenu));
 }
 
 }  // namespace extensions
