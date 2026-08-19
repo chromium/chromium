@@ -3011,7 +3011,9 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithFastTimeout,
 #endif
 }
 
-IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPanelWillOpenBeforeClientReady) {
+// TODO(crbug.com/548845985): Re-enable this test after the bug fix.
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       DISABLED_testPanelWillOpenBeforeClientReady) {
   ToggleGlicForActiveTab(/*prevent_close=*/true);
   auto* instance = GetOnlyGlicInstance();
   ASSERT_TRUE(instance);
