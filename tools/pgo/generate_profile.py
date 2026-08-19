@@ -675,7 +675,7 @@ def merge_profdata(
     _LOGGER.info(f"Merging all profdata files into: {profile_output_path}")
     all_profdata = glob.glob(f'{args.profiledir}/*.profdata')
 
-    if not args.separate_renderer_pgo:
+    if not getattr(args, 'separate_renderer_pgo', False):
         _LOGGER.debug(f"Found {len(all_profdata)} profdata files")
         if not all_profdata:
             raise RuntimeError(f'No profdata files found in {args.profiledir}')

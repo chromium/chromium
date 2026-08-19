@@ -57,6 +57,7 @@ class OptionsNamespace(argparse.Namespace):
     skip_profdata: bool
     temporal_trace_length: Optional[int]
     verbose: int
+    separate_renderer_pgo: bool = False
     # The following are bot-specific args.
     isolated_script_test_output: Optional[str]
     isolated_script_test_perf_output: Optional[str]
@@ -108,6 +109,12 @@ def parse_args():
         '--temporal-trace-length',
         type=int,
         help='Add flags necessary for temporal PGO (experimental).',
+    )
+    parser.add_argument(
+        '--separate-renderer-pgo',
+        action='store_true',
+        default=False,
+        help='Support separate per-target renderer PGO profiles.',
     )
     parser.add_argument(
         '-v',
