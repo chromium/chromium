@@ -54,16 +54,6 @@ testing::Matcher<const sync_pb::SessionSpecifics&> MatchesTab(
     testing::Matcher<int> tab_node_id,
     const std::vector<std::string>& urls);
 
-testing::Matcher<const sync_pb::SessionSpecifics&> MatchesTabScreenshot(
-    testing::Matcher<std::string> session_tag,
-    testing::Matcher<int> tab_node_id);
-
-testing::Matcher<const sync_pb::SessionSpecifics&> MatchesTabScreenshot(
-    testing::Matcher<std::string> session_tag,
-    testing::Matcher<int> tab_node_id,
-    testing::Matcher<std::string> screenshot_data,
-    testing::Matcher<std::string> url);
-
 testing::Matcher<const SyncedSession*> MatchesSyncedSession(
     testing::Matcher<std::string> session_tag,
     const std::map<int, std::vector<int>>& window_id_to_tabs);

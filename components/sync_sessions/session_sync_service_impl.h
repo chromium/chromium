@@ -34,13 +34,7 @@ class SessionSyncServiceImpl : public SessionSyncService {
   // SessionSyncService overrides.
   syncer::GlobalIdMapper* GetGlobalIdMapper() const override;
   OpenTabsUIDelegate* GetOpenTabsUIDelegate() override;
-  void AddTabScreenshot(SessionID tab_id,
-                        std::string&& screenshot_data,
-                        const GURL& url) override;
-  void ReadTabScreenshot(
-      const std::string& session_tag,
-      SessionID tab_id,
-      base::OnceCallback<void(std::optional<std::string>)> callback) override;
+
   [[nodiscard]] base::CallbackListSubscription
   SubscribeToForeignSessionsChanged(const base::RepeatingClosure& cb) override;
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()

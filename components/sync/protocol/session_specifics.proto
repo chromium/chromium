@@ -26,7 +26,9 @@ message SessionSpecifics {
   oneof content {
     SessionHeader header = 2;
     SessionTab tab = 3;
-    SessionTabScreenshot tab_screenshot = 5;
+    // TODO(crbug.com/488242420): Fully remove tab_screenshot once all
+    // server-side references are gone.
+    SessionTabScreenshot tab_screenshot = 5 [deprecated = true];
   }
 
   // The local tab id used by sync. The same id can be used by at most two nodes

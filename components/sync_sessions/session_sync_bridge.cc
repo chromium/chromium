@@ -69,12 +69,10 @@ class LocalSessionWriteBatch : public LocalSessionEventHandlerImpl::WriteBatch {
 
   // WriteBatch implementation.
   void Delete(int tab_node_id) override {
-    const std::vector<std::string> storage_keys =
+    const std::string storage_key =
         batch_->DeleteLocalTabWithoutUpdatingTracker(tab_node_id);
-    for (const std::string& storage_key : storage_keys) {
-      processor_->Delete(storage_key, syncer::DeletionOrigin::Unspecified(),
-                         batch_->GetMetadataChangeList());
-    }
+    processor_->Delete(storage_key, syncer::DeletionOrigin::Unspecified(),
+                       batch_->GetMetadataChangeList());
   }
 
   void Put(std::unique_ptr<sync_pb::SessionSpecifics> specifics) override {
@@ -134,55 +132,6 @@ OpenTabsUIDelegate* SessionSyncBridge::GetOpenTabsUIDelegate() {
 bool SessionSyncBridge::IsLocalDataOutOfSyncForTest() const {
   return sessions_client_ &&
          sessions_client_->GetSessionSyncPrefs()->GetLocalDataOutOfSync();
-}
-
-void SessionSyncBridge::AddTabScreenshot(SessionID tab_id,
-                                         std::string&& screenshot_data,
-                                         const GURL& url) {
-  CHECK(base::FeatureList::IsEnabled(kSyncTabScreenshots));
-  if (!syncing_) {
-    return;
-  }
-
-  const int tab_node_id = store_->tracker()->LookupTabNodeFromTabId(
-      store_->local_session_info().session_tag, tab_id);
-  if (tab_node_id == TabNodePool::kInvalidTabNodeID) {
-    return;
-  }
-
-  std::unique_ptr<SessionStore::WriteBatch> batch =
-      CreateSessionStoreWriteBatch();
-
-  const base::Time now = base::Time::Now();
-
-  sync_pb::SessionSpecifics specifics;
-  specifics.set_session_tag(store_->local_session_info().session_tag);
-  specifics.set_tab_node_id(tab_node_id);
-  specifics.mutable_tab_screenshot()->set_screenshot_data(
-      std::move(screenshot_data));
-  specifics.mutable_tab_screenshot()->set_url(url.spec());
-  specifics.mutable_tab_screenshot()->set_timestamp_unix_epoch_millis(
-      now.InMillisecondsSinceUnixEpoch());
-
-  const std::string storage_key = batch->PutAndUpdateTracker(specifics, now);
-
-  change_processor()->Put(
-      storage_key,
-      MoveToEntityData(store_->local_session_info().client_name, &specifics),
-      batch->GetMetadataChangeList());
-
-  SessionStore::WriteBatch::Commit(std::move(batch));
-}
-
-void SessionSyncBridge::ReadTabScreenshot(
-    const std::string& session_tag,
-    SessionID tab_id,
-    base::OnceCallback<void(std::optional<std::string>)> callback) {
-  if (!syncing_ || !store_) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-  store_->ReadTabScreenshot(session_tag, tab_id, std::move(callback));
 }
 
 std::optional<syncer::ModelError> SessionSyncBridge::MergeFullSyncData(

@@ -11,7 +11,6 @@ namespace sync_sessions {
 
 BASE_DECLARE_FEATURE(kOptimizeAssociateWindowsAndroid);
 BASE_DECLARE_FEATURE(kFilterNavigationsBySyncSessionsClient);
-BASE_DECLARE_FEATURE(kSyncTabScreenshots);
 // When enabled, the session name (display name for the synced device) is
 // enriched using preferred names from DEVICE_INFO instead of falling back to
 // the raw hardware model.

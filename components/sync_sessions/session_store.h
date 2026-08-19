@@ -66,8 +66,6 @@ class SessionStore {
   static std::string GetHeaderStorageKey(const std::string& session_tag);
   static std::string GetTabStorageKey(const std::string& session_tag,
                                       int tab_node_id);
-  static std::string GetTabScreenshotStorageKey(const std::string& session_tag,
-                                                int tab_node_id);
   // Verifies if |storage_key| corresponds to an entity in the local session,
   // identified by the session tag.
   bool StorageKeyMatchesLocalSession(const std::string& storage_key) const;
@@ -110,8 +108,7 @@ class SessionStore {
     // the caller's responsibility to do so *before* calling these functions.
     std::string PutWithoutUpdatingTracker(
         const sync_pb::SessionSpecifics& specifics);
-    std::vector<std::string> DeleteLocalTabWithoutUpdatingTracker(
-        int tab_node_id);
+    std::string DeleteLocalTabWithoutUpdatingTracker(int tab_node_id);
 
     syncer::MetadataChangeList* GetMetadataChangeList();
 
@@ -146,16 +143,6 @@ class SessionStore {
   std::unique_ptr<WriteBatch> CreateWriteBatch(
       syncer::OnceModelErrorHandler error_handler);
 
-  // Reads an individual tab screenshot from persisted storage and returns it
-  // to the `callback`. If no matching screenshot is available or an error
-  // occurs while reading it, the callback is invoked with nullopt.
-  // Note: This special API is required since screenshots (as opposed to the
-  // tabs themselves) are not stored in the in-memory model and are hence
-  // not available through the normal read APIs.
-  void ReadTabScreenshot(
-      const std::string& session_tag,
-      SessionID tab_id,
-      base::OnceCallback<void(std::optional<std::string>)> callback);
 
   using RecreateEmptyStoreCallback =
       base::OnceCallback<std::unique_ptr<SessionStore>(
@@ -189,12 +176,6 @@ class SessionStore {
   static void OnReadAllData(std::unique_ptr<Builder> builder,
                             const std::optional<syncer::ModelError>& error);
 
-  static void OnReadTabScreenshotDone(
-      const GURL& tab_url,
-      base::OnceCallback<void(std::optional<std::string>)> callback,
-      const std::optional<syncer::ModelError>& error,
-      std::unique_ptr<syncer::DataTypeStore::RecordList> data_records,
-      std::unique_ptr<syncer::DataTypeStore::IdList> missing_id_list);
 
   static std::unique_ptr<SessionStore> RecreateEmptyStore(
       SessionInfo local_session_info_without_session_tag,

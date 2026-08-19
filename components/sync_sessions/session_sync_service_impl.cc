@@ -41,20 +41,7 @@ OpenTabsUIDelegate* SessionSyncServiceImpl::GetOpenTabsUIDelegate() {
   return bridge_->GetOpenTabsUIDelegate();
 }
 
-void SessionSyncServiceImpl::AddTabScreenshot(SessionID tab_id,
-                                              std::string&& screenshot_data,
-                                              const GURL& url) {
-  CHECK(base::FeatureList::IsEnabled(kSyncTabScreenshots));
-  bridge_->AddTabScreenshot(tab_id, std::move(screenshot_data), url);
-}
 
-void SessionSyncServiceImpl::ReadTabScreenshot(
-    const std::string& session_tag,
-    SessionID tab_id,
-    base::OnceCallback<void(std::optional<std::string>)> callback) {
-  CHECK(callback);
-  bridge_->ReadTabScreenshot(session_tag, tab_id, std::move(callback));
-}
 
 base::CallbackListSubscription
 SessionSyncServiceImpl::SubscribeToForeignSessionsChanged(
