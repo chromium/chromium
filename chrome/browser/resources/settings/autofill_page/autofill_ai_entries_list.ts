@@ -480,10 +480,14 @@ export class SettingsAutofillAiEntriesListElement extends
         return 'privacy20:person-check';
       case EntityTypeName.kNationalIdCard:
         return 'settings20:id-card';
+      case EntityTypeName.kOrder:
+        return 'settings20:orders';
       case EntityTypeName.kPassport:
         return 'settings20:passport';
       case EntityTypeName.kRedressNumber:
         return 'privacy20:person-check';
+      case EntityTypeName.kShipment:
+        return 'settings20:local-shipping';
       case EntityTypeName.kVehicle:
         return 'settings20:directions-car';
       default:

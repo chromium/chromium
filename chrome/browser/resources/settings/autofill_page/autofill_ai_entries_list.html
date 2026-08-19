@@ -40,6 +40,7 @@
        user opted out by switching the toggle, the user should not be able to
        add entity instances. -->
   <cr-button id="addEntityInstance" class="header-aligned-button"
+      hidden$="[[!completeEntityTypesList_.length]]"
       disabled$="[[!allowNewEntitiesAddition_]]" on-click="onAddEntityInstanceClick_">
     $i18n{add}
     <cr-icon icon="cr:arrow-drop-down" class="arrow-icon-down"></cr-icon>

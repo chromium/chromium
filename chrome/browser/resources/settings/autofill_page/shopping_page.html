@@ -39,4 +39,17 @@
       </div>
     </template>
   </div>
+
+  <!-- Entities list card -->
+  <div class="card">
+    <settings-autofill-ai-entries-list
+        list-title="$i18n{shoppingCardTitle}"
+        page-name="Shopping"
+        allowed-entity-types="[[getAllowedEntityTypes_()]]"
+        metric-entity-types="[[getMetricEntityTypes_()]]"
+        allow-new-entities-addition-pref="[[
+            prefs.autofill.autofill_ai.shopping_entities_enabled]]"
+        prefs="{{prefs}}">
+    </settings-autofill-ai-entries-list>
+  </div>
 </settings-subpage>
