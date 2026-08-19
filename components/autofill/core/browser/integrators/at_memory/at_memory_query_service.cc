@@ -690,12 +690,14 @@ AtMemoryQueryService::AtMemoryQueryService(
     personal_context::PersonalContextEligibilityService*
         personal_context_eligibility_service,
     subscription_eligibility::SubscriptionEligibilityService*
-        subscription_eligibility_service)
+        subscription_eligibility_service,
+    PrefService* pref_service)
     : data_provider_(std::move(data_provider)),
       personal_context_service_(personal_context_service),
       locale_(locale),
       eligibility_metrics_tracker_(personal_context_eligibility_service,
-                                   subscription_eligibility_service) {}
+                                   subscription_eligibility_service,
+                                   pref_service) {}
 
 AtMemoryQueryService::~AtMemoryQueryService() = default;
 

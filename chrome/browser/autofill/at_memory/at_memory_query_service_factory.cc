@@ -76,7 +76,8 @@ AtMemoryQueryServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<autofill::AtMemoryQueryService>(
       std::move(data_provider), personal_context_service,
       g_browser_process->GetApplicationLocale(),
-      personal_context_eligibility_service, subscription_eligibility_service);
+      personal_context_eligibility_service, subscription_eligibility_service,
+      profile->GetPrefs());
 }
 
 bool AtMemoryQueryServiceFactory::ServiceIsCreatedWithBrowserContext() const {

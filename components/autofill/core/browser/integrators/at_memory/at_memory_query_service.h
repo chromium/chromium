@@ -77,7 +77,8 @@ class AtMemoryQueryService : public KeyedService {
       personal_context::PersonalContextEligibilityService*
           personal_context_eligibility_service,
       subscription_eligibility::SubscriptionEligibilityService*
-          subscription_eligibility_service);
+          subscription_eligibility_service,
+      PrefService* pref_service);
   AtMemoryQueryService(const AtMemoryQueryService&) = delete;
   AtMemoryQueryService& operator=(const AtMemoryQueryService&) = delete;
   ~AtMemoryQueryService() override;

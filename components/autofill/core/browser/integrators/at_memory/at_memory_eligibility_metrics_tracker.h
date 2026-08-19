@@ -7,11 +7,15 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/personal_context/core/personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_types.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
+
+class PrefService;
 
 namespace autofill {
 
@@ -25,7 +29,8 @@ class AtMemoryEligibilityMetricsTracker
       personal_context::PersonalContextEligibilityService*
           personal_context_eligibility_service,
       subscription_eligibility::SubscriptionEligibilityService*
-          subscription_eligibility_service);
+          subscription_eligibility_service,
+      PrefService* pref_service);
   AtMemoryEligibilityMetricsTracker(const AtMemoryEligibilityMetricsTracker&) =
       delete;
   AtMemoryEligibilityMetricsTracker& operator=(
@@ -40,6 +45,9 @@ class AtMemoryEligibilityMetricsTracker
   void OnAiSubscriptionTierUpdated(int32_t new_subscription_tier) override;
 
  private:
+  // Invoked when the personal context settings toggle changes.
+  void OnPersonalContextSettingsToggleChanged();
+
   // Computes the non-eligibility reason (e.g. G1 subscription status or Android
   // premium device status) and logs it to UMA if the reason has changed and the
   // startup delay has elapsed.
@@ -48,6 +56,9 @@ class AtMemoryEligibilityMetricsTracker
   // Indicates whether `kNonEligibilityLoggingDelayOnStartup` has elapsed,
   // preventing premature UMA logging during browser startup.
   bool is_non_eligibility_startup_delay_elapsed_ = false;
+
+  const raw_ptr<PrefService> pref_service_;
+  PrefChangeRegistrar pref_registrar_;
 
   // The last reported non-eligibility reason.
   std::optional<personal_context::PersonalContextNonEligibilityReason>

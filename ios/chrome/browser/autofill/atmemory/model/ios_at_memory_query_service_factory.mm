@@ -79,5 +79,6 @@ IOSAtMemoryQueryServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<AtMemoryQueryService>(
       std::move(data_provider), personal_context_service,
       GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
-      personal_context_eligibility_service, subscription_eligibility_service);
+      personal_context_eligibility_service, subscription_eligibility_service,
+      profile->GetPrefs());
 }
