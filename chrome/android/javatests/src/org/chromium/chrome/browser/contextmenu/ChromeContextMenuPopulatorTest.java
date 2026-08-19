@@ -343,7 +343,7 @@ public class ChromeContextMenuPopulatorTest {
         doReturn(false).when(mPopulator).shouldTriggerEphemeralTabHelpUi();
         doReturn(false).when(mPopulator).shouldTriggerReadLaterHelpUi();
         doReturn(true).when(mPopulator).shouldShowEmptySpaceContextMenu();
-        doReturn(false).when(mPopulator).shouldShowTranslateItem();
+        doReturn(false).when(mPopulator).shouldEnableTranslateItem();
         doReturn(true).when(mExternalAuthUtils).isGoogleSigned(IntentHandler.PACKAGE_GSA);
         doReturn(shouldShowDeveloperMenu).when(mPopulator).shouldShowDeveloperMenu();
         doReturn(shouldShowViewPageSourceMenu).when(mPopulator).shouldShowViewPageSourceMenu();
@@ -2616,10 +2616,12 @@ public class ChromeContextMenuPopulatorTest {
                 R.id.contextmenu_open_in_reading_mode,
             },
             {R.id.contextmenu_send_tab_to_self, R.id.contextmenu_create_qr_code},
+            {R.id.contextmenu_translate},
         };
+        List<Integer> expectedDisabled = Arrays.asList(R.id.contextmenu_translate);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
-        checkMenuOptions(expected);
+        checkMenuOptions(expectedDisabled, expected);
     }
 
     @Test
@@ -2644,11 +2646,14 @@ public class ChromeContextMenuPopulatorTest {
                 R.id.contextmenu_share_page,
                 R.id.contextmenu_open_in_reading_mode,
             },
-            {R.id.contextmenu_create_qr_code},
+            {R.id.contextmenu_send_tab_to_self, R.id.contextmenu_create_qr_code},
+            {R.id.contextmenu_translate},
         };
+        List<Integer> expectedDisabled =
+                Arrays.asList(R.id.contextmenu_send_tab_to_self, R.id.contextmenu_translate);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
-        checkMenuOptions(expected);
+        checkMenuOptions(expectedDisabled, expected);
     }
 
     @Test
@@ -2670,14 +2675,16 @@ public class ChromeContextMenuPopulatorTest {
                 R.id.contextmenu_open_in_reading_mode,
             },
             {R.id.contextmenu_send_tab_to_self, R.id.contextmenu_create_qr_code},
+            {R.id.contextmenu_translate},
         };
+        List<Integer> expectedDisabled = Arrays.asList(R.id.contextmenu_translate);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         // Override the default test environment to simulate AGSA not being installed/supported.
         GSAUtils.setFakePassableGsaEnvironmentForTesting(false);
         GSAUtils.setAgsaPackageInfoForTesting(null);
         when(mExternalAuthUtils.isGoogleSigned(anyString())).thenReturn(false);
-        checkMenuOptions(expected);
+        checkMenuOptions(expectedDisabled, expected);
     }
 
     @Test
@@ -2702,7 +2709,7 @@ public class ChromeContextMenuPopulatorTest {
         };
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
-        doCallRealMethod().when(mPopulator).shouldShowTranslateItem();
+        doCallRealMethod().when(mPopulator).shouldEnableTranslateItem();
         when(mTranslateBridgeMock.canManuallyTranslate(eq(mWebContents), anyBoolean()))
                 .thenReturn(true);
         when(mTranslateBridgeMock.getTargetLanguage(any())).thenReturn("en");
@@ -2728,19 +2735,21 @@ public class ChromeContextMenuPopulatorTest {
                 R.id.contextmenu_open_in_reading_mode,
             },
             {R.id.contextmenu_send_tab_to_self, R.id.contextmenu_create_qr_code},
+            {R.id.contextmenu_translate},
         };
+        List<Integer> expectedDisabled = Arrays.asList(R.id.contextmenu_translate);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
-        checkMenuOptions(expected);
+        checkMenuOptions(expectedDisabled, expected);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
-        checkMenuOptions(expected);
+        checkMenuOptions(expectedDisabled, expected);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.WEB_APP, params);
-        checkMenuOptions(expected);
+        checkMenuOptions(expectedDisabled, expected);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NETWORK_BOUND_TAB, params);
-        checkMenuOptions(expected);
+        checkMenuOptions(expectedDisabled, expected);
 
         int[][] expectedThinWebView = {{R.id.contextmenu_reload, R.id.contextmenu_print_page}};
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, params);
@@ -2765,27 +2774,33 @@ public class ChromeContextMenuPopulatorTest {
                 R.id.contextmenu_open_in_reading_mode,
             },
             {R.id.contextmenu_send_tab_to_self, R.id.contextmenu_create_qr_code},
+            {R.id.contextmenu_translate},
         };
 
         // All items are present and enabled.
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
-        checkMenuOptions(expected);
+        checkMenuOptions(Arrays.asList(R.id.contextmenu_translate), expected);
 
         // Only back is disabled.
         when(mItemDelegate.canCurrentTabGoBack()).thenReturn(false);
-        List<Integer> expectedDisabled = Arrays.asList(R.id.contextmenu_back);
+        List<Integer> expectedDisabled =
+                Arrays.asList(R.id.contextmenu_back, R.id.contextmenu_translate);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         checkMenuOptions(expectedDisabled, expected);
 
         // Both back and forward are disabled.
         when(mItemDelegate.canCurrentTabGoForward()).thenReturn(false);
-        expectedDisabled = Arrays.asList(R.id.contextmenu_back, R.id.contextmenu_forward);
+        expectedDisabled =
+                Arrays.asList(
+                        R.id.contextmenu_back,
+                        R.id.contextmenu_forward,
+                        R.id.contextmenu_translate);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         checkMenuOptions(expectedDisabled, expected);
 
         // Only forward is disabled.
         when(mItemDelegate.canCurrentTabGoBack()).thenReturn(true);
-        expectedDisabled = Arrays.asList(R.id.contextmenu_forward);
+        expectedDisabled = Arrays.asList(R.id.contextmenu_forward, R.id.contextmenu_translate);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         checkMenuOptions(expectedDisabled, expected);
     }
@@ -2808,20 +2823,22 @@ public class ChromeContextMenuPopulatorTest {
                 R.id.contextmenu_open_in_reading_mode,
             },
             {R.id.contextmenu_send_tab_to_self, R.id.contextmenu_create_qr_code},
+            {R.id.contextmenu_translate},
             {R.id.contextmenu_view_page_source, R.id.contextmenu_inspect_element},
         };
+        List<Integer> expectedDisabled = Arrays.asList(R.id.contextmenu_translate);
 
         initializePopulator(
                 ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params, true, true, true);
-        checkMenuOptions(expected);
+        checkMenuOptions(expectedDisabled, expected);
 
         initializePopulator(
                 ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params, true, true, true);
-        checkMenuOptions(expected);
+        checkMenuOptions(expectedDisabled, expected);
 
         initializePopulator(
                 ChromeContextMenuPopulator.ContextMenuMode.WEB_APP, params, true, true, true);
-        checkMenuOptions(expected);
+        checkMenuOptions(expectedDisabled, expected);
 
         initializePopulator(
                 ChromeContextMenuPopulator.ContextMenuMode.NETWORK_BOUND_TAB,
@@ -2829,7 +2846,7 @@ public class ChromeContextMenuPopulatorTest {
                 true,
                 true,
                 true);
-        checkMenuOptions(expected);
+        checkMenuOptions(expectedDisabled, expected);
 
         int[][] expectedThinWebView = {
             {R.id.contextmenu_reload, R.id.contextmenu_print_page},
@@ -2860,8 +2877,10 @@ public class ChromeContextMenuPopulatorTest {
                 R.id.contextmenu_open_in_reading_mode,
             },
             {R.id.contextmenu_send_tab_to_self, R.id.contextmenu_create_qr_code},
+            {R.id.contextmenu_translate},
         };
-        List<Integer> expectedDisabled = Arrays.asList(R.id.contextmenu_save_page);
+        List<Integer> expectedDisabled =
+                Arrays.asList(R.id.contextmenu_save_page, R.id.contextmenu_translate);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         checkMenuOptions(expectedDisabled, expectedPage);
@@ -2893,23 +2912,27 @@ public class ChromeContextMenuPopulatorTest {
             },
             {
                 R.id.contextmenu_save_page,
+                R.id.contextmenu_print_page,
                 R.id.contextmenu_share_page,
                 R.id.contextmenu_open_in_reading_mode,
             },
             {R.id.contextmenu_send_tab_to_self, R.id.contextmenu_create_qr_code},
+            {R.id.contextmenu_translate},
         };
+        List<Integer> expectedDisabled =
+                Arrays.asList(R.id.contextmenu_print_page, R.id.contextmenu_translate);
 
         initializePopulator(
                 ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params, false, false, false);
-        checkMenuOptions(expected);
+        checkMenuOptions(expectedDisabled, expected);
 
         initializePopulator(
                 ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params, false, false, false);
-        checkMenuOptions(expected);
+        checkMenuOptions(expectedDisabled, expected);
 
         initializePopulator(
                 ChromeContextMenuPopulator.ContextMenuMode.WEB_APP, params, false, false, false);
-        checkMenuOptions(expected);
+        checkMenuOptions(expectedDisabled, expected);
 
         initializePopulator(
                 ChromeContextMenuPopulator.ContextMenuMode.NETWORK_BOUND_TAB,
@@ -2917,7 +2940,7 @@ public class ChromeContextMenuPopulatorTest {
                 false,
                 false,
                 false);
-        checkMenuOptions(expected);
+        checkMenuOptions(expectedDisabled, expected);
 
         int[][] expectedThinWebView = {
             {R.id.contextmenu_reload},
