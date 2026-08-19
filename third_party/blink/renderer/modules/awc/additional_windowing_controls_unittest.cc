@@ -10,6 +10,7 @@
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
@@ -147,6 +148,22 @@ class MockPermissionService final : public mojom::blink::PermissionService {
   mojo::Remote<mojom::blink::PermissionObserver> observer_;
 };
 
+ScriptPromise<IDLUndefined> SetResizableTrueWrapper(
+    ScriptState* script_state,
+    LocalDOMWindow& window,
+    ExceptionState& exception_state) {
+  return AdditionalWindowingControls::setResizable(
+      script_state, window, /*resizable=*/true, exception_state);
+}
+
+ScriptPromise<IDLUndefined> SetResizableFalseWrapper(
+    ScriptState* script_state,
+    LocalDOMWindow& window,
+    ExceptionState& exception_state) {
+  return AdditionalWindowingControls::setResizable(
+      script_state, window, /*resizable=*/false, exception_state);
+}
+
 }  // namespace
 
 class AdditionalWindowingControlsTestBase : public testing::Test {
@@ -201,6 +218,10 @@ struct AwcTestParam {
   bool IsAlreadyInTargetState() const {
     return target_state.has_value() && initial_state == target_state.value();
   }
+  bool RequiresUserActivation() const {
+    return !(action == &SetResizableTrueWrapper ||
+             action == &SetResizableFalseWrapper);
+  }
 };
 
 class AdditionalWindowingControlsTest
@@ -239,22 +260,6 @@ class AdditionalWindowingControlsTest
 
   frame_test_helpers::WebViewHelper helper_;
 };
-
-ScriptPromise<IDLUndefined> SetResizableTrueWrapper(
-    ScriptState* script_state,
-    LocalDOMWindow& window,
-    ExceptionState& exception_state) {
-  return AdditionalWindowingControls::setResizable(
-      script_state, window, /*resizable=*/true, exception_state);
-}
-
-ScriptPromise<IDLUndefined> SetResizableFalseWrapper(
-    ScriptState* script_state,
-    LocalDOMWindow& window,
-    ExceptionState& exception_state) {
-  return AdditionalWindowingControls::setResizable(
-      script_state, window, /*resizable=*/false, exception_state);
-}
 
 TEST_P(AdditionalWindowingControlsTest, RejectsIfFrameDetached) {
   ScriptState::Scope scope(GetScriptState());
@@ -349,6 +354,10 @@ TEST_P(AdditionalWindowingControlsTest, PermissionDenied) {
   GetMockPermissionService().SetPermissionStatus(
       mojom::blink::PermissionStatus::DENIED);
 
+  LocalFrame::NotifyUserActivation(
+      GetWindow().GetFrame(),
+      mojom::blink::UserActivationNotificationType::kTest);
+
   auto promise = RunAwcApiCall(GetScriptState(), GetWindow(), exception_state);
   GetMockPermissionService().Flush();
 
@@ -368,6 +377,10 @@ TEST_P(AdditionalWindowingControlsTest, PermissionDeferred) {
 
   GetMockPermissionService().SetPermissionStatus(
       mojom::blink::PermissionStatus::ASK);
+
+  LocalFrame::NotifyUserActivation(
+      GetWindow().GetFrame(),
+      mojom::blink::UserActivationNotificationType::kTest);
 
   auto promise = RunAwcApiCall(GetScriptState(), GetWindow(), exception_state);
   GetMockPermissionService().Flush();
@@ -390,50 +403,16 @@ TEST_P(AdditionalWindowingControlsTest,
     ScriptState::Scope scope(GetScriptState());
     DummyExceptionStateForTesting exception_state;
 
+    LocalFrame::NotifyUserActivation(
+        GetWindow().GetFrame(),
+        mojom::blink::UserActivationNotificationType::kTest);
+
     RunAwcApiCall(GetScriptState(), GetWindow(), exception_state);
   }
 
   GetDocument().GetFrame()->Detach(FrameDetachType::kRemove);
 
   EXPECT_NO_FATAL_FAILURE(GetMockPermissionService().Flush());
-}
-
-TEST_P(AdditionalWindowingControlsTest,
-       ConsumesTransientUserActivationAndRequestsPermission) {
-  ScriptState::Scope scope(GetScriptState());
-  DummyExceptionStateForTesting exception_state;
-
-  GetMockPermissionService().SetPermissionStatus(
-      mojom::blink::PermissionStatus::GRANTED);
-
-  LocalFrame::NotifyUserActivation(
-      GetWindow().GetFrame(),
-      mojom::blink::UserActivationNotificationType::kTest);
-  EXPECT_TRUE(LocalFrame::HasTransientUserActivation(GetWindow().GetFrame()));
-
-  RunAwcApiCall(GetScriptState(), GetWindow(), exception_state);
-  GetMockPermissionService().Flush();
-
-  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(GetWindow().GetFrame()));
-
-  EXPECT_EQ(GetMockPermissionService().GetRequestPermissionCallCount(), 1);
-  EXPECT_EQ(GetMockPermissionService().GetHasPermissionCallCount(), 0);
-}
-
-TEST_P(AdditionalWindowingControlsTest, ChecksPermissionWithoutUserActivation) {
-  ScriptState::Scope scope(GetScriptState());
-  DummyExceptionStateForTesting exception_state;
-
-  GetMockPermissionService().SetPermissionStatus(
-      mojom::blink::PermissionStatus::GRANTED);
-
-  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(GetWindow().GetFrame()));
-
-  RunAwcApiCall(GetScriptState(), GetWindow(), exception_state);
-  GetMockPermissionService().Flush();
-
-  EXPECT_EQ(GetMockPermissionService().GetHasPermissionCallCount(), 1);
-  EXPECT_EQ(GetMockPermissionService().GetRequestPermissionCallCount(), 0);
 }
 
 TEST_P(AdditionalWindowingControlsTest,
@@ -523,6 +502,10 @@ struct ExecutionTestParam {
   void (*setup_expectation)(MockChromeClient&, bool success);
   const char* expected_error_message;
   std::optional<ui::mojom::blink::WindowShowState> initial_state = std::nullopt;
+  bool RequiresUserActivation() const {
+    return !(action == &SetResizableTrueWrapper ||
+             action == &SetResizableFalseWrapper);
+  }
 };
 
 class AdditionalWindowingControlsExecutionTest
@@ -608,6 +591,101 @@ TEST_P(AdditionalWindowingControlsExecutionTest, RejectsOnBrowserFailure) {
   ASSERT_TRUE(dom_exception);
   EXPECT_EQ(dom_exception->name(), "NotAllowedError");
   EXPECT_EQ(dom_exception->message(), GetParam().expected_error_message);
+}
+
+TEST_P(AdditionalWindowingControlsExecutionTest,
+       VerifyRequiringUserActivation) {
+  ScriptState::Scope scope(GetScriptState());
+  DummyExceptionStateForTesting exception_state;
+
+  GetMockPermissionService().SetPermissionStatus(
+      mojom::blink::PermissionStatus::GRANTED);
+
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(GetWindow().GetFrame()));
+
+  if (!GetParam().RequiresUserActivation()) {
+    GetParam().setup_expectation(GetMockChromeClient(), /*success=*/true);
+  }
+  ScriptPromise<IDLUndefined> promise =
+      GetParam().action(GetScriptState(), GetWindow(), exception_state);
+  GetMockPermissionService().Flush();
+
+  if (GetParam().RequiresUserActivation()) {
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kNotAllowedError);
+    EXPECT_EQ(exception_state.Message(),
+              "API requires transient user activation.");
+    EXPECT_EQ(GetMockPermissionService().GetRequestPermissionCallCount(), 0);
+  } else {
+    EXPECT_FALSE(exception_state.HadException());
+    ScriptPromiseTester tester(GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+    EXPECT_EQ(GetMockPermissionService().GetRequestPermissionCallCount(), 1);
+  }
+  EXPECT_EQ(GetMockPermissionService().GetHasPermissionCallCount(), 0);
+}
+
+TEST_P(AdditionalWindowingControlsExecutionTest,
+       VerifyConsumingUserActivation) {
+  ScriptState::Scope scope(GetScriptState());
+  DummyExceptionStateForTesting exception_state;
+
+  GetMockPermissionService().SetPermissionStatus(
+      mojom::blink::PermissionStatus::GRANTED);
+
+  LocalFrame::NotifyUserActivation(
+      GetWindow().GetFrame(),
+      mojom::blink::UserActivationNotificationType::kTest);
+  EXPECT_TRUE(LocalFrame::HasTransientUserActivation(GetWindow().GetFrame()));
+
+  GetParam().setup_expectation(GetMockChromeClient(), /*success=*/true);
+  ScriptPromise<IDLUndefined> promise =
+      GetParam().action(GetScriptState(), GetWindow(), exception_state);
+  GetMockPermissionService().Flush();
+
+  ScriptPromiseTester tester(GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+
+  if (GetParam().RequiresUserActivation()) {
+    EXPECT_FALSE(
+        LocalFrame::HasTransientUserActivation(GetWindow().GetFrame()));
+  } else {
+    EXPECT_TRUE(LocalFrame::HasTransientUserActivation(GetWindow().GetFrame()));
+  }
+
+  EXPECT_EQ(GetMockPermissionService().GetRequestPermissionCallCount(), 1);
+  EXPECT_EQ(GetMockPermissionService().GetHasPermissionCallCount(), 0);
+}
+
+TEST_P(AdditionalWindowingControlsExecutionTest,
+       AllowsIwaWithoutUserActivation) {
+  ScriptState::Scope scope(GetScriptState());
+  DummyExceptionStateForTesting exception_state;
+
+  Agent::SetIsIsolatedContext(true);
+
+  GetMockPermissionService().SetPermissionStatus(
+      mojom::blink::PermissionStatus::GRANTED);
+
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(GetWindow().GetFrame()));
+
+  GetParam().setup_expectation(GetMockChromeClient(), /*success=*/true);
+  ScriptPromise<IDLUndefined> promise =
+      GetParam().action(GetScriptState(), GetWindow(), exception_state);
+  GetMockPermissionService().Flush();
+
+  ScriptPromiseTester tester(GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+
+  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_EQ(GetMockPermissionService().GetRequestPermissionCallCount(), 1);
+  EXPECT_EQ(GetMockPermissionService().GetHasPermissionCallCount(), 0);
+
+  Agent::ResetIsIsolatedContextForTest();
 }
 
 INSTANTIATE_TEST_SUITE_P(
