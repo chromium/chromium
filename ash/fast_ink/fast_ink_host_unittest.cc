@@ -120,7 +120,7 @@ TEST_P(FastInkHostFrameSubmissionTest,
   if (features::IsFastInkHostLowPriorityHintEnabled()) {
     EXPECT_EQ(texture_quad->overlay_priority_hint,
               params.auto_update ? viz::OverlayPriority::kRegular
-                                 : viz::OverlayPriority::kLow);
+                                 : viz::OverlayPriority::kNone);
   } else {
     EXPECT_EQ(frame.resource_list.back().GetIsOverlayCandidate(),
               params.auto_update);

@@ -1202,7 +1202,7 @@ TEST_P(SurfaceTest, DisableNonYUVOverlays) {
     viz::DrawQuad* draw_quad = frame.render_pass_list.back()->quad_list.back();
     EXPECT_EQ(viz::DrawQuad::Material::kTextureContent, draw_quad->material);
     EXPECT_EQ(
-        viz::OverlayPriority::kLow,
+        viz::OverlayPriority::kNone,
         viz::TextureDrawQuad::MaterialCast(draw_quad)->overlay_priority_hint);
   }
 }

@@ -180,7 +180,7 @@ StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad>::Read(
 
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kClear;
-  viz::OverlayPriority overlay_priority_hint = viz::OverlayPriority::kLow;
+  viz::OverlayPriority overlay_priority_hint = viz::OverlayPriority::kNone;
   if (!data.ReadTexCoordRect(&quad->tex_coord_rect_)) {
     return base::unexpected(DeserializationError());
   }

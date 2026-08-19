@@ -28,7 +28,7 @@ class TextureQuadStateDataView;
 }
 
 // The priority for a quads to require being promoted to overlay.
-enum class OverlayPriority { kLow, kRegular, kRequired };
+enum class OverlayPriority { kNone, kRegular, kRequired };
 
 class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
  public:

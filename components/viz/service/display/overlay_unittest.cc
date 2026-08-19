@@ -2857,11 +2857,11 @@ TEST_F(SingleOverlayOnTopTest, RejectTransparentColorOnTopWithoutBlending) {
 }
 
 // Test makes sure promotion hint (|overlay_priority_hint| in |TextureDrawQuad|)
-// feature functions. The (current) expectation is that |kLow| will not promote
+// feature functions. The (current) expectation is that |kNone| will not promote
 // and that |kRequired| will be promoted in preference to |kRegular| candidates.
 TEST_F(SingleOverlayOnTopTest, CheckPromotionHintBasic) {
   // Test has two passes:
-  // Pass 1 checks kLow and kRegular values.
+  // Pass 1 checks kNone and kRegular values.
   constexpr size_t kTestRegularAtFrame = 3;
   // Pass 2 checks kRequired against kRegular values.
   constexpr size_t kTestRequiredAtFrame = 6;
@@ -2897,7 +2897,7 @@ TEST_F(SingleOverlayOnTopTest, CheckPromotionHintBasic) {
     sqs_partial->overlay_damage_index = surface_damage_rect_list.size();
     tex_quad_full->overlay_priority_hint = i > kTestRegularAtFrame
                                                ? OverlayPriority::kRegular
-                                               : OverlayPriority::kLow;
+                                               : OverlayPriority::kNone;
     // Damage is 100% of |display_rect|.
     surface_damage_rect_list.push_back(kOverlayBottomRightRect);
 
@@ -4258,10 +4258,7 @@ TEST_F(UnderlayCastTest, NoOverlayContentBounds) {
       resource_provider(), &pass_list, GetIdentityColorMatrix(),
       std::move(surface_damage_rect_list), GetDefaultPrimaryPlane(),
       &candidate_list, &damage_rect_);
-
 }
-
-
 
 TEST_F(UnderlayCastTest, NoOverlayPromotionWithoutProtectedContent) {
   auto pass = CreateRenderPass();
@@ -4279,7 +4276,6 @@ TEST_F(UnderlayCastTest, NoOverlayPromotionWithoutProtectedContent) {
       &candidate_list, &damage_rect_);
 
   ASSERT_TRUE(candidate_list.empty());
-
 }
 
 TEST_F(UnderlayCastTest, OverlayPromotionWithMaskFilter) {
@@ -4302,8 +4298,6 @@ TEST_F(UnderlayCastTest, OverlayPromotionWithMaskFilter) {
       resource_provider(), &pass_list, GetIdentityColorMatrix(),
       std::move(surface_damage_rect_list), GetDefaultPrimaryPlane(),
       &candidate_list, &damage_rect_);
-
-
 
   ASSERT_EQ(1U, pass_list.size());
   ASSERT_EQ(1U, pass_list.front()->quad_list.size());

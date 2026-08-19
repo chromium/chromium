@@ -244,7 +244,7 @@ TEST_F(FastInkHostCreateFrameUtilTest, LowPriorityHintKillswitch) {
     auto* texture_quad_no_auto = viz::TextureDrawQuad::MaterialCast(
         frame_no_auto->render_pass_list.front()->quad_list.back());
     EXPECT_EQ(texture_quad_no_auto->overlay_priority_hint,
-              viz::OverlayPriority::kLow);
+              viz::OverlayPriority::kNone);
 
     auto frame_auto = fast_ink_internal::CreateCompositorFrame(
         viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,

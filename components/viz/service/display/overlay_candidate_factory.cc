@@ -634,8 +634,8 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
     const TextureDrawQuad* quad,
     OverlayCandidate& candidate) const {
   if (!context_.is_delegated_context &&
-      quad->overlay_priority_hint == OverlayPriority::kLow) {
-    // For current implementation low priority means this does not promote to
+      quad->overlay_priority_hint == OverlayPriority::kNone) {
+    // For current implementation none priority means this does not promote to
     // overlay.
     return CandidateStatus::kFailPriority;
   }

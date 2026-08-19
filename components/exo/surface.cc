@@ -1762,7 +1762,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
 
       if (state_.buffer.has_value() && state_.buffer->buffer() &&
           ShouldDisableOverlay(state_.buffer->buffer()->GetFormat())) {
-        texture_quad->overlay_priority_hint = viz::OverlayPriority::kLow;
+        texture_quad->overlay_priority_hint = viz::OverlayPriority::kNone;
       }
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)

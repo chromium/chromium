@@ -80,8 +80,8 @@ template <>
 struct EnumTraits<viz::mojom::OverlayPriority, viz::OverlayPriority> {
   static viz::mojom::OverlayPriority ToMojom(viz::OverlayPriority input) {
     switch (input) {
-      case viz::OverlayPriority::kLow:
-        return viz::mojom::OverlayPriority::kLow;
+      case viz::OverlayPriority::kNone:
+        return viz::mojom::OverlayPriority::kNone;
       case viz::OverlayPriority::kRegular:
         return viz::mojom::OverlayPriority::kRegular;
       case viz::OverlayPriority::kRequired:
@@ -92,8 +92,8 @@ struct EnumTraits<viz::mojom::OverlayPriority, viz::OverlayPriority> {
 
   static viz::OverlayPriority FromMojom(viz::mojom::OverlayPriority input) {
     switch (input) {
-      case viz::mojom::OverlayPriority::kLow:
-        return viz::OverlayPriority::kLow;
+      case viz::mojom::OverlayPriority::kNone:
+        return viz::OverlayPriority::kNone;
       case viz::mojom::OverlayPriority::kRegular:
         return viz::OverlayPriority::kRegular;
       case viz::mojom::OverlayPriority::kRequired:

@@ -24,7 +24,7 @@ enum ProtectedVideoState {
 };
 
 enum OverlayPriority {
-  kLow,
+  kNone,
   kRegular,
   kRequired
 };

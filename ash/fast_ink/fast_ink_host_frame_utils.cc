@@ -83,7 +83,7 @@ void AppendQuad(const viz::TransferableResource& resource,
       /*is_tex_coords_normalized=*/false);
 
   if (features::IsFastInkHostLowPriorityHintEnabled() && !auto_update) {
-    texture_quad->overlay_priority_hint = viz::OverlayPriority::kLow;
+    texture_quad->overlay_priority_hint = viz::OverlayPriority::kNone;
   }
 }
 
