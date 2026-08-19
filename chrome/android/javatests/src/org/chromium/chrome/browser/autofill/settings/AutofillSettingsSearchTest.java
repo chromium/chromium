@@ -176,7 +176,7 @@ public class AutofillSettingsSearchTest {
     @Test
     @SmallTest
     public void testSearchSaveAndFillAddresses() {
-        searchSettings("address");
+        searchSettings("save and fill address");
 
         onViewWaiting( // Wait for debounce and Search results to appear.
                         allOf(
