@@ -266,6 +266,8 @@ bool ShouldRedactContent(
     case optimization_guide::proto::
         REDACTION_DECISION_UNREDACTED_EMPTY_PASSWORD:
     case optimization_guide::proto::
+        REDACTION_DECISION_UNREDACTED_EMPTY_CUSTOM_PASSWORD:
+    case optimization_guide::proto::
         REDACTION_DECISION_UNREDACTED_EMPTY_PAYMENT_FIELD:
     case optimization_guide::proto::
         REDACTION_DECISION_UNREDACTED_EMPTY_OTP_FIELD:
@@ -273,6 +275,10 @@ bool ShouldRedactContent(
 
     case optimization_guide::proto::
         REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD:
+    case optimization_guide::proto::
+        REDACTION_DECISION_REDACTED_CUSTOM_PASSWORD_CSS:
+    case optimization_guide::proto::
+        REDACTION_DECISION_REDACTED_CUSTOM_PASSWORD_JS:
       return true;
 
     case optimization_guide::proto::REDACTION_DECISION_REDACTED_IS_OTP:

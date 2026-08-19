@@ -4689,9 +4689,10 @@ TEST_P(PageContextWrapperTest,
       input_node.content_attributes().form_control_data();
 
   // Should be identified as a password due to redaction decision
-  // REDACTED_HAS_BEEN_PASSWORD (2).
+  // REDACTED_CUSTOM_PASSWORD_CSS (6).
   EXPECT_EQ(form_control_data.redaction_decision(),
-            static_cast<optimization_guide::proto::RedactionDecision>(2));
+            optimization_guide::proto::
+                REDACTION_DECISION_REDACTED_CUSTOM_PASSWORD_CSS);
 
   // The value should be empty because it was redacted.
   EXPECT_FALSE(form_control_data.has_field_value());
@@ -4748,8 +4749,75 @@ TEST_P(PageContextWrapperTest,
 
   // Based on JS masking heuristic, this should be redacted.
   EXPECT_EQ(form_control_data.redaction_decision(),
-            static_cast<optimization_guide::proto::RedactionDecision>(2));
+            optimization_guide::proto::
+                REDACTION_DECISION_REDACTED_CUSTOM_PASSWORD_JS);
   EXPECT_EQ(form_control_data.field_value(), "");
+}
+
+// Tests that a password field with OTP attributes (e.g., name="otp",
+// autocomplete="one-time-code") is prioritized and redacted as a password
+// rather than an OTP field.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_PasswordOverOtpPriority) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{kPageContextScreenshotPasswordRedaction,
+                            kPageContextAutofillOtpRedactions},
+      /*disabled_features=*/{});
+
+  auto page_structure = HtmlPage(
+      "PasswordOverOtp", RawHtml("<html><body>"
+                                 "<form>"
+                                 "<input type='password' name='otp_code' "
+                                 "autocomplete='one-time-code' value='123456'>"
+                                 "</form>"
+                                 "</body></html>"));
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetExtractAutofillOtpRedactions(true)
+          .SetExtractPasswordScreenshotRedactions(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+
+  ASSERT_EQ(root_node.children_nodes_size(), 1);
+  const auto& form_node = root_node.children_nodes(0);
+  ASSERT_EQ(form_node.children_nodes_size(), 1);
+  const auto& input_node = form_node.children_nodes(0);
+
+  EXPECT_TRUE(input_node.content_attributes().has_form_control_data());
+  const auto& form_control_data =
+      input_node.content_attributes().form_control_data();
+
+  // The field should be redacted with password priority, not OTP.
+  EXPECT_EQ(
+      form_control_data.redaction_decision(),
+      optimization_guide::proto::REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD);
+  EXPECT_EQ(form_control_data.field_value(), "");
+  EXPECT_EQ(form_control_data.form_control_type(),
+            optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_PASSWORD);
 }
 
 // Tests that Autofill metadata is correctly identified and populated in the
@@ -7535,6 +7603,12 @@ TEST_P(PageContextWrapperTest,
     return;
   }
 
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{kPageContextScreenshotSensitivePaymentRedaction,
+                             kPageContextScreenshotPasswordRedaction});
+
   auto page_structure =
       HtmlPage("Sensitive Payment Geometry Disabled Test",
                RawHtml("<form>"
@@ -7700,6 +7774,153 @@ TEST_P(PageContextWrapperTest,
       otp_input.content_attributes().geometry().has_outer_bounding_box());
   EXPECT_TRUE(
       otp_input.content_attributes().geometry().has_visible_bounding_box());
+}
+
+// Test that the global kPageContextScreenshotPasswordRedaction feature flag
+// enables redaction geometry extraction for password fields (standard, CSS
+// masked, and JS masked) even when actionable mode is off. Configures a test
+// page with a checkbox and password inputs with actionable mode off, and
+// verifies that enabling the feature flag forces geometry extraction for the
+// password fields while omitting geometry for the checkbox.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_PasswordRedactionGeometry_FeatureFlag) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kPageContextScreenshotPasswordRedaction);
+
+  auto page_structure =
+      HtmlPage("Password Geometry Test",
+               RawHtml("<form>"
+                       "  <input type='checkbox' id='normal_checkbox'>"
+                       "  <input type='password' id='password_field'>"
+                       "  <input type='text' style='-webkit-text-security: "
+                       "disc' id='css_password'>"
+                       "  <input type='text' value='••••••••' id='js_password'>"
+                       "</form>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(false)
+          .SetIncludeSensitivePaymentsForRedaction(false)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+  ASSERT_TRUE(page_context);
+
+  const auto& actual_apc = page_context->annotated_page_content();
+  const auto& root = actual_apc.root_node();
+
+  ASSERT_GE(root.children_nodes_size(), 1);
+  const auto& form = root.children_nodes(0);
+  ASSERT_EQ(form.children_nodes_size(), 4);
+
+  // 1. Non-password checkbox has no geometry.
+  const auto& checkbox_input = form.children_nodes(0);
+  EXPECT_FALSE(
+      checkbox_input.content_attributes().geometry().has_outer_bounding_box());
+
+  // 2. Standard password input has geometry.
+  const auto& password_input = form.children_nodes(1);
+  EXPECT_TRUE(
+      password_input.content_attributes().geometry().has_outer_bounding_box());
+  EXPECT_TRUE(password_input.content_attributes()
+                  .geometry()
+                  .has_visible_bounding_box());
+
+  // 3. CSS custom password input has geometry.
+  const auto& css_password_input = form.children_nodes(2);
+  EXPECT_TRUE(css_password_input.content_attributes()
+                  .geometry()
+                  .has_outer_bounding_box());
+  EXPECT_TRUE(css_password_input.content_attributes()
+                  .geometry()
+                  .has_visible_bounding_box());
+
+  // 4. JS custom password input has geometry.
+  const auto& js_password_input = form.children_nodes(3);
+  EXPECT_TRUE(js_password_input.content_attributes()
+                  .geometry()
+                  .has_outer_bounding_box());
+  EXPECT_TRUE(js_password_input.content_attributes()
+                  .geometry()
+                  .has_visible_bounding_box());
+}
+
+// Test that when kPageContextScreenshotPasswordRedaction is disabled and
+// actionable mode is off, geometry is omitted for all password fields
+// (standard, CSS masked, and JS masked).
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_PasswordRedactionGeometry_DisabledFeatureFlag) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kPageContextScreenshotPasswordRedaction);
+
+  auto page_structure =
+      HtmlPage("Password Geometry Disabled Test",
+               RawHtml("<form>"
+                       "  <input type='checkbox' id='normal_checkbox'>"
+                       "  <input type='password' id='password_field'>"
+                       "  <input type='text' style='-webkit-text-security: "
+                       "disc' id='css_password'>"
+                       "  <input type='text' value='••••••••' id='js_password'>"
+                       "</form>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(false)
+          .SetIncludeSensitivePaymentsForRedaction(false)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+  ASSERT_TRUE(page_context);
+
+  const auto& actual_apc = page_context->annotated_page_content();
+  const auto& root = actual_apc.root_node();
+
+  ASSERT_GE(root.children_nodes_size(), 1);
+  const auto& form = root.children_nodes(0);
+  ASSERT_EQ(form.children_nodes_size(), 4);
+
+  // All fields must have geometry omitted when both actionable mode and
+  // password screenshot redaction are off.
+  for (int i = 0; i < 4; ++i) {
+    EXPECT_FALSE(form.children_nodes(i)
+                     .content_attributes()
+                     .geometry()
+                     .has_outer_bounding_box());
+  }
 }
 
 // Tests that the version and mode fields are correctly populated in the
@@ -8085,7 +8306,7 @@ TEST_P(PageContextWrapperTest, ImageRedaction_AutofillOTP) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{kPageContextAutofillOtpRedactions},
-      /*disabled_features=*/{});
+      /*disabled_features=*/{kPageContextScreenshotPasswordRedaction});
 
   PageContextWrapper* wrapper = [[PageContextWrapper alloc]
         initWithWebState:web_state()
@@ -8100,6 +8321,43 @@ TEST_P(PageContextWrapperTest, ImageRedaction_AutofillOTP) {
   EXPECT_FALSE([wrapper shouldRedactDecisionForScreenshot:
                             optimization_guide::proto::
                                 REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD]);
+}
+
+// Test that `shouldRedactDecisionForScreenshot:` returns YES for password
+// fields (including standard passwords and custom CSS/JS password heuristics)
+// and NO for OTP and sensitive payment fields when only password screenshot
+// redaction is enabled.
+TEST_P(PageContextWrapperTest, ImageRedaction_PasswordFields) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{kPageContextScreenshotPasswordRedaction},
+      /*disabled_features=*/{kPageContextScreenshotSensitivePaymentRedaction,
+                             kPageContextAutofillOtpRedactions});
+
+  PageContextWrapper* wrapper = [[PageContextWrapper alloc]
+        initWithWebState:web_state()
+                  config:PageContextWrapperConfigBuilder().Build()
+      completionCallback:base::BindOnce(
+                             [](PageContextWrapperCallbackResponse response) {
+                             })];
+
+  EXPECT_TRUE([wrapper shouldRedactDecisionForScreenshot:
+                           optimization_guide::proto::
+                               REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD]);
+  EXPECT_TRUE(
+      [wrapper shouldRedactDecisionForScreenshot:
+                   optimization_guide::proto::
+                       REDACTION_DECISION_REDACTED_CUSTOM_PASSWORD_CSS]);
+  EXPECT_TRUE([wrapper shouldRedactDecisionForScreenshot:
+                           optimization_guide::proto::
+                               REDACTION_DECISION_REDACTED_CUSTOM_PASSWORD_JS]);
+  EXPECT_FALSE([wrapper
+      shouldRedactDecisionForScreenshot:
+          optimization_guide::proto::REDACTION_DECISION_REDACTED_IS_OTP]);
+  EXPECT_FALSE(
+      [wrapper shouldRedactDecisionForScreenshot:
+                   optimization_guide::proto::
+                       REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD]);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

@@ -598,6 +598,7 @@ function isPageContextActionableOptimizationEnabled() {
 }
 
 
+
 /**
  * Maps a tag name to its corresponding PageContentAnnotatedRole.
  *
@@ -1107,20 +1108,28 @@ function mayContainOtp(element: HTMLElement): boolean {
 
 /**
  * Checks whether geometry should be extracted for screenshot redaction
- * purposes. Iframes are also included if any redaction flag is enabled because
- * their geometries are required for absolute coordinate offset calculations.
+ * purposes (e.g. sensitive payment fields, OTP fields, password fields, or
+ * iframes). Iframes are included if any redaction flag is enabled because their
+ * geometries are required for coordinate translation during frame grafting.
  *
  * @param element The DOM element to check.
  * @param includeSensitivePaymentsForRedaction Whether sensitive payments
  *     redaction is enabled.
  * @param extractAutofillOtpRedactions Whether OTP redaction is enabled.
+ * @param extractPasswordScreenshotRedactions Whether password screenshot
+ *     redaction is enabled.
+ * @param styleCache Optional cache for computed styles.
  * @return True if geometry should be extracted for redaction.
  */
 function shouldExtractGeometryForRedaction(
     element: HTMLElement, includeSensitivePaymentsForRedaction: boolean,
-    extractAutofillOtpRedactions: boolean): boolean {
-  if (element.tagName === TAG_IFRAME) {
-    return includeSensitivePaymentsForRedaction || extractAutofillOtpRedactions;
+    extractAutofillOtpRedactions: boolean,
+    extractPasswordScreenshotRedactions: boolean,
+    styleCache?: StyleCache): boolean {
+  const tagName = getStandardTagName(element);
+  if (tagName === TAG_IFRAME) {
+    return includeSensitivePaymentsForRedaction ||
+        extractAutofillOtpRedactions || extractPasswordScreenshotRedactions;
   }
 
   if (includeSensitivePaymentsForRedaction &&
@@ -1129,6 +1138,11 @@ function shouldExtractGeometryForRedaction(
   }
 
   if (extractAutofillOtpRedactions && mayContainOtp(element)) {
+    return true;
+  }
+
+  if (extractPasswordScreenshotRedactions &&
+      isPasswordField(element, tagName, styleCache)) {
     return true;
   }
 
@@ -2180,7 +2194,8 @@ function getContentForIframeNode(
     maxDepth: number, actionableMode: boolean,
     paidContentContext: PaidContentExtractionContext,
     includeSensitivePaymentsForRedaction: boolean,
-    extractAutofillOtpRedactions: boolean): PageContentNode|null {
+    extractAutofillOtpRedactions: boolean,
+    extractPasswordScreenshotRedactions: boolean): PageContentNode|null {
   const attributes: PageContentAttributes = {
     attributeType: PageContentAttributeType.IFRAME,
     annotatedRoles: [],
@@ -2209,7 +2224,8 @@ function getContentForIframeNode(
           contentDoc, nonce, depth + APC_NODE_DEPTH_COST, maxDepth,
           actionableMode, paidContentContext.extractPaidContent,
           paidContentContext.attemptPaidContentJsonFixing,
-          includeSensitivePaymentsForRedaction, extractAutofillOtpRedactions);
+          includeSensitivePaymentsForRedaction, extractAutofillOtpRedactions,
+          extractPasswordScreenshotRedactions);
       if (pageContent) {
         childTree = pageContent.rootNode;
         localFrameData = pageContent.frameData;
@@ -2445,19 +2461,40 @@ function isLikelyJSCustomPasswordField(fieldValue: string): boolean {
 /**
  * Checks if the element is a custom password field (e.g. using CSS
  * text-security or JS masking).
+ *
+ * @param element The DOM element to process.
+ * @param styleCache The style cache to use for computing styles.
+ * @return True if the element is a custom password field.
  */
-function isCustomPassword(element: Element, styleCache?: StyleCache): boolean {
+function isCustomPasswordField(
+    element: Element, styleCache?: StyleCache): boolean {
   const tagName = getStandardTagName(element);
-  if (tagName === TAG_INPUT || tagName === TAG_TEXTAREA) {
-    const value = (element as HTMLInputElement | HTMLTextAreaElement).value;
-    if (value && isLikelyJSCustomPasswordField(value)) {
-      return true;
-    }
+  if (tagName !== TAG_INPUT && tagName !== TAG_TEXTAREA) {
+    return false;
+  }
+
+  const value = (element as HTMLInputElement | HTMLTextAreaElement).value;
+  if (value && isLikelyJSCustomPasswordField(value)) {
+    return true;
   }
 
   const style = getComputedStyleForElement(element, styleCache);
   const textSecurity = style?.getPropertyValue('-webkit-text-security');
-  return !!textSecurity && textSecurity !== 'none';
+  return Boolean(textSecurity && textSecurity !== 'none');
+}
+
+/**
+ * Checks if the element is a standard password input (or was previously one).
+ *
+ * @param domNode The DOM element to process.
+ * @param tagName The tag name of the element.
+ * @return True if the element is a standard password field.
+ */
+function isStandardPasswordField(
+    domNode: HTMLElement, tagName: string): boolean {
+  return tagName === TAG_INPUT &&
+      (Boolean((domNode as PasswordTrackedElement)[HAS_BEEN_PASSWORD_SYMBOL]) ||
+       (domNode as HTMLInputElement).type === PASSWORD_TYPE);
 }
 
 /**
@@ -2470,18 +2507,29 @@ function isCustomPassword(element: Element, styleCache?: StyleCache): boolean {
  */
 function isPasswordField(
     domNode: HTMLElement, tagName: string, styleCache?: StyleCache): boolean {
-  if (tagName === TAG_INPUT &&
-      ((domNode as PasswordTrackedElement)[HAS_BEEN_PASSWORD_SYMBOL] ||
-       (domNode as HTMLInputElement).type === PASSWORD_TYPE)) {
-    // A plain password input.
-    return true;
-  }
+  return isStandardPasswordField(domNode, tagName) ||
+      isCustomPasswordField(domNode, styleCache);
+}
 
-  if (tagName === TAG_INPUT || tagName === TAG_TEXTAREA) {
-    // Check for custom password fields (CSS or JS masked).
-    return isCustomPassword(domNode, styleCache);
+/**
+ * Gets the custom password redaction decision for a custom password element.
+ *
+ * @param element The DOM element to process.
+ * @param needRedaction Whether the field contains non-empty text requiring
+ *     redaction.
+ * @return The custom password PageContentRedactionDecision.
+ */
+function getCustomPasswordRedactionDecision(
+    element: Element, needRedaction: boolean): PageContentRedactionDecision {
+  const value = (element as HTMLInputElement | HTMLTextAreaElement).value;
+  if (value && isLikelyJSCustomPasswordField(value)) {
+    return needRedaction ?
+        PageContentRedactionDecision.REDACTED_CUSTOM_PASSWORD_JS :
+        PageContentRedactionDecision.UNREDACTED_EMPTY_CUSTOM_PASSWORD;
   }
-  return false;
+  return needRedaction ?
+      PageContentRedactionDecision.REDACTED_CUSTOM_PASSWORD_CSS :
+      PageContentRedactionDecision.UNREDACTED_EMPTY_CUSTOM_PASSWORD;
 }
 
 /**
@@ -2528,12 +2576,15 @@ function getFormControlData(
   const value = (domNode as HTMLInputElement).value;
   if (value !== undefined) {
     let needRedaction = false;
-    if (isPasswordField(domNode, tagName, styleCache)) {
+    if (isStandardPasswordField(domNode, tagName)) {
       needRedaction = !!value;
-      // Exclude password field value mirroring Blink's logic.
       formControlData.redactionDecision = needRedaction ?
           PageContentRedactionDecision.REDACTED_HAS_BEEN_PASSWORD :
           PageContentRedactionDecision.UNREDACTED_EMPTY_PASSWORD;
+    } else if (isCustomPasswordField(domNode, styleCache)) {
+      needRedaction = !!value;
+      formControlData.redactionDecision =
+          getCustomPasswordRedactionDecision(domNode, needRedaction);
     }
     if (!needRedaction) {
       formControlData.fieldValue = value;
@@ -2646,6 +2697,7 @@ function getBasicContentForNonGenericElement(
     actionableMode: boolean, paidContentContext: PaidContentExtractionContext,
     includeSensitivePaymentsForRedaction: boolean,
     extractAutofillOtpRedactions: boolean,
+    extractPasswordScreenshotRedactions: boolean,
     styleCache?: StyleCache): PageContentNode|null {
   const tagName = getStandardTagName(domNode);
 
@@ -2655,7 +2707,7 @@ function getBasicContentForNonGenericElement(
       return getContentForIframeNode(
           domNode as HTMLIFrameElement, nonce, depth, maxDepth, actionableMode,
           paidContentContext, includeSensitivePaymentsForRedaction,
-          extractAutofillOtpRedactions);
+          extractAutofillOtpRedactions, extractPasswordScreenshotRedactions);
     case TAG_IMG:
       return {
         childrenNodes: [],
@@ -2921,6 +2973,7 @@ function getContentForElementNode(
     paidContentContext: PaidContentExtractionContext,
     includeSensitivePaymentsForRedaction: boolean,
     extractAutofillOtpRedactions: boolean,
+    extractPasswordScreenshotRedactions: boolean,
     styleCache?: StyleCache): PageContentNode|null {
   let labelForDOMNodeID: number | undefined = undefined;
   if (actionableMode && getStandardTagName(domNode) === TAG_LABEL) {
@@ -2934,7 +2987,7 @@ function getContentForElementNode(
   contentNode = getBasicContentForNonGenericElement(
       domNode, nonce, depth, maxDepth, actionableMode, paidContentContext,
       includeSensitivePaymentsForRedaction, extractAutofillOtpRedactions,
-      styleCache);
+      extractPasswordScreenshotRedactions, styleCache);
 
   const annotatedRoles: PageContentAnnotatedRole[] = [];
   addAnnotatedRoles(domNode, annotatedRoles, paidContentContext, styleCache);
@@ -3185,13 +3238,15 @@ function addNodeGeometry(
     context: ClippingContext, actionableMode: boolean,
     includeSensitivePaymentsForRedaction: boolean,
     extractAutofillOtpRedactions: boolean,
+    extractPasswordScreenshotRedactions: boolean,
     styleCache?: StyleCache): ClippingContext {
   // Process element nodes when in actionable mode, or if it may contain
-  // sensitive fields (payments or OTP) that should be redacted.
+  // sensitive fields (payments, OTP, or passwords) that should be redacted.
   if (!actionableMode &&
       !shouldExtractGeometryForRedaction(
           element, includeSensitivePaymentsForRedaction,
-          extractAutofillOtpRedactions)) {
+          extractAutofillOtpRedactions, extractPasswordScreenshotRedactions,
+          styleCache)) {
     return context;
   }
 
@@ -3310,7 +3365,8 @@ function maybeGenerateContentNode(
     paidContentContext: PaidContentExtractionContext, hasCanvas: boolean,
     parentContext: ClippingContext,
     includeSensitivePaymentsForRedaction: boolean,
-    extractAutofillOtpRedactions: boolean, styleCache?: StyleCache): {
+    extractAutofillOtpRedactions: boolean,
+    extractPasswordScreenshotRedactions: boolean, styleCache?: StyleCache): {
   node: PageContentNode|null,
   nextClippingContext: ClippingContext,
 } {
@@ -3341,7 +3397,7 @@ function maybeGenerateContentNode(
         element, nonce, depth, maxDepth, interactionInfo, actionableMode,
         interactiveNodeIds, paidContentContext,
         includeSensitivePaymentsForRedaction, extractAutofillOtpRedactions,
-        styleCache);
+        extractPasswordScreenshotRedactions, styleCache);
     if (contentNode) {
       const domNodeId = getOrCreateNodeId(domNode);
       if (domNodeId !== null) {
@@ -3352,7 +3408,7 @@ function maybeGenerateContentNode(
       const nextClippingContext = addNodeGeometry(
           element, contentNode.contentAttributes, parentContext, actionableMode,
           includeSensitivePaymentsForRedaction, extractAutofillOtpRedactions,
-          styleCache);
+          extractPasswordScreenshotRedactions, styleCache);
       return {node: contentNode, nextClippingContext};
     }
   }
@@ -3462,7 +3518,8 @@ function generateAndPushContentNode(
     ancestorStack: AncestorStackItem[], interactiveNodeIds: InteractiveNodeIds,
     actionableMode: boolean, paidContentContext: PaidContentExtractionContext,
     hasCanvas: boolean, includeSensitivePaymentsForRedaction: boolean,
-    extractAutofillOtpRedactions: boolean, styleCache?: StyleCache) {
+    extractAutofillOtpRedactions: boolean,
+    extractPasswordScreenshotRedactions: boolean, styleCache?: StyleCache) {
   const parentStackItem = ancestorStack[ancestorStack.length - 1]!;
 
   // 2. Generate Content Node. Skip nodes that are too deep while keep
@@ -3479,7 +3536,7 @@ function generateAndPushContentNode(
       node, nonce, currentDepth, maxDepth, interactiveNodeIds, actionableMode,
       paidContentContext, hasCanvas, parentContext,
       includeSensitivePaymentsForRedaction, extractAutofillOtpRedactions,
-      styleCache);
+      extractPasswordScreenshotRedactions, styleCache);
   if (!result.node) {
     // Ignore the node if it can't be parsed. That node cannot be a parent
     // either where another node in the ancestor stack will be picked as the
@@ -3977,7 +4034,8 @@ export function extractAnnotatedPageContent(
     actionableMode: boolean, extractPaidContent: boolean,
     attemptPaidContentJsonFixing: boolean,
     includeSensitivePaymentsForRedaction: boolean,
-    extractAutofillOtpRedactions: boolean): PageContent|null {
+    extractAutofillOtpRedactions: boolean,
+    extractPasswordScreenshotRedactions: boolean): PageContent|null {
   if (depth > maxDepth) {
     return null;
   }
@@ -4066,7 +4124,8 @@ export function extractAnnotatedPageContent(
           absoluteClip: getViewportRect(document),
         },
         actionableMode, includeSensitivePaymentsForRedaction,
-        extractAutofillOtpRedactions, styleCache),
+        extractAutofillOtpRedactions, extractPasswordScreenshotRedactions,
+        styleCache),
   }];
 
   // Collect interactive nodes (focused element, selection start/end).
@@ -4076,7 +4135,7 @@ export function extractAnnotatedPageContent(
       root, ancestorStack, document, nonce, maxDepth, interactiveNodeIds,
       actionableMode, paidContentContext, hasCanvas,
       includeSensitivePaymentsForRedaction, extractAutofillOtpRedactions,
-      styleCache);
+      extractPasswordScreenshotRedactions, styleCache);
 
   const pageInteractionInfo = extractPageInteractionInfo(document);
 
@@ -4109,7 +4168,9 @@ function walkTreeAndPopulate(
     nonce: string, maxDepth: number, interactiveNodeIds: InteractiveNodeIds,
     actionableMode: boolean, paidContentContext: PaidContentExtractionContext,
     hasCanvas: boolean, includeSensitivePaymentsForRedaction: boolean,
-    extractAutofillOtpRedactions: boolean, styleCache?: StyleCache): void {
+    extractAutofillOtpRedactions: boolean,
+    extractPasswordScreenshotRedactions: boolean,
+    styleCache?: StyleCache): void {
   // Create a tree walker to traverse the DOM tree.
   // Uses `undefined` as the filter lambda to avoid performance penalty since
   // the walker would have to cross WebCore C++/JS bridge for every node.
@@ -4207,7 +4268,7 @@ function walkTreeAndPopulate(
         currentNode, nonce, maxDepth, ancestorStack, interactiveNodeIds,
         actionableMode, paidContentContext, hasCanvas,
         includeSensitivePaymentsForRedaction, extractAutofillOtpRedactions,
-        styleCache);
+        extractPasswordScreenshotRedactions, styleCache);
 
     // Descend into an open shadow root, which the TreeWalker does not cross.
     // Anchor it at the current stack top (the host's node if emitted, else the
@@ -4222,7 +4283,8 @@ function walkTreeAndPopulate(
             shadowRoot, [ancestorStack[ancestorStack.length - 1]!], document,
             nonce, maxDepth, interactiveNodeIds, actionableMode,
             paidContentContext, hasCanvas, includeSensitivePaymentsForRedaction,
-            extractAutofillOtpRedactions, styleCache);
+            extractAutofillOtpRedactions, extractPasswordScreenshotRedactions,
+            styleCache);
       }
     }
 

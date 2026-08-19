@@ -223,7 +223,8 @@ function extractPageContext(
     useRichExtraction: boolean, actionableMode: boolean,
     extractPaidContent: boolean, attemptPaidContentJsonFixing: boolean,
     includeSensitivePaymentsForRedaction: boolean,
-    extractAutofillOtpRedactions: boolean): ExtractionResult {
+    extractAutofillOtpRedactions: boolean,
+    extractPasswordScreenshotRedactions: boolean): ExtractionResult {
   // If the PageContext should be detached, early return.
   if (shouldDetachPageContext()) {
     return { shouldDetachPageContext: true } as DetachData;
@@ -245,7 +246,7 @@ function extractPageContext(
     const apc = extractAnnotatedPageContent(
         document, nonce, 0, maxDepth, actionableMode, extractPaidContent,
         attemptPaidContentJsonFixing, includeSensitivePaymentsForRedaction,
-        extractAutofillOtpRedactions);
+        extractAutofillOtpRedactions, extractPasswordScreenshotRedactions);
     return isPageContextIPCOptimizationEnabled() ? JSONStringify(apc) : apc;
   }
 

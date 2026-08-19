@@ -60,6 +60,9 @@ class PageContextWrapperConfig {
   // True to apply redacting metadata for OTP fields.
   bool extract_autofill_otp_redactions() const;
 
+  // True to apply redacting metadata and geometry for password fields.
+  bool extract_password_screenshot_redactions() const;
+
   // True to block page context extraction on unsafe pages.
   bool block_unsafe_pages() const;
 
@@ -81,6 +84,7 @@ class PageContextWrapperConfig {
       bool extract_autofill_credit_card_redactions,
       bool include_sensitive_payments_for_redaction,
       bool extract_autofill_otp_redactions,
+      bool extract_password_screenshot_redactions,
       bool block_unsafe_pages,
       bool include_same_site_only);
 
@@ -113,6 +117,9 @@ class PageContextWrapperConfig {
 
   // Bit to apply Autofill OTP redaction policies.
   bool extract_autofill_otp_redactions_;
+
+  // Bit to apply password screenshot redaction policies.
+  bool extract_password_screenshot_redactions_;
 
   // Bit to block page context extraction on unsafe pages.
   bool block_unsafe_pages_;
@@ -184,6 +191,12 @@ class PageContextWrapperConfigBuilder {
   PageContextWrapperConfigBuilder& SetExtractAutofillOtpRedactions(
       bool extract_autofill_otp_redactions);
 
+  // Sets whether to apply password redactions to screenshot and geometry.
+  // Note: If `kPageContextScreenshotPasswordRedaction` is enabled, this setting
+  // is overridden to true upon `Build()`.
+  PageContextWrapperConfigBuilder& SetExtractPasswordScreenshotRedactions(
+      bool extract_password_screenshot_redactions);
+
   // Sets whether to block page context extraction on unsafe pages.
   PageContextWrapperConfigBuilder& SetBlockUnsafePages(bool block_unsafe_pages);
 
@@ -205,6 +218,7 @@ class PageContextWrapperConfigBuilder {
   bool extract_autofill_credit_card_redactions_;
   bool include_sensitive_payments_for_redaction_;
   bool extract_autofill_otp_redactions_;
+  bool extract_password_screenshot_redactions_;
   bool block_unsafe_pages_;
   bool include_same_site_only_;
 };
