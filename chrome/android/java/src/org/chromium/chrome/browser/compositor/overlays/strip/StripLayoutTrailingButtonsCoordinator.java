@@ -496,7 +496,7 @@ public class StripLayoutTrailingButtonsCoordinator {
                             (time, view, motionEventButtonState, modifiers) ->
                                     handleGlicActorButtonClick(),
                             glicKeyboardFocusHandler,
-                            R.drawable.ic_arrow_selector_spark_16dp,
+                            R.drawable.ic_arrow_selector_spark_24dp,
                             /* clickSlopDp= */ 0.f,
                             /* hasLongClickAction= */ false,
                             /* dismissButton= */ null);

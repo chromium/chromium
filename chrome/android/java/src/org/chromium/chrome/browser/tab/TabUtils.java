@@ -330,8 +330,8 @@ public class TabUtils {
     public static @DrawableRes int getTabAlertDrawable(@Nullable @TabAlert Integer alertState) {
         if (alertState == null) return Resources.ID_NULL;
         return switch (alertState) {
-            case TabAlert.ACTOR_ACCESSING -> R.drawable.ic_arrow_selector_spark_14dp;
-            case TabAlert.ACTOR_WAITING_ON_USER -> R.drawable.ic_arrow_selector_spark_16dp;
+            case TabAlert.ACTOR_ACCESSING, TabAlert.ACTOR_WAITING_ON_USER ->
+                    R.drawable.ic_arrow_selector_spark_24dp;
             case TabAlert.AUDIO_MUTING -> R.drawable.volume_off_24dp;
             case TabAlert.AUDIO_PLAYING -> R.drawable.volume_up_24dp;
             case TabAlert.AUDIO_RECORDING, TabAlert.MEDIA_RECORDING, TabAlert.VIDEO_RECORDING ->
@@ -340,7 +340,7 @@ public class TabUtils {
             case TabAlert.BLUETOOTH_SCAN_ACTIVE -> R.drawable.gm_filled_bluetooth_searching_24;
             case TabAlert.DESKTOP_CAPTURING, TabAlert.TAB_CAPTURING -> R.drawable.capture_24dp;
             case TabAlert.GLIC_ACCESSING, TabAlert.GLIC_SHARING ->
-                    R.drawable.ic_screensaver_auto_16dp;
+                    R.drawable.ic_screensaver_auto_24dp;
             // WebHID is unsupported on Android (services/device/hid lacks an Android driver).
             case TabAlert.HID_CONNECTED -> Resources.ID_NULL;
             case TabAlert.PIP_PLAYING -> R.drawable.picture_in_picture_24px;

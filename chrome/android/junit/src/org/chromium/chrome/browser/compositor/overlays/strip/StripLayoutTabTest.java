@@ -309,8 +309,8 @@ public class StripLayoutTabTest {
                 "Indicator should be shown when actor accessing is active",
                 tab.shouldShowIndicator());
         assertEquals(
-                "Should return spark 14dp icon for actor accessing",
-                R.drawable.ic_arrow_selector_spark_14dp,
+                "Should return spark icon for actor accessing",
+                R.drawable.ic_arrow_selector_spark_24dp,
                 tab.getIndicatorRes());
         assertEquals(
                 "Should return spinner overlay for actor accessing",
