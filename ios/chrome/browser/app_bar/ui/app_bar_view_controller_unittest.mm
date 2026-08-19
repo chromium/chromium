@@ -653,4 +653,24 @@ TEST_F(AppBarViewControllerTest, TestNewTabButtonMetricsIncognito) {
   EXPECT_EQ(user_action_tester.GetActionCount("MobileTabNewTab"), 1);
 }
 
+// Tests that updateForFullscreenProgress updates the button title alpha.
+TEST_F(AppBarViewControllerTest,
+       TestUpdateForFullscreenProgressUpdatesTitleAlpha) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kAppBarHideInFullscreen);
+
+  [view_controller_ updateForFullscreenProgress:0.5];
+  NSNumber* buttonsTitleAlpha =
+      [view_controller_ valueForKey:@"buttonsTitleAlpha"];
+  EXPECT_EQ(buttonsTitleAlpha.doubleValue, 0.5);
+
+  [view_controller_ updateForFullscreenProgress:0.0];
+  buttonsTitleAlpha = [view_controller_ valueForKey:@"buttonsTitleAlpha"];
+  EXPECT_EQ(buttonsTitleAlpha.doubleValue, 0.0);
+
+  [view_controller_ updateForFullscreenProgress:1.0];
+  buttonsTitleAlpha = [view_controller_ valueForKey:@"buttonsTitleAlpha"];
+  EXPECT_EQ(buttonsTitleAlpha.doubleValue, 1.0);
+}
+
 }  // namespace

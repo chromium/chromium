@@ -1167,10 +1167,9 @@ TEST_F(GeminiBrowserAgentTest, TestOnGeminiLiveUserDidBargeIn) {
             ios::provider::GeminiClientMode::kTranscribing);
 }
 
-// Tests that fullscreen is temporarily disabled when floaty is invoked, and
-// re-enabled once the UI appears or collapses.
-TEST_F(GeminiBrowserAgentTest,
-       TestFloatyKeepsFullscreenDisabledUntilDismissed) {
+// Tests that fullscreen is disabled when floaty is invoked, and re-enabled
+// once the UI appears.
+TEST_F(GeminiBrowserAgentTest, TestFloatyReenablesFullscreenWhenUIAppears) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {kChromeNextIa, kAppBarHideInFullscreen, kComposeboxIpad}, {});
@@ -1182,11 +1181,11 @@ TEST_F(GeminiBrowserAgentTest,
   InvokeFloaty([[GeminiConfiguration alloc] init]);
   EXPECT_FALSE(IsFullscreenEnabled());
 
-  // Fullscreen should be re-enabled once UI appears.
+  // Fullscreen should be re-enabled once the floaty UI appears.
   gemini_browser_agent_->OnGeminiUIDidAppear();
   EXPECT_TRUE(IsFullscreenEnabled());
 
-  // Fullscreen remains enabled in collapsed state.
+  // Fullscreen should remain enabled when state is collapsed.
   gemini_browser_agent_->OnViewStateChanged(
       ios::provider::GeminiViewState::kCollapsed);
   EXPECT_TRUE(IsFullscreenEnabled());
