@@ -519,6 +519,10 @@ size_t PreloadingDataImpl::GetPredictionsSizeForTesting() const {
   return preloading_predictions_.size();
 }
 
+size_t PreloadingDataImpl::GetAttemptsSizeForTesting() const {
+  return preloading_attempts_.size();
+}
+
 void PreloadingDataImpl::SetMaxPredictionsToTenForTesting() {
   max_predictions_is_ten_for_testing_ = true;
 }

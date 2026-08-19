@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -119,13 +120,6 @@ class AnchorElementPreloaderBrowserTest
       run_loop_->Run();
       run_loop_.reset();
     }
-  }
-
-  void GiveItSomeTime(const base::TimeDelta& t) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), t);
-    run_loop.Run();
   }
 
   // content::PreconnectManager::Observer
@@ -334,23 +328,18 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, DISABLED_IframeTest) {
   EXPECT_EQ(1, preresolve_count_);
 }
 
-// TODO(crbug.com/546866634): Fix 100 ms timing race on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_UserSettingDisabledTest DISABLED_UserSettingDisabledTest
-#else
-#define MAYBE_UserSettingDisabledTest UserSettingDisabledTest
-#endif
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest,
-                       MAYBE_UserSettingDisabledTest) {
+                       UserSettingDisabledTest) {
   prefetch::SetPreloadPagesState(browser()->GetProfile()->GetPrefs(),
                                  prefetch::PreloadPagesState::kNoPreloading);
   const GURL& url = GetTestURL("/one_anchor.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   SimulateMouseDownElementWithId("anchor1");
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::test::GetPreloadingAttemptsCount(
+               browser()->tab_strip_model()->GetActiveWebContents()) > 0;
+  }));
   EXPECT_EQ(0, preresolve_count_);
-
-  // Give some time for Preloading APIs creation.
-  GiveItSomeTime(base::Milliseconds(100));
 
   // Navigate away to the same origin that was preconnected. This should flush
   // the Preloading UKM logs.
@@ -383,22 +372,17 @@ class AnchorElementPreloaderHoldbackBrowserTest
   }
 };
 
-// TODO(crbug.com/546817564): Fix 100 ms timing race on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_PreconnectHoldbackTest DISABLED_PreconnectHoldbackTest
-#else
-#define MAYBE_PreconnectHoldbackTest PreconnectHoldbackTest
-#endif
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderHoldbackBrowserTest,
-                       MAYBE_PreconnectHoldbackTest) {
+                       PreconnectHoldbackTest) {
   const GURL& url = GetTestURL("/one_anchor.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   SimulateMouseDownElementWithId("anchor1");
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::test::GetPreloadingAttemptsCount(
+               browser()->tab_strip_model()->GetActiveWebContents()) > 0;
+  }));
   EXPECT_EQ(0, preresolve_count_);
-
-  // Give some time for Preloading APIs creation.
-  GiveItSomeTime(base::Milliseconds(100));
 
   // Navigate away to the same origin that was preconnected. This should flush
   // the Preloading UKM logs.

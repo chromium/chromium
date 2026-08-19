@@ -20,6 +20,7 @@
 namespace content {
 
 class PreloadingConfig;
+class WebContents;
 
 namespace test {
 
@@ -160,6 +161,9 @@ std::string BuildScriptElementSpeculationRules(
     const std::string& target_hint = "",
     std::optional<std::string> ruleset_tag = std::nullopt,
     std::optional<bool> form_submission = std::nullopt);
+
+// Returns the number of preloading attempts registered for the WebContents.
+size_t GetPreloadingAttemptsCount(WebContents* web_contents);
 
 }  // namespace test
 }  // namespace content

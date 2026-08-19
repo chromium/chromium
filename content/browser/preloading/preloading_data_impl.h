@@ -142,6 +142,7 @@ class CONTENT_EXPORT PreloadingDataImpl
   static bool IsLinkClickNavigation(NavigationHandle* navigation_handle);
 
   size_t GetPredictionsSizeForTesting() const;
+  size_t GetAttemptsSizeForTesting() const;
   void SetMaxPredictionsToTenForTesting();
 
  private:

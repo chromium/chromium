@@ -310,4 +310,10 @@ std::string BuildScriptElementSpeculationRules(
                                                {action, ss.str()}, nullptr);
 }
 
+size_t GetPreloadingAttemptsCount(WebContents* web_contents) {
+  PreloadingDataImpl* preloading_data =
+      PreloadingDataImpl::FromWebContents(web_contents);
+  return preloading_data ? preloading_data->GetAttemptsSizeForTesting() : 0;
+}
+
 }  // namespace content::test
