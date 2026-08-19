@@ -246,6 +246,8 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   // video playback.
   bool IsSecureCodecRequired();
 
+  MediaDrmStorageBridge* storage() const { return storage_.get(); }
+
   // Helper functions to resolve promises.
   void ResolvePromise(uint32_t promise_id);
   void ResolvePromiseWithSession(uint32_t promise_id,
@@ -262,6 +264,11 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   // The registered callbacks will be fired on |task_runner_|. The caller
   // should make sure that the callbacks are posted to the correct thread.
   void SetMediaCryptoReadyCB(MediaCryptoReadyCB media_crypto_ready_cb);
+
+  // Completes initialization by setting the security origin and triggering
+  // MediaCrypto creation.
+  void CompleteInitialization(const std::string& origin_id,
+                              MediaCryptoReadyCB media_crypto_ready_cb);
 
   // Sets 'property_name' with 'property_value' in MediaDrm. This can
   // potentially throw exceptions if the property_name does not exist for the

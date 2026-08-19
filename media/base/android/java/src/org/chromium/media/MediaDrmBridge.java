@@ -107,7 +107,8 @@ public class MediaDrmBridge {
 
     private final UUID mKeySystemUuid;
     private final int mSecurityLevel;
-    private final boolean mRequiresMediaCrypto;
+
+    private boolean mRequiresMediaCrypto;
 
     // A session only for the purpose of creating a MediaCrypto object. Created
     // after construction, or after the provisioning process is successfully
@@ -538,6 +539,23 @@ public class MediaDrmBridge {
         }
 
         return mediaDrmBridge;
+    }
+
+    @CalledByNative
+    private boolean initializeWithOriginAndCrypto(String originId) {
+        mRequiresMediaCrypto = true;
+
+        if (!originId.isEmpty() && !setOrigin(originId)) {
+            onCreateError(MediaDrmCreateError.FAILED_SECURITY_ORIGIN);
+            release();
+            return false;
+        }
+
+        if (!createMediaCrypto()) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

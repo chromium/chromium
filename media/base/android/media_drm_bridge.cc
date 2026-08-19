@@ -802,6 +802,36 @@ void MediaDrmBridge::SetMediaCryptoReadyCB(
       .Run(*j_media_crypto_, IsSecureCodecRequired());
 }
 
+void MediaDrmBridge::CompleteInitialization(
+    const std::string& origin_id,
+    MediaCryptoReadyCB media_crypto_ready_cb) {
+  if (!task_runner_->BelongsToCurrentThread()) {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&MediaDrmBridge::CompleteInitialization,
+                                  weak_factory_.GetWeakPtr(), origin_id,
+                                  std::move(media_crypto_ready_cb)));
+    return;
+  }
+
+  DVLOG(1) << __func__;
+
+  SetMediaCryptoReadyCB(std::move(media_crypto_ready_cb));
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jstring> j_security_origin =
+      ConvertUTF8ToJavaString(env, origin_id);
+
+  bool success = Java_MediaDrmBridge_initializeWithOriginAndCrypto(
+      env, j_media_drm_, j_security_origin);
+
+  if (!success) {
+    LOG(ERROR) << "Failed to complete JNI MediaDrmBridge initialization.";
+    if (media_crypto_ready_cb_) {
+      std::move(media_crypto_ready_cb_).Run(nullptr, false);
+    }
+  }
+}
+
 bool MediaDrmBridge::SetPropertyStringForTesting(
     const std::string& property_name,
     const std::string& property_value) {
