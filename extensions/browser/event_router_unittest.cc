@@ -225,6 +225,11 @@ class EventRouterTest : public ExtensionsTest {
     ExtensionsTest::SetUp();
     render_process_host_ =
         std::make_unique<content::MockRenderProcessHost>(browser_context());
+    // Tests below call EventRouter::Get(), so install the EventRouter
+    // explicitly rather than depending on whether the factory creates one
+    // in testing contexts.
+    EventRouterFactory::GetInstance()->SetTestingFactory(
+        browser_context(), base::BindRepeating(&BuildEventRouter));
   }
 
   void TearDown() override {
