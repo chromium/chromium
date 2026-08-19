@@ -67,11 +67,6 @@ bool HasElapsedCadenceInterval(
 }
 
 namespace viz {
-
-// TODO (crbug.com/495852034): Remove once M150 hits Stable.
-BASE_FEATURE(kDisconnectOnInvalidHitTestRegionList,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 // If enabled, CompositorFrameSinkSupport cleans up unhandled/orphaned reserved
@@ -1009,9 +1004,7 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
   if (!frame_sink_manager()->SubmitHitTestRegionList(
           last_created_surface_id_, frame_index,
           std::move(hit_test_region_list))) {
-    if (base::FeatureList::IsEnabled(kDisconnectOnInvalidHitTestRegionList)) {
-      return SubmitResult::HIT_TEST_DATA_INVALID;
-    }
+    return SubmitResult::HIT_TEST_DATA_INVALID;
   }
 
   Surface::QueueFrameResult result = current_surface->QueueFrame(
