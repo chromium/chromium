@@ -325,6 +325,19 @@ cr-searchbox-dropdown::part(dropdown-content) {
   inset-inline-end: 7px;
 }
 
+:host([aim-button-icon-only_]) #composeButton::part(compose-button) {
+  border-radius: 50%;
+  padding: 0;
+  /* Match width to height (24px) for a 1:1 circular icon button. */
+  min-width: var(--cr-button-height);
+  width: var(--cr-button-height);
+}
+
+:host([aim-button-icon-only_]) #composeButton::part(label),
+:host([aim-button-icon-only_]) #composeButton::part(arrow-icon) {
+  display: none;
+}
+
 #composeButton::part(hoverBackground) {
   background-color: var(--color-sys-state-hover-dim-blend-protection);
   display: block;
