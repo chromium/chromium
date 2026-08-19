@@ -323,8 +323,6 @@ CGFloat GPayIconTopAnchorOffset() {
 
   self.headerSeparator = CreateGraySeparatorForContainer(self.contentView);
 
-  UILabel* expirationDateSeparatorLabel;
-
   // Card instruction textview is always created, but is only visible for
   // virtual and CardInfoRetrieval enrolled cards and hidden for rest.
   self.cardInstructionTextView = [self createCardInstructionTextView];
@@ -370,13 +368,13 @@ CGFloat GPayIconTopAnchorOffset() {
                               action:@selector(onAutofillFormButtonTapped)
                     forControlEvents:UIControlEventTouchUpInside];
 
-  [self horizontallyArrangeViews:expirationDateSeparatorLabel];
+  [self horizontallyArrangeViews];
 
   SetUpCellAccessibilityElements(self, accessibilityElements);
 }
 
 // Horizontally positions the UIViews.
-- (void)horizontallyArrangeViews:(UILabel*)expirationDateSeparatorLabel {
+- (void)horizontallyArrangeViews {
   NSMutableArray<NSLayoutConstraint*>* staticConstraints =
       [[NSMutableArray alloc] init];
   AppendHorizontalConstraintsForViews(staticConstraints, @[ self.headerView ],
