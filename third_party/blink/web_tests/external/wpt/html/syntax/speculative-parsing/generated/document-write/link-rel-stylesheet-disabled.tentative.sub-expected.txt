@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Speculative parsing, document.write(): link-rel-stylesheet-disabled
-  Unhandled rejection: assert_equals: speculative case incorrectly fetched expected "" but got "param-encodingcheck: %C4%9E\\r\\nAccept: text/css,*/*;q=0.1\\r\\nReferer: http://web-platform.test:8001/html/syntax/speculative-parsing/generated/document-write/link-rel-stylesheet-disabled.tentative.sub.html"
-Harness: the test ran to completion.
-

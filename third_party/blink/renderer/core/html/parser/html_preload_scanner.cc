@@ -372,15 +372,11 @@ class TokenPreloadScanner::StartTagScanner {
               : (is_async_ ? RenderBlockingBehavior::kPotentiallyBlocking
                            : RenderBlockingBehavior::kNonBlocking);
     } else if (is_script || type == ResourceType::kCSSStyleSheet) {
-      // CSS here is render blocking unless it's disabled, as non blocking
-      // doesn't get preloaded. JS here is a blocking one, as others would've
-      // been caught by the previous condition.
+      // JS here is a blocking one, as others would've been caught by the
+      // previous condition.
       render_blocking_behavior =
-          type == ResourceType::kCSSStyleSheet && disabled_attr_set_
-              ? RenderBlockingBehavior::kNonBlocking
-          : treat_links_as_in_body
-              ? RenderBlockingBehavior::kInBodyParserBlocking
-              : RenderBlockingBehavior::kBlocking;
+          treat_links_as_in_body ? RenderBlockingBehavior::kInBodyParserBlocking
+                                 : RenderBlockingBehavior::kBlocking;
     }
     request->SetRenderBlockingBehavior(render_blocking_behavior);
 
@@ -729,6 +725,10 @@ class TokenPreloadScanner::StartTagScanner {
 
   bool ShouldPreloadLink(std::optional<ResourceType>& type) const {
     if (link_is_style_sheet_) {
+      // Disabled stylesheets are not loaded by the tree builder either.
+      if (disabled_attr_set_) {
+        return false;
+      }
       return type_attribute_value_.empty() ||
              MIMETypeRegistry::IsSupportedStyleSheetMIMEType(
                  ContentType(type_attribute_value_).GetType());

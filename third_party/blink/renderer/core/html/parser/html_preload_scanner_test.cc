@@ -534,6 +534,28 @@ TEST_F(HTMLPreloadScannerTest, testImages) {
     Test(test_case);
 }
 
+TEST_F(HTMLPreloadScannerTest, testLinkRelStylesheetDisabled) {
+  PreloadScannerTestCase test_cases[] = {
+      {"http://example.test", "<link rel=stylesheet href='sheet.css'>",
+       "sheet.css", "http://example.test/", ResourceType::kCSSStyleSheet, 0},
+      // The real parser does not load disabled stylesheets, so the
+      // speculative parser must not fetch them either.
+      {"http://example.test", "<link rel=stylesheet href='sheet.css' disabled>",
+       nullptr, "http://example.test/", ResourceType::kCSSStyleSheet, 0},
+      {"http://example.test",
+       "<link rel=stylesheet href='sheet.css' disabled=''>", nullptr,
+       "http://example.test/", ResourceType::kCSSStyleSheet, 0},
+      // disabled only applies to stylesheets, not to rel=preload.
+      {"http://example.test",
+       "<link rel=preload as=style href='sheet.css' disabled>", "sheet.css",
+       "http://example.test/", ResourceType::kCSSStyleSheet, 0},
+  };
+
+  for (const auto& test_case : test_cases) {
+    Test(test_case);
+  }
+}
+
 TEST_F(HTMLPreloadScannerTest, testImagesWithViewport) {
   PreloadScannerTestCase test_cases[] = {
       {"http://example.test",
@@ -887,9 +909,6 @@ TEST_F(HTMLPreloadScannerTest, testRenderBlocking) {
       {"http://example.test",
        "<body><link rel=stylesheet href=http://example2.test></body>",
        RenderBlockingBehavior::kInBodyParserBlocking},
-      {"http://example.test",
-       "<link rel=stylesheet href=http://example2.test disabled>",
-       RenderBlockingBehavior::kNonBlocking},
   };
 
   for (const auto& test_case : test_cases) {
