@@ -55,8 +55,11 @@
     clickCount: 1,
   });
 
-  targetAttachedPromise.then(() => {
-    testRunner.log('New tab opened');
-    testRunner.completeTest();
-  });
+  // Wait for both the new target to attach and its navigation request to be
+  // intercepted before completing the test to avoid race conditions during
+  // test teardown while navigation IPCs are in-flight.
+  await Promise.all([targetAttachedPromise, targetRequestedPromise]);
+
+  testRunner.log('New tab opened');
+  testRunner.completeTest();
 });
