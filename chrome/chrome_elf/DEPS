@@ -5,6 +5,7 @@ include_rules = [
   "+chrome/install_static",
   "+components/crash/core/app/crashpad.h",
   "+components/crash/core/common/crash_keys.h",
+  "+components/metrics/system_profile_user_stream.h",
   "+sandbox",
   "+third_party/breakpad/breakpad/src/client",
   "+third_party/crashpad/crashpad/client/crashpad_client.h",

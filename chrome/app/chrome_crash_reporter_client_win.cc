@@ -9,9 +9,11 @@
 #include <windows.h>
 
 #include <assert.h>
+
 #include <iterator>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/debug/leak_annotations.h"
@@ -24,6 +26,7 @@
 #include "chrome/install_static/install_util.h"
 #include "chrome/install_static/user_data_dir.h"
 #include "components/crash/core/app/crashpad.h"
+#include "components/metrics/system_profile_user_stream.h"
 #include "components/version_info/channel.h"
 
 ChromeCrashReporterClient::ChromeCrashReporterClient() = default;
@@ -181,6 +184,30 @@ bool ChromeCrashReporterClient::EnableBreakpadForProcess(
     const std::string& process_type) {
   // This is not used by Crashpad (at least on Windows).
   NOTREACHED();
+}
+
+std::vector<base::ReadOnlySharedMemoryRegion>
+ChromeCrashReporterClient::GetUserStreamSharedMemoryRegions() {
+  std::vector<base::ReadOnlySharedMemoryRegion> streams;
+
+  // Early-initialize the singleton before Crashpad spawns.
+  // This guarantees the memory region exists for Crashpad to inherit.
+  metrics::SystemProfileUserStream& stream =
+      metrics::SystemProfileUserStream::Get();
+  stream.Initialize();
+
+  base::ReadOnlySharedMemoryRegion region =
+      stream.DuplicateSharedMemoryRegion();
+  // An OOM or initial allocation failure inside Initialize() would have
+  // already triggered a CHECK and crashed the browser. However,
+  // DuplicateSharedMemoryRegion() can still fail if the OS exhausts its
+  // handles. In that case, gracefully degrade by dropping the telemetry stream
+  // rather than causing an unnecessary crash.
+  if (region.IsValid()) {
+    streams.push_back(std::move(region));
+  }
+
+  return streams;
 }
 
 std::wstring ChromeCrashReporterClient::GetWerRuntimeExceptionModule() {

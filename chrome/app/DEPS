@@ -25,6 +25,7 @@ include_rules = [
   "+components/memory_system",
   "+components/metrics/android_unconditional_persistent_histograms_field_trial.h",
   "+components/metrics/persistent_histograms.h",
+  "+components/metrics/system_profile_user_stream.h",
   "+components/page_load_metrics/common",
   "+components/policy",
   "+components/safe_browsing/android",

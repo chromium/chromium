@@ -154,6 +154,19 @@ if (!is_cronet_build || is_ios) {
     }
   }
 
+  source_set("system_profile_user_stream") {
+    public = [ "system_profile_user_stream.h" ]
+    sources = [ "system_profile_user_stream.cc" ]
+    configs += [
+      "//build/config/compiler:wexit_time_destructors",
+      "//build/config/compiler:wglobal_constructors",
+    ]
+    public_deps = [
+      "//base",
+      "//components/crash/core/common:shared_memory_user_stream",
+    ]
+  }
+
   source_set("metrics") {
     sources = [
       "call_stacks/call_stack_profile_metrics_provider.cc",
@@ -204,7 +217,6 @@ if (!is_cronet_build || is_ios) {
       "server_urls.cc",
       "stability_metrics_helper.cc",
       "stability_metrics_provider.cc",
-      "system_profile_user_stream.cc",
       "unsent_log_store.cc",
       "unsent_log_store_metrics.cc",
       "unsent_log_store_metrics_impl.cc",
@@ -271,7 +283,6 @@ if (!is_cronet_build || is_ios) {
       "stability_metrics_helper.h",
       "stability_metrics_provider.h",
       "startup_visibility.h",
-      "system_profile_user_stream.h",
       "ukm_demographic_metrics_provider.h",
       "unsent_log_store.h",
       "unsent_log_store_metrics.h",
@@ -286,6 +297,7 @@ if (!is_cronet_build || is_ios) {
 
     public_deps = [
       ":metrics_component",
+      ":system_profile_user_stream",
       "//components/country_codes",
       "//components/metrics:client_info",
       "//components/metrics:metrics_pref_names",

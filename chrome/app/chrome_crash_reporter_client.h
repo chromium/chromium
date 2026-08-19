@@ -62,6 +62,9 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
 
   bool EnableBreakpadForProcess(const std::string& process_type) override;
 
+  std::vector<base::ReadOnlySharedMemoryRegion>
+  GetUserStreamSharedMemoryRegions() override;
+
  private:
   friend class base::NoDestructor<ChromeCrashReporterClient>;
 

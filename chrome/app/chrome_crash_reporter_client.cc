@@ -5,6 +5,7 @@
 #include "chrome/app/chrome_crash_reporter_client.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/environment.h"
@@ -23,6 +24,7 @@
 #include "chrome/common/env_vars.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/crash/core/common/crash_keys.h"
+#include "components/metrics/system_profile_user_stream.h"
 #include "components/version_info/version_info_values.h"
 #include "content/public/common/content_switches.h"
 
@@ -222,4 +224,28 @@ bool ChromeCrashReporterClient::EnableBreakpadForProcess(
          process_type == switches::kZygoteProcess ||
          process_type == switches::kGpuProcess ||
          process_type == switches::kUtilityProcess;
+}
+
+std::vector<base::ReadOnlySharedMemoryRegion>
+ChromeCrashReporterClient::GetUserStreamSharedMemoryRegions() {
+  std::vector<base::ReadOnlySharedMemoryRegion> streams;
+
+  // Early-initialize the singleton before Crashpad spawns.
+  // This guarantees the memory region exists for Crashpad to inherit.
+  metrics::SystemProfileUserStream& stream =
+      metrics::SystemProfileUserStream::Get();
+  stream.Initialize();
+
+  base::ReadOnlySharedMemoryRegion region =
+      stream.DuplicateSharedMemoryRegion();
+  // An OOM or initial allocation failure inside Initialize() would have
+  // already triggered a CHECK and crashed the browser. However,
+  // DuplicateSharedMemoryRegion() can still fail if the OS exhausts its
+  // file descriptors (or Mach ports on Mac). In that case, gracefully degrade
+  // by dropping the telemetry stream rather than causing an unnecessary crash.
+  if (region.IsValid()) {
+    streams.push_back(std::move(region));
+  }
+
+  return streams;
 }

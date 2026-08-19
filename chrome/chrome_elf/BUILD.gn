@@ -107,6 +107,7 @@ static_library("crash") {
     "//chrome/install_static:install_static_util",
     "//components/crash/core/app",
     "//components/crash/core/common",  # crash_keys
+    "//components/metrics:system_profile_user_stream",
     "//components/version_info:channel",
     "//sandbox/policy:win_hook_util",
     "//third_party/crashpad/crashpad/client",  # DumpWithoutCrash
