@@ -63,7 +63,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/macros.h"
 #include "absl/base/nullability.h"
@@ -252,7 +251,7 @@ void LocalManagerNontrivial(FunctionToCall operation,
     case FunctionToCall::relocate_from_to_and_query_rust:
       // NOTE: Requires that the left-hand operand is already empty.
       ::new (static_cast<void*>(&to->storage)) T(std::move(from_object));
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case FunctionToCall::dispose:
       from_object.~T();  // Must not throw. // NOLINT
       return;

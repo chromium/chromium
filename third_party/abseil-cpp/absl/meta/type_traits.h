@@ -17,7 +17,7 @@
 // type_traits.h
 // -----------------------------------------------------------------------------
 //
-// This file contains C++11-compatible versions of standard <type_traits> API
+// This file contains C++17-compatible versions of standard <type_traits> API
 // functions for determining the characteristics of types. Such traits can
 // support type inference, classification, and transformation, as well as
 // make it easier to write templates based on generic type behavior.
@@ -54,13 +54,9 @@
 #include <span>  // NOLINT(build/c++20)
 #endif
 
-// Defines the default alignment. `__STDCPP_DEFAULT_NEW_ALIGNMENT__` is a C++17
-// feature.
-#if defined(__STDCPP_DEFAULT_NEW_ALIGNMENT__)
+// Defines the default alignment. `__STDCPP_DEFAULT_NEW_ALIGNMENT__` is
+// predefined by every C++17 implementation.
 #define ABSL_INTERNAL_DEFAULT_NEW_ALIGNMENT __STDCPP_DEFAULT_NEW_ALIGNMENT__
-#else  // defined(__STDCPP_DEFAULT_NEW_ALIGNMENT__)
-#define ABSL_INTERNAL_DEFAULT_NEW_ALIGNMENT alignof(std::max_align_t)
-#endif  // defined(__STDCPP_DEFAULT_NEW_ALIGNMENT__)
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -239,7 +235,7 @@ using remove_cvref_t = std::remove_cvref_t<T>;
 #else
 // remove_cvref()
 //
-// C++11 compatible implementation of std::remove_cvref which was added in
+// C++17 compatible implementation of std::remove_cvref which was added in
 // C++20.
 template <typename T>
 struct remove_cvref {
@@ -274,22 +270,16 @@ using type_identity_t = typename type_identity<T>::type;
 
 namespace type_traits_internal {
 
-#if (defined(__cpp_lib_is_invocable) && __cpp_lib_is_invocable >= 201703L) || \
-    (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L)
-// std::result_of is deprecated (C++17) or removed (C++20)
 template <typename>
 struct result_of;
 template <typename F, typename... Args>
 struct result_of<F(Args...)> : std::invoke_result<F, Args...> {};
-#else
-template <typename F>
-using result_of = std::result_of<F>;
-#endif
 
 }  // namespace type_traits_internal
 
 template <typename F>
-using result_of_t = typename type_traits_internal::result_of<F>::type;
+using result_of_t [[deprecated("Use std::invoke_result_t instead.")]] =
+    typename type_traits_internal::result_of<F>::type;
 
 namespace type_traits_internal {
 
@@ -345,68 +335,12 @@ inline void AssertHashEnabled() {
   Helper::Sink(Helper::DoIt<Ts>()...);
 }
 
-}  // namespace type_traits_internal
-
-// An internal namespace that is required to implement the C++17 swap traits.
-// It is not further nested in type_traits_internal to avoid long symbol names.
-namespace swap_internal {
-
-// Necessary for the traits.
-using std::swap;
-
-// This declaration prevents global `swap` and `absl::swap` overloads from being
-// considered unless ADL picks them up.
-void swap();
+template <class T>
+using IsSwappable ABSL_DEPRECATE_AND_INLINE() = std::is_swappable<T>;
 
 template <class T>
-using IsSwappableImpl = decltype(swap(std::declval<T&>(), std::declval<T&>()));
-
-// NOTE: This dance with the default template parameter is for MSVC.
-template <class T, class IsNoexcept = std::bool_constant<noexcept(
-                       swap(std::declval<T&>(), std::declval<T&>()))>>
-using IsNothrowSwappableImpl = std::enable_if_t<IsNoexcept::value>;
-
-// IsSwappable
-//
-// Determines whether the standard swap idiom is a valid expression for
-// arguments of type `T`.
-template <class T>
-struct IsSwappable
-    : absl::type_traits_internal::is_detected<IsSwappableImpl, T> {};
-
-// IsNothrowSwappable
-//
-// Determines whether the standard swap idiom is a valid expression for
-// arguments of type `T` and is noexcept.
-template <class T>
-struct IsNothrowSwappable
-    : absl::type_traits_internal::is_detected<IsNothrowSwappableImpl, T> {};
-
-// Swap()
-//
-// Performs the swap idiom from a namespace where valid candidates may only be
-// found in `std` or via ADL.
-template <class T, std::enable_if_t<IsSwappable<T>::value, int> = 0>
-void Swap(T& lhs, T& rhs) noexcept(IsNothrowSwappable<T>::value) {
-  swap(lhs, rhs);
-}
-
-// StdSwapIsUnconstrained
-//
-// Some standard library implementations are broken in that they do not
-// constrain `std::swap`. This will effectively tell us if we are dealing with
-// one of those implementations.
-using StdSwapIsUnconstrained = IsSwappable<void()>;
-
-}  // namespace swap_internal
-
-namespace type_traits_internal {
-
-// Make the swap-related traits/function accessible from this namespace.
-using swap_internal::IsNothrowSwappable;
-using swap_internal::IsSwappable;
-using swap_internal::StdSwapIsUnconstrained;
-using swap_internal::Swap;
+using IsNothrowSwappable ABSL_DEPRECATE_AND_INLINE() =
+    std::is_nothrow_swappable<T>;
 
 }  // namespace type_traits_internal
 
@@ -482,10 +416,9 @@ struct is_trivially_relocatable
 // TODO(b/325479096): Remove this case.
 template <class T>
 struct is_trivially_relocatable
-    : std::integral_constant<bool,
-                             std::is_trivially_copyable_v<T> ||
-                                 (__is_trivially_relocatable(T) &&
-                                  std::is_trivially_move_assignable_v<T>)> {};
+    : std::bool_constant<std::is_trivially_copyable_v<T> ||
+                         (__is_trivially_relocatable(T) &&
+                          std::is_trivially_move_assignable_v<T>)> {};
 #else
 // Otherwise we use a fallback that detects only those types we can feasibly
 // detect. Any type that is trivially copyable is by definition trivially

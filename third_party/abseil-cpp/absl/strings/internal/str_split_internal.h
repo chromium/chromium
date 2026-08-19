@@ -244,16 +244,14 @@ struct ShouldUseLifetimeBound<
 
 template <typename StringType, typename First, typename Second>
 using ShouldUseLifetimeBoundForPair =
-    std::integral_constant<bool,
-                           std::is_same_v<StringType, std::string> &&
-                               (std::is_same_v<First, absl::string_view> ||
-                                std::is_same_v<Second, absl::string_view>)>;
+    std::bool_constant<std::is_same_v<StringType, std::string> &&
+                       (std::is_same_v<First, absl::string_view> ||
+                        std::is_same_v<Second, absl::string_view>)>;
 
 template <typename StringType, typename ElementType, std::size_t Size>
 using ShouldUseLifetimeBoundForArray =
-    std::integral_constant<bool,
-                           std::is_same_v<StringType, std::string> &&
-                               std::is_same_v<ElementType, absl::string_view>>;
+    std::bool_constant<std::is_same_v<StringType, std::string> &&
+                       std::is_same_v<ElementType, absl::string_view>>;
 
 // This class implements the range that is returned by absl::StrSplit(). This
 // class has templated conversion operators that allow it to be implicitly

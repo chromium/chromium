@@ -21,10 +21,6 @@
 
 #ifdef ABSL_HAVE_VDSO_SUPPORT     // defined in vdso_support.h
 
-#if !defined(__has_include)
-#define __has_include(header) 0
-#endif
-
 #include <errno.h>
 #include <fcntl.h>
 #if __has_include(<syscall.h>)

@@ -28,7 +28,6 @@
 #endif
 
 #include <assert.h>
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,6 +36,7 @@
 #include <algorithm>
 #include <atomic>
 #include <cstddef>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <thread>  // NOLINT(build/c++11)
@@ -49,16 +49,23 @@
 #include "absl/base/internal/cycleclock.h"
 #include "absl/base/internal/hide_ptr.h"
 #include "absl/base/internal/low_level_alloc.h"
+#include "absl/base/internal/low_level_scheduling.h"
 #include "absl/base/internal/raw_logging.h"
+#include "absl/base/internal/scheduling_mode.h"
 #include "absl/base/internal/spinlock.h"
 #include "absl/base/internal/sysinfo.h"
 #include "absl/base/internal/thread_identity.h"
 #include "absl/base/internal/tsan_mutex_interface.h"
+#include "absl/base/macros.h"
 #include "absl/base/optimization.h"
+#include "absl/base/thread_annotations.h"
 #include "absl/debugging/stacktrace.h"
 #include "absl/debugging/symbolize.h"
+#include "absl/synchronization/internal/create_thread_identity.h"
 #include "absl/synchronization/internal/graphcycles.h"
+#include "absl/synchronization/internal/kernel_timeout.h"
 #include "absl/synchronization/internal/per_thread_sem.h"
+#include "absl/time/clock.h"
 #include "absl/time/time.h"
 
 using absl::base_internal::CurrentThreadIdentityIfPresent;

@@ -865,16 +865,16 @@ inline Span<char> CordRepBtree::GetAppendBuffer(size_t size) {
       tree = tree->Edge(kBack)->btree();
       if (!tree->refcount.IsOne()) return {};
       n2 = tree;
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case 2:
       tree = tree->Edge(kBack)->btree();
       if (!tree->refcount.IsOne()) return {};
       n1 = tree;
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case 1:
       tree = tree->Edge(kBack)->btree();
       if (!tree->refcount.IsOne()) return {};
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case 0:
       CordRep* edge = tree->Edge(kBack);
       if (!edge->refcount.IsOne()) return {};
@@ -887,13 +887,13 @@ inline Span<char> CordRepBtree::GetAppendBuffer(size_t size) {
       switch (height) {
         case 3:
           n3->length += delta;
-          ABSL_FALLTHROUGH_INTENDED;
+          [[fallthrough]];
         case 2:
           n2->length += delta;
-          ABSL_FALLTHROUGH_INTENDED;
+          [[fallthrough]];
         case 1:
           n1->length += delta;
-          ABSL_FALLTHROUGH_INTENDED;
+          [[fallthrough]];
         case 0:
           tree->length += delta;
           return span;

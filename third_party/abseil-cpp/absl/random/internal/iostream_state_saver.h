@@ -223,7 +223,7 @@ struct stream_u128_helper<__uint128_t> {
 
 template <typename FloatType, typename IStream>
 inline FloatType read_floating_point(IStream& is) {
-  static_assert(std::is_floating_point_v<FloatType>, "");
+  static_assert(std::is_floating_point_v<FloatType>);
   FloatType dest;
   is >> dest;
   // Parsing a double value may report a subnormal value as an error

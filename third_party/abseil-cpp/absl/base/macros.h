@@ -116,10 +116,9 @@ ABSL_NAMESPACE_END
 
 // ABSL_ASSERT()
 //
-// In C++11, `assert` can't be used portably within constexpr functions.
-// `assert` also generates spurious unused-symbol warnings.
-// ABSL_ASSERT functions as a runtime assert but works in C++11 constexpr
-// functions, and maintains references to symbols.  Example:
+// `assert` generates spurious unused-symbol warnings when NDEBUG is defined.
+// ABSL_ASSERT functions as a runtime assert but maintains references to
+// symbols even under NDEBUG.  Example:
 //
 // constexpr double Divide(double a, double b) {
 //   return ABSL_ASSERT(b != 0), a / b;

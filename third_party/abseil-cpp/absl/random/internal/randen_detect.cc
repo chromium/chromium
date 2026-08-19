@@ -20,10 +20,8 @@
 #include "absl/random/internal/randen_detect.h"
 
 #if defined(__APPLE__) && defined(__aarch64__)
-#if defined(__has_include)
 #if __has_include(<arm/cpu_capabilities_public.h>)
 #include <arm/cpu_capabilities_public.h>
-#endif
 #endif
 #include <sys/sysctl.h>
 #include <sys/types.h>

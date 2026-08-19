@@ -26,7 +26,7 @@
 #endif
 
 #if defined(__aarch64__) && defined(__APPLE__)
-#if defined(__has_include) && __has_include(<arm/cpu_capabilities_public.h>)
+#if __has_include(<arm/cpu_capabilities_public.h>)
 #include <arm/cpu_capabilities_public.h>
 #endif
 #include <sys/sysctl.h>

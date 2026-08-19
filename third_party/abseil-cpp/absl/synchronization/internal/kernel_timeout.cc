@@ -21,14 +21,12 @@
 #include <algorithm>
 #include <chrono>  // NOLINT(build/c++11)
 #include <cstdint>
-#include <cstdlib>
-#include <cstring>
 #include <ctime>
 #include <limits>
 
-#include "absl/base/attributes.h"
-#include "absl/base/call_once.h"
 #include "absl/base/config.h"
+#include "absl/base/internal/raw_logging.h"
+#include "absl/time/clock.h"
 #include "absl/time/time.h"
 
 namespace absl {

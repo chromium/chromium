@@ -35,8 +35,11 @@
 #include "absl/strings/string_view.h"
 
 // We can only add poisoning if we can detect consteval executions.
-#if defined(ABSL_HAVE_CONSTANT_EVALUATED) && \
-    (defined(ABSL_HAVE_ADDRESS_SANITIZER) || \
+//
+// TODO(b/548049702): attempt to turn this back on. It's disabled because asan
+// interacts poorly with trivial ABIs (http://b/546331925).
+#if 0 && defined(ABSL_HAVE_CONSTANT_EVALUATED) && \
+    (defined(ABSL_HAVE_ADDRESS_SANITIZER) ||      \
      defined(ABSL_HAVE_MEMORY_SANITIZER))
 #define ABSL_INTERNAL_CORD_HAVE_SANITIZER 1
 #endif
@@ -465,8 +468,8 @@ using cordz_info_t = int64_t;
 
 // Assert that the `cordz_info` pointer value perfectly overlaps the last half
 // of `data` and can hold a pointer value.
-static_assert(sizeof(cordz_info_t) * 2 == kMaxInline + 1, "");
-static_assert(sizeof(cordz_info_t) >= sizeof(intptr_t), "");
+static_assert(sizeof(cordz_info_t) * 2 == kMaxInline + 1);
+static_assert(sizeof(cordz_info_t) >= sizeof(intptr_t));
 
 // LittleEndianByte() creates a little endian representation of 'value', i.e.:
 // a little endian value where the first byte in the host's representation
@@ -479,7 +482,7 @@ static constexpr cordz_info_t LittleEndianByte(unsigned char value) {
 #endif
 }
 
-class InlineData {
+class ABSL_ATTRIBUTE_TRIVIAL_ABI InlineData {
  public:
   // DefaultInitType forces the use of the default initialization constructor.
   enum DefaultInitType { kDefaultInit };
@@ -516,7 +519,7 @@ class InlineData {
   // value. Creates an inlined SSO value if `rep` is null, otherwise
   // creates a tree instance value.
   constexpr InlineData(absl::string_view sv, CordRep* rep) noexcept
-      : rep_(rep ? Rep(rep) : Rep(sv)) {
+      : rep_(rep != nullptr ? Rep(rep) : Rep(sv)) {
     poison();
   }
 
@@ -833,7 +836,7 @@ class InlineData {
   Rep rep_;
 };
 
-static_assert(sizeof(InlineData) == kMaxInline + 1, "");
+static_assert(sizeof(InlineData) == kMaxInline + 1);
 
 #ifdef ABSL_INTERNAL_CORD_HAVE_SANITIZER
 

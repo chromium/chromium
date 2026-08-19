@@ -296,33 +296,33 @@ struct HasDiff {
 
 TEST(CivilTime, DisallowCrossAlignedDifference) {
   // Difference is allowed between types with the same alignment.
-  static_assert(HasDiff<absl::CivilSecond, absl::CivilSecond>::value, "");
-  static_assert(HasDiff<absl::CivilMinute, absl::CivilMinute>::value, "");
-  static_assert(HasDiff<absl::CivilHour, absl::CivilHour>::value, "");
-  static_assert(HasDiff<absl::CivilDay, absl::CivilDay>::value, "");
-  static_assert(HasDiff<absl::CivilMonth, absl::CivilMonth>::value, "");
-  static_assert(HasDiff<absl::CivilYear, absl::CivilYear>::value, "");
+  static_assert(HasDiff<absl::CivilSecond, absl::CivilSecond>::value);
+  static_assert(HasDiff<absl::CivilMinute, absl::CivilMinute>::value);
+  static_assert(HasDiff<absl::CivilHour, absl::CivilHour>::value);
+  static_assert(HasDiff<absl::CivilDay, absl::CivilDay>::value);
+  static_assert(HasDiff<absl::CivilMonth, absl::CivilMonth>::value);
+  static_assert(HasDiff<absl::CivilYear, absl::CivilYear>::value);
 
   // Difference is disallowed between types with different alignments.
-  static_assert(!HasDiff<absl::CivilSecond, absl::CivilMinute>::value, "");
-  static_assert(!HasDiff<absl::CivilSecond, absl::CivilHour>::value, "");
-  static_assert(!HasDiff<absl::CivilSecond, absl::CivilDay>::value, "");
-  static_assert(!HasDiff<absl::CivilSecond, absl::CivilMonth>::value, "");
-  static_assert(!HasDiff<absl::CivilSecond, absl::CivilYear>::value, "");
+  static_assert(!HasDiff<absl::CivilSecond, absl::CivilMinute>::value);
+  static_assert(!HasDiff<absl::CivilSecond, absl::CivilHour>::value);
+  static_assert(!HasDiff<absl::CivilSecond, absl::CivilDay>::value);
+  static_assert(!HasDiff<absl::CivilSecond, absl::CivilMonth>::value);
+  static_assert(!HasDiff<absl::CivilSecond, absl::CivilYear>::value);
 
-  static_assert(!HasDiff<absl::CivilMinute, absl::CivilHour>::value, "");
-  static_assert(!HasDiff<absl::CivilMinute, absl::CivilDay>::value, "");
-  static_assert(!HasDiff<absl::CivilMinute, absl::CivilMonth>::value, "");
-  static_assert(!HasDiff<absl::CivilMinute, absl::CivilYear>::value, "");
+  static_assert(!HasDiff<absl::CivilMinute, absl::CivilHour>::value);
+  static_assert(!HasDiff<absl::CivilMinute, absl::CivilDay>::value);
+  static_assert(!HasDiff<absl::CivilMinute, absl::CivilMonth>::value);
+  static_assert(!HasDiff<absl::CivilMinute, absl::CivilYear>::value);
 
-  static_assert(!HasDiff<absl::CivilHour, absl::CivilDay>::value, "");
-  static_assert(!HasDiff<absl::CivilHour, absl::CivilMonth>::value, "");
-  static_assert(!HasDiff<absl::CivilHour, absl::CivilYear>::value, "");
+  static_assert(!HasDiff<absl::CivilHour, absl::CivilDay>::value);
+  static_assert(!HasDiff<absl::CivilHour, absl::CivilMonth>::value);
+  static_assert(!HasDiff<absl::CivilHour, absl::CivilYear>::value);
 
-  static_assert(!HasDiff<absl::CivilDay, absl::CivilMonth>::value, "");
-  static_assert(!HasDiff<absl::CivilDay, absl::CivilYear>::value, "");
+  static_assert(!HasDiff<absl::CivilDay, absl::CivilMonth>::value);
+  static_assert(!HasDiff<absl::CivilDay, absl::CivilYear>::value);
 
-  static_assert(!HasDiff<absl::CivilMonth, absl::CivilYear>::value, "");
+  static_assert(!HasDiff<absl::CivilMonth, absl::CivilYear>::value);
 }
 
 TEST(CivilTime, ValueSemantics) {

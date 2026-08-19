@@ -923,7 +923,7 @@ template <
     typename H, InvokeTag... Tags,
     typename = typename EnableIfContained<InvokeTag::kHashValue, Tags...>::type>
 H AbslHashValue(H state, CustomHashType<Tags...> t) {
-  static_assert(MinTag<Tags...>::value == InvokeTag::kHashValue, "");
+  static_assert(MinTag<Tags...>::value == InvokeTag::kHashValue);
   return H::combine(std::move(state),
                     t.value + static_cast<int>(InvokeTag::kHashValue));
 }
@@ -949,7 +949,7 @@ struct hash<CustomHashType<Tags...>> {
   template <InvokeTag... TagsIn, typename = typename EnableIfContained<
                                      InvokeTag::kLegacyHash, TagsIn...>::type>
   size_t operator()(CustomHashType<TagsIn...> t) const {
-    static_assert(MinTag<Tags...>::value == InvokeTag::kLegacyHash, "");
+    static_assert(MinTag<Tags...>::value == InvokeTag::kLegacyHash);
     return t.value + static_cast<int>(InvokeTag::kLegacyHash);
   }
 };
@@ -962,7 +962,7 @@ struct hash<CustomHashType<Tags...>> {
   template <InvokeTag... TagsIn, typename = typename EnableIfContained<
                                      InvokeTag::kStdHash, TagsIn...>::type>
   size_t operator()(CustomHashType<TagsIn...> t) const {
-    static_assert(MinTag<Tags...>::value == InvokeTag::kStdHash, "");
+    static_assert(MinTag<Tags...>::value == InvokeTag::kStdHash);
     return t.value + static_cast<int>(InvokeTag::kStdHash);
   }
 };
@@ -1041,10 +1041,10 @@ struct StructWithPadding {
 
 static_assert(sizeof(StructWithPadding) > sizeof(char) + sizeof(int),
               "StructWithPadding doesn't have padding");
-static_assert(std::is_standard_layout_v<StructWithPadding>, "");
+static_assert(std::is_standard_layout_v<StructWithPadding>);
 
 // This check has to be disabled because libstdc++ doesn't support it.
-// static_assert(std::is_trivially_constructible_v<StructWithPadding>, "");
+// static_assert(std::is_trivially_constructible_v<StructWithPadding>);
 
 template <typename T>
 struct ArraySlice {

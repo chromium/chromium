@@ -304,13 +304,11 @@ using FlagUseValueAndInitBitStorage =
 
 template <typename T>
 using FlagUseOneWordStorage =
-    std::integral_constant<bool,
-                           std::is_trivially_copyable_v<T> && (sizeof(T) <= 8)>;
+    std::bool_constant<std::is_trivially_copyable_v<T> && (sizeof(T) <= 8)>;
 
 template <class T>
 using FlagUseSequenceLockStorage =
-    std::integral_constant<bool,
-                           std::is_trivially_copyable_v<T> && (sizeof(T) > 8)>;
+    std::bool_constant<std::is_trivially_copyable_v<T> && (sizeof(T) > 8)>;
 
 enum class FlagValueStorageKind : uint8_t {
   kValueAndInitBit = 0,

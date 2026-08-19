@@ -469,8 +469,7 @@ class ABSL_ATTRIBUTE_TRIVIAL_ABI Status final {
   // Same as above but for rvalue string.
   // Note: using a template to disambiguate the case of matching string_view and
   // string&& (e.g. char*) as a template lowers the priority of the overload.
-  template <typename String,
-            typename = std::enable_if_t<std::is_same_v<String, std::string>>>
+  template <typename String, typename = status_internal::EnableIfString<String>>
   Status(absl::StatusCode code, String&& msg,
          absl::SourceLocation loc = SourceLocation::current());
 #endif  // SWIG
@@ -890,44 +889,175 @@ ABSL_MUST_USE_RESULT bool IsUnknown(const Status& status);
 // These convenience functions create an `absl::Status` object with an error
 // code as indicated by the associated function name, using the error message
 // passed in `message`.
+// Note: using a template for the rvalue message overload to disambiguate the
+// case of matching string_view and string&& (e.g. char*) as a template lowers
+// the priority of the overload.
+
+// AbortedError
 Status AbortedError(absl::string_view message,
                     absl::SourceLocation loc = SourceLocation::current());
+
+#ifndef SWIG
+template <typename String, typename = status_internal::EnableIfString<String>>
+Status AbortedError(String&& message,
+                    absl::SourceLocation loc = SourceLocation::current());
+#endif  // SWIG
+
+// AlreadyExistsError
 Status AlreadyExistsError(absl::string_view message,
                           absl::SourceLocation loc = SourceLocation::current());
+
+#ifndef SWIG
+template <typename String, typename = status_internal::EnableIfString<String>>
+Status AlreadyExistsError(String&& message,
+                          absl::SourceLocation loc = SourceLocation::current());
+#endif  // SWIG
+
+// CancelledError
 Status CancelledError(absl::string_view message,
                       absl::SourceLocation loc = SourceLocation::current());
+
+#ifndef SWIG
+template <typename String, typename = status_internal::EnableIfString<String>>
+Status CancelledError(String&& message,
+                      absl::SourceLocation loc = SourceLocation::current());
+#endif  // SWIG
+
+// DataLossError
 Status DataLossError(absl::string_view message,
                      absl::SourceLocation loc = SourceLocation::current());
+
+#ifndef SWIG
+template <typename String, typename = status_internal::EnableIfString<String>>
+Status DataLossError(String&& message,
+                     absl::SourceLocation loc = SourceLocation::current());
+#endif  // SWIG
+
+// DeadlineExceededError
 Status DeadlineExceededError(
     absl::string_view message,
     absl::SourceLocation loc = SourceLocation::current());
+
+#ifndef SWIG
+template <typename String, typename = status_internal::EnableIfString<String>>
+Status DeadlineExceededError(
+    String&& message, absl::SourceLocation loc = SourceLocation::current());
+#endif  // SWIG
+
+// FailedPreconditionError
 Status FailedPreconditionError(
     absl::string_view message,
     absl::SourceLocation loc = SourceLocation::current());
+
+#ifndef SWIG
+template <typename String, typename = status_internal::EnableIfString<String>>
+Status FailedPreconditionError(
+    String&& message, absl::SourceLocation loc = SourceLocation::current());
+#endif  // SWIG
+
+// InternalError
 Status InternalError(absl::string_view message,
                      absl::SourceLocation loc = SourceLocation::current());
+
+#ifndef SWIG
+template <typename String, typename = status_internal::EnableIfString<String>>
+Status InternalError(String&& message,
+                     absl::SourceLocation loc = SourceLocation::current());
+#endif  // SWIG
+
+// InvalidArgumentError
 Status InvalidArgumentError(
     absl::string_view message,
     absl::SourceLocation loc = SourceLocation::current());
+
+#ifndef SWIG
+template <typename String, typename = status_internal::EnableIfString<String>>
+Status InvalidArgumentError(
+    String&& message, absl::SourceLocation loc = SourceLocation::current());
+#endif  // SWIG
+
+// NotFoundError
 Status NotFoundError(absl::string_view message,
                      absl::SourceLocation loc = SourceLocation::current());
+
+#ifndef SWIG
+template <typename String, typename = status_internal::EnableIfString<String>>
+Status NotFoundError(String&& message,
+                     absl::SourceLocation loc = SourceLocation::current());
+#endif  // SWIG
+
+// OutOfRangeError
 Status OutOfRangeError(absl::string_view message,
                        absl::SourceLocation loc = SourceLocation::current());
+
+#ifndef SWIG
+template <typename String, typename = status_internal::EnableIfString<String>>
+Status OutOfRangeError(String&& message,
+                       absl::SourceLocation loc = SourceLocation::current());
+#endif  // SWIG
+
+// PermissionDeniedError
 Status PermissionDeniedError(
     absl::string_view message,
     absl::SourceLocation loc = SourceLocation::current());
+
+#ifndef SWIG
+template <typename String, typename = status_internal::EnableIfString<String>>
+Status PermissionDeniedError(
+    String&& message, absl::SourceLocation loc = SourceLocation::current());
+#endif  // SWIG
+
+// ResourceExhaustedError
 Status ResourceExhaustedError(
     absl::string_view message,
     absl::SourceLocation loc = SourceLocation::current());
+
+#ifndef SWIG
+template <typename String, typename = status_internal::EnableIfString<String>>
+Status ResourceExhaustedError(
+    String&& message, absl::SourceLocation loc = SourceLocation::current());
+#endif  // SWIG
+
+// UnauthenticatedError
 Status UnauthenticatedError(
     absl::string_view message,
     absl::SourceLocation loc = SourceLocation::current());
+
+#ifndef SWIG
+template <typename String, typename = status_internal::EnableIfString<String>>
+Status UnauthenticatedError(
+    String&& message, absl::SourceLocation loc = SourceLocation::current());
+#endif  // SWIG
+
+// UnavailableError
 Status UnavailableError(absl::string_view message,
                         absl::SourceLocation loc = SourceLocation::current());
+
+#ifndef SWIG
+template <typename String, typename = status_internal::EnableIfString<String>>
+Status UnavailableError(String&& message,
+                        absl::SourceLocation loc = SourceLocation::current());
+#endif  // SWIG
+
+// UnimplementedError
 Status UnimplementedError(absl::string_view message,
                           absl::SourceLocation loc = SourceLocation::current());
+
+#ifndef SWIG
+template <typename String, typename = status_internal::EnableIfString<String>>
+Status UnimplementedError(String&& message,
+                          absl::SourceLocation loc = SourceLocation::current());
+#endif  // SWIG
+
+// UnknownError
 Status UnknownError(absl::string_view message,
                     absl::SourceLocation loc = SourceLocation::current());
+
+#ifndef SWIG
+template <typename String, typename = status_internal::EnableIfString<String>>
+Status UnknownError(String&& message,
+                    absl::SourceLocation loc = SourceLocation::current());
+#endif  // SWIG
 
 // ErrnoToStatusCode()
 //
@@ -1143,109 +1273,338 @@ const char* absl_nonnull StatusMessageAsCStr(
 namespace status_internal {
 // We use an int in the template parameter to shorten mangled names.
 template <int error_code>
-Status MakeErrorImpl(string_view message, SourceLocation loc);
+Status MakeErrorStringViewImpl(string_view message, SourceLocation loc);
 // Make the instantiations extern to reduce bloat on callers.
 #ifndef SWIG
-extern template Status MakeErrorImpl<0>(string_view, SourceLocation);
-extern template Status MakeErrorImpl<1>(string_view, SourceLocation);
-extern template Status MakeErrorImpl<2>(string_view, SourceLocation);
-extern template Status MakeErrorImpl<3>(string_view, SourceLocation);
-extern template Status MakeErrorImpl<4>(string_view, SourceLocation);
-extern template Status MakeErrorImpl<5>(string_view, SourceLocation);
-extern template Status MakeErrorImpl<6>(string_view, SourceLocation);
-extern template Status MakeErrorImpl<7>(string_view, SourceLocation);
-extern template Status MakeErrorImpl<8>(string_view, SourceLocation);
-extern template Status MakeErrorImpl<9>(string_view, SourceLocation);
-extern template Status MakeErrorImpl<10>(string_view, SourceLocation);
-extern template Status MakeErrorImpl<11>(string_view, SourceLocation);
-extern template Status MakeErrorImpl<12>(string_view, SourceLocation);
-extern template Status MakeErrorImpl<13>(string_view, SourceLocation);
-extern template Status MakeErrorImpl<14>(string_view, SourceLocation);
-extern template Status MakeErrorImpl<15>(string_view, SourceLocation);
-extern template Status MakeErrorImpl<16>(string_view, SourceLocation);
+extern template Status MakeErrorStringViewImpl<0>(string_view, SourceLocation);
+extern template Status MakeErrorStringViewImpl<1>(string_view, SourceLocation);
+extern template Status MakeErrorStringViewImpl<2>(string_view, SourceLocation);
+extern template Status MakeErrorStringViewImpl<3>(string_view, SourceLocation);
+extern template Status MakeErrorStringViewImpl<4>(string_view, SourceLocation);
+extern template Status MakeErrorStringViewImpl<5>(string_view, SourceLocation);
+extern template Status MakeErrorStringViewImpl<6>(string_view, SourceLocation);
+extern template Status MakeErrorStringViewImpl<7>(string_view, SourceLocation);
+extern template Status MakeErrorStringViewImpl<8>(string_view, SourceLocation);
+extern template Status MakeErrorStringViewImpl<9>(string_view, SourceLocation);
+extern template Status MakeErrorStringViewImpl<10>(string_view, SourceLocation);
+extern template Status MakeErrorStringViewImpl<11>(string_view, SourceLocation);
+extern template Status MakeErrorStringViewImpl<12>(string_view, SourceLocation);
+extern template Status MakeErrorStringViewImpl<13>(string_view, SourceLocation);
+extern template Status MakeErrorStringViewImpl<14>(string_view, SourceLocation);
+extern template Status MakeErrorStringViewImpl<15>(string_view, SourceLocation);
+extern template Status MakeErrorStringViewImpl<16>(string_view, SourceLocation);
 #endif  // SWIG
 
 template <StatusCode error_code>
-Status MakeError(string_view message, SourceLocation loc) {
-  Status out = MakeErrorImpl<static_cast<int>(error_code)>(message, loc);
+Status MakeErrorFromStringView(string_view message, SourceLocation loc) {
+  Status out =
+      MakeErrorStringViewImpl<static_cast<int>(error_code)>(message, loc);
   // -Wassume warning complains about potential side effects of `ok()`, so use a
   // local to avoid that.
   [[maybe_unused]] bool ok = out.ok();
   ABSL_ASSUME(!ok);
   return out;
 }
+
+// Same as above, but for rvalue std::string.
+#ifndef SWIG
+// We use an int in the template parameter to shorten mangled names.
+template <int error_code>
+Status MakeErrorStringRvalueImpl(std::string&& message, SourceLocation loc);
+// Make the instantiations extern to reduce bloat on callers.
+extern template Status MakeErrorStringRvalueImpl<0>(std::string&&,
+                                                    SourceLocation);
+extern template Status MakeErrorStringRvalueImpl<1>(std::string&&,
+                                                    SourceLocation);
+extern template Status MakeErrorStringRvalueImpl<2>(std::string&&,
+                                                    SourceLocation);
+extern template Status MakeErrorStringRvalueImpl<3>(std::string&&,
+                                                    SourceLocation);
+extern template Status MakeErrorStringRvalueImpl<4>(std::string&&,
+                                                    SourceLocation);
+extern template Status MakeErrorStringRvalueImpl<5>(std::string&&,
+                                                    SourceLocation);
+extern template Status MakeErrorStringRvalueImpl<6>(std::string&&,
+                                                    SourceLocation);
+extern template Status MakeErrorStringRvalueImpl<7>(std::string&&,
+                                                    SourceLocation);
+extern template Status MakeErrorStringRvalueImpl<8>(std::string&&,
+                                                    SourceLocation);
+extern template Status MakeErrorStringRvalueImpl<9>(std::string&&,
+                                                    SourceLocation);
+extern template Status MakeErrorStringRvalueImpl<10>(std::string&&,
+                                                     SourceLocation);
+extern template Status MakeErrorStringRvalueImpl<11>(std::string&&,
+                                                     SourceLocation);
+extern template Status MakeErrorStringRvalueImpl<12>(std::string&&,
+                                                     SourceLocation);
+extern template Status MakeErrorStringRvalueImpl<13>(std::string&&,
+                                                     SourceLocation);
+extern template Status MakeErrorStringRvalueImpl<14>(std::string&&,
+                                                     SourceLocation);
+extern template Status MakeErrorStringRvalueImpl<15>(std::string&&,
+                                                     SourceLocation);
+extern template Status MakeErrorStringRvalueImpl<16>(std::string&&,
+                                                     SourceLocation);
+
+template <StatusCode error_code, typename String>
+Status MakeErrorFromStringRvalue(String&& message, SourceLocation loc) {
+  static_assert(std::is_same_v<String&&, std::string&&>,
+                "`message` should be std::string&&");
+  Status out = MakeErrorStringRvalueImpl<static_cast<int>(error_code)>(
+      std::forward<String>(message), loc);
+  // -Wassume warning complains about potential side effects of `ok()`, so use a
+  // local to avoid that.
+  [[maybe_unused]] bool ok = out.ok();
+  ABSL_ASSUME(!ok);
+  return out;
+}
+#endif  // SWIG
+
 }  // namespace status_internal
 
 // Inline implementations to give the compiler static knowledge about the
 // objects.
+
+// AbortedError
 inline Status AbortedError(absl::string_view message,
                            absl::SourceLocation loc) {
-  return status_internal::MakeError<StatusCode::kAborted>(message, loc);
+  return status_internal::MakeErrorFromStringView<StatusCode::kAborted>(message,
+                                                                        loc);
 }
+
+#ifndef SWIG
+template <typename String, typename>
+Status AbortedError(String&& message, absl::SourceLocation loc) {
+  return status_internal::MakeErrorFromStringRvalue<StatusCode::kAborted>(
+      std::forward<String>(message), loc);
+}
+#endif  // SWIG
+
+// AlreadyExistsError
 inline Status AlreadyExistsError(absl::string_view message,
                                  absl::SourceLocation loc) {
-  return status_internal::MakeError<StatusCode::kAlreadyExists>(message, loc);
+  return status_internal::MakeErrorFromStringView<StatusCode::kAlreadyExists>(
+      message, loc);
 }
+
+#ifndef SWIG
+template <typename String, typename>
+Status AlreadyExistsError(String&& message, absl::SourceLocation loc) {
+  return status_internal::MakeErrorFromStringRvalue<StatusCode::kAlreadyExists>(
+      std::forward<String>(message), loc);
+}
+#endif  // SWIG
+
+// CancelledError
 inline Status CancelledError(absl::string_view message,
                              absl::SourceLocation loc) {
-  return status_internal::MakeError<StatusCode::kCancelled>(message, loc);
+  return status_internal::MakeErrorFromStringView<StatusCode::kCancelled>(
+      message, loc);
 }
+
+#ifndef SWIG
+template <typename String, typename>
+Status CancelledError(String&& message, absl::SourceLocation loc) {
+  return status_internal::MakeErrorFromStringRvalue<StatusCode::kCancelled>(
+      std::forward<String>(message), loc);
+}
+#endif  // SWIG
+
+// DataLossError
 inline Status DataLossError(absl::string_view message,
                             absl::SourceLocation loc) {
-  return status_internal::MakeError<StatusCode::kDataLoss>(message, loc);
+  return status_internal::MakeErrorFromStringView<StatusCode::kDataLoss>(
+      message, loc);
 }
+
+#ifndef SWIG
+template <typename String, typename>
+Status DataLossError(String&& message, absl::SourceLocation loc) {
+  return status_internal::MakeErrorFromStringRvalue<StatusCode::kDataLoss>(
+      std::forward<String>(message), loc);
+}
+#endif  // SWIG
+
+// DeadlineExceededError
 inline Status DeadlineExceededError(absl::string_view message,
                                     absl::SourceLocation loc) {
-  return status_internal::MakeError<StatusCode::kDeadlineExceeded>(message,
-                                                                   loc);
+  return status_internal::MakeErrorFromStringView<
+      StatusCode::kDeadlineExceeded>(message, loc);
 }
+
+#ifndef SWIG
+template <typename String, typename>
+Status DeadlineExceededError(String&& message, absl::SourceLocation loc) {
+  return status_internal::MakeErrorFromStringRvalue<
+      StatusCode::kDeadlineExceeded>(std::forward<String>(message), loc);
+}
+#endif  // SWIG
+
+// FailedPreconditionError
 inline Status FailedPreconditionError(absl::string_view message,
                                       absl::SourceLocation loc) {
-  return status_internal::MakeError<StatusCode::kFailedPrecondition>(message,
-                                                                     loc);
+  return status_internal::MakeErrorFromStringView<
+      StatusCode::kFailedPrecondition>(message, loc);
 }
+
+#ifndef SWIG
+template <typename String, typename>
+Status FailedPreconditionError(String&& message, absl::SourceLocation loc) {
+  return status_internal::MakeErrorFromStringRvalue<
+      StatusCode::kFailedPrecondition>(std::forward<String>(message), loc);
+}
+#endif  // SWIG
+
+// InternalError
 inline Status InternalError(absl::string_view message,
                             absl::SourceLocation loc) {
-  return status_internal::MakeError<StatusCode::kInternal>(message, loc);
+  return status_internal::MakeErrorFromStringView<StatusCode::kInternal>(
+      message, loc);
 }
+
+#ifndef SWIG
+template <typename String, typename>
+Status InternalError(String&& message, absl::SourceLocation loc) {
+  return status_internal::MakeErrorFromStringRvalue<StatusCode::kInternal>(
+      std::forward<String>(message), loc);
+}
+#endif  // SWIG
+
+// InvalidArgumentError
 inline Status InvalidArgumentError(absl::string_view message,
                                    absl::SourceLocation loc) {
-  return status_internal::MakeError<StatusCode::kInvalidArgument>(message, loc);
+  return status_internal::MakeErrorFromStringView<StatusCode::kInvalidArgument>(
+      message, loc);
 }
+
+#ifndef SWIG
+template <typename String, typename>
+Status InvalidArgumentError(String&& message, absl::SourceLocation loc) {
+  return status_internal::MakeErrorFromStringRvalue<
+      StatusCode::kInvalidArgument>(std::forward<String>(message), loc);
+}
+#endif  // SWIG
+
+// NotFoundError
 inline Status NotFoundError(absl::string_view message,
                             absl::SourceLocation loc) {
-  return status_internal::MakeError<StatusCode::kNotFound>(message, loc);
+  return status_internal::MakeErrorFromStringView<StatusCode::kNotFound>(
+      message, loc);
 }
+
+#ifndef SWIG
+template <typename String, typename>
+Status NotFoundError(String&& message, absl::SourceLocation loc) {
+  return status_internal::MakeErrorFromStringRvalue<StatusCode::kNotFound>(
+      std::forward<String>(message), loc);
+}
+#endif  // SWIG
+
+// OutOfRangeError
 inline Status OutOfRangeError(absl::string_view message,
                               absl::SourceLocation loc) {
-  return status_internal::MakeError<StatusCode::kOutOfRange>(message, loc);
+  return status_internal::MakeErrorFromStringView<StatusCode::kOutOfRange>(
+      message, loc);
 }
+
+#ifndef SWIG
+template <typename String, typename>
+Status OutOfRangeError(String&& message, absl::SourceLocation loc) {
+  return status_internal::MakeErrorFromStringRvalue<StatusCode::kOutOfRange>(
+      std::forward<String>(message), loc);
+}
+#endif  // SWIG
+
+// PermissionDeniedError
 inline Status PermissionDeniedError(absl::string_view message,
                                     absl::SourceLocation loc) {
-  return status_internal::MakeError<StatusCode::kPermissionDenied>(message,
-                                                                   loc);
+  return status_internal::MakeErrorFromStringView<
+      StatusCode::kPermissionDenied>(message, loc);
 }
+
+#ifndef SWIG
+template <typename String, typename>
+Status PermissionDeniedError(String&& message, absl::SourceLocation loc) {
+  return status_internal::MakeErrorFromStringRvalue<
+      StatusCode::kPermissionDenied>(std::forward<String>(message), loc);
+}
+#endif  // SWIG
+
+// ResourceExhaustedError
 inline Status ResourceExhaustedError(absl::string_view message,
                                      absl::SourceLocation loc) {
-  return status_internal::MakeError<StatusCode::kResourceExhausted>(message,
-                                                                    loc);
+  return status_internal::MakeErrorFromStringView<
+      StatusCode::kResourceExhausted>(message, loc);
 }
+
+#ifndef SWIG
+template <typename String, typename>
+Status ResourceExhaustedError(String&& message, absl::SourceLocation loc) {
+  return status_internal::MakeErrorFromStringRvalue<
+      StatusCode::kResourceExhausted>(std::forward<String>(message), loc);
+}
+#endif  // SWIG
+
+// UnauthenticatedError
 inline Status UnauthenticatedError(absl::string_view message,
                                    absl::SourceLocation loc) {
-  return status_internal::MakeError<StatusCode::kUnauthenticated>(message, loc);
+  return status_internal::MakeErrorFromStringView<StatusCode::kUnauthenticated>(
+      message, loc);
 }
+
+#ifndef SWIG
+template <typename String, typename>
+Status UnauthenticatedError(String&& message, absl::SourceLocation loc) {
+  return status_internal::MakeErrorFromStringRvalue<
+      StatusCode::kUnauthenticated>(std::forward<String>(message), loc);
+}
+#endif  // SWIG
+
+// UnavailableError
 inline Status UnavailableError(absl::string_view message,
                                absl::SourceLocation loc) {
-  return status_internal::MakeError<StatusCode::kUnavailable>(message, loc);
+  return status_internal::MakeErrorFromStringView<StatusCode::kUnavailable>(
+      message, loc);
 }
+
+#ifndef SWIG
+template <typename String, typename>
+Status UnavailableError(String&& message, absl::SourceLocation loc) {
+  return status_internal::MakeErrorFromStringRvalue<StatusCode::kUnavailable>(
+      std::forward<String>(message), loc);
+}
+#endif  // SWIG
+
+// UnimplementedError
 inline Status UnimplementedError(absl::string_view message,
                                  absl::SourceLocation loc) {
-  return status_internal::MakeError<StatusCode::kUnimplemented>(message, loc);
+  return status_internal::MakeErrorFromStringView<StatusCode::kUnimplemented>(
+      message, loc);
 }
+
+#ifndef SWIG
+template <typename String, typename>
+Status UnimplementedError(String&& message, absl::SourceLocation loc) {
+  return status_internal::MakeErrorFromStringRvalue<StatusCode::kUnimplemented>(
+      std::forward<String>(message), loc);
+}
+#endif  // SWIG
+
+// UnknownError
 inline Status UnknownError(absl::string_view message,
                            absl::SourceLocation loc) {
-  return status_internal::MakeError<StatusCode::kUnknown>(message, loc);
+  return status_internal::MakeErrorFromStringView<StatusCode::kUnknown>(message,
+                                                                        loc);
 }
+
+#ifndef SWIG
+template <typename String, typename>
+Status UnknownError(String&& message, absl::SourceLocation loc) {
+  return status_internal::MakeErrorFromStringRvalue<StatusCode::kUnknown>(
+      std::forward<String>(message), loc);
+}
+#endif  // SWIG
 
 ABSL_NAMESPACE_END
 }  // namespace absl

@@ -171,7 +171,7 @@ std::ostream& operator<<(std::ostream& os, const Status& x) {
 namespace status_internal {
 // We use an int in the template parameter to shorten mangled names.
 template <int error_code>
-Status MakeErrorImpl(string_view message, SourceLocation loc) {
+Status MakeErrorStringViewImpl(string_view message, SourceLocation loc) {
   return Status(static_cast<StatusCode>(error_code), message, loc);
 }
 
@@ -179,23 +179,55 @@ Status MakeErrorImpl(string_view message, SourceLocation loc) {
 // If we add more error code, we need to add their values on this list.
 // Using ints here instead of static_cast<int>(StatusCode::kFoo) makes it easier
 // to see that the list is complete.
-template Status MakeErrorImpl<0>(string_view, SourceLocation);
-template Status MakeErrorImpl<1>(string_view, SourceLocation);
-template Status MakeErrorImpl<2>(string_view, SourceLocation);
-template Status MakeErrorImpl<3>(string_view, SourceLocation);
-template Status MakeErrorImpl<4>(string_view, SourceLocation);
-template Status MakeErrorImpl<5>(string_view, SourceLocation);
-template Status MakeErrorImpl<6>(string_view, SourceLocation);
-template Status MakeErrorImpl<7>(string_view, SourceLocation);
-template Status MakeErrorImpl<8>(string_view, SourceLocation);
-template Status MakeErrorImpl<9>(string_view, SourceLocation);
-template Status MakeErrorImpl<10>(string_view, SourceLocation);
-template Status MakeErrorImpl<11>(string_view, SourceLocation);
-template Status MakeErrorImpl<12>(string_view, SourceLocation);
-template Status MakeErrorImpl<13>(string_view, SourceLocation);
-template Status MakeErrorImpl<14>(string_view, SourceLocation);
-template Status MakeErrorImpl<15>(string_view, SourceLocation);
-template Status MakeErrorImpl<16>(string_view, SourceLocation);
+template Status MakeErrorStringViewImpl<0>(string_view, SourceLocation);
+template Status MakeErrorStringViewImpl<1>(string_view, SourceLocation);
+template Status MakeErrorStringViewImpl<2>(string_view, SourceLocation);
+template Status MakeErrorStringViewImpl<3>(string_view, SourceLocation);
+template Status MakeErrorStringViewImpl<4>(string_view, SourceLocation);
+template Status MakeErrorStringViewImpl<5>(string_view, SourceLocation);
+template Status MakeErrorStringViewImpl<6>(string_view, SourceLocation);
+template Status MakeErrorStringViewImpl<7>(string_view, SourceLocation);
+template Status MakeErrorStringViewImpl<8>(string_view, SourceLocation);
+template Status MakeErrorStringViewImpl<9>(string_view, SourceLocation);
+template Status MakeErrorStringViewImpl<10>(string_view, SourceLocation);
+template Status MakeErrorStringViewImpl<11>(string_view, SourceLocation);
+template Status MakeErrorStringViewImpl<12>(string_view, SourceLocation);
+template Status MakeErrorStringViewImpl<13>(string_view, SourceLocation);
+template Status MakeErrorStringViewImpl<14>(string_view, SourceLocation);
+template Status MakeErrorStringViewImpl<15>(string_view, SourceLocation);
+template Status MakeErrorStringViewImpl<16>(string_view, SourceLocation);
+
+// Same as above, but for rvalue strings.
+#ifndef SWIG
+// We use an int in the template parameter to shorten mangled names.
+template <int error_code>
+Status MakeErrorStringRvalueImpl(std::string&& message, SourceLocation loc) {
+  return Status(static_cast<StatusCode>(error_code), std::move(message), loc);
+}
+
+// Explicit instantiation for all the error codes.
+// If we add more error code, we need to add their values on this list.
+// Using ints here instead of static_cast<int>(StatusCode::kFoo) makes it easier
+// to see that the list is complete.
+template Status MakeErrorStringRvalueImpl<0>(std::string&&, SourceLocation);
+template Status MakeErrorStringRvalueImpl<1>(std::string&&, SourceLocation);
+template Status MakeErrorStringRvalueImpl<2>(std::string&&, SourceLocation);
+template Status MakeErrorStringRvalueImpl<3>(std::string&&, SourceLocation);
+template Status MakeErrorStringRvalueImpl<4>(std::string&&, SourceLocation);
+template Status MakeErrorStringRvalueImpl<5>(std::string&&, SourceLocation);
+template Status MakeErrorStringRvalueImpl<6>(std::string&&, SourceLocation);
+template Status MakeErrorStringRvalueImpl<7>(std::string&&, SourceLocation);
+template Status MakeErrorStringRvalueImpl<8>(std::string&&, SourceLocation);
+template Status MakeErrorStringRvalueImpl<9>(std::string&&, SourceLocation);
+template Status MakeErrorStringRvalueImpl<10>(std::string&&, SourceLocation);
+template Status MakeErrorStringRvalueImpl<11>(std::string&&, SourceLocation);
+template Status MakeErrorStringRvalueImpl<12>(std::string&&, SourceLocation);
+template Status MakeErrorStringRvalueImpl<13>(std::string&&, SourceLocation);
+template Status MakeErrorStringRvalueImpl<14>(std::string&&, SourceLocation);
+template Status MakeErrorStringRvalueImpl<15>(std::string&&, SourceLocation);
+template Status MakeErrorStringRvalueImpl<16>(std::string&&, SourceLocation);
+#endif  // SWIG
+
 }  // namespace status_internal
 
 bool IsAborted(const Status& status) {

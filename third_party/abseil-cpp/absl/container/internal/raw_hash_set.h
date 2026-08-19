@@ -568,7 +568,9 @@ class HashtableCapacityImpl {
   // We use these sentinel capacity values in debug mode to indicate different
   // classes of bugs.
   enum InvalidCapacity : IntType {
-    kAboveMaxValidCapacity = (std::numeric_limits<IntType>::max)() - 100,
+    kAboveMaxValidCapacity = StorageMode == kCapacityByValue
+                                 ? (std::numeric_limits<IntType>::max)() - 100
+                                 : 64 - 10,
     kReentrance,
     kDestroyed,
 
@@ -590,39 +592,24 @@ template <HashtableCapacityStorageMode StorageMode>
 class HashtableInlineDataImpl;
 
 // Returns next per-table seed.
-uint16_t NextHashTableSeed();
+uint8_t NextHashTableSeed();
 
 // Per table hash salt. This gets mixed into H1 to randomize iteration order
 // per-table.
 // The seed is needed to ensure non-determinism of iteration order.
-template <typename StorageType>
-class PerTableSeedImpl {
+class PerTableSeed {
  public:
-  using IntType = StorageType;
-
-  // The number of bits in the seed.
-  // It is big enough to ensure non-determinism of iteration order.
-  // We store the seed inside a uint64_t together with size and other metadata.
-  // Using 8 or 16 bits allows us to save one `and` instruction in H1 (we use
-  // zero-extended move instead of mov+and). When absl::Hash is inlined, it can
-  // also have lower latency knowing that the high bits of the seed are zero.
-  static constexpr size_t kBitCount = sizeof(IntType) * 8;
-
-  // We need to use a constant seed when the table is sampled so that sampled
-  // hashes use the same seed and can e.g. identify stuck bits accurately.
-  static constexpr IntType kSampledSeed = static_cast<IntType>(~IntType{0});
-
   // Returns the seed for the table.
   size_t seed() const { return seed_; }
 
  private:
-  template <HashtableCapacityStorageMode StorageMode>
+  template <HashtableCapacityStorageMode StorageModeOfData>
   friend class HashtableInlineDataImpl;
 
-  explicit PerTableSeedImpl(uint64_t seed)
-      : seed_(static_cast<IntType>(seed)) {}
+  explicit PerTableSeed(uint64_t seed)
+      : seed_(static_cast<uint16_t>(seed)) {}
 
-  const IntType seed_;
+  const uint16_t seed_;
 };
 
 // Represents blocked elements info: log2_period and tail_blocked.
@@ -672,18 +659,25 @@ class BlockedInfo {
 //    bit of the seed is repurposed to track if sampling has been tried).
 template <HashtableCapacityStorageMode StorageMode>
 class HashtableInlineDataImpl {
+  // The number of bits in the seed. It is big enough to ensure
+  // non-determinism of iteration order. We store the seed inside a uint64_t
+  // together with size and other metadata. When absl::Hash is inlined, it can
+  // have lower latency knowing that the high bits of the seed are zero.
+  static constexpr size_t kSeedBitCount = 5;
+
  public:
   static constexpr HashtableCapacityStorageMode kStorageMode = StorageMode;
-  using PerTableSeed = PerTableSeedImpl<
-      std::conditional_t<StorageMode == kCapacityByValue, uint16_t, uint8_t>>;
   using HashtableCapacity = HashtableCapacityImpl<StorageMode>;
   static constexpr size_t kBlockedElementBitCount = 3;
   static constexpr size_t kMaxBlockedElementCount =
       (uint64_t{1} << kBlockedElementBitCount) - 1;
+  static constexpr size_t kCapacityBitCount =
+      StorageMode == kCapacityByValue ? sizeof(HashtableCapacity) * 8 : 6;
+  static constexpr size_t kCapacityBitStoredInDataCount =
+      StorageMode == kCapacityByValue ? 0 : kCapacityBitCount;
   static constexpr size_t kSizeBitCount =
-      64 -
-      (kBlockedElementBitCount + PerTableSeed::kBitCount + /*has_infoz*/ 1 +
-       (StorageMode == kCapacityByValue ? 0 : sizeof(HashtableCapacity) * 8));
+      64 - (kBlockedElementBitCount + kSeedBitCount +
+            /*has_infoz*/ 1 + kCapacityBitStoredInDataCount);
 
   explicit HashtableInlineDataImpl(uninitialized_tag_t) {}
   explicit HashtableInlineDataImpl(HashtableCapacity capacity,
@@ -727,18 +721,18 @@ class HashtableInlineDataImpl {
         (data_ & kMetadataMask) | (static_cast<uint64_t>(size) << kSizeShift);
   }
 
-  PerTableSeed seed() const { return PerTableSeed(data_ & kSeedMask); }
-
-  void generate_new_seed() {
-    set_seed(static_cast<typename PerTableSeed::IntType>(NextHashTableSeed()));
+  PerTableSeed seed() const {
+    return PerTableSeed(ToPublicSeed(data_ & kSeedMask));
   }
+
+  void generate_new_seed() { set_seed(NextHashTableSeed()); }
 
   // We need to use a constant seed when the table is sampled so that sampled
   // hashes use the same seed and can e.g. identify stuck bits accurately.
-  void set_sampled_seed() { set_seed(PerTableSeed::kSampledSeed); }
+  void set_sampled_seed() { set_seed(kSampledSeed); }
 
   bool is_sampled_seed() const {
-    return seed().seed() == PerTableSeed::kSampledSeed;
+    return seed().seed() == ToPublicSeed(kSampledSeed);
   }
 
   // Returns true if the table has infoz.
@@ -767,34 +761,46 @@ class HashtableInlineDataImpl {
   void set_no_seed_for_testing() { data_ &= ~kSeedMask; }
 
  private:
-  // Bit layout of `data_` from MSB to LSB:
-  // (44 bits)      : size
+  // Bit layout of `data_` and `capacity_internal_` from MSB to LSB:
+  // (55/49 bits)   : size
   // (3 bits)       : blocked_element_count
   // (1 bit)        : has_infoz
-  // (16 or 8 bits) : seed
+  // (5 bits)       : seed
+  // (6 bits)       : capacity (only for kCapacityByLog)
   // We don't split these components of `data_` into separate bit field elements
   // because we get worse generated code that way.
+
   static constexpr size_t kDataBitCount =
-      PerTableSeed::kBitCount + 1 + kSizeBitCount + kBlockedElementBitCount;
+      kSeedBitCount + 1 + kSizeBitCount + kBlockedElementBitCount;
   static constexpr size_t kSizeShift = kDataBitCount - kSizeBitCount;
   static constexpr uint64_t kSizeOneNoMetadata = uint64_t{1} << kSizeShift;
   static constexpr uint64_t kMetadataMask = kSizeOneNoMetadata - 1;
-  static constexpr uint64_t kSeedMask =
-      (uint64_t{1} << PerTableSeed::kBitCount) - 1;
+  static constexpr uint64_t kSeedMask = (uint64_t{1} << kSeedBitCount) - 1;
   // The next bit after the seed.
   static constexpr uint64_t kHasInfozMask = kSeedMask + 1;
-  static constexpr uint64_t kBlockedElementsShift = PerTableSeed::kBitCount + 1;
+  static constexpr uint64_t kBlockedElementsShift = kSeedBitCount + 1;
   static constexpr uint64_t kBlockedElementMask = kMaxBlockedElementCount
                                                   << kBlockedElementsShift;
   // For SOO tables, the seed is unused, and bit 0 is repurposed to track
   // whether the table has already queried should_sample_soo().
   static constexpr uint64_t kSooHasTriedSamplingMask = 1;
 
-  void set_seed(typename PerTableSeed::IntType seed) {
-    data_ = (data_ & ~kSeedMask) | seed;
+  // We need to use a constant seed when the table is sampled so that sampled
+  // hashes use the same seed and can e.g. identify stuck bits accurately.
+  static constexpr uint8_t kSampledSeed = (1 << kSeedBitCount) - 1;
+
+  static constexpr uint64_t ToPublicSeed(uint64_t seed) {
+    // In kCapacityByLog mode, we shift public seed to the left to keep bits of
+    // the seed in the original place. It allows us to use single instruction to
+    // access the seed (e.g., `andl $0x7c0, %r8d`).
+    return seed << kCapacityBitStoredInDataCount;
   }
 
-  uint64_t capacity_internal_ : sizeof(HashtableCapacity) * 8;
+  void set_seed(uint8_t seed) {
+    data_ = (data_ & ~kSeedMask) | (seed & kSeedMask);
+  }
+
+  uint64_t capacity_internal_ : kCapacityBitCount;
   uint64_t data_ : kDataBitCount;
 };
 
@@ -814,7 +820,6 @@ using HashtableInlineData = HashtableInlineDataImpl<kCapacityByLog>;
 #else
 using HashtableInlineData = HashtableInlineDataImpl<kCapacityByValue>;
 #endif  // ABSL_SWISSTABLE_INTERNAL_ENABLE_CAPACITY_BY_VALUE
-using PerTableSeed = HashtableInlineData::PerTableSeed;
 using HashtableCapacity = HashtableInlineData::HashtableCapacity;
 
 // For large tables, we limit the number of blocked elements to maintain O(1)

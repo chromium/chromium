@@ -465,7 +465,7 @@ bool IsCheap(AnySpan<T> s) {
 
 template <typename T>
 bool EqualImpl(AnySpan<T> a, AnySpan<T> b) {
-  static_assert(std::is_const_v<T>, "");
+  static_assert(std::is_const_v<T>);
   return std::equal(a.begin(), a.end(), b.begin(), b.end());
 }
 

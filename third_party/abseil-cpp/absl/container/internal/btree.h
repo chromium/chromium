@@ -97,7 +97,8 @@ constexpr bool BtreeGenerationsEnabled() { return false; }
 #endif
 
 template <typename Compare, typename T, typename U>
-using compare_result_t = absl::result_of_t<const Compare(const T &, const U &)>;
+using compare_result_t =
+    std::invoke_result_t<const Compare, const T &, const U &>;
 
 // A helper class that indicates if the Compare parameter is a key-compare-to
 // comparator.

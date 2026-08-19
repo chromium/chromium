@@ -60,7 +60,7 @@ struct alignas(Alignment) AlignedType {
 // returns insufficiently alignment pointer, that's what you are going to get.
 template <size_t Alignment, class Alloc>
 void* Allocate(Alloc* alloc, size_t n) {
-  static_assert(Alignment > 0, "");
+  static_assert(Alignment > 0);
   assert(n && "n must be positive");
   using M = AlignedType<Alignment>;
   using A = typename std::allocator_traits<Alloc>::template rebind_alloc<M>;
@@ -91,7 +91,7 @@ constexpr auto IsDestructionTrivial() {
 // Allocate<Alignment>(alloc, n).
 template <size_t Alignment, class Alloc>
 void Deallocate(Alloc* alloc, void* p, size_t n) {
-  static_assert(Alignment > 0, "");
+  static_assert(Alignment > 0);
   assert(n && "n must be positive");
   using M = AlignedType<Alignment>;
   using A = typename std::allocator_traits<Alloc>::template rebind_alloc<M>;

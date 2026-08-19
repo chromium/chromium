@@ -278,7 +278,7 @@ struct StackOperations {
         return tree;
       case CordRepBtree::kCopied:
         CordRep::Unref(tree);
-        ABSL_FALLTHROUGH_INTENDED;
+        [[fallthrough]];
       case CordRepBtree::kSelf:
         return result.tree;
     }

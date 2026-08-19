@@ -125,9 +125,9 @@ template <class T, int SignificantBits, int Shift = 0,
           bool NullifyBitsOnIteration = false>
 class BitMask : public NonIterableBitMask<T, SignificantBits, Shift> {
   using Base = NonIterableBitMask<T, SignificantBits, Shift>;
-  static_assert(std::is_unsigned_v<T>, "");
-  static_assert(Shift == 0 || Shift == 3, "");
-  static_assert(!NullifyBitsOnIteration || Shift == 3, "");
+  static_assert(std::is_unsigned_v<T>);
+  static_assert(Shift == 0 || Shift == 3);
+  static_assert(!NullifyBitsOnIteration || Shift == 3);
 
  public:
   explicit BitMask(T mask) : Base(mask) {

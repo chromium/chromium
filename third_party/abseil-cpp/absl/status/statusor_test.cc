@@ -118,8 +118,8 @@ absl::StatusOr<std::unique_ptr<int>> ReturnUniquePtr() {
 }
 
 TEST(StatusOr, ElementType) {
-  static_assert(std::is_same<absl::StatusOr<int>::value_type, int>(), "");
-  static_assert(std::is_same<absl::StatusOr<char>::value_type, char>(), "");
+  static_assert(std::is_same<absl::StatusOr<int>::value_type, int>());
+  static_assert(std::is_same<absl::StatusOr<char>::value_type, char>());
 }
 
 TEST(StatusOr, TestMoveOnlyInitialization) {
@@ -1393,7 +1393,7 @@ TEST(StatusOr, TestPointerValueConst) {
 
 TEST(StatusOr, StatusOrVectorOfUniquePointerCanReserveAndResize) {
   using EvilType = std::vector<std::unique_ptr<int>>;
-  static_assert(std::is_copy_constructible_v<EvilType>, "");
+  static_assert(std::is_copy_constructible_v<EvilType>);
   std::vector<::absl::StatusOr<EvilType>> v(5);
   v.reserve(v.capacity() + 10);
   v.resize(v.capacity() + 10);

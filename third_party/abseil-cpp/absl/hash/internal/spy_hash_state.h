@@ -48,7 +48,7 @@ template <typename T>
 class SpyHashStateImpl : public HashStateBase<SpyHashStateImpl<T>> {
  public:
   SpyHashStateImpl() : error_(std::make_shared<std::optional<std::string>>()) {
-    static_assert(std::is_void_v<T>, "");
+    static_assert(std::is_void_v<T>);
   }
 
   // Move-only

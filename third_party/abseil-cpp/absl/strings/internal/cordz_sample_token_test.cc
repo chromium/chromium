@@ -44,33 +44,27 @@ using ::testing::Ne;
 auto constexpr kTrackCordMethod = CordzUpdateTracker::kConstructorString;
 
 TEST(CordzSampleTokenTest, IteratorTraits) {
-  static_assert(std::is_copy_constructible_v<CordzSampleToken::Iterator>, "");
-  static_assert(std::is_copy_assignable_v<CordzSampleToken::Iterator>, "");
-  static_assert(std::is_move_constructible_v<CordzSampleToken::Iterator>, "");
-  static_assert(std::is_move_assignable_v<CordzSampleToken::Iterator>, "");
+  static_assert(std::is_copy_constructible_v<CordzSampleToken::Iterator>);
+  static_assert(std::is_copy_assignable_v<CordzSampleToken::Iterator>);
+  static_assert(std::is_move_constructible_v<CordzSampleToken::Iterator>);
+  static_assert(std::is_move_assignable_v<CordzSampleToken::Iterator>);
   static_assert(
       std::is_same_v<
           std::iterator_traits<CordzSampleToken::Iterator>::iterator_category,
-          std::input_iterator_tag>,
-      "");
-  static_assert(
-      std::is_same_v<
-          std::iterator_traits<CordzSampleToken::Iterator>::value_type,
-          const CordzInfo&>,
-      "");
+          std::input_iterator_tag>);
+  static_assert(std::is_same_v<
+                std::iterator_traits<CordzSampleToken::Iterator>::value_type,
+                const CordzInfo&>);
   static_assert(
       std::is_same_v<
           std::iterator_traits<CordzSampleToken::Iterator>::difference_type,
-          ptrdiff_t>,
-      "");
+          ptrdiff_t>);
   static_assert(
       std::is_same_v<std::iterator_traits<CordzSampleToken::Iterator>::pointer,
-                     const CordzInfo*>,
-      "");
+                     const CordzInfo*>);
   static_assert(std::is_same_v<
-                    std::iterator_traits<CordzSampleToken::Iterator>::reference,
-                    const CordzInfo&>,
-                "");
+                std::iterator_traits<CordzSampleToken::Iterator>::reference,
+                const CordzInfo&>);
 }
 
 TEST(CordzSampleTokenTest, IteratorEmpty) {

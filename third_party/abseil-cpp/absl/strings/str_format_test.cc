@@ -524,6 +524,19 @@ TEST_F(FormatEntryPointTest, SNPrintF) {
   EXPECT_EQ(buffer[0], '\0');
 }
 
+TEST_F(FormatEntryPointTest, SNPrintFTooLarge) {
+  // Formatting more than INT_MAX bytes cannot be represented in the int return
+  // value, so the call reports an error via errno rather than returning a
+  // truncated (and possibly negative) count, matching FPrintF. A zero size
+  // means nothing is written to the buffer.
+  char buffer[16];
+  int width = 2000000000;
+  errno = 0;
+  int result = SNPrintF(buffer, 0, "%*d %*d", width, 0, width, 0);
+  EXPECT_LT(result, 0);
+  EXPECT_EQ(errno, EFBIG);
+}
+
 TEST_F(FormatEntryPointTest, SNPrintFWithV) {
   char buffer[16];
   int result =

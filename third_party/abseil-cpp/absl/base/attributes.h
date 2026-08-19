@@ -639,47 +639,16 @@
 //
 // Annotates implicit fall-through between switch labels, allowing a case to
 // indicate intentional fallthrough and turn off warnings about any lack of a
-// `break` statement. The ABSL_FALLTHROUGH_INTENDED macro should be followed by
-// a semicolon and can be used in most places where `break` can, provided that
-// no statements exist between it and the next switch label.
+// `break` statement.
 //
-// Example:
+// Deprecated: Use the standard C++17 `[[fallthrough]]` instead.
 //
-//  switch (x) {
-//    case 40:
-//    case 41:
-//      if (truth_is_out_there) {
-//        ++x;
-//        ABSL_FALLTHROUGH_INTENDED;  // Use instead of/along with annotations
-//                                    // in comments
-//      } else {
-//        return x;
-//      }
-//    case 42:
-//      ...
-//
-// Notes: When supported, GCC and Clang can issue a warning on switch labels
-// with unannotated fallthrough using the warning `-Wimplicit-fallthrough`. See
-// clang documentation on language extensions for details:
-// https://clang.llvm.org/docs/AttributeReference.html#fallthrough-clang-fallthrough
-//
-// When used with unsupported compilers, the ABSL_FALLTHROUGH_INTENDED macro has
-// no effect on diagnostics. In any case this macro has no effect on runtime
-// behavior and performance of code.
+// This macro has no effect on runtime behavior and performance of code.
 
 #ifdef ABSL_FALLTHROUGH_INTENDED
 #error "ABSL_FALLTHROUGH_INTENDED should not be defined."
-#elif ABSL_HAVE_CPP_ATTRIBUTE(fallthrough)
-#define ABSL_FALLTHROUGH_INTENDED [[fallthrough]]
-#elif ABSL_HAVE_CPP_ATTRIBUTE(clang::fallthrough)
-#define ABSL_FALLTHROUGH_INTENDED [[clang::fallthrough]]
-#elif ABSL_HAVE_CPP_ATTRIBUTE(gnu::fallthrough)
-#define ABSL_FALLTHROUGH_INTENDED [[gnu::fallthrough]]
-#else
-#define ABSL_FALLTHROUGH_INTENDED \
-  do {                            \
-  } while (0)
 #endif
+#define ABSL_FALLTHROUGH_INTENDED [[fallthrough]]
 
 // ABSL_DEPRECATED()
 //

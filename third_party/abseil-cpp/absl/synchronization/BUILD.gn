@@ -11,6 +11,7 @@ absl_source_set("graphcycles_internal") {
   public = [ "internal/graphcycles.h" ]
   visibility = [ ":*" ]
   deps = [
+    "//third_party/abseil-cpp/absl/algorithm:container",
     "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/base:base_internal",
     "//third_party/abseil-cpp/absl/base:config",
@@ -25,9 +26,7 @@ absl_source_set("kernel_timeout_internal") {
   public = [ "internal/kernel_timeout.h" ]
   visibility = [ ":*" ]
   deps = [
-    "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/base:config",
-    "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
     "//third_party/abseil-cpp/absl/time",
   ]
@@ -37,8 +36,6 @@ absl_test("kernel_timeout_internal_test") {
   sources = [ "internal/kernel_timeout_test.cc" ]
   deps = [
     ":kernel_timeout_internal",
-    "//third_party/abseil-cpp/absl/base:config",
-    "//third_party/abseil-cpp/absl/random",
     "//third_party/abseil-cpp/absl/time",
   ]
 }
@@ -110,7 +107,9 @@ absl_test("graphcycles_test") {
   sources = [ "internal/graphcycles_test.cc" ]
   deps = [
     ":graphcycles_internal",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/container:flat_hash_set",
     "//third_party/abseil-cpp/absl/log",
     "//third_party/abseil-cpp/absl/log:check",
   ]
@@ -132,12 +131,10 @@ absl_test("mutex_test") {
   deps = [
     ":synchronization",
     ":thread_pool",
-    "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/log",
     "//third_party/abseil-cpp/absl/log:check",
-    "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/random",
     "//third_party/abseil-cpp/absl/time",
   ]
@@ -155,9 +152,11 @@ absl_source_set("per_thread_sem_test_common") {
   sources = [ "internal/per_thread_sem_test.cc" ]
   visibility = [ ":*" ]
   deps = [
+    ":kernel_timeout_internal",
     ":synchronization",
     "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/time",
     "//third_party/googletest:gmock",
@@ -180,7 +179,6 @@ absl_test("waiter_test") {
     ":kernel_timeout_internal",
     ":synchronization",
     ":thread_pool",
-    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/random",
     "//third_party/abseil-cpp/absl/time",
   ]

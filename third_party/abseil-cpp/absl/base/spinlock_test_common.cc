@@ -127,7 +127,7 @@ static void ThreadedTest(SpinLock* spinlock) {
 }
 
 #ifndef ABSL_HAVE_THREAD_SANITIZER
-static_assert(std::is_trivially_destructible<SpinLock>(), "");
+static_assert(std::is_trivially_destructible<SpinLock>());
 #endif
 
 TEST(SpinLock, StackNonCooperativeDisablesScheduling) {

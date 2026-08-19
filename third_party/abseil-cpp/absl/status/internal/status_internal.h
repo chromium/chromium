@@ -82,6 +82,9 @@ struct Payload {
 
 using Payloads = absl::InlinedVector<Payload, 1>;
 
+template <typename T>
+using EnableIfString = std::enable_if_t<std::is_same_v<T, std::string>>;
+
 // Reference-counted representation of Status data.
 class StatusRep {
  public:
@@ -92,16 +95,13 @@ class StatusRep {
         message_(message_arg),
         payloads_(std::move(payloads_arg)) {}
 
-#ifndef SWIG
-  template <typename String,
-            typename = std::enable_if_t<std::is_same_v<String, std::string>>>
+  template <typename String, typename = EnableIfString<String>>
   StatusRep(absl::StatusCode code_arg, String&& message_arg,
             std::unique_ptr<status_internal::Payloads> payloads_arg)
       : ref_(int32_t{1}),
         code_(code_arg),
         message_(std::forward<String>(message_arg)),
         payloads_(std::move(payloads_arg)) {}
-#endif  // SWIG
 
   absl::StatusCode code() const { return code_; }
   const std::string& message() const { return message_; }

@@ -15,8 +15,8 @@
 SETLOCAL ENABLEDELAYEDEXPANSION
 
 :: The version of GoogleTest to be used in the CMake tests in this directory.
-:: Keep this in sync with the version in the WORKSPACE file.
-SET ABSL_GOOGLETEST_VERSION=1.17.0
+:: Keep this in sync with the version in the MODULE.bazel file.
+SET ABSL_GOOGLETEST_VERSION=1.18.0
 
 IF EXIST %KOKORO_GFILE_DIR%\distdir\googletest-%ABSL_GOOGLETEST_VERSION%.tar.gz (
   SET ABSL_GOOGLETEST_DOWNLOAD_URL=file://%KOKORO_GFILE_DIR%\distdir\googletest-%ABSL_GOOGLETEST_VERSION%.tar.gz

@@ -217,8 +217,7 @@ void CheckArgsInferType() {
   static_assert(
       std::conjunction_v<
           std::is_same<Expect, decltype(InferredUniformReturnT<A, B>(0))>,
-          std::is_same<Expect, decltype(InferredUniformReturnT<B, A>(0))>>,
-      "");
+          std::is_same<Expect, decltype(InferredUniformReturnT<B, A>(0))>>);
 }
 
 TEST_F(UniformHelperTest, UniformTypeInference) {

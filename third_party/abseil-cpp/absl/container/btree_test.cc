@@ -3530,7 +3530,7 @@ TEST(Btree, FieldTypeEqualsSlotType) {
   // This breaks if we try to do layout_type::Pointer<slot_type> because
   // slot_type is the same as field_type.
   using set_type = absl::btree_set<uint8_t>;
-  static_assert(BtreeNodePeer::FieldTypeEqualsSlotType<set_type>(), "");
+  static_assert(BtreeNodePeer::FieldTypeEqualsSlotType<set_type>());
   TestBasicFunctionality(set_type());
 }
 
