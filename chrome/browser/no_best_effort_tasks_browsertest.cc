@@ -121,15 +121,15 @@ constexpr base::TimeDelta kSendMessageRetryPeriod = base::Milliseconds(250);
 
 // Verify that it is possible to load and paint the initial about:blank page
 // without running BEST_EFFORT tasks.
-// TODO(crbug.com/40932711): Disabled due to excessive flakiness.
-IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, DISABLED_LoadAndPaintAboutBlank) {
+IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, LoadAndPaintAboutBlank) {
   content::WebContents* const web_contents =
       chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(web_contents);
 #if BUILDFLAG(IS_ANDROID)
   // Ensure about:blank is loaded, so the last committed URL is correct.
-  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
 #endif
-  EXPECT_TRUE(web_contents->GetLastCommittedURL().IsAboutBlank());
+  ASSERT_TRUE(web_contents->GetLastCommittedURL().IsAboutBlank());
 
   RunLoopUntilLoadedAndPainted run_until_loaded_and_painted(web_contents);
   run_until_loaded_and_painted.Run();
@@ -140,14 +140,13 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, DISABLED_LoadAndPaintAboutBlank) {
 //
 // This test has more dependencies than LoadAndPaintAboutBlank, including
 // loading cookies.
-// TODO(crbug.com/40932711): Disabled due to excessive flakiness.
-IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest,
-                       DISABLED_LoadAndPaintFromNetwork) {
+IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, LoadAndPaintFromNetwork) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* const web_contents =
       OpenUrlInNewTab(embedded_test_server()->GetURL("a.com", "/empty.html"));
-  EXPECT_TRUE(web_contents->IsLoading());
+  ASSERT_TRUE(web_contents);
+  ASSERT_TRUE(web_contents->IsLoading());
 
   RunLoopUntilLoadedAndPainted run_until_loaded_and_painted(web_contents);
   run_until_loaded_and_painted.Run();
@@ -155,8 +154,7 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest,
 
 // Verify that it is possible to load and paint a file:// URL without running
 // BEST_EFFORT tasks. Regression test for https://crbug.com/40631718.
-// TODO(crbug.com/40932711): Disabled due to excessive flakiness.
-IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, DISABLED_LoadAndPaintFileScheme) {
+IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, LoadAndPaintFileScheme) {
   constexpr base::FilePath::CharType kFile[] = FILE_PATH_LITERAL("links.html");
   GURL file_url(chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -164,7 +162,8 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, DISABLED_LoadAndPaintFileScheme) {
   ASSERT_TRUE(file_url.SchemeIs(url::kFileScheme));
 
   content::WebContents* const web_contents = OpenUrlInNewTab(file_url);
-  EXPECT_TRUE(web_contents->IsLoading());
+  ASSERT_TRUE(web_contents);
+  ASSERT_TRUE(web_contents->IsLoading());
 
   RunLoopUntilLoadedAndPainted run_until_loaded_and_painted(web_contents);
   run_until_loaded_and_painted.Run();
@@ -202,6 +201,7 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, LoadExtensionAndSendMessages) {
   // extension permissions).
   content::WebContents* const web_contents =
       chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(web_contents);
   ASSERT_TRUE(chrome_test_utils::NavigateToURL(
       web_contents,
       embedded_test_server()->GetURL("fake.chromium.org", "/empty.html")));
@@ -246,8 +246,10 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, LoadExtensionAndSendMessages) {
 // Regression test for https://crbug.com/40638518.
 IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, BlobXMLHttpRequest) {
   ASSERT_TRUE(embedded_test_server()->Start());
+
   content::WebContents* const web_contents =
       chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(web_contents);
   ASSERT_TRUE(chrome_test_utils::NavigateToURL(
       web_contents, embedded_test_server()->GetURL("/empty.html")));
   const char kScript[] = R"(
@@ -278,8 +280,10 @@ class NoBestEffortTasksTestWithQuota : public NoBestEffortTasksTest {
 // Regression test for https://crbug.com/40099913.
 IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTestWithQuota, CacheStorage) {
   ASSERT_TRUE(embedded_test_server()->Start());
+
   content::WebContents* const web_contents =
       chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(web_contents);
   ASSERT_TRUE(chrome_test_utils::NavigateToURL(
       web_contents, embedded_test_server()->GetURL("/empty.html")));
   const char kScript[] = R"(
@@ -301,8 +305,10 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTestWithQuota, CacheStorage) {
 // Regression test for https://crbug.com/40099913.
 IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTestWithQuota, QuotaEstimate) {
   ASSERT_TRUE(embedded_test_server()->Start());
+
   content::WebContents* const web_contents =
       chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(web_contents);
   ASSERT_TRUE(chrome_test_utils::NavigateToURL(
       web_contents, embedded_test_server()->GetURL("/empty.html")));
   const char kScript[] = R"(
