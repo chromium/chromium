@@ -2238,4 +2238,119 @@ TEST_F(IDBRequestTestWithDeduplication,
       mojom::blink::IDBFactory::Name_, {});
 }
 
+// Regression test for crbug.com/548715588: Context destruction while shared
+// requests are pending should not promote requests or leave dangling state.
+TEST_F(IDBRequestTestWithDeduplication,
+       ContextDestroyedWithPendingSharedRequests) {
+  V8TestingScope scope(KURL("https://example.com"));
+  auto* factory = MakeGarbageCollected<IDBFactory>(scope.GetExecutionContext());
+
+  MockIDBFactory mock_idb_factory;
+  scope.GetExecutionContext()->GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::blink::IDBFactory::Name_,
+      BindRepeating(&MockIDBFactory::Bind, Unretained(&mock_idb_factory)));
+
+  // 1. Primary request R1
+  mojo::PendingAssociatedRemote<mojom::blink::IDBFactoryClient> client1;
+  mojo::PendingAssociatedRemote<mojom::blink::IDBDatabaseCallbacks>
+      callbacks_remote1;
+  Persistent<IDBOpenDBRequest> request1;
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_idb_factory, Open(_, _, String("db1"), 1, _, _, _, false))
+        .WillOnce(
+            [&](mojo::PendingAssociatedRemote<mojom::blink::IDBFactoryClient>
+                    client,
+                mojo::PendingAssociatedRemote<
+                    mojom::blink::IDBDatabaseCallbacks> callbacks,
+                const String& name, int64_t version,
+                mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction>
+                    transaction_receiver,
+                int64_t transaction_id, int32_t priority,
+                bool request_shared_connection) {
+              client1 = std::move(client);
+              callbacks_remote1 = std::move(callbacks);
+              run_loop.Quit();
+            });
+
+    request1 = factory->open(scope.GetScriptState(), "db1", 1,
+                             scope.GetExceptionState());
+    ASSERT_TRUE(!scope.GetExceptionState().HadException());
+    run_loop.Run();
+    EXPECT_EQ(request1->readyState(), V8IDBRequestReadyState::Enum::kPending);
+  }
+
+  // 2. Shared requests R2 and R3
+  mojo::PendingAssociatedRemote<mojom::blink::IDBFactoryClient> client2;
+  mojo::PendingAssociatedRemote<mojom::blink::IDBDatabaseCallbacks>
+      callbacks_remote2;
+  Persistent<IDBOpenDBRequest> request2;
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_idb_factory,
+                Open(_, _, String("db1"), IDBDatabaseMetadata::kNoVersion, _, _,
+                     _, true))
+        .WillOnce(
+            [&](mojo::PendingAssociatedRemote<mojom::blink::IDBFactoryClient>
+                    client,
+                mojo::PendingAssociatedRemote<
+                    mojom::blink::IDBDatabaseCallbacks> callbacks,
+                const String& name, int64_t version,
+                mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction>
+                    transaction_receiver,
+                int64_t transaction_id, int32_t priority,
+                bool request_shared_connection) {
+              client2 = std::move(client);
+              callbacks_remote2 = std::move(callbacks);
+              run_loop.Quit();
+            });
+
+    request2 =
+        factory->open(scope.GetScriptState(), "db1", scope.GetExceptionState());
+    ASSERT_TRUE(!scope.GetExceptionState().HadException());
+    run_loop.Run();
+    EXPECT_EQ(request2->readyState(), V8IDBRequestReadyState::Enum::kPending);
+  }
+
+  mojo::PendingAssociatedRemote<mojom::blink::IDBFactoryClient> client3;
+  mojo::PendingAssociatedRemote<mojom::blink::IDBDatabaseCallbacks>
+      callbacks_remote3;
+  Persistent<IDBOpenDBRequest> request3;
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_idb_factory,
+                Open(_, _, String("db1"), IDBDatabaseMetadata::kNoVersion, _, _,
+                     _, true))
+        .WillOnce(
+            [&](mojo::PendingAssociatedRemote<mojom::blink::IDBFactoryClient>
+                    client,
+                mojo::PendingAssociatedRemote<
+                    mojom::blink::IDBDatabaseCallbacks> callbacks,
+                const String& name, int64_t version,
+                mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction>
+                    transaction_receiver,
+                int64_t transaction_id, int32_t priority,
+                bool request_shared_connection) {
+              client3 = std::move(client);
+              callbacks_remote3 = std::move(callbacks);
+              run_loop.Quit();
+            });
+
+    request3 =
+        factory->open(scope.GetScriptState(), "db1", scope.GetExceptionState());
+    ASSERT_TRUE(!scope.GetExceptionState().HadException());
+    run_loop.Run();
+    EXPECT_EQ(request3->readyState(), V8IDBRequestReadyState::Enum::kPending);
+  }
+
+  // 3. Destroy execution context. This invokes ContextDestroyed() on all
+  // observers. With the fix, requests are not promoted and all in-flight state
+  // is cleanly cleared without triggering any CHECKs on destruction.
+  scope.GetExecutionContext()->NotifyContextDestroyed();
+
+  // Clean up binder.
+  scope.GetExecutionContext()->GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::blink::IDBFactory::Name_, {});
+}
+
 }  // namespace blink

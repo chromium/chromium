@@ -81,7 +81,8 @@ void IDBOpenDBRequest::BindToConnection(
 }
 
 void IDBOpenDBRequest::OnRequestComplete() {
-  if (!shared_requests_.empty()) {
+  if (!shared_requests_.empty() && GetExecutionContext() &&
+      !GetExecutionContext()->IsContextDestroyed()) {
     factory_->PromoteSharedRequest(this, shared_requests_);
   } else {
     factory_->UnregisterPendingRequest(this);
