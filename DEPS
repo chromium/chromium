@@ -3807,7 +3807,7 @@ deps = {
 
   'src/chrome/browser/nearby_sharing/internal': {
       'url': Var('chrome_git') + '/chrome/browser/nearby_sharing/internal.git' + '@' +
-        'b54453882b41959777ea55518a7e41ab64560776',
+        '438be484022c1877ff928bebc9670b861ce4d8e0',
       'condition': 'checkout_src_internal',
   },
 
