@@ -95,16 +95,6 @@ MockVideoCaptureClient::ReserveOutputBuffer(
   NOTREACHED();
 }
 
-void MockVideoCaptureClient::OnIncomingCapturedBuffer(
-    Buffer buffer,
-    const VideoCaptureFormat& format,
-    base::TimeTicks reference_time,
-    base::TimeDelta timestamp,
-    std::optional<base::TimeTicks> capture_begin_time,
-    const std::optional<media::VideoFrameMetadata>& metadata) {
-  DoOnIncomingCapturedBuffer();
-}
-
 void MockVideoCaptureClient::OnIncomingCapturedBufferExt(
     Buffer buffer,
     const VideoCaptureFormat& format,

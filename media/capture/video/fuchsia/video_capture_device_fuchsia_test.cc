@@ -183,15 +183,6 @@ class TestVideoCaptureClient final : public VideoCaptureDevice::Client {
       const std::optional<VideoFrameMetadata>& metadata) override {
     NOTREACHED();
   }
-  void OnIncomingCapturedBuffer(
-      Buffer buffer,
-      const VideoCaptureFormat& format,
-      base::TimeTicks reference_time,
-      base::TimeDelta timestamp,
-      std::optional<base::TimeTicks> capture_begin_time,
-      const std::optional<VideoFrameMetadata>& metadata) override {
-    NOTREACHED();
-  }
   void OnError(VideoCaptureError error,
                const base::Location& from_here,
                const std::string& reason) override {

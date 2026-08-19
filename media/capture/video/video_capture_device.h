@@ -294,16 +294,6 @@ class CAPTURE_EXPORT VideoCaptureDevice
     // ReserveOutputBuffer().
     // See OnIncomingCapturedData for details of |reference_time| and
     // |timestamp|.
-    virtual void OnIncomingCapturedBuffer(
-        Buffer buffer,
-        const VideoCaptureFormat& format,
-        base::TimeTicks reference_time,
-        base::TimeDelta timestamp,
-        std::optional<base::TimeTicks> capture_begin_timestamp,
-        const std::optional<VideoFrameMetadata>& metadata) = 0;
-
-    // Extended version of OnIncomingCapturedBuffer() allowing clients to
-    // pass a custom |visible_rect| and |additional_metadata|.
     virtual void OnIncomingCapturedBufferExt(
         Buffer buffer,
         const VideoCaptureFormat& format,

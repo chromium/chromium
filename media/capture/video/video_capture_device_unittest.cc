@@ -305,7 +305,6 @@ class VideoCaptureDeviceTest
     auto result = std::make_unique<NiceMockVideoCaptureDeviceClient>();
     ON_CALL(*result, OnError).WillByDefault(DumpError);
     EXPECT_CALL(*result, ReserveOutputBuffer).Times(0);
-    EXPECT_CALL(*result, DoOnIncomingCapturedBuffer).Times(0);
     EXPECT_CALL(*result, DoOnIncomingCapturedBufferExt).Times(0);
     ON_CALL(*result, OnIncomingCapturedData)
         .WillByDefault(WithArgs<0, 1>(

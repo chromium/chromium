@@ -716,11 +716,12 @@ void FileVideoCaptureDevice::OnCaptureTask() {
     // NV12.
     VideoCaptureFormat buffer_format = ptz_format;
     buffer_format.pixel_format = PIXEL_FORMAT_NV12;
-    client_->OnIncomingCapturedBuffer(std::move(capture_buffer), buffer_format,
-                                      current_time,
-                                      current_time - first_ref_time_,
-                                      /*capture_begin_timestamp=*/std::nullopt,
-                                      /*metadata=*/std::nullopt);
+    client_->OnIncomingCapturedBufferExt(
+        std::move(capture_buffer), buffer_format, gfx::ColorSpace(),
+        current_time, current_time - first_ref_time_,
+        /*capture_begin_timestamp=*/std::nullopt,
+        gfx::Rect(buffer_format.frame_size),
+        /*additional_metadata=*/std::nullopt);
   } else {
     // Leave the color space unset for compatibility purposes but this
     // information should be retrieved from the container when possible.

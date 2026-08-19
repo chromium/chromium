@@ -397,9 +397,9 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
   }
 
   if (format.pixel_format == PIXEL_FORMAT_Y16) {
-    return OnIncomingCapturedY16Data(data, format, reference_time, timestamp,
-                                     capture_begin_timestamp, metadata,
-                                     frame_feedback_id);
+    return OnIncomingCapturedY16Data(
+        data, format, data_color_space, reference_time, timestamp,
+        capture_begin_timestamp, metadata, frame_feedback_id);
   }
 
   // |new_unrotated_{width,height}| are the dimensions of the output buffer that
@@ -599,9 +599,10 @@ void VideoCaptureDeviceClient::OnIncomingCapturedImage(
 
   const VideoCaptureFormat output_format = VideoCaptureFormat(
       dimensions, frame_format.frame_rate, PIXEL_FORMAT_I420);
-  OnIncomingCapturedBuffer(std::move(output_buffer), output_format,
-                           reference_time, timestamp, capture_begin_timestamp,
-                           metadata);
+  OnIncomingCapturedBufferExt(std::move(output_buffer), output_format,
+                              shared_image->color_space(), reference_time,
+                              timestamp, capture_begin_timestamp,
+                              gfx::Rect(dimensions), metadata);
 }
 
 void VideoCaptureDeviceClient::OnIncomingCapturedImageZeroCopy(
@@ -814,20 +815,6 @@ VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
   return ReserveResult::kSucceeded;
 }
 
-void VideoCaptureDeviceClient::OnIncomingCapturedBuffer(
-    Buffer buffer,
-    const VideoCaptureFormat& format,
-    base::TimeTicks reference_time,
-    base::TimeDelta timestamp,
-    std::optional<base::TimeTicks> capture_begin_timestamp,
-    const std::optional<VideoFrameMetadata>& metadata) {
-  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
-
-  OnIncomingCapturedBufferExt(
-      std::move(buffer), format, gfx::ColorSpace(), reference_time, timestamp,
-      capture_begin_timestamp, gfx::Rect(format.frame_size), metadata);
-}
-
 void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
     Buffer buffer,
     const VideoCaptureFormat& format,
@@ -902,6 +889,7 @@ void VideoCaptureDeviceClient::OnStarted() {
 void VideoCaptureDeviceClient::OnIncomingCapturedY16Data(
     base::span<const uint8_t> data,
     const VideoCaptureFormat& format,
+    const gfx::ColorSpace& color_space,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp,
@@ -929,8 +917,9 @@ void VideoCaptureDeviceClient::OnIncomingCapturedY16Data(
       .copy_from_nonoverlapping(data.first(copy_length));
   const VideoCaptureFormat output_format = VideoCaptureFormat(
       format.frame_size, format.frame_rate, PIXEL_FORMAT_Y16);
-  OnIncomingCapturedBuffer(std::move(buffer), output_format, reference_time,
-                           timestamp, capture_begin_timestamp, metadata);
+  OnIncomingCapturedBufferExt(
+      std::move(buffer), output_format, color_space, reference_time, timestamp,
+      capture_begin_timestamp, gfx::Rect(format.frame_size), metadata);
 }
 
 void VideoCaptureDeviceClient::InvalidateBuffers() {
