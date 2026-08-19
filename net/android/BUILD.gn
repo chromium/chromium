@@ -266,7 +266,6 @@ java_cpp_enum("net_android_java_enums_srcjar") {
     "../base/network_change_notifier.h",
     "../socket/socket_tag.cc",
     "cert_verify_result_android.h",
-    "keystore.h",
     "network_change_notifier_android.cc",
     "traffic_stats.cc",
   ]

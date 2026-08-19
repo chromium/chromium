@@ -8,6 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -29,7 +30,7 @@ namespace net {
 
 namespace {
 
-typedef base::android::ScopedJavaLocalRef<jobject> ScopedJava;
+using base::android::ScopedJavaLocalRef;
 
 bool ReadTestFile(const char* filename, std::string* pkcs8) {
   base::FilePath certs_dir = GetTestCertsDirectory();
@@ -38,14 +39,18 @@ bool ReadTestFile(const char* filename, std::string* pkcs8) {
 }
 
 // Retrieve a JNI local ref from encoded PKCS#8 data.
-ScopedJava GetPKCS8PrivateKeyJava(android::PrivateKeyType key_type,
-                                  const std::string& pkcs8_key) {
+ScopedJavaLocalRef<jobject> GetPKCS8PrivateKeyJava(
+    const char* algorithm,
+    const std::string& pkcs8_key) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jbyteArray> bytes =
+  ScopedJavaLocalRef<jbyteArray> bytes =
       base::android::ToJavaByteArray(env, pkcs8_key);
+  ScopedJavaLocalRef<jstring> algorithm_java =
+      base::android::ConvertUTF8ToJavaString(env, algorithm);
 
-  ScopedJava key(Java_AndroidKeyStoreTestUtil_createPrivateKeyFromPKCS8(
-      env, key_type, bytes));
+  ScopedJavaLocalRef<jobject> key(
+      android::Java_AndroidKeyStoreTestUtil_createPrivateKeyFromPKCS8(
+          env, algorithm_java, bytes));
 
   return key;
 }
@@ -55,18 +60,14 @@ struct TestKey {
   const char* cert_file;
   const char* key_file;
   int type;
-  android::PrivateKeyType android_key_type;
+  const char* android_key_type;
 };
 
 const TestKey kTestKeys[] = {
-    {"RSA", "client_1.pem", "client_1.pk8", EVP_PKEY_RSA,
-     android::PRIVATE_KEY_TYPE_RSA},
-    {"ECDSA_P256", "client_4.pem", "client_4.pk8", EVP_PKEY_EC,
-     android::PRIVATE_KEY_TYPE_ECDSA},
-    {"ECDSA_P384", "client_5.pem", "client_5.pk8", EVP_PKEY_EC,
-     android::PRIVATE_KEY_TYPE_ECDSA},
-    {"ECDSA_P521", "client_6.pem", "client_6.pk8", EVP_PKEY_EC,
-     android::PRIVATE_KEY_TYPE_ECDSA},
+    {"RSA", "client_1.pem", "client_1.pk8", EVP_PKEY_RSA, "RSA"},
+    {"ECDSA_P256", "client_4.pem", "client_4.pk8", EVP_PKEY_EC, "EC"},
+    {"ECDSA_P384", "client_5.pem", "client_5.pk8", EVP_PKEY_EC, "EC"},
+    {"ECDSA_P521", "client_6.pem", "client_6.pk8", EVP_PKEY_EC, "EC"},
 };
 
 std::string TestKeyToString(const testing::TestParamInfo<TestKey>& params) {
@@ -87,7 +88,7 @@ TEST_P(SSLPlatformKeyAndroidTest, Matches) {
 
   std::string key_bytes;
   ASSERT_TRUE(ReadTestFile(test_key.key_file, &key_bytes));
-  ScopedJava java_key =
+  ScopedJavaLocalRef<jobject> java_key =
       GetPKCS8PrivateKeyJava(test_key.android_key_type, key_bytes);
   ASSERT_FALSE(java_key.is_null());
 
@@ -115,7 +116,7 @@ TEST_P(SSLPlatformKeyAndroidTest, MatchesPublicKey) {
 
   std::string key_bytes;
   ASSERT_TRUE(ReadTestFile(test_key.key_file, &key_bytes));
-  ScopedJava java_key =
+  ScopedJavaLocalRef<jobject> java_key =
       GetPKCS8PrivateKeyJava(test_key.android_key_type, key_bytes);
   ASSERT_FALSE(java_key.is_null());
 
