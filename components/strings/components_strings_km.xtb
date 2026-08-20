@@ -70,7 +70,6 @@
 <translation id="1110994991967754504">ជ្រើសរើស​ការអនុញ្ញាត​សម្រាប់ <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">រក្សាទុក IBAN ឬ?</translation>
 <translation id="1113869188872983271">បកក្រោយការតម្រៀបឡើងវិញ</translation>
-<translation id="1117709830616495622">ដំណើរការដោយបញ្ញាផ្ទាល់ខ្លួនតាមរយៈ Gemini។</translation>
 <translation id="111897705806685148">ប្រើកូដសម្ងាត់ពីឧបករណ៍ផ្សេង</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Tab បន្ទាប់មក Enter ដើម្បី​គ្រប់គ្រង​ព័ត៌មាន Chrome ដែលអ្នក​រក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក</translation>
 <translation id="1121990216147052230">បង្កើតបញ្ជីកិច្ចការត្រូវធ្វើសម្រាប់ខ្ញុំ</translation>
@@ -1174,7 +1173,6 @@
 <translation id="3005723025932146533">បង្ហាញច្បាប់ចម្លងដែលបានរក្សាទុក</translation>
 <translation id="300580149047131921">បាន​ប្រើ​ថ្មីៗ</translation>
 <translation id="3006864083554020786">អាសយដ្ឋានផ្ទះ</translation>
-<translation id="3008410317623852235">ឥឡូវនេះ អ្នកអាចស្វែងរក និងបំពេញព័ត៌មានពី Gmail និងអ្វីៗជាច្រើនទៀត។</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" /> ចុច Tab ដើម្បី​រុករក​សកម្មភាព​ដែលអាចធ្វើបាន រួច​ចុច Enter ដើម្បី​​ប្រតិបត្តិ​​សកម្មភាព​ដែល​បាន​ជ្រើសរើស។</translation>
 <translation id="3010991137650052245">ដើម្បី​ប្រើ<ph name="PERMISSION" />របស់អ្នក​នៅលើ​គេហទំព័រនេះ សូមផ្ដល់​សិទ្ធិឱ្យ <ph name="SHORT_PRODUCT_NAME" /> ចូលប្រើ</translation>
 <translation id="3014726756341138577">មុខងារ​ម៉ាស៊ីន​បោះពុម្ព​កម្រិតខ្ពស់</translation>
@@ -2325,7 +2323,6 @@
 <translation id="4941627891654116707">ទំហំពុម្ពអក្សរ</translation>
 <translation id="4943620199112228840">ប្រើមីក្រូហ្វូនរបស់អ្នក</translation>
 <translation id="4943872375798546930">គ្មានលទ្ធផលទេ</translation>
-<translation id="494701040141924538">យល់ហើយ, បិទការជូនដំណឹង</translation>
 <translation id="495170559598752135">សកម្មភាព</translation>
 <translation id="4953689047182316270">ឆ្លើយតប​នឹងព្រឹត្តិការណ៍​ភាពងាយស្រួល</translation>
 <translation id="4954505713046251871">ដើម្បីផ្ដល់​ការណែនាំ និង​កែលម្អ​មុខងារនេះ ខ្លឹមសារ និង URL របស់ទំព័រ​ត្រូវបាន​ចែករំលែក​ជាមួយ Google</translation>
@@ -3376,7 +3373,6 @@
 <translation id="6743841972744298686">ការកំណត់ការធ្វើសមកាលកម្ម</translation>
 <translation id="6745212570062463886">បំពេញ​ឈ្មោះ និង​អាសយដ្ឋានអ៊ីមែល​របស់អ្នក​ពី​គណនី Google របស់អ្នក​ដោយ​ស្វ័យប្រវត្តិ</translation>
 <translation id="674580074662200768">ធ្វើបច្ចុប្បន្នភាពលិខិតឆ្លងដែនដោយសុវត្ថិភាព</translation>
-<translation id="6749473226660745022">រូបថត</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">តម្លៃគោលការណ៍</translation>
 <translation id="6753434778807740853">លុបធាតុ <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3715,7 +3711,6 @@
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">ឧបករណ៍​ដោះស្រាយ​ការទូទាត់</translation>
 <translation id="7366594738862061263">ស្វែងយល់អំពីរបៀបដែល Chrome ការពារពាក្យ​សម្ងាត់របស់អ្នក</translation>
-<translation id="7366909168761621528">ទិន្នន័យរុករក</translation>
 <translation id="7370751048350026847">មិនណែនាំឱ្យ​ដាក់​ខ្លឹមសារនេះ​ចូលទៅក្នុង​គេហទំព័រនេះទេ</translation>
 <translation id="7372526636730851647">រូបថត (រលោង)</translation>
 <translation id="7372973238305370288">លទ្ធផលស្វែងរក</translation>
@@ -4306,7 +4301,6 @@
 <translation id="8350416046273606058">ផ្លូវកាត់​មិនអាច​មានការដកឃ្លា​បានទេ៖ "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">បង្កើត​កំណត់​ចំណាំ</translation>
 <translation id="8352849934814541340">អ្នកគ្រប់គ្រង​ឧបករណ៍នេះ​បានដំឡើង​កម្មវិធីសម្រាប់​មុខងារបន្ថែម។ កម្មវិធី​មានសិទ្ធិចូលប្រើ​ទិន្នន័យមួយចំនួន​របស់អ្នក។</translation>
-<translation id="8353273112634584260">ដំណើរការដោយបញ្ញាផ្ទាល់ខ្លួនតាមរយៈ Gemini។ សំណើ ចំណងជើងទំព័រ និង URL របស់អ្នកអាចត្រូវបានត្រួតពិនិត្យ ដើម្បីកែលម្អការបំពេញស្វ័យប្រវត្តិរហ័ស។</translation>
 <translation id="8355270400102541638">បរិបទនៃការគាំងមូលដ្ឋាន៖</translation>
 <translation id="8362914115861174987">បក​ប្រែ​ជា</translation>
 <translation id="8363502534493474904">សូមបិទរបៀបលើយន្តហោះ</translation>
@@ -4666,7 +4660,6 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">សាកល្បងប្រើ Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">ដើម្បី​ចាកចេញពី​អេក្រង់ពេញ សូម​ចុច |<ph name="ACCELERATOR" />| ឱ្យជាប់</translation>
-<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">កំហុសឆ្គងសុវត្ថិភាព</translation>
 <translation id="9035699147763101514">ដំណើរការដោយបញ្ញាផ្ទាល់ខ្លួនតាមរយៈ Gemini។ គ្រប់គ្រងជម្រើសរបស់អ្នកនៅក្នុងការកំណត់។</translation>
 <translation id="9035824888276246493">រក្សាទុក​លេខកូដ​សុវត្ថិភាព</translation>

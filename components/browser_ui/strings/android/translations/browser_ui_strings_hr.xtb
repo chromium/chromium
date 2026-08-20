@@ -372,7 +372,6 @@
 <translation id="4676059169848868271">Da bi aplikacija <ph name="APP_NAME" /> mogla koristiti praćenje pokreta ruku, uključite praćenje pokreta ruku i u <ph name="BEGIN_LINK" />sistemskim postavkama<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Upravljajte karticama</translation>
 <translation id="4722332387043141878">Web-lokacije obično upotrebljavaju senzore kretanja i svjetlosne senzore uređaja za značajke poput virtualne stvarnosti ili praćenja kondicije</translation>
-<translation id="4748783296226936791">Web-lokacije se obično povezuju s HID uređajima radi značajki koje koriste neuobičajene tipkovnice, upravljače za igre i druge uređaje</translation>
 <translation id="4755971844837804407">Kad je ta postavka uključena, web-lokacije mogu vam prikazati bilo koji oglas. Kad je ta postavka isključena, web-lokacije ne mogu prikazivati ometajuće ili obmanjujuće oglase.</translation>
 <translation id="4779083564647765204">Zumiranje</translation>
 <translation id="4807122856660838973">Uključite sigurno pregledavanje</translation>
@@ -457,7 +456,6 @@
 <translation id="5700761515355162635">Dopušteni su kolačići trećih strana</translation>
 <translation id="5706552988683188916">Time se brišu kolačići i ostali podaci web-lokacije <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Web-lokacije mogu prikazivati upite za prijavu s usluga za provjeru identiteta</translation>
-<translation id="5719854774000914513">Web-lokacije mogu tražiti dopuštenje za povezivanje s HID uređajima</translation>
 <translation id="5740126560802162366">Web-lokacije mogu spremati podatke na vaš uređaj</translation>
 <translation id="5743425052258407233">Dohvatite svoju povijest na svim svojim uređajima kako biste lako nastavili tamo gdje ste stali</translation>
 <translation id="5749158352074143502">Nastavi s ovom karticom</translation>
@@ -577,7 +575,6 @@
 <translation id="6950072572526089586">Web-lokacija koju posjećujete može spremiti podatke o tome što radite kako bi funkcionirala kako treba, na primjer kako biste ostali prijavljeni na web-lokaciju ili spremili artikle u košaricu. Web-lokacije često spremaju te podatke na vaš uređaj privremeno.</translation>
 <translation id="6964291282260073066">WebGPU je onemogućen.</translation>
 <translation id="6965382102122355670">U redu</translation>
-<translation id="6972629891077993081">HID uređaji</translation>
 <translation id="6980507581230208647">Ružičasta tema</translation>
 <translation id="6980861169612950611">Želite li izbrisati podatke web-lokacije? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
@@ -735,7 +732,6 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:</translation>
 <translation id="8593422116412089302">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu podataka koje su spremile o vama. Kad je ta postavka isključena, web-lokacije od vas ne mogu tražiti korištenje podataka koje su spremile o vama.</translation>
 <translation id="8609465669617005112">Premjesti gore</translation>
 <translation id="8617611086246832542">Kad je ta postavka uključena, prikazuje se prikaz web-lokacija na računalu. Kad je ta postavka isključena, prikazuje se prikaz web-lokacija na mobilnom uređaju.</translation>
-<translation id="8625916342247441948">Ne dopuštaj web-lokacijama povezivanje s HID uređajima</translation>
 <translation id="8670078035093027626">Donja tablica zadanog preglednika otvorena je u punoj visini</translation>
 <translation id="8676316391139423634">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za praćenje vaših ruku. Kad je ta postavka isključena, web-lokacije ne mogu pratiti vaše ruke.</translation>
 <translation id="8676374126336081632">Brisanje unosa</translation>

@@ -372,7 +372,6 @@
 <translation id="4676059169848868271">Als je <ph name="APP_NAME" /> handen volgen wilt laten gebruiken, zet je handen volgen ook aan via de <ph name="BEGIN_LINK" />systeeminstellingen<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Je kaarten beheren</translation>
 <translation id="4722332387043141878">Sites gebruiken de bewegings- en lichtsensoren van je apparaat meestal voor functies zoals virtual reality of fitnesstracking</translation>
-<translation id="4748783296226936791">Sites maken meestal verbinding met HID-apparaten voor functies die ongebruikelijke toetsenborden, gamecontrollers en andere apparaten gebruiken</translation>
 <translation id="4755971844837804407">Als deze optie aanstaat, kunnen sites elke advertentie aan je tonen. Staat de optie uit, dan kunnen sites geen opdringerige of misleidende advertenties tonen.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Safe Browsing aanzetten</translation>
@@ -457,7 +456,6 @@
 <translation id="5700761515355162635">Cookies van derden toegestaan</translation>
 <translation id="5706552988683188916">Hiermee worden cookies en andere sitegegevens voor <ph name="WEBSITE" /> verwijderd</translation>
 <translation id="571222594670061844">Sites kunnen inlogprompts van identiteitsservices tonen</translation>
-<translation id="5719854774000914513">Sites kunnen vragen of ze verbinding mogen maken met HID-apparaten</translation>
 <translation id="5740126560802162366">Sites kunnen gegevens opslaan op je apparaat</translation>
 <translation id="5743425052258407233">Krijg toegang tot je geschiedenis op al je apparaten, zodat je makkelijk verder kunt gaan waar je gebleven was</translation>
 <translation id="5749158352074143502">Doorgaan met dit tabblad</translation>
@@ -577,7 +575,6 @@
 <translation id="6950072572526089586">Een site die je bezoekt, kan informatie over je activiteiten opslaan zodat deze werkt zoals verwacht, bijvoorbeeld om je ingelogd te houden op een site of artikelen in je winkelwagen op te slaan. Sites slaan deze informatie vaak tijdelijk op je apparaat op.</translation>
 <translation id="6964291282260073066">WebGPU staat uit.</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6972629891077993081">HID-apparaten</translation>
 <translation id="6980507581230208647">Rooskleurig thema</translation>
 <translation id="6980861169612950611">Sitegegevens verwijderen? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Toegankelijkheid</translation>
@@ -735,7 +732,6 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:</translation>
 <translation id="8593422116412089302">Als deze optie aanstaat, kunnen sites vragen of ze informatie mogen gebruiken die ze over je hebben opgeslagen. Staat de optie uit, dan kunnen sites je niet vragen of ze informatie mogen gebruiken die ze over jou hebben opgeslagen.</translation>
 <translation id="8609465669617005112">Omhoog</translation>
 <translation id="8617611086246832542">Als deze optie aanstaat, wordt de desktopweergave van websites getoond. Staat de optie uit, dan wordt de mobiele weergave van websites getoond.</translation>
-<translation id="8625916342247441948">Niet toestaan dat sites verbinding maken met HID-apparaten</translation>
 <translation id="8670078035093027626">Blad onderaan voor standaardbrowser is op volledige hoogte geopend</translation>
 <translation id="8676316391139423634">Als deze optie aanstaat, kunnen sites vragen of ze je handen mogen volgen. Staat de optie uit, dan kunnen sites je handen niet volgen.</translation>
 <translation id="8676374126336081632">Invoer wissen</translation>

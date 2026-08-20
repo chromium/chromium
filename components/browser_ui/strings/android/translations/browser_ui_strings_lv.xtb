@@ -372,7 +372,6 @@
 <translation id="4676059169848868271">Lai ļautu lietotnei <ph name="APP_NAME" /> izmantot roku kustību izsekošanu, ieslēdziet roku kustību izsekošanu arī <ph name="BEGIN_LINK" />sistēmas iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Karšu pārvaldība</translation>
 <translation id="4722332387043141878">Parasti vietnēs ierīces kustību un gaismas sensori tiek izmantoti, lai nodrošinātu noteiktas funkcijas, piemēram, virtuālo realitāti vai fitnesa aktivitāšu uzskaiti.</translation>
-<translation id="4748783296226936791">Parasti vietnēs savienojums ar HID ierīcēm tiek veidots, lai nodrošinātu funkcijas, kuru darbībai nepieciešamas reti sastopamas tastatūras, spēļu vadāmierīces un citas ierīces.</translation>
 <translation id="4755971844837804407">Kad šis slēdzis ir ieslēgts, vietnēs var tikt rādītas jebkādas reklāmas. Kad šis slēdzis ir izslēgts, vietnēs nevar rādīt traucējošas vai maldinošas reklāmas.</translation>
 <translation id="4779083564647765204">Tālummaiņa</translation>
 <translation id="4807122856660838973">Ieslēdziet drošu pārlūkošanu</translation>
@@ -457,7 +456,6 @@
 <translation id="5700761515355162635">Trešo pušu sīkfailu ir atļauti</translation>
 <translation id="5706552988683188916">Tiks dzēsti sīkfaili un citi vietnes <ph name="WEBSITE" /> dati</translation>
 <translation id="571222594670061844">Vietnēs drīkst rādīt pierakstīšanās uzvednes, ko nodrošina identitātes pakalpojumi</translation>
-<translation id="5719854774000914513">Atļaut vietnēm pieprasīt atļauju veidot savienojumu ar HID ierīcēm</translation>
 <translation id="5740126560802162366">Vietnes var saglabāt datus jūsu ierīcē</translation>
 <translation id="5743425052258407233">Iegūstiet savu vēsturi visās savās ierīcēs, lai varētu ērti turpināt iesākto.</translation>
 <translation id="5749158352074143502">Turpiniet pārlūkot šo cilni</translation>
@@ -577,7 +575,6 @@
 <translation id="6950072572526089586">Apmeklētā vietne var saglabāt informāciju par jūsu veiktajām darbībām, lai nodrošinātu pienācīgu tās darbību, piemēram, pierakstīšanos vietnē vai iepirkumu grozā ievietoto preču saglabāšanu. Bieži vien vietnes šo informāciju jūsu ierīcē saglabā īslaicīgi.</translation>
 <translation id="6964291282260073066">Tiek atspējota saskarne WebGPU.</translation>
 <translation id="6965382102122355670">Labi</translation>
-<translation id="6972629891077993081">HID ierīces</translation>
 <translation id="6980507581230208647">Rozā motīvs</translation>
 <translation id="6980861169612950611">Vai dzēst vietnes datus? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Pieejamība</translation>
@@ -735,7 +732,6 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus.</transl
 <translation id="8593422116412089302">Kad šis slēdzis ir ieslēgts, vietnes drīkst pieprasīt atļauju izmantot par jums saglabāto informāciju. Kad šis slēdzis ir izslēgts, vietnes nedrīkst pieprasīt atļauju izmantot par jums saglabāto informāciju.</translation>
 <translation id="8609465669617005112">Virziet uz augšu</translation>
 <translation id="8617611086246832542">Kad šis slēdzis ir ieslēgts, tiek rādīts vietņu skats datorā. Kad šis slēdzis ir izslēgts, tiek rādīts vietņu skats mobilajā ierīcē.</translation>
-<translation id="8625916342247441948">Neļaut vietnēm veidot savienojumu ar HID ierīcēm</translation>
 <translation id="8670078035093027626">Noklusējuma pārlūka ekrāna apakšdaļas lapa ir atvērta pilnā augstumā</translation>
 <translation id="8676316391139423634">Kad šis slēdzis ir ieslēgts, vietnes drīkst pieprasīt atļauju izsekot jūsu roku kustības. Kad šis slēdzis ir izslēgts, vietnes nedrīkst izsekot jūsu roku kustības.</translation>
 <translation id="8676374126336081632">Notīrīt ievadi</translation>

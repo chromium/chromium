@@ -1031,7 +1031,6 @@
 <translation id="4430505936695785931">Dobijte sačuvane lozinke u drugim aplikacijama</translation>
 <translation id="4431224949908513835">Odaberite način plaćanja za unos.</translation>
 <translation id="4432122368769493392">Postavke…</translation>
-<translation id="4439968635693513370">Planirajte vikend uz</translation>
 <translation id="4442550905108052454">Otvorite <ph name="BEGIN_BOLD" />Postavke<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Više opcija za <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Možete prevući na rubu da se vratite ili se pomaknete unaprijed.</translation>
@@ -1060,7 +1059,6 @@
 <translation id="454217142158335225">Možete ponovo otvoriti zatvorene stavke iz odjeljaka nedavnih kartica ili grupa kartica. Zakačene kartice se neće zatvoriti.</translation>
 <translation id="4547181496285029457">Povratak na nedavnu karticu</translation>
 <translation id="4552042254369397518">Kopiranje…</translation>
-<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Više pristupnih ključeva</translation>
 <translation id="4564893319561643483">Sakrij "<ph name="TITLE" />"</translation>
 <translation id="456502772933839252">Dijeljenje stranice <ph name="PAGE_TITLE" /></translation>
@@ -1102,7 +1100,6 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Vaša organizacija zahtijeva da pregledate privatno. Grupe kartica se ne sinhroniziraju u anonimnom načinu rada.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
-<translation id="4670422040696550256">Pouzdano kupujte uz</translation>
 <translation id="467189612236587057">Povezivanje s preduzećem upućivanjem telefonskog poziva</translation>
 <translation id="4673565891421389203">Prijava putem upravljanog računa vam pomaže da odvojite pregledanje povezano s vašom organizacijom (uključujući kartice, historiju i lozinke) od drugog pregledanja.
 
@@ -1392,7 +1389,6 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5596627076506792578">Više opcija</translation>
 <translation id="560322036295180549">Isključila je vaša organizacija</translation>
 <translation id="5611398002774823980">Sačuvaj na račun</translation>
-<translation id="5612225021788368236">Zatvaranje promocije zadanog preglednika</translation>
 <translation id="561269594905823128">Dodirnite <ph name="BEGIN_BOLD" />Odaberite fajl<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Poredaj po najnovijem</translation>
 <translation id="5614553682702429503">Sačuvati lozinku?</translation>
@@ -2478,7 +2474,6 @@ Da nastavite s računara, prebacite se na <ph name="OTHER_EMAIL" />. Dobijat će
 <translation id="9029650858822697271">Odjavljeni ste</translation>
 <translation id="9032405509996909363">Potvrda brisanja podataka pregledanja</translation>
 <translation id="9035699147763101514">Omogućava Lična inteligencija putem Geminija. Upravljajte odabirom u postavkama.</translation>
-<translation id="9038526468059454274">Sažmite uz</translation>
 <translation id="9039373489628511875">Propusnost</translation>
 <translation id="9042893549633094279">Privatnost i sigurnost</translation>
 <translation id="9055291197094969722">Kreirajte grupe kartica da organizirate otvorene kartice i budete produktivni</translation>

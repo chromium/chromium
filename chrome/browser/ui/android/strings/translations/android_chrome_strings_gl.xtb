@@ -99,7 +99,6 @@
 <translation id="1372840539168747818">{NUM_SITES,plural, =1{Podes evitar que este sitio envíe notificacións no futuro}other{Podes evitar que estes sitios envíen notificacións no futuro}}</translation>
 <translation id="137496472437646183">Selecciona Protección mellorada</translation>
 <translation id="1376578503827013741">Calculando...</translation>
-<translation id="138181280295369883">Inicia sesión para poder acceder á túa información gardada e moito máis en todos os teus dispositivos</translation>
 <translation id="1381838868249179644">Para protexerte, quitáronse os permisos dalgúns sitios</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384704387250346179">Traducir imaxe con Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -136,10 +135,8 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="1513352483775369820">Marcadores e historial web</translation>
 <translation id="1515901671075971249">Atallos de navegación polas pestanas</translation>
 <translation id="1516966594427080024">Abre unha nova ventá no modo de incógnito</translation>
-<translation id="152204906462707884">Elimina rapidamente o historial de navegación e obtén máis control sobre a túa privacidade</translation>
 <translation id="153446405401665083">Hai unha versión de Chrome máis recente</translation>
 <translation id="1540012742443808215">A barra de enderezos está actualmente na parte superior</translation>
-<translation id="1543035591122163372">Inicia sesión para acceder aos teus contrasinais e moito máis desde <ph name="DEVICE_TYPE" /></translation>
 <translation id="1544084554881119930">Os enderezos e os métodos de pago non se encriptarán. Tampouco se sincronizará o historial de navegación de Chrome.
 Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase de acceso. Google non recibirá nin almacenará a frase de acceso. Se a esqueces ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Para xestionar a túa conta de Google, toca o botón Xestionar conta</translation>
@@ -202,8 +199,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="1829244130665387512">Buscar na páxina</translation>
 <translation id="1832459821645506983">Si, acepto</translation>
 <translation id="1845958458910716240">Para protexer os teus datos, permite que Chrome quite os permisos dos sitios que leves tempo sen visitar</translation>
-<translation id="1851551847729706116">Compartindo <ph name="TAB_NAME" /> con esta pestana</translation>
-<translation id="1869691326892615940">Contrasinais máis seguros, inicio de sesión máis rápido</translation>
 <translation id="1871098866036088250">Abrir no navegador Chrome</translation>
 <translation id="1877026089748256423">Chrome está desactualizado</translation>
 <translation id="1877073879466606884">O perfil no que tes a sesión iniciada é un perfil xestionado. A persoa administradora pode facer cambios na súa configuración de forma remota, analizar información sobre o navegador mediante informes e realizar outras tarefas necesarias.</translation>
@@ -213,7 +208,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="1899175549411605574">Panel inferior de estatísticas de prezos</translation>
 <translation id="1900260903084164610">Ao continuar, aceptas as <ph name="BEGIN_TOS_LINK" />Condicións de servizo<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Os URL que visitas gárdanse na túa Conta de Google</translation>
-<translation id="1905582086181351638">Inicia sesión para acceder á túa información gardada e moito máis desde <ph name="DEVICE_TYPE" /></translation>
 <translation id="1910950723001426294">A lista de opcións para compartir está pechada.</translation>
 <translation id="1912367671208932516">Abrir menú de extensións</translation>
 <translation id="191726024256261717">Revisar os permisos</translation>
@@ -307,6 +301,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2238038374973843156">Mover grupo a outra ventá</translation>
 <translation id="2247789808226901522">A tarxeta venceu</translation>
 <translation id="2251809247798634662">Nova ventá do modo de incógnito</translation>
+<translation id="2253927598983295051">Escolle o que queres compartir con <ph name="APP_NAME" /></translation>
 <translation id="2261570557291037252">Máis información sobre a aplicación</translation>
 <translation id="2276696007612801991">Inicia sesión na túa Conta de Google para comprobar os teus contrasinais</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, pestana do modo de incógnito seleccionada</translation>
@@ -315,7 +310,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{Ver <ph name="TABS_COUNT_ONE" /> pestana}other{Ver <ph name="TABS_COUNT_MANY" /> pestanas}}</translation>
 <translation id="2297822946037605517">Compartir esta páxina</translation>
 <translation id="230115972905494466">Non se atoparon dispositivos compatibles</translation>
-<translation id="2305798319182970276">Elimina o historial cun só toque</translation>
 <translation id="2316129865977710310">Non, grazas</translation>
 <translation id="232137538351753795">Pasa o dedo desde o bordo esquerdo para volver</translation>
 <translation id="2323763861024343754">Almacenamento do sitio</translation>
@@ -379,6 +373,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2527779675047087889">Ocultar contido do portapapeis</translation>
 <translation id="2531209299761896527">Belisca as pestanas, mantenas premidas e arrástraas para abrilas nunha nova ventá</translation>
 <translation id="2532336938189706096">Vista web</translation>
+<translation id="253498598929009420">Este sitio poderá ver os contidos da túa pantalla</translation>
 <translation id="2535807170289627159">Todas as pestanas</translation>
 <translation id="2536728043171574184">Visualización dunha copia sen conexión desta páxina</translation>
 <translation id="2537574774089209541">Algunhas ferramentas cambiaron de lugar para que poidas acceder facilmente a Gemini mentres navegas</translation>
@@ -535,12 +530,10 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3158667104057012316">Ordenando de maneira manual</translation>
 <translation id="3159335509547415276">Máis información acerca das contas bloqueadas</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />; ábrese nunha pestana nova</translation>
-<translation id="3164329792803560526">Compartindo esta pestana con <ph name="APP_NAME" /></translation>
 <translation id="3166827708714933426">Atallos da ventá e da pestana</translation>
 <translation id="3167258285411721858">Podes solicitar o sitio para móbiles para o anfitrión <ph name="HOST_NAME" /></translation>
 <translation id="3177338796769255211">Inicia sesión para poder acceder aos teus marcadores e moito máis en todos os teus dispositivos</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, pestana do modo de incógnito fixada, silenciada e multiseleccionada</translation>
-<translation id="3185851164388130512">A función Navegación segura mellorada ofrece protección fronte a perigos coñecidos e posibles ameazas novas</translation>
 <translation id="3189635831478931757">Grupo de pestanas <ph name="GROUP_TITLE" /></translation>
 <translation id="3200536777393523575">Queres pechar a ventá actual?</translation>
 <translation id="3207960819495026254">Engadida a marcadores</translation>
@@ -758,7 +751,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4113030288477039509">Xestionado polo teu administrador</translation>
 <translation id="4116038641877404294">Descarga as páxinas para velas cando non teñas conexión</translation>
 <translation id="4121654769234887259">Non terás que lembrar este contrasinal. Gardarase no xestor de contrasinais de Google para <ph name="USERNAME" />.</translation>
-<translation id="4128312955780560730">Bloquea as pestanas do modo de incógnito</translation>
 <translation id="4132137475637520539">Permitir que se una calquera persoa que teña a ligazón</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, pestana con gravación en curso fixada e multiseleccionada</translation>
 <translation id="4137746084635924146">Idioma actual do dispositivo</translation>
@@ -799,7 +791,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4285498937028063278">Deixar de fixar</translation>
 <translation id="4285846616383034558">Cookies, memoria caché e outros datos dos sitios</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activa o bloqueo de pantalla na configuración de Android<ph name="END_LINK" /></translation>
-<translation id="4293154608148215505">o teu teléfono</translation>
 <translation id="4296252229500326964">Nova pestana de incógnito</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, pestana do modo de incógnito multiseleccionada</translation>
 <translation id="4298388696830689168">Sitios vinculados</translation>
@@ -810,7 +801,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4307992518367153382">Opcións básicas</translation>
 <translation id="4311652497846705514">Queres abrir o PDF?</translation>
 <translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Posible spam}other{Posible spam (#)}}</translation>
-<translation id="4315292299997584267">Inicia sesión neste sitio e en Chrome para acceder aos teus contrasinais e a máis contido de <ph name="DEVICE_TYPE" /></translation>
 <translation id="4320177379694898372">Non hai conexión a Internet</translation>
 <translation id="4326079409704643112">Para usar e gardar os datos de Chrome na túa Conta de Google, verifica a túa identidade</translation>
 <translation id="4335835283689002019">A navegación segura está desactivada</translation>
@@ -885,7 +875,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4601095002996233687">Análises minuciosas para detectar descargas sospeitosas.</translation>
 <translation id="4606559747793337066">Cando un sitio ou aplicación solicita precargar ligazóns da súa páxina de forma privada, Chrome encripta e precarga as páxinas correspondentes a través dos servidores de Google sen cookies. Deste xeito, ocúltaselle a túa identidade ao sitio precargado.</translation>
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
-<translation id="4619615317237390068">Pestanas doutros dispositivos</translation>
 <translation id="4624065194742029982">Modo de incógnito de Chrome</translation>
 <translation id="4634124774493850572">Usar contrasinal</translation>
 <translation id="463471994228293091">{PASSWORDS_COUNT,plural, =1{Hai 1 contrasinal e outros elementos gardados só neste dispositivo. Para usalo noutros dispositivos, gárdao na túa Conta de Google.}other{Hai # contrasinais e outros elementos gardados só neste dispositivo. Para usalos noutros dispositivos, gárdaos na túa Conta de Google.}}</translation>
@@ -940,7 +929,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4793679854893018356">Descubre como te protexe Chrome</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">Nome que aparece na tarxeta</translation>
-<translation id="4807700370495020449">Inicia sesión neste sitio e en Chrome para acceder á túa información gardada e moito máis en todos os teus dispositivos</translation>
 <translation id="480990236307250886">Abre a páxina de inicio</translation>
 <translation id="4816492930507672669">Axustar á páxina</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> grupo de pestanas pechado e gardado</translation>
@@ -987,7 +975,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4991110219272367918">Opción para aprobar ou non un sitio web pechado</translation>
 <translation id="4996042648402406470">Obter</translation>
 <translation id="4996095658297597226">Queres utilizar o contrasinal suxerido?</translation>
-<translation id="4996275162531289114">A experiencia de navegación máis segura de Google</translation>
 <translation id="5007392906805964215">Revisar</translation>
 <translation id="5010886807652684893">Vista visual</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> quere conectarse</translation>
@@ -1015,7 +1002,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5118713593561876160">Intereses</translation>
 <translation id="5122378528687922675">Se necesitas axuda, pídella ao teu pai ou á túa nai (<ph name="PARENT_NAME_1" /> ou <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Pestana do modo de incógnito</translation>
-<translation id="5126335625961252141">a túa tableta</translation>
 <translation id="5130015735779747822">Desprazarse á parte inferior da páxina</translation>
 <translation id="5142281402488957685">Se queres ver historias novas, arrastra cara abaixo para actualizar o contido</translation>
 <translation id="5144385790872094440">Precargaranse algunhas das páxinas que visites. As páxinas poderán precargarse a través dos nosos servidores se están vinculadas desde unha aplicación ou un sitio de Google.</translation>
@@ -1072,7 +1058,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5375374982898812658">Perderás inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />", que se eliminará de todos os dispositivos</translation>
 <translation id="5375577065097716013">Buscar imaxe con Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="537865165090710757">Gardar e compartir</translation>
-<translation id="5385892579392932755">o teu portátil</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> quere usar información persoal do teu moedeiro dixital. Continúa só se confías neste sitio. Os sitios perigosos poderían enganarte para que reveles información como o teu nome legal ou número de documento de identidade.</translation>
 <translation id="5395376160638294582">Asegúrate de poder usar sempre os datos de Chrome na túa Conta de Google</translation>
 <translation id="539881862970320163">Suxestión de contrasinal seguro. Teclado oculto.</translation>
@@ -1089,7 +1074,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5438292632479953702">Descargar de novo</translation>
 <translation id="5439191312780166229">Analiza máis datos de sitios que a protección estándar para avisarte sobre os sitios perigosos (mesmo sobre os que Google non coñeza ata ese momento). Se queres, podes omitir as advertencias de Chrome.</translation>
 <translation id="5441466871879044658">Traducir texto a este idioma</translation>
-<translation id="544285856361623600">Inicia sesión neste sitio e en Chrome para acceder aos teus marcadores e a máis contido desde <ph name="DEVICE_TYPE" /></translation>
 <translation id="5444999712122199445">Volver ao sitio</translation>
 <translation id="544776284582297024">Para abrir pestanas e visitar distintas páxinas ao mesmo tempo, toca o botón de pestanas abertas</translation>
 <translation id="5456381639095306749">Descargar páxina</translation>
@@ -1376,7 +1360,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6565959834589222080">Úsase a conexión wifi cando está dispoñible</translation>
 <translation id="657177046675873214">Activa na configuración a opción Marcadores para poder acceder a eles en todos os teus dispositivos</translation>
 <translation id="6573096386450695060">Permitir sempre</translation>
-<translation id="658099107946526506">Protexe a túa navegación privada cun PIN para evitar o acceso non desexado</translation>
 <translation id="6583199322650523874">Engadir aos marcadores a páxina actual</translation>
 <translation id="6588043302623806746">Usar DNS seguro</translation>
 <translation id="6590471736817333463">Aforra ata un 60 % de datos</translation>
@@ -1536,7 +1519,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Revisáronse os permisos de 1 sitio}other{Revisáronse os permisos de # sitios}}</translation>
 <translation id="7138678301420049075">Outros</translation>
 <translation id="7140829094791862589">Ordenar manualmente</translation>
-<translation id="7144458305574230431">Inicia sesión para acceder aos teus marcadores e moito máis desde <ph name="DEVICE_TYPE" /></translation>
 <translation id="7146622961999026732">Estes sitios e aplicacións parecen importantes para ti:</translation>
 <translation id="7148400116894863598"><ph name="BEGIN_LINK" />Obtén máis información<ph name="END_LINK" /> de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
@@ -1677,7 +1659,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7663320421139257046">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá con este sitio os seguintes datos: <ph name="FIELDS_STRING" />. Consulta a <ph name="BEGIN_LINK1" />política de privacidade<ph name="END_LINK1" /> do sitio.</translation>
 <translation id="766587987807204883">Aquí aparecen os artigos e podes lelos mesmo cando esteas sen conexión</translation>
 <translation id="7666185984446444960">Elementos pechados: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
-<translation id="767157537088426800">Inicia sesión neste sitio e en Chrome para acceder aos teus contrasinais e moito máis en todos os teus dispositivos</translation>
 <translation id="7682724950699840886">Sigue estes consellos: asegúrate de que hai espazo suficiente no dispositivo e proba a exportar os contrasinais de novo.</translation>
 <translation id="7690596512217303514">O teu dispositivo non puido abrir Chrome. Para solucionar o problema, descarga a actualización máis recente de Chrome desde a tenda de aplicacións.</translation>
 <translation id="7692761875510935111">Ábreo rapidamente no navegador. Para editar este atallo, mantén premido o botón.</translation>
@@ -1754,7 +1735,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7997875520309653083">Pasa o dedo desde o bordo dereito para volver</translation>
 <translation id="7998918019931843664">Abre de novo a pestana pechada</translation>
 <translation id="8001245658307297681">Estás vendo un ficheiro local</translation>
-<translation id="800155843932969169">Crea e almacena os teus contrasinais de forma segura, inicia sesión máis rápido e identifica os problemas de seguranza dos contrasinais para protexerte</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8006630792898017994">Espazo ou Tabulador</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, pestana do modo de incógnito de uso compartido fixada e multiseleccionada</translation>
@@ -1857,6 +1837,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> grupo de pestanas}other{<ph name="TAB_GROUPS_MANY" /> grupos de pestanas}}</translation>
 <translation id="8387617938027387193">Verifica a túa identidade</translation>
 <translation id="8393700583063109961">Enviar mensaxe</translation>
+<translation id="8396098434728053815">Compartir tamén audio da pestana</translation>
 <translation id="8398389123831319859">Toca dúas veces o botón e manteno premido para cambiar ao modo de incógnito</translation>
 <translation id="8412037385861858490">Para protexer o teu traballo en Chrome, a túa organización poderá ver ou xestionar certa información cando teñas a sesión iniciada en Chrome. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Mostrar historial completo</translation>
@@ -1937,6 +1918,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8683039184091909753">imaxe</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, pestana seleccionada</translation>
 <translation id="8696297579102085705">Enviar ao teu dispositivo</translation>
+<translation id="8697753151306746444">Comparte a ventá ou a pantalla no seu lugar</translation>
 <translation id="8699120352855309748">Non ofrecer a opción de traducir texto escrito nestes idiomas</translation>
 <translation id="8700565880437506364">Presentámosche Gemini en Chrome</translation>
 <translation id="8712637175834984815">De acordo</translation>
@@ -1975,7 +1957,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="885480114717186641">Podes solicitar o sitio para ordenadores para o anfitrión <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Obter descricións</translation>
 <translation id="8863714995118816041">Volvéronse conceder permisos a <ph name="SITE_NAME" /></translation>
-<translation id="8864055848767439877">Compartindo <ph name="TAB_NAME" /> con <ph name="APP_NAME" /></translation>
 <translation id="8865415417596392024">Datos de Chrome na túa conta</translation>
 <translation id="8872506776304248286">Abrir na aplicación</translation>
 <translation id="8880275451109933094">Vista de dúas páxinas</translation>
@@ -2065,7 +2046,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="9190355771000652811">Na barra de enderezos, utiliza esta combinación de teclas con atallos para motores de busca e a busca de sitios.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, pestana do modo de incógnito seleccionada e fixada</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{A comprobación realizouse hai 1 minuto}other{A comprobación realizouse hai # minutos}}</translation>
-<translation id="9199610579638564405">Inicia sesión neste sitio e en Chrome para acceder á túa información gardada e a máis contido de <ph name="DEVICE_TYPE" /></translation>
 <translation id="9202894533863490414">Queres descargar un ficheiro deste sitio?</translation>
 <translation id="9204836675896933765">Queda 1 ficheiro</translation>
 <translation id="9205933215779845960">Non se puido atopar esa páxina. Comproba que escribises ben a consulta ou proba a realizar a busca en <ph name="SEARCH_ENGINE" />.</translation>
@@ -2082,7 +2062,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="930834144334005936">Restablece o modo actual (<ph name="MODE_NAME" />) para a Busca</translation>
 <translation id="938850635132480979">Erro: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Introducir frase de acceso</translation>
-<translation id="939736085109172342">Cartafol novo</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, pestana dos modos de incógnito e pantalla superposta fixada</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="948276827484905248">Crear código QR</translation>

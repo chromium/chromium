@@ -167,16 +167,6 @@ URL パターンは、<ph name="CONTROLLED_FRAME_ALLOWED_FOR_URLS_POLICY_NAME" /
 <translation id="1100840127293327071">既存の閲覧データを保持するオプションをデフォルトでオンにしない</translation>
 <translation id="1105572260329131950">安全な接続にデフォルトのアイコンを使用する</translation>
 <translation id="1105711894873068933"><ph name="LACROS_NAME" /> が無効になった後、すべてのユーザー データを次回のログイン時に削除する。</translation>
-<translation id="1106279506320506502">分離モードを有効にするかどうかを指定します。
-
-分離モードは、エンタープライズ版限定の一時的な閲覧モードです。
-DLP に関連するエンタープライズ ポリシーと自動インストールされた拡張機能がサポートされます。
-
-「1 - 有効」に設定した場合、分離モードが有効になり、シークレット モードは無効になります。
-
-「0 - 無効」に設定するか未設定のままにした場合、分離モードは無効になります。
-
-このポリシーを適用するには、<ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /> ライセンスが必要です。</translation>
 <translation id="1106342730891876476">共有設定</translation>
 <translation id="1107538157073168076">分析情報の拡張機能を無効にする</translation>
 <translation id="1110426799149444997"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> の地域検索を無効にする。</translation>
@@ -1603,17 +1593,6 @@ accounts.google.com など一部の URL は認証に必要です。オンライ�
 <translation id="2057317273526988987">URL のリストへのアクセスを許可する</translation>
 <translation id="205807990145127714">電波強度が変化した場合に報告するテレメトリー データ。</translation>
 <translation id="2060153898336610735">現在の言語に基づいて自動設定する</translation>
-<translation id="2060316966423154087"><ph name="PRODUCT_NAME" /> で、生成 AI を使用してフォームの内容を正確に把握し、より多くの項目に入力できるようにするかどうかを指定します。
-
-0 = 1 と同じ効果があります。M153 より前のバージョンでは、この設定により、Google が AI モデルを改善する目的で関連データを使用することが許可されていました。関連データには、機能に応じてプロンプト、入力内容、出力内容、ソース資料、フィードバックの文面などが含まれます。以下に記載している場合を除き、0 がデフォルト値です。
-
-1 = この機能の使用を許可しますが、Google がモデルを改善する目的で関連データ（プロンプト、入力内容、出力内容、ソース資料、フィードバックの文面など）を使用することは許可しません。1 は、<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> で管理されている企業ユーザーと、<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> で管理されている教育機関向けアカウントのデフォルト値です。
-
-2 = この機能を許可しません。
-
-このポリシーを未設定のままにした場合、動作は <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> ポリシーによって決まります。
-
-生成 AI 機能のデータ処理について詳しくは、https://support.google.com/chrome/a?p=generative_ai_settings をご覧ください。</translation>
 <translation id="2061123930713023976">デバッグのネットワーク パケット キャプチャを許可する</translation>
 <translation id="2061810934846663491">リモート アクセス ホストの必須のドメイン名を設定する</translation>
 <translation id="2062632109797189011">サポートを終了した window.webkitStorageInfo API を再度使用できるようにする</translation>
@@ -2784,7 +2763,6 @@ WebSocket 以外のリクエストの上限を変更するには、<ph name="MAX
 
 このポリシーを未設定のままにした場合、<ph name="BLOCK_POPUPS_POLICY_NAME" /> は適用されますが、ユーザーはこの設定を変更できます。</translation>
 <translation id="2796714419743648316">アプリごとの時間制限の許可リスト</translation>
-<translation id="2799223571221894425">再起動</translation>
 <translation id="2801065672151277034">証明書の管理設定</translation>
 <translation id="2801155097555584385">バッテリー充電のカスタムの充電開始設定（%）を行う</translation>
 <translation id="2801378553855965587"><ph name="GOOGLE_CALENDAR_NAME" />　統合を無効にする。</translation>
@@ -3343,6 +3321,19 @@ false に設定した場合、教師はこの機能にアクセスできませ�
 <translation id="3150351525324499342">デフォルトで <ph name="PRODUCT_NAME" /> アイコンをツールバーに表示しないが、ユーザーが選択できるようにする</translation>
 <translation id="3152135410085709340">PDF ビューアで file:// URL へのローカル ファイル アクセスを許可するサイトを指定する</translation>
 <translation id="3152425128389603870">統合デスクトップを使用可能にし、デフォルトで有効にする</translation>
+<translation id="3157506194753687842"><ph name="GEMINI_SPARK_PRODUCT_NAME" /> エージェントが <ph name="PRODUCT_NAME" /> に接続して自動ブラウジングを使用できるようにするかどうかを制御します。
+
+0 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> が <ph name="PRODUCT_NAME" /> に接続して自動ブラウジングを使用することを許可します
+
+1 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> が <ph name="PRODUCT_NAME" /> に接続して自動ブラウジングを使用することを許可しません
+
+警告: <ph name="GEMINI_SPARK_PRODUCT_NAME" /> が <ph name="PRODUCT_NAME" /> に接続して自動ブラウジングを使用することを許可すると、<ph name="GEMINI_SPARK_PRODUCT_NAME" /> エージェントはアクティブなブラウザ セッションを使用して、<ph name="PRODUCT_NAME" /> クライアントで自律的なマルチステップのアクションを実行できるようになります。これには、認証情報の漏洩リスク、ローカル ネットワークへの侵入、コンテキストアウェア シグナルの損失など、重大なセキュリティ リスクが伴います。既存の管理設定およびセキュリティの制御が適用されない可能性があります。
+
+管理者は、この機能を有効にする前に、組織のネットワーク脅威モデル、コンプライアンスとプライバシーに関するガイドラインを慎重に検討することが推奨されます。
+
+<ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> アプリまたは <ph name="PRODUCT_NAME" /> 自動ブラウジング ポリシーが無効になっている場合、このポリシーは無視されます。たとえば、<ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> アプリは <ph name="GEMINI_SETTINGS_POLICY_NAME" /> ポリシーで無効にできます。<ph name="PRODUCT_NAME" /> での <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> について詳しくは、https://support.google.com/chrome/a?p=gemini_in_chrome をご覧ください。
+
+国や言語によっては <ph name="PRODUCT_NAME" /> の自動ブラウジングと <ph name="GEMINI_SPARK_PRODUCT_NAME" /> を利用できない場合があります。このポリシーを 0（有効）に設定しても、機能が有効になるかどうかは、国や言語での提供状況に準じて決まります。リリースについて詳しくは、Enterprise リリースノート（https://chromeenterprise.google/resources/release-notes/）をご覧ください。</translation>
 <translation id="3159375329008977062">ユーザーは UI から Crostini コンテナを書き出しおよび読み込みできます</translation>
 <translation id="3163167792874598128">このポリシーを未設定のままにするか有効に設定した場合、App Store の評価に関するプロモーションがユーザーに表示されます（最大で年に 1 回）。
 このポリシーを無効に設定した場合、App Store の評価に関するプロモーションはユーザーに表示されません。</translation>
@@ -5096,6 +5087,7 @@ URL パターンは、<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> 
 
 注: このポリシーの導入に伴い、<ph name="ARC_GLS_POLICY_NAME" /> ポリシーのサポートは終了しました。
 このポリシーを設定した場合、<ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> は <ph name="ANDROID_NAME" /> の <ph name="PRODUCT_OS_NAME" /> の位置情報設定に影響しなくなります。</translation>
+<translation id="4340826578810728651"><ph name="GEMINI_SPARK_PRODUCT_NAME" /> が <ph name="PRODUCT_NAME" /> に接続して自動ブラウジングを使用することを許可する</translation>
 <translation id="4341199399451274159"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> がオンの場合に、<ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> では、検索プロバイダによってサポートされる文字エンコードを指定できます。エンコードは、UTF-8、GB2312、ISO-8859-1 などのコードページ名であり、指定された順序で適用されます。
 
       <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> を未設定のままにした場合、UTF-8 が使用されます。</translation>
@@ -5765,7 +5757,6 @@ JavaScript の最適化ポリシーの例外は、サイトの詳細レベル（
 このポリシーを無効に設定した場合、認証情報プロバイダ拡張機能のプロモーションはユーザーに表示されません。</translation>
 <translation id="4768446404233019970">TLS の 3DES 暗号スイートを有効にします</translation>
 <translation id="4770334626033858263">保護者のアクセスコードの生成と確認に使用する設定です。</translation>
-<translation id="477383002672213319">AI モデルの改善は行わずに、高精度の自動入力を許可する（M153 より前の AI モデルを改善する）。</translation>
 <translation id="4773997835955617342">手動で作成された新しいチケットの <ph name="KRB5_CONFIG" /> 推奨設定を変更します。このポリシーを有効にすると、「KerberosCustomPrefilledConfig」の値が推奨設定として適用され、Kerberos 認証ダイアログの [詳細設定] セクションに表示されます。
 
       このポリシーを無効にするか未設定のままにした場合は、代わりに <ph name="PRODUCT_OS_NAME" /> 推奨設定が適用されます。これは、Kerberos 認証ダイアログの [詳細設定] セクションにも表示されます。</translation>
@@ -6940,13 +6931,6 @@ Microsoft SharePoint と OneDrive のカードには、追加の管理者設定�
 <translation id="5537400155400537818">無効: CSS のズームで従来の標準化前の動作を維持する。</translation>
 <translation id="5537587542872235553">自動インストールされた独立したウェブアプリとキオスク アプリケーションに Device Attributes API の使用を許可する</translation>
 <translation id="553806128266843748">ネットワーク制限を有効にするかどうかを示すブール値のフラグです。</translation>
-<translation id="5540415024237352600">このポリシーは M153 で非推奨となり、以降のリリースでサポートされなくなります（無視されます）。プログレッシブ ウェブ アプリケーション（PWA）のインストール時に作成されたネイティブ アプリケーションのアドホック署名は、<ph name="MAC_OS_NAME" /> では恒久的に有効になりました。これにより、インストールされた各アプリは <ph name="MAC_OS_NAME" /> のシステム コンポーネントで一意に識別されます。
-
-このポリシーを有効に設定するか未設定のままにした場合、プログレッシブ ウェブ アプリケーション（PWA）のインストール時に作成されたネイティブ アプリケーションで、アドホック署名の使用が有効になります。これにより、インストールされた各アプリは <ph name="MAC_OS_NAME" /> のシステム コンポーネントで一意に識別されます。
-
-このポリシーを無効に設定した場合、プログレッシブ ウェブ アプリケーションのインストール時に作成されたネイティブ アプリケーションは、すべて同じものとして識別されます。その結果、<ph name="MAC_OS_NAME" /> の機能の動作が妨げられる可能性があります。
-
-このポリシーの無効化は、アドホック署名のあるアプリケーションをブロックするエンドポイント セキュリティ ソリューションを使用している場合のみにしてください。</translation>
 <translation id="5540885720415375851">ローカル デバイスの検出を許可する</translation>
 <translation id="5542235730745104308">このポリシーを True に設定した場合、<ph name="PRODUCT_NAME" /> では組み込まれている別のエラーページ（「ページが見つかりません」など）が使用されます。このポリシーを False に設定した場合、<ph name="PRODUCT_NAME" /> では別のエラーページは使用されません。
 

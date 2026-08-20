@@ -172,16 +172,6 @@ Le libellé est personnalisable avec la règle <ph name="ENTERPRISE_CUSTOM_LABEL
 <translation id="1100840127293327071">Ne pas cocher l'option permettant de conserver les données de navigation existantes par défaut</translation>
 <translation id="1105572260329131950">Utiliser les icônes par défaut pour les connexions sécurisées</translation>
 <translation id="1105711894873068933">Une fois <ph name="LACROS_NAME" /> désactivé, toutes les données utilisateur sont supprimées à la connexion suivante.</translation>
-<translation id="1106279506320506502">Indique si le mode isolé est activé.
-
-Le mode isolé est un mode de navigation éphémère réservé aux entreprises.
-Il est compatible avec les extensions installées d'office et les règles d'entreprise liées à la protection contre la perte de données.
-
-Si cette règle est définie sur 1 – Activée, le mode isolé est activé et le mode navigation privée est désactivé.
-
-Si cette règle est définie sur 0 — Désactivée, ou si elle n'est pas configurée, le mode isolé est désactivé.
-
-Cette règle nécessite une licence <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /> pour être appliquée.</translation>
 <translation id="1106342730891876476">Paramètres de partage</translation>
 <translation id="1107538157073168076">Désactiver l'extension des insights</translation>
 <translation id="1110426799149444997">Désactiver la recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
@@ -1646,17 +1636,6 @@ Cette règle est habituellement désactivée pour protéger les utilisateurs con
 <translation id="2057317273526988987">Autoriser l'accès à une liste d'URL</translation>
 <translation id="205807990145127714">Données de télémétrie pour signaler un événement d'intensité du signal.</translation>
 <translation id="2060153898336610735">Automatique, basé sur la langue actuelle</translation>
-<translation id="2060316966423154087">Indique si les utilisateurs peuvent autoriser <ph name="PRODUCT_NAME" /> à utiliser l'IA générative pour mieux comprendre les formulaires et les aider à remplir plus de champs.
-
-0 = A le même effet que 1. Avant la version M153, ce paramètre autorisait Google à utiliser des données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des prompts, des entrées, des sorties, des sources et des commentaires écrits. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
-
-1 = Autorise l'utilisation de la fonctionnalité, mais n'autorise pas Google à améliorer ses modèles à l'aide de données pertinentes (y compris les prompts, les entrées, les sorties, les sources et les commentaires écrits). 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = N'autorise pas la fonctionnalité.
-
-Si la règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2061123930713023976">Autoriser les captures de paquets de débogage du réseau</translation>
 <translation id="2061810934846663491">Configurer les noms de domaines requis pour les hôtes d'accès à distance</translation>
 <translation id="2062632109797189011">Réactiver l'API obsolète window.webkitStorageInfo</translation>
@@ -2877,7 +2856,6 @@ Définir "command_line" empêche le chargement de l'extension à partir de la li
 
 Si cette règle n'est pas configurée, la règle <ph name="BLOCK_POPUPS_POLICY_NAME" /> s'applique. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="2796714419743648316">Liste d'autorisation des limites de temps spécifiques à chaque application</translation>
-<translation id="2799223571221894425">Relancer</translation>
 <translation id="2801065672151277034">Paramètres de gestion des certificats</translation>
 <translation id="2801155097555584385">Personnaliser le pourcentage auquel la batterie doit commencer à être rechargée</translation>
 <translation id="2801378553855965587">Désactiver l'intégration de <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
@@ -3452,6 +3430,19 @@ Si elle est désactivée ou n'est pas définie, le menu d'accessibilité flottan
 <translation id="3150351525324499342">Ne pas afficher par défaut l'icône <ph name="PRODUCT_NAME" /> dans la barre d'outils, mais laisser les utilisateurs choisir</translation>
 <translation id="3152135410085709340">Autoriser l'accès aux fichiers locaux aux URL file:// sur ces sites dans le lecteur PDF</translation>
 <translation id="3152425128389603870">Rendre le mode bureau unifié disponible et l'activer par défaut</translation>
+<translation id="3157506194753687842">Détermine si l'agent <ph name="GEMINI_SPARK_PRODUCT_NAME" /> est autorisé à se connecter à <ph name="PRODUCT_NAME" /> et à utiliser la navigation automatique.
+
+0 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> est autorisé à se connecter à la navigation automatique de <ph name="PRODUCT_NAME" /> et à l'utiliser
+
+1 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> n'est pas autorisé à se connecter à la navigation automatique de <ph name="PRODUCT_NAME" /> ni à l'utiliser
+
+Avertissement : Autoriser <ph name="GEMINI_SPARK_PRODUCT_NAME" /> à se connecter à <ph name="PRODUCT_NAME" /> et à utiliser la navigation automatique permet à l'agent <ph name="GEMINI_SPARK_PRODUCT_NAME" /> d'effectuer des actions autonomes en plusieurs étapes sur les clients <ph name="PRODUCT_NAME" /> depuis la session de navigateur active. Cela implique des risques de sécurité importants, y compris liés aux identifiants, à l'accès au réseau local et à la perte de signaux contextuels. Les contrôles de gestion et de sécurité existants pourraient ne pas être respectés.
+
+Les administrateurs sont invités à évaluer attentivement le modèle de menace réseau, ainsi que les consignes en matière de conformité et de confidentialité de leur organisation avant d'activer cette fonctionnalité.
+
+Cette règle n'a aucun effet lorsque les règles de navigation automatique de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> ou <ph name="PRODUCT_NAME" /> sont désactivées. Par exemple, l'appli <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> peut être désactivée par la règle <ph name="GEMINI_SETTINGS_POLICY_NAME" />. Pour en savoir plus sur <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> dans <ph name="PRODUCT_NAME" />, veuillez consulter https://support.google.com/chrome/a?p=gemini_in_chrome.
+
+<ph name="GEMINI_SPARK_PRODUCT_NAME" /> et la navigation automatique de <ph name="PRODUCT_NAME" /> ne sont pas disponibles dans tous les pays ni dans toutes les langues. Définir cette règle sur 0 - Activée ne garantit pas que la fonctionnalité sera activée. Elle reste soumise à disponibilité. Pour en savoir plus sur le déploiement, consultez les notes de version d'Enterprise : https://chromeenterprise.google/resources/release-notes/.</translation>
 <translation id="3159375329008977062">L'utilisateur est autorisé à exporter/importer des conteneurs Crostini via l'UI</translation>
 <translation id="3163167792874598128">Si cette règle n'est pas configurée ou si elle est activée, la promo concernant la note sur l'App Store peut être présentée à l'utilisateur au maximum une fois par an.
 Si cette règle est désactivée, l'utilisateur ne verra pas la promo.</translation>
@@ -5206,6 +5197,7 @@ Il s'agit d'une couche de contrôle supplémentaire, située en dessous de la co
 Les utilisateurs ne peuvent pas ignorer les paramètres sélectionnés par l'administrateur. Si cette règle n'est pas configurée, les utilisateurs bénéficient d'une expérience grand public (c'est-à-dire qu'ils peuvent modifier librement le paramètre système de localisation, et dont la valeur par défaut est <ph name="GLS_ALLOWED" />).
 
 Remarque : cette règle rend obsolète la règle <ph name="ARC_GLS_POLICY_NAME" />. De plus, lorsque cette règle est configurée, <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> n'a plus d'incidence sur la préférence de localisation <ph name="ANDROID_NAME" /> sur <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="4340826578810728651">Autorise <ph name="GEMINI_SPARK_PRODUCT_NAME" /> à se connecter à <ph name="PRODUCT_NAME" /> et à utiliser la navigation automatique</translation>
 <translation id="4341199399451274159">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> vous permet de spécifier les encodages de caractères compatibles avec le moteur de recherche. Ces encodages sont des noms de page de codes, comme UTF-8, GB2312 et ISO-8859-1, qui sont testés dans l'ordre dans lequel ils sont indiqués.
 
       Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> n'est pas configurée, l'encodage UTF-8 est alors utilisé.</translation>
@@ -5900,7 +5892,6 @@ Sinon, seuls les services sélectionnés sont activés.</translation>
 Si cette règle est désactivée, l'utilisateur ne voit pas cette promo.</translation>
 <translation id="4768446404233019970">Activer les suites de chiffrement 3DES dans TLS</translation>
 <translation id="4770334626033858263">Configuration utilisée pour générer et valider le code d'accès parental.</translation>
-<translation id="477383002672213319">Autoriser la saisie automatique améliorée sans perfectionner les modèles d'IA (améliore les modèles d'IA avant M153).</translation>
 <translation id="4773997835955617342">Modifie la configuration suggérée de <ph name="KRB5_CONFIG" /> pour les nouvelles demandes créées manuellement.
 
       Si cette règle est activée, la valeur de la règle "KerberosCustomPrefilledConfig" est appliquée en tant que configuration suggérée et figure dans la section "Paramètres avancés" de la boîte de dialogue d'authentification Kerberos.
@@ -7173,13 +7164,6 @@ Plusieurs règles listent des origines qui ont un impact sur les requêtes adres
 <translation id="5537400155400537818">Désactivé : le zoom CSS fonctionne de la même manière qu'avant la spécification standard.</translation>
 <translation id="5537587542872235553">Autoriser les applis Web isolées installées d'office et les applis kiosque à utiliser l'API Device Attributes</translation>
 <translation id="553806128266843748">Flag booléen spécifiant si la limitation est activée.</translation>
-<translation id="5540415024237352600">Cette règle sera abandonnée dans M153 et ne sera plus prise en charge (n'aura aucun effet) dans une prochaine version. Les signatures ponctuelles pour les applis natives créées lors de l'installation d'une progressive web app (PWA) sont désormais activées de manière permanente sous <ph name="MAC_OS_NAME" />. Cela garantit que chaque appli installée a une identité unique pour les composants système <ph name="MAC_OS_NAME" />.
-
-Si cette règle est activée ou qu'elle n'est pas configurée, les signatures ponctuelles sont autorisées pour l'appli native créée lors de l'installation d'une progressive web app (PWA). Cela garantit que chaque appli installée a une identité unique pour les composants système <ph name="MAC_OS_NAME" />.
-
-Si cette règle est désactivée, toutes les applis natives créées lors de l'installation de PWA auront la même identité. Cela peut interférer avec la fonctionnalité <ph name="MAC_OS_NAME" />.
-
-Désactivez cette règle uniquement si vous utilisez une solution de sécurité des points de terminaison qui bloque les applis avec une signature ponctuelle.</translation>
 <translation id="5540885720415375851">Autoriser la détection des appareils en local</translation>
 <translation id="5542235730745104308">Si cette règle est définie sur "True", <ph name="PRODUCT_NAME" /> utilise les variantes de pages d'erreur intégrées (telles que "Page introuvable"). Si cette règle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise jamais les variantes de pages d'erreur.
 

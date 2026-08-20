@@ -717,7 +717,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1554640914375980459">Įjungti ekrano mirksėjimą gavus pranešimų. Naudokite mirksėjimo pranešimus apdairiai, jei esate jautrūs šviesai.</translation>
 <translation id="1555130319947370107">Mėlyna</translation>
 <translation id="1556127816860282890">Veikla fone ir kai kurie vaizdiniai efektai, pvz., sklandus slinkimas, gali būti apriboti</translation>
-<translation id="1557806604681757705">kompiuteryje</translation>
 <translation id="1557939148300698553">Profilio kūrimas</translation>
 <translation id="155803912725350982">Lėtieji klavišai</translation>
 <translation id="155865706765934889">Jutiklinis kilimėlis</translation>
@@ -1027,7 +1026,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1784707308176068866">Paleisti fone, kai to prašo bendradarbiaujanti savoji programa</translation>
 <translation id="1784849162047402014">Mažai laisvos vietos įrenginio diske</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Pašalinus „<ph name="APP_NAME" />“, taip pat bus pašalinta ši programa:}one{Pašalinus „<ph name="APP_NAME" />“, taip pat bus pašalintos šios programos:}few{Pašalinus „<ph name="APP_NAME" />“, taip pat bus pašalintos šios programos:}many{Pašalinus „<ph name="APP_NAME" />“, taip pat bus pašalintos šios programos:}other{Pašalinus „<ph name="APP_NAME" />“, taip pat bus pašalintos šios programos:}}</translation>
-<translation id="1785698972112179866">Prisijunkite, kad gautumėte žymes ir kt. <ph name="DEVICE" /></translation>
 <translation id="1786290960428378411">Pateikta užklausa skaityti ir keisti</translation>
 <translation id="1789543093145556097">Visada slėpti</translation>
 <translation id="179021551944139249">Pridėti nuorodą prie skaitymo sąrašo</translation>
@@ -1714,6 +1712,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2322193970951063277">Antraštės ir poraštės</translation>
 <translation id="2322622365472107569">Pabaigos laikas <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Išsaugoti „Wi-Fi“ tinklai</translation>
+<translation id="2323685460575935191">Slėpti slinkimo mygtukus</translation>
 <translation id="2325444234681128157">Atsiminti slaptažodį</translation>
 <translation id="2326188115274135041">Patvirtinkite PIN kodą, kad įjungtumėte automatinio atrakinimo funkciją</translation>
 <translation id="2326583548923775947">Tai nėra „Google“ paskyra. „Chrome“ išsaugoti elementai nebus pasiekiami kituose įrenginiuose.</translation>
@@ -8109,6 +8108,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7260206782629605806">Jei sumažinsite slenkstį, galėsite naudoti subtilų judėjimą. Jei padidinsite slenkstį, gali reikėti atlikti ryškesnį judėjimą.</translation>
 <translation id="7260802376010589729">Naudokite „c“, kad atleistumėte pelės mygtuką</translation>
 <translation id="7261217796641151584">Grupės bendrinimas</translation>
+<translation id="7261249528606034119">Slėpti slinkimo mygtukus</translation>
 <translation id="7261612856573623172">Sistemos teksto į kalbą balsas</translation>
 <translation id="7262004276116528033">Ši prisijungimo paslauga priglobiama <ph name="SAML_DOMAIN" />.</translation>
 <translation id="7262162806583378242">Naršydami pasirinkite bet ką ekrane, kad galėtumėte apsipirkti, versti ir ieškoti naudodami DI</translation>
@@ -8668,7 +8668,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršyklę, įrenginio operacinę sistemą ir IP adresus.</translation>
 <translation id="7683834360226457448">Sutrikusio regėjimo asmenims skirti ekrano įrankiai</translation>
 <translation id="7684212569183643648">Įdiegė jūsų administratorius</translation>
-<translation id="7684547908663093354">Prisijunkite, kad gautumėte slaptažodžius ir kt. <ph name="DEVICE" /></translation>
 <translation id="7684718995427157417">Kad galėtumėte kurti ir testuoti programas, įgalinkite „Android“ derinimo tiltą (ADB). Atminkite, kad atlikus šį veiksmą bus leidžiama įdiegti „Android“ programas, kurios nebuvo patvirtintos „Google“, o norint išjungti ADB, reikės atkurti gamyklinius nustatymus.</translation>
 <translation id="7684803937028953000">Jūsų organizacija užblokavo vietinį šio failo atsisiuntimą.</translation>
 <translation id="7684913007876670600">Jei norite, kad būtų rodomas supaprastintas šio puslapio rodinys, atidarykite šoninį skydelį ir pasirinkite skaitymo režimą</translation>
@@ -9089,7 +9088,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8011372169388649948">Žymė „<ph name="BOOKMARK_TITLE" />“ perkelta.</translation>
 <translation id="8012188750847319132">didžiųjų raidžių klavišas</translation>
 <translation id="8013181884974864006">Kontekstinės užduotys</translation>
-<translation id="8013462234418290522">Prisijunkite, kad gautumėte išsaugotą informaciją ir kt. <ph name="DEVICE" /></translation>
 <translation id="8013534738634318212">Šios svetainės priklauso <ph name="RWS_OWNER" /> nustatytai grupei. Grupėje esančios svetainės gali matyti jūsų veiklą grupėje.</translation>
 <translation id="8013993649590906847">Jei nebus naudingo vaizdo aprašo, „Chrome“ bandys jums jį pateikti. Kad būtų galima kurti aprašus, vaizdai siunčiami į sistemą „Google“.</translation>
 <translation id="8014154204619229810">Atnaujinimo programa šiuo metu paleista. Netrukus atnaujinkite ir vėl patikrinkite.</translation>
@@ -9576,7 +9574,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8377625247046155446">Šis „passkey“ bus išsaugotas tik šiame įrenginyje. Jis liks šiame įrenginyje, kai uždarysite visus inkognito langus.</translation>
 <translation id="837790003026572432">Skirtuko garso perdavimas šiame įrenginyje nepalaikomas</translation>
 <translation id="8378714024927312812">Tvarko jūsų organizacija</translation>
-<translation id="8378855320830505539">Regionas</translation>
 <translation id="8379988659465232385">Pavadinimo laukas negali būti tuščias</translation>
 <translation id="8379991678458444070">Grįžkite čia greičiau pasižymėję šį skirtuką</translation>
 <translation id="8380266723152870797">Lango pavadinimas</translation>

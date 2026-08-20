@@ -372,7 +372,6 @@
 <translation id="4676059169848868271">Če želite aplikaciji <ph name="APP_NAME" /> dovoliti uporabo sledenja potezam dlani, sledenje potezam dlani vklopite tudi v <ph name="BEGIN_LINK" />sistemskih nastavitvah<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Upravljanje kartic</translation>
 <translation id="4722332387043141878">Spletna mesta običajno uporabljajo tipala gibanja in svetlobe v napravi zaradi funkcij, kot sta navidezna resničnost ali spremljanje telesne pripravljenosti.</translation>
-<translation id="4748783296226936791">Spletna mesta običajno vzpostavijo povezavo z napravami HID zaradi funkcij, ki uporabljajo redke tipkovnico, krmilnike za igre in druge naprave.</translation>
 <translation id="4755971844837804407">Če je ta možnost vklopljena, vam spletna mesta lahko prikazujejo kateri koli oglas. Če je ta možnost izklopljena, spletna mesta ne smejo prikazovati vsiljivih ali zavajajočih oglasov.</translation>
 <translation id="4779083564647765204">Povečaj</translation>
 <translation id="4807122856660838973">Vklop Varnega brskanja</translation>
@@ -457,7 +456,6 @@
 <translation id="5700761515355162635">Piškotki tretjih oseb so dovoljeni</translation>
 <translation id="5706552988683188916">S tem izbrišete piškotke in druge podatke spletnega mesta za <ph name="WEBSITE" />.</translation>
 <translation id="571222594670061844">Spletna mesta lahko prikazujejo pozive za prijavo storitev za identiteto</translation>
-<translation id="5719854774000914513">Spletna mesta lahko zahtevajo vzpostavitev povezave z napravami HID.</translation>
 <translation id="5740126560802162366">Spletna mesta lahko shranjujejo podatke v napravi.</translation>
 <translation id="5743425052258407233">Zagotovite si zgodovino v vseh napravah, da boste lahko preprosto nadaljevali, kjer ste nehali</translation>
 <translation id="5749158352074143502">Nadaljuj s tem zavihkom</translation>
@@ -577,7 +575,6 @@
 <translation id="6950072572526089586">Spletno mesto, ki ga obiščete, lahko shranjuje podatke o tem, kaj počnete, da lahko deluje po pričakovanjih – poskrbi na primer, da ostanete prijavljeni na spletnem mestu, ali shranjuje izdelke v nakupovalni košarici. Spletna mesta te podatke pogosto začasno shranijo v vaši napravi.</translation>
 <translation id="6964291282260073066">»WebGPU« je onemogočen.</translation>
 <translation id="6965382102122355670">V redu</translation>
-<translation id="6972629891077993081">Naprave HID</translation>
 <translation id="6980507581230208647">Rožnata tema</translation>
 <translation id="6980861169612950611">Želite izbrisati podatke spletnega mesta? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Dostopnost</translation>
@@ -735,7 +732,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:</translation>
 <translation id="8593422116412089302">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo, da dovolite uporabo podatkov, ki so jih shranila o vas. Če je ta možnost izklopljena, spletna mesta ne smejo zahtevati, da dovolite uporabo podatkov, ki so jih shranila o vas.</translation>
 <translation id="8609465669617005112">Premakni navzgor</translation>
 <translation id="8617611086246832542">Če je ta možnost vklopljena, je prikazan pogled spletnih mest za namizni računalnik. Če je ta možnost izklopljena, je prikazan pogled spletnih mest za mobilno napravo.</translation>
-<translation id="8625916342247441948">Spletnim mestom ni dovoljeno povezovanje z napravami HID.</translation>
 <translation id="8670078035093027626">Razdelek na dnu zaslona za privzeti brskalnik, odprt pri polni višini</translation>
 <translation id="8676316391139423634">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo, da dovolite sledenje potezam z dlanmi. Če je ta možnost izklopljena, spletna mesta ne smejo slediti potezam z dlanmi.</translation>
 <translation id="8676374126336081632">Izbriši vnos</translation>

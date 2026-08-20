@@ -70,7 +70,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />ପାଇଁ ଅନୁମତି ଚୟନ କରନ୍ତୁ</translation>
 <translation id="1113000785583998331">IBAN ସେଭ କରିବେ?</translation>
 <translation id="1113869188872983271">&amp;ପୁନଃକ୍ରମକୁ ପୂର୍ବବତ୍‌ କରନ୍ତୁ</translation>
-<translation id="1117709830616495622">Gemini ସହ ପର୍ସନାଲ ଇଣ୍ଟେଲିଜେନ୍ସ ଦ୍ୱାରା ପରିଚାଳିତ।</translation>
 <translation id="111897705806685148">ଅନ୍ୟ ଏକ ଡିଭାଇସରୁ ପାସକୀ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଆପଣ କେଉଁ Chrome ସୂଚନା ସେଭ କରନ୍ତି ତାହା ପରିଚାଳନା କରିବାକୁ ଟାବ ତା'ପରେ ଏଣ୍ଟର ଦବାନ୍ତୁ</translation>
 <translation id="1121990216147052230">ମୋ ପାଇଁ ଏକ ଟୁ-ଡୁ ତାଲିକା ତିଆରି କରନ୍ତୁ</translation>
@@ -1171,7 +1170,6 @@
 <translation id="3005723025932146533">ସେଭ୍ ହୋଇଥିବା କପି ଦେଖାନ୍ତୁ</translation>
 <translation id="300580149047131921">ବର୍ତ୍ତମାନ ବ୍ୟବହାର କରାଯାଇଛି</translation>
 <translation id="3006864083554020786">ଘର ଠିକଣା</translation>
-<translation id="3008410317623852235">ବର୍ତ୍ତମାନ ଆପଣ Gmail ଏବଂ ଆହୁରି ଅନେକ କିଛିରୁ ସୂଚନା ଖୋଜିପାରିବେ ଏବଂ ପୂରଣ କରିପାରିବେ।</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଉପଲବ୍ଧ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ ବ୍ରାଉଜ କରିବା ପାଇଁ Tab ଦବାନ୍ତୁ, ତା'ପରେ ଚୟନିତ କାର୍ଯ୍ୟକୁ କାର୍ଯ୍ୟକାରୀ କରିବାକୁ Enter ଦବାନ୍ତୁ।</translation>
 <translation id="3010991137650052245">ଏହି ସାଇଟରେ ଆପଣଙ୍କ <ph name="PERMISSION" />କୁ ବ୍ୟବହାର କରିବା ପାଇଁ <ph name="SHORT_PRODUCT_NAME" />କୁ ଆକ୍ସେସ ଦିଅନ୍ତୁ</translation>
 <translation id="3014726756341138577">ଉନ୍ନତ ପ୍ରିଣ୍ଟର ଫିଚରଗୁଡ଼ିକ</translation>
@@ -2318,7 +2316,6 @@
 <translation id="4941627891654116707">ଫଣ୍ଟର ଆକାର</translation>
 <translation id="4943620199112228840">ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="4943872375798546930">କୌଣସି ଫଳାଫଳ ନାହିଁ</translation>
-<translation id="494701040141924538">ବୁଝିଗଲି, ନୋଟିସ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="495170559598752135">କାର୍ଯ୍ୟ</translation>
 <translation id="4953689047182316270">ଆକ୍ସେସିବିଲିଟୀ ଇଭେଣ୍ଟକୁ ପ୍ରତିକ୍ରିୟା ଦିଏ</translation>
 <translation id="4954505713046251871">ପରାମର୍ଶ ଦେବା ଏବଂ ଏହି ଫିଚରକୁ ଉନ୍ନତ କରିବା ପାଇଁ, ପୃଷ୍ଠାର URL ଏବଂ ବିଷୟବସ୍ତୁକୁ Google ସହ ସେୟାର କରାଯାଇଛି</translation>
@@ -3368,7 +3365,6 @@
 <translation id="6743841972744298686">ସିଙ୍କ ସେଟିଂସ</translation>
 <translation id="6745212570062463886">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରୁ ଆପଣଙ୍କର ନାମ ଏବଂ ଇମେଲ ଠିକଣାକୁ ଅଟୋଫିଲ କରନ୍ତୁ</translation>
 <translation id="674580074662200768">ପାସପୋର୍ଟକୁ ସୁରକ୍ଷିତ ଭାବେ ଅପଡେଟ କରନ୍ତୁ</translation>
-<translation id="6749473226660745022">ଫଟୋଗୁଡ଼ିକ</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">ନୀତି ମୂଲ୍ୟ</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> ଏଣ୍ଟ୍ରିକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
@@ -3707,7 +3703,6 @@
 <translation id="7366117520888504990">198 x 275 ମିମି</translation>
 <translation id="7366362069757178916">ପେମେଣ୍ଟ ହ୍ୟାଣ୍ଡଲରଗୁଡ଼ିକ</translation>
 <translation id="7366594738862061263">Chrome ଆପଣଙ୍କ ପାସୱାର୍ଡକୁ କିପରି ସୁରକ୍ଷିତ ରଖେ ସେ ବିଷୟରେ ଜାଣନ୍ତୁ</translation>
-<translation id="7366909168761621528">ବ୍ରାଉଜିଂ ଡାଟା</translation>
 <translation id="7370751048350026847">ଏହି ସାଇଟରେ ଏ ବିଷୟବସ୍ତୁ ପେଷ୍ଟ କରିବାକୁ ସୁପାରିଶ କରାଯାଇନାହିଁ</translation>
 <translation id="7372526636730851647">ଫଟୋ (ଗ୍ଲସି)</translation>
 <translation id="7372973238305370288">ସର୍ଚ୍ଚ ଫଳାଫଳ</translation>
@@ -4296,7 +4291,6 @@
 <translation id="8350416046273606058">ସର୍ଟକଟରେ ସ୍ପେସ ରହିପାରିବ ନାହିଁ: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">ନୋଟ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="8352849934814541340">ଅତିରିକ୍ତ ଫଙ୍କସନ ପାଇଁ ଏହି ଡିଭାଇସର ଆଡମିନିଷ୍ଟ୍ରେଟର ଆପ୍ଲିକେସନଗୁଡ଼ିକୁ ଇନଷ୍ଟଲ କରିଛନ୍ତି। ଆପ୍ଲିକେସନଗୁଡ଼ିକର ଆପଣଙ୍କର କିଛି ଡାଟାକୁ ଆକ୍ସେସ ଅଛି।</translation>
-<translation id="8353273112634584260">Gemini ସହ ପର୍ସନାଲ ଇଣ୍ଟେଲିଜେନ୍ସ ଦ୍ୱାରା ପରିଚାଳିତ। ଉନ୍ନତ ଅଟୋଫିଲକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଆପଣଙ୍କ ଅନୁରୋଧ, ପୃଷ୍ଠା ଟାଇଟେଲ ଏବଂ URLଗୁଡ଼ିକୁ ରିଭ୍ୟୁ କରାଯାଇପାରେ।</translation>
 <translation id="8355270400102541638">ସ୍ଥାନୀୟ କ୍ରାସ୍ ପ୍ରସଙ୍ଗ:</translation>
 <translation id="8362914115861174987">ଏଥିକୁ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="8363502534493474904">ଏରୋପ୍ଲେନ୍ ମୋଡ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -4656,7 +4650,6 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Chrome Enterprise Core ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="9027531288681624875">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରୁ ବାହାରି ଯିବା ପାଇଁ |<ph name="ACCELERATOR" />|କୁ ଦବାଇ ଧରି ରଖନ୍ତୁ</translation>
-<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">ସୁରକ୍ଷା ତ୍ରୁଟି</translation>
 <translation id="9035699147763101514">Gemini ସହ ପର୍ସନାଲ ଇଣ୍ଟେଲିଜେନ୍ସ ଦ୍ୱାରା ପରିଚାଳିତ। ସେଟିଂସରେ ଆପଣଙ୍କ ପସନ୍ଦଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ।</translation>
 <translation id="9035824888276246493">ସୁରକ୍ଷା କୋଡଗୁଡ଼ିକୁ ସେଭ କରନ୍ତୁ</translation>

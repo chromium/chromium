@@ -1031,7 +1031,6 @@
 <translation id="4430505936695785931">Iegūstiet saglabātās paroles citās lietotnēs</translation>
 <translation id="4431224949908513835">Atlasiet maksājuma veidu, ko aizpildīt.</translation>
 <translation id="4432122368769493392">Iestatījumi…</translation>
-<translation id="4439968635693513370">Plānojiet nedēļas nogali, izmantojot</translation>
 <translation id="4442550905108052454">Atveriet sadaļu <ph name="BEGIN_BOLD" />Iestatījumi<ph name="END_BOLD" />.</translation>
 <translation id="4445840280797509738">Citas iespējas: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Varat vilkt no malas, lai pārietu atpakaļ vai uz priekšu.</translation>
@@ -1060,7 +1059,6 @@
 <translation id="454217142158335225">Varat atkārtoti atvērt aizvērtos vienumus no nesen atvērto ciļņu vai ciļņu grupu sadaļām. Jūsu piespraustās cilnes netiks aizvērtas.</translation>
 <translation id="4547181496285029457">Atgriešanās uz cilni “Nesenās”</translation>
 <translation id="4552042254369397518">Notiek kopēšana…</translation>
-<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Citas piekļuves atslēgas</translation>
 <translation id="4564893319561643483">Paslēpt moduli “<ph name="TITLE" />”</translation>
 <translation id="456502772933839252">Notiek šīs lapas kopīgošana: <ph name="PAGE_TITLE" /></translation>
@@ -1102,7 +1100,6 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Saskaņā ar jūsu organizācijas politiku tīmeklis ir jāpārlūko privāti. Inkognito režīmā ciļņu grupas netiek sinhronizētas.
 <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
-<translation id="4670422040696550256">Iepērcieties droši, izmantojot</translation>
 <translation id="467189612236587057">Sazināties ar uzņēmumu, sākot tālruņa zvanu</translation>
 <translation id="4673565891421389203">Pierakstīšanās, izmantojot pārvaldīto kontu, palīdz atdalīt ar organizāciju saistīto pārlūkošanas informāciju (tostarp cilnes, vēsturi un paroles) no pārējās pārlūkošanas informācijas.
 
@@ -1392,7 +1389,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5596627076506792578">Citas opcijas</translation>
 <translation id="560322036295180549">Funkciju izslēdza jūsu organizācija.</translation>
 <translation id="5611398002774823980">Saglabāt kontā</translation>
-<translation id="5612225021788368236">Aizvērt noklusējuma pārlūka reklāmas paziņojumu</translation>
 <translation id="561269594905823128">Pieskarieties vienumam <ph name="BEGIN_BOLD" />Atlasīt failu<ph name="END_BOLD" />.</translation>
 <translation id="5613297089029360427">Kārtot, sākot ar jaunāko saturu</translation>
 <translation id="5614553682702429503">Vai saglabāt paroli?</translation>
@@ -2478,7 +2474,6 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="9029650858822697271">Jūs tikāt izrakstīts</translation>
 <translation id="9032405509996909363">Apstiprināt pārlūkošanas datu dzēšanu</translation>
 <translation id="9035699147763101514">Nodrošina funkcija “Personīgais intelekts” ar Gemini. Pārvaldiet savas izvēles iestatījumos.</translation>
-<translation id="9038526468059454274">Apkopojiet, izmantojot</translation>
 <translation id="9039373489628511875">Joslas platums</translation>
 <translation id="9042893549633094279">Konfidencialitāte un drošība</translation>
 <translation id="9055291197094969722">Izveidojiet ciļņu grupas, lai kārtotu atvērtās cilnes un saglabātu produktivitāti</translation>

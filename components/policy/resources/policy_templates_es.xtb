@@ -172,16 +172,6 @@ La etiqueta se puede personalizar mediante la política <ph name="ENTERPRISE_CUS
 <translation id="1100840127293327071">No marcar la opción de conservar los datos de navegación previos de forma predeterminada</translation>
 <translation id="1105572260329131950">Usar iconos predeterminados en el caso de las conexiones seguras</translation>
 <translation id="1105711894873068933">Después de que se inhabilite <ph name="LACROS_NAME" />, se eliminarán todos los datos de usuario al realizar el siguiente inicio de sesión.</translation>
-<translation id="1106279506320506502">Especifica si el modo Aislado está habilitado.
-
-El modo Aislado es un modo de navegación de carácter efímero exclusivo para empresas.
-Admite políticas de empresa relacionadas con DLP y extensiones instaladas de manera forzada.
-
-Si se le asigna el valor 1 (habilitada), se habilitará el modo Aislado y se inhabilitará el modo Incógnito.
-
-Si se le asigna el valor 0 (inhabilitada) o no se define, se inhabilitará el modo Aislado.
-
-Es necesario tener una licencia de <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /> para poder aplicar esta política.</translation>
 <translation id="1106342730891876476">Opciones para compartir</translation>
 <translation id="1107538157073168076">Inhabilitar extensión de estadísticas</translation>
 <translation id="1110426799149444997">Inhabilitar la búsqueda por sección de <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
@@ -1647,17 +1637,6 @@ Esta política suele estar inhabilitada para ofrecer protección contra phishing
 <translation id="2057317273526988987">Permitir el acceso a una lista de URLs</translation>
 <translation id="205807990145127714">Datos de telemetría para registrar en los cambios de intensidad de la señal</translation>
 <translation id="2060153898336610735">Automático en función del idioma seleccionado</translation>
-<translation id="2060316966423154087">Especifica si los usuarios pueden permitir que <ph name="PRODUCT_NAME" /> use IA generativa para entender mejor los formularios y ayudarlos a rellenar más campos.
-
-0 = Tiene el mismo efecto que 1. Antes de la versión M153, el ajuste permitía que Google usara datos relevantes para mejorar sus modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados, materiales de origen y comentarios escritos. 0 es el valor predeterminado, excepto en los casos indicados abajo.
-
-Si se asigna el valor 1, permite que se use la función, pero no permite que Google mejore los modelos con datos relevantes (incluyendo peticiones, entradas, resultados, materiales de origen y comentarios escritos). 1 es el valor predeterminado de los usuarios de empresa que se gestionan en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Si se asigna el valor 2, no se permite la función.
-
-Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2061123930713023976">Permite capturas de paquetes de red de depuración</translation>
 <translation id="2061810934846663491">Configurar los nombres de dominio obligatorios para hosts de acceso remoto</translation>
 <translation id="2062632109797189011">Volver a habilitar la API obsoleta window.webkitStorageInfo</translation>
@@ -2881,7 +2860,6 @@ dicha extensión desde la línea de comandos.</translation>
 Si no se establece, se aplicará la política <ph name="BLOCK_POPUPS_POLICY_NAME" />, pero los usuarios podrán cambiar esta opción.</translation>
 <translation id="2796714419743648316">Lista de límites de tiempo por aplicación permitidos
 </translation>
-<translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2801065672151277034">Ajustes de gestión de certificados</translation>
 <translation id="2801155097555584385">Define un porcentaje personalizado de inicio de carga de la batería</translation>
 <translation id="2801378553855965587">Inhabilita la integración con <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
@@ -3455,6 +3433,19 @@ Si se inhabilita esta política o no se define, el menú de accesibilidad flotan
 <translation id="3150351525324499342">No mostrar de forma predeterminada el icono de <ph name="PRODUCT_NAME" /> en la barra de herramientas, pero dejar que los usuarios elijan</translation>
 <translation id="3152135410085709340">Permitir que estos sitios accedan a archivos locales mediante URLs file:// en el lector de PDFs</translation>
 <translation id="3152425128389603870">Habilitar el escritorio unificado y activarlo de forma predeterminada</translation>
+<translation id="3157506194753687842">Controla si el agente <ph name="GEMINI_SPARK_PRODUCT_NAME" /> puede conectarse a <ph name="PRODUCT_NAME" /> y usar la navegación automática.
+
+0 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> puede conectarse y usar la Navegación automática de <ph name="PRODUCT_NAME" />
+
+1 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> no puede conectarse ni usar la Navegación automática de <ph name="PRODUCT_NAME" />
+
+Advertencia: Si permites que <ph name="GEMINI_SPARK_PRODUCT_NAME" /> se conecte a <ph name="PRODUCT_NAME" /> y use Navegación automática, el agente <ph name="GEMINI_SPARK_PRODUCT_NAME" /> podrá realizar acciones autónomas de varios pasos en los clientes de <ph name="PRODUCT_NAME" /> mediante la sesión de navegador activa. Esto conlleva riesgos de seguridad significativos, como riesgos de credenciales, entrada de red local y pérdida de señales contextuales. Puede que no se respeten los controles de gestión y seguridad actuales.
+
+Se recomienda a los administradores que evalúen cuidadosamente el modelo de amenazas de red, las directrices de cumplimiento y las directrices de privacidad de su organización antes de habilitar esta función.
+
+Esta política no tiene efecto cuando la aplicación <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> o las políticas de Navegación automática de <ph name="PRODUCT_NAME" /> están inhabilitadas. Por ejemplo, la aplicación <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> se puede inhabilitar mediante la política <ph name="GEMINI_SETTINGS_POLICY_NAME" />. Para obtener más información sobre <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> en <ph name="PRODUCT_NAME" />, consulta https://support.google.com/chrome/a?p=gemini_in_chrome.
+
+<ph name="GEMINI_SPARK_PRODUCT_NAME" /> y la Navegación automática de <ph name="PRODUCT_NAME" /> no están disponibles en todos los países ni en todos los idiomas. Aunque se le asigne el valor 0 (Habilitado) a esta política, no se garantiza que la función se habilite, ya que sigue sujeta a disponibilidad. Para obtener más información sobre su lanzamiento, consulta las notas de la versión de Enterprise: https://chromeenterprise.google/resources/release-notes/.</translation>
 <translation id="3159375329008977062">El usuario tiene permiso para exportar e importar contenedores Crostini a través de la UI</translation>
 <translation id="3163167792874598128">Si esta política se habilita o no se define, la promoción de valoraciones del App Store se podrá mostrar al usuario (como máximo, una vez al año).
 Si esta política se inhabilita, la promoción de valoraciones del App Store no se mostrará al usuario.</translation>
@@ -5221,6 +5212,7 @@ Esta capa de control adicional está en un nivel inferior a la capa de permisos 
 Los usuarios no pueden anular la selección del administrador. Si no se define esta política, los usuarios tendrán una experiencia de consumidor, es decir, podrán modificar libremente los ajustes de ubicación del sistema y el valor predeterminado será <ph name="GLS_ALLOWED" />.
 
 Nota: Esta política desactiva la política <ph name="ARC_GLS_POLICY_NAME" />. Además, si se define esta política, <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> dejará de afectar a la preferencia de ubicación de <ph name="ANDROID_NAME" /> en <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="4340826578810728651">Permite que <ph name="GEMINI_SPARK_PRODUCT_NAME" /> se conecte y use la Navegación automática de <ph name="PRODUCT_NAME" /></translation>
 <translation id="4341199399451274159">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />, se especificarán las codificaciones de caracteres admitidas por el proveedor de búsquedas. Las codificaciones son nombres de páginas de códigos, como UTF‑8, GB2312 o ISO-8859‑1. Se intentarán utilizar siguiendo el orden especificado.
 
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />, se utilizará la codificación UTF‑8.</translation>
@@ -5915,7 +5907,6 @@ De lo contrario, solo se habilitarán los servicios seleccionados.</translation>
 Si se inhabilita esta política, la promoción de la extensión del proveedor de credenciales no se mostrará al usuario.</translation>
 <translation id="4768446404233019970">Habilitar los paquetes de cifrado 3DES en TLS</translation>
 <translation id="4770334626033858263">Configuración que se utiliza para generar y verificar códigos de acceso parental.</translation>
-<translation id="477383002672213319">Permitir la función Autocompletar mejorado sin mejorar los modelos de IA (mejora los modelos de IA anteriores a la versión M153).</translation>
 <translation id="4773997835955617342">Cambia la configuración sugerida de <ph name="KRB5_CONFIG" /> para los nuevos tickets creados manualmente.
 
       Si se habilita esta política, el valor de la política KerberosCustomPrefillConfig se aplicará como configuración sugerida y se mostrará en la sección Configuración avanzada del cuadro de diálogo de autenticación de Kerberos.
@@ -7199,13 +7190,6 @@ Varias políticas indican orígenes que afectan a las solicitudes a endpoints de
 <translation id="5537400155400537818">Inhabilitado: el zoom de CSS conserva su comportamiento anterior al estándar.</translation>
 <translation id="5537587542872235553">Permitir que las apps web aisladas que se han instalado de manera forzada y las apps de kiosco usen la API Device Attributes</translation>
 <translation id="553806128266843748">Un indicador booleano que especifica si las limitaciones de ancho de banda están habilitadas.</translation>
-<translation id="5540415024237352600">Esta política dejará de estar disponible en la versión M153 y no se admitirá (no tendrá ningún efecto) en una versión futura. Las firmas específicas para las aplicaciones nativas creadas al instalar una aplicación web progresiva (PWA) ahora están habilitadas de forma permanente en <ph name="MAC_OS_NAME" />. De esta forma, cada aplicación instalada tiene una identidad única para los componentes del sistema de <ph name="MAC_OS_NAME" />.
-
-Si se habilita esta política o no se define, se permitirá que se usen firmas específicas para la aplicación nativa que se crea al instalar una aplicación web progresiva (PWA). De esta forma, cada aplicación instalada tiene una identidad única para los componentes del sistema de <ph name="MAC_OS_NAME" />.
-
-Si se inhabilita esta política, todas las aplicaciones nativas creadas al instalar aplicaciones web progresivas tendrán la misma identidad. Esto puede interferir con la funcionalidad de <ph name="MAC_OS_NAME" />.
-
-Por ello, esta política solo debe inhabilitarse si usas una solución de seguridad de endpoints que bloquee las aplicaciones con una firma específica.</translation>
 <translation id="5540885720415375851">Permitir descubrimiento de dispositivos locales</translation>
 <translation id="5542235730745104308">Si se asigna el valor true a esta política, <ph name="PRODUCT_NAME" /> usará páginas de error alternativas que vienen incorporadas (como "No se encuentra la página"). Si se le asigna el valor false, <ph name="PRODUCT_NAME" /> nunca usará páginas de error alternativas.
 

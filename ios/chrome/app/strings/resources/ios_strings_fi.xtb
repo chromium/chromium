@@ -1031,7 +1031,6 @@
 <translation id="4430505936695785931">Käytä tallennettuja salasanoja muissa sovelluksissa</translation>
 <translation id="4431224949908513835">Valitse täytettävä maksutapa.</translation>
 <translation id="4432122368769493392">Asetukset…</translation>
-<translation id="4439968635693513370">Ota viikonlopun suunnitteluun avuksi</translation>
 <translation id="4442550905108052454">Avaa <ph name="BEGIN_BOLD" />Asetukset<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Lisää vaihtoehtoja: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Voit siirtyä taakse- tai eteenpäin pyyhkäisemällä sivun reunaa.</translation>
@@ -1060,7 +1059,6 @@
 <translation id="454217142158335225">Voit avata suljetut kohteet uudelleen Viimeaikaiset välilehdet- tai Välilehtiryhmät-osioista. Kiinnitettyjä välilehtiä ei suljeta.</translation>
 <translation id="4547181496285029457">Palaa viimeisimmälle välilehdelle</translation>
 <translation id="4552042254369397518">Kopioidaan…</translation>
-<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Lisää avainkoodeja</translation>
 <translation id="4564893319561643483">Piilota "<ph name="TITLE" />"</translation>
 <translation id="456502772933839252">Jaetaan <ph name="PAGE_TITLE" /></translation>
@@ -1102,7 +1100,6 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Organisaatiosi edellyttää, että selaat yksityisesti. Välilehtiryhmiä ei synkronoida incognito-tilassa.
 <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
-<translation id="4670422040696550256">Ota ostosten tekoon avuksi</translation>
 <translation id="467189612236587057">Ota yhteys yritykseen soittamalla</translation>
 <translation id="4673565891421389203">Kun kirjaudut sisään hallinnoidulla tilillä, voit erottaa organisaatioosi liittyvän selaamisen (esim. välilehdet, historian ja salasanat) muusta selaamisesta.
 
@@ -1392,7 +1389,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5596627076506792578">Lisäasetukset</translation>
 <translation id="560322036295180549">Organisaatiosi on laittanut tämän pois päältä</translation>
 <translation id="5611398002774823980">Tallenna tilille</translation>
-<translation id="5612225021788368236">Sulje oletusselainpromo</translation>
 <translation id="561269594905823128">Napauta <ph name="BEGIN_BOLD" />Valitse tiedosto<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Lajittele viimeisimmät ensimmäisiksi</translation>
 <translation id="5614553682702429503">Tallennetaanko salasana?</translation>
@@ -2478,7 +2474,6 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="9029650858822697271">Sinut on kirjattu ulos</translation>
 <translation id="9032405509996909363">Vahvista selausdatan poisto</translation>
 <translation id="9035699147763101514">Hyödyntää Geminin henkilökohtaista älyä. Muuta valintoja asetuksista.</translation>
-<translation id="9038526468059454274">Tee yhteenveto</translation>
 <translation id="9039373489628511875">Kaistanleveys</translation>
 <translation id="9042893549633094279">Yksityisyys ja turvallisuus</translation>
 <translation id="9055291197094969722">Luo välilehtiryhmiä järjestelläksesi avoimet välilehdet ja pysyäksesi tuottavana</translation>

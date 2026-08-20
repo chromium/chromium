@@ -372,7 +372,6 @@
 <translation id="4676059169848868271">Untuk membenarkan <ph name="APP_NAME" /> menggunakan penjejakan tangan, hidupkan penjejakan tangan dalam <ph name="BEGIN_LINK" />tetapan sistem<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Urus kad anda</translation>
 <translation id="4722332387043141878">Biasanya laman menggunakan penderia gerakan dan cahaya peranti anda untuk ciri seperti realiti maya atau penjejakan kecergasan</translation>
-<translation id="4748783296226936791">Laman biasanya menyambung kepada peranti HID untuk ciri yang menggunakan papan kekunci yang tidak biasa digunakan, pengawal permainan dan peranti lain</translation>
 <translation id="4755971844837804407">Apabila dihidupkan, laman dapat memaparkan sebarang iklan kepada anda. Apabila dimatikan, laman tidak dapat memaparkan iklan yang mengganggu atau mengelirukan.</translation>
 <translation id="4779083564647765204">Zum</translation>
 <translation id="4807122856660838973">Hidupkan Penyemakan Imbas Selamat</translation>
@@ -457,7 +456,6 @@
 <translation id="5700761515355162635">Kuki pihak ketiga dibenarkan</translation>
 <translation id="5706552988683188916">Tindakan ini memadamkan kuki dan data laman lain untuk <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Laman boleh menunjukkan gesaan log masuk daripada perkhidmatan identiti</translation>
-<translation id="5719854774000914513">Tapak boleh meminta untuk menyambung kepada peranti HID</translation>
 <translation id="5740126560802162366">Laman boleh menyimpan data pada peranti anda</translation>
 <translation id="5743425052258407233">Dapatkan sejarah anda pada semua peranti anda agar anda boleh menyambung semula pada tempat anda berhenti dengan mudah</translation>
 <translation id="5749158352074143502">Teruskan dengan tab ini</translation>
@@ -577,7 +575,6 @@
 <translation id="6950072572526089586">Laman yang anda lawati boleh menyimpan maklumat tentang perkara yang anda lakukan agar laman tersebut berfungsi seperti yang dijangkakan — contohnya, untuk memastikan anda terus dilog masuk ke laman atau untuk menyimpan item dalam troli beli-belah anda. Selalunya laman menyimpan maklumat ini pada peranti anda buat sementara waktu.</translation>
 <translation id="6964291282260073066">"WebGPU" dilumpuhkan.</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6972629891077993081">Peranti HID</translation>
 <translation id="6980507581230208647">Tema ros</translation>
 <translation id="6980861169612950611">Padamkan data laman? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Kebolehcapaian</translation>
@@ -735,7 +732,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:</translation>
 <translation id="8593422116412089302">Apabila dihidupkan, laman dapat meminta untuk menggunakan maklumat yang disimpan tentang anda. Apabila dimatikan, laman tidak dapat meminta untuk menggunakan maklumat yang disimpan tentang anda.</translation>
 <translation id="8609465669617005112">Alihkan ke atas</translation>
 <translation id="8617611086246832542">Apabila dihidupkan, paparan desktop laman web akan dipaparkan. Apabila dimatikan, paparan mudah alih laman web akan dipaparkan.</translation>
-<translation id="8625916342247441948">Jangan benarkan laman menyambung kepada peranti HID</translation>
 <translation id="8670078035093027626">Helaian bawah penyemak imbas lalai dibuka pada ketinggian penuh</translation>
 <translation id="8676316391139423634">Apabila pilihan ini dihidupkan, laman boleh meminta untuk menjejaki tangan anda. Apabila pilihan ini dimatikan, laman tidak boleh menjejaki tangan anda.</translation>
 <translation id="8676374126336081632">Kosongkan input</translation>

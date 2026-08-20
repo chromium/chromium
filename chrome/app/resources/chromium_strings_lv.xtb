@@ -74,7 +74,6 @@
 <translation id="1857749206890802997">Lejupielādējiet pārlūku Chromium savā tālrunī, lai atvērtu vai izveidotu jaunas ciļņu grupas, atrodoties ceļā.</translation>
 <translation id="185970820835152459">Varat pārvaldīt Google kontus, kuros esat pierakstījies. Jūsu Google konti tiek izmantoti pārlūkā Chromium, Play veikalā, pakalpojumā Gmail un citur. Ja vēlaties pievienot kontu kādam citam, piemēram, ģimenes loceklim, pievienojiet jaunu personu savai <ph name="DEVICE_TYPE" /> ierīcei. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="1862852878885210965">Meklēšana, izmantojot funkciju Attēlu meklēšana</translation>
-<translation id="1863837059069884561">Jau ir pierakstījies lietotājs <ph name="EXISTING_USER" />. Lai atdalītu pārlūkošanu, pierakstieties pārlūkā Chromium savā profilā, izmantojot e-pasta adresi <ph name="USER_EMAIL_ADDRESS" />. Varēsiet arī piekļūt grāmatzīmēm un citiem datiem no <ph name="DEVICE" />.</translation>
 <translation id="1880677175115548835">Atlasīt tekstu</translation>
 <translation id="1881322772814446296">Jūs pierakstāties ar pārvaldītu kontu, kura administrators var kontrolēt jūsu profilu. Jūsu Chromium dati, piemēram, lietotnes, grāmatzīmes, vēsture, paroles un citi iestatījumi, tiks neatgriezeniski saistīti ar lietotāju <ph name="USER_NAME" />. Varēsiet dzēst šos datus, izmantojot Google kontu informācijas paneli, taču nevarēsiet šos datus saistīt ar citu kontu. Ja vēlaties, varat izveidot jaunu profilu, lai atsevišķi glabātu Chromium datus. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Pārlūkā Chromium tiek taupīta akumulatora enerģija, ierobežojot darbības fonā un vizuālos efektus, piemēram, vienmērīgu ritināšanu un video kadru nomaiņas ātrumu. Varat <ph name="BEGIN_LINK" />uzzināt vairāk par enerģijas taupīšanas režīmu<ph name="END_LINK" />.</translation>
@@ -133,7 +132,6 @@
 <translation id="2418322681019544463">Atveriet saites pārlūkā Chromium no jebkuras lietotnes un saglabājiet pārlūku pieejamu uzdevumu joslā.</translation>
 <translation id="2425157128016763890">Noklikšķiniet uz pogas Apkopot, lai kopīgotu šo dokumentu ar Gemini pārlūkā Chromium, iegūtu īsu kopsavilkumu un uzdotu papildu jautājumus.</translation>
 <translation id="2440750600860946460">Izmantojot <ph name="BEGIN_LINK" />Chromium rīkus<ph name="END_LINK" />, varat droši pārlūkot saturu un pārvaldīt jums pieejamās iespējas.</translation>
-<translation id="2449487342837813167">Jau ir pierakstījies lietotājs <ph name="EXISTING_USER" />. Lai atdalītu pārlūkošanu, pierakstieties pārlūkā Chromium savā profilā, izmantojot e-pasta adresi <ph name="USER_EMAIL_ADDRESS" />. Varēsiet arī piekļūt parolēm un citiem datiem visās savās ierīcēs.</translation>
 <translation id="2451727308784734061">Izmantojot saīsni, varat ātri piekļūt Google paroļu pārvaldniekam. Varat pārvietot saīsni uz datora sākuma ekrānu vai lietotņu palaidēju.</translation>
 <translation id="2478295928299953161">Chromium drīz tiks aizvērts</translation>
 <translation id="2483889755041906834">Pārlūkā Chromium</translation>
@@ -406,7 +404,6 @@
 
 Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</translation>
 <translation id="5575874067957905201">Rādīt pakalpojumu Gemini pārlūkā Chromium Mac izvēļņu joslā un ieslēgt īsinājumtaustiņu</translation>
-<translation id="5576587363991567745">Jau ir pierakstījies lietotājs <ph name="EXISTING_USER" />. Lai atdalītu pārlūkošanu, pierakstieties pārlūkā Chromium savā profilā, izmantojot e-pasta adresi <ph name="USER_EMAIL_ADDRESS" />. Varēsiet arī piekļūt saglabātajai informācijai un citiem datiem no <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Palaišanas kļūda: lūdzu, palaidiet instalēšanas programmu kā parasts lietotājs, nevis kā administrators.</translation>
 <translation id="5580770360767802657">Izmantojiet pārlūku Chromium pēc noklusējuma un piespraudiet to</translation>
 <translation id="5596627076506792578">Citas opcijas</translation>
@@ -581,7 +578,6 @@ Jaunas grāmatzīmes nevar saglabāt jūsu kontā, kamēr neizdzēsīsiet dažas
 <translation id="7213407614656404070">Izmantojiet Chromium ikreiz, kad noklikšķināt uz saitēm ziņojumos, dokumentos un citās lietotnēs</translation>
 <translation id="7216228761061470870">Kad izmantojat attēlu meklēšanu, serverim tiek nosūtīts lapas nosaukums, URL un saturs, tostarp PDF faili.</translation>
 <translation id="7223968959479464213">Uzdevumu pārvaldnieks — Chromium</translation>
-<translation id="7227958669698166857">Jau ir pierakstījies lietotājs <ph name="EXISTING_USER" />. Lai atdalītu pārlūkošanu, pierakstieties pārlūkā Chromium savā profilā, izmantojot e-pasta adresi <ph name="USER_EMAIL_ADDRESS" />. Varēsiet arī piekļūt saglabātajai informācijai un citiem datiem visās savās ierīcēs.</translation>
 <translation id="7252276985725323153">Sāciet pārlūkošanu uzreiz: tagad pārlūks Chromium var tikt palaists, kad tiek palaista operētājsistēma Windows.</translation>
 <translation id="7274695763216404502">Piesprausts! Varat atkal piekļūt funkcijai Attēlu meklēšana no rīkjoslas.</translation>
 <translation id="7288567540154601580">Cilnes un paplašinājumi</translation>
@@ -649,7 +645,6 @@ Jaunas grāmatzīmes nevar saglabāt jūsu kontā, kamēr neizdzēsīsiet dažas
 <translation id="7888981273428720788">Iestatīt Chromium kā noklusējuma pārlūku</translation>
 <translation id="7934340546140346950">Pārlūkā Chromium nedrošie savienojumi tiek automātiski jaunināti uz HTTPS, ja iespējams.</translation>
 <translation id="7937630085815544518">Operētājsistēmā Chromium iepriekš pierakstījāties kā lietotājs <ph name="USER_EMAIL_ADDRESS" />. Lai pierakstītos vēlreiz, lūdzu, izmantojiet to pašu kontu.</translation>
-<translation id="7944602660083060118">Jau ir pierakstījies lietotājs <ph name="EXISTING_USER" />. Lai atdalītu pārlūkošanu, pierakstieties pārlūkā Chromium savā profilā, izmantojot e-pasta adresi <ph name="USER_EMAIL_ADDRESS" />. Varēsiet arī piekļūt grāmatzīmēm un citiem datiem visās savās ierīcēs.</translation>
 <translation id="7975919845073681630">Šī ir Chromium papildu instalācija, un to nevar izmantot kā noklusējuma pārlūku.</translation>
 <translation id="7997934263947464652">No nezināmiem avotiem iegūti paplašinājumi, lietotnes un motīvi var kaitēt ierīcei. Chromium komanda iesaka instalēt tos tikai no veikala <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="8000759043835159571">Izmantojiet pārlūku Chromium savā ierīcē (<ph name="DEVICE_TYPE" />), lai pilnvērtīgi izmantotu Google piedāvātās iespējas</translation>
@@ -681,7 +676,6 @@ Jaunas grāmatzīmes nevar saglabāt jūsu kontā, kamēr neizdzēsīsiet dažas
 <translation id="8232193495299001329">Chromium nevar pārbaudīt šī paplašinājuma izcelsmi, un, iespējams, tas nav drošs. Noņemiet to no pārlūka Chromium, lai tas jūsu apmeklētajās vietnēs vairs nevarētu skatīt un mainīt jūsu datus, tostarp personas informāciju.</translation>
 <translation id="8248265253516264921">Ja attēlam nav vērtīga apraksta, pārlūks Chromium mēģinās jums tādu nodrošināt. Lai izveidotu aprakstus, attēli tiek nosūtīti uzņēmumam Google. Jebkurā brīdī iestatījumos varat izslēgt šo iespēju.</translation>
 <translation id="8254601181414348851">Vai pierakstīties pārlūkā Chromium, izmantojot jaunu profilu?</translation>
-<translation id="8262224117913639129">Jau ir pierakstījies lietotājs <ph name="EXISTING_USER" />. Lai atdalītu pārlūkošanu, pierakstieties pārlūkā Chromium savā profilā, izmantojot e-pasta adresi <ph name="USER_EMAIL_ADDRESS" />. Varēsiet arī piekļūt parolēm un citiem datiem no <ph name="DEVICE" />.</translation>
 <translation id="8277334259226003205">Rādīt pakalpojumu Gemini pārlūkā Chromium sistēmas teknē un ieslēgt īsinājumtaustiņu</translation>
 <translation id="8286943863733751221">Pārlūkā <ph name="BEGIN_LINK" />Chromium tiek rādīti brīdinājumi<ph name="END_LINK" /> par nedrošām vietnēm un lejupielādēm</translation>
 <translation id="8295827201165805317">Pēdējā laikā šī vietne nav apmeklēta. Pārlūkā Chromium tika noņemta šāda atļauja: <ph name="PERMISSION" />.</translation>

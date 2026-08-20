@@ -372,7 +372,6 @@
 <translation id="4676059169848868271">Per consentire all'app <ph name="APP_NAME" /> di usare il tracciamento delle mani, attiva anche il tracciamento delle mani nelle <ph name="BEGIN_LINK" />impostazioni di sistema<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Gestisci le carte</translation>
 <translation id="4722332387043141878">Solitamente i siti usano i sensori di movimento e della luce del dispositivo per funzionalità come la realtà virtuale o il monitoraggio dell'attività fisica</translation>
-<translation id="4748783296226936791">Solitamente i siti si connettono ai dispositivi HID per funzionalità che usano tastiere insolite, controller di gioco e altri dispositivi</translation>
 <translation id="4755971844837804407">Quando l'opzione è attiva, i siti possono mostrarti qualsiasi annuncio. Quando l'opzione è disattivata, i siti non possono mostrare annunci invasivi o fuorvianti.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Attiva Navigazione sicura</translation>
@@ -457,7 +456,6 @@
 <translation id="5700761515355162635">Cookie di terze parti consentiti</translation>
 <translation id="5706552988683188916">Vengono eliminati i cookie e altri dati dei siti per <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">I siti possono mostrare richieste di accesso da servizi di identità</translation>
-<translation id="5719854774000914513">I siti possono chiedere di connettersi ai dispositivi HID</translation>
 <translation id="5740126560802162366">I siti possono salvare dati sul dispositivo</translation>
 <translation id="5743425052258407233">Attiva la tua cronologia su tutti i dispositivi, così potrai riprendere facilmente da dove avevi interrotto</translation>
 <translation id="5749158352074143502">Continua con questa scheda</translation>
@@ -577,7 +575,6 @@
 <translation id="6950072572526089586">Un sito che visiti può salvare informazioni su ciò che stai facendo affinché possa funzionare come previsto, ad esempio per mantenere l'accesso al sito o salvare gli articoli nel tuo carrello degli acquisti. Spesso i siti salvano temporaneamente queste informazioni sul dispositivo</translation>
 <translation id="6964291282260073066">"WebGPU" è disattivato.</translation>
 <translation id="6965382102122355670">Ok</translation>
-<translation id="6972629891077993081">Dispositivi HID</translation>
 <translation id="6980507581230208647">Tema rosa</translation>
 <translation id="6980861169612950611">Vuoi eliminare i dati del sito? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accessibilità</translation>
@@ -735,7 +732,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:</translation>
 <translation id="8593422116412089302">Quando l'opzione è attiva, i siti possono chiedere di utilizzare le informazioni su di te che hanno salvato. Quando l'opzione è disattivata, i siti non possono chiederti di usare le informazioni su di te che hanno salvato.</translation>
 <translation id="8609465669617005112">Sposta su</translation>
 <translation id="8617611086246832542">Quando l'opzione è attiva, viene mostrata la visualizzazione dei siti web da computer. Quando l'opzione è disattivata, viene mostrata la visualizzazione mobile dei siti web.</translation>
-<translation id="8625916342247441948">Non consentire ai siti di connettersi ai dispositivi HID</translation>
 <translation id="8670078035093027626">Riquadro inferiore del browser predefinito aperto a schermo intero</translation>
 <translation id="8676316391139423634">Quando l'opzione è attiva, i siti possono chiedere di monitorare le tue mani. Quando l'opzione è disattivata, i siti non possono monitorare le tue mani.</translation>
 <translation id="8676374126336081632">Cancella testo inserito</translation>

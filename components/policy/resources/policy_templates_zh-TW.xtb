@@ -173,16 +173,6 @@
 <translation id="1100840127293327071">不要勾選保留現有瀏覽資料的預設選項</translation>
 <translation id="1105572260329131950">使用預設圖示代表安全連線</translation>
 <translation id="1105711894873068933"><ph name="LACROS_NAME" /> 停用後，系統會在下一次登入時移除所有使用者資料。</translation>
-<translation id="1106279506320506502">指定是否啟用隔離模式。
-
-隔離模式是企業專用的暫時瀏覽模式。
-此模式支援資料遺失防護相關企業政策和強制安裝的擴充功能。
-
-如果設為 1 (啟用)：啟用隔離模式並停用無痕模式。
-
-如果設為 0 (停用) 或未設定：停用隔離模式。
-
-必須具備 `<ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />` 授權，這項政策才會生效。</translation>
 <translation id="1106342730891876476">共用設定</translation>
 <translation id="1107538157073168076">停用深入分析擴充功能</translation>
 <translation id="1110426799149444997">停用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />的區域搜尋功能。</translation>
@@ -1597,17 +1587,6 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 <translation id="2057317273526988987">允許存取網址清單</translation>
 <translation id="205807990145127714">要用於回報信號強度事件的遙測資料。</translation>
 <translation id="2060153898336610735">自動 (根據目前的語言)</translation>
-<translation id="2060316966423154087">指定使用者能否讓 <ph name="PRODUCT_NAME" /> 使用生成式 AI 進一步辨識表單，協助填寫更多欄位。
-
-0 = 效果與 1 相同。在 M153 之前，這項設定允許 Google 使用相關資料改良 AI 模型。相關資料可能包括提示詞、輸入內容、輸出內容、來源資料和文字意見回饋 (視功能而定)。預設值為 0，但以下註明的情形除外。
-
-1 = 允許使用這項功能，但不允許 Google 使用提示詞、輸入內容、輸出內容、來源資料和文字意見回饋等相關資料改良模型。如果是 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企業版使用者，以及 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版帳戶，預設值為 1。
-
-2 = 不允許使用這項功能。
-
-如果不設定這項政策，系統會根據 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策決定其行為。
-
-如要進一步瞭解生成式 AI 功能的資料處理方式，請前往 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="2061123930713023976">允許針對網路封包擷取作業進行偵錯</translation>
 <translation id="2061810934846663491">為遠端存取主機設定必要的網域名稱</translation>
 <translation id="2062632109797189011">重新啟用已淘汰的 window.webkitStorageInfo API</translation>
@@ -2810,7 +2789,6 @@ PAC 樣式的字串：
 
 如果不設定這項政策，系統會套用 <ph name="BLOCK_POPUPS_POLICY_NAME" />，但使用者可以變更這項設定。</translation>
 <translation id="2796714419743648316">個別應用程式時間限制許可清單</translation>
-<translation id="2799223571221894425">重新啟動</translation>
 <translation id="2801065672151277034">憑證管理設定</translation>
 <translation id="2801155097555584385">自訂電池開始充電值 (以百分比表示)</translation>
 <translation id="2801378553855965587">停用 <ph name="GOOGLE_CALENDAR_NAME" />整合。</translation>
@@ -3370,6 +3348,19 @@ PAC 樣式的字串：
 <translation id="3150351525324499342">預設不在工具列顯示 <ph name="PRODUCT_NAME" /> 圖示，但允許使用者選擇</translation>
 <translation id="3152135410085709340">允許這些網站在 PDF 檢視器中存取本機的 file:// 網址</translation>
 <translation id="3152425128389603870">允許使用整合桌面並預設為啟用。</translation>
+<translation id="3157506194753687842">控制 <ph name="GEMINI_SPARK_PRODUCT_NAME" /> 代理程式是否可連線至 <ph name="PRODUCT_NAME" /> 並使用自動瀏覽功能。
+
+0 = 允許 <ph name="GEMINI_SPARK_PRODUCT_NAME" /> 連線至 <ph name="PRODUCT_NAME" /> 並使用自動瀏覽功能
+
+1 = 禁止 <ph name="GEMINI_SPARK_PRODUCT_NAME" /> 連線或使用 <ph name="PRODUCT_NAME" /> 自動瀏覽功能
+
+警告：如果允許 <ph name="GEMINI_SPARK_PRODUCT_NAME" /> 連線至 <ph name="PRODUCT_NAME" /> 並使用自動瀏覽功能，<ph name="GEMINI_SPARK_PRODUCT_NAME" /> 代理程式就能透過使用中的瀏覽器工作階段，在 <ph name="PRODUCT_NAME" /> 用戶端執行多步驟的自主動作。這會導致嚴重的安全風險，包括憑證外洩風險、區域網路連入 (Local Network Ingress) 以及內容認知信號遺失。現有的管理和安全控管機制可能無法發揮作用。
+
+建議管理員在啟用這項功能前，先謹慎評估機構的網路威脅模型、法規遵循和隱私權規範。
+
+如果停用 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 應用程式或 <ph name="PRODUCT_NAME" /> 自動瀏覽政策，這項政策就沒有任何作用。例如，<ph name="GEMINI_SETTINGS_POLICY_NAME" /> 政策可能會停用 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 應用程式。如要進一步瞭解 <ph name="PRODUCT_NAME" /> 內建的 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />，請前往 https://support.google.com/chrome/a?p=gemini_in_chrome。
+
+<ph name="PRODUCT_NAME" /> 自動瀏覽和 <ph name="GEMINI_SPARK_PRODUCT_NAME" /> 目前只在部分國家/地區推出，且僅支援某些語言。將這項政策設為「0 - 啟用」並不保證一定會啟用此功能，實際情況仍須視適用情形而定。如要進一步瞭解推出情況，請參閱 Chrome Enterprise 版本資訊：https://chromeenterprise.google/resources/release-notes/。</translation>
 <translation id="3159375329008977062">允許使用者透過 UI 匯出/匯入 Crostini 容器</translation>
 <translation id="3163167792874598128">如未設定這項政策或設為啟用，系統可能會向使用者顯示 App Store 評分宣傳 (一年最多一次)。
 如果將這項政策設為停用，系統就不會向使用者顯示 App Store 評分宣傳。</translation>
@@ -5090,6 +5081,7 @@ IP 位址空間覆寫有兩種形式：
 使用者無法覆寫管理員選取的項目。如果未設定這項政策，系統會採用預設值 <ph name="GLS_ALLOWED" />，使用者將可享有消費者體驗，也就是可自由修改系統位置資訊設定。
 
 注意：這項政策會淘汰 <ph name="ARC_GLS_POLICY_NAME" /> 政策。此外，設定這項政策後，<ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> 將不再影響 <ph name="PRODUCT_OS_NAME" /> 的 <ph name="ANDROID_NAME" /> 位置偏好設定。</translation>
+<translation id="4340826578810728651">允許 <ph name="GEMINI_SPARK_PRODUCT_NAME" /> 連線至 <ph name="PRODUCT_NAME" /> 並使用自動瀏覽功能</translation>
 <translation id="4341199399451274159">如果已啟用 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策，你可以設定 <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> 政策來指定搜尋引擎支援的字元編碼。編碼就是 UTF-8、GB2312 和 ISO-8859-1 等字碼頁名稱，系統會依提供的順序嘗試使用編碼。
 
       如果未設定 <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> 政策，系統會使用 UTF-8。</translation>
@@ -5765,7 +5757,6 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
 如果將政策設為停用，使用者可能不會看到憑證提供者擴充功能擴充能宣傳資訊。</translation>
 <translation id="4768446404233019970">在傳輸層安全標準 (TLS) 中啟用 3DES 加密套件</translation>
 <translation id="4770334626033858263">用於產生及驗證家長存取碼的設定。</translation>
-<translation id="477383002672213319">允許使用強化版自動填入功能，但不協助改良 AI 模型 (M153 前的版本會改良 AI 模型)。</translation>
 <translation id="4773997835955617342">為手動建立的新票證變更 <ph name="KRB5_CONFIG" /> 建議設定。
 
       如果啟用這項政策，「KerberosCustomPrefilledConfig」政策的值就會用於建議設定，並顯示在 Kerberos 驗證對話方塊的「進階」部分中。
@@ -7016,13 +7007,6 @@ Microsoft SharePoint 和 OneDrive 資訊卡需要額外的管理員設定。想�
 <translation id="5537400155400537818">已停用：CSS zoom 屬性會保留標準化前的舊版行為。</translation>
 <translation id="5537587542872235553">允許強制安裝的隔離網頁應用程式和資訊站應用程式使用 Device Attributes API</translation>
 <translation id="553806128266843748">布林值標記，表示是否已啟用節流功能。</translation>
-<translation id="5540415024237352600">這項政策將在 M153 版淘汰，並在未來版本中停止支援 (不再有效)。在 <ph name="MAC_OS_NAME" /> 上，安裝漸進式網頁應用程式 (PWA) 時建立的原生應用程式，現在已永久啟用臨時簽名機制，確保每個安裝的應用程式都有專屬身分，供 <ph name="MAC_OS_NAME" /> 系統元件識別。
-
-如果將這項政策設為啟用或不設定，即可在安裝漸進式網頁應用程式 (PWA) 時，為建立的原生應用程式進行臨時簽名，確保每個安裝的應用程式都有專屬身分，供 <ph name="MAC_OS_NAME" /> 系統元件識別。
-
-如果設為停用，安裝漸進式網頁應用程式 (PWA) 時，建立的原生應用程式都會具備相同身分，這可能會干擾 <ph name="MAC_OS_NAME" /> 的功能運作。
-
-除非端點安全性解決方案會封鎖具有臨時簽名的應用程式，否則建議不要停用這項政策。</translation>
 <translation id="5540885720415375851">允許本機裝置搜尋</translation>
 <translation id="5542235730745104308">如果將這項政策設為 True，<ph name="PRODUCT_NAME" /> 會使用內建的替代錯誤頁面 (例如「找不到網頁」)。如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 一律不會使用替代錯誤頁面。
 

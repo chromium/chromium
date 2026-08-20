@@ -1031,7 +1031,6 @@
 <translation id="4430505936695785931">أصبح بإمكانك الآن ملء كلمات المرور المحفوظة في تطبيقات أخرى</translation>
 <translation id="4431224949908513835">اختَر طريقة دفع لاستخدامها.</translation>
 <translation id="4432122368769493392">الإعدادات…</translation>
-<translation id="4439968635693513370">فرصتك لتخطيط عطلة نهاية الأسبوع مع</translation>
 <translation id="4442550905108052454">‏فتح <ph name="BEGIN_BOLD" />الإعدادات (Settings)<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">خيارات إضافية حول "<ph name="CELL_ACCESSIBILITY_LABEL" />"</translation>
 <translation id="4455710003856931944">يمكنك التمرير سريعًا من الحافة للرجوع للخلف أو التقدّم للأمام.</translation>
@@ -1060,7 +1059,6 @@
 <translation id="454217142158335225">يمكنك إعادة فتح علامات التبويب المغلقة من قسمَي "علامات التبويب الأخيرة" و"مجموعات علامات التبويب". ولن يتم إغلاق علامات التبويب المثبَّتة.</translation>
 <translation id="4547181496285029457">العودة إلى أحدث علامة تبويب</translation>
 <translation id="4552042254369397518">جارٍ النسخ…</translation>
-<translation id="4552089082226364758">الفلاش</translation>
 <translation id="4553044860350038560">المزيد من مفاتيح المرور</translation>
 <translation id="4564893319561643483">إخفاء "<ph name="TITLE" />"</translation>
 <translation id="456502772933839252">جارٍ مشاركة "<ph name="PAGE_TITLE" />"</translation>
@@ -1102,7 +1100,6 @@
 <translation id="4668929960204016307">،</translation>
 <translation id="4669618761237477717">تفرض مؤسستك سياسة التصفُّح بخصوصية تامّة. لذا، لا تتم مزامنة مجموعات علامات التبويب في وضع التصفُّح المتخفي.
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
-<translation id="4670422040696550256">فرصة للتسوّق بثقة مع</translation>
 <translation id="467189612236587057">التواصل مع نشاط تجاري من خلال بدء مكالمة هاتفية</translation>
 <translation id="4673565891421389203">يساعدك تسجيل الدخول باستخدام حسابك المُدار في فصل بيانات التصفّح المتعلقة بمؤسستك (بما في ذلك علامات التبويب والسجلّ وكلمات المرور) عن بيانات التصفّح الأخرى.
 
@@ -1310,7 +1307,6 @@
 <translation id="5300589172476337783">عرض</translation>
 <translation id="5311061401280561833">الوصول إلى الكاميرا والميكروفون مسموح به</translation>
 <translation id="5313967007315987356">إضافة موقع إلكتروني</translation>
-<translation id="5315029634103634221">‏‫Gemini هو نموذج ذكاء اصطناعي وقد يرتكب أخطاءً. <ph name="BEGIN_LINK" />مزيد من المعلومات حول البيانات ذات الصلة التي يتم إرسالها إلى Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">ما مِن عناصر متاحة للاستيراد</translation>
 <translation id="5316356981864168850">‫<ph name="INDEX" /> من إجمالي <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">حفظ</translation>
@@ -1391,7 +1387,6 @@
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="560322036295180549">أوقفت مؤسستك هذا الخيار.</translation>
 <translation id="5611398002774823980">الحفظ في الحساب</translation>
-<translation id="5612225021788368236">إغلاق الرسالة الترويجية عن المتصفّح التلقائي</translation>
 <translation id="561269594905823128">‏انقر على <ph name="BEGIN_BOLD" />اختيار الملف (Select your file)<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">الترتيب حسب الأحدث</translation>
 <translation id="5614553682702429503">هل تريد حفظ كلمة المرور؟</translation>
@@ -2478,7 +2473,6 @@
 <translation id="9029650858822697271">تم تسجيل خروجك من الحساب</translation>
 <translation id="9032405509996909363">تأكيد حذف بيانات التصفّح</translation>
 <translation id="9035699147763101514">‏تستنِد هذه الميزة إلى "الذكاء المخصّص" في Gemini. ويمكنك إدارة اختياراتك في الإعدادات.</translation>
-<translation id="9038526468059454274">الملخص بانتظارك مع</translation>
 <translation id="9039373489628511875">معدّل نقل البيانات</translation>
 <translation id="9042893549633094279">الخصوصية والأمان</translation>
 <translation id="9055291197094969722">لتعزيز إنتاجيتك، يمكنك تنظيم علامات التبويب المفتوحة عبر وضعها في مجموعات</translation>

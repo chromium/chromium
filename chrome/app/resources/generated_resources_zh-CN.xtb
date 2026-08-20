@@ -500,7 +500,6 @@
 <translation id="1378715594598306389">查看更多标签页</translation>
 <translation id="1380028686461971526">自动联网</translation>
 <translation id="1381567580865186407">系统会将<ph name="LANGUAGE" />语音发送给 Google 以供处理</translation>
-<translation id="138181280295369883">登录即可在自己的所有设备上获取保存的信息等内容</translation>
 <translation id="1382174183118245544">信用卡号</translation>
 <translation id="1383065744946263511">固定到工具栏</translation>
 <translation id="1383381142702995121">管理此扩展程序</translation>
@@ -716,7 +715,6 @@
 <translation id="1554640914375980459">收到通知时闪烁屏幕。如果您对光敏感，请谨慎使用闪烁通知功能。</translation>
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="1556127816860282890">后台活动和某些视觉效果（例如流畅滚动）可能会受到限制</translation>
-<translation id="1557806604681757705">您的电脑</translation>
 <translation id="1557939148300698553">创建个人资料</translation>
 <translation id="155803912725350982">慢速键</translation>
 <translation id="155865706765934889">触控板</translation>
@@ -1018,7 +1016,6 @@
 <translation id="1784707308176068866">在合作的原生应用请求时在后台运行</translation>
 <translation id="1784849162047402014">设备磁盘空间不足</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{卸载“<ph name="APP_NAME" />”也会卸载下面这个应用：}other{卸载“<ph name="APP_NAME" />”也会卸载下面这些应用：}}</translation>
-<translation id="1785698972112179866">登录即可获取<ph name="DEVICE" />中的书签等信息</translation>
 <translation id="1786290960428378411">请求进行读取和更改</translation>
 <translation id="1789543093145556097">一律隐藏</translation>
 <translation id="179021551944139249">将链接添加到阅读清单</translation>
@@ -3290,7 +3287,6 @@
 <translation id="3527085408025491307">文件夹</translation>
 <translation id="3527473647192919613">打开新的隔离窗口</translation>
 <translation id="3528498924003805721">快捷方式目标</translation>
-<translation id="35296112145429559">固定滚动按钮</translation>
 <translation id="3529851166527095708">地址和其他信息(&amp;A)</translation>
 <translation id="3530919970074558307">为分组撤销焦点效果</translation>
 <translation id="3531070080754387701">Microsoft 365 无法从此文件夹中打开 <ph name="FILE_NAMES" /></translation>
@@ -3492,7 +3488,6 @@
 <translation id="3681191721636073359">Chrome 认为您不想在该网站上使用位置信息，因此会隐藏请求，减少干扰。</translation>
 <translation id="3681311097828166361">感谢您提交反馈。您目前处于离线状态，系统将在您上线后提交您的反馈报告。</translation>
 <translation id="3681548574519135185">聚焦环</translation>
-<translation id="3682207069037179944">您可以通过滚动或使用鼠标滚轮来查看所有标签页</translation>
 <translation id="3683524264665795342"><ph name="APP_NAME" /> 屏幕共享请求</translation>
 <translation id="3685598397738512288">Linux USB 偏好设置</translation>
 <translation id="3686108296937784939">我所属组织的快捷方式</translation>
@@ -3511,7 +3506,6 @@
 <translation id="369522892592566391">{NUM_FILES,plural, =0{已完成安全检查。系统将会上传您的数据。}=1{已完成安全检查。系统将会上传您的文件。}other{已完成安全检查。系统将会上传您的文件。}}</translation>
 <translation id="369736917241079046">启动器键 + 向左键</translation>
 <translation id="3697716475445175867">上次打开时间</translation>
-<translation id="3697962048674120810">{COUNT,plural, =0{没有密码}=1{已检查 1 个密码}other{已检查 {COUNT} 个密码}}</translation>
 <translation id="3698471669415859717">检查完毕</translation>
 <translation id="3699624789011381381">邮箱</translation>
 <translation id="3699920817649120894">要关闭同步和个性化功能吗？</translation>
@@ -4305,7 +4299,6 @@
 <translation id="4290898381118933198">滑动即可浏览各个页面</translation>
 <translation id="4292613336957320546">加速</translation>
 <translation id="429312253194641664">某个网站正在播放媒体内容</translation>
-<translation id="4293154608148215505">您的手机</translation>
 <translation id="4293219510510666933">使用日常用语搜索您的浏览记录，并查找您访问过的网站。您还可以提出问题，系统会根据您的浏览记录提供答案。此设置已开启。</translation>
 <translation id="429344752071832554">为分组撤销焦点效果</translation>
 <translation id="4294392694389031609">“<ph name="FILE_NAME" />”已从下载记录中删除，但仍保留在您的设备上</translation>
@@ -5385,7 +5378,6 @@
 <translation id="5125714798187802869">启用</translation>
 <translation id="5125751979347152379">网址无效。</translation>
 <translation id="5125967981703109366">关于此卡片</translation>
-<translation id="5126335625961252141">您的平板电脑</translation>
 <translation id="512642543295077915">搜索键 + 退格键</translation>
 <translation id="5126611267288187364">查看更改</translation>
 <translation id="5127620150973591153">安全配对号码：<ph name="TOKEN" /></translation>
@@ -5450,7 +5442,6 @@
 <translation id="5176671554021050278">使用 Google 智能镜头可详细了解网页上的特定图片或文字。</translation>
 <translation id="5177479852722101802">仍然禁止访问摄像头和麦克风</translation>
 <translation id="5178667623289523808">查找上一个</translation>
-<translation id="5179428098696668914">关闭 AI 播放功能</translation>
 <translation id="5180276433875360121">显示<ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">正在下载</translation>
 <translation id="5181172023548002891">保存到 <ph name="ACCOUNT" /> 的 Google 密码管理工具</translation>
@@ -5563,7 +5554,6 @@
 <translation id="5262334727506665688">继续将密码保存在您的 Google 账号中</translation>
 <translation id="5262784498883614021">自动连接到网络</translation>
 <translation id="5263656105659419083">如需轻松返回侧边栏，请点击右上角的“固定”</translation>
-<translation id="5266117308710480775">查看您的所有标签页</translation>
 <translation id="526622169288322445">显示可对“<ph name="ADDRESS_SUMMARY" />”执行的更多操作</translation>
 <translation id="5267544731219369573">如要使用“技能”，请通过已启用 Chrome 中的 Gemini 的 Google 账号登录 Chrome</translation>
 <translation id="5267572070504076962">开启“安全浏览”功能，防范危险网站</translation>
@@ -5757,7 +5747,6 @@
 <translation id="5427459444770871191">顺时针旋转(&amp;C)</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" />（可进行更新）</translation>
 <translation id="5429818411180678468">全角</translation>
-<translation id="5430283833237000571">如需检查您在其他设备上保存的密码，请<ph name="BEGIN_LINK" />验证身份<ph name="END_LINK" />。</translation>
 <translation id="5430931332414098647">即时网络共享</translation>
 <translation id="5431318178759467895">彩色</translation>
 <translation id="5432145523462851548">在文件夹中显示 <ph name="FILE_NAME" /></translation>
@@ -6675,7 +6664,6 @@
 <translation id="6164832038898943453">添加可自动翻译的语言</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6169040057125497443">请检查您的麦克风。</translation>
-<translation id="616942303645148485">在需要时自动显示标签页滚动按钮</translation>
 <translation id="6169967265765719844">您可以在 <ph name="LINK_BEGIN" />Steam 应用设置<ph name="LINK_END" />中管理通过 Steam 安装的游戏和应用的权限。</translation>
 <translation id="6170313103929479668">调整拆分视图</translation>
 <translation id="6170470584681422115">三明治</translation>
@@ -7538,7 +7526,6 @@
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{要移除该标签页并删除该分组吗？}=1{要移除这些标签页并删除该分组吗？}other{要移除这些标签页并删除这些分组吗？}}</translation>
 <translation id="6833479554815567477">此标签页已从“<ph name="GROUP_NAME" />”组中移除 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">均衡（推荐）</translation>
-<translation id="6838672728804308905">固定滚动按钮</translation>
 <translation id="6838992358006915573">放大镜跟随 ChromeVox 焦点移动</translation>
 <translation id="6840155290835956714">发送前先询问</translation>
 <translation id="6840184929775541289">不是证书授权中心</translation>
@@ -7982,7 +7969,6 @@
 <translation id="7182051712900867547">使用其他账号</translation>
 <translation id="7182063559013288142">智能热点</translation>
 <translation id="7182791023900310535">移动您的密码</translation>
-<translation id="7184054569440068670">开启 AI 播放功能</translation>
 <translation id="718427252411067142">为防止他人使用您的密码，请打开该应用更改密码</translation>
 <translation id="718512729823942418">无可用麦克风</translation>
 <translation id="7186088072322679094">固定在工具栏中</translation>
@@ -8197,7 +8183,6 @@
 <translation id="7349010927677336670">视频流畅性</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{有 {COUNT} 个密码仅保存在此设备上}other{有 {COUNT} 个密码仅保存在此设备上}}</translation>
 <translation id="7352651011704765696">出了点问题</translation>
-<translation id="735288298862560236">{COUNT,plural, =0{没有密码}=1{正在检查 {COUNT} 个密码…}other{正在检查 {COUNT} 个密码…}}</translation>
 <translation id="7353261921908507769">附近的所有联系人都可与您分享内容。仅当您接受后，系统才会开始传输内容。</translation>
 <translation id="7353432112255316844">请验证是您本人在操作</translation>
 <translation id="7356506068433555887">棕榈树</translation>
@@ -8640,7 +8625,6 @@
 这可能包括与已安装的软件、文件、浏览器、设备的操作系统和 IP 地址相关的信息。</translation>
 <translation id="7683834360226457448">低视力显示工具</translation>
 <translation id="7684212569183643648">安装者：您的管理员</translation>
-<translation id="7684547908663093354">登录即可获取<ph name="DEVICE" />中的密码等信息</translation>
 <translation id="7684718995427157417">要创建和测试您的应用，请启用 Android 调试桥 (ADB)。请注意，此操作会允许安装未经 Google 验证的 Android 应用，而且您会需要将设备恢复出厂设置才能停用 ADB。</translation>
 <translation id="7684803937028953000">贵组织已禁止在本地下载此文件。</translation>
 <translation id="7684913007876670600">若要显示此页面的简化视图，请打开侧边栏并从中选择“阅读模式”</translation>
@@ -9061,7 +9045,6 @@
 <translation id="8011372169388649948">已移动书签“<ph name="BOOKMARK_TITLE" />”。</translation>
 <translation id="8012188750847319132">CapsLock 键</translation>
 <translation id="8013181884974864006">情境任务</translation>
-<translation id="8013462234418290522">登录即可获取<ph name="DEVICE" />中保存的信息等内容</translation>
 <translation id="8013534738634318212">这些网站属于由 <ph name="RWS_OWNER" /> 定义的群组。群组中的网站可查看您在该群组中的活动记录。</translation>
 <translation id="8013993649590906847">如果图片缺少有用的说明，则 Chrome 会尝试为您提供一条说明。为便于创建说明，系统会将图片发送给 Google。</translation>
 <translation id="8014154204619229810">更新程序正在运行，请稍后刷新并再次查看。</translation>
@@ -9490,7 +9473,6 @@
 <translation id="8331822764922665615">为您的分组命名，选择一种颜色，然后按 Esc 键</translation>
 <translation id="833256022891467078">Crostini 共享文件夹</translation>
 <translation id="833262891116910667">突出显示</translation>
-<translation id="8334621501749011645">在需要时自动显示标签页滚动按钮</translation>
 <translation id="8336407002559723354">将于 <ph name="MONTH_AND_YEAR" />停止更新</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{此设备将被保存 1 小时，下次您无需代码即可连接。这项设置是由您的管理员指定的。}other{此设备将被保存 {HOURS} 小时，下次您无需代码即可连接。这项设置是由您的管理员指定的。}}</translation>
 <translation id="8337399713761067085">您目前处于离线状态</translation>
@@ -9548,7 +9530,6 @@
 <translation id="8377625247046155446">这个通行密钥只会保存在此设备上。在您关闭所有无痕式窗口后，这个通行密钥会保留在此设备上。</translation>
 <translation id="837790003026572432">此设备不支持投放标签页中的音频</translation>
 <translation id="8378714024927312812">由您的组织管理</translation>
-<translation id="8378855320830505539">区域</translation>
 <translation id="8379988659465232385">名称不能为空</translation>
 <translation id="8379991678458444070">只需为此标签页添加书签，便可在需要时快速返回到此处</translation>
 <translation id="8380266723152870797">窗口名称</translation>
@@ -9560,7 +9541,6 @@
 <translation id="8387361103813440603">不允许查看您的位置信息</translation>
 <translation id="8389492867173948260">允许此扩展程序读取和更改您访问网站时留存的所有数据：</translation>
 <translation id="8390449457866780408">服务器无法使用。</translation>
-<translation id="8391172837960094276">如需查看和管理您的密码，请<ph name="BEGIN_LINK" />验证身份<ph name="END_LINK" />。</translation>
 <translation id="8391218455464584335">黑胶唱片</translation>
 <translation id="8391918125842702622">性能问题提醒</translation>
 <translation id="8392726714909453725">“随选朗读”相关设置</translation>

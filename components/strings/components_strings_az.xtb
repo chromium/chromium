@@ -70,7 +70,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> üçün icazə seçin</translation>
 <translation id="1113000785583998331">IBAN yadda saxlanılsın?</translation>
 <translation id="1113869188872983271">&amp;Yerbəyer etməyi ləğv edin</translation>
-<translation id="1117709830616495622">Gemini ilə Şəxsi Zəka tərəfindən dəstəklənir.</translation>
 <translation id="111897705806685148">Başqa cihazın giriş açarından istifadə edin</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab, sonra Enter düyməsinə basaraq Google Hesabında yadda saxladığınız Chrome məlumatlarını idarə edin</translation>
 <translation id="1121990216147052230">Mənim üçün görüləcək işlər siyahısı yarat</translation>
@@ -1171,7 +1170,6 @@
 <translation id="3005723025932146533">Saxlanılmış kopyanı göstərin</translation>
 <translation id="300580149047131921">Bu yaxınlarda istifadə edilib</translation>
 <translation id="3006864083554020786">ev ünvanı</translation>
-<translation id="3008410317623852235">Artıq Gmail və digər mənbələrdən məlumat tapıb doldura bilərsiniz.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, əlçatan əməliyyatlara baxmaq üçün Tab, seçilmiş əməliyyatı icra etmək üçün Enter üzərinə basın.</translation>
 <translation id="3010991137650052245">Bu saytda <ph name="PERMISSION" /> istifadə etmək üçün <ph name="SHORT_PRODUCT_NAME" /> üzrə giriş imkanı verin</translation>
 <translation id="3014726756341138577">Təkmil printer funksiyaları</translation>
@@ -2317,7 +2315,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4941627891654116707">Şrift ölçüsü</translation>
 <translation id="4943620199112228840">Mikrofonlardan istifadə edin</translation>
 <translation id="4943872375798546930">Nəticə yoxdur</translation>
-<translation id="494701040141924538">Anladım, bildirişi bağlayın</translation>
 <translation id="495170559598752135">Fəaliyyətlər</translation>
 <translation id="4953689047182316270">Əlçatımlılıq Tədbirlərinə cavab vermək</translation>
 <translation id="4954505713046251871">Təkliflər vermək və bu funksiyanı təkmilləşdirmək üçün səhifənin URL-i və kontenti Google ilə paylaşılır</translation>
@@ -3368,7 +3365,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="6743841972744298686">Sinxronizasiya ayarları</translation>
 <translation id="6745212570062463886">Adınızı və e-poçt ünvanınızı Google Hesabınızdan avtomatik doldurun</translation>
 <translation id="674580074662200768">Pasportu təhlükəsiz şəkildə güncəlləyin</translation>
-<translation id="6749473226660745022">Foto</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Siyasət dəyəri</translation>
 <translation id="6753434778807740853">Daxiletməni silin: <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3707,7 +3703,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Ödəniş nizamlayıcıları</translation>
 <translation id="7366594738862061263">Chrome-un parollarınızı necə qoruduğunu öyrənin</translation>
-<translation id="7366909168761621528">Axtarış Datası</translation>
 <translation id="7370751048350026847">Bu kontenti bu sayta əlavə etmək tövsiyə edilmir</translation>
 <translation id="7372526636730851647">Foto (parlaq)</translation>
 <translation id="7372973238305370288">axtarış nəticəsi</translation>
@@ -4296,7 +4291,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8350416046273606058">Qısayolda boşluqlar olmamalıdır: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Qeyd yaradın</translation>
 <translation id="8352849934814541340">Bu cihazın administratoru əlavə funksiyalar üçün tətbiqlər quraşdırıb. Tətbiqlər müəyyən dataya daxil ola bilər.</translation>
-<translation id="8353273112634584260">Gemini ilə Şəxsi Zəka tərəfindən dəstəklənir. Qabaqcıl avtodoldurmanı təkmilləşdirmək üçün sorğularınız, səhifə başlıqlarınız və URL-ləriniz nəzərdən keçirilə bilər.</translation>
 <translation id="8355270400102541638">Lokal Xəta Konteksti:</translation>
 <translation id="8362914115861174987">Hədəf dil:</translation>
 <translation id="8363502534493474904">Təyyarə rejimi deaktiv edilir</translation>
@@ -4656,7 +4650,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="9026253329950610248">Google Sayt</translation>
 <translation id="9027020981272345766">Chrome Enterprise Core-u sınayın</translation>
 <translation id="9027531288681624875">Tam ekrandan çıxmaq üçün |<ph name="ACCELERATOR" />| düyməsini basıb saxlayın.</translation>
-<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Güvənlik xətası</translation>
 <translation id="9035699147763101514">Gemini ilə Şəxsi Zəka tərəfindən dəstəklənir. Seçimlərinizi ayarlarda idarə edin.</translation>
 <translation id="9035824888276246493">Təhlükəsizlik kodlarını yadda saxlayın</translation>

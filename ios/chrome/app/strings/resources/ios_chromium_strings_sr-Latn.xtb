@@ -253,7 +253,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chromium
 <translation id="6154098560469640583">Koristite Chromium svaki put kada dodirujete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="6157162508956739031">Brzo se prijavljujte u aplikacije i na sajtove automatskim popunjavanjem lozinki i pristupnih ključeva iz Chromium-a</translation>
 <translation id="6170619162539716595">Dozvolite Chromium-u da koristi Google mape da bi vam pružao uputstva i lokalne informacije o otkrivenim adresama.</translation>
-<translation id="6170834619568075230">Možete da koristite Google objektiv u Chromium-u da biste pretraživali sve što vidite</translation>
 <translation id="6244277266078678766">Podaci se čuvaju u Menadžeru lozinki za <ph name="USER_EMAIL" /></translation>
 <translation id="6268381023930128611">Želite li da se odjavite iz Chromium-a?</translation>
 <translation id="6301717043141881464">Da biste lako pristupali sačuvanim lozinkama u drugim aplikacijama, koristite Chromium za automatsko popunjavanje</translation>
@@ -380,7 +379,6 @@ Sačekajte nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi
 <translation id="9177628952266852500"><ph name="EMAIL" />. Chromium-om se upravlja.</translation>
 <translation id="921174536258924340">Chromium nije uspeo da proveri sve lozinke. Probajte ponovo sutra ili <ph name="BEGIN_LINK" />proverite lozinke na Google nalogu.<ph name="END_LINK" /></translation>
 <translation id="924957577793602335">Prilagodite Chromium sebi</translation>
-<translation id="925642420047255224">Možete da koristite Chromium svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama</translation>
 <translation id="981812233959540767">Igrajte igru Chromium dinosaurus</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 <translation id="986520777495807752">Podesite Chromium kao podrazumevani pregledač</translation>

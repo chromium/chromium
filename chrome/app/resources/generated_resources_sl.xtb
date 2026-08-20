@@ -717,7 +717,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1554640914375980459">Utripanje zaslona ob prejemu obvestil. Obveščanje z utripanjem uporabljajte previdno, če ste občutljivi na svetlobo.</translation>
 <translation id="1555130319947370107">Modra</translation>
 <translation id="1556127816860282890">Dejavnost v ozadju in nekateri vizualni učinki (denimo gladko drsenje) bodo morda omejeni.</translation>
-<translation id="1557806604681757705">računalniku</translation>
 <translation id="1557939148300698553">Ustvari profil</translation>
 <translation id="155803912725350982">Počasne tipke</translation>
 <translation id="155865706765934889">Sledilna ploščica</translation>
@@ -1027,7 +1026,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1784707308176068866">Izvajanje v ozadju na zahtevo sodelujoče izvorne aplikacije</translation>
 <translation id="1784849162047402014">V napravi primanjkuje prostora na disku</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Če odmestite aplikacijo »<ph name="APP_NAME" />«, boste odmestili tudi to aplikacijo:}one{Če odmestite aplikacijo »<ph name="APP_NAME" />«, boste odmestili tudi te aplikacije:}two{Če odmestite aplikacijo »<ph name="APP_NAME" />«, boste odmestili tudi ti aplikaciji:}few{Če odmestite aplikacijo »<ph name="APP_NAME" />«, boste odmestili tudi te aplikacije:}other{Če odmestite aplikacijo »<ph name="APP_NAME" />«, boste odmestili tudi te aplikacije:}}</translation>
-<translation id="1785698972112179866">Prijavite se, da boste lahko dostopali do zaznamkov in drugega v <ph name="DEVICE" /></translation>
 <translation id="1786290960428378411">Zahtevanje branja in spreminjanja</translation>
 <translation id="1789543093145556097">Vedno skrij</translation>
 <translation id="179021551944139249">Dodajanje povezave na bralni seznam</translation>
@@ -1713,6 +1711,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2322193970951063277">Glave in noge</translation>
 <translation id="2322622365472107569">Končni čas: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Shranjena omrežja Wi-Fi</translation>
+<translation id="2323685460575935191">Skrij gumbe za pomikanje</translation>
 <translation id="2325444234681128157">Zapomni si geslo</translation>
 <translation id="2326188115274135041">Potrdite kodo PIN za vklop samodejnega odklepanja</translation>
 <translation id="2326583548923775947">To ni račun Google. Elementi, ki jih shranite v Chrome, ne bodo na voljo v drugih napravah.</translation>
@@ -8108,6 +8107,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7260206782629605806">Če prag znižate, lahko uporabite rahel premik. Če prag povečate, bo morda potreben občutnejši premik.</translation>
 <translation id="7260802376010589729">Uporabite »c«, če želite sprostiti gumb miške</translation>
 <translation id="7261217796641151584">Deli skupino</translation>
+<translation id="7261249528606034119">Skrij gumbe za pomikanje</translation>
 <translation id="7261612856573623172">Sistemski glas pretvorbe besedila v govor</translation>
 <translation id="7262004276116528033">Prijavno storitev gosti <ph name="SAML_DOMAIN" /></translation>
 <translation id="7262162806583378242">Med brskanjem izberite poljubno vsebino na zaslonu za nakupovanje, prevajanje in iskanje z umetno inteligenco</translation>
@@ -8667,7 +8667,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalniku, operacijskem sistemu naprave in naslovih IP.</translation>
 <translation id="7683834360226457448">Orodja za prikaz pri slabovidnosti</translation>
 <translation id="7684212569183643648">Namestil skrbnik</translation>
-<translation id="7684547908663093354">Prijavite se, da boste lahko dostopali do gesel in drugega v <ph name="DEVICE" /></translation>
 <translation id="7684718995427157417">Če želite ustvarjati in preizkušati aplikacije, omogočite most za odpravljanje težav s sistemom Android (ADB). Upoštevajte, da to dejanje omogoča namestitev aplikacij za Android, ki jih ni preveril Google, če želite orodje onemogočiti, pa je potrebna tovarniško ponastavitev.</translation>
 <translation id="7684803937028953000">Vaša organizacija je blokirala lokalni prenos te datoteke.</translation>
 <translation id="7684913007876670600">Za prikaz poenostavljenega pogleda te strani odprite stransko podokno in izberite način za branje</translation>
@@ -9088,7 +9087,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8011372169388649948">Premaknjeno: »<ph name="BOOKMARK_TITLE" />«.</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8013181884974864006">Kontekstualna opravila</translation>
-<translation id="8013462234418290522">Prijavite se, da boste lahko dostopali do shranjenih informacij in drugega v <ph name="DEVICE" /></translation>
 <translation id="8013534738634318212">Ta spletna mesta so v skupini, ki jo je definiralo spletno mesto <ph name="RWS_OWNER" />. Spletna mesta v skupini lahko vidijo vašo dejavnost v skupini.</translation>
 <translation id="8013993649590906847">Če slika nima koristnega opisa, ga bo Chrome poskušal zagotoviti. Opisi se ustvarijo tako, da se slike pošljejo Googlu.</translation>
 <translation id="8014154204619229810">Orodje za posodabljanje se trenutno izvaja. Osvežite čez minuto in preverite znova.</translation>
@@ -9575,7 +9573,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8377625247046155446">Ta ključ za dostop bo shranjen samo v tej napravi. V tej napravi bo ostal, ko zaprete vsa anonimna okna.</translation>
 <translation id="837790003026572432">Predvajanje zvoka zavihka v tej napravi ni podprto</translation>
 <translation id="8378714024927312812">Upravlja vaša organizacija</translation>
-<translation id="8378855320830505539">Območje</translation>
 <translation id="8379988659465232385">Polje z imenom ne sme biti prazno</translation>
 <translation id="8379991678458444070">Hitro se vrnite na ta zavihek tako, da ga dodate med zaznamke</translation>
 <translation id="8380266723152870797">Ime okna</translation>

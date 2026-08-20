@@ -144,7 +144,6 @@
 <translation id="2424440923901031101">‏התוסף הזה מפר את המדיניות של חנות האינטרנט של Chrome, ויכול להיות שהוא לא בטוח. צריך להסיר אותו מ-Chrome כדי לא לאפשר לו יותר להציג ולשנות את הנתונים שלך באתרים שאליהם תתבצע כניסה, כולל הפרטים האישיים שלך.</translation>
 <translation id="2467438592969358367">‏Google Chrome רוצה לייצא את הסיסמאות שלך. יש להקליד את הסיסמה שלך ל-Windows כדי לאפשר זאת.</translation>
 <translation id="2472092250898121027">‏התוסף הזה מכיל תוכנה זדונית והוא לא בטוח. צריך להסיר אותו מ-Chrome כדי לא לאפשר לו יותר להציג ולשנות את הנתונים שלך באתרים שאליהם תתבצע כניסה, כולל הפרטים האישיים שלך.</translation>
-<translation id="2482846200327569645">‏הדפדפן כבר מחובר לחשבון של <ph name="EXISTING_USER" />. כדי להפריד בין נתוני הגלישה של החשבונות, עליך להיכנס לפרופיל שלך ב-Chromium בתור <ph name="USER_EMAIL_ADDRESS" />. הסימניות ופריטים נוספים יופיעו במכשיר <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">הסרה</translation>
 <translation id="2513154137948333830">נדרשת הפעלה מחדש: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2523492931736391680">‏עבודה מאובטחת ב-Chrome</translation>
@@ -196,7 +195,6 @@
 <translation id="2916983411556218750">‏עכשיו נגדיר את Chrome</translation>
 <translation id="2926952073016206995">‏נדרשת הרשאת גישה למצלמה ב-Chrome עבור האתר הזה</translation>
 <translation id="2945997411976714835">שגיאת התקנה: הפעלת התהליך של מנהל ההתקנה נכשלה.</translation>
-<translation id="2959224682348913614">‏הדפדפן כבר מחובר לחשבון של <ph name="EXISTING_USER" />. כדי להפריד בין נתוני הגלישה של החשבונות, עליך להיכנס לפרופיל שלך ב-Chromium בתור <ph name="USER_EMAIL_ADDRESS" />. הסיסמאות שלך ופרטים נוספים יופיעו במכשיר <ph name="DEVICE" />.</translation>
 <translation id="2969728957078202736">‏<ph name="PAGE_TITLE" /> – כניסה לרשת – Chrome</translation>
 <translation id="2970681950995291301">‏כדי להסיר את החשבון שלך ב-Google מ-Chrome, צריך לצאת מ-Chrome בדף ההגדרות</translation>
 <translation id="2976869732253036751">‏רוצה לקבל התראות על מעקב מחירים באמצעות Chrome בטלפון?</translation>
@@ -216,7 +214,6 @@
 <translation id="3073571714401714450">‏הפעלה או השבתה של Gemini ב-Chrome פיתוח</translation>
 <translation id="3080151273017101988">‏המשך הפעלת אפליקציות ברקע כאשר Google Chrome סגור</translation>
 <translation id="308397506772922478">‏אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך למחוק את נתוני Chrome בחשבון<ph name="END_LINK" /></translation>
-<translation id="3089427491314610412">‏הדפדפן כבר מחובר לחשבון של <ph name="EXISTING_USER" />. כדי להפריד בין נתוני הגלישה של החשבונות, עליך להיכנס לפרופיל שלך ב-Chromium בתור <ph name="USER_EMAIL_ADDRESS" />. המידע השמור ופריטים נוספים יופיעו במכשיר <ph name="DEVICE" />.</translation>
 <translation id="3100998948628680988">‏בחירת שם לפרופיל Chrome שלך</translation>
 <translation id="310459126943037700">סיום המשימות נכשל.</translation>
 <translation id="3104828284009500087">אפשר לחפש משהו בדף הזה</translation>
@@ -229,7 +226,6 @@
 <translation id="3140883423282498090">‏השינויים ייכנסו לתוקף בפעם הבאה ש-Google Chrome יופעל מחדש.</translation>
 <translation id="3149510190863420837">‏אפליקציות Chrome</translation>
 <translation id="3161522574479303604">כל השפות</translation>
-<translation id="318555301233810762">‏הדפדפן כבר מחובר לחשבון של <ph name="EXISTING_USER" />. כדי להפריד בין נתוני הגלישה של החשבונות, עליך להיכנס לפרופיל שלך ב-Chromium בתור <ph name="USER_EMAIL_ADDRESS" />. הסימניות ופריטים נוספים יופיעו בכל המכשירים שלך.</translation>
 <translation id="319199214552513804">‏כדי לקבל גישה לתוסף הזה ולנתונים נוספים בכל המחשבים, צריך להיכנס ל-Chrome</translation>
 <translation id="3196187562065225381">‏Chrome חסם את ההורדה הזאת כי הקובץ מסוכן</translation>
 <translation id="3222857603094643834">‏אפשר לחפש כל דבר בדף הזה באמצעות Google Lens</translation>
@@ -268,7 +264,6 @@
 <translation id="3598673391539778844">‏הצגת Gemini ב-Chrome במגש המערכת</translation>
 <translation id="3622716124581627104">‏אפשר לנסות לזהות דברים או מקומות ולהעתיק או לתרגם טקסטים. כשמשתמשים ב-Google Lens, צילום מסך של הדף נשלח אל Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">‏קל יותר כעת להשתמש ב-Chrome באמצעות חשבון Google שלך ובמחשבים משותפים.</translation>
-<translation id="3628103251823745322">‏הדפדפן כבר מחובר לחשבון של <ph name="EXISTING_USER" />. כדי להפריד בין נתוני הגלישה של החשבונות, עליך להיכנס לפרופיל שלך ב-Chromium בתור <ph name="USER_EMAIL_ADDRESS" />. המידע השמור ופריטים נוספים יופיעו בכל המכשירים שלך.</translation>
 <translation id="3635073343384702370">‏ל-Chrome יש אפשרות לבדוק את הסיסמאות שלך רק אם שמרת אותן</translation>
 <translation id="3636970668267555808">‏כדי להשתמש בקלות בתכונות המוכרות והאהובות, כדאי להגדיר את Chrome בתור דפדפן ברירת המחדל.</translation>
 <translation id="3667616615096815454">אין אפשרות להתקין, האפליקציה לא מוכרת לשרת.</translation>
@@ -592,7 +587,6 @@
 <translation id="6933858244219479645">‏מערכת ChromeOS</translation>
 <translation id="6938166777909186039">‏כדי לקבל עדכונים של Google Chrome בעתיד, צריך להשתמש ב-Windows מגרסה 10 ואילך. במחשב הזה פועלת מערכת Windows 8.1.</translation>
 <translation id="6943584222992551122">‏נתוני הגלישה של האדם הזה יימחקו מהמכשיר. כדי לשחזר את הנתונים, יש להיכנס ל-Chrome בתור<ph name="USER_EMAIL" />.</translation>
-<translation id="6962628299694876291">‏הדפדפן כבר מחובר לחשבון של <ph name="EXISTING_USER" />. כדי להפריד בין נתוני הגלישה של החשבונות, עליך להיכנס לפרופיל שלך ב-Chromium בתור <ph name="USER_EMAIL_ADDRESS" />. הסיסמאות ופריטים נוספים יופיעו בכל המכשירים שלך.</translation>
 <translation id="6965382102122355670">אישור</translation>
 <translation id="6967962315388095737">‏כלל נכנס לגרסת הבטא של Google Chrome כדי לאפשר תנועת mDNS.</translation>
 <translation id="6979589607440534284">‏מידע על חסימה של קבצים מסוימים ב-Chrome, נפתח בכרטיסייה חדשה</translation>

@@ -546,7 +546,7 @@
 <translation id="271033894570825754">Neue Sammlung</translation>
 <translation id="2712929214961145009">Sans Serif</translation>
 <translation id="2713106313042589954">Kamera ausschalten</translation>
-<translation id="2715440913764382254">Links direkt von hier aufrufen</translation>
+<translation id="2715440913764382254">Links direkt hier starten</translation>
 <translation id="2718352093833049315">Nur bei WLAN</translation>
 <translation id="2721190673959776287">Beispiel für ein umfassendes Infofeld im Kontextmenü, das mehrmals täglich angezeigt wird.</translation>
 <translation id="2739887572830526131">Du kannst diese Gruppe beibehalten, um später Tabs hinzuzufügen, oder sie löschen, wenn du sie nicht mehr benötigst.</translation>
@@ -864,7 +864,7 @@
 <translation id="3888863481921783344">Dadurch werden dir Personen angezeigt, die du zu deinem Termin einladen kannst.</translation>
 <translation id="3891414008432200754">Preis</translation>
 <translation id="3892144330757387737">Hier wird dein Verlauf angezeigt</translation>
-<translation id="3892695492576181257">Wenn diese Option aktiviert ist, werden deine Aktivitäten im Aktivitätsverlauf in Gemini-Apps 18 Monate lang gespeichert. Du kannst den Zeitraum auf 3 oder 36 Monate ändern. Google nutzt deine Aktivitäten, um Google-Dienste (einschließlich Gemini-Modelle) zu entwickeln und zu verbessern, und um Google, seine Nutzer und die Öffentlichkeit mithilfe von Prüfern zu schützen. Von Dienstanbietern überprüfte Daten werden von deinem Konto getrennt und 3 Jahre lang gespeichert.</translation>
+<translation id="3892695492576181257">Wenn sie aktiviert ist, werden deine Aktivitäten im Aktivitätsverlauf in Gemini-Apps 18 Monate lang gespeichert. Du kannst den Zeitraum auf 3 oder 36 Monate ändern. Google nutzt deine Aktivitäten, um Google-Dienste (einschließlich Gemini-Modelle) zu entwickeln und zu verbessern, und um Google, seine Nutzer und die Öffentlichkeit mithilfe von Prüfern zu schützen. Von Dienstanbietern überprüfte Daten werden von deinem Konto getrennt und 3 Jahre lang gespeichert.</translation>
 <translation id="3893858854379998374">Wenn du neue Lesezeichen in deinem Konto speichern möchtest, lösche deine nicht verwendeten Lesezeichen</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3904270275864974753">Karussell bearbeiten</translation>
@@ -1008,7 +1008,7 @@
 <translation id="4338258232580025606">Anmelden nicht möglich</translation>
 <translation id="4338650699862464074">URLs der von dir besuchten Seiten werden an Google gesendet.</translation>
 <translation id="4342946437867096381">Du hast bereits ein Passwort für diese Website in deinem Google-Konto gespeichert. Google kann für dich das neueste Passwort auswählen.</translation>
-<translation id="4355702523442402731">Nahtlos in Apps surfen</translation>
+<translation id="4355702523442402731">Flüssiges appübergreifendes Surfen</translation>
 <translation id="4365121137632832185">Tabgruppe. Maximiert.</translation>
 <translation id="4365685757967464989">Erlaube Gemini, die Kamera zum Aufnehmen von Fotos zu verwenden</translation>
 <translation id="4367971618859387374">Anzeigename</translation>
@@ -1031,7 +1031,6 @@
 <translation id="4430505936695785931">Gespeicherte Passwörter in anderen Apps abrufen</translation>
 <translation id="4431224949908513835">Wähle eine Zahlungsmethode für das automatische Ausfüllen aus.</translation>
 <translation id="4432122368769493392">Einstellungen…</translation>
-<translation id="4439968635693513370">Wochenende planen mit</translation>
 <translation id="4442550905108052454">Öffne die <ph name="BEGIN_BOLD" />Einstellungen<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Weitere Optionen für „<ph name="CELL_ACCESSIBILITY_LABEL" />“</translation>
 <translation id="4455710003856931944">Du kannst über den Rand wischen, um zurück- oder weiterzugehen.</translation>
@@ -1060,7 +1059,6 @@
 <translation id="454217142158335225">Du kannst geschlossene Elemente über die Bereiche „Zuletzt geöffnete Tabs“ oder „Tabgruppen“ wieder öffnen. Deine angepinnten Tabs werden nicht geschlossen.</translation>
 <translation id="4547181496285029457">Zurück zum Tab „Zuletzt geöffnet“</translation>
 <translation id="4552042254369397518">Wird kopiert…</translation>
-<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Weitere Passkeys</translation>
 <translation id="4564893319561643483">„<ph name="TITLE" />“ ausblenden</translation>
 <translation id="456502772933839252">„<ph name="PAGE_TITLE" />“ wird geteilt</translation>
@@ -1102,7 +1100,6 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Deine Organisation verlangt, dass du im privaten Modus surfst. Tabgruppen werden im Inkognitomodus nicht synchronisiert.
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
-<translation id="4670422040696550256">Entspannt einkaufen mit</translation>
 <translation id="467189612236587057">Unternehmen anrufen</translation>
 <translation id="4673565891421389203">Wenn du dich mit deinem verwalteten Konto anmeldest, kannst du die mit deiner Organisation verbundenen Browserdaten wie Tabs, Verlauf und Passwörter besser von deinen anderen Browserdaten trennen.
 
@@ -1392,7 +1389,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5596627076506792578">Weitere Optionen</translation>
 <translation id="560322036295180549">Von deiner Organisation deaktiviert</translation>
 <translation id="5611398002774823980">Im Konto speichern</translation>
-<translation id="5612225021788368236">Werbung für Standardbrowser schließen</translation>
 <translation id="561269594905823128">Tippe auf <ph name="BEGIN_BOLD" />Datei auswählen<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Neueste zuerst</translation>
 <translation id="5614553682702429503">Passwort speichern?</translation>
@@ -2032,7 +2028,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="7646263789464975852">Menü → Einstellungen → Sicherheitscheck</translation>
 <translation id="7646772052135772216">Passwortsynchronisierung funktioniert nicht</translation>
 <translation id="764827086632467055">Tippe auf „Standardbrowser-App“</translation>
-<translation id="7648666127045672239">Mit nur einem Fingertipp hierher gelangen</translation>
+<translation id="7648666127045672239">Mit einem Tippen hierher gelangen</translation>
 <translation id="7649070708921625228">Hilfe</translation>
 <translation id="765555660695722850">Dadurch werden auf diesem Gerät gespeicherte Adressen gelöscht. Außerdem werden einige Informationen aus deinem Google-Konto gelöscht, aber keine grundlegenden Informationen wie dein Name oder deine Privatadresse.</translation>
 <translation id="765631330137769217">Tippe auf „Speichern“, um bei der nächsten Anmeldung einfach auf dieses Passwort zuzugreifen</translation>
@@ -2478,7 +2474,6 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="9029650858822697271">Du wurdest abgemeldet</translation>
 <translation id="9032405509996909363">Löschen der Browserdaten bestätigen</translation>
 <translation id="9035699147763101514">Unterstützt durch Personal Intelligence mit Gemini. Du kannst deine Auswahl in den Einstellungen verwalten.</translation>
-<translation id="9038526468059454274">Zusammenfassen mit</translation>
 <translation id="9039373489628511875">Bandbreite</translation>
 <translation id="9042893549633094279">Datenschutz und Sicherheit</translation>
 <translation id="9055291197094969722">Mit Tabgruppen kannst du deine geöffneten Tabs organisieren und bist produktiver</translation>

@@ -1031,7 +1031,6 @@
 <translation id="4430505936695785931">Басқа қолданбаларда сақталған құпия сөздерді алыңыз.</translation>
 <translation id="4431224949908513835">Толтыруға қажетті төлеу әдісін таңдаңыз.</translation>
 <translation id="4432122368769493392">Параметрлер…</translation>
-<translation id="4439968635693513370">Демалыс күндерін жоспарлаңыз:</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />Параметрлер<ph name="END_BOLD" /> бөлімін ашыңыз.</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" />: басқа опциялар</translation>
 <translation id="4455710003856931944">Артқа не алға өту үшін шетке сырғытуға болады.</translation>
@@ -1060,7 +1059,6 @@
 <translation id="454217142158335225">Жабылған элементтерді соңғы қойындылар немесе қойындылар топтары бөлімдерінен қайта ашуға болады. Бекітілген қойындылар жабылмайды.</translation>
 <translation id="4547181496285029457">Соңғы қойындыға оралу</translation>
 <translation id="4552042254369397518">Көшірілуде…</translation>
-<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Басқа кіру кілттері</translation>
 <translation id="4564893319561643483">"<ph name="TITLE" />" модулін жасыру</translation>
 <translation id="456502772933839252"><ph name="PAGE_TITLE" /> беті бөлісіліп жатыр.</translation>
@@ -1102,7 +1100,6 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Ұйымыңыз интернетті құпия шарлау арқылы пайдалануыңызды талап етеді. Қойындылар топтары инкогнито режимінде синхрондалмайды.
 <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
-<translation id="4670422040696550256">Емін-еркін сауда жасаңыз:</translation>
 <translation id="467189612236587057">Компанияға қоңырау шалу</translation>
 <translation id="4673565891421389203">Басқарылатын аккаунтпен кірсеңіз, ұйымға қатысты қойындылар, тарих пен құпия сөздер сияқты шолу ақпаратын басқа шолу ақпаратынан бөлек сақтай аласыз.
 
@@ -1392,7 +1389,6 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="5596627076506792578">Қосымша опциялар</translation>
 <translation id="560322036295180549">Ұйымыңыз өшірген.</translation>
 <translation id="5611398002774823980">Аккаунтта сақтау</translation>
-<translation id="5612225021788368236">Әдепкі браузер промокеңесін жабу</translation>
 <translation id="561269594905823128"><ph name="BEGIN_BOLD" />Файл таңдау<ph name="END_BOLD" /> түймесін түртіңіз.</translation>
 <translation id="5613297089029360427">Соңғысы бойынша сұрыптау</translation>
 <translation id="5614553682702429503">Құпия сөз сақталсын ба?</translation>
@@ -2478,7 +2474,6 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="9029650858822697271">Аккаунттан шығарылдыңыз</translation>
 <translation id="9032405509996909363">Браузерді пайдалану деректерін жоюды растау</translation>
 <translation id="9035699147763101514">Gemini-дағы Personal Intelligence арқылы істейді. Таңдауларыңызды параметрлерде реттей аласыз.</translation>
-<translation id="9038526468059454274">Қорытынды жасаңыз:</translation>
 <translation id="9039373489628511875">Өткізу мүмкіндігі</translation>
 <translation id="9042893549633094279">Құпиялық және қауіпсіздік</translation>
 <translation id="9055291197094969722">Ашық қойындыларды ретке келтіру және өнімді жұмыс істеу үшін қойындылар топтарын жасаңыз.</translation>

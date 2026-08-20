@@ -1031,7 +1031,6 @@
 <translation id="4430505936695785931">Få tilgang til lagrede passord i andre apper</translation>
 <translation id="4431224949908513835">Velg betalingsmåten du vil fylle ut.</translation>
 <translation id="4432122368769493392">Innstillinger</translation>
-<translation id="4439968635693513370">Planlegg helgen med</translation>
 <translation id="4442550905108052454">Åpne <ph name="BEGIN_BOLD" />Innstillinger<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Flere alternativer for <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Du kan sveipe på kanten for å gå frem eller tilbake.</translation>
@@ -1060,7 +1059,6 @@
 <translation id="454217142158335225">Du kan gjenåpne lukkede elementer fra Nylige faner- eller Fanegrupper-delen. De festede fanene dine lukkes ikke.</translation>
 <translation id="4547181496285029457">Gå tilbake til nylig fane</translation>
 <translation id="4552042254369397518">Kopierer …</translation>
-<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Flere passnøkler</translation>
 <translation id="4564893319561643483">Skjul «<ph name="TITLE" />»</translation>
 <translation id="456502772933839252">Deler <ph name="PAGE_TITLE" /></translation>
@@ -1102,7 +1100,6 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Organisasjonen din krever at du surfer privat. Fanegrupper synkroniseres ikke i inkognitomodus.
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
-<translation id="4670422040696550256">Handle trygt med</translation>
 <translation id="467189612236587057">Start telefonsamtaler for å komme i kontakt med bedrifter</translation>
 <translation id="4673565891421389203">Hvis du logger på med den administrerte kontoen din, kan du holde nettlesingen som er knyttet til organisasjonen din (inkludert faner, logg og passord), atskilt fra annen nettlesing
 
@@ -1310,7 +1307,6 @@
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5311061401280561833">Kamera- og mikrofontilgang er tillatt</translation>
 <translation id="5313967007315987356">Legg til et nettsted</translation>
-<translation id="5315029634103634221">Gemini er AI og kan gjøre feil. <ph name="BEGIN_LINK" />Mer om relevante data som sendes til Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Ingenting å importere</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> av <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Lagre</translation>
@@ -1393,7 +1389,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5596627076506792578">Flere alternativer</translation>
 <translation id="560322036295180549">Organisasjonen din har slått av denne funksjonen</translation>
 <translation id="5611398002774823980">Lagre i kontoen</translation>
-<translation id="5612225021788368236">Lukk promoteringen av standardnettleseren</translation>
 <translation id="561269594905823128">Trykk på <ph name="BEGIN_BOLD" />Velg filen<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Sorter etter nyeste</translation>
 <translation id="5614553682702429503">Vil du lagre passordet?</translation>
@@ -2479,7 +2474,6 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="9029650858822697271">Du ble logget av</translation>
 <translation id="9032405509996909363">Bekreft sletting av nettlesingsdata</translation>
 <translation id="9035699147763101514">Basert på personlig tilpasset intelligens med Gemini. Administrer valgene dine i innstillingene.</translation>
-<translation id="9038526468059454274">Oppsummer med</translation>
 <translation id="9039373489628511875">Båndbredde</translation>
 <translation id="9042893549633094279">Personvern og sikkerhet</translation>
 <translation id="9055291197094969722">Opprett fanegrupper for å organisere de åpne fanene dine og holde deg produktiv</translation>

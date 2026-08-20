@@ -1059,7 +1059,6 @@
 <translation id="454217142158335225">बंद किए गए टैब को 'हाल ही के टैब' या 'टैब ग्रुप' सेक्शन में जाकर फिर से खोला जा सकता है. पिन किए गए टैब बंद नहीं किए जाएंगे.</translation>
 <translation id="4547181496285029457">हाल ही में खोले गए टैब पर वापस जाएं</translation>
 <translation id="4552042254369397518">कॉपी किया जा रहा है…</translation>
-<translation id="4552089082226364758">फ़्लैश</translation>
 <translation id="4553044860350038560">और पासकी</translation>
 <translation id="4564893319561643483">"<ph name="TITLE" />" छिपाएं</translation>
 <translation id="456502772933839252"><ph name="PAGE_TITLE" /> को शेयर किया जा रहा है</translation>
@@ -1308,7 +1307,6 @@
 <translation id="5300589172476337783">दिखाएं</translation>
 <translation id="5311061401280561833">कैमरा और माइक्रोफ़ोन इस्तेमाल किया जा सकता है</translation>
 <translation id="5313967007315987356">साइट जोड़ें</translation>
-<translation id="5315029634103634221">Gemini एक एआई है और इससे गलतियां हो सकती हैं. <ph name="BEGIN_LINK" />Google को भेजे गए ज़रूरी डेटा के बारे में ज़्यादा जानकारी<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">इंपोर्ट करने के लिए कोई आइटम नहीं है</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> में से <ph name="INDEX" /></translation>
 <translation id="5317780077021120954">सेव करें</translation>
@@ -1391,7 +1389,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="5596627076506792578">ज़्यादा विकल्प</translation>
 <translation id="560322036295180549">आपके संगठन ने इस विकल्प को बंद कर दिया है</translation>
 <translation id="5611398002774823980">खाते में सेव करें</translation>
-<translation id="5612225021788368236">डिफ़ॉल्ट ब्राउज़र का प्रोमो बंद करें</translation>
 <translation id="561269594905823128"><ph name="BEGIN_BOLD" />अपनी फ़ाइल चुनें<ph name="END_BOLD" /> पर टैप करें</translation>
 <translation id="5613297089029360427">'सबसे नए' के मुताबिक क्रम से लगाएं</translation>
 <translation id="5614553682702429503">पासवर्ड सेव करें?</translation>

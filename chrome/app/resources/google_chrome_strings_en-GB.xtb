@@ -148,7 +148,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2424440923901031101">This extension violates the Chrome Web Store policy and might be unsafe. Remove it from Chrome so that it can no longer see and change your data on sites that you visit, including your personal info.</translation>
 <translation id="2467438592969358367">Google Chrome wants to export your passwords. Type your Windows password to allow this.</translation>
 <translation id="2472092250898121027">This extension contains malware and is unsafe. Remove it from Chrome so that it can no longer see and change your data on sites that you visit, including your personal info.</translation>
-<translation id="2482846200327569645"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chrome in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You'll also get your bookmarks and more from <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Uninstall</translation>
 <translation id="2513154137948333830">Reboot required: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2523492931736391680">Your work secured on Chrome</translation>
@@ -200,7 +199,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="2916983411556218750">Let's get your Chrome ready</translation>
 <translation id="2926952073016206995">Chrome needs camera permission for this site</translation>
 <translation id="2945997411976714835">Install error: The installer process failed to start.</translation>
-<translation id="2959224682348913614"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chrome in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You'll also get your passwords and more from <ph name="DEVICE" />.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Network sign-in – Chrome</translation>
 <translation id="2970681950995291301">To remove your Google Account from Chrome, sign out of Chrome in the Settings page</translation>
 <translation id="2976869732253036751">Get price tracking alerts with Chrome on your phone</translation>
@@ -220,7 +218,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="3073571714401714450">Toggle Gemini in Chrome Dev</translation>
 <translation id="3080151273017101988">Continue running background apps when Google Chrome is closed</translation>
 <translation id="308397506772922478">If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your account<ph name="END_LINK" /></translation>
-<translation id="3089427491314610412"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chrome in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You'll also get your saved info and more from <ph name="DEVICE" />.</translation>
 <translation id="3100998948628680988">Name your Chrome profile</translation>
 <translation id="310459126943037700">Failed to end task(s).</translation>
 <translation id="3104828284009500087">Search anything on page</translation>
@@ -233,7 +230,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="3140883423282498090">Your changes will take effect the next time you relaunch Google Chrome.</translation>
 <translation id="3149510190863420837">Chrome Apps</translation>
 <translation id="3161522574479303604">All languages</translation>
-<translation id="318555301233810762"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chrome in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You’ll also get your bookmarks and more on all your devices.</translation>
 <translation id="319199214552513804">To get this extension and more on all your computers, sign in to Chrome</translation>
 <translation id="3196187562065225381">Chrome blocked this download because the file is dangerous</translation>
 <translation id="3222857603094643834">Search anything on this page with Google Lens</translation>
@@ -272,7 +268,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="3598673391539778844">Show Gemini in Chrome in system tray</translation>
 <translation id="3622716124581627104">Identify things or places and copy or translate text. When you use Google Lens, a screenshot of the page is sent to Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Now it's easier to use Chrome with your Google Account and on shared computers.</translation>
-<translation id="3628103251823745322"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chrome in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You'll also get your saved info and more on all your devices.</translation>
 <translation id="3635073343384702370">Chrome can check your passwords when you save them.</translation>
 <translation id="3636970668267555808">Get easy access to the features that you know, love and trust by setting Chrome as your default browser.</translation>
 <translation id="3667616615096815454">Unable to install, the application is unknown to the server.</translation>
@@ -600,7 +595,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6933858244219479645">ChromeOS system</translation>
 <translation id="6938166777909186039">To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 8.1.</translation>
 <translation id="6943584222992551122">This person's browsing data will be deleted from this device. To recover the data, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
-<translation id="6962628299694876291"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chrome in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You'll also get your passwords and more on all your devices.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6967962315388095737">Inbound rule for Google Chrome Beta to allow mDNS traffic.</translation>
 <translation id="6979589607440534284">Learn why Chrome blocks some files, opens in new tab</translation>

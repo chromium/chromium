@@ -372,7 +372,6 @@
 <translation id="4676059169848868271">Untuk mengizinkan <ph name="APP_NAME" /> menggunakan pelacakan tangan, aktifkan juga pelacakan tangan di <ph name="BEGIN_LINK" />setelan sistem<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Mengelola kartu</translation>
 <translation id="4722332387043141878">Situs biasanya menggunakan sensor gerakan dan cahaya perangkat untuk fitur seperti virtual reality atau pelacak kebugaran</translation>
-<translation id="4748783296226936791">Situs biasanya terhubung ke perangkat HID untuk fitur yang menggunakan keyboard yang tidak biasa, pengontrol game, dan perangkat lainnya</translation>
 <translation id="4755971844837804407">Jika diaktifkan, situs dapat menampilkan iklan apa pun kepada Anda. Jika dinonaktifkan, situs tidak dapat menampilkan iklan yang mengganggu atau menyesatkan.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Aktifkan Safe Browsing</translation>
@@ -457,7 +456,6 @@
 <translation id="5700761515355162635">Cookie pihak ketiga diizinkan</translation>
 <translation id="5706552988683188916">Tindakan ini akan menghapus cookie dan data situs lainnya untuk <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Situs dapat menampilkan perintah login dari layanan identitas</translation>
-<translation id="5719854774000914513">Situs dapat meminta untuk terhubung ke perangkat HID</translation>
 <translation id="5740126560802162366">Situs dapat menyimpan data di perangkat Anda</translation>
 <translation id="5743425052258407233">Dapatkan histori Anda di semua perangkat, sehingga Anda dapat dengan mudah melanjutkan dari bagian yang terakhir dibuka</translation>
 <translation id="5749158352074143502">Lanjutkan dengan tab ini</translation>
@@ -577,7 +575,6 @@
 <translation id="6950072572526089586">Situs yang Anda buka dapat menyimpan info tentang hal-hal yang Anda lakukan agar situs tersebut berfungsi seperti yang diharapkan — misalnya, untuk membuat Anda tetap login ke situs atau menyimpan item di keranjang belanja. Situs sering kali menyimpan info ini untuk sementara di perangkat Anda.</translation>
 <translation id="6964291282260073066">"WebGPU" dinonaktifkan.</translation>
 <translation id="6965382102122355670">Oke</translation>
-<translation id="6972629891077993081">Perangkat HID</translation>
 <translation id="6980507581230208647">Tema merah mawar</translation>
 <translation id="6980861169612950611">Hapus data situs? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Aksesibilitas</translation>
@@ -735,7 +732,6 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:</translation>
 <translation id="8593422116412089302">Jika diaktifkan, situs dapat meminta untuk menggunakan informasi tentang Anda yang disimpan situs. Jika dinonaktifkan, situs tidak dapat meminta untuk menggunakan informasi tentang Anda yang disimpan situs.</translation>
 <translation id="8609465669617005112">Berpindah ke atas</translation>
 <translation id="8617611086246832542">Jika diaktifkan, tampilan desktop situs akan ditampilkan. Jika dinonaktifkan, tampilan seluler situs akan ditampilkan.</translation>
-<translation id="8625916342247441948">Jangan izinkan situs terhubung ke perangkat HID</translation>
 <translation id="8670078035093027626">Sheet bawah browser default terbuka sepenuhnya</translation>
 <translation id="8676316391139423634">Jika diaktifkan, situs dapat meminta untuk melacak tangan Anda. Jika dinonaktifkan, situs tidak dapat melacak tangan Anda.</translation>
 <translation id="8676374126336081632">Hapus masukan</translation>

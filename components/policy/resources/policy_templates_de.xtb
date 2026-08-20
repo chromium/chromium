@@ -172,16 +172,6 @@ Das Label kann über die Richtlinie „<ph name="ENTERPRISE_CUSTOM_LABEL_POLICY_
 <translation id="1100840127293327071">Option zum standardmäßigen Beibehalten bestehender Browserdaten nicht aktivieren</translation>
 <translation id="1105572260329131950">Standardsymbole für verschlüsselte Verbindungen verwenden</translation>
 <translation id="1105711894873068933">Wenn <ph name="LACROS_NAME" /> deaktiviert wurde, werden beim nächsten Log-in alle Nutzerdaten entfernt.</translation>
-<translation id="1106279506320506502">Gibt an, ob der isolierte Modus aktiviert ist.
-
-Der isolierte Modus ist ein flüchtiger Browsermodus, der nur für Unternehmen verfügbar ist.
-Er unterstützt auf den Schutz vor Datenverlust bezogene Unternehmensrichtlinien und zwangsinstallierte Erweiterungen.
-
-Wenn die Richtlinie auf „1 – Aktiviert“ gesetzt ist, ist der isolierte Modus aktiviert und der Inkognitomodus deaktiviert.
-
-Wenn die Richtlinie auf „0 – Deaktiviert“ gesetzt oder nicht konfiguriert ist, ist der isolierte Modus deaktiviert.
-
-Für diese Richtlinie ist eine <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />-Lizenz erforderlich, damit sie wirksam wird.</translation>
 <translation id="1106342730891876476">Einstellungen zum Teilen</translation>
 <translation id="1107538157073168076">Erweiterung „Insights“ deaktivieren</translation>
 <translation id="1110426799149444997"><ph name="GOOGLE_LENS_PRODUCT_NAME" />-Ausschnittsuche deaktivieren.</translation>
@@ -1644,17 +1634,6 @@ Diese Richtlinie ist normalerweise zum Schutz vor Phishing deaktiviert.</transla
 <translation id="2057317273526988987">Zugriff auf eine Liste mit URLs erlauben</translation>
 <translation id="205807990145127714">Telemetriedaten, die bei Änderungen der Signalstärke gesendet werden.</translation>
 <translation id="2060153898336610735">Automatisch, basierend auf der aktuellen Sprache</translation>
-<translation id="2060316966423154087">Gibt an, ob Nutzerinnen bzw. Nutzer generative KI in <ph name="PRODUCT_NAME" /> zulassen dürfen, damit Inhalte von Formularen besser erkannt und leichter ausgefüllt werden können.
-
-„0“ = Derselbe Effekt wie „1“. Vor M153 erlaubte die Einstellung Google, relevante Daten zur Verbesserung seiner KI-Modelle zu verwenden. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterial und schriftliches Feedback sein. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
-
-„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe relevanter Daten (einschließlich Prompts, Eingaben, Ausgaben, Quellenmaterials und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzerinnen und -nutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
-
-„2“ = Die Funktion darf nicht verwendet werden.
-
-Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
-
-Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2061123930713023976">Fehlerbehebung von Netzwerkpaketaufnahmen erlauben</translation>
 <translation id="2061810934846663491">Erforderliche Domainnamen für Remote-Zugriff-Hosts konfigurieren</translation>
 <translation id="2062632109797189011">Veraltete window.webmasterStorageInfo API wieder aktivieren</translation>
@@ -2875,7 +2854,6 @@ Wenn du „command_line“ festlegst, wird das Laden von Erweiterungen über die
 
 Wenn sie nicht konfiguriert ist, gilt die Richtlinie <ph name="BLOCK_POPUPS_POLICY_NAME" />, aber Nutzer können diese Einstellung ändern.</translation>
 <translation id="2796714419743648316">Zulassungsliste für App-Zeitbeschränkungen</translation>
-<translation id="2799223571221894425">Neu starten</translation>
 <translation id="2801065672151277034">Zertifikatverwaltungseinstellungen</translation>
 <translation id="2801155097555584385">Den Akkuladestand (%) für benutzerdefiniertes Starten des Ladevorgangs festlegen</translation>
 <translation id="2801378553855965587">Dadurch wird die <ph name="GOOGLE_CALENDAR_NAME" />-Integration deaktiviert.</translation>
@@ -3450,6 +3428,19 @@ Ist diese Richtlinie deaktiviert oder nicht konfiguriert, wird das unverankerte 
 <translation id="3150351525324499342"><ph name="PRODUCT_NAME" />-Symbol nicht standardmäßig in der Symbolleiste anzeigen, sondern Nutzer auswählen lassen</translation>
 <translation id="3152135410085709340">Lokalen Dateizugriff auf „file://“-URLs auf diesen Websites im PDF-Viewer zulassen</translation>
 <translation id="3152425128389603870">Unified Desktop verfügbar machen und standardmäßig aktivieren</translation>
+<translation id="3157506194753687842">Legt fest, ob der <ph name="GEMINI_SPARK_PRODUCT_NAME" />-KI-Agent eine Verbindung zu <ph name="PRODUCT_NAME" /> herstellen und das automatische Browsen verwenden darf.
+
+0 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> darf sich mit dem automatischen Browsen in <ph name="PRODUCT_NAME" /> verbinden und es verwenden
+
+1 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> darf sich nicht mit dem automatischen Browsen in <ph name="PRODUCT_NAME" /> verbinden und es nicht verwenden
+
+Warnung: Wenn du <ph name="GEMINI_SPARK_PRODUCT_NAME" /> erlaubst, sich mit <ph name="PRODUCT_NAME" /> zu verbinden und das automatische Browsen zu verwenden, kann der <ph name="GEMINI_SPARK_PRODUCT_NAME" />-KI-Agent autonome Aktionen mit mehreren Schritten auf <ph name="PRODUCT_NAME" />-Clients über die aktive Browsersitzung ausführen. Dies birgt erhebliche Sicherheitsrisiken, darunter Risiken im Zusammenhang mit Anmeldedaten, dem im lokalen Netzwerk eingehenden Traffic und dem Verlust kontextsensitiver Signale. Vorhandene Verwaltungs- und Sicherheitsmechanismen werden möglicherweise nicht berücksichtigt.
+
+Administratoren sollten das Netzwerkbedrohungsmodell sowie die Compliance- und Datenschutzrichtlinien ihrer Organisation sorgfältig prüfen, bevor sie diese Funktion aktivieren.
+
+Diese Richtlinie hat keine Auswirkungen, wenn die <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> App oder die Richtlinien für das automatische Browsen in <ph name="PRODUCT_NAME" /> deaktiviert sind. Beispielsweise kann die <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> App durch die Richtlinie „<ph name="GEMINI_SETTINGS_POLICY_NAME" />“ deaktiviert werden. Weitere Informationen zu <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> in <ph name="PRODUCT_NAME" /> findest du unter https://support.google.com/chrome/a?p=gemini_in_chrome.
+
+Automatisches Browsen in <ph name="PRODUCT_NAME" /> und <ph name="GEMINI_SPARK_PRODUCT_NAME" /> sind nicht in allen Ländern und Sprachen verfügbar. Auch wenn du für diese Richtlinie „0 – Aktiviert“ festlegst, kann die Funktion möglicherweise nicht aktiviert werden, da sie von der Verfügbarkeit abhängig ist. Weitere Informationen zur Einführung der Funktion findest du in den Versionshinweisen für Chrome Enterprise: https://chromeenterprise.google/resources/release-notes/.</translation>
 <translation id="3159375329008977062">Nutzer darf Crostini-Container über die Benutzeroberfläche exportieren/importieren</translation>
 <translation id="3163167792874598128">Wenn die Richtlinie nicht konfiguriert oder aktiviert ist, wird dem Nutzer die Werbung für App Store-Bewertungen maximal einmal pro Jahr angezeigt.
 Ist die Richtlinie deaktiviert, wird dem Nutzer die Werbung für App Store-Bewertungen nicht angezeigt.</translation>
@@ -5208,6 +5199,7 @@ Das ist eine zusätzliche Steuerungsebene, die vor der Berechtigungsebene für A
 Nutzer können die Administratorauswahl nicht überschreiben. Wenn die Richtlinie nicht konfiguriert ist, können Nutzer die Einstellung für den Systemstandort nach Bedarf ändern und festlegen, wo die Standardeinstellung „<ph name="GLS_ALLOWED" />“ ist.
 
 Hinweis: Diese Richtlinie ersetzt die Richtlinie „<ph name="ARC_GLS_POLICY_NAME" />“. Wenn diese Richtlinie konfiguriert ist, wirkt sich „<ph name="DEFAULT_GEO_SETTING_POLICY_NAME" />“ nicht mehr auf die <ph name="ANDROID_NAME" />-Standorteinstellung unter <ph name="PRODUCT_OS_NAME" /> aus.</translation>
+<translation id="4340826578810728651">Ermöglicht <ph name="GEMINI_SPARK_PRODUCT_NAME" />, sich mit dem automatischen Browsen in <ph name="PRODUCT_NAME" /> zu verbinden und es zu verwenden</translation>
 <translation id="4341199399451274159">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />" die Zeichencodierungen an, die vom Suchanbieter unterstützt werden. Dazu werden Codeseiten-Namen wie "UTF-8", "GB2312" oder "ISO-8859-1" verwendet. Sie werden in der angegebenen Reihenfolge ausprobiert
 
       Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />" nicht konfiguriert ist, wird "UTF-8" verwendet.</translation>
@@ -5889,7 +5881,6 @@ Andernfalls werden nur ausgewählte Dienste aktiviert.</translation>
 Ist sie deaktiviert, sieht der Nutzer keine Werbung zur Erweiterung für Anmeldeinformationsanbieter.</translation>
 <translation id="4768446404233019970">Cipher Suites von 3DES in TLS aktivieren</translation>
 <translation id="4770334626033858263">Konfigurationseinstellungen, die bestimmen, wie der Eltern-Zugangscode generiert und bestätigt wird.</translation>
-<translation id="477383002672213319">Erweitertes Autofill zulassen, ohne KI-Modelle zu verbessern (verbessert KI-Modelle vor M153).</translation>
 <translation id="4773997835955617342">Ändert die vorgeschlagene <ph name="KRB5_CONFIG" />-Konfiguration für die neuen, manuell erstellten Tickets.
 
       Wenn diese Richtlinie aktiviert ist, wird der Wert der Richtlinie „KerberosCustomPrefilledConfig“ als vorgeschlagene Konfiguration angewendet und im Authentifizierungsdialogfeld von Kerberos unter „Erweitert“ angezeigt.
@@ -7170,13 +7161,6 @@ Es gibt mehrere Richtlinien, die Ursprünge auflisten, die sich auf Anfragen an 
 <translation id="5537400155400537818">Deaktiviert: CSS‑Zoom behält das alte Verhalten bei.</translation>
 <translation id="5537587542872235553">Isolierten Web-Apps mit erzwungener Installation und Kiosk-Apps erlauben, die Device Attributes API zu verwenden</translation>
 <translation id="553806128266843748">Boolescher Parameter, der angibt, ob die Drosselung aktiviert ist.</translation>
-<translation id="5540415024237352600">Diese Richtlinie wird in M153 eingestellt und in einer zukünftigen Version nicht mehr unterstützt, sodass sie dann keine Auswirkungen mehr hat. Ad-hoc-Signaturen für native Anwendungen, die bei der Installation einer progressiven Web-App (PWA) erstellt werden, sind jetzt unter <ph name="MAC_OS_NAME" /> dauerhaft aktiviert. So wird sichergestellt, dass jede installierte Anwendung eine eindeutige Identität für <ph name="MAC_OS_NAME" />-Systemkomponenten hat.
-
-Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, ist die Verwendung von Ad-hoc-Signaturen für die native Anwendung erlaubt, die bei der Installation einer progressiven Webanwendung (PWA) erstellt wird. So wird sichergestellt, dass jede installierte Anwendung eine eindeutige Identität für <ph name="MAC_OS_NAME" />-Systemkomponenten hat.
-
-Wenn die Richtlinie deaktiviert ist, hat jede native Anwendung, die bei der Installation von progressiven Webanwendungen erstellt wird, dieselbe Identität. Dies kann die Funktionalität von <ph name="MAC_OS_NAME" /> beeinträchtigen.
-
-Deaktiviere die Richtlinie nur, wenn du eine Endpunkt-Sicherheitslösung verwendest, die Anwendungen mit einer Ad-hoc-Signatur blockiert.</translation>
 <translation id="5540885720415375851">Erkennung lokaler Geräte zulassen</translation>
 <translation id="5542235730745104308">Wenn die Richtlinie auf „True“ gesetzt ist, verwendet <ph name="PRODUCT_NAME" /> alternative Fehlerseiten (z. B. „Seite nicht gefunden“). Ist sie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /> niemals alternative Fehlerseiten.
 

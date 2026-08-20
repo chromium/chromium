@@ -77,7 +77,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1857749206890802997">Prenesite Chromium v telefon, da boste lahko na poti odpirali ali ustvarjali nove skupine zavihkov.</translation>
 <translation id="185970820835152459">Upravljate lahko račune Google, v katere ste prijavljeni. Računi Google se uporabljajo za brskalnik Chromium, Trgovino Play, Gmail in drugo. Če želite dodati račun za nekoga drugega, na primer družinskega člana, v napravo <ph name="DEVICE_TYPE" /> dodajte novo osebo. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Iskanje s slikovnim iskanjem</translation>
-<translation id="1863837059069884561">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen. Če želite ločiti brskanje, se v Chromiumu prijavite v svoj profil kot <ph name="USER_EMAIL_ADDRESS" />. Dostopali boste lahko tudi do zaznamkov in drugega v <ph name="DEVICE" />.</translation>
 <translation id="1880677175115548835">Izbira besedila</translation>
 <translation id="1881322772814446296">Prijavljate se z upravljanim računom in s tem njegovemu skrbniku omogočate nadzor vašega profila v Chromiumu. Vaši podatki v Chromiumu, kot so aplikacije, zaznamki, zgodovina, gesla in druge nastavitve, bodo postali trajno povezani z uporabnikom <ph name="USER_NAME" />. Te podatke boste lahko izbrisali na nadzorni plošči za Google Račune, vendar jih ne boste mogli povezati z drugim računom. Če želite, lahko ustvarite nov profil, da bodo obstoječi podatki v Chromiumu ostali ločeni. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium varčuje z energijo baterije tako, da omeji dejavnost v ozadju in vizualne učinke, kot sta tekoče pomikanje in število sličic v sekundi pri videoposnetkih. <ph name="BEGIN_LINK" />Preberite več o varčevanju z energijo<ph name="END_LINK" /></translation>
@@ -136,7 +135,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2418322681019544463">Povezave iz poljubne aplikacije odprite v Chromiumu in poskrbite, da bo brskalnik dostopen v opravilni vrstici</translation>
 <translation id="2425157128016763890">Kliknite gumb za povzetek, če želite ta dokument deliti z Geminijem v Chromiumu, da pridobite hiter pregled in zastavite dodatna vprašanja</translation>
 <translation id="2440750600860946460">Z <ph name="BEGIN_LINK" />orodji iz Chromiuma<ph name="END_LINK" /> lahko varno brskate in imate nadzor</translation>
-<translation id="2449487342837813167">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen. Če želite ločiti brskanje, se v Chromiumu prijavite v svoj profil kot <ph name="USER_EMAIL_ADDRESS" />. V vseh svojih napravah boste imeli na voljo tudi gesla in drugo.</translation>
 <translation id="2451727308784734061">Z bližnjico lahko hitro odprete Upravitelja gesel. Bližnjico lahko premaknete na začetni zaslon računalnika ali v zaganjalnik aplikacij.</translation>
 <translation id="2478295928299953161">Chromium se bo kmalu zaprl</translation>
 <translation id="2483889755041906834">V Chromiumu</translation>
@@ -409,7 +407,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 
 Če ta stran ne deluje po pričakovanjih, poskusite omogočiti optimizacijo.</translation>
 <translation id="5575874067957905201">Prikaz Geminija v Chromiumu v menijski vrstici sistema macOS in vklop bližnjičnih tipk</translation>
-<translation id="5576587363991567745">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen. Če želite ločiti brskanje, se v Chromiumu prijavite v svoj profil kot <ph name="USER_EMAIL_ADDRESS" />. Dostopali boste lahko tudi do shranjenih podatkov in drugega v <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Napaka pri zagonu: Zaženite namestitveni program kot običajni uporabnik, ne kot skrbnik.</translation>
 <translation id="5580770360767802657">Privzeto uporabljajte Chromium in ga pripnite</translation>
 <translation id="5596627076506792578">Več možnosti</translation>
@@ -584,7 +581,6 @@ Novih zaznamkov ni mogoče shraniti v račun, dokler nekaterih ne izbrišete. Č
 <translation id="7213407614656404070">Uporaba Chromiuma ob vsakem kliku povezav v sporočilih, dokumentih in drugih aplikacijah</translation>
 <translation id="7216228761061470870">Če uporabljate slikovno iskanje v namiznem računalniku, se naslov strani, URL in vsebina, vključno s datotekami PDF, pošljejo v strežnik.</translation>
 <translation id="7223968959479464213">Upravitelj opravil – Chromium</translation>
-<translation id="7227958669698166857">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen. Če želite ločiti brskanje, se v Chromiumu prijavite v svoj profil kot <ph name="USER_EMAIL_ADDRESS" />. V vseh svojih napravah boste imeli na voljo tudi shranjene informacije in drugo.</translation>
 <translation id="7252276985725323153">Takoj začnite brskati: Chromium se lahko zdaj zažene, ko se zažene Windows.</translation>
 <translation id="7274695763216404502">Pripeto. Slikovno iskanje lahko znova uporabite v orodni vrstici.</translation>
 <translation id="7288567540154601580">Zavihki in razširitve</translation>
@@ -654,7 +650,6 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="7888981273428720788">Nastavite Chromium kot privzeto možnost</translation>
 <translation id="7934340546140346950">Povezave, ki niso varne, Chromium samodejno nadgradi na HTTPS, ko je to mogoče</translation>
 <translation id="7937630085815544518">V Chromium ste bili prijavljeni kot <ph name="USER_EMAIL_ADDRESS" />. Pri vnovični prijavi uporabite isti račun.</translation>
-<translation id="7944602660083060118">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen. Če želite ločiti brskanje, se v Chromiumu prijavite v svoj profil kot <ph name="USER_EMAIL_ADDRESS" />. V vseh svojih napravah boste imeli na voljo tudi zaznamke in drugo.</translation>
 <translation id="7975919845073681630">To je sekundarna namestitev Chromiuma in ga ni mogoče nastaviti kot privzeti brskalnik.</translation>
 <translation id="7997934263947464652">Razširitve, aplikacije in teme iz neznanih virov lahko škodijo napravi. Chromium priporoča, da jih namestite samo tukaj: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="8000759043835159571">Z aplikacijo Chromium v napravi <ph name="DEVICE_TYPE" /> izkoristite najboljše, kar ponuja Google</translation>
@@ -686,7 +681,6 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8232193495299001329">Chromium ne more preveriti, od kod je ta razširitev, in morda ni varna. Odstranite jo iz Chromiuma, da si ne bo mogla več ogledati vaših podatkov na obiskanih spletnih mestih, vključno z osebnimi podatki, in jih spreminjati.</translation>
 <translation id="8248265253516264921">Če slika nima koristnega opisa, ga bo Chromium poskušal zagotoviti. Opisi se ustvarijo tako, da se slike pošljejo Googlu. To lahko kadar koli izklopite v nastavitvah.</translation>
 <translation id="8254601181414348851">Se želite v Chromium prijaviti v novem profilu?</translation>
-<translation id="8262224117913639129">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen. Če želite ločiti brskanje, se v Chromiumu prijavite v svoj profil kot <ph name="USER_EMAIL_ADDRESS" />. Dostopali boste lahko tudi do gesel in drugega v <ph name="DEVICE" />.</translation>
 <translation id="8277334259226003205">Prikaz Geminija v Chromiumu v sistemski vrstici in vklop bližnjičnih tipk</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium vas opozori<ph name="END_LINK" /> glede spletnih mest in prenosov, ki niso varni</translation>
 <translation id="8295827201165805317">Nedavno niste obiskali tega mesta. Chromium je odstranil to dovoljenje: <ph name="PERMISSION" />.</translation>

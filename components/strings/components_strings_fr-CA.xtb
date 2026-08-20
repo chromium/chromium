@@ -70,7 +70,6 @@
 <translation id="1110994991967754504">Sélectionner une autorisation pour <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Enregistrer l'IBAN?</translation>
 <translation id="1113869188872983271">&amp;Annuler la réorganisation</translation>
-<translation id="1117709830616495622">Fonctionnalité propulsée par l'Intelligence personnalisée avec Gemini.</translation>
 <translation id="111897705806685148">Utiliser la clé d'accès d'un autre appareil</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour gérer les renseignements Chrome que vous enregistrez dans votre compte Google</translation>
 <translation id="1121990216147052230">Fais-moi une liste de tâches</translation>
@@ -1171,7 +1170,6 @@
 <translation id="3005723025932146533">Afficher une copie sauvegardée</translation>
 <translation id="300580149047131921">Utilisée récemment</translation>
 <translation id="3006864083554020786">adresse personnelle</translation>
-<translation id="3008410317623852235">Vous pouvez désormais trouver et remplir des informations à partir de Gmail et plus encore.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation pour parcourir les actions offertes, puis sur Entrée pour exécuter l'action sélectionnée.</translation>
 <translation id="3010991137650052245">Pour utiliser votre <ph name="PERMISSION" /> sur ce site, accordez l'accès à <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3014726756341138577">Fonctionnalités avancées de l'imprimante</translation>
@@ -2321,7 +2319,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4941627891654116707">Taille de la police</translation>
 <translation id="4943620199112228840">Utiliser votre micro</translation>
 <translation id="4943872375798546930">Aucun résultat</translation>
-<translation id="494701040141924538">OK, fermer la notification</translation>
 <translation id="495170559598752135">Actions</translation>
 <translation id="4953689047182316270">Répondre aux événements d'accessibilité</translation>
 <translation id="4954505713046251871">Pour proposer des suggestions et améliorer cette fonctionnalité, l'URL et le contenu de la page sont partagés avec Google</translation>
@@ -3372,7 +3369,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6743841972744298686">Paramètres de synchronisation</translation>
 <translation id="6745212570062463886">Remplissez automatiquement votre nom et votre adresse courriel à partir de votre compte Google</translation>
 <translation id="674580074662200768">Mettre à jour le passeport en toute sécurité</translation>
-<translation id="6749473226660745022">Photos</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Valeur de la règle</translation>
 <translation id="6753434778807740853">Supprimer l'entrée <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3711,7 +3707,6 @@ Détails supplémentaires :
 <translation id="7366117520888504990">198 mm x 275 mm</translation>
 <translation id="7366362069757178916">Modules de traitement de paiements</translation>
 <translation id="7366594738862061263">Découvrir comment Chrome protège vos mots de passe</translation>
-<translation id="7366909168761621528">Données de navigation</translation>
 <translation id="7370751048350026847">Il n'est pas recommandé de coller ce contenu sur ce site</translation>
 <translation id="7372526636730851647">Photo (brillante)</translation>
 <translation id="7372973238305370288">résultat de la recherche</translation>
@@ -4300,7 +4295,6 @@ Détails supplémentaires :
 <translation id="8350416046273606058">Le raccourci ne peut pas contenir d'espaces : « <ph name="SHORTCUT_NAME" /> »</translation>
 <translation id="8351131234907093545">Créer une note</translation>
 <translation id="8352849934814541340">L'administrateur de cet appareil a installé des applications offrant des fonctions supplémentaires. Les applications ont accès à certaines de vos données.</translation>
-<translation id="8353273112634584260">Fonctionnalité propulsée par l'Intelligence personnalisée avec Gemini. Vos requêtes, les URL et les titres des pages peuvent être examinés afin d'améliorer le remplissage automatique amélioré.</translation>
 <translation id="8355270400102541638">Contexte du plantage local :</translation>
 <translation id="8362914115861174987">Langue cible</translation>
 <translation id="8363502534493474904">De désactiver le mode Avion</translation>
@@ -4660,7 +4654,6 @@ Détails supplémentaires :
 <translation id="9026253329950610248">Sites Google</translation>
 <translation id="9027020981272345766">Essayer Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Pour quitter le mode plein écran, maintenez le doigt sur |<ph name="ACCELERATOR" />|</translation>
-<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Erreur liée à la sécurité</translation>
 <translation id="9035699147763101514">Propulsé par l'Intelligence personnalisée avec Gemini. Gérez vos choix dans les paramètres.</translation>
 <translation id="9035824888276246493">Enregistrer les codes de sécurité</translation>

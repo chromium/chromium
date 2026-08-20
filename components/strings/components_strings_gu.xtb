@@ -70,7 +70,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> માટે પરવાનગી પસંદ કરો</translation>
 <translation id="1113000785583998331">IBAN સાચવીએ?</translation>
 <translation id="1113869188872983271">&amp;પુનઃક્રમાંકિત કરવું પૂર્વવત્ કરો</translation>
-<translation id="1117709830616495622">Gemini સાથે પર્સનલ ઇન્ટેલિજન્સ દ્વારા સંચાલિત.</translation>
 <translation id="111897705806685148">અન્ય ડિવાઇસમાંથી પાસકીનો ઉપયોગ કરો</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, તમે તમારા Google એકાઉન્ટમાં Chromeની કઈ માહિતી સાચવો છો તે મેનેજ કરવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="1121990216147052230">મારા માટે કરવાના કાર્યોની સૂચિ બનાવો</translation>
@@ -1171,7 +1170,6 @@
 <translation id="3005723025932146533">સાચવેલી કૉપિ બતાવો</translation>
 <translation id="300580149047131921">તાજેતરમાં ઉપયોગમાં લીધેલી</translation>
 <translation id="3006864083554020786">ઘરનું સરનામું</translation>
-<translation id="3008410317623852235">હવે તમે Gmail અને વધુમાંથી માહિતી શોધી અને ભરી શકો છો.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, ઉપલબ્ધ ક્રિયાઓને બ્રાઉઝ કરવા માટે ટૅબ દબાવો, તે પછી પસંદ કરેલી ક્રિયાને અમલમાં લાવવા માટે Enter દબાવો.</translation>
 <translation id="3010991137650052245">આ સાઇટ પર તમારા <ph name="PERMISSION" />નો ઉપયોગ કરવા માટે, <ph name="SHORT_PRODUCT_NAME" />ને ઍક્સેસ આપો</translation>
 <translation id="3014726756341138577">પ્રિન્ટરની વિગતવાર સુવિધાઓ</translation>
@@ -2321,7 +2319,6 @@
 <translation id="4941627891654116707">ફૉન્ટનું કદ</translation>
 <translation id="4943620199112228840">તમારા માઇક્રોફોનનોઉપયોગ કરો</translation>
 <translation id="4943872375798546930">પરિણામો નથી</translation>
-<translation id="494701040141924538">સમજાઈ ગયું, નોટિસ બંધ કરો</translation>
 <translation id="495170559598752135">ક્રિયાઓ</translation>
 <translation id="4953689047182316270">ઍક્સેસિબિલિટી ઇવેન્ટનો જવાબ આપો</translation>
 <translation id="4954505713046251871">સૂચનો ઑફર કરવા અને આ સુવિધાને બહેતર બનાવવા માટે પેજનું URL તથા કન્ટેન્ટ, Google સાથે શેર કરવામાં આવે છે</translation>
@@ -3372,7 +3369,6 @@
 <translation id="6743841972744298686">સિંક સેટિંગ</translation>
 <translation id="6745212570062463886">તમારા Google એકાઉન્ટમાંથી તમારું નામ અને ઇમેઇલ ઍડ્રેસ ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="674580074662200768">પાસપોર્ટની માહિતી સુરક્ષિત રીતે અપડેટ કરો</translation>
-<translation id="6749473226660745022">ફોટા</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">પૉલિસી મૂલ્ય</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> એન્ટ્રી ડિલીટ કરો</translation>
@@ -3712,7 +3708,6 @@
 <translation id="7366117520888504990">198 x 275 મિમી</translation>
 <translation id="7366362069757178916">ચુકવણી હૅન્ડલર</translation>
 <translation id="7366594738862061263">Chrome તમારા પાસવર્ડને કેવી રીતે સુરક્ષિત કરે છે તે વિશે જાણો</translation>
-<translation id="7366909168761621528">બ્રાઉઝિંગ ડેટા</translation>
 <translation id="7370751048350026847">આ કન્ટેન્ટને આ સાઇટ પર પેસ્ટ કરવાનો સુઝાવ આપવામાં આવતો નથી</translation>
 <translation id="7372526636730851647">ફોટો (ગ્લોસી)</translation>
 <translation id="7372973238305370288">શોધ પરિણામ</translation>
@@ -4301,7 +4296,6 @@
 <translation id="8350416046273606058">શૉર્ટકટમાં સ્પેસ શામેલ હોઈ શકે નહીં: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">નોંધ બનાવો</translation>
 <translation id="8352849934814541340">આ ડિવાઇસના ઍડમિનિસ્ટ્રેટર દ્વારા વધારાના કાર્યો માટે ઍપ્લિકેશન ઇન્સ્ટૉલ કરવામાં આવી છે. ઍપ્લિકેશન તમારા અમુક ડેટાનો ઍક્સેસ ધરાવે છે.</translation>
-<translation id="8353273112634584260">Gemini સાથે પર્સનલ ઇન્ટેલિજન્સ દ્વારા સંચાલિત. ઑટોમૅટિક રીતે ભરવાની બહેતર સુવિધાને બહેતર બનાવવા માટે, તમારી વિનંતીઓ, પેજના શીર્ષકો અને URLsનો રિવ્યૂ કરવામાં આવી શકે છે.</translation>
 <translation id="8355270400102541638">સ્થાનિક ક્રૅશ સંદર્ભ:</translation>
 <translation id="8362914115861174987">આ ભાષામાં અનુવાદ કરો</translation>
 <translation id="8363502534493474904">એરપ્લેન મોડ બંધ કરીને</translation>
@@ -4661,7 +4655,6 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Chrome Enterprise Core અજમાવી જુઓ</translation>
 <translation id="9027531288681624875">પૂર્ણ સ્ક્રીનમાંથી બહાર નીકળવા માટે, |<ph name="ACCELERATOR" />| દબાવી રાખો</translation>
-<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">સુરક્ષા ભૂલ</translation>
 <translation id="9035699147763101514">Gemini સાથે પર્સનલ ઇન્ટેલિજન્સ દ્વારા સંચાલિત. સેટિંગમાં તમારી પસંદગીઓ મેનેજ કરો.</translation>
 <translation id="9035824888276246493">સુરક્ષા કોડ સાચવો</translation>

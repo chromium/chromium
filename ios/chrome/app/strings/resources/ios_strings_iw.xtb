@@ -529,7 +529,7 @@
 <translation id="2666092431469916601">למעלה</translation>
 <translation id="2669454659051515572">כל מי שמשתמש במכשיר הזה יכול לראות את הקבצים שהורדו</translation>
 <translation id="2671423594960767771">שיתוף קבוצה</translation>
-<translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
+<translation id="2672512470874391563"><ph name="OWNER_NAME" />‏ • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">תשלום בתשלומים</translation>
 <translation id="2673508731173059946">מעבר לקישור שהועתק</translation>
 <translation id="2679659833697380">הפרטים שלך נשמרו במכשיר</translation>
@@ -546,7 +546,7 @@
 <translation id="271033894570825754">אוסף חדש</translation>
 <translation id="2712929214961145009">‏גופן Sans Serif</translation>
 <translation id="2713106313042589954">השבתת המצלמה</translation>
-<translation id="2715440913764382254">שקישורים ייפתחו ישירות כאן?</translation>
+<translation id="2715440913764382254">פתיחת קישורים ישירות מכאן</translation>
 <translation id="2718352093833049315">‏רק ב-Wi-Fi</translation>
 <translation id="2721190673959776287">דוגמה לבועת מידע עשיר לגבי המוצר בחלונית ההקשר. הבועה אמורה להופיע כמה פעמים ביום.</translation>
 <translation id="2739887572830526131">אפשר לשמור את הקבוצה הזו כדי להוסיף כרטיסיות מאוחר יותר, או למחוק אותה אם אין לך יותר צורך בה.</translation>
@@ -1059,7 +1059,6 @@
 <translation id="454217142158335225">אפשר לפתוח מחדש פריטים שנסגרו בקטעים "כרטיסיות אחרונות" או "קבוצות של כרטיסיות". הכרטיסיות המוצמדות לא ייסגרו.</translation>
 <translation id="4547181496285029457">חזרה לכרטיסייה הקודמת</translation>
 <translation id="4552042254369397518">מתבצעת העתקה…</translation>
-<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">עוד מפתחות גישה</translation>
 <translation id="4564893319561643483">הסתרה של '<ph name="TITLE" />'</translation>
 <translation id="456502772933839252">שיתוף של <ph name="PAGE_TITLE" /></translation>
@@ -1390,7 +1389,6 @@
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="560322036295180549">האפשרות הושבתה על ידי הארגון שלך</translation>
 <translation id="5611398002774823980">שמירה בחשבון</translation>
-<translation id="5612225021788368236">סגירת המודעה לגבי דפדפן ברירת מחדל</translation>
 <translation id="561269594905823128">לוחצים על <ph name="BEGIN_BOLD" />בחירת קובץ<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">מיון לפי הישן ביותר</translation>
 <translation id="5614553682702429503">לשמור את הסיסמה?</translation>
@@ -1500,7 +1498,7 @@
 <translation id="5952641243319721872">בחרת לבטל. להמשיך?</translation>
 <translation id="5956112131836209882">כרטיסייה של קבוצת כרטיסיות. ‫<ph name="TAB_INDEX_IN_GROUP" /> מתוך <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">חיפוש ב-<ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5963694076845073027">רוצה שבפעם הבאה, קישורים ייפתחו ישירות כאן?</translation>
+<translation id="5963694076845073027">בפעם הבאה, הקישורים ייפתחו כאן</translation>
 <translation id="5963939892571022323">לא ניתן ליצור קישור לטקסט המודגש.</translation>
 <translation id="5968400720580217226">‏מצב AI</translation>
 <translation id="5971459446352190251">‏חיפוש של קוד QR</translation>
@@ -2048,7 +2046,7 @@
 <translation id="7701040980221191251">אין</translation>
 <translation id="7702428539671224160">המילוי האוטומטי של פרטי התשלום מופעל באתר <ph name="URL" /></translation>
 <translation id="7708994397325774423">קבלת כל הסיסמאות</translation>
-<translation id="7710096647785049958">די לבזבז זמן על העתקת קישורים</translation>
+<translation id="7710096647785049958">בלי לבזבז זמן על העתקת קישורים</translation>
 <translation id="7711440461521638739">אין שימוש חוזר בסיסמאות כלשהן</translation>
 <translation id="7712361583414030698">מוצגת גרסת אופליין</translation>
 <translation id="7719038820139380048">צריך להיכנס לחשבון כדי לקבל תוכן מותאם לתחומי העניין שלך.</translation>
@@ -2514,7 +2512,7 @@
 <translation id="9148126808321036104">כניסה חוזרת</translation>
 <translation id="9149866541089851383">עריכה…</translation>
 <translation id="9152637745605628097">אפשר לבחור מתוך קטגוריות העיצוב והאוספים המיוחדים או להעלות תמונה</translation>
-<translation id="9153159728062222866">די ל"העתק-הדבק"</translation>
+<translation id="9153159728062222866">בלי "העתק-הדבק"</translation>
 <translation id="9159628751968616911">שליחת דף האינטרנט</translation>
 <translation id="9162412286847966593">‏הנתונים וההקלטות של הארגון שלך לא ישמשו לשיפור מודלים של AI גנרטיבי. <ph name="BEGIN_LINK" />הפרטיות שלך ו-Gemini<ph name="END_LINK" /></translation>
 <translation id="9162432979321511934">מפעילים את האפשרות מילוי אוטומטי של סיסמאות.</translation>

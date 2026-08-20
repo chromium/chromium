@@ -372,7 +372,6 @@
 <translation id="4676059169848868271">如要讓 <ph name="APP_NAME" /> 使用手勢追蹤功能，請一併在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中開啟手勢追蹤。</translation>
 <translation id="4688045258817337666">管理資訊卡</translation>
 <translation id="4722332387043141878">網站通常會使用裝置的動作和光源感應器，以提供虛擬實境或健身追蹤等功能</translation>
-<translation id="4748783296226936791">網站通常會連線至 HID 裝置，是因為有功能需要使用非標準鍵盤、遊戲控制器和其他裝置。</translation>
 <translation id="4755971844837804407">如果啟用，網站就可以向你顯示任何廣告。如果停用，網站將無法顯示誤導性或侵入式廣告。</translation>
 <translation id="4779083564647765204">縮放</translation>
 <translation id="4807122856660838973">開啟安全瀏覽功能</translation>
@@ -457,7 +456,6 @@
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
 <translation id="5706552988683188916">如果這麼做，系統將刪除 <ph name="WEBSITE" /> 的 Cookie 及其他網站資料</translation>
 <translation id="571222594670061844">網站可以顯示身分識別服務的登入提示</translation>
-<translation id="5719854774000914513">網站可以要求連線至 HID 裝置</translation>
 <translation id="5740126560802162366">網站可將資料儲存到裝置</translation>
 <translation id="5743425052258407233">在所有裝置上存取歷史記錄，輕鬆接續瀏覽進度</translation>
 <translation id="5749158352074143502">繼續使用這個分頁</translation>
@@ -577,7 +575,6 @@
 <translation id="6950072572526089586">你造訪的網站可儲存使用者的活動資訊，協助正常運作，例如在網站上保持登入狀態或儲存購物車內的項目。網站通常會暫時在裝置上儲存這項資訊。</translation>
 <translation id="6964291282260073066">停用「WebGPU」。</translation>
 <translation id="6965382102122355670">確定</translation>
-<translation id="6972629891077993081">HID 裝置</translation>
 <translation id="6980507581230208647">玫瑰粉主題</translation>
 <translation id="6980861169612950611">要刪除網站資料嗎？<ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">無障礙設定</translation>
@@ -735,7 +732,6 @@
 <translation id="8593422116412089302">如果啟用，網站可以要求使用與你相關的既有資訊；如果停用，網站就無法要求使用這些資訊。</translation>
 <translation id="8609465669617005112">上移</translation>
 <translation id="8617611086246832542">如果啟用，系統將顯示網站的電腦檢視畫面。如果停用，系統將顯示網站的行動裝置檢視畫面。</translation>
-<translation id="8625916342247441948">禁止網站連線至 HID 裝置</translation>
 <translation id="8670078035093027626">預設瀏覽器底部功能表已開啟，並顯示在整個畫面</translation>
 <translation id="8676316391139423634">開啟後，網站可以要求追蹤你的手勢。如果關閉，網站就無法追蹤你的手勢。</translation>
 <translation id="8676374126336081632">清除輸入</translation>

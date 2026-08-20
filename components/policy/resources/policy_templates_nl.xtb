@@ -172,16 +172,6 @@ Het label is aanpasbaar via het beleid <ph name="ENTERPRISE_CUSTOM_LABEL_POLICY_
 <translation id="1100840127293327071">De optie om bestaande browsegegevens standaard te bewaren niet aanvinken</translation>
 <translation id="1105572260329131950">Standaardiconen gebruiken voor beveiligde verbindingen</translation>
 <translation id="1105711894873068933">Nadat <ph name="LACROS_NAME" /> is uitgezet, worden alle gebruikersgegevens verwijderd als er weer wordt ingelogd.</translation>
-<translation id="1106279506320506502">Geeft aan of de geïsoleerde modus aanstaat.
-
-De geïsoleerde modus is een kortstondige browsemodus die alleen beschikbaar is voor Enterprise.
-De modus ondersteunt DLP-gerelateerd zakelijk beleid en afgedwongen geïnstalleerde extensies.
-
-Als je deze optie instelt op 1 - Aangezet, wordt de geïsoleerde modus aangezet en de incognitomodus uitgezet.
-
-Als je het beleid instelt op 0 - Uitgezet of niet instelt, wordt de geïsoleerde modus uitgezet.
-
-Dit beleid vereist een <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />-licentie om van kracht te worden.</translation>
 <translation id="1106342730891876476">Instellingen voor delen</translation>
 <translation id="1107538157073168076">Extensie voor inzichten uitzetten</translation>
 <translation id="1110426799149444997">Regio doorzoeken uitzetten voor <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
@@ -1646,17 +1636,6 @@ Dit beleid wordt meestal niet toegepast als beveiliging tegen phishing.</transla
 <translation id="2057317273526988987">Toegang verlenen aan een lijst met URL's</translation>
 <translation id="205807990145127714">Telemetriegegevens om te rapporteren over signaalsterkte.</translation>
 <translation id="2060153898336610735">Automatisch op basis van huidige taal</translation>
-<translation id="2060316966423154087">Hiermee bepaal je of gebruikers <ph name="PRODUCT_NAME" /> generatieve AI kunnen laten gebruiken om formulieren beter te begrijpen en meer velden te laten invullen.
-
-0 = Heeft hetzelfde effect als 1. Vóór M153 stond de instelling toe dat Google relevante gegevens gebruikte om zijn AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
-
-1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met relevante gegevens (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = Hiermee wordt de functie niet toegestaan.
-
-Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="2061123930713023976">Opnamen van netwerkpakketten voor fouten opsporen toestaan</translation>
 <translation id="2061810934846663491">De vereiste domeinnamen configureren voor hosts voor externe toegang</translation>
 <translation id="2062632109797189011">De beëindigde API window.webkitStorageInfo opnieuw aanzetten</translation>
@@ -2875,7 +2854,6 @@ Als je 'command_line' instelt, kan de extensie niet worden geladen via de opdrac
 
 Als je het beleid niet instelt, is <ph name="BLOCK_POPUPS_POLICY_NAME" /> van toepassing maar kunnen gebruikers deze instelling wijzigen.</translation>
 <translation id="2796714419743648316">Toelatingslijst voor tijdslimieten per app</translation>
-<translation id="2799223571221894425">Opnieuw starten</translation>
 <translation id="2801065672151277034">Instellingen voor certificaatbeheer</translation>
 <translation id="2801155097555584385">Een custom startpunt voor batterijoplading opgeven in procenten</translation>
 <translation id="2801378553855965587"><ph name="GOOGLE_CALENDAR_NAME" />-integratie uitzetten.</translation>
@@ -3449,6 +3427,19 @@ Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor 
 <translation id="3150351525324499342">Het icoon voor <ph name="PRODUCT_NAME" /> niet standaard tonen in de werkbalk, maar gebruikers laten kiezen</translation>
 <translation id="3152135410085709340">Lokale bestandstoegang tot file://-URL's op deze sites toestaan in de pdf-viewer</translation>
 <translation id="3152425128389603870">Maak Samengestelde desktop beschikbaar en zet deze standaard aan</translation>
+<translation id="3157506194753687842">Hiermee bepaal je of de <ph name="GEMINI_SPARK_PRODUCT_NAME" />-agent verbinding mag maken met <ph name="PRODUCT_NAME" /> en automatisch browsen mag gebruiken.
+
+0 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> mag verbinding maken met en automatisch gebruiken browsen in <ph name="PRODUCT_NAME" />
+
+1 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> mag geen verbinding maken met of automatisch gebruiken browsen in <ph name="PRODUCT_NAME" />
+
+Waarschuwing: Als je <ph name="GEMINI_SPARK_PRODUCT_NAME" /> toestaat verbinding te maken met <ph name="PRODUCT_NAME" /> en automatisch browsen te gebruiken, kan de <ph name="GEMINI_SPARK_PRODUCT_NAME" />-agent zelfstandige acties in meerdere stappen uitvoeren op <ph name="PRODUCT_NAME" />-clients met de actieve browsersessie. Dit brengt aanzienlijke beveiligingsrisico's met zich mee, waaronder risico's voor inloggegevens, toegang tot het lokale netwerk en verlies van contextafhankelijke signalen. Bestaande beheer- en beveiligingsfuncties worden misschien niet gerespecteerd.
+
+We raden beheerders aan het model voor netwerkdreigingen, de nalevingsrichtlijnen en de privacyrichtlijnen van hun organisatie zorgvuldig te evalueren voordat ze deze functie aanzetten.
+
+Dit beleid heeft geen effect als de beleidsregels voor de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />-app of automatisch browsen in <ph name="PRODUCT_NAME" /> niet worden toegepast. De <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />-app kan bijvoorbeeld worden uitgezet met het beleid <ph name="GEMINI_SETTINGS_POLICY_NAME" />. Ga voor meer informatie over <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> in <ph name="PRODUCT_NAME" /> naar https://support.google.com/chrome/a?p=gemini_in_chrome.
+
+Automatisch browsen in <ph name="PRODUCT_NAME" /> en <ph name="GEMINI_SPARK_PRODUCT_NAME" /> zijn niet in alle landen of alle talen beschikbaar. Als je dit beleid instelt op 0 - Enabled (Aan), garandeert dit niet dat de functie wordt aangezet. De functie blijft afhankelijk van de beschikbaarheid. Check de release-opmerkingen voor Chrome Enterprise voor meer informatie over de uitrol: https://chromeenterprise.google/resources/release-notes/.</translation>
 <translation id="3159375329008977062">Gebruiker kan Crostini-containers exporteren/importeren via de gebruikersinterface</translation>
 <translation id="3163167792874598128">Als je het beleid toepast of niet instelt, kan de promotie voor appstore-beoordelingen maximaal één keer per jaar worden getoond aan de gebruiker.
 Als je het beleid niet toepast, wordt de promotie voor appstore-beoordelingen niet getoond aan de gebruiker.</translation>
@@ -5204,6 +5195,7 @@ Dit is een extra beheerlaag die zich onder de rechtenlaag voor apps en websites 
 Gebruikers kunnen de beheerdersselectie niet overschrijven. Als je het beleid niet instelt, hebben gebruikers de consumentenfunctionaliteit. Dat wil zeggen dat ze de locatie-instelling van het systeem zelf kunnen aanpassen. De standaard is dan <ph name="GLS_ALLOWED" />.
 
 Opmerking: Met dit beleid wordt het beleid <ph name="ARC_GLS_POLICY_NAME" /> beëindigd. Als je dit beleid instelt, heeft <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> ook geen invloed meer op de <ph name="ANDROID_NAME" />-locatievoorkeur in <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="4340826578810728651">Hiermee kan <ph name="GEMINI_SPARK_PRODUCT_NAME" /> verbinding maken met en automatisch browsen gebruiken in <ph name="PRODUCT_NAME" /></translation>
 <translation id="4341199399451274159">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> instelt, worden de tekencoderingen gespecificeerd die worden ondersteund door de zoekprovider. Deze coderingen zijn codepaginanamen zoals UTF-8, GB2312 en ISO-8859-1. Ze worden getest in de volgorde waarin ze worden opgegeven.
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> niet instelt, wordt UTF-8 gebruikt.</translation>
@@ -5884,7 +5876,6 @@ Anders worden alleen geselecteerde services aangezet.</translation>
 Als je het beleid niet toepast, wordt de promotie voor de extensie voor inloggegevensproviders niet getoond aan de gebruiker.</translation>
 <translation id="4768446404233019970">3DES cipher suites aanzetten in TLS</translation>
 <translation id="4770334626033858263">De configuratie die is gebruikt om de toegangscode voor ouders te genereren en te verifiëren.</translation>
-<translation id="477383002672213319">Verbeterd automatisch invullen toestaan zonder AI-modellen te verbeteren (verbetert AI-modellen vóór M153).</translation>
 <translation id="4773997835955617342">Hiermee wordt de voorgestelde <ph name="KRB5_CONFIG" />-configuratie voor de nieuwe handmatig gemaakte tickets gewijzigd.
 
       Als je dit beleid toepast, wordt de waarde van het beleid KerberosCustomPrefilledConfig toegepast als voorgestelde configuratie en getoond in het gedeelte Geavanceerd van het dialoogvenster voor Kerberos-verificatie.
@@ -7141,13 +7132,6 @@ Er zijn meerdere beleidsregels met oorsprongen die van invloed zijn op verzoeken
 <translation id="5537400155400537818">Uitgezet: css-zoom behoudt het verouderde gedrag van vóór de standaardisatie.</translation>
 <translation id="5537587542872235553">Toestaan dat afgedwongen geïnstalleerde geïsoleerde web-apps en kiosk-apps de Device Attributes API gebruiken</translation>
 <translation id="553806128266843748">Een Booleaanse markering die aangeeft of throttling aanstaat.</translation>
-<translation id="5540415024237352600">Dit beleid wordt beëindigd in M153 en wordt niet meer ondersteund (heeft geen effect) in een toekomstige release. Ad-hoc-handtekeningen voor systeemeigen apps die worden gemaakt bij de installatie van een progressive web-app (PWA), staan nu permanent aan op <ph name="MAC_OS_NAME" />. Hierdoor heeft elke geïnstalleerde app een unieke identiteit voor <ph name="MAC_OS_NAME" />-systeemcomponenten.
-
-Als je het beleid toepast of niet instelt, wordt het gebruik van ad-hoc-handtekeningen aangezet voor de systeemeigen app die wordt gemaakt bij de installatie van een progressive web-app (PWA). Hierdoor heeft elke geïnstalleerde app een unieke identiteit voor <ph name="MAC_OS_NAME" />-systeemcomponenten.
-
-Als je het beleid niet toepast, heeft elke systeemeigen app die wordt gemaakt bij het installeren van progressive web-apps dezelfde identiteit. Dit kan de <ph name="MAC_OS_NAME" />-functionaliteit verstoren.
-
-Zet het beleid alleen uit als je een oplossing voor beveiliging van eindpunten gebruikt die apps met een ad-hoc-handtekening blokkeert.</translation>
 <translation id="5540885720415375851">Toestaan dat lokale apparaten worden gevonden</translation>
 <translation id="5542235730745104308">Als je het beleid instelt op True, gebruikt <ph name="PRODUCT_NAME" /> alternatieve foutpagina's die zijn ingebouwd (zoals Pagina niet gevonden). Als je het beleid instelt op False, gebruikt <ph name="PRODUCT_NAME" /> nooit alternatieve foutpagina's.
 

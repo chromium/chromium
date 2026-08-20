@@ -717,7 +717,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1554640914375980459">Bildirishnoma kelganda ekran miltillaydi. Yorugʻlikka sezgir boʻlsangiz, chaqnoqli bildirishnoma ishlating.</translation>
 <translation id="1555130319947370107">Ko‘k</translation>
 <translation id="1556127816860282890">Fondagi amallar va ravon varaqlash kabi ayrim vizual effektlar cheklanishi mumkin</translation>
-<translation id="1557806604681757705">kompyuter</translation>
 <translation id="1557939148300698553">Profil yaratish</translation>
 <translation id="155803912725350982">Sekin tugmalar</translation>
 <translation id="155865706765934889">Sensorli panel</translation>
@@ -1019,7 +1018,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1784707308176068866">Original ilova tomonidan talab qilinganda fonda ishga tushirish</translation>
 <translation id="1784849162047402014">Diskda bo‘sh joy tugamoqda</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{“<ph name="APP_NAME" />” oʻchirilganda quyidagi ilova ham oʻchiriladi:}other{“<ph name="APP_NAME" />” oʻchirilganda quyidagi ilovalar ham oʻchiriladi:}}</translation>
-<translation id="1785698972112179866">Bukmarklar va boshqa maʼlumotlaringizni <ph name="DEVICE" /> qurilmasidan olish uchun hisobingizga kiring</translation>
 <translation id="1786290960428378411">Oʻqish va yozishga ruxsat olmoqchi</translation>
 <translation id="1789543093145556097">Doim berkitish</translation>
 <translation id="179021551944139249">Havolani saqlangan sahifalarga qoʻshish</translation>
@@ -1706,6 +1704,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2322193970951063277">Sarlavha va taglavhalar</translation>
 <translation id="2322622365472107569">Tugash vaqti: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Saqlangan Wi-Fi tarmoqlar</translation>
+<translation id="2323685460575935191">Varaqlash tugmalarini berkitish</translation>
 <translation id="2325444234681128157">Parol eslab qolinsin</translation>
 <translation id="2326188115274135041">Qulfni avtomatik yechish funksiyasini yoqish uchun PIN kodni tasdiqlang</translation>
 <translation id="2326583548923775947">Bu Google hisobi emas. Chromega saqlangan obyektlar boshqa qurilmalarda ishlamaydi.</translation>
@@ -8090,6 +8089,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7260206782629605806">Chegarani asta harakat bilan pasaytirish mumkin. Chegarani keskin harakat bilan oshirish mumkin.</translation>
 <translation id="7260802376010589729">Sichqoncha tugmasini boʻshatishda “c” ishlating</translation>
 <translation id="7261217796641151584">Guruhni ulashish</translation>
+<translation id="7261249528606034119">Varaqlash tugmalarini yashirish</translation>
 <translation id="7261612856573623172">Tizim uchun nutq sintezatori ovozi</translation>
 <translation id="7262004276116528033">Tizimga kirish xizmati <ph name="SAML_DOMAIN" /> domenida joylashgan.</translation>
 <translation id="7262162806583378242">AI yordamida xarid qilish, tarjima qilish va qidirish uchun ekrandagi istalgan narsani tanlang</translation>
@@ -8649,7 +8649,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion tizim va IP manzillar haqidagi maʼlumotlar kiradi.</translation>
 <translation id="7683834360226457448">Koʻrish qobiliyati pastlar uchun ekran vositalari</translation>
 <translation id="7684212569183643648">Administratoringiz tomonidan o‘rnatilgan</translation>
-<translation id="7684547908663093354">Parollar va boshqa maʼlumotlaringizni <ph name="DEVICE" /> qurilmasidan olish uchun hisobingizga kiring</translation>
 <translation id="7684718995427157417">Ilovalar ishlab chiqish va ularni sinash uchun Android Debug Bridge (ADB) vositasini faollashtiring. Eslatma: bunda Google tomonidan tekshirilmagan Android ilovalar ham oʻrnatilishi mumkin va zavod sozlamalariga tiklash yoqilmasligi kerak.</translation>
 <translation id="7684803937028953000">Tashkilotingiz bu faylni qurilmaga yuklab olishni taqiqlagan.</translation>
 <translation id="7684913007876670600">Sahifani soddalashtirilgan shaklda ochish uchun yon panelni oching va Oʻqish rejimini tanlang</translation>
@@ -9070,7 +9069,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8011372169388649948">“<ph name="BOOKMARK_TITLE" />” boshqa joyga olindi.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8013181884974864006">Kontekstli vazifalar</translation>
-<translation id="8013462234418290522">Saqlangan maʼlumotlaringiz va boshqalarni <ph name="DEVICE" /> qurilmasidan olish uchun hisobingizga kiring</translation>
 <translation id="8013534738634318212">Bu saytlar <ph name="RWS_OWNER" /> guruhiga kiradi. Guruhdagi saytlar guruhdagi faoliyatni koʻra oladi.</translation>
 <translation id="8013993649590906847">Agar rasmga foydali tavsif berilmagan boʻlsa, Google Chrome uni sizga tavsiflaydi. Tavsif yaratish uchun rasmlar Googlega yuboriladi.</translation>
 <translation id="8014154204619229810">Yangilash vositasi ishlamoqda. Bir necha daqiqadan so‘ng qayta urinib ko‘ring.</translation>
@@ -9557,7 +9555,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8377625247046155446">Bu kod faqat shu qurilmada saqlanadi Barcha inkognito oynalari yopilganidan keyin kod shu qurilmada qoladi.</translation>
 <translation id="837790003026572432">Bu qurilma varaq audiosini translatsiya qila olmaydi</translation>
 <translation id="8378714024927312812">Tashkilotingiz tomonidan boshqariladi</translation>
-<translation id="8378855320830505539">Hudud</translation>
 <translation id="8379988659465232385">Nomini kiritish shart</translation>
 <translation id="8379991678458444070">Bu varaq bukmarkka olinsa, keyinchalik oson topiladi</translation>
 <translation id="8380266723152870797">Oyna nomi</translation>

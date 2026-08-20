@@ -199,7 +199,6 @@
 <translation id="1829244130665387512">חיפוש בדף</translation>
 <translation id="1832459821645506983">כן, אני רוצה</translation>
 <translation id="1845958458910716240">‏כדי להגן על הנתונים שלך, כדאי לאפשר ל-Chrome להסיר הרשאות מאתרים שלא נכנסת אליהם לאחרונה</translation>
-<translation id="1851551847729706116">מתבצע שיתוף של <ph name="TAB_NAME" /> לכרטיסייה הזו</translation>
 <translation id="1871098866036088250">‏פתיחה בדפדפן Chrome</translation>
 <translation id="1877026089748256423">‏Chrome אינו מעודכן</translation>
 <translation id="1877073879466606884">הפרופיל שאליו נכנסת הוא פרופיל מנוהל. לאדמין יש אפשרות לשנות מרחוק את הגדרות הפרופיל, לנתח מידע על הדפדפן באמצעות דוחות ולבצע משימות חשובות אחרות.</translation>
@@ -302,6 +301,7 @@
 <translation id="2238038374973843156">העברת קבוצת הכרטיסיות לחלון אחר</translation>
 <translation id="2247789808226901522">תוקף הכרטיס פג</translation>
 <translation id="2251809247798634662">חלון חדש לגלישה בסתר</translation>
+<translation id="2253927598983295051">בחירת המידע שישותף עם <ph name="APP_NAME" /></translation>
 <translation id="2261570557291037252">מידע נוסף על האפליקציה</translation>
 <translation id="2276696007612801991">‏יש להיכנס לחשבון Google כדי לבדוק את הסיסמאות שלך</translation>
 <translation id="2281243904606300427">‫<ph name="TAB_TITLE" />, הכרטיסייה הפרטית שנבחרה</translation>
@@ -373,6 +373,7 @@
 <translation id="2527779675047087889">הסתרת התוכן שבלוח</translation>
 <translation id="2531209299761896527">כדי לפתוח כרטיסיות בחלון חדש, צריך לסגור את האצבעות על המסך בלי לפתוח, ולגרור אותן</translation>
 <translation id="2532336938189706096">תצוגת אינטרנט</translation>
+<translation id="253498598929009420">האתר יוכל לראות את תוכן המסך שלך</translation>
 <translation id="2535807170289627159">כל הכרטיסיות</translation>
 <translation id="2536728043171574184">מוצג העתק לא מקוון של עמוד זה</translation>
 <translation id="2537574774089209541">‏כדי לאפשר לך להגיע ל-Gemini בקלות בזמן הגלישה, חלק מהכלים עברו למקום אחר</translation>
@@ -529,7 +530,6 @@
 <translation id="3158667104057012316">בתהליך מיון לפי סדר ידני</translation>
 <translation id="3159335509547415276">מידע על חשבונות חסומים</translation>
 <translation id="3161699713309727585">‫<ph name="BUTTON_TEXT" />, פתיחה בכרטיסייה חדשה</translation>
-<translation id="3164329792803560526">המערכת משתפת את הכרטיסייה הזו עם <ph name="APP_NAME" /></translation>
 <translation id="3166827708714933426">מקשי קיצור לכרטיסיות ולחלונות</translation>
 <translation id="3167258285411721858">ניתן לבקש את האתר לנייד של <ph name="HOST_NAME" /></translation>
 <translation id="3177338796769255211">לאחר הכניסה לחשבון, הסימניות ונתונים נוספים יופיעו בכל המכשירים שלך</translation>
@@ -875,7 +875,6 @@
 <translation id="4601095002996233687">סריקות מעמיקות לאיתור הורדות חשודות.</translation>
 <translation id="4606559747793337066">‏כשאתר או אפליקציה מבקשים לטעון מראש קישורים בדף שלהם באופן פרטי, דפדפן Chrome מצפין וטוען מראש את הדפים באמצעות השרתים של Google ללא קובצי Cookie. כך מוסתרת הזהות שלך מהאתר שנטען מראש.</translation>
 <translation id="4616150815774728855">פתיחה של <ph name="WEBAPK_NAME" /></translation>
-<translation id="4619615317237390068">כרטיסיות ממכשירים אחרים</translation>
 <translation id="4624065194742029982">‏מצב פרטי ב-Chrome</translation>
 <translation id="4634124774493850572">שימוש בסיסמה</translation>
 <translation id="463471994228293091">{PASSWORDS_COUNT,plural, =1{‏סיסמה אחת ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}one{‏‫# סיסמאות ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}two{‏‫# סיסמאות ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}other{‏‫# סיסמאות ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}}</translation>
@@ -1838,6 +1837,7 @@
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{קבוצת כרטיסיות אחת (<ph name="TAB_GROUPS_ONE" />)}one{‫<ph name="TAB_GROUPS_MANY" /> קבוצות של כרטיסיות}two{‫<ph name="TAB_GROUPS_MANY" /> קבוצות של כרטיסיות}other{‫<ph name="TAB_GROUPS_MANY" /> קבוצות של כרטיסיות}}</translation>
 <translation id="8387617938027387193">אימות הזהות שלך</translation>
 <translation id="8393700583063109961">שליחת הודעה</translation>
+<translation id="8396098434728053815">שיתוף גם של האודיו מהכרטיסייה</translation>
 <translation id="8398389123831319859">כדי לעבור למצב פרטי, לוחצים לחיצה כפולה ולוחצים לחיצה ארוכה</translation>
 <translation id="8412037385861858490">‏כדי להגן על העבודה שלך ב-Chrome, הארגון יוכל לראות מידע מסוים או לנהל אותו אם התחברת לחשבון בדפדפן. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">להצגת ההיסטוריה המלאה</translation>
@@ -1918,6 +1918,7 @@
 <translation id="8683039184091909753">תמונה</translation>
 <translation id="8688183792442786085">‫<ph name="TAB_TITLE" />, הכרטיסייה שנבחרה</translation>
 <translation id="8696297579102085705">שליחה למכשיר שלך</translation>
+<translation id="8697753151306746444">שיתוף של חלון או מסך במקום זאת</translation>
 <translation id="8699120352855309748">לא להציע לי לתרגם את השפות האלה</translation>
 <translation id="8700565880437506364">‏חדש: Gemini ב-Chrome</translation>
 <translation id="8712637175834984815">הבנתי</translation>
@@ -1956,7 +1957,6 @@
 <translation id="885480114717186641">ניתן לבקש את האתר שמותאם למחשב של <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">ליצירת תיאורים</translation>
 <translation id="8863714995118816041">הרשאות ניתנו מחדש לאתר <ph name="SITE_NAME" /></translation>
-<translation id="8864055848767439877">המערכת משתפת את <ph name="TAB_NAME" /> עם <ph name="APP_NAME" /></translation>
 <translation id="8865415417596392024">‏נתוני Chrome בחשבון שלך</translation>
 <translation id="8872506776304248286">פתח ביישום</translation>
 <translation id="8880275451109933094">תצוגת 2 עמודים</translation>
@@ -2062,7 +2062,6 @@
 <translation id="930834144334005936">איפוס המצב הנוכחי <ph name="MODE_NAME" /> ל"חיפוש"</translation>
 <translation id="938850635132480979">שגיאה: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">הזנת ביטוי סיסמה</translation>
-<translation id="939736085109172342">תיקייה חדשה</translation>
 <translation id="94161319503679839">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית מוצמדת, במצב "תמונה בתוך תמונה"</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="948276827484905248">‏יצירת קוד QR</translation>

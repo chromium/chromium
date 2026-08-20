@@ -70,7 +70,6 @@
 <translation id="1110994991967754504">ເລືອກການອະນຸຍາດສຳລັບ <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">ບັນທຶກ IBAN ບໍ?</translation>
 <translation id="1113869188872983271">ປ່ຽນ​ກັບ​ຄືນຄໍາສັ່ງຈັດລໍາດັບຄືນ</translation>
-<translation id="1117709830616495622">ຂັບເຄື່ອນໂດຍ Personal Intelligence ຈາກ Gemini.</translation>
 <translation id="111897705806685148">ໃຊ້ກະແຈຜ່ານຈາກອຸປະກອນອື່ນ</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຕາມດ້ວຍ Enter ເພື່ອຈັດການຂໍ້ມູນ Chrome ທີ່ທ່ານບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="1121990216147052230">ສ້າງລາຍການທີ່ຕ້ອງເຮັດໃຫ້ຂ້ອຍ</translation>
@@ -1171,7 +1170,6 @@
 <translation id="3005723025932146533">ສະແດງສໍາເນົາທີ່ບັນທຶກໄວ້</translation>
 <translation id="300580149047131921">ໃຊ້ຫຼ້າສຸດ</translation>
 <translation id="3006864083554020786">ທີ່ຢູ່ເຮືອນ</translation>
-<translation id="3008410317623852235">ຕອນນີ້ທ່ານສາມາດຊອກຫາ ແລະ ຕື່ມຂໍ້ມູນຈາກ Gmail ແລະ ອື່ນໆໄດ້ແລ້ວ.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ເພື່ອເລືອກເບິ່ງຄຳສັ່ງທີ່ມີໃຫ້, ຈາກນັ້ນກົດ Enter ເພື່ອເປີດໃຊ້ຄຳສັ່ງທີ່ເລືອກ.</translation>
 <translation id="3010991137650052245">ເພື່ອໃຊ້ <ph name="PERMISSION" /> ຂອງທ່ານຢູ່ເວັບໄຊນີ້, ໃຫ້ມອບສິດເຂົ້າເຖິງໃຫ້ <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3014726756341138577">ຄຸນສົມບັດເຄື່ອງພິມຂັ້ນສູງ</translation>
@@ -2321,7 +2319,6 @@
 <translation id="4941627891654116707">ຂະ​ຫນາດ​ຟ​ອນ</translation>
 <translation id="4943620199112228840">ໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ</translation>
 <translation id="4943872375798546930">ບໍ່​ມີ​ຜົນ​ໄດ້​ຮັບ</translation>
-<translation id="494701040141924538">ເຂົ້າໃຈແລ້ວ, ປິດການແຈ້ງເຕືອນ</translation>
 <translation id="495170559598752135">ການກະທໍາ</translation>
 <translation id="4953689047182316270">ຕອບສະໜອງຕໍ່ກັບເຫດການການຊ່ວຍເຂົ້າເຖິງ</translation>
 <translation id="4954505713046251871">ເພື່ອສະເໜີການແນະນຳ ແລະ ປັບປຸງຄຸນສົມບັດນີ້, URL ແລະ ເນື້ອຫາຂອງໜ້າຈະຖືກແບ່ງປັນໃຫ້ກັບ Google</translation>
@@ -3372,7 +3369,6 @@
 <translation id="6743841972744298686">ການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="6745212570062463886">ຕື່ມຂໍ້ມູນຊື່ ແລະ ທີ່ຢູ່ອີເມວຂອງທ່ານຈາກບັນຊີ Google ຂອງທ່ານອັດຕະໂນມັດ</translation>
 <translation id="674580074662200768">ອັບເດດໜັງສືຜ່ານແດນຢ່າງປອດໄພ</translation>
-<translation id="6749473226660745022">ຮູບພາບ</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">ຄ່າ​​ນະ​ໂຍ​ບາຍ</translation>
 <translation id="6753434778807740853">ລຶບລາຍການ <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3711,7 +3707,6 @@
 <translation id="7366117520888504990">198 x 275 ມມ</translation>
 <translation id="7366362069757178916">ຕົວຈັດການການຈ່າຍເງິນ</translation>
 <translation id="7366594738862061263">ສຶກສາກ່ຽວກັບວິທີທີ່ Chrome ປົກປ້ອງລະຫັດຜ່ານຂອງທ່ານ</translation>
-<translation id="7366909168761621528">ຂໍ້ມູນການທ່ອງເວັບ</translation>
 <translation id="7370751048350026847">ບໍ່ແນະນຳໃຫ້ວາງເນື້ອຫາໄປໃສ່ເວັບໄຊນີ້</translation>
 <translation id="7372526636730851647">ຮູບພາບ (ມັນວາວ)</translation>
 <translation id="7372973238305370288">ຜົນ​ການຄົ້ນ​ຫາ</translation>
@@ -4300,7 +4295,6 @@
 <translation id="8350416046273606058">ທາງລັດບໍ່ສາມາດມີຍະຫວ່າງໄດ້: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">ສ້າງບັນທຶກ</translation>
 <translation id="8352849934814541340">ຜູ້ເບິ່ງແຍງລະບົບຂອງອຸປະກອນນີ້ໄດ້ຕິດຕັ້ງແອັບພລິເຄຊັນສຳລັບຟັງຊັນເພີ່ມເຕີມແລ້ວ. ແອັບພລິເຄຊັນມີສິດເຂົ້າເຖິງບາງຂໍ້ມູນຂອງທ່ານ.</translation>
-<translation id="8353273112634584260">ຂັບເຄື່ອນໂດຍ Personal Intelligence ຈາກ Gemini. ລະບົບອາດກວດສອບຄຳຮ້ອງຂໍ, ຊື່ໜ້າ ແລະ URL ຂອງທ່ານເພື່ອປັບປຸງການຕື່ມຂໍ້ມູນອັດຕະໂນມັດທີ່ປັບປຸງໃຫ້ດີຂຶ້ນ.</translation>
 <translation id="8355270400102541638">ບໍລິບົດການຂັດຂ້ອງພາຍໃນເຄື່ອງ:</translation>
 <translation id="8362914115861174987">ແປພາສາເປັນ</translation>
 <translation id="8363502534493474904">ກຳລັງປິດໂໝດເຮືອບິນ</translation>
@@ -4660,7 +4654,6 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">ລອງໃຊ້ Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">ເພື່ອອອກຈາກໂໝດເຕັມຈໍ, ໃຫ້ກົດ |<ph name="ACCELERATOR" />| ຄ້າງໄວ້</translation>
-<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">ຄວາມປອດໄພຂັດຂ້ອງ</translation>
 <translation id="9035699147763101514">ຂັບເຄື່ອນໂດຍ Personal Intelligence ຈາກ Gemini. ຈັດການຕົວເລືອກຂອງທ່ານໄດ້ໃນການຕັ້ງຄ່າ.</translation>
 <translation id="9035824888276246493">ບັນທຶກລະຫັດຄວາມປອດໄພ</translation>

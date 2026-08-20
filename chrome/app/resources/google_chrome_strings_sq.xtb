@@ -148,7 +148,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2424440923901031101">Kjo shtesë shkel politikën e "Dyqanit të uebit të Chrome" dhe mund të mos jetë e sigurt. Hiqe atë nga Chrome që të mos arrijë të shikojë dhe të ndryshojë më të dhënat e tua në sajtin që viziton ti, duke përfshirë informacionet e tua personale.</translation>
 <translation id="2467438592969358367">Google Chrome dëshiron të eksportojë fjalëkalimet e tua. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="2472092250898121027">Kjo shtesë përmban softuerë keqdashës dhe nuk është e sigurt. Hiqe atë nga Chrome që të mos arrijë të shikojë dhe të ndryshojë më të dhënat e tua në sajtin që viziton ti, duke përfshirë informacionet e tua personale.</translation>
-<translation id="2482846200327569645"><ph name="EXISTING_USER" /> është identifikuar tashmë. Për ta mbajtur shfletimin tënd të ndarë, identifikohu në Chrome në profilin tënd si <ph name="USER_EMAIL_ADDRESS" />. Do të marrësh gjithashtu faqeshënuesit e tu etj. nga <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Çinstalo</translation>
 <translation id="2513154137948333830">Nevojitet rindezja: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2523492931736391680">Puna jote e sigurt në Chrome</translation>
@@ -200,7 +199,6 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="2916983411556218750">Le të përgatisim Chrome</translation>
 <translation id="2926952073016206995">Chrome ka nevojë për lejen e kamerës për këtë sajt</translation>
 <translation id="2945997411976714835">Gabim gjatë instalimit: Nisja e procesit të instaluesit dështoi.</translation>
-<translation id="2959224682348913614"><ph name="EXISTING_USER" /> është identifikuar tashmë. Për ta mbajtur shfletimin tënd të ndarë, identifikohu në Chrome në profilin tënd si <ph name="USER_EMAIL_ADDRESS" />. Do të marrësh gjithashtu fjalëkalimet e tua etj. nga <ph name="DEVICE" />.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - identifikimi në rrjet - Chrome</translation>
 <translation id="2970681950995291301">Për ta hequr "Llogarinë tënde të Google" nga Chrome, dil nga llogaria në Chrome te faqja e "Cilësimeve"</translation>
 <translation id="2976869732253036751">Merr sinjalizime për monitorimin e çmimeve me Chrome në telefonin tënd</translation>
@@ -220,7 +218,6 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="3073571714401714450">Aktivizo/çaktivizo Gemini në Chrome Dev</translation>
 <translation id="3080151273017101988">Vazhdo ekzekutimin e aplikacioneve në sfond kur Google Chrome është i mbyllur</translation>
 <translation id="308397506772922478">Nëse ke harruar frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" /></translation>
-<translation id="3089427491314610412"><ph name="EXISTING_USER" /> është identifikuar tashmë. Për ta mbajtur shfletimin tënd të ndarë, identifikohu në Chrome në profilin tënd si <ph name="USER_EMAIL_ADDRESS" />. Do të marrësh gjithashtu informacionet e tua të ruajtura etj. nga <ph name="DEVICE" />.</translation>
 <translation id="3100998948628680988">Emërto profilin tënd të Chrome</translation>
 <translation id="310459126943037700">Përfundimi i detyrave dështoi.</translation>
 <translation id="3104828284009500087">Kërko për çdo gjë në faqe</translation>
@@ -233,7 +230,6 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="3140883423282498090">Ndryshimet e tua do të hyjnë në fuqi herën tjetër kur të rinisësh Google Chrome.</translation>
 <translation id="3149510190863420837">Aplikacionet e Chrome</translation>
 <translation id="3161522574479303604">Të gjitha gjuhët</translation>
-<translation id="318555301233810762"><ph name="EXISTING_USER" /> është identifikuar tashmë. Për ta mbajtur shfletimin tënd të ndarë, identifikohu në Chrome në profilin tënd si <ph name="USER_EMAIL_ADDRESS" />. Do të marrësh gjithashtu faqeshënuesit etj. në të gjitha pajisjet e tua.</translation>
 <translation id="319199214552513804">Për të marrë këtë shtesë dhe më shumë në të gjithë kompjuterët e tu, identifikohu në Chrome</translation>
 <translation id="3196187562065225381">Chrome e bllokoi këtë shkarkim sepse skedari është i rrezikshëm</translation>
 <translation id="3222857603094643834">Kërko çdo gjë në këtë faqe me "Lenten e Google"</translation>
@@ -272,7 +268,6 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="3598673391539778844">Shfaq Gemini në Chrome në tabakanë e sistemit</translation>
 <translation id="3622716124581627104">Identifiko gjërat ose vendet dhe kopjo ose përkthe tekstin. Kur përdor "Lenten e Google", Google i dërgohet një pamje ekrani e faqes. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Tani është më e lehtë të përdorësh Chrome me llogarinë tënde të Google dhe në kompjuterët e ndarë.</translation>
-<translation id="3628103251823745322"><ph name="EXISTING_USER" /> është identifikuar tashmë. Për ta mbajtur shfletimin tënd të ndarë, identifikohu në Chrome në profilin tënd si <ph name="USER_EMAIL_ADDRESS" />. Do të marrësh gjithashtu informacionet e ruajtura etj. në të gjitha pajisjet e tua.</translation>
 <translation id="3635073343384702370">Chrome mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato</translation>
 <translation id="3636970668267555808">Përfito qasje të lehtë te veçoritë që njeh, që të pëlqejnë dhe që u beson duke caktuar Chrome si shfletuesin tënd të parazgjedhur.</translation>
 <translation id="3667616615096815454">Instalimi nuk mund të kryhej. Aplikacioni është i panjohur për serverin.</translation>
@@ -599,7 +594,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6933858244219479645">Sistemi i ChromeOS</translation>
 <translation id="6938166777909186039">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 8.1.</translation>
 <translation id="6943584222992551122">Të dhënat e shfletimit të këtij personi do të fshihen nga kjo pajisje. Për të rikuperuar të dhënat, identifikohu në Chrome si <ph name="USER_EMAIL" />.</translation>
-<translation id="6962628299694876291"><ph name="EXISTING_USER" /> është identifikuar tashmë. Për ta mbajtur shfletimin tënd të ndarë, identifikohu në Chrome në profilin tënd si <ph name="USER_EMAIL_ADDRESS" />. Do të marrësh gjithashtu fjalëkalimet etj. në të gjitha pajisjet e tua.</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6967962315388095737">Rregulli hyrës për Google Chrome Beta për të lejuar trafikun mDNS.</translation>
 <translation id="6979589607440534284">Mëso se pse Chrome i bllokon disa skedarë, hapet në një skedë të re</translation>

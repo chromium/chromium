@@ -372,7 +372,6 @@
 <translation id="4676059169848868271">Để cho phép <ph name="APP_NAME" /> dùng tính năng theo dõi cử chỉ tay, hãy bật cả tính năng này trong phần <ph name="BEGIN_LINK" />cài đặt hệ thống<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Quản lý thẻ</translation>
 <translation id="4722332387043141878">Các trang web thường sử dụng cảm biến chuyển động và cảm biến ánh sáng trên thiết bị của bạn để cung cấp các tính năng như thực tế ảo hoặc theo dõi hoạt động thể dục</translation>
-<translation id="4748783296226936791">Các trang web thường kết nối với thiết bị HID cho những tính năng sử dụng bàn phím không phổ biến, tay điều khiển trò chơi và các thiết bị khác</translation>
 <translation id="4755971844837804407">Khi bạn bật tuỳ chọn này, các trang web có thể hiển thị bất kỳ quảng cáo nào cho bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể hiển thị quảng cáo xâm nhập hoặc quảng cáo gây hiểu lầm.</translation>
 <translation id="4779083564647765204">Thu phóng</translation>
 <translation id="4807122856660838973">Bật tính năng Duyệt web an toàn</translation>
@@ -457,7 +456,6 @@
 <translation id="5700761515355162635">Đã cho phép cookie của bên thứ ba</translation>
 <translation id="5706552988683188916">Thao tác này sẽ xoá cookie và dữ liệu khác của trang web <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Các trang web có thể đưa ra lời nhắc đăng nhập qua các dịch vụ định danh.</translation>
-<translation id="5719854774000914513">Trang web có thể yêu cầu kết nối với thiết bị HID</translation>
 <translation id="5740126560802162366">Các trang web có thể lưu dữ liệu trên thiết bị của bạn</translation>
 <translation id="5743425052258407233">Đồng bộ hoá nhật ký trên mọi thiết bị để dễ dàng xem tiếp nội dung bạn đang xem dở</translation>
 <translation id="5749158352074143502">Tiếp tục duyệt xem thẻ này</translation>
@@ -577,7 +575,6 @@
 <translation id="6950072572526089586">Trang web bạn truy cập có thể lưu thông tin về những việc bạn đang làm để có thể vận hành như dự kiến, ví dụ: để duy trì trạng thái đăng nhập vào một trang web hoặc lưu các mặt hàng vào giỏ hàng. Thông thường, các trang web lưu thông tin này tạm thời trên thiết bị của bạn.</translation>
 <translation id="6964291282260073066">"WebGPU" đang tắt.</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6972629891077993081">Thiết bị HID</translation>
 <translation id="6980507581230208647">Giao diện màu hoa hồng</translation>
 <translation id="6980861169612950611">Xoá dữ liệu trang web? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Hỗ trợ tiếp cận</translation>
@@ -735,7 +732,6 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="8593422116412089302">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng thông tin mà trang web đã lưu về bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể yêu cầu sử dụng thông tin mà trang web đã lưu về bạn.</translation>
 <translation id="8609465669617005112">Di chuyển lên</translation>
 <translation id="8617611086246832542">Khi bạn bật tuỳ chọn này, các trang web sẽ hiển thị ở chế độ xem trên máy tính để bàn. Khi bạn tắt tuỳ chọn này, các trang web sẽ hiển thị ở chế độ xem trên thiết bị di động.</translation>
-<translation id="8625916342247441948">Không cho phép trang web kết nối với các thiết bị HID</translation>
 <translation id="8670078035093027626">Bảng dưới cùng của trình duyệt mặc định đã mở trên toàn màn hình</translation>
 <translation id="8676316391139423634">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu theo dõi tay bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể theo dõi tay bạn.</translation>
 <translation id="8676374126336081632">Xóa văn bản nhập</translation>

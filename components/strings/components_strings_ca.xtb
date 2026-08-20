@@ -70,7 +70,6 @@
 <translation id="1110994991967754504">Selecciona un permís per a <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Vols desar l'IBAN?</translation>
 <translation id="1113869188872983271">&amp;Desfés el canvi d'ordre</translation>
-<translation id="1117709830616495622">Amb la tecnologia d'Intel·ligència personal amb Gemini.</translation>
 <translation id="111897705806685148">Utilitza la clau d'accés d'un altre dispositiu</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; prem Tab i després Retorn per gestionar la informació de Chrome que deses al teu Compte de Google.</translation>
 <translation id="1121990216147052230">Fes-me una llista de tasques pendents</translation>
@@ -1171,7 +1170,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3005723025932146533">Mostra la còpia desada</translation>
 <translation id="300580149047131921">Utilitzada fa poc</translation>
 <translation id="3006864083554020786">adreça de casa</translation>
-<translation id="3008410317623852235">Ara pots trobar i emplenar informació a partir de Gmail i més.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />. Prem Tab per navegar per les accions disponibles i, a continuació, prem Retorn per executar l'acció seleccionada.</translation>
 <translation id="3010991137650052245">Per utilitzar la <ph name="PERMISSION" /> en aquest lloc web, concedeix accés a <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3014726756341138577">Funcions avançades de la impressora</translation>
@@ -2321,7 +2319,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4941627891654116707">Cos de font</translation>
 <translation id="4943620199112228840">Utilitzar els micròfons</translation>
 <translation id="4943872375798546930">No hi ha cap resultat</translation>
-<translation id="494701040141924538">Entesos, tanca l'avís</translation>
 <translation id="495170559598752135">Accions</translation>
 <translation id="4953689047182316270">Respondre als esdeveniments d'accessibilitat</translation>
 <translation id="4954505713046251871">Per oferir suggeriments i millorar aquesta funció, l'URL i el contingut de la pàgina es comparteixen amb Google</translation>
@@ -3372,7 +3369,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6743841972744298686">Configuració de sincronització</translation>
 <translation id="6745212570062463886">Emplena automàticament el nom i l'adreça electrònica a partir del teu Compte de Google</translation>
 <translation id="674580074662200768">Actualitza el passaport de manera segura</translation>
-<translation id="6749473226660745022">Fotos</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Valor de la política</translation>
 <translation id="6753434778807740853">Suprimeix l'entrada <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3712,7 +3708,6 @@ Detalls addicionals:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Gestors de pagaments</translation>
 <translation id="7366594738862061263">Informació sobre com protegeix Chrome les contrasenyes</translation>
-<translation id="7366909168761621528">Dades de navegació</translation>
 <translation id="7370751048350026847">No es recomana enganxar aquest contingut en aquest lloc web</translation>
 <translation id="7372526636730851647">Foto (brillant)</translation>
 <translation id="7372973238305370288">resultat de la cerca</translation>
@@ -4301,7 +4296,6 @@ Detalls addicionals:
 <translation id="8350416046273606058">La drecera no pot contenir espais: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Crea una nota</translation>
 <translation id="8352849934814541340">L'administrador del dispositiu ha instal·lat aplicacions per obtenir funcions addicionals. Les aplicacions tenen accés a algunes de les teves dades.</translation>
-<translation id="8353273112634584260">Amb la tecnologia d'Intel·ligència personal amb Gemini. És possible que les teves sol·licituds, els títols de les pàgines i els URL es revisin per perfeccionar l'emplenament automàtic millorat.</translation>
 <translation id="8355270400102541638">Context del bloqueig local:</translation>
 <translation id="8362914115861174987">Tradueix a</translation>
 <translation id="8363502534493474904">Desactiva el mode d'avió.</translation>
@@ -4661,7 +4655,6 @@ Detalls addicionals:
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Prova Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Per sortir de la pantalla completa, mantén premut |<ph name="ACCELERATOR" />|</translation>
-<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Error de seguretat</translation>
 <translation id="9035699147763101514">Amb la tecnologia d'Intel·ligència personal de Gemini. Gestiona les teves opcions a la configuració.</translation>
 <translation id="9035824888276246493">Desa els codis de seguretat</translation>

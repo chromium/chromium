@@ -1031,7 +1031,6 @@
 <translation id="4430505936695785931">Вводите сохраненные пароли в других приложениях.</translation>
 <translation id="4431224949908513835">Выберите, какой способ оплаты использовать.</translation>
 <translation id="4432122368769493392">Настройки…</translation>
-<translation id="4439968635693513370">Планируйте выходные с</translation>
 <translation id="4442550905108052454">Откройте <ph name="BEGIN_BOLD" />Настройки<ph name="END_BOLD" />.</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" />, другие действия</translation>
 <translation id="4455710003856931944">Чтобы перейти вперед или назад, проведите пальцем по краю экрана.</translation>
@@ -1060,7 +1059,6 @@
 <translation id="454217142158335225">Вы можете повторно открыть закрытые вкладки или группы вкладок. Закрепленные вкладки закрыты не будут.</translation>
 <translation id="4547181496285029457">Вернуться к последней использовавшейся вкладке</translation>
 <translation id="4552042254369397518">Копирование…</translation>
-<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Другие ключи доступа</translation>
 <translation id="4564893319561643483">Скрыть карточку "<ph name="TITLE" />"</translation>
 <translation id="456502772933839252">Вы вместе смотрите <ph name="PAGE_TITLE" />.</translation>
@@ -1102,7 +1100,6 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Согласно правилам вашей организации, использовать режим инкогнито обязательно. В нем группы вкладок не синхронизируются.
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
-<translation id="4670422040696550256">Покупайте уверенно с</translation>
 <translation id="467189612236587057">Позвонить в компанию</translation>
 <translation id="4673565891421389203">Вход в управляемый аккаунт позволяет разделить рабочие и личные данные в браузере, например вкладки, историю и пароли.
 
@@ -1310,7 +1307,6 @@
 <translation id="5300589172476337783">Показать</translation>
 <translation id="5311061401280561833">Доступ к камере и микрофону разрешен.</translation>
 <translation id="5313967007315987356">Добавить сайт</translation>
-<translation id="5315029634103634221">Gemini — это ИИ. Он может ошибаться. Подробнее <ph name="BEGIN_LINK" />о данных, которые передаются в Google<ph name="END_LINK" />…</translation>
 <translation id="5315870524563628285">Нет данных для импорта</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> из <ph name="INDEX" /></translation>
 <translation id="5317780077021120954">Сохранить</translation>
@@ -1393,7 +1389,6 @@
 <translation id="5596627076506792578">Ещё</translation>
 <translation id="560322036295180549">Функция отключена вашей организацией</translation>
 <translation id="5611398002774823980">Сохранить в аккаунте</translation>
-<translation id="5612225021788368236">Закрыть предложение браузера по умолчанию</translation>
 <translation id="561269594905823128">Нажмите <ph name="BEGIN_BOLD" />Выбрать файл<ph name="END_BOLD" />.</translation>
 <translation id="5613297089029360427">Сортировать по дате</translation>
 <translation id="5614553682702429503">Сохранить пароль?</translation>
@@ -2479,7 +2474,6 @@
 <translation id="9029650858822697271">Вы вышли из аккаунта.</translation>
 <translation id="9032405509996909363">Подтвердить удаление данных о работе в браузере</translation>
 <translation id="9035699147763101514">На основе персонального ИИ в Gemini. Этот параметр можно изменить в настройках.</translation>
-<translation id="9038526468059454274">Выделяйте главное с</translation>
 <translation id="9039373489628511875">Контроль трафика</translation>
 <translation id="9042893549633094279">Конфиденциальность и безопасность</translation>
 <translation id="9055291197094969722">Для удобства объединяйте открытые вкладки в группы.</translation>

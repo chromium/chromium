@@ -70,7 +70,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> の権限を選択します</translation>
 <translation id="1113000785583998331">IBAN を保存しますか？</translation>
 <translation id="1113869188872983271">順序変更の取り消し（&amp;U）</translation>
-<translation id="1117709830616495622">Gemini のパーソナル インテリジェンスを使用します。</translation>
 <translation id="111897705806685148">別のデバイスのパスキーを使用</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google アカウントに保存する Chrome の情報を管理できます</translation>
 <translation id="1121990216147052230">ToDo リストを作成して</translation>
@@ -1171,7 +1170,6 @@
 <translation id="3005723025932146533">保存済みのコピーを表示</translation>
 <translation id="300580149047131921">最近使用した権限</translation>
 <translation id="3006864083554020786">自宅の住所</translation>
-<translation id="3008410317623852235">Gmail などから情報を探して入力できるようになりました。</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キーを押して操作オプションを参照し、Enter キーを押すと、選択した操作を実行できます。</translation>
 <translation id="3010991137650052245">このサイトで <ph name="PERMISSION" /> を使用するには、<ph name="SHORT_PRODUCT_NAME" /> にアクセスを許可してください</translation>
 <translation id="3014726756341138577">高度なプリンタ機能</translation>
@@ -2321,7 +2319,6 @@
 <translation id="4941627891654116707">フォントサイズ</translation>
 <translation id="4943620199112228840">マイクの使用</translation>
 <translation id="4943872375798546930">結果はありません</translation>
-<translation id="494701040141924538">確認して通知を閉じる</translation>
 <translation id="495170559598752135">操作</translation>
 <translation id="4953689047182316270">ユーザー補助機能のイベントへの応答</translation>
 <translation id="4954505713046251871">候補を表示して、この機能を改善するため、ページの URL とコンテンツを Google と共有します</translation>
@@ -3372,7 +3369,6 @@
 <translation id="6743841972744298686">同期設定</translation>
 <translation id="6745212570062463886">Google アカウントから名前とメールアドレスを自動入力します</translation>
 <translation id="674580074662200768">パスポートを安全に更新</translation>
-<translation id="6749473226660745022">写真</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">ポリシーの値</translation>
 <translation id="6753434778807740853">エントリ <ph name="ENTRY_VOICEOVER" /> を削除します</translation>
@@ -3712,7 +3708,6 @@
 <translation id="7366117520888504990">198x275 mm</translation>
 <translation id="7366362069757178916">支払いハンドラ</translation>
 <translation id="7366594738862061263">Chrome のパスワード保護の仕組みについて</translation>
-<translation id="7366909168761621528">閲覧履歴データ</translation>
 <translation id="7370751048350026847">このコンテンツをこのサイトに貼り付けることは推奨されていません</translation>
 <translation id="7372526636730851647">写真（光沢）</translation>
 <translation id="7372973238305370288">検索結果</translation>
@@ -4301,7 +4296,6 @@
 <translation id="8350416046273606058">ショートカットにスペースを含めることはできません: 「<ph name="SHORTCUT_NAME" />」</translation>
 <translation id="8351131234907093545">メモを作成</translation>
 <translation id="8352849934814541340">このデバイスの管理者によって、機能を追加するアプリケーションがインストールされました。このアプリケーションでは、ユーザーデータの一部にアクセスする場合があります。</translation>
-<translation id="8353273112634584260">Gemini のパーソナル インテリジェンスを使用します。リクエスト、ページのタイトル、URL は、高精度の自動入力の改善に向けて確認される場合があります。</translation>
 <translation id="8355270400102541638">ローカル クラッシュ コンテキスト:</translation>
 <translation id="8362914115861174987">訳文の言語</translation>
 <translation id="8363502534493474904">機内モードをオフにする</translation>
@@ -4662,7 +4656,6 @@
 <translation id="9026253329950610248">Google サイト</translation>
 <translation id="9027020981272345766">Chrome Enterprise Core を試す</translation>
 <translation id="9027531288681624875">全画面表示を終了するには、|<ph name="ACCELERATOR" />| を長押しします</translation>
-<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">セキュリティ エラー</translation>
 <translation id="9035699147763101514">Gemini のパーソナル インテリジェンスを使用します。選択内容は [設定] で管理できます。</translation>
 <translation id="9035824888276246493">セキュリティ コードを保存する</translation>

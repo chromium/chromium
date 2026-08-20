@@ -75,7 +75,6 @@
 <translation id="1857749206890802997">Laadige oma telefoni alla Chromium, et liikvel olles uusi vahelehegruppe avada või luua.</translation>
 <translation id="185970820835152459">Saate oma sisselogitud Google'i kontosid hallata. Teie Google'i kontosid kasutatakse Chromiumi brauseris, Play poes, Gmailis ja mujal. Kui soovite lisada konto kellegi teise (näiteks pereliikme) jaoks, lisage selle asemel oma seadmesse <ph name="DEVICE_TYPE" /> uus inimene. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Otsing pildiotsinguga</translation>
-<translation id="1863837059069884561"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chromiumi sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete juurde oma järjehoidjatele ja muule järgmises seadmes: <ph name="DEVICE" />.</translation>
 <translation id="1880677175115548835">Valige tekst</translation>
 <translation id="1881322772814446296">Logite sisse hallatud kontoga ja annate selle administraatorile üle Chromiumi profiili juhtimise. Teie Chromiumi andmed, näiteks rakendused, järjehoidjad, ajalugu, paroolid ja muud seaded seotakse jäädavalt kasutajaga <ph name="USER_NAME" />. Saate need andmed kustutada Google'i kontode juhtpaneeli kaudu, kuid te ei saa neid seostada teise kontoga. Võite olemasolevate Chrome'i andmete eraldi hoidmiseks luua aga uue profiili. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium säästab akutoidet, piirates taustal toimuvaid tegevusi ja visuaalseid efekte, nagu sujuv kerimine ja video kaadrisagedus. <ph name="BEGIN_LINK" />Lisateave energiasäästja kohta<ph name="END_LINK" /></translation>
@@ -134,7 +133,6 @@
 <translation id="2418322681019544463">Avage mis tahes rakenduse lingid Chromiumis ja hoidke brauser tegumiribal käepärast.</translation>
 <translation id="2425157128016763890">Selle dokumendi jagamiseks Chrome'i Geminis klõpsake kokkuvõtte nuppu, et saada kiire ülevaade ja esitada täpsustavaid küsimusi.</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromiumi tööriistadega<ph name="END_LINK" /> saate ohutult sirvida ja kõik kontrolli all hoida</translation>
-<translation id="2449487342837813167"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chromiumi sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete kõigis seadmetes juurde oma paroolidele ja muule.</translation>
 <translation id="2451727308784734061">Kasutage oma otseteed, et kiiresti Paroolihalduri juurde pääseda. Saate teisaldada otsetee arvuti avakuvale või rakenduste käivitajale.</translation>
 <translation id="2478295928299953161">Chromium sulgub peagi</translation>
 <translation id="2483889755041906834">Chromiumis</translation>
@@ -407,7 +405,6 @@
 
 Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translation>
 <translation id="5575874067957905201">Kuva Gemini Chromiumis Maci menüüribal ja lülita sisse klaviatuuri otseteed</translation>
-<translation id="5576587363991567745"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chromiumi sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete juurde oma salvestatud teabele ja muule järgmises seadmes: <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Käivitamisel ilmnes viga: käitage installiprogrammi tavakasutajana, mitte administraatorina.</translation>
 <translation id="5580770360767802657">Kasutage vaikimisi Chromiumit ja laske see kinnitada</translation>
 <translation id="5596627076506792578">Rohkem valikuid</translation>
@@ -582,7 +579,6 @@ Uusi järjehoidjaid ei saa teie kontole salvestada, enne kui mõned kustutate. K
 <translation id="7213407614656404070">Kasutage Chromiumi iga kord, kui klõpsate sõnumites, dokumentides ja teistes rakendustes linkidel</translation>
 <translation id="7216228761061470870">Kui kasutate pildiotsingut lauaarvutis, saadetakse lehe pealkiri, URL ja sisu (sh PDF-id) serverisse</translation>
 <translation id="7223968959479464213">Tegumihaldur – Chromium</translation>
-<translation id="7227958669698166857"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chromiumi sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete kõigis seadmetes juurde oma salvestatud teabele ja muule.</translation>
 <translation id="7252276985725323153">Alustage kohe sirvimist: Chromiumi saab nüüd käivitada Windowsi käivitamisel.</translation>
 <translation id="7274695763216404502">Kinnitatud! Kasutage pildiotsingut uuesti tööriistariba kaudu.</translation>
 <translation id="7288567540154601580">Vahelehed ja laiendused</translation>
@@ -652,7 +648,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="7888981273428720788">Määrake Chromium vaikebrauseriks</translation>
 <translation id="7934340546140346950">Chromium uuendab võimalusel ebaturvalised ühendused automaatselt HTTPS-ile</translation>
 <translation id="7937630085815544518">Olite Chromiumisse sisse logitud kasutajana <ph name="USER_EMAIL_ADDRESS" />. Kasutage uuesti sisselogimiseks sama kontot.</translation>
-<translation id="7944602660083060118"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chromiumi sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete kõigis seadmetes juurde oma järjehoidjatele ja muule.</translation>
 <translation id="7975919845073681630">See on Chromiumi sekundaarne install ja seda ei saa määrata vaikebrauseriks.</translation>
 <translation id="7997934263947464652">Tundmatutest allikatest pärinevad laiendused, rakendused ja teemad võivad teie seadet kahjustada. Chromium soovitab neid ainult järgmisest poest installida: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8000759043835159571">Kasutage seadmes <ph name="DEVICE_TYPE" /> Chromiumi rakendust, et pääseda juurde Google'i parimatele funktsioonidele</translation>
@@ -684,7 +679,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8232193495299001329">Chromium ei suuda tuvastada, kust see laiendus pärineb. Laiendus võib olla ebaturvaline. Eemaldage laiendus Chromiumist, et see ei saaks enam teie külastatavatel saitidel näha ja muuta teie andmeid, sealhulgas isiklikku teavet.</translation>
 <translation id="8248265253516264921">Kui pildil puudub kasulik kirjeldus, üritab Chromium selle ise luua. Kirjelduste loomiseks saadetakse pildid Google'ile. Võite selle seadetes igal ajal välja lülitada.</translation>
 <translation id="8254601181414348851">Kas logida Chromiumi sisse uuel profiilil?</translation>
-<translation id="8262224117913639129"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chromiumi sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete juurde oma paroolidele ja muule järgmises seadmes: <ph name="DEVICE" />.</translation>
 <translation id="8277334259226003205">Kuva Gemini Chromiumis süsteemisalves ja lülita sisse klaviatuuri otseteed</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium hoiatab teid<ph name="END_LINK" /> ebaturvaliste saitide ja allalaadimiste eest</translation>
 <translation id="8295827201165805317">Te pole hiljuti külastanud. Chromium eemaldas loa <ph name="PERMISSION" />.</translation>

@@ -75,7 +75,6 @@
 <translation id="1857749206890802997">Download Chromium på din telefon for at åbne eller oprette nye fanegrupper på farten.</translation>
 <translation id="185970820835152459">Du kan administrere de Google-konti, du er logget ind på. Dine Google-konti bruges i Chromium-browseren, Play Butik, Gmail m.m. Hvis du vil tilføje en konto, der tilhører en anden, f.eks. et familiemedlem, skal du føje en ny person til din <ph name="DEVICE_TYPE" /> i stedet. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Søg med billedsøgning</translation>
-<translation id="1863837059069884561"><ph name="EXISTING_USER" /> er allerede logget ind. Hvis du vil holde din browsing adskilt, skal du logge ind i Chromium på din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du kan også se dine bogmærker og meget mere fra <ph name="DEVICE" />.</translation>
 <translation id="1880677175115548835">Vælg tekst</translation>
 <translation id="1881322772814446296">Du er ved at logge ind med en managerstyret konto og give dens administrator kontrol over din profil i Chromium. Dine Chromium-data, f.eks. dine apps, bogmærker, historikdata, adgangskoder og andre indstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse data via kontrolpanelet for Google Konti, men du kan ikke knytte disse data til en anden konto. Du kan eventuelt oprette en ny profil for at holde dine Chromium-data adskilt. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium sparer på batteriet ved at begrænse aktivitet i baggrunden og visuelle effekter, f.eks. smooth scrolling og videobilledfrekvenser. <ph name="BEGIN_LINK" />Få flere oplysninger om Energisparefunktion<ph name="END_LINK" /></translation>
@@ -134,7 +133,6 @@
 <translation id="2418322681019544463">Åbn links i Chromium fra en hvilken som helst app, og sørg for, at browseren altid er tilgængelig på proceslinjen</translation>
 <translation id="2425157128016763890">Klik på knappen Opsummer for at dele dette dokument med Gemini i Chromium for at få en hurtig oversigt og stille opfølgende spørgsmål</translation>
 <translation id="2440750600860946460">Med <ph name="BEGIN_LINK" />værktøjer fra Chromium<ph name="END_LINK" /> kan du søge sikkert på nettet og bevare styringen</translation>
-<translation id="2449487342837813167"><ph name="EXISTING_USER" /> er allerede logget ind. Hvis du vil holde din browsing adskilt, skal du logge ind i Chromium på din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du kan også se dine adgangskoder og meget mere på alle dine enheder.</translation>
 <translation id="2451727308784734061">Brug din genvej til hurtigt at gå til Adgangs­kode­admin­istrator. Du kan flytte din genvej til din computers startskærm eller appliste.</translation>
 <translation id="2478295928299953161">Chromium lukkes snart</translation>
 <translation id="2483889755041906834">I Chromium</translation>
@@ -407,7 +405,6 @@
 
 Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering.</translation>
 <translation id="5575874067957905201">Vis Gemini i Chromium på Mac-menulinjen, og aktivér tastaturgenvejen</translation>
-<translation id="5576587363991567745"><ph name="EXISTING_USER" /> er allerede logget ind. Hvis du vil holde din browsing adskilt, skal du logge ind i Chromium på din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du kan også se dine gemte oplysninger og meget mere fra <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Opstartsfejl: Kør installationsprogrammet som almindelig bruger, ikke som administrator.</translation>
 <translation id="5580770360767802657">Brug Chromium som standard, og fastgør den</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
@@ -582,7 +579,6 @@ Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du log
 <translation id="7213407614656404070">Brug Chromium, hver gang du klikker på links i beskeder, dokumenter og andre apps</translation>
 <translation id="7216228761061470870">Når du bruger Billedsøgning på en computer, sendes sidetitlen, webadressen og indholdet, herunder PDF-filer, til serveren</translation>
 <translation id="7223968959479464213">Jobliste – Chromium</translation>
-<translation id="7227958669698166857"><ph name="EXISTING_USER" /> er allerede logget ind. Hvis du vil holde din browsing adskilt, skal du logge ind i Chromium på din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du kan også se dine gemte oplysninger og meget mere på alle dine enheder.</translation>
 <translation id="7252276985725323153">Begynd at browse med det samme: Chromium kan nu åbnes, når Windows starter.</translation>
 <translation id="7274695763216404502">Panelet er fastgjort. Brug billedsøgning igen via værktøjslinjen</translation>
 <translation id="7288567540154601580">Faner og udvidelser</translation>
@@ -652,7 +648,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7888981273428720788">Angiv Chromium som standardbrowser</translation>
 <translation id="7934340546140346950">Chromium opgraderer automatisk usikre forbindelser til HTTPS, når det er muligt</translation>
 <translation id="7937630085815544518">Du loggede ind på Chromium som <ph name="USER_EMAIL_ADDRESS" />. Brug den samme konto til at logge ind igen.</translation>
-<translation id="7944602660083060118"><ph name="EXISTING_USER" /> er allerede logget ind. Hvis du vil holde din browsing adskilt, skal du logge ind i Chromium på din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du kan også se dine bogmærker og meget mere på alle dine enheder.</translation>
 <translation id="7975919845073681630">Dette er en sekundær installation af Chromium, og den kan ikke gøres til din standardbrowser.</translation>
 <translation id="7997934263947464652">Udvidelser, apps og temaer fra ukendte kilder kan skade din enhed. Chromium anbefaler, at de kun installeres via <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8000759043835159571">Få det bedste fra Google med Chromium-appen på din <ph name="DEVICE_TYPE" /></translation>
@@ -684,7 +679,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8232193495299001329">Chromium kan ikke verificere, hvor denne udvidelse kommer fra, og den kan derfor være skadelig. Du bør fjerne udvidelsen fra Chromium, så den ikke længere kan se og ændre dine data på de websites, du besøger, bl.a. dine personlige oplysninger.</translation>
 <translation id="8248265253516264921">Hvis et billede ikke har en brugbar beskrivelse, forsøger Chromium at angive en for dig. Billederne sendes til Google, så der kan oprettes beskrivelser. Du kan til enhver tid deaktivere denne funktion i indstillingerne.</translation>
 <translation id="8254601181414348851">Vil du logge ind i Chromium med en ny profil?</translation>
-<translation id="8262224117913639129"><ph name="EXISTING_USER" /> er allerede logget ind. Hvis du vil holde din browsing adskilt, skal du logge ind i Chromium på din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du kan også se dine adgangskoder og meget mere fra <ph name="DEVICE" />.</translation>
 <translation id="8277334259226003205">Vis Gemini i Chromium i systembakken, og aktivér tastaturgenvejen</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium advarer dig<ph name="END_LINK" /> om usikre websites og downloads</translation>
 <translation id="8295827201165805317">Du har ikke besøgt websitet for nylig. Chromium har fjernet <ph name="PERMISSION" />.</translation>

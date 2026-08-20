@@ -70,7 +70,6 @@
 <translation id="1110994991967754504">اختيار إذن لـ <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">‏هل تريد حفظ رقم الحساب بصيغة IBAN؟</translation>
 <translation id="1113869188872983271">تراجع عن إعادة الت&amp;رتيب</translation>
-<translation id="1117709830616495622">‏تستنِد هذه الميزة إلى "الذكاء المخصّص" في Gemini.</translation>
 <translation id="111897705806685148">استخدام مفتاح مرور من جهاز آخر</translation>
 <translation id="1119009590493440389">‏‫<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لإدارة معلومات Chrome التي يتم حفظها في حسابك على Google</translation>
 <translation id="1121990216147052230">أريد إنشاء قائمة مهام</translation>
@@ -1171,7 +1170,6 @@
 <translation id="3005723025932146533">عرض نسخة محفوظة</translation>
 <translation id="300580149047131921">تم استخدامه مؤخرًا</translation>
 <translation id="3006864083554020786">عنوان المنزل</translation>
-<translation id="3008410317623852235">‏يمكنك الآن العثور على المعلومات وملؤها من Gmail والمزيد.</translation>
 <translation id="3009036448238594149">‏‫<ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />: اضغط على مفتاح التبويب (Tab) لتصفُّح الإجراءات المتوفّرة، ثم اضغط على مفتاح Enter لتنفيذ الإجراء المحدَّد.</translation>
 <translation id="3010991137650052245">لاستخدام <ph name="PERMISSION" /> على هذا الموقع الإلكتروني، يجب منح <ph name="SHORT_PRODUCT_NAME" /> إذنًا بذلك</translation>
 <translation id="3014726756341138577">الميزات المتقدمة للطابعة</translation>
@@ -2321,7 +2319,6 @@
 <translation id="4941627891654116707">حجم الخط</translation>
 <translation id="4943620199112228840">استخدام الميكروفونات</translation>
 <translation id="4943872375798546930">لا نتائج</translation>
-<translation id="494701040141924538">حسنًا، إغلاق الإشعار</translation>
 <translation id="495170559598752135">إجراءات</translation>
 <translation id="4953689047182316270">الاستجابة لأحداث إمكانية الوصول</translation>
 <translation id="4954505713046251871">‏لتقديم اقتراحات وتحسين هذه الميزة، تتم مشاركة عنوان URL للصفحة ومحتواها مع Google</translation>
@@ -3372,7 +3369,6 @@
 <translation id="6743841972744298686">إعدادات المزامنة</translation>
 <translation id="6745212570062463886">‏يمكنك ملء اسمك وعنوان بريدك الإلكتروني تلقائيًا من حسابك على Google</translation>
 <translation id="674580074662200768">تعديل معلومات جواز السفر بأمان</translation>
-<translation id="6749473226660745022">الصور</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">قيمة السياسة</translation>
 <translation id="6753434778807740853">حذف إدخال "<ph name="ENTRY_VOICEOVER" />"</translation>
@@ -3712,7 +3708,6 @@
 <translation id="7366117520888504990">‏‎198 × 275 ملم</translation>
 <translation id="7366362069757178916">معالِجات الدفع</translation>
 <translation id="7366594738862061263">‏مزيد من المعلومات عن كيفية حماية كلمات المرور في Chrome</translation>
-<translation id="7366909168761621528">بيانات التصفح</translation>
 <translation id="7370751048350026847">لا يُنصَح بلصق هذا المحتوى في هذا الموقع الإلكتروني.</translation>
 <translation id="7372526636730851647">تصوير (لامع)</translation>
 <translation id="7372973238305370288">نتيجة البحث</translation>
@@ -4302,7 +4297,6 @@
 <translation id="8350416046273606058">لا يمكن أن يحتوي الاختصار على مسافات: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">إنشاء ملاحظة</translation>
 <translation id="8352849934814541340">ثبَّت مشرف هذا الجهاز تطبيقات للوظائف الإضافية. ويمكن لهذه التطبيقات الوصول إلى بعض بياناتك.</translation>
-<translation id="8353273112634584260">‏تستنِد هذه الميزة إلى "الذكاء المخصّص" في Gemini. قد تتم مراجعة طلباتك وعناوين الصفحات وعناوين URL لتحسين ميزة "الملء التلقائي المحسّن".</translation>
 <translation id="8355270400102541638">سياق التعطّل على جهاز المستخدِم:</translation>
 <translation id="8362914115861174987">الترجمة إلى</translation>
 <translation id="8363502534493474904">إيقاف "وضع الطيران"</translation>
@@ -4664,7 +4658,6 @@
 <translation id="9026253329950610248">‏مواقع Google</translation>
 <translation id="9027020981272345766">‏تجربة إصدار Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">للخروج من وضع "ملء الشاشة"، اضغط مع الاستمرار على |<ph name="ACCELERATOR" />|</translation>
-<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">خطأ متعلق بالأمان</translation>
 <translation id="9035699147763101514">‏تستنِد هذه الميزة إلى "الذكاء المخصّص" في Gemini. ويمكنك إدارة اختياراتك في الإعدادات.</translation>
 <translation id="9035824888276246493">حفظ رموز الأمان</translation>

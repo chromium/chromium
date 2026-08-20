@@ -148,7 +148,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2424440923901031101">Ova ekstenzija krši pravila Chrome Web trgovine i može biti nesigurna. Uklonite je s Chromea kako više ne bi mogla vidjeti i mijenjati vaše podatke na web lokacijama koje posjećujete, uključujući vaše lične informacije.</translation>
 <translation id="2467438592969358367">Google Chrome želi izvesti vaše lozinke. Unesite svoju lozinku za Windows da ovo omogućite.</translation>
 <translation id="2472092250898121027">Ova ekstenzija sadrži zlonamjerni softver i nije sigurna. Uklonite je s Chromea kako više ne bi mogla vidjeti i mijenjati vaše podatke na web lokacijama koje posjećujete, uključujući vaše lične informacije.</translation>
-<translation id="2482846200327569645"><ph name="EXISTING_USER" /> je već prijavljen(a). Da vaše pregledanje ostane odvojeno, prijavite se u Chrome na vlastitom profilu kao <ph name="USER_EMAIL_ADDRESS" />. Također ćete dobiti svoje oznake i druge stavke sa <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Deinstaliraj</translation>
 <translation id="2513154137948333830">Potrebno je ponovno pokretanje: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2523492931736391680">Vaš rad je zaštićen u Chromeu</translation>
@@ -200,7 +199,6 @@ Ako ova stranica ne funkcionira kako se očekuje, pokušajte dozvoliti optimizac
 <translation id="2916983411556218750">Pripremimo Chrome</translation>
 <translation id="2926952073016206995">Chromeu je za ovu web lokaciju potrebno odobrenje za kameru</translation>
 <translation id="2945997411976714835">Greška prilikom instaliranja: pokretanje postupka programa za instaliranje nije uspjelo.</translation>
-<translation id="2959224682348913614"><ph name="EXISTING_USER" /> je već prijavljen(a). Da vaše pregledanje ostane odvojeno, prijavite se u Chrome na vlastitom profilu kao <ph name="USER_EMAIL_ADDRESS" />. Također ćete dobiti svoje lozinke i druge stavke sa <ph name="DEVICE" />.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – prijava na mrežu – Chrome</translation>
 <translation id="2970681950995291301">Da uklonite Google račun iz Chromea, odjavite se iz tog preglednika na stranici Postavke</translation>
 <translation id="2976869732253036751">Dobijajte obavještenja o praćenju cijena putem Chromea na telefonu</translation>
@@ -220,7 +218,6 @@ Ako ova stranica ne funkcionira kako se očekuje, pokušajte dozvoliti optimizac
 <translation id="3073571714401714450">Uključite/isključite Gemini u Chrome Devu</translation>
 <translation id="3080151273017101988">Ostavi aplikacije da rade u pozadini kada se Google Chrome zatvori</translation>
 <translation id="308397506772922478">Ako ste zaboravili pristupni izraz ili želite promijeniti ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea na računu<ph name="END_LINK" /></translation>
-<translation id="3089427491314610412"><ph name="EXISTING_USER" /> je već prijavljen(a). Da vaše pregledanje ostane odvojeno, prijavite se u Chrome na vlastitom profilu kao <ph name="USER_EMAIL_ADDRESS" />. Također ćete dobiti svoje sačuvane informacije i druge stavke sa <ph name="DEVICE" />.</translation>
 <translation id="3100998948628680988">Dajte naziv Chrome profilu</translation>
 <translation id="310459126943037700">Prekidanje zadataka nije uspjelo.</translation>
 <translation id="3104828284009500087">Pretražite bilo šta na stranici</translation>
@@ -233,7 +230,6 @@ Ako ova stranica ne funkcionira kako se očekuje, pokušajte dozvoliti optimizac
 <translation id="3140883423282498090">Promjene će stupiti na snagu kada sljedeći put pokrenete Google Chrome.</translation>
 <translation id="3149510190863420837">Chromeove aplikacije</translation>
 <translation id="3161522574479303604">Svi jezici</translation>
-<translation id="318555301233810762"><ph name="EXISTING_USER" /> je već prijavljen(a). Da vaše pregledanje ostane odvojeno, prijavite se u Chrome na vlastitom profilu kao <ph name="USER_EMAIL_ADDRESS" />. Također ćete dobiti svoje oznake i druge stavke na svim svojim uređajima.</translation>
 <translation id="319199214552513804">Da dobijete ovu ekstenziju i drugo na svim svojim računarima, prijavite se u Chrome</translation>
 <translation id="3196187562065225381">Chrome je blokirao ovo preuzimanje jer je fajl opasan</translation>
 <translation id="3222857603094643834">Pretražite bilo šta na ovoj stranici putem Google Objektiva</translation>
@@ -272,7 +268,6 @@ Ako ova stranica ne funkcionira kako se očekuje, pokušajte dozvoliti optimizac
 <translation id="3598673391539778844">Prikaži Gemini u Chromeu na sistemskoj traci</translation>
 <translation id="3622716124581627104">Identificirajte stvari ili mjesta i kopirajte ili prevedite tekst. Kada koristite Google Objektiv, snimak ekrana stranice se šalje Googleu. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Sada je lakše koristiti Chrome s vašim Google računom i na dijeljenim računarima.</translation>
-<translation id="3628103251823745322"><ph name="EXISTING_USER" /> je već prijavljen(a). Da vaše pregledanje ostane odvojeno, prijavite se u Chrome na vlastitom profilu kao <ph name="USER_EMAIL_ADDRESS" />. Također ćete dobiti svoje sačuvane informacije i druge stavke na svim svojim uređajima.</translation>
 <translation id="3635073343384702370">Chrome može provjeravati vaše lozinke kada ih sačuvate</translation>
 <translation id="3636970668267555808">Postavite Chrome kao zadani preglednik da dobijete lak pristup funkcijama koje poznajete, volite i smatrate pouzdanim.</translation>
 <translation id="3667616615096815454">Nije moguće instalirati jer aplikacija nije poznata serveru.</translation>
@@ -600,7 +595,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6933858244219479645">Sistem ChromeOS</translation>
 <translation id="6938166777909186039">Da primate buduća ažuriranja za Google Chrome, trebat će vam Windows 10 ili novija verzija. Računar koristi Windows 8.1.</translation>
 <translation id="6943584222992551122">Podaci pregledanja ove osobe će se izbrisati s uređaja. Da vratite podatke, prijavite se u Chrome kao <ph name="USER_EMAIL" />.</translation>
-<translation id="6962628299694876291"><ph name="EXISTING_USER" /> je već prijavljen(a). Da vaše pregledanje ostane odvojeno, prijavite se u Chrome na vlastitom profilu kao <ph name="USER_EMAIL_ADDRESS" />. Također ćete dobiti svoje lozinke i druge stavke na svim svojim uređajima.</translation>
 <translation id="6965382102122355670">Uredu</translation>
 <translation id="6967962315388095737">Ulazno pravilo da Google Chrome beta verzija dozvoli mDNS saobraćaj.</translation>
 <translation id="6979589607440534284">Informacije o tome zašto Chrome blokira neke fajlove; otvara se na novoj kartici</translation>

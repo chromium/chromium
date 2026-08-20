@@ -70,7 +70,6 @@
 <translation id="1110994991967754504">Seleziona l'autorizzazione per <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Salvare IBAN?</translation>
 <translation id="1113869188872983271">&amp;Annulla ridisposizione</translation>
-<translation id="1117709830616495622">Basato su Personal Intelligence con Gemini.</translation>
 <translation id="111897705806685148">Usa passkey da un altro dispositivo</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per decidere quali informazioni di Chrome salvare nel tuo Account Google.</translation>
 <translation id="1121990216147052230">Preparami una lista di cose da fare</translation>
@@ -1171,7 +1170,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3005723025932146533">Mostra copia salvata</translation>
 <translation id="300580149047131921">Utilizzata di recente</translation>
 <translation id="3006864083554020786">indirizzo di casa</translation>
-<translation id="3008410317623852235">Ora puoi trovare e inserire informazioni da Gmail e altro.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab per sfogliare le azioni disponibili, quindi Invio per eseguire l'azione selezionata.</translation>
 <translation id="3010991137650052245">Per usare <ph name="PERMISSION" /> su questo sito, consenti l'accesso a <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3014726756341138577">Funzionalità avanzate della stampante</translation>
@@ -2318,7 +2316,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4941627891654116707">Dimensioni carattere</translation>
 <translation id="4943620199112228840">Utilizzare i microfoni</translation>
 <translation id="4943872375798546930">Nessun risultato</translation>
-<translation id="494701040141924538">Ok, chiudi avviso</translation>
 <translation id="495170559598752135">Azioni</translation>
 <translation id="4953689047182316270">Rispondi agli eventi di accessibilità</translation>
 <translation id="4954505713046251871">Per poterti offrire suggerimenti e migliorare questa funzionalità, l'URL e i contenuti della pagina vengono condivisi con Google</translation>
@@ -3368,7 +3365,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6743841972744298686">Impostazioni di sincronizzazione</translation>
 <translation id="6745212570062463886">Inserisci automaticamente il nome e l'indirizzo email dal tuo Account Google</translation>
 <translation id="674580074662200768">Aggiorna il passaporto in modo sicuro</translation>
-<translation id="6749473226660745022">Foto</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Valore policy</translation>
 <translation id="6753434778807740853">Elimina voce <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3708,7 +3704,6 @@ Ulteriori dettagli:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Gestori dei pagamenti</translation>
 <translation id="7366594738862061263">Scopri di più su come Chrome protegge le tue password</translation>
-<translation id="7366909168761621528">Dati di navigazione</translation>
 <translation id="7370751048350026847">Incollare questi contenuti nel sito non è consigliato</translation>
 <translation id="7372526636730851647">Foto (patinata)</translation>
 <translation id="7372973238305370288">risultato della ricerca</translation>
@@ -4297,7 +4292,6 @@ Ulteriori dettagli:
 <translation id="8350416046273606058">La scorciatoia non può contenere spazi: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Crea nota</translation>
 <translation id="8352849934814541340">L'amministratore di questo dispositivo ha installato applicazioni per funzioni aggiuntive. Le applicazioni hanno accesso ad alcuni tuoi dati.</translation>
-<translation id="8353273112634584260">Basato su Personal Intelligence con Gemini. Le tue richieste, i titoli delle pagine e gli URL potrebbero essere esaminati per migliorare la compilazione automatica avanzata.</translation>
 <translation id="8355270400102541638">Contesto arresto anomalo locale:</translation>
 <translation id="8362914115861174987">Traduci in</translation>
 <translation id="8363502534493474904">Disattivare la modalità aereo</translation>
@@ -4657,7 +4651,6 @@ Ulteriori dettagli:
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Prova Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Per uscire dalla modalità a schermo intero, tieni premuto |<ph name="ACCELERATOR" />|</translation>
-<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Errore di sicurezza</translation>
 <translation id="9035699147763101514">Basato su Personal Intelligence con Gemini. Gestisci le tue scelte nelle impostazioni.</translation>
 <translation id="9035824888276246493">Salva i codici di sicurezza</translation>

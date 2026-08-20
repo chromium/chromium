@@ -148,7 +148,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2424440923901031101">Esta extensión infringe la política de Chrome Web Store y podría no ser segura. Elimínala de Chrome para que no pueda ver ni cambiar tus datos en los sitios que visites, incluida tu información personal.</translation>
 <translation id="2467438592969358367">Google Chrome quiere exportar tus contraseñas. Escribe tu contraseña de Windows para permitirlo.</translation>
 <translation id="2472092250898121027">Esta extensión contiene malware y no es segura. Elimínala de Chrome para que no pueda ver ni cambiar tus datos en los sitios que visites, incluida tu información personal.</translation>
-<translation id="2482846200327569645">Ya has iniciado sesión con <ph name="EXISTING_USER" />. Para mantener tu información de navegación aparte, inicia sesión en Chrome con tu perfil de <ph name="USER_EMAIL_ADDRESS" />. También tendrás tus marcadores y otra información de <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2513154137948333830">Reinicio requerido: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2523492931736391680">Tu trabajo está protegido en Chrome</translation>
@@ -200,7 +199,6 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="2916983411556218750">Vamos a preparar tu Chrome</translation>
 <translation id="2926952073016206995">Chrome necesita el permiso de la cámara para este sitio</translation>
 <translation id="2945997411976714835">Error de instalación: no se ha podido iniciar el proceso de instalación.</translation>
-<translation id="2959224682348913614">Ya has iniciado sesión con <ph name="EXISTING_USER" />. Para mantener tu información de navegación aparte, inicia sesión en Chrome con tu perfil de <ph name="USER_EMAIL_ADDRESS" />. También tendrás tus contraseñas y otra información de <ph name="DEVICE" />.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" />, inicio de sesión en la red, Chrome</translation>
 <translation id="2970681950995291301">Para eliminar de Chrome tu cuenta de Google, cierra sesión en Chrome en la página de configuración</translation>
 <translation id="2976869732253036751">Recibe alertas de seguimiento de precios con Chrome en tu teléfono</translation>
@@ -220,7 +218,6 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="3073571714401714450">Activar o desactivar Gemini en Chrome Dev</translation>
 <translation id="3080151273017101988">Seguir ejecutando aplicaciones en segundo plano al cerrar Google Chrome</translation>
 <translation id="308397506772922478">Si has olvidado tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
-<translation id="3089427491314610412">Ya has iniciado sesión con <ph name="EXISTING_USER" />. Para mantener tu información de navegación aparte, inicia sesión en Chrome con tu perfil de <ph name="USER_EMAIL_ADDRESS" />. También tendrás tu información guardada y otros datos de <ph name="DEVICE" />.</translation>
 <translation id="3100998948628680988">Pon un nombre a tu perfil de Chrome</translation>
 <translation id="310459126943037700">No se han podido finalizar las tareas.</translation>
 <translation id="3104828284009500087">Buscar cualquier elemento en la página</translation>
@@ -233,7 +230,6 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="3140883423282498090">Los cambios se aplicarán la próxima vez que reinicies Google Chrome.</translation>
 <translation id="3149510190863420837">Aplicaciones de Chrome</translation>
 <translation id="3161522574479303604">Todos los idiomas</translation>
-<translation id="318555301233810762">Ya has iniciado sesión con <ph name="EXISTING_USER" />. Para mantener tu información de navegación aparte, inicia sesión en Chrome con tu perfil de <ph name="USER_EMAIL_ADDRESS" />. También tendrás tus marcadores y otra información en todos tus dispositivos.</translation>
 <translation id="319199214552513804">Para obtener esta extensión y más en todos tus ordenadores, inicia sesión en Chrome</translation>
 <translation id="3196187562065225381">Chrome ha bloqueado esta descarga porque el archivo es peligroso</translation>
 <translation id="3222857603094643834">Busca cualquier elemento de esta página con Google Lens</translation>
@@ -272,7 +268,6 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="3598673391539778844">Mostrar Gemini en Chrome en la bandeja del sistema</translation>
 <translation id="3622716124581627104">Identifica objetos o lugares y copia o traduce texto. Al usar Google Lens, se envía una captura de pantalla de la página a Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Ahora es más fácil utilizar Chrome con tu cuenta de Google y en ordenadores compartidos.</translation>
-<translation id="3628103251823745322">Ya has iniciado sesión con <ph name="EXISTING_USER" />. Para mantener tu información de navegación aparte, inicia sesión en Chrome con tu perfil de <ph name="USER_EMAIL_ADDRESS" />. También tendrás tu información guardada y otros datos en todos tus dispositivos.</translation>
 <translation id="3635073343384702370">Chrome puede comprobar tus contraseñas cuando las guardas</translation>
 <translation id="3636970668267555808">Accede fácilmente a las funciones que conoces, te encantan y en las que confías estableciendo Chrome como navegador predeterminado.</translation>
 <translation id="3667616615096815454">No se puede realizar la instalación porque se trata de una aplicación desconocida para el servidor.</translation>
@@ -600,7 +595,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6933858244219479645">Sistema ChromeOS</translation>
 <translation id="6938166777909186039">Para recibir futuras actualizaciones de Google Chrome, deberás tener Windows 10 o una versión posterior. Este ordenador tiene Windows 8.1.</translation>
 <translation id="6943584222992551122">Los datos de navegación de este usuario se eliminarán del dispositivo. Para recuperar los datos, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
-<translation id="6962628299694876291">Ya has iniciado sesión con <ph name="EXISTING_USER" />. Para mantener tu información de navegación aparte, inicia sesión en Chrome con tu perfil de <ph name="USER_EMAIL_ADDRESS" />. También tendrás tus contraseñas y otra información en todos tus dispositivos.</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6967962315388095737">Regla entrante para que Google Chrome Beta permita tráfico mDNS.</translation>
 <translation id="6979589607440534284">Averigua por qué Chrome bloquea algunos archivos (se abre en una nueva pestaña)</translation>

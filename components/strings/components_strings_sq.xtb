@@ -70,7 +70,6 @@
 <translation id="1110994991967754504">Përzgjidh autorizimin për <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Të ruhet numri IBAN?</translation>
 <translation id="1113869188872983271">&amp;Zhbëj rirenditjen</translation>
-<translation id="1117709830616495622">Mundësuar nga "Inteligjenca personale" me Gemini.</translation>
 <translation id="111897705806685148">Përdor çelësin e kalimit nga një pajisje tjetër</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab" dhe më pas "Enter" për të menaxhuar se çfarë informacionesh të Chrome ruhen në "Llogarinë tënde të Google"</translation>
 <translation id="1121990216147052230">Më bëj një listë të gjërave për të bërë</translation>
@@ -1171,7 +1170,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3005723025932146533">Shfaq një kopje të ruajtur</translation>
 <translation id="300580149047131921">Përdorur së fundi</translation>
 <translation id="3006864083554020786">adresa e shtëpisë</translation>
-<translation id="3008410317623852235">Tani mund të gjesh dhe të plotësosh informacionet nga Gmail etj.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp tastin "Tab" për të shfletuar veprimet e disponueshme dhe më pas tastin "Enter" për të ekzekutuar veprimin e zgjedhur.</translation>
 <translation id="3010991137650052245">Për ta përdorur "<ph name="PERMISSION" />" bë këtë sajt, jepi qasje <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3014726756341138577">Veçoritë e përparuara të printerit</translation>
@@ -2321,7 +2319,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4941627891654116707">Madhësia e shkrimit</translation>
 <translation id="4943620199112228840">Të përdorë mikrofonat e tu</translation>
 <translation id="4943872375798546930">Asnjë rezultat</translation>
-<translation id="494701040141924538">E kuptova, mbylle njoftimin</translation>
 <translation id="495170559598752135">Veprimet</translation>
 <translation id="4953689047182316270">Reago ndaj ngjarjeve të qasshmërisë</translation>
 <translation id="4954505713046251871">Për të ofruar sugjerime dhe për të përmirësuar këtë veçori, URL-ja dhe përmbajtja e faqes ndahen me Google</translation>
@@ -3371,7 +3368,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6743841972744298686">Cilësimet e sinkronizimit</translation>
 <translation id="6745212570062463886">Plotëso automatikisht emrin dhe adresën tënde të email-it nga "Llogaria jote e Google"</translation>
 <translation id="674580074662200768">Përditëso pasaportën në mënyrë të sigurt</translation>
-<translation id="6749473226660745022">Fotografitë</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Vlera e politikës</translation>
 <translation id="6753434778807740853">Fshi hyrjen: <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3710,7 +3706,6 @@ Detaje shtesë:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Përpunuesit e pagesave</translation>
 <translation id="7366594738862061263">Mëso se si i mbron Chrome fjalëkalimet e tua</translation>
-<translation id="7366909168761621528">Të dhënat e shfletimit</translation>
 <translation id="7370751048350026847">Ngjitja e kësaj përmbajtjeje në këtë sajt nuk rekomandohet</translation>
 <translation id="7372526636730851647">Fotografi (me shkëlqim)</translation>
 <translation id="7372973238305370288">rezultati i kërkimit</translation>
@@ -4299,7 +4294,6 @@ Detaje shtesë:
 <translation id="8350416046273606058">Shkurtorja nuk mund të përfshijë hapësira: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Krijo një shënim</translation>
 <translation id="8352849934814541340">Administratori i kësaj pajisjeje ka instaluar aplikacione për funksionet shtesë. Aplikacionet kanë qasje te disa prej të dhënave të tua.</translation>
-<translation id="8353273112634584260">Mundësuar nga "Inteligjenca personale" me Gemini. Kërkesat, titujt e faqeve dhe URL-të e tua mund të shqyrtohen për të përmirësuar plotësimin automatik të përmirësuar.</translation>
 <translation id="8355270400102541638">Konteksti lokal i ndërprerjes aksidentale:</translation>
 <translation id="8362914115861174987">Përkthe në</translation>
 <translation id="8363502534493474904">Të çaktivizosh modalitetin e aeroplanit</translation>
@@ -4659,7 +4653,6 @@ Detaje shtesë:
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Provo Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Për të dalë nga ekrani i plotë, shtyp dhe mbaj shtypur |<ph name="ACCELERATOR" />|</translation>
-<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Gabim i sigurisë</translation>
 <translation id="9035699147763101514">Mundësuar nga "Inteligjenca personale" me Gemini. Menaxho zgjedhjet e tua te cilësimet.</translation>
 <translation id="9035824888276246493">Ruaj kodet e sigurisë</translation>

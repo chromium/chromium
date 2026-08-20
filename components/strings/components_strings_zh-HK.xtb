@@ -70,7 +70,6 @@
 <translation id="1110994991967754504">選擇對<ph name="PERMISSION_NAME" />的權限</translation>
 <translation id="1113000785583998331">要儲存 IBAN 嗎？</translation>
 <translation id="1113869188872983271">復原重新排序(&amp;U)</translation>
-<translation id="1117709830616495622">採用 Gemini「個人化智能」技術。</translation>
 <translation id="111897705806685148">使用另一部裝置的密鑰</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以管理 Google 帳戶儲存邊啲 Chrome 資料</translation>
 <translation id="1121990216147052230">建立待辦事項清單</translation>
@@ -1171,7 +1170,6 @@
 <translation id="3005723025932146533">顯示儲存的複本</translation>
 <translation id="300580149047131921">最近使用過</translation>
 <translation id="3006864083554020786">住宅地址</translation>
-<translation id="3008410317623852235">你現可尋找並填入 Gmail 等來源的資料。</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒 Tab 掣就可以瀏覽可以用嘅操作，然後㩒 Enter 掣就可以執行揀咗嘅操作。</translation>
 <translation id="3010991137650052245">如要在此網站上使用<ph name="PERMISSION" />，請向 <ph name="SHORT_PRODUCT_NAME" /> 授予存取權</translation>
 <translation id="3014726756341138577">進階打印機功能</translation>
@@ -2320,7 +2318,6 @@
 <translation id="4941627891654116707">字型大小</translation>
 <translation id="4943620199112228840">使用麥克風</translation>
 <translation id="4943872375798546930">搵唔到結果</translation>
-<translation id="494701040141924538">知道喇，閂通知</translation>
 <translation id="495170559598752135">動作</translation>
 <translation id="4953689047182316270">回應無障礙功能事件</translation>
 <translation id="4954505713046251871">為提供建議及改善此功能，頁面網址和內容會與 Google 分享</translation>
@@ -3371,7 +3368,6 @@
 <translation id="6743841972744298686">同步處理設定</translation>
 <translation id="6745212570062463886">自動填入你 Google 帳戶的姓名和電郵地址</translation>
 <translation id="674580074662200768">安全地更新護照</translation>
-<translation id="6749473226660745022">相片</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">政策值</translation>
 <translation id="6753434778807740853">刪除項目 <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3711,7 +3707,6 @@
 <translation id="7366117520888504990">198 x 275 毫米</translation>
 <translation id="7366362069757178916">付款處理常式</translation>
 <translation id="7366594738862061263">瞭解 Chrome 如何保護你的密碼</translation>
-<translation id="7366909168761621528">瀏覽資料</translation>
 <translation id="7370751048350026847">不建議將此內容貼到此網站</translation>
 <translation id="7372526636730851647">相紙 (光面)</translation>
 <translation id="7372973238305370288">搜尋結果</translation>
@@ -4300,7 +4295,6 @@
 <translation id="8350416046273606058">快速指令不可包含空格：「<ph name="SHORTCUT_NAME" />」</translation>
 <translation id="8351131234907093545">建立筆記</translation>
 <translation id="8352849934814541340">此裝置的管理員已安裝支援額外功能的應用程式，這些應用程式可存取你的部分資料。</translation>
-<translation id="8353273112634584260">採用 Gemini「個人化智能」技術。你的要求、網頁標題和網址可能會送交審核，以改善加強版自動填入。</translation>
 <translation id="8355270400102541638">本機當機內容：</translation>
 <translation id="8362914115861174987">譯文語言</translation>
 <translation id="8363502534493474904">關閉飛行模式</translation>
@@ -4660,7 +4654,6 @@
 <translation id="9026253329950610248">Google 協作平台</translation>
 <translation id="9027020981272345766">試用 Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">如要離開全螢幕，請按住 |<ph name="ACCELERATOR" />|</translation>
-<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">安全錯誤</translation>
 <translation id="9035699147763101514">採用 Gemini「個人化智能」技術。你可以在設定中管理選擇。</translation>
 <translation id="9035824888276246493">儲存安全碼</translation>

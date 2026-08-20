@@ -181,16 +181,6 @@ Etiket, <ph name="ENTERPRISE_CUSTOM_LABEL_POLICY_NAME" /> politikası kullanıla
 <translation id="1100840127293327071">Mevcut tarama verilerini saklama seçeneğini varsayılan olarak işaretleme</translation>
 <translation id="1105572260329131950">Güvenli bağlantılar için varsayılan simgeler kullanın</translation>
 <translation id="1105711894873068933"><ph name="LACROS_NAME" /> devre dışı bırakıldıktan sonra tüm kullanıcı verileri bir sonraki girişte kaldırılır.</translation>
-<translation id="1106279506320506502">Yalıtılmış Mod'un etkinleştirilip etkinleştirilmeyeceğini belirtir.
-
-Yalıtılmış Mod, yalnızca kurumsal kullanıma yönelik geçici bir tarama modudur.
-Veri Kaybını Önleme ile ilgili kurumsal politikaları ve zorunlu yüklenmiş uzantıları destekler.
-
-1 - Etkin değerine ayarlanırsa Yalıtılmış Mod etkinleştirilir ve Gizli Mod devre dışı bırakılır.
-
-0 - Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa Yalıtılmış Mod devre dışı bırakılır.
-
-Bu politikanın geçerli olması için "<ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />" lisansı gerekir.</translation>
 <translation id="1106342730891876476">Paylaşım Ayarları</translation>
 <translation id="1107538157073168076">Analizler uzantısını devre dışı bırak</translation>
 <translation id="1110426799149444997"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> bölge aramayı devre dışı bırakın.</translation>
@@ -1674,17 +1664,6 @@ Genellikle bu politika kimlik avına karşı bir savunma olarak Devre Dışıdı
 <translation id="2057317273526988987">URL listesine erişime izin ver</translation>
 <translation id="205807990145127714">Sinyal gücü etkinliği hakkında raporlanacak telemetri verileri.</translation>
 <translation id="2060153898336610735">Geçerli dil ayarınıza göre otomatik</translation>
-<translation id="2060316966423154087">Kullanıcıların, <ph name="PRODUCT_NAME" /> hizmetinin formları daha iyi anlamak ve daha fazla alanı doldurmalarına yardımcı olmak için üretken yapay zekayı kullanıp kullanamayacağını belirtir.
-
-0 = 1 ile aynı etkiye sahiptir. Bu ayar, Google'ın M153'ten önce yapay zeka modellerini daha iyi hale getirmek için ilgili verileri kullanmasına izin veriyordu. İlgili veriler arasında özelliğe bağlı olarak istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler yer alabilir. Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
-
-1 = Özelliğin kullanılmasına izin verir ancak Google'ın ilgili verileri (istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler dahil) kullanarak modelleri daha iyi hale getirmesine izin vermez. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> tarafından yönetilen kurumsal kullanıcılar ve <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen eğitim hesapları için varsayılan değer 1'dir.
-
-2 = Özelliğe izin vermez.
-
-Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> politikasına göre belirlenir.
-
-Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="2061123930713023976">Ağ paketi yakalama işlemlerinde hata ayıklamaya izin ver</translation>
 <translation id="2061810934846663491">Uzaktan erişim ana makineleri için gereken alan adlarını yapılandır</translation>
 <translation id="2062632109797189011">Kullanımdan kaldırılan window.webkitStorageInfo API'sini yeniden etkinleştir</translation>
@@ -2941,7 +2920,6 @@ engeller.</translation>
 
 Politikayı ayarlamadan bırakırsanız <ph name="BLOCK_POPUPS_POLICY_NAME" /> politikası geçerli olur. Kullanıcılar bu ayarı değiştirebilir.</translation>
 <translation id="2796714419743648316">Uygulama Başına Süre Sınırları İzin Verilenler Listesi</translation>
-<translation id="2799223571221894425">Yeniden başlat</translation>
 <translation id="2801065672151277034">Sertifika yönetim ayarları</translation>
 <translation id="2801155097555584385">Pil şarjı için özel şarj başlatma değerini yüzde olarak ayarla</translation>
 <translation id="2801378553855965587"><ph name="GOOGLE_CALENDAR_NAME" /> entegrasyonunu devre dışı bırak</translation>
@@ -3521,6 +3499,19 @@ Bu politika devre dışı olarak ayarlanırsa veya ayarlanmadan bırakılırsa k
 <translation id="3150351525324499342">Araç çubuğunda <ph name="PRODUCT_NAME" /> simgesini varsayılan olarak gösterme, kullanıcıların seçmesine izin ver</translation>
 <translation id="3152135410085709340">Yerel dosyaların, PDF görüntüleyicide bu sitelerdeki file:// URL'lerine erişmesine izin ver</translation>
 <translation id="3152425128389603870">Birleşik Masaüstü'nü kullanılabilir hale getir ve varsayılan olarak aç.</translation>
+<translation id="3157506194753687842"><ph name="GEMINI_SPARK_PRODUCT_NAME" /> ajanının <ph name="PRODUCT_NAME" /> ile bağlantı kurmasına ve otomatik gezinme özelliğini kullanmasına izin verilip verilmeyeceğini kontrol eder.
+
+0 = <ph name="GEMINI_SPARK_PRODUCT_NAME" />, <ph name="PRODUCT_NAME" /> ile bağlantı kurabilir ve otomatik gezinme özelliğini kullanabilir
+
+1 = <ph name="GEMINI_SPARK_PRODUCT_NAME" />, <ph name="PRODUCT_NAME" /> ile bağlantı kuramaz veya otomatik gezinme özelliğini kullanamaz
+
+Uyarı: <ph name="GEMINI_SPARK_PRODUCT_NAME" /> ajanının <ph name="PRODUCT_NAME" /> ile bağlantı kurmasını ve otomatik gezinme özelliğini kullanmasını etkinleştirmek, <ph name="GEMINI_SPARK_PRODUCT_NAME" /> ajanının etkin tarayıcı oturumunu kullanarak <ph name="PRODUCT_NAME" /> istemcilerinde bağımsız, çok adımlı işlemler yapmasına olanak tanır. Bu durum; kimlik bilgisi riskleri, Yerel Ağ Girişi ve içeriğe duyarlı sinyallerin kaybı gibi önemli güvenlik risklerini beraberinde getirir. Mevcut yönetim ve güvenlik denetimlerine uyulmayabilir.
+
+Yöneticilerin bu özelliği etkinleştirmeden önce kuruluşlarının ağ tehdit modelini, uyumluluk ve gizlilik kurallarını dikkatlice değerlendirmeleri önerilir.
+
+<ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> uygulaması veya <ph name="PRODUCT_NAME" /> otomatik gezinme politikaları devre dışı bırakıldığında bu politikanın etkisi olmaz. Örneğin, <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> uygulaması <ph name="GEMINI_SETTINGS_POLICY_NAME" /> politikası tarafından devre dışı bırakılabilir. <ph name="PRODUCT_NAME" /> üzerinde <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=gemini_in_chrome adresine göz atın.
+
+<ph name="PRODUCT_NAME" /> otomatik gezinme ve <ph name="GEMINI_SPARK_PRODUCT_NAME" /> tüm ülkelerde veya dillerde kullanılamaz. Bu politikanın 0 - Etkin değerine ayarlanması, özelliğin etkinleştirileceğini garanti etmez. Bu durum, kullanılabilirliğe bağlıdır. Kullanıma sunmayla ilgili daha fazla bilgi edinmek için Enterprise sürüm notlarını inceleyin: https://chromeenterprise.google/resources/release-notes/.</translation>
 <translation id="3159375329008977062">Kullanıcının, kullanıcı arayüzü üzerinden Crostini kapsayıcıları dışa/içe aktarmasına izin verilir</translation>
 <translation id="3163167792874598128">Politika ayarlanmaz veya Etkin değerine ayarlanırsa App Store puan promosyonu, kullanıcıya en fazla yılda bir kez gösterilebilir.
 Politika, Devre Dışı değerine ayarlanırsa App Store puan promosyonu, kullanıcıya gösterilmez.</translation>
@@ -5324,6 +5315,7 @@ Bu, uygulama ve web sitelerine ait izin katmanının altındaki ek bir kontrol k
 Kullanıcılar, yöneticinin yaptığı seçimi geçersiz kılamaz. Politika ayarlanmadan bırakılırsa kullanıcılar, tüketici deneyimi yaşar. Bu da sistem konum ayarını istedikleri gibi değiştirebilecekleri ve varsayılan değerin <ph name="GLS_ALLOWED" /> olacağı anlamına gelir.
 
 Not: Bu politika ile birlikte <ph name="ARC_GLS_POLICY_NAME" /> politikasının desteği sonlandırılır. Ayrıca, bu politika ayarlandığında <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> artık <ph name="PRODUCT_OS_NAME" /> ürününde <ph name="ANDROID_NAME" /> konum tercihini etkilemez.</translation>
+<translation id="4340826578810728651"><ph name="GEMINI_SPARK_PRODUCT_NAME" /> ajanının <ph name="PRODUCT_NAME" /> ile bağlantı kurmasına ve otomatik gezinme özelliğini kullanmasına izin verilir.</translation>
 <translation id="4341199399451274159"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> açıksa <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> politikasının ayarlanması, arama sağlayıcı tarafından desteklenen karakter kodlamalarını belirtir. Kodlamalar UTF-8, GB2312 ve ISO-8859-1 gibi kod sayfası adlarıdır. Bunlar, sağlandıkları sırada denenirler.
 
       <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> politikası ayarlanmazsa UTF-8 kullanılır.</translation>
@@ -6008,7 +6000,6 @@ Aksi takdirde, yalnızca seçilen hizmetler etkinleştirilir.</translation>
 Politika, Devre Dışı değerine ayarlanırsa Kimlik Bilgisi Sağlayıcı uzantısı promosyonu, kullanıcıya gösterilmez.</translation>
 <translation id="4768446404233019970">TLS'de 3DES şifre paketlerini etkinleştir</translation>
 <translation id="4770334626033858263">Ebeveyn Erişim Kodu'nu oluşturmak ve doğrulamak için kullanılan yapılandırma.</translation>
-<translation id="477383002672213319">Yapay zeka modellerini daha iyi hale getirmeden gelişmiş otomatik doldurma özelliğine izin ver (M153 sürümünden önce yapay zeka modellerini daha iyi hale getirir).</translation>
 <translation id="4773997835955617342">Manuel olarak oluşturulan yeni kayıtlar için önerilen <ph name="KRB5_CONFIG" /> yapılandırmasını değiştirir.
 
       Bu politika etkinleştirilirse "KerberosCustomPrefilledConfig" politikasının değeri önerilen yapılandırma olarak uygulanır ve Kerberos kimlik doğrulama iletişim kutusunun "Gelişmiş" bölümünde gösterilir.
@@ -7299,13 +7290,6 @@ Yerel ağ uç noktalarına yönelik istekleri etkileyen ve içinde kaynakların 
 <translation id="5537400155400537818">Devre dışı: CSS yakınlaştırma, standart öncesindeki eski davranışını korur.</translation>
 <translation id="5537587542872235553">Zorunlu yüklenmiş, yalıtılmış web uygulamalarının ve kiosk uygulamalarının Device Attributes API'yi kullanmasına izin ver</translation>
 <translation id="553806128266843748">Veri akışı kısıtlamanın etkinleştirilip etkinleştirilmediğini gösteren bir boole flag'i.</translation>
-<translation id="5540415024237352600">Bu politikanın desteği M153 sürümünde sonlandırılacak ve gelecekteki bir sürümde desteklenmeyecek (etkisiz kalacak). Progresif web uygulaması (PWA) yüklenirken oluşturulan yerel uygulamalar için geçici imzalar artık <ph name="MAC_OS_NAME" /> üzerinde kalıcı olarak etkinleştirildi. Bu sayede, yüklü her uygulamanın <ph name="MAC_OS_NAME" /> sistem bileşenleri için benzersiz bir kimliği olur.
-
-Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa progresif web uygulaması (PWA) yüklenirken oluşturulan yerel uygulama için geçici imzaların kullanılmasına izin verilir. Bu sayede, yüklü her uygulamanın <ph name="MAC_OS_NAME" /> sistem bileşenleri için benzersiz bir kimliği olur.
-
-Politika, Devre Dışı değerine ayarlanırsa progresif web uygulaması (PWA) yüklenirken oluşturulan her yerel uygulamanın kimliği aynı olur. Bu durum, <ph name="MAC_OS_NAME" /> işlevlerini etkileyebilir.
-
-Politikayı yalnızca geçici imza içeren uygulamaların engellendiği bir uç nokta güvenlik çözümü kullanıyorsanız devre dışı bırakın.</translation>
 <translation id="5540885720415375851">Yerel cihaz bulmaya izin ver</translation>
 <translation id="5542235730745104308">Politika, Doğru değerine ayarlandığında <ph name="PRODUCT_NAME" /> tarayıcıya gömülü alternatif hata sayfalarını kullanır (ör. "sayfa bulunamadı"). Politika, Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> alternatif hata sayfalarını kullanmaz.
 

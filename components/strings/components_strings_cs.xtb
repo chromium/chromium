@@ -70,7 +70,6 @@
 <translation id="1110994991967754504">Vyberte oprávnění pro <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Uložit kód IBAN?</translation>
 <translation id="1113869188872983271">&amp;Vrátit změnu uspořádání zpět</translation>
-<translation id="1117709830616495622">Využívá Osobní inteligenci s Gemini.</translation>
 <translation id="111897705806685148">Použít přístupový klíč z jiného zařízení</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter můžete spravovat, jaké informace z Chromu se ukládají do vašeho účtu Google</translation>
 <translation id="1121990216147052230">Vytvoř mi seznam úkolů</translation>
@@ -1171,7 +1170,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3005723025932146533">Zobrazit uloženou kopii</translation>
 <translation id="300580149047131921">Nedávno použito</translation>
 <translation id="3006864083554020786">adresa domů</translation>
-<translation id="3008410317623852235">Teď můžete vyhledávat a vyplňovat informace z Gmailu a dalších služeb.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru můžete procházet dostupné akce a stisknutím klávesy Enter vybranou akci provést.</translation>
 <translation id="3010991137650052245">Pokud na tomhle webu chcete používat prostředek <ph name="PERMISSION" />, udělte prohlížeči <ph name="SHORT_PRODUCT_NAME" /> přístup</translation>
 <translation id="3014726756341138577">Pokročilé funkce tiskáren</translation>
@@ -2317,7 +2315,6 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4941627891654116707">Velikost písma</translation>
 <translation id="4943620199112228840">Používat vaše mikrofony</translation>
 <translation id="4943872375798546930">Žádné výsledky</translation>
-<translation id="494701040141924538">Rozumím, zavřít oznámení</translation>
 <translation id="495170559598752135">Akce</translation>
 <translation id="4953689047182316270">Reagovat na události přístupnosti</translation>
 <translation id="4954505713046251871">Za účelem nabízení návrhů a vylepšování této funkce se adresa URL a obsah stránky sdílí se společností Google</translation>
@@ -3367,7 +3364,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6743841972744298686">Nastavení synchronizace</translation>
 <translation id="6745212570062463886">Automaticky vyplnit jméno a e‑mailovou adresu z vašeho účtu Google</translation>
 <translation id="674580074662200768">Bezpečně si pas aktualizujte</translation>
-<translation id="6749473226660745022">Fotky</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Hodnota zásady</translation>
 <translation id="6753434778807740853">Smazat záznam <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3706,7 +3702,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7366117520888504990">198 × 275 mm</translation>
 <translation id="7366362069757178916">Obslužné nástroje pro platby</translation>
 <translation id="7366594738862061263">Jak Chrome chrání hesla</translation>
-<translation id="7366909168761621528">Údaje o prohlížení</translation>
 <translation id="7370751048350026847">Vložení tohoto obsahu na tento web administrátor nedoporučuje</translation>
 <translation id="7372526636730851647">Fotografie (lesklá)</translation>
 <translation id="7372973238305370288">výsledek vyhledávání</translation>
@@ -4295,7 +4290,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8350416046273606058">Zkratka nesmí obsahovat mezery: „<ph name="SHORTCUT_NAME" />“</translation>
 <translation id="8351131234907093545">Vytvořit poznámku</translation>
 <translation id="8352849934814541340">Administrátor tohoto zařízení nainstaloval rozšíření pro dodatečné funkce. Rozšíření mají přístup k některým vašim datům.</translation>
-<translation id="8353273112634584260">Využívá Osobní inteligenci s Gemini. Vaše žádosti, názvy stránek a adresy URL mohou být kontrolovány za účelem zdokonalování vylepšeného automatického vyplňování.</translation>
 <translation id="8355270400102541638">Místní kontext selhání:</translation>
 <translation id="8362914115861174987">Přeložit do jazyka</translation>
 <translation id="8363502534493474904">Vypnout režim Letadlo</translation>
@@ -4656,7 +4650,6 @@ Další podrobnosti:
 <translation id="9026253329950610248">Weby Google</translation>
 <translation id="9027020981272345766">Vyzkoušet Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Pokud chcete ukončit režim celé obrazovky, podržte |<ph name="ACCELERATOR" />|</translation>
-<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Chyba zabezpečení</translation>
 <translation id="9035699147763101514">Využívá Osobní inteligenci s Gemini. Své volby můžete spravovat v nastavení.</translation>
 <translation id="9035824888276246493">Ukládat bezpečnostní kódy</translation>

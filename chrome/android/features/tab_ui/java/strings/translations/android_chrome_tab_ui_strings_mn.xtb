@@ -98,7 +98,6 @@
 <translation id="3940195383040445971">Табууд дээрх үнийг хянах</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> шинэ таб, <ph name="ANY_CLOSED" />-г хаасан}other{<ph name="MANY_ADDED" /> шинэ таб, <ph name="ANY_CLOSED" /> табыг хаасан}}</translation>
 <translation id="3962134438902735041">{TABS_COUNT,plural, =1{Сонгогдсон <ph name="TABS_COUNT_ONE" /> табыг бэхэлснийг болиулах}other{Сонгогдсон <ph name="TABS_COUNT_MANY" /> табыг бэхэлснийг болиулах}}</translation>
-<translation id="3979765093124840698">{TABS_COUNT,plural, =1{Бусад +<ph name="TABS_COUNT_ONE" />}other{Бусад +<ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> хоногийн өмнө үүсгэсэн}other{<ph name="NUM_DAYS_MANY" /> хоногийн өмнө үүсгэсэн}}</translation>
 <translation id="4076226664360336092">Табын бүлгийн жагсаалт. Бүтэн өндрөөр нээсэн</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> таб холбоотой бололтой. Эдгээрийг бүлэглэх үү?</translation>

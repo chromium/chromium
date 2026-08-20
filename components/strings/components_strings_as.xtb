@@ -70,7 +70,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />ৰ বাবে অনুমতি বাছনি কৰক</translation>
 <translation id="1113000785583998331">IBAN ছেভ কৰিবনে?</translation>
 <translation id="1113869188872983271">পুনঃক্ৰম কৰাটো &amp;আনডু কৰক</translation>
-<translation id="1117709830616495622">Geminiৰ জৰিয়তে পাৰ্ছনেল ইণ্টেলিজেন্সে সঞ্চালনা কৰা।</translation>
 <translation id="111897705806685148">অন্য এটা ডিভাইচৰ পৰা পাছকী ব্যৱহাৰ কৰক</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপুনি আপোনাৰ Google একাউণ্টত Chromeৰ কি তথ্য ছেভ কৰে সেয়া পৰিচালনা কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="1121990216147052230">মোৰ বাবে এখন কৰণীয় কাৰ্যৰ সূচী বনাওক</translation>
@@ -1171,7 +1170,6 @@
 <translation id="3005723025932146533">ছে’ভ কৰা প্ৰতিলিপি দেখুৱাওক</translation>
 <translation id="300580149047131921">অলপতে ব্যৱহৃত</translation>
 <translation id="3006864083554020786">ঘৰৰ ঠিকনা</translation>
-<translation id="3008410317623852235">আপুনি এতিয়া Gmail আৰু অধিক সেৱাৰ পৰা তথ্য বিচাৰি পাব আৰু সেয়া পূৰ কৰিব পাৰে।</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, উপলব্ধ কাৰ্যসমূহ ব্ৰাউজ কৰিবলৈ টেব টিপক, তাৰ পাছত বাছনি কৰা কাৰ্যটো কাৰ্যকৰী কৰিবলৈ এণ্টাৰ টিপক।</translation>
 <translation id="3010991137650052245">এই ছাইটত আপোনাৰ <ph name="PERMISSION" /> ব্যৱহাৰ কৰিবলৈ <ph name="SHORT_PRODUCT_NAME" />ক এক্সেছ প্ৰদান কৰক</translation>
 <translation id="3014726756341138577">প্ৰিণ্টাৰৰ উচ্চখাপৰ সুবিধা</translation>
@@ -2317,7 +2315,6 @@
 <translation id="4941627891654116707">ফ'ণ্টৰ আকাৰ</translation>
 <translation id="4943620199112228840">আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰক</translation>
 <translation id="4943872375798546930">কোনো ফলাফল নাই</translation>
-<translation id="494701040141924538">বুজি পালোঁ, জাননী বন্ধ কৰক</translation>
 <translation id="495170559598752135">কাৰ্যসমূহ</translation>
 <translation id="4953689047182316270">সাধ্যসুবিধাৰ অনুষ্ঠানলৈ সঁহাৰি জনাওক</translation>
 <translation id="4954505713046251871">পৰামৰ্শ আগবঢ়োৱাৰ বাবে আৰু এই সুবিধাটো উন্নত কৰাৰ বাবে, পৃষ্ঠাখনৰ URL আৰু সমল Googleৰ সৈতে শ্বেয়াৰ কৰা হৈছে</translation>
@@ -3367,7 +3364,6 @@
 <translation id="6743841972744298686">ছিংকৰ ছেটিং</translation>
 <translation id="6745212570062463886">আপোনাৰ Google একাউণ্টৰ পৰা নিজৰ নাম আৰু ইমেইল ঠিকনা স্বয়ংক্ৰিয়ভাৱে পূৰ কৰক</translation>
 <translation id="674580074662200768">সুৰক্ষিতভাৱে পাছপ’ৰ্ট আপডে’ট কৰক</translation>
-<translation id="6749473226660745022">ফট’</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">নীতিৰ মান</translation>
 <translation id="6753434778807740853">প্ৰৱিষ্টি <ph name="ENTRY_VOICEOVER" /> মচক</translation>
@@ -3706,7 +3702,6 @@
 <translation id="7366117520888504990">১৯৮ x ২৭৫ মি.মি.</translation>
 <translation id="7366362069757178916">পৰিশোধ নিয়ন্ত্ৰক</translation>
 <translation id="7366594738862061263">Chromeএ আপোনাৰ পাছৱৰ্ডসমূহ কেনেকৈ সুৰক্ষিত কৰে সেই বিষয়ে জানক</translation>
-<translation id="7366909168761621528">ব্ৰাউজিং ডেটা</translation>
 <translation id="7370751048350026847">এই সমলখিনি এই ছাইটটোত পে’ষ্ট কৰাটো চুপাৰিছ কৰা নাই</translation>
 <translation id="7372526636730851647">ফট’ (গ্লছযুক্ত)</translation>
 <translation id="7372973238305370288">ফলাফল সন্ধান কৰক</translation>
@@ -4295,7 +4290,6 @@
 <translation id="8350416046273606058">শ্বৰ্টকাটত স্পেচ থাকিব নোৱাৰে: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">টোকা সৃষ্টি কৰক</translation>
 <translation id="8352849934814541340">এই ডিভাইচটোৰ প্ৰশাসকে অতিৰিক্ত ফাংশ্বনৰ বাবে এপ্লিকেশ্বন ইনষ্টল কৰিছে। এপ্লিকেশ্বনসমূহে আপোনাৰ কিছুমান ডেটা এক্সেছ কৰিব পাৰে।</translation>
-<translation id="8353273112634584260">Geminiৰ জৰিয়তে পাৰ্ছনেল ইণ্টেলিজেন্সে সঞ্চালনা কৰা। অধিক উন্নত অট’ফিলৰ সুবিধাটো উন্নত কৰিবলৈ আপোনাৰ অনুৰোধ, পৃষ্ঠাৰ শিৰোনাম আৰু URLসমূহ পৰ্যালোচনা কৰা হ’ব পাৰে।</translation>
 <translation id="8355270400102541638">ল'কেল ক্ৰেশ্বৰ প্ৰসংগ:</translation>
 <translation id="8362914115861174987">এই ভাষাটোলৈ অনুবাদ কৰক</translation>
 <translation id="8363502534493474904">এয়াৰপ্লেন ম’ড অফ কৰি থকা হৈছে</translation>
@@ -4655,7 +4649,6 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Chrome Enterprise Core ব্যৱহাৰ কৰি চাওক</translation>
 <translation id="9027531288681624875">পূৰ্ণ স্ক্ৰীনৰ পৰা বাহিৰ হ'বলৈ আৰু ডাউনল'ড চাবলৈ, |<ph name="ACCELERATOR" />| টিপি হেঁচি ৰাখক</translation>
-<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">সুৰক্ষাজনিত আসোঁৱাহ</translation>
 <translation id="9035699147763101514">Geminiৰ জৰিয়তে পাৰ্ছনেল ইণ্টেলিজেন্সে সঞ্চালনা কৰা। আপোনাৰ বাছনিসমূহ ছেটিঙত পৰিচালনা কৰক।</translation>
 <translation id="9035824888276246493">সুৰক্ষা ক'ড ছেভ কৰক</translation>

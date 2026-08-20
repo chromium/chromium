@@ -465,7 +465,6 @@
 <translation id="1757773103848038814">Monospace फॉंट</translation>
 <translation id="1757935267918149452">Google पासवर्ड बदला बटण, तुमचा Google खाते पासवर्ड बदलण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="1759776526873274358">तुमच्या सुरक्षेमध्ये सुधारणा करण्यासाठी साइट वापरत असलेले पडताळणी कोड ऑटोफिल करा. Chrome हे कोड तुमच्या Gmail मधून मिळवू शकते. <ph name="BEGIN_LINK" />या वैशिष्ट्याबद्दल अधिक जाणून घ्या<ph name="LINK_END" /></translation>
-<translation id="176013700366797492"><ph name="BEGIN_LINK1" />डेटा आणि गोपनीयता प्राधान्ये<ph name="END_LINK1" /> नियंत्रित करण्यासाठी किंवा लॉयल्टी कार्ड व आयडी यांसारख्या <ph name="BEGIN_LINK2" />पेमेंट पद्धती<ph name="END_LINK2" /> आणि <ph name="BEGIN_LINK3" />पास<ph name="END_LINK3" /> व्यवस्थापित करण्यासाठी Google Wallet ला भेट द्या</translation>
 <translation id="1763864636252898013">हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षितता सर्टिफिकेट तुम्हाला डिव्हाइसच्या ऑपरेटिंग सिस्टमद्वारे विश्वसनीय नाही. हे कदाचित एका चुकीच्या कॉन्फिगरेशनमुळे किंवा हल्लेखोराने तुमचे कनेक्शन इंटरसेप्ट केल्यामुळे झाले असू शकते.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows नेटवर्क निदान चालवून पहा<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">फोटो (आर्कायव्हल)</translation>
@@ -789,7 +788,6 @@
 <translation id="2321291402658100099">माहिती व्यवस्थापित करा</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{१ विंडो}other{# विंडो}}</translation>
 <translation id="232390861414237658">हे कार्ड Google Pay सह वापरण्यासाठी सेव्ह केलेले असते, तेव्हा Chrome मध्ये केलेल्या खरेदीसाठी ते ऑटोफिल करा</translation>
-<translation id="2325722389016720813">आपोआप पूर्ण करण्यासाठी अप किंवा डाउन ॲरो प्रेस करा. ऑटोकंप्लीट करण्यासाठी टाइप करा.</translation>
 <translation id="2326283484705860548">तुम्ही आता Google Wallet मधून आणखी माहिती ऑटोफिल करू शकता</translation>
 <translation id="2326747055382936979">वर्धित ऑटोफिल व्यवस्थापित करा</translation>
 <translation id="2328651992442742497">अनुमती आहे (डीफॉल्ट)</translation>
@@ -3374,7 +3372,6 @@
 <translation id="6743841972744298686">सेटिंग्ज सिंक करा</translation>
 <translation id="6745212570062463886">Google खाते मधून तुमचे नाव आणि ईमेल अ‍ॅड्रेस ऑटोफिल करा</translation>
 <translation id="674580074662200768">पासपोर्ट सुरक्षितपणे अपडेट करा</translation>
-<translation id="6749473226660745022">फोटो</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">धोरण मूल्य</translation>
 <translation id="6753434778807740853">एंट्री हटवा <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3714,7 +3711,6 @@
 <translation id="7366117520888504990">१९८ x २७५ मिमी</translation>
 <translation id="7366362069757178916">पेमेंट हँडलर</translation>
 <translation id="7366594738862061263">Chrome तुमच्या पासवर्डचे संरक्षण कसे करते याबद्दल जाणून घ्या</translation>
-<translation id="7366909168761621528">ब्राउझिंग डेटा</translation>
 <translation id="7370751048350026847">या साइटवर हा आशय पेस्ट करण्याची शिफारस करत नाही</translation>
 <translation id="7372526636730851647">फोटो (ग्लॉसी)</translation>
 <translation id="7372973238305370288">शोध परिणाम</translation>
@@ -4663,7 +4659,6 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Chrome Enterprise Core वापरून पहा</translation>
 <translation id="9027531288681624875">फुल स्क्रीनमधून बाहेर पडण्यासाठी, |<ph name="ACCELERATOR" />| प्रेस करून धरून ठेवा</translation>
-<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">सुरक्षितता एरर</translation>
 <translation id="9035699147763101514">Gemini सह पर्सनल इंटेलिजन्स द्वारे सक्षम केलेले. सेटिंग्जमध्ये तुमच्या निवडी व्यवस्थापित करा.</translation>
 <translation id="9035824888276246493">सुरक्षा कोड सेव्ह करा</translation>

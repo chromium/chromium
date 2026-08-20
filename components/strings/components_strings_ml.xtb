@@ -70,7 +70,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> എന്നതിന്‍റെ അനുമതി തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1113000785583998331">IBAN സംരക്ഷിക്കണോ?</translation>
 <translation id="1113869188872983271">&amp;പുനഃക്രമീകരിക്കുന്നത് പഴയപടിയാക്കുക</translation>
-<translation id="1117709830616495622">Gemini-യിലെ പേഴ്‌സണൽ ഇന്റലിജൻസ് ലഭ്യമാക്കുന്നത്.</translation>
 <translation id="111897705806685148">മറ്റൊരു ഉപകരണത്തിൽ നിന്ന് പാസ്‌കീ ഉപയോഗിക്കുക</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Google Account-ൽ ഏതെല്ലാം Chrome വിവരങ്ങളാണ് സംരക്ഷിക്കേണ്ടത് എന്ന് മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="1121990216147052230">എനിക്ക് ചെയ്യേണ്ടവയുടെ ലിസ്റ്റ് ഉണ്ടാക്കിത്തരൂ</translation>
@@ -1171,7 +1170,6 @@
 <translation id="3005723025932146533">സംരക്ഷിച്ച പകർപ്പ് കാണിക്കുക</translation>
 <translation id="300580149047131921">അടുത്തിടെ ഉപയോഗിച്ചത്</translation>
 <translation id="3006864083554020786">വീട്ടുവിലാസം</translation>
-<translation id="3008410317623852235">ഇപ്പോൾ നിങ്ങൾക്ക് Gmail-ൽ നിന്നും മറ്റും വിവരങ്ങൾ കണ്ടെത്തി പൂരിപ്പിക്കാം.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, ലഭ്യമായ പ്രവർത്തനങ്ങൾ ബ്രൗസ് ചെയ്യാൻ ടാബ് അമർത്തുക, തുടർന്ന് തിരഞ്ഞെടുത്ത പ്രവർത്തനം നടപ്പിലാക്കാൻ Enter അമർത്തുക.</translation>
 <translation id="3010991137650052245">ഈ സൈറ്റിൽ നിങ്ങളുടെ <ph name="PERMISSION" /> ഉപയോഗിക്കാൻ <ph name="SHORT_PRODUCT_NAME" /> എന്നതിന് ആക്സസ് നൽകുക</translation>
 <translation id="3014726756341138577">വിപുലമായ പ്രിന്റർ ഫീച്ചറുകൾ</translation>
@@ -2320,7 +2318,6 @@
 <translation id="4941627891654116707">ഫോണ്ട് വലുപ്പം</translation>
 <translation id="4943620199112228840">നിങ്ങളുടെ മൈക്രോഫോണുകൾ ഉപയോഗിക്കുക</translation>
 <translation id="4943872375798546930">ഫലങ്ങളൊന്നുമില്ല</translation>
-<translation id="494701040141924538">മനസ്സിലായി, അറിയിപ്പ് അടയ്ക്കുക</translation>
 <translation id="495170559598752135">പ്രവര്‍ത്തനങ്ങള്‍</translation>
 <translation id="4953689047182316270">ഉപയോഗസഹായി ഇവന്റുകളോട് പ്രതികരിക്കുക</translation>
 <translation id="4954505713046251871">നിർദ്ദേശങ്ങൾ നൽകുന്നതിനും ഈ ഫീച്ചർ മെച്ചപ്പെടുത്തുന്നതിനുമായി, പേജിന്റെ URL-ഉം ഉള്ളടക്കവും Google-മായി പങ്കിടുന്നു</translation>
@@ -3371,7 +3368,6 @@
 <translation id="6743841972744298686">സമന്വയ ക്രമീകരണം</translation>
 <translation id="6745212570062463886">നിങ്ങളുടെ Google Account-ൽ നിന്ന് പേരും ഇമെയിൽ വിലാസവും സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="674580074662200768">പാസ്‌പോർട്ട് സുരക്ഷിതമായി അപ്ഡേറ്റ് ചെയ്യുക</translation>
-<translation id="6749473226660745022">ഫോട്ടോകൾ</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">നയ മൂല്യം</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> എന്ന എൻട്രി ഇല്ലാതാക്കുക</translation>
@@ -3711,7 +3707,6 @@
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">പേയ്‌മെന്റ് കൈകാര്യം ചെയ്യുന്ന സംവിധാനങ്ങൾ</translation>
 <translation id="7366594738862061263">Chrome നിങ്ങളുടെ പാസ്‌വേഡുകൾ സംരക്ഷിക്കുന്നത് എങ്ങനെയെന്ന് അറിയുക</translation>
-<translation id="7366909168761621528">ഡാറ്റ ബ്രൌസ് ചെയ്യുന്നു</translation>
 <translation id="7370751048350026847">ഈ ഉള്ളടക്കം ഈ സൈറ്റിൽ ഒട്ടിക്കുന്നത് നിർദ്ദേശിക്കുന്നില്ല</translation>
 <translation id="7372526636730851647">ഫോട്ടോ (ഗ്ലോസി)</translation>
 <translation id="7372973238305370288">തിരയൽ ഫലം</translation>
@@ -4298,7 +4293,6 @@
 <translation id="8350416046273606058">കുറുക്കുവഴിയിൽ സ്പേസ് ഉണ്ടാകരുത്: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">കുറിപ്പ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="8352849934814541340">ഈ ഉപകരണത്തിന്റെ അഡ്‌മിൻ, അധിക ഫംഗ്ഷനുകൾക്കുള്ള ആപ്പുകൾ ഇൻസ്‌റ്റാൾ ചെയ്‌തിരിക്കുന്നു. ആപ്പുകൾക്ക് നിങ്ങളുടെ ചില ഡാറ്റയിലേക്ക് ആക്‌സസ് ഉണ്ട്.</translation>
-<translation id="8353273112634584260">Gemini-യിലെ പേഴ്‌സണൽ ഇന്റലിജൻസ് ലഭ്യമാക്കുന്നത്. സ്വയമേവ പൂരിപ്പിക്കൽ മെച്ചപ്പെടുത്താൻ നിങ്ങളുടെ അഭ്യർത്ഥനകളും പേജിന്റെ പേരുകളും URL-കളും അവലോകനം ചെയ്തേക്കാം.</translation>
 <translation id="8355270400102541638">ലോക്കൽ ക്രാഷ് സന്ദർഭം:</translation>
 <translation id="8362914115861174987">ഈ ഭാഷയിലേക്ക് വിവർത്തനം ചെയ്യുക</translation>
 <translation id="8363502534493474904">ഫ്ലൈറ്റ് മോഡ് ഓഫാക്കുന്നു</translation>
@@ -4658,7 +4652,6 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Chrome Enterprise Core പരീക്ഷിക്കൂ</translation>
 <translation id="9027531288681624875">പൂർണ്ണ സ്ക്രീനിൽ നിന്ന് പുറത്തുകടക്കാൻ |<ph name="ACCELERATOR" />| അമർത്തിപ്പിടിക്കുക</translation>
-<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">സുരക്ഷാ പിശക്</translation>
 <translation id="9035699147763101514">Gemini-യിലെ പേഴ്‌സണൽ ഇന്റലിജൻസ് ലഭ്യമാക്കുന്നത്. ക്രമീകരണത്തിൽ നിങ്ങളുടെ ചോയ്‌സുകൾ മാനേജ് ചെയ്യുക.</translation>
 <translation id="9035824888276246493">സുരക്ഷാ കോഡുകൾ സംരക്ഷിക്കുക</translation>

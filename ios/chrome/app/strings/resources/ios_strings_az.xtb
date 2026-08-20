@@ -1031,7 +1031,6 @@
 <translation id="4430505936695785931">Digər tətbiqlərdə yadda saxlanmış parolları əldə edin</translation>
 <translation id="4431224949908513835">Daxil etmək üçün ödəniş metodu seçin.</translation>
 <translation id="4432122368769493392">Ayarlar…</translation>
-<translation id="4439968635693513370">Həftəsonunuzu planlaşdırın</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />Ayarları<ph name="END_BOLD" /> açın</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> üçün əlavə seçimlər</translation>
 <translation id="4455710003856931944">Kənarı geri və ya irəli çəkə bilərsiniz.</translation>
@@ -1060,7 +1059,6 @@
 <translation id="454217142158335225">Son tablar və ya tab qrupları bölmələrində bağlanmış elementləri yenidən aça bilərsiniz. Bərkidilmiş tablar bağlanmayacaq.</translation>
 <translation id="4547181496285029457">Son taba qayıdın</translation>
 <translation id="4552042254369397518">Kopiyalanır…</translation>
-<translation id="4552089082226364758">İşartı</translation>
 <translation id="4553044860350038560">Digər giriş açarları</translation>
 <translation id="4564893319561643483">Gizlədin: "<ph name="TITLE" />"</translation>
 <translation id="456502772933839252"><ph name="PAGE_TITLE" /> paylaşılır</translation>
@@ -1102,7 +1100,6 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Təşkilatınız məxfi şəkildə baxış keçirməyinizi tələb edir. Tab qrupları Anonim rejimdə sinxronlaşdırılmır.
 <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
-<translation id="4670422040696550256">Bununla inamla alış-veriş edin:</translation>
 <translation id="467189612236587057">Telefon zəngi edərək müəssisə ilə əlaqə saxlayın</translation>
 <translation id="4673565891421389203">İdarə olunan hesabınız ilə daxil olmaq təşkilatınızla əlaqəli axtarışı (tablar, tarixçə və parollar daxil olmaqla) digər axtarışdan ayırmağa kömək edir.
 
@@ -1392,7 +1389,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5596627076506792578">Əlavə seçimlər</translation>
 <translation id="560322036295180549">Təşkilatınız tərəfindən deaktiv edilib</translation>
 <translation id="5611398002774823980">Hesabda yadda saxlayın</translation>
-<translation id="5612225021788368236">Defolt brauzer tanıtımını bağlayın</translation>
 <translation id="561269594905823128"><ph name="BEGIN_BOLD" />Fayl seçin<ph name="END_BOLD" /> seçiminə toxunun</translation>
 <translation id="5613297089029360427">Sonuncular üzrə çeşidləyin</translation>
 <translation id="5614553682702429503">Parol yadda saxlanılsın?</translation>
@@ -2478,7 +2474,6 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="9029650858822697271">Çıxış edildi</translation>
 <translation id="9032405509996909363">Baxış datasının silinməsini təsdiq edin</translation>
 <translation id="9035699147763101514">Gemini ilə Şəxsi Zəka tərəfindən dəstəklənir. Seçimlərinizi ayarlarda idarə edin.</translation>
-<translation id="9038526468059454274">Bununla yekunlaşdırın:</translation>
 <translation id="9039373489628511875">Ötürmə qabiliyyəti</translation>
 <translation id="9042893549633094279">Məxfilik və təhlükəsizlik</translation>
 <translation id="9055291197094969722">Açıq tabları düzənləmək və məhsuldar olmaq üçün tab qrupları yaradın</translation>

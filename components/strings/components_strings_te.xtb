@@ -70,7 +70,6 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> కోసం అనుమతిని ఎంచుకోండి</translation>
 <translation id="1113000785583998331">IBANను సేవ్ చేయాలా?</translation>
 <translation id="1113869188872983271">&amp;మళ్లీ క్రమం చేయడాన్ని రద్దు చేయండి</translation>
-<translation id="1117709830616495622">Geminiలోని పర్సనల్ ఇంటెలిజెన్స్ సహాయంతో పని చేస్తుంది.</translation>
 <translation id="111897705806685148">మరొక పరికరం నుండి పాస్-కీని ఉపయోగించండి</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ Google ఖాతాలో మీరు సేవ్ చేసే Chrome సమాచారాన్ని మేనేజ్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="1121990216147052230">నా కోసం చేయాల్సిన పనుల లిస్ట్‌ను రూపొందించు</translation>
@@ -1166,7 +1165,6 @@
 <translation id="3005723025932146533">సేవ్ చేయబడిన కాపీని చూపు</translation>
 <translation id="300580149047131921">ఇటీవలే ఉపయోగించబడింది</translation>
 <translation id="3006864083554020786">ఇంటి అడ్రస్</translation>
-<translation id="3008410317623852235">ఇప్పుడు మీరు Gmail, అలాగే మరెన్నో ప్లాట్‌ఫామ్‌ల నుండి సమాచారాన్ని వెతికి, ఫిల్ చేయవచ్చు.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, అందుబాటులో ఉన్న చర్యలను బ్రౌజ్ చేయడానికి ట్యాబ్‌ను నొక్కండి, ఆపై ఎంచుకున్న చర్యను అమలు చేయడానికి ఎంటర్ చేయండి.</translation>
 <translation id="3010991137650052245">ఈ సైట్‌లో మీ <ph name="PERMISSION" /> అనుమతిని ఉపయోగించడానికి, <ph name="SHORT_PRODUCT_NAME" />‌కు యాక్సెస్ ఇవ్వండి</translation>
 <translation id="3014726756341138577">అధునాతన ప్రింటర్ ఫీచర్‌లు</translation>
@@ -2316,7 +2314,6 @@
 <translation id="4941627891654116707">ఫాంట్ సైజ్‌</translation>
 <translation id="4943620199112228840">మీ మైక్రోఫోన్‌లను ఉపయోగించండి</translation>
 <translation id="4943872375798546930">ఫలితాలు ఏవీ లేవు</translation>
-<translation id="494701040141924538">సరే, నోటీసును మూసివేయండి</translation>
 <translation id="495170559598752135">చర్యలు</translation>
 <translation id="4953689047182316270">యాక్సెస్ సామర్థ్యం ఉన్న ఈవెంట్‌లకు ప్రతిస్పందించండి</translation>
 <translation id="4954505713046251871">సూచనలను అందించడానికి, ఈ ఫీచర్‌ను మెరుగుపరచడానికి, పేజీ URL, ఇంకా కంటెంట్, Googleతో షేర్ చేయబడతాయి</translation>
@@ -3367,7 +3364,6 @@
 <translation id="6743841972744298686">సింక్‌ సెట్టింగ్‌లు</translation>
 <translation id="6745212570062463886">మీ Google ఖాతా నుండి మీ పేరు, ఈమెయిల్ అడ్రస్‌ను ఆటోఫిల్ చేయండి</translation>
 <translation id="674580074662200768">పాస్‌పోర్ట్‌ను సురక్షితంగా అప్‌డేట్ చేయండి</translation>
-<translation id="6749473226660745022">Photos</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">విధానం విలువ</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> ఎంట్రీని తొలగించండి</translation>
@@ -3707,7 +3703,6 @@
 <translation id="7366117520888504990">198 x 275 మి.మీ.</translation>
 <translation id="7366362069757178916">పేమెంట్ హ్యాండ్లర్‌లు</translation>
 <translation id="7366594738862061263">Chrome మీ పాస్‌వర్డ్‌లను ఎలా రక్షిస్తుంది అనే దాని గురించి మరింత తెలుసుకోండి</translation>
-<translation id="7366909168761621528">బ్రౌజింగ్ డేటా</translation>
 <translation id="7370751048350026847">ఈ కంటెంట్‌ను ఈ సైట్‌లో పేస్ట్ చేయడం అనేది సిఫార్సు చేయబడదు</translation>
 <translation id="7372526636730851647">ఫోటో (గ్లాసీ)</translation>
 <translation id="7372973238305370288">సెర్చ్ ఫలితం</translation>
@@ -4296,7 +4291,6 @@
 <translation id="8350416046273606058">షార్ట్‌కట్‌లో స్పేస్‌లు ఉండకూడదు: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">గమనికను క్రియేట్ చేయండి</translation>
 <translation id="8352849934814541340">ఈ పరికర అడ్మినిస్ట్రేటర్ అదనపు ఫంక్షన్‌ల కోసం అప్లికేషన్‌లను ఇన్‌స్టాల్ చేశారు. మీ డేటాలో కొంత భాగానికి ఎక్స్‌టెన్షన్‌లకు యాక్సెస్ ఉంటుంది.</translation>
-<translation id="8353273112634584260">Geminiలోని పర్సనల్ ఇంటెలిజెన్స్ సహాయంతో పని చేస్తుంది. మెరుగైన ఆటోఫిల్‌ను మరింత మెరుగుపరచడానికి మీ రిక్వెస్ట్‌లను, పేజీ టైటిల్స్‌ను, URLలను రివ్యూ చేసే అవకాశం ఉంది.</translation>
 <translation id="8355270400102541638">స్థానిక క్రాష్ సందర్భం:</translation>
 <translation id="8362914115861174987">ఈ భాషలోకి అనువదించండి</translation>
 <translation id="8363502534493474904">ఎయిర్‌ప్లైన్ మోడ్‌ను ఆఫ్ చేయడం</translation>
@@ -4656,7 +4650,6 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Chrome Enterprise Coreను ట్రై చేయండి</translation>
 <translation id="9027531288681624875">ఫుల్ స్క్రీన్ నుండి ఎగ్జిట్ కావడానికి, |<ph name="ACCELERATOR" />|ను నొక్కి, పట్టుకోండి</translation>
-<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">భద్రతా ఎర్రర్</translation>
 <translation id="9035699147763101514">Geminiలోని పర్సనల్ ఇంటెలిజెన్స్ సహాయంతో పని చేస్తుంది. సెట్టింగ్‌లలో మీ ఎంపికలను మేనేజ్ చేయండి.</translation>
 <translation id="9035824888276246493">సెక్యూరిటీ కోడ్‌లను సేవ్ చేయండి</translation>

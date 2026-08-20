@@ -146,7 +146,6 @@
 <translation id="2424440923901031101">এই এক্সটেনশন, Chrome ওয়েব স্টোর নীতি লঙ্ঘন করে এবং এটি নিরাপদ নাও হতে পারে। Chrome থেকে এটি সরান যাতে আপনার ভিজিট করা সাইটের ডেটা এটি আর দেখতে না পায় এবং তা পরিবর্তন না করতে পারে, এর মধ্যে আপনার ব্যক্তিগত তথ্যও রয়েছে।</translation>
 <translation id="2467438592969358367">Google Chrome আপনার পাসওয়ার্ড এক্সপোর্ট করতে চাইছে। অনুমতি দিতে Windows এর পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="2472092250898121027">এই এক্সটেনশনে ম্যালওয়্যার রয়েছে এবং এটি নিরাপদ নাও হতে পারে। Chrome থেকে এটি সরান যাতে আপনার ভিজিট করা সাইটের ডেটা এটি আর দেখতে না পায় এবং তা পরিবর্তন না করতে পারে, এর মধ্যে আপনার ব্যক্তিগত তথ্যও রয়েছে।</translation>
-<translation id="2482846200327569645"><ph name="EXISTING_USER" /> আগেই সাইন-ইন করেছেন। আপনি আলাদাভাবে ব্রাউজ করতে চাইলে, নিজের Chrome প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করুন। এছাড়াও আপনি <ph name="DEVICE" /> থেকে নিজের বুকমার্ক ও আরও অনেক কিছু পাবেন।</translation>
 <translation id="2485422356828889247">আনইনস্টল</translation>
 <translation id="2513154137948333830">আবার চালু করতে হবে: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2523492931736391680">Chrome-এ আপনার কাজ সুরক্ষিত</translation>
@@ -198,7 +197,6 @@
 <translation id="2916983411556218750">আসুন, আপনার Chrome রেডি করা যাক</translation>
 <translation id="2926952073016206995">এই সাইটের জন্য Chrome-এর ক্যামেরা অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
 <translation id="2945997411976714835">ইনস্টল সংক্রান্ত সমস্যা: ইনস্টলার প্রসেস শুরু করা যায়নি।</translation>
-<translation id="2959224682348913614"><ph name="EXISTING_USER" /> আগেই সাইন-ইন করেছেন। আপনি আলাদাভাবে ব্রাউজ করতে চাইলে, নিজের Chrome প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করুন। এছাড়াও আপনি <ph name="DEVICE" /> থেকে আপনার পাসওয়ার্ড ও আরও অনেক কিছু পাবেন।</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - নেটওয়ার্ক সাইন-ইন - Chrome</translation>
 <translation id="2970681950995291301">Chrome থেকে আপনার Google অ্যাকাউন্ট সরিয়ে দিতে, সেটিংস পৃষ্ঠায় গিয়ে Chrome থেকে সাইন-আউট করুন</translation>
 <translation id="2976869732253036751">আপনার ফোনে Chrome-এর মাধ্যমে দাম ট্র্যাক করা সংক্রান্ত সতর্কতা পান</translation>
@@ -218,7 +216,6 @@
 <translation id="3073571714401714450">Chrome Dev-এ Gemini টগল করুন</translation>
 <translation id="3080151273017101988">Google Chrome বন্ধ হলে পশ্চাদপট অ্যাপ্লিকেশানের চলা অবিরত রাখুন</translation>
 <translation id="308397506772922478">আপনি নিজের পাসফ্রেজ ভুলে গেলে অথবা এই সেটিং পরিবর্তন করতে চাইলে, <ph name="BEGIN_LINK" />আপনার অ্যাকাউন্টে থাকা Chrome ডেটা মুছে দিন<ph name="END_LINK" /></translation>
-<translation id="3089427491314610412"><ph name="EXISTING_USER" /> আগেই সাইন-ইন করেছেন। আপনি আলাদাভাবে ব্রাউজ করতে চাইলে, নিজের Chrome প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করুন। এছাড়াও, আপনি <ph name="DEVICE" /> থেকে সেভ করা তথ্য ও আরও অনেক কিছু পাবেন।</translation>
 <translation id="3100998948628680988">আপনার Chrome প্রোফাইলের নাম লিখুন</translation>
 <translation id="310459126943037700">টাস্ক শেষ করা যায়নি।</translation>
 <translation id="3104828284009500087">পৃষ্ঠায় যা ইচ্ছা সার্চ করুন</translation>
@@ -231,7 +228,6 @@
 <translation id="3140883423282498090">আপনি পরবর্তী সময়ে যখন Google Chrome আবার লঞ্চ করবেন আপনার পরিবর্তনগুলি কার্যকর হবে৷</translation>
 <translation id="3149510190863420837">Chrome অ্যাপগুলি</translation>
 <translation id="3161522574479303604">সকল ভাষা</translation>
-<translation id="318555301233810762"><ph name="EXISTING_USER" /> আগেই সাইন-ইন করেছেন। আপনি আলাদাভাবে ব্রাউজ করতে চাইলে, নিজের Chrome প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করুন। এছাড়াও, আপনার সব ডিভাইসে বুকমার্ক ও আরও অনেক কিছু পাবেন।</translation>
 <translation id="319199214552513804">আপনার সব কম্পিউটারে এই এক্সটেনশন এবং আরও অনেক কিছু পেতে, Chrome-এ সাইন-ইন করুন</translation>
 <translation id="3196187562065225381">এই ফাইলটি বিপজ্জনক, তাই Chrome এই ডাউনলোডটি ব্লক করে দিয়েছে</translation>
 <translation id="3222857603094643834">Google Lens ব্যবহার করে এই পৃষ্ঠায় যেকোনও কিছু সার্চ করুন</translation>
@@ -270,7 +266,6 @@
 <translation id="3598673391539778844">সিস্টেম ট্রেতে Chrome-এ Gemini দেখুন</translation>
 <translation id="3622716124581627104">বস্তু বা জায়গা শনাক্ত করুন ও টেক্সট কপি বা অনুবাদ করুন। আপনি Google Lens ব্যবহার করার সময়, পৃষ্ঠার স্ক্রিনশট Google-এ পাঠানো হয়। <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">এখন আপনার Google অ্যাকাউন্ট ও শেয়ার করা কম্পিউটারগুলিতে Chrome ব্যবহার করা আরো সহজ৷</translation>
-<translation id="3628103251823745322"><ph name="EXISTING_USER" /> আগেই সাইন-ইন করেছেন। আপনি আলাদাভাবে ব্রাউজ করতে চাইলে, নিজের Chrome প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করুন। এছাড়াও, আপনার সব ডিভাইসে সেভ করা তথ্য ও আরও অনেক কিছু পাবেন।</translation>
 <translation id="3635073343384702370">আপনি পাসওয়ার্ড সেভ করলে Chrome তা চেক করতে পারবে</translation>
 <translation id="3636970668267555808">Chrome-কে ডিফল্ট ব্রাউজার হিসেবে সেট করে আপনার পরিচিত, পছন্দের এবং বিশ্বস্ত ফিচারে সহজেই অ্যাক্সেস পান।</translation>
 <translation id="3667616615096815454">ইনস্টল করা যায়নি, অ্যাপ্লিকেশনটি সার্ভারের ক্ষেত্রে অজানা।</translation>
@@ -596,7 +591,6 @@
 <translation id="6933858244219479645">ChromeOS সিস্টেম</translation>
 <translation id="6938166777909186039">ভবিষ্যতে Google Chrome আপডেট পেতে হলে, আপনার কম্পিউটারে Windows 10 বা এর পরবর্তী যেকোনও ভার্সন থাকতে হবে। এই কম্পিউটারে Windows 8.1 ভার্সন ব্যবহার করা হচ্ছে।</translation>
 <translation id="6943584222992551122">ডিভাইসটি থেকে এই ব্যক্তির ব্রাউজিং ডেটা মুছে ফেলা হবে। ডেটা ফিরিয়ে আনতে Chrome-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
-<translation id="6962628299694876291"><ph name="EXISTING_USER" /> আগেই সাইন-ইন করেছেন। আপনি আলাদাভাবে ব্রাউজ করতে চাইলে, নিজের Chrome প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করুন। এছাড়াও, আপনার সব ডিভাইসের পাসওয়ার্ড ও আরও অনেক কিছু পাবেন।</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6967962315388095737">mDNS ট্রাফিকের অনুমতি দিতে Google Chrome বিটার জন্য ইনবাউন্ড নিয়ম।</translation>
 <translation id="6979589607440534284">Chrome কিছু ফাইল কেন ব্লক করে, নতুন ট্যাবে খোলে সেই সম্পর্কে জানুন</translation>

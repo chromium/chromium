@@ -70,7 +70,6 @@
 <translation id="1110994991967754504">Engedély kiválasztása a következőhöz: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Menti az IBAN-számot?</translation>
 <translation id="1113869188872983271">&amp;Átrendezés visszavonása</translation>
-<translation id="1117709830616495622">A Gemini Személyre szabott intelligencia funkciójával.</translation>
 <translation id="111897705806685148">Másik eszközről származó azonosítókulcs használata</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, nyomja le a Tab, majd az Enter billentyűt a Google-fiókba menteni kívánt Chrome-adatok kezeléséhez</translation>
 <translation id="1121990216147052230">Készíts nekem egy teendőlistát</translation>
@@ -1171,7 +1170,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3005723025932146533">Mentett másolat megjelenítése</translation>
 <translation id="300580149047131921">Legutóbb használt</translation>
 <translation id="3006864083554020786">otthoni cím</translation>
-<translation id="3008410317623852235">Mostantól a Gmailből és más forrásokból is megkeresheti és kitöltheti az adatokat.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, nyomja le a Tab billentyűt a rendelkezésre álló műveletek böngészéséhez, majd az Enter billentyűt a kiválasztott művelet végrehajtásához.</translation>
 <translation id="3010991137650052245">Adjon hozzáférést a(z) <ph name="SHORT_PRODUCT_NAME" /> számára, ha használni szeretné a következőt ezen a webhelyen: <ph name="PERMISSION" /></translation>
 <translation id="3014726756341138577">Speciális nyomtatófunkciók</translation>
@@ -2318,7 +2316,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4941627891654116707">Betűméret</translation>
 <translation id="4943620199112228840">Mikrofonok használata</translation>
 <translation id="4943872375798546930">Nincs találat</translation>
-<translation id="494701040141924538">Értem, és bezárom az értesítést.</translation>
 <translation id="495170559598752135">Műveletek</translation>
 <translation id="4953689047182316270">Válasz kisegítő lehetőségekkel kapcsolatos eseményekre</translation>
 <translation id="4954505713046251871">Javaslatok biztosítása és a funkció továbbfejlesztése érdekében az oldal URL-je és tartalma meg lesz osztva a Google-lal</translation>
@@ -3369,7 +3366,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6743841972744298686">Szinkronizálási beállítások</translation>
 <translation id="6745212570062463886">Automatikusan kitöltheti a Google-fiókjában tárolt nevét és e-mail-címét</translation>
 <translation id="674580074662200768">Útlevél biztonságos frissítése</translation>
-<translation id="6749473226660745022">Fotók</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Házirend értéke</translation>
 <translation id="6753434778807740853">Bejegyzés (<ph name="ENTRY_VOICEOVER" />) törlése</translation>
@@ -3709,7 +3705,6 @@ További részletek:
 <translation id="7366117520888504990">198 × 275 mm</translation>
 <translation id="7366362069757178916">Fizetéskezelők</translation>
 <translation id="7366594738862061263">További információ arról, hogyan védi a Chrome a felhasználók jelszavait.</translation>
-<translation id="7366909168761621528">Böngészési adatok</translation>
 <translation id="7370751048350026847">Nem javasolt ennek a tartalomnak a beillesztése erre a webhelyre</translation>
 <translation id="7372526636730851647">Fotó (fényes)</translation>
 <translation id="7372973238305370288">keresési találat</translation>
@@ -4298,7 +4293,6 @@ További részletek:
 <translation id="8350416046273606058">A billentyűparancs nem tartalmazhat szóközt: „<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="8351131234907093545">Jegyzet létrehozása</translation>
 <translation id="8352849934814541340">Az eszköz rendszergazdája alkalmazásokat telepített további funkciók használata céljából. Az alkalmazások hozzáférhetnek az Ön bizonyos adataihoz.</translation>
-<translation id="8353273112634584260">A Gemini Személyre szabott intelligencia funkciójával. A továbbfejlesztett automatikus kitöltés javítása érdekében ellenőrizhetjük a kéréseket, az oldalcímeket és az URL-eket.</translation>
 <translation id="8355270400102541638">Összeomlás helyi kontextusa:</translation>
 <translation id="8362914115861174987">Fordítás a következő nyelvre:</translation>
 <translation id="8363502534493474904">Repülős üzemmód kikapcsolása</translation>
@@ -4659,7 +4653,6 @@ További részletek:
 <translation id="9026253329950610248">Google Webhelyek</translation>
 <translation id="9027020981272345766">Próbálja ki a Chrome Enterprise Core szolgáltatást</translation>
 <translation id="9027531288681624875">A teljes képernyős nézetből való kilépéshez tartsa lenyomva a következőt: |<ph name="ACCELERATOR" />|</translation>
-<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Biztonsági hiba</translation>
 <translation id="9035699147763101514">A Gemini Személyre szabott intelligencia funkciójával. A beállításokban kezelheti a választásait.</translation>
 <translation id="9035824888276246493">Biztonsági kódok mentése</translation>

@@ -99,7 +99,6 @@
 <translation id="1372840539168747818">{NUM_SITES,plural, =1{ਤੁਸੀਂ ਇਸ ਸਾਈਟ ਨੂੰ ਭਵਿੱਖੀ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਤੋਂ ਰੋਕ ਸਕਦੇ ਹੋ}one{ਤੁਸੀਂ ਇਸ ਸਾਈਟ ਨੂੰ ਭਵਿੱਖੀ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਤੋਂ ਰੋਕ ਸਕਦੇ ਹੋ}other{ਤੁਸੀਂ ਇਨ੍ਹਾਂ ਸਾਈਟਾਂ ਨੂੰ ਭਵਿੱਖੀ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਤੋਂ ਰੋਕ ਸਕਦੇ ਹੋ}}</translation>
 <translation id="137496472437646183">“ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ” ਚੁਣੋ</translation>
 <translation id="1376578503827013741">ਗਣਨਾ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ…</translation>
-<translation id="138181280295369883">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੀ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="1381838868249179644">ਤੁਹਾਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ, ਕੁਝ ਸਾਈਟਾਂ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਸੀ</translation>
 <translation id="1383876407941801731">ਖੋਜੋ</translation>
 <translation id="1384704387250346179">Google Lens ਨਾਲ ਚਿੱਤਰ ਦਾ ਅਨੁਵਾਦ ਕਰੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
@@ -136,10 +135,8 @@
 <translation id="1513352483775369820">ਬੁੱਕਮਾਰਕ ਅਤੇ ਵੈੱਬ ਇਤਿਹਾਸ</translation>
 <translation id="1515901671075971249">ਨੈਵੀਗੇਸ਼ਨ ਸ਼ਾਰਟਕੱਟ ਟੈਬ</translation>
 <translation id="1516966594427080024">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਇੱਕ ਨਵੀਂ ਵਿੰਡੋ ਖੋਲ੍ਹੋ</translation>
-<translation id="152204906462707884">ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨੂੰ ਤੇਜ਼ੀ ਨਾਲ ਮਿਟਾਓ ਅਤੇ ਆਪਣੀ ਪਰਦੇਦਾਰੀ 'ਤੇ ਹੋਰ ਕੰਟਰੋਲ ਕਰੋ</translation>
 <translation id="153446405401665083">Chrome ਦਾ ਨਵਾਂ ਵਰਜਨ ਉਪਲਬਧ ਹੈ</translation>
 <translation id="1540012742443808215">ਪਤਾ ਬਾਰ ਇਸ ਵੇਲੇ ਸਿਖਰ 'ਤੇ ਹੈ</translation>
-<translation id="1543035591122163372"><ph name="DEVICE_TYPE" /> ਤੋਂ ਆਪਣੇ ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="1544084554881119930">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਅਤੇ ਪਤਿਆਂ ਨੂੰ ਇਨਕ੍ਰਿਪਟ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ। Chrome ਦੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨੂੰ ਸਿੰਕ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।
 ਸਿਰਫ਼ ਤੁਹਾਡੇ ਪਾਸਫਰੇਜ਼ ਨਾਲ ਹੀ ਕੋਈ ਤੁਹਾਡੇ ਇਨਕ੍ਰਿਪਟਡ ਡਾਟੇ ਨੂੰ ਪੜ੍ਹ ਸਕਦਾ ਹੈ। ਪਾਸਫਰੇਜ਼ Google ਨੂੰ ਨਹੀਂ ਭੇਜਿਆ ਜਾਂਦਾ ਜਾਂ ਇਸ ਵੱਲੋਂ ਸਟੋਰ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ। ਜੇ ਤੁਸੀਂ ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਭੁੱਲ ਜਾਂਦੇ ਹੋ ਜਾਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ <ph name="BEGIN_LINK" />ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟੇ ਨੂੰ ਕਲੀਅਰ ਕਰੋ<ph name="END_LINK" />।</translation>
 <translation id="1544826120773021464">ਆਪਣੇ Google ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ, "ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ" ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
@@ -202,8 +199,6 @@
 <translation id="1829244130665387512">ਸਫ਼ੇ ਵਿੱਚ ਲੱਭੋ</translation>
 <translation id="1832459821645506983">ਹਾਂ, ਮੈਂ ਸਹਿਮਤ ਹਾਂ</translation>
 <translation id="1845958458910716240">ਆਪਣੇ ਡਾਟੇ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਲਈ, Chrome ਨੂੰ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਹਟਾਉਣ ਦਿਓ, ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਨਹੀਂ ਗਏ ਹੋ</translation>
-<translation id="1851551847729706116">ਇਸ ਟੈਬ ਨਾਲ <ph name="TAB_NAME" /> ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
-<translation id="1869691326892615940">ਸੁਰੱਖਿਅਤ ਪਾਸਵਰਡ, ਤੇਜ਼ ਸਾਈਨ-ਇਨ</translation>
 <translation id="1871098866036088250">Chrome ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="1877026089748256423">Chrome ਦਾ ਇਹ ਵਰਜਨ ਪੁਰਾਣਾ ਹੈ</translation>
 <translation id="1877073879466606884">ਤੁਸੀਂ ਜਿਸ ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੈ, ਉਹ ਇੱਕ ਪ੍ਰਬੰਧਿਤ ਪ੍ਰੋਫਾਈਲ ਹੈ। ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਦੂਰ-ਦੁਰਾਡੇ ਤੋਂ ਤੁਹਾਡੀਆਂ ਪ੍ਰੋਫਾਈਲ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਤਬਦੀਲੀਆਂ ਕਰ ਸਕਦਾ ਹੈ, ਰਿਪੋਰਟਿੰਗ ਰਾਹੀਂ ਬ੍ਰਾਊਜ਼ਰ ਬਾਰੇ ਜਾਣਕਾਰੀ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਕਰ ਸਕਦਾ ਹੈ ਅਤੇ ਹੋਰ ਜ਼ਰੂਰੀ ਕਾਰਜ ਕਰ ਸਕਦਾ ਹੈ।</translation>
@@ -213,7 +208,6 @@
 <translation id="1899175549411605574">ਕੀਮਤਾਂ ਬਾਰੇ ਅੰਦਰੂਨੀ-ਝਾਤਾਂ ਦੀ ਹੇਠਲੀ ਸ਼ੀਟ</translation>
 <translation id="1900260903084164610">ਜਾਰੀ ਰੱਖ ਕੇ, ਤੁਸੀਂ <ph name="BEGIN_TOS_LINK" />ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_TOS_LINK" /> ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ।</translation>
 <translation id="1904580727789512086">ਉਹ URL ਤੁਹਾਡੇ Google ਖਾਤੇ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾਂਦੇ ਹਨ, ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਗਏ ਹੋ</translation>
-<translation id="1905582086181351638"><ph name="DEVICE_TYPE" /> ਤੋਂ ਆਪਣੀ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="1910950723001426294">ਸਾਂਝਾਕਰਨ ਵਿਕਲਪਾਂ ਦੀ ਸੂਚੀ ਬੰਦ ਹੈ।</translation>
 <translation id="1912367671208932516">ਐਕਸਟੈਂਸ਼ਨ ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
 <translation id="191726024256261717">ਇਜਾਜ਼ਤਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
@@ -307,6 +301,7 @@
 <translation id="2238038374973843156">ਗਰੁੱਪ ਨੂੰ ਕਿਸੇ ਹੋਰ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ</translation>
 <translation id="2247789808226901522">ਕਾਰਡ ਦੀ ਮਿਆਦ ਸਮਾਪਤ ਹੋ ਗਈ ਹੈ</translation>
 <translation id="2251809247798634662">ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ</translation>
+<translation id="2253927598983295051">ਚੁਣੋ ਕਿ <ph name="APP_NAME" /> ਨਾਲ ਕੀ ਸਾਂਝਾ ਕਰਨਾ ਹੈ</translation>
 <translation id="2261570557291037252">ਹੋਰ ਐਪ ਜਾਣਕਾਰੀ</translation>
 <translation id="2276696007612801991">ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰਨ ਲਈ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, ਚੁਣੀ ਗਈ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
@@ -315,7 +310,6 @@
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ਟੈਬ ਦੇਖੋ}one{<ph name="TABS_COUNT_MANY" /> ਟੈਬ ਦੇਖੋ}other{<ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਦੇਖੋ}}</translation>
 <translation id="2297822946037605517">ਇਹ ਪੰਨਾ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="230115972905494466">ਕੋਈ ਅਨੁਰੂਪ ਡੀਵਾਈਸ ਨਹੀਂ ਮਿਲੇ</translation>
-<translation id="2305798319182970276">ਬਟਨ ਦੇ ਟੈਪ ਨਾਲ ਆਪਣਾ ਇਤਿਹਾਸ ਮਿਟਾਓ</translation>
 <translation id="2316129865977710310">ਨਹੀਂ ਧੰਨਵਾਦ</translation>
 <translation id="232137538351753795">ਪਿੱਛੇ ਜਾਣ ਲਈ ਖੱਬੇ ਕਿਨਾਰੇ ਤੋਂ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="2323763861024343754">ਸਾਈਟ ਸਟੋਰੇਜ</translation>
@@ -379,6 +373,7 @@
 <translation id="2527779675047087889">ਕਲਿੱਪਬੋਰਡ ਸਮੱਗਰੀ ਲੁਕਾਓ</translation>
 <translation id="2531209299761896527">ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਟੈਬਾਂ ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ, ਚੂੰਢੀ ਭਰੋ, ਦਬਾ ਕੇ ਰੱਖੋ ਅਤੇ ਘਸੀਟੋ</translation>
 <translation id="2532336938189706096">ਵੈੱਬ ਦ੍ਰਿਸ਼</translation>
+<translation id="253498598929009420">ਸਾਈਟ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਦੀਆਂ ਸਮੱਗਰੀਆਂ ਦੇਖ ਸਕੇਗੀ</translation>
 <translation id="2535807170289627159">ਸਾਰੀਆਂ ਟੈਬਾਂ</translation>
 <translation id="2536728043171574184">ਇਸ ਪੰਨੇ ਦੀ ਇੱਕ ਆਫ਼ਲਾਈਨ ਕਾਪੀ ਦੇਖ ਰਿਹਾ ਹੈ</translation>
 <translation id="2537574774089209541">ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਤੁਹਾਨੂੰ Gemini ਤੱਕ ਆਸਾਨ ਪਹੁੰਚ ਦੇਣ ਲਈ ਕੁਝ ਟੂਲ ਹਟਾ ਦਿੱਤੇ ਗਏ ਹਨ</translation>
@@ -535,12 +530,10 @@
 <translation id="3158667104057012316">ਹੱਥੀਂ ਆਰਡਰ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰਨਾ</translation>
 <translation id="3159335509547415276">ਬਲਾਕ ਕੀਤੇ ਖਾਤਿਆਂ ਬਾਰੇ ਜਾਣੋ</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਖੁੱਲ੍ਹਦਾ ਹੈ</translation>
-<translation id="3164329792803560526">ਇਸ ਟੈਬ ਨੂੰ <ph name="APP_NAME" /> ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="3166827708714933426">ਟੈਬ ਅਤੇ ਵਿੰਡੋ ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="3167258285411721858">ਤੁਸੀਂ <ph name="HOST_NAME" /> ਲਈ ਮੋਬਾਈਲ ਸਾਈਟ ਦੀ ਬੇਨਤੀ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="3177338796769255211">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, ਇੱਕ ਤੋਂ ਵੱਧ ਚੁਣੀਆਂ ਗਈਆਂ ਅਜਿਹੀਆਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ, ਜਿਨ੍ਹਾਂ ਨੂੰ ਪਿੰਨ ਅਤੇ ਮਿਊਟ ਕੀਤਾ ਗਿਆ</translation>
-<translation id="3185851164388130512">ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਵਿਸ਼ੇਸ਼ਤਾ ਜਾਣੂ ਅਤੇ ਸੰਭਾਵੀ ਨਵੇਂ ਖਤਰਿਆਂ ਤੋਂ ਸੁਰੱਖਿਆ ਦੀ ਪੇਸ਼ਕਸ਼ ਕਰਦੀ ਹੈ</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> ਟੈਬ ਗਰੁੱਪ</translation>
 <translation id="3200536777393523575">ਕੀ ਤੁਹਾਡੀ ਮੌਜੂਦਾ ਵਿੰਡੋ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3207960819495026254">ਬੁੱਕਮਾਰਕ ਕੀਤੇ</translation>
@@ -758,7 +751,6 @@
 <translation id="4113030288477039509">ਤੁਹਾਡੇ ਪ੍ਰਬੰਧਕ ਵੱਲੋਂ ਵਿਵਸਥਿਤ</translation>
 <translation id="4116038641877404294">ਪੰਨਿਆਂ ਨੂੰ ਆਫ਼ਲਾਈਨ ਵਰਤਣ ਲਈ ਉਹਨਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="4121654769234887259">ਤੁਹਾਨੂੰ ਇਸ ਪਾਸਵਰਡ ਨੂੰ ਯਾਦ ਰੱਖਣ ਦੀ ਲੋੜ ਨਹੀਂ ਪਵੇਗੀ। ਇਸਨੂੰ <ph name="USERNAME" /> ਲਈ Google Password Manager ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
-<translation id="4128312955780560730">ਆਪਣੀਆਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਨੂੰ ਲਾਕ ਕਰੋ</translation>
 <translation id="4132137475637520539">ਜਿਸ ਕੋਲ ਵੀ ਲਿੰਕ ਹੈ, ਉਸ ਨੂੰ ਸ਼ਾਮਲ ਹੋਣ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, ਇੱਕ ਤੋਂ ਵੱਧ ਚੁਣੀਆਂ ਗਈਆਂ ਅਜਿਹੀਆਂ ਰਿਕਾਰਡਿੰਗ ਟੈਬਾਂ, ਜਿਨ੍ਹਾਂ ਨੂੰ ਪਿੰਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4137746084635924146">ਡੀਵਾਈਸ ਦੀ ਮੌਜੂਦਾ ਭਾਸ਼ਾ</translation>
@@ -799,7 +791,6 @@
 <translation id="4285498937028063278">ਅਨਪਿਨ ਕਰੋ</translation>
 <translation id="4285846616383034558">ਕੁਕੀਜ਼, ਕੈਸ਼ੇ ਅਤੇ ਹੋਰ ਸਾਈਟ ਡਾਟਾ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸਕ੍ਰੀਨ ਲਾਕ ਚਾਲੂ ਕਰੋ<ph name="END_LINK" /></translation>
-<translation id="4293154608148215505">ਤੁਹਾਡਾ ਫ਼ੋਨ</translation>
 <translation id="4296252229500326964">ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, ਇੱਕ ਤੋਂ ਵੱਧ ਚੁਣੀਆਂ ਗਈਆਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ</translation>
 <translation id="4298388696830689168">ਲਿੰਕ ਕੀਤੀਆਂ ਸਾਈਟਾਂ</translation>
@@ -810,7 +801,6 @@
 <translation id="4307992518367153382">ਮੂਲ</translation>
 <translation id="4311652497846705514">ਕੀ PDF ਨੂੰ ਖੋਲ੍ਹਣਾ ਹੈ?</translation>
 <translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਸਪੈਮ}one{ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਸਪੈਮ (#)}other{ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਸਪੈਮ (#)}}</translation>
-<translation id="4315292299997584267"><ph name="DEVICE_TYPE" /> ਤੋਂ ਆਪਣੇ ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਇਸ ਸਾਈਟ ਅਤੇ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="4320177379694898372">ਕੋਈ ਇੰਟਰਨੈਟ ਕਨੈਕਸ਼ਨ ਨਹੀਂ</translation>
 <translation id="4326079409704643112">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟੇ ਨੂੰ ਵਰਤਣ ਅਤੇ ਰੱਖਿਅਤ ਕਰਨ ਲਈ, ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="4335835283689002019">ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਬੰਦ ਹੈ</translation>
@@ -885,7 +875,6 @@
 <translation id="4601095002996233687">ਸ਼ੱਕੀ ਡਾਊਨਲੋਡਾਂ ਦੀ ਗਹਿਰਾਈ ਨਾਲ ਸਕੈਨਿੰਗ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।</translation>
 <translation id="4606559747793337066">ਜਦੋਂ ਕੋਈ ਸਾਈਟ ਜਾਂ ਐਪ ਆਪਣੇ ਪੰਨੇ 'ਤੇ ਨਿੱਜੀ ਤੌਰ 'ਤੇ ਲਿੰਕਾਂ ਨੂੰ ਪ੍ਰੀਲੋਡ ਕਰਨ ਲਈ ਕਹਿੰਦੀ ਹੈ, ਤਾਂ Chrome ਕੁਕੀਜ਼ ਤੋਂ ਬਿਨਾਂ Google ਸਰਵਰਾਂ ਰਾਹੀਂ ਪੰਨਿਆਂ ਨੂੰ ਇਨਕ੍ਰਿਪਟ ਅਤੇ ਪ੍ਰੀਲੋਡ ਕਰਦਾ ਹੈ। ਇਹ ਪ੍ਰੀਲੋਡ ਕੀਤੀ ਸਾਈਟ ਤੋਂ ਤੁਹਾਡੀ ਪਛਾਣ ਨੂੰ ਲੁਕਾਉਂਦਾ ਹੈ।</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ਖੋਲ੍ਹੋ</translation>
-<translation id="4619615317237390068">ਹੋਰ ਡੀਵਾਈਸਾਂ ਤੋਂ ਟੈਬਾਂ</translation>
 <translation id="4624065194742029982">Chrome ਇਨਕੋਗਨਿਟੋ</translation>
 <translation id="4634124774493850572">ਪਾਸਵਰਡ ਵਰਤੋ</translation>
 <translation id="463471994228293091">{PASSWORDS_COUNT,plural, =1{1 ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਆਈਟਮਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਨ੍ਹਾਂ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}one{# ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਆਈਟਮਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਨ੍ਹਾਂ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}other{# ਪਾਸਵਰਡਾਂ ਅਤੇ ਹੋਰ ਆਈਟਮਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਨ੍ਹਾਂ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}}</translation>
@@ -940,7 +929,6 @@
 <translation id="4793679854893018356">ਜਾਣੋ ਕਿ Chrome ਤੁਹਾਨੂੰ ਕਿਵੇਂ ਸੁਰੱਖਿਅਤ ਰੱਖਦਾ ਹੈ</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">ਕਾਰਡ ਤੇ ਨਾਮ</translation>
-<translation id="4807700370495020449">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੀ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਇਸ ਸਾਈਟ ਅਤੇ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="480990236307250886">ਹੋਮ ਪੇਜ ਖੋਲ੍ਹੋ</translation>
 <translation id="4816492930507672669">ਸਫ਼ੇ ਤੇ ਫਿਟ</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਬੰਦ ਅਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
@@ -987,7 +975,6 @@
 <translation id="4991110219272367918">ਕਿਸੇ ਵੈੱਬਸਾਈਟ ਨੂੰ ਮਨਜ਼ੂਰੀ ਦੇਣ ਜਾਂ ਨਾ ਦੇਣ ਦਾ ਵਿਕਲਪ ਬੰਦ ਹੋ ਗਿਆ ਹੈ</translation>
 <translation id="4996042648402406470">ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="4996095658297597226">ਕੀ ਸੁਝਾਇਆ ਗਿਆ ਪਾਸਵਰਡ ਵਰਤਣਾ ਹੈ?</translation>
-<translation id="4996275162531289114">Google ਦਾ ਸਭ ਤੋਂ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਅਨੁਭਵ</translation>
 <translation id="5007392906805964215">ਸਮੀਖਿਆ ਕਰੋ</translation>
 <translation id="5010886807652684893">ਦ੍ਰਿਸ਼ਟੀਗਤ ਦ੍ਰਿਸ਼</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ਕਨੈਕਟ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
@@ -1015,7 +1002,6 @@
 <translation id="5118713593561876160">ਦਿਲਚਸਪੀਆਂ</translation>
 <translation id="5122378528687922675">ਜੇ ਤੁਹਾਨੂੰ ਮਦਦ ਦੀ ਲੋੜ ਹੈ, ਤਾਂ ਆਪਣੇ ਮਾਂ-ਪਿਓ (<ph name="PARENT_NAME_1" /> ਜਾਂ <ph name="PARENT_NAME_2" />) ਨੂੰ ਕਹੋ</translation>
 <translation id="5123685120097942451">ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
-<translation id="5126335625961252141">ਤੁਹਾਡਾ ਟੈਬਲੈੱਟ</translation>
 <translation id="5130015735779747822">ਪੰਨੇ ਦੇ ਹੇਠਾਂ ਤੱਕ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
 <translation id="5142281402488957685">ਨਵੀਆਂ ਕਹਾਣੀਆਂ ਲਈ, ਰਿਫ੍ਰੈਸ਼ ਕਰਨ ਵਾਸਤੇ ਹੇਠਾਂ ਵੱਲ ਖਿੱਚੋ</translation>
 <translation id="5144385790872094440">ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਗਏ ਕੁਝ ਪੰਨਿਆਂ ਨੂੰ ਪ੍ਰੀਲੋਡ ਕੀਤਾ ਗਿਆ ਹੈ। Google ਸਾਈਟ ਜਾਂ ਐਪ ਤੋਂ ਲਿੰਕ ਕੀਤੇ ਜਾਣ 'ਤੇ ਪੰਨਿਆਂ ਨੂੰ Google ਸਰਵਰਾਂ ਰਾਹੀਂ ਪ੍ਰੀਲੋਡ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
@@ -1072,7 +1058,6 @@
 <translation id="5375374982898812658">ਤੁਸੀਂ “<ph name="GROUP_NAME" />” ਟੈਬ ਗਰੁੱਪ ਤੱਕ ਤੁਰੰਤ ਪਹੁੰਚ ਗੁਆ ਦੇਵੋਗੇ ਅਤੇ ਇਸ ਨੂੰ ਤੁਹਾਡੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="5375577065097716013">Google Lens ਨਾਲ ਚਿੱਤਰ ਖੋਜੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
 <translation id="537865165090710757">ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਸਾਂਝਾ ਕਰੋ</translation>
-<translation id="5385892579392932755">ਤੁਹਾਡਾ ਲੈਪਟਾਪ</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> ਦੀ ਤੁਹਾਡੇ ਡਿਜੀਟਲ ਵਾਲੇਟ ਤੋਂ ਨਿੱਜੀ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇੱਛਾ ਹੈ। ਜੇ ਤੁਸੀਂ ਇਸ ਸਾਈਟ 'ਤੇ ਭਰੋਸਾ ਕਰਦੇ ਹੋ, ਤਾਂ ਹੀ ਜਾਰੀ ਰੱਖੋ। ਖਤਰਨਾਕ ਸਾਈਟਾਂ ਤੁਹਾਨੂੰ ਧੋਖੇ ਨਾਲ ਤੁਹਾਡੇ ਤੋਂ ਕਨੂੰਨੀ ਨਾਮ ਜਾਂ ਆਈਡੀ ਨੰਬਰ ਵਰਗੀਆਂ ਚੀਜ਼ਾਂ ਨੂੰ ਜ਼ਾਹਰ ਕਰਨ ਲਈ ਭਰਮਾ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="5395376160638294582">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਕਦੇ ਵੀ Chrome ਡਾਟਾ ਵਰਤ ਸਕਦੇ ਹੋ</translation>
 <translation id="539881862970320163">ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਦਾ ਸੁਝਾਅ ਦਿੱਤਾ ਗਿਆ। ਕੀ-ਬੋਰਡ ਲੁਕਾਇਆ ਗਿਆ।</translation>
@@ -1089,7 +1074,6 @@
 <translation id="5438292632479953702">ਦੁਬਾਰਾ ਡਾਉਨਲੋਡ ਕਰੋ</translation>
 <translation id="5439191312780166229">ਇਹ ਸੁਵਿਧਾ ਮਿਆਰੀ ਸੁਰੱਖਿਆ ਨਾਲੋਂ ਜ਼ਿਆਦਾ ਡਾਟੇ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਕਰ ਕੇ ਤੁਹਾਨੂੰ ਅਜਿਹੀਆਂ ਖਤਰਨਾਕ ਸਾਈਟਾਂ ਬਾਰੇ ਚਿਤਾਵਨੀ ਦਿੰਦੀ ਹੈ ਜਿਨ੍ਹਾਂ ਬਾਰੇ Google ਨੂੰ ਪਹਿਲਾਂ ਨਹੀਂ ਪਤਾ ਸੀ। ਤੁਸੀਂ Chrome ਚਿਤਾਵਨੀਆਂ ਨੂੰ ਛੱਡਣ ਦੀ ਚੋਣ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="5441466871879044658">ਇਸ ਭਾਸ਼ਾ ਵਿੱਚ ਅਨੁਵਾਦ ਕਰੋ</translation>
-<translation id="544285856361623600"><ph name="DEVICE_TYPE" /> ਤੋਂ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਇਸ ਸਾਈਟ ਅਤੇ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="5444999712122199445">ਸਾਈਟ 'ਤੇ ਵਾਪਸ ਜਾਓ</translation>
 <translation id="544776284582297024">ਟੈਬਾਂ ਨੂੰ ਖੋਲ੍ਹਣ ਅਤੇ ਇੱਕੋ ਵੇਲੇ ਵੱਖ-ਵੱਖ ਪੰਨਿਆਂ 'ਤੇ ਜਾਣ ਲਈ, 'ਟੈਬਾਂ ਖੋਲ੍ਹੋ' ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="5456381639095306749">ਪੰਨਾ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
@@ -1376,7 +1360,6 @@
 <translation id="6565959834589222080">ਉਪਲਬਧ ਹੋਣ 'ਤੇ ਵਾਈ-ਫਾਈ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="657177046675873214">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ ਵਿੱਚ "ਬੁੱਕਮਾਰਕ" ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6573096386450695060">ਹਮੇਸ਼ਾਂ ਰੀਡਾਇਰੈਕਟ ਕਰਨ ਦਿਓ</translation>
-<translation id="658099107946526506">ਅਣਚਾਹੀ ਪਹੁੰਚ ਨੂੰ ਰੋਕਣ ਲਈ ਪਿੰਨ ਨਾਲ ਆਪਣੀ ਪ੍ਰਾਈਵੇਟ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="6583199322650523874">ਮੌਜੂਦਾ ਪੰਨੇ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ</translation>
 <translation id="6588043302623806746">ਸੁਰੱਖਿਅਤ DNS ਵਰਤੋ</translation>
 <translation id="6590471736817333463">60% ਤੱਕ ਡਾਟਾ ਬਚਾਓ</translation>
@@ -1536,7 +1519,6 @@
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 ਸਾਈਟ ਲਈ ਇਜਾਜ਼ਤਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਗਈ}one{# ਸਾਈਟ ਲਈ ਇਜਾਜ਼ਤਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਗਈ}other{# ਸਾਈਟਾਂ ਲਈ ਇਜਾਜ਼ਤਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਗਈ}}</translation>
 <translation id="7138678301420049075">ਹੋਰ</translation>
 <translation id="7140829094791862589">ਹੱਥੀਂ ਆਰਡਰ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ</translation>
-<translation id="7144458305574230431"><ph name="DEVICE_TYPE" /> ਤੋਂ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="7146622961999026732">ਇਹ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਤੁਹਾਡੇ ਲਈ ਮਹੱਤਵਪੂਰਨ ਲੱਗ ਰਹੀਆਂ ਹਨ:</translation>
 <translation id="7148400116894863598"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਤੋਂ <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰੋ<ph name="END_LINK" />।</translation>
 <translation id="7149893636342594995">ਪਿਛਲੇ 24 ਘੰਟੇ</translation>
@@ -1677,7 +1659,6 @@
 <translation id="7663320421139257046">ਜਾਰੀ ਰੱਖਣ ਲਈ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਤੁਹਾਡੇ <ph name="FIELDS_STRING" /> ਨੂੰ ਇਸ ਸਾਈਟ ਨਾਲ ਸਾਂਝਾ ਕਰੇਗਾ। ਇਸ ਸਾਈਟ ਦੀ <ph name="BEGIN_LINK1" />ਪਰਦੇਦਾਰੀ ਨੀਤੀ<ph name="END_LINK1" /> ਦੇਖੋ।</translation>
 <translation id="766587987807204883">ਲੇਖ ਇੱਥੇ ਦਿਖਾਈ ਦਿੰਦੇ ਹਨ, ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ ਆਫ਼ਲਾਈਨ ਹੋਣ 'ਤੇ ਵੀ ਪੜ੍ਹ ਸਕਦੇ ਹੋ</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
-<translation id="767157537088426800">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਇਸ ਸਾਈਟ ਅਤੇ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="7682724950699840886">ਅੱਗੇ ਦਿੱਤੇ ਨੁਕਤੇ ਅਜ਼ਮਾਓ: ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਲੋੜੀਂਦੀ ਜਗ੍ਹਾ ਹੈ, ਦੁਬਾਰਾ ਨਿਰਯਾਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="7690596512217303514">ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ Chrome ਖੁੱਲ੍ਹ ਨਹੀਂ ਸਕਿਆ। ਸਮੱਸਿਆ ਨੂੰ ਠੀਕ ਕਰਨ ਲਈ, ਆਪਣੇ ਐਪ ਸਟੋਰ ਤੋਂ Chrome ਦਾ ਨਵੀਨਤਮ ਅੱਪਡੇਟ ਡਾਊਨਲੋਡ ਕਰੋ।</translation>
 <translation id="7692761875510935111">ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਤੁਰੰਤ ਖੋਲ੍ਹੋ। ਇਸ ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ, ਸਪਰਸ਼ ਕਰ ਕੇ ਰੱਖੋ।</translation>
@@ -1754,7 +1735,6 @@
 <translation id="7997875520309653083">ਪਿੱਛੇ ਜਾਣ ਲਈ ਸੱਜੇ ਕਿਨਾਰੇ ਤੋਂ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="7998918019931843664">ਬੰਦ ਕੀਤੀ ਟੈਬ ਦੁਬਾਰਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="8001245658307297681">ਤੁਸੀਂ ਇੱਕ ਸਥਾਨਕ ਫ਼ਾਈਲ ਦੇਖ ਰਹੇ ਹੋ</translation>
-<translation id="800155843932969169">ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਆਪਣੇ ਪਾਸਵਰਡ ਬਣਾਓ ਅਤੇ ਸਟੋਰ ਕਰੋ, ਤੇਜ਼ੀ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ ਅਤੇ ਤੁਹਾਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ ਪਾਸਵਰਡ ਸੁਰੱਖਿਆ ਸਮੱਸਿਆਵਾਂ ਦੀ ਪਛਾਣ ਕਰੋ</translation>
 <translation id="8004582292198964060">ਬ੍ਰਾਊਜ਼ਰ</translation>
 <translation id="8006630792898017994">Space ਜਾਂ Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, ਇੱਕ ਤੋਂ ਵੱਧ ਚੁਣੀਆਂ ਗਈਆਂ ਅਜਿਹੀਆਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ, ਜਿਨ੍ਹਾਂ ਨੂੰ ਪਿੰਨ ਕਰ ਕੇ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -1857,6 +1837,7 @@
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> ਟੈਬ ਗਰੁੱਪ}one{<ph name="TAB_GROUPS_MANY" /> ਟੈਬ ਗਰੁੱਪ}other{<ph name="TAB_GROUPS_MANY" /> ਟੈਬ ਗਰੁੱਪ}}</translation>
 <translation id="8387617938027387193">ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="8393700583063109961">ਸੁਨੇਹਾ ਭੇਜੋ</translation>
+<translation id="8396098434728053815">ਟੈਬ ਆਡੀਓ ਨੂੰ ਵੀ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="8398389123831319859">ਇਨਕੋਗਨਿਟੋ ਮੋਡ 'ਤੇ ਸਵਿੱਚ ਕਰਨ ਲਈ ਡਬਲ ਟੈਪ ਕਰੋ ਅਤੇ ਦਬਾਈ ਰੱਖੋ</translation>
 <translation id="8412037385861858490">Chrome 'ਤੇ ਤੁਹਾਡੇ ਕੰਮ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਲਈ, ਤੁਹਾਡੀ ਸੰਸਥਾ ਤੁਹਾਡੇ ਵੱਲੋਂ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ 'ਤੇ ਕੁਝ ਖਾਸ ਜਾਣਕਾਰੀ ਨੂੰ ਦੇਖ ਸਕੇਗੀ ਜਾਂ ਉਸਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕੇਗੀ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">ਪੂਰਾ ਇਤਿਹਾਸ ਦਿਖਾਓ</translation>
@@ -1937,6 +1918,7 @@
 <translation id="8683039184091909753">ਚਿੱਤਰ</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, ਚੁਣੀ ਗਈ ਟੈਬ</translation>
 <translation id="8696297579102085705">ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਭੇਜੋ</translation>
+<translation id="8697753151306746444">ਇਸਦੀ ਬਜਾਏ ਵਿੰਡੋ ਜਾਂ ਸਕ੍ਰੀਨ ਨੂੰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="8699120352855309748">ਇਹਨਾਂ ਭਾਸ਼ਾਵਾਂ ਦਾ ਅਨੁਵਾਦ ਕਰਨ ਦੀ ਪੇਸ਼ਕਸ਼ ਨਾ ਕਰੋ</translation>
 <translation id="8700565880437506364">ਪੇਸ਼ ਹੈ Chrome ਵਿੱਚ Gemini</translation>
 <translation id="8712637175834984815">ਸਮਝ ਲਿਆ</translation>
@@ -1975,7 +1957,6 @@
 <translation id="885480114717186641">ਤੁਸੀਂ <ph name="HOST_NAME" /> ਲਈ ਡੈਸਕਟਾਪ ਸਾਈਟ ਦੀ ਬੇਨਤੀ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="8856607253650333758">ਵਰਣਨ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="8863714995118816041"><ph name="SITE_NAME" /> ਲਈ ਇਜਾਜ਼ਤਾਂ ਦੀ ਦੁਬਾਰਾ ਆਗਿਆ ਦਿੱਤੀ ਗਈ</translation>
-<translation id="8864055848767439877"><ph name="TAB_NAME" /> ਨੂੰ <ph name="APP_NAME" /> ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="8865415417596392024">ਤੁਹਾਡੇ ਖਾਤੇ ਵਿਚਲਾ Chrome ਡਾਟਾ</translation>
 <translation id="8872506776304248286">ਐਪ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="8880275451109933094">ਦੋ ਪੰਨਾ-ਦ੍ਰਿਸ਼</translation>
@@ -2065,7 +2046,6 @@
 <translation id="9190355771000652811">ਪਤਾ ਬਾਰ ਵਿੱਚ, ਖੋਜ ਇੰਜਣਾਂ ਅਤੇ ਸਾਈਟ ਖੋਜ ਲਈ ਸ਼ਾਰਟਕੱਟਾਂ ਨਾਲ ਇਸ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, ਚੁਣੀ ਗਈ ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਨੂੰ ਪਿੰਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 ਮਿੰਟ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}one{# ਮਿੰਟ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}other{# ਮਿੰਟ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}}</translation>
-<translation id="9199610579638564405"><ph name="DEVICE_TYPE" /> ਤੋਂ ਆਪਣੀ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਇਸ ਸਾਈਟ ਅਤੇ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="9202894533863490414">ਕੀ ਇਸ ਸਾਈਟ ਤੋਂ ਡਾਊਨਲੋਡ ਕਰਨਾ ਹੈ?</translation>
 <translation id="9204836675896933765">1 ਫ਼ਾਈਲ ਬਾਕੀ</translation>
 <translation id="9205933215779845960">ਉਹ ਪੰਨਾ ਨਹੀਂ ਮਿਲਿਆ। ਆਪਣੇ ਸ਼ਬਦ-ਜੋੜ ਦੀ ਜਾਂਚ ਕਰੋ ਜਾਂ <ph name="SEARCH_ENGINE" /> 'ਤੇ ਖੋਜ ਕੇ ਦੇਖੋ।</translation>
@@ -2082,7 +2062,6 @@
 <translation id="930834144334005936">ਮੌਜੂਦਾ ਮੋਡ <ph name="MODE_NAME" /> ਨੂੰ ਖੋਜ 'ਤੇ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="938850635132480979">ਗੜਬੜ: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">ਪਾਸਫਰੇਜ਼ ਦਾਖਲ ਕਰੋ</translation>
-<translation id="939736085109172342">ਨਵਾਂ ਫੋਲਡਰ</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, ਪਿੰਨ ਕੀਤੀ ਗਈ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="945522503751344254">ਪ੍ਰਤੀਕਰਮ ਭੇਜੋ</translation>
 <translation id="948276827484905248">QR ਕੋਡ ਬਣਾਓ</translation>
