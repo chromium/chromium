@@ -701,4 +701,16 @@ public class BottomSheetControllerImplUnitTest {
 
         watcher.assertExpected();
     }
+
+    @Test
+    public void testGetMaxSheetHeight_Uninitialized() {
+        assertEquals(0, mController.getMaxSheetHeight());
+    }
+
+    @Test
+    public void testGetMaxSheetHeight_Initialized() {
+        mController.runSheetInitializerForTesting();
+        doReturn(500).when(mBottomSheet).getMaxSheetHeight();
+        assertEquals(500, mController.getMaxSheetHeight());
+    }
 }

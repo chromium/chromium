@@ -1268,4 +1268,87 @@ public class BottomSheetUnitTest {
         sheet.showContent(contentWithoutHandlebar);
         assertEquals(View.GONE, handlebar.getVisibility());
     }
+
+    @Test
+    public void testGetMaxSheetHeight_Standard() {
+        assertEquals(mSheetContainer.getHeight(), mBottomSheet.getMaxSheetHeight());
+    }
+
+    @Test
+    public void testGetMaxSheetHeight_LargeFormFactor() {
+        BottomSheet sheet =
+                (BottomSheet)
+                        LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_desktop, null);
+        int containerHeight = 800;
+        mSheetContainer.removeAllViews();
+        mSheetContainer.addView(sheet);
+        mSheetContainer.layout(0, 0, 1000, containerHeight);
+        sheet.setSheetContainerForTesting(mSheetContainer);
+        sheet.setToolbarHolderForTesting(mToolbarHolder);
+        sheet.setBottomSheetContentContainerForTesting(
+                sheet.findViewById(R.id.bottom_sheet_content));
+        sheet.setSheetBackgroundForTesting(mSheetBackground);
+        sheet.setShadowLayerForTesting(mShadowLayerView);
+
+        sheet.init(
+                mActivity.getWindow(),
+                /* keyboardDelegate= */ mKeyboardDelegate,
+                /* alwaysFullWidth= */ false,
+                /* edgeToEdgeBottomInsetSupplier= */ () -> 0,
+                /* appHeaderHeight= */ 0,
+                /* bottomMargin= */ 0,
+                mInsetObserver,
+                /* isLargeFormFactor= */ true);
+
+        doReturn(true).when(mSheetContent).supportsLargeFormFactor();
+        doReturn(new View(mActivity)).when(mSheetContent).getContentView();
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
+        sheet.showContent(mSheetContent);
+
+        int bottomMargin =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_sheet_desktop_bottom_margin);
+        int expectedMaxHeight = containerHeight - 2 * bottomMargin;
+        assertEquals(expectedMaxHeight, sheet.getMaxSheetHeight());
+    }
+
+    @Test
+    public void testAllowShadowOverflow_DisablesContainerClipping() {
+        BottomSheet.setSmallScreenForTesting(false);
+        int containerHeight = 1000;
+        BottomSheet sheet =
+                (BottomSheet)
+                        LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_desktop, null);
+        mSheetContainer.removeAllViews();
+        mSheetContainer.addView(sheet);
+        mSheetContainer.layout(0, 0, 1000, containerHeight);
+        sheet.setSheetContainerForTesting(mSheetContainer);
+        sheet.setToolbarHolderForTesting(mToolbarHolder);
+        sheet.setBottomSheetContentContainerForTesting(
+                sheet.findViewById(R.id.bottom_sheet_content));
+        sheet.setSheetBackgroundForTesting(mSheetBackground);
+        sheet.setShadowLayerForTesting(mShadowLayerView);
+
+        sheet.init(
+                mActivity.getWindow(),
+                /* keyboardDelegate= */ mKeyboardDelegate,
+                /* alwaysFullWidth= */ false,
+                /* edgeToEdgeBottomInsetSupplier= */ () -> 0,
+                /* appHeaderHeight= */ 0,
+                /* bottomMargin= */ 0,
+                mInsetObserver,
+                /* isLargeFormFactor= */ true);
+
+        doReturn(true).when(mSheetContent).supportsLargeFormFactor();
+        doReturn(new View(mActivity)).when(mSheetContent).getContentView();
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
+        sheet.showContent(mSheetContent);
+
+        // Trigger onLayout in LFF mode.
+        sheet.layout(0, 0, 1000, containerHeight);
+
+        assertFalse(mSheetContainer.getClipChildren());
+        assertFalse(mSheetContainer.getClipToPadding());
+    }
 }

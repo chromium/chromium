@@ -43,6 +43,7 @@ robolectric_library("junit_tests") {
   resources_package = "org.chromium.components.browser_ui.bottomsheet"
   sources = [
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetControllerImplUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetListViewBaseUnitTest.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetRecyclerScrollListenerTest.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetSwipeDetectorTest.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetUnitTest.java",
@@ -58,6 +59,7 @@ robolectric_library("junit_tests") {
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/theme/android:java_resources",
     "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_runner_java",

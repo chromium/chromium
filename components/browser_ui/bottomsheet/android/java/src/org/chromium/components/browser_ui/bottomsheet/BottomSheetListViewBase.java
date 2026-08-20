@@ -254,7 +254,7 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
         }
         @Px int requiredMaxHeight = getHeightWhenFullyExtendedPx();
         if (UiAndroidFeatureList.sBottomSheetRemeasureFix.isEnabled()
-                || requiredMaxHeight <= mBottomSheetController.getContainerHeight()) {
+                || requiredMaxHeight <= getAvailableSheetHeight()) {
             return requiredMaxHeight;
         }
         remeasure();
@@ -366,7 +366,7 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
 
     protected boolean isFullyExtended() {
         return mBottomSheetController.getCurrentOffset()
-                == Math.min(getMaximumSheetHeightPx(), mBottomSheetController.getContainerHeight());
+                == Math.min(getMaximumSheetHeightPx(), getAvailableSheetHeight());
     }
 
     private @Px int getInsetDisplayWidthPx() {
@@ -419,16 +419,23 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
     @Override
     public float getFullHeightRatio() {
         // WRAP_CONTENT would be the right fit but this disables the HALF state.
-        return Math.min(getMaximumSheetHeightPx(), mBottomSheetController.getContainerHeight())
-                / (float) mBottomSheetController.getContainerHeight();
+        float maxAvailable = getAvailableSheetHeight();
+        if (maxAvailable <= 0) return HeightMode.DEFAULT;
+        return Math.min(getMaximumSheetHeightPx(), maxAvailable) / maxAvailable;
     }
 
     @Override
     public float getHalfHeightRatio() {
         // Disable the half state when touch exploration is enabled.
         if (skipHalfStateOnScrollingDown()) return HeightMode.DISABLED;
-        return Math.min(getDesiredSheetHeightPx(), mBottomSheetController.getContainerHeight())
-                / (float) mBottomSheetController.getContainerHeight();
+        float maxAvailable = getAvailableSheetHeight();
+        if (maxAvailable <= 0) return HeightMode.DISABLED;
+        return Math.min(getDesiredSheetHeightPx(), maxAvailable) / maxAvailable;
+    }
+
+    private @Px int getAvailableSheetHeight() {
+        int maxHeight = mBottomSheetController.getMaxSheetHeight();
+        return maxHeight > 0 ? maxHeight : mBottomSheetController.getContainerHeight();
     }
 
     @Override

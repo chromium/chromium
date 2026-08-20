@@ -1561,7 +1561,8 @@ class BottomSheet extends BottomSheetView
     /**
      * @return The max possible height that the sheet can be.
      */
-    private int getMaxSheetHeight() {
+    @Px
+    int getMaxSheetHeight() {
         if (isLargeFormFactorUiEnabled()) {
             // Clamp the height to leave an empty gap at the top of the window equal to the
             // desktop bottom margin (24dp).
@@ -1934,9 +1935,9 @@ class BottomSheet extends BottomSheetView
         int visibleHeight = (int) Math.max(0, mCurrentOffsetPx);
 
         // Ensure we don't accidentally ask for a bounds size larger than the actual layout limits.
-        int measuredBgHeight = mSheetBackground.getMeasuredHeight();
-        if (measuredBgHeight > 0) {
-            visibleHeight = Math.min(visibleHeight, measuredBgHeight);
+        int targetFullHeight = (int) getSheetHeightForState(SheetState.FULL);
+        if (targetFullHeight > 0) {
+            visibleHeight = Math.min(visibleHeight, targetFullHeight);
         }
 
         // Clip the solid background strictly to the visual height.
@@ -1948,6 +1949,7 @@ class BottomSheet extends BottomSheetView
         int shadowBottomPadding = mShadowLayer.getPaddingBottom();
         mShadowLayer.setBottom(
                 mShadowLayer.getTop() + visibleHeight + shadowTopPadding + shadowBottomPadding);
+        mShadowLayer.invalidate();
     }
 
     /**
@@ -1958,6 +1960,10 @@ class BottomSheet extends BottomSheetView
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         if (isLargeFormFactorUiEnabled()) {
+            // Allow the shadow to draw outside the strict layout boundaries of the container.
+            // Since the shadow expands into the container's bottom margin or window insets,
+            // we must also disable clipping on the parent to prevent the shadow from being sliced.
+            updateContainerClipping(true);
             applyLargeFormFactorBackgroundBounds();
         }
     }
