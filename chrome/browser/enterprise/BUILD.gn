@@ -101,6 +101,8 @@ source_set("enterprise") {
 
   if (!is_android) {
     public_deps += [
+      "//chrome/browser/ui:idle_bubble",
+      "//chrome/browser/ui:idle_dialog",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
       "//chrome/browser/ui/webui/signin:signin_utils",
@@ -868,9 +870,7 @@ source_set("impl") {
       "reporting/extension_request/extension_request_report_generator.cc",
     ]
     if (is_android) {
-      sources += [
-        "reporting/extension_request/extension_request_notification_handler_android.cc",
-      ]
+      sources += [ "reporting/extension_request/extension_request_notification_handler_android.cc" ]
     }
     deps += [
       "//chrome/browser/extensions",

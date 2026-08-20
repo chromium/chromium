@@ -520,7 +520,6 @@ source_set("tab_dialogs") {
 # circular includes from each other.
 static_library("ui") {
   sources = [
-    "idle_bubble.h",
     "tab_helpers.cc",
     "tab_helpers.h",
   ]
@@ -2896,6 +2895,7 @@ static_library("ui") {
 
     deps += [
       ":browser_init_state",
+      ":idle_bubble",
       ":idle_dialog",
       ":incognito_clear_browsing_data_dialog_interface",
       "//base",
@@ -3428,6 +3428,7 @@ static_library("ui") {
     if (is_win) {
       sources += [ "views/chrome_views_delegate_win.cc" ]
       deps += [
+        ":accessibility_util",
         "//chrome/browser/ui/views/frame:system_menu_insertion_delegate_win",
       ]
     }
@@ -3868,6 +3869,15 @@ if (!is_android) {
 
   source_set("incognito_clear_browsing_data_dialog_interface") {
     public = [ "incognito_clear_browsing_data_dialog_interface.h" ]
+  }
+
+  source_set("idle_bubble") {
+    public = [ "idle_bubble.h" ]
+    public_deps = [
+      ":idle_dialog",
+      "//base",
+      "//ui/views",
+    ]
   }
 
   source_set("chrome_pages") {

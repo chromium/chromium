@@ -3275,6 +3275,7 @@ source_set("browser") {
 
     deps += [
       "//chrome/browser/taskbar",
+      "//chrome/browser/ui:accessibility_util",
       "//chrome/browser/win:impl",
       "//components/app_launch_prefetch",
     ]
