@@ -21,7 +21,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.modaldialog.ChromeTabModalPresenter;
-import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.TestAndroidPermissionDelegate;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -48,8 +47,6 @@ public class PermissionNavigationTest {
 
     private static final String DISMISS_TYPE_HISTOGRAM =
             "Permissions.Prompt.GeolocationApproximateOrPrecise.ModalDialog.Dismissed.Method";
-
-    private TestAndroidPermissionDelegate mTestAndroidPermissionDelegate;
 
     public PermissionNavigationTest() {}
 

@@ -48,7 +48,6 @@ public class RuntimePermissionTest {
 
     private static final String GEOLOCATION_TEST = "/chrome/test/data/geolocation/geolocation.html";
     private static final String MEDIA_TEST = "/content/test/data/media/getusermedia.html";
-    private static final String DOWNLOAD_TEST = "/chrome/test/data/android/download/get.html";
 
     private static final String DISMISS_TYPE_HISTOGRAM =
             "Permissions.Prompt.GeolocationApproximateOrPrecise.ModalDialog.Dismissed.Method";
