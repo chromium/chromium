@@ -340,6 +340,9 @@ class GPU_GLES2_EXPORT SharedContextState
 
   std::optional<error::ContextLostReason> GetResetStatus(bool needs_gl);
 
+  void PurgeGaneshMemory(int memory_limit);
+  void PurgeGraphiteMemory(int memory_limit);
+
   // gpu::GLContextVirtualDelegate implementation.
   bool initialized() const override;
   const gles2::ContextState* GetContextState() override;
