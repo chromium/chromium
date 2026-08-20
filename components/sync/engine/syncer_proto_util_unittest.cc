@@ -186,6 +186,9 @@ TEST_F(SyncerProtoUtilTest, VerifyEncryptionObsolete) {
 }
 
 TEST_F(SyncerProtoUtilTest, PostAndProcessHeaders) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kSyncUsePropagatedAccessToken);
+
   ClientToServerMessage msg;
   SyncerProtoUtil::SetProtocolVersion(&msg);
   msg.set_share("required");
