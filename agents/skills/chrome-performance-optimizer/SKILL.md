@@ -23,17 +23,18 @@ ______________________________________________________________________
 
 ```mermaid
 graph TD
-    A[1. Ingest Profile: pprof link / ID / Sagacity MCP] --> B[2. Formulate Macro Hypothesis]
-    B --> C[3. Implement on Dedicated Branch]
-    C --> D[4. Verify Locally: Tests & Crossbench]
-    D -->|Fail| C
-    D -->|Pass| E[5. Upload CL to Gerrit]
-    E --> F[6. Run Pinpoint on M1: pp c -c m1 -t sp3 -r 150]
-    F --> G[7. Poll & Evaluate Results: pp s]
-    G -->|Stat-Significant Improvement| H[8. Propose CL & Update Benchmark Report]
-    G -->|No Improvement or Regressed| I[9. Abandon CL: git cl abandon]
-    H --> A
+    A[1. Ingest Profile: pprof link / ID / Sagacity MCP] --> B[2. Fetch Tried CLs: topic:chrome-perf-opt-rejected & accepted]
+    B --> C[3. Formulate Unexplored Macro Hypothesis]
+    C --> D[4. Implement on Dedicated Branch]
+    D --> E[5. Verify Locally: Tests & Crossbench]
+    E -->|Fail| D
+    E -->|Pass| F[6. Upload CL to Gerrit]
+    F --> G[7. Run Pinpoint on M1: pp c -c m1 -t sp3 -r 150]
+    G --> H[8. Poll & Evaluate Results: pp s]
+    H -->|Stat-Significant Improvement| I[9. Tag topic:chrome-perf-opt-accepted & Propose CL]
+    H -->|No Improvement or Regressed| J[10. Tag topic:chrome-perf-opt-rejected & Abandon CL]
     I --> A
+    J --> A
 ```
 
 ______________________________________________________________________
@@ -74,7 +75,21 @@ You can provide one or multiple profile sources:
    vpython3 agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=EXP_ID" --base="pprof/?id=BASE_ID" --mode=cum
    ```
 
-5. **Classify the Bottleneck Pattern & Search for High-Impact Levers**: You
+5. **Fetch & Exclude Previously Attempted CLs**: Before formulating any new
+   optimization hypothesis, you **MUST** query all previously attempted CLs on
+   Gerrit to avoid repeating rejected ideas and to build upon accepted ones:
+
+   ```bash
+   vpython3 agents/skills/chrome-performance-optimizer/scripts/fetch_tried_cls.py
+   ```
+
+   - **`topic:chrome-perf-opt-rejected`**: CLs that failed Pinpoint evaluation
+     ($p > 0.05$). You **MUST NOT** repeat or re-propose any of these changes or
+     micro-variations of them.
+   - **`topic:chrome-perf-opt-accepted`**: Validated benchmark winners. You may
+     use these as reference implementations.
+
+6. **Classify the Bottleneck Pattern & Search for High-Impact Levers**: You
    **MUST** thoroughly study
    [Macro-Optimization Patterns](references/optimization_patterns.md) before
    formulating optimizations or writing code. Examine the historical top 20 CL
@@ -127,10 +142,28 @@ ______________________________________________________________________
 
 ## Step 2: Formulate Macro Hypothesis & Create Isolated Branch
 
-> [!IMPORTANT] **Mandatory High-Impact Standard**: Do NOT propose trivial
-> micro-tweaks (such as isolated bounds checks, micro-inlining of small helpers,
-> or single variable renames) that produce `< 0.1%` change and vanish in
-> Pinpoint noise.
+> [!IMPORTANT] **Mandatory High-Impact & Non-Duplication Standard**:
+>
+> 1. **No Duplication**: Check `fetch_tried_cls.py` output. NEVER repeat changes
+>    listed under `topic:chrome-perf-opt-rejected` or
+>    `topic:chrome-perf-opt-accepted`.
+> 2. **No Micro-Tweaks**: Do NOT propose trivial micro-tweaks (such as isolated
+>    bounds checks, micro-inlining of small helpers, or single variable renames)
+>    that produce `< 0.1%` change and vanish in Pinpoint noise.
+>
+> Every optimization hypothesis MUST aim for **architectural leverage**:
+>
+> - **Allocation Elimination**: Eliminate heap / GC allocations in hot
+>   per-element or per-token loops.
+> - **Invariant Caching**: Cache expensive cross-iteration computations (e.g.
+>   style match trees, parsed SVG/path byte streams, shaped word glyphs).
+> - **Fast-Path Short-Circuits**: Bypass heavy multi-layer framework code (e.g.
+>   ICU, HarfBuzz, SkPath, full CSS cascade) for common-case inputs.
+> - **Concurrency / Deferral**: Defer non-critical work to idle tasks or worker
+>   threads (e.g. sweeping, lazy state initialization).
+>
+> Continue iterating through candidate profiles and patterns autonomously until
+> a statistically significant win ($p < 0.05$) is confirmed on Pinpoint.
 >
 > Every optimization hypothesis MUST aim for **architectural leverage**:
 >
@@ -244,13 +277,20 @@ ______________________________________________________________________
 2. **Decision Rules**:
 
    - ✅ **Statistically Significant Improvement ($p < 0.05$)**:
-     - Keep the CL.
+     - Set Gerrit topic to `chrome-perf-opt-accepted`:
+       ```bash
+       vpython3 -c "import sys; sys.path.insert(0, 'third_party/depot_tools'); import gerrit_util; gerrit_util.CallGerritApi('chromium-review.googlesource.com', f'/changes/{$(git cl issue)}/topic', reqtype='PUT', body={'topic': 'chrome-perf-opt-accepted'})"
+       ```
      - Add the Pinpoint benchmark results to the CL description:
        ```bash
        git cl upload -m "Add Pinpoint M1 benchmark results (+X.X% improvement)"
        ```
      - Propose the change to the user and reviewers.
    - ❌ **Neutral or Regressed**:
+     - Set Gerrit topic to `chrome-perf-opt-rejected` before abandoning:
+       ```bash
+       vpython3 -c "import sys; sys.path.insert(0, 'third_party/depot_tools'); import gerrit_util; gerrit_util.CallGerritApi('chromium-review.googlesource.com', f'/changes/{$(git cl issue)}/topic', reqtype='PUT', body={'topic': 'chrome-perf-opt-rejected'})"
+       ```
      - Abandon the CL immediately:
        ```bash
        git cl abandon -m "Pinpoint try job (150 iterations on M1) showed no statistically significant speedup."
@@ -264,5 +304,6 @@ ______________________________________________________________________
 
 - [Macro-Optimization Patterns](references/optimization_patterns.md)
 - [Pinpoint & Gerrit Workflow Guide](references/pinpoint_workflow.md)
+- [Fetch Previously Tried CLs Script](scripts/fetch_tried_cls.py)
 - [Profile Analyzer Script](scripts/analyze_profile.py)
 - [Pinpoint Evaluator Script](scripts/pinpoint_evaluator.py)
