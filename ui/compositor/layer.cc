@@ -1668,8 +1668,4 @@ bool Layer::GetTransformRelativeToImpl(const Layer* ancestor,
   return p == ancestor;
 }
 
-bool Layer::ContainsMirrorForTest(Layer* mirror) const {
-  return std::ranges::contains(mirrors_, mirror, &internal::LayerMirror::dest);
-}
-
 }  // namespace ui

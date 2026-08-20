@@ -699,8 +699,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
                                   bool is_target_transform,
                                   gfx::Transform* transform) const;
 
-  bool ContainsMirrorForTest(Layer* mirror) const;
-
   const LayerType type_;
 
   raw_ptr<Compositor> compositor_;

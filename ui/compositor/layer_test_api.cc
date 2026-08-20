@@ -4,11 +4,13 @@
 
 #include "ui/compositor/layer_test_api.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "cc/layers/picture_layer.h"
 #include "cc/layers/solid_color_layer.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_mirror.h"
 #include "ui/compositor/layer_solid_color.h"
 #include "ui/compositor/layer_textured.h"
 
@@ -79,7 +81,8 @@ bool LayerTestApi::IsPaintDeferred() const {
 }
 
 bool LayerTestApi::ContainsMirror(Layer* mirror) const {
-  return layer_->ContainsMirrorForTest(mirror);
+  return std::ranges::contains(layer_->mirrors_, mirror,
+                               &internal::LayerMirror::dest);
 }
 
 void LayerTestApi::SetCompositor(Compositor* compositor) {

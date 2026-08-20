@@ -1099,6 +1099,11 @@ TEST_P(LayerWithDelegateTest, Mirroring) {
   child->SetIsFastRoundedCorner(true);
   EXPECT_EQ(kCornerRadii, mirror1->rounded_corner_radii());
   EXPECT_TRUE(mirror1->is_fast_rounded_corner());
+
+  EXPECT_TRUE(child_test_api.ContainsMirror(mirror1.get()));
+  EXPECT_TRUE(child_test_api.ContainsMirror(mirror2.get()));
+  EXPECT_TRUE(child_test_api.ContainsMirror(mirror3.get()));
+  EXPECT_FALSE(child_test_api.ContainsMirror(root.get()));
 }
 
 // Tests for SurfaceLayer cloning and mirroring. This tests certain properties
