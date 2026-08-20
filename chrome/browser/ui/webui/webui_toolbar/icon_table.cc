@@ -212,6 +212,8 @@ const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
            {"webui-toolbar:dangerous_filled", IconType::kIconSet}},
           {{&vector_icons::kDomainIcon},
            {"webui-toolbar:domain", IconType::kIconSet}},
+          {{&vector_icons::kDraftIcon},
+           {"webui-toolbar:draft", IconType::kIconSet}},
           {{&vector_icons::kEditChromeRefreshOldIcon},
            {"webui-toolbar:edit", IconType::kIconSet}},
           {{&vector_icons::kEditIcon},
@@ -256,6 +258,8 @@ const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
            {"webui-toolbar:no_encryption", IconType::kIconSet}},
           {{&vector_icons::kNotSecureWarningChromeRefreshOldIcon},
            {"webui-toolbar:warning", IconType::kIconSet}},
+          {{&vector_icons::kPasskeyIcon},
+           {"webui-toolbar:passkey", IconType::kIconSet}},
           {{&vector_icons::kPasswordManagerIcon},
            {"webui-toolbar:password_manager", IconType::kIconSet}},
           {{&vector_icons::kPasswordManagerOldIcon},
@@ -299,6 +303,8 @@ const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
            {"webui-toolbar:visibility", IconType::kIconSet}},
           {{&views::kEyeRefreshOldIcon},
            {"webui-toolbar:visibility", IconType::kIconSet}},
+          {{&views::kVisibilityOffIcon},
+           {"webui-toolbar:visibility_off", IconType::kIconSet}},
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
           {{&vector_icons::kFastForwardCircleSparkIcon},
