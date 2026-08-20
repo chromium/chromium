@@ -52,6 +52,10 @@
 #include <windows.h>
 
 #include <commctrl.h>
+
+#include <optional>
+
+#include "base/win/access_token.h"
 #include "remoting/base/crash/crash_reporting_breakpad.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -59,21 +63,13 @@ namespace remoting {
 
 namespace {
 
-#if BUILDFLAG(IS_WIN) && defined(OFFICIAL_BUILD)
-bool CurrentProcessHasUiAccess() {
-  HANDLE process_token;
-  OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &process_token);
-
-  DWORD size;
-  DWORD uiaccess_value = 0;
-  if (!GetTokenInformation(process_token, TokenUIAccess, &uiaccess_value,
-                           sizeof(uiaccess_value), &size)) {
-    PLOG(ERROR) << "GetTokenInformation() failed";
-  }
-  CloseHandle(process_token);
-  return uiaccess_value != 0;
+#if BUILDFLAG(IS_WIN)
+bool CurrentProcessIsElevated() {
+  std::optional<base::win::AccessToken> token =
+      base::win::AccessToken::FromCurrentProcess();
+  return token && token->IsElevated();
 }
-#endif  // BUILDFLAG(IS_WIN) && defined(OFFICIAL_BUILD)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -160,14 +156,11 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
 
   if (command_line->HasSwitch(kElevateSwitchName)) {
     is_process_elevated_ = true;
-#if defined(OFFICIAL_BUILD)
-    // Unofficial builds won't have 'UiAccess' since it requires signing.
-    if (!CurrentProcessHasUiAccess()) {
-      LOG(ERROR) << "UiAccess permission missing from elevated It2Me process.";
+    if (!CurrentProcessIsElevated()) {
+      LOG(ERROR) << "Process is not elevated.";
     }
-#endif  // defined(OFFICIAL_BUILD)
 
-    // The UiAccess binary should always have the "input" and "output" switches
+    // The elevated binary should always have the "input" and "output" switches
     // specified, they represent the name of the named pipes that should be used
     // in place of stdin and stdout.
     DCHECK(command_line->HasSwitch(kInputSwitchName));

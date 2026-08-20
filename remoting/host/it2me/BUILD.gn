@@ -255,13 +255,7 @@ if (!is_chromeos && enable_remoting_host) {
         "comctl32.lib",
       ]
 
-      # uiAccess requires a signed build to work correctly, so only enable the
-      # manifest flag when the binary will be properly signed.
-      if (is_official_build) {
-        deps += [ "//remoting/host/win:dpi_aware_uiaccess_exe_manifest" ]
-      } else {
-        deps += [ "//remoting/host/win:dpi_aware_exe_manifest" ]
-      }
+      deps += [ "//remoting/host/win:dpi_aware_elevated_exe_manifest" ]
     }
   } else {
     if (is_mac) {
