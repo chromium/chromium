@@ -21,9 +21,9 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/ash/login/locale_switch_screen_handler.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
@@ -228,17 +228,17 @@ void LocaleSwitchScreen::ShowImpl() {
 
   user_manager::User* user = user_manager::UserManager::Get()->GetActiveUser();
   DCHECK(user->is_profile_created());
-  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
   if (user->GetType() == user_manager::UserType::kPublicAccount) {
     locale_ =
-        profile->GetPrefs()->GetString(language::prefs::kApplicationLocale);
+        user->GetProfilePrefs()->GetString(language::prefs::kApplicationLocale);
     SwitchLocale();
     return;
   }
 
   DCHECK(user->HasGaiaAccount());
 
-  identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
+  identity_manager_ =
+      ash::IdentityManagerProvider::Get().Find(user->GetAccountId());
   if (!identity_manager_) {
     NOTREACHED();
   }
