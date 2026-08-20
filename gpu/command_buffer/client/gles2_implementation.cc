@@ -59,6 +59,7 @@
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
+#include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -4649,12 +4650,15 @@ GLboolean GLES2Implementation::ReadbackARGBImagePixelsINTERNAL(
   if (!*readback_result) {
     return GL_FALSE;
   }
-  // We need to use `RelaxedAtomicWriteMemcpy` because we might be writing into
-  // memory observed by JS at the same time.
   auto dst = UNSAFE_TODO(base::span(static_cast<uint8_t*>(pixels), dst_size));
   auto src = UNSAFE_TODO(
       base::span(static_cast<uint8_t*>(shm_address) + pixels_offset, dst_size));
-  base::subtle::RelaxedAtomicWriteMemcpy(dst, src);
+  size_t min_row_bytes =
+      dst_width *
+      SkColorTypeBytesPerPixel(static_cast<SkColorType>(dst_sk_color_type));
+  RelaxedAtomicWriteMemcpyImageRowsSkippingPadding(
+      /*dst=*/dst, /*src=*/src, /*row_bytes=*/min_row_bytes,
+      /*height=*/dst_height, /*stride=*/dst_row_bytes);
   return GL_TRUE;
 }
 

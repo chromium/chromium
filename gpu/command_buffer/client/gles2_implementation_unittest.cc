@@ -17,6 +17,7 @@
 #include <array>
 #include <memory>
 
+#include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
@@ -403,7 +404,8 @@ class GLES2ImplementationTest : public testing::Test {
     ExpectedMemoryInfo mem;
 
     // Temporarily allocate memory and expect that memory block to be reused.
-    mem.ptr = gl_->mapped_memory_->Alloc(size, &mem.id, &mem.offset).data();
+    mem.span = gl_->mapped_memory_->Alloc(size, &mem.id, &mem.offset);
+    mem.ptr = mem.span.data();
     gl_->mapped_memory_->Free(mem.ptr);
 
     return mem;
@@ -3862,6 +3864,75 @@ TEST_F(GLES2ImplementationTest,
   EXPECT_THAT(last_error,
               testing::HasSubstr("READ-usage buffer was written, then fenced, "
                                  "but written again"));
+}
+
+TEST_F(GLES2ImplementationTest, ReadbackARGBImagePixelsINTERNALPadding) {
+  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
+
+  GLuint dst_width = 2;
+  GLuint dst_height = 2;
+  GLuint dst_sk_color_type = 4;  // kRGBA_8888_SkColorType
+  GLuint dst_sk_alpha_type = 1;  // kPremul_SkAlphaType
+  GLuint dst_row_bytes =
+      12;  // 2 pixels * 4 bytes/pixel = 8 bytes. Row padding = 4 bytes.
+  GLuint dst_size = dst_height * dst_row_bytes;
+
+  GLuint color_space_offset = base::bits::AlignUp(
+      sizeof(cmds::ReadbackARGBImagePixelsINTERNAL::Result), sizeof(uint64_t));
+  GLuint mailbox_offset = color_space_offset;
+  GLuint pixels_offset = base::bits::AlignUp(
+      mailbox_offset + sizeof(gpu::Mailbox), sizeof(uint64_t));
+
+  GLuint total_size =
+      pixels_offset +
+      base::bits::AlignUp(dst_size, static_cast<GLuint>(sizeof(uint64_t)));
+
+  ExpectedMemoryInfo mem = GetExpectedMappedMemory(total_size);
+
+  std::vector<uint8_t> dst_pixels(dst_size, 0xAA);
+
+  EXPECT_CALL(*command_buffer(), OnFlush())
+      .WillOnce([mem, pixels_offset, dst_size]() {
+        // Write 1 to readback_result (at the beginning of shm).
+        auto* result =
+            reinterpret_cast<cmds::ReadbackARGBImagePixelsINTERNAL::Result*>(
+                mem.ptr);
+        *result = 1;
+
+        // Write test data to the pixel portion of the shared memory.
+        auto src_pixels = mem.span.subspan(pixels_offset, dst_size);
+        // Fill src_pixels with distinct values, e.g. 1 to dst_size
+        for (size_t i = 0; i < dst_size; ++i) {
+          src_pixels[i] = static_cast<uint8_t>(i + 1);
+        }
+      })
+      .RetiresOnSaturation();
+
+  GLboolean success = gl_->ReadbackARGBImagePixelsINTERNAL(
+      mailbox.name, /*dst_color_space=*/nullptr,
+      /*dst_color_space_size=*/0, dst_size, dst_width, dst_height,
+      dst_sk_color_type, dst_sk_alpha_type, dst_row_bytes, /*src_x=*/0,
+      /*src_y=*/0, /*plane_index=*/0, dst_pixels.data());
+
+  EXPECT_TRUE(success);
+
+  // Expected output:
+  // Row 1 (pixels: 0 to 7) copied from src_pixels (0 to 7): 1, 2, 3, 4, 5, 6,
+  // 7, 8. Row 1 (padding: 8 to 11) untouched: 0xAA, 0xAA, 0xAA, 0xAA. Row 2
+  // (pixels: 12 to 19) copied from src_pixels (12 to 19): 13, 14, 15, 16, 17,
+  // 18, 19, 20. Row 2 (padding: 20 to 23) untouched: 0xAA, 0xAA, 0xAA, 0xAA.
+
+  std::vector<uint8_t> expected_pixels(dst_size, 0xAA);
+  size_t min_row_bytes = 8;  // 2 pixels * 4 bytes/pixel = 8.
+  for (size_t y = 0; y < dst_height; ++y) {
+    for (size_t x = 0; x < min_row_bytes; ++x) {
+      size_t dst_idx = y * dst_row_bytes + x;
+      size_t src_idx = y * dst_row_bytes + x;
+      expected_pixels[dst_idx] = static_cast<uint8_t>(src_idx + 1);
+    }
+  }
+
+  EXPECT_EQ(dst_pixels, expected_pixels);
 }
 
 #include "gpu/command_buffer/client/gles2_implementation_unittest_autogen.h"
