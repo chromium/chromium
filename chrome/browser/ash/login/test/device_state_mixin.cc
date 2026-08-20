@@ -10,7 +10,6 @@
 #include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
@@ -51,16 +50,14 @@ cryptohome::SerializedInstallAttributes BuildInstallAttributes(
   cryptohome::SerializedInstallAttributes install_attrs;
   install_attrs.set_version(1);
 
-  for (const auto& it : install_attrs_) {
-    if (it.second.empty())
+  for (const auto& [name, value] : install_attrs_) {
+    if (value.empty()) {
       continue;
+    }
     cryptohome::SerializedInstallAttributes::Attribute* attr_entry =
         install_attrs.add_attributes();
-    const std::string& name = it.first;
-    const std::string& value = it.second;
     attr_entry->set_name(name);
-    attr_entry->mutable_value()->assign(
-        value.data(), UNSAFE_TODO(value.data() + value.size()));
+    attr_entry->set_value(value);
   }
   return install_attrs;
 }
