@@ -216,8 +216,8 @@ public class ImeAdapterImpl
     private @Nullable ImeRenderWidgetHostImpl mBoundImeRenderWidgetHost;
 
     /**
-     * {@ResultReceiver} passed in InputMethodManager#showSoftInput}. We need this to scroll to the
-     * editable node at the right timing, which is after input method window shows up.
+     * {@link ResultReceiver} passed in InputMethodManager#showSoftInput}. We need this to scroll to
+     * the editable node at the right timing, which is after input method window shows up.
      */
     private static class ShowKeyboardResultReceiver extends ResultReceiver {
         // Unfortunately, the memory life cycle of ResultReceiver object, once passed in

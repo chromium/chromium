@@ -8,9 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import android.graphics.Typeface;
-import android.text.TextUtils;
-import android.text.Spanned;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.style.StyleSpan;
 import android.view.inputmethod.InputConnection;
 
@@ -22,7 +22,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.content_public.browser.ContentFeatureList;
 
-/** Unit tests for {@TextInputState}. */
+/** Unit tests for {@link TextInputState}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TextInputStateTest {
     @Test
@@ -236,11 +236,15 @@ public class TextInputStateTest {
         // Verify that the spans are included in the resulting text when styling flag is set to
         // InputConnection.GET_TEXT_WITH_STYLES.
 
-        SpannableStringBuilder spannedTextWithStyles = createSpannedText("The quick brown fox", 8, 11);
+        SpannableStringBuilder spannedTextWithStyles =
+                createSpannedText("The quick brown fox", 8, 11);
         TextInputState stateSpannedWithStyles =
-                new TextInputState(spannedTextWithStyles, new Range(7, 7), new Range(-1, -1), false, true);
-        CharSequence surroundingTextWithStyles = stateSpannedWithStyles.getSurroundingTextInternal(
-                3, 5, InputConnection.GET_TEXT_WITH_STYLES).mText;
+                new TextInputState(
+                        spannedTextWithStyles, new Range(7, 7), new Range(-1, -1), false, true);
+        CharSequence surroundingTextWithStyles =
+                stateSpannedWithStyles.getSurroundingTextInternal(
+                                3, 5, InputConnection.GET_TEXT_WITH_STYLES)
+                        .mText;
         int expectedSpanCount = 1;
         int expectedSpanStart = 4;
         int expectedSpanEnd = 7;

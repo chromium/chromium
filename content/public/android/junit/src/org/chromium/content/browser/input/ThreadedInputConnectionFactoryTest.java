@@ -42,7 +42,7 @@ import org.chromium.content_public.browser.InputMethodManagerWrapper;
 
 import java.util.concurrent.Callable;
 
-/** Unit tests for {@ThreadedInputConnectionFactory}. */
+/** Unit tests for {@link ThreadedInputConnectionFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ThreadedInputConnectionFactoryTest {

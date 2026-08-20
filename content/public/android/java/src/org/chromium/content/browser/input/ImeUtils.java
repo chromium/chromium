@@ -230,7 +230,7 @@ public class ImeUtils {
 
     /**
      * @param editorInfo The EditorInfo
-     * @return Debug string for the given {@EditorInfo}.
+     * @return Debug string for the given {@link EditorInfo}.
      */
     static String getEditorInfoDebugString(EditorInfo editorInfo) {
         StringBuilder builder = new StringBuilder();
@@ -241,7 +241,7 @@ public class ImeUtils {
 
     /**
      * @param editable The editable.
-     * @return Debug string for the given {@Editable}.
+     * @return Debug string for the given {@link Editable}.
      */
     static String getEditableDebugString(Editable editable) {
         return String.format(
@@ -256,7 +256,7 @@ public class ImeUtils {
 
     /**
      * @param correctionInfo The correction info.
-     * @return Debug string for the given {@CorrectionInfo}.
+     * @return Debug string for the given {@link CorrectionInfo}.
      */
     static String getCorrectionInfoDebugString(CorrectionInfo correctionInfo) {
         // TODO(changwan): implement it properly if needed.

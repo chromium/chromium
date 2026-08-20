@@ -50,7 +50,7 @@ import org.chromium.content_public.common.ContentFeatures;
 
 import java.util.concurrent.Callable;
 
-/** Unit tests for {@ThreadedInputConnection}. */
+/** Unit tests for {@link ThreadedInputConnection}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ThreadedInputConnectionTest {

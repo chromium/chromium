@@ -52,7 +52,7 @@ public class TestInputMethodManagerWrapper implements InputMethodManagerWrapper 
     }
 
     /**
-     * Default {@InputConnectionProvider} that uses a given {@link ImeAdapter} to create {@link
+     * Default {@link InputConnectionProvider} that uses a given {@link ImeAdapter} to create {@link
      * InputConnection}.
      */
     public static InputConnectionProvider defaultInputConnectionProvider(

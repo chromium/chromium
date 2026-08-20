@@ -478,7 +478,8 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     }
 
     /**
-     * Run the {@Callable} on IME thread (or UI thread if not applicable).
+     * Run the {@link Callable} on IME thread (or UI thread if not applicable).
+     *
      * @param c The callable
      * @return The result from running the callable.
      */
