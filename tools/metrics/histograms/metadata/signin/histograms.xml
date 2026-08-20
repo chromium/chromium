@@ -651,6 +651,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Signin.AccountPreview.SingleRequestRateLimited"
+    enum="BooleanRateLimited" expires_after="2027-06-01">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records when a single account preview preference request (e.g. from UI) is
+    denied because the service is currently rate-limited due to a previous HTTP
+    429 error.
+  </summary>
+</histogram>
+
 <histogram
     name="Signin.AccountPreview.TriggerCauseAccountsUnchangedSinceLastFetch"
     enum="AccountPreviewFetchTriggerCause" expires_after="2027-06-01">
@@ -660,6 +671,17 @@ chromium-metrics-reviews@google.com.
     This records causes that did not result in any actual network fetches
     because the accounts were the ones already used for the last preference
     computation.
+  </summary>
+</histogram>
+
+<histogram name="Signin.AccountPreview.TriggerCauseRateLimited"
+    enum="AccountPreviewFetchTriggerCause" expires_after="2027-06-01">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the trigger cause of a fetch cycle that was denied and not performed
+    because the service is currently rate-limited due to a previous HTTP 429
+    error.
   </summary>
 </histogram>
 
@@ -703,6 +725,18 @@ chromium-metrics-reviews@google.com.
     <variant name="Success" summary="successful (at least some data returned)"/>
     <variant name="TokenFailure" summary="failed during access token fetch"/>
   </token>
+</histogram>
+
+<histogram name="Signin.AccountPreviewData.FetchHit429" enum="BooleanHit"
+    expires_after="2027-06-01">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records whether a sync preview data fetch attempt for a signed-in account
+    encountered an HTTP 429 (Too Many Requests) response from either endpoint
+    (statistics or entities previews). Recorded whenever a network fetch
+    completes.
+  </summary>
 </histogram>
 
 <histogram name="Signin.AccountPreviewData.FetchState"

@@ -7,6 +7,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/sync/base/time.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -141,6 +142,22 @@ void MockFailedPreviewsFetch(
   test_url_loader_factory->AddResponse(GURL(GetTestPreviewsUrl()),
                                        network::mojom::URLResponseHead::New(),
                                        "", status);
+}
+
+void Mock429StatsFetch(network::TestURLLoaderFactory* test_url_loader_factory) {
+  test_url_loader_factory->AddResponse(GetTestStatsUrl(), "",
+                                       net::HTTP_TOO_MANY_REQUESTS);
+}
+
+void Mock429PreviewsFetch(
+    network::TestURLLoaderFactory* test_url_loader_factory) {
+  test_url_loader_factory->AddResponse(GetTestPreviewsUrl(), "",
+                                       net::HTTP_TOO_MANY_REQUESTS);
+}
+
+void Mock429Fetch(network::TestURLLoaderFactory* test_url_loader_factory) {
+  Mock429StatsFetch(test_url_loader_factory);
+  Mock429PreviewsFetch(test_url_loader_factory);
 }
 
 void SimulateSuccessfulFetch(

@@ -66,7 +66,8 @@ class AccountPreviewDataFetcher {
 
   using FetchCompleteCallback =
       base::OnceCallback<void(const GaiaId&,
-                              std::optional<AccountPreviewData>)>;
+                              std::optional<AccountPreviewData>,
+                              bool hit_429_error)>;
 
   AccountPreviewDataFetcher(
       const GaiaId& gaia_id,
@@ -112,6 +113,7 @@ class AccountPreviewDataFetcher {
   base::RepeatingCallback<void(bool)> barrier_callback_;
 
   bool is_started_ = false;
+  bool hit_429_error_ = false;
   std::optional<base::ElapsedTimer> fetch_timer_;
 
   base::OnceClosure on_fetch_completed_for_testing_;

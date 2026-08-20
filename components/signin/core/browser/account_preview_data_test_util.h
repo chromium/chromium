@@ -55,6 +55,16 @@ void MockFailedPreviewsFetch(
     network::TestURLLoaderFactory* test_url_loader_factory,
     net::Error error_code);
 
+// Mocks a 429 Too Many Requests response from the stats endpoint.
+void Mock429StatsFetch(network::TestURLLoaderFactory* test_url_loader_factory);
+
+// Mocks a 429 Too Many Requests response from the previews endpoint.
+void Mock429PreviewsFetch(
+    network::TestURLLoaderFactory* test_url_loader_factory);
+
+// Mocks 429 Too Many Requests responses for both stats and previews endpoints.
+void Mock429Fetch(network::TestURLLoaderFactory* test_url_loader_factory);
+
 // Simulates successful responses for the oldest matching pending stats and
 // previews fetches.
 void SimulateSuccessfulFetch(

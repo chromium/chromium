@@ -25,9 +25,11 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace signin {
@@ -40,6 +42,8 @@ constexpr char kStagingPreviewUrl[] =
     "https://alpha-chromesyncpreview-googleapis.pa.sandbox.google.com/v1";
 
 constexpr char kFetchStateHistogram[] = "Signin.AccountPreviewData.FetchState";
+constexpr char kFetchHit429Histogram[] =
+    "Signin.AccountPreviewData.FetchHit429";
 constexpr char kFetchDurationSuccessHistogram[] =
     "Signin.AccountPreviewData.FetchDuration.Success";
 constexpr char kFetchDurationFailureHistogram[] =
@@ -375,24 +379,42 @@ void AccountPreviewDataFetcher::StartNetworkRequests(
 
 void AccountPreviewDataFetcher::OnStatsFetchCompleted(
     std::optional<std::string> response_body) {
+  int response_code =
+      stats_url_loader_->ResponseInfo() &&
+              stats_url_loader_->ResponseInfo()->headers
+          ? stats_url_loader_->ResponseInfo()->headers->response_code()
+          : -1;
+  if (response_code == net::HTTP_TOO_MANY_REQUESTS) {
+    hit_429_error_ = true;
+  }
   stats_url_loader_.reset();
+  bool is_http_success = (response_code == net::HTTP_OK);
   base::UmaHistogramEnumeration(kFetchStateHistogram,
-                                response_body.has_value()
+                                response_body.has_value() && is_http_success
                                     ? FetchState::kStatisticsHasResult
                                     : FetchState::kStatisticsEmptyResult);
-  bool success = response_body.has_value() &&
+  bool success = is_http_success && response_body.has_value() &&
                  ParseStatsResponse(*response_body, *fetched_data_);
   barrier_callback_.Run(success);
 }
 
 void AccountPreviewDataFetcher::OnPreviewsFetchCompleted(
     std::optional<std::string> response_body) {
+  int response_code =
+      previews_url_loader_->ResponseInfo() &&
+              previews_url_loader_->ResponseInfo()->headers
+          ? previews_url_loader_->ResponseInfo()->headers->response_code()
+          : -1;
+  if (response_code == net::HTTP_TOO_MANY_REQUESTS) {
+    hit_429_error_ = true;
+  }
   previews_url_loader_.reset();
+  bool is_http_success = (response_code == net::HTTP_OK);
   base::UmaHistogramEnumeration(kFetchStateHistogram,
-                                response_body.has_value()
+                                response_body.has_value() && is_http_success
                                     ? FetchState::kEntityPreviewHasResult
                                     : FetchState::kEntityPreviewEmptyResult);
-  bool success = response_body.has_value() &&
+  bool success = is_http_success && response_body.has_value() &&
                  ParsePreviewsResponse(*response_body, *fetched_data_,
                                        current_device_cache_guids_);
   barrier_callback_.Run(success);
@@ -408,6 +430,8 @@ void AccountPreviewDataFetcher::OnFetchCompleted(std::vector<bool> results) {
                                 fetched_data_.has_value()
                                     ? FetchState::kCompletedWithResults
                                     : FetchState::kCompletedWithoutResults);
+
+  base::UmaHistogramBoolean(kFetchHit429Histogram, hit_429_error_);
 
   CHECK(fetch_timer_.has_value());
   base::UmaHistogramMediumTimes(fetched_data_.has_value()
@@ -432,7 +456,7 @@ void AccountPreviewDataFetcher::CompleteFetch() {
 
 void AccountPreviewDataFetcher::RunCallback() {
   CHECK(callback_);
-  std::move(callback_).Run(gaia_id_, std::move(fetched_data_));
+  std::move(callback_).Run(gaia_id_, std::move(fetched_data_), hit_429_error_);
 }
 
 }  // namespace signin

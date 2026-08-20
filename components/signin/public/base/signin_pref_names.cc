@@ -26,6 +26,10 @@ const char kAccountPreviewPreference[] = "signin.account_preview_preference";
 const char kAccountPreviewDataLastUpdatePref[] =
     "signin.account_preview_data_last_update";
 
+// Time pref that tracks the last time account preview data request hit 429.
+const char kAccountPreviewDataLast429TimePref[] =
+    "signin.account_preview_data_last_429_time";
+
 // List pref that tracks the GAIA IDs of accounts present during the last data
 // fetch.
 const char kAccountPreviewDataLastFetchAccounts[] =

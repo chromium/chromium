@@ -94,6 +94,8 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   bool HasActiveFetcherForTesting(const GaiaId& gaia_id) const;
   AccountPreviewDataFetcher* GetFetcherForTesting(const GaiaId& gaia_id) const;
 
+  bool IsRateLimitedForTesting() const { return IsRateLimited(); }
+
   void SetFetchCompleteCallbackForTesting(base::OnceClosure callback);
   void SetAllDataAvailableCallbackForTesting(base::OnceClosure callback);
 
@@ -111,12 +113,14 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   void OnIdentityManagerShutdown(IdentityManager* identity_manager) override;
 
  private:
+  bool IsRateLimited() const;
   void RefreshAllAccountPreviewData();
   void EnsureAllAccountsFetched(FetchTriggerCause cause);
   void FetchAccountPreviewData(const GaiaId& gaia_id);
   void StartFetch(const GaiaId& gaia_id);
   void OnSingleFetchCompleted(const GaiaId& gaia_id,
-                              std::optional<AccountPreviewData> data);
+                              std::optional<AccountPreviewData> data,
+                              bool hit_429);
   std::vector<CoreAccountInfo> GetAccountsWithValidRefreshTokens() const;
   void RefreshAccountIdToGaiaIdMapping();
   bool HaveAccountsMutatedSinceLastFetch(
