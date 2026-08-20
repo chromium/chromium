@@ -248,6 +248,8 @@ inline constexpr char kAutofillThirdPartyPackageUsedForPlatformAutofill[] =
     "autofill.third_party_package_used_for_platform_autofill";
 inline constexpr char kFacilitatedPaymentsEwallet[] =
     "facilitated_payments.ewallet";
+inline constexpr char kFacilitatedPaymentsEwalletAccountLinking[] =
+    "facilitated_payments.ewallet_account_linking_enabled";
 inline constexpr char kFacilitatedPaymentsPix[] = "facilitated_payments.pix";
 inline constexpr char kFacilitatedPaymentsPixAccountLinking[] =
     "facilitated_payments.pix_account_linking_enabled";
@@ -373,6 +375,12 @@ void DeduplicateEmailVerificationState(PrefService* prefs);
 void SetFacilitatedPaymentsEwallet(PrefService* prefs, bool value);
 
 bool IsFacilitatedPaymentsEwalletEnabled(const PrefService* prefs);
+
+void SetFacilitatedPaymentsEwalletAccountLinking(PrefService* prefs,
+                                                 bool value);
+
+bool IsFacilitatedPaymentsEwalletAccountLinkingEnabled(
+    const PrefService* prefs);
 
 void SetFacilitatedPaymentsPix(PrefService* prefs, bool value);
 

@@ -963,14 +963,17 @@ TEST_F(PixAccountLinkingManagerTest, GetStrikeDatabase_ReturnsValidInstance) {
   EXPECT_EQ(strike_db->GetStrikes(), 0);
 }
 
-TEST_F(PixAccountLinkingManagerTest, GetStrikeDatabase_IncognitoReturnsNullptr) {
+TEST_F(PixAccountLinkingManagerTest,
+       GetStrikeDatabase_IncognitoReturnsNullptr) {
   EXPECT_CALL(client(), GetStrikeDatabase).WillOnce(testing::Return(nullptr));
   EXPECT_EQ(test_api().GetStrikeDatabase(), nullptr);
 }
 
-TEST_F(PixAccountLinkingManagerTest,
-       MaybeShowPixAccountLinkingPrompt_IncognitoNullStrikeDatabase_PromptShown) {
-  EXPECT_CALL(client(), GetStrikeDatabase).WillRepeatedly(testing::Return(nullptr));
+TEST_F(
+    PixAccountLinkingManagerTest,
+    MaybeShowPixAccountLinkingPrompt_IncognitoNullStrikeDatabase_PromptShown) {
+  EXPECT_CALL(client(), GetStrikeDatabase)
+      .WillRepeatedly(testing::Return(nullptr));
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt);
 
   manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
@@ -979,20 +982,24 @@ TEST_F(PixAccountLinkingManagerTest,
 
 TEST_F(PixAccountLinkingManagerTest,
        OnAccepted_IncognitoNullStrikeDatabase_DoesNotCrash) {
-  EXPECT_CALL(client(), GetStrikeDatabase).WillRepeatedly(testing::Return(nullptr));
+  EXPECT_CALL(client(), GetStrikeDatabase)
+      .WillRepeatedly(testing::Return(nullptr));
   test_api().OnAccepted();
 }
 
 TEST_F(PixAccountLinkingManagerTest,
        OnDeclined_IncognitoNullStrikeDatabase_DoesNotCrash) {
-  EXPECT_CALL(client(), GetStrikeDatabase).WillRepeatedly(testing::Return(nullptr));
+  EXPECT_CALL(client(), GetStrikeDatabase)
+      .WillRepeatedly(testing::Return(nullptr));
   test_api().OnDeclined();
 }
 
-TEST_F(PixAccountLinkingManagerTest,
-       MaybeShowPixAccountLinkingPrompt_StrictCheckOrder_StrikeLimitTakesPrecedence) {
+TEST_F(
+    PixAccountLinkingManagerTest,
+    MaybeShowPixAccountLinkingPrompt_StrictCheckOrder_StrikeLimitTakesPrecedence) {
   base::HistogramTester histogram_tester;
-  // Set up 3 strikes (max limit) AND disable user preference AND disable screenlock.
+  // Set up 3 strikes (max limit) AND disable user preference AND disable
+  // screenlock.
   PixAccountLinkingStrikeDatabase strike_database(test_strike_database_.get());
   strike_database.AddStrikes(3);
   autofill::prefs::SetFacilitatedPaymentsPixAccountLinking(pref_service_.get(),

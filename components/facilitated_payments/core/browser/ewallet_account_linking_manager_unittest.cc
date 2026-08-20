@@ -8,11 +8,15 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
+#include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/facilitated_payments/core/browser/ewallet_account_linking_manager_test_api.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
@@ -26,6 +30,7 @@ namespace payments::facilitated {
 namespace {
 
 using ::testing::_;
+using ::testing::Return;
 
 class EwalletAccountLinkingManagerTest : public testing::Test {
  public:
@@ -50,6 +55,11 @@ class EwalletAccountLinkingManagerTest : public testing::Test {
 
   void SetUp() override {
     payments_data_manager_.SetAutofillPaymentMethodsEnabled(true);
+    pref_service_ = autofill::test::PrefServiceForTesting();
+    payments_data_manager_.SetPrefService(pref_service_.get());
+    test_strike_database_ = std::make_unique<autofill::TestStrikeDatabase>();
+    ON_CALL(client_, GetStrikeDatabase)
+        .WillByDefault(testing::Return(test_strike_database_.get()));
     ON_CALL(client_, GetFacilitatedPaymentsNetworkInterface)
         .WillByDefault(testing::Return(payments_network_interface_.get()));
     ON_CALL(client_, GetPaymentsDataManager)
@@ -62,9 +72,12 @@ class EwalletAccountLinkingManagerTest : public testing::Test {
   MockFacilitatedPaymentsClient client_;
   signin::IdentityTestEnvironment identity_test_env_;
   autofill::TestPaymentsDataManager payments_data_manager_;
+  std::unique_ptr<PrefService> pref_service_;
+  std::unique_ptr<autofill::TestStrikeDatabase> test_strike_database_;
   std::unique_ptr<MockFacilitatedPaymentsNetworkInterface>
       payments_network_interface_;
   std::unique_ptr<EwalletAccountLinkingManager> manager_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(EwalletAccountLinkingManagerTest, GetHistogramSuffix) {
@@ -73,10 +86,9 @@ TEST_F(EwalletAccountLinkingManagerTest, GetHistogramSuffix) {
 
 TEST_F(EwalletAccountLinkingManagerTest,
        GetPayloadForGetDetailsForCreatePaymentInstrument) {
-  base::DictValue expected_payload;
-  EXPECT_EQ(
-      expected_payload,
-      test_api(*manager_).GetPayloadForGetDetailsForCreatePaymentInstrument());
+  EXPECT_TRUE(test_api(*manager_)
+                  .GetPayloadForGetDetailsForCreatePaymentInstrument()
+                  .empty());
 }
 
 TEST_F(EwalletAccountLinkingManagerTest,
@@ -149,7 +161,6 @@ TEST_F(EwalletAccountLinkingManagerTest, DoOnClientTokenReceived) {
   EXPECT_CALL(
       *payments_network_interface_,
       GetDetailsForCreatePaymentInstrument(0, client_token, _, "en-US"));
-
   test_api(*manager_).DoOnClientTokenReceived(client_token);
 }
 
@@ -186,6 +197,28 @@ TEST_F(EwalletAccountLinkingManagerTest,
 }
 
 TEST_F(EwalletAccountLinkingManagerTest,
+       DoOnGetDetailsForCreatePaymentInstrumentResponse_Accepted) {
+  base::OnceCallback<void()> on_accepted;
+
+  EXPECT_CALL(client_, ShowAccountLinkingPrompt(_, _, _, _))
+      .WillOnce([&](const AccountLinkingParams& p,
+                    base::OnceCallback<void()> accepted,
+                    base::OnceCallback<void()> declined,
+                    base::OnceCallback<void()> dismissed) {
+        on_accepted = std::move(accepted);
+      });
+
+  test_api(*manager_).DoOnGetDetailsForCreatePaymentInstrumentResponse(true);
+
+  ASSERT_TRUE(on_accepted);
+
+  EXPECT_CALL(client_, DismissPrompt());
+  // Since action_token_ is empty, it should exit with AccountLinkingResult{}
+  // which has kCouldNotInvoke.
+  std::move(on_accepted).Run();
+}
+
+TEST_F(EwalletAccountLinkingManagerTest,
        DoOnGetDetailsForCreatePaymentInstrumentResponse_Declined) {
   base::OnceCallback<void()> on_declined;
 
@@ -203,28 +236,6 @@ TEST_F(EwalletAccountLinkingManagerTest,
 
   EXPECT_CALL(client_, DismissPrompt());
   std::move(on_declined).Run();
-}
-
-TEST_F(EwalletAccountLinkingManagerTest,
-       DoOnGetDetailsForCreatePaymentInstrumentResponse_Accepted) {
-  base::OnceCallback<void()> on_accepted;
-
-  EXPECT_CALL(client_, ShowAccountLinkingPrompt(_, _, _, _))
-      .WillOnce([&](const AccountLinkingParams& p,
-                    base::OnceCallback<void()> accepted,
-                    base::OnceCallback<void()> declined,
-                    base::OnceCallback<void()> dismissed) {
-        on_accepted = std::move(accepted);
-      });
-
-  test_api(*manager_).DoOnGetDetailsForCreatePaymentInstrumentResponse(true);
-
-  ASSERT_TRUE(on_accepted);
-
-  // Since action_token_ is empty, it should exit with AccountLinkingResult{}
-  // which has kCouldNotInvoke.
-  EXPECT_CALL(client_, DismissPrompt());
-  std::move(on_accepted).Run();
 }
 
 TEST_F(EwalletAccountLinkingManagerTest,
@@ -247,11 +258,49 @@ TEST_F(EwalletAccountLinkingManagerTest,
   std::move(on_dismissed).Run();
 }
 
-TEST_F(EwalletAccountLinkingManagerTest, CreateAccountLinkingParams) {
+TEST_F(EwalletAccountLinkingManagerTest,
+       GetStrikeDatabase_ReturnsValidInstance) {
+  auto* strike_db = test_api(*manager_).GetStrikeDatabase();
+  ASSERT_NE(strike_db, nullptr);
+  EXPECT_EQ(strike_db->GetStrikes(), 0);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest,
+       GetStrikeDatabase_IncognitoReturnsNullptr) {
+  EXPECT_CALL(client_, GetStrikeDatabase()).WillOnce(Return(nullptr));
+  EXPECT_EQ(test_api(*manager_).GetStrikeDatabase(), nullptr);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest,
+       IsUserPrefEnabled_ReadsFromPaymentsDataManager) {
+  EXPECT_TRUE(test_api(*manager_).IsUserPrefEnabled());
+  autofill::prefs::SetFacilitatedPaymentsEwalletAccountLinking(
+      pref_service_.get(), false);
+  EXPECT_FALSE(test_api(*manager_).IsUserPrefEnabled());
+  autofill::prefs::SetFacilitatedPaymentsEwalletAccountLinking(
+      pref_service_.get(), true);
+  EXPECT_TRUE(test_api(*manager_).IsUserPrefEnabled());
+}
+
+TEST_F(EwalletAccountLinkingManagerTest,
+       CreateAccountLinkingParams_PopulatesStrikeCountFromStrikeDatabase) {
+  auto* strike_db = test_api(*manager_).GetStrikeDatabase();
+  ASSERT_NE(strike_db, nullptr);
+  strike_db->AddStrike();
+  strike_db->AddStrike();
+
   auto params = test_api(*manager_).CreateAccountLinkingParams();
   ASSERT_TRUE(params.has_value());
   EXPECT_EQ(params->fop_type, FacilitatedPaymentsType::kEwallet);
   EXPECT_EQ(params->fop_display_name, u"eWallet");
+  EXPECT_EQ(params->strike_count, 2);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest,
+       CreateAccountLinkingParams_NullStrikeDatabase_StrikeCountIsZero) {
+  EXPECT_CALL(client_, GetStrikeDatabase()).WillRepeatedly(Return(nullptr));
+  auto params = test_api(*manager_).CreateAccountLinkingParams();
+  ASSERT_TRUE(params.has_value());
   EXPECT_EQ(params->strike_count, 0);
 }
 
@@ -270,6 +319,184 @@ TEST_F(EwalletAccountLinkingManagerTest,
 
   EXPECT_CALL(client_, DismissPrompt());
   manager_->DismissAndCancel();
+}
+
+TEST_F(EwalletAccountLinkingManagerTest,
+       CanPromptUser_MaxStrikesReached_ReturnsFalseAndLogsHistogram) {
+  auto* strike_db = test_api(*manager_).GetStrikeDatabase();
+  strike_db->AddStrike();
+  strike_db->AddStrike();
+  strike_db->AddStrike();
+  EXPECT_CALL(client_, HasScreenlockOrBiometricSetup())
+      .WillRepeatedly(Return(true));
+
+  EXPECT_FALSE(manager_->CanPromptUser());
+  histogram_tester_.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.AccountLinking.FlowExitedReason",
+      AccountLinkingFlowExitedReason::kMaxStrikes, 1);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest,
+       CanPromptUser_RequiredDelayNotPassed_ReturnsFalseAndLogsHistogram) {
+  auto* strike_db = test_api(*manager_).GetStrikeDatabase();
+  strike_db->AddStrike();
+  EXPECT_CALL(client_, HasScreenlockOrBiometricSetup())
+      .WillRepeatedly(Return(true));
+
+  EXPECT_FALSE(manager_->CanPromptUser());
+  histogram_tester_.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.AccountLinking.FlowExitedReason",
+      AccountLinkingFlowExitedReason::kRequiredDelayNotPassed, 1);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest,
+       CanPromptUser_UserPrefDisabled_ReturnsFalseAndLogsHistogram) {
+  autofill::prefs::SetFacilitatedPaymentsEwalletAccountLinking(
+      pref_service_.get(), false);
+  EXPECT_FALSE(manager_->CanPromptUser());
+  histogram_tester_.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.AccountLinking.FlowExitedReason",
+      AccountLinkingFlowExitedReason::kUserOptedOut, 1);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest,
+       CanPromptUser_NoScreenlockOrBiometrics_ReturnsFalseAndLogsHistogram) {
+  EXPECT_CALL(client_, HasScreenlockOrBiometricSetup()).WillOnce(Return(false));
+  EXPECT_FALSE(manager_->CanPromptUser());
+  histogram_tester_.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.AccountLinking.FlowExitedReason",
+      AccountLinkingFlowExitedReason::kNoScreenlockOrBiometricSetup, 1);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest,
+       CanPromptUser_IncognitoNullStrikeDatabase_ReturnsTrue) {
+  EXPECT_CALL(client_, GetStrikeDatabase()).WillRepeatedly(Return(nullptr));
+  EXPECT_CALL(client_, HasScreenlockOrBiometricSetup()).WillOnce(Return(true));
+  EXPECT_TRUE(manager_->CanPromptUser());
+  histogram_tester_.ExpectTotalCount(
+      "FacilitatedPayments.Ewallet.AccountLinking.FlowExitedReason", 0);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest, OnAccepted_ClearsStrikesInDatabase) {
+  auto* strike_db = test_api(*manager_).GetStrikeDatabase();
+  strike_db->AddStrike();
+  strike_db->AddStrike();
+  ASSERT_EQ(strike_db->GetStrikes(), 2);
+
+  manager_->OnAccepted();
+  EXPECT_EQ(strike_db->GetStrikes(), 0);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest, OnDeclined_RecordsStrikeInDatabase) {
+  auto* strike_db = test_api(*manager_).GetStrikeDatabase();
+  ASSERT_EQ(strike_db->GetStrikes(), 0);
+
+  manager_->OnDeclined();
+  EXPECT_EQ(strike_db->GetStrikes(), 1);
+  histogram_tester_.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.AccountLinking.FlowExitedReason",
+      AccountLinkingFlowExitedReason::kUserDeclined, 1);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest, OnDismissed_DoesNotRecordStrike) {
+  auto* strike_db = test_api(*manager_).GetStrikeDatabase();
+  ASSERT_EQ(strike_db->GetStrikes(), 0);
+
+  manager_->OnDismissed();
+  EXPECT_EQ(strike_db->GetStrikes(), 0);
+  histogram_tester_.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.AccountLinking.FlowExitedReason",
+      AccountLinkingFlowExitedReason::kScreenClosedByUser, 1);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest, OnDeclined_PrefRemainsEnabled) {
+  EXPECT_TRUE(test_api(*manager_).IsUserPrefEnabled());
+  manager_->OnDeclined();
+  EXPECT_TRUE(test_api(*manager_).IsUserPrefEnabled());
+}
+
+TEST_F(EwalletAccountLinkingManagerTest,
+       OnAccepted_UserLoggedOut_ExitedReasonLogged) {
+  test_api(*manager_).set_action_token({'a', 'c', 't', 'i', 'o', 'n'});
+  EXPECT_CALL(client_, GetCoreAccountInfo()).WillOnce(Return(std::nullopt));
+  manager_->OnAccepted();
+  histogram_tester_.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.AccountLinking.FlowExitedReason",
+      AccountLinkingFlowExitedReason::kUserLoggedOut, 1);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest,
+       CanPromptUser_StrikeLimitAndPrefDisabled_LogsStrikeLimitReasonFirst) {
+  auto* strike_db = test_api(*manager_).GetStrikeDatabase();
+  strike_db->AddStrike();
+  strike_db->AddStrike();
+  strike_db->AddStrike();
+  autofill::prefs::SetFacilitatedPaymentsEwalletAccountLinking(
+      pref_service_.get(), false);
+
+  EXPECT_FALSE(manager_->CanPromptUser());
+  histogram_tester_.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.AccountLinking.FlowExitedReason",
+      AccountLinkingFlowExitedReason::kMaxStrikes, 1);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest,
+       TriggerAccountLinking_CanPromptUserReturnsFalse_DoesNotFetchToken) {
+  bool get_api_client_called = false;
+  manager_ = std::make_unique<EwalletAccountLinkingManager>(
+      &client_,
+      base::BindLambdaForTesting(
+          [&get_api_client_called]()
+              -> std::unique_ptr<FacilitatedPaymentsApiClient> {
+            get_api_client_called = true;
+            return nullptr;
+          }),
+      autofill::Ewallet(/*instrument_id=*/0, /*nickname=*/u"",
+                        /*display_icon_url=*/GURL(),
+                        /*ewallet_name=*/u"eWallet",
+                        /*account_display_name=*/u"",
+                        /*supported_payment_link_uris=*/{},
+                        /*is_fido_enrolled=*/false));
+
+  autofill::prefs::SetFacilitatedPaymentsEwalletAccountLinking(
+      pref_service_.get(), false);
+
+  base::MockCallback<base::OnceCallback<void(AccountLinkingResult)>> result_callback;
+  manager_->TriggerAccountLinking(result_callback.Get());
+
+  EXPECT_FALSE(get_api_client_called);
+  histogram_tester_.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.AccountLinking.FlowExitedReason",
+      AccountLinkingFlowExitedReason::kUserOptedOut, 1);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest,
+       TriggerAccountLinking_CanPromptUserReturnsTrue_FetchesToken) {
+  bool get_api_client_called = false;
+  manager_ = std::make_unique<EwalletAccountLinkingManager>(
+      &client_,
+      base::BindLambdaForTesting(
+          [&get_api_client_called]()
+              -> std::unique_ptr<FacilitatedPaymentsApiClient> {
+            get_api_client_called = true;
+            return nullptr;
+          }),
+      autofill::Ewallet(/*instrument_id=*/0, /*nickname=*/u"",
+                        /*display_icon_url=*/GURL(),
+                        /*ewallet_name=*/u"eWallet",
+                        /*account_display_name=*/u"",
+                        /*supported_payment_link_uris=*/{},
+                        /*is_fido_enrolled=*/false));
+
+  EXPECT_CALL(client_, HasScreenlockOrBiometricSetup())
+      .WillRepeatedly(Return(true));
+
+  base::MockCallback<base::OnceCallback<void(AccountLinkingResult)>> result_callback;
+  manager_->TriggerAccountLinking(result_callback.Get());
+
+  EXPECT_TRUE(get_api_client_called);
+  histogram_tester_.ExpectTotalCount(
+      "FacilitatedPayments.Ewallet.AccountLinking.FlowExitedReason", 0);
 }
 
 }  // namespace

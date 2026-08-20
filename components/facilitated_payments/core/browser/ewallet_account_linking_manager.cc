@@ -7,8 +7,10 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/facilitated_payments/core/browser/account_linking_params.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
+#include "components/facilitated_payments/core/browser/strike_databases/ewallet_account_linking_strike_database.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 
 namespace payments::facilitated {
@@ -35,6 +37,10 @@ void EwalletAccountLinkingManager::TriggerAccountLinking(
   }
   on_account_linking_result_callback_ =
       std::move(on_account_linking_result_callback);
+
+  if (!CanPromptUser()) {
+    return;
+  }
   FetchClientToken();
 }
 
@@ -55,28 +61,41 @@ void EwalletAccountLinkingManager::DoOnClientTokenReceived(
   InitiateAccountLinkingNetworkCall(client_token);
 }
 
+
 std::optional<AccountLinkingParams>
 EwalletAccountLinkingManager::CreateAccountLinkingParams() {
   AccountLinkingParams params(FacilitatedPaymentsType::kEwallet);
   params.fop_display_name = ewallet_creation_option_.ewallet_name();
-  // TODO(b/509694036): Plumb strike count when supported.
-  params.strike_count = 0;
+  params.strike_count =
+      GetStrikeDatabase() ? GetStrikeDatabase()->GetStrikes() : 0;
   return params;
 }
 
 strike_database::StrikeDatabaseIntegratorBase*
 EwalletAccountLinkingManager::GetStrikeDatabase() {
-  return nullptr;
+  return GetOrCreateStrikeDatabase();
 }
 
 bool EwalletAccountLinkingManager::IsUserPrefEnabled() const {
-  return true;
+  return client()
+      ->GetPaymentsDataManager()
+      ->IsFacilitatedPaymentsEwalletAccountLinkingUserPrefEnabled();
+}
+
+EwalletAccountLinkingStrikeDatabase*
+EwalletAccountLinkingManager::GetOrCreateStrikeDatabase() {
+  if (!strike_database_) {
+    auto* strike_db_provider = client()->GetStrikeDatabase();
+    if (strike_db_provider) {
+      strike_database_ = std::make_unique<EwalletAccountLinkingStrikeDatabase>(
+          strike_db_provider);
+    }
+  }
+  return strike_database_.get();
 }
 
 void EwalletAccountLinkingManager::
     DoOnGetDetailsForCreatePaymentInstrumentResponse(bool is_eligible) {
-  // TODO(crbug.com/520063014): Implement preference checks and strike database
-  // checks mirroring Pix.
   if (is_eligible) {
     ShowAccountLinkingPrompt();
   }

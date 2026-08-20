@@ -66,9 +66,7 @@ class PixAccountLinkingManagerTestApi {
   strike_database::StrikeDatabaseIntegratorBase* GetStrikeDatabase() {
     return manager_->GetStrikeDatabase();
   }
-  bool IsUserPrefEnabled() const {
-    return manager_->IsUserPrefEnabled();
-  }
+  bool IsUserPrefEnabled() const { return manager_->IsUserPrefEnabled(); }
 
  private:
   const raw_ref<PixAccountLinkingManager> manager_;

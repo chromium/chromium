@@ -36,6 +36,8 @@ static_library("browser") {
     "pix_manager.cc",
     "pix_manager.h",
     "pix_manager_test_api.h",
+    "strike_databases/ewallet_account_linking_strike_database.cc",
+    "strike_databases/ewallet_account_linking_strike_database.h",
     "strike_databases/payment_link_suggestion_strike_database.h",
     "strike_databases/pix_account_linking_strike_database.cc",
     "strike_databases/pix_account_linking_strike_database.h",
@@ -51,6 +53,7 @@ static_library("browser") {
     "//components/facilitated_payments/core/validation",
     "//components/optimization_guide/core",
     "//components/signin/public/identity_manager",
+    "//components/strike_database",
     "//services/data_decoder/public/cpp",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network/public/cpp",
@@ -73,6 +76,7 @@ source_set("unit_tests") {
     "payment_link_manager_unittest.cc",
     "pix_account_linking_manager_unittest.cc",
     "pix_manager_unittest.cc",
+    "strike_databases/ewallet_account_linking_strike_database_unittest.cc",
   ]
 
   deps = [

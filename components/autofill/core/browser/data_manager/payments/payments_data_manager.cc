@@ -2109,6 +2109,17 @@ bool PaymentsDataManager::IsFacilitatedPaymentsEwalletUserPrefEnabled() const {
   return prefs::IsFacilitatedPaymentsEwalletEnabled(pref_service_);
 }
 
+void PaymentsDataManager::SetFacilitatedPaymentsEwalletAccountLinkingUserPref(
+    bool enabled) {
+  prefs::SetFacilitatedPaymentsEwalletAccountLinking(pref_service_, enabled);
+}
+
+bool PaymentsDataManager::
+    IsFacilitatedPaymentsEwalletAccountLinkingUserPrefEnabled() const {
+  return prefs::IsFacilitatedPaymentsEwalletAccountLinkingEnabled(
+      pref_service_);
+}
+
 bool PaymentsDataManager::IsFacilitatedPaymentsA2AUserPrefEnabled() const {
   return prefs::IsFacilitatedPaymentsA2AEnabled(pref_service_);
 }

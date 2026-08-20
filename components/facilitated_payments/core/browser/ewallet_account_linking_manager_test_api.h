@@ -27,6 +27,10 @@ class EwalletAccountLinkingManagerTestApi {
     manager_->DoOnGetDetailsForCreatePaymentInstrumentResponse(is_eligible);
   }
 
+  void set_action_token(std::vector<uint8_t> action_token) {
+    manager_->SetActionTokenForTesting(std::move(action_token));
+  }
+
   std::optional<AccountLinkingParams> CreateAccountLinkingParams() {
     return manager_->CreateAccountLinkingParams();
   }
@@ -46,6 +50,12 @@ class EwalletAccountLinkingManagerTestApi {
   base::WeakPtr<NativeAccountLinkingHandler> GetWeakPtr() {
     return manager_->GetWeakPtr();
   }
+
+  strike_database::StrikeDatabaseIntegratorBase* GetStrikeDatabase() {
+    return manager_->GetStrikeDatabase();
+  }
+
+  bool IsUserPrefEnabled() const { return manager_->IsUserPrefEnabled(); }
 
  private:
   const raw_ptr<EwalletAccountLinkingManager> manager_;

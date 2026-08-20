@@ -653,18 +653,17 @@ TEST_F(NativeAccountLinkingHandlerTest,
 TEST_F(NativeAccountLinkingHandlerTest,
        CanPromptUser_NoScreenlockOrBiometrics_ReturnsFalseAndLogsHistogram) {
   handler_->set_is_user_pref_enabled(true);
-  EXPECT_CALL(client_, HasScreenlockOrBiometricSetup())
-      .WillOnce(Return(false));
+  EXPECT_CALL(client_, HasScreenlockOrBiometricSetup()).WillOnce(Return(false));
   EXPECT_FALSE(handler_->CanPromptUser());
   histogram_tester_.ExpectUniqueSample(
       "FacilitatedPayments.TestFop.AccountLinking.FlowExitedReason",
       AccountLinkingFlowExitedReason::kNoScreenlockOrBiometricSetup, 1);
 }
 
-TEST_F(NativeAccountLinkingHandlerTest, CanPromptUser_AllConditionsMet_ReturnsTrue) {
+TEST_F(NativeAccountLinkingHandlerTest,
+       CanPromptUser_AllConditionsMet_ReturnsTrue) {
   handler_->set_is_user_pref_enabled(true);
-  EXPECT_CALL(client_, HasScreenlockOrBiometricSetup())
-      .WillOnce(Return(true));
+  EXPECT_CALL(client_, HasScreenlockOrBiometricSetup()).WillOnce(Return(true));
   EXPECT_TRUE(handler_->CanPromptUser());
   histogram_tester_.ExpectTotalCount(
       "FacilitatedPayments.TestFop.AccountLinking.FlowExitedReason", 0);
@@ -689,8 +688,7 @@ TEST_F(NativeAccountLinkingHandlerTest,
        CanPromptUser_IncognitoNullStrikeDatabase_ReturnsTrue) {
   handler_->set_strike_database(nullptr);
   handler_->set_is_user_pref_enabled(true);
-  EXPECT_CALL(client_, HasScreenlockOrBiometricSetup())
-      .WillOnce(Return(true));
+  EXPECT_CALL(client_, HasScreenlockOrBiometricSetup()).WillOnce(Return(true));
   EXPECT_TRUE(handler_->CanPromptUser());
   histogram_tester_.ExpectTotalCount(
       "FacilitatedPayments.TestFop.AccountLinking.FlowExitedReason", 0);
