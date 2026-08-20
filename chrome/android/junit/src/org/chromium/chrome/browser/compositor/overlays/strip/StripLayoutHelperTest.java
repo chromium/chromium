@@ -5765,8 +5765,6 @@ public class StripLayoutHelperTest {
     @Test
     public void testHandleGroupTitleClick_Collapse() {
         // Initialize with 4 tabs. Group first three tabs.
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher("Android.TabStrip.TabGroupCollapsed", true);
         initializeTest(false, false, 3, 4);
         mStripLayoutHelper.onSizeChanged(
                 STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
@@ -5780,16 +5778,11 @@ public class StripLayoutHelperTest {
         // Verify the proper event was sent to the TabModel.
         verify(mModel)
                 .setTabGroupCollapsed(TAB_GROUP_ID_1, /* isCollapsed= */ true, /* animate= */ true);
-        // Verify we record the correct metric.
-        histogramWatcher.assertExpected("Should record true, since we're collapsing.");
     }
 
     @Test
     public void testHandleGroupTitleClick_Expand() {
         // Initialize with 4 tabs. Group first three tabs.
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.TabStrip.TabGroupCollapsed", false);
         initializeTest(false, false, 3, 4);
         mStripLayoutHelper.onSizeChanged(
                 STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
@@ -5806,8 +5799,6 @@ public class StripLayoutHelperTest {
         verify(mModel)
                 .setTabGroupCollapsed(
                         TAB_GROUP_ID_1, /* isCollapsed= */ false, /* animate= */ true);
-        // Verify we record the correct metric.
-        histogramWatcher.assertExpected("Should record false, since we're expanding.");
     }
 
     @Test
