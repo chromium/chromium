@@ -98,7 +98,9 @@ suite('ComposeboxMixinTest', () => {
         loadTimeData.overrideValues({
           contextManagementInComposeboxEnabled: true,
           contextManagementInOmniboxEnabled: true,
+          tabDeselectionEnabled: false,
         });
+        element.tabDeselectionEnabled = false;
         const tab1 = {
           tabId: 0,
           title: 'Tab 1',
@@ -160,7 +162,9 @@ suite('ComposeboxMixinTest', () => {
         loadTimeData.overrideValues({
           contextManagementInComposeboxEnabled: true,
           contextManagementInOmniboxEnabled: true,
+          tabDeselectionEnabled: false,
         });
+        element.tabDeselectionEnabled = false;
         const tab1 = {
           tabId: 0,
           title: 'Tab 1',

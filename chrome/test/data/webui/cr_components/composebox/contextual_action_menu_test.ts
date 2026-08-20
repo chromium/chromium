@@ -77,6 +77,7 @@ suite('ContextualActionMenu', () => {
       ShowContextMenuHeaders: true,
       contextManagementInComposeboxEnabled: false,
       keepMenuOpenOnTabSelectForRealbox: false,
+      composeboxContextMenuEnableTabDeselection: false,
     });
 
     const pluralStringProxy = new TestPluralStringProxy();
@@ -797,6 +798,9 @@ suite('ContextualActionMenu', () => {
       'Browser tab suggestions disabled when they are thread restored',
       async () => {
         actionMenu.remove();
+        loadTimeData.overrideValues({
+          composeboxContextMenuEnableTabDeselection: false,
+        });
         actionMenu =
             document.createElement('cr-composebox-contextual-action-menu');
         actionMenu.contextManagementInComposeboxEnabled = true;

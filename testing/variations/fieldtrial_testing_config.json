@@ -6988,6 +6988,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "KeepMenuOpenOnTabSelectForRealboxComposebox": "true",
+                        "enable_tab_deselection": "true"
+                    },
                     "enable_features": [
                         "ContextManagementInComposebox",
                         "ContextManagementInOmnibox"
