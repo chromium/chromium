@@ -888,6 +888,22 @@ TEST_F(ChromePaymentsAutofillClientTest, GetBnplUiDelegate) {
   EXPECT_EQ(ui_delegate, chrome_payments_client()->GetBnplUiDelegate());
 }
 
+// Test that Wallet reminder notice UI delegate is created and returned
+// correctly.
+TEST_F(ChromePaymentsAutofillClientTest, GetWalletReminderNoticeUiDelegate) {
+  payments::WalletReminderNoticeUiDelegate* ui_delegate =
+      chrome_payments_client()->GetWalletReminderNoticeUiDelegate();
+#if !BUILDFLAG(IS_ANDROID)
+  ASSERT_NE(ui_delegate, nullptr);
+
+  // Test that the same instance is returned on subsequent calls.
+  EXPECT_EQ(ui_delegate,
+            chrome_payments_client()->GetWalletReminderNoticeUiDelegate());
+#else
+  EXPECT_EQ(ui_delegate, nullptr);
+#endif
+}
+
 // Test that `DisablePaymentsAutofill` correctly disables the client's support
 // for autofill payment methods.
 TEST_F(ChromePaymentsAutofillClientTest, DisablePaymentsAutofill) {
