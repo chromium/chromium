@@ -6820,6 +6820,7 @@ bool ChromeContentBrowserClient::WillCreateRestrictedCookieManager(
     bool is_service_worker,
     int process_id,
     int routing_id,
+    bool prefer_bound_cookie_context,
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager>* receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -6827,6 +6828,7 @@ bool ChromeContentBrowserClient::WillCreateRestrictedCookieManager(
     DCHECK_EQ(network::mojom::RestrictedCookieManagerRole::SCRIPT, role);
     extensions::ChromeExtensionCookies::Get(browser_context)
         ->CreateRestrictedCookieManager(origin, isolation_info,
+                                        prefer_bound_cookie_context,
                                         std::move(*receiver));
     return true;
   }

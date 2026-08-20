@@ -90,6 +90,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   // not be used for cookie access decisions, but should be the same as `origin`
   // if the `role` is mojom::RestrictedCookieManagerRole::SCRIPT.
   //
+  // When `prefer_bound_cookie_context` is true, cookie access decisions use
+  // `isolation_info`'s site_for_cookies and top_frame_origin instead of the
+  // renderer-provided per-call values. Set when the browser holds an
+  // authoritative cookie context the renderer cannot compute (e.g., a frame
+  // whose effective top frame for partitioning differs from the actual top).
+  //
   // `first_party_set_metadata` should have been previously computed by
   // `ComputeFirstPartySetMetadata` using the same `origin`, `cookie_store` and
   // `isolation_info` as were passed in here.
@@ -104,6 +110,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const net::IsolationInfo& isolation_info,
       const net::CookieSettingOverrides& cookie_setting_overrides,
       const net::CookieSettingOverrides& devtools_cookie_setting_overrides,
+      bool prefer_bound_cookie_context,
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
       net::FirstPartySetMetadata first_party_set_metadata,
       UmaMetricsUpdater* metrics_updater = nullptr);
@@ -123,8 +130,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   const CookieSettings& cookie_settings() const { return *cookie_settings_; }
 
   void GetAllForUrl(const GURL& url,
-                    const net::SiteForCookies& site_for_cookies,
-                    const url::Origin& top_frame_origin,
+                    const net::SiteForCookies& renderer_site_for_cookies,
+                    const url::Origin& renderer_top_frame_origin,
                     net::StorageAccessApiStatus storage_access_api_status,
                     mojom::CookieManagerGetOptionsPtr options,
                     bool is_ad_tagged,
@@ -135,8 +142,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   void SetCanonicalCookie(
       mojom::RestrictedCanonicalCookieParamsPtr cookie_params,
       const GURL& url,
-      const net::SiteForCookies& site_for_cookies,
-      const url::Origin& top_frame_origin,
+      const net::SiteForCookies& renderer_site_for_cookies,
+      const url::Origin& renderer_top_frame_origin,
       net::StorageAccessApiStatus storage_access_api_status,
       bool is_ad_tagged,
       bool apply_devtools_overrides,
@@ -144,24 +151,24 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
 
   void AddChangeListener(
       const GURL& url,
-      const net::SiteForCookies& site_for_cookies,
-      const url::Origin& top_frame_origin,
+      const net::SiteForCookies& renderer_site_for_cookies,
+      const url::Origin& renderer_top_frame_origin,
       net::StorageAccessApiStatus storage_access_api_status,
       mojo::PendingRemote<mojom::CookieChangeListener> listener,
       AddChangeListenerCallback callback) override;
 
   void SetCookieFromString(
       const GURL& url,
-      const net::SiteForCookies& site_for_cookies,
-      const url::Origin& top_frame_origin,
+      const net::SiteForCookies& renderer_site_for_cookies,
+      const url::Origin& renderer_top_frame_origin,
       net::StorageAccessApiStatus storage_access_api_status,
       bool is_ad_tagged,
       bool apply_devtools_overrides,
       const std::string& cookie) override;
 
   void GetCookiesString(const GURL& url,
-                        const net::SiteForCookies& site_for_cookies,
-                        const url::Origin& top_frame_origin,
+                        const net::SiteForCookies& renderer_site_for_cookies,
+                        const url::Origin& renderer_top_frame_origin,
                         net::StorageAccessApiStatus storage_access_api_status,
                         bool get_version_shared_memory,
                         bool is_ad_tagged,
@@ -169,8 +176,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
                         bool force_disable_third_party_cookies,
                         GetCookiesStringCallback callback) override;
   void CookiesEnabledFor(const GURL& url,
-                         const net::SiteForCookies& site_for_cookies,
-                         const url::Origin& top_frame_origin,
+                         const net::SiteForCookies& renderer_site_for_cookies,
+                         const url::Origin& renderer_top_frame_origin,
                          net::StorageAccessApiStatus storage_access_api_status,
                          bool apply_devtools_overrides,
                          CookiesEnabledForCallback callback) override;
@@ -281,6 +288,21 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
     return isolation_info_.top_frame_origin().value();
   }
 
+  // Cookie access decisions use the renderer-provided per-call context,
+  // unless `prefer_bound_cookie_context_` is set - then the bound
+  // `isolation_info_` context wins.
+  const net::SiteForCookies& EffectiveSiteForCookies(
+      const net::SiteForCookies& renderer_site_for_cookies) const {
+    return prefer_bound_cookie_context_ ? BoundSiteForCookies()
+                                        : renderer_site_for_cookies;
+  }
+
+  const url::Origin& EffectiveTopFrameOrigin(
+      const url::Origin& renderer_top_frame_origin) const {
+    return prefer_bound_cookie_context_ ? BoundTopFrameOrigin()
+                                        : renderer_top_frame_origin;
+  }
+
   CookieAccesses* GetCookieAccessesForURLAndSite(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies);
@@ -325,6 +347,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   // this RestrictedCookieManager is bound. (The frame_origin field is not used
   // directly, but must match the `origin_` if the RCM role is SCRIPT.)
   net::IsolationInfo isolation_info_;
+
+  // Whether cookie access decisions use the bound `isolation_info_` context
+  // instead of the renderer-provided per-call values.
+  const bool prefer_bound_cookie_context_;
 
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;
 

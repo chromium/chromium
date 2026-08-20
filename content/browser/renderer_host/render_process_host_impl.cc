@@ -2425,6 +2425,7 @@ void RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker(
       network::mojom::RestrictedCookieManagerRole::SCRIPT, storage_key.origin(),
       storage_key.ToPartialNetIsolationInfo(),
       /*is_service_worker=*/true, GetDeprecatedID(), IPC::mojom::kRoutingIdNone,
+      /*prefer_bound_cookie_context=*/false,
       /*cookie_setting_overrides=*/net::CookieSettingOverrides(),
       /*devtools_cookie_setting_overrides=*/net::CookieSettingOverrides(),
       std::move(receiver),

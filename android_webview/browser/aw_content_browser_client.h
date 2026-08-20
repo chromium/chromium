@@ -259,6 +259,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       bool is_service_worker,
       int process_id,
       int routing_id,
+      bool prefer_bound_cookie_context,
       mojo::PendingReceiver<network::mojom::RestrictedCookieManager>* receiver)
       override;
   std::string GetProduct() override;

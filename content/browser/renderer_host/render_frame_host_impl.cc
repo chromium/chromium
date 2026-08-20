@@ -15405,6 +15405,21 @@ void RenderFrameHostImpl::BindRestrictedCookieManagerWithOrigin(
   devtools_instrumentation::ApplyNetworkCookieControlsOverrides(
       *this, devtools_cookie_setting_overrides);
 
+  // When the embedder declares an effective top frame for this frame's
+  // subtree, the bound IsolationInfo carries a cookie context the renderer
+  // cannot compute from its frame tree; the RestrictedCookieManager must
+  // prefer the bound context over the renderer-provided values.
+  //
+  // Unlike `ShouldPreferFactorySiteForCookies()`, this predicate must not
+  // require a non-null bound site_for_cookies: a cross-site child of the
+  // effective top frame has a null one, and the bound top_frame_origin is
+  // what matters there. (A URLRequest already takes top_frame_origin from
+  // the factory's IsolationInfo; RestrictedCookieManager takes both values
+  // per call.)
+  const bool prefer_bound_cookie_context =
+      GetContentClient()->browser()->GetEffectiveTopFrameForPartitioning(
+          this) != nullptr;
+
   // CookieSettingOverrides is passesd in instead of calling
   // GetCookieSettingOverrides, because this call can happen before the frame
   // is committed.
@@ -15412,7 +15427,7 @@ void RenderFrameHostImpl::BindRestrictedCookieManagerWithOrigin(
       network::mojom::RestrictedCookieManagerRole::SCRIPT, origin,
       isolation_info,
       /*is_service_worker=*/false, GetProcess()->GetDeprecatedID(),
-      GetRoutingID(), cookie_setting_overrides,
+      GetRoutingID(), prefer_bound_cookie_context, cookie_setting_overrides,
       devtools_cookie_setting_overrides, std::move(receiver),
       CreateCookieAccessObserver(CookieAccessDetails::Source::kNonNavigation));
 }

@@ -1070,6 +1070,13 @@ interface NetworkContext {
   //
   // If |role| == SCRIPT, this interface can be safely handed out to a process
   // that is known to represent the given origin, such as a renderer process.
+  //
+  // If |prefer_bound_cookie_context| is true, cookie access decisions use
+  // |isolation_info|'s site_for_cookies and top_frame_origin instead of the
+  // renderer-provided per-call values. Set when the browser holds an
+  // authoritative cookie context that the renderer cannot compute (e.g., a
+  // frame whose effective top frame for storage partitioning differs from
+  // the actual top frame).
   GetRestrictedCookieManager(
       pending_receiver<RestrictedCookieManager> restricted_cookie_manager,
       RestrictedCookieManagerRole role,
@@ -1077,6 +1084,7 @@ interface NetworkContext {
       IsolationInfo isolation_info,
       CookieSettingOverrides cookie_setting_overrides,
       CookieSettingOverrides devtools_cookie_setting_overrides,
+      bool prefer_bound_cookie_context,
       pending_remote<CookieAccessObserver>? cookie_observer);
 
   // Provides a TrustTokenQueryAnswerer scoped to the given top-frame origin

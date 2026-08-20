@@ -722,6 +722,7 @@ void SignedExchangeHandler::CheckAbsenceOfCookies(base::OnceClosure callback) {
                             : -1,
           render_frame_host ? render_frame_host->GetRoutingID()
                             : IPC::mojom::kRoutingIdNone,
+          /*prefer_bound_cookie_context=*/false,
           /*cookie_setting_overrides=*/
           render_frame_host ? render_frame_host->GetCookieSettingOverrides()
                             : net::CookieSettingOverrides(),

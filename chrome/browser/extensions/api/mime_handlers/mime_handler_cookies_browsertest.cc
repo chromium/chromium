@@ -20,6 +20,8 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -189,6 +191,8 @@ class MimeHandlerCookiesTest : public ExtensionApiTest {
   net::EmbeddedTestServer* test_server() { return test_server_.get(); }
 
   ExtensionCookiesTestHelper& helper() { return *helper_; }
+
+  const Extension* extension() const { return extension_; }
 
  private:
   std::unique_ptr<ExtensionCookiesTestHelper> helper_;
@@ -528,5 +532,86 @@ IN_PROC_BROWSER_TEST_P(MimeHandlerSameSiteCookiesTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          MimeHandlerSameSiteCookiesTest,
                          ::testing::Bool());
+
+// Tests for script cookie access (`document.cookie`) in the MIME handler
+// context. Network cookie access above goes through the URL loader, which
+// uses the browser-computed `site_for_cookies`; script access goes through
+// `network::RestrictedCookieManager`. Both must observe the same cookie
+// context: the extension is the effective top-level for its MIME handler
+// subtree, so script cookies behave exactly as they do when the extension
+// page is the actual top-level.
+class MimeHandlerScriptCookiesTest : public MimeHandlerCookiesTest {
+ public:
+  MimeHandlerScriptCookiesTest() = default;
+  MimeHandlerScriptCookiesTest(const MimeHandlerScriptCookiesTest&) = delete;
+  MimeHandlerScriptCookiesTest& operator=(const MimeHandlerScriptCookiesTest&) =
+      delete;
+  ~MimeHandlerScriptCookiesTest() override = default;
+
+ protected:
+  const Extension* MakeExtension() override {
+    return MimeHandlerCookiesTest::MakeExtension(
+        {ExtensionCookiesTestHelper::kPermissionPattern1});
+  }
+
+  void BlockThirdPartyCookies() {
+    profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            content_settings::CookieControlsMode::kBlockThirdParty));
+  }
+};
+
+// Control: on an extension page that is the actual top-level, a plain
+// `document.cookie` write is first-party and readable back.
+IN_PROC_BROWSER_TEST_F(MimeHandlerScriptCookiesTest,
+                       TopLevelExtensionScriptCookies) {
+  static constexpr char kCookie[] = "top_cookie=1";
+  ASSERT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(), extension()->GetResourceURL("handler.html")));
+  content::RenderFrameHost* extension_frame =
+      GetActiveWebContents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(content::ExecJs(
+      extension_frame, base::StrCat({"document.cookie = '", kCookie, "'"})));
+  EXPECT_EQ(kCookie, content::EvalJs(extension_frame, "document.cookie"));
+}
+
+// The same write inside the MIME handler subframe. The browser computes the
+// extension's IsolationInfo with the extension as the effective top-level,
+// so script cookie access is first-party here just as in the top-level case
+// above.
+IN_PROC_BROWSER_TEST_F(MimeHandlerScriptCookiesTest,
+                       MimeHandlerFrameScriptCookies) {
+  static constexpr char kCookie[] = "subframe_cookie=1";
+  content::RenderFrameHost* extension_frame =
+      LoadMimeHandlerInCrossSiteEmbedder();
+  ASSERT_TRUE(extension_frame);
+  ASSERT_TRUE(content::ExecJs(
+      extension_frame, base::StrCat({"document.cookie = '", kCookie, "'"})));
+  EXPECT_EQ(kCookie, content::EvalJs(extension_frame, "document.cookie"));
+}
+
+// With third-party cookies blocked, cookie settings derive the first-party
+// URL from the effective top-level - the extension - and chrome-extension
+// is a third-party-cookies-allowed scheme. A permitted child of the MIME
+// handler can therefore still use SameSite=None cookies, matching the
+// topology where the extension page is the actual top-level. The extension
+// frame itself is first-party, so cookies remain enabled for it.
+IN_PROC_BROWSER_TEST_F(MimeHandlerScriptCookiesTest,
+                       PermittedChildScriptCookiesWhenThirdPartyBlocked) {
+  static constexpr char kCookie[] = "child_cookie=1";
+  BlockThirdPartyCookies();
+  content::RenderFrameHost* extension_frame =
+      LoadMimeHandlerInCrossSiteEmbedder();
+  ASSERT_TRUE(extension_frame);
+  EXPECT_EQ(true, content::EvalJs(extension_frame, "navigator.cookieEnabled"));
+  content::RenderFrameHost* child_frame = helper().MakeChildFrame(
+      extension_frame, ExtensionCookiesTestHelper::kPermittedHost);
+  ASSERT_TRUE(child_frame);
+  ASSERT_TRUE(
+      content::ExecJs(child_frame, base::StrCat({"document.cookie = '", kCookie,
+                                                 "; SameSite=None; Secure'"})));
+  EXPECT_EQ(kCookie, content::EvalJs(child_frame, "document.cookie"));
+}
 
 }  // namespace extensions

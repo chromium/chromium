@@ -1137,6 +1137,7 @@ bool ContentBrowserClient::WillCreateRestrictedCookieManager(
     bool is_service_worker,
     int process_id,
     int frame_id,
+    bool prefer_bound_cookie_context,
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager>* receiver) {
   return false;
 }

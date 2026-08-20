@@ -77,6 +77,7 @@ ChromeExtensionCookies* ChromeExtensionCookies::Get(
 void ChromeExtensionCookies::CreateRestrictedCookieManager(
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
+    bool prefer_bound_cookie_context,
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!io_data_)
@@ -84,9 +85,10 @@ void ChromeExtensionCookies::CreateRestrictedCookieManager(
 
   // Safe since |io_data_| is non-null so no IOData deletion is queued.
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&IOData::CreateRestrictedCookieManager,
-                                base::Unretained(io_data_.get()), origin,
-                                isolation_info, std::move(receiver)));
+      FROM_HERE,
+      base::BindOnce(&IOData::CreateRestrictedCookieManager,
+                     base::Unretained(io_data_.get()), origin, isolation_info,
+                     prefer_bound_cookie_context, std::move(receiver)));
 }
 
 void ChromeExtensionCookies::ClearCookies(const GURL& origin,
@@ -133,6 +135,7 @@ ChromeExtensionCookies::IOData::~IOData() {
 void ChromeExtensionCookies::IOData::CreateRestrictedCookieManager(
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
+    bool prefer_bound_cookie_context,
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
   net::FirstPartySetMetadata first_party_set_metadata =
       network::RestrictedCookieManager::ComputeFirstPartySetMetadata(
@@ -147,6 +150,7 @@ void ChromeExtensionCookies::IOData::CreateRestrictedCookieManager(
           isolation_info,
           /*cookie_setting_overrides=*/net::CookieSettingOverrides(),
           /*devtools_cookie_setting_overrides=*/net::CookieSettingOverrides(),
+          prefer_bound_cookie_context,
           /* null cookies_observer disables logging */
           mojo::NullRemote(), std::move(first_party_set_metadata)),
       std::move(receiver));

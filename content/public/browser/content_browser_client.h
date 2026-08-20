@@ -2065,6 +2065,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // are not bound to a particular frame, but are in context of a service worker
   // appropriate for |origin|.
   //
+  // |prefer_bound_cookie_context| requests that cookie access decisions use
+  // |isolation_info|'s cookie context instead of the renderer-provided
+  // per-call values; an interposed RestrictedCookieManager that makes its own
+  // cookie access decisions must honor it.
+  //
   // This is called on the UI thread.
   virtual bool WillCreateRestrictedCookieManager(
       network::mojom::RestrictedCookieManagerRole role,
@@ -2074,6 +2079,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       bool is_service_worker,
       int process_id,
       int routing_id,
+      bool prefer_bound_cookie_context,
       mojo::PendingReceiver<network::mojom::RestrictedCookieManager>* receiver);
 
   // Allows the embedder to returns a list of request interceptors that can

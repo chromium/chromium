@@ -100,6 +100,7 @@ class CookieStoreTest : public testing::Test {
             /*cookies_setting_overrides=*/net::CookieSettingOverrides(),
             /*devtools_cookies_setting_overrides=*/
             net::CookieSettingOverrides(),
+            /*prefer_bound_cookie_context=*/false,
             /*cookie_observer=*/mojo::NullRemote(),
             network::RestrictedCookieManager::ComputeFirstPartySetMetadata(
                 origin_,
