@@ -192,6 +192,7 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerInteractiveBrowserTest,
       // Confirm the dialog.
       InstrumentNonTabWebView(kWebContentsId,
                               kConstrainedDialogWebViewElementId),
+      WaitForWebContentsPainted(kWebContentsId),
       WaitForElementExists(kWebContentsId, kConfirmButton),
       SendAccelerator(kWebContentsId,
                       ui::Accelerator(ui::VKEY_RETURN, ui::EF_NONE))
