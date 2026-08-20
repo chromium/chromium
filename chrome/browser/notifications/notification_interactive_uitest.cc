@@ -19,10 +19,10 @@
 #include "chrome/browser/notifications/notification_interactive_uitest_support.h"
 #include "chrome/browser/notifications/notification_test_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, DISABLED_TestUserGestureInfobar) {
 
   infobars::ContentInfoBarManager* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(
-          browser()->tab_strip_model()->GetWebContentsAt(0));
+          browser()->GetTabStripModel()->GetWebContentsAt(0));
   EXPECT_EQ(1U, infobar_manager->infobars().size());
 }
 
@@ -450,9 +450,9 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCloseTabWithPermissionRequestUI) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   EXPECT_TRUE(RequestPermissionAndWait(browser()));
   content::WebContentsDestroyedWatcher destroyed_watcher(
-      browser()->tab_strip_model()->GetWebContentsAt(0));
-  browser()->tab_strip_model()->CloseWebContentsAt(0,
-                                                   TabCloseTypes::CLOSE_NONE);
+      browser()->GetTabStripModel()->GetWebContentsAt(0));
+  browser()->GetTabStripModel()->CloseWebContentsAt(0,
+                                                    TabCloseTypes::CLOSE_NONE);
   destroyed_watcher.Wait();
 }
 
@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCrashRendererNotificationRemain) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("about:blank"), WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
-  browser()->tab_strip_model()->ActivateTabAt(
+  browser()->GetTabStripModel()->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
@@ -671,7 +671,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayMultiFullscreen) {
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
-  Browser* other_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser =
+      CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(other_browser, GURL("about:blank")));
 
   std::string result = CreateSimpleNotification(browser(), true);
@@ -748,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTestWithFakeMediaStream,
 
   AllowAllOrigins();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
-  const int notification_tab = browser()->tab_strip_model()->active_index();
+  const int notification_tab = browser()->GetTabStripModel()->active_index();
 
   // We should see displayed notifications by default.
   std::string result = CreateSimpleNotification(browser(), /*wait=*/false);
@@ -764,7 +765,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTestWithFakeMediaStream,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       https_server.GetURL("/notifications/notification_tester.html")));
-  const int screen_capture_tab = browser()->tab_strip_model()->active_index();
+  const int screen_capture_tab = browser()->GetTabStripModel()->active_index();
 
   // Start a screen capture session.
   content::WebContents* web_contents = GetActiveWebContents(browser());
@@ -772,7 +773,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTestWithFakeMediaStream,
 
   // Showing a notification during the screen capture session should show the
   // "Notifications muted" notification.
-  browser()->tab_strip_model()->ActivateTabAt(notification_tab);
+  browser()->GetTabStripModel()->ActivateTabAt(notification_tab);
   result = CreateSimpleNotification(browser(), /*wait=*/false);
   EXPECT_NE("-1", result);
   notifications =
@@ -798,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTestWithFakeMediaStream,
             (*notifications.begin())->message());
 
   // Stop the screen capture session.
-  browser()->tab_strip_model()->ActivateTabAt(screen_capture_tab);
+  browser()->GetTabStripModel()->ActivateTabAt(screen_capture_tab);
   ASSERT_EQ("success", content::EvalJs(web_contents, "stopScreenCapture();"));
 
   // Stopping the screen capture session should display the queued notifications

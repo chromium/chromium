@@ -29,7 +29,7 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -38,7 +38,6 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/filters/hints_component_info.h"
 #include "components/optimization_guide/core/filters/hints_component_util.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
@@ -50,6 +49,7 @@
 #include "components/optimization_guide/core/hints/top_host_provider.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -1165,7 +1165,7 @@ IN_PROC_BROWSER_TEST_F(
 
   OptimizationGuideKeyedServiceFactory::GetForProfile(
       Profile::FromBrowserContext(browser()
-                                      ->tab_strip_model()
+                                      ->GetTabStripModel()
                                       ->GetActiveWebContents()
                                       ->GetBrowserContext()))
       ->RegisterOptimizationTypes(
@@ -1257,7 +1257,7 @@ IN_PROC_BROWSER_TEST_F(
 
   OptimizationGuideKeyedServiceFactory::GetForProfile(
       Profile::FromBrowserContext(browser()
-                                      ->tab_strip_model()
+                                      ->GetTabStripModel()
                                       ->GetActiveWebContents()
                                       ->GetBrowserContext()))
       ->RegisterOptimizationTypes(
@@ -1445,7 +1445,7 @@ class HintsFetcherSearchPagePrerenderingBrowserTest
   }
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
  private:

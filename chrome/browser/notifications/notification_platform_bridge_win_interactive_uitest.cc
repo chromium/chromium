@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/notifications/notification_platform_bridge_win.h"
+
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
@@ -27,7 +29,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/notifications/notification_platform_bridge_win.h"
 #include "chrome/browser/notifications/win/fake_itoastnotification.h"
 #include "chrome/browser/notifications/win/fake_itoastnotifier.h"
 #include "chrome/browser/notifications/win/notification_launch_id.h"
@@ -35,7 +36,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/shell_integration_win.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"

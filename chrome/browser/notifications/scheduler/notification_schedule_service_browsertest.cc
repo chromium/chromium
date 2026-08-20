@@ -25,7 +25,7 @@
 #include "chrome/browser/notifications/scheduler/schedule_service_factory_helper.h"
 #include "chrome/browser/notifications/scheduler/test/mock_notification_background_task_scheduler.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"

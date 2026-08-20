@@ -6,7 +6,7 @@
 #include "chrome/browser/notifications/non_persistent_notification_handler.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/permission_request_manager.h"
@@ -120,7 +120,7 @@ class NotificationPermissionBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* GetActiveWebContents() const {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   content::RenderFrameHost* CreateChildIframe(

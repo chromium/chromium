@@ -28,7 +28,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_waiter.h"
@@ -38,7 +38,6 @@
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/core/filters/test_hints_component_creator.h"
 #include "components/optimization_guide/core/hints/command_line_top_host_provider.h"
-#include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/hints/hints_manager.h"
 #include "components/optimization_guide/core/hints/optimization_guide_store.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
@@ -48,6 +47,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -297,7 +297,7 @@ class OptimizationGuideKeyedServiceBrowserTest
 
     // Set up an OptimizationGuideKeyedService consumer.
     consumer_ = std::make_unique<OptimizationGuideConsumerWebContentsObserver>(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
   }
 
   void CanApplyOptimizationOnDemand(
@@ -640,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
             last_can_apply_optimization_decision());
 
   // Make sure metrics get recorded when tab is hidden.
-  browser()->tab_strip_model()->GetActiveWebContents()->WasHidden();
+  browser()->GetTabStripModel()->GetActiveWebContents()->WasHidden();
 
   // Expect that the optimization guide UKM is recorded.
   auto entries = ukm_recorder.GetEntriesByName(
@@ -828,7 +828,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   // in progress.
   run_loop = std::make_unique<base::RunLoop>();
   OptimizationGuideNewApiConsumerWebContentsObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents(),
+      browser()->GetTabStripModel()->GetActiveWebContents(),
       base::BindOnce(
           [](base::RunLoop* run_loop, OptimizationGuideDecision decision,
              const OptimizationMetadata& metadata) {
@@ -1061,7 +1061,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 
   // Set up incognito browser and incognito OptimizationGuideKeyedService
   // consumer.
-  Browser* otr_browser = CreateIncognitoBrowser(browser()->GetProfile());
+  BrowserWindowInterface* otr_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
   EXPECT_TRUE(otr_browser);
 
   // Instantiate off the record Optimization Guide Service.
@@ -1083,7 +1084,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 // CreateGuestBrowser() is not supported for Android or ChromeOS out of the box.
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
                        GuestProfileUniqueKeyedService) {
-  Browser* guest_browser = CreateGuestBrowser();
+  BrowserWindowInterface* guest_browser = CreateGuestBrowser();
   OptimizationGuideKeyedService* guest_ogks =
       OptimizationGuideKeyedServiceFactory::GetForProfile(
           guest_browser->GetProfile());
@@ -1199,7 +1200,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Set up incognito browser and incognito OptimizationGuideKeyedService
   // consumer.
-  Browser* otr_browser = CreateIncognitoBrowser(browser()->GetProfile());
+  BrowserWindowInterface* otr_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
 
   // Instantiate off the record Optimization Guide Service.
   OptimizationGuideKeyedService* otr_ogks =

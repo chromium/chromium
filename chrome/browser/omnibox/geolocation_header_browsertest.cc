@@ -16,8 +16,8 @@
 #include "chrome/browser/omnibox/geolocation_header_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, AppendsXGeoHeader) {
       false);
 
   content::TestNavigationObserver navigation_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   browser()->OpenURL(params, /*navigation_handle_callback=*/{});
 
@@ -346,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, NoHeaderInIncognito) {
   device::ScopedGeolocationOverrider overrider(
       /*latitude=*/12.34, /*longitude=*/56.78);
 
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
 
   // Perform navigation in incognito mimicking the Omnibox.
   GURL search_url = test_server_.GetURL("/search?q=test");
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, NoHeaderInIncognito) {
       false);
 
   content::TestNavigationObserver navigation_observer(
-      incognito_browser->tab_strip_model()->GetActiveWebContents());
+      incognito_browser->GetTabStripModel()->GetActiveWebContents());
 
   incognito_browser->OpenURL(params, /*navigation_handle_callback=*/{});
 
@@ -406,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest,
       false);
 
   content::TestNavigationObserver navigation_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   browser()->OpenURL(params, /*navigation_handle_callback=*/{});
 
@@ -451,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, NoHeaderForNonDse) {
       false);
 
   content::TestNavigationObserver navigation_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   browser()->OpenURL(params, /*navigation_handle_callback=*/{});
 
@@ -495,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, RedirectToNonDse) {
       false);
 
   content::TestNavigationObserver navigation_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   browser()->OpenURL(params, /*navigation_handle_callback=*/{});
 
@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, RedirectToSameOrigin) {
       false);
 
   content::TestNavigationObserver navigation_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   browser()->OpenURL(params, /*navigation_handle_callback=*/{});
 
@@ -581,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderFencedFrameBrowserTest,
 
   // Create a Fenced Frame manually via JS.
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
 
   EXPECT_TRUE(
@@ -650,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest,
       false);
 
   content::TestNavigationObserver navigation_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   browser()->OpenURL(params, /*navigation_handle_callback=*/{});
 
@@ -667,7 +667,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest,
   content_settings::PageSpecificContentSettings* pscs =
       content_settings::PageSpecificContentSettings::GetForFrame(
           browser()
-              ->tab_strip_model()
+              ->GetTabStripModel()
               ->GetActiveWebContents()
               ->GetPrimaryMainFrame());
   ASSERT_TRUE(pscs);
@@ -761,7 +761,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderDisabledBrowserTest,
       false);
 
   content::TestNavigationObserver navigation_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   browser()->OpenURL(params, /*navigation_handle_callback=*/{});
 
@@ -780,7 +780,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderDisabledBrowserTest,
   content_settings::PageSpecificContentSettings* pscs =
       content_settings::PageSpecificContentSettings::GetForFrame(
           browser()
-              ->tab_strip_model()
+              ->GetTabStripModel()
               ->GetActiveWebContents()
               ->GetPrimaryMainFrame());
   ASSERT_TRUE(pscs);

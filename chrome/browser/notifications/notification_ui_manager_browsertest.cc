@@ -17,7 +17,7 @@
 #include "chrome/browser/notifications/notification_ui_manager_impl.h"
 #include "chrome/browser/notifications/profile_notification.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
