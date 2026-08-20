@@ -107,6 +107,7 @@ static_library("session") {
     "//chromeos/ash/components/osauth/public",
     "//chromeos/ash/components/peripheral_notification",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/signin:identity_manager_provider",
     "//chromeos/ash/components/tpm",
     "//chromeos/ash/experiences/arc:arc_base_utils",
     "//chromeos/ash/experiences/arc:arc_features",

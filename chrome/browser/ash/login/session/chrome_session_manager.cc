@@ -39,7 +39,6 @@
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/login/login_display_host_webui.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/shimless_rma_dialog/shimless_rma_dialog.h"
@@ -51,6 +50,7 @@
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/login/integrity/misconfigured_user_cleaner.h"
 #include "chromeos/ash/components/osauth/public/auth_hub.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
@@ -143,33 +143,35 @@ void StartLoginOobeSession(PrefService& local_state) {
 
 // Seed the stub user account in the same way as it's done in
 // `UserSessionManager::InitProfilePreferences` for regular users.
-void UpsertStubUserToAccountManager(Profile* user_profile,
-                                    const user_manager::User* user) {
+void UpsertStubUserToAccountManager(const user_manager::User& user,
+                                    const base::FilePath& profile_path) {
   // 1. Make sure that the account is present in
   // `account_manager::AccountManager`.
   account_manager::AccountManager* account_manager =
       ash::AccountManagerFactory::Get()->GetAccountManager(
-          user_profile->GetPath().value());
+          profile_path.value());
 
   DCHECK(account_manager->IsInitialized());
 
   const ::account_manager::AccountKey account_key =
       ::account_manager::AccountKey::FromGaiaId(
-          user->GetAccountId().GetGaiaId());
+          user.GetAccountId().GetGaiaId());
 
   account_manager->UpsertAccount(
-      account_key, /*raw_email=*/user->GetDisplayEmail(),
+      account_key, /*raw_email=*/user.GetDisplayEmail(),
       account_manager::AccountManager::kInvalidToken);
 
   DCHECK(account_manager->IsTokenAvailable(account_key));
 
   // 2. Seed it into `IdentityManager`.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(user_profile);
+  // TODO(hidehiko): Consider to rework on user session management, and
+  // inject IdentityManager from callers.
+  auto* identity_manager =
+      ash::IdentityManagerProvider::Get().Find(user.GetAccountId());
   signin::AccountsMutator* accounts_mutator =
       identity_manager->GetAccountsMutator();
   CoreAccountId account_id = accounts_mutator->SeedAccountInfo(
-      user->GetAccountId().GetGaiaId(), user->GetDisplayEmail());
+      user.GetAccountId().GetGaiaId(), user.GetDisplayEmail());
 
   // 3. Set it as the Primary Account.
   const signin::ConsentLevel consent_level = [&]() {
@@ -196,7 +198,7 @@ void UpsertStubUserToAccountManager(Profile* user_profile,
 
   CHECK(identity_manager->HasPrimaryAccount(consent_level));
   CHECK_EQ(identity_manager->GetPrimaryAccountInfo(consent_level).gaia,
-           user->GetAccountId().GetGaiaId());
+           user.GetAccountId().GetGaiaId());
 
   DCHECK_EQ(account_id, identity_manager->GetPrimaryAccountId(
                             signin::ConsentLevel::kSignin));
@@ -259,7 +261,8 @@ void StartUserSession(
       InitializeAccountManager(
           std::move(shared_url_loader_factory), user_profile->GetPath(),
           /*initialization_callback=*/
-          base::BindOnce(&UpsertStubUserToAccountManager, user_profile, user));
+          base::BindOnce(&UpsertStubUserToAccountManager, std::ref(*user),
+                         user_profile->GetPath()));
     }
 
     user_session_mgr->OnUserProfileLoaded(user_profile, user);
