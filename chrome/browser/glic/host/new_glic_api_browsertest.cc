@@ -5229,6 +5229,39 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
   ContinueJsTest({.instance = tab1_instance});
 }
 
+// TabData.favicon is not supported on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_testTabDataUpdateOnFaviconChangeForPinnedTab \
+  DISABLED_testTabDataUpdateOnFaviconChangeForPinnedTab
+#else
+#define MAYBE_testTabDataUpdateOnFaviconChangeForPinnedTab \
+  testTabDataUpdateOnFaviconChangeForPinnedTab
+#endif
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       MAYBE_testTabDataUpdateOnFaviconChangeForPinnedTab) {
+  tabs::TabInterface* tab0 = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab0);
+  NavigateTab(*tab0,
+              embedded_test_server()->GetURL("/glic/browser_tests/test.html"));
+  std::string tab0_id = GlicTabId(tab0->GetHandle());
+
+  CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_OK_AND_ASSIGN(auto* tab1_instance, OpenGlicForActiveTab());
+
+  ExecuteJsTest({.params = base::Value(base::DictValue().Set("tabId", tab0_id)),
+                 .instance = tab1_instance});
+
+  // Add favicon to the webcontents.
+  const char* script =
+      "var link = document.createElement('link');"
+      "link.rel = 'icon';"
+      "link.href= '../../../glic/youtube_favicon_16x16.png';"
+      "document.head.appendChild(link);";
+  ASSERT_TRUE(content::ExecJs(tab0->GetContents(), script));
+
+  ContinueJsTest({.instance = tab1_instance});
+}
+
 auto DefaultTestParamSet() {
   return testing::Values(TestParams{});
 }

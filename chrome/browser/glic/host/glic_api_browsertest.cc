@@ -496,31 +496,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testMetrics) {
   histogram_tester->ExpectTotalCount("Glic.TabContext.UploadTime", 1);
 }
 
-// TODO(crbug.com/454001121): Re-enable after fixing.
-IN_PROC_BROWSER_TEST_P(GlicApiTest,
-                       DISABLED_testTabDataUpdateOnFaviconChangeForPinnedTab) {
-  NavigateTabAndOpenGlicFloating();
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  const int tab_id = GetTabId(web_contents);
-  RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
-
-  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
-                     "tabId", base::NumberToString(tab_id)))});
-
-  // Add favicon to the webcontents.
-  const char* script =
-      "var link = document.createElement('link');"
-      "link.rel = 'icon';"
-      "link.href= '../../../glic/youtube_favicon_16x16.png';"
-      "document.head.appendChild(link);";
-  ASSERT_TRUE(content::ExecJs(web_contents, script));
-
-  ContinueJsTest();
-}
-
-
 // TODO(crbug.com/441588906): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
                        DISABLED_testFetchInactiveTabScreenshot) {

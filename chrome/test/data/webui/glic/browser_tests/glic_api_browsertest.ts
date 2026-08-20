@@ -4,7 +4,7 @@
 import {HostCapability, MetricUserInputReactionType, PanelStateKind, ResponseStopCause, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {TabData} from '/glic/glic_api/glic_api.js';
 
-import {ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertTrue, checkDefined, mapObservable, observeSequence, testMain} from './browser_test_base.js';
+import {ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertTrue, checkDefined, mapObservable, observeSequence, testMain} from './browser_test_base.js';
 import type {SequencedSubscriber} from './browser_test_base.js';
 
 // Test cases here correspond to test cases in glic_api_browsertest.cc.
@@ -91,32 +91,6 @@ class ApiTests extends ApiTestFixtureBase {
         (tabs) => tabs.some(t => t.tabId === tabId));
     return tabId;
   }
-
-  async testTabDataUpdateOnFaviconChangeForPinnedTab() {
-    assertDefined(this.host.getPinnedTabs);
-    assertDefined(this.host.pinTabs);
-
-    const tabId = this.testParams.tabId;
-    assertNotEquals(tabId, this.getActiveTabId());
-
-    await this.host.pinTabs([tabId]);
-    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
-
-    await pinnedTabsUpdates.waitFor(
-        (tabs) => tabs.length === 1 &&
-            tabs.some(t => t.tabId === tabId && t.favicon === undefined));
-
-    // Update the favicon.
-    await this.advanceToNextStep();
-
-    const [tabData] = await pinnedTabsUpdates.waitFor(
-        (tabs) => tabs.length === 1 &&
-            tabs.some(t => t.tabId === tabId && t.favicon !== undefined));
-
-    const blob = await tabData?.favicon?.();
-    assertEquals(blob?.type, 'image/png');
-  }
-
 
   // Helper to get focused tabId.
   getFocusedTabId(): string {

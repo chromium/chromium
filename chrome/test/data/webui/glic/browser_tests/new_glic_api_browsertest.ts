@@ -2693,6 +2693,31 @@ class ApiTests extends ApiTestFixtureBase {
         (tabs) =>
             tabs.some(t => t.tabId === tabId && t.url.includes('changed')));
   }
+
+  async testTabDataUpdateOnFaviconChangeForPinnedTab() {
+    assertDefined(this.host.getPinnedTabs);
+    assertDefined(this.host.pinTabs);
+
+    const tabId = (this.testParams as {tabId: string}).tabId;
+    assertNotEquals(tabId, this.getActiveTabId());
+
+    await this.host.pinTabs([tabId]);
+    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
+
+    await pinnedTabsUpdates.waitFor(
+        (tabs) => tabs.some(t => t.tabId === tabId && t.favicon === undefined));
+
+    // Update the favicon.
+    await this.advanceToNextStep();
+
+    const tabs = await pinnedTabsUpdates.waitFor(
+        (tabs) => tabs.some(t => t.tabId === tabId && t.favicon !== undefined));
+
+    const tabData = tabs.find(t => t.tabId === tabId);
+    const blob = await tabData?.favicon?.();
+    assertEquals(blob?.type, 'image/bmp');
+    assertTrue(checkDefined(blob).size > 0);
+  }
 }
 
 class DaisyChainApiTests extends ApiTestFixtureBase {
