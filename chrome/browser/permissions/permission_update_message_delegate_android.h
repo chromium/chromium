@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/permissions/permission_update_requester_android.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/messages/android/message_enums.h"
@@ -61,6 +62,7 @@ class PermissionUpdateMessageDelegate {
   // HandleDismissCallback has been called, since the message is already
   // dismissed at that point.
   bool should_dismiss_internal_ = true;
+  base::WeakPtrFactory<PermissionUpdateMessageDelegate> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_PERMISSION_UPDATE_MESSAGE_DELEGATE_ANDROID_H_

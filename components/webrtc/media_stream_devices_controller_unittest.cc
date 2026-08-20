@@ -489,4 +489,158 @@ TEST_F(MediaStreamDevicesControllerTest,
   // It should succeed (or get OK).
   EXPECT_EQ(result, blink::mojom::MediaStreamRequestResult::OK);
 }
+
+TEST_F(MediaStreamDevicesControllerTest,
+       FallbackToPrimaryMainFrameWhenRenderFrameHostChangesOnAndroid) {
+  content::WebContentsTester::For(web_contents_)
+      ->NavigateAndCommit(origin_.GetURL());
+  render_frame_host_ = web_contents_->GetPrimaryMainFrame();
+  render_frame_host_id_ = render_frame_host_->GetGlobalId();
+
+  auto* mock_permission_controller = static_cast<MockPermissionController*>(
+      browser_context_.GetPermissionController());
+  ON_CALL(*mock_permission_controller, GetPermissionResultForCurrentDocument)
+      .WillByDefault([](const blink::mojom::PermissionDescriptorPtr&,
+                        content::RenderFrameHost*) {
+        return content::PermissionResult{
+            content::PermissionStatus::GRANTED,
+            content::PermissionStatusSource::UNSPECIFIED,
+        };
+      });
+
+  base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
+      saved_callback;
+  EXPECT_CALL(
+      *mock_permission_controller,
+      RequestPermissionsFromCurrentDocument(render_frame_host_.get(), _, _))
+      .WillOnce(
+          [&](auto*, auto,
+              base::OnceCallback<void(
+                  const std::vector<content::PermissionResult>&)> callback) {
+            saved_callback = std::move(callback);
+          });
+
+  base::test::TestFuture<blink::mojom::MediaStreamRequestResult,
+                         blink::mojom::StreamDevicesPtr>
+      result_future;
+  webrtc::MediaStreamDevicesController::RequestPermissions(
+      content::MediaStreamRequest{
+          /*render_process_id=*/render_frame_host_id_.child_id.GetUnsafeValue(),
+          /*render_frame_id=*/render_frame_host_id_.frame_routing_id,
+          /*page_request_id=*/0,
+          /*url_origin=*/origin_,
+          /*user_gesture=*/false,
+          blink::MediaStreamRequestType::MEDIA_GENERATE_STREAM,
+          /*requested_audio_device_ids=*/{},
+          /*requested_video_device_ids=*/
+          GetIds(enumerator_.GetVideoCaptureDevices(), 0),
+          blink::mojom::MediaStreamType::NO_SERVICE,
+          blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+          /*disable_local_echo=*/false,
+          /*request_pan_tilt_zoom_permission=*/false,
+          /*captured_surface_control_active=*/false,
+      },
+      &enumerator_,
+      base::BindLambdaForTesting(
+          [&](const blink::mojom::StreamDevicesSet& stream_devices_set,
+              blink::mojom::MediaStreamRequestResult result,
+              bool blocked_by_permissions_policy, ContentSetting audio_setting,
+              ContentSetting video_setting) {
+            result_future.SetValue(
+                result, stream_devices_set.stream_devices.empty()
+                            ? blink::mojom::StreamDevicesPtr()
+                            : stream_devices_set.stream_devices[0]->Clone());
+          }));
+
+  // Re-navigate to the same URL to simulate a new RenderFrameHost replacing the
+  // old one.
+  content::WebContentsTester::For(web_contents_)
+      ->NavigateAndCommit(origin_.GetURL());
+
+  std::move(saved_callback)
+      .Run({content::PermissionResult(
+          content::PermissionStatus::GRANTED,
+          content::PermissionStatusSource::UNSPECIFIED)});
+
+  auto [result, stream_devices] = result_future.Take();
+  EXPECT_EQ(result, blink::mojom::MediaStreamRequestResult::OK);
+  EXPECT_TRUE(stream_devices->video_device.has_value());
+}
+
+TEST_F(MediaStreamDevicesControllerTest,
+       FallbackRejectedWhenNavigatedAwayOnAndroid) {
+  content::WebContentsTester::For(web_contents_)
+      ->NavigateAndCommit(origin_.GetURL());
+  render_frame_host_ = web_contents_->GetPrimaryMainFrame();
+  render_frame_host_id_ = render_frame_host_->GetGlobalId();
+
+  auto* mock_permission_controller = static_cast<MockPermissionController*>(
+      browser_context_.GetPermissionController());
+  ON_CALL(*mock_permission_controller, GetPermissionResultForCurrentDocument)
+      .WillByDefault([](const blink::mojom::PermissionDescriptorPtr&,
+                        content::RenderFrameHost*) {
+        return content::PermissionResult{
+            content::PermissionStatus::GRANTED,
+            content::PermissionStatusSource::UNSPECIFIED,
+        };
+      });
+
+  base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
+      saved_callback;
+  EXPECT_CALL(
+      *mock_permission_controller,
+      RequestPermissionsFromCurrentDocument(render_frame_host_.get(), _, _))
+      .WillOnce(
+          [&](auto*, auto,
+              base::OnceCallback<void(
+                  const std::vector<content::PermissionResult>&)> callback) {
+            saved_callback = std::move(callback);
+          });
+
+  base::test::TestFuture<blink::mojom::MediaStreamRequestResult,
+                         blink::mojom::StreamDevicesPtr>
+      result_future;
+  webrtc::MediaStreamDevicesController::RequestPermissions(
+      content::MediaStreamRequest{
+          /*render_process_id=*/render_frame_host_id_.child_id.GetUnsafeValue(),
+          /*render_frame_id=*/render_frame_host_id_.frame_routing_id,
+          /*page_request_id=*/0,
+          /*url_origin=*/origin_,
+          /*user_gesture=*/false,
+          blink::MediaStreamRequestType::MEDIA_GENERATE_STREAM,
+          /*requested_audio_device_ids=*/{},
+          /*requested_video_device_ids=*/
+          GetIds(enumerator_.GetVideoCaptureDevices(), 0),
+          blink::mojom::MediaStreamType::NO_SERVICE,
+          blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+          /*disable_local_echo=*/false,
+          /*request_pan_tilt_zoom_permission=*/false,
+          /*captured_surface_control_active=*/false,
+      },
+      &enumerator_,
+      base::BindLambdaForTesting(
+          [&](const blink::mojom::StreamDevicesSet& stream_devices_set,
+              blink::mojom::MediaStreamRequestResult result,
+              bool blocked_by_permissions_policy, ContentSetting audio_setting,
+              ContentSetting video_setting) {
+            result_future.SetValue(
+                result, stream_devices_set.stream_devices.empty()
+                            ? blink::mojom::StreamDevicesPtr()
+                            : stream_devices_set.stream_devices[0]->Clone());
+          }));
+
+  // Navigate to a different page within the same origin.
+  content::WebContentsTester::For(web_contents_)
+      ->NavigateAndCommit(GURL("https://stuff.com/other"));
+
+  std::move(saved_callback)
+      .Run({content::PermissionResult(
+          content::PermissionStatus::GRANTED,
+          content::PermissionStatusSource::UNSPECIFIED)});
+
+  auto [result, stream_devices] = result_future.Take();
+  EXPECT_EQ(result, blink::mojom::MediaStreamRequestResult::
+                        FAILED_DUE_TO_SHUTDOWN_CONTROLLER_DESTRUCTOR);
+  EXPECT_FALSE(stream_devices);
+}
 #endif

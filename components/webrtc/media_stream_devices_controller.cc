@@ -223,6 +223,14 @@ MediaStreamDevicesController::MediaStreamDevicesController(
                                      request, &denial_reason_);
   video_setting_ = GetContentSetting(blink::PermissionType::VIDEO_CAPTURE,
                                      request, &denial_reason_);
+
+#if BUILDFLAG(IS_ANDROID)
+  content::RenderFrameHost* initial_rfh = content::RenderFrameHost::FromID(
+      request_.render_process_id, request_.render_frame_id);
+  if (initial_rfh && initial_rfh == web_contents_->GetPrimaryMainFrame()) {
+    request_main_frame_url_ = initial_rfh->GetLastCommittedURL();
+  }
+#endif
 }
 
 bool MediaStreamDevicesController::ShouldRequestAudio() const {
@@ -434,12 +442,39 @@ bool MediaStreamDevicesController::IsUserAcceptAllowedOnAndroid(
 }
 #endif
 
+content::RenderFrameHost*
+MediaStreamDevicesController::GetTargetRenderFrameHost() const {
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      request_.render_process_id, request_.render_frame_id);
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, presenting the OS-level permission dialog can pause/resume the
+  // activity and invalidate or replace the original RenderFrameHost. If the
+  // request originally came from the primary main frame, ensure the frame is
+  // active and has not navigated away. If the original RenderFrameHost is no
+  // longer active, fall back to the active primary main frame if the URL has
+  // not changed.
+  if (request_main_frame_url_.has_value() && web_contents_) {
+    content::RenderFrameHost* main_rfh = web_contents_->GetPrimaryMainFrame();
+    if (rfh && rfh->IsActive() && rfh == main_rfh) {
+      return (rfh->GetLastCommittedURL() == *request_main_frame_url_) ? rfh
+                                                                      : nullptr;
+    }
+    if (main_rfh && main_rfh->IsActive() &&
+        main_rfh->GetLastCommittedURL() == *request_main_frame_url_) {
+      return main_rfh;
+    }
+    return nullptr;
+  }
+#endif
+  return rfh;
+}
+
 bool MediaStreamDevicesController::PermissionIsBlockedForReason(
     blink::PermissionType permission,
     content::PermissionStatusSource reason) const {
-  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-      request_.render_process_id, request_.render_frame_id);
-  if (rfh->GetLastCommittedOrigin().GetURL() != request_.security_origin) {
+  content::RenderFrameHost* rfh = GetTargetRenderFrameHost();
+  if (!rfh ||
+      rfh->GetLastCommittedOrigin().GetURL() != request_.security_origin) {
     return false;
   }
 
@@ -461,8 +496,8 @@ bool MediaStreamDevicesController::PermissionIsBlockedForReason(
 
 void MediaStreamDevicesController::PromptAnsweredGroupedRequest(
     const std::vector<content::PermissionResult>& permission_result) {
-  if (content::RenderFrameHost::FromID(request_.render_process_id,
-                                       request_.render_frame_id) == nullptr) {
+  content::RenderFrameHost* rfh = GetTargetRenderFrameHost();
+  if (!rfh) {
     // The frame requesting media devices was removed while we were waiting for
     // a user response on permissions. Nothing more to do.
     return;

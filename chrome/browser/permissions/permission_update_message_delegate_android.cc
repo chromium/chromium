@@ -46,13 +46,25 @@ PermissionUpdateMessageDelegate::PermissionUpdateMessageDelegate(
   message_->SetPrimaryButtonText(
       l10n_util::GetStringUTF16(IDS_MESSAGE_UPDATE_PERMISSIONS_BUTTON_TEXT));
   message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(icon_id));
-  messages::MessageDispatcherBridge::Get()->EnqueueMessage(
+  bool enqueued = messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents, messages::MessageScopeType::NAVIGATION,
       messages::MessagePriority::kNormal);
   permission_update_requester_ = std::make_unique<PermissionUpdateRequester>(
       web_contents, required_android_permissions, optional_android_permissions,
       base::BindOnce(&PermissionUpdateMessageDelegate::OnPermissionResult,
                      base::Unretained(this)));
+  // `EnqueueMessage` fails when the WebContents is not attached to a window
+  // with a MessageDispatcher (for example, non-tab WebContents like custom
+  // overlays or Glic) or when the activity is being recreated/destroyed. In
+  // this case, fall back to triggering the Android OS permission request
+  // directly.
+  if (!enqueued) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &PermissionUpdateMessageDelegate::HandlePrimaryActionCallback,
+            weak_factory_.GetWeakPtr()));
+  }
 }
 
 PermissionUpdateMessageDelegate::~PermissionUpdateMessageDelegate() {

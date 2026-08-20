@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WEBRTC_MEDIA_STREAM_DEVICES_CONTROLLER_H_
 #define COMPONENTS_WEBRTC_MEDIA_STREAM_DEVICES_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
+#include "url/gurl.h"
 
 namespace blink {
 enum class PermissionType;
@@ -25,6 +27,7 @@ enum class PermissionType;
 
 namespace content {
 enum class PermissionStatusSource;
+class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
@@ -104,6 +107,8 @@ class MediaStreamDevicesController {
   void PromptAnsweredGroupedRequest(
       const std::vector<content::PermissionResult>& permission_result);
 
+  content::RenderFrameHost* GetTargetRenderFrameHost() const;
+
   bool HasAvailableDevices(blink::PermissionType permission,
                            const std::vector<std::string>& device_ids) const;
 
@@ -124,6 +129,12 @@ class MediaStreamDevicesController {
 
   // The original request for access to devices.
   const content::MediaStreamRequest request_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // The URL of the primary main frame at the time the request was made, if the
+  // request originated from the primary main frame.
+  std::optional<GURL> request_main_frame_url_;
+#endif
 
   // The callback that needs to be run to notify WebRTC of whether access to
   // audio/video devices was granted or not.
