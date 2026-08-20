@@ -118,7 +118,7 @@ class JSTestStarter : public content::TestNavigationObserver {
   }
 
   // TestNavigationObserver:
-  void OnDidFinishNavigation(
+  void NavigationOfInterestDidFinish(
       content::NavigationHandle* navigation_handle) override {
     // If the background page scripts have run, the test will exist, so just run
     // it. Otherwise, schedule the test to be run at the end of the background
@@ -133,8 +133,6 @@ class JSTestStarter : public content::TestNavigationObserver {
     ASSERT_TRUE(content::ExecJs(
         navigation_handle->GetRenderFrameHost(),
         base::ReplaceStringPlaceholders(kScript, {test_name_}, nullptr)));
-
-    TestNavigationObserver::OnDidFinishNavigation(navigation_handle);
   }
 
  private:
