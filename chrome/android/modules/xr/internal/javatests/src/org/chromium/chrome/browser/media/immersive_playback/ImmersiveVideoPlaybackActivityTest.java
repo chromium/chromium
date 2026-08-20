@@ -16,6 +16,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -40,6 +41,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.media.VideoOverlayActivity;
 import org.chromium.chrome.browser.media.VideoOverlayActivityJni;
+import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -269,6 +271,29 @@ public class ImmersiveVideoPlaybackActivityTest {
         ThreadUtils.runOnUiThreadBlocking(() -> activity.onStart());
         verify(mNativeMock, times(1)).onActivityStart(eq(mNativeWindowToken), any(), any());
 
+        testExitOn(activity, () -> activity.close());
+    }
+
+    /** Tests that the activity is in night mode by default. */
+    @Test
+    @MediumTest
+    public void testNightModeByDefault() throws Throwable {
+        ImmersiveVideoPlaybackActivity activity = startImmersiveVideoPlaybackActivity();
+        Assert.assertNotNull(activity);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    NightModeStateProvider provider = activity.createNightModeStateProvider();
+                    Assert.assertTrue(
+                            provider
+                                    instanceof
+                                    ImmersiveVideoPlaybackActivity
+                                            .ImmersiveVideoPlaybackNightModeStateProvider);
+                    Assert.assertTrue(provider.isInNightMode());
+                    Assert.assertEquals(
+                            "AppCompatDelegate should be set to local night mode",
+                            AppCompatDelegate.MODE_NIGHT_YES,
+                            activity.getDelegate().getLocalNightMode());
+                });
         testExitOn(activity, () -> activity.close());
     }
 

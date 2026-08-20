@@ -12,15 +12,18 @@ import android.content.Intent;
 import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UnguessableToken;
 import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.media.VideoOverlayActivity;
+import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.thinwebview.CompositorView;
@@ -40,6 +43,8 @@ public class ImmersiveVideoPlaybackActivity extends VideoOverlayActivity {
 
     @SuppressWarnings("StaticFieldLeak")
     private static @Nullable ImmersiveVideoPlaybackCoordinator sPlaybackCoordinatorForTesting;
+
+    private @MonotonicNonNull ImmersiveVideoPlaybackNightModeStateProvider mNightModeStateProvider;
 
     /** Stores state that arrives before the UI is ready. This is only used on startup. */
     @VisibleForTesting
@@ -249,6 +254,19 @@ public class ImmersiveVideoPlaybackActivity extends VideoOverlayActivity {
         }
     }
 
+    @Override
+    protected void initializeNightModeStateProvider() {
+        if (mNightModeStateProvider != null) {
+            mNightModeStateProvider.initialize(getDelegate());
+        }
+    }
+
+    @Override
+    protected NightModeStateProvider createNightModeStateProvider() {
+        mNightModeStateProvider = new ImmersiveVideoPlaybackNightModeStateProvider();
+        return mNightModeStateProvider;
+    }
+
     public PendingState getPendingStateForTesting() {
         return mPendingState;
     }
@@ -276,5 +294,24 @@ public class ImmersiveVideoPlaybackActivity extends VideoOverlayActivity {
         intent.putExtra(NATIVE_TOKEN_KEY, nativeToken);
         intent.putExtra(WEB_CONTENTS_KEY, ((Tab) initiatorTab).getWebContents());
         context.startActivity(intent);
+    }
+
+    @VisibleForTesting
+    /* package */ static class ImmersiveVideoPlaybackNightModeStateProvider
+            implements NightModeStateProvider {
+        public void initialize(AppCompatDelegate delegate) {
+            delegate.setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+
+        @Override
+        public boolean isInNightMode() {
+            return true;
+        }
+
+        @Override
+        public void addObserver(Observer observer) {}
+
+        @Override
+        public void removeObserver(Observer observer) {}
     }
 }
