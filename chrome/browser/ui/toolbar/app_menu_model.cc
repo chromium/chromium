@@ -1206,8 +1206,6 @@ void ToolsMenuModel::Build(BrowserWindowInterface* browser) {
                                     : kDockToRightOldIcon
           : features::IsRoundedIconsEnabled() ? kDockToRightIcon
                                               : kDockToLeftOldIcon);
-    }
-    if (!controller->ShouldDisplayVerticalTabs()) {
       const bool use_preview_badge =
           base::FeatureList::IsEnabled(tabs::kVerticalTabsPreviewBadge);
       const ui::NewBadgeType badge_type = use_preview_badge

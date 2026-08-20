@@ -152,14 +152,6 @@ class VerticalTabStripInteractiveUiTest : public InteractiveBrowserTest {
   std::optional<ui::UserDataFactory::ScopedOverride> override_;
 };
 
-#if BUILDFLAG(IS_MAC)
-constexpr int kSwitchToVerticalTabStringId = IDS_SWITCH_TO_VERTICAL_TAB_MAC;
-constexpr int kSwitchToHorizontalTabStringId = IDS_SWITCH_TO_HORIZONTAL_TAB_MAC;
-#else
-constexpr int kSwitchToVerticalTabStringId = IDS_SWITCH_TO_VERTICAL_TAB;
-constexpr int kSwitchToHorizontalTabStringId = IDS_SWITCH_TO_HORIZONTAL_TAB;
-#endif
-
 // Unable to programmatically click System Context Menu Items in Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_VerifyTabsToTheSideButton DISABLED_VerifyTabsToTheSideButton
@@ -169,7 +161,7 @@ constexpr int kSwitchToHorizontalTabStringId = IDS_SWITCH_TO_HORIZONTAL_TAB;
 // This test checks that we can click the show tabs to the side button
 IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
                        MAYBE_VerifyTabsToTheSideButton) {
-  EXPECT_TRUE(SystemMenuContainsStringId(kSwitchToVerticalTabStringId));
+  EXPECT_TRUE(SystemMenuContainsStringId(IDS_SWITCH_TO_VERTICAL_TAB));
 
   RunTestSequence(
       WaitForShow(kTabStripFrameGrabHandleElementId),
@@ -180,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
       SelectMenuItem(SystemMenuModelBuilder::kToggleVerticalTabsElementId),
       WaitForShow(kVerticalTabStripCollapseButtonElementId));
 
-  EXPECT_TRUE(SystemMenuContainsStringId(kSwitchToHorizontalTabStringId));
+  EXPECT_TRUE(SystemMenuContainsStringId(IDS_SWITCH_TO_HORIZONTAL_TAB));
 }
 
 // Unable to programmatically click System Context Menu Items in Windows.
@@ -195,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
   tabs::VerticalTabStripStateController::From(browser())
       ->SetVerticalTabsEnabled(true);
 
-  EXPECT_TRUE(SystemMenuContainsStringId(kSwitchToHorizontalTabStringId));
+  EXPECT_TRUE(SystemMenuContainsStringId(IDS_SWITCH_TO_HORIZONTAL_TAB));
 
   RunScheduledLayouts();
 
@@ -208,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
       SelectMenuItem(SystemMenuModelBuilder::kToggleVerticalTabsElementId),
       WaitForShow(kTabStripFrameGrabHandleElementId));
 
-  EXPECT_TRUE(SystemMenuContainsStringId(kSwitchToVerticalTabStringId));
+  EXPECT_TRUE(SystemMenuContainsStringId(IDS_SWITCH_TO_VERTICAL_TAB));
 }
 
 // Unable to programmatically click System Context Menu Items in Windows.
