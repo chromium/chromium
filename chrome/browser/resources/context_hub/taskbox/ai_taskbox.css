@@ -78,6 +78,32 @@ h2 {
   gap: 12px;
 }
 
+.category-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.category-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 32px;
+}
+
+.category-header h3 {
+  color: var(--cr-primary-text-color);
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
 .completed-section {
   margin-top: 24px;
   display: flex;

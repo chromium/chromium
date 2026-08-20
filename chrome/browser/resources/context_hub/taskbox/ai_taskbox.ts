@@ -245,6 +245,29 @@ export class AiTaskboxElement extends CrLitElement {
     this.showingReadingList_ = false;
   }
 
+  protected getUnfinishedTabTodos_(): AutoTodoItem[] {
+    return this.tabTodos?.filter(
+               todo => todo.data.thirdParty?.groupType ===
+                   AutoTodoGroup.kUnfinishedAction) ??
+        [];
+  }
+
+  protected getStaleTabTodos_(): AutoTodoItem[] {
+    return this.tabTodos?.filter(
+               todo => todo.data.thirdParty?.groupType ===
+                   AutoTodoGroup.kNudgeToClose) ??
+        [];
+  }
+
+  protected onCloseAllStaleTabsClick_() {
+    for (const todo of this.getStaleTabTodos_()) {
+      const tabId = todo.data.thirdParty?.tabId;
+      if (tabId !== null && tabId !== undefined) {
+        browserProxyFactory.getInstance().handler.closeTab(tabId);
+      }
+    }
+  }
+
   protected onCompletedExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.isCompletedExpanded_ = e.detail.value;
   }
