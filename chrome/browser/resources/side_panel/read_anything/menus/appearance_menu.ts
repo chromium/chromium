@@ -11,6 +11,8 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
+import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
 import {DEFAULT_SETTINGS, ToolbarEvent} from '../content/read_anything_types.js';
 import type {SettingsPrefs, ShowAtConfigPrefs} from '../content/read_anything_types.js';
 import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
@@ -51,6 +53,9 @@ export class AppearanceMenuElement extends AppearanceMenuElementBase implements
   accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
   accessor nonModal: boolean = false;
   accessor presentationState: number = 0;
+
+  private visualBrowserProxy_: VisualBrowserProxy =
+      VisualBrowserProxyImpl.getInstance();
 
   private colorOptions_: Array<MenuStateItem<number>> = [
     {
@@ -98,11 +103,11 @@ export class AppearanceMenuElement extends AppearanceMenuElementBase implements
   private viewOptions_: Array<MenuStateItem<number>> = [
     {
       title: loadTimeData.getString('sidePanelLabel'),
-      data: chrome.readingMode.inSidePanelPresentationState,
+      data: this.visualBrowserProxy_.getInSidePanelPresentationState(),
     },
     {
       title: loadTimeData.getString('fullPageLabel'),
-      data: chrome.readingMode.inImmersiveOverlayPresentationState,
+      data: this.visualBrowserProxy_.getInImmersiveOverlayPresentationState(),
     },
   ];
 
@@ -162,8 +167,7 @@ export class AppearanceMenuElement extends AppearanceMenuElementBase implements
   protected onPresentationChange_(e: CustomEvent<{data: number}>) {
     const newPresentationState = e.detail.data;
     if (newPresentationState !== this.presentationState) {
-      chrome.readingMode.togglePresentation();
-      this.presentationState = newPresentationState;
+      this.visualBrowserProxy_.togglePresentation();
     }
   }
 

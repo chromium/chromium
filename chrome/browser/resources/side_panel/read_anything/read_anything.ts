@@ -12,6 +12,8 @@ export type {AppElement} from './app/app.js';
 export {AppStyleUpdater} from './app/app_style_updater.js';
 export type {ReadAnythingToolbarElement} from './app/read_anything_toolbar.js';
 export {IMAGES_DISABLED_ICON, IMAGES_ENABLED_ICON, IMAGES_TOGGLE_BUTTON_ID, LINK_TOGGLE_BUTTON_ID, LINKS_DISABLED_ICON, LINKS_ENABLED_ICON, moreOptionsClass} from './app/read_anything_toolbar.js';
+export type {VisualBrowserProxy} from './app/visual_browser_proxy.js';
+export {VisualBrowserProxyImpl} from './app/visual_browser_proxy.js';
 export type {ContentListener, ContentState} from './content/content_controller.js';
 export {ContentController, ContentType, HIGHLIGHTED_LINK_CLASS} from './content/content_controller.js';
 export {LineFocusController} from './content/line_focus_controller.js';

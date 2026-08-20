@@ -8,6 +8,8 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
+import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
 import {ToolbarEvent} from '../content/read_anything_types.js';
 import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
 
@@ -45,14 +47,17 @@ export class PresentationMenuElement extends PresentationMenuElementBase
   accessor presentationState: number = 0;
   accessor nonModal: boolean = true;
 
+  private visualBrowserProxy_: VisualBrowserProxy =
+      VisualBrowserProxyImpl.getInstance();
+
   protected accessor options_: Array<MenuStateItem<number>> = [
     {
       title: loadTimeData.getString('sidePanelLabel'),
-      data: chrome.readingMode.inSidePanelPresentationState,
+      data: this.visualBrowserProxy_.getInSidePanelPresentationState(),
     },
     {
       title: loadTimeData.getString('fullPageLabel'),
-      data: chrome.readingMode.inImmersiveOverlayPresentationState,
+      data: this.visualBrowserProxy_.getInImmersiveOverlayPresentationState(),
     },
   ];
 
@@ -70,7 +75,7 @@ export class PresentationMenuElement extends PresentationMenuElementBase
 
   protected onPresentationChange_(e: CustomEvent<{data: number}>) {
     if (e.detail.data !== this.presentationState) {
-      chrome.readingMode.togglePresentation();
+      this.visualBrowserProxy_.togglePresentation();
     }
     this.fire(ToolbarEvent.CLOSE_ALL_MENUS);
   }

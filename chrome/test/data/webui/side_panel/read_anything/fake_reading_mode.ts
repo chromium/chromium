@@ -599,10 +599,6 @@ export class FakeReadingMode {
   // Called by the Read Anything app to close the immersive mode UI.
   close() {}
 
-  // Called by the Read Anything app to toggle between Side Panel and Immersive
-  // Mode.
-  togglePresentation() {}
-
   // There has been a long delay between starting speech and speech
   // playing.
   onSpeechEngineStalled() {}
