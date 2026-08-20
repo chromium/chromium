@@ -115,7 +115,8 @@ void TrimShipment(sync_pb::Shipment& shipment) {
   shipment.clear_shipping_date();
   shipment.clear_carrier_name();
   shipment.clear_carrier_domain();
-  shipment.clear_associated_order_ids();
+  shipment.clear_merchant_name();
+  shipment.clear_product_names();
 }
 
 }  // namespace

@@ -646,6 +646,7 @@ GetShipmentAttributesFromSpecifics(const sync_pb::Shipment& shipment,
   AddDateAttribute(kShipmentShippedDate, shipment.shipping_date(), attributes);
   AddAttribute(kShipmentCarrierName, shipment.carrier_name(), attributes);
   AddAttribute(kShipmentCarrierDomain, shipment.carrier_domain(), attributes);
+  // TODO(crbug.com/541119872): Populate merchant name and product names.
   FinalizeEntityAttributes(EntityType(EntityTypeName::kShipment),
                            serialized_metadata, attributes);
   return attributes;
@@ -671,7 +672,7 @@ sync_pb::AutofillValuableSpecifics GetShipmentSpecifics(
                             shipment);
   SET_OR_CLEAR_STRING_FIELD(entity, kShipmentCarrierDomain, carrier_domain,
                             shipment);
-
+  // TODO(crbug.com/541119872): Populate merchant name and product names.
   *specifics.mutable_serialized_chrome_valuables_metadata() =
       AnyWrapProto(SerializeChromeValuablesMetadata(entity));
   return specifics;

@@ -360,8 +360,14 @@ message Shipment {
   optional string carrier_name = 4;
   // The eTLD+1 of the courier's domain (e.g. "fedex.com").
   optional string carrier_domain = 5;
-  // The Order::ids of the orders shipped.
-  repeated string associated_order_ids = 6;
+  // Attributes corresponding to the Order(s) associated with the Shipment.
+  // They are duplicated from the Order fields of the same name and flattened
+  // into Shipment. This avoids having to deal with cross-entity relations.
+  optional string merchant_name = 7;
+  repeated string product_names = 8;
+
+  reserved 6;
+  reserved "associated_order_ids";
 }
 
 // Valuables coming from Google Wallet.
