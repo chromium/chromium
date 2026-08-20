@@ -13,6 +13,7 @@
 #include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -25,6 +26,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/host_access_request_helper.h"
@@ -1509,6 +1511,57 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   requests = menu_model()->host_access_requests();
   ASSERT_EQ(1u, requests.size());
   EXPECT_EQ(extension_C->id(), requests[0]);
+}
+
+// Tests that disabling multiple extensions updates the menu model action
+// models.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
+                       RemoveMultipleExtensions) {
+  auto extension_A = AddExtension("Extension A");
+  auto extension_B = AddExtension("Extension B");
+
+  ASSERT_EQ(2u, menu_model()->action_models().size());
+
+  extension_registrar()->DisableExtension(
+      extension_A->id(), {extensions::disable_reason::DISABLE_USER_ACTION});
+  extension_registrar()->DisableExtension(
+      extension_B->id(), {extensions::disable_reason::DISABLE_USER_ACTION});
+
+  EXPECT_TRUE(menu_model()->action_models().empty());
+}
+
+// Tests that triggering an extension requiring reload updates
+// PageNeedsRefresh state.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
+                       ActivateWithReload_PageNeedsRefresh) {
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("Extension")
+          .AddHostPermissions({"<all_urls>"})
+          .SetManifestKey(
+              "content_scripts",
+              base::ListValue().Append(
+                  base::DictValue()
+                      .Set("matches", base::ListValue().Append("<all_urls>"))
+                      .Set("run_at", "document_start")
+                      .Set("js", base::ListValue().Append("script.js"))))
+          .SetID(crx_file::id_util::GenerateId("Extension"))
+          .Build();
+  extension_registrar()->AddExtension(extension.get());
+
+  extensions::ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+
+  NavigateTo("example.com");
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  extensions::ExtensionActionRunner* action_runner =
+      extensions::ExtensionActionRunner::GetForWebContents(web_contents);
+  EXPECT_TRUE(action_runner->WantsToRun(extension.get()));
+
+  // A refresh should be needed in order to run the actions and inject the
+  // content script.
+  EXPECT_TRUE(permissions_helper()->PageNeedsRefreshToRun(
+      action_runner->GetBlockedActions(extension->id())));
 }
 
 // Tests that GetSiteSettingsState strips '#' fragment from file:// URLs.
