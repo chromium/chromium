@@ -118,10 +118,8 @@ class PLATFORM_EXPORT FloatRoundedRect {
    private:
     friend class FloatRoundedRect;
     void Outset(const gfx::OutsetsF& outsets);
-    void OutsetWithCornerCorrection(const gfx::OutsetsF&);
-    void OutsetWithCornerCorrectionUsingCoverageFactor(
-        const gfx::OutsetsF&,
-        const gfx::SizeF& box_size);
+    void OutsetWithCornerCorrection(const gfx::OutsetsF&,
+                                    const gfx::SizeF& box_size);
     void OutsetForShapeMargin(float outset);
 
     gfx::SizeF top_left_;

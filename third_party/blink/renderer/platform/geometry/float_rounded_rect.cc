@@ -34,7 +34,6 @@
 
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/insets_f.h"
@@ -132,41 +131,6 @@ void FloatRoundedRect::Radii::Outset(const gfx::OutsetsF& outsets) {
 }
 
 // From: https://drafts.csswg.org/css-backgrounds-3/#corner-shaping
-// ... in order to create a sharper corner when the border radius is small (and
-// thus ensure continuity between round and sharp corners), when the border
-// radius is less than the margin, the margin is multiplied by the proportion
-// 1 + (r-1)^3, where r is the ratio of the border radius to the margin, in
-// calculating the corner radii of the margin box shape.
-// And https://drafts.csswg.org/css-backgrounds-3/#shadow-shape:
-// ... For example, if the border radius is 10px and the spread distance is
-// 20px (r = .5), the corner radius of the shadow shape will be
-// 10px + 20px × (1 + (.5 - 1)^3) = 27.5px rather than 30px. This adjustment
-// is applied independently to the radii in each dimension.
-static void ApplyCornerCorrection(gfx::SizeF& corner,
-                                  float width_outset,
-                                  float height_outset) {
-  if (corner.IsZero() || (width_outset == 0 && height_outset == 0))
-    return;
-
-  float width_factor = 1;
-  if (corner.width() < std::abs(width_outset)) {
-    width_factor = 1 + std::pow(corner.width() / std::abs(width_outset) - 1, 3);
-  }
-
-  float height_factor = 1;
-  if (corner.height() == corner.width() && width_outset == height_outset) {
-    height_factor = width_factor;
-  } else if (corner.height() < std::abs(height_outset)) {
-    height_factor =
-        1 + std::pow(corner.height() / std::abs(height_outset) - 1, 3);
-  }
-
-  corner.set_width(std::max(corner.width() + width_factor * width_outset, 0.f));
-  corner.set_height(
-      std::max(corner.height() + height_factor * height_outset, 0.f));
-}
-
-// From: https://drafts.csswg.org/css-backgrounds-3/#corner-shaping
 // To compute the <dfn>adjusted radius dimension</dfn> given numbers |coverage|,
 // |radius|, and |outset|:
 static float AdjustedRadiusDimension(float radius,
@@ -212,14 +176,6 @@ static void ComputeOutsetAdjustedBorderRadius(gfx::SizeF& corner,
 }
 
 void FloatRoundedRect::Radii::OutsetWithCornerCorrection(
-    const gfx::OutsetsF& outsets) {
-  ApplyCornerCorrection(top_left_, outsets.left(), outsets.top());
-  ApplyCornerCorrection(top_right_, outsets.right(), outsets.top());
-  ApplyCornerCorrection(bottom_left_, outsets.left(), outsets.bottom());
-  ApplyCornerCorrection(bottom_right_, outsets.right(), outsets.bottom());
-}
-
-void FloatRoundedRect::Radii::OutsetWithCornerCorrectionUsingCoverageFactor(
     const gfx::OutsetsF& outsets,
     const gfx::SizeF& box_size) {
   ComputeOutsetAdjustedBorderRadius(
@@ -257,11 +213,8 @@ void FloatRoundedRect::OutsetWithCornerCorrection(
 
   const gfx::SizeF size = rect_.size();
   rect_.Outset(outsets);
-  if (RuntimeEnabledFeatures::ShadowContourFollowsBorderEnabled() &&
-      !size.IsEmpty()) {
-    radii_.OutsetWithCornerCorrectionUsingCoverageFactor(outsets, size);
-  } else {
-    radii_.OutsetWithCornerCorrection(outsets);
+  if (!size.IsEmpty()) {
+    radii_.OutsetWithCornerCorrection(outsets, size);
   }
 }
 

@@ -5644,11 +5644,6 @@
       status: {"ChromeOS": "experimental", "default": ""},
       browser_process_read_write_access: true,
     },
-    // https://chromestatus.com/feature/5176753681203200
-    {
-      name: "ShadowContourFollowsBorder",
-      status: "stable",
-    },
     // https://crbug.com/448174611
     {
       name: "ShadowRootAdoptedStyleSheet",
