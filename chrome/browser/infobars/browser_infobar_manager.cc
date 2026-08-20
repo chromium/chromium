@@ -66,6 +66,9 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate,
     }
   }
 
+  // Called once the infobar has actually been added.
+  void set_shown() { pending_result_ = InfoBarResult::kIgnored; }
+
   // Keeps a manager-initiated removal from being reported as an outcome.
   void suppress_result() { pending_result_.reset(); }
 
@@ -242,9 +245,11 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate,
 
   InfoBarSpec spec_;
   InfoBarShowParams params_;
+
   // The terminal outcome still owed at destruction, cleared once an
   // interaction reports its own result.
-  std::optional<InfoBarResult> pending_result_ = InfoBarResult::kIgnored;
+  std::optional<InfoBarResult> pending_result_;
+
   // Computed once and cached so the substitutions don't change under the
   // view.
   mutable std::optional<std::vector<MessageSubstitution>> substitutions_;
@@ -342,6 +347,8 @@ infobars::InfoBar* BrowserInfoBarManager::Show(
   if (auto* added_infobar = manager->AddInfoBar(
           CreateConfirmInfoBar(std::make_unique<RegistryInfoBarDelegate>(
               it->second, contents, std::move(params))))) {
+    static_cast<RegistryInfoBarDelegate*>(added_infobar->delegate())
+        ->set_shown();
     base::UmaHistogramSparse("InfoBar.Centralized.Show", identifier);
     return added_infobar;
   }
@@ -382,6 +389,8 @@ bool BrowserInfoBarManager::ShowGlobally(
                     spec, active_contents, InfoBarShowParams()));
             auto* added_infobar = manager->AddInfoBar(std::move(infobar));
             if (added_infobar) {
+              static_cast<RegistryInfoBarDelegate*>(added_infobar->delegate())
+                  ->set_shown();
               active_global_infobars_[identifier].active_instances[manager] =
                   added_infobar;
               added_any_infobars = true;
@@ -589,6 +598,8 @@ void BrowserInfoBarManager::OnActiveTabChanged(
               context.spec, active_contents, InfoBarShowParams()));
       auto* added_infobar = new_manager->AddInfoBar(std::move(infobar));
       if (added_infobar) {
+        static_cast<RegistryInfoBarDelegate*>(added_infobar->delegate())
+            ->set_shown();
         context.active_instances[new_manager] = added_infobar;
         if (!infobar_manager_observations_.IsObservingSource(new_manager)) {
           infobar_manager_observations_.AddObservation(new_manager);

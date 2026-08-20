@@ -735,6 +735,32 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
+                       NeverShownInfoBarReportsNoResult) {
+  base::HistogramTester histogram_tester;
+  const auto identifier = InfoBarDelegate::TEST_INFOBAR;
+  std::vector<InfoBarResult> results;
+  manager()->Register(InfoBarSpec::Builder(identifier)
+                          .SetMessageText(u"Test Message")
+                          .SetScope(InfoBarScope::kTab)
+                          .SetResultCallback(base::BindLambdaForTesting(
+                              [&](content::WebContents*, InfoBarResult result) {
+                                results.push_back(result);
+                              }))
+                          .Build());
+
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(manager()->Show(tab, identifier));
+
+  // The duplicate is rejected by AddInfoBar and its delegate destroyed
+  // immediately; that must not be reported as an ignored infobar.
+  ASSERT_FALSE(manager()->Show(tab, identifier));
+  EXPECT_TRUE(results.empty());
+  histogram_tester.ExpectTotalCount("InfoBar.Centralized.Ignored", 0);
+
+  manager()->Hide(tab->GetContents(), identifier);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
                        HideForWebContentsRemovesFromBackgroundTab) {
   const auto identifier = InfoBarDelegate::TEST_INFOBAR;
   std::vector<InfoBarResult> results;
@@ -747,14 +773,13 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
                               }))
                           .Build());
 
-  // Show on a tab, then background it by opening a new active tab. The old
-  // Hide(identifier) overload could not reach infobars on background tabs.
+  // Show on a background tab. The old Hide(identifier) overload could not
+  // reach infobars on background tabs.
   tabs::TabInterface* background_tab =
       browser()->tab_strip_model()->GetActiveTab();
   content::WebContents* background_contents = background_tab->GetContents();
-  manager()->Show(background_tab, identifier);
-
   chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+  manager()->Show(background_tab, identifier);
   auto* infobar_manager =
       ContentInfoBarManager::FromWebContents(background_contents);
   ASSERT_EQ(1u, infobar_manager->infobars().size());
