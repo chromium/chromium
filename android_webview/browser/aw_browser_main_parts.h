@@ -53,8 +53,6 @@ class AwBrowserMainParts : public content::BrowserMainParts {
       std::unique_ptr<base::RunLoop>& run_loop) override;
   void PostCreateThreads() override;
 
-  static bool runStartupTasksAsync();
-
  private:
   void RegisterSyntheticTrials();
 

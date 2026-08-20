@@ -470,11 +470,6 @@ void AwBrowserMainParts::PostCreateThreads() {
       base::trace_event::kStartupTracingTriggerName);
 }
 
-bool AwBrowserMainParts::runStartupTasksAsync() {
-  return Java_AwBrowserMainParts_runStartupTasksAsync(
-      base::android::AttachCurrentThread());
-}
-
 }  // namespace android_webview
 
 DEFINE_JNI(AwBrowserMainParts)

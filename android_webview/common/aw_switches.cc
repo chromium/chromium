@@ -110,4 +110,8 @@ const char kWebViewReduceUserAgentMinorVersion[] =
 const char kWebViewReduceUAAndroidVersionDeviceModel[] =
     "webview-reduce-ua-android-version-device-model";
 
+// Forces startup tasks to run synchronously on the UI thread even when
+// triggered from a background thread.
+const char kWebViewRunStartupTasksSync[] = "webview-run-startup-tasks-sync";
+
 }  // namespace switches

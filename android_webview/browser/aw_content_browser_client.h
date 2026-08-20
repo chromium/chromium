@@ -312,9 +312,6 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   }
 
   void OnStartupComplete();
-  void set_run_startup_tasks_async_for_testing(bool enabled) {
-    run_startup_tasks_async_for_testing_ = enabled;
-  }
 
  private:
   scoped_refptr<safe_browsing::UrlCheckerDelegate>
@@ -348,10 +345,6 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   };
 
   StartupInfo startup_info_;
-
-  bool ShouldRunStartupTasksAsync();
-  std::optional<bool> should_run_startup_tasks_async_;
-  bool run_startup_tasks_async_for_testing_ = false;
 };
 
 }  // namespace android_webview

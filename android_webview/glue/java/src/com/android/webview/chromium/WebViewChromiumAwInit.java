@@ -175,7 +175,6 @@ public class WebViewChromiumAwInit {
     private StartupTasksRunner mStartupTasksRunner;
     private RuntimeException mStartupException;
     private Error mStartupError;
-    private boolean mRunStartupTasksAsync;
 
     private volatile boolean mShouldInitializeDefaultProfile = true;
 
@@ -192,19 +191,14 @@ public class WebViewChromiumAwInit {
             return;
         }
 
-        if (mRunStartupTasksAsync) {
-            if (mStartupException != null) {
-                throw mStartupException;
-            } else if (mStartupError != null) {
-                throw mStartupError;
-            }
+        if (mStartupException != null) {
+            throw mStartupException;
+        } else if (mStartupError != null) {
+            throw mStartupError;
+        }
 
-            // This can be non-null for async-then-sync or multiple-async calls.
-            if (mStartupTasksRunner == null) {
-                mStartupTasksRunner = initializeStartupTasksRunner();
-            }
-        } else {
-            // Makes sure we run all of the startup tasks.
+        // This can be non-null for async-then-sync or multiple-async calls.
+        if (mStartupTasksRunner == null) {
             mStartupTasksRunner = initializeStartupTasksRunner();
         }
 
@@ -213,12 +207,6 @@ public class WebViewChromiumAwInit {
 
     void setProviderInitOnMainLooperLocation(Throwable t) {
         mStartupDiagnostics.setProviderInitOnMainLooperLocation(t);
-    }
-
-    // Called once during the WebViewChromiumFactoryProvider initialization
-    void runStartupTasksAsync(boolean enabled) {
-        assert mInitState.get() == INIT_NOT_STARTED;
-        mRunStartupTasksAsync = enabled;
     }
 
     // These are startup tasks that can either run during provider init or during `startChromium`.
@@ -294,7 +282,6 @@ public class WebViewChromiumAwInit {
                 },
                 preBrowserProcessStartTasks,
                 postBrowserProcessStartTasks,
-                mRunStartupTasksAsync,
                 mChromiumFirstStartupRequestMode.get());
     }
 
@@ -307,13 +294,11 @@ public class WebViewChromiumAwInit {
                         PlatformServiceBridge.getInstance();
                     });
         }
-        if (mRunStartupTasksAsync) {
-            // Disable java-side PostTask scheduling. The native-side task runners
-            // are also disabled in the native code. The unscheduled prenative tasks
-            // are migrated to the native task runner. The native task runner is
-            // enabled when we are done with startup.
-            PostTask.disablePreNativeUiTasks(true);
-        }
+        // Disable java-side PostTask scheduling. The native-side task runners
+        // are also disabled in the native code. The unscheduled prenative tasks
+        // are migrated to the native task runner. The native task runner is
+        // enabled when we are done with startup.
+        PostTask.disablePreNativeUiTasks(true);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             TrackExitReasons.startTrackingStartup();
@@ -430,11 +415,9 @@ public class WebViewChromiumAwInit {
         // This runs all the pending tasks queued for after Chromium init is
         // finished, so should run after `mInitState` is `INIT_FINISHED`.
         mFactory.getRunQueue().notifyChromiumStarted();
-        if (mRunStartupTasksAsync) {
-            // Re-enables the taskrunners
-            PostTask.disablePreNativeUiTasks(false);
-            AwBrowserProcess.onStartupComplete();
-        }
+        // Re-enables the taskrunners
+        PostTask.disablePreNativeUiTasks(false);
+        AwBrowserProcess.onStartupComplete();
     }
 
     private void addBrowserProcessStartTasksToQueue(
@@ -454,36 +437,19 @@ public class WebViewChromiumAwInit {
                         throw new ProcessInitException(LoaderErrors.NATIVE_STARTUP_FAILED);
                     }
                 };
-        if (mRunStartupTasksAsync) {
-            preBrowserProcessStartTasks.addLast(
-                    () -> {
-                        AwBrowserProcess.runPreBrowserProcessStart();
-                        if (mStartupTasksRunner.getRunState()
-                                == StartupTasksRunner.StartupRequestMode.ASYNC) {
-                            AwBrowserProcess.triggerAsyncBrowserProcess(callback);
-                        }
-                    });
-            postBrowserProcessStartTasks.addLast(
-                    () -> {
-                        AwBrowserProcess.finishBrowserProcessStart();
-                        runImmediateTaskAfterBrowserProcessInit();
-                    });
-        } else {
-            preBrowserProcessStartTasks.addLast(
-                    () -> {
-                        // Starts browser process synchronously.
-                        AwBrowserProcess.runPreBrowserProcessStart();
-                        AwBrowserProcess.finishBrowserProcessStart();
-                        if (mStartupTasksRunner.getRunState()
-                                == StartupTasksRunner.StartupRequestMode.ASYNC) {
-                            // Tell the StartupTaskRunner to continue with the
-                            // postBrowserProcessStartQueue.
-                            mStartupTasksRunner.finishAsyncRun();
-                        }
-                    });
-
-            postBrowserProcessStartTasks.addLast(this::runImmediateTaskAfterBrowserProcessInit);
-        }
+        preBrowserProcessStartTasks.addLast(
+                () -> {
+                    AwBrowserProcess.runPreBrowserProcessStart();
+                    if (mStartupTasksRunner.getRunState()
+                            == StartupTasksRunner.StartupRequestMode.ASYNC) {
+                        AwBrowserProcess.triggerAsyncBrowserProcess(callback);
+                    }
+                });
+        postBrowserProcessStartTasks.addLast(
+                () -> {
+                    AwBrowserProcess.finishBrowserProcessStart();
+                    runImmediateTaskAfterBrowserProcessInit();
+                });
     }
 
     // Run the next startup task following BrowserProcess init.

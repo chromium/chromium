@@ -8,6 +8,8 @@ import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.android_webview.common.AwSwitches;
+import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -110,7 +112,6 @@ public final class StartupTasksRunner {
     private final ArrayDeque<Runnable> mPostBrowserProcessStartQueue;
     private final int mPreBrowserProcessStartTasksSize;
     private final int mNumTasks;
-    private final boolean mRunStartupTasksAsync;
     private final @StartupRequestMode int mChromiumFirstStartupRequestMode;
 
     private boolean mAsyncHasBeenTriggered;
@@ -127,15 +128,17 @@ public final class StartupTasksRunner {
             Delegate delegate,
             ArrayDeque<Runnable> preBrowserProcessStartTasks,
             ArrayDeque<Runnable> postBrowserProcessStartTasks,
-            boolean runStartupTasksAsync,
             @StartupRequestMode int chromiumFirstStartupRequestMode) {
         mDelegate = delegate;
         mPreBrowserProcessStartQueue = preBrowserProcessStartTasks;
         mPostBrowserProcessStartQueue = postBrowserProcessStartTasks;
         mPreBrowserProcessStartTasksSize = preBrowserProcessStartTasks.size();
         mNumTasks = mPreBrowserProcessStartTasksSize + postBrowserProcessStartTasks.size();
-        mRunStartupTasksAsync = runStartupTasksAsync;
         mChromiumFirstStartupRequestMode = chromiumFirstStartupRequestMode;
+    }
+
+    private boolean shouldRunStartupTasksAsync() {
+        return !CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_RUN_STARTUP_TASKS_SYNC);
     }
 
     public void run(@StartupCallSite int callSite, boolean triggeredFromUIThread) {
@@ -155,7 +158,7 @@ public final class StartupTasksRunner {
             return;
         }
 
-        if (mRunStartupTasksAsync && !triggeredFromUIThread) {
+        if (shouldRunStartupTasksAsync() && !triggeredFromUIThread) {
             // Prevents triggering async run multiple times and thus reduces the interval between
             // tasks.
             if (mAsyncHasBeenTriggered) {
@@ -286,8 +289,9 @@ public final class StartupTasksRunner {
     // 2. Whether the first task ran synchronously or asynchronously.
     // 3. Whether the last task ran synchronously or asynchronously.
     private @StartupMode int calculateStartupMode() {
-        // The control arm of our experiment runs fully synchronously.
-        if (!mRunStartupTasksAsync) {
+        // TODO(abhijithnair): Evaluate if we need to consider the switch value here and remove if
+        // not needed.
+        if (!shouldRunStartupTasksAsync()) {
             return StartupMode.FULLY_SYNC;
         }
 
