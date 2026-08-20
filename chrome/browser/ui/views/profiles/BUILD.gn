@@ -228,6 +228,17 @@ if (is_win || is_mac || is_linux) {
     public_deps = [ "//base" ]
   }
 
+  source_set("profile_picker_web_contents_host") {
+    public = [ "profile_picker_web_contents_host.h" ]
+    public_deps = [
+      ":profile_management_types",
+      "//base",
+      "//components/signin/public/base:signin_buildflags",
+      "//components/web_modal",
+      "//ui/views/controls/webview",
+    ]
+  }
+
   # ProfilePickerView and the flow controllers this helper drives are only
   # compiled into //chrome/browser/ui on Windows, Mac and Linux, so the helper
   # (whose object file is always linked in, unlike when it lived in the
@@ -241,6 +252,7 @@ if (is_win || is_mac || is_linux) {
     ]
 
     public_deps = [
+      ":profile_picker_web_contents_host",
       "//base",
       "//chrome/browser/ui",
       "//chrome/browser/ui/profiles",

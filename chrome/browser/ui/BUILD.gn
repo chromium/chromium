@@ -2240,7 +2240,6 @@ static_library("ui") {
       "views/profiles/profile_picker_turn_sync_on_delegate.h",
       "views/profiles/profile_picker_view.cc",
       "views/profiles/profile_picker_view.h",
-      "views/profiles/profile_picker_web_contents_host.h",
       "views/profiles/profile_picker_widget.cc",
       "views/profiles/profile_picker_widget.h",
     ]
@@ -2255,6 +2254,7 @@ static_library("ui") {
       "//chrome/browser/ui/startup/default_browser_prompt:impl",
       "//chrome/browser/ui/views/profiles:badged_profile_photo",
       "//chrome/browser/ui/views/profiles:profile_management_types",
+      "//chrome/browser/ui/views/profiles:profile_picker_web_contents_host",
       "//chrome/browser/ui/webui/app_home",
       "//chrome/browser/ui/webui/app_home:impl",
       "//chrome/browser/ui/webui/app_settings",

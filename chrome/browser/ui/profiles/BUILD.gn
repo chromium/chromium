@@ -109,6 +109,7 @@ source_set("impl") {
 
       deps += [
         "//chrome/browser/ui:chrome_pages",
+        "//chrome/browser/ui/views/profiles:profile_management_types",
         "//chrome/browser/ui/webui/signin",
         "//chrome/browser/ui/webui/signin:login_ui_service",
 
@@ -116,7 +117,6 @@ source_set("impl") {
         # signin_intercept_first_run_experience_dialog.h listed above - see
         # comment in :profiles above.
         "//chrome/browser/ui/signin",
-        "//chrome/browser/ui/views/profiles:profile_management_types",
         "//chrome/browser/ui/webui/signin:profile",
       ]
     }
