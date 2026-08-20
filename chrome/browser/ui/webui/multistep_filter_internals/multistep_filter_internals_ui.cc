@@ -53,11 +53,11 @@ void MultistepFilterInternalsUI::BindInterface(
 void MultistepFilterInternalsUI::CreatePageHandler(
     mojo::PendingRemote<mojom::Page> page,
     mojo::PendingReceiver<mojom::PageHandler> receiver) {
+  Profile* profile = Profile::FromWebUI(web_ui());
   multistep_filter::MultistepFilterLogRouter* log_router =
-      multistep_filter::MultistepFilterLogRouterFactory::GetForProfile(
-          Profile::FromWebUI(web_ui()));
+      multistep_filter::MultistepFilterLogRouterFactory::GetForProfile(profile);
   page_handler_ = std::make_unique<MultistepFilterInternalsPageHandler>(
-      std::move(receiver), std::move(page), log_router);
+      std::move(receiver), std::move(page), profile, log_router);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(MultistepFilterInternalsUI)

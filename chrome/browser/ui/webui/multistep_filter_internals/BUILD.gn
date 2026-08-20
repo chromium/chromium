@@ -22,18 +22,19 @@ source_set("multistep_filter_internals") {
 
   deps = [
     "//base",
+    "//chrome/browser/contextual_cueing",
+    "//chrome/browser/multistep_filter/core",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/multistep_filter_internals:resources",
     "//chrome/common",
+    "//components/multistep_filter/core",
+    "//components/multistep_filter/core:features",
     "//content/public/browser",
     "//ui/webui",
   ]
 
   public_deps = [
     ":mojo_bindings",
-    "//chrome/browser/multistep_filter/core",
-    "//components/multistep_filter/core",
-    "//components/multistep_filter/core:features",
     "//components/multistep_filter/core/logging",
   ]
 }
@@ -48,9 +49,14 @@ source_set("unit_tests") {
   deps = [
     ":multistep_filter_internals",
     "//base/test:test_support",
+    "//chrome/browser/multistep_filter/core",
     "//chrome/test:test_support",
     "//components/multistep_filter/core",
+    "//components/multistep_filter/core:features",
+    "//components/multistep_filter/core:test_support",
     "//components/multistep_filter/core/logging",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/unified_consent",
     "//content/test:test_support",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",

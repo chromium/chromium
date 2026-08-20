@@ -322,6 +322,7 @@ source_set("browser_tests") {
       "//components/lens:enterprise_policy",
       "//components/lens:features",
       "//components/multistep_filter/core",
+      "//components/multistep_filter/core:features",
       "//components/optimization_guide/core",
       "//components/optimization_guide/optimization_guide_internals/webui:url_constants",
       "//components/password_manager/content/browser",

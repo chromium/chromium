@@ -27,6 +27,52 @@
   margin-bottom: 20px;
 }
 
+#debug-info {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.info-section {
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  flex: 1 1 300px;
+  padding: 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.info-section h2 {
+  font-size: 1.1rem;
+  margin-top: 0;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 8px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 16px;
+  font-size: 0.9rem;
+  align-items: center;
+}
+
+.info-label {
+  font-weight: bold;
+  color: var(--secondary-text);
+}
+
+.info-value {
+  font-family: monospace;
+}
+
+.highlight-value {
+  font-weight: bold;
+  color: rgb(26, 115, 232);
+}
+
 #controls {
   align-items: center;
   display: flex;

@@ -10,6 +10,58 @@ export function getHtml(this: MultistepFilterInternalsAppElement) {
   // clang-format off
   return html`
     <h1 class="page-title">Multistep Filter Internals</h1>
+    <div id="debug-info">
+      ${this.debugInfo ? html`
+        <div class="info-section">
+          <h2>Overall Status</h2>
+          <div class="info-grid">
+            <div class="info-label">Overall Eligible:</div>
+            <div class="info-value highlight-value">${this.debugInfo.isEligible ? 'Yes' : 'No'}</div>
+          </div>
+        </div>
+        <div class="info-section">
+          <h2>Account</h2>
+          <div class="info-grid">
+            <div class="info-label">User Signed In:</div>
+            <div class="info-value">${this.debugInfo.accountStatus.isSignedIn ? 'Yes' : 'No'}</div>
+
+            <div class="info-label">Model Execution Allowed:</div>
+            <div class="info-value">${this.debugInfo.accountStatus.canUseModelExecutionFeatures ? 'Yes' : 'No'}</div>
+          </div>
+        </div>
+        <div class="info-section">
+          <h2>Settings</h2>
+          <div class="info-grid">
+            <div class="info-label">Smart Suggestions:</div>
+            <div class="info-value">${this.debugInfo.settingsStatus.contextualCueingOptInState}</div>
+
+            <div class="info-label">Enterprise Policy:</div>
+            <div class="info-value">${this.debugInfo.settingsStatus.chromeSuggestionsPolicyState}</div>
+          </div>
+        </div>
+        <div class="info-section">
+          <h2>Consent</h2>
+          <div class="info-grid">
+            <div class="info-label">MSBB Enabled:</div>
+            <div class="info-value">${this.debugInfo.consentStatus.isMsbbEnabled ? 'Yes' : 'No'}</div>
+
+            <div class="info-label">History Sync Enabled:</div>
+            <div class="info-value">${this.debugInfo.consentStatus.isHistorySyncEnabled ? 'Yes' : 'No'}</div>
+          </div>
+        </div>
+        <div class="info-section">
+          <h2>Feature Flags</h2>
+          <div class="info-grid">
+            ${this.debugInfo.featureFlags?.map(flag => html`
+              <div class="info-label">${flag.name}:</div>
+              <div class="info-value">${flag.enabled ? 'Enabled' : 'Disabled'}</div>
+            `)}
+          </div>
+        </div>
+      ` : html`
+        <div class="loading-message">Loading debug info...</div>
+      `}
+    </div>
     <div id="controls">
       <cr-input id="filter-input" placeholder="Search logs..."
           aria-label="Search logs"

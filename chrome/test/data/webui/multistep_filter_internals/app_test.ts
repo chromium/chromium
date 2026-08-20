@@ -15,12 +15,38 @@ const TEST_NAV_ID = 123456n;
 
 class TestPageHandler extends TestBrowserProxy implements PageHandlerInterface {
   constructor() {
-    super(['getBufferedLogs']);
+    super(['getBufferedLogs', 'getDebugInfo']);
   }
 
   getBufferedLogs() {
     this.methodCalled('getBufferedLogs');
     return Promise.resolve({logs: []});
+  }
+
+  getDebugInfo() {
+    this.methodCalled('getDebugInfo');
+    return Promise.resolve({
+      info: {
+        accountStatus: {
+          isSignedIn: true,
+          canUseModelExecutionFeatures: true,
+        },
+        consentStatus: {
+          isMsbbEnabled: true,
+          isHistorySyncEnabled: true,
+        },
+        settingsStatus: {
+          contextualCueingOptInState: 'Enabled',
+          chromeSuggestionsPolicyState: 'Enabled (0)',
+        },
+        isEligible: true,
+        featureFlags: [
+          {name: 'MultistepFilter', enabled: true},
+          {name: 'MultistepFilterSendFeedback', enabled: false},
+          {name: 'ContextualCueingV2', enabled: true},
+        ],
+      },
+    });
   }
 }
 
@@ -48,6 +74,24 @@ suite('AppTest', function() {
   test('Page loads and list exists', function() {
     const list = app.shadowRoot.querySelector('#log-list');
     assertTrue(!!list);
+  });
+
+  test('Debug info is rendered correctly', function() {
+    const debugInfo = app.shadowRoot.querySelector('#debug-info');
+    assertTrue(!!debugInfo);
+
+    const labelValues = debugInfo.querySelectorAll('.info-value');
+    assertEquals(10, labelValues.length);
+    assertEquals('Yes', labelValues[0]!.textContent?.trim());
+    assertEquals('Yes', labelValues[1]!.textContent?.trim());
+    assertEquals('Yes', labelValues[2]!.textContent?.trim());
+    assertEquals('Enabled', labelValues[3]!.textContent?.trim());
+    assertEquals('Enabled (0)', labelValues[4]!.textContent?.trim());
+    assertEquals('Yes', labelValues[5]!.textContent?.trim());
+    assertEquals('Yes', labelValues[6]!.textContent?.trim());
+    assertEquals('Enabled', labelValues[7]!.textContent?.trim());
+    assertEquals('Disabled', labelValues[8]!.textContent?.trim());
+    assertEquals('Enabled', labelValues[9]!.textContent?.trim());
   });
 
   test('List is populated with logs', async function() {
@@ -211,7 +255,7 @@ suite('AppTest', function() {
 class TestPageHandlerWithLogs extends TestBrowserProxy implements
     PageHandlerInterface {
   constructor() {
-    super(['getBufferedLogs']);
+    super(['getBufferedLogs', 'getDebugInfo']);
   }
 
   getBufferedLogs() {
@@ -240,6 +284,32 @@ class TestPageHandlerWithLogs extends TestBrowserProxy implements
           details: '',
         },
       ],
+    });
+  }
+
+  getDebugInfo() {
+    this.methodCalled('getDebugInfo');
+    return Promise.resolve({
+      info: {
+        accountStatus: {
+          isSignedIn: true,
+          canUseModelExecutionFeatures: true,
+        },
+        consentStatus: {
+          isMsbbEnabled: true,
+          isHistorySyncEnabled: true,
+        },
+        settingsStatus: {
+          contextualCueingOptInState: 'Enabled',
+          chromeSuggestionsPolicyState: 'Enabled (0)',
+        },
+        isEligible: true,
+        featureFlags: [
+          {name: 'MultistepFilter', enabled: true},
+          {name: 'MultistepFilterSendFeedback', enabled: false},
+          {name: 'ContextualCueingV2', enabled: true},
+        ],
+      },
     });
   }
 }

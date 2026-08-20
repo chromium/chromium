@@ -21,10 +21,55 @@ struct LogEntry {
 };
 // LINT.ThenChange(//components/multistep_filter/core/logging/log_entry.h:LogEntry)
 
+// Represents the user's account status for Multistep Filter.
+// LINT.IfChange(AccountStatus)
+struct AccountStatus {
+  bool is_signed_in;
+  bool can_use_model_execution_features;
+};
+// LINT.ThenChange(//components/multistep_filter/core/data_models/suggestions_consent_state.h:AccountState)
+
+// Represents the user's consent status for Multistep Filter.
+// LINT.IfChange(ConsentStatus)
+struct ConsentStatus {
+  bool is_msbb_enabled;
+  bool is_history_sync_enabled;
+};
+// LINT.ThenChange(//components/multistep_filter/core/data_models/suggestions_consent_state.h:ConsentState)
+
+// Represents the user's settings status for Multistep Filter.
+// LINT.IfChange(SettingsStatus)
+struct SettingsStatus {
+  string contextual_cueing_opt_in_state;
+  string chrome_suggestions_policy_state;
+};
+// LINT.ThenChange(//components/multistep_filter/core/data_models/suggestions_consent_state.h:SettingsState)
+
+// Represents the user's feature flag status for Multistep Filter.
+struct FeatureFlagStatus {
+  string name;
+  bool enabled;
+};
+
+// Represents the overall debug info for Multistep Filter.
+struct DebugInfo {
+  AccountStatus account_status;
+  ConsentStatus consent_status;
+  SettingsStatus settings_status;
+  // Whether the user is eligible for Multistep Filter. It is derived from the
+  // account, consent, and settings status.
+  bool is_eligible;
+  // List of feature flags and their status.
+  array<FeatureFlagStatus> feature_flags;
+};
+
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
   // Get all logs that have been buffered so far.
   GetBufferedLogs() => (array<LogEntry> logs);
+
+  // Get current consent and feature flag status.
+  GetDebugInfo() => (DebugInfo info);
 };
 
 // WebUI-side observer for log updates.

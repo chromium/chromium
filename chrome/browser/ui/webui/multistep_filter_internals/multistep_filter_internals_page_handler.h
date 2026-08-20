@@ -14,6 +14,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+class Profile;
+
 namespace multistep_filter_internals {
 
 // Handler for the chrome://multistep-filter-internals WebUI page.
@@ -27,6 +29,7 @@ class MultistepFilterInternalsPageHandler
   MultistepFilterInternalsPageHandler(
       mojo::PendingReceiver<mojom::PageHandler> receiver,
       mojo::PendingRemote<mojom::Page> page,
+      Profile* profile,
       multistep_filter::MultistepFilterLogRouter* log_router);
 
   MultistepFilterInternalsPageHandler(
@@ -38,12 +41,14 @@ class MultistepFilterInternalsPageHandler
 
   // mojom::PageHandler:
   void GetBufferedLogs(GetBufferedLogsCallback callback) override;
+  void GetDebugInfo(GetDebugInfoCallback callback) override;
 
   // multistep_filter::MultistepFilterLogRouter::Observer:
   void OnLogEntryAdded(const multistep_filter::LogEntry& entry) override;
   void OnLogRouterShutdown() override;
 
  private:
+  raw_ptr<Profile> profile_;
   raw_ptr<multistep_filter::MultistepFilterLogRouter> log_router_;
   mojo::Receiver<mojom::PageHandler> receiver_;
   mojo::Remote<mojom::Page> page_;
