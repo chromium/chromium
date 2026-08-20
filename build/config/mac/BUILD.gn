@@ -102,7 +102,12 @@ config("mac_dynamic_flags") {
 #
 # The symbolic link for $mac_sdk_path is set up by
 # //build/config/apple/sdk_info.py in //build/config/mac/mac_sdk.gni.
-if (use_system_xcode && current_toolchain == default_toolchain) {
+#
+# We want to "generate" these files in a single toolchain and have other
+# mac toolchains depend on it. use_system_xcode implies host_os == "mac",
+# while default_toolchain could be any platform (think mac->win cross builds).
+# So make the host toolchain the canonical one.
+if (use_system_xcode && current_toolchain == host_toolchain) {
   action("sdk_inputs") {
     script = "//build/noop.py"
     outputs = [
@@ -113,8 +118,8 @@ if (use_system_xcode && current_toolchain == default_toolchain) {
   }
 } else {
   group("sdk_inputs") {
-    if (current_toolchain != default_toolchain && (is_mac || is_ios)) {
-      public_deps = [ ":sdk_inputs($default_toolchain)" ]
+    if (use_system_xcode) {
+      public_deps = [ ":sdk_inputs($host_toolchain)" ]
     }
   }
 }
