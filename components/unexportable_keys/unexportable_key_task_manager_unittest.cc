@@ -7,6 +7,7 @@
 #include <memory>
 #include <variant>
 
+#include "base/cancelable_callback.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_expected_support.h"
@@ -1008,6 +1009,83 @@ TEST_P(UnexportableKeyTaskManagerTest, CertifyAsync) {
   EXPECT_THAT(histogram_tester.GetAllSamples(absl::StrFormat(
                   kTaskRetriesSuccessHistogramNameFormat, kCertifyTaskType)),
               ElementsAre(base::Bucket(0, 1)));
+}
+
+TEST_P(UnexportableKeyTaskManagerTest, CancelPendingTask) {
+  crypto::ScopedMockUnexportableKeyProvider& scoped_provider =
+      SwitchToMockKeyProvider();
+
+  // The first task gets scheduled on the background thread immediately.
+  EXPECT_CALL(scoped_provider.mock(), GenerateSigningKeySlowly)
+      .WillOnce(Return(std::make_unique<crypto::MockUnexportableSigningKey>()));
+
+  // The second task is queued while the first task is running. Since it is
+  // canceled before being posted, its background operation should never run.
+  EXPECT_CALL(scoped_provider.mock(), FromWrappedSigningKeySlowly).Times(0);
+
+  base::HistogramTester histogram_tester;
+
+  base::test::TestFuture<
+      ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
+      task1_future;
+  auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+  task_manager().GenerateSigningKeySlowlyAsync(
+      GetParam().origin, crypto::UnexportableKeyProvider::Config(),
+      supported_algorithm, BackgroundTaskPriority::kBestEffort,
+      task1_future.GetCallback());
+
+  base::test::TestFuture<
+      ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
+      task2_future;
+  base::CancelableOnceCallback<void(
+      ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>)>
+      cancelable_task2(task2_future.GetCallback());
+  std::vector<uint8_t> wrapped_key = {1, 2, 3};
+  task_manager().FromWrappedSigningKeySlowlyAsync(
+      GetParam().origin, crypto::UnexportableKeyProvider::Config(), wrapped_key,
+      BackgroundTaskPriority::kBestEffort, cancelable_task2.callback());
+
+  // Cancel the second task while it is pending in the queue.
+  cancelable_task2.Cancel();
+
+  RunBackgroundTasks();
+
+  EXPECT_TRUE(task1_future.IsReady());
+  EXPECT_FALSE(task2_future.IsReady());
+
+  // Result metrics should be recorded for task 1, but not for the canceled
+  // task 2.
+  histogram_tester.ExpectTotalCount(
+      GetResultHistogramName(kGenerateKeyTaskType), 1);
+  histogram_tester.ExpectTotalCount(
+      GetResultHistogramName(kFromWrappedKeyTaskType), 0);
+}
+
+TEST_P(UnexportableKeyTaskManagerTest, CancelRunningTaskDoesNotRetry) {
+  auto mock_signing_key =
+      std::make_unique<crypto::MockUnexportableSigningKey>();
+  // When the task fails, it would normally be retried up to 3 times (4 calls
+  // total). Because the callback is canceled, it should not be retried.
+  EXPECT_CALL(*mock_signing_key, SignSlowly).WillOnce(Return(std::nullopt));
+
+  auto signing_key =
+      MakeRefCountedUnexportableSigningKey(std::move(mock_signing_key));
+
+  base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
+  base::CancelableOnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)>
+      cancelable_sign(sign_future.GetCallback());
+
+  std::vector<uint8_t> data = {1, 2, 3};
+  task_manager().SignSlowlyAsync(GetParam().origin, signing_key, data,
+                                 BackgroundTaskPriority::kBestEffort,
+                                 cancelable_sign.callback());
+
+  // Cancel the task before background execution completes.
+  cancelable_sign.Cancel();
+
+  RunBackgroundTasks();
+
+  EXPECT_FALSE(sign_future.IsReady());
 }
 
 INSTANTIATE_TEST_SUITE_P(
