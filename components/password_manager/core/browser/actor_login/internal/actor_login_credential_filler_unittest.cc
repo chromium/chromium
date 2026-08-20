@@ -138,7 +138,6 @@ class MockStubPasswordManagerDriver
   MOCK_METHOD(bool, IsDirectChildOfPrimaryMainFrame, (), (const, override));
   MOCK_METHOD(bool, IsInPrimaryMainFrame, (), (const, override));
   MOCK_METHOD(bool, IsNestedWithinFencedFrame, (), (const, override));
-  MOCK_METHOD(bool, HasCrossOriginAncestor, (), (const, override));
   MOCK_METHOD(PasswordManagerInterface*, GetPasswordManager, (), (override));
   MOCK_METHOD(void,
               CheckViewAreaVisible,
@@ -263,6 +262,8 @@ class ActorLoginCredentialFillerTest : public ::testing::TestWithParam<bool> {
       FakeFormFetcher& form_fetcher) {
     ON_CALL(mock_driver, GetLastCommittedOrigin())
         .WillByDefault(ReturnRef(origin));
+    ON_CALL(mock_driver, IsInPrimaryMainFrame)
+        .WillByDefault(Return(origin.IsSameOriginWith(main_frame_origin_)));
     ON_CALL(mock_driver, GetPasswordManager)
         .WillByDefault(Return(&mock_password_manager_));
     auto form_manager = std::make_unique<PasswordFormManager>(
@@ -775,46 +776,6 @@ TEST_P(ActorLoginCredentialFillerTest, FillsNestedFrameWithSameOrigin) {
 }
 
 TEST_P(ActorLoginCredentialFillerTest,
-       DoesntFillNestedFrameWithCrossOriginAncestor) {
-  const url::Origin main_frame_origin =
-      url::Origin::Create(GURL("https://example.com"));
-  const Credential credential = CreateTestCredential(
-      kTestUsername, main_frame_origin.GetURL(), main_frame_origin);
-  const FormData form_data = CreateSigninFormData(main_frame_origin.GetURL());
-  SetSavedCredential(&form_fetcher_, main_frame_origin.GetURL(), kTestUsername,
-                     kTestPassword);
-
-  // The form frame's last committed origin is the same as the main frame
-  // origin, but it is nested inside a cross-origin iframe (A -> B -> A).
-  ON_CALL(mock_driver_, GetLastCommittedOrigin)
-      .WillByDefault(ReturnRef(main_frame_origin));
-
-  // Neither the form frame or its parent are in the main frame.
-  ON_CALL(mock_driver_, IsInPrimaryMainFrame).WillByDefault(Return(false));
-  EXPECT_CALL(mock_driver_, IsDirectChildOfPrimaryMainFrame)
-      .WillRepeatedly(Return(false));
-  EXPECT_CALL(mock_driver_, HasCrossOriginAncestor)
-      .WillRepeatedly(Return(true));
-
-  std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
-  form_managers.push_back(CreateFormManagerWithParsedForm(
-      main_frame_origin, form_data, mock_driver_));
-
-  base::test::TestFuture<LoginStatusResultOrError> future;
-  auto filler = std::make_unique<ActorLoginCredentialFiller>(
-      main_frame_origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
-      /*frame_filling_started_cb=*/base::DoNothing(), future.GetCallback());
-  EXPECT_CALL(mock_form_cache_, GetFormManagers)
-      .WillRepeatedly(Return(base::span(form_managers)));
-
-  filler->AttemptLogin(&mock_password_manager_);
-  const LoginStatusResultOrError& result = future.Get();
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value(), LoginStatusResult::kErrorNoSigninForm);
-}
-
-TEST_P(ActorLoginCredentialFillerTest,
        FillsSameSiteDirectChildOfPrimaryMainFrame) {
   const url::Origin main_frame_origin =
       url::Origin::Create(GURL("https://example.com"));
@@ -891,8 +852,6 @@ TEST_P(ActorLoginCredentialFillerTest, DoesntFillSameSiteNestedIframe) {
   EXPECT_CALL(mock_driver_, IsNestedWithinFencedFrame).WillOnce(Return(false));
   EXPECT_CALL(mock_driver_, IsDirectChildOfPrimaryMainFrame)
       .WillRepeatedly(Return(false));
-  EXPECT_CALL(mock_driver_, HasCrossOriginAncestor)
-      .WillRepeatedly(Return(true));
 
   EXPECT_FALSE(parsed_form->username_element_renderer_id.is_null());
   EXPECT_FALSE(parsed_form->password_element_renderer_id.is_null());

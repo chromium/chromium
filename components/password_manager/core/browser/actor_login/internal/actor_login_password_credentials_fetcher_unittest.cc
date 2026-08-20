@@ -130,7 +130,6 @@ class MockPasswordManagerDriver
   MOCK_METHOD(bool, IsInPrimaryMainFrame, (), (const, override));
   MOCK_METHOD(bool, IsDirectChildOfPrimaryMainFrame, (), (const, override));
   MOCK_METHOD(bool, IsNestedWithinFencedFrame, (), (const, override));
-  MOCK_METHOD(bool, HasCrossOriginAncestor, (), (const, override));
   MOCK_METHOD(password_manager::PasswordManagerInterface*,
               GetPasswordManager,
               (),
@@ -600,36 +599,6 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, NestedFrameWithSameOrigin) {
   EXPECT_TRUE(credentials[0].immediatelyAvailableToLogin);
 }
 
-TEST_F(ActorLoginPasswordCredentialsFetcherTest,
-       NestedFrameWithCrossOriginAncestor) {
-  const GURL same_origin_url = GURL("https://foo.com/login");
-  const url::Origin same_origin = url::Origin::Create(same_origin_url);
-  client()->profile_store()->AddLogin(
-      CreatePasswordForm(same_origin_url.spec(), u"user", u"pass"));
-  AddFormManager(
-      CreateFormManager(same_origin,
-                        /*is_in_main_frame=*/false,
-                        actor_login::CreateSigninFormData(same_origin_url),
-                        client(), driver(), form_fetcher()));
-
-  ON_CALL(driver(), IsDirectChildOfPrimaryMainFrame)
-      .WillByDefault(Return(false));
-  ON_CALL(driver(), HasCrossOriginAncestor).WillByDefault(Return(true));
-
-  base::test::TestFuture<std::vector<Credential>,
-                         ActorLoginCredentialsFetcher::Status>
-      future;
-
-  auto fetcher = std::make_unique<ActorLoginPasswordCredentialsFetcher>(
-      kOrigin, client(), password_manager(), mqls_logger());
-  fetcher->Fetch(future.GetCallback());
-
-  ASSERT_TRUE(future.Wait());
-  const auto& [credentials, status] = future.Get();
-  ASSERT_EQ(credentials.size(), 1u);
-  EXPECT_FALSE(credentials[0].immediatelyAvailableToLogin);
-}
-
 TEST_F(ActorLoginPasswordCredentialsFetcherTest, IgnoresSameSiteNestedFrame) {
   const GURL same_site_url = GURL("https://login.foo.com");
   const url::Origin same_site_origin = url::Origin::Create(same_site_url);
@@ -655,7 +624,6 @@ TEST_F(ActorLoginPasswordCredentialsFetcherTest, IgnoresSameSiteNestedFrame) {
 
   ON_CALL(driver(), IsDirectChildOfPrimaryMainFrame)
       .WillByDefault(Return(false));
-  ON_CALL(driver(), HasCrossOriginAncestor).WillByDefault(Return(true));
 
   base::test::TestFuture<std::vector<Credential>,
                          ActorLoginCredentialsFetcher::Status>

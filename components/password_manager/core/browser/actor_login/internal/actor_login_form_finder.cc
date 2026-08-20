@@ -84,12 +84,13 @@ bool IsValidFrameAndOriginToFill(
     return false;
   }
 
+  bool is_same_origin =
+      driver->GetLastCommittedOrigin().IsSameOriginWith(main_frame_origin);
+
   // We can fill a form if its frame context is considered safe and not overly
-  // nested. A "fillable context" is either the primary main frame itself,
-  // a direct child of the primary main frame that is not a fenced frame, or
-  // a nested frame that is same-origin with the main frame and has no
-  // cross-origin ancestors.
-  return !driver->HasCrossOriginAncestor() || driver->IsInPrimaryMainFrame() ||
+  // nested. A "fillable context" is either the primary main frame itself, or
+  // a direct child of the primary main frame that is not a fenced frame.
+  return is_same_origin || driver->IsInPrimaryMainFrame() ||
          driver->IsDirectChildOfPrimaryMainFrame();
 }
 
