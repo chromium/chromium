@@ -2857,6 +2857,11 @@ def CheckNoProductionCodeUsingTestOnlyFunctions(input_api, output_api):
     exclusion_pattern = input_api.re.compile(
         r'(::[A-Za-z0-9_]+(%s)|(%s))[^;]+\{' %
         (base_function_pattern, base_function_pattern))
+    # exclusion_pattern misses the closing '{' when it wraps to the next line,
+    # support an on demand multi-line check as a last step.
+    multi_line_exclusion_pattern = input_api.re.compile(
+        r'(::[A-Za-z0-9_]+(%s)|(%s))[^;]+\{' %
+        (base_function_pattern, base_function_pattern), input_api.re.DOTALL)
     # Avoid a false positive in this case, where the method name, the ::, and
     # the closing { are all on different lines due to line wrapping.
     # HelperClassForTesting::
@@ -2877,14 +2882,21 @@ def CheckNoProductionCodeUsingTestOnlyFunctions(input_api, output_api):
     for f in input_api.AffectedSourceFiles(FilterFile):
         local_path = f.LocalPath()
         in_method_defn = False
+        cached_file_lines = None
         for line_number, line in f.ChangedContents():
             if (inclusion_pattern.search(line)
                     and not comment_pattern.search(line)
                     and not exclusion_pattern.search(line)
                     and not allowlist_pattern.search(line)
                     and not in_method_defn):
-                problems.append('%s:%d\n    %s' %
-                                (local_path, line_number, line.strip()))
+                if cached_file_lines is None:
+                    cached_file_lines = input_api.ReadFile(f).splitlines()
+                full_text_from_line = '\n'.join(
+                    cached_file_lines[line_number - 1:])
+                match = multi_line_exclusion_pattern.search(full_text_from_line)
+                if not match or match.start() >= len(line):
+                    problems.append('%s:%d\n    %s' %
+                                    (local_path, line_number, line.strip()))
             in_method_defn = method_defn_pattern.search(line)
 
     if problems:

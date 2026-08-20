@@ -3646,6 +3646,10 @@ class NoProductionCodeUsingTestOnlyFunctionsTest(unittest.TestCase):
             MockFile('some/path/foo.cc', ['::FooForTesting() {']),
             MockFile('some/path/foo.cpp', ['// foo_for_test();']),
             MockFile('some/path/foo.cxx', ['foo_for_test(); // IN-TEST']),
+            MockFile('some/path/foo.cc', [
+                'void FooForTesting(',
+                '    int x) {'
+            ]),
         ]
 
         results = PRESUBMIT.CheckNoProductionCodeUsingTestOnlyFunctions(
