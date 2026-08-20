@@ -64,6 +64,7 @@ CustomizeButtonsHandler::SetCustomizeChromeEntryChangedCallback() {
   if (!controller) {
     return nullptr;
   }
+
   controller->SetEntryChangedCallback(base::BindRepeating(
       &CustomizeButtonsHandler::NotifyCustomizeChromeSidePanelVisibilityChanged,
       weak_ptr_factory_.GetWeakPtr()));

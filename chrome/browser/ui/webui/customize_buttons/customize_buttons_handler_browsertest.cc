@@ -18,7 +18,6 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
-#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
@@ -30,11 +29,6 @@ class MockFeaturePromoHelper : public NewTabPageFeaturePromoHelper {
   MOCK_METHOD(void,
               RecordPromoFeatureUsageAndClosePromo,
               (const base::Feature& feature, content::WebContents*),
-              (override));
-  MOCK_METHOD(void,
-              MaybeShowFeaturePromo,
-              (user_education::FeaturePromoParams params,
-               content::WebContents*),
               (override));
   MOCK_METHOD(bool,
               IsSigninModalDialogOpen,
@@ -74,7 +68,7 @@ class MockCustomizeChromeTabHelper
   MOCK_METHOD(bool, IsCustomizeChromeEntryShowing, (), (const, override));
   MOCK_METHOD(void,
               SetEntryChangedCallback,
-              (StateChangedCallBack),
+              (customize_chrome::SidePanelController::StateChangedCallBack),
               (override));
   MOCK_METHOD(void,
               OpenSidePanel,
@@ -160,7 +154,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerBrowserTest, OpenSidePanelTwice) {
-  content::WebContents* web_contents = GetActiveTab()->GetContents();
   SidePanelOpenTrigger trigger;
   std::optional<CustomizeChromeSection> section;
   bool visible;
@@ -172,6 +165,8 @@ IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerBrowserTest, OpenSidePanelTwice) {
   EXPECT_CALL(doc_, SetCustomizeChromeSidePanelVisibility)
       .Times(2)
       .WillRepeatedly(testing::SaveArg<0>(&visible));
+#if !BUILDFLAG(IS_ANDROID)
+  content::WebContents* web_contents = GetActiveTab()->GetContents();
   EXPECT_CALL(
       *GetMockFeaturePromoHelper(),
       RecordPromoFeatureUsageAndClosePromo(
@@ -186,6 +181,7 @@ IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerBrowserTest, OpenSidePanelTwice) {
               feature_engagement::kIPHDesktopCustomizeChromeAutoOpenFeature),
           web_contents))
       .Times(2);
+#endif
 
   handler_->SetCustomizeChromeSidePanelVisible(
       /*visible=*/true, CustomizeChromeSection::kUnspecified,
@@ -288,7 +284,6 @@ INSTANTIATE_TEST_SUITE_P(
         customize_buttons::mojom::SidePanelOpenTrigger::kNewTabFooter));
 
 IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerTriggerParamTest, OpenSidePanel) {
-  content::WebContents* web_contents = GetActiveTab()->GetContents();
   std::optional<CustomizeChromeSection> section;
   SidePanelOpenTrigger trigger;
 
@@ -296,6 +291,8 @@ IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerTriggerParamTest, OpenSidePanel) {
       .Times(1)
       .WillOnce(testing::DoAll(testing::SaveArg<0>(&trigger),
                                testing::SaveArg<1>(&section)));
+#if !BUILDFLAG(IS_ANDROID)
+  content::WebContents* web_contents = GetActiveTab()->GetContents();
   EXPECT_CALL(
       *GetMockFeaturePromoHelper(),
       RecordPromoFeatureUsageAndClosePromo(
@@ -310,6 +307,7 @@ IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerTriggerParamTest, OpenSidePanel) {
               feature_engagement::kIPHDesktopCustomizeChromeAutoOpenFeature),
           web_contents))
       .Times(1);
+#endif
 
   handler_->SetCustomizeChromeSidePanelVisible(
       /*visible=*/true, CustomizeChromeSection::kUnspecified, trigger_param());

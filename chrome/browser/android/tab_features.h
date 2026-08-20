@@ -82,6 +82,18 @@ class TabFeatures {
     return data_protection_tab_controller_.get();
   }
 
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+  customize_chrome::SidePanelController*
+  customize_chrome_side_panel_controller() {
+    return customize_chrome_side_panel_controller_.get();
+  }
+
+  customize_chrome::SidePanelController*
+  SetCustomizeChromeSidePanelControllerForTesting(
+      std::unique_ptr<customize_chrome::SidePanelController>
+          customize_chrome_side_panel_controller);
+#endif
+
  private:
   // Returns the factory used to create owned components.
   static ui::UserDataFactoryWithOwner<TabInterface>& GetUserDataFactory();

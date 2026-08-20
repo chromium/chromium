@@ -1596,6 +1596,10 @@ if (is_android) {
       ]
     }
 
+    if (enable_webui_ntp) {
+      deps += [ "//chrome/browser/ui/webui/customize_buttons:browser_tests" ]
+    }
+
     if (enable_chrome_android_internal) {
       data_deps += [ "//clank/build/bot/filters:android_browsertests_filters" ]
     }
