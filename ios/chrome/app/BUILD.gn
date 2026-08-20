@@ -184,6 +184,7 @@ source_set("unit_tests") {
     "app_startup_parameters_unittest.mm",
     "change_profile_animator_unittest.mm",
     "deferred_initialization_runner_unittest.mm",
+    "legacy_scene_identifier_map_unittest.mm",
     "safe_mode_app_state_agent_unittest.mm",
     "tab_opener_unittest.mm",
     "task_orchestrator_unittest.mm",
@@ -199,6 +200,7 @@ source_set("unit_tests") {
     ":change_profile_animator",
     ":mode",
     ":safe_mode_app_state_agent",
+    ":scene_identifier_map",
     ":tasks_handling",
     ":variations_app_state_agent",
     "//base",
@@ -257,6 +259,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",
@@ -789,6 +792,20 @@ if (ios_chrome_privacy_manifest != "") {
     sources = [ ios_chrome_privacy_manifest ]
     outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
   }
+}
+
+source_set("scene_identifier_map") {
+  sources = [
+    "legacy_scene_identifier_map.h",
+    "legacy_scene_identifier_map.mm",
+    "scene_identifier_map.h",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/profile",
+  ]
 }
 
 source_set("multitasking_test_app_delegate") {
