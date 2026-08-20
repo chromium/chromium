@@ -109,10 +109,6 @@ void TabDragSession::OnInputEvent(const TabDragInputEvent& event) {
           drag_mode_ == DragMode::kRunningWindowMoveLoop) {
         break;
       }
-      TabDragWindowAdapter* window = registry()->Get(dragged_window_);
-      if (window && window->HasCapture()) {
-        break;
-      }
       injector_->GetSessionListener().OnSessionCancelled();
       EndSession();
       break;

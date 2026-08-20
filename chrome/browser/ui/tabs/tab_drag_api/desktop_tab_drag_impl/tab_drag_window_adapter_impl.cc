@@ -97,28 +97,6 @@ gfx::Point TabDragWindowAdapterImpl::ConvertScreenPointToLocal(
   return local_point;
 }
 
-void TabDragWindowAdapterImpl::SetCapture() {
-  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
-      browser_window_->GetWindow()->GetNativeWindow());
-  if (widget) {
-    widget->SetCapture(nullptr);
-  }
-}
-
-void TabDragWindowAdapterImpl::ReleaseCapture() {
-  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
-      browser_window_->GetWindow()->GetNativeWindow());
-  if (widget) {
-    widget->ReleaseCapture();
-  }
-}
-
-bool TabDragWindowAdapterImpl::HasCapture() const {
-  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
-      browser_window_->GetWindow()->GetNativeWindow());
-  return widget && widget->HasCapture();
-}
-
 void TabDragWindowAdapterImpl::Activate() {
   if (!browser_window_ || !browser_window_->GetWindow()) {
     return;

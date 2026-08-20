@@ -59,7 +59,6 @@ TEST_F(TabDragSessionTest, StartAndReleaseCapture) {
 
   EXPECT_FALSE(toy_adapter.capture_started());
   EXPECT_FALSE(toy_adapter.capture_released());
-  EXPECT_FALSE(toy_window.HasCapture());
 
   {
     TabDragSessionParams params{
@@ -71,11 +70,9 @@ TEST_F(TabDragSessionTest, StartAndReleaseCapture) {
     EXPECT_TRUE(session.Start().has_value());
     EXPECT_TRUE(toy_adapter.capture_started());
     EXPECT_FALSE(toy_adapter.capture_released());
-    EXPECT_TRUE(toy_window.HasCapture());
   }
 
   EXPECT_TRUE(toy_adapter.capture_released());
-  EXPECT_FALSE(toy_window.HasCapture());
 }
 
 TEST_F(TabDragSessionTest, InputEventCancelled) {
@@ -198,7 +195,6 @@ TEST_F(TabDragSessionTest, ListenerNotification) {
   EXPECT_EQ(dummy_window_.last_detach_tab_ids(), tab_ids);
   EXPECT_EQ(dummy_window_.last_detach_drag_offset(), gfx::Vector2d(120, 0));
   EXPECT_TRUE(dummy_detached_window_.run_window_move_loop_called());
-  EXPECT_FALSE(dummy_detached_window_.had_capture_on_move_loop());
   EXPECT_EQ(dummy_detached_window_.last_move_loop_point(), tear_point);
   EXPECT_EQ(dummy_detached_window_.last_move_loop_offset(),
             gfx::Vector2d(120, 120));
@@ -221,10 +217,8 @@ TEST_F(TabDragSessionTest, CaptureLostExternally) {
       .start_point = gfx::Point()};
   TabDragSession session(std::move(params), end_callback.Get(), &injector);
   EXPECT_TRUE(session.Start().has_value());
-  EXPECT_TRUE(toy_window.HasCapture());
 
   // Simulate external capture loss.
-  toy_window.ReleaseCapture();
   EXPECT_CALL(end_callback, Run()).Times(1);
   toy_adapter.SendToyEvent(TabDragInputEvent::Type::kCaptureChanged);
 }
@@ -332,7 +326,6 @@ TEST_F(TabDragSessionTest, CaptureLostDuringDetachIgnored) {
       .start_point = gfx::Point()};
   TabDragSession session(std::move(params), end_callback.Get(), &injector);
   EXPECT_TRUE(session.Start().has_value());
-  EXPECT_TRUE(toy_window.HasCapture());
 
   // Force the session into the kDetaching state.
   session.set_drag_mode_for_testing(TabDragSession::DragMode::kDetaching);
@@ -386,9 +379,8 @@ TEST_F(TabDragSessionTest, SingleTabDragImmediateWindowDrag) {
   EXPECT_FALSE(dummy_window_.detach_to_new_window_called());
 
   // Verify that RunWindowMoveLoop was called on the SOURCE window
-  // (dummy_window_) and that capture was released before entering the loop.
+  // (dummy_window_).
   EXPECT_TRUE(dummy_window_.run_window_move_loop_called());
-  EXPECT_FALSE(dummy_window_.had_capture_on_move_loop());
   EXPECT_EQ(dummy_window_.last_move_loop_point(), start_point);
   EXPECT_FALSE(dummy_detached_window_.run_window_move_loop_called());
 }
@@ -439,7 +431,6 @@ TEST_F(TabDragSessionTest, SingleTabDragReattachesToTargetWindow) {
   // Verify that the session's dragged window transitioned to the target window
   // and was activated.
   EXPECT_EQ(session.dragged_window(), target_window.GetWindowId());
-  EXPECT_TRUE(target_window.HasCapture());
   EXPECT_TRUE(target_window.activated());
 
   // Drop in the target window.

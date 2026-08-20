@@ -38,16 +38,4 @@ gfx::Point ToyTabDragWindowAdapter::ConvertScreenPointToLocal(
   return screen_point - bounds_.OffsetFromOrigin();
 }
 
-void ToyTabDragWindowAdapter::SetCapture() {
-  has_capture_ = true;
-}
-
-void ToyTabDragWindowAdapter::ReleaseCapture() {
-  has_capture_ = false;
-}
-
-bool ToyTabDragWindowAdapter::HasCapture() const {
-  return has_capture_;
-}
-
 }  // namespace tabs_api

@@ -39,10 +39,6 @@ class TabDragWindowAdapterImpl : public tabs_api::TabDragWindowAdapter,
   gfx::Point ConvertScreenPointToLocal(
       gfx::NativeView target_view,
       const gfx::Point& screen_point) const override;
-
-  void SetCapture() override;
-  void ReleaseCapture() override;
-  bool HasCapture() const override;
   void Activate() override;
 
   base::expected<tabs_api::TabDragWindowId, mojo_base::mojom::ErrorPtr>

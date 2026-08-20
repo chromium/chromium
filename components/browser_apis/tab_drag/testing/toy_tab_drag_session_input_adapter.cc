@@ -19,33 +19,21 @@ ToyTabDragSessionInputAdapter::StartInputCapture(
   capture_started_ = true;
   callback_ = std::move(callback);
   active_window_ = initial_window;
-  if (!suspended_ && active_window_) {
-    active_window_->SetCapture();
-  }
   return base::ok();
 }
 
 void ToyTabDragSessionInputAdapter::ReleaseInputCapture() {
   capture_released_ = true;
-  if (active_window_) {
-    active_window_->ReleaseCapture();
-    active_window_ = nullptr;
-  }
+  active_window_ = nullptr;
   callback_.Reset();
 }
 
 void ToyTabDragSessionInputAdapter::SuspendInputCapture() {
   suspended_ = true;
-  if (active_window_) {
-    active_window_->ReleaseCapture();
-  }
 }
 
 void ToyTabDragSessionInputAdapter::ResumeInputCapture() {
   suspended_ = false;
-  if (active_window_) {
-    active_window_->SetCapture();
-  }
 }
 
 void ToyTabDragSessionInputAdapter::SetActiveWindowContext(
@@ -53,13 +41,7 @@ void ToyTabDragSessionInputAdapter::SetActiveWindowContext(
   if (active_window_ == new_window) {
     return;
   }
-  if (!suspended_ && active_window_) {
-    active_window_->ReleaseCapture();
-  }
   active_window_ = new_window;
-  if (!suspended_ && active_window_) {
-    active_window_->SetCapture();
-  }
 }
 
 void ToyTabDragSessionInputAdapter::SendToyEvent(
