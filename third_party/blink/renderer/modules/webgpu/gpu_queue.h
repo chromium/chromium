@@ -90,6 +90,9 @@ class GPUQueue : public DawnObject<wgpu::Queue> {
   void copyElementImageToTexture(GPUCopyElementImageSource* source,
                                  GPUCopyElementImageDestination* destination,
                                  ExceptionState& exception_state);
+  void drawElementImageToTexture(GPUCopyElementImageSource* source,
+                                 GPUCopyElementImageDestination* destination,
+                                 ExceptionState& exception_state);
   // }}} End of WebIDL binding implementation.
 
  private:
@@ -104,7 +107,7 @@ class GPUQueue : public DawnObject<wgpu::Queue> {
                             bool dst_premultiplied_alpha,
                             PredefinedColorSpace dst_color_space,
                             bool flipY);
-  void CopyElementImageToTextureInternal(
+  void DrawElementImageToTextureInternal(
       const V8UnionElementOrElementImage* source,
       std::optional<float> sx,
       std::optional<float> sy,

@@ -54,7 +54,7 @@ self.onmessage = async function(e) {
         destDict.height = args[1];
       }
 
-      queue.copyElementImageToTexture(sourceDict, destDict);
+      queue.drawElementImageToTexture(sourceDict, destDict);
       self.postMessage('done');
     }
   } catch (err) {

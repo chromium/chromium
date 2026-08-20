@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
-  <title>WebGPU copyElementImageToTexture</title>
+  <title>WebGPU drawElementImageToTexture</title>
   <meta charset="utf-8" />
   <meta name="fuzzy" content="maxDifference=0-100; totalPixels=0-500" />
   <link rel="help" href="https://github.com/WICG/html-in-canvas" />
@@ -38,7 +38,7 @@
       alphaMode: "premultiplied",
     });
     await resizeToPixelGrid(cvs);
-    queue.copyElementImageToTexture(
+    queue.drawElementImageToTexture(
       { source: cvs.firstElementChild },
       { destination: { texture: ctx.getCurrentTexture() }});
     takeScreenshot();

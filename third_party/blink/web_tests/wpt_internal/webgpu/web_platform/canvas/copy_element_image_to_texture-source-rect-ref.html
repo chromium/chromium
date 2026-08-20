@@ -53,7 +53,7 @@
   const canvasCssHeight = 256;
 
   Array.from(document.querySelectorAll(".draw-element-wrapper")).forEach(wrapper => {
-    // Imitate the behavior of (sx|sy) arguments to copyElementImageToTexture
+    // Imitate the behavior of (sx|sy) arguments to drawElementImageToTexture
     const outset = Number.parseFloat(wrapper.getAttribute("outset") || "0");
     const xscale = Number.parseFloat(wrapper.getAttribute("xscale") || "1");
     const yscale = Number.parseFloat(wrapper.getAttribute("yscale") || "1");
@@ -66,7 +66,7 @@
     wrapper.style.clipPath =
       `rect(${-outset}px ${canvasCssWidth - outset}px ${canvasCssHeight - outset}px ${-outset}px)`;
 
-    // Imitate clipping behavior of (swidth|sheight) arguments to copyElementImageToTexture
+    // Imitate clipping behavior of (swidth|sheight) arguments to drawElementImageToTexture
     const colorGrid = wrapper.firstElementChild;
     const colorGridStyle = getComputedStyle(colorGrid);
     const colorGridWidth = Number.parseFloat(colorGridStyle.width);

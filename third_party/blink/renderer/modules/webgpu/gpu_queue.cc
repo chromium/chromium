@@ -459,6 +459,13 @@ void GPUQueue::copyElementImageToTexture(
     GPUCopyElementImageSource* source,
     GPUCopyElementImageDestination* destination,
     ExceptionState& exception_state) {
+  drawElementImageToTexture(source, destination, exception_state);
+}
+
+void GPUQueue::drawElementImageToTexture(
+    GPUCopyElementImageSource* source,
+    GPUCopyElementImageDestination* destination,
+    ExceptionState& exception_state) {
   std::optional<float> sx;
   std::optional<float> sy;
   std::optional<float> swidth;
@@ -504,12 +511,12 @@ void GPUQueue::copyElementImageToTexture(
     return;
   }
 
-  CopyElementImageToTextureInternal(source->source(), sx, sy, swidth, sheight,
+  DrawElementImageToTextureInternal(source->source(), sx, sy, swidth, sheight,
                                     width, height, destination->destination(),
                                     exception_state);
 }
 
-void GPUQueue::CopyElementImageToTextureInternal(
+void GPUQueue::DrawElementImageToTextureInternal(
     const V8UnionElementOrElementImage* source,
     std::optional<float> sx,
     std::optional<float> sy,
@@ -525,7 +532,7 @@ void GPUQueue::CopyElementImageToTextureInternal(
   CanvasRenderingContext* context = nullptr;
   if (source->IsElement()) {
     context = CanvasRenderingContext::GetEnclosingContextForDrawElement(
-        source->GetAsElement(), "copyElementImageToTexture()", exception_state);
+        source->GetAsElement(), "drawElementImageToTexture()", exception_state);
   } else {
     const std::unique_ptr<CanvasChildPaintRecord>& record =
         source->GetAsElementImage()->PaintRecord();
@@ -576,7 +583,7 @@ void GPUQueue::CopyElementImageToTextureInternal(
   scoped_refptr<StaticBitmapImage> image =
       context->GetElementImage(source, sx, sy, swidth, sheight, width, height,
                                gpu::SHARED_IMAGE_USAGE_WEBGPU_READ,
-                               "copyElementImageToTexture()", exception_state);
+                               "drawElementImageToTexture()", exception_state);
   if (!image) {
     return;
   }

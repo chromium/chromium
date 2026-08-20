@@ -3367,6 +3367,7 @@ interface GPUQueue
     method constructor
     method copyElementImageToTexture
     method copyExternalImageToTexture
+    method drawElementImageToTexture
     method onSubmittedWorkDone
     method submit
     method writeBuffer

@@ -264,7 +264,7 @@ function copyElementImageToWebGPUCanvas(queue, ctx, target, scaleX, scaleY,
     destDict.height = destHeight;
   }
 
-  queue.copyElementImageToTexture(sourceDict, destDict);
+  queue.drawElementImageToTexture(sourceDict, destDict);
 }
 
 export { getPixelFromImageData,

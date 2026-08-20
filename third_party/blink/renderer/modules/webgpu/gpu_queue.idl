@@ -45,5 +45,10 @@
     void copyElementImageToTexture(
         GPUCopyElementImageSource source,
         GPUCopyElementImageDestination destination);
+
+    [RuntimeEnabled=CanvasDrawElement, RaisesException, MeasureAs=HTMLInCanvas]
+    void drawElementImageToTexture(
+        GPUCopyElementImageSource source,
+        GPUCopyElementImageDestination destination);
 };
 GPUQueue includes GPUObjectBase;

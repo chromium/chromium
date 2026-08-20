@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>WebGPU copyElementImageToTexture error conditions tests</title>
+    <title>WebGPU drawElementImageToTexture error conditions tests</title>
     <meta charset="utf-8" />
     <link rel="help" href="https://github.com/WICG/html-in-canvas" />
     <script src="/resources/testharness.js"></script>
@@ -74,10 +74,10 @@
         // Must specify all or none.
 
         // None specified: should NOT throw.
-        queue.copyElementImageToTexture(makeSource(child), makeDest(destination));
+        queue.drawElementImageToTexture(makeSource(child), makeDest(destination));
 
         // All specified: should NOT throw.
-        queue.copyElementImageToTexture(makeSource(child, 0, 0, 10, 10), makeDest(destination));
+        queue.drawElementImageToTexture(makeSource(child, 0, 0, 10, 10), makeDest(destination));
 
         // Mismatched: should throw OperationError.
         const mismatchSrcCases = [
@@ -91,7 +91,7 @@
 
         for (const src of mismatchSrcCases) {
           assert_throws_dom("OperationError",
-            () => queue.copyElementImageToTexture(src, makeDest(destination)),
+            () => queue.drawElementImageToTexture(src, makeDest(destination)),
             `Should throw OperationError for mismatched source params: ${JSON.stringify(src)}`
           );
         }
@@ -100,10 +100,10 @@
         // Must specify neither or both.
 
         // Neither specified: should NOT throw.
-        queue.copyElementImageToTexture(makeSource(child), makeDest(destination));
+        queue.drawElementImageToTexture(makeSource(child), makeDest(destination));
 
         // Both specified: should NOT throw.
-        queue.copyElementImageToTexture(makeSource(child), makeDest(destination, 10, 10));
+        queue.drawElementImageToTexture(makeSource(child), makeDest(destination, 10, 10));
 
         // Mismatched: should throw OperationError.
         const mismatchDestCases = [
@@ -113,28 +113,28 @@
 
         for (const dest of mismatchDestCases) {
           assert_throws_dom("OperationError",
-            () => queue.copyElementImageToTexture(makeSource(child), dest),
+            () => queue.drawElementImageToTexture(makeSource(child), dest),
             `Should throw OperationError for mismatched dest params: ${JSON.stringify(dest)}`
           );
         }
 
         // 3. Mixed cases.
         // Valid sx/sy/swidth/sheight (all) and valid width/height (both) -> should not throw.
-        queue.copyElementImageToTexture(makeSource(child, 0, 0, 10, 10), makeDest(destination, 10, 10));
+        queue.drawElementImageToTexture(makeSource(child, 0, 0, 10, 10), makeDest(destination, 10, 10));
 
         // Mismatched sx/sy/swidth/sheight (some) and valid width/height (both) -> should throw OperationError.
         assert_throws_dom("OperationError",
-          () => queue.copyElementImageToTexture(makeSource(child, 0, 0, 10), makeDest(destination, 10, 10)),
+          () => queue.drawElementImageToTexture(makeSource(child, 0, 0, 10), makeDest(destination, 10, 10)),
           "Should throw OperationError for mismatched source and valid dest"
         );
 
         // Valid sx/sy/swidth/sheight (all) and mismatched width/height (one) -> should throw OperationError.
         assert_throws_dom("OperationError",
-          () => queue.copyElementImageToTexture(makeSource(child, 0, 0, 10, 10), makeDest(destination, 10)),
+          () => queue.drawElementImageToTexture(makeSource(child, 0, 0, 10, 10), makeDest(destination, 10)),
           "Should throw OperationError for valid source and mismatched dest"
         );
 
-      }, "copyElementImageToTexture parameter group validation");
+      }, "drawElementImageToTexture parameter group validation");
     </script>
   </body>
 </html>

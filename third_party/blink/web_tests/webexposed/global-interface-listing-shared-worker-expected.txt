@@ -883,6 +883,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method copyElementImageToTexture
 [Worker]     method copyExternalImageToTexture
+[Worker]     method drawElementImageToTexture
 [Worker]     method onSubmittedWorkDone
 [Worker]     method submit
 [Worker]     method writeBuffer
