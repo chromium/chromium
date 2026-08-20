@@ -21,7 +21,6 @@
 #include "components/safe_browsing/core/browser/csd_model_type.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
-#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/embeddings.pb.h"
 
 namespace optimization_guide {

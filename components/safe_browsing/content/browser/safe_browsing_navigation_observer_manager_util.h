@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_NAVIGATION_OBSERVER_MANAGER_UTIL_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_NAVIGATION_OBSERVER_MANAGER_UTIL_H_
 
+#include <vector>
+
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
-#include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
 namespace safe_browsing {
 
