@@ -66,15 +66,32 @@ if [[ -f "$OLD_SCRIPT_FILE" ]]; then
   cp "$OLD_SCRIPT_FILE" "$INSTALLER_TEMP/script_backup"
 fi
 
-# Stop and unload the service for each user currently running the service, and
-# record the user IDs so the service can be restarted for the same users in the
+# Record the user IDs so the service can be restarted for the same users in the
 # postflight script.
 rm -f "$USERS_TMP_FILE"
 
 for uid in $(find_users_with_active_hosts); do
-  logger Unloading service for user "$uid"
   if [[ -n "$uid" ]]; then
     echo "$uid" >> "$USERS_TMP_FILE"
+  fi
+done
+
+# Send SIGUSR2 before unloading the service to allow host processes to shut down
+# cleanly after notifying clients.
+logger "Sending SIGUSR2 to Chrome Remote Desktop host service..."
+pkill -USR2 -f "^$HOST_SERVICE_BINARY" || true
+# Wait up to 5 seconds for the host processes to shut down cleanly.
+for i in {1..10}; do
+  if ! pgrep -f "^$HOST_SERVICE_BINARY" > /dev/null; then
+    break
+  fi
+  sleep 0.5
+done
+
+# Stop and unload the service for each user that was running the service.
+if [[ -f "$USERS_TMP_FILE" ]]; then
+  for uid in $(sort "$USERS_TMP_FILE" | uniq); do
+    logger Unloading service for user "$uid"
     if [[ "$uid" = "0" ]]; then
       context="LoginWindow"
     else
@@ -89,8 +106,8 @@ for uid in $(find_users_with_active_hosts); do
     $bootstrap_user $sudo_user $stop
     logger $bootstrap_user $sudo_user $unload
     $bootstrap_user $sudo_user $unload
-  fi
-done
+  done
+fi
 
 logger Unloading broker service
 logger launchctl bootout $BROKER_SERVICE_TARGET
