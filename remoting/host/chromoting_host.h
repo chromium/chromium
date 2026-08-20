@@ -143,6 +143,9 @@ class ChromotingHost :
   // Registers a host extension.
   void AddExtension(std::unique_ptr<HostExtension> extension);
 
+  // Disconnects all connected client sessions.
+  void DisconnectAllClients(ErrorCode error);
+
   // Sets the authenticator factory to use for incoming
   // connections. Incoming connections are rejected until
   // authenticator factory is set. Must be called on the network

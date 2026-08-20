@@ -41,6 +41,7 @@ enum ProtocolErrorCode {
   kInvalidArgument = 27,
   kNetworkFailure = 28,
   kOperationTimeout = 29,
+  kSoftwareUpgraded = 30,
 };
 
 // This struct mirrors remoting::SourceLocation.

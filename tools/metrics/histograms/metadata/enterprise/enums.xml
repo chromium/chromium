@@ -611,6 +611,7 @@ chromium-metrics-reviews@google.com.
   <int value="35" label="FAILURE_INVALID_ARGUMENT"/>
   <int value="36" label="FAILURE_NETWORK_FAILURE"/>
   <int value="37" label="FAILURE_OPERATION_TIMEOUT"/>
+  <int value="38" label="FAILURE_SOFTWARE_UPGRADED"/>
 </enum>
 
 <!-- LINT.IfChange(EnterpriseDeviceManagementStatus) -->

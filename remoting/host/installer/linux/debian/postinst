@@ -27,15 +27,24 @@ CRD_PEER_CONNECTION_USER="_crd_peer_connection"
 kill_processes() {
   # Kill CRD processes except for the service script process. The script process
   # command line conveniently starts with /usr/bin/python3, so the pkill pattern
-  # won't kill it. SIGKILL is used because the wrapper script will restart the
-  # host immediately (so any cleanup that might otherwise happen is not useful),
-  # and this ensures that hosts restart even if they are deadlocked.
+  # won't kill it. SIGUSR2 is tried first to allow host processes to shut down
+  # cleanly after notifying clients. SIGKILL is used as a fallback if they are
+  # deadlocked or fail to exit.
   # For the multi-process host, this kills the daemon process and all its
-  # children with SIGKILL, then the systemd service will relaunch the daemon
+  # children, then the systemd service will relaunch the daemon
   # process, which will recover GDM remote displays created by the previous
   # incarnation.
   # TODO: crbug.com/496325766 - Improve the upgrade experience.
   echo "Killing Chrome Remote Desktop processes so that they can be reloaded (sessions will be unaffected)..."
+  pkill -USR2 -f "^$INSTALL_DIR" || true
+  # Wait up to 5 seconds for the host processes to shut down cleanly.
+  for i in {1..10}; do
+    if ! pgrep -f "^$INSTALL_DIR" > /dev/null; then
+      return
+    fi
+    sleep 0.5
+  done
+  echo "Clean shutdown failed, killing processes..."
   pkill -KILL -f "^$INSTALL_DIR" || true
 }
 

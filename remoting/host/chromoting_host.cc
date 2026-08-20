@@ -18,7 +18,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner.h"
 #include "build/build_config.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/endpoint_options.h"
@@ -101,11 +103,7 @@ ChromotingHost::ChromotingHost(
 ChromotingHost::~ChromotingHost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Disconnect all of the clients.
-  while (!clients_.empty()) {
-    clients_.begin()->second->DisconnectSession(
-        ErrorCode::OK, /* error_details= */ {}, FROM_HERE);
-  }
+  DisconnectAllClients(ErrorCode::OK);
 
   // Destroy the session manager(s) to unregister their SignalStrategy listeners
   session_manager_.reset();
@@ -116,6 +114,14 @@ ChromotingHost::~ChromotingHost() {
     for (auto& observer : status_monitor_->observers()) {
       observer.OnHostShutdown();
     }
+  }
+}
+
+void ChromotingHost::DisconnectAllClients(ErrorCode error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  while (!clients_.empty()) {
+    clients_.begin()->second->DisconnectSession(
+        error, /* error_details= */ {}, FROM_HERE);
   }
 }
 

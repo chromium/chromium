@@ -117,6 +117,9 @@ enum ErrorCode {
   // A peer network issue has prevented the remote connection.
   PEER_NETWORK_FAILURE = 68;
 
+  // The connection was closed because the host software was upgraded.
+  SOFTWARE_UPGRADED = 69;
+
   reserved 2, 6 to 7, 11, 12, 15, 17, 19 to 25, 28 to 39, 41, 51 to 59, 61;
 
   // [400, 699] are reserved for internal errors.
