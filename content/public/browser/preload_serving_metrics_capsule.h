@@ -38,6 +38,7 @@ class CONTENT_EXPORT PreloadServingMetricsCapsule {
   // `page_load_metrics::CorrectEventAsNavigationOrActivationOrigined()`.
   virtual void RecordFirstContentfulPaint(
       base::TimeDelta corrected_first_contentful_paint,
+      bool is_in_foreground,
       std::string_view navigation_initiator_string,
       bool is_url_srp) const = 0;
 };

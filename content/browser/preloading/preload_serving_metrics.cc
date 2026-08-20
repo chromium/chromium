@@ -477,6 +477,7 @@ void PreloadServingMetrics::RecordMetricsForPrerenderInitialNavigationFailed()
 
 void PreloadServingMetrics::RecordFirstContentfulPaint(
     base::TimeDelta corrected_first_contentful_paint,
+    bool is_in_foreground,
     std::string_view navigation_initiator_string,
     bool is_url_srp) const {
   const bool is_prerender_used = !!prerender_initial_preload_serving_metrics;
@@ -515,6 +516,21 @@ void PreloadServingMetrics::RecordFirstContentfulPaint(
   const std::array<std::string_view, 2> used_instant_loads = {
       "All", used_instant_load_suffix};
 
+  if (is_in_foreground) {
+    for (const auto navigation_initiator : navigation_initiators) {
+      for (const auto srp_all : srp_alls) {
+        for (const auto used_instant_load : used_instant_loads) {
+          PAGE_LOAD_HISTOGRAM(
+              base::StrCat(
+                  {"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+                   "NavigationToFirstContentfulPaint.",
+                   navigation_initiator, ".", srp_all, ".", used_instant_load}),
+              corrected_first_contentful_paint);
+        }
+      }
+    }
+  }
+
   for (const auto navigation_initiator : navigation_initiators) {
     for (const auto srp_all : srp_alls) {
       for (const auto used_instant_load : used_instant_loads) {
@@ -542,6 +558,21 @@ void PreloadServingMetrics::RecordFirstContentfulPaint(
                         "NavigationToFirstContentfulPaint.WithPrefetch",
                         pre_prefetch_suffix}),
           corrected_first_contentful_paint);
+
+      if (is_in_foreground) {
+        for (const auto navigation_initiator : navigation_initiators) {
+          for (const auto srp_all : srp_alls) {
+            PAGE_LOAD_HISTOGRAM(
+                base::StrCat(
+                    {"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+                     "NavigationToFirstContentfulPaint.",
+                     navigation_initiator, ".", srp_all, ".Prefetch",
+                     pre_prefetch_suffix}),
+                corrected_first_contentful_paint);
+          }
+        }
+      }
+
       for (const auto navigation_initiator : navigation_initiators) {
         for (const auto srp_all : srp_alls) {
           PAGE_LOAD_HISTOGRAM(
@@ -594,11 +625,12 @@ void PreloadServingMetricsCapsuleImpl::
 
 void PreloadServingMetricsCapsuleImpl::RecordFirstContentfulPaint(
     base::TimeDelta corrected_first_contentful_paint,
+    bool is_in_foreground,
     std::string_view navigation_initiator_string,
     bool is_url_srp) const {
   preload_serving_metrics_->RecordFirstContentfulPaint(
-      std::move(corrected_first_contentful_paint), navigation_initiator_string,
-      is_url_srp);
+      std::move(corrected_first_contentful_paint), is_in_foreground,
+      navigation_initiator_string, is_url_srp);
 }
 
 }  // namespace content

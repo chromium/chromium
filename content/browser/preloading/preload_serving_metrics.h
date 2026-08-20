@@ -232,6 +232,7 @@ struct CONTENT_EXPORT PreloadServingMetrics final {
   void RecordMetricsForPrerenderInitialNavigationFailed() const;
   void RecordFirstContentfulPaint(
       base::TimeDelta corrected_first_contentful_paint,
+      bool is_in_foreground,
       std::string_view navigation_initiator_string,
       bool is_url_srp) const;
 
@@ -269,6 +270,7 @@ class CONTENT_EXPORT PreloadServingMetricsCapsuleImpl final
       bool is_url_srp) const override;
   void RecordFirstContentfulPaint(
       base::TimeDelta corrected_first_contentful_paint,
+      bool is_in_foreground,
       std::string_view navigation_initiator_string,
       bool is_url_srp) const override;
 

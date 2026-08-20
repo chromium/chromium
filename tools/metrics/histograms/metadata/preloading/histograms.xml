@@ -483,6 +483,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PreloadServingMetrics.PageLoad.Clients.PaintTiming.NavigationToFirstContentfulPaint.{InitiatorLocation}.{NavigationDestinationSuffix}.{UsedInstantLoad}"
+    units="ms" expires_after="2027-02-07">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    FirstContentfulPaint.
+
+    Recorded when {InitiatorLocation}, {NavigationDestinationSuffix}, and
+    {UsedInstantLoad}.
+  </summary>
+  <token key="InitiatorLocation" variants="InitiatorLocation"/>
+  <token key="NavigationDestinationSuffix"
+      variants="NavigationDestinationSuffix"/>
+  <token key="UsedInstantLoad" variants="UsedInstantLoad"/>
+</histogram>
+
+<histogram
     name="PreloadServingMetrics.PageLoad.Clients.PaintTiming.NavigationToFirstContentfulPaint.{WithPreloadSuffix}"
     units="ms" expires_after="2027-01-31">
   <owner>kenoss@chromium.org</owner>
@@ -493,7 +510,7 @@ chromium-metrics-reviews@google.com.
     Recorded when {WithPreloadSuffix}.
 
     Note: This is going to be obsolete. Use
-    PreloadServingMetrics.PageLoad.Clients.PaintTiming.NavigationToFirstContentfulPaint.WithoutFiltering.All.All.{{UsedInstantLoad}}
+    PreloadServingMetrics.PageLoad.Clients.PaintTiming.NavigationToFirstContentfulPaint.All.All.{{UsedInstantLoad}}
     instead.
   </summary>
   <token key="WithPreloadSuffix" variants="WithPreloadSuffix"/>

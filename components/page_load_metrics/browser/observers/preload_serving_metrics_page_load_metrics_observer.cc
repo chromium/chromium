@@ -153,11 +153,23 @@ void PreloadServingMetricsPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     return;
   }
 
+  const bool is_prerender =
+      GetDelegate().GetPrerenderingState() !=
+      page_load_metrics::PrerenderingState::kNoPrerendering;
+  const bool is_in_foreground =
+      is_prerender
+          ? page_load_metrics::
+                WasActivatedInForegroundOptionalEventInForeground(
+                    timing.paint_timing->first_contentful_paint, GetDelegate())
+          : page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
+                timing.paint_timing->first_contentful_paint, GetDelegate());
+
   base::TimeDelta corrected =
       page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
           GetDelegate(), timing.paint_timing->first_contentful_paint.value());
   navigation_data_->preload_serving_metrics_capsule->RecordFirstContentfulPaint(
-      corrected, navigation_data_->navigation_initiator_string,
+      corrected, is_in_foreground,
+      navigation_data_->navigation_initiator_string,
       navigation_data_->is_url_srp);
 }
 
