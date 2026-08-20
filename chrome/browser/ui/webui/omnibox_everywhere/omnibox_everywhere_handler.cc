@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -15,9 +17,21 @@
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_omnibox_client.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "components/search/search.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_ui.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition_utils.h"
 
 namespace {
+
+// Query parameter key ("gs_ivs" = "Google Search Input Voice Search") and
+// value ("1") used by Google Search (matching ComposeboxQueryController and
+// New Tab Page voice search) to signal that the query was initiated via speech
+// recognition, allowing Google Search to return voice-optimized results.
+constexpr char kVoiceSearchQueryParameterKey[] = "gs_ivs";
+constexpr char kVoiceSearchQueryParameterValue[] = "1";
 
 class OmniboxEverywhereClient : public ContextualOmniboxClient {
  public:
@@ -32,6 +46,12 @@ class OmniboxEverywhereClient : public ContextualOmniboxClient {
     return metrics::OmniboxEventProto::OMNIBOX_EVERYWHERE;
   }
 
+  // Base class SearchboxOmniboxClient::OnAutocompleteAccept invokes
+  // web_contents_->OpenURL(...) directly on the WebContents, which for
+  // Omnibox Everywhere is the standalone popup widget. Omnibox Everywhere
+  // routes all navigations to the browser window and dismisses the popup via
+  // OmniboxEverywhereService::OpenUrl, so we intentionally override and bypass
+  // the base class navigation.
   void OnAutocompleteAccept(
       const GURL& destination_url,
       TemplateURLRef::PostContent* post_content,
@@ -44,7 +64,15 @@ class OmniboxEverywhereClient : public ContextualOmniboxClient {
       const std::u16string& text,
       const AutocompleteMatch& match,
       const AutocompleteMatch& alternative_nav_match) override {
-    service_->OpenUrl(destination_url, disposition, transition);
+    if (service_) {
+      service_->OpenUrl(destination_url, disposition, transition);
+    }
+  }
+
+  void OpenUrl(GURL gurl, WindowOpenDisposition disposition) override {
+    if (service_) {
+      service_->OpenUrl(gurl, disposition, ui::PAGE_TRANSITION_GENERATED);
+    }
   }
 
  private:
@@ -108,6 +136,60 @@ void OmniboxEverywhereHandler::CleanupDrivePicker() {
   // cancel, or error) so that the widget can regain focus and restore standard
   // auto-dismissal.
   service_->OnDrivePickerClosed();
+}
+
+void OmniboxEverywhereHandler::SubmitQuery(const std::string& query_text,
+                                           uint8_t mouse_button,
+                                           bool alt_key,
+                                           bool ctrl_key,
+                                           bool meta_key,
+                                           bool shift_key,
+                                           bool is_voice_search) {
+  if (!is_voice_search) {
+    ContextualSearchboxHandler::SubmitQuery(query_text, mouse_button, alt_key,
+                                            ctrl_key, meta_key, shift_key,
+                                            is_voice_search);
+    return;
+  }
+
+  // In classic Omnibox mode, unlike Composebox mode (which handles contextual
+  // file/tab attachments via ComposeboxEverywhereHandler and routes through
+  // ComposeboxQueryController), there are no contextual attachments. Voice
+  // searches from classic Omnibox mode should navigate directly to the user's
+  // default search provider rather than being routed to AI Mode (udm=50).
+  //
+  // Unlike the New Tab Page, which can perform a client-side navigation inside
+  // its own tab, Omnibox Everywhere runs in a standalone popup window. We must
+  // route query submissions through OpenUrl so that the navigation redirects
+  // to the active browser window/tab and dismisses the popup widget.
+  //
+  // This override lives specifically in OmniboxEverywhereHandler to avoid
+  // altering default behavior in the shared base ContextualSearchboxHandler.
+  TemplateURLService* template_url_service = client()->GetTemplateURLService();
+  if (!template_url_service) {
+    return;
+  }
+  const TemplateURL* default_provider =
+      template_url_service->GetDefaultSearchProvider();
+  if (!default_provider) {
+    return;
+  }
+
+  TemplateURLRef::SearchTermsArgs search_terms_args(
+      base::UTF8ToUTF16(query_text));
+  if (search::DefaultSearchProviderIsGoogle(template_url_service)) {
+    search_terms_args.additional_query_params = base::StrCat(
+        {kVoiceSearchQueryParameterKey, "=", kVoiceSearchQueryParameterValue});
+  }
+
+  const WindowOpenDisposition disposition = ui::DispositionFromClick(
+      /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
+      shift_key);
+  GURL search_url = GURL(default_provider->url_ref().ReplaceSearchTerms(
+      search_terms_args, template_url_service->search_terms_data()));
+  ClearFiles(/*should_block_auto_suggested_tabs=*/false,
+             /*query_submitted=*/true);
+  client()->OpenUrl(search_url, disposition);
 }
 
 void OmniboxEverywhereHandler::OpenProfilePicker() {
