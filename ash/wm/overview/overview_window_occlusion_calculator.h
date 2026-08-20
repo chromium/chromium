@@ -39,8 +39,6 @@ class ASH_EXPORT OverviewWindowOcclusionCalculator : public OverviewObserver {
   void OnOverviewModeStarting() override;
   void OnOverviewModeEnding(OverviewSession* overview_session) override;
 
-  void ComputeOcclusionStateForAllDesks();
-
   std::unique_ptr<DesksWindowOcclusionCalculator> calculator_;
   base::ScopedObservation<OverviewController, OverviewObserver>
       overview_controller_observation_{this};

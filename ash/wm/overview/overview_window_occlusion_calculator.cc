@@ -33,9 +33,15 @@ void OverviewWindowOcclusionCalculator::OnOverviewModeStarting() {
   TRACE_EVENT0("ui",
                "OverviewWindowOcclusionCalculator::OnOverviewModeWillStart");
   calculator_ = std::make_unique<DesksWindowOcclusionCalculator>();
-  // Compute initial occlusion state of all desks' windows before overview mode
-  // starts transforming windows.
-  ComputeOcclusionStateForAllDesks();
+  // Compute initial occlusion snapshot of all desks' windows before overview
+  // mode starts transforming windows into the overview grid.
+  aura::Window::Windows all_desk_containers;
+  for (const auto& root_window : Shell::GetAllRootWindows()) {
+    for (const auto& desk : DesksController::Get()->desks()) {
+      all_desk_containers.push_back(desk->GetDeskContainerForRoot(root_window));
+    }
+  }
+  calculator_->SnapshotOcclusionStateForWindows(all_desk_containers);
 }
 
 void OverviewWindowOcclusionCalculator::OnOverviewModeEnding(
@@ -49,17 +55,6 @@ void OverviewWindowOcclusionCalculator::OnOverviewModeEnding(
                  "OverviewWindowOcclusionCalculator::OnOverviewModeEnding");
     calculator_.reset();
   }
-}
-
-void OverviewWindowOcclusionCalculator::ComputeOcclusionStateForAllDesks() {
-  aura::Window::Windows all_desk_containers;
-  for (const auto& root_window : Shell::GetAllRootWindows()) {
-    for (const auto& desk : DesksController::Get()->desks()) {
-      all_desk_containers.push_back(desk->GetDeskContainerForRoot(root_window));
-    }
-  }
-  CHECK(calculator_);
-  calculator_->SnapshotOcclusionStateForWindows(all_desk_containers);
 }
 
 }  // namespace ash
