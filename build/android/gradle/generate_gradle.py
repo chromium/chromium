@@ -683,21 +683,30 @@ def _GenerateGradleProperties(sdk_version=None):
     return '\n'.join(lines)
 
 
+def _ParseSdkVersion(version):
+    try:
+        # Convert float versions like "36.1" to integers for AGP compatibility.
+        return int(float(version))
+    except (ValueError, TypeError):
+        return version
+
+
 def _GenerateBaseVars(generator, build_vars):
     variables = {}
     # Avoid pre-release SDKs since Studio might not know how to download them.
-    sdk_version = build_vars['android_sdk_platform_version']
-    try:
-        # Convert float versions like "36.1" to integers for AGP compatibility.
-        sdk_version = int(float(sdk_version))
-    except ValueError:
-        pass
+    sdk_version = _ParseSdkVersion(build_vars['android_sdk_platform_version'])
     variables['compile_sdk_version'] = 'android-%s' % sdk_version
-    target_sdk_version = sdk_version
-    if str(target_sdk_version).isalpha():
-        target_sdk_version = '"{}"'.format(target_sdk_version)
-    variables['target_sdk_version'] = target_sdk_version
-    variables['min_sdk_version'] = build_vars['default_min_sdk_version']
+    if isinstance(sdk_version, int):
+        variables['target_sdk_version'] = sdk_version
+    else:
+        variables['target_sdk_preview'] = sdk_version
+
+    min_sdk_version = _ParseSdkVersion(build_vars['default_min_sdk_version'])
+    if isinstance(min_sdk_version, int):
+        variables['min_sdk_version'] = min_sdk_version
+    else:
+        variables['min_sdk_preview'] = min_sdk_version
+
     variables['use_gradle_process_resources'] = (
         generator.use_gradle_process_resources
     )

@@ -52,8 +52,16 @@ android {
 
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
+{% if min_sdk_version is defined %}
         minSdk = {{ min_sdk_version }}
+{% elif min_sdk_preview is defined %}
+        minSdkPreview = "{{ min_sdk_preview }}"
+{% endif %}
+{% if target_sdk_version is defined %}
         targetSdk = {{ target_sdk_version }}
+{% elif target_sdk_preview is defined %}
+        targetSdkPreview = "{{ target_sdk_preview }}"
+{% endif %}
     }
 
     compileOptions {
