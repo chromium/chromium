@@ -136,7 +136,7 @@ public abstract class NativeBackgroundTask implements BackgroundTask {
 
     /**
      * Ensure that native is started before running the task. If native fails to start, the task is
-     * going to be rescheduled, by issuing a {@see TaskFinishedCallback} with parameter set to
+     * going to be rescheduled, by issuing a {@link TaskFinishedCallback} with parameter set to
      * <c>true</c>.
      *
      * @param startWithNativeRunnable A runnable that will execute #onStartTaskWithNative, after the

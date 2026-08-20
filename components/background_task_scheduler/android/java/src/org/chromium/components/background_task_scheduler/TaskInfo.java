@@ -495,7 +495,7 @@ public class TaskInfo {
      *     prerequisite conditions are not met.
      * @return the builder which can be used to continue configuration and {@link Builder#build()}.
      * @see TaskIds
-     * @deprecated the {@see #createTask(int, Class, TimingInfo)} method should be used instead.
+     * @deprecated the {@link #createTask(int, Class, TimingInfo)} method should be used instead.
      *     This method requires an additional step for the caller: the creation of the specific
      *     {@link TimingInfo} object with the wanted properties.
      */
@@ -511,16 +511,15 @@ public class TaskInfo {
      *
      * @param taskId the unique task ID for this task. Should be listed in {@link TaskIds}.
      * @param windowStartTimeMs the start of the window that the task can begin executing as a delta
-     * in milliseconds from now.
+     *     in milliseconds from now.
      * @param windowEndTimeMs the end of the window that the task can begin executing as a delta in
-     * milliseconds from now. Note that the task begins executing at this point even if the
-     * prerequisite conditions are not met.
+     *     milliseconds from now. Note that the task begins executing at this point even if the
+     *     prerequisite conditions are not met.
      * @return the builder which can be used to continue configuration and {@link Builder#build()}.
      * @see TaskIds
-     *
-     * @deprecated the {@see #createTask(int, Class, TimingInfo)} method should be used instead.
-     * This method requires an additional step for the caller: the creation of the specific
-     * {@link TimingInfo} object with the wanted properties.
+     * @deprecated the {@link #createTask(int, Class, TimingInfo)} method should be used instead.
+     *     This method requires an additional step for the caller: the creation of the specific
+     *     {@link TimingInfo} object with the wanted properties.
      */
     @Deprecated
     public static Builder createOneOffTask(
@@ -534,25 +533,22 @@ public class TaskInfo {
     }
 
     /**
-     * Schedule a periodic task that will recur at the specified interval, without the need to
-     * be rescheduled. The task will continue to recur until
-     * {@link BackgroundTaskScheduler#cancel(Context, int)} is invoked with the task ID from this
-     * {@link TaskInfo}.
-     * The flex time specifies how close to the end of the interval you are willing to execute.
-     * Instead of executing at the exact interval, the task will execute at the interval or up to
-     * flex milliseconds before.
+     * Schedule a periodic task that will recur at the specified interval, without the need to be
+     * rescheduled. The task will continue to recur until {@link
+     * BackgroundTaskScheduler#cancel(Context, int)} is invoked with the task ID from this {@link
+     * TaskInfo}. The flex time specifies how close to the end of the interval you are willing to
+     * execute. Instead of executing at the exact interval, the task will execute at the interval or
+     * up to flex milliseconds before.
      *
      * @param taskId the unique task ID for this task. Should be listed in {@link TaskIds}.
      * @param intervalMs the interval between occurrences of this task in milliseconds.
      * @param flexMs the flex time for this task. The task can execute at any time in a window of
-     * flex
-     * length at the end of the period. It is reported in milliseconds.
+     *     flex length at the end of the period. It is reported in milliseconds.
      * @return the builder which can be used to continue configuration and {@link Builder#build()}.
      * @see TaskIds
-     *
-     * @deprecated the {@see #createTask(int, TimingInfo)} method should be used instead.
-     * This method requires an additional step for the caller: the creation of the specific
-     * {@link TimingInfo} object with the wanted properties.
+     * @deprecated the {@link #createTask(int, TimingInfo)} method should be used instead. This
+     *     method requires an additional step for the caller: the creation of the specific {@link
+     *     TimingInfo} object with the wanted properties.
      */
     @Deprecated
     public static Builder createPeriodicTask(int taskId, long intervalMs, long flexMs) {
