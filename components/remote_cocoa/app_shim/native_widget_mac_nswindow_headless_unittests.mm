@@ -16,6 +16,7 @@
 #import "ui/display/mac/test/test_screen_mac.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/mac/coordinate_conversion.h"
 
 namespace {
 
@@ -312,6 +313,96 @@ TEST_F(NativeWidgetMacNSWindowHeadlessTest,
 
   [window performMiniaturize:nil];
   EXPECT_FALSE([window isMiniaturized]);
+}
+
+TEST_F(NativeWidgetMacNSWindowHeadlessTest,
+       HeadlessWindowLargeScreenFullscreenRestoreResize) {
+  CreateTestScreen(gfx::Size(3840, 2160));
+
+  NativeWidgetMacNSWindow* window = [[NativeWidgetMacNSWindow alloc]
+      initWithContentRect:ui::kWindowSizeDeterminedLater
+                styleMask:NSWindowStyleMaskResizable |
+                          NSWindowStyleMaskClosable |
+                          NSWindowStyleMaskMiniaturizable
+                  backing:NSBackingStoreBuffered
+                    defer:NO];
+
+  [window setIsHeadless:YES];
+  ASSERT_TRUE([window isHeadless]);
+
+  // Set initial normal frame.
+  const gfx::Rect initial_bounds(22, 22, 1200, 2116);
+  const NSRect initial_frame = gfx::ScreenRectToNSRect(initial_bounds);
+  [window setFrame:initial_frame display:NO animate:NO];
+  EXPECT_TRUE(NSEqualRects([window frame], initial_frame));
+  EXPECT_EQ(gfx::ScreenRectFromNSRect([window frame]), initial_bounds);
+
+  // Toggle fullscreen.
+  [window toggleFullScreen:nil];
+  EXPECT_EQ([window styleMask] & NSWindowStyleMaskFullScreen,
+            NSWindowStyleMaskFullScreen);
+  const gfx::Rect fullscreen_bounds(0, 0, 3840, 2160);
+  const NSRect fullscreen_frame = gfx::ScreenRectToNSRect(fullscreen_bounds);
+  EXPECT_TRUE(NSEqualRects([window frame], fullscreen_frame));
+  EXPECT_EQ(gfx::ScreenRectFromNSRect([window frame]), fullscreen_bounds);
+
+  // Exit fullscreen.
+  [window toggleFullScreen:nil];
+  EXPECT_NE([window styleMask] & NSWindowStyleMaskFullScreen,
+            NSWindowStyleMaskFullScreen);
+  EXPECT_TRUE(NSEqualRects([window frame], initial_frame));
+  EXPECT_EQ(gfx::ScreenRectFromNSRect([window frame]), initial_bounds);
+
+  // Resize window in normal mode.
+  const gfx::Rect new_bounds(22, 22, 850, 650);
+  const NSRect new_frame = gfx::ScreenRectToNSRect(new_bounds);
+  [window setFrame:new_frame display:NO animate:NO];
+  EXPECT_TRUE(NSEqualRects([window frame], new_frame));
+  EXPECT_EQ(gfx::ScreenRectFromNSRect([window frame]), new_bounds);
+}
+
+TEST_F(NativeWidgetMacNSWindowHeadlessTest,
+       HeadlessWindowLargeScreenZoomRestoreResize) {
+  CreateTestScreen(gfx::Size(3840, 2160));
+
+  NativeWidgetMacNSWindow* window = [[NativeWidgetMacNSWindow alloc]
+      initWithContentRect:ui::kWindowSizeDeterminedLater
+                styleMask:NSWindowStyleMaskResizable |
+                          NSWindowStyleMaskClosable |
+                          NSWindowStyleMaskMiniaturizable
+                  backing:NSBackingStoreBuffered
+                    defer:NO];
+
+  [window setIsHeadless:YES];
+  ASSERT_TRUE([window isHeadless]);
+
+  // Set initial normal frame.
+  const gfx::Rect initial_bounds(22, 22, 1200, 2116);
+  const NSRect initial_frame = gfx::ScreenRectToNSRect(initial_bounds);
+  [window setFrame:initial_frame display:NO animate:NO];
+  EXPECT_TRUE(NSEqualRects([window frame], initial_frame));
+  EXPECT_EQ(gfx::ScreenRectFromNSRect([window frame]), initial_bounds);
+
+  // Zoom window.
+  [window setIsZoomed:YES];
+  EXPECT_TRUE([window isZoomed]);
+  const gfx::Rect zoomed_bounds(0, 0, 3840, 2160);
+  const NSRect zoomed_frame = gfx::ScreenRectToNSRect(zoomed_bounds);
+  EXPECT_TRUE(NSEqualRects([window frame], zoomed_frame));
+  EXPECT_EQ(gfx::ScreenRectFromNSRect([window frame]), zoomed_bounds);
+
+  // Unzoom window.
+  [window setIsZoomed:NO];
+  EXPECT_FALSE([window isZoomed]);
+  EXPECT_TRUE(NSEqualRects([window frame], initial_frame));
+  EXPECT_EQ(gfx::ScreenRectFromNSRect([window frame]), initial_bounds);
+
+  // Resize window in normal mode.
+  const gfx::Rect new_bounds(22, 22, 850, 650);
+  const NSRect new_frame = gfx::ScreenRectToNSRect(new_bounds);
+  [window setFrame:new_frame display:NO animate:NO];
+  EXPECT_TRUE(NSEqualRects([window frame], new_frame));
+  EXPECT_EQ(gfx::ScreenRectFromNSRect([window frame]), new_bounds);
 }
 
 }  // namespace

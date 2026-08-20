@@ -435,8 +435,9 @@ struct NSEdgeAndCornerThicknesses {
 }
 
 // AppKit calls constrainFrameRect:toScreen: to clamp window frames to screen
-// boundaries. When a window move loop is active, suppress this clamping so that
-// CocoaWindowMoveLoop can smoothly drag windows across display boundaries
+// boundaries. In headless mode or when a window move loop is active, suppress
+// this clamping so that the frame is not constrained to the physical display
+// and CocoaWindowMoveLoop can smoothly drag windows across display boundaries
 // without AppKit snapping the window to screen edges.
 - (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen*)screen {
   if (self.isHeadless || self.parentWindow ||
@@ -453,18 +454,20 @@ struct NSEdgeAndCornerThicknesses {
 // AppKit's internal screen layout manager invokes
 // _setFrame:fromAdjustmentToScreen: and _setFrameAfterMove: asynchronously
 // during screen layout changes or display boundary transitions to adjust the
-// window origin. Since CocoaWindowMoveLoop manually drives window positioning
-// during a tab drag, these stale AppKit callbacks would overwrite the move
-// loop's calculated position and cause the window to bounce back or lock to the
-// display edge. Suppress them while the move loop is active.
+// window origin. In headless mode or while CocoaWindowMoveLoop manually drives
+// window positioning during a tab drag, suppress these callbacks so that
+// headless window positioning is not constrained to physical display bounds
+// and stale AppKit callbacks do not overwrite the move loop's calculated
+// position.
 - (void)_setFrame:(NSRect)frameRect
     fromAdjustmentToScreen:(NSScreen*)screen
             anchorIfNeeded:(const CGPoint*)anchor
                    animate:(BOOL)animate {
-  if (base::FeatureList::IsEnabled(
-          remote_cocoa::features::
-              kSuppressAppKitFrameAdjustmentsDuringMoveLoop) &&
-      _bridge && _bridge->window_move_loop()) {
+  if (self.isHeadless ||
+      (base::FeatureList::IsEnabled(
+           remote_cocoa::features::
+               kSuppressAppKitFrameAdjustmentsDuringMoveLoop) &&
+       _bridge && _bridge->window_move_loop())) {
     return;
   }
   if (_inSetFrameFromAdjustment) {
@@ -480,10 +483,11 @@ struct NSEdgeAndCornerThicknesses {
 }
 
 - (void)_setFrameAfterMove:(NSRect)frameRect {
-  if (base::FeatureList::IsEnabled(
-          remote_cocoa::features::
-              kSuppressAppKitFrameAdjustmentsDuringMoveLoop) &&
-      _bridge && _bridge->window_move_loop()) {
+  if (self.isHeadless ||
+      (base::FeatureList::IsEnabled(
+           remote_cocoa::features::
+               kSuppressAppKitFrameAdjustmentsDuringMoveLoop) &&
+       _bridge && _bridge->window_move_loop())) {
     return;
   }
   if (_inSetFrameFromAdjustment) {
