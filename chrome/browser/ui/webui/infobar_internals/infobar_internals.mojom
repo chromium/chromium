@@ -40,6 +40,9 @@ enum InfoBarType {
   [EnableIf=is_mac]
   kKeystone,
 
+  // Known interception disclosure infobar.
+  kKnownInterception,
+
   // Local test policies infobar.
   kLocalTestPoliciesApplied,
 

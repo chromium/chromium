@@ -24,9 +24,11 @@
 #include "chrome/browser/devtools/global_confirm_info_bar.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/infobars/browser_infobar_manager.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -39,6 +41,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/infobar.h"
 #include "components/infobars/core/simple_alert_infobar_delegate.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/prefs/pref_service.h"
@@ -184,6 +187,14 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
       "prevents the infobar from being shown, then shows the infobar. "
       "This can only be triggered on Mac."));
 #endif
+
+  infobar_list.emplace_back(InfoBarEntry::New(
+      /*type=*/InfoBarType::kKnownInterception,
+      /*name=*/"Known Interception Disclosure",
+      /*description=*/
+      "The Known Interception Disclosure infobar alerts users when network "
+      "interception or monitoring is detected. This trigger shows the "
+      "infobar."));
 
   infobar_list.emplace_back(InfoBarEntry::New(
       /*type=*/InfoBarType::kLocalTestPoliciesApplied,
@@ -450,6 +461,39 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
 #endif
     }
 #endif
+    case InfoBarType::kKnownInterception: {
+      if (!bwi || !bwi->GetActiveTabInterface()) {
+        return false;
+      }
+
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::
+                  KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE)) {
+        if (!browser_infobar_manager) {
+          return false;
+        }
+        browser_infobar_manager->Show(
+            bwi->GetActiveTabInterface(),
+            infobars::InfoBarDelegate::
+                KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE);
+      } else {
+        if (!profile) {
+          return false;
+        }
+        content::WebContents* web_contents =
+            bwi->GetActiveTabInterface()->GetContents();
+        infobars::ContentInfoBarManager* infobar_manager =
+            infobars::ContentInfoBarManager::FromWebContents(web_contents);
+        if (!infobar_manager) {
+          return false;
+        }
+        auto delegate =
+            std::make_unique<KnownInterceptionDisclosureInfoBarDelegate>(
+                profile);
+        infobar_manager->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
+      }
+      return true;
+    }
     case InfoBarType::kLocalTestPoliciesApplied: {
       if (infobars::IsInfoBarMigrated(
               infobars::InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR)) {
