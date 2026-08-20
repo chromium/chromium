@@ -1044,7 +1044,8 @@ class CONTENT_EXPORT WebContentsImpl
       scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt,
       PreloadingHoldbackStatus holdback_status_override,
-      std::optional<base::TimeDelta> ttl) override;
+      std::optional<base::TimeDelta> ttl,
+      bool should_ignore_saver_modes) override;
   std::unique_ptr<PrerenderHandle> StartPrerendering(
       const GURL& prerendering_url,
       PreloadingTriggerType trigger_type,

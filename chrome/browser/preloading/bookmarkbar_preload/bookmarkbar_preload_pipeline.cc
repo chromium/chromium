@@ -82,7 +82,8 @@ void BookmarkBarPreloadPipeline::StartPrefetch(
       /*no_vary_search_hint=*/std::nullopt, /*priority=*/std::nullopt,
       pipeline_info_, attempt->GetWeakPtr(),
       /*holdback_status_override=*/
-      content::PreloadingHoldbackStatus::kUnspecified, /*ttl=*/std::nullopt);
+      content::PreloadingHoldbackStatus::kUnspecified, /*ttl=*/std::nullopt,
+      /*should_ignore_saver_modes=*/false);
 }
 
 void BookmarkBarPreloadPipeline::StartPrerender(

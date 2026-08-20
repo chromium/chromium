@@ -58,7 +58,8 @@ class CONTENT_EXPORT PrefetchServiceDelegate {
   virtual bool DisableDecoysBasedOnUserSettings() = 0;
 
   // Get the state of the user's preloading settings.
-  virtual PreloadingEligibility IsSomePreloadingEnabled() = 0;
+  virtual PreloadingEligibility IsSomePreloadingEnabled(
+      bool should_ignore_saver_modes) = 0;
   virtual bool IsExtendedPreloadingEnabled() = 0;
   virtual bool IsPreloadingPrefEnabled() = 0;
   virtual bool IsDataSaverEnabled() = 0;

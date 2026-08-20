@@ -81,8 +81,10 @@ bool ChromePrefetchServiceDelegate::DisableDecoysBasedOnUserSettings() {
 }
 
 content::PreloadingEligibility
-ChromePrefetchServiceDelegate::IsSomePreloadingEnabled() {
-  return prefetch::IsSomePreloadingEnabled(*profile_->GetPrefs());
+ChromePrefetchServiceDelegate::IsSomePreloadingEnabled(
+    bool should_ignore_saver_modes) {
+  return prefetch::IsSomePreloadingEnabled(*profile_->GetPrefs(),
+                                           should_ignore_saver_modes);
 }
 
 bool ChromePrefetchServiceDelegate::IsPreloadingPrefEnabled() {

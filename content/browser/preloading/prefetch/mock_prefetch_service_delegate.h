@@ -38,7 +38,10 @@ class MockPrefetchServiceDelegate : public PrefetchServiceDelegate {
   MOCK_METHOD(bool, IsOriginOutsideRetryAfterWindow, (const GURL&), (override));
   MOCK_METHOD(void, ClearData, (), (override));
   MOCK_METHOD(bool, DisableDecoysBasedOnUserSettings, (), (override));
-  MOCK_METHOD(PreloadingEligibility, IsSomePreloadingEnabled, (), (override));
+  MOCK_METHOD(PreloadingEligibility,
+              IsSomePreloadingEnabled,
+              (bool should_ignore_saver_modes),
+              (override));
   MOCK_METHOD(bool, IsExtendedPreloadingEnabled, (), (override));
   MOCK_METHOD(bool, IsPreloadingPrefEnabled, (), (override));
   MOCK_METHOD(bool, IsDataSaverEnabled, (), (override));

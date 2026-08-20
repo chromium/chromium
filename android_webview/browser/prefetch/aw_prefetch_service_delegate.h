@@ -34,7 +34,8 @@ class AwPrefetchServiceDelegate : public content::PrefetchServiceDelegate {
   bool IsOriginOutsideRetryAfterWindow(const GURL& url) override;
   void ClearData() override;
   bool DisableDecoysBasedOnUserSettings() override;
-  content::PreloadingEligibility IsSomePreloadingEnabled() override;
+  content::PreloadingEligibility IsSomePreloadingEnabled(
+      bool should_ignore_saver_modes) override;
   bool IsPreloadingPrefEnabled() override;
   bool IsDataSaverEnabled() override;
   bool IsBatterySaverEnabled() override;

@@ -55,6 +55,7 @@ BASE_DECLARE_FEATURE(kDsePreload2OnPress);
 extern const base::FeatureParam<bool> kDsePreload2OnPressMouseDown;
 extern const base::FeatureParam<bool> kDsePreload2OnPressUpOrDownArrowButton;
 extern const base::FeatureParam<bool> kDsePreload2OnPressTouchDown;
+extern const base::FeatureParam<bool> kDsePreload2OnPressIgnoreSaverModes;
 
 // Enables on-press trigger in incognito mode.
 //
@@ -82,6 +83,10 @@ bool DsePreload2OnPressIsPredictorEnabled(
 
 // Returns true iff on-press in incognito is enabled.
 bool IsDsePreload2OnPressIncognitoEnabled();
+
+// Returns true iff search preload can ignore battery and data saver modes for
+// on-press navigation preloads.
+bool IsDsePreload2IgnoreSaverModesOnPressEnabled();
 
 }  // namespace features
 

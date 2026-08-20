@@ -82,7 +82,8 @@ bool AwPrefetchServiceDelegate::DisableDecoysBasedOnUserSettings() {
 }
 
 content::PreloadingEligibility
-AwPrefetchServiceDelegate::IsSomePreloadingEnabled() {
+AwPrefetchServiceDelegate::IsSomePreloadingEnabled(
+    bool should_ignore_saver_modes) {
   // Prefetching within WebView is currently only app-triggered so by default we
   // return |PreloadingEligibility::kEligible|. However, if WebView ever adds
   // support for non-app triggered prefetching, we may need to revisit the value

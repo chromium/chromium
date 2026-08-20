@@ -273,7 +273,8 @@ SearchPreloadPipelineManager::TriggerPreloads(TriggerPreloadsData data) {
           GetWebContents(), data.search_preload_service, data.prefetch_url,
           chrome_preloading_predictor::kDefaultSearchEngine,
           data.no_vary_search_hint,
-          /*is_navigation_likely=*/false);
+          /*is_navigation_likely=*/false,
+          /*should_ignore_saver_modes=*/false);
 
   // Trigger prerender without waiting prefetch.
   //
@@ -429,6 +430,25 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
           }
         }(navigation_predictor);
 
+    // We ignore saver modes for on-press navigation prefetching because the
+    // navigation is highly likely to happen soon. The network request will be
+    // sent anyway, so prefetching does not waste resources. Conversely, for
+    // up-or-down arrow key predictions, the confidence is lower, so we strictly
+    // enforce saver mode restrictions.
+    const bool should_ignore_saver_modes = [&] {
+      if (!features::IsDsePreload2IgnoreSaverModesOnPressEnabled()) {
+        return false;
+      }
+
+      switch (navigation_predictor) {
+        case omnibox::mojom::NavigationPredictor::kMouseDown:
+        case omnibox::mojom::NavigationPredictor::kTouchDown:
+          return true;
+        case omnibox::mojom::NavigationPredictor::kUpOrDownArrowButton:
+          return false;
+      }
+    }();
+
     if (!pipelines_.contains(canonical_url)) {
       pipelines_.insert_or_assign(
           canonical_url,
@@ -438,7 +458,7 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
     return pipelines_[canonical_url]->StartPrefetch(
         GetWebContents(), search_preload_service, prefetch_url, predictor,
         no_vary_search_hint,
-        /*is_navigation_likely=*/true);
+        /*is_navigation_likely=*/true, should_ignore_saver_modes);
   }();
 
   if (signal_result_prefetch.has_value()) {

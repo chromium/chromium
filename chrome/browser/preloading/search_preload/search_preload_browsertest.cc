@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
+#include "chrome/browser/battery/battery_saver.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_preload_test_response_utils.h"
@@ -507,6 +508,7 @@ class SearchPreloadBrowserTestBase : public PlatformBrowserTest,
 };
 
 class SearchPreloadBrowserTest : public SearchPreloadBrowserTestBase {
+ public:
   void InitFeatures(
       base::test::ScopedFeatureList& scoped_feature_list) override {
     scoped_feature_list.InitWithFeaturesAndParameters(
@@ -2120,6 +2122,267 @@ IN_PROC_BROWSER_TEST_F(
       search_preload_service.GetNoVarySearchDataCacheForTesting().has_value());
   EXPECT_TRUE(pref_service.GetString(prefs::kSearchPreloadNoVarySearchHintCache)
                   .empty());
+}
+
+class SearchPreloadBrowserTest_OnPressIgnoreSaverModesEnabled
+    : public SearchPreloadBrowserTestBase {
+ public:
+  void InitFeatures(
+      base::test::ScopedFeatureList& scoped_feature_list) override {
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {
+            {
+                extensions_features::kForceWebRequestProxyForTest,
+                {},
+            },
+            {
+                features::kDsePreload2,
+                {
+                    {"kDsePreload2DeviceMemoryThresholdMiB", "0"},
+                },
+            },
+            {
+                features::kDsePreload2OnPress,
+                {
+                    {"kDsePreload2OnPressMouseDown", "true"},
+                    {"kDsePreload2OnPressUpOrDownArrowButton", "true"},
+                    {"kDsePreload2OnPressTouchDown", "true"},
+                    {"kDsePreload2OnPressIgnoreSaverModes", "true"},
+                },
+            },
+        },
+        /*disabled_features=*/{});
+  }
+};
+
+// `OnNavigationLikely()` ignores battery saver mode if
+// `kDsePreload2IgnoreSaverModesOnPress` is enabled.
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_OnPressIgnoreSaverModesEnabled,
+                       OnNavigationLikely_IgnoreSaverModes) {
+  HistogramTesterWrapper uma_tester;
+  battery::OverrideIsBatterySaverEnabledForTesting(true);
+  base::ScopedClosureRunner reset_battery_saver(
+      base::BindOnce(&battery::ResetIsBatterySaverEnabledForTesting));
+
+  SetUpTemplateURLService(/*prefetch_likely_navigations=*/true);
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = R"(key-order, params, except=("q"))",
+  });
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  std::string original_query = "he";
+  std::string search_terms = "hello";
+  SearchUrls urls = GetSearchUrls(search_terms);
+
+  {
+    content::test::TestPrefetchWatcher watcher;
+
+    AutocompleteMatch autocomplete_match = CreateSearchSuggestionMatch(
+        original_query, search_terms, PrefetchHint::kEnabled,
+        PrerenderHint::kDisabled);
+
+    const bool is_triggered_prefetch =
+        GetSearchPreloadService().OnNavigationLikely(
+            1, autocomplete_match,
+            omnibox::mojom::NavigationPredictor::kMouseDown, &GetWebContents());
+    ASSERT_TRUE(is_triggered_prefetch);
+
+    watcher.WaitUntilPrefetchResponseCompleted(std::nullopt,
+                                               urls.prefetch_on_press);
+  }
+
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_press));
+
+  // Navigate.
+  NavigateAndWaitFCP(urls.navigation);
+  NavigateAwayToRecordHistogram();
+
+  // Prefetch is used.
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_press));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.navigation));
+
+  uma_tester.ExpectUma("Omnibox.DsePreload.SignalResult.OnPress.Prefetch",
+                       {SearchPreloadSignalResult::kPrefetchTriggered});
+}
+
+// `OnNavigationLikely()` with `kUpOrDownArrowButton` does not ignore battery
+// saver mode even if `kDsePreload2IgnoreSaverModesOnPress` is enabled.
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_OnPressIgnoreSaverModesEnabled,
+                       OnNavigationLikely_ArrowButton_DoesntIgnoreSaverModes) {
+  HistogramTesterWrapper uma_tester;
+  battery::OverrideIsBatterySaverEnabledForTesting(true);
+  base::ScopedClosureRunner reset_battery_saver(
+      base::BindOnce(&battery::ResetIsBatterySaverEnabledForTesting));
+
+  SetUpTemplateURLService(/*prefetch_likely_navigations=*/true);
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = R"(key-order, params, except=("q"))",
+  });
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  std::string original_query = "he";
+  std::string search_terms = "hello";
+  SearchUrls urls = GetSearchUrls(search_terms);
+
+  AutocompleteMatch autocomplete_match = CreateSearchSuggestionMatch(
+      original_query, search_terms, PrefetchHint::kEnabled,
+      PrerenderHint::kDisabled);
+
+  const bool is_triggered_prefetch =
+      GetSearchPreloadService().OnNavigationLikely(
+          1, autocomplete_match,
+          omnibox::mojom::NavigationPredictor::kUpOrDownArrowButton,
+          &GetWebContents());
+  ASSERT_TRUE(is_triggered_prefetch);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Navigate.
+  NavigateAndWaitFCP(urls.navigation);
+  NavigateAwayToRecordHistogram();
+
+  // Up or down arrow key predictions have lower confidence than mouse/touch
+  // down, so saver modes are not ignored and no prefetch request is sent.
+  EXPECT_EQ(0, request_collector().CountByPath(urls.prefetch_on_press));
+  EXPECT_EQ(1, request_collector().CountByPath(urls.navigation));
+
+  uma_tester.ExpectUma("Omnibox.DsePreload.SignalResult.OnPress.Prefetch",
+                       {SearchPreloadSignalResult::kPrefetchTriggered});
+}
+
+class SearchPreloadBrowserTest_OnPressIgnoreSaverModesDisabled
+    : public SearchPreloadBrowserTestBase {
+ public:
+  void InitFeatures(
+      base::test::ScopedFeatureList& scoped_feature_list) override {
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {
+            {
+                extensions_features::kForceWebRequestProxyForTest,
+                {},
+            },
+            {
+                features::kDsePreload2,
+                {
+                    {"kDsePreload2DeviceMemoryThresholdMiB", "0"},
+                },
+            },
+            {
+                features::kDsePreload2OnPress,
+                {
+                    {"kDsePreload2OnPressMouseDown", "true"},
+                    {"kDsePreload2OnPressUpOrDownArrowButton", "true"},
+                    {"kDsePreload2OnPressTouchDown", "true"},
+                    {"kDsePreload2OnPressIgnoreSaverModes", "false"},
+                },
+            },
+        },
+        /*disabled_features=*/{});
+  }
+};
+
+// `OnNavigationLikely()` does not ignore battery saver mode if
+// `kDsePreload2IgnoreSaverModesOnPress` is disabled.
+IN_PROC_BROWSER_TEST_F(
+    SearchPreloadBrowserTest_OnPressIgnoreSaverModesDisabled,
+    OnNavigationLikely_DoesntIgnoreSaverModesWhenFeatureDisabled) {
+  HistogramTesterWrapper uma_tester;
+  battery::OverrideIsBatterySaverEnabledForTesting(true);
+  base::ScopedClosureRunner reset_battery_saver(
+      base::BindOnce(&battery::ResetIsBatterySaverEnabledForTesting));
+
+  SetUpTemplateURLService(/*prefetch_likely_navigations=*/true);
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = R"(key-order, params, except=("q"))",
+  });
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  std::string original_query = "he";
+  std::string search_terms = "hello";
+  SearchUrls urls = GetSearchUrls(search_terms);
+
+  AutocompleteMatch autocomplete_match = CreateSearchSuggestionMatch(
+      original_query, search_terms, PrefetchHint::kEnabled,
+      PrerenderHint::kDisabled);
+
+  const bool is_triggered_prefetch =
+      GetSearchPreloadService().OnNavigationLikely(
+          1, autocomplete_match,
+          omnibox::mojom::NavigationPredictor::kMouseDown, &GetWebContents());
+  ASSERT_TRUE(is_triggered_prefetch);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Navigate.
+  NavigateAndWaitFCP(urls.navigation);
+  NavigateAwayToRecordHistogram();
+
+  // `OnNavigationLikely()` requested `WebContents::StartPrefetch()`. However,
+  // because `kDsePreload2IgnoreSaverModesOnPress` is disabled and battery saver
+  // mode is active, `PrefetchService` marks the request ineligible and does
+  // not dispatch any network request.
+  EXPECT_EQ(0, request_collector().CountByPath(urls.prefetch_on_press));
+  EXPECT_EQ(1, request_collector().CountByPath(urls.navigation));
+
+  // `SearchPreloadSignalResult` records that the preload API was triggered by
+  // the signal rather than whether the network request was actually dispatched.
+  uma_tester.ExpectUma("Omnibox.DsePreload.SignalResult.OnPress.Prefetch",
+                       {SearchPreloadSignalResult::kPrefetchTriggered});
+}
+
+// `OnSuggest` does not trigger prefetch nor prerender under battery saver mode.
+//
+// Note that the behavior doesn't depend on OnPressIgnoreSaverModes.
+IN_PROC_BROWSER_TEST_F(
+    SearchPreloadBrowserTest_OnPressIgnoreSaverModesDisabled,
+    OnSuggest_DoesntTriggerPrefetchNorPrerenderUnderBatterySaver) {
+  HistogramTesterWrapper uma_tester;
+  battery::OverrideIsBatterySaverEnabledForTesting(true);
+  base::ScopedClosureRunner reset_battery_saver(
+      base::BindOnce(&battery::ResetIsBatterySaverEnabledForTesting));
+
+  SetUpTemplateURLService(/*prefetch_likely_navigations=*/true);
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = R"(key-order, params, except=("q"))",
+  });
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  std::string original_query = "he";
+  std::string search_terms = "hello";
+  SearchUrls urls = GetSearchUrls(search_terms);
+
+  ChangeAutocompleteResult(original_query, search_terms, PrefetchHint::kEnabled,
+                           PrerenderHint::kEnabled);
+
+  // Neither prefetch nor prerender dispatches network requests because battery
+  // saver mode is active. `PrefetchService` marks the prefetch ineligible, and
+  // the prerender navigation is aborted due to the unavailable prefetch.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_FALSE(prerender_helper().GetHostForUrl(urls.prerender));
+
+  // Navigate.
+  NavigateAndWaitFCP(urls.navigation);
+  NavigateAwayToRecordHistogram();
+
+  EXPECT_EQ(0, request_collector().CountByPath(urls.prefetch_on_suggest));
+  EXPECT_EQ(1, request_collector().CountByPath(urls.navigation));
+
+  // `SearchPreloadSignalResult` records that preload trigger requests were
+  // issued for both prefetch and prerender upon the suggestion signal.
+  uma_tester.ExpectUma("Omnibox.DsePreload.SignalResult.OnSuggest.Prefetch",
+                       {SearchPreloadSignalResult::kPrefetchTriggered});
+  uma_tester.ExpectUma("Omnibox.DsePreload.SignalResult.OnSuggest.Prerender",
+                       {SearchPreloadSignalResult::kPrerenderTriggered});
 }
 
 }  // namespace

@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
 
 namespace features {
@@ -49,6 +50,14 @@ const base::FeatureParam<bool> kDsePreload2OnPressUpOrDownArrowButton{
     &kDsePreload2OnPress, "kDsePreload2OnPressUpOrDownArrowButton", true};
 const base::FeatureParam<bool> kDsePreload2OnPressTouchDown{
     &kDsePreload2OnPress, "kDsePreload2OnPressTouchDown", true};
+const base::FeatureParam<bool> kDsePreload2OnPressIgnoreSaverModes{
+    &kDsePreload2OnPress, "kDsePreload2OnPressIgnoreSaverModes",
+#if BUILDFLAG(IS_ANDROID)
+    true
+#else
+    false
+#endif  // BUILDFLAG(IS_ANDROID)
+};
 
 BASE_FEATURE(kDsePreload2OnPressIncognito, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -83,6 +92,11 @@ bool DsePreload2OnPressIsPredictorEnabled(
 bool IsDsePreload2OnPressIncognitoEnabled() {
   return IsDsePreload2OnPressEnabled() &&
          base::FeatureList::IsEnabled(kDsePreload2OnPressIncognito);
+}
+
+bool IsDsePreload2IgnoreSaverModesOnPressEnabled() {
+  return IsDsePreload2OnPressEnabled() &&
+         kDsePreload2OnPressIgnoreSaverModes.Get();
 }
 
 }  // namespace features

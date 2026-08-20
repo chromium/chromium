@@ -832,7 +832,8 @@ PrefetchService::CheckInitialEligibilityOfPrefetch(
     CheckEligibilityParams params) {
   auto prefetch_container = params.prefetch_container_internal;
   if (delegate_) {
-    const auto eligibility_from_delegate = delegate_->IsSomePreloadingEnabled();
+    const auto eligibility_from_delegate = delegate_->IsSomePreloadingEnabled(
+        prefetch_container->request().should_ignore_saver_modes());
     // If pre* actions are disabled then don't prefetch.
     if (eligibility_from_delegate != PreloadingEligibility::kEligible) {
       return std::move(params).Finish(eligibility_from_delegate);
