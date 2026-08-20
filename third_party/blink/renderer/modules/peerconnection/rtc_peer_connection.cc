@@ -2223,7 +2223,7 @@ RTCDataChannel* RTCPeerConnection::createDataChannel(
   }
   init.protocol = data_channel_dict->protocol().Utf8();
   init.negotiated = data_channel_dict->negotiated();
-  if (data_channel_dict->hasId()) {
+  if (init.negotiated && data_channel_dict->hasId()) {
     init.id = data_channel_dict->id();
   }
   if (data_channel_dict->hasPriority()) {
