@@ -4,7 +4,7 @@
 import {HostCapability, PanelStateKind} from '/glic/glic_api/glic_api.js';
 import type {TabData} from '/glic/glic_api/glic_api.js';
 
-import {ApiTestFixtureBase, assertDefined, assertFalse, checkDefined, mapObservable, observeSequence, testMain} from './browser_test_base.js';
+import {ApiTestFixtureBase, assertDefined, checkDefined, mapObservable, observeSequence, testMain} from './browser_test_base.js';
 import type {SequencedSubscriber} from './browser_test_base.js';
 
 // Test cases here correspond to test cases in glic_api_browsertest.cc.
@@ -87,54 +87,6 @@ class ApiTests extends ApiTestFixtureBase {
           }
           return active;
         }));
-  }
-
-
-  // Helper for `testFetchInactiveTabScreenshot` and
-  // `testFetchInactiveTabScreenshotWhileMinimized`.
-  async fetchInactiveTabScreenshot(expectNoFocus: boolean = false) {
-    assertDefined(this.host.getFocusedTabStateV2);
-    assertDefined(this.host.getContextFromTab);
-    assertDefined(this.host.pinTabs);
-    assertDefined(this.host.getPinnedTabs);
-
-    // Pin the focused tab.
-    const focusSequence = observeSequence(this.host.getFocusedTabStateV2());
-    let focus = await focusSequence.next();
-    const tabId = checkDefined(focus?.hasFocus?.tabData.tabId);
-    await this.host.pinTabs([tabId]);
-
-    // Select the other tab.
-    await this.advanceToNextStep();
-    focus = await focusSequence.waitFor(
-        (f) => (!!f.hasFocus && f.hasFocus.tabData.tabId !== tabId) ||
-            (expectNoFocus && !!f.hasNoFocus));
-
-    // Get context and verify we have a screenshot.
-    const context = await this.host.getContextFromTab(tabId, {
-      viewportScreenshot: true,
-    });
-    return context;
-  }
-
-  async testFetchInactiveTabScreenshotWhileMinimized() {
-    const shouldGetScreenshot = this.testParams;
-    // Tests fetching the screenshot of a tab while the browser is minimized.
-    // Ideally this would work, but it currently times out and provides no
-    // screenshot on some platforms.
-    const context = await this.fetchInactiveTabScreenshot(
-        /*expectNoFocus=*/ true);
-    assertFalse(checkDefined(context.tabData.isObservable));
-
-    if (shouldGetScreenshot) {
-      assertDefined(context.viewportScreenshot);
-    } else {
-      // For platforms where screenshotting fails while minimized, it fails
-      // randomly, so we don't assert anything here. This test at least confirms
-      // screenshotting does not hang forever.
-      // Note: I've tried adding a sleep between minimizing the window and
-      // capturing the screenshot, but it still succeeds randomly.
-    }
   }
 }
 

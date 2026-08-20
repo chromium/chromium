@@ -5308,6 +5308,35 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
   ContinueJsTest();
 }
 
+// TODO(crbug.com/460826488): Enable on ChromeOS.
+// Win-asan is flaky.
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+     (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)))
+#define MAYBE_testFetchInactiveTabScreenshotWhileMinimized \
+  DISABLED_testFetchInactiveTabScreenshotWhileMinimized
+#else
+#define MAYBE_testFetchInactiveTabScreenshotWhileMinimized \
+  testFetchInactiveTabScreenshotWhileMinimized
+#endif
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       MAYBE_testFetchInactiveTabScreenshotWhileMinimized) {
+  tabs::TabInterface* tab0 = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab0);
+  CreateAndActivateTab(GetSimpleTestUrl());
+
+  bool can_fetch_screenshot = BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC);
+
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest({.params = base::Value(can_fetch_screenshot)});
+
+  ActivateTab(tab0);
+#if !BUILDFLAG(IS_ANDROID)
+  GetBrowserWindowInterface()->GetWindow()->Minimize();
+#endif
+
+  ContinueJsTest();
+}
+
 auto DefaultTestParamSet() {
   return testing::Values(TestParams{});
 }

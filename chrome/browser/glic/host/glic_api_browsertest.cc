@@ -173,7 +173,6 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTab);
 std::vector<std::string> GetTestSuiteNames() {
   return {
       "GlicApiTest",
-      "GlicApiTestWithOneTab",
 
       "GlicApiTestUserStatusCheckTest",
       "GlicApiTestWithOneTabMoreDebounceDelay",
@@ -468,29 +467,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testAllTestsAreRegistered) {
   AssertAllTestsRegistered(GetTestSuiteNames());
 }
 
-// TODO(crbug.com/460826488): Enable on ChromeOS.
-// Win-asan is flaky.
-#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
-#define MAYBE_testFetchInactiveTabScreenshotWhileMinimized \
-  DISABLED_testFetchInactiveTabScreenshotWhileMinimized
-#else
-#define MAYBE_testFetchInactiveTabScreenshotWhileMinimized \
-  testFetchInactiveTabScreenshotWhileMinimized
-#endif
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       MAYBE_testFetchInactiveTabScreenshotWhileMinimized) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
-  RunTestSequence(AddInstrumentedTabAndOpenSidePanel(kSecondTab, page_url()));
-  bool can_fetch_screenshot = BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC);
-
-  ExecuteJsTest({.params = base::Value(can_fetch_screenshot)});
-
-  browser()->tab_strip_model()->SelectPreviousTab();
-  browser()->GetWindow()->Minimize();
-
-  ContinueJsTest();
-}
-
 // TODO(b/498955581): Clean up glic hibernation experiments, and test in the
 // coordinator test.
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testHibernateAllOnMemoryPressure) {
@@ -544,17 +520,6 @@ auto DefaultTestParamSet() {
   return testing::Values(TestParams{});
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    GlicApiTestWithOneTab,
-#if defined(SLOW_BINARY)
-    // TODO(crbug.com/460826483): Evaluate the feasibility of multi_instance.
-    // Even the test setup sometimes doesn't finish on ASAN for multi-instance.
-    testing::Values(TestParams{}),
-#else
-    DefaultTestParamSet(),
-#endif
-    &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTest,
                          DefaultTestParamSet(),

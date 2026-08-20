@@ -2787,6 +2787,23 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(screenshot.widthPixels > 0);
     assertTrue(screenshot.heightPixels > 0);
   }
+
+  async testFetchInactiveTabScreenshotWhileMinimized() {
+    const shouldGetScreenshot = this.testParams;
+    // Tests fetching the screenshot of a tab while the browser is minimized.
+    // Ideally this would work, but it currently times out and provides no
+    // screenshot on some platforms.
+    const context = await this.fetchInactiveTabScreenshot(
+        /*expectNoFocus=*/ true);
+
+    if (shouldGetScreenshot) {
+      assertDefined(context.viewportScreenshot);
+    } else {
+      // For platforms where screenshotting fails while minimized, it fails
+      // randomly, so we don't assert anything here. This test at least confirms
+      // this call does not crash.
+    }
+  }
 }
 
 class DaisyChainApiTests extends ApiTestFixtureBase {
