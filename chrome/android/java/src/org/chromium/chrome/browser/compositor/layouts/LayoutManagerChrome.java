@@ -331,21 +331,26 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
     protected void tabClosed(int id, int nextId, boolean incognito, boolean tabRemoved) {
         if (!isActivityFinishingOrDestroyed()) {
             boolean showOverview = nextId == Tab.INVALID_TAB_ID;
-            boolean animate = !tabRemoved && animationsEnabled();
-            if (getActiveLayoutType() != LayoutType.HUB
-                    && showOverview
-                    && getNextLayoutType() != LayoutType.HUB
-                    && !DeviceInfo.isXr()) {
-                showLayout(LayoutType.HUB, animate);
-            } else if (getActiveLayoutType() == LayoutType.HUB
-                    && assumeNonNull(getActiveLayout()).isStartingToHide()
-                    && showOverview
-                    && getNextLayoutType() == LayoutType.BROWSING
-                    && !DeviceInfo.isXr()) {
+            if (shouldShowHubOnTabClosed(showOverview)) {
+                boolean animate = !tabRemoved && animationsEnabled();
                 showLayout(LayoutType.HUB, animate);
             }
         }
         super.tabClosed(id, nextId, incognito, tabRemoved);
+    }
+
+    private boolean shouldShowHubOnTabClosed(boolean showOverview) {
+        if (!showOverview || DeviceInfo.isXr() || TabSwitcherUtils.isGridTabSwitcherDisabled()) {
+            return false;
+        }
+        // Case 1: Not currently in the Hub and not already navigating to the Hub.
+        if (getActiveLayoutType() != LayoutType.HUB && getNextLayoutType() != LayoutType.HUB) {
+            return true;
+        }
+        // Case 2: In the Hub, but the Hub is starting to hide back to the browsing layout.
+        return getActiveLayoutType() == LayoutType.HUB
+                && assumeNonNull(getActiveLayout()).isStartingToHide()
+                && getNextLayoutType() == LayoutType.BROWSING;
     }
 
     @Override

@@ -339,6 +339,27 @@ public class LayoutManagerChromeUnitTest {
         verify(layoutManagerChrome).showLayout(eq(LayoutType.HUB), eq(true));
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
+    public void testTabClosed_disabledOnDesktop_doesNotShowHub() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        LayoutManagerChrome layoutManagerChrome = createLayoutManagerChromeSpy();
+
+        layoutManagerChrome.tabClosed(1, Tab.INVALID_TAB_ID, false, false);
+
+        verify(layoutManagerChrome, never()).showLayout(eq(LayoutType.HUB), anyBoolean());
+    }
+
+    @Test
+    public void testTabClosed_enabledOnPhone_showsHub() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        LayoutManagerChrome layoutManagerChrome = createLayoutManagerChromeSpy();
+
+        layoutManagerChrome.tabClosed(1, Tab.INVALID_TAB_ID, false, false);
+
+        verify(layoutManagerChrome).showLayout(eq(LayoutType.HUB), anyBoolean());
+    }
+
     private LayoutManagerChrome createLayoutManagerChromeSpy() {
         LayoutManagerChrome layoutManagerChrome =
                 spy(
