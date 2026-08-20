@@ -80,10 +80,7 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kV8TurboFastApiCalls);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8UseOriginalMessageForStackTrace);
 GIN_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kV8MemoryReducerStartDelay;
-GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptRegExpModifiers);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptImportAttributes);
-GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptRegExpDuplicateNamedGroups);
-GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptPromiseTry);
 
 }  // namespace features
 

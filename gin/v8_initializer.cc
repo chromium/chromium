@@ -298,11 +298,7 @@ void SetFlags(IsolateHolder::ScriptMode mode,
 // However, some features must be shipped from the blink side because they add
 // new globals, which requires updating web tests that cannot be skipped (to
 // safeguard against accidentally breaking the web).
-void SetDefaultEnabledFeatureFlags() {
-  SetV8Flags("--js-float16array");
-  SetV8Flags("--js-explicit-resource-management");
-  SetV8Flags("--js-regexp-escape");
-}
+void SetDefaultEnabledFeatureFlags() {}
 
 // Sets feature controlled V8 flags.
 void SetFeatureFlags() {
@@ -502,16 +498,9 @@ void SetFeatureFlags() {
                          "--no-use-original-message-for-stack-trace");
 
   // JavaScript language features.
-  SetV8FlagsIfOverridden(features::kJavaScriptRegExpModifiers,
-                         "--js-regexp-modifiers", "--no-js-regexp-modifiers");
   SetV8FlagsIfOverridden(features::kJavaScriptImportAttributes,
                          "--harmony-import-attributes",
                          "--no-harmony-import-attributes");
-  SetV8FlagsIfOverridden(features::kJavaScriptRegExpDuplicateNamedGroups,
-                         "--js-regexp-duplicate-named-groups",
-                         "--no-js-duplicate-named-groups");
-  SetV8FlagsIfOverridden(features::kJavaScriptPromiseTry, "--js-promise-try",
-                         "--no-js-promise-try");
 
   // WebAssembly features (currently none).
 }
