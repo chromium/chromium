@@ -21,8 +21,6 @@
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
-// TODO(crbug.com/445720439): Remove this import.
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -32,8 +30,6 @@
 #include "extensions/browser/api/alarms/alarms_api_constants.h"
 #include "extensions/browser/api_unittest.h"
 #include "extensions/common/extension_builder.h"
-// TODO(crbug.com/445720439): Remove this import.
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -405,48 +401,7 @@ TEST_F(ExtensionAlarmsLogTest, CreateDelayBelowMinimum) {
                   "delay is less than the minimum duration of 1 second"));
 }
 
-// TODO(crbug.com/445720439): Clean up this test after long alarm name
-// deprecation.
-TEST_F(ExtensionAlarmsLogTest, CreateLongAlarmName) {
-  // Disable alarm length error to test the warning.
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      extensions_features::kApiAlarmsCreateLengthLimit);
-
-  // Set up context for the test.
-  ConsoleLogMessageLocalFrame local_frame;
-  local_frame.Init(
-      contents()->GetPrimaryMainFrame()->GetRemoteAssociatedInterfaces());
-  ASSERT_EQ(local_frame.message_count(), 0u);
-
-  // Short alarm names (no longer than 1024 characters) do not result in
-  // warnings.
-  CreateAlarm("[\"" + std::string(1024, 'a') + "\", {\"when\": 0}]");
-  this->alarm_delegate_->WaitForAlarm();
-  ASSERT_EQ(local_frame.message_count(), 0u);
-
-  // The extension is only allowed to fire an alarm once a second.
-  test_clock_.Advance(base::Seconds(1));
-
-  // Long alarm names (1025 characters and longer) cause a warning.
-  CreateAlarm("[\"" + std::string(1025, 'a') + "\", {\"when\": 0}]");
-  this->alarm_delegate_->WaitForAlarm();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return local_frame.message_count() == 1u; }));
-  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kWarning,
-            local_frame.last_level());
-  EXPECT_EQ(
-      local_frame.last_message(),
-      "Alarm length is 1025 characters which exceeds future limit of 1024 "
-      "characters. Chrome 150 will throw an error for alarm creation with "
-      "names longer than 1024 characters.");
-}
-
 TEST_F(ExtensionAlarmsLogTest, RejectLongAlarmName) {
-  // Alarm name length limit must be enabled by default.
-  EXPECT_TRUE(base::FeatureList::IsEnabled(
-      extensions_features::kApiAlarmsCreateLengthLimit));
-
   // Set up context for the test.
   ConsoleLogMessageLocalFrame local_frame;
   local_frame.Init(
