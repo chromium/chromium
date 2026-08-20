@@ -651,8 +651,9 @@ ClipboardExtractedData ClientSideDetectionHostBase::ExtractClipboardData(
   }
 
   // Replace shell and scripting delimiters with space to simplify tokenization.
-  std::vector<std::u16string> delimiters = {
-      u"&&", u"||", u"$(", u"|", u";", u")", u"`", u"(", u"{", u"}", u"::"};
+  std::vector<std::u16string> delimiters = {u"&&", u"||", u"$(", u"|",
+                                            u";",  u")",  u"`",  u"(",
+                                            u"{",  u"}",  u"::", u"\""};
   for (const auto& delimiter : delimiters) {
     base::ReplaceSubstringsAfterOffset(&processed_payload, 0, delimiter, u" ");
   }
@@ -721,7 +722,11 @@ ClipboardExtractedData ClientSideDetectionHostBase::ExtractClipboardData(
       }
     }
 
-    if (IsPossibleURL(base::UTF16ToUTF8(tokens[i]))) {
+    std::string token_utf8 = base::UTF16ToUTF8(tokens[i]);
+    std::string lower_token = base::ToLowerASCII(token_utf8);
+    if (IsPossibleURL(token_utf8) ||
+        lower_token.find("%localappdata%") != std::string::npos ||
+        lower_token.find("%userprofile%") != std::string::npos) {
       has_endpoint = true;
       clipboard_data.add_urls(normalized_token);
     }

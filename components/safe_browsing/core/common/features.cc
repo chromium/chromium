@@ -97,7 +97,7 @@ const base::FeatureParam<std::string> kCsdClipboardCopyApiLoaders{
     &kClientSideDetectionClipboardCopyApi, "Loaders",
     /*default_value=*/
     "curl,wget,invoke-webrequest,iwr,invoke-restmethod,irm,certutil,"
-    "bitsadmin,echo,cat,finger"};
+    "bitsadmin,echo,cat,finger,gc"};
 const base::FeatureParam<std::string> kCsdClipboardCopyApiRunners{
     &kClientSideDetectionClipboardCopyApi, "Runners",
     /*default_value=*/
