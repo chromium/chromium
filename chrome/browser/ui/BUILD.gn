@@ -521,7 +521,6 @@ source_set("tab_dialogs") {
 static_library("ui") {
   sources = [
     "idle_bubble.h",
-    "screen_capture_notification_ui.h",
     "tab_helpers.cc",
     "tab_helpers.h",
   ]
@@ -543,6 +542,7 @@ static_library("ui") {
     ":accelerator_utils_headers",
     ":crypto_module_password_dialog",
     ":enterprise_startup_dialog",
+    ":screen_capture_notification_ui",
     ":simple_message_box_headers",
     ":tab_dialogs",
     ":tab_modal_confirm_dialog",
@@ -1861,7 +1861,6 @@ static_library("ui") {
     assert(enable_supervised_users)
     assert(toolkit_views)
     sources += [
-      "platform_keys_certificate_selector_chromeos.h",
       "settings_window_manager_chromeos.cc",
       "settings_window_manager_chromeos.h",
       "views/chrome_views_delegate_ash.cc",
@@ -1892,6 +1891,7 @@ static_library("ui") {
 
     deps += [
       ":browser_commands_chromeos",
+      ":platform_keys_certificate_selector_chromeos",
       "//ash",
       "//ash/keyboard/ui",
       "//ash/public/cpp",
@@ -2181,7 +2181,6 @@ static_library("ui") {
 
   if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [
-      "incognito_clear_browsing_data_dialog_interface.h",
       "views/autofill/payments/webauthn_dialog_view.cc",
       "views/autofill/payments/webauthn_dialog_view.h",
       "views/external_protocol_dialog.cc",
@@ -2906,6 +2905,7 @@ static_library("ui") {
     deps += [
       ":browser_init_state",
       ":idle_dialog",
+      ":incognito_clear_browsing_data_dialog_interface",
       "//base",
       "//chrome/browser:resources",
       "//chrome/browser/accessibility",
@@ -3773,7 +3773,10 @@ source_set("layout_constants") {
   }
 
   if (is_chromeos) {
-    deps += [ "//chromeos/constants" ]
+    deps += [
+      ":platform_keys_certificate_selector_chromeos",
+      "//chromeos/constants",
+    ]
   }
 }
 
@@ -3861,6 +3864,10 @@ if (!is_android) {
       "//chrome/browser/ui/tabs:tabs_public",
       "//ui/base/unowned_user_data",
     ]
+  }
+
+  source_set("incognito_clear_browsing_data_dialog_interface") {
+    public = [ "incognito_clear_browsing_data_dialog_interface.h" ]
   }
 
   source_set("chrome_pages") {
@@ -4222,12 +4229,28 @@ if (enable_webui_certificate_viewer) {
   }
 }
 
+source_set("screen_capture_notification_ui") {
+  public = [ "screen_capture_notification_ui.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/media/webrtc:media_stream_ui",
+  ]
+}
+
 if (is_chromeos) {
   source_set("browser_commands_chromeos") {
     public = [ "browser_commands_chromeos.h" ]
     sources = [ "browser_commands_chromeos.cc" ]
     public_deps = [ "//base" ]
     deps = [ "//ash" ]
+  }
+
+  source_set("platform_keys_certificate_selector_chromeos") {
+    public = [ "platform_keys_certificate_selector_chromeos.h" ]
+    public_deps = [
+      "//base",
+      "//net",
+    ]
   }
 }
 

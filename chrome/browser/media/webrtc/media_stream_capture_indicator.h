@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
+#include "chrome/browser/media/webrtc/media_stream_ui.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "content/public/browser/media_stream_request.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -29,28 +30,6 @@ class ImageSkia;
 }  // namespace gfx
 
 class StatusIcon;
-
-// Interface to display custom UI during screen-capture (tab/window/screen).
-class MediaStreamUI {
- public:
-  // Called when stream capture is stopped.
-  virtual ~MediaStreamUI() = default;
-
-  // Called when screen capture starts.
-  // |stop_callback| is a callback to stop the stream.
-  // |source_callback| is a callback to change the desktop capture source.
-  // Returns the platform-dependent window ID for the UI, or 0 if not
-  // applicable.
-  // |media_ids| represent the display-surfaces whose capture has started.
-  virtual gfx::NativeViewId OnStarted(
-      base::OnceClosure stop_callback,
-      content::MediaStreamUI::SourceCallback source_callback,
-      const std::vector<content::DesktopMediaID>& media_ids) = 0;
-
-  // Called when Region Capture starts/stops, or when the cropped area changes.
-  virtual void OnRegionCaptureRectChanged(
-      const std::optional<gfx::Rect>& region_capture_rect) {}
-};
 
 // Keeps track of which WebContents are capturing media streams. Used to display
 // indicators (e.g. in the tab strip, via notifications) and to make resource

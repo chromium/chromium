@@ -21,6 +21,7 @@ static_library("platform_keys") {
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:platform_keys_certificate_selector_chromeos",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/platform_keys",
     "//components/keyed_service/core",

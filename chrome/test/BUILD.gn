@@ -4584,6 +4584,7 @@ if (!is_android) {
     if (toolkit_views && !is_chromeos) {
       sources +=
           [ "../browser/ui/screen_capture_notification_ui_browsertest.cc" ]
+      deps += [ "//chrome/browser/ui:screen_capture_notification_ui" ]
     }
 
     if (enable_session_service) {

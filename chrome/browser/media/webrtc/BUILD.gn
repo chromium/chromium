@@ -10,6 +10,16 @@ import("//chrome/common/features.gni")
 import("//content/public/common/features.gni")
 import("//third_party/webrtc/webrtc.gni")
 
+source_set("media_stream_ui") {
+  public = [ "media_stream_ui.h" ]
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+}
+
 source_set("webrtc") {
   sources = [
     "audio_debug_recordings_handler.cc",
@@ -92,6 +102,7 @@ source_set("webrtc") {
   ]
 
   public_deps = [
+    ":media_stream_ui",
     "//base",
     "//build:android_buildflags",
     "//build:buildflag_header_h",
@@ -142,6 +153,7 @@ source_set("webrtc") {
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/status_icons",
+    "//chrome/browser/ui:screen_capture_notification_ui",
     "//chrome/browser/ui:simple_message_box_headers",
     "//chrome/browser/ui:tab_modal_confirm_dialog",
     "//chrome/browser/ui:tab_modal_confirm_dialog_delegate",

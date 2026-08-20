@@ -5,9 +5,14 @@
 #ifndef CHROME_BROWSER_UI_SCREEN_CAPTURE_NOTIFICATION_UI_H_
 #define CHROME_BROWSER_UI_SCREEN_CAPTURE_NOTIFICATION_UI_H_
 
+#include <memory>
 #include <string>
 
-#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "chrome/browser/media/webrtc/media_stream_ui.h"
+
+namespace content {
+class WebContents;
+}
 
 // Interface for screen capture notification UI shown when content of the screen
 // is being captured.
