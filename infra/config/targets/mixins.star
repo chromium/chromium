@@ -2274,22 +2274,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "xcode_17a400",
-    args = [
-        "--xcode-build-version",
-        "17a400",
-    ],
-    swarming = targets.swarming(
-        named_caches = [
-            swarming.cache(
-                name = "xcode_ios_17a400",
-                path = "Xcode.app",
-            ),
-        ],
-    ),
-)
-
-targets.mixin(
     name = "xcode_26_main",
     args = [
         "--xcode-build-version",
