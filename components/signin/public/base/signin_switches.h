@@ -828,6 +828,10 @@ BASE_DECLARE_FEATURE(kSigninWindows10DepreciationStateBypassForTesting);
 COMPONENT_EXPORT(SIGNIN_SWITCHES) bool IsSigninWindows10DepreciationState();
 
 #if BUILDFLAG(IS_ANDROID)
+// Feature to allow deleting browser data to android desktop users.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kSignOutDeletesBrowsingData);
+
 // Feature to show "Sign out of Chrome" string to android desktop users.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSignOutOfChrome);

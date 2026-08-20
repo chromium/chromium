@@ -7,10 +7,14 @@ package org.chromium.chrome.browser.ui.signin;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
@@ -22,6 +26,9 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.widget.CheckBoxWithDescription;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.SyncService;
@@ -319,21 +326,16 @@ public class SignOutCoordinator {
                             NumberFormat.getIntegerInstance()
                                     .format(SyncService.SYNC_BOOKMARKS_LIMIT));
         }
+        View customView = createCustomView(context, signinManager, message);
+        ModalDialogProperties.Controller controller =
+                createController(
+                        dialogManager, customView, signinManager, signOutReason, onSignOut);
+
         final PropertyModel model =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(
                                 ModalDialogProperties.TITLE,
                                 context.getString(R.string.sign_out_unsaved_data_title))
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, message)
-                        // Setting CHECKBOX_TEXT to an empty string hides the checkbox.
-                        .with(
-                                ModalDialogProperties.CHECKBOX_TEXT,
-                                signinManager.hasSignedInAccountExtensions()
-                                        ? context.getString(
-                                                R.string
-                                                        .sign_out_unsaved_data_remove_extensions_message)
-                                        : "")
-                        .with(ModalDialogProperties.CHECKBOX_CHECKED, false)
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 context.getString(R.string.sign_out_unsaved_data_primary_button))
@@ -341,10 +343,9 @@ public class SignOutCoordinator {
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 context.getString(R.string.cancel))
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                        .with(
-                                ModalDialogProperties.CONTROLLER,
-                                createController(
-                                        dialogManager, signinManager, signOutReason, onSignOut))
+                        .with(ModalDialogProperties.CUSTOM_VIEW, customView)
+                        .with(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, true)
+                        .with(ModalDialogProperties.CONTROLLER, controller)
                         .build();
         dialogManager.showDialog(model, ModalDialogManager.ModalDialogType.APP);
     }
@@ -357,31 +358,24 @@ public class SignOutCoordinator {
             SyncService syncService,
             @SignoutReason int signOutReason,
             Runnable onSignOut) {
+        String message = context.getString(R.string.sign_out_message);
+        View customView = createCustomView(context, signinManager, message);
         ModalDialogProperties.Controller controller =
                 createController(
                         dialogManager,
+                        customView,
                         signinManager,
                         signOutReason,
                         () -> {
                             onSignOut.run();
                             showSnackbar(context, snackbarManager, syncService);
                         });
+
         final PropertyModel model =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(
                                 ModalDialogProperties.TITLE,
                                 context.getString(R.string.sign_out_title))
-                        .with(
-                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                                context.getString(R.string.sign_out_message))
-                        // Setting CHECKBOX_TEXT to an empty string hides the checkbox.
-                        .with(
-                                ModalDialogProperties.CHECKBOX_TEXT,
-                                signinManager.hasSignedInAccountExtensions()
-                                        ? context.getString(
-                                                R.string.sign_out_remove_extensions_message)
-                                        : "")
-                        .with(ModalDialogProperties.CHECKBOX_CHECKED, false)
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 context.getString(R.string.sign_out))
@@ -392,22 +386,51 @@ public class SignOutCoordinator {
                                 ModalDialogProperties.BUTTON_STYLES,
                                 ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, customView)
+                        .with(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, true)
                         .with(ModalDialogProperties.CONTROLLER, controller)
                         .build();
         dialogManager.showDialog(model, ModalDialogManager.ModalDialogType.APP);
     }
 
+    private static View createCustomView(
+            Context context, SigninManager signinManager, String message) {
+        View customView = LayoutInflater.from(context).inflate(R.layout.sign_out_dialog, null);
+        TextView messageView = customView.findViewById(R.id.sign_out_message);
+        CheckBoxWithDescription removeExtensionsCheckBox =
+                customView.findViewById(R.id.remove_extensions_checkbox);
+
+        messageView.setText(message);
+        if (signinManager.hasSignedInAccountExtensions()) {
+            removeExtensionsCheckBox.setVisibility(View.VISIBLE);
+            removeExtensionsCheckBox.setPrimaryText(
+                    context.getString(R.string.sign_out_remove_extensions_checkbox_title));
+            if (DeviceInfo.isDesktop()
+                    && SigninFeatureMap.isEnabled(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA)) {
+                removeExtensionsCheckBox.setDescriptionText(
+                        context.getString(R.string.sign_out_remove_extensions_checkbox_subtitle));
+            }
+        }
+
+        return customView;
+    }
+
     private static ModalDialogProperties.Controller createController(
             ModalDialogManager dialogManager,
+            View customView,
             SigninManager signinManager,
             @SignoutReason int signOutReason,
             Runnable onSignOut) {
+        CheckBoxWithDescription removeExtensionsCheckBox =
+                customView.findViewById(R.id.remove_extensions_checkbox);
+        assert removeExtensionsCheckBox != null;
+
         return new ModalDialogProperties.Controller() {
             @Override
             public void onClick(PropertyModel model, int buttonType) {
                 if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
                     signinManager.setUninstallAccountExtensionsOnSignout(
-                            model.get(ModalDialogProperties.CHECKBOX_CHECKED));
+                            removeExtensionsCheckBox.isChecked());
                     signOut(
                             signinManager,
                             signOutReason,

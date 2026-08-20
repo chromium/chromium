@@ -33,6 +33,9 @@ found in the LICENSE file.
             app:layout_constraintBottom_toTopOf="@id/description"
             app:layout_constraintStart_toEndOf="@id/checkbox"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintVertical_chainStyle="packed"/>
 
         <!-- This TextView is hidden if it has no text, so the initial visibility should be "gone". -->
@@ -44,6 +47,9 @@ found in the LICENSE file.
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/checkbox"
-            app:layout_constraintTop_toBottomOf="@id/primary"/>
+            app:layout_constraintTop_toBottomOf="@id/primary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintHorizontal_bias="0"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>
