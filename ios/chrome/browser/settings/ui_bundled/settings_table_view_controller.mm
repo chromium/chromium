@@ -220,13 +220,18 @@ struct EnhancedSafeBrowsingActivePromoData
   static constexpr char key[] = "EnhancedSafeBrowsingActivePromoData";
 };
 
-// Struct used to count and store the number of active Settings Default Browser
-// passive promos, as the FET does not support showing multiple promos for the
-// same FET feature at the same time in a multi-window setup.
+// Struct used to count active Settings Default Browser passive promos across
+// windows (as the FET does not support showing multiple promos for the same FET
+// feature at the same time in a multi-window setup) and track whether the card
+// promo has been shown in the current session.
 struct DefaultBrowserPassivePromoActiveData
     : public base::SupportsUserData::Data {
   // The number of active promos across all windows.
   int active_promos = 0;
+
+  // Whether the default browser promo card should be shown in the current
+  // session and bypass the FET.
+  BOOL should_show_promo_card = NO;
 
   // Key to use for this type in SupportsUserData
   static constexpr char key[] = "DefaultBrowserPassivePromoActiveData";
@@ -1647,6 +1652,14 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   _featureEngagementTracker->NotifyEvent(
       feature_engagement::events::kDefaultBrowserSettingsCardPromoUsed);
 
+  DefaultBrowserPassivePromoActiveData* data =
+      static_cast<DefaultBrowserPassivePromoActiveData*>(
+          _featureEngagementTracker->GetUserData(
+              DefaultBrowserPassivePromoActiveData::key));
+  if (data) {
+    data->should_show_promo_card = NO;
+  }
+
   [self dismissPassivePromoWithFeature:
             feature_engagement::kIPHiOSPromoSettingsCardDefaultBrowserFeature];
 
@@ -1663,6 +1676,14 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   _defaultBrowserPromoCardShown = NO;
   _featureEngagementTracker->NotifyEvent(
       feature_engagement::events::kDefaultBrowserSettingsCardPromoUsed);
+
+  DefaultBrowserPassivePromoActiveData* data =
+      static_cast<DefaultBrowserPassivePromoActiveData*>(
+          _featureEngagementTracker->GetUserData(
+              DefaultBrowserPassivePromoActiveData::key));
+  if (data) {
+    data->should_show_promo_card = NO;
+  }
 
   [self dismissPassivePromoWithFeature:
             feature_engagement::kIPHiOSPromoSettingsCardDefaultBrowserFeature];
@@ -2544,6 +2565,10 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 // Evaluates conditions and FET states to determine if the passive default
 // browser promo (either card or cell) should be visible in Settings.
 - (void)evaluateDefaultBrowserPassivePromoVisibility {
+  if (IsChromeLikelyDefaultBrowser()) {
+    return;
+  }
+
   if (!IsIOSSettingsDefaultBrowserPromoV2Enabled()) {
     return;
   }
@@ -2580,21 +2605,39 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
           _featureEngagementTracker->GetUserData(
               DefaultBrowserPassivePromoActiveData::key));
 
-  if (data) {
+  BOOL isPromoTypeCard =
+      &feature ==
+      &feature_engagement::kIPHiOSPromoSettingsCardDefaultBrowserFeature;
+
+  // If the promo is already active in another window or has already been shown
+  // in this session (card promo), increment the refcount without re-querying
+  // the FET.
+  BOOL isPromoAlreadyActive =
+      data && (isPromoTypeCard ? data->should_show_promo_card
+                               : data->active_promos > 0);
+  if (isPromoAlreadyActive) {
     data->active_promos++;
     return YES;
   }
 
-  BOOL shouldShow = _featureEngagementTracker->ShouldTriggerHelpUI(feature);
-  if (shouldShow) {
-    std::unique_ptr<DefaultBrowserPassivePromoActiveData> new_data =
-        std::make_unique<DefaultBrowserPassivePromoActiveData>();
-    new_data->active_promos++;
+  if (!_featureEngagementTracker->ShouldTriggerHelpUI(feature)) {
+    return NO;
+  }
+
+  // Create user data struct on first trigger.
+  if (!data) {
+    auto new_data = std::make_unique<DefaultBrowserPassivePromoActiveData>();
+    data = new_data.get();
     _featureEngagementTracker->SetUserData(
         DefaultBrowserPassivePromoActiveData::key, std::move(new_data));
   }
 
-  return shouldShow;
+  data->active_promos++;
+  if (isPromoTypeCard) {
+    data->should_show_promo_card = YES;
+  }
+
+  return YES;
 }
 
 // Decrements the active counter for a passive promo and dismisses the FET when
@@ -2610,9 +2653,11 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   if (data) {
     data->active_promos--;
     if (data->active_promos <= 0) {
-      _featureEngagementTracker->RemoveUserData(
-          DefaultBrowserPassivePromoActiveData::key);
       _featureEngagementTracker->Dismissed(feature);
+      if (!data->should_show_promo_card) {
+        _featureEngagementTracker->RemoveUserData(
+            DefaultBrowserPassivePromoActiveData::key);
+      }
     }
   } else {
     _featureEngagementTracker->Dismissed(feature);
