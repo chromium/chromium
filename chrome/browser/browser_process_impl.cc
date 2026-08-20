@@ -425,12 +425,12 @@ void BrowserProcessImpl::Init() {
   extensions_browser_client_->AddAPIProvider(
       std::make_unique<
           controlled_frame::ControlledFrameExtensionsBrowserAPIProvider>());
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_CHROMEOS)
   extensions_browser_client_->AddAPIProvider(
       std::make_unique<
           chromeos::ChromeOSTelemetryExtensionsBrowserAPIProvider>());
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   extensions::ExtensionsBrowserClient::Set(extensions_browser_client_.get());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)

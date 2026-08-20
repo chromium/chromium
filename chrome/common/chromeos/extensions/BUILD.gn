@@ -7,7 +7,7 @@ import("//extensions/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-assert(enable_extensions)
+assert(enable_extensions_core && is_chromeos)
 
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
