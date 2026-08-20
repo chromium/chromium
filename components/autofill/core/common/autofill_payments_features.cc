@@ -254,7 +254,7 @@ const base::FeatureParam<int> kAutofillEnableResurrectingPaymentsUsersTreatment{
 
 // When enabled, the 'Save and Fill' suggestion will be offered in the credit
 // card dropdown menu for users who don't have any cards saved in Autofill.
-BASE_FEATURE(kAutofillEnableSaveAndFill, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillEnableSaveAndFill, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the 'Scan new card' option will be offered even if the user
 // does not have any credit cards saved in Autofill.

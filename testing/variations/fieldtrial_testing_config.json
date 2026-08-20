@@ -2984,24 +2984,6 @@
             ]
         }
     ],
-    "AutofillEnableSaveAndFill": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableSaveAndFill"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableTravelCategoryAndMerchantBenefitsFromCurinos": [
         {
             "platforms": [
