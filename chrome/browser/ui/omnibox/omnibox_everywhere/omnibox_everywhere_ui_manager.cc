@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/file_select_helper.h"
@@ -179,6 +180,8 @@ content::WebContents* OmniboxEverywhereUIManager::web_contents() const {
 
 void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
                                                 gfx::NativeWindow context) {
+  deactivation_task_.Cancel();
+  last_shown_time_ = base::TimeTicks::Now();
   if (widget_ && profile_ == profile) {
     ActivateAndFocus();
     return;
@@ -393,6 +396,8 @@ void OmniboxEverywhereUIManager::OnMostVisitedPrefChanged() {
 }
 
 void OmniboxEverywhereUIManager::Close() {
+  last_shown_time_.reset();
+  deactivation_task_.Cancel();
   if (widget_) {
     if (is_file_chooser_open_ || is_drive_picker_open_) {
       CleanUpWidget();
@@ -407,6 +412,7 @@ void OmniboxEverywhereUIManager::Close() {
 }
 
 void OmniboxEverywhereUIManager::CleanUpWidget() {
+  deactivation_task_.Cancel();
   if (widget_) {
     widget_observation_.Reset();
 #if defined(USE_AURA)
@@ -448,9 +454,12 @@ void OmniboxEverywhereUIManager::CleanUpWidget() {
   pending_auto_resize_size_.reset();
   draggable_region_.reset();
   browser_collection_observation_.Reset();
+  last_shown_time_.reset();
 }
 
 void OmniboxEverywhereUIManager::Shutdown() {
+  deactivation_task_.Cancel();
+  last_shown_time_.reset();
   browser_collection_observation_.Reset();
   profile_pref_change_registrar_.Reset();
   CleanUpWidget();
@@ -474,13 +483,7 @@ void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
     views::Widget* widget,
     bool active) {
   if (!active && !is_context_menu_open_ && !HasModalDialogOpen()) {
-    if (IsEphemeral()) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&OmniboxEverywhereUIManager::Close,
-                                    weak_factory_.GetWeakPtr()));
-    } else if (widget_) {
-      widget_->SetZOrderLevel(ui::ZOrderLevel::kNormal);
-    }
+    HandleWidgetDeactivated();
   }
 }
 
@@ -495,13 +498,30 @@ void OmniboxEverywhereUIManager::OnContextMenuClosed() {
         FROM_HERE, std::move(context_menu_model_));
   }
   if (widget_ && !widget_->IsActive() && !HasModalDialogOpen()) {
-    if (IsEphemeral()) {
+    HandleWidgetDeactivated();
+  }
+}
+
+void OmniboxEverywhereUIManager::HandleWidgetDeactivated() {
+  if (!widget_ || !widget_->IsVisible()) {
+    return;
+  }
+  if (IsEphemeral()) {
+    if (last_shown_time_.has_value() &&
+        base::TimeTicks::Now() - *last_shown_time_ < kActivationGracePeriod) {
+      deactivation_task_.Reset(
+          base::BindOnce(&OmniboxEverywhereUIManager::ActivateAndFocus,
+                         weak_factory_.GetWeakPtr()));
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&OmniboxEverywhereUIManager::Close,
-                                    weak_factory_.GetWeakPtr()));
-    } else {
-      widget_->SetZOrderLevel(ui::ZOrderLevel::kNormal);
+          FROM_HERE, deactivation_task_.callback());
+      return;
     }
+    deactivation_task_.Reset(base::BindOnce(&OmniboxEverywhereUIManager::Close,
+                                            weak_factory_.GetWeakPtr()));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, deactivation_task_.callback());
+  } else if (widget_) {
+    widget_->SetZOrderLevel(ui::ZOrderLevel::kNormal);
   }
 }
 

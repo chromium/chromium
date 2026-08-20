@@ -265,11 +265,91 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissOnDeactivationInEphemeralMode) {
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
 
-  // Simulating deactivation (active = false) in ephemeral mode should hide the
-  // widget.
+  // Advance time past the activation grace period.
+  task_environment()->FastForwardBy(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kActivationGracePeriod +
+      base::Milliseconds(1));
+
+  // Simulating deactivation (active = false) in ephemeral mode after the grace
+  // period should hide the widget.
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
   EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
   EXPECT_TRUE(ui_manager->widget());
+}
+
+// TODO(crbug.com/546604786): Deactivation within grace period tests are flaky
+// on Linux due to lack of window manager activation synchronization in tests.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DeactivationWithinGracePeriodReactivatesWidget \
+  DISABLED_DeactivationWithinGracePeriodReactivatesWidget
+#else
+#define MAYBE_DeactivationWithinGracePeriodReactivatesWidget \
+  DeactivationWithinGracePeriodReactivatesWidget
+#endif
+TEST_F(OmniboxEverywhereUIManagerTest,
+       MAYBE_DeactivationWithinGracePeriodReactivatesWidget) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Advance time within the grace period (e.g. 100ms < 500ms).
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+
+  // Simulating deactivation (active = false) within the grace period should NOT
+  // hide the widget, but instead reactivate it and keep it visible.
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return widget->IsActive(); }));
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Advance time past the grace period.
+  task_environment()->FastForwardBy(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kActivationGracePeriod);
+
+  // Deactivation after the grace period has elapsed should cleanly dismiss.
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
+}
+
+// TODO(crbug.com/546604786): Explicit close within grace period tests are flaky
+// on Linux due to lack of window manager activation synchronization in tests.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ExplicitCloseWithinGracePeriodStaysClosed \
+  DISABLED_ExplicitCloseWithinGracePeriodStaysClosed
+#else
+#define MAYBE_ExplicitCloseWithinGracePeriodStaysClosed \
+  ExplicitCloseWithinGracePeriodStaysClosed
+#endif
+TEST_F(OmniboxEverywhereUIManagerTest,
+       MAYBE_ExplicitCloseWithinGracePeriodStaysClosed) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Advance time within the grace period (e.g. 100ms < 500ms).
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+
+  // Simulate deactivation within the grace period, which schedules
+  // reactivation.
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+
+  // Explicitly closing the widget (e.g. Esc key) within the grace period should
+  // cancel the reactivation task and hide the widget.
+  ui_manager->Close();
+  EXPECT_FALSE(widget->IsVisible());
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, PersistentDeactivationDemotesZOrder) {
@@ -323,8 +403,11 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringFileChooser) {
   EXPECT_TRUE(ui_manager->widget());
   EXPECT_TRUE(widget->IsVisible());
 
-  // Clean up: closing file chooser and triggering deactivation should hide the
-  // widget in ephemeral mode.
+  // Clean up: closing file chooser and triggering deactivation after grace
+  // period should hide the widget in ephemeral mode.
+  task_environment()->FastForwardBy(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kActivationGracePeriod +
+      base::Milliseconds(1));
   ui_manager->OnFileChooserClosed();
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
   EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
@@ -497,8 +580,11 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringDrivePicker) {
   EXPECT_TRUE(ui_manager->widget());
   EXPECT_TRUE(widget->IsVisible());
 
-  // Clean up: closing drive picker and triggering deactivation should hide the
-  // widget in ephemeral mode.
+  // Clean up: closing drive picker and triggering deactivation after grace
+  // period should hide the widget in ephemeral mode.
+  task_environment()->FastForwardBy(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kActivationGracePeriod +
+      base::Milliseconds(1));
   ui_manager->OnDrivePickerClosed();
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
   EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
@@ -611,8 +697,11 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringContextMenu) {
   EXPECT_TRUE(ui_manager->widget());
   EXPECT_TRUE(widget->IsVisible());
 
-  // Clean up: closing context menu and triggering deactivation should close the
-  // widget in ephemeral mode.
+  // Clean up: closing context menu and triggering deactivation after grace
+  // period should close the widget in ephemeral mode.
+  task_environment()->FastForwardBy(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kActivationGracePeriod +
+      base::Milliseconds(1));
   ui_manager->OnContextMenuClosedForTesting();
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
   EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
@@ -1008,8 +1097,11 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringScreensharePicker) {
   EXPECT_TRUE(ui_manager->widget());
   EXPECT_TRUE(widget->IsVisible());
 
-  // Clean up: closing screenshare picker and triggering deactivation should
-  // hide the widget in ephemeral mode.
+  // Clean up: closing screenshare picker and triggering deactivation after
+  // grace period should hide the widget in ephemeral mode.
+  task_environment()->FastForwardBy(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kActivationGracePeriod +
+      base::Milliseconds(1));
   ui_manager->OnScreensharePickerClosed();
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
   EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));

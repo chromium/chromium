@@ -9,9 +9,11 @@
 #include <optional>
 #include <vector>
 
+#include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
@@ -55,6 +57,8 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   // = 728px total window width.
   static constexpr int kPopupFixedWidth = 728;
   static constexpr int kDefaultRestingHeight = 152;
+  static constexpr base::TimeDelta kActivationGracePeriod =
+      base::Milliseconds(500);
 
   enum ContextMenuCommandId {
     kCut = 1,
@@ -195,6 +199,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void OnWidgetClosed(views::Widget::ClosedReason reason);
   void OnContextMenuClosed();
   bool HasModalDialogOpen() const;
+  void HandleWidgetDeactivated();
 
 #if defined(USE_AURA)
   std::unique_ptr<OmniboxEverywhereEventHandlerAura> event_handler_;
@@ -223,12 +228,18 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
 
+  std::optional<base::TimeTicks> last_shown_time_;
+  // Task posted when the widget is deactivated, used to either dismiss or
+  // reactivate the widget after the grace period.
+  base::CancelableOnceClosure deactivation_task_;
+
   PrefChangeRegistrar local_state_pref_change_registrar_;
   PrefChangeRegistrar profile_pref_change_registrar_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
   base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
+
   base::WeakPtrFactory<OmniboxEverywhereUIManager> weak_factory_{this};
 };
 
