@@ -21,7 +21,9 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="ChromeInitiatorLocation">
+  <variant name="Backward" summary="Initiated by a back navigation"/>
   <variant name="BookmarkBar" summary="Initiated from BookmarkBar"/>
+  <variant name="Forward" summary="Initiated by a forward navigation"/>
   <variant name="LinkClick" summary="Initiated by a link click"/>
   <variant name="NewTabPage" summary="Initiated from NewTabPage"/>
   <variant name="OmniboxDefaultSearchEngine"
@@ -29,6 +31,7 @@ chromium-metrics-reviews@google.com.
   <variant name="OmniboxDirectUrlInput"
       summary="Initiated from OmniboxDirectUrlInput"/>
   <variant name="Other" summary="Initiated from other"/>
+  <variant name="Reload" summary="Initiated by a reload navigation"/>
 </variants>
 
 <variants name="ExperimentalPreloadingPrediction">
