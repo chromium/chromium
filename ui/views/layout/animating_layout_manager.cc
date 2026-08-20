@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
@@ -32,13 +31,6 @@
 namespace views {
 
 namespace {
-
-// When enabled, a call to gfx::Animation::ShouldRenderRichAnimation() is
-// avoided when not needed. Behind a feature to assess impact
-// (go/chrome-performance-work-should-be-finched).
-// TODO(crbug.com/40897031): Clean up when experiment is complete.
-BASE_FEATURE(kAvoidUnnecessaryShouldRenderRichAnimation,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Returns the ChildLayout data for the child view in the proposed layout, or
 // nullptr if not found.
@@ -474,9 +466,7 @@ gfx::Size AnimatingLayoutManager::GetPreferredSize(const View* host) const {
   // (go/jank-from-should-render-rich-animation-jun2025). Avoid calling it when
   // `bounds_animation_mode_` is `kUseHostBounds`, since it won't affect the
   // outcome.
-  if (base::FeatureList::IsEnabled(
-          kAvoidUnnecessaryShouldRenderRichAnimation) &&
-      bounds_animation_mode_ == BoundsAnimationMode::kUseHostBounds) {
+  if (bounds_animation_mode_ == BoundsAnimationMode::kUseHostBounds) {
     return target_layout_manager()->GetPreferredSize(host);
   }
 
@@ -488,9 +478,7 @@ gfx::Size AnimatingLayoutManager::GetPreferredSize(const View* host) const {
 
   switch (bounds_animation_mode_) {
     case BoundsAnimationMode::kUseHostBounds: {
-      CHECK(!base::FeatureList::IsEnabled(
-          kAvoidUnnecessaryShouldRenderRichAnimation));
-      return target_layout_manager()->GetPreferredSize(host);
+      NOTREACHED();
     }
     case BoundsAnimationMode::kAnimateMainAxis: {
       // Animating only main axis, so cross axis is preferred size.
