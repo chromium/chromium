@@ -8,11 +8,16 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
+#include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/facilitated_payments/core/browser/ewallet_account_linking_manager_test_api.h"
+#include "components/facilitated_payments/core/browser/mock_facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/network_api/mock_facilitated_payments_network_interface.h"
+#include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,7 +34,7 @@ class EwalletAccountLinkingManagerTest : public testing::Test {
         &client_, /*api_client_creator=*/
         base::BindRepeating(
             []() -> std::unique_ptr<FacilitatedPaymentsApiClient> {
-              return nullptr;
+              return std::make_unique<MockFacilitatedPaymentsApiClient>();
             }),
         autofill::Ewallet(/*instrument_id=*/0, /*nickname=*/u"",
                           /*display_icon_url=*/GURL(),
@@ -44,6 +49,7 @@ class EwalletAccountLinkingManagerTest : public testing::Test {
   }
 
   void SetUp() override {
+    payments_data_manager_.SetAutofillPaymentMethodsEnabled(true);
     ON_CALL(client_, GetFacilitatedPaymentsNetworkInterface)
         .WillByDefault(testing::Return(payments_network_interface_.get()));
     ON_CALL(client_, GetPaymentsDataManager)
@@ -73,10 +79,68 @@ TEST_F(EwalletAccountLinkingManagerTest,
       test_api(*manager_).GetPayloadForGetDetailsForCreatePaymentInstrument());
 }
 
-TEST_F(EwalletAccountLinkingManagerTest, DoOnAccountLinkingResult) {
-  // Just verify it doesn't crash.
-  test_api(*manager_).DoOnAccountLinkingResult(AccountLinkingResult{true});
-  test_api(*manager_).DoOnAccountLinkingResult(AccountLinkingResult{false});
+TEST_F(EwalletAccountLinkingManagerTest,
+       DoOnAccountLinkingResult_InvokesCallback) {
+  base::HistogramTester histogram_tester;
+  base::MockCallback<base::OnceCallback<void(AccountLinkingResult)>> result_cb;
+
+  AccountLinkingResult expected_result{false, 0,
+                                       AccountLinkingResultCode::kResultError};
+  EXPECT_CALL(result_cb, Run(expected_result));
+
+  manager_->TriggerAccountLinking(result_cb.Get());
+
+  test_api(*manager_).DoOnAccountLinkingResult(expected_result);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.AccountLinking.Result",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest, DoOnAccountLinkingResult_Canceled) {
+  base::HistogramTester histogram_tester;
+  test_api(*manager_).DoOnAccountLinkingResult(AccountLinkingResult{
+      false, 0, AccountLinkingResultCode::kResultCanceled});
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.AccountLinking.Result",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest, DoOnAccountLinkingResult_Success) {
+  base::HistogramTester histogram_tester;
+  test_api(*manager_).DoOnAccountLinkingResult(
+      AccountLinkingResult{true, 12345, AccountLinkingResultCode::kResultOk});
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.AccountLinking.Result",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest,
+       DoOnAccountLinkingResult_CouldNotInvoke) {
+  base::HistogramTester histogram_tester;
+  test_api(*manager_).DoOnAccountLinkingResult(AccountLinkingResult{
+      false, 0, AccountLinkingResultCode::kCouldNotInvoke});
+  // Verify that early exits do not log to the metric.
+  histogram_tester.ExpectTotalCount(
+      "FacilitatedPayments.Ewallet.AccountLinking.Result", 0);
+}
+
+TEST_F(EwalletAccountLinkingManagerTest, DismissAndCancelClearsState) {
+  base::MockCallback<base::OnceCallback<void(AccountLinkingResult)>> result_cb;
+
+  EXPECT_CALL(result_cb, Run(_)).Times(0);
+
+  manager_->TriggerAccountLinking(result_cb.Get());
+
+  manager_->DismissAndCancel();
+
+  // Since it was cancelled and the callback was reset, returning a result now
+  // should not invoke the callback.
+  test_api(*manager_).DoOnAccountLinkingResult(AccountLinkingResult{
+      true, /*instrument_id=*/12345, AccountLinkingResultCode::kResultOk});
 }
 
 TEST_F(EwalletAccountLinkingManagerTest, DoOnClientTokenReceived) {

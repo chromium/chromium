@@ -107,7 +107,6 @@ class NativeAccountLinkingHandler {
   void InvokeInstrumentManager(CoreAccountInfo primary_account,
                                const std::vector<uint8_t>& action_token);
 
-
   // Non-virtual helper to handle standard linking completion logic. Calls the
   // DoOnAccountLinkingResult virtual method.
   void OnAccountLinkingResult(AccountLinkingResult result);

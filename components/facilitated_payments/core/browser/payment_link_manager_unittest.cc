@@ -659,6 +659,85 @@ TEST_F(PaymentLinkManagerTest, LogGetClientTokenResultAndLatency) {
   }
 }
 
+// Test that OnAccountLinkingResult returns early and logs metric in landscape
+// mode.
+TEST_F(PaymentLinkManagerTest, OnAccountLinkingResult_LandscapeModeExitsFlow) {
+  base::HistogramTester histogram_tester;
+  GURL payment_link_url(
+      "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
+      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
+
+  EXPECT_CALL(client_, IsInLandscapeMode)
+      .Times(1)
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(client_, ShowPaymentLinkPrompt).Times(0);
+
+  test_api(*payment_link_manager_)
+      .OnAccountLinkingResult(
+          payment_link_url,
+          AccountLinkingResult{true, 12345,
+                               AccountLinkingResultCode::kResultOk});
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason",
+      /*sample=*/EwalletFlowExitedReason::kLandscapeScreenOrientation,
+      /*expected_bucket_count=*/1);
+
+  EXPECT_EQ(test_api(*payment_link_manager_).ui_state(), UiState::kHidden);
+}
+
+// Test that OnAccountLinkingResult successfully triggers the prompt if ewallet
+// is found.
+TEST_F(PaymentLinkManagerTest, OnAccountLinkingResult_SuccessLoadsRiskData) {
+  GURL payment_link_url(
+      "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
+      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
+
+  payments_data_manager_.AddEwalletForTest(
+      autofill::Ewallet(/*instrument_id=*/100, /*nickname=*/u"nickname",
+                        /*display_icon_url=*/GURL("http://www.example.com"),
+                        /*ewallet_name=*/u"ewallet_name",
+                        /*account_display_name=*/u"account_display_name",
+                        /*supported_payment_link_uris=*/
+                        {u"^shopeepay:\\/\\/shopeepay\\.com\\.my\\?code=.*$"},
+                        /*is_fido_enrolled=*/true));
+
+  EXPECT_CALL(client_, LoadRiskData);
+
+  test_api(*payment_link_manager_)
+      .OnAccountLinkingResult(
+          payment_link_url,
+          AccountLinkingResult{true, 12345,
+                               AccountLinkingResultCode::kResultOk});
+}
+
+// Test that OnAccountLinkingResult aborts quietly on cancellation.
+TEST_F(PaymentLinkManagerTest,
+       OnAccountLinkingResult_CancellationExitsQuietly) {
+  GURL payment_link_url("shopeepay://shopeepay.com.my?code=123");
+  EXPECT_CALL(client_, ShowErrorScreen).Times(0);
+  EXPECT_CALL(client_, ShowPaymentLinkPrompt).Times(0);
+
+  test_api(*payment_link_manager_)
+      .OnAccountLinkingResult(
+          payment_link_url,
+          AccountLinkingResult{false, 0,
+                               AccountLinkingResultCode::kResultCanceled});
+}
+
+// Test that OnAccountLinkingResult shows error screen on failure.
+TEST_F(PaymentLinkManagerTest, OnAccountLinkingResult_FailureShowsError) {
+  GURL payment_link_url("shopeepay://shopeepay.com.my?code=123");
+  EXPECT_CALL(client_, ShowErrorScreen).Times(1);
+  EXPECT_CALL(client_, ShowPaymentLinkPrompt).Times(0);
+
+  test_api(*payment_link_manager_)
+      .OnAccountLinkingResult(
+          payment_link_url,
+          AccountLinkingResult{false, 0,
+                               AccountLinkingResultCode::kResultError});
+}
+
 // Test that SendInitiatePaymentRequest doesn't initiates payment when
 // FacilitatedPaymentsNetworkInterface is not available.
 TEST_F(

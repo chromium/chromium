@@ -914,30 +914,7 @@ TEST_F(PixAccountLinkingManagerTest, DoOnAccountLinkingResult_Success) {
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(PixAccountLinkingManagerTest,
-       DoOnAccountLinkingResult_MissingInstrumentId) {
-  base::HistogramTester histogram_tester;
-  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
-  task_environment_.FastForwardBy(kShowPromptDelay);
 
-  EXPECT_CALL(client(), DismissPrompt());
-  EXPECT_CALL(client(), ShowPixAccountLinkingSuccessScreen()).Times(0);
-  EXPECT_CALL(client(), ShowAccountLinkingFailureNotification(
-                            FacilitatedPaymentsType::kPix));
-
-  test_api().DoOnAccountLinkingResult(
-      AccountLinkingResult{/*is_successful=*/true, /*instrument_id=*/0,
-                           AccountLinkingResultCode::kResultOk});
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.AccountLinking.Result",
-      /*sample=*/false,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
-      /*sample=*/AccountLinkingFlowExitedReason::kGmsCoreFlowFailed,
-      /*expected_bucket_count=*/1);
-}
 
 TEST_F(PixAccountLinkingManagerTest, DoOnAccountLinkingResult_Canceled) {
   base::HistogramTester histogram_tester;
@@ -956,10 +933,6 @@ TEST_F(PixAccountLinkingManagerTest, DoOnAccountLinkingResult_Canceled) {
       "FacilitatedPayments.Pix.AccountLinking.Result",
       /*sample=*/false,
       /*expected_bucket_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
-      /*sample=*/AccountLinkingFlowExitedReason::kUserCanceledInGmsCore,
-      /*expected_bucket_count=*/1);
 }
 
 TEST_F(PixAccountLinkingManagerTest, DoOnAccountLinkingResult_Failure) {
@@ -977,10 +950,6 @@ TEST_F(PixAccountLinkingManagerTest, DoOnAccountLinkingResult_Failure) {
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.AccountLinking.Result",
       /*sample=*/false,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
-      /*sample=*/AccountLinkingFlowExitedReason::kGmsCoreFlowFailed,
       /*expected_bucket_count=*/1);
 }
 

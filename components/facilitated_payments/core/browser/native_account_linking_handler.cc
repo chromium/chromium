@@ -95,6 +95,25 @@ void NativeAccountLinkingHandler::OnClientTokenReceived(
 
 void NativeAccountLinkingHandler::OnAccountLinkingResult(
     AccountLinkingResult result) {
+  // Sanitize the response: GMSCore returning success but omitting a valid
+  // instrument ID indicates a silent API breakdown. Surface this as a strict
+  // failure directly so telemetry picks up the generic failure reason.
+  if (result.is_successful && result.instrument_id <= 0) {
+    result.is_successful = false;
+    result.error_code = AccountLinkingResultCode::kResultError;
+  }
+
+  if (!result.is_successful) {
+    if (result.error_code == AccountLinkingResultCode::kResultCanceled) {
+      LogAccountLinkingFlowExitedReason(
+          GetHistogramSuffix(),
+          AccountLinkingFlowExitedReason::kUserCanceledInGmsCore);
+    } else if (result.error_code == AccountLinkingResultCode::kResultError) {
+      LogAccountLinkingFlowExitedReason(
+          GetHistogramSuffix(),
+          AccountLinkingFlowExitedReason::kGmsCoreFlowFailed);
+    }
+  }
   DoOnAccountLinkingResult(result);
 }
 
@@ -178,24 +197,42 @@ void NativeAccountLinkingHandler::
       rpc_result ==
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess;
 
-  LogAccountLinkingGetDetailsForCreatePaymentInstrumentResultAndLatency(
-      GetHistogramSuffix(), is_eligible && result, latency);
+  // 1. Calculate success: both the RPC must succeed and the user must be
+  // eligible.
+  bool is_successful = result && is_eligible;
 
-  if (result && is_eligible) {
+  // 2. Log the overall success/failure result and latency.
+  LogAccountLinkingGetDetailsForCreatePaymentInstrumentResultAndLatency(
+      GetHistogramSuffix(), is_successful, latency);
+
+  // 3. On success, store the action token early and trigger the UI.
+  if (is_successful) {
     action_token_ = action_token;
-  } else {
-    if (!result) {
-      LogAccountLinkingFlowExitedReason(
-          GetHistogramSuffix(),
-          AccountLinkingFlowExitedReason::kGetDetailsFailed);
-    } else if (!is_eligible) {
-      LogAccountLinkingFlowExitedReason(
-          GetHistogramSuffix(),
-          AccountLinkingFlowExitedReason::kNotEligiblePerPaymentsBackend);
-    }
-    OnAccountLinkingResult(AccountLinkingResult{});
+    DoOnGetDetailsForCreatePaymentInstrumentResponse(true);
+    return;
   }
-  DoOnGetDetailsForCreatePaymentInstrumentResponse(result && is_eligible);
+
+  // 4. On failure, log the specific reason why the flow exited.
+  if (!result) {
+    LogAccountLinkingFlowExitedReason(
+        GetHistogramSuffix(),
+        AccountLinkingFlowExitedReason::kGetDetailsFailed);
+  } else {
+    LogAccountLinkingFlowExitedReason(
+        GetHistogramSuffix(),
+        AccountLinkingFlowExitedReason::kNotEligiblePerPaymentsBackend);
+  }
+
+  // 5. Notify the UI to tear down the loading states first.
+  auto weak_this = GetWeakPtr();
+  DoOnGetDetailsForCreatePaymentInstrumentResponse(false);
+
+  if (!weak_this) {
+    return;
+  }
+
+  // 6. Return the empty result to the caller.
+  OnAccountLinkingResult(AccountLinkingResult{});
 }
 
 void NativeAccountLinkingHandler::OnAccepted() {
@@ -228,8 +265,7 @@ void NativeAccountLinkingHandler::OnDeclined() {
   LogAccountLinkingFlowExitedReason(
       GetHistogramSuffix(), AccountLinkingFlowExitedReason::kUserDeclined);
   DismissPrompt();
-  OnAccountLinkingResult(AccountLinkingResult{
-      false, 0, AccountLinkingResultCode::kResultCanceled});
+  OnAccountLinkingResult(AccountLinkingResult{});
 }
 
 void NativeAccountLinkingHandler::OnDismissed() {
@@ -237,8 +273,7 @@ void NativeAccountLinkingHandler::OnDismissed() {
       GetHistogramSuffix(),
       AccountLinkingFlowExitedReason::kScreenClosedByUser);
   DismissPrompt();
-  OnAccountLinkingResult(AccountLinkingResult{
-      false, 0, AccountLinkingResultCode::kResultCanceled});
+  OnAccountLinkingResult(AccountLinkingResult{});
 }
 
 }  // namespace payments::facilitated

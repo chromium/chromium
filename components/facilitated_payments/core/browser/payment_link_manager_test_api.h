@@ -130,6 +130,11 @@ class PaymentLinkManagerTestApi {
     return payment_link_manager_->supported_ewallets_;
   }
 
+  void OnAccountLinkingResult(const GURL& payment_link_url,
+                              AccountLinkingResult result) {
+    payment_link_manager_->OnAccountLinkingResult(payment_link_url, result);
+  }
+
  private:
   const raw_ref<PaymentLinkManager> payment_link_manager_;
 };

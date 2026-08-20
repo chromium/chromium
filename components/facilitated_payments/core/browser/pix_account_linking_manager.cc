@@ -63,29 +63,20 @@ void PixAccountLinkingManager::DoOnAccountLinkingResult(
 
   switch (result.error_code) {
     case AccountLinkingResultCode::kResultOk:
-      if (result.is_successful && result.instrument_id > 0) {
+      if (result.is_successful) {
         LogAccountLinkingResult(kPixFopSuffix, /*is_successful=*/true);
         client()->ShowPixAccountLinkingSuccessScreen();
       } else {
         LogAccountLinkingResult(kPixFopSuffix, /*is_successful=*/false);
-        LogAccountLinkingFlowExitedReason(
-            kPixFopSuffix, AccountLinkingFlowExitedReason::kGmsCoreFlowFailed);
         client()->ShowAccountLinkingFailureNotification(
             FacilitatedPaymentsType::kPix);
       }
       break;
     case AccountLinkingResultCode::kResultCanceled:
       LogAccountLinkingResult(kPixFopSuffix, /*is_successful=*/false);
-      if (is_prompt_accepted_) {
-        LogAccountLinkingFlowExitedReason(
-            kPixFopSuffix,
-            AccountLinkingFlowExitedReason::kUserCanceledInGmsCore);
-      }
       break;
     case AccountLinkingResultCode::kResultError:
       LogAccountLinkingResult(kPixFopSuffix, /*is_successful=*/false);
-      LogAccountLinkingFlowExitedReason(
-          kPixFopSuffix, AccountLinkingFlowExitedReason::kGmsCoreFlowFailed);
       client()->ShowAccountLinkingFailureNotification(
           FacilitatedPaymentsType::kPix);
       break;
