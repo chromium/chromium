@@ -269,6 +269,29 @@ int64_t CalculateOutputPaddingSize(int64_t input_size,
   return output_padding.ValueOrDie();
 }
 
+// Calculate the ending padding needed for a pooling spatial dimension whose
+// WebNN output size was rounded up (roundingType: "ceil"). Emitting
+// `ceil_mode=1` without enlarging the ending padding may cause: the
+// ceil-rounded output size requires the last window to sample input positions
+// past the (padded) input bounds, i.e. the window overhangs the input tensor.
+// Instead we enlarge the ending padding so those overhanging positions become
+// explicit padding and the descriptor is self-consistent, then emit
+// `ceil_mode=0`. This mirrors CalculatePaddingEndForCeilRoundingType() in the
+// TFLite backend.
+int64_t CalculatePoolPaddingEndForCeilRounding(int64_t output_size,
+                                               int64_t stride,
+                                               int64_t filter_size,
+                                               int64_t dilation,
+                                               int64_t input_size,
+                                               int64_t padding_begin) {
+  const auto effective_filter_size =
+      (base::CheckedNumeric(filter_size) - 1) * dilation + 1;
+  const auto padding_end = (base::CheckedNumeric(output_size) - 1) * stride +
+                           effective_filter_size - input_size - padding_begin;
+  CHECK(padding_end.IsValid());
+  return std::max<int64_t>(padding_end.ValueOrDie(), 0);
+}
+
 void CheckReduceInputSupported(const DataTypeLimits& data_type_limits,
                                mojom::Reduce::Kind kind,
                                const OperandDescriptor& input_descriptor) {
@@ -2606,9 +2629,7 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
       base::checked_cast<int64_t>(pool2d.padding->beginning->width),
       base::checked_cast<int64_t>(pool2d.padding->ending->height),
       base::checked_cast<int64_t>(pool2d.padding->ending->width)};
-  attributes.push_back(model_editor_.CreateAttribute(kAttrPads, pads));
 
-  // Calculate the ceil_mode.
   const OperandDescriptor& input_descriptor =
       GetOperand(pool2d.input_operand_id).descriptor;
   const std::vector<uint32_t>& input_shape = input_descriptor.shape();
@@ -2631,14 +2652,26 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
       pool2d.strides->width, pool2d.dilations->width, pool2d.label);
   CHECK(float_output_width.has_value());
 
-  // ONNX Pool has a single global ceil_mode attribute that applies to both
-  // spatial dimensions. Set ceil_mode=1 when either dimension needs ceiling
-  // rounding to match the WebNN output shape.
-  int64_t ceil_mode = (float_output_height.value() < output_height ||
-                       float_output_width.value() < output_width)
-                          ? 1
-                          : 0;
-  attributes.push_back(model_editor_.CreateAttribute(kAttrCeilMode, ceil_mode));
+  // When a spatial dimension's WebNN output size was rounded up (ceil), enlarge
+  // the ending padding so the emitted descriptor stays self-consistent, then
+  // emit ceil_mode=0. See CalculatePoolPaddingEndForCeilRounding() for why we
+  // do not rely on ONNX's ceil_mode.
+  if (float_output_height.value() < output_height) {
+    pads[2] =
+        std::max(pads[2], CalculatePoolPaddingEndForCeilRounding(
+                              output_height, pool2d.strides->height,
+                              pool2d.window_dimensions->height,
+                              pool2d.dilations->height, input_height, pads[0]));
+  }
+  if (float_output_width.value() < output_width) {
+    pads[3] =
+        std::max(pads[3], CalculatePoolPaddingEndForCeilRounding(
+                              output_width, pool2d.strides->width,
+                              pool2d.window_dimensions->width,
+                              pool2d.dilations->width, input_width, pads[1]));
+  }
+  attributes.push_back(model_editor_.CreateAttribute(kAttrPads, pads));
+  attributes.push_back(model_editor_.CreateAttribute(kAttrCeilMode, 0));
 
   const DataTypeLimits& data_type_limits = context_properties_.data_type_limits;
   base::cstring_view op_type;
