@@ -4,6 +4,7 @@
 
 #include "content/browser/loader/file_url_loader_factory.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -595,14 +596,22 @@ class FileURLLoader : public network::mojom::URLLoader {
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
 
-    // Request the larger size data pipe for file:// URL loading.
-    uint32_t data_pipe_size = network::GetDataPipeDefaultAllocationSize(
-        network::DataPipeAllocationSize::kLargerSizeIfPossible);
+    // Request the larger size data pipe for file:// URL loading, but don't
+    // make it larger than the file: the pipe's shared memory is allocated up
+    // front, so a 2 MiB pipe for a small script or stylesheet costs more to
+    // create, map and tear down than the transfer itself. The size is always
+    // at least the MIME sniffing buffer so the initial read below fits.
+    const uint32_t max_data_pipe_size =
+        network::GetDataPipeDefaultAllocationSize(
+            network::DataPipeAllocationSize::kLargerSizeIfPossible);
     // This should already be static_asserted in network::features, but good
     // to double-check.
-    DCHECK(data_pipe_size >= net::kMaxBytesToSniff)
+    DCHECK(max_data_pipe_size >= net::kMaxBytesToSniff)
         << "Default file data pipe size must be at least as large as a "
            "MIME-type sniffing buffer.";
+    const uint32_t data_pipe_size =
+        base::checked_cast<uint32_t>(std::clamp<int64_t>(
+            info.size, net::kMaxBytesToSniff, max_data_pipe_size));
 
     if (mojo::CreateDataPipe(data_pipe_size, producer_handle,
                              consumer_handle) != MOJO_RESULT_OK) {
