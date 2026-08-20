@@ -4900,6 +4900,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147221232" label="CLASS_E_NOAGGREGATION"/>
   <int value="-2147221164" label="REGDB_E_CLASSNOTREG"/>
   <int value="-2147221163" label="REGDB_E_IIDNOTREG"/>
+  <int value="-2147221005" label="CO_E_CLASSSTRING"/>
   <int value="-2147220480"
       label="custom error for abort setting badge for non app window"/>
   <int value="-2147220479"
@@ -5036,6 +5037,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147157498" label="media::kErrorLoadLibrary"/>
   <int value="-2147157497" label="media::kErrorGetFunctionPointer"/>
   <int value="-2147157496" label="media::kErrorInvalidCdmProxy"/>
+  <int value="-2147024895" label="ERROR_INVALID_FUNCTION"/>
   <int value="-2147024894" label="ERROR_FILE_NOT_FOUND"/>
   <int value="-2147024893" label="ERROR_PATH_NOT_FOUND"/>
   <int value="-2147024891" label="E_ACCESSDENIED"/>
@@ -5181,6 +5183,20 @@ shown properly on the user-facing crash UI.
   <int value="-2004287464" label="AUDCLNT_E_BUFFER_ERROR"/>
   <int value="-2004287463" label="AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED"/>
   <int value="-2004287456" label="AUDCLNT_E_INVALID_DEVICE_PERIOD"/>
+  <int value="-2004287455" label="AUDCLNT_E_INVALID_STREAM_FLAG"/>
+  <int value="-2004287454" label="AUDCLNT_E_ENDPOINT_OFFLOAD_NOT_CAPABLE"/>
+  <int value="-2004287453" label="AUDCLNT_E_OUT_OF_OFFLOAD_RESOURCES"/>
+  <int value="-2004287452" label="AUDCLNT_E_OFFLOAD_MODE_ONLY"/>
+  <int value="-2004287451" label="AUDCLNT_E_NONOFFLOAD_MODE_ONLY"/>
+  <int value="-2004287450" label="AUDCLNT_E_RESOURCES_INVALIDATED"/>
+  <int value="-2004287449" label="AUDCLNT_E_RAW_MODE_UNSUPPORTED"/>
+  <int value="-2004287448" label="AUDCLNT_E_ENGINE_PERIODICITY_LOCKED"/>
+  <int value="-2004287447" label="AUDCLNT_E_ENGINE_FORMAT_LOCKED"/>
+  <int value="-2004287440" label="AUDCLNT_E_HEADTRACKING_ENABLED"/>
+  <int value="-2004287424" label="AUDCLNT_E_HEADTRACKING_UNSUPPORTED"/>
+  <int value="-2004287423" label="AUDCLNT_E_EFFECT_NOT_AVAILABLE"/>
+  <int value="-2004287422" label="AUDCLNT_E_EFFECT_STATE_READ_ONLY"/>
+  <int value="-2004287421" label="AUDCLNT_E_POST_VOLUME_LOOPBACK_UNSUPPORTED"/>
   <int value="-2003283968" label="DWRITE_E_FILEFORMAT"/>
   <int value="-2003283967" label="DWRITE_E_UNEXPECTED"/>
   <int value="-2003283966" label="DWRITE_E_NOFONT"/>
