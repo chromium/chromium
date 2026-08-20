@@ -48,10 +48,6 @@ bool IsCheckable(const FormFieldData::CheckStatus& check_status) {
   return check_status != FormFieldData::CheckStatus::kNotCheckable;
 }
 
-bool IsChecked(const FormFieldData::CheckStatus& check_status) {
-  return check_status == FormFieldData::CheckStatus::kChecked;
-}
-
 std::optional<size_t> FindShortestSubstringMatchInSelect(
     const std::u16string& value,
     bool ignore_whitespace,

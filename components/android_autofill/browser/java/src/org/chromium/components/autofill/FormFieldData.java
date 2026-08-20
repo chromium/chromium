@@ -59,7 +59,6 @@ public class FormFieldData {
     // The bounds in the container view's coordinates.
     private @Nullable RectF mBoundsInContainerViewCoordinates;
 
-    private boolean mIsChecked;
     private String mValue;
     private boolean mFocusable;
     private final boolean mVisible;
@@ -87,7 +86,6 @@ public class FormFieldData {
             String[] optionValues,
             String[] optionContents,
             boolean isCheckField,
-            boolean isChecked,
             int maxLength,
             String heuristicType,
             String serverType,
@@ -113,7 +111,6 @@ public class FormFieldData {
         mId = id;
         mOptionValues = optionValues;
         mOptionContents = optionContents;
-        mIsChecked = isChecked;
         mDatalistLabels = datalistLabels;
         mDatalistValues = datalistValues;
         mOrigin = origin;
@@ -171,11 +168,6 @@ public class FormFieldData {
         updateAutofillState(true);
     }
 
-    public void setChecked(boolean checked) {
-        mIsChecked = checked;
-        updateAutofillState(true);
-    }
-
     @CalledByNative
     private void updateValue(String value) {
         mValue = value;
@@ -227,11 +219,6 @@ public class FormFieldData {
         return "NO_SERVER_DATA";
     }
 
-    @CalledByNative
-    public boolean isChecked() {
-        return mIsChecked;
-    }
-
     public boolean hasPreviouslyAutofilled() {
         return mPreviouslyAutofilled;
     }
@@ -268,7 +255,6 @@ public class FormFieldData {
             String[] optionValues,
             String[] optionContents,
             boolean isCheckField,
-            boolean isChecked,
             int maxLength,
             String heuristicType,
             String serverType,
@@ -296,7 +282,6 @@ public class FormFieldData {
                 optionValues,
                 optionContents,
                 isCheckField,
-                isChecked,
                 maxLength,
                 heuristicType,
                 serverType,

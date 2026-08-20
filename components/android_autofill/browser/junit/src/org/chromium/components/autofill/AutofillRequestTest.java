@@ -47,13 +47,6 @@ public class AutofillRequestTest {
         return builder;
     }
 
-    private static FormFieldDataBuilder createCheckboxFieldBuilder() {
-        FormFieldDataBuilder builder = new FormFieldDataBuilder();
-        builder.mIsCheckField = true;
-        builder.mIsChecked = true;
-        return builder;
-    }
-
     private static FormFieldDataBuilder createListFieldBuilder() {
         FormFieldDataBuilder builder = new FormFieldDataBuilder();
         builder.mOptionValues = new String[] {"value1", "value2"};
@@ -177,20 +170,6 @@ public class AutofillRequestTest {
     }
 
     @Test
-    // Tests that the control-type specific data of a checkbox field is set correctly.
-    public void testControlTypeSpecificInformationIsSetForCheckboxFields() {
-        FormFieldDataBuilder fieldBuilder = createCheckboxFieldBuilder();
-        TestViewStructure structure =
-                fillStructureForRequest(createRequest(FORM_SESSION_ID, fieldBuilder.build()));
-
-        assertEquals(1, structure.getChildCount());
-        TestViewStructure child = structure.getChild(0);
-
-        assertEquals(View.AUTOFILL_TYPE_TOGGLE, child.getAutofillType());
-        assertEquals(AutofillValue.forToggle(fieldBuilder.mIsChecked), child.getAutofillValue());
-    }
-
-    @Test
     // Tests that the control-type specific data of a list field is set correctly.
     public void testControlTypeSpecificInformationIsSetForListFields() {
         FormFieldDataBuilder fieldBuilder = createListFieldBuilder();
@@ -247,24 +226,6 @@ public class AutofillRequestTest {
         assertTrue(request.autofill(valuesToFill));
         // The underlying FormFieldData object is updated.
         assertEquals("entry2", request.getField((short) 0).getValue());
-    }
-
-    @Test
-    // Tests that autofill() updates the underlying FormFieldData for a checkbox field.
-    public void testAutofillUpdatesCheckboxField() {
-        FormFieldDataBuilder fieldBuilder = createCheckboxFieldBuilder();
-        AutofillRequest request = createRequest(FORM_SESSION_ID, fieldBuilder.build());
-        TestViewStructure structure = fillStructureForRequest(request);
-        assertEquals(1, structure.getChildCount());
-        TestViewStructure child = structure.getChild(0);
-
-        SparseArray<AutofillValue> valuesToFill = new SparseArray<>();
-        valuesToFill.append(child.getId(), AutofillValue.forToggle(false));
-
-        // The autofill requests succeeds.
-        assertTrue(request.autofill(valuesToFill));
-        // The underlying FormFieldData object is updated.
-        assertEquals(false, request.getField((short) 0).isChecked());
     }
 
     @Test

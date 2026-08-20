@@ -19,7 +19,6 @@ public class FormFieldDataBuilder {
     String[] mOptionValues;
     String[] mOptionContents;
     boolean mIsCheckField;
-    boolean mIsChecked;
     int mMaxLength;
     String mHeuristicType;
     String mServerType;
@@ -48,7 +47,6 @@ public class FormFieldDataBuilder {
                         mOptionValues,
                         mOptionContents,
                         mIsCheckField,
-                        mIsChecked,
                         mMaxLength,
                         mHeuristicType,
                         mServerType,

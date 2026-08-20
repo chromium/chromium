@@ -80,8 +80,7 @@ FormFieldDataAndroidBridgeImpl::GetOrCreateJavaPeer(
       /*optionValues=*/ProjectOptions(field.options(), &SelectOption::value),
       /*optionContents=*/
       ProjectOptions(field.options(), &SelectOption::text),
-      IsCheckable(field.check_status()), IsChecked(field.check_status()),
-      field.max_length(),
+      IsCheckable(field.check_status()), field.max_length(),
       /*heuristicType=*/field_types.heuristic_type == UNKNOWN_TYPE
           ? nullptr
           : ConvertUTF8ToJavaString(
