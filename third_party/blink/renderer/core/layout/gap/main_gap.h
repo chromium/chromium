@@ -53,8 +53,10 @@ class CORE_EXPORT MainGap {
 
   wtf_size_t GetCrossGapBeforeStart() const;
   wtf_size_t GetCrossGapBeforeEnd() const;
+  wtf_size_t GetCrossGapBeforeCount() const;
   wtf_size_t GetCrossGapAfterStart() const;
   wtf_size_t GetCrossGapAfterEnd() const;
+  wtf_size_t GetCrossGapAfterCount() const;
 
   void IncrementRangeOfCrossGapsBefore(wtf_size_t cross_gap_index) {
     range_of_cross_gaps_before_.Increment(cross_gap_index);

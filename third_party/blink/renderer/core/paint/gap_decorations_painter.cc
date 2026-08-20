@@ -262,10 +262,10 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
 
   wtf_size_t total_gap_count = fragment_relative_gap_count;
   if (has_row_gap_fragmentation) {
-    const BreakTokenAlgorithmData* first_break_token_data =
+    const BreakTokenAlgorithmData* first_fragment_data =
         GetFirstFragmentBreakTokenData(box_fragment_);
-    CHECK(first_break_token_data);
-    total_gap_count = first_break_token_data->GetTotalRowGapCount();
+    CHECK(first_fragment_data);
+    total_gap_count = first_fragment_data->GetTotalRowGapCount();
   }
 
   // When `overlap-join` is specified, the decoration extends to meet the
@@ -289,12 +289,38 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
         cross_rule_widths, cross_gap_count);
   }
 
-  auto width_iterator =
-      GapDataListIterator<int>(rule_widths.GetGapDataList(), total_gap_count);
-  auto style_iterator = GapDataListIterator<EBorderStyle>(
-      rule_styles.GetGapDataList(), total_gap_count);
-  auto color_iterator = GapDataListIterator<StyleColor>(
-      rule_colors.GetGapDataList(), total_gap_count);
+  const bool all_rules_single_valued = rule_widths.HasSingleValue() &&
+                                       rule_styles.HasSingleValue() &&
+                                       rule_colors.HasSingleValue();
+  // Random access is unnecessary when decoration order matches geometric paint
+  // order, this axis has fewer than two gaps, or every rule has one value.
+  // TODO(javiercon): Preserve placement-order indices across fragmented flex
+  // containers. Until then, reversal patterns restart in each fragment.
+  const bool needs_decoration_reversal =
+      fragment_relative_gap_count > 1 && !all_rules_single_valued &&
+      gap_geometry.HasNonIdentityDecorationOrder(track_direction);
+
+  // TODO(javiercon): After profiling reversed and fragmented cases, consider
+  // using `GapDataListValueAccessor` for all paths and removing the iterator
+  // path.
+  std::optional<GapDataListValueAccessor<int>> reversal_width_accessor;
+  std::optional<GapDataListValueAccessor<EBorderStyle>> reversal_style_accessor;
+  std::optional<GapDataListValueAccessor<StyleColor>> reversal_color_accessor;
+  std::optional<GapDataListIterator<int>> width_iterator;
+  std::optional<GapDataListIterator<EBorderStyle>> style_iterator;
+  std::optional<GapDataListIterator<StyleColor>> color_iterator;
+  if (needs_decoration_reversal) {
+    reversal_width_accessor.emplace(rule_widths.GetGapDataList(),
+                                    fragment_relative_gap_count);
+    reversal_style_accessor.emplace(rule_styles.GetGapDataList(),
+                                    fragment_relative_gap_count);
+    reversal_color_accessor.emplace(rule_colors.GetGapDataList(),
+                                    fragment_relative_gap_count);
+  } else {
+    width_iterator.emplace(rule_widths.GetGapDataList(), total_gap_count);
+    style_iterator.emplace(rule_styles.GetGapDataList(), total_gap_count);
+    color_iterator.emplace(rule_colors.GetGapDataList(), total_gap_count);
+  }
 
   // Reused across gaps. Grid and multicol allocate at most once per Paint;
   // flex grows capacity only when a later gap needs more.
@@ -333,30 +359,49 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
       AdvanceCrossGapOwnerCursor(gap_geometry, gap_index,
                                  *cross_gap_owner_index);
     }
-    // Gap decorations can take a list format for their styles, and that order
-    // must be maintained when the container fragments. Resolve this gap's
-    // `stitched_gap_index` (i.e. its index in the global unfragmented context)
-    // and advance the iterators to that point so that the 'color', 'style' and
-    // 'width' patterns are maintained across fragments.
+    // `geometric_gap_index` is the gap's index in stored paint order, based on
+    // its logical position in the container. Gap-decoration list order must be
+    // maintained across fragments, so resolve that index in the global
+    // unfragmented context when needed.
+    wtf_size_t geometric_gap_index = gap_index;
     if (has_row_gap_fragmentation) {
       // TODO(crbug.com/343257585): If grid-lanes gap decorations gain
       // fragmentation support, do not pass the lane owner index to
       // `StitchedRowGapIndex`, which expects a flex-line index.
       CHECK(gap_geometry.GetContainerType() !=
             GapGeometry::ContainerType::kGridLanes);
-      const wtf_size_t stitched_gap_index =
+      geometric_gap_index =
           box_fragment_.GetLayoutObject()->StitchedRowGapIndex(
               box_fragment_, gap_index, cross_gap_owner_index);
-      color_iterator.AdvanceUpTo(stitched_gap_index);
-      style_iterator.AdvanceUpTo(stitched_gap_index);
-      width_iterator.AdvanceUpTo(stitched_gap_index);
     }
-    const StyleColor rule_color = color_iterator.Next();
+
+    StyleColor rule_color;
+    EBorderStyle rule_style_value;
+    int rule_width_value;
+    if (needs_decoration_reversal) {
+      const wtf_size_t decoration_index = gap_geometry.DecorationIndexForGap(
+          track_direction, gap_index, cross_gap_owner_index,
+          fragment_relative_gap_count);
+      rule_color = reversal_color_accessor->ValueAt(decoration_index);
+      rule_style_value = reversal_style_accessor->ValueAt(decoration_index);
+      rule_width_value = reversal_width_accessor->ValueAt(decoration_index);
+    } else {
+      // Advance the iterators to `geometric_gap_index` so the 'color', 'style'
+      // and 'width' patterns are maintained across fragments.
+      if (has_row_gap_fragmentation) {
+        color_iterator->AdvanceUpTo(geometric_gap_index);
+        style_iterator->AdvanceUpTo(geometric_gap_index);
+        width_iterator->AdvanceUpTo(geometric_gap_index);
+      }
+      rule_color = color_iterator->Next();
+      rule_style_value = style_iterator->Next();
+      rule_width_value = width_iterator->Next();
+    }
     const Color resolved_rule_color =
         style.VisitedDependentGapColor(rule_color, is_column_gap);
     const EBorderStyle rule_style =
-        ComputedStyle::CollapsedBorderStyle(style_iterator.Next());
-    const LayoutUnit rule_thickness = LayoutUnit(width_iterator.Next());
+        ComputedStyle::CollapsedBorderStyle(rule_style_value);
+    const LayoutUnit rule_thickness = LayoutUnit(rule_width_value);
 
     const LayoutUnit center =
         gap_geometry.GetGapCenterOffset(track_direction, gap_index);

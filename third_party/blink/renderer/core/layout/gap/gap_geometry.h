@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GAP_GAP_GEOMETRY_H_
 
 #include <optional>
+#include <utility>
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_intersection.h"
@@ -144,6 +145,20 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
     kMultiColumn,
   };
 
+  // Describes how flex placement order differs from geometric paint order.
+  struct FlexGapPlacementReversal {
+    FlexGapPlacementReversal(bool reverse_lines, bool reverse_items_in_line)
+        : reverse_lines(reverse_lines),
+          reverse_items_in_line(reverse_items_in_line) {
+      CHECK(reverse_lines || reverse_items_in_line);
+    }
+
+    bool operator==(const FlexGapPlacementReversal&) const = default;
+
+    const bool reverse_lines;
+    const bool reverse_items_in_line;
+  };
+
   explicit GapGeometry(ContainerType container_type)
       : container_type_(container_type) {}
 
@@ -161,6 +176,7 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
         main_gaps_(std::move(new_main_gaps)),
         cross_gaps_(other.cross_gaps_),
         flex_cross_gap_sizes_(other.flex_cross_gap_sizes_),
+        flex_gap_placement_reversal_(other.flex_gap_placement_reversal_),
         content_inline_start_(other.content_inline_start_),
         content_inline_end_(other.content_inline_end_),
         content_block_start_(new_content_block_start),
@@ -174,6 +190,8 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
            block_gap_size_ == other.block_gap_size_ &&
            container_type_ == other.container_type_ &&
            main_gaps_ == other.main_gaps_ && cross_gaps_ == other.cross_gaps_ &&
+           flex_cross_gap_sizes_ == other.flex_cross_gap_sizes_ &&
+           flex_gap_placement_reversal_ == other.flex_gap_placement_reversal_ &&
            content_inline_start_ == other.content_inline_start_ &&
            content_inline_end_ == other.content_inline_end_ &&
            content_block_start_ == other.content_block_start_ &&
@@ -314,6 +332,30 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // Interior lane boundaries correspond to `MainGap`s; the outer lane
   // boundaries are content edges.
   LayoutUnit GridAxisOffsetForLaneBoundary(wtf_size_t lane_boundary) const;
+
+  // Records that this flex container's gap-decoration values are assigned in
+  // placement order rather than geometric (paint) order. `reverse_lines` is
+  // `flex-wrap: wrap-reverse` (reverses `MainGap` assignment, and the order of
+  // the line groups that make up the axis-wide `CrossGap` pattern).
+  // `reverse_items_in_line` is a reversed `flex-direction` (reverses `CrossGap`
+  // assignment within each line).
+  void SetFlexGapPlacementReversal(FlexGapPlacementReversal reversal) {
+    flex_gap_placement_reversal_.emplace(reversal);
+  }
+
+  // Returns whether gap-decoration values use a different order from geometric
+  // paint order in `track_direction`.
+  bool HasNonIdentityDecorationOrder(
+      GridTrackSizingDirection track_direction) const;
+
+  // Returns the gap-decoration list index for a gap stored at
+  // `geometric_index`. `owning_main_gap_index` identifies the group that
+  // contains a cross gap.
+  wtf_size_t DecorationIndexForGap(
+      GridTrackSizingDirection track_direction,
+      wtf_size_t geometric_index,
+      std::optional<wtf_size_t> owning_main_gap_index,
+      wtf_size_t total_gap_count) const;
 
   // Resets transient per-paint state. A cached `GapGeometry` can be reused
   // across relayouts and repaints, so paint must not inherit state left behind
@@ -594,6 +636,11 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
       Vector<GapIntersection>& intersections,
       GapSegmentStateCursor& cursor) const;
 
+  // Returns the owning flex line's first CrossGap index and CrossGap count in
+  // the same index space used by the placement pattern.
+  std::pair<wtf_size_t, wtf_size_t> GetFlexLineCrossGapStartAndCount(
+      wtf_size_t owning_main_gap_index) const;
+
   // Computes the end offset for a flex or multicol cross gap at
   // `cross_gap_index`. The end offset is either:
   // - The container's content end which occurs when the cross gap is at last
@@ -639,6 +686,10 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // for flex containers. Column flex uses absolute flex-line indices, while row
   // flex uses fragment-relative line indices.
   std::optional<Vector<LayoutUnit>> flex_cross_gap_sizes_;
+
+  // Describes how flex placement order differs from geometric paint order.
+  // See `SetFlexGapPlacementReversal`.
+  std::optional<FlexGapPlacementReversal> flex_gap_placement_reversal_;
 
   // These represent the offsets of the content where the gaps begin and end.
   // We use separate LayoutUnits instead of LogicalOffsets, since these are more

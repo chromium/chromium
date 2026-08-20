@@ -138,6 +138,84 @@ bool GapGeometry::HasRowGapFragmentation(
   return false;
 }
 
+bool GapGeometry::HasNonIdentityDecorationOrder(
+    GridTrackSizingDirection track_direction) const {
+  if (!flex_gap_placement_reversal_) {
+    return false;
+  }
+  return !IsMainDirection(track_direction) ||
+         flex_gap_placement_reversal_->reverse_lines;
+}
+
+std::pair<wtf_size_t, wtf_size_t> GapGeometry::GetFlexLineCrossGapStartAndCount(
+    wtf_size_t owning_main_gap_index) const {
+  CHECK(flex_gap_placement_reversal_.has_value());
+
+  if (main_gaps_.empty()) {
+    CHECK_EQ(owning_main_gap_index, 0u);
+    CHECK(!cross_gaps_.empty());
+    return {0, cross_gaps_.size()};
+  }
+
+  if (owning_main_gap_index < main_gaps_.size()) {
+    const MainGap& main_gap = main_gaps_[owning_main_gap_index];
+    CHECK(main_gap.HasCrossGapsBefore());
+    return {main_gap.GetCrossGapBeforeStart(),
+            main_gap.GetCrossGapBeforeCount()};
+  }
+
+  CHECK_EQ(owning_main_gap_index, main_gaps_.size());
+  const MainGap& last_main_gap = main_gaps_.back();
+  CHECK(last_main_gap.HasCrossGapsAfter());
+  return {last_main_gap.GetCrossGapAfterStart(),
+          last_main_gap.GetCrossGapAfterCount()};
+}
+
+wtf_size_t GapGeometry::DecorationIndexForGap(
+    GridTrackSizingDirection track_direction,
+    wtf_size_t geometric_index,
+    std::optional<wtf_size_t> owning_main_gap_index,
+    wtf_size_t total_gap_count) const {
+  CHECK(HasNonIdentityDecorationOrder(track_direction));
+  CHECK_LT(geometric_index, total_gap_count);
+
+  if (IsMainDirection(track_direction)) {
+    return total_gap_count - 1 - geometric_index;
+  }
+
+  CHECK(owning_main_gap_index.has_value());
+
+  // TODO(javiercon): For fragmented flex containers, use the first fragment's
+  // break-token data to map fragment-local indices into the global decoration
+  // pattern. We'll need to pass the first fragment's data here.
+  const auto [line_start, line_gap_count] =
+      GetFlexLineCrossGapStartAndCount(*owning_main_gap_index);
+
+  CHECK_GE(geometric_index, line_start);
+  // Geometric order is the order in which gaps are stored and painted, based
+  // on their logical positions in the container.
+  const wtf_size_t geometric_index_in_line = geometric_index - line_start;
+  CHECK_LT(geometric_index_in_line, line_gap_count);
+
+  // Next, reverse the gap's index within its line for a reversed
+  // `flex-direction`.
+  wtf_size_t placement_index_in_line = geometric_index_in_line;
+  if (flex_gap_placement_reversal_->reverse_items_in_line) {
+    CHECK_LE(placement_index_in_line, line_gap_count - 1);
+    placement_index_in_line = line_gap_count - 1 - placement_index_in_line;
+  }
+
+  // Finally, move the complete line group to its placement-order position for
+  // `wrap-reverse`.
+  CHECK_LE(line_start, total_gap_count);
+  CHECK_LE(line_gap_count, total_gap_count - line_start);
+  const wtf_size_t line_start_in_placement_order =
+      flex_gap_placement_reversal_->reverse_lines
+          ? total_gap_count - line_start - line_gap_count
+          : line_start;
+  return line_start_in_placement_order + placement_index_in_line;
+}
+
 PhysicalRect GapGeometry::ComputeInkOverflowForGaps(
     WritingDirectionMode writing_direction,
     const PhysicalSize& container_size,
@@ -402,13 +480,9 @@ void GapGeometry::GenerateMainIntersectionListForFlex(
   const bool has_cross_gaps_before = main_gap.HasCrossGapsBefore();
   const bool has_cross_gaps_after = main_gap.HasCrossGapsAfter();
   const wtf_size_t num_cross_gaps_before =
-      has_cross_gaps_before ? main_gap.GetCrossGapBeforeEnd() -
-                                  main_gap.GetCrossGapBeforeStart() + 1
-                            : 0u;
+      has_cross_gaps_before ? main_gap.GetCrossGapBeforeCount() : 0u;
   const wtf_size_t num_cross_gaps_after =
-      has_cross_gaps_after ? main_gap.GetCrossGapAfterEnd() -
-                                 main_gap.GetCrossGapAfterStart() + 1
-                           : 0u;
+      has_cross_gaps_after ? main_gap.GetCrossGapAfterCount() : 0u;
   intersections.reserve(num_cross_gaps_before + num_cross_gaps_after + 2);
 
   LayoutUnit content_start =

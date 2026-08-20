@@ -77,6 +77,15 @@ class CORE_EXPORT GapData {
 
   bool IsRepeaterData() const { return value_repeater_ != nullptr; }
 
+  wtf_size_t GetFixedSlotCount() const {
+    if (!IsRepeaterData()) {
+      return 1;
+    }
+    CHECK(!GetValueRepeater()->IsAutoRepeater());
+    return GetValueRepeater()->RepeatCount() *
+           GetValueRepeater()->RepeatedValues().size();
+  }
+
  private:
   T value_ = T();
   Member<ValueRepeater<T>> value_repeater_;

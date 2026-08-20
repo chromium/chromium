@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_DATA_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_DATA_LIST_H_
 
+#include <algorithm>
+
 #include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/core/style/gap_data.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
@@ -12,6 +14,64 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+namespace gap_data_list_internal {
+
+// The Leading/Auto/Trailing region slot counts and the auto-repeater index
+// for a `GapDataList`, given a known gap count. See `GapDataListIterator` for
+// the region model.
+struct RegionSlotCounts {
+  wtf_size_t leading = 0;
+  wtf_size_t auto_repeat = 0;
+  wtf_size_t trailing = 0;
+  wtf_size_t auto_idx = kNotFound;
+  bool leading_has_integer_repeaters = false;
+  bool trailing_has_integer_repeaters = false;
+};
+
+// Computes `RegionSlotCounts` for `gap_data_list`. Shared by
+// `GapDataListIterator` (sequential access) and `GapDataListValueAccessor`
+// (random access) so the two traversal strategies agree on region boundaries.
+template <typename GapDataVector>
+RegionSlotCounts ComputeRegionSlotCounts(const GapDataVector& gap_data_list,
+                                         wtf_size_t gap_count) {
+  RegionSlotCounts counts;
+
+  for (wtf_size_t i = 0; i < gap_data_list.size(); ++i) {
+    const auto& gap_data = gap_data_list[i];
+
+    bool is_integer_repeater = false;
+    if (gap_data.IsRepeaterData()) {
+      if (gap_data.GetValueRepeater()->IsAutoRepeater()) {
+        CHECK_EQ(counts.auto_idx, kNotFound);
+        counts.auto_idx = i;
+        continue;
+      }
+      is_integer_repeater = true;
+    }
+    const wtf_size_t gap_data_slot_count = gap_data.GetFixedSlotCount();
+
+    if (counts.auto_idx == kNotFound) {
+      counts.leading += gap_data_slot_count;
+      counts.leading_has_integer_repeaters |= is_integer_repeater;
+    } else {
+      counts.trailing += gap_data_slot_count;
+      counts.trailing_has_integer_repeaters |= is_integer_repeater;
+    }
+  }
+  if (counts.auto_idx != kNotFound) {
+    // Compute the number of slots allocated to the auto region. If the
+    // combined slots from leading and trailing regions is greater than the
+    // total gap count, the auto region slot count remains zero.
+    wtf_size_t combined_slot_count = counts.leading + counts.trailing;
+    if (combined_slot_count < gap_count) {
+      counts.auto_repeat = gap_count - combined_slot_count;
+    }
+  }
+  return counts;
+}
+
+}  // namespace gap_data_list_internal
 
 // These are used to store gap decorations values in the order they are
 // specified. These values can be an auto repeater, an integer repeater, or a
@@ -85,9 +145,7 @@ class CORE_EXPORT GapDataList {
     return result.ReleaseString();
   }
 
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(gap_data_list_);
-  }
+  void Trace(Visitor* visitor) const { visitor->Trace(gap_data_list_); }
 
   const GapDataVector& GetGapDataList() const { return gap_data_list_; }
 
@@ -100,9 +158,7 @@ class CORE_EXPORT GapDataList {
     return gap_data_list_[0].GetValue();
   }
 
-  const T GetLegacyValue() const {
-    return gap_data_list_[0].GetValue();
-  }
+  const T GetLegacyValue() const { return gap_data_list_[0].GetValue(); }
 
   bool operator==(const GapDataList& o) const {
     return gap_data_list_ == o.gap_data_list_;
@@ -135,14 +191,16 @@ class CORE_EXPORT GapDataListIterator {
   using GapData = GapData<T>;
 
   GapDataListIterator(const GapDataVector& gap_data_list, wtf_size_t gap_count)
-      : gap_data_list_(gap_data_list), gap_count_(gap_count) {
+      : gap_data_list_(gap_data_list),
+        gap_count_(gap_count),
+        counts_(gap_data_list_internal::ComputeRegionSlotCounts(gap_data_list,
+                                                                gap_count)) {
     CHECK(!gap_data_list_.empty());
-    BuildRegions();
 
-    if (auto_idx_ == 0) {
+    if (counts_.auto_idx == 0) {
       // Here, the auto repeater is the first item, so start at kAuto region.
       region_ = kAuto;
-      current_region_slots_remaining_ = auto_repeat_slot_count_;
+      current_region_slots_remaining_ = counts_.auto_repeat;
       repeated_value_idx_ = 0;
       if (current_region_slots_remaining_ == 0) {
         TransitionToNextRegion();
@@ -150,7 +208,7 @@ class CORE_EXPORT GapDataListIterator {
     } else {
       // Auto-repeater is not the first item, start at kLeading region.
       region_ = kLeading;
-      current_region_slots_remaining_ = leading_slot_count_;
+      current_region_slots_remaining_ = counts_.leading;
       list_idx_ = 0;
       InitNonAutoDataState();
     }
@@ -186,51 +244,10 @@ class CORE_EXPORT GapDataListIterator {
   }
 
  private:
-  // Iterates through `gap_data_list_` to determine region boundaries and slot
-  // counts.
-  void BuildRegions() {
-    leading_slot_count_ = 0;
-    trailing_slot_count_ = 0;
-    auto_repeat_slot_count_ = 0;
-    auto_idx_ = kNotFound;
-
-    for (wtf_size_t i = 0; i < gap_data_list_.size(); ++i) {
-      const GapData& gap_data = gap_data_list_[i];
-
-      wtf_size_t gap_data_slot_count = 1;
-      if (gap_data.IsRepeaterData()) {
-        if (gap_data.GetValueRepeater()->IsAutoRepeater()) {
-          CHECK_EQ(auto_idx_, kNotFound);
-          auto_idx_ = i;
-          continue;
-        }
-        gap_data_slot_count =
-            gap_data.GetValueRepeater()->RepeatCount() *
-            gap_data.GetValueRepeater()->RepeatedValues().size();
-      }
-
-      if (auto_idx_ == kNotFound) {
-        leading_slot_count_ += gap_data_slot_count;
-      } else {
-        trailing_slot_count_ += gap_data_slot_count;
-      }
-    }
-    if (auto_idx_ != kNotFound) {
-      // Compute the number of slots allocated to the auto region. If the
-      // combined slots from leading and trailing regions is greater than the
-      // total gap count, the auto region slot count remains zero.
-      wtf_size_t combined_slot_count =
-          leading_slot_count_ + trailing_slot_count_;
-      if (combined_slot_count < gap_count_) {
-        auto_repeat_slot_count_ = gap_count_ - combined_slot_count;
-      }
-    }
-  }
-
   // Retrieves the current value based on the region and index.
   T GetData() const {
     const GapData& gap_data =
-        gap_data_list_[region_ == kAuto ? auto_idx_ : list_idx_];
+        gap_data_list_[region_ == kAuto ? counts_.auto_idx : list_idx_];
     return gap_data.IsRepeaterData()
                ? gap_data.GetValueRepeater()
                      ->RepeatedValues()[repeated_value_idx_]
@@ -274,33 +291,35 @@ class CORE_EXPORT GapDataListIterator {
 
   void AdvanceWithinAutoRegion() {
     CHECK_EQ(region_, kAuto);
-    wtf_size_t repeated_auto_values_size =
-        gap_data_list_[auto_idx_].GetValueRepeater()->RepeatedValues().size();
+    wtf_size_t repeated_auto_values_size = gap_data_list_[counts_.auto_idx]
+                                               .GetValueRepeater()
+                                               ->RepeatedValues()
+                                               .size();
     repeated_value_idx_ = (repeated_value_idx_ + 1) % repeated_auto_values_size;
   }
 
   void TransitionToNextRegion() {
     switch (region_) {
       case kLeading:
-        if (auto_idx_ == kNotFound) {
+        if (counts_.auto_idx == kNotFound) {
           // No auto-repeater, so cycle back to the leading.
-          current_region_slots_remaining_ = leading_slot_count_;
+          current_region_slots_remaining_ = counts_.leading;
           list_idx_ = 0;
           InitNonAutoDataState();
         } else {
-          if (auto_repeat_slot_count_ > 0) {
+          if (counts_.auto_repeat > 0) {
             // Move from leading to the auto region.
             region_ = GapDataListRegion::kAuto;
-            current_region_slots_remaining_ = auto_repeat_slot_count_;
+            current_region_slots_remaining_ = counts_.auto_repeat;
             repeated_value_idx_ = 0;
           } else {
             // Auto-repeater is present but squashed due
-            // `leading_slot_count_` + `trailing_slot_count_`
+            // `counts_.leading` + `counts_.trailing`
             // being greater than or equal to the number of gaps, so jump to
             // trailing segment.
             region_ = GapDataListRegion::kTrailing;
-            current_region_slots_remaining_ = trailing_slot_count_;
-            list_idx_ = auto_idx_ + 1;
+            current_region_slots_remaining_ = counts_.trailing;
+            list_idx_ = counts_.auto_idx + 1;
             InitNonAutoDataState();
           }
         }
@@ -308,8 +327,8 @@ class CORE_EXPORT GapDataListIterator {
       case kAuto:
         // Move from the auto region to the trailing region.
         region_ = GapDataListRegion::kTrailing;
-        current_region_slots_remaining_ = trailing_slot_count_;
-        list_idx_ = auto_idx_ + 1;
+        current_region_slots_remaining_ = counts_.trailing;
+        list_idx_ = counts_.auto_idx + 1;
         InitNonAutoDataState();
         break;
       case kTrailing:
@@ -334,11 +353,10 @@ class CORE_EXPORT GapDataListIterator {
   // ref-count churn would cost more than the protection is worth.
   RAW_PTR_EXCLUSION const GapDataVector& gap_data_list_;
   wtf_size_t gap_count_;
+  const gap_data_list_internal::RegionSlotCounts counts_;
 
   // Index of the current gap to which we are assigning a gap data.
   wtf_size_t current_gap_index_ = 0;
-
-  wtf_size_t leading_slot_count_, auto_repeat_slot_count_, trailing_slot_count_;
 
   // Traversal states.
   GapDataListRegion region_;
@@ -346,9 +364,159 @@ class CORE_EXPORT GapDataListIterator {
 
   // Internal iterators states.
   wtf_size_t list_idx_ = 0;
-  wtf_size_t auto_idx_ = kNotFound;
   wtf_size_t repeats_left_ = 0;
   wtf_size_t repeated_value_idx_ = 0;
+};
+
+// Provides random access to the value assigned to a given gap slot. The caller
+// determines that slot, for example when placement order differs from paint
+// order.
+//
+// It shares region boundaries with `GapDataListIterator` (see
+// `gap_data_list_internal::ComputeRegionSlotCounts`), but never expands the
+// list: fixed regions containing only single values use direct indexing, fixed
+// regions with integer repeaters use binary search over cumulative per-entry
+// slot counts, and the auto-repeat region uses direct modulo arithmetic.
+//
+// This accessor provides O(1) access in the common cases, such as single-value
+// lists, and lists without integer repeaters. For fixed regions containing
+// integer repeaters, lookup is O(log n), where n is the number of unexpanded
+// entries in that region.
+// TODO(javiercon): After profiling reversed and fragmented cases, consider
+// using `GapDataListValueAccessor` for all paths and removing the Iterator
+// path.
+template <typename T>
+class CORE_EXPORT GapDataListValueAccessor {
+  DISALLOW_NEW();
+
+ public:
+  using GapDataVector = GapDataList<T>::GapDataVector;
+  using GapData = GapData<T>;
+
+  GapDataListValueAccessor(const GapDataVector& gap_data_list,
+                           wtf_size_t gap_count)
+      : gap_data_list_(gap_data_list), gap_count_(gap_count) {
+    CHECK(!gap_data_list_.empty());
+    const auto counts = gap_data_list_internal::ComputeRegionSlotCounts(
+        gap_data_list_, gap_count_);
+    auto_repeat_slot_count_ = counts.auto_repeat;
+    auto_idx_ = counts.auto_idx;
+
+    if (!HasAutoRepeater()) {
+      leading_region_ =
+          BuildFixedRegion(0, gap_data_list_.size(), counts.leading,
+                           counts.leading_has_integer_repeaters);
+    } else {
+      leading_region_ = BuildFixedRegion(0, auto_idx_, counts.leading,
+                                         counts.leading_has_integer_repeaters);
+      trailing_region_ = BuildFixedRegion(
+          auto_idx_ + 1, gap_data_list_.size(), counts.trailing,
+          counts.trailing_has_integer_repeaters);
+    }
+  }
+
+  // Returns the value assigned to gap slot `index`, out of `gap_count` total
+  // slots.
+  T ValueAt(wtf_size_t index) const {
+    CHECK_LT(index, gap_count_);
+
+    if (!HasAutoRepeater()) {
+      // No auto-repeater: the whole list is one region that cycles to fill
+      // any slots beyond its own total.
+      return ValueInFixedRegion(leading_region_,
+                                index % leading_region_.total_slots);
+    }
+    const wtf_size_t leading_slot_count = leading_region_.total_slots;
+    if (index < leading_slot_count) {
+      return ValueInFixedRegion(leading_region_, index);
+    }
+    if (index < leading_slot_count + auto_repeat_slot_count_) {
+      const auto& repeated_values =
+          gap_data_list_[auto_idx_].GetValueRepeater()->RepeatedValues();
+      CHECK(!repeated_values.empty());
+      return repeated_values[(index - leading_slot_count) %
+                             repeated_values.size()];
+    }
+    const wtf_size_t trailing_start =
+        leading_slot_count + auto_repeat_slot_count_;
+    CHECK_GE(index, trailing_start);
+    return ValueInFixedRegion(trailing_region_, index - trailing_start);
+  }
+
+ private:
+  // A contiguous run of non-auto-repeater entries in `gap_data_list_`. Plain
+  // values use direct indexing. Regions with integer repeaters store cumulative
+  // slot counts for binary search.
+  struct FixedRegion {
+    wtf_size_t start_list_index = 0;
+    wtf_size_t total_slots = 0;
+    // Cumulative boundaries for regions with integer repeaters.
+    Vector<wtf_size_t> slot_ends;
+  };
+
+  bool HasAutoRepeater() const { return auto_idx_ != kNotFound; }
+
+  FixedRegion BuildFixedRegion(wtf_size_t begin,
+                               wtf_size_t end,
+                               wtf_size_t total_slots,
+                               bool has_integer_repeaters) const {
+    CHECK_LE(begin, end);
+    CHECK_LE(end, gap_data_list_.size());
+    FixedRegion region;
+    region.start_list_index = begin;
+    region.total_slots = total_slots;
+    if (!has_integer_repeaters) {
+      CHECK_EQ(total_slots, end - begin);
+      return region;
+    }
+
+    region.slot_ends.ReserveInitialCapacity(end - begin);
+    wtf_size_t running_total = 0;
+    for (wtf_size_t i = begin; i < end; ++i) {
+      running_total += gap_data_list_[i].GetFixedSlotCount();
+      region.slot_ends.push_back(running_total);
+    }
+    CHECK_EQ(running_total, total_slots);
+    return region;
+  }
+
+  T ValueInFixedRegion(const FixedRegion& region,
+                       wtf_size_t local_index) const {
+    CHECK_LT(local_index, region.total_slots);
+    if (region.slot_ends.empty()) {
+      return gap_data_list_[region.start_list_index + local_index].GetValue();
+    }
+
+    DCHECK(std::is_sorted(region.slot_ends.begin(), region.slot_ends.end()));
+    const auto it = std::upper_bound(region.slot_ends.begin(),
+                                     region.slot_ends.end(), local_index);
+    CHECK(it != region.slot_ends.end());
+    const wtf_size_t entry_offset =
+        static_cast<wtf_size_t>(it - region.slot_ends.begin());
+    const wtf_size_t entry_start =
+        entry_offset == 0 ? 0 : region.slot_ends[entry_offset - 1];
+    const GapData& gap_data =
+        gap_data_list_[region.start_list_index + entry_offset];
+    if (!gap_data.IsRepeaterData()) {
+      return gap_data.GetValue();
+    }
+    const auto& repeated_values = gap_data.GetValueRepeater()->RepeatedValues();
+    return repeated_values[(local_index - entry_start) %
+                           repeated_values.size()];
+  }
+
+  const GapDataVector& gap_data_list_;
+  const wtf_size_t gap_count_;
+
+  // The auto-repeat region's slot count, and its index in `gap_data_list_`
+  // (`kNotFound` if there is no auto-repeater). The leading/trailing fixed
+  // regions' slot counts are `leading_region_.total_slots` and
+  // `trailing_region_.total_slots`.
+  wtf_size_t auto_repeat_slot_count_ = 0;
+  wtf_size_t auto_idx_ = kNotFound;
+
+  FixedRegion leading_region_;
+  FixedRegion trailing_region_;
 };
 
 }  // namespace blink

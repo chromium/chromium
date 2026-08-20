@@ -5,16 +5,18 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEX_GAP_ACCUMULATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEX_GAP_ACCUMULATOR_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/flex/flex_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/flex/flex_line.h"
+#include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class BoxFragmentBuilder;
-class GapGeometry;
 struct LogicalOffset;
 struct FlexLine;
 
@@ -124,13 +126,15 @@ class CORE_EXPORT FlexGapAccumulator {
   STACK_ALLOCATED();
 
  public:
-  explicit FlexGapAccumulator(LayoutUnit gap_between_items,
-                              LayoutUnit effective_gap_between_lines,
-                              wtf_size_t num_lines,
-                              wtf_size_t num_flex_items,
-                              bool is_column,
-                              LayoutUnit border_scrollbar_padding_block_start,
-                              LayoutUnit border_scrollbar_padding_inline_start);
+  explicit FlexGapAccumulator(
+      LayoutUnit gap_between_items,
+      LayoutUnit effective_gap_between_lines,
+      wtf_size_t num_lines,
+      wtf_size_t num_flex_items,
+      bool is_column,
+      LayoutUnit border_scrollbar_padding_block_start,
+      LayoutUnit border_scrollbar_padding_inline_start,
+      std::optional<GapGeometry::FlexGapPlacementReversal> placement_reversal);
 
   const GapGeometry* BuildGapGeometry(
       const BoxFragmentBuilder& container_builder);

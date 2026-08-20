@@ -1285,18 +1285,31 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
       GetConstraintSpace(), Node(), BorderPadding(), total_intrinsic_block_size,
       container_builder_.InlineSize());
 
+  // Gap-decoration values must be assigned in placement order, which can
+  // differ from the geometric order `ApplyReversals` produces (e.g.
+  // `flex-direction: row-reverse` or `flex-wrap: wrap-reverse`). Run it before
+  // constructing the accumulator so it always sees `flex_lines` in final
+  // geometric order.
+  if (!IsBreakInside(GetBreakToken())) {
+    ApplyReversals(&flex_lines);
+  }
+
   std::optional<FlexGapAccumulator> gap_accumulator = std::nullopt;
   if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
       Style().HasGapRule() && !flex_lines.empty()) {
+    std::optional<GapGeometry::FlexGapPlacementReversal> gap_placement_reversal;
+    if (is_wrap_reverse_ || is_reverse_direction_) {
+      gap_placement_reversal.emplace(is_wrap_reverse_, is_reverse_direction_);
+    }
     gap_accumulator = FlexGapAccumulator(
         gap_between_items_, gap_between_lines_, flex_lines.size(),
         flex_items_.size(), is_column_,
         container_builder_.BorderScrollbarPadding().block_start,
-        container_builder_.BorderScrollbarPadding().inline_start);
+        container_builder_.BorderScrollbarPadding().inline_start,
+        gap_placement_reversal);
   }
 
   if (!IsBreakInside(GetBreakToken())) {
-    ApplyReversals(&flex_lines);
     LayoutResult::EStatus status = GiveItemsFinalPositionAndSize(
         &flex_lines, &row_break_between_outputs, gap_accumulator,
         current_gap_data.effective_gap_between_lines,
