@@ -334,6 +334,11 @@ BASE_FEATURE(kEvictionUnlocksResources, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSingleVideoFrameRateThrottling,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, FrameIntervalDecider will attempt to match mixed fixed-rate
+// content intervals (e.g. video coexisting with stepped compositor animations)
+// using a common integer multiple (LCM).
+BASE_FEATURE(kMixedFixedIntervalMatcher, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the FrameEvictionManager scales its limit of max number of saved
 // frames dynamically based on memory pressure.
 BASE_FEATURE(kScalableFrameEviction, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -438,6 +443,10 @@ bool IsVizWithIoMessagePumpEnabled() {
 
 bool IsUsingVizFrameSubmissionForWebView() {
   return base::FeatureList::IsEnabled(kVizFrameSubmissionForWebView);
+}
+
+bool IsMixedFixedIntervalMatcherEnabled() {
+  return base::FeatureList::IsEnabled(kMixedFixedIntervalMatcher);
 }
 
 bool ShouldWebRtcLogCapturePipeline() {

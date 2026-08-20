@@ -140,6 +140,7 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDisplaySDRMaxLuminanceNits);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kHideDelegatedFrameHostMac);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEvictionUnlocksResources);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kSingleVideoFrameRateThrottling);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kMixedFixedIntervalMatcher);
 
 // If enabled, the FrameEvictionManager scales its limit of max number of saved
 // frames dynamically based on available memory.
@@ -189,6 +190,7 @@ VIZ_COMMON_EXPORT bool ShouldRemoveRedirectionBitmap();
 #endif
 VIZ_COMMON_EXPORT bool IsUsingVizFrameSubmissionForWebView();
 VIZ_COMMON_EXPORT bool IsUsingPreferredIntervalForVideo();
+VIZ_COMMON_EXPORT bool IsMixedFixedIntervalMatcherEnabled();
 VIZ_COMMON_EXPORT bool ShouldWebRtcLogCapturePipeline();
 VIZ_COMMON_EXPORT int MaxOverlaysConsidered();
 VIZ_COMMON_EXPORT bool ShouldOnBeginFrameThrottleVideo();
