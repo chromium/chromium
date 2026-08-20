@@ -511,7 +511,6 @@ InspectorPageAgent::InspectorPageAgent(
       enabled_(&agent_state_, /*default_value=*/false),
       enable_file_chooser_opened_event_(&agent_state_,
                                         /*default_value=*/false),
-      screencast_enabled_(&agent_state_, /*default_value=*/false),
       lifecycle_events_enabled_(&agent_state_, /*default_value=*/false),
       bypass_csp_enabled_(&agent_state_, /*default_value=*/false),
       standard_font_size_(&agent_state_, /*default_value=*/0),
@@ -572,7 +571,6 @@ protocol::Response InspectorPageAgent::disable() {
   requested_compilation_cache_.clear();
   compilation_cache_.clear();
   frame_ad_script_ancestry_.clear();
-  stopScreencast();
 
   return protocol::Response::Success();
 }
@@ -1143,10 +1141,6 @@ void InspectorPageAgent::FrameSubtreeWillBeDetached(Frame* frame) {
   GetFrontend()->flush();
 }
 
-bool InspectorPageAgent::ScreencastEnabled() {
-  return enabled_.Get() && screencast_enabled_.Get();
-}
-
 void InspectorPageAgent::FrameStoppedLoading(LocalFrame* frame) {
   // The actual event is reported by the browser, but let's make sure
   // earlier events from the commit make their way to client first.
@@ -1585,21 +1579,6 @@ InspectorPageAgent::BuildObjectForResourceTree(LocalFrame* frame) {
   }
   result->setChildFrames(std::move(children_array));
   return result;
-}
-
-protocol::Response InspectorPageAgent::startScreencast(
-    std::optional<String> format,
-    std::optional<int> quality,
-    std::optional<int> max_width,
-    std::optional<int> max_height,
-    std::optional<int> every_nth_frame) {
-  screencast_enabled_.Set(true);
-  return protocol::Response::Success();
-}
-
-protocol::Response InspectorPageAgent::stopScreencast() {
-  screencast_enabled_.Set(false);
-  return protocol::Response::Success();
 }
 
 protocol::Response InspectorPageAgent::getLayoutMetrics(

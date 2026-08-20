@@ -95,7 +95,6 @@ namespace {
 
 constexpr const char* kMhtml = "mhtml";
 constexpr int kDefaultScreenshotQuality = 80;
-constexpr int kMaxScreencastFramesInFlight = 2;
 constexpr char kCommandIsOnlyAvailableAtTopTarget[] =
     "Command can only be executed on top-level targets";
 constexpr char kErrorNotAttached[] = "Not attached to a page";
@@ -511,12 +510,6 @@ PageHandler::PageHandler(
       navigation_initiator_origin_(navigation_initiator_origin),
       may_read_local_files_(may_read_local_files),
       enabled_(false),
-      screencast_max_width_(-1),
-      screencast_max_height_(-1),
-      capture_every_nth_frame_(1),
-      session_id_(0),
-      frame_counter_(0),
-      frames_in_flight_(0),
       io_context_(io_context),
       host_(nullptr),
       emulation_handler_(emulation_handler),
@@ -1577,7 +1570,9 @@ Response PageHandler::StartScreencast(std::optional<std::string> format,
                                       std::optional<int> quality,
                                       std::optional<int> max_width,
                                       std::optional<int> max_height,
-                                      std::optional<int> every_nth_frame) {
+                                      std::optional<int> every_nth_frame,
+                                      std::optional<int> max_frames_in_flight,
+                                      std::optional<bool> send_last_frame) {
   if (screencast_encoder_ || media_recorder_) {
     return Response::ServerError("Screencast is already active");
   }
@@ -1589,6 +1584,13 @@ Response PageHandler::StartScreencast(std::optional<std::string> format,
   RenderWidgetHostImpl* widget_host = host_->GetRenderWidgetHost();
   if (!widget_host) {
     return Response::InternalError();
+  }
+  if (max_frames_in_flight.has_value() && max_frames_in_flight.value() <= 0) {
+    return Response::InvalidParams(
+        "maxFramesInFlight must be a positive integer");
+  }
+  if (every_nth_frame.has_value() && every_nth_frame.value() <= 0) {
+    return Response::InvalidParams("everyNthFrame must be a positive integer");
   }
 
   auto encoder =
@@ -1607,6 +1609,10 @@ Response PageHandler::StartScreencast(std::optional<std::string> format,
   frame_counter_ = 0;
   frames_in_flight_ = 0;
   capture_every_nth_frame_ = every_nth_frame.value_or(1);
+  max_frames_in_flight_ = max_frames_in_flight.value_or(3);
+  send_last_frame_ = send_last_frame.value_or(false);
+  last_frame_metadata_.reset();
+  last_frame_ = SkBitmap();
   bool visible = !widget_host->IsHidden();
   NotifyScreencastVisibility(visible);
 
@@ -1626,7 +1632,7 @@ Response PageHandler::StartScreencast(std::optional<std::string> format,
 
   video_consumer_->StartCapture();
 
-  return Response::FallThrough();
+  return Response::Success();
 }
 
 Response PageHandler::StartScreenRecording(std::optional<bool> audio,
@@ -1696,15 +1702,18 @@ void PageHandler::OnMediaRecorderFlushed() {
 
 Response PageHandler::StopScreencast() {
   screencast_encoder_.Reset();
+  last_frame_metadata_.reset();
+  last_frame_ = SkBitmap();
   if (video_consumer_) {
     video_consumer_->StopCapture();
   }
-  return Response::FallThrough();
+  return Response::Success();
 }
 
 Response PageHandler::ScreencastFrameAck(int session_id) {
   if (session_id == session_id_) {
     --frames_in_flight_;
+    MaybeSendLastScreencastFrame();
   }
   return Response::Success();
 }
@@ -1806,9 +1815,8 @@ void PageHandler::NotifyScreencastVisibility(bool visible) {
   frontend_->ScreencastVisibilityChanged(visible);
 }
 
-bool PageHandler::ShouldCaptureNextScreencastFrame() {
-  return frames_in_flight_ <= kMaxScreencastFramesInFlight &&
-         !(++frame_counter_ % capture_every_nth_frame_);
+bool PageHandler::EnoughScreencastFramesInFlight() {
+  return frames_in_flight_ >= max_frames_in_flight_;
 }
 
 void PageHandler::OnFrameFromVideoConsumer(
@@ -1817,7 +1825,14 @@ void PageHandler::OnFrameFromVideoConsumer(
     return;
   }
 
-  if (!ShouldCaptureNextScreencastFrame()) {
+  if (++frame_counter_ % capture_every_nth_frame_) {
+    return;
+  }
+
+  // Do not capture a new frame when not in sendLastFrame mode,
+  // and we cannot send this frame right away. This is a choice
+  // for performance over latency.
+  if (EnoughScreencastFramesInFlight() && !send_last_frame_) {
     return;
   }
 
@@ -1855,19 +1870,34 @@ void PageHandler::OnFrameFromVideoConsumer(
   if (!page_metadata) {
     return;
   }
-
-  frames_in_flight_++;
-  ScreencastFrameCaptured(std::move(page_metadata),
-                          DevToolsVideoConsumer::GetSkBitmapFromFrame(frame));
-}
-
-void PageHandler::ScreencastFrameCaptured(
-    std::unique_ptr<Page::ScreencastFrameMetadata> page_metadata,
-    const SkBitmap& bitmap) {
+  SkBitmap bitmap = DevToolsVideoConsumer::GetSkBitmapFromFrame(frame);
   if (bitmap.drawsNothing()) {
-    --frames_in_flight_;
     return;
   }
+
+  last_frame_ = std::move(bitmap);
+  last_frame_metadata_ = std::move(page_metadata);
+  MaybeSendLastScreencastFrame();
+}
+
+void PageHandler::MaybeSendLastScreencastFrame() {
+  if (EnoughScreencastFramesInFlight()) {
+    // Note: when not in sendLastFrame mode, the frame should not be
+    // even captured if we cannot send it right away.
+    CHECK(send_last_frame_);
+    return;
+  }
+  if (!last_frame_metadata_ || last_frame_.drawsNothing()) {
+    return;
+  }
+
+  SendScreencastFrame(std::move(last_frame_metadata_), std::move(last_frame_));
+}
+
+void PageHandler::SendScreencastFrame(
+    std::unique_ptr<Page::ScreencastFrameMetadata> page_metadata,
+    const SkBitmap& bitmap) {
+  frames_in_flight_++;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(

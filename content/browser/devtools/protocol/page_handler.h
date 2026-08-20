@@ -165,7 +165,9 @@ class PageHandler : public DevToolsDomainHandler,
                            std::optional<int> quality,
                            std::optional<int> max_width,
                            std::optional<int> max_height,
-                           std::optional<int> every_nth_frame) override;
+                           std::optional<int> every_nth_frame,
+                           std::optional<int> max_frames_in_flight,
+                           std::optional<bool> send_last_frame) override;
   Response StartScreenRecording(std::optional<bool> audio,
                                 std::optional<int> max_width,
                                 std::optional<int> max_height,
@@ -236,10 +238,11 @@ class PageHandler : public DevToolsDomainHandler,
       std::optional<bool> optimize_for_speed,
       std::unique_ptr<CaptureScreenshotCallback> callback,
       const gfx::Size& full_page_size);
-  bool ShouldCaptureNextScreencastFrame();
+  bool EnoughScreencastFramesInFlight();
   void NotifyScreencastVisibility(bool visible);
   void OnFrameFromVideoConsumer(scoped_refptr<media::VideoFrame> frame);
-  void ScreencastFrameCaptured(
+  void MaybeSendLastScreencastFrame();
+  void SendScreencastFrame(
       std::unique_ptr<Page::ScreencastFrameMetadata> metadata,
       const SkBitmap& bitmap);
   void ScreencastFrameEncoded(
@@ -272,12 +275,16 @@ class PageHandler : public DevToolsDomainHandler,
   bool bypass_csp_ = false;
 
   BitmapEncoder screencast_encoder_;
-  int screencast_max_width_;
-  int screencast_max_height_;
-  int capture_every_nth_frame_;
-  int session_id_;
-  int frame_counter_;
-  int frames_in_flight_;
+  int screencast_max_width_ = -1;
+  int screencast_max_height_ = -1;
+  int capture_every_nth_frame_ = 1;
+  int max_frames_in_flight_ = 1;
+  bool send_last_frame_ = false;
+  int session_id_ = 0;
+  int frame_counter_ = 0;
+  int frames_in_flight_ = 0;
+  std::unique_ptr<Page::ScreencastFrameMetadata> last_frame_metadata_;
+  SkBitmap last_frame_;
 
   // |video_consumer_| consumes video frames from FrameSinkVideoCapturerImpl,
   // and provides PageHandler with these frames via OnFrameFromVideoConsumer.

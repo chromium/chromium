@@ -1398,6 +1398,61 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
                     true);
 }
 
+IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, ScreencastSendsLastRepaint) {
+  shell()->LoadURL(
+      GURL("data:text/html,<body style='background:%23ff0000'></body>"));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  Attach();
+  SendCommandSync("Page.enable");
+
+  base::DictValue params;
+  params.Set("format", "png");
+  // Only allow a single frame in flight, so that the repaint below cannot be
+  // sent before the first frame is acknowledged.
+  params.Set("maxFramesInFlight", 1);
+  params.Set("sendLastFrame", true);
+  SendCommandSync("Page.startScreencast", std::move(params));
+  ASSERT_FALSE(error());
+
+  base::DictValue frame = WaitForNotification("Page.screencastFrame", true);
+  std::optional<int> session_id = frame.FindInt("sessionId");
+  const std::string* data = frame.FindString("data");
+  ASSERT_TRUE(session_id && data) << "Did not receive a screencast frame";
+  // Screencast frames go through video encoding, so the colors are not exact.
+  constexpr int kMaxColorDiff = 20;
+  SkBitmap bitmap = DecodePNG(*data);
+  EXPECT_TRUE(ColorsMatchWithinLimit(
+      SK_ColorRED, bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2),
+      kMaxColorDiff));
+
+  // Repaint the page while the first frame is still in flight.
+  RenderFrameSubmissionObserver observer(shell()->web_contents());
+  ASSERT_TRUE(ExecJs(shell(), "document.body.style.background = '#00ff00'"));
+  observer.WaitForAnyFrameSubmission();
+  // Waiting for the renderer-side frame submission is not enough - make sure
+  // the browser compositor has drawn it, so that the capturer has picked it
+  // up and delivered it to the page handler.
+  ForceNewCompositorFrameFromBrowser(shell()->web_contents());
+  WaitForBrowserCompositorFramePresented(shell()->web_contents());
+
+  base::DictValue ack;
+  ack.Set("sessionId", *session_id);
+  SendCommandSync("Page.screencastFrameAck", std::move(ack));
+
+  // The repaint was captured while the first frame was in flight, and has to
+  // be delivered now that there is room for it again.
+  base::DictValue next = WaitForNotification("Page.screencastFrame", true);
+  const std::string* next_data = next.FindString("data");
+  ASSERT_TRUE(next_data) << "Did not receive the withheld screencast frame";
+  SkBitmap next_bitmap = DecodePNG(*next_data);
+  EXPECT_TRUE(ColorsMatchWithinLimit(
+      SK_ColorGREEN,
+      next_bitmap.getColor(next_bitmap.width() / 2, next_bitmap.height() / 2),
+      kMaxColorDiff));
+
+  SendCommandSync("Page.stopScreencast");
+}
+
 #if BUILDFLAG(ENABLE_LIBAOM)
 IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, StartStopScreenRecording) {
   shell()->LoadURL(
