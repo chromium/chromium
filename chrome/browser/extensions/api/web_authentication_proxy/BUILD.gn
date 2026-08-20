@@ -4,7 +4,7 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions)
+assert(enable_extensions_core)
 
 # This API is limited to Win/Mac/Linux.
 assert(is_win || is_mac || is_linux)
