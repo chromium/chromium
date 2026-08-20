@@ -76,10 +76,6 @@ bool IsForInitialWebUI(const GURL& url) {
   return false;
 }
 
-bool IsInitialWebUIMetricsLoggingEnabled() {
-  return base::FeatureList::IsEnabled(features::kInitialWebUIMetrics);
-}
-
 void PrewarmHelper::ConfigureWebUIContents(content::WebContents* web_contents,
                                            Profile* profile) {
   // `PageLoadMetrics` needs to be initialized before loading the URL.

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/waap/waap_ui_metrics_recorder.h"
 
+#include "base/check.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_service.h"
@@ -46,7 +47,8 @@ WaapUIMetricsRecorder::WaapUIMetricsRecorder(Profile* profile)
 WaapUIMetricsRecorder::~WaapUIMetricsRecorder() = default;
 
 void WaapUIMetricsRecorder::OnButtonPressedStart(const ui::Event& event) {
-  if (!waap_service_ || !IsReloadButtonInputType(event.type())) {
+  CHECK(waap_service_);
+  if (!IsReloadButtonInputType(event.type())) {
     return;
   }
 
@@ -61,7 +63,8 @@ void WaapUIMetricsRecorder::OnButtonPressedStart(const ui::Event& event) {
 }
 
 void WaapUIMetricsRecorder::DidExecuteReloadCommand(base::TimeTicks time) {
-  if (!waap_service_ || !last_input_info_.has_value()) {
+  CHECK(waap_service_);
+  if (!last_input_info_.has_value()) {
     return;
   }
 

@@ -581,6 +581,15 @@ class ApiGuardDelegateShimlessRMAAppTest : public ApiGuardDelegateTest {
   void OnUserProfileCreated(const std::string& email,
                             Profile* profile) override {}
 
+  // Standalone dialogs in Shimless RMA do not require a desktop `Browser`.
+  std::unique_ptr<Browser> CreateBrowser(
+      Profile* profile,
+      Browser::Type browser_type,
+      bool hosted_app,
+      BrowserWindow* browser_window) override {
+    return nullptr;
+  }
+
  private:
   std::unique_ptr<ScopedChromeOSSystemExtensionInfo>
       chromeos_system_extension_info_;

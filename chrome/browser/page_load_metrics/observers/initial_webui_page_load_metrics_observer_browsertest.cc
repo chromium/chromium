@@ -163,9 +163,7 @@ class InitialWebUIPageLoadMetricsObserverBrowserTest
  public:
   InitialWebUIPageLoadMetricsObserverBrowserTest() {
     feature_list_.InitWithFeatures(
-        {features::kInitialWebUI, features::kWebUIReloadButton,
-         features::kInitialWebUIMetrics},
-        {});
+        {features::kInitialWebUI, features::kWebUIReloadButton}, {});
   }
 
   InitialWebUIPageLoadMetricsObserverBrowserTest(

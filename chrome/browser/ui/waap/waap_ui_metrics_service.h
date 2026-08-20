@@ -30,8 +30,11 @@ class WaapUIMetricsService : public KeyedService {
   ~WaapUIMetricsService() override;
 
   // Returns the instance of the service for the profile.
-  // May return nullptr.
+  // May return nullptr if profile is null.
   static WaapUIMetricsService* Get(Profile* profile);
+
+  // Resets static markers tracking whether startup metrics have been emitted.
+  static void ResetForTesting();
 
   // Called when the browser window is created.
   void OnBrowserWindowCreated();

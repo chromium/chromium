@@ -182,8 +182,7 @@ void PageLoadMetricsEmbedder::RegisterObservers(
 
 #if !BUILDFLAG(IS_ANDROID)
   if (HasWebUIConfig(navigation_handle->GetURL()) &&
-      waap::IsForInitialWebUI(navigation_handle->GetURL()) &&
-      waap::IsInitialWebUIMetricsLoggingEnabled()) {
+      waap::IsForInitialWebUI(navigation_handle->GetURL())) {
     tracker->AddObserver(
         std::make_unique<InitialWebUIPageLoadMetricsObserver>());
   }

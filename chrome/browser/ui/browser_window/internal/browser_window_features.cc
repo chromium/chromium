@@ -433,8 +433,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   // `InitialWebUIWindowMetricsManager` depends on Browser (for Profile) and
   // must be initialized before BrowserView creation because it is used by
   // various views which are created during BrowserView::Init.
-  if (waap::IsInitialWebUIMetricsLoggingEnabled() &&
-      browser->GetType() == BrowserWindowInterface::TYPE_NORMAL) {
+  if (browser->GetType() == BrowserWindowInterface::TYPE_NORMAL) {
     initial_webui_window_metrics_manager_ =
         std::make_unique<InitialWebUIWindowMetricsManager>(browser);
   }

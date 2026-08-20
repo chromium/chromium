@@ -57,9 +57,7 @@ class InitialWebUIPageLoadMetricsObserverTest
  public:
   InitialWebUIPageLoadMetricsObserverTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kInitialWebUI, features::kInitialWebUIMetrics,
-         features::kWebUIReloadButton},
-        {});
+        {features::kInitialWebUI, features::kWebUIReloadButton}, {});
   }
 
   void SetUp() override {

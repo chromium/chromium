@@ -29,21 +29,7 @@ enum class NewWindowCreationSource {
 
 // Returns true if the given URL is the initial WebUI scheme.
 // This is only relevant on non-Android platforms.
-// TODO(crbug.com/448794588): Some callers of this function assume that
-// `WaapUIMetricsService` is available when this returns true. This
-// assumption is no longer valid as the service is now gated by
-// features::kInitialWebUIMetrics. Introduce a new helper function,
-// e.g., ShouldLogMetricsForInitialWebUI(), that checks
-// features::kInitialWebUIMetrics and update those callers.
 bool IsForInitialWebUI(const GURL& url);
-
-// Returns true if the WaapUIMetricsService and related metrics logging are
-// enabled.
-// This is intentionally separate from IsForInitialWebUI() because when enabled,
-// the UI metrics should be logged for the UI views that are relevant to WaaP
-// experiment, which includes both the existing C++ version (not a InitialWebUI)
-// and the WebUI version.
-bool IsInitialWebUIMetricsLoggingEnabled();
 
 class PrewarmHelper {
  public:

@@ -8,7 +8,6 @@
 
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/command_updater_impl.h"
@@ -290,7 +289,6 @@ class ReloadButtonMetricsTest : public ChromeViewsTestBase,
                                 public ReloadButtonTestBase {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kInitialWebUIMetrics);
     ChromeViewsTestBase::SetUp();
     profile_ = std::make_unique<TestingProfile>();
     WaapUIMetricsServiceFactory::GetForProfile(profile_.get());
@@ -346,7 +344,6 @@ class ReloadButtonMetricsTest : public ChromeViewsTestBase,
 
  private:
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
-  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CommandUpdaterImpl> command_updater_;

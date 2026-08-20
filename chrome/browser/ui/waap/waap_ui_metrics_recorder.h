@@ -61,9 +61,9 @@ class WaapUIMetricsRecorder {
     ReloadButtonInputType type;
   };
 
-  // This may be null if profile is null, e.g. in tests, or if the feature is
-  // disabled. Its lifetime is managed by the `WaapUIMetricsServiceFactory` and
-  // is guaranteed to outlive this object as long as none null.
+  // This may be null if profile is null, e.g. in tests. Its lifetime is managed
+  // by the `WaapUIMetricsServiceFactory` and is guaranteed to outlive this
+  // object as long as none null.
   // Not owned.
   const raw_ptr<WaapUIMetricsService> waap_service_;
 

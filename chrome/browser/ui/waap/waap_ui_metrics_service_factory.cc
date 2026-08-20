@@ -4,11 +4,9 @@
 
 #include "chrome/browser/ui/waap/waap_ui_metrics_service_factory.h"
 
-#include "base/feature_list.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_service.h"
-#include "chrome/common/chrome_features.h"
 
 // static
 WaapUIMetricsService* WaapUIMetricsServiceFactory::GetForProfile(
@@ -24,9 +22,7 @@ WaapUIMetricsService* WaapUIMetricsServiceFactory::GetForProfile(
 WaapUIMetricsServiceFactory* WaapUIMetricsServiceFactory::GetInstance() {
   static base::NoDestructor<WaapUIMetricsServiceFactory> instance;
 
-  return base::FeatureList::IsEnabled(features::kInitialWebUIMetrics)
-             ? instance.get()
-             : nullptr;
+  return instance.get();
 }
 
 WaapUIMetricsServiceFactory::WaapUIMetricsServiceFactory()

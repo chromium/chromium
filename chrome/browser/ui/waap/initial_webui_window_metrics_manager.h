@@ -88,7 +88,7 @@ class InitialWebUIWindowMetricsManager {
   // Helper to emit the delta metric once both timestamps are available.
   void RecordPaintDeltaIfAvailable();
 
-  // The service used to record metrics. May be null if the feature is disabled.
+  // The service used to record metrics. May be null if the profile is null.
   const raw_ptr<WaapUIMetricsService> waap_service_;
 
   const raw_ptr<BrowserWindowInterface> browser_;

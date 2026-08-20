@@ -254,9 +254,7 @@ void BrowserControlsService::MaybeRecordInteractionToReloadMetric(
   auto* profile =
       Profile::FromBrowserContext(toolbar_rfh_->GetBrowserContext());
   auto* metrics_service = WaapUIMetricsService::Get(profile);
-  if (!metrics_service) {
-    return;
-  }
+  CHECK(metrics_service);
   std::optional<WaapUIMetricsRecorder::ReloadButtonInputType> target_input_type;
   switch (input_type) {
     case mojom::ReloadInputType::kUnspecified:

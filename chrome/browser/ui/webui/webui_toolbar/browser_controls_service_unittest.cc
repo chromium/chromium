@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/webui_toolbar/testing/toy_browser.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_test_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
 #include "content/public/test/web_contents_tester.h"
@@ -73,7 +72,6 @@ class BrowserControlsServiceTest : public ChromeRenderViewHostTestHarness {
     // TimeTicks and avoid underflow issues when subtracting offsets in
     // validation tests.
     task_environment()->FastForwardBy(base::Seconds(100));
-    feature_list_.InitAndEnableFeature(features::kInitialWebUIMetrics);
 
     service_ = std::make_unique<BrowserControlsService>(
         mojo::PendingReceiver<mojom::BrowserControlsService>(),
@@ -98,7 +96,6 @@ class BrowserControlsServiceTest : public ChromeRenderViewHostTestHarness {
   MockBrowserControlsServiceDelegate& delegate() { return delegate_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   testing::ToyBrowser toy_browser_;
   std::unique_ptr<BrowserControlsService> service_;
   base::HistogramTester histogram_tester_;

@@ -200,7 +200,6 @@ WaapUIMetricsService* InitialWebUIPageLoadMetricsObserver::service() const {
   CHECK(GetDelegate().GetWebContents()->GetBrowserContext());
   auto* profile = Profile::FromBrowserContext(
       GetDelegate().GetWebContents()->GetBrowserContext());
-  // The service is null only if the profile is null or the feature is disabled.
   auto* service = WaapUIMetricsService::Get(profile);
   CHECK(service);
   return service;

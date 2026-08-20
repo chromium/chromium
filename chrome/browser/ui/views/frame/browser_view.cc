@@ -5117,7 +5117,7 @@ void BrowserView::RemovedFromWidget() {
 }
 
 void BrowserView::PaintChildren(const views::PaintInfo& paint_info) {
-  if (waap::IsInitialWebUIMetricsLoggingEnabled() && GetWidget()) {
+  if (GetWidget()) {
     GetWidget()->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
         base::BindOnce(&BrowserView::OnFirstPresentation,
                        weak_ptr_factory_.GetWeakPtr()));

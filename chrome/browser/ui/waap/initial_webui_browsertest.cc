@@ -164,7 +164,6 @@ class InitialWebUIBrowserTestBase : public InProcessBrowserTest {
     std::vector<base::test::FeatureRefAndParams> base_features = {
         {features::kInitialWebUI, {{"use_separate_process", "true"}}},
         {features::kWebUIReloadButton, {}},
-        {features::kInitialWebUIMetrics, {}},
         {features::kSkipIPCChannelPausingForNonGuests, {}},
         {features::kWebUIInProcessResourceLoadingV2, {}}};
 
@@ -377,7 +376,6 @@ class InitialWebUINavigationTimelineBrowserTest : public InProcessBrowserTest {
     std::vector<base::test::FeatureRefAndParams> features = {
         {features::kInitialWebUI, {{"use_separate_process", "true"}}},
         {features::kWebUIReloadButton, {{"prewarm_webui", "false"}}},
-        {features::kInitialWebUIMetrics, {}},
         {features::kSkipIPCChannelPausingForNonGuests, {}},
         {features::kWebUIInProcessResourceLoadingV2, {}}};
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -481,7 +479,6 @@ class PrewarmedWebUINavigationTimelineBrowserTest
     std::vector<base::test::FeatureRefAndParams> features = {
         {features::kInitialWebUI, {{"use_separate_process", "true"}}},
         {features::kWebUIReloadButton, {{"prewarm_webui", "true"}}},
-        {features::kInitialWebUIMetrics, {}},
         {features::kSkipIPCChannelPausingForNonGuests, {}},
         {features::kWebUIInProcessResourceLoadingV2, {}}};
     scoped_feature_list_.InitWithFeaturesAndParameters(

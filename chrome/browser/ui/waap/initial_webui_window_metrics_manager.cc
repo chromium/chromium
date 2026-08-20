@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 
+#include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
@@ -14,6 +15,10 @@
 
 namespace {
 
+// Tracks process-wide startup metrics. Startup metrics must be recorded at
+// most once per browser process lifecycle across all windows.
+// Declared in the anonymous namespace so `ResetForTesting()` can reset state
+// between tests.
 bool g_is_startup_first_paint_recorded = false;
 bool g_is_startup_reload_first_paint_recorded = false;
 bool g_is_startup_reload_first_contentful_paint_recorded = false;
@@ -34,9 +39,7 @@ InitialWebUIWindowMetricsManager::InitialWebUIWindowMetricsManager(
               ->GetSize() > 0) {}
 
 InitialWebUIWindowMetricsManager::~InitialWebUIWindowMetricsManager() {
-  if (!waap_service_) {
-    return;
-  }
+  CHECK(waap_service_);
   if (!g_is_startup_first_paint_recorded &&
       !skip_startup_metrics_for_testing_ &&
       window_show_first_requested_time_.has_value()) {
@@ -83,9 +86,7 @@ void InitialWebUIWindowMetricsManager::OnBrowserWindowFirstPresentation(
   }
   // Ensures only one startup window is recorded per browser process.
   bool& is_startup_first_paint_recorded = g_is_startup_first_paint_recorded;
-  if (!waap_service_) {
-    return;
-  }
+  CHECK(waap_service_);
 
   if (window_show_first_requested_time_.has_value()) {
     // Record ShowRequestedToFirstPaint metric.
@@ -120,15 +121,13 @@ void InitialWebUIWindowMetricsManager::OnBrowserWindowFirstPresentation(
 }
 
 void InitialWebUIWindowMetricsManager::OnBrowserWindowCreated() {
-  if (waap_service_) {
-    waap_service_->OnBrowserWindowCreated();
-  }
+  CHECK(waap_service_);
+  waap_service_->OnBrowserWindowCreated();
 }
 
 void InitialWebUIWindowMetricsManager::OnReloadButtonCreated() {
-  if (waap_service_) {
-    waap_service_->OnReloadButtonCreated();
-  }
+  CHECK(waap_service_);
+  waap_service_->OnReloadButtonCreated();
 }
 
 void InitialWebUIWindowMetricsManager::OnReloadButtonFirstPaint(
@@ -139,9 +138,7 @@ void InitialWebUIWindowMetricsManager::OnReloadButtonFirstPaint(
   // Ensures only one startup reload button is recorded per browser process.
   bool& is_startup_first_paint_recorded =
       g_is_startup_reload_first_paint_recorded;
-  if (!waap_service_) {
-    return;
-  }
+  CHECK(waap_service_);
 
   if (!reload_button_first_paint_time_.has_value()) {
     reload_button_first_paint_time_ = timestamp;
@@ -169,9 +166,7 @@ void InitialWebUIWindowMetricsManager::OnReloadButtonFirstContentfulPaint(
   // Ensures only one startup reload button is recorded per browser process.
   bool& is_startup_first_contentful_paint_recorded =
       g_is_startup_reload_first_contentful_paint_recorded;
-  if (!waap_service_) {
-    return;
-  }
+  CHECK(waap_service_);
 
   if (!is_startup_first_contentful_paint_recorded &&
       !skip_startup_metrics_for_testing_) {
@@ -196,9 +191,7 @@ void InitialWebUIWindowMetricsManager::
   }
   // Ensures only one startup process launch is recorded per browser process.
   bool& is_startup_process_recorded = g_is_startup_process_recorded;
-  if (!waap_service_) {
-    return;
-  }
+  CHECK(waap_service_);
 
   if (!is_startup_process_recorded && !skip_startup_metrics_for_testing_) {
     is_startup_process_recorded = true;
@@ -212,7 +205,8 @@ void InitialWebUIWindowMetricsManager::SkipStartupForTesting() {
 }
 
 void InitialWebUIWindowMetricsManager::RecordPaintDeltaIfAvailable() {
-  if (!waap_service_ || !browser_window_first_paint_time_.has_value() ||
+  CHECK(waap_service_);
+  if (!browser_window_first_paint_time_.has_value() ||
       !reload_button_first_paint_time_.has_value()) {
     return;
   }
@@ -257,4 +251,5 @@ void InitialWebUIWindowMetricsManager::ResetForTesting() {
   g_is_startup_reload_first_contentful_paint_recorded = false;
   g_is_startup_process_recorded = false;
   g_process_startup_delta_recorded = false;
+  WaapUIMetricsService::ResetForTesting();
 }
