@@ -94,6 +94,7 @@ android_library("javatests") {
     "//chrome/browser/password_manager/android:settings_interface_java",
     "//chrome/browser/password_manager/android:test_support_java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/settings:java",
     "//chrome/browser/settings:test_support_java",
     "//chrome/browser/sync/android:java",
     "//chrome/test/android:chrome_java_integration_test_support",

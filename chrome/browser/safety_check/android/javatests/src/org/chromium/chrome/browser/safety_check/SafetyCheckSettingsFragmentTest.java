@@ -39,7 +39,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -71,8 +71,8 @@ public class SafetyCheckSettingsFragmentTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public SettingsActivityTestRule<SafetyCheckSettingsFragment> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(SafetyCheckSettingsFragment.class);
+    public SettingsTestRule<SafetyCheckSettingsFragment> mSettingsActivityTestRule =
+            new SettingsTestRule<>(SafetyCheckSettingsFragment.class);
 
     @Mock private SyncService mSyncService;
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNativeMock;
