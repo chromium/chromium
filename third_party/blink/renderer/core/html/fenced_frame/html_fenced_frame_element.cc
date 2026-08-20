@@ -314,8 +314,7 @@ void HTMLFencedFrameElement::Navigate(
     const KURL& url,
     std::optional<bool> deprecated_should_freeze_initial_size,
     std::optional<gfx::Size> container_size,
-    std::optional<gfx::Size> content_size,
-    String embedder_shared_storage_context) {
+    std::optional<gfx::Size> content_size) {
   TRACE_EVENT0("navigation", "HTMLFencedFrameElement::Navigate");
   if (!isConnected())
     return;
@@ -395,7 +394,7 @@ void HTMLFencedFrameElement::Navigate(
 
   UpdateContainerPolicy();
 
-  frame_delegate_->Navigate(url, embedder_shared_storage_context);
+  frame_delegate_->Navigate(url);
 
   RecordFencedFrameCreationOutcome(
       mode_ == blink::FencedFrame::DeprecatedFencedFrameMode::kDefault
@@ -459,8 +458,8 @@ void HTMLFencedFrameElement::NavigateToConfig() {
             ->GetValueIgnoringVisibility<FencedFrameConfig::Attribute::kURL>();
   }
   Navigate(url, config_->deprecated_should_freeze_initial_size(PassKey()),
-           config_->container_size(PassKey()), config_->content_size(PassKey()),
-           config_->GetSharedStorageContext());
+           config_->container_size(PassKey()),
+           config_->content_size(PassKey()));
 }
 
 void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
@@ -836,13 +835,10 @@ HTMLFencedFrameElement::FencedFrameDelegate::FencedFrameDelegate(
   DCHECK_EQ(remote_frame, GetElement().ContentFrame());
 }
 
-void HTMLFencedFrameElement::FencedFrameDelegate::Navigate(
-    const KURL& url,
-    const String& embedder_shared_storage_context) {
+void HTMLFencedFrameElement::FencedFrameDelegate::Navigate(const KURL& url) {
   DCHECK(remote_.get());
   const auto navigation_start_time = base::TimeTicks::Now();
-  remote_->Navigate(url, navigation_start_time,
-                    embedder_shared_storage_context);
+  remote_->Navigate(url, navigation_start_time);
 }
 
 void HTMLFencedFrameElement::FencedFrameDelegate::Dispose() {

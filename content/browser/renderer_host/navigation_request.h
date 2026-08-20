@@ -269,9 +269,7 @@ class CONTENT_EXPORT NavigationRequest
       bool is_form_submission,
       std::unique_ptr<NavigationUIData> navigation_ui_data,
       EmbedderIsolationInfo::Mode embedder_isolation_mode,
-      bool is_embedder_initiated_fenced_frame_navigation = false,
-      std::optional<std::u16string> embedder_shared_storage_context =
-          std::nullopt);
+      bool is_embedder_initiated_fenced_frame_navigation = false);
 
   // Creates a request for either a browser-initiated navigation or a
   // renderer-initiated navigation. Normally, renderer-initiated navigations
@@ -306,9 +304,7 @@ class CONTENT_EXPORT NavigationRequest
       EmbedderIsolationInfo::Mode embedder_isolation_mode,
       bool is_embedder_initiated_fenced_frame_navigation = false,
       bool is_container_initiated = false,
-      bool has_rel_opener = false,
-      std::optional<std::u16string> embedder_shared_storage_context =
-          std::nullopt);
+      bool has_rel_opener = false);
 
   // Creates a request for a renderer-initiated navigation.
   static std::unique_ptr<NavigationRequest> CreateRendererInitiated(
@@ -1972,9 +1968,7 @@ class CONTENT_EXPORT NavigationRequest
           renderer_ignore_duplicate_navigation_listener = mojo::NullReceiver(),
       mojo::PendingReceiver<
           blink::mojom::NavigationResumeDeferredCommitListener>
-          deferred_commit_resume_listener = mojo::NullReceiver(),
-      std::optional<std::u16string> embedder_shared_storage_context =
-          std::nullopt);
+          deferred_commit_resume_listener = mojo::NullReceiver());
 
   // Checks if this navigation may activate a prerendered page. If it's
   // possible, schedules to start running CommitDeferringConditions for
@@ -3463,14 +3457,6 @@ class CONTENT_EXPORT NavigationRequest
   // If the navigation doesn't commit (e.g. an HTTP 204 response), the fenced
   // frame properties will not be stored in the fenced frame root.
   std::optional<FencedFrameProperties> fenced_frame_properties_;
-
-  // For fenced frames, any contextual string that was written by the embedder
-  // via `blink::FencedFrameConfig::setSharedStorageContext()` to be later
-  // retrieved only inside an eligible shared storage worklet in the fenced
-  // frame via `sharedStorage.context`. absl:nullopt if this request is not for
-  // a fenced frame or if the context string wasn't set prior to this
-  // navigation.
-  std::optional<std::u16string> embedder_shared_storage_context_;
 
   // Prerender2:
   // The information about the reserved prerender host. This is used to pass

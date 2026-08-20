@@ -2236,7 +2236,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFencedFrameConfig) {
   ScopedFencedFramesForTest fenced_frames(true);
   V8TestingScope scope;
   FencedFrameConfig* config = FencedFrameConfig::Create(
-      KURL("https://example.com"), "some shared storage context",
+      KURL("https://example.com"),
       KURL("urn:uuid:37665e6f-f3fd-4393-8429-719d02843a54"), gfx::Size(64, 48),
       gfx::Size(32, 16), FencedFrameConfig::AttributeVisibility::kOpaque, true);
   v8::Local<v8::Value> wrapper =
@@ -2248,8 +2248,6 @@ TEST(V8ScriptValueSerializerTest, RoundTripFencedFrameConfig) {
   ASSERT_NE(new_config, nullptr);
   EXPECT_NE(config, new_config);
   EXPECT_EQ(config->url_, new_config->url_);
-  EXPECT_EQ(config->shared_storage_context_,
-            new_config->shared_storage_context_);
   EXPECT_EQ(config->urn_uuid_, new_config->urn_uuid_);
   EXPECT_EQ(config->container_size_, new_config->container_size_);
   EXPECT_EQ(config->content_size_, new_config->content_size_);
@@ -2275,8 +2273,6 @@ TEST(V8ScriptValueSerializerTest, RoundTripFencedFrameConfigNullValues) {
       V8FencedFrameConfig::ToWrappable(scope.GetIsolate(), result);
   ASSERT_NE(new_config, nullptr);
   EXPECT_NE(config, new_config);
-  EXPECT_EQ(config->shared_storage_context_,
-            new_config->shared_storage_context_);
   EXPECT_EQ(config->urn_uuid_, new_config->urn_uuid_);
   EXPECT_FALSE(new_config->urn_uuid_.has_value());
   EXPECT_EQ(config->container_size_, new_config->container_size_);

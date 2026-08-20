@@ -1198,8 +1198,7 @@ void Navigator::NavigateFromFrameProxy(
     bool is_unfenced_top_navigation,
     bool force_new_browsing_instance,
     bool is_container_initiated,
-    bool has_rel_opener,
-    std::optional<std::u16string> embedder_shared_storage_context) {
+    bool has_rel_opener) {
   // |method != "POST"| should imply absence of |post_body|.
   if (method != "POST" && post_body) {
     NOTREACHED();
@@ -1260,8 +1259,7 @@ void Navigator::NavigateFromFrameProxy(
       std::move(blob_url_loader_factory), is_form_submission, has_user_gesture,
       started_by_ad, actual_navigation_start_time, navigation_start_time,
       is_embedder_initiated_fenced_frame_navigation, is_unfenced_top_navigation,
-      force_new_browsing_instance, is_container_initiated, has_rel_opener,
-      embedder_shared_storage_context);
+      force_new_browsing_instance, is_container_initiated, has_rel_opener);
 }
 
 void Navigator::BeforeUnloadCompleted(FrameTreeNode* frame_tree_node,

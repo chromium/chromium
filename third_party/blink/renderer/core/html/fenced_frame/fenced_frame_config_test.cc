@@ -6,11 +6,8 @@
 
 #include <gtest/gtest.h>
 
-#include <string>
-
 #include "base/test/scoped_feature_list.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -40,18 +37,7 @@ TEST_F(FencedFrameConfigTest, FencedFrameConfigConstructionWithURL) {
       config->GetValueIgnoringVisibility<FencedFrameConfig::Attribute::kURL>(),
       url);
 
-  EXPECT_EQ(config->GetSharedStorageContext(), String());
-
   config->setSharedStorageContext("some context");
-  EXPECT_EQ(config->GetSharedStorageContext(), "some context");
-
-  // Setting a shared storage context that is over the length length results in
-  // truncation.
-  String long_context(
-      std::string(kFencedFrameConfigSharedStorageContextMaxLength, 'x'));
-  String longer_context = long_context + 'X';
-  config->setSharedStorageContext(longer_context);
-  EXPECT_EQ(config->GetSharedStorageContext(), long_context);
 }
 
 TEST_F(FencedFrameConfigTest, FencedFrameConfigCreateWithURL) {
@@ -66,10 +52,7 @@ TEST_F(FencedFrameConfigTest, FencedFrameConfigCreateWithURL) {
       config->GetValueIgnoringVisibility<FencedFrameConfig::Attribute::kURL>(),
       url);
 
-  EXPECT_EQ(config->GetSharedStorageContext(), String());
-
   config->setSharedStorageContext("some context");
-  EXPECT_EQ(config->GetSharedStorageContext(), "some context");
 }
 
 }  // namespace blink

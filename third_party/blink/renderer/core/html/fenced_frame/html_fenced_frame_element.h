@@ -46,7 +46,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
     explicit FencedFrameDelegate(HTMLFencedFrameElement* outer_element);
     ~FencedFrameDelegate() = default;
 
-    void Navigate(const KURL&, const String&);
+    void Navigate(const KURL&);
     // This method is used to clean up all state in preparation for destruction,
     // even though the destruction may happen arbitrarily later during garbage
     // collection.
@@ -126,8 +126,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
       const KURL& url,
       std::optional<bool> deprecated_should_freeze_initial_size = std::nullopt,
       std::optional<gfx::Size> container_size = std::nullopt,
-      std::optional<gfx::Size> content_size = std::nullopt,
-      String embedder_shared_storage_context = String());
+      std::optional<gfx::Size> content_size = std::nullopt);
 
   // This method delegates to `Navigate()` above only if `this` has a non-null
   // `config_`. If that's the case, this method pulls the appropriate URL off of

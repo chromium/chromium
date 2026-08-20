@@ -436,19 +436,7 @@ class CONTENT_EXPORT FencedFrameProperties {
     return shared_storage_budget_metadata_;
   }
 
-  const std::optional<std::u16string>& embedder_shared_storage_context() const {
-    return embedder_shared_storage_context_;
-  }
 
-  // Used to store the shared storage context passed from the embedder
-  // (navigation initiator)'s renderer into the new FencedFrameProperties.
-  // TODO(crbug.com/40257432): Refactor this to be part of the
-  // FencedFrameProperties constructor rather than
-  // OnFencedFrameURLMappingComplete.
-  void SetEmbedderSharedStorageContext(
-      const std::optional<std::u16string>& embedder_shared_storage_context) {
-    embedder_shared_storage_context_ = embedder_shared_storage_context;
-  }
 
   // Stores whether the original document loaded with this config opted in to
   // cross-origin event-level reporting. That is, if the document was served
@@ -546,12 +534,6 @@ class CONTENT_EXPORT FencedFrameProperties {
   // the outermost frame tree.
   std::optional<FencedFrameProperty<raw_ptr<const SharedStorageBudgetMetadata>>>
       shared_storage_budget_metadata_;
-
-  // Any context that is written by the embedder using
-  // `blink::FencedFrameConfig::setSharedStorageContext`. Only readable in
-  // shared storage worklets via `sharedStorage.context()`. Not copied during
-  // redaction.
-  std::optional<std::u16string> embedder_shared_storage_context_;
 
   scoped_refptr<FencedFrameReporter> fenced_frame_reporter_;
 

@@ -890,14 +890,6 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
     std::optional<KURL> urn_uuid = config->urn_uuid(PassKey());
     WriteUTF8String(urn_uuid ? urn_uuid->GetString() : g_empty_string);
 
-    // The serialization process does not distinguish between null and empty
-    // strings. Storing whether the current string is null or not allows us to
-    // get this functionality back, which is needed for Shared Storage.
-    WriteUint32(!config->GetSharedStorageContext().IsNull());
-    if (!config->GetSharedStorageContext().IsNull()) {
-      WriteUTF8String(config->GetSharedStorageContext());
-    }
-
     std::optional<gfx::Size> container_size = config->container_size(PassKey());
     WriteUint32(container_size.has_value());
     if (container_size.has_value()) {

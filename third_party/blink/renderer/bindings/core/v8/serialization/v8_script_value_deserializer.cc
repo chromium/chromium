@@ -846,10 +846,9 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
           has_requested ? std::make_optional(requested) : std::nullopt);
     }
     case kFencedFrameConfigTag: {
-      String url_string, shared_storage_context, urn_uuid_string;
-      uint32_t has_shared_storage_context, has_container_size, container_width,
-          container_height, has_content_size, content_width, content_height,
-          freeze_initial_size;
+      String url_string, urn_uuid_string;
+      uint32_t has_container_size, container_width, container_height,
+          has_content_size, content_width, content_height, freeze_initial_size;
       KURL url;
       std::optional<KURL> urn_uuid;
       FencedFrameConfig::AttributeVisibility url_visibility;
@@ -860,17 +859,6 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
               &url_visibility) ||
           !ReadUint32(&freeze_initial_size) ||
           !ReadUTF8String(&urn_uuid_string)) {
-        return nullptr;
-      }
-
-      // `ReadUTF8String` does not distinguish between null and empty strings.
-      // Adding the `has_shared_storage_context` bit allows us to get this
-      // functionality back, which is needed for Shared Storage.
-      if (!ReadUint32(&has_shared_storage_context)) {
-        return nullptr;
-      }
-      if (has_shared_storage_context &&
-          !ReadUTF8String(&shared_storage_context)) {
         return nullptr;
       }
 
@@ -905,9 +893,9 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
         return nullptr;
       }
 
-      return FencedFrameConfig::Create(url, shared_storage_context, urn_uuid,
-                                       container_size, content_size,
-                                       url_visibility, freeze_initial_size);
+      return FencedFrameConfig::Create(url, urn_uuid, container_size,
+                                       content_size, url_visibility,
+                                       freeze_initial_size);
     }
     default:
       break;

@@ -15,15 +15,14 @@ FencedFrameConfig* FencedFrameConfig::Create(const String& url) {
 // static
 FencedFrameConfig* FencedFrameConfig::Create(
     const KURL url,
-    const String& shared_storage_context,
     std::optional<KURL> urn_uuid,
     std::optional<gfx::Size> container_size,
     std::optional<gfx::Size> content_size,
     AttributeVisibility url_visibility,
     bool freeze_initial_size) {
-  return MakeGarbageCollected<FencedFrameConfig>(
-      url, shared_storage_context, urn_uuid, container_size, content_size,
-      url_visibility, freeze_initial_size);
+  return MakeGarbageCollected<FencedFrameConfig>(url, urn_uuid, container_size,
+                                                 content_size, url_visibility,
+                                                 freeze_initial_size);
 }
 
 // static
@@ -36,14 +35,12 @@ FencedFrameConfig::FencedFrameConfig(const String& url)
     : url_(url), url_attribute_visibility_(AttributeVisibility::kTransparent) {}
 
 FencedFrameConfig::FencedFrameConfig(const KURL url,
-                                     const String& shared_storage_context,
                                      std::optional<KURL> urn_uuid,
                                      std::optional<gfx::Size> container_size,
                                      std::optional<gfx::Size> content_size,
                                      AttributeVisibility url_visibility,
                                      bool freeze_initial_size)
     : url_(url),
-      shared_storage_context_(shared_storage_context),
       url_attribute_visibility_(url_visibility),
       urn_uuid_(urn_uuid),
       container_size_(container_size),
@@ -101,15 +98,6 @@ V8UnionOpaquePropertyOrUSVString* FencedFrameConfig::url() const {
   return Get<Attribute::kURL>();
 }
 
-void FencedFrameConfig::setSharedStorageContext(const String& context) {
-  shared_storage_context_ =
-      (context.length() <= kFencedFrameConfigSharedStorageContextMaxLength)
-          ? context
-          : context.substr(0, kFencedFrameConfigSharedStorageContextMaxLength);
-}
-
-String FencedFrameConfig::GetSharedStorageContext() const {
-  return shared_storage_context_;
-}
+void FencedFrameConfig::setSharedStorageContext(const String& context_string) {}
 
 }  // namespace blink

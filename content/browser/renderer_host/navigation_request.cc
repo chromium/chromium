@@ -1164,8 +1164,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     bool is_form_submission,
     std::unique_ptr<NavigationUIData> navigation_ui_data,
     EmbedderIsolationInfo::Mode embedder_isolation_mode,
-    bool is_embedder_initiated_fenced_frame_navigation,
-    std::optional<std::u16string> embedder_shared_storage_context) {
+    bool is_embedder_initiated_fenced_frame_navigation) {
   auto request = Create(
       frame_tree_node, std::move(common_params), std::move(commit_params),
       /*browser_initiated=*/true, was_opener_suppressed,
@@ -1178,8 +1177,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
       /*started_with_transient_activation=*/false,
       /*started_by_ad=*/false, embedder_isolation_mode,
       is_embedder_initiated_fenced_frame_navigation,
-      /*is_container_initiated=*/false, /*has_rel_opener=*/false,
-      embedder_shared_storage_context);
+      /*is_container_initiated=*/false, /*has_rel_opener=*/false);
   // It is only possible for a null NavigationRequest to be returned if an
   // initiator_frame_token is provided.
   CHECK(request);
@@ -1207,8 +1205,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
     EmbedderIsolationInfo::Mode embedder_isolation_mode,
     bool is_embedder_initiated_fenced_frame_navigation,
     bool is_container_initiated,
-    bool has_rel_opener,
-    std::optional<std::u16string> embedder_shared_storage_context) {
+    bool has_rel_opener) {
   TRACE_EVENT("navigation", "NavigationRequest::Create", "browser_initiated",
               browser_initiated);
 
@@ -1279,8 +1276,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
       embedder_isolation_mode, is_embedder_initiated_fenced_frame_navigation,
       mojo::NullReceiver() /* renderer_cancellation_listener */,
       mojo::NullReceiver() /* renderer_ignore_duplicate_navigation_listener */,
-      mojo::NullReceiver() /* deferred_commit_resume_listener */,
-      embedder_shared_storage_context));
+      mojo::NullReceiver() /* deferred_commit_resume_listener */));
 
   return navigation_request;
 }
@@ -1669,8 +1665,7 @@ NavigationRequest::NavigationRequest(
         mojom::NavigationRendererIgnoreDuplicateNavigationListener>
         renderer_ignore_duplicate_navigation_listener,
     mojo::PendingReceiver<blink::mojom::NavigationResumeDeferredCommitListener>
-        deferred_commit_resume_listener,
-    std::optional<std::u16string> embedder_shared_storage_context)
+        deferred_commit_resume_listener)
     : frame_tree_node_(frame_tree_node),
       is_synchronous_renderer_commit_(is_synchronous_renderer_commit),
       common_params_(std::move(common_params)),
@@ -1733,7 +1728,6 @@ NavigationRequest::NavigationRequest(
           is_embedder_initiated_fenced_frame_navigation
               ? std::make_optional(FencedFrameProperties(common_params_->url))
               : std::nullopt),
-      embedder_shared_storage_context_(embedder_shared_storage_context),
       request_method_(common_params_->method),
       original_url_(common_params_->url),
       prerender_host_id_(
@@ -2833,12 +2827,6 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
   // embedder context for shared storage in the`NavigationRequest`. Upon commit,
   // it will be stored in the fenced frame root `FrameTreeNode`.
   fenced_frame_properties_ = properties;
-
-  // Set the shared storage context in the fenced frame properties.
-  CHECK(fenced_frame_properties_);
-  fenced_frame_properties_->SetEmbedderSharedStorageContext(
-      embedder_shared_storage_context_);
-  embedder_shared_storage_context_ = std::nullopt;
 
   // For urns loaded into iframes, we disable certain aspects of fenced frames:
   // * a storage/network partition nonce

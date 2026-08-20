@@ -55,9 +55,7 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
 
   // blink::mojom::FencedFrameOwnerHost implementation.
   void Navigate(const GURL& url,
-                base::TimeTicks navigation_start_time,
-                const std::optional<std::u16string>&
-                    embedder_shared_storage_context) override;
+                base::TimeTicks navigation_start_time) override;
   void DidChangeFramePolicy(const blink::FramePolicy& frame_policy) override;
 
   // FrameTree::Delegate.
