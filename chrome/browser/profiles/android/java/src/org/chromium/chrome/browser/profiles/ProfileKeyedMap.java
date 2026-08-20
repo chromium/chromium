@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.profiles;
 
 import android.util.ArrayMap;
 
+import androidx.annotation.CheckResult;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
@@ -152,6 +153,18 @@ public class ProfileKeyedMap<T> {
             ProfileManager.addObserver(mProfileManagerObserver);
         }
         return obj;
+    }
+
+    /**
+     * Removes and returns the mapped value for the profile without invoking the destroy action.
+     *
+     * @param profile The Profile the object is associated with.
+     * @return The removed object associated with the passed in Profile, or null if none existed.
+     */
+    @CheckResult
+    public @Nullable T removeForProfile(Profile profile) {
+        profile = getProfileToUse(profile, mProfileSelection);
+        return mData.remove(profile);
     }
 
     /** Destroys this object and all objects currently mapped to Profiles. */

@@ -286,6 +286,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kApb144Patch9,
     &kAppSpecificHistory,
     &kAppSpecificHistoryViewIntent,
+    &kArchivedTabsTeardown,
     &kAsyncNotificationManager,
     &kAsyncNotificationManagerForDownload,
     &kAutomotiveBackButtonBarStreamline,
@@ -691,6 +692,7 @@ BASE_FEATURE(kApb144Patch8, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kApb144Patch9, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAppSpecificHistory, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAppSpecificHistoryViewIntent, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kArchivedTabsTeardown, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAsyncNotificationManager, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAsyncNotificationManagerForDownload, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutomotiveBackButtonBarStreamline, base::FEATURE_ENABLED_BY_DEFAULT);

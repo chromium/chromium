@@ -329,6 +329,7 @@ public abstract class ChromeFeatureList {
     public static final String APPLY_DEVICE_CHOICE_RENEWAL = "ApplyDeviceChoiceRenewal";
     public static final String APP_SPECIFIC_HISTORY = "AppSpecificHistory";
     public static final String APP_SPECIFIC_HISTORY_VIEW_INTENT = "AppSpecificHistoryViewIntent";
+    public static final String ARCHIVED_TABS_TEARDOWN = "ArchivedTabsTeardown";
     public static final String ASYNC_NOTIFICATION_MANAGER = "AsyncNotificationManager";
     public static final String ASYNC_NOTIFICATION_MANAGER_FOR_DOWNLOAD =
             "AsyncNotificationManagerForDownload";
@@ -976,6 +977,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAppSpecificHistory = newCachedFlag(APP_SPECIFIC_HISTORY, true);
     public static final CachedFlag sAppSpecificHistoryViewIntent =
             newCachedFlag(APP_SPECIFIC_HISTORY_VIEW_INTENT, true);
+    public static final CachedFlag sArchivedTabsTeardown =
+            newCachedFlag(ARCHIVED_TABS_TEARDOWN, /* defaultValue= */ false);
     public static final CachedFlag sAsyncNotificationManager =
             newCachedFlag(ASYNC_NOTIFICATION_MANAGER, false, true);
     public static final CachedFlag sAsyncNotificationManagerForDownload =
@@ -1476,6 +1479,7 @@ public abstract class ChromeFeatureList {
                     sAndroidXrImmersivePlayer,
                     sAppSpecificHistory,
                     sAppSpecificHistoryViewIntent,
+                    sArchivedTabsTeardown,
                     sAsyncNotificationManager,
                     sAutoDocPipPermissionPromptAndroid,
                     sAutomotiveBackButtonBarStreamline,

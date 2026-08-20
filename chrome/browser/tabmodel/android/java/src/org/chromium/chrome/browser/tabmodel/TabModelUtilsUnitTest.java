@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -210,6 +211,11 @@ public class TabModelUtilsUnitTest {
         verify(mTabModelSelectorCallback).onResult(any());
     }
 
+    @After
+    public void tearDown() {
+        ArchivedTabModelSelectorHolder.setInstanceFn(/* archivedTabModelSelectorFn= */ null);
+    }
+
     @Test
     public void testGetTabModelByTab() {
         assertEquals(TabList.INVALID_TAB_INDEX, mTabModel.index());
@@ -223,5 +229,21 @@ public class TabModelUtilsUnitTest {
         assertEquals(TabList.INVALID_TAB_INDEX, mTabModel.index());
         TabModel tabModel = TabModelUtils.getTabModelByTab(mArchivedTab);
         assertEquals(mArchivedTabModelSelector.getCurrentModel(), tabModel);
+    }
+
+    @Test
+    public void testGetTabModelByTab_ArchivedNullFn() {
+        ArchivedTabModelSelectorHolder.setInstanceFn(/* archivedTabModelSelectorFn= */ null);
+        assertEquals(TabList.INVALID_TAB_INDEX, mTabModel.index());
+        TabModel tabModel = TabModelUtils.getTabModelByTab(mArchivedTab);
+        assertEquals(mTabModelSelector.getCurrentModel(), tabModel);
+    }
+
+    @Test
+    public void testGetTabModelByTab_ArchivedFnReturnsNull() {
+        ArchivedTabModelSelectorHolder.setInstanceFn((profile) -> null);
+        assertEquals(TabList.INVALID_TAB_INDEX, mTabModel.index());
+        TabModel tabModel = TabModelUtils.getTabModelByTab(mArchivedTab);
+        assertEquals(mTabModelSelector.getCurrentModel(), tabModel);
     }
 }

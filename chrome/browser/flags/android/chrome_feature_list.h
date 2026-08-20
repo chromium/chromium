@@ -89,6 +89,7 @@ BASE_DECLARE_FEATURE(kApb144Patch8);
 BASE_DECLARE_FEATURE(kApb144Patch9);
 BASE_DECLARE_FEATURE(kAppSpecificHistory);
 BASE_DECLARE_FEATURE(kAppSpecificHistoryViewIntent);
+BASE_DECLARE_FEATURE(kArchivedTabsTeardown);
 BASE_DECLARE_FEATURE(kAsyncNotificationManager);
 BASE_DECLARE_FEATURE(kAsyncNotificationManagerForDownload);
 BASE_DECLARE_FEATURE(kAutomotiveBackButtonBarStreamline);
