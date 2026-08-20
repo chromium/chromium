@@ -369,7 +369,8 @@ bool IndigoPageActionController::MaybeInvokeGlic() {
   }
 
   glic::GlicInvokeOptions options(
-      glic::Target(tab()), glic::mojom::InvocationSource::kIndigoPageAction);
+      glic::Target(tab(), glic::NewConversation()),
+      glic::mojom::InvocationSource::kIndigoPageAction);
 
   std::string skill_id = features::kIndigoGlicSkillId.Get();
   const skills::Skill* skill = nullptr;
