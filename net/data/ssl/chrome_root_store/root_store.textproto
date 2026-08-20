@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 38
+version_major: 39
 
 # When allocating new crs_root_id values, always start from the value in
 # NEXT_UNUSED_CRS_ROOT_ID.txt (which may not exist in the Chromium repository),
@@ -35,6 +35,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1820966399
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -47,6 +51,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1820966399
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -75,6 +83,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1790812799
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -87,6 +99,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1790812799
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -97,6 +113,10 @@ trust_anchors {
   crs_root_id: 11
   constraints: {
     sct_not_after_sec: 1761955199
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -109,6 +129,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1761955199
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -135,6 +159,10 @@ trust_anchors {
   crs_root_id: 16
   constraints: {
     sct_not_after_sec: 1780012799
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -149,6 +177,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1780012799
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -159,6 +191,10 @@ trust_anchors {
   crs_root_id: 18
   constraints: {
     sct_not_after_sec: 1780012799
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -171,6 +207,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1780012799
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -181,6 +221,10 @@ trust_anchors {
   crs_root_id: 20
   constraints: {
     sct_not_after_sec: 1781481599
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -194,6 +238,10 @@ trust_anchors {
   trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x0a"  # 52580.200109.1.10
   constraints: {
     sct_not_after_sec: 1820966399
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -207,6 +255,10 @@ trust_anchors {
   trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x09"  # 52580.200109.1.9
   constraints: {
     sct_not_after_sec: 1820966399
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -245,6 +297,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1790812799
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -256,6 +312,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1790812799
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -268,6 +328,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1790812799
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -308,6 +372,10 @@ trust_anchors {
   crs_root_id: 38
   constraints: {
     sct_not_after_sec: 1820966399
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -364,6 +432,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1776211199
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -380,6 +452,10 @@ trust_anchors {
   crs_root_id: 48
   constraints: {
     sct_not_after_sec: 1790812799
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -390,6 +466,10 @@ trust_anchors {
   crs_root_id: 49
   constraints: {
     sct_not_after_sec: 1790812799
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -414,6 +494,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1790812799
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -424,6 +508,10 @@ trust_anchors {
   crs_root_id: 54
   constraints: {
     sct_not_after_sec: 1790812799
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -435,6 +523,10 @@ trust_anchors {
   trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x08"  # 52580.200109.1.8
   constraints: {
     sct_not_after_sec: 1820966399
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -448,6 +540,10 @@ trust_anchors {
   trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x07"  # 52580.200109.1.7
   constraints: {
     sct_not_after_sec: 1820966399
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -470,6 +566,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1790812799
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -482,6 +582,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1790812799
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -494,6 +598,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1790812799
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -506,6 +614,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1790812799
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -532,6 +644,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1781481599
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -544,6 +660,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1781481599
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -554,6 +674,10 @@ trust_anchors {
   crs_root_id: 67
   constraints: {
     sct_not_after_sec: 1781481599
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -564,6 +688,10 @@ trust_anchors {
   crs_root_id: 68
   constraints: {
     sct_not_after_sec: 1781481599
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -576,6 +704,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1789430399
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -602,6 +734,10 @@ trust_anchors {
   crs_root_id: 72
   constraints: {
     sct_not_after_sec: 1820966399
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -612,6 +748,10 @@ trust_anchors {
   crs_root_id: 73
   constraints: {
     sct_not_after_sec: 1819670399
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -721,6 +861,10 @@ trust_anchors {
   crs_root_id: 87
   constraints: {
     sct_not_after_sec: 1799971199
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -745,6 +889,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1799971199
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -757,6 +905,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1799971199
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -836,6 +988,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1813017599
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -846,6 +1002,10 @@ trust_anchors {
   crs_root_id: 102
   constraints: {
     sct_not_after_sec: 1820966399
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -858,6 +1018,10 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1819670399
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -868,6 +1032,10 @@ trust_anchors {
   crs_root_id: 104
   constraints: {
     sct_not_after_sec: 1819670399
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -878,6 +1046,10 @@ trust_anchors {
   crs_root_id: 105
   constraints: {
     sct_not_after_sec: 1819670399
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -921,6 +1093,10 @@ trust_anchors {
   trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x0b"  # 52580.200109.1.11
   constraints: {
     sct_not_after_sec: 1789430399
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -934,6 +1110,10 @@ trust_anchors {
   trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x0c"  # 52580.200109.1.12
   constraints: {
     sct_not_after_sec: 1789430399
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
@@ -947,6 +1127,10 @@ trust_anchors {
   trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x0d"  # 52580.200109.1.13
   constraints: {
     sct_not_after_sec: 1789430399
+    min_version: "153.0.8010.0"
+  }
+  constraints: {
+    max_version_exclusive: "153.0.8010.0"
   }
 }
 
