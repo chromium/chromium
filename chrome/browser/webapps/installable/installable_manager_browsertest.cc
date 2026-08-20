@@ -49,7 +49,7 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
 
@@ -386,10 +386,10 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, ManagerInIncognito) {
   // Ensure that the InstallableManager returns an error if called in an
   // incognito profile.
-  Browser* incognito_browser =
+  BrowserWindowInterface* incognito_browser =
       OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   content::WebContents* web_contents =
-      incognito_browser->tab_strip_model()->GetActiveWebContents();
+      incognito_browser->GetTabStripModel()->GetActiveWebContents();
   auto manager = std::make_unique<InstallableManager>(web_contents);
 
   base::RunLoop run_loop;
@@ -1483,7 +1483,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerAllowlistOriginBrowserTest,
   // The allowlisted origin should be regarded as secure.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kInsecureOrigin)));
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(InstallableEvaluator::IsContentSecure(web_contents()));
 
   // While a non-allowlisted origin should not.

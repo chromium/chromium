@@ -5,7 +5,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorPermissionBrowserTest,
       url, url, ContentSettingsType::SENSORS, CONTENT_SETTING_BLOCK);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   EXPECT_EQ("null_event_fired",
             content::EvalJs(web_contents, kDeviceOrientationScript));
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorPermissionBrowserTest,
       url, url, ContentSettingsType::SENSORS, CONTENT_SETTING_ASK);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // In the "ASK" state, adding a listener does not trigger a permission prompt.
   // Instead, it immediately falls back to the "missing hardware" behavior and
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorPermissionBrowserTest,
       url, url, ContentSettingsType::SENSORS, CONTENT_SETTING_BLOCK);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   EXPECT_EQ("null_event_fired",
             content::EvalJs(web_contents, kDeviceMotionScript));
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorPermissionBrowserTest,
       url, url, ContentSettingsType::SENSORS, CONTENT_SETTING_ASK);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // In the "ASK" state, adding a listener does not trigger a permission prompt.
   // Instead, it immediately falls back to the "missing hardware" behavior and
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(
       url, url, ContentSettingsType::SENSORS, CONTENT_SETTING_BLOCK);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   EXPECT_EQ("null_event_fired",
             content::EvalJs(web_contents, kDeviceOrientationAbsoluteScript));
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorPermissionBrowserTest,
       url, url, ContentSettingsType::SENSORS, CONTENT_SETTING_ASK);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // In the "ASK" state, adding a listener does not trigger a permission prompt.
   // Instead, it immediately falls back to the "missing hardware" behavior and
@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorPermissionBrowserTest,
       url, url, ContentSettingsType::SENSORS, CONTENT_SETTING_ASK);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   permissions::PermissionRequestManager::FromWebContents(web_contents)
       ->set_auto_response_for_test(
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorPermissionBrowserTest,
       url, url, ContentSettingsType::SENSORS, CONTENT_SETTING_ASK);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   permissions::PermissionRequestManager::FromWebContents(web_contents)
       ->set_auto_response_for_test(
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(
       url, url, ContentSettingsType::SENSORS, CONTENT_SETTING_ASK);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   permissions::PermissionRequestManager::FromWebContents(web_contents)
       ->set_auto_response_for_test(

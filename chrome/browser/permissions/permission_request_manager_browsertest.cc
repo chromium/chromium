@@ -22,7 +22,7 @@
 #include "chrome/browser/download/download_permission_request.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -104,12 +104,12 @@ class PermissionRequestManagerBrowserTestBase : public InProcessBrowserTest {
 
   permissions::PermissionRequestManager* GetPermissionRequestManager() {
     return permissions::PermissionRequestManager::FromWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
   }
 
   content::RenderFrameHost* GetActiveMainFrame() {
     return browser()
-        ->tab_strip_model()
+        ->GetTabStripModel()
         ->GetActiveWebContents()
         ->GetPrimaryMainFrame();
   }
@@ -220,7 +220,7 @@ class PermissionRequestManagerBrowserTest
 
     // Simulate a notification permission request that is denied by the user.
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     ASSERT_EQ("denied",
               content::EvalJs(web_contents, "requestNotification();",
                               content::EXECUTE_SCRIPT_NO_USER_GESTURE));
@@ -311,7 +311,7 @@ class PermissionRequestManagerWithPrerenderingTest
 
  private:
   content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   content::test::PrerenderTestHelper prerender_test_helper_;
@@ -368,8 +368,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   std::unique_ptr<content::WebContents> new_contents =
       content::WebContents::Create(params);
   content::WebContents* raw_new_contents = new_contents.get();
-  browser()->tab_strip_model()->DiscardWebContents(
-      browser()->tab_strip_model()->GetWebContentsAt(0),
+  browser()->GetTabStripModel()->DiscardWebContents(
+      browser()->GetTabStripModel()->GetWebContentsAt(0),
       std::move(new_contents));
 
   permissions::PermissionRequestManager* manager =
@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
 
   EXPECT_TRUE(content::WaitForLoadStop(raw_new_contents));
 
-  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->active_index());
 
   permissions::MockPermissionPromptFactory mock_factory(manager);
 
@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
 
   // After the discarded tab is revived by activating it, the pending request's
   // prompt must appear.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return mock_factory.TotalRequestCount() == 1; }));
 }
@@ -546,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest, MultipleTabs) {
       std::make_unique<permissions::MockPermissionPromptFactory>(
           GetPermissionRequestManager()));
 
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_EQ(2, tab_strip_model->count());
   ASSERT_EQ(1, tab_strip_model->active_index());
 
@@ -629,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
           GetPermissionRequestManager()));
 
   // Create a split with the two tabs.
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   tab_strip_model->AddToNewSplit(
       {0}, split_tabs::SplitTabVisualData(),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
@@ -703,7 +703,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
 
   // Request Notifications, prompt should be shown.
   ASSERT_TRUE(content::ExecJs(
-      browser()->tab_strip_model()->GetWebContentsAt(0)->GetPrimaryMainFrame(),
+      browser()->GetTabStripModel()->GetWebContentsAt(0)->GetPrimaryMainFrame(),
       "Notification.requestPermission()",
       content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   bubble_factory()->WaitForPermissionBubble();
@@ -720,16 +720,16 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
 
   // Navigate background tab, prompt should be removed.
   content::TestNavigationObserver observer(
-      browser()->tab_strip_model()->GetWebContentsAt(0));
+      browser()->GetTabStripModel()->GetWebContentsAt(0));
 
   ASSERT_TRUE(content::ExecJs(
-      browser()->tab_strip_model()->GetWebContentsAt(0)->GetPrimaryMainFrame(),
+      browser()->GetTabStripModel()->GetWebContentsAt(0)->GetPrimaryMainFrame(),
       "window.location = 'simple.html'"));
 
   observer.Wait();
   EXPECT_FALSE(bubble_factory()->is_visible());
 
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   EXPECT_FALSE(bubble_factory()->is_visible());
   EXPECT_EQ(1, bubble_factory()->show_count());
 }
@@ -744,7 +744,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
       embedded_test_server()->GetURL("/permissions/killswitch_tester.html")));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::ExecJs(web_contents, "requestGeolocation();",
                               content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   bubble_factory()->WaitForPermissionBubble();
@@ -781,7 +781,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
 
   // Simulate a notification permission request that is denied by the user.
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_EQ("denied", content::EvalJs(web_contents, "requestNotification();",
                                       content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   ASSERT_EQ(1, bubble_factory()->show_count());
@@ -881,7 +881,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
       embedded_test_server()->GetURL("/permissions/killswitch_tester.html")));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::ExecJs(web_contents, "requestNotification();",
                               content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   bubble_factory()->WaitForPermissionBubble();
@@ -935,7 +935,7 @@ class PermissionRequestManagerPostPromptBrowserTest
     bubble_factory()->set_response_type(
         permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
 
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
     auto request_supported =
         std::make_unique<permissions::MockPermissionRequest>(
             kInitialURL, request_type,
@@ -949,8 +949,8 @@ class PermissionRequestManagerPostPromptBrowserTest
   }
 
   void CloseTab() {
-    browser()->tab_strip_model()->CloseWebContentsAt(
-        browser()->tab_strip_model()->active_index(),
+    browser()->GetTabStripModel()->CloseWebContentsAt(
+        browser()->GetTabStripModel()->active_index(),
         TabCloseTypes::CLOSE_USER_GESTURE);
   }
 
@@ -1051,7 +1051,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   selector->last_permission_request_relevance_ =
       std::make_optional(kPermissionRequestRelevance);
 
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   auto request_supported = std::make_unique<permissions::MockPermissionRequest>(
       permissions::RequestType::kNotifications, /*request_state=*/nullptr);
   GetPermissionRequestManager()->AddRequest(web_contents->GetPrimaryMainFrame(),
@@ -1089,7 +1089,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   selector->last_permission_request_relevance_ =
       std::make_optional(kPermissionRequestRelevance);
 
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   auto request_not_supported =
       std::make_unique<permissions::MockPermissionRequest>(
           permissions::RequestType::kClipboard);
@@ -1113,7 +1113,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
       UiDecision::UseQuietUi(QuietUiReason::kTriggeredDueToAbusiveContent,
                              WarningReason::kAbusiveContent));
 
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   auto request_quiet = std::make_unique<permissions::MockPermissionRequest>(
       permissions::RequestType::kNotifications);
   GetPermissionRequestManager()->AddRequest(web_contents->GetPrimaryMainFrame(),
@@ -1145,7 +1145,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
       browser(), embedded_test_server()->GetURL("/empty.html"), 1);
 
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   auto request_quiet = std::make_unique<permissions::MockPermissionRequest>(
       permissions::RequestType::kNotifications);
   GetPermissionRequestManager()->AddRequest(web_contents->GetPrimaryMainFrame(),
@@ -1170,7 +1170,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   EXPECT_EQ(disposition.value(), disposition_from_prompt_bubble);
 
   //  DCHECK failure if Closing executed on HIDDEN PermissionRequestManager.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   manager->Dismiss(/*prompt_options=*/std::monostate());
   base::RunLoop().RunUntilIdle();
 }
@@ -1207,7 +1207,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
 
     SetUiSelectorWithCannedDecision(test.simulated_decision);
 
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
     content::WebContentsConsoleObserver console_observer(web_contents);
 
     auto request_quiet = std::make_unique<permissions::MockPermissionRequest>(
@@ -1429,7 +1429,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerOneTimePermissionBrowserTest,
   second_tab_bubble_factory.reset();
 
   // Close the first two tabs.
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   tab_strip_model->CloseWebContentsAt(0, TabCloseTypes::CLOSE_USER_GESTURE);
   tab_strip_model->CloseWebContentsAt(0, TabCloseTypes::CLOSE_USER_GESTURE);
 
@@ -1592,7 +1592,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithFencedFrameTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Load a fenced frame.
   GURL fenced_frame_url =
@@ -1640,7 +1640,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithFencedFrameTest,
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
   ASSERT_TRUE(https_server.Start());
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
 
   GURL initial_url = https_server.GetURL("/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
@@ -1741,7 +1741,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(request_state.cancelled);
   EXPECT_FALSE(bubble_factory()->is_visible());
 
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   web_contents->GetController().GoBack();
   EXPECT_TRUE(request_state.cancelled);
 }
@@ -1762,7 +1762,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
       base::TimeTicks::Now() - base::Seconds(50));
 
   // Request notification permission.
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   auto request_supported = std::make_unique<permissions::MockPermissionRequest>(
       kInitialURL, permissions::RequestType::kNotifications,
       permissions::PermissionRequestGestureType::GESTURE,
@@ -1796,7 +1796,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
       base::TimeTicks::Now() - base::Seconds(50));
 
   // Request geolocation permission.
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   auto request_supported = std::make_unique<permissions::MockPermissionRequest>(
       kInitialURL, permissions::RequestType::kGeolocation,
       permissions::PermissionRequestGestureType::GESTURE,
@@ -1830,7 +1830,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
       base::TimeTicks::Now() - base::Seconds(200));
 
   // Request notification permission.
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   auto request_supported = std::make_unique<permissions::MockPermissionRequest>(
       kInitialURL, permissions::RequestType::kNotifications,
       permissions::PermissionRequestGestureType::GESTURE,
@@ -1864,7 +1864,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
       base::TimeTicks::Now() - base::Seconds(200));
 
   // Request geolocation permission.
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   auto request_supported = std::make_unique<permissions::MockPermissionRequest>(
       kInitialURL, permissions::RequestType::kGeolocation,
       permissions::PermissionRequestGestureType::GESTURE,
@@ -1898,7 +1898,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
       base::TimeTicks::Now() - base::Minutes(50));
 
   // Request notification permission.
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   auto request_supported = std::make_unique<permissions::MockPermissionRequest>(
       kInitialURL, permissions::RequestType::kNotifications,
       permissions::PermissionRequestGestureType::GESTURE,
@@ -1932,7 +1932,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
       base::TimeTicks::Now() - base::Minutes(50));
 
   // Request geolocation permission.
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   auto request_supported = std::make_unique<permissions::MockPermissionRequest>(
       kInitialURL, permissions::RequestType::kGeolocation,
       permissions::PermissionRequestGestureType::GESTURE,
@@ -2504,7 +2504,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   const char kQueryPermission[] = R"(
       (async () => {
@@ -2626,7 +2626,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   const char kQueryPermission[] = R"(
       (async () => {

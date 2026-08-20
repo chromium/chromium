@@ -12,7 +12,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -163,15 +163,16 @@ content::RenderFrameHost* CreateIframe(
   return LastChild(parent_rfh);
 }
 
-content::WebContents* OpenPopup(Browser* browser, const GURL& url) {
+content::WebContents* OpenPopup(BrowserWindowInterface* browser,
+                                const GURL& url) {
   content::WebContents* contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   content::ExecuteScriptAsync(
       contents, content::JsReplace("window.open($1, '', '[]');", url));
-  Browser* popup = ui_test_utils::WaitForBrowserToOpen();
+  BrowserWindowInterface* popup = ui_test_utils::WaitForBrowserToOpen();
   EXPECT_NE(popup, browser);
   content::WebContents* popup_contents =
-      popup->tab_strip_model()->GetActiveWebContents();
+      popup->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(WaitForRenderFrameReady(popup_contents->GetPrimaryMainFrame()));
   WaitForLoadStop(popup_contents);
   return popup_contents;
@@ -581,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   ASSERT_TRUE(main_rfh);
 
   content::WebContents* embedder_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   content::RenderFrameHost* about_blank_iframe =
       content::FrameMatchingPredicate(
@@ -598,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* opener_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(opener_contents);
 
   content::WebContents* popup_contents =
@@ -618,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* opener_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(opener_contents);
 
   content::WebContents* popup_contents =
@@ -641,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   ASSERT_TRUE(main_rfh);
 
   content::WebContents* embedder_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   content::RenderFrameHost* srcdoc_iframe = content::FrameMatchingPredicate(
       main_rfh->GetPage(),
@@ -661,7 +662,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   ASSERT_TRUE(main_rfh);
 
   content::WebContents* embedder_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   content::RenderFrameHost* blob_iframe_rfh = content::FrameMatchingPredicate(
       main_rfh->GetPage(),
@@ -681,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
                                                                 1);
   ASSERT_TRUE(main_rfh);
   content::WebContents* opener_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(opener_contents);
 
   content::WebContents* blob_popup_contents =
@@ -704,7 +705,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
                                                                 1);
   ASSERT_TRUE(main_rfh);
   content::WebContents* opener_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(opener_contents);
 
   content::WebContents* popup_iframe =
@@ -724,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
                                                                 1);
   ASSERT_TRUE(main_rfh);
   content::WebContents* opener_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(opener_contents);
 
   GURL fs_url = CreateFilesystemURL(main_rfh);
@@ -757,7 +758,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
                                                                 1);
   ASSERT_TRUE(main_rfh);
   content::WebContents* embedder_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(embedder_contents);
   EXPECT_FALSE(embedder_contents->GetLastCommittedURL().SchemeIsFile());
 
@@ -793,7 +794,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
                                                                 1);
   ASSERT_TRUE(main_rfh);
   content::WebContents* embedder_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(embedder_contents);
   EXPECT_FALSE(embedder_contents->GetLastCommittedURL().SchemeIsFile());
 
@@ -842,7 +843,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* embedder_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(embedder_contents);
 
   // Activate the preference to allow universal access from file URLs.
@@ -892,7 +893,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
 IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
                        UniversalAccessFromFileUrlsAboutBlank) {
   content::WebContents* embedder_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(embedder_contents);
 
   // Activate the preference to allow universal access from file URLs.
@@ -934,7 +935,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
 IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
                        PermissionRequestOnNtpUseDseOrigin) {
   content::WebContents* embedder_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(embedder_contents);
 
   content::RenderFrameHost* main_rfh =
@@ -973,7 +974,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
 IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
                        MicActivityIndicatorOnNtpUseDseOrigin) {
   content::WebContents* embedder_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(embedder_contents);
 
   content::RenderFrameHost* main_rfh =
@@ -1026,7 +1027,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
 IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
                        PermissionRequestOnNtpIsNotAutoIgnored) {
   content::WebContents* embedder_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(embedder_contents);
 
   content::RenderFrameHost* main_rfh =
@@ -1113,7 +1114,7 @@ class PermissionsSecurityModelHTTPS
   net::EmbeddedTestServer* GetHttpsServer() { return &https_test_server_; }
 
   content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   // Navigate the main frame toward |url|, returns the new RenderFrameHost.
@@ -1496,7 +1497,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsRequestedFromFencedFrameTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Load a fenced frame.
   GURL fenced_frame_url =
@@ -1644,7 +1645,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelHTTPS,
   url::Origin origin_b = url::Origin::Create(url_b);
 
   content::WebContents* embedder_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // 1) Navigate to A.
   EXPECT_TRUE(content::NavigateToURL(embedder_contents, url_a));
@@ -1786,7 +1787,7 @@ class PermissionRequestFromExtension : public extensions::ExtensionApiTest {
 
   void VerifyExtensionsPopupPage(std::string extension_path) {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
 
     permissions::PermissionRequestManager* manager =
         permissions::PermissionRequestManager::FromWebContents(web_contents);
@@ -1823,7 +1824,7 @@ class PermissionRequestFromExtension : public extensions::ExtensionApiTest {
       permissions::PermissionRequestManager::AutoResponseType type =
           permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL) {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
 
     permissions::PermissionRequestManager* manager =
         permissions::PermissionRequestManager::FromWebContents(web_contents);
@@ -1846,11 +1847,11 @@ class PermissionRequestFromExtension : public extensions::ExtensionApiTest {
 
     // Opening the options page should take the new tab and use it, so we should
     // have only one tab, and it should be open to the options page.
-    EXPECT_EQ(1, browser()->tab_strip_model()->count());
+    EXPECT_EQ(1, browser()->GetTabStripModel()->count());
     EXPECT_TRUE(content::WaitForLoadStop(
-        browser()->tab_strip_model()->GetActiveWebContents()));
+        browser()->GetTabStripModel()->GetActiveWebContents()));
     EXPECT_EQ(options_url, browser()
-                               ->tab_strip_model()
+                               ->GetTabStripModel()
                                ->GetActiveWebContents()
                                ->GetLastCommittedURL());
 
@@ -1872,7 +1873,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
@@ -1961,7 +1962,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
@@ -2049,7 +2050,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
 
@@ -2080,7 +2081,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
@@ -2115,7 +2116,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
@@ -2170,7 +2171,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
 IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
                        BackgroundV2HasPermissionsTest) {
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
@@ -2196,7 +2197,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
 IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
                        BackgroundV2NoPermissionsTest) {
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);

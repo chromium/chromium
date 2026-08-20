@@ -8,12 +8,13 @@
 // permissions. The tests verify that the cached permission state correctly
 // updates when the browser window regains focus, and that `IsDeniedFresh` can
 // successfully bypass the cache to retrieve real-time state from the OS.
+#include "chrome/browser/permissions/system/system_permission_settings.h"
+
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "build/build_config.h"
-#include "chrome/browser/permissions/system/system_permission_settings.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -121,7 +122,8 @@ IN_PROC_BROWSER_TEST_F(SystemPermissionSettingsBrowserTest,
       ContentSettingsType::MEDIASTREAM_CAMERA));
 
   // 2. Simulate deactivation and reactivation of the browser window.
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(second_browser));
   ASSERT_FALSE(browser()->GetWindow()->IsActive());
 

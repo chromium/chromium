@@ -21,7 +21,7 @@
 #include "base/auto_reset.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
@@ -213,7 +213,7 @@ content::WebContents* MLPromotionBrowserTestBase::web_contents() {
   // TODO(b/287255120) : Build functionalities for Android.
   return nullptr;
 #else
-  return browser()->tab_strip_model()->GetActiveWebContents();
+  return browser()->GetTabStripModel()->GetActiveWebContents();
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
