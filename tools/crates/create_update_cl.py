@@ -390,13 +390,6 @@ process and other details can be found at
 
     description += """
 Bug: None
-Cq-Include-Trybots: chromium/try:android-rust-arm32-rel
-Cq-Include-Trybots: chromium/try:android-rust-arm64-dbg
-Cq-Include-Trybots: chromium/try:android-rust-arm64-rel
-Cq-Include-Trybots: chromium/try:linux-rust-x64-dbg
-Cq-Include-Trybots: chromium/try:linux-rust-x64-rel
-Cq-Include-Trybots: chromium/try:win-rust-x64-dbg
-Cq-Include-Trybots: chromium/try:win-rust-x64-rel
 """
 
     return description

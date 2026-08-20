@@ -56,23 +56,6 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//testing/rust_gtest_interop:rust_gtest_interop_unittests/",
-        "module_scheme": "gtest",
-        "name": "rust_gtest_interop_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-15"
-          },
-          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "module_name": "//chrome/test:unit_tests/",
         "module_scheme": "gtest",
         "name": "unit_tests",

@@ -2177,10 +2177,6 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "rust_gtest_interop_unittests",
-)
-
-targets.tests.gtest_test(
     name = "sandbox_linux_unittests",
 )
 
@@ -2471,10 +2467,6 @@ targets.tests.gtest_test(
         "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.cc_unittests.filter",
     ],
     binary = "cc_unittests",
-)
-
-targets.tests.gtest_test(
-    name = "test_cpp_including_rust_unittests",
 )
 
 targets.tests.isolated_script_test(

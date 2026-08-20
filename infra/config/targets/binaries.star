@@ -2088,12 +2088,6 @@ targets.binaries.console_test_launcher(
 )
 
 targets.binaries.console_test_launcher(
-    name = "rust_gtest_interop_unittests",
-    label = "//testing/rust_gtest_interop:rust_gtest_interop_unittests",
-    module_scheme = "gtest",
-)
-
-targets.binaries.console_test_launcher(
     name = "sandbox_linux_unittests",
     label = "//sandbox/linux:sandbox_linux_unittests",
     module_scheme = "gtest",
@@ -2336,14 +2330,6 @@ targets.binaries.generated_script(
     name = "telemetry_unittests",
     label = "//chrome/test:telemetry_unittests",
     module_scheme = "pyunit",
-)
-
-targets.binaries.console_test_launcher(
-    name = "test_cpp_including_rust_unittests",
-    label = "//build/rust/tests/test_cpp_including_rust:test_cpp_including_rust_unittests",
-    # All references have been moved to starlark
-    skip_usage_check = True,
-    module_scheme = "gtest",
 )
 
 targets.binaries.generated_script(

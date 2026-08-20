@@ -500,22 +500,6 @@
         "autotest_name": "chromium",
         "cros_board": "brya",
         "cros_model": "kano",
-        "module_name": "//testing/rust_gtest_interop:rust_gtest_interop_unittests",
-        "module_scheme": "gtest",
-        "name": "rust_gtest_interop_unittests LKGM",
-        "resultdb": {
-          "result_format": "gtest"
-        },
-        "shard_level_retries_on_ctp": 1,
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/",
-        "use_lkgm": true,
-        "variant_id": "LKGM"
-      },
-      {
-        "autotest_name": "chromium",
-        "cros_board": "brya",
-        "cros_model": "kano",
         "module_name": "//sql:sql_unittests",
         "module_scheme": "gtest",
         "name": "sql_unittests LKGM",

@@ -20,9 +20,6 @@ ci/android-code-coverage-native
 ci/android-device-flasher
 ci/android-fieldtrial-rel
 ci/android-perfetto-rel
-ci/android-rust-arm32-rel
-ci/android-rust-arm64-dbg
-ci/android-rust-arm64-rel
 ci/android-sdk-packager
 ci/android-webview-12-x64-dbg-tests
 ci/android-webview-13-x64-dbg-tests
@@ -55,8 +52,6 @@ ci/linux-headless-shell-rel
 ci/linux-js-code-coverage
 ci/linux-perfetto-rel
 ci/linux-rel-no-external-ip
-ci/linux-rust-x64-dbg
-ci/linux-rust-x64-rel
 ci/linux-upload-perfetto
 ci/linux-v4l2-codec-rel
 ci/mac-code-coverage
@@ -70,8 +65,6 @@ ci/rts-suite-analysis
 ci/win-annotator-rel
 ci/win-fieldtrial-rel
 ci/win-perfetto-rel
-ci/win-rust-x64-dbg
-ci/win-rust-x64-rel
 ci/win-upload-perfetto
 ci/win10-code-coverage
 ci/win10-rel-no-external-ip
@@ -112,9 +105,6 @@ try/android-deterministic-dbg
 try/android-deterministic-rel
 try/android-fieldtrial-rel
 try/android-perfetto-rel
-try/android-rust-arm32-rel
-try/android-rust-arm64-dbg
-try/android-rust-arm64-rel
 try/android-webview-10-x86-rel-tests
 try/android-webview-12-x64-dbg
 try/android-webview-13-x64-dbg
@@ -192,8 +182,6 @@ try/linux-perfetto-rel
 try/linux-rel
 try/linux-rel-cft
 try/linux-rel-compilator
-try/linux-rust-x64-dbg
-try/linux-rust-x64-rel
 try/linux-swangle-chromium-try-x64
 try/linux-swangle-chromium-try-x64-exp
 try/linux-swangle-try-tot-swiftshader-x64
@@ -267,8 +255,6 @@ try/win-presubmit
 try/win-rel
 try/win-rel-cft
 try/win-rel-compilator
-try/win-rust-x64-dbg
-try/win-rust-x64-rel
 try/win-swangle-chromium-try-x86
 try/win-swangle-try-tot-swiftshader-x64
 try/win-swangle-try-tot-swiftshader-x86

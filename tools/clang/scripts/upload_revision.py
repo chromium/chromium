@@ -94,14 +94,6 @@ Cq-Include-Trybots: chrome/try:linux-chromeos-chrome
 Cq-Include-Trybots: chrome/try:linux-pgo,mac-pgo,win32-pgo,win64-pgo
 Cq-Include-Trybots: chrome/try:win-chrome,win64-chrome,linux-chrome,mac-chrome'''
 
-RUST_BOTS = '''Cq-Include-Trybots: chromium/try:android-rust-arm32-rel
-Cq-Include-Trybots: chromium/try:android-rust-arm64-dbg
-Cq-Include-Trybots: chromium/try:android-rust-arm64-rel
-Cq-Include-Trybots: chromium/try:linux-rust-x64-dbg
-Cq-Include-Trybots: chromium/try:linux-rust-x64-rel
-Cq-Include-Trybots: chromium/try:mac-rust-x64-dbg
-Cq-Include-Trybots: chromium/try:win-rust-x64-dbg
-Cq-Include-Trybots: chromium/try:win-rust-x64-rel'''
 
 is_win = sys.platform.startswith('win32')
 
@@ -456,8 +448,6 @@ def main():
   body = f'{clang_change_log}{rust_change_log}Ran: {cmd}'
 
   commit_message = f'{title}\n\n{body}\n{COMMIT_FOOTER}'
-  if not args.skip_rust:
-    commit_message += f'\n{RUST_BOTS}'
 
   Git('add', CLANG_UPDATE_PY_PATH, RUST_UPDATE_PY_PATH, no_run=args.no_git)
   Git('commit', '-m', commit_message, no_run=args.no_git)

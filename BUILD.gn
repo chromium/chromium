@@ -853,26 +853,14 @@ group("all_rust") {
   testonly = true
 
   deps = [
-    ":rust_build_tests",
     "//base:base_unittests",  # There is rust stuff in here.
+    "//build/rust/tests",
     "//third_party/cloud_authenticator/processor",
   ]
-
-  # TODO(https://crbug.com/405379314): This fails to build on some iOS ASAN
-  # builders.
-  if (!is_ios || !is_asan) {
-    deps += [ "//testing/rust_gtest_interop:rust_gtest_interop_unittests" ]
-  }
 
   if (!is_cronet_build) {
     deps += [ "//skia" ]
   }
-}
-
-# This group exists to give targets for the waterfall to refer to.
-group("rust_build_tests") {
-  testonly = true
-  deps = [ "//build/rust/tests" ]
 }
 
 # TODO(https://crbug.com/1112776): ensure remoting is functional on Linux builds with

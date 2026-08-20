@@ -1016,27 +1016,6 @@
       },
       {
         "args": [
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--device-spec=x64-emu-large"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "module_name": "//testing/rust_gtest_interop:rust_gtest_interop_unittests",
-        "module_scheme": "gtest",
-        "name": "rust_gtest_interop_unittests",
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "rust_gtest_interop_unittests",
-        "test_id_prefix": "ninja://testing/rust_gtest_interop:rust_gtest_interop_unittests/"
-      },
-      {
-        "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.services_unittests.filter",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
           "--device-spec=x64-emu-large"

@@ -1435,9 +1435,6 @@
 ### rlz_unittests iPhone 16 26.0
 * [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22ios-simulator%5C%22%22))
 
-### rust_gtest_interop_unittests
-* [fuchsia-x64-cast-receiver-rel](https://ci.chromium.org/ui/p/chromium/builders/try/fuchsia-x64-cast-receiver-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22fuchsia-x64-cast-receiver-rel%5C%22%22))
-
 ### sandbox_linux_unittests
 * [android-x64-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-x64-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-x64-rel%5C%22%22))
 * [android-x86-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-x86-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22android-x86-rel%5C%22%22))

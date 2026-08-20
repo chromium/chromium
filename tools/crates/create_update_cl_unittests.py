@@ -125,13 +125,6 @@ Removed crates:
 * deleted@3.0.1; https://docs.rs/crate/deleted/3.0.1
 
 Bug: None
-Cq-Include-Trybots: chromium/try:android-rust-arm32-rel
-Cq-Include-Trybots: chromium/try:android-rust-arm64-dbg
-Cq-Include-Trybots: chromium/try:android-rust-arm64-rel
-Cq-Include-Trybots: chromium/try:linux-rust-x64-dbg
-Cq-Include-Trybots: chromium/try:linux-rust-x64-rel
-Cq-Include-Trybots: chromium/try:win-rust-x64-dbg
-Cq-Include-Trybots: chromium/try:win-rust-x64-rel
 """
         self.assertEqual(actual_desc, expected_desc)
 

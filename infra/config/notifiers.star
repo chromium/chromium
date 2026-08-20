@@ -12,14 +12,6 @@ luci.notifier(
     ],
 )
 
-luci.notifier(
-    name = "chrome-rust-experiments",
-    on_new_status = ["FAILURE", "INFRA_FAILURE"],
-    notify_emails = [
-        "chrome-rust-experiments+bots@google.com",
-    ],
-)
-
 # Notifier for "package rust" step on *_upload_clang bots.
 luci.notifier(
     name = "chrome-rust-toolchain",

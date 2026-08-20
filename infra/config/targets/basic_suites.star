@@ -367,11 +367,6 @@ targets.legacy_basic_suite(
                 "--test-launcher-jobs=1",
             ],
         ),
-        "rust_gtest_interop_unittests": targets.legacy_test_config(
-            skylab = targets.skylab(
-                autotest_name = "chromium",
-            ),
-        ),
         "sql_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
@@ -528,12 +523,6 @@ targets.legacy_basic_suite(
             ),
             experiment_percentage = 100,
         ),
-        "rust_gtest_interop_unittests": targets.legacy_test_config(
-            skylab = targets.skylab(
-                autotest_name = "chromium",
-                timeout_sec = 5400,
-            ),
-        ),
         "sql_unittests": targets.legacy_test_config(
             skylab = targets.skylab(
                 autotest_name = "chromium",
@@ -670,8 +659,6 @@ targets.legacy_basic_suite(
         ),
         "perfetto_unittests": targets.legacy_test_config(),
         "puffin_unittests": targets.legacy_test_config(),
-        # TODO(crbug.com/40274401): Enable this.
-        # "rust_gtest_interop_unittests": None,
         "services_unittests": targets.legacy_test_config(),
         "shell_dialogs_unittests": targets.legacy_test_config(),
         "skia_unittests": targets.legacy_test_config(),

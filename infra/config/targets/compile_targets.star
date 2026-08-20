@@ -377,13 +377,6 @@ targets.compile_target(
 )
 
 targets.compile_target(
-    name = "rust_build_tests",
-    label = "//build/rust/tests",
-    # All references have been moved to starlark
-    skip_usage_check = True,
-)
-
-targets.compile_target(
     name = "symupload",
     label = "//third_party/breakpad:symupload",
 )

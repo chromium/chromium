@@ -104,7 +104,6 @@ group("deps") {
       if (enable_rust_cxx) {
         deps += [
           "//build/rust/tests/test_cpp_including_rust:test_cpp_including_rust_unittest_sources",
-          "//build/rust/tests/test_cpp_including_rust:test_cpp_including_rust_unittests",
           "//build/rust/tests/test_rust_exe:test_rust_exe_unittests",
           "//build/rust/tests/test_rust_static_library:test_rust_static_library_unittests",
           "//build/rust/tests/test_rust_unittests",
