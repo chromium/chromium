@@ -25,6 +25,10 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   highContrastTheme: number = 5;
   lowContrastLightTheme: number = 6;
   lowContrastDarkTheme: number = 7;
+  fontSize: number = 10;
+  lineSpacing: number = 0;
+  activeDistillationMethod: number = 0;
+  distillationTypeReadability: number = 0;
 
   constructor() {
     super([
@@ -35,6 +39,9 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
       'getStandardLineSpacing',
       'getLooseLineSpacing',
       'getVeryLooseLineSpacing',
+      'getLineSpacing',
+      'getLineSpacingValue',
+      'getFontSize',
       'getStandardLetterSpacing',
       'getWideLetterSpacing',
       'getVeryWideLetterSpacing',
@@ -46,6 +53,8 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
       'getHighContrastTheme',
       'getLowContrastLightTheme',
       'getLowContrastDarkTheme',
+      'getActiveDistillationMethod',
+      'getDistillationTypeReadability',
       'onFontChange',
       'onLineSpacingChange',
       'onLetterSpacingChange',
@@ -87,6 +96,21 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   getVeryLooseLineSpacing(): number {
     this.methodCalled('getVeryLooseLineSpacing');
     return this.veryLooseLineSpacing;
+  }
+
+  getLineSpacing(): number {
+    this.methodCalled('getLineSpacing');
+    return this.lineSpacing;
+  }
+
+  getLineSpacingValue(lineSpacing: number): number {
+    this.methodCalled('getLineSpacingValue', lineSpacing);
+    return lineSpacing + 1;
+  }
+
+  getFontSize(): number {
+    this.methodCalled('getFontSize');
+    return this.fontSize;
   }
 
   getStandardLetterSpacing(): number {
@@ -142,6 +166,16 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   getLowContrastDarkTheme(): number {
     this.methodCalled('getLowContrastDarkTheme');
     return this.lowContrastDarkTheme;
+  }
+
+  getActiveDistillationMethod(): number {
+    this.methodCalled('getActiveDistillationMethod');
+    return this.activeDistillationMethod;
+  }
+
+  getDistillationTypeReadability(): number {
+    this.methodCalled('getDistillationTypeReadability');
+    return this.distillationTypeReadability;
   }
 
   onFontChange(font: string): void {

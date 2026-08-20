@@ -14,6 +14,9 @@ export interface VisualBrowserProxy {
   getStandardLineSpacing(): number;
   getLooseLineSpacing(): number;
   getVeryLooseLineSpacing(): number;
+  getLineSpacing(): number;
+  getLineSpacingValue(lineSpacing: number): number;
+  getFontSize(): number;
 
   getStandardLetterSpacing(): number;
   getWideLetterSpacing(): number;
@@ -27,6 +30,9 @@ export interface VisualBrowserProxy {
   getHighContrastTheme(): number;
   getLowContrastLightTheme(): number;
   getLowContrastDarkTheme(): number;
+
+  getActiveDistillationMethod(): number;
+  getDistillationTypeReadability(): number;
 
   onFontChange(font: string): void;
   onLineSpacingChange(value: number): void;
@@ -62,6 +68,18 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
 
   getVeryLooseLineSpacing(): number {
     return chrome.readingMode.veryLooseLineSpacing;
+  }
+
+  getLineSpacing(): number {
+    return chrome.readingMode.lineSpacing;
+  }
+
+  getLineSpacingValue(lineSpacing: number): number {
+    return chrome.readingMode.getLineSpacingValue(lineSpacing);
+  }
+
+  getFontSize(): number {
+    return chrome.readingMode.fontSize;
   }
 
   getStandardLetterSpacing(): number {
@@ -106,6 +124,14 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
 
   getLowContrastDarkTheme(): number {
     return chrome.readingMode.lowContrastDarkTheme;
+  }
+
+  getActiveDistillationMethod(): number {
+    return chrome.readingMode.activeDistillationMethod;
+  }
+
+  getDistillationTypeReadability(): number {
+    return chrome.readingMode.distillationTypeReadability;
   }
 
   onFontChange(font: string): void {
