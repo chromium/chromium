@@ -65,13 +65,13 @@ MockUrlCheckerClient::PendingCheck::PendingCheck(
     : url(url), callback(std::move(callback)) {}
 MockUrlCheckerClient::PendingCheck::~PendingCheck() = default;
 
-void MockUrlCheckerClient::RunFirstCallack(
+void MockUrlCheckerClient::RunFirstCallback(
     safe_search_api::ClientClassification classification) {
   const GURL& url = pending_checks_.front().url;
   std::move(pending_checks_.front().callback).Run(url, classification);
   pending_checks_.pop_front();
 }
-void MockUrlCheckerClient::RunLastCallack(
+void MockUrlCheckerClient::RunLastCallback(
     safe_search_api::ClientClassification classification) {
   const GURL& url = pending_checks_.back().url;
   std::move(pending_checks_.back().callback).Run(url, classification);

@@ -53,8 +53,8 @@ class MockUrlCheckerClient : public safe_search_api::URLCheckerClient {
               (const GURL& url, ClientCheckCallback callback),
               (override));
 
-  void RunFirstCallack(safe_search_api::ClientClassification classification);
-  void RunLastCallack(safe_search_api::ClientClassification classification);
+  void RunFirstCallback(safe_search_api::ClientClassification classification);
+  void RunLastCallback(safe_search_api::ClientClassification classification);
 
   // Next CheckURL will use scheduled resolutions synchronously, until
   // exhausted.

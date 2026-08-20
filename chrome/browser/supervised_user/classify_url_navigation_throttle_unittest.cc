@@ -346,7 +346,7 @@ TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
 
   // Before the throttle will be notified that the content is ready, complete
   // the check
-  mock_url_checker_client().RunFirstCallack(
+  mock_url_checker_client().RunFirstCallback(
       safe_search_api::ClientClassification::kAllowed);
 
   // Throttle is not blocked
@@ -396,7 +396,7 @@ TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
             registry->throttles().back()->WillProcessResponse());
 
   // Now complete the outstanding check
-  mock_url_checker_client().RunFirstCallack(
+  mock_url_checker_client().RunFirstCallback(
       safe_search_api::ClientClassification::kAllowed);
 
   // As a result, the navigation is resumed (and three checks registered)
@@ -442,9 +442,9 @@ TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
 
   // Resolve pending checks in reverse order, so that block for 2nd request
   // comes first.
-  mock_url_checker_client().RunLastCallack(
+  mock_url_checker_client().RunLastCallback(
       safe_search_api::ClientClassification::kRestricted);
-  mock_url_checker_client().RunLastCallack(
+  mock_url_checker_client().RunLastCallback(
       safe_search_api::ClientClassification::kAllowed);
 
   histogram_tester()->ExpectBucketCount(
@@ -544,7 +544,7 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
   // Before the throttle will be notified that the content is ready, complete
   // all pending checks for all redirects.
   for (std::size_t i = 0; i < pending_checks_count; ++i) {
-    mock_url_checker_client().RunFirstCallack(
+    mock_url_checker_client().RunFirstCallback(
         safe_search_api::ClientClassification::kAllowed);
   }
 
@@ -603,7 +603,7 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
   // Before the throttle will be notified that the content is ready, complete
   // all checks but from the back.
   for (std::size_t i = 0; i < pending_checks_count; ++i) {
-    mock_url_checker_client().RunLastCallack(
+    mock_url_checker_client().RunLastCallback(
         safe_search_api::ClientClassification::kAllowed);
     // Classification still not complete.
     histogram_tester()->ExpectTotalCount(
@@ -670,7 +670,7 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
     std::size_t pending_checks_count =
         mock_url_checker_client().GetPendingChecksCount();
     for (std::size_t i = 1; i < pending_checks_count; ++i) {
-      mock_url_checker_client().RunLastCallack(
+      mock_url_checker_client().RunLastCallback(
           safe_search_api::ClientClassification::kAllowed);
     }
   }
@@ -690,7 +690,7 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
             registry->throttles().back()->WillProcessResponse());
 
   // Now complete the outstanding check
-  mock_url_checker_client().RunLastCallack(
+  mock_url_checker_client().RunLastCallback(
       safe_search_api::ClientClassification::kAllowed);
 
   // As a result, the navigation is resumed (and three checks registered, even
@@ -792,7 +792,7 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
             registry->throttles().back()->WillProcessResponse());
 
   // Complete first pending check
-  mock_url_checker_client().RunFirstCallack(
+  mock_url_checker_client().RunFirstCallback(
       safe_search_api::ClientClassification::kRestricted);
 
   // Now two out of three checks are complete
