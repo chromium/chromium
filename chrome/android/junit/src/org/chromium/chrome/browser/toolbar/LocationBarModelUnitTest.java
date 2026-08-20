@@ -474,6 +474,24 @@ public class LocationBarModelUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
+    public void
+            getSecurityIconResource_connectionNone_internalScheme_returnsOmniboxInfoEvenWhenLoading() {
+        mLocationBarModel.initializeWithNative();
+        doReturn(true).when(mRegularTabMock).isInitialized();
+        doReturn(true).when(mRegularTabMock).isLoading();
+        doReturn(new GURL("chrome://flags"))
+                .when(mLocationBarModelJni)
+                .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
+        mLocationBarModel.setTab(mRegularTabMock, mRegularProfileMock);
+
+        assertResourceIdIs(
+                R.drawable.omnibox_info,
+                ConnectionSecurityLevel.NONE,
+                ConnectionMaliciousContentStatus.NONE);
+    }
+
+    @Test
     public void getSecurityIconResource_connectionWarning_returnsNotSecureWarning() {
         mLocationBarModel.initializeWithNative();
 

@@ -840,10 +840,12 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         }
 
         // Suppress neutral/info icon during page load to avoid transition jank if the toolbar
-        // refactor is enabled.
+        // refactor is enabled, unless it is an internal scheme (e.g. chrome://) which will
+        // never have a SECURE or DANGEROUS security level.
         if (ToolbarVariationUtils.isToolbarUiRefactorEnabled(mContext)
                 && securityLevel == ConnectionSecurityLevel.NONE
-                && isLoading()) {
+                && isLoading()
+                && !UrlUtilities.isInternalScheme(getCurrentGurl())) {
             return Resources.ID_NULL;
         }
 
