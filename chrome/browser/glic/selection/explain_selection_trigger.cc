@@ -15,7 +15,15 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/proto/string_value.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -76,6 +84,32 @@ bool ExplainSelectionTrigger::IsInlineFulfillmentSupported() {
   return !GetPromptTemplate().empty();
 }
 
+// static
+bool ExplainSelectionTrigger::ShouldUseOptimizationGuide() {
+  const auto* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->HasSwitch("glic-inline-use-optimization-guide");
+}
+
+// static
+std::string ExplainSelectionTrigger::FormatPrompt(
+    const std::string& prompt_template,
+    const std::string& selected_text,
+    const std::string& surrounding_text) {
+  std::string formatted_prompt = prompt_template;
+  size_t pos = formatted_prompt.find("$1");
+  if (pos != std::string::npos) {
+    formatted_prompt.replace(pos, 2, selected_text);
+  } else {
+    formatted_prompt += "\n" + selected_text;
+  }
+
+  size_t pos2 = formatted_prompt.find("$2");
+  if (pos2 != std::string::npos) {
+    formatted_prompt.replace(pos2, 2, surrounding_text);
+  }
+  return formatted_prompt;
+}
+
 void ExplainSelectionTrigger::RequestExplanation(
     content::WebContents* web_contents,
     const std::string& selected_text,
@@ -100,32 +134,86 @@ void ExplainSelectionTrigger::RequestExplanation(
   // TODO(b/539511437): Evaluate whether enterprise Data Loss Prevention (DLP)
   // restrictions apply before sending selected text to the Gemini model.
 
-  SendGeminiApiRequest(web_contents, selected_text, surrounding_text,
-                       callback);
+  std::string prompt =
+      FormatPrompt(GetPromptTemplate(), selected_text, surrounding_text);
+
+  if (ShouldUseOptimizationGuide()) {
+    SendOptimizationGuideRequest(web_contents, prompt, callback);
+  } else {
+    SendGeminiApiRequest(web_contents, prompt, selected_text, callback);
+  }
+}
+
+void ExplainSelectionTrigger::SendOptimizationGuideRequest(
+    content::WebContents* web_contents,
+    const std::string& prompt,
+    StreamUpdateCallback callback) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (!profile) {
+    callback.Run(/*markdown_output=*/"", /*is_complete=*/true,
+                 /*error_message=*/"Invalid profile");
+    return;
+  }
+
+  OptimizationGuideKeyedService* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  if (!optimization_guide_keyed_service) {
+    callback.Run(
+        /*markdown_output=*/"", /*is_complete=*/true,
+        /*error_message=*/l10n_util::GetStringUTF8(IDS_GLIC_ERROR_NOTICE));
+    return;
+  }
+
+  optimization_guide::proto::StringValue request_metadata;
+  request_metadata.set_value(prompt);
+
+  optimization_guide_keyed_service->ExecuteModel(
+      optimization_guide::ModelBasedCapabilityKey::kTest, request_metadata,
+      /*options=*/{},
+      base::BindOnce(&ExplainSelectionTrigger::OnOptimizationGuideResponse,
+                     weak_ptr_factory_.GetWeakPtr(), callback));
+}
+
+void ExplainSelectionTrigger::OnOptimizationGuideResponse(
+    StreamUpdateCallback callback,
+    optimization_guide::OptimizationGuideModelExecutionResult result,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  base::TimeDelta latency = base::TimeTicks::Now() - start_time_;
+  base::UmaHistogramTimes(
+      "OptimizationGuide.ModelExecution.ExplainSelection.TTFT", latency);
+  base::UmaHistogramTimes(
+      "OptimizationGuide.ModelExecution.ExplainSelection.TotalLatency",
+      latency);
+
+  if (!result.response.has_value()) {
+    callback.Run(
+        /*markdown_output=*/"", /*is_complete=*/true,
+        /*error_message=*/l10n_util::GetStringUTF8(IDS_GLIC_ERROR_NOTICE));
+    return;
+  }
+
+  std::optional<optimization_guide::proto::StringValue> response =
+      optimization_guide::ParsedAnyMetadata<
+          optimization_guide::proto::StringValue>(result.response.value());
+  if (!response || response->value().empty()) {
+    callback.Run(
+        /*markdown_output=*/"", /*is_complete=*/true,
+        /*error_message=*/l10n_util::GetStringUTF8(IDS_GLIC_ERROR_NOTICE));
+    return;
+  }
+
+  callback.Run(response->value(), /*is_complete=*/true, /*error_message=*/"");
 }
 
 void ExplainSelectionTrigger::SendGeminiApiRequest(
     content::WebContents* web_contents,
+    const std::string& formatted_prompt,
     const std::string& selected_text,
-    const std::string& surrounding_text,
     StreamUpdateCallback callback) {
   std::string api_key = GetGeminiApiKey();
 
   // Construct Gemini API generateContent payload
-  std::string prompt_template = GetPromptTemplate();
-  std::string formatted_prompt = prompt_template;
-  size_t pos = formatted_prompt.find("$1");
-  if (pos != std::string::npos) {
-    formatted_prompt.replace(pos, 2, selected_text);
-  } else {
-    formatted_prompt += "\n" + selected_text;
-  }
-
-  size_t pos2 = formatted_prompt.find("$2");
-  if (pos2 != std::string::npos) {
-    formatted_prompt.replace(pos2, 2, surrounding_text);
-  }
-
   base::DictValue payload;
   base::ListValue contents;
   base::DictValue user_content;

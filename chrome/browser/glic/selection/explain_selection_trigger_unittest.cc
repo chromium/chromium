@@ -6,12 +6,19 @@
 
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/proto/string_value.pb.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
@@ -203,6 +210,200 @@ TEST_F(ExplainSelectionTriggerTest, RequestExplanationEmptyResponse) {
 
   run_loop.Run();
 
+  EXPECT_FALSE(received_error.empty());
+}
+
+TEST_F(ExplainSelectionTriggerTest, ShouldUseOptimizationGuideDefaultDisabled) {
+  EXPECT_FALSE(ExplainSelectionTrigger::ShouldUseOptimizationGuide());
+}
+
+TEST_F(ExplainSelectionTriggerTest,
+       ShouldUseOptimizationGuideCommandLineSwitch) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      "glic-inline-use-optimization-guide");
+  EXPECT_TRUE(ExplainSelectionTrigger::ShouldUseOptimizationGuide());
+}
+
+TEST_F(ExplainSelectionTriggerTest, FormatPromptHelper) {
+  EXPECT_EQ(ExplainSelectionTrigger::FormatPrompt("Explain: $1 in $2", "cat",
+                                                  "context"),
+            "Explain: cat in context");
+  EXPECT_EQ(ExplainSelectionTrigger::FormatPrompt("Explain", "cat", "context"),
+            "Explain\ncat");
+}
+
+TEST_F(ExplainSelectionTriggerTest,
+       RequestExplanationOptimizationGuideSuccessfulResponse) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      "glic-inline-use-optimization-guide");
+  feature_list_.InitAndEnableFeatureWithParameters(
+      features::kGlicSelectionPrompt,
+      {{"inline_fulfillment", "true"},
+       {"inline_prompt_template", "Explain text: $1"}});
+
+  auto* mock_opt_guide =
+      static_cast<testing::NiceMock<MockOptimizationGuideKeyedService>*>(
+          OptimizationGuideKeyedServiceFactory::GetInstance()
+              ->SetTestingFactoryAndUse(
+                  profile(),
+                  base::BindRepeating([](content::BrowserContext* context)
+                                          -> std::unique_ptr<KeyedService> {
+                    return std::make_unique<
+                        testing::NiceMock<MockOptimizationGuideKeyedService>>();
+                  })));
+
+  EXPECT_CALL(*mock_opt_guide,
+              ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kTest,
+                           testing::_, testing::_, testing::_))
+      .WillOnce(
+          [](optimization_guide::ModelBasedCapabilityKey capability,
+             const google::protobuf::MessageLite& request,
+             const optimization_guide::ModelExecutionOptions& options,
+             optimization_guide::OptimizationGuideModelExecutionResultCallback
+                 callback) {
+            const auto* string_value_req =
+                static_cast<const optimization_guide::proto::StringValue*>(
+                    &request);
+            EXPECT_EQ(string_value_req->value(),
+                      "Explain text: quantum computing");
+
+            optimization_guide::proto::StringValue response_msg;
+            response_msg.set_value(
+                "Quantum computing processes information using qubits.");
+            optimization_guide::proto::Any any;
+            any.set_value(response_msg.SerializeAsString());
+            any.set_type_url(base::StrCat(
+                {"type.googleapis.com/", response_msg.GetTypeName()}));
+
+            std::move(callback).Run(
+                optimization_guide::OptimizationGuideModelExecutionResult(
+                    std::move(any), nullptr),
+                nullptr);
+          });
+
+  ExplainSelectionTrigger trigger;
+  std::string received_explanation;
+  bool is_complete_received = false;
+  std::string received_error;
+
+  base::RunLoop run_loop;
+  trigger.RequestExplanation(
+      web_contents(), "quantum computing", "context",
+      base::BindLambdaForTesting([&](const std::string& explanation,
+                                     bool is_complete,
+                                     const std::string& error_message) {
+        received_explanation = explanation;
+        is_complete_received = is_complete;
+        received_error = error_message;
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+
+  EXPECT_TRUE(is_complete_received);
+  EXPECT_TRUE(received_error.empty());
+  EXPECT_EQ(received_explanation,
+            "Quantum computing processes information using qubits.");
+}
+
+TEST_F(ExplainSelectionTriggerTest,
+       RequestExplanationOptimizationGuideErrorResponse) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      "glic-inline-use-optimization-guide");
+  feature_list_.InitAndEnableFeatureWithParameters(
+      features::kGlicSelectionPrompt,
+      {{"inline_fulfillment", "true"},
+       {"inline_prompt_template", "Explain text: $1"}});
+
+  auto* mock_opt_guide =
+      static_cast<testing::NiceMock<MockOptimizationGuideKeyedService>*>(
+          OptimizationGuideKeyedServiceFactory::GetInstance()
+              ->SetTestingFactoryAndUse(
+                  profile(),
+                  base::BindRepeating([](content::BrowserContext* context)
+                                          -> std::unique_ptr<KeyedService> {
+                    return std::make_unique<
+                        testing::NiceMock<MockOptimizationGuideKeyedService>>();
+                  })));
+
+  EXPECT_CALL(*mock_opt_guide,
+              ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kTest,
+                           testing::_, testing::_, testing::_))
+      .WillOnce(
+          [](optimization_guide::ModelBasedCapabilityKey capability,
+             const google::protobuf::MessageLite& request,
+             const optimization_guide::ModelExecutionOptions& options,
+             optimization_guide::OptimizationGuideModelExecutionResultCallback
+                 callback) {
+            auto error = optimization_guide::
+                OptimizationGuideModelExecutionError::FromModelExecutionError(
+                    optimization_guide::OptimizationGuideModelExecutionError::
+                        ModelExecutionError::kGenericFailure);
+            std::move(callback).Run(
+                optimization_guide::OptimizationGuideModelExecutionResult(
+                    base::unexpected(error), nullptr),
+                nullptr);
+          });
+
+  ExplainSelectionTrigger trigger;
+  std::string received_explanation;
+  bool is_complete_received = false;
+  std::string received_error;
+
+  base::RunLoop run_loop;
+  trigger.RequestExplanation(
+      web_contents(), "test input", "context",
+      base::BindLambdaForTesting([&](const std::string& explanation,
+                                     bool is_complete,
+                                     const std::string& error_message) {
+        received_explanation = explanation;
+        is_complete_received = is_complete;
+        received_error = error_message;
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+
+  EXPECT_TRUE(is_complete_received);
+  EXPECT_TRUE(received_explanation.empty());
+  EXPECT_FALSE(received_error.empty());
+}
+
+TEST_F(ExplainSelectionTriggerTest,
+       RequestExplanationOptimizationGuideNullService) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      "glic-inline-use-optimization-guide");
+  feature_list_.InitAndEnableFeatureWithParameters(
+      features::kGlicSelectionPrompt,
+      {{"inline_fulfillment", "true"},
+       {"inline_prompt_template", "Explain text: $1"}});
+
+  OptimizationGuideKeyedServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating(
+                     [](content::BrowserContext* context)
+                         -> std::unique_ptr<KeyedService> { return nullptr; }));
+
+  ExplainSelectionTrigger trigger;
+  std::string received_explanation;
+  bool is_complete_received = false;
+  std::string received_error;
+
+  base::RunLoop run_loop;
+  trigger.RequestExplanation(
+      web_contents(), "test input", "context",
+      base::BindLambdaForTesting([&](const std::string& explanation,
+                                     bool is_complete,
+                                     const std::string& error_message) {
+        received_explanation = explanation;
+        is_complete_received = is_complete;
+        received_error = error_message;
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+
+  EXPECT_TRUE(is_complete_received);
+  EXPECT_TRUE(received_explanation.empty());
   EXPECT_FALSE(received_error.empty());
 }
 
