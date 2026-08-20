@@ -5,6 +5,8 @@
 module geic.mojom;
 
 import "chrome/browser/pwc/pwc_features.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "url/mojom/url.mojom";
 
 // The GEIC capability surface, exposed to the qualifying main frame of a GEIC
 // PrivilegedWebContents (see //chrome/browser/pwc). The browser-side binder
@@ -50,11 +52,141 @@ interface GeicApi {};
 // //chrome/browser/glic/host/context/) rather than re-implementing them. These
 // live outside GEiC's OWNERS, so convergence is deferred to a follow-up.
 
-// Browser-side interface for the GE client running in a GEIC
-// PrivilegedWebContents. Methods and types are added alongside their
-// implementation in a follow-up CL.
-interface GeicBrowserHost {};
+// Lightweight metadata for browser tab identification and UI chip rendering.
+struct TabMetadata {
+  // Unique frame tree node / tab identifier.
+  int32 tab_id;
+  // Browser window identifier containing the tab.
+  int32 window_id;
+  // Committed URL of the active document in the tab.
+  url.mojom.Url url;
+  // Page title of the active document in the tab.
+  mojo_base.mojom.String16 title;
+  // PNG-encoded favicon data, or null if no favicon is available.
+  array<uint8>? favicon;
+  // Whether this tab is currently the active tab in its window.
+  bool is_active_in_window;
+};
 
-// Client-side interface implemented by the GE client, for browser-initiated
-// notifications. Methods are added alongside their implementation.
-interface GeicClient {};
+// Reason why no focused tab data could be shared.
+// Note: Unlike glic, we intentionally do NOT expose rejected tab metadata
+// (e.g. chrome:// URL or title) to prevent information leakage from
+// non-allowlisted schemes.
+struct NoFocusedTabData {
+  // Human-readable diagnostic reason explaining why the tab cannot be shared
+  // (e.g. "no active tab", "scheme not allowed", "incognito window").
+  //
+  // This is a string rather than an enum because the reason is diagnostic and
+  // the set of failure conditions is still settling. Using an enum would freeze
+  // the set into the Mojo contract prematurely before client needs are known,
+  // making additions require additional security review rounds. A string keeps
+  // it cheap to iterate and refine during early development.
+  //
+  // The GE web app must NOT branch programmatically on this text; it is
+  // intended strictly for display and diagnostic logging. This should be
+  // tightened into a formal enum once the set of failure reasons stabilizes.
+  string no_focus_reason;
+};
+
+// Represents the focused tab state for the side panel.
+union FocusedTabData {
+  // Successfully validated and shareable tab metadata.
+  TabMetadata focused_tab;
+  // Information describing why focused tab data is unavailable.
+  NoFocusedTabData no_focused_tab_data;
+};
+
+// Initial state delivered to the GE web app upon connecting.
+struct GeicInitialState {
+  // Focused tab data available at the time the client is registered.
+  FocusedTabData focused_tab_data;
+};
+
+// Options for on-demand page content capture.
+struct TabContextOptions {
+  // Whether to extract innerText from the active tab. Defaults to false.
+  bool include_inner_text = false;
+  // Maximum bytes of innerText to extract. 0 selects the browser default
+  // cap. A client requesting no inner text sets include_inner_text = false,
+  // so 0 is never ambiguous with withholding text.
+  uint32 inner_text_bytes_limit = 0;
+  // Whether to capture a screenshot of the active tab. Defaults to false.
+  bool include_screenshot = false;
+  // Maximum width in pixels for the captured screenshot. 0 selects the
+  // browser default (viewport width).
+  uint32 screenshot_max_width = 0;
+  // Maximum height in pixels for the captured screenshot. 0 selects the
+  // browser default (viewport height).
+  uint32 screenshot_max_height = 0;
+};
+
+// Full extracted tab context payload for GEiC grounding.
+struct TabContextData {
+  // Metadata for the tab from which context was extracted.
+  TabMetadata metadata;
+  // Extracted innerText from the tab DOM, if requested.
+  string? inner_text;
+  // Encoded image data of the screenshot, if requested.
+  array<uint8>? screenshot_data;
+  // MIME type of the screenshot data (e.g. "image/jpeg").
+  string? screenshot_mime_type;
+};
+
+// Error codes returned when tab context extraction fails.
+[Extensible]
+enum GetTabContextError {
+  // Fallback for values added after this client was built.
+  [Default] kUnknown = 0,
+  // Tab was closed before or during extraction.
+  kTabClosed = 1,
+  // Tab navigated during extraction; the captured state would not match the
+  // tab that was validated.
+  kNavigationInProgress = 2,
+  // Permission denied, or the tab's scheme is not on the allowlist.
+  kPermissionDenied = 3,
+  // Internal browser error during capture or IPC.
+  kInternalError = 4,
+};
+
+// TODO(crbug.com/539909218): Converge GeicBrowserHost and GeicClient with the
+// PWC-scoped GeicApi / GeicHost interface above.
+
+// Main IPC interface from the GE web app to browser for GEiC side panel
+// interaction.
+interface GeicBrowserHost {
+  // Registers the GE web app's client endpoint and returns the state the
+  // GE web app needs before its first frame. The browser is always ready before
+  // the GE web app's JS, so returning initial state here removes the startup
+  // race that a later push would create.
+  // `client`: The remote callback endpoint implemented by the GE web app.
+  // Returns `initial_state` containing initial focused-tab data to eliminate
+  // startup races.
+  RegisterClient(pending_remote<GeicClient> client)
+      => (GeicInitialState initial_state);
+
+  // Returns metadata or rejection reason for the currently active tab in the
+  // browser window.
+  // Returns `data` containing `TabMetadata` if the tab is valid and shareable,
+  // or `NoFocusedTabData` explaining why tab data cannot be shared.
+  GetFocusedTab() => (FocusedTabData data);
+
+  // Extracts full page context (e.g. inner text and/or screenshot) from the
+  // active tab.
+  // `options`: Configuration specifying what data to capture (e.g. byte limits,
+  // screenshot dimensions).
+  // Returns `result` containing `TabContextData` on success, or a
+  // `GetTabContextError` failure code if extraction could not be completed.
+  GetContextFromFocusedTab(TabContextOptions options)
+      => result<TabContextData, GetTabContextError>;
+
+  // Requests the browser to close the GEiC side panel for this tab.
+  ClosePanel();
+};
+
+// Client callbacks sent from browser C++ to the GE web app.
+interface GeicClient {
+  // Notifies the GE web app when the active or focused tab changes.
+  // `data`: The updated focused tab state, containing either `TabMetadata` or
+  // `NoFocusedTabData`.
+  OnFocusedTabChanged(FocusedTabData data);
+};

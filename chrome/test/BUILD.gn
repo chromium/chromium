@@ -5278,6 +5278,7 @@ test("unit_tests") {
     "//chrome/browser/first_party_sets:unit_tests",
     "//chrome/browser/gcm",
     "//chrome/browser/gcm:unit_tests",
+    "//chrome/browser/geic:unit_tests",
     "//chrome/browser/glic",
     "//chrome/browser/glic:unit_tests",
     "//chrome/browser/glic/test_support",

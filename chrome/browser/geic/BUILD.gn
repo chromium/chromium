@@ -16,23 +16,32 @@ mojom("mojo_bindings") {
 
   sources = [ "geic.mojom" ]
 
-  public_deps = [ "//chrome/browser/pwc:features" ]
+  public_deps = [
+    "//chrome/browser/pwc:features",
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
   webui_module_path = "/"
 }
 
 source_set("geic") {
-  sources = [
-    "geic_enabling.cc",
+  public = [
     "geic_enabling.h",
-    "geic_host.cc",
     "geic_host.h",
   ]
+
+  sources = [
+    "geic_enabling.cc",
+    "geic_host.cc",
+  ]
+
   public_deps = [
     ":mojo_bindings",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//ui/base/unowned_user_data",
   ]
+
   deps = [
     "//base",
     "//chrome/browser:bad_message",
@@ -44,6 +53,62 @@ source_set("geic") {
     "//components/version_info",
     "//content/public/common",
   ]
+
+  if (!is_android) {
+    public += [
+      "geic_browser_host_impl.h",
+      "geic_pwc_manager.h",
+    ]
+
+    sources += [
+      "geic_browser_host_impl.cc",
+      "geic_pwc_manager.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/ui:browser_tab_strip",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/side_panel",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//components/content_extraction/content/browser",
+      "//components/favicon/content",
+      "//components/tabs:public",
+      "//skia",
+      "//ui/base",
+      "//ui/gfx",
+      "//ui/gfx/codec",
+      "//url",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = [
+    ":geic",
+    ":mojo_bindings",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/pwc",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "geic_browser_host_impl_unittest.cc",
+      "geic_pwc_manager_unittest.cc",
+    ]
+    deps += [
+      "//components/tabs:public",
+      "//components/tabs:test_support",
+    ]
+  }
 }
 
 if (!is_android) {
@@ -70,6 +135,7 @@ if (!is_android) {
       "//ui/base/unowned_user_data",
       "//ui/gfx",
       "//ui/views",
+      "//ui/views/controls/webview",
     ]
   }
 }

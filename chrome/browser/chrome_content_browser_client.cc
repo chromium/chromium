@@ -158,6 +158,7 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/profiles/renderer_updater.h"
 #include "chrome/browser/profiles/renderer_updater_factory.h"
+#include "chrome/browser/pwc/privileged_web_contents.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/safe_browsing/url_checker_delegate_impl.h"
@@ -2283,6 +2284,21 @@ bool ChromeContentBrowserClient::IsWebUIAllowedToMakeNetworkRequests(
 bool ChromeContentBrowserClient::ShouldAllowMojoJsBindingsForFrame(
     content::RenderFrameHost& render_frame_host) {
   if (glic::IsFrameAllowedGlicApi(render_frame_host)) {
+    return true;
+  }
+  // TODO(crbug.com/539909218): Prototype shortcut. Enabling MojoJS for any PWC
+  // exposes the entire Mojo interface surface rather than only GeicApi, and the
+  // committed origin is not checked against the capability allowlist here.
+  // Gating on the outermost main frame is a stopgap while erikchen@ designs a
+  // scoped capability binding mechanism in follow-ups. We check
+  // `!render_frame_host.GetParentOrOuterDocument()` rather than
+  // `IsInPrimaryMainFrame()` because this predicate is consulted from
+  // `ReadyToCommitNavigation` before the frame commits, where
+  // lifecycle-dependent queries return false.
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host);
+  if (!render_frame_host.GetParentOrOuterDocument() && web_contents &&
+      pwc::PrivilegedWebContents::FromWebContents(web_contents)) {
     return true;
   }
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

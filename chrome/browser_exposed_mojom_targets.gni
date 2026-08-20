@@ -20,6 +20,7 @@ browser_exposed_mojom_targets = [
   "//chrome/browser/actor/ui:mojo_bindings",
   "//chrome/browser/contextual_cueing/internals:mojo_bindings",
   "//chrome/browser/contextual_tasks:mojo_bindings",
+  "//chrome/browser/geic:mojo_bindings",
   "//chrome/browser/glic:mojo_bindings",
   "//chrome/browser/lens/core/mojom:mojo_bindings",
   "//chrome/browser/media:mojo_bindings",
