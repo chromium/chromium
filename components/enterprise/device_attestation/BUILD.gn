@@ -32,6 +32,10 @@ static_library("device_attestation") {
     sources += [ "android/device_attestation_service_android.cc" ]
     deps += [ "//components/enterprise/device_attestation/android" ]
   }
+
+  if (is_ios) {
+    public += [ "ios/attestation_service_ios.h" ]
+  }
 }
 
 source_set("test_support") {
