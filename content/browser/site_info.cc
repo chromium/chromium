@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "content/browser/isolated_origin_util.h"
 #include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
@@ -970,18 +971,42 @@ AgentClusterKey SiteInfo::GetAgentClusterKeyForURL(
   // to its own origin -- stronger than the default site-keyed process model.
   // This ensures that a compromise in a same-site but cross-origin subframe
   // lands in a different process than the main frame and so cannot reach the
-  // privileged capabilities bound there. Force origin-keyed process isolation,
-  // as if the origin had sent an `Origin-Agent-Cluster: ?1` header, overriding
-  // any opt-out. This is only possible where OAC process isolation is available
-  // (see the CHECK below); on configurations where it is disabled (e.g. Android
-  // below the site-isolation memory threshold) privileged frames fall back to
-  // the site-keyed process, which still isolates them from ordinary content.
+  // privileged capabilities bound there. This applies regardless of whether
+  // OAC process isolation is available: on configurations where it is
+  // disabled (e.g. Android below the site-isolation memory threshold),
+  // privileged frames must still be origin-keyed. Origin keying only applies
+  // to origins that would be valid for an Origin-Agent-Cluster opt-in
+  // (secure, non-opaque, with a host), the same validity rule
+  // DetermineOriginAgentClusterIsolation applies on the opt-in path; other
+  // privileged documents keep site-keyed (but still dedicated) processes.
   if (url_info.embedder_isolation_info.is_privileged() &&
-      SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled()) {
-    oac_isolation_state =
-        OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
-            /*had_oac_request=*/true,
-            /*requires_origin_keyed_process=*/true);
+      IsolatedOriginUtil::IsValidOriginForOriginAgentClusterOptIn(origin)) {
+    if (SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled()) {
+      // Force origin-keyed process isolation through the regular OAC
+      // machinery, as if the origin had sent an `Origin-Agent-Cluster: ?1`
+      // header, overriding any opt-out.
+      oac_isolation_state =
+          OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
+              /*had_oac_request=*/true,
+              /*requires_origin_keyed_process=*/true);
+    } else if (!is_origin_isolated_sandboxed_data_iframe) {
+      // OAC process isolation is unavailable, so the OAC opt-in state must
+      // not claim an origin-keyed process (see the CHECK below and in
+      // OriginAgentClusterIsolationState). Instead, key the agent cluster to
+      // the origin directly, outside the OAC opt-in machinery: an
+      // AgentClusterKey may be origin-keyed while its OACStatus stays
+      // kSiteKeyedByDefault. Combined with the dedicated-process requirement
+      // for privileged content, this yields a separate process per origin
+      // even where OAC process isolation is disabled.
+      //
+      // IsValidOriginForOriginAgentClusterOptIn() above guarantees a
+      // non-opaque HTTP(S) origin, so `origin` necessarily has a host and is
+      // not a file: origin.
+      CHECK(!origin.host().empty());
+      CHECK_NE(origin.scheme(), url::kFileScheme);
+      return AgentClusterKey::CreateOriginKeyed(
+          origin, AgentClusterKey::OACStatus::kSiteKeyedByDefault);
+    }
   }
 
   // Now check if the requested isolation state should be overridden by an OAC

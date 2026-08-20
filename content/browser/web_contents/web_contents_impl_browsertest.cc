@@ -2381,12 +2381,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   BrowserContext* browser_context =
       shell()->web_contents()->GetBrowserContext();
 
-  // Forcing origin isolation depends on OAC process isolation being available;
-  // where it is not (e.g. Android below the site-isolation memory threshold)
-  // privileged frames fall back to the site-keyed process.
-  const bool origin_isolation_available =
-      SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled();
-
   WebContents::CreateParams privileged_create_params(browser_context);
   WebContents::PrivilegedParams marker;
   marker.feature_id = 42;
@@ -2413,11 +2407,76 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   };
   EXPECT_TRUE(is_privileged(privileged_main));
   EXPECT_TRUE(is_privileged(privileged_subframe));
-  if (origin_isolation_available) {
-    EXPECT_NE(privileged_main->GetProcess(), privileged_subframe->GetProcess());
-  } else {
-    EXPECT_EQ(privileged_main->GetProcess(), privileged_subframe->GetProcess());
+  // Origin keying is forced for privileged frames regardless of whether OAC
+  // process isolation is available, so the same-site cross-origin subframe
+  // never shares the main frame's process.
+  EXPECT_NE(privileged_main->GetProcess(), privileged_subframe->GetProcess());
+}
+
+// Runs with site isolation off and the Origin-Agent-Cluster machinery
+// disabled, approximating a low-end Android configuration where OAC process
+// isolation is unavailable.
+class PrivilegedWebContentsNoOACProcessIsolationBrowserTest
+    : public WebContentsImplBrowserTest {
+ public:
+  PrivilegedWebContentsNoOACProcessIsolationBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kOriginIsolationHeader);
   }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebContentsImplBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kDisableSiteIsolation);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Even where OAC process isolation is unavailable, a privileged WebContents
+// keeps its security-critical process placement: the main frame runs in its
+// own process, separate from ordinary content at the same origin, and a
+// same-site cross-origin subframe is origin-keyed away from the main frame.
+IN_PROC_BROWSER_TEST_F(PrivilegedWebContentsNoOACProcessIsolationBrowserTest,
+                       PrivilegedProcessPlacementWithoutOACProcessIsolation) {
+  ASSERT_FALSE(
+      SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled());
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetCertHostnames({"a.com", "sub.a.com"});
+  https_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+  ASSERT_TRUE(https_server.Start());
+  const GURL main_url = https_server.GetURL("a.com", "/title1.html");
+  const GURL subframe_url = https_server.GetURL("sub.a.com", "/title1.html");
+  BrowserContext* browser_context =
+      shell()->web_contents()->GetBrowserContext();
+
+  WebContents::CreateParams privileged_create_params(browser_context);
+  WebContents::PrivilegedParams marker;
+  marker.feature_id = 42;
+  privileged_create_params.privileged_params = marker;
+  std::unique_ptr<WebContents> privileged(
+      WebContents::Create(privileged_create_params));
+  ASSERT_TRUE(NavigateToURL(privileged.get(), main_url));
+  RenderFrameHost* privileged_main = privileged->GetPrimaryMainFrame();
+
+  // The main frame must not share a process with ordinary content at the very
+  // same origin, even with site isolation off.
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+  EXPECT_NE(privileged_main->GetProcess(),
+            shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
+
+  // A same-site cross-origin subframe must be origin-keyed out of the main
+  // frame's process.
+  ASSERT_TRUE(ExecJs(privileged_main, JsReplace(R"(
+      const f = document.createElement('iframe');
+      f.src = $1;
+      document.body.appendChild(f);
+  )",
+                                                subframe_url)));
+  ASSERT_TRUE(WaitForLoadStop(privileged.get()));
+  RenderFrameHost* privileged_subframe = ChildFrameAt(privileged_main, 0);
+  ASSERT_TRUE(privileged_subframe);
+  EXPECT_NE(privileged_main->GetProcess(), privileged_subframe->GetProcess());
 }
 
 // Two privileged WebContents of the same feature coalesce into a single shared
