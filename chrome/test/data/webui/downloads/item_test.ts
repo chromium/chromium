@@ -208,9 +208,10 @@ suite('ItemTest', function() {
     });
     await microtasksFinished();
 
-    assertEquals(
-        'downloads:dangerous-old',
-        item.shadowRoot.querySelector('cr-icon')!.icon);
+    const iconName = loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'downloads:dangerous-filled' :
+        'downloads:dangerous-old';
+    assertEquals(iconName, item.shadowRoot.querySelector('cr-icon')!.icon);
     assertTrue(item.$.fileIcon.hidden);
     assertEquals(
         'red',
@@ -223,9 +224,7 @@ suite('ItemTest', function() {
     });
     await microtasksFinished();
 
-    assertEquals(
-        'downloads:dangerous-old',
-        item.shadowRoot.querySelector('cr-icon')!.icon);
+    assertEquals(iconName, item.shadowRoot.querySelector('cr-icon')!.icon);
     assertTrue(item.$.fileIcon.hidden);
     assertEquals(
         'red',

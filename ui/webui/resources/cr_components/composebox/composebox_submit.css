@@ -55,6 +55,10 @@
   transition: var(--submit-enabled-transition);
 }
 
+:host-context([webui-rounded-icons]) #submitIcon {
+  --cr-icon-button-icon-size: var(--cr-composebox-submit-icon-size, 24px);
+}
+
 :host([disabled]) #submitIcon {
   opacity: 0.4;
 }

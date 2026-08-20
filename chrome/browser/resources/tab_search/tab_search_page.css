@@ -28,6 +28,11 @@
   width: var(--mwb-icon-size);
 }
 
+:host-context([webui-rounded-icons]) #searchIcon {
+  height: 20px;
+  width: 20px;
+}
+
 #searchWrapper {
   display: flex;
   flex: 1;

@@ -221,22 +221,31 @@ suite('Toolbar', () => {
     });
 
     test('icon defaults to on', () => {
-      assertStringContains(highlightButton.ironIcon!, 'highlight-on');
+      const icon = loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'ink-highlighter-move' :
+          'highlight-on-old';
+      assertStringContains(highlightButton.ironIcon!, icon);
     });
 
     test('highlight off updates button icon', async () => {
       await changeHighlight(chrome.readingMode.noHighlighting);
-      assertStringContains(highlightButton.ironIcon!, 'highlight-off');
+      const icon = loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'ink-highlighter' :
+          'highlight-off';
+      assertStringContains(highlightButton.ironIcon!, icon);
     });
 
     test('highlight granularities update button icon', async () => {
       await changeHighlight(chrome.readingMode.noHighlighting);
       await changeHighlight(chrome.readingMode.wordHighlighting);
-      assertStringContains(highlightButton.ironIcon!, 'highlight-on');
+      const icon = loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'ink-highlighter-move' :
+          'highlight-on-old';
+      assertStringContains(highlightButton.ironIcon!, icon);
 
       await changeHighlight(chrome.readingMode.noHighlighting);
       await changeHighlight(chrome.readingMode.autoHighlighting);
-      assertStringContains(highlightButton.ironIcon!, 'highlight-on');
+      assertStringContains(highlightButton.ironIcon!, icon);
     });
   });
 
