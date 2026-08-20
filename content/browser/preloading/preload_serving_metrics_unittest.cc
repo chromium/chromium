@@ -4,6 +4,9 @@
 
 #include "content/browser/preloading/preload_serving_metrics.h"
 
+#include <optional>
+
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
@@ -32,6 +35,20 @@ std::unique_ptr<PreloadServingMetrics> MakeSkeletonPreloadServingMetrics(
 
 base::TimeTicks Millis(int ms) {
   return base::TimeTicks() + base::Milliseconds(ms);
+}
+
+void ExpectFCP(const base::HistogramTester& histogram_tester,
+               const std::string& suffix,
+               std::optional<int> fcp) {
+  const std::string name =
+      base::StrCat({"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+                    "NavigationToFirstContentfulPaint.",
+                    suffix});
+  if (fcp) {
+    histogram_tester.ExpectUniqueTimeSample(name, base::Milliseconds(*fcp), 1);
+  } else {
+    histogram_tester.ExpectTotalCount(name, 0);
+  }
 }
 
 // Scenario:
@@ -214,18 +231,9 @@ TEST(PreloadServingMetricsTest, NavigationWithoutPreload) {
       "PotentialCandidateServingResult",
       0);
 
-  histogram_tester.ExpectUniqueTimeSample(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithoutPreload",
-      base::Milliseconds(334), 1);
-  histogram_tester.ExpectTotalCount(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithPrefetch",
-      0);
-  histogram_tester.ExpectTotalCount(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithPrerender",
-      0);
+  ExpectFCP(histogram_tester, "WithoutPreload", {334});
+  ExpectFCP(histogram_tester, "WithPrefetch", {});
+  ExpectFCP(histogram_tester, "WithPrerender", {});
 
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
                                       0 /* kNoInstantLoad */, 1);
@@ -495,26 +503,11 @@ TEST(PreloadServingMetricsTest, NavigationWithPrefetch) {
       "PotentialCandidateServingResult",
       0);
 
-  histogram_tester.ExpectTotalCount(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithoutPreload",
-      0);
-  histogram_tester.ExpectUniqueTimeSample(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithPrefetch",
-      base::Milliseconds(334), 1);
-  histogram_tester.ExpectTotalCount(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithPrefetch.WithPrePrefetch",
-      0);
-  histogram_tester.ExpectUniqueTimeSample(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithPrefetch.WithoutPrePrefetch",
-      base::Milliseconds(334), 1);
-  histogram_tester.ExpectTotalCount(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithPrerender",
-      0);
+  ExpectFCP(histogram_tester, "WithoutPreload", {});
+  ExpectFCP(histogram_tester, "WithPrefetch", {334});
+  ExpectFCP(histogram_tester, "WithPrefetch.WithPrePrefetch", {});
+  ExpectFCP(histogram_tester, "WithPrefetch.WithoutPrePrefetch", {334});
+  ExpectFCP(histogram_tester, "WithPrerender", {});
 
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
                                       1 /* kPrefetch */, 1);
@@ -627,26 +620,11 @@ TEST(PreloadServingMetricsTest, NavigationWithPrefetchWithPrePrefetch) {
       "PotentialMatchThen.WithAheadOfPrerender.PotentialCandidateServingResult",
       0);
 
-  histogram_tester.ExpectTotalCount(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithoutPreload",
-      0);
-  histogram_tester.ExpectUniqueTimeSample(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithPrefetch",
-      base::Milliseconds(334), 1);
-  histogram_tester.ExpectUniqueTimeSample(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithPrefetch.WithPrePrefetch",
-      base::Milliseconds(334), 1);
-  histogram_tester.ExpectTotalCount(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithPrefetch.WithoutPrePrefetch",
-      0);
-  histogram_tester.ExpectTotalCount(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithPrerender",
-      0);
+  ExpectFCP(histogram_tester, "WithoutPreload", {});
+  ExpectFCP(histogram_tester, "WithPrefetch", {334});
+  ExpectFCP(histogram_tester, "WithPrefetch.WithPrePrefetch", {334});
+  ExpectFCP(histogram_tester, "WithPrefetch.WithoutPrePrefetch", {});
+  ExpectFCP(histogram_tester, "WithPrerender", {});
 
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
                                       1 /* kPrefetch */, 1);
@@ -899,18 +877,9 @@ TEST(PreloadServingMetricsTest,
       "PotentialCandidateServingResult",
       0);
 
-  histogram_tester.ExpectTotalCount(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithoutPreload",
-      0);
-  histogram_tester.ExpectTotalCount(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithPrefetch",
-      0);
-  histogram_tester.ExpectUniqueTimeSample(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithPrerender",
-      base::Milliseconds(334), 1);
+  ExpectFCP(histogram_tester, "WithoutPreload", {});
+  ExpectFCP(histogram_tester, "WithPrefetch", {});
+  ExpectFCP(histogram_tester, "WithPrerender", {334});
 
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
                                       2 /* kPrerender */, 1);
@@ -1226,18 +1195,9 @@ TEST(PreloadServingMetricsTest,
       "WithAheadOfPrerender.PotentialCandidateServingResult",
       0);
 
-  histogram_tester.ExpectUniqueTimeSample(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithoutPreload",
-      base::Milliseconds(2157), 1);
-  histogram_tester.ExpectTotalCount(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithPrefetch",
-      0);
-  histogram_tester.ExpectTotalCount(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithPrerender",
-      0);
+  ExpectFCP(histogram_tester, "WithoutPreload", {2157});
+  ExpectFCP(histogram_tester, "WithPrefetch", {});
+  ExpectFCP(histogram_tester, "WithPrerender", {});
 
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
                                       0 /* kNoInstantLoad */, 1);
@@ -1543,18 +1503,9 @@ TEST(
       "WithAheadOfPrerender.PotentialCandidateServingResult",
       PrefetchPotentialCandidateServingResult::kNotServedLoadFailed, 1);
 
-  histogram_tester.ExpectUniqueTimeSample(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithoutPreload",
-      base::Milliseconds(10334), 1);
-  histogram_tester.ExpectTotalCount(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithPrefetch",
-      0);
-  histogram_tester.ExpectTotalCount(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint.WithPrerender",
-      0);
+  ExpectFCP(histogram_tester, "WithoutPreload", {10334});
+  ExpectFCP(histogram_tester, "WithPrefetch", {});
+  ExpectFCP(histogram_tester, "WithPrerender", {});
 
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
                                       0 /* kNoInstantLoad */, 1);
