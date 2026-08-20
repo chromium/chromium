@@ -144,6 +144,7 @@
 <translation id="2424440923901031101">この拡張機能は Chrome ウェブストアのポリシーに違反しており、安全でない可能性があります。アクセスしたサイトでユーザーデータ（個人情報を含む）が参照、変更されないように、Chrome からこの拡張機能を削除してください。</translation>
 <translation id="2467438592969358367">Google Chrome からパスワードをエクスポートするための許可を求められています。許可するには Windows のパスワードを入力してください。</translation>
 <translation id="2472092250898121027">この拡張機能にはマルウェアが含まれており、安全ではありません。アクセスしたサイトでユーザーデータ（個人情報を含む）が参照、変更されないように、Chrome からこの拡張機能を削除してください。</translation>
+<translation id="2482846200327569645"><ph name="EXISTING_USER" /> がすでにログインしています。ブラウジング環境を分ける場合は、<ph name="USER_EMAIL_ADDRESS" /> として自分用のプロフィールで Chrome にログインしてください。<ph name="DEVICE" /> のブックマークなどの設定を使用できます。</translation>
 <translation id="2485422356828889247">アンインストール</translation>
 <translation id="2513154137948333830">再起動が必要です: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2523492931736391680">Chrome で作業データを保護</translation>
@@ -159,7 +160,7 @@
 <translation id="259935314519650377">ダウンロードしたインストーラのキャッシュに失敗しました。エラー: <ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
 <translation id="2608461706055011366">Gemini in Chrome でこのドキュメントの概要をすばやく把握し、質問することができます</translation>
 <translation id="2620436844016719705">システム</translation>
-<translation id="263447411082773721">パスワード、ブックマーク、履歴をデバイス間で完全に同期できます。既定のブラウザを Chrome に変更すると、お馴染みの機能を簡単に利用できるようになります。Chrome はタスクバーに固定され、すばやくアクセスできます。</translation>
+<translation id="263447411082773721">パスワード、ブックマーク、履歴をデバイス間で同期できます。既定のブラウザを Chrome に変更して、使い慣れた機能を簡単に利用できるようにしましょう。Chrome はタスクバーに固定され、すばやくアクセスできます。</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome では、ブラウザが安全な設定になっているかどうかを定期的に確認しています。お客様による確認が必要な項目がありましたらお知らせします。</translation>
 <translation id="2652691236519827073">新しい Chrome タブでリンクを開く(&amp;T)</translation>
@@ -193,6 +194,7 @@
 <translation id="2916983411556218750">Chrome の設定を始めましょう</translation>
 <translation id="2926952073016206995">このサイトを利用するには、Chrome でカメラの使用を許可する必要があります</translation>
 <translation id="2945997411976714835">インストール エラー: インストーラのプロセスを開始できませんでした。</translation>
+<translation id="2959224682348913614"><ph name="EXISTING_USER" /> がすでにログインしています。ブラウジング環境を分ける場合は、<ph name="USER_EMAIL_ADDRESS" /> として自分用のプロフィールで Chrome にログインしてください。<ph name="DEVICE" /> のパスワードなどの設定を使用できます。</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ネットワークにログイン - Chrome</translation>
 <translation id="2970681950995291301">Chrome から Google アカウントを削除するには、[設定] ページで Chrome からログアウトしてください</translation>
 <translation id="2976869732253036751">スマートフォンの Chrome で価格トラッキングのアラートを受け取る</translation>
@@ -212,6 +214,7 @@
 <translation id="3073571714401714450">Gemini in Chrome Dev を切り替える</translation>
 <translation id="3080151273017101988">Google Chrome を閉じた際にバックグラウンド アプリの処理を続行する</translation>
 <translation id="308397506772922478">パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chrome データを削除<ph name="END_LINK" />してください。</translation>
+<translation id="3089427491314610412"><ph name="EXISTING_USER" /> がすでにログインしています。ブラウジング環境を分ける場合は、<ph name="USER_EMAIL_ADDRESS" /> として自分用のプロフィールで Chrome にログインしてください。<ph name="DEVICE" /> で保存した情報などを使用できます。</translation>
 <translation id="3100998948628680988">Chrome プロファイルの名前を設定</translation>
 <translation id="310459126943037700">タスクを終了できませんでした。</translation>
 <translation id="3104828284009500087">ページ上のコンテンツを検索</translation>
@@ -224,6 +227,7 @@
 <translation id="3140883423282498090">変更内容は次に Google Chrome を再起動したときに有効になります。</translation>
 <translation id="3149510190863420837">Chrome アプリ</translation>
 <translation id="3161522574479303604">すべての言語</translation>
+<translation id="318555301233810762"><ph name="EXISTING_USER" /> がすでにログインしています。ブラウジング環境を分ける場合は、<ph name="USER_EMAIL_ADDRESS" /> として自分用のプロフィールで Chrome にログインしてください。すべてのデバイスでブックマークなどの設定を使用できます。</translation>
 <translation id="319199214552513804">すべてのパソコンでこの拡張機能などを使用するには、Chrome にログインしてください</translation>
 <translation id="3196187562065225381">危険なファイルであるため、このダウンロードは Chrome でブロックされました</translation>
 <translation id="3222857603094643834">Google レンズでこのページの内容を検索</translation>
@@ -262,8 +266,9 @@
 <translation id="3598673391539778844">システムトレイに Gemini in Chrome を表示する</translation>
 <translation id="3622716124581627104">ものや場所を特定したり、テキストをコピーまたは翻訳したりできます。Google レンズを使用すると、ページのスクリーンショットが Google に送信されます。<ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">共有パソコンの Chrome で Google アカウントが簡単に使用できるようになりました。</translation>
+<translation id="3628103251823745322"><ph name="EXISTING_USER" /> がすでにログインしています。ブラウジング環境を分ける場合は、<ph name="USER_EMAIL_ADDRESS" /> として自分用のプロフィールで Chrome にログインしてください。すべてのデバイスで保存した情報などを使用できます。</translation>
 <translation id="3635073343384702370">パスワードを保存すると、Chrome による確認が可能になります</translation>
-<translation id="3636970668267555808">Chrome を既定のブラウザに設定すると、お馴染みの信頼できる機能を簡単に利用できるようになります。</translation>
+<translation id="3636970668267555808">Chrome を既定のブラウザに設定して、使い慣れた信頼できる機能を簡単に利用できるようにしましょう。</translation>
 <translation id="3667616615096815454">インストールできません。このアプリはサーバーに認識されていません。</translation>
 <translation id="3673813398384385993">Chrome で「<ph name="EXTENSION_NAME" />」に不正なソフトウェアが含まれていることが検出されました</translation>
 <translation id="3697952514309507634">その他の Chrome プロファイル</translation>
@@ -584,6 +589,7 @@
 <translation id="6933858244219479645">ChromeOS システム</translation>
 <translation id="6938166777909186039">今後、Google Chrome のアップデートを受信するには、Windows 10 以降が必要となります。このパソコンでは Windows 8.1 が実行されています。</translation>
 <translation id="6943584222992551122">この操作を行うと、このユーザーの閲覧データがこのデバイスから削除されます。データを復元するには、<ph name="USER_EMAIL" /> として Chrome にログインしてください。</translation>
+<translation id="6962628299694876291"><ph name="EXISTING_USER" /> がすでにログインしています。ブラウジング環境を分ける場合は、<ph name="USER_EMAIL_ADDRESS" /> として自分用のプロフィールで Chrome にログインしてください。すべてのデバイスでパスワードなどの設定を使用できます。</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6967962315388095737">mDNS トラフィックを許可する Google Chrome ベータ版のインバウンド ルールです。</translation>
 <translation id="6979589607440534284">新しいタブを開いて、Chrome で一部のファイルがブロックされる理由を確認します</translation>
@@ -705,8 +711,8 @@
 <translation id="80471789339884597">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはすべてのブラウザを再起動してください。</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064965390968184078">1. 下の [<ph name="BUTTON_LABEL" />] をクリックします
-2.Windows の設定で [<ph name="BUTTON_2" />] をクリックします
-3.Windows の通知で [<ph name="BUTTON_3" />] をクリックすると、Chrome がタスクバーに固定され、すばやくアクセスできるようになります</translation>
+2. Windows の設定で [<ph name="BUTTON_2" />] をクリックします
+3. Windows の通知で [<ph name="BUTTON_3" />] をクリックすると、Chrome がタスクバーに固定され、すばやくアクセスできるようになります</translation>
 <translation id="8069447462453318634">[ツールバーに固定] を選択します</translation>
 <translation id="8074398340364918139">Chrome の特定の機能や拡張機能を検索するには、アドレスバーに該当のショートカットを入力して、選択したキーボードキーを押します</translation>
 <translation id="8077579734294125741">その他の Chrome プロファイル</translation>

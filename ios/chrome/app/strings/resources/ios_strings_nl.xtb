@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">Gebruik opgeslagen wachtwoorden in andere apps</translation>
 <translation id="4431224949908513835">Selecteer een betaalmethode om in te vullen.</translation>
 <translation id="4432122368769493392">Instellingen…</translation>
+<translation id="4439968635693513370">Plan je weekend met</translation>
 <translation id="4442550905108052454">Open <ph name="BEGIN_BOLD" />Instellingen<ph name="END_BOLD" />.</translation>
 <translation id="4445840280797509738">Meer opties voor <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Je kunt over de rand swipen om terug of vooruit te gaan.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">Je kunt gesloten items opnieuw openen via de gedeelten Recente tabbladen of Tabbladgroepen. Je vastgezette tabbladen worden niet gesloten.</translation>
 <translation id="4547181496285029457">Terug naar recent tabblad</translation>
 <translation id="4552042254369397518">Kopiëren…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Meer toegangssleutels</translation>
 <translation id="4564893319561643483"><ph name="TITLE" /> verbergen</translation>
 <translation id="456502772933839252"><ph name="PAGE_TITLE" /> delen</translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Je organisatie vereist dat je privé browst. Tabbladgroepen worden niet gesynchroniseerd in de incognitomodus.
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">Winkel met vertrouwen met</translation>
 <translation id="467189612236587057">Neem contact op met een bedrijf door een telefoongesprek te starten</translation>
 <translation id="4673565891421389203">Als je inlogt met je beheerde account, kun je browsen gerelateerd aan je organisatie (zoals tabbladen, geschiedenis en wachtwoorden) scheiden van je andere browse-activiteiten.
 
@@ -1307,6 +1310,7 @@
 <translation id="5300589172476337783">Tonen</translation>
 <translation id="5311061401280561833">Camera- en microfoontoegang toegestaan</translation>
 <translation id="5313967007315987356">Site toevoegen</translation>
+<translation id="5315029634103634221">Gemini is AI en kan fouten maken. <ph name="BEGIN_LINK" />Meer informatie over relevante gegevens die naar Google worden gestuurd<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Niets te importeren</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> van <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Opslaan</translation>
@@ -1389,6 +1393,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5596627076506792578">Meer opties</translation>
 <translation id="560322036295180549">Uitgezet door je organisatie</translation>
 <translation id="5611398002774823980">Opslaan in account</translation>
+<translation id="5612225021788368236">Promotie voor standaardbrowser sluiten</translation>
 <translation id="561269594905823128">Tik op <ph name="BEGIN_BOLD" />Je bestand selecteren<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Sorteren op nieuwste</translation>
 <translation id="5614553682702429503">Wachtwoord opslaan?</translation>
@@ -2474,6 +2479,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="9029650858822697271">Je bent uitgelogd</translation>
 <translation id="9032405509996909363">Browsegegevens verwijderen bevestigen</translation>
 <translation id="9035699147763101514">Mogelijk gemaakt door Personal Intelligence met Gemini. Beheer je keuzes in de instellingen.</translation>
+<translation id="9038526468059454274">Vat het samen met</translation>
 <translation id="9039373489628511875">Bandbreedte</translation>
 <translation id="9042893549633094279">Privacy en beveiliging</translation>
 <translation id="9055291197094969722">Maak tabbladgroepen om je geopende tabbladen te ordenen en productief te blijven</translation>

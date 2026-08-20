@@ -716,6 +716,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1554640914375980459">I-flash ang screen kapag nakatanggap ka ng mga notification. Mag-ingat sa paggamit ng mga flash notification kung sensitibo ka sa ilaw.</translation>
 <translation id="1555130319947370107">Asul</translation>
 <translation id="1556127816860282890">Posibleng maging limitado ang aktibidad sa background at ilang visual effect, tulad ng maayos na pag-scroll</translation>
+<translation id="1557806604681757705">iyong computer</translation>
 <translation id="1557939148300698553">Gumawa ng Profile</translation>
 <translation id="155803912725350982">Mga slow key</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -1025,6 +1026,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1784707308176068866">Patakbuhin sa background kapag hiniling ng nakikipagtulungang native application</translation>
 <translation id="1784849162047402014">Kaunti na lang ang espasyo sa disk ng device</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Kapag in-uninstall ang "<ph name="APP_NAME" />," maa-uninstall din ang app na ito:}one{Kapag in-uninstall ang "<ph name="APP_NAME" />," maa-uninstall din ang mga app na ito:}other{Kapag in-uninstall ang "<ph name="APP_NAME" />," maa-uninstall din ang mga app na ito:}}</translation>
+<translation id="1785698972112179866">Mag-sign in para makuha ang iyong mga bookmark at higit pa mula sa <ph name="DEVICE" /></translation>
 <translation id="1786290960428378411">Nagre-request na basahin at baguhin</translation>
 <translation id="1789543093145556097">Palaging itago</translation>
 <translation id="179021551944139249">Idagdag ang Link sa Listahan ng Babasahin</translation>
@@ -8648,6 +8650,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga file, browser mo, operating system ng device, at mga IP address.</translation>
 <translation id="7683834360226457448">Mga tool ng display para sa malabo ang paningin</translation>
 <translation id="7684212569183643648">Na-install ng Iyong Administrator</translation>
+<translation id="7684547908663093354">Mag-sign in para makuha ang iyong mga password at higit pa mula sa <ph name="DEVICE" /></translation>
 <translation id="7684718995427157417">Para gumawa at subukan ang iyong mga app, i-enable ang Android Debug Bridge (ADB). Tandaang binibigyang-daan ng pagkilos na ito ang pag-install ng mga Android app na hindi pa na-verify ng Google, at nangangailangan ito ng factory reset para ma-disable.</translation>
 <translation id="7684803937028953000">Na-block ng iyong organisasyon ang lokal na pag-download ng file na ito.</translation>
 <translation id="7684913007876670600">Para magpakita ng pinasimpleng view ng page na ito, buksan ang panel sa gilid at piliin ang Reading mode</translation>
@@ -9068,6 +9071,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8011372169388649948">Inilipat ang '<ph name="BOOKMARK_TITLE" />.'</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8013181884974864006">Mga Gawaing Batay sa Konteksto</translation>
+<translation id="8013462234418290522">Mag-sign in para makuha ang iyong naka-save na impormasyon at higit pa mula sa <ph name="DEVICE" /></translation>
 <translation id="8013534738634318212">Ang mga site na ito ay nasa isang grupong tinukoy ng <ph name="RWS_OWNER" />. Makikita ng mga site sa isang grupo ang iyong aktibidad sa grupo.</translation>
 <translation id="8013993649590906847">Kung hindi sapat ang deskripsyon ng isang larawan, susubukan ng Chrome na ayusin ito para sa iyo. Para gumawa ng mga deskripsyon, ipinapadala ang mga larawan sa Google.</translation>
 <translation id="8014154204619229810">Kasalukuyang tumatakbo ang updater. I-refresh pagkatapos ng isang minuto upang muling suriin.</translation>
@@ -9553,6 +9557,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8377625247046155446">Mase-save lang ang passkey na ito sa device na ito. Mananatili ito sa device na ito pagkatapos mong isara ang lahat ng Incognito window.</translation>
 <translation id="837790003026572432">Hindi sinusuportahan sa device na ito ang pag-cast ng audio ng tab</translation>
 <translation id="8378714024927312812">Pinapamahalaan ng iyong organisasyon</translation>
+<translation id="8378855320830505539">Rehiyon</translation>
 <translation id="8379988659465232385">Hindi puwedeng walang laman ang pangalan</translation>
 <translation id="8379991678458444070">Makabalik kaagad dito sa pamamagitan ng pag-bookmark sa tab na ito</translation>
 <translation id="8380266723152870797">Pangalan ng Window</translation>

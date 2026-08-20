@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">Fáðu vistuð aðgangsorð í öðrum forritum</translation>
 <translation id="4431224949908513835">Veldu greiðslumáta til að fylla inn.</translation>
 <translation id="4432122368769493392">Stillingar…</translation>
+<translation id="4439968635693513370">Skipuleggðu helgina með</translation>
 <translation id="4442550905108052454">Opnaðu <ph name="BEGIN_BOLD" />stillingar<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Fleiri valkostir fyrir <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Strjúktu brúnina til að fara áfram eða til baka.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">Þú getur opnað lokuð atriði aftur í hlutunum „Nýlegir flipar“ eða „Flipahópar“. Festum flipum verður ekki lokað.</translation>
 <translation id="4547181496285029457">Fara aftur á síðasta flipa</translation>
 <translation id="4552042254369397518">Afritar…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Fleiri aðgangslyklar</translation>
 <translation id="4564893319561643483">Fela „<ph name="TITLE" />“</translation>
 <translation id="456502772933839252">Deilir <ph name="PAGE_TITLE" /></translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Fyrirtækið þitt krefst þess að þú vafrir í huliðsstillingu. Flipahópar samstillast ekki í huliðsstillingu.
 <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">Verslaðu áhyggjulaust með</translation>
 <translation id="467189612236587057">Hringdu í fyrirtæki til að fá frekari upplýsingar</translation>
 <translation id="4673565891421389203">Með því að skrá þig inn með stýrða reikningnum þínum auðveldarðu þér að halda vefskoðun sem tengist fyrirtækinu þínu (svo sem flipa, feril og aðgangsorð) aðskildri frá annarri vefskoðun.
 
@@ -1389,6 +1392,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5596627076506792578">Fleiri valkostir</translation>
 <translation id="560322036295180549">Fyrirtækið þitt slökkti á þessu</translation>
 <translation id="5611398002774823980">Vista á reikningi</translation>
+<translation id="5612225021788368236">Loka kynningu á sjálfgefnum vafra</translation>
 <translation id="561269594905823128">Ýttu á <ph name="BEGIN_BOLD" />Veldu skrána þína<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Raða eftir nýjasta</translation>
 <translation id="5614553682702429503">Vista aðgangsorð?</translation>
@@ -2474,6 +2478,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="9029650858822697271">Þú skráðist út</translation>
 <translation id="9032405509996909363">Staðfesta eyðingu vefskoðunargagna</translation>
 <translation id="9035699147763101514">Knúið af persónulegri greind með Gemini. Þú getur stjórnað valkostunum þínum í stillingunum.</translation>
+<translation id="9038526468059454274">Taka saman með</translation>
 <translation id="9039373489628511875">Bandvídd</translation>
 <translation id="9042893549633094279">Persónuvernd og öryggi</translation>
 <translation id="9055291197094969722">Búðu til flipahópa til að flokka opnu flipana þína og afkasta meiru</translation>

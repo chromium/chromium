@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">Získajte uložené heslá v iných aplikáciách</translation>
 <translation id="4431224949908513835">Vyberte spôsob platby, ktorý chcete vyplniť.</translation>
 <translation id="4432122368769493392">Nastavenia…</translation>
+<translation id="4439968635693513370">Naplánujte si víkend pomocou</translation>
 <translation id="4442550905108052454">Otvorte <ph name="BEGIN_BOLD" />Nastavenia<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Ďalšie možnosti pre akciu <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Potiahnutím okraja prejdete dozadu alebo dopredu.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">Zavreté položky môžete znova otvoriť v sekciách Nedávne karty alebo Skupiny kariet. Pripnuté karty sa nezavrú.</translation>
 <translation id="4547181496285029457">Návrat na poslednú kartu</translation>
 <translation id="4552042254369397518">Kopíruje sa…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Ďalšie prístupové kľúče</translation>
 <translation id="4564893319561643483">Skryť <ph name="TITLE" /></translation>
 <translation id="456502772933839252">Zdieľanie: <ph name="PAGE_TITLE" /></translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Vaša organizácia vyžaduje, aby ste prehliadali súkromne. Skupiny kariet sa v režime inkognito nesynchronizujú.
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">Nakupujte bez obáv pomocou</translation>
 <translation id="467189612236587057">Spojte sa s určitou firmou tak, že zavoláte na jej číslo</translation>
 <translation id="4673565891421389203">Ak sa prihlásite spravovaným účtom, budete môcť prehliadanie súvisiace s vašou organizáciou (vrátane kariet, histórie a hesiel) ponechať oddelené od ostatného prehliadania.
 
@@ -1389,6 +1392,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5596627076506792578">Ďalšie možnosti</translation>
 <translation id="560322036295180549">Vypnuté vašou organizáciou</translation>
 <translation id="5611398002774823980">Uložiť v účte</translation>
+<translation id="5612225021788368236">Zavrieť promo na predvolený prehliadač</translation>
 <translation id="561269594905823128">Klepnite na <ph name="BEGIN_BOLD" />Vybrať súbor<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Zoradiť od najnovších</translation>
 <translation id="5614553682702429503">Uložiť heslo?</translation>
@@ -2474,6 +2478,7 @@ Ak chcete pokračovať v počítači, prepnite na účet <ph name="OTHER_EMAIL"
 <translation id="9029650858822697271">Systém vás odhlásil</translation>
 <translation id="9032405509996909363">Potvrdiť odstránenie dát prehliadania</translation>
 <translation id="9035699147763101514">Využíva inteligenciu na mieru s Gemini. Svoje voľby môžete spravovať v nastaveniach.</translation>
+<translation id="9038526468059454274">Zhrňte to pomocou</translation>
 <translation id="9039373489628511875">Rýchlosť pripojenia</translation>
 <translation id="9042893549633094279">Ochrana súkromia a zabezpečenie</translation>
 <translation id="9055291197094969722">Vytvorte skupinu kariet, aby ste si karty mohli usporiadať a zachovať si produktivitu</translation>

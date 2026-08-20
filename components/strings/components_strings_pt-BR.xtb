@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Selecione uma permissão para <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Salvar IBAN?</translation>
 <translation id="1113869188872983271">&amp;Desfazer reordenar</translation>
+<translation id="1117709830616495622">Com a tecnologia da Inteligência Personalizada do Gemini.</translation>
 <translation id="111897705806685148">Usar a chave de acesso de outro dispositivo</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pressione "Tab" e "Enter" para gerenciar quais informações do Chrome você salva na sua Conta do Google</translation>
 <translation id="1121990216147052230">Crie uma lista de tarefas para mim</translation>
@@ -614,7 +615,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2058468041496756763">Você pode mudar o mecanismo de pesquisa a qualquer momento nas configurações do Chrome. Caso o mecanismo da sua preferência não esteja listado, acesse o site dele e faça uma pesquisa. Ele será exibido entre os mecanismos de pesquisa usados recentemente nas configurações do Chrome, e você poderá defini-lo como padrão.</translation>
 <translation id="2059166748188874810">Município</translation>
 <translation id="2059202684901022309">22 x 34 pol.</translation>
-<translation id="2063929825539050431">Para enviar esta página para outro dispositivo de forma rápida, toque e pressione a barra de endereço</translation>
+<translation id="2063929825539050431">Para enviar esta página a outro dispositivo de forma rápida, toque e pressione a barra de endereço</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugestão}one{# sugestão}other{# sugestões}}</translation>
 <translation id="2066969741541525119">O site a seguir foi bloqueado pela sua organização</translation>
 <translation id="2071156619270205202">Esse não é um número de cartão virtual.</translation>
@@ -1170,6 +1171,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3005723025932146533">Mostrar cópia salva</translation>
 <translation id="300580149047131921">Usado recentemente</translation>
 <translation id="3006864083554020786">endereço de casa</translation>
+<translation id="3008410317623852235">Agora você pode encontrar e preencher informações do Gmail e muito mais.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab para procurar as ações disponíveis e Enter para executar a selecionada.</translation>
 <translation id="3010991137650052245">Para usar a permissão <ph name="PERMISSION" /> neste site, autorize o acesso do<ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3014726756341138577">Recursos avançados de impressora</translation>
@@ -2319,6 +2321,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4941627891654116707">Tamanho da fonte</translation>
 <translation id="4943620199112228840">Usar os microfones</translation>
 <translation id="4943872375798546930">Nenhum resultado</translation>
+<translation id="494701040141924538">Entendi, fechar aviso</translation>
 <translation id="495170559598752135">Ações</translation>
 <translation id="4953689047182316270">Responder a eventos de acessibilidade</translation>
 <translation id="4954505713046251871">Para o recurso dar sugestões e ser aprimorado, o URL e o conteúdo da página são compartilhados com o Google</translation>
@@ -3369,6 +3372,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6743841972744298686">Configurações de sincronização</translation>
 <translation id="6745212570062463886">Preencha automaticamente seu nome e endereço de e-mail da Conta do Google</translation>
 <translation id="674580074662200768">Atualizar passaporte com segurança</translation>
+<translation id="6749473226660745022">Fotos</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Valor da política</translation>
 <translation id="6753434778807740853">Excluir a entrada <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3708,6 +3712,7 @@ Mais detalhes:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Gerenciadores de pagamento</translation>
 <translation id="7366594738862061263">Saiba mais sobre como o Chrome protege suas senhas</translation>
+<translation id="7366909168761621528">Dados de navegação</translation>
 <translation id="7370751048350026847">Não é recomendado colar o conteúdo neste site</translation>
 <translation id="7372526636730851647">Foto (brilhante)</translation>
 <translation id="7372973238305370288">resultado da pesquisa</translation>
@@ -4296,6 +4301,7 @@ Mais detalhes:
 <translation id="8350416046273606058">O atalho não pode conter espaços: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Criar nota</translation>
 <translation id="8352849934814541340">O administrador do dispositivo instalou aplicativos para funções adicionais. Os aplicativos têm acesso a alguns dos seus dados.</translation>
+<translation id="8353273112634584260">Com a tecnologia da Inteligência Personalizada do Gemini. Suas solicitações, títulos de páginas e URLs podem ser analisados para melhorar o preenchimento automático aprimorado.</translation>
 <translation id="8355270400102541638">Contexto de falha local:</translation>
 <translation id="8362914115861174987">Traduzir para </translation>
 <translation id="8363502534493474904">Desativar o modo avião</translation>
@@ -4656,6 +4662,7 @@ Mais detalhes:
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Testar o Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Para sair do modo tela cheia, toque em |<ph name="ACCELERATOR" />| e pressione</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Erro de segurança</translation>
 <translation id="9035699147763101514">Com a tecnologia da Inteligência Personalizada do Gemini. Gerencie suas escolhas nas configurações.</translation>
 <translation id="9035824888276246493">Salvar códigos de segurança</translation>

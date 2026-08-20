@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">Aceda a palavras-passe guardadas noutras apps</translation>
 <translation id="4431224949908513835">Selecione um método de pagamento para preencher.</translation>
 <translation id="4432122368769493392">Definições…</translation>
+<translation id="4439968635693513370">Planeie o seu fim de semana com o</translation>
 <translation id="4442550905108052454">Abra as <ph name="BEGIN_BOLD" />Definições<ph name="END_BOLD" />.</translation>
 <translation id="4445840280797509738">Mais opções para <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Pode deslizar rapidamente na extremidade para retroceder ou avançar.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">Pode reabrir itens fechados a partir das secções de separadores recentes ou grupos de separadores. Os separadores fixos não vão ser fechados.</translation>
 <translation id="4547181496285029457">Volte ao separador Recentes</translation>
 <translation id="4552042254369397518">A copiar…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Mais chaves de acesso</translation>
 <translation id="4564893319561643483">Oculte "<ph name="TITLE" />"</translation>
 <translation id="456502772933839252">A partilhar <ph name="PAGE_TITLE" /></translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">A sua organização requer que navegue em privado. Os grupos de separadores não são sincronizados no Modo de navegação anónima.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">Compre com confiança com o</translation>
 <translation id="467189612236587057">Iniciar uma chamada telefónica para contactar uma empresa</translation>
 <translation id="4673565891421389203">Iniciar sessão com a sua conta gerida ajuda a manter a navegação relacionada com a sua organização (incluindo separadores, histórico e palavras-passe) separada da restante navegação.
 
@@ -1307,6 +1310,7 @@
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5311061401280561833">Acesso à câmara e ao microfone permitido</translation>
 <translation id="5313967007315987356">Adicionar site</translation>
+<translation id="5315029634103634221">O Gemini é IA e pode cometer erros. <ph name="BEGIN_LINK" />Mais sobre os dados relevantes enviados para a Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Nada para importar</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Guardar</translation>
@@ -1389,6 +1393,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="560322036295180549">Desativado pela sua entidade</translation>
 <translation id="5611398002774823980">Guardar na conta</translation>
+<translation id="5612225021788368236">Fechar promoção do navegador predefinido</translation>
 <translation id="561269594905823128">Toque em <ph name="BEGIN_BOLD" />Selecionar ficheiro<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Ordenar por mais recente</translation>
 <translation id="5614553682702429503">Guardar a palavra-passe?</translation>
@@ -2474,6 +2479,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="9029650858822697271">A sua sessão foi terminada</translation>
 <translation id="9032405509996909363">Confirmar eliminação de dados de navegação</translation>
 <translation id="9035699147763101514">Com tecnologia da Inteligência Personalizada com o Gemini. Faça a gestão das suas escolhas nas definições.</translation>
+<translation id="9038526468059454274">Resuma com o</translation>
 <translation id="9039373489628511875">Largura de banda</translation>
 <translation id="9042893549633094279">Privacidade e segurança</translation>
 <translation id="9055291197094969722">Crie grupos de separadores para organizar os separadores abertos e manter a produtividade</translation>

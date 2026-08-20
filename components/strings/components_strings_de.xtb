@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Berechtigung für <ph name="PERMISSION_NAME" /> auswählen</translation>
 <translation id="1113000785583998331">IBAN speichern?</translation>
 <translation id="1113869188872983271">&amp;Neu anordnen rückgängig machen</translation>
+<translation id="1117709830616495622">Basierend auf Personal Intelligence mit Gemini.</translation>
 <translation id="111897705806685148">Passkey von einem anderen Gerät verwenden</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um festzulegen, welche Chrome-Daten in deinem Google-Konto gespeichert werden sollen</translation>
 <translation id="1121990216147052230">Erstelle eine To-do-Liste für mich</translation>
@@ -1170,6 +1171,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3005723025932146533">Gespeicherte Kopie anzeigen</translation>
 <translation id="300580149047131921">Zuletzt verwendet</translation>
 <translation id="3006864083554020786">Privatadresse</translation>
+<translation id="3008410317623852235">Jetzt kannst du Informationen aus Gmail und mehr suchen und einfügen.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, drücke die Tabulatortaste, um die verfügbaren Aktionen aufzurufen, und dann die Eingabetaste, um die ausgewählte Aktion auszuführen.</translation>
 <translation id="3010991137650052245">Wenn du deine „<ph name="PERMISSION" />“-Berechtigung auf dieser Website verwenden möchtest, musst du <ph name="SHORT_PRODUCT_NAME" /> Zugriff erlauben</translation>
 <translation id="3014726756341138577">Erweiterte Druckerfunktionen</translation>
@@ -2317,6 +2319,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4941627891654116707">Schriftgröße</translation>
 <translation id="4943620199112228840">Mikrofon verwenden</translation>
 <translation id="4943872375798546930">Keine Ergebnisse</translation>
+<translation id="494701040141924538">Ok, Benachrichtigung schließen</translation>
 <translation id="495170559598752135">Aktionen</translation>
 <translation id="4953689047182316270">Auf Bedienungshilfen reagieren</translation>
 <translation id="4954505713046251871">Damit du Vorschläge erhalten kannst und diese Funktion verbessert werden kann, werden die URL und die Inhalte der Seite an Google gesendet</translation>
@@ -3367,6 +3370,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6743841972744298686">Synchronisierungseinstellungen</translation>
 <translation id="6745212570062463886">Automatisch Name und E‑Mail-Adresse aus deinem Google-Konto einfügen lassen</translation>
 <translation id="674580074662200768">Reisepass sicher aktualisieren</translation>
+<translation id="6749473226660745022">Fotos</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Wert der Richtlinie</translation>
 <translation id="6753434778807740853">Eintrag „<ph name="ENTRY_VOICEOVER" />“ löschen</translation>
@@ -3548,7 +3552,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="7064851114919012435">Kontaktdaten</translation>
 <translation id="7070144569727915108">Systemeinstellungen</translation>
 <translation id="70705239631109039">Deine Verbindung ist nicht uneingeschränkt sicher</translation>
-<translation id="7074595960655571061">Du kannst jetzt Zahlungsmethoden speichern, um sie beim Bezahlen in Chrome automatisch ausfüllen zu lassen. <ph name="LINK_TEXT" /></translation>
+<translation id="7074595960655571061">Du kannst jetzt Zahlungsmethoden speichern, um sie beim Bezahlen in Chrome automatisch eintragen zu lassen. <ph name="LINK_TEXT" /></translation>
 <translation id="7075452647191940183">Die Anfrage ist zu groß</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 mit RSA-Verschlüsselung</translation>
 <translation id="7075896597860500885">Das Kopieren von dieser Website wird nicht empfohlen</translation>
@@ -3706,6 +3710,7 @@ Weitere Details:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Zahlungs-Handler</translation>
 <translation id="7366594738862061263">Informationen dazu, wie du deine Passwörter mit Chrome schützen kannst</translation>
+<translation id="7366909168761621528">Browserdaten</translation>
 <translation id="7370751048350026847">Das Einfügen dieser Inhalte auf dieser Website wird nicht empfohlen</translation>
 <translation id="7372526636730851647">Foto (glänzend)</translation>
 <translation id="7372973238305370288">Suchergebnis</translation>
@@ -4294,6 +4299,7 @@ Weitere Details:
 <translation id="8350416046273606058">Kürzel darf keine Leerzeichen enthalten: „<ph name="SHORTCUT_NAME" />“</translation>
 <translation id="8351131234907093545">Notiz erstellen</translation>
 <translation id="8352849934814541340">Der Administrator dieses Geräts hat Anwendungen für zusätzliche Funktionen installiert. Diese Anwendungen können auf einige deiner Daten zugreifen.</translation>
+<translation id="8353273112634584260">Basierend auf Personal Intelligence mit Gemini. Deine Anfragen, Seitentitel und URLs werden möglicherweise überprüft, um die Funktion „Erweitertes Autofill“ zu verbessern.</translation>
 <translation id="8355270400102541638">Kontext für lokalen Absturz:</translation>
 <translation id="8362914115861174987">Zielsprache</translation>
 <translation id="8363502534493474904">Flugmodus ausschalten</translation>
@@ -4654,6 +4660,7 @@ Weitere Details:
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Chrome Enterprise Core testen</translation>
 <translation id="9027531288681624875">Zum Beenden des Vollbildmodus |<ph name="ACCELERATOR" />| gedrückt halten</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Sicherheitsfehler</translation>
 <translation id="9035699147763101514">Unterstützt durch Personal Intelligence mit Gemini. Du kannst deine Auswahl in den Einstellungen verwalten.</translation>
 <translation id="9035824888276246493">Sicherheitscodes speichern</translation>

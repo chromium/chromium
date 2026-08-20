@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Rechten selecteren voor <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">IBAN opslaan?</translation>
 <translation id="1113869188872983271">&amp;Volgorde wijzigen ongedaan maken</translation>
+<translation id="1117709830616495622">Mogelijk gemaakt door Personal Intelligence met Gemini.</translation>
 <translation id="111897705806685148">Toegangssleutel van een ander apparaat gebruiken</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om te beheren welke Chrome-informatie je opslaat in je Google-account</translation>
 <translation id="1121990216147052230">Maak een takenlijst voor me</translation>
@@ -1170,6 +1171,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3005723025932146533">Opgeslagen kopie bekijken</translation>
 <translation id="300580149047131921">Recent gebruikt</translation>
 <translation id="3006864083554020786">woonadres</translation>
+<translation id="3008410317623852235">Je kunt nu onder andere informatie uit Gmail vinden en invullen.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab om door de beschikbare acties te browsen en op Enter om de geselecteerde actie uit te voeren.</translation>
 <translation id="3010991137650052245">Geef <ph name="SHORT_PRODUCT_NAME" /> toegang om je <ph name="PERMISSION" /> op deze site te gebruiken</translation>
 <translation id="3014726756341138577">Geavanceerde printerfuncties</translation>
@@ -2313,6 +2315,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4941627891654116707">Lettergrootte</translation>
 <translation id="4943620199112228840">Je microfoons gebruiken</translation>
 <translation id="4943872375798546930">Geen resultaten</translation>
+<translation id="494701040141924538">OK, melding sluiten</translation>
 <translation id="495170559598752135">Acties</translation>
 <translation id="4953689047182316270">Reageren op toegankelijkheidsgebeurtenissen</translation>
 <translation id="4954505713046251871">De URL en content van de pagina worden gedeeld met Google om suggesties te bieden en deze functie te verbeteren</translation>
@@ -3362,6 +3365,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6743841972744298686">Synchronisatie-instellingen</translation>
 <translation id="6745212570062463886">Vul je naam en e-mailadres automatisch in vanuit je Google-account</translation>
 <translation id="674580074662200768">Paspoort beveiligd updaten</translation>
+<translation id="6749473226660745022">Foto's</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Beleidswaarde</translation>
 <translation id="6753434778807740853">Item <ph name="ENTRY_VOICEOVER" /> verwijderen</translation>
@@ -3701,6 +3705,7 @@ Aanvullende informatie:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Betalingshandlers</translation>
 <translation id="7366594738862061263">Meer informatie over hoe Chrome je wachtwoorden beveiligt</translation>
+<translation id="7366909168761621528">Browsegegevens</translation>
 <translation id="7370751048350026847">Deze content plakken op deze site wordt niet aanbevolen</translation>
 <translation id="7372526636730851647">Foto (glanzend)</translation>
 <translation id="7372973238305370288">zoekresultaat</translation>
@@ -4289,6 +4294,7 @@ Aanvullende informatie:
 <translation id="8350416046273606058">De snelkoppeling mag geen spaties bevatten: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="8351131234907093545">Notitie maken</translation>
 <translation id="8352849934814541340">De beheerder van dit apparaat heeft apps geïnstalleerd voor aanvullende functies. Apps hebben toegang tot sommige van je gegevens.</translation>
+<translation id="8353273112634584260">Mogelijk gemaakt door Personal Intelligence met Gemini. Je verzoeken, paginatitels en URL's kunnen worden beoordeeld om verbeterd automatisch invullen te verbeteren.</translation>
 <translation id="8355270400102541638">Lokale crashcontext:</translation>
 <translation id="8362914115861174987">Vertalen naar het</translation>
 <translation id="8363502534493474904">Zet de vliegtuigmodus uit</translation>
@@ -4648,6 +4654,7 @@ Aanvullende informatie:
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Chrome Enterprise Core proberen</translation>
 <translation id="9027531288681624875">Houd |<ph name="ACCELERATOR" />| ingedrukt om het volledige scherm te sluiten</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Beveiligingsfout</translation>
 <translation id="9035699147763101514">Mogelijk gemaakt door Personal Intelligence met Gemini. Beheer je keuzes in de instellingen.</translation>
 <translation id="9035824888276246493">Beveiligingscodes opslaan</translation>

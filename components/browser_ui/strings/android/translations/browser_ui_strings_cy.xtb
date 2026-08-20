@@ -372,6 +372,7 @@
 <translation id="4676059169848868271">I adael i <ph name="APP_NAME" /> ddefnyddio olrhain dwylo, trowch olrhain dwylo ymlaen hefyd yn y <ph name="BEGIN_LINK" />gosodiadau system<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Rheoli eich cardiau</translation>
 <translation id="4722332387043141878">Mae gwefannau fel arfer yn defnyddio synwyryddion symudiad a golau eich dyfais ar gyfer nodweddion megis rhithwironedd neu olrhain ffitrwydd</translation>
+<translation id="4748783296226936791">Mae gwefannau fel arfer yn cysylltu â dyfeisiau HID ar gyfer nodweddion sy'n defnyddio bysellfyrddau anghyffredin, rheolyddion gemau a dyfeisiau eraill</translation>
 <translation id="4755971844837804407">Pan fydd wedi'i droi ymlaen, gall gwefannau ddangos unrhyw hysbyseb i chi. Pan fydd wedi'i ddiffodd, ni all gwefannau ddangos hysbysebion ymwthiol neu gamarweiniol.</translation>
 <translation id="4779083564647765204">Chwyddo</translation>
 <translation id="4807122856660838973">Troi Pori'n Ddiogel ymlaen</translation>
@@ -456,6 +457,7 @@
 <translation id="5700761515355162635">Caniateir cwcis trydydd parti</translation>
 <translation id="5706552988683188916">Mae hyn yn dileu cwcis a data gwefan eraill ar gyfer <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Gall gwefannau ddangos anogwyr mewngofnodi o wasanaethau hunaniaeth</translation>
+<translation id="5719854774000914513">Gall gwefannau ofyn am gysylltu â dyfeisiau HID</translation>
 <translation id="5740126560802162366">Gall gwefannau gadw data ar eich dyfais</translation>
 <translation id="5743425052258407233">Cewch eich hanes ar eich holl ddyfeisiau, fel y barhau â'r hyn yr oeddech yn ei wneud yn hawdd</translation>
 <translation id="5749158352074143502">Parhau gyda'r tab hwn</translation>
@@ -575,6 +577,7 @@
 <translation id="6950072572526089586">Gall gwefan rydych yn ymweld â hi gadw gwybodaeth am yr hyn rydych yn ei wneud fel ei bod yn gweithio yn ôl y disgwyl - er enghraifft, i'ch cadw chi wedi'ch mewngofnodi i wefan neu i gadw eitemau yn eich basged siopa. Yn aml mae gwefannau'n cadw'r wybodaeth hon dros dro ar eich dyfais.</translation>
 <translation id="6964291282260073066">Mae "WebGPU" wedi'i analluogi.</translation>
 <translation id="6965382102122355670">Iawn</translation>
+<translation id="6972629891077993081">Dyfeisiau HID</translation>
 <translation id="6980507581230208647">Thema rhosyn</translation>
 <translation id="6980861169612950611">Dileu data gwefan? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Hygyrchedd</translation>
@@ -732,6 +735,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:</translation>
 <translation id="8593422116412089302">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am gael defnyddio gwybodaeth y maent wedi'i chadw amdanoch chi. Pan fydd wedi'i ddiffodd, ni all gwefannau ofyn am gael defnyddio gwybodaeth y maent wedi'i chadw amdanoch chi.</translation>
 <translation id="8609465669617005112">Symud i fyny</translation>
 <translation id="8617611086246832542">Pan fydd wedi'i droi ymlaen, dangosir gwedd bwrdd gwaith gwefannau. Pan fydd wedi'i ddiffodd, dangosir gwedd symudol gwefannau.</translation>
+<translation id="8625916342247441948">Peidio â chaniatáu i wefannau gysylltu â dyfeisiau HID</translation>
 <translation id="8670078035093027626">Taflen waelod porwr diofyn wedi'i hagor ar uchder llawn</translation>
 <translation id="8676316391139423634">Pan fydd ymlaen, gall gwefannau ofyn i olrhain eich dwylo. Pan fydd wedi'i ddiffodd, ni all gwefannau olrhain eich dwylo.</translation>
 <translation id="8676374126336081632">Clirio mewnbwn</translation>

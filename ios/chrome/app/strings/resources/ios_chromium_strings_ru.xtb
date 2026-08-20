@@ -253,6 +253,7 @@
 <translation id="6154098560469640583">Открывайте ссылки в сообщениях, документах и других приложениях с помощью Chromium.</translation>
 <translation id="6157162508956739031">Пароли и ключи доступа из Chromium будут вводиться автоматически. Это позволит быстро входить в аккаунты на сайтах и в приложениях.</translation>
 <translation id="6170619162539716595">Чтобы браузер Chromium показывал полезную информацию о найденных адресах и прокладывал маршруты, разрешите ему использовать Google Карты.</translation>
+<translation id="6170834619568075230">Google Объектив в Chromium позволяет искать информацию о любых объектах на экране.</translation>
 <translation id="6244277266078678766">Ваши данные будут сохранены в Менеджере паролей для аккаунта <ph name="USER_EMAIL" />.</translation>
 <translation id="6268381023930128611">Выйти из Chromium?</translation>
 <translation id="6301717043141881464">Чтобы быстро вводить сохраненные пароли в других приложениях, выберите автозаполнение Chromium.</translation>
@@ -379,6 +380,7 @@
 <translation id="9177628952266852500"><ph name="EMAIL" />. Chromium находится под управлением.</translation>
 <translation id="921174536258924340">Браузеру Chromium не удается проверить все пароли. Повторите попытку завтра или <ph name="BEGIN_LINK" />проверьте пароли в аккаунте Google<ph name="END_LINK" />.</translation>
 <translation id="924957577793602335">Настройте Chromium для себя</translation>
+<translation id="925642420047255224">При переходе по ссылкам в сообщениях, документах и других приложениях будет открываться Chromium.</translation>
 <translation id="981812233959540767">Играть в Chromium Dino</translation>
 <translation id="985602178874221306">Авторы Chromium</translation>
 <translation id="986520777495807752">Сделайте Chromium браузером по умолчанию</translation>

@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">保存したパスワードを他のアプリで使用</translation>
 <translation id="4431224949908513835">入力するお支払い方法を選択してください。</translation>
 <translation id="4432122368769493392">設定…</translation>
+<translation id="4439968635693513370">週末の予定を立てるなら</translation>
 <translation id="4442550905108052454">[<ph name="BEGIN_BOLD" />設定<ph name="END_BOLD" />] を開く</translation>
 <translation id="4445840280797509738">「<ph name="CELL_ACCESSIBILITY_LABEL" />」に関するその他のオプション</translation>
 <translation id="4455710003856931944">端をスワイプすると、前または次のタブに移動できます。</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">閉じたタブやタブグループは、[最近使ったタブ] または [タブグループ] で再度開くことができます。固定タブは閉じられません。</translation>
 <translation id="4547181496285029457">最近使用したタブに戻る</translation>
 <translation id="4552042254369397518">コピー中…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">その他のパスキー</translation>
 <translation id="4564893319561643483">「<ph name="TITLE" />」を非表示にする</translation>
 <translation id="456502772933839252"><ph name="PAGE_TITLE" /> の共有</translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">組織がシークレット モードで閲覧するよう求めています。シークレット モードではタブグループは同期されません。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">安心してお買い物を楽しむなら</translation>
 <translation id="467189612236587057">ビジネスに電話で問い合わせる</translation>
 <translation id="4673565891421389203">管理対象アカウントでログインすると、組織に関連するブラウジング（タブ、履歴、パスワードなど）を他のブラウジングと分けて管理できます。
 
@@ -1307,6 +1310,7 @@
 <translation id="5300589172476337783">表示</translation>
 <translation id="5311061401280561833">カメラとマイクへのアクセスが許可されています</translation>
 <translation id="5313967007315987356">サイトを追加</translation>
+<translation id="5315029634103634221">Gemini は AI であり、不正確な情報を表示することがあります。<ph name="BEGIN_LINK" />Google に送信される関連データの詳細<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">インポートするアイテムはありません</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">保存</translation>
@@ -1389,6 +1393,7 @@
 <translation id="5596627076506792578">その他のオプション</translation>
 <translation id="560322036295180549">組織によって無効にされています</translation>
 <translation id="5611398002774823980">アカウントに保存</translation>
+<translation id="5612225021788368236">デフォルトのブラウザのプロモーションを閉じる</translation>
 <translation id="561269594905823128">[<ph name="BEGIN_BOLD" />ファイルを選択<ph name="END_BOLD" />] をタップします</translation>
 <translation id="5613297089029360427">最新で並べ替え</translation>
 <translation id="5614553682702429503">パスワードを保存しますか？</translation>
@@ -2474,6 +2479,7 @@
 <translation id="9029650858822697271">ログアウトしました</translation>
 <translation id="9032405509996909363">閲覧履歴データの削除を確定する</translation>
 <translation id="9035699147763101514">Gemini のパーソナル インテリジェンスを使用します。選択内容は [設定] で管理できます。</translation>
+<translation id="9038526468059454274">文章を要約するなら</translation>
 <translation id="9039373489628511875">帯域幅</translation>
 <translation id="9042893549633094279">プライバシーとセキュリティ</translation>
 <translation id="9055291197094969722">タブグループを作成して、開いているタブを整理し、効率的に作業できます</translation>

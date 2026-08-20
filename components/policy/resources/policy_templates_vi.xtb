@@ -172,6 +172,16 @@ Bạn có thể tuỳ chỉnh nhãn thông qua chính sách <ph name="ENTERPRISE
 <translation id="1100840127293327071">Không chọn tuỳ chọn lưu giữ dữ liệu duyệt web hiện có theo mặc định</translation>
 <translation id="1105572260329131950">Sử dụng biểu tượng mặc định cho các kết nối an toàn</translation>
 <translation id="1105711894873068933">Sau khi <ph name="LACROS_NAME" /> tắt, tất cả dữ liệu người dùng sẽ bị xoá vào lần đăng nhập tiếp theo.</translation>
+<translation id="1106279506320506502">Chỉ định xem Chế độ tách biệt có được bật hay không.
+
+Chế độ tách biệt là chế độ duyệt web tạm thời chỉ dành cho doanh nghiệp.
+Chế độ này hỗ trợ các chính sách doanh nghiệp liên quan đến quy trình DLP (Ngăn chặn mất dữ liệu) và các tiện ích bị buộc cài đặt.
+
+Nếu được đặt thành 1 – Enabled (Bật), Chế độ tách biệt sẽ bật và chế độ ẩn danh sẽ tắt.
+
+Nếu được đặt thành 0 – Disabled (Tắt) hoặc không đặt, Chế độ tách biệt sẽ tắt.
+
+Chính sách này chỉ có hiệu lực khi người dùng có giấy phép "<ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />".</translation>
 <translation id="1106342730891876476">Cài đặt cách chia sẻ</translation>
 <translation id="1107538157073168076">Tắt tiện ích thông tin chi tiết</translation>
 <translation id="1110426799149444997">Tắt tính năng tìm kiếm khu vực của <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
@@ -1650,6 +1660,17 @@ Thông thường, chính sách này bị Disabled (Tắt) để chống lừa đ
 <translation id="2057317273526988987">Cho phép truy cập vào một danh sách các URL</translation>
 <translation id="205807990145127714">Dữ liệu đo từ xa để báo cáo khi xảy ra sự kiện tác động đến cường độ tín hiệu.</translation>
 <translation id="2060153898336610735">Tự động dựa trên ngôn ngữ hiện tại</translation>
+<translation id="2060316966423154087">Chỉ định xem người dùng có thể cho phép <ph name="PRODUCT_NAME" /> sử dụng AI tạo sinh để hiểu rõ hơn về các biểu mẫu và điền nhiều trường hơn hay không.
+
+0 = Có hiệu lực tương tự như 1. Trước phiên bản M153, chế độ cài đặt này cho phép Google sử dụng dữ liệu liên quan để cải tiến các mô hình AI. Tuỳ thuộc vào tính năng, dữ liệu liên quan có thể bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản. 0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
+
+1 = Cho phép tính năng nhưng không cho phép Google sử dụng dữ liệu liên quan (bao gồm cả câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản) để cải tiến các mô hình. 1 là giá trị mặc định cho Người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý và Tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
+
+2 = Không cho phép tính năng.
+
+Nếu bạn không đặt chính sách này, hành vi của chính sách sẽ do chính sách <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> xác định.
+
+Để biết thêm thông tin về cách xử lý dữ liệu cho các tính năng AI tạo sinh, vui lòng tham khảo https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2061123930713023976">Cho phép dùng kỹ thuật chặn bắt gói tin qua mạng để gỡ lỗi</translation>
 <translation id="2061810934846663491">Định cấu hình tên miền bắt buộc cho máy chủ truy cập từ xa</translation>
 <translation id="2062632109797189011">Bật lại API window.webkitStorageInfo không được dùng nữa</translation>
@@ -2871,6 +2892,7 @@ Thao tác đặt "command_line" sẽ chặn hoạt động tải tiện ích t�
 
 Nếu bạn không đặt chính sách này, <ph name="BLOCK_POPUPS_POLICY_NAME" /> sẽ được áp dụng nhưng người dùng có thể thay đổi chế độ cài đặt này.</translation>
 <translation id="2796714419743648316">Danh sách cho phép theo giới hạn thời gian cho mỗi ứng dụng</translation>
+<translation id="2799223571221894425">Chạy lại</translation>
 <translation id="2801065672151277034">Các tùy chọn quản lý chứng chỉ</translation>
 <translation id="2801155097555584385">Đặt mức phần trăm bắt đầu sạc pin tùy chỉnh</translation>
 <translation id="2801378553855965587">Tắt tính năng tích hợp <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
@@ -3445,19 +3467,6 @@ Nếu bạn không đặt hoặc đặt chính sách này thành tắt, thì tr�
 <translation id="3150351525324499342">Không hiển thị biểu tượng <ph name="PRODUCT_NAME" /> trên thanh công cụ theo mặc định mà để người dùng chọn</translation>
 <translation id="3152135410085709340">Cho phép truy cập tệp cục bộ vào URL file:// trên các trang web này trong Trình xem PDF</translation>
 <translation id="3152425128389603870">Cho phép Màn hình hợp nhất và chính sách này bật theo mặc định.</translation>
-<translation id="3157506194753687842">Kiểm soát việc cho phép hay không cho phép tác nhân <ph name="GEMINI_SPARK_PRODUCT_NAME" /> kết nối với <ph name="PRODUCT_NAME" /> và sử dụng tính năng tự động duyệt web.
-
-0 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> được phép kết nối và sử dụng tính năng tự động duyệt web của <ph name="PRODUCT_NAME" />
-
-1 = <ph name="GEMINI_SPARK_PRODUCT_NAME" /> không được phép kết nối hoặc sử dụng tính năng tự động duyệt web của <ph name="PRODUCT_NAME" />
-
-Cảnh báo: Việc cho phép <ph name="GEMINI_SPARK_PRODUCT_NAME" /> kết nối với <ph name="PRODUCT_NAME" /> và sử dụng tính năng tự động duyệt web sẽ cho phép tác nhân <ph name="GEMINI_SPARK_PRODUCT_NAME" /> thực hiện các công việc tự động, có nhiều bước trên các máy khách <ph name="PRODUCT_NAME" /> bằng phiên trình duyệt đang hoạt động. Việc này tiềm ẩn những rủi ro bảo mật đáng kể, bao gồm rủi ro về thông tin đăng nhập, xâm nhập vào mạng cục bộ và mất tín hiệu nhận biết theo bối cảnh. Các chế độ kiểm soát hiện có về quản lý và bảo mật có thể không được tuân thủ.
-
-Quản trị viên nên cẩn thận đánh giá mô hình mối đe doạ đối với mạng, các nguyên tắc về tuân thủ và quyền riêng tư của tổ chức trước khi bật tính năng này.
-
-Chính sách này không có hiệu lực khi bạn tắt ứng dụng <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> hoặc chính sách tự động duyệt web của <ph name="PRODUCT_NAME" />. Ví dụ: Ứng dụng <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> có thể bị tắt theo chính sách <ph name="GEMINI_SETTINGS_POLICY_NAME" />. Để biết thêm thông tin về <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> trong <ph name="PRODUCT_NAME" />, vui lòng truy cập https://support.google.com/chrome/a?p=gemini_in_chrome.
-
-Tính năng tự động duyệt web của <ph name="PRODUCT_NAME" /> và <ph name="GEMINI_SPARK_PRODUCT_NAME" /> chỉ sử dụng được ở một số quốc gia hoặc ngôn ngữ. Việc đặt chính sách này thành 0 – Enabled (Bật) không đảm bảo rằng tính năng sẽ được bật; điều này vẫn tuỳ thuộc vào khả năng sử dụng tính năng. Để biết thêm thông tin về việc ra mắt tính năng, hãy xem Ghi chú phát hành Enterprise: https://chromeenterprise.google/resources/release-notes/.</translation>
 <translation id="3159375329008977062">Người dùng được phép xuất/nhập các vùng chứa Crostini qua giao diện người dùng</translation>
 <translation id="3163167792874598128">Khi bạn không đặt hoặc đặt chính sách này thành Bật, người dùng có thể thấy quảng cáo Xếp hạng trong App Store tối đa một lần một năm.
 Khi bạn đặt chính sách này thành Tắt, người dùng sẽ không thấy quảng cáo Xếp hạng trong App Store.</translation>
@@ -5257,7 +5266,6 @@ Khi bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> chỉ cho phé
 Người dùng không thể ghi đè lựa chọn của quản trị viên. Nếu bạn không đặt chính sách này, người dùng sẽ có trải nghiệm như bình thường, tức là họ có thể thoải mái sửa đổi chế độ cài đặt vị trí của hệ thống và giá trị mặc định là <ph name="GLS_ALLOWED" />.
 
 Lưu ý: Chính sách này sẽ vô hiệu hoá chính sách <ph name="ARC_GLS_POLICY_NAME" />. Ngoài ra, khi bạn đặt chính sách này, <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> sẽ không còn ảnh hưởng đến lựa chọn ưu tiên về vị trí của <ph name="ANDROID_NAME" /> trên <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="4340826578810728651">Cho phép <ph name="GEMINI_SPARK_PRODUCT_NAME" /> kết nối và sử dụng tính năng tự động duyệt web của <ph name="PRODUCT_NAME" /></translation>
 <translation id="4341199399451274159">Nếu bạn bật <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, thì thao tác đặt <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> sẽ chỉ định phương thức mã hóa ký tự mà nhà cung cấp dịch vụ tìm kiếm hỗ trợ. Phương thức mã hóa là tên trang mã, chẳng hạn như UTF-8, GB2312 và ISO-8859-1. Các tên này được thử theo thứ tự cung cấp.
 
       Nếu bạn không đặt <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />, thì hệ thống sẽ sử dụng UTF-8.</translation>
@@ -5954,6 +5962,7 @@ Nếu không, chỉ các dịch vụ đã chọn mới bật.</translation>
 Khi bạn đặt chính sách này thành Tắt, người dùng sẽ không thấy quảng cáo Tiện ích nhà cung cấp chứng chỉ.</translation>
 <translation id="4768446404233019970">Bật bộ thuật toán mật mã 3DES trong TLS</translation>
 <translation id="4770334626033858263">Cấu hình dùng để tạo và xác minh Mã truy cập dành cho cha mẹ.</translation>
+<translation id="477383002672213319">Cho phép tính năng tự động điền nâng cao nhưng không cải tiến các mô hình AI (có cải tiến các mô hình AI trước phiên bản M153).</translation>
 <translation id="4773997835955617342">Thay đổi cấu hình <ph name="KRB5_CONFIG" /> đề xuất cho các phiếu yêu cầu hỗ trợ mới được tạo theo cách thủ công.
 
       Nếu bạn bật chính sách này, thì giá trị của chính sách "KerberosCustomPrefilledConfig" sẽ được áp dụng làm cấu hình đề xuất và hiển thị trong phần "Advanced" (Nâng cao) của hộp thoại xác thực Kerberos.
@@ -7262,6 +7271,13 @@ Có nhiều chính sách liệt kê những nguồn gốc ảnh hưởng đến 
 <translation id="5537400155400537818">Tắt: Thuộc tính thu phóng trong CSS giữ nguyên hành vi cũ, trước khi có thông số kỹ thuật tiêu chuẩn.</translation>
 <translation id="5537587542872235553">Cho phép các Ứng dụng web tách biệt và ứng dụng kiosk bị buộc cài đặt sử dụng Device Attributes API</translation>
 <translation id="553806128266843748">Một cờ boolean cho biết liệu tùy chọn điều tiết có được bật hay không.</translation>
+<translation id="5540415024237352600">Chính sách này sẽ không được dùng nữa trong M153 và sẽ không được hỗ trợ (không có hiệu lực) trong một bản phát hành sau này. Giờ đây, chữ ký đặc biệt cho ứng dụng gốc được tạo khi cài đặt Ứng dụng web tiến bộ (PWA) được bật vĩnh viễn trên <ph name="MAC_OS_NAME" />. Điều này đảm bảo rằng mỗi ứng dụng được cài đặt đều có danh tính riêng biệt đối với các thành phần hệ thống <ph name="MAC_OS_NAME" />.
+
+Nếu bạn đặt chính sách này thành Bật hoặc không đặt chính sách này, người dùng có thể sử dụng chữ ký đặc biệt cho ứng dụng gốc được tạo khi cài đặt Ứng dụng web tiến bộ (PWA). Điều này đảm bảo rằng mỗi ứng dụng được cài đặt đều có danh tính riêng biệt đối với các thành phần hệ thống <ph name="MAC_OS_NAME" />.
+
+Nếu bạn đặt chính sách này thành Tắt, mọi ứng dụng gốc được tạo khi cài đặt Ứng dụng web tiến bộ sẽ có cùng một danh tính. Điều này có thể ảnh hưởng đến chức năng của <ph name="MAC_OS_NAME" />.
+
+Bạn chỉ nên tắt chính sách này nếu đang sử dụng giải pháp bảo mật điểm cuối có tác dụng chặn ứng dụng có chữ ký đặc biệt.</translation>
 <translation id="5540885720415375851">Cho phép tìm thiết bị cục bộ</translation>
 <translation id="5542235730745104308">Nếu bạn đặt chính sách này thành True, thì <ph name="PRODUCT_NAME" /> sẽ sử dụng các trang thông báo lỗi thay thế tích hợp (chẳng hạn như "không tìm thấy trang"). Nếu bạn đặt chính sách này thành False, thì <ph name="PRODUCT_NAME" /> sẽ không bao giờ sử dụng các trang thông báo lỗi thay thế.
 

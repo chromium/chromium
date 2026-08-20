@@ -162,7 +162,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="259935314519650377">Falha de cache após o download do instalador. Erro: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2608461706055011366">Confira uma visão geral rápida deste documento e faça perguntas com o Gemini no Chrome</translation>
 <translation id="2620436844016719705">Sistema</translation>
-<translation id="263447411082773721">Defina o Chrome como seu navegador padrão para acessar facilmente seus recursos preferidos e manter senhas, favoritos e histórico sincronizados em todos os dispositivos. O Chrome será fixado na barra de tarefas para agilizar o acesso.</translation>
+<translation id="263447411082773721">Acesse facilmente seus recursos preferidos e mantenha senhas, favoritos e histórico sincronizados em todos os dispositivos. O Chrome ficará fixado na barra de tarefas para agilizar o acesso.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">O Chrome verifica regularmente se o navegador tem as configurações mais seguras. Avisaremos se algo precisar da sua análise.</translation>
 <translation id="2652691236519827073">Abrir link em nova &amp;guia do Chrome</translation>
@@ -270,7 +270,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="3622797965165704966">Agora ficou mais fácil usar o Chrome com sua Conta do Google e em computadores compartilhados.</translation>
 <translation id="3628103251823745322">A conta <ph name="EXISTING_USER" /> já está conectada. Para manter sua navegação separada, faça login no Chrome no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Você também terá acesso às informações salvas e muito mais em todos os seus dispositivos.</translation>
 <translation id="3635073343384702370">O Chrome poderá verificar suas senhas quando elas forem salvas</translation>
-<translation id="3636970668267555808">Defina o Chrome como o navegador padrão para acessar seus recursos favoritos com facilidade.</translation>
+<translation id="3636970668267555808">Acesse seus recursos favoritos com mais facilidade.</translation>
 <translation id="3667616615096815454">Não foi possível fazer a instalação. O app é desconhecido para o servidor.</translation>
 <translation id="3673813398384385993">O Chrome encontrou malware na extensão <ph name="EXTENSION_NAME" /></translation>
 <translation id="3697952514309507634">Outros perfis do Chrome</translation>

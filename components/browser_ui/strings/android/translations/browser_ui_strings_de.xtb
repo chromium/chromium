@@ -372,6 +372,7 @@
 <translation id="4676059169848868271">Damit <ph name="APP_NAME" /> Handtracking verwenden kann, musst du die Einstellung auch in den <ph name="BEGIN_LINK" />Systemeinstellungen<ph name="END_LINK" /> aktivieren.</translation>
 <translation id="4688045258817337666">Karten verwalten</translation>
 <translation id="4722332387043141878">Websites verwenden die Bewegungs- und Lichtsensoren deines Geräts normalerweise für Funktionen wie Virtual Reality oder Fitnesstracking</translation>
+<translation id="4748783296226936791">Websites verbinden sich normalerweise für solche Funktionen mit HID-Geräten, für die ungewöhnliche Tastaturen, Gamecontroller und andere Geräte verwendet werden</translation>
 <translation id="4755971844837804407">Wenn dieser Schalter aktiviert ist, können dir Websites beliebige Werbung anzeigen. Wenn er deaktiviert ist, können dir Websites keine aufdringliche oder irreführende Werbung anzeigen.</translation>
 <translation id="4779083564647765204">Zoomen</translation>
 <translation id="4807122856660838973">Safe Browsing aktivieren</translation>
@@ -456,6 +457,7 @@
 <translation id="5700761515355162635">Drittanbieter-Cookies zugelassen</translation>
 <translation id="5706552988683188916">Dadurch werden Cookies und andere Websitedaten für <ph name="WEBSITE" /> gelöscht</translation>
 <translation id="571222594670061844">Websites dürfen Aufforderungen zur Anmeldung von Identitätsdiensten anzeigen</translation>
+<translation id="5719854774000914513">Websites dürfen nachfragen, wenn sie eine Verbindung mit HID-Geräten herstellen möchten</translation>
 <translation id="5740126560802162366">Websites können Daten auf deinem Gerät speichern</translation>
 <translation id="5743425052258407233">Du kannst deinen Verlauf auf allen deinen Geräten abrufen und dort weitermachen, wo du aufgehört hast</translation>
 <translation id="5749158352074143502">Mit diesem Tab fortfahren</translation>
@@ -575,6 +577,7 @@
 <translation id="6950072572526089586">Websites, die du besuchst, können Informationen zu deinen Aktivitäten speichern, um erwartungsgemäß zu funktionieren – beispielsweise um dafür zu sorgen, dass du angemeldet bleibst oder um Artikel in deinem Einkaufswagen zu speichern. Oft speichern Websites diese Informationen vorübergehend auf deinem Gerät.</translation>
 <translation id="6964291282260073066">„WebGPU“ ist deaktiviert.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6972629891077993081">HID-Geräte</translation>
 <translation id="6980507581230208647">Rosafarbenes Design</translation>
 <translation id="6980861169612950611">Websitedaten löschen? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Bedienungshilfen</translation>
@@ -732,6 +735,7 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="8593422116412089302">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie Informationen verwenden dürfen, die sie über dich gespeichert haben. Wenn er deaktiviert ist, können Websites nicht anfragen, ob sie Informationen verwenden dürfen, die sie über dich gespeichert haben.</translation>
 <translation id="8609465669617005112">Nach oben</translation>
 <translation id="8617611086246832542">Wenn dieser Schalter aktiviert ist, wird die Desktop-Ansicht von Websites angezeigt. Wenn er deaktiviert ist, wird die mobile Ansicht von Websites angezeigt.</translation>
+<translation id="8625916342247441948">Websites dürfen keine Verbindung mit HID-Geräten herstellen</translation>
 <translation id="8670078035093027626">Ansicht am unteren Rand des Standardbrowsers vollständig geöffnet</translation>
 <translation id="8676316391139423634">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie deine Handbewegungen verfolgen dürfen. Wenn er deaktiviert ist, können Websites deine Handbewegungen nicht verfolgen.</translation>
 <translation id="8676374126336081632">Eingabe löschen</translation>

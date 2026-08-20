@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">Accesează parolele salvate în alte aplicații</translation>
 <translation id="4431224949908513835">Selectează o metodă de plată de completat.</translation>
 <translation id="4432122368769493392">Setări…</translation>
+<translation id="4439968635693513370">Planifică-ți weekendul cu</translation>
 <translation id="4442550905108052454">Deschide <ph name="BEGIN_BOLD" />Setările<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Mai multe opțiuni pentru <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Poți să glisezi pe margine pentru a te deplasa înainte sau înapoi.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">Poți redeschide elementele închise din secțiunile File recente sau Grupuri de file. Filele fixate nu se vor închide.</translation>
 <translation id="4547181496285029457">Revino la fila Recente</translation>
 <translation id="4552042254369397518">Se copiază…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Mai multe chei de acces</translation>
 <translation id="4564893319561643483">Ascunde <ph name="TITLE" /></translation>
 <translation id="456502772933839252">Se trimite <ph name="PAGE_TITLE" /></translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Organizația îți solicită să navighezi în privat. Grupurile de file nu sunt sincronizate în modul incognito.
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">Cumpără cu încredere cu</translation>
 <translation id="467189612236587057">Ia legătura cu o companie prin inițierea unui apel telefonic</translation>
 <translation id="4673565891421389203">Dacă te conectezi cu contul gestionat, poți să separi navigarea asociată organizației tale (inclusiv filele, istoricul și parolele) de celelalte activități de navigare.
 
@@ -1389,6 +1392,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5596627076506792578">Mai multe opțiuni</translation>
 <translation id="560322036295180549">Dezactivată de organizație</translation>
 <translation id="5611398002774823980">Salvează în cont</translation>
+<translation id="5612225021788368236">Închide promoția pentru browserul prestabilit</translation>
 <translation id="561269594905823128">Atinge <ph name="BEGIN_BOLD" />Selectează fișierul<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Sortează după cele mai recente</translation>
 <translation id="5614553682702429503">Salvezi parola?</translation>
@@ -2474,6 +2478,7 @@ Pentru a continua de pe computer, treci la <ph name="OTHER_EMAIL" />. Vei accesa
 <translation id="9029650858822697271">Te-ai deconectat</translation>
 <translation id="9032405509996909363">Confirmă ștergerea datelor de navigare</translation>
 <translation id="9035699147763101514">Dezvoltat de Inteligența personalizată cu Gemini. Gestionează-ți opțiunile în setări.</translation>
+<translation id="9038526468059454274">Rezumă cu</translation>
 <translation id="9039373489628511875">Lățime de bandă</translation>
 <translation id="9042893549633094279">Confidențialitate și securitate</translation>
 <translation id="9055291197094969722">Creează grupuri de file pentru a-ți organiza filele deschise și a rămâne productiv</translation>

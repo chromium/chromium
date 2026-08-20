@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Dewiswch ganiatâd ar gyfer <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Cadw IBAN?</translation>
 <translation id="1113869188872983271">&amp;Ailwneud aildrefnu</translation>
+<translation id="1117709830616495622">Pwerir gan Ddeallusrwydd Personol gyda Gemini.</translation>
 <translation id="111897705806685148">Defnyddio Cod Pas o Ddyfais Arall</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i reoli pa wybodaeth Chrome rydych yn ei chadw yn eich Cyfrif Google</translation>
 <translation id="1121990216147052230">Gwneud restr o bethau i'w gwneud i mi</translation>
@@ -1170,6 +1171,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3005723025932146533">Dangos y copi sydd wedi'i gadw</translation>
 <translation id="300580149047131921">Wedi'u defnyddio'n ddiweddar</translation>
 <translation id="3006864083554020786">cyfeiriad cartref</translation>
+<translation id="3008410317623852235">Gallwch bellach ddod o hyd i wybodaeth a’i llenwi o Gmail a rhagor.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab i bori'r gweithredoedd sydd ar gael, yna Enter i weithredu'r weithred a ddewiswyd.</translation>
 <translation id="3010991137650052245">I ddefnyddio'ch <ph name="PERMISSION" /> ar y wefan hon, rhowch fynediad at <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3014726756341138577">Nodweddion argraffydd uwch</translation>
@@ -2319,6 +2321,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4941627891654116707">Maint y ffont</translation>
 <translation id="4943620199112228840">Defnyddio eich meicroffonau</translation>
 <translation id="4943872375798546930">Dim canlyniadau</translation>
+<translation id="494701040141924538">Iawn, cau'r hysbysiad</translation>
 <translation id="495170559598752135">Gweithrediadau</translation>
 <translation id="4953689047182316270">Ymateb i Ddigwyddiadau Hygyrchedd</translation>
 <translation id="4954505713046251871">Er mwyn cynnig awgrymiadau a gwella'r nodwedd hon, mae URL a chynnwys y dudalen yn cael eu rhannu â Google</translation>
@@ -3369,6 +3372,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="6743841972744298686">Gosodiadau cysoni</translation>
 <translation id="6745212570062463886">Awtolenwi eich enw a'ch cyfeiriad e-bost o'ch Cyfrif Google</translation>
 <translation id="674580074662200768">Diweddaru pasbort yn ddiogel</translation>
+<translation id="6749473226660745022">Lluniau</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Gwerth polisi</translation>
 <translation id="6753434778807740853">Dileu'r cofnod <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3707,6 +3711,7 @@ Manylion ychwanegol:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Trinyddion taliadau</translation>
 <translation id="7366594738862061263">Dysgu sut mae Chrome yn amddiffyn eich cyfrineiriau</translation>
+<translation id="7366909168761621528">Data pori</translation>
 <translation id="7370751048350026847">Ni argymhellir gludo'r cynnwys hwn i'r wefan hon</translation>
 <translation id="7372526636730851647">Llun (Sglein)</translation>
 <translation id="7372973238305370288">canlyniad chwilio</translation>
@@ -4295,6 +4300,7 @@ Manylion ychwanegol:
 <translation id="8350416046273606058">Ni all y llwybr byr gynnwys bylchau: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Creu nodyn</translation>
 <translation id="8352849934814541340">Mae gweinyddwr y ddyfais hon wedi gosod apiau ar gyfer swyddogaethau ychwanegol. Mae gan apiau fynediad at rywfaint o'ch data.</translation>
+<translation id="8353273112634584260">Pwerir gan Ddeallusrwydd Personol gyda Gemini. Mae'n bosib y bydd eich ceisiadau, teitlau tudalennau, a chyfeiriadau URL yn cael eu hadolygu i wella awtolenwi gwell.</translation>
 <translation id="8355270400102541638">Cyd-destun Toriad Lleol:</translation>
 <translation id="8362914115861174987">Cyfieithu i</translation>
 <translation id="8363502534493474904">Yn diffodd modd awyrennau</translation>
@@ -4654,6 +4660,7 @@ Manylion ychwanegol:
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Rhowch gynnig ar Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">I adael y sgrîn lawn, pwyswch a daliwch |<ph name="ACCELERATOR" />|</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Gwall diogelwch</translation>
 <translation id="9035699147763101514">Pwerir gan Ddeallusrwydd Personol gyda Gemini. Rheoli eich dewisiadau yn y gosodiadau.</translation>
 <translation id="9035824888276246493">Cadw codau diogelwch</translation>

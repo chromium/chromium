@@ -717,6 +717,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1554640914375980459">Denyarkan skrin apabila anda menerima pemberitahuan. Gunakan pemberitahuan denyar dengan berhati-hati jika anda sensitif terhadap cahaya.</translation>
 <translation id="1555130319947370107">Biru</translation>
 <translation id="1556127816860282890">Aktiviti latar dan beberapa kesan visual, seperti penatalan lancar, mungkin terhad</translation>
+<translation id="1557806604681757705">komputer anda</translation>
 <translation id="1557939148300698553">Buat Profil</translation>
 <translation id="155803912725350982">Kekunci perlahan</translation>
 <translation id="155865706765934889">Pad sentuh</translation>
@@ -1026,6 +1027,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1784707308176068866">Jalankan dalam latar belakang apabila diminta oleh aplikasi asli yang bekerjasama</translation>
 <translation id="1784849162047402014">Peranti kekurangan ruang cakera</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Menyahpasang "<ph name="APP_NAME" />" juga akan menyahpasang apl ini:}other{Menyahpasang "<ph name="APP_NAME" />" juga akan menyahpasang apl ini:}}</translation>
+<translation id="1785698972112179866">Log masuk untuk mendapatkan penanda halaman anda dan pelbagai lagi daripada <ph name="DEVICE" /></translation>
 <translation id="1786290960428378411">Meminta untuk membaca dan menukar</translation>
 <translation id="1789543093145556097">Sentiasa sembunyi</translation>
 <translation id="179021551944139249">Tambahkan Pautan pada Senarai Bacaan</translation>
@@ -1712,7 +1714,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2322193970951063277">Pengepala dan pengaki</translation>
 <translation id="2322622365472107569">Masa tamat <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Rangkaian Wi-Fi yang disimpan</translation>
-<translation id="2323685460575935191">Sembunyikan butang tatal</translation>
 <translation id="2325444234681128157">Ingat kata laluan</translation>
 <translation id="2326188115274135041">Sahkan PIN untuk menghidupkan buka kunci automatik</translation>
 <translation id="2326583548923775947">Akaun ini bukan Google Account. Item yang anda simpan pada Chrome tidak akan tersedia pada peranti lain.</translation>
@@ -8101,7 +8102,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7260206782629605806">Jika anda mengurangkan ambang, anda boleh menggunakan pergerakan halus. Jika anda meningkatkan ambang, anda mungkin perlu melakukan pergerakan yang lebih ketara.</translation>
 <translation id="7260802376010589729">Gunakan “c” untuk melepaskan butang tetikus</translation>
 <translation id="7261217796641151584">Kumpulan Kongsi</translation>
-<translation id="7261249528606034119">Sembunyikan Butang Tatal</translation>
 <translation id="7261612856573623172">Suara Teks ke Pertuturan Sistem</translation>
 <translation id="7262004276116528033">Perkhidmatan log masuk ini dihoskan oleh <ph name="SAML_DOMAIN" /></translation>
 <translation id="7262162806583378242">Pilih apa-apa sahaja pada skrin anda semasa anda menyemak imbas untuk membeli-belah, menterjemah dan membuat carian menggunakan AI</translation>
@@ -8661,6 +8661,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak imbas anda, sistem pengendalian peranti dan alamat IP.</translation>
 <translation id="7683834360226457448">Alatan paparan rabun</translation>
 <translation id="7684212569183643648">Dipasang oleh Pentadbir Anda</translation>
+<translation id="7684547908663093354">Log masuk untuk mendapatkan kata laluan anda dan pelbagai lagi daripada <ph name="DEVICE" /></translation>
 <translation id="7684718995427157417">Untuk membuat dan menguji apl anda, dayakan Titi Nyahpepijat Android (ADB). Harap maklum bahawa tindakan ini membolehkan pemasangan apl Android yang belum disahkan oleh Google dan memerlukan tetapan semula kilang untuk melumpuhkannya.</translation>
 <translation id="7684803937028953000">Organisasi anda menyekat muat turun setempat fail ini.</translation>
 <translation id="7684913007876670600">Untuk menunjukkan paparan ringkas halaman ini, buka panel sisi dan pilih Mod bacaan</translation>
@@ -9081,6 +9082,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' dialihkan.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8013181884974864006">Tugasan Kontekstual</translation>
+<translation id="8013462234418290522">Log masuk untuk mendapatkan maklumat anda yang disimpan dan pelbagai lagi daripada <ph name="DEVICE" /></translation>
 <translation id="8013534738634318212">Laman ini berada dalam kumpulan yang ditakrifkan oleh <ph name="RWS_OWNER" />. Laman dalam sesebuah kumpulan boleh melihat aktiviti anda dalam kumpulan itu.</translation>
 <translation id="8013993649590906847">Jika imej tiada perihalan yang berguna, Chrome akan cuba memberikan perihalan untuk anda. Untuk membuat perihalan, imej dihantar kepada Google.</translation>
 <translation id="8014154204619229810">Pengemaskinian sedang dijalankan. Muatkan semula dalam satu minit untuk memeriksa lagi.</translation>
@@ -9568,6 +9570,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8377625247046155446">Kunci laluan ini hanya akan disimpan pada peranti ini. Kunci ini akan kekal pada peranti ini selepas anda menutup semua tetingkap inkognito.</translation>
 <translation id="837790003026572432">Ciri menghantar audio tab tidak disokong pada peranti ini</translation>
 <translation id="8378714024927312812">Diurus oleh organisasi anda</translation>
+<translation id="8378855320830505539">Wilayah</translation>
 <translation id="8379988659465232385">Nama tidak boleh dibiarkan kosong</translation>
 <translation id="8379991678458444070">Tandai tab ini untuk kembali ke sini dengan cepat</translation>
 <translation id="8380266723152870797">Nama tetingkap</translation>

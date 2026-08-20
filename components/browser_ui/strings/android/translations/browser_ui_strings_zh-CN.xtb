@@ -372,6 +372,7 @@
 <translation id="4676059169848868271">若要允许 <ph name="APP_NAME" /> 使用手部追踪功能，您还需在<ph name="BEGIN_LINK" />系统设置<ph name="END_LINK" />中开启手部追踪功能。</translation>
 <translation id="4688045258817337666">管理您的卡</translation>
 <translation id="4722332387043141878">网站通常会使用您设备的移动传感器和光传感器来实现虚拟现实或健身跟踪等功能</translation>
+<translation id="4748783296226936791">网站通常会连接到 HID 设备以实现某些需要使用非标准键盘、游戏控制器和其他设备的功能</translation>
 <translation id="4755971844837804407">开启此设置后，网站可以向您展示任何广告。关闭此设置后，网站无法展示侵扰性或误导性广告。</translation>
 <translation id="4779083564647765204">缩放</translation>
 <translation id="4807122856660838973">开启安全浏览</translation>
@@ -456,6 +457,7 @@
 <translation id="5700761515355162635">已允许使用第三方 Cookie</translation>
 <translation id="5706552988683188916">此操作会删除 <ph name="WEBSITE" /> 的 Cookie 和其他网站数据</translation>
 <translation id="571222594670061844">网站可以显示来自身份服务的登录提示</translation>
+<translation id="5719854774000914513">网站可以请求连接到 HID 设备</translation>
 <translation id="5740126560802162366">网站可将数据保存在您的设备上</translation>
 <translation id="5743425052258407233">在您的所有设备上同步历史记录，以便您轻松继续未完成的操作</translation>
 <translation id="5749158352074143502">继续使用此标签页</translation>
@@ -575,6 +577,7 @@
 <translation id="6950072572526089586">您访问的网站可以保存与您正在进行的浏览活动有关的信息，以便网站能按预期运行 - 例如，以便保持您在网站上的登录状态或者保存您的购物车内的商品。网站通常会将这类信息暂时保存在您的设备上。</translation>
 <translation id="6964291282260073066">“WebGPU”已停用。</translation>
 <translation id="6965382102122355670">确定</translation>
+<translation id="6972629891077993081">HID 设备</translation>
 <translation id="6980507581230208647">玫瑰色主题</translation>
 <translation id="6980861169612950611">要删除网站数据吗？<ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">无障碍</translation>
@@ -732,6 +735,7 @@
 <translation id="8593422116412089302">开启此设置后，网站可以请求使用其保存的与您相关的信息。关闭此设置后，网站无法请求使用其保存的与您相关的信息。</translation>
 <translation id="8609465669617005112">上移</translation>
 <translation id="8617611086246832542">开启此设置后，系统会显示网站的桌面版视图。关闭此设置后，系统会显示网站的移动版视图。</translation>
+<translation id="8625916342247441948">不允许网站连接到 HID 设备</translation>
 <translation id="8670078035093027626">默认浏览器底部动作条已全屏打开</translation>
 <translation id="8676316391139423634">开启此设置后，网站可以请求跟踪您的双手。关闭此设置后，网站无法跟踪您的双手。</translation>
 <translation id="8676374126336081632">清除输入的内容</translation>

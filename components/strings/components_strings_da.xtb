@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Vælg tilladelse til <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Vil du gemme IBAN?</translation>
 <translation id="1113869188872983271">&amp;Fortryd omarrangering</translation>
+<translation id="1117709830616495622">Leveret af Personlig intelligens med Gemini.</translation>
 <translation id="111897705806685148">Brug en adgangsnøgle fra en anden enhed</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryk på Tab-tasten efterfulgt af Enter for at administrere, hvilke Chrome-oplysninger du gemmer på din Google-konto</translation>
 <translation id="1121990216147052230">Lav en huskeliste til mig</translation>
@@ -1170,6 +1171,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3005723025932146533">Vis gemt kopi</translation>
 <translation id="300580149047131921">Brugt for nylig</translation>
 <translation id="3006864083554020786">hjemmeadresse</translation>
+<translation id="3008410317623852235">Nu kan du finde og udfylde oplysninger fra Gmail og meget mere</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten for at gennemse tilgængelige handlinger, og tryk derefter på Enter for at udføre den valgte handling.</translation>
 <translation id="3010991137650052245">For at bruge <ph name="PERMISSION" /> på dette website skal du give <ph name="SHORT_PRODUCT_NAME" /> adgang</translation>
 <translation id="3014726756341138577">Avancerede printerfunktioner</translation>
@@ -2319,6 +2321,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4941627891654116707">Skriftstørrelse</translation>
 <translation id="4943620199112228840">Brug dine mikrofoner</translation>
 <translation id="4943872375798546930">Ingen resultater</translation>
+<translation id="494701040141924538">OK, luk meddelelsen</translation>
 <translation id="495170559598752135">Handlinger</translation>
 <translation id="4953689047182316270">Reagere på hændelser med hjælpefunktioner</translation>
 <translation id="4954505713046251871">For at kunne give dig forslag og forbedre denne funktion deles sidens webadresse og indhold med Google</translation>
@@ -3369,6 +3372,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="6743841972744298686">Indstillinger for synkronisering</translation>
 <translation id="6745212570062463886">Udfyld automatisk dit navn og din mailadresse fra din Google-konto</translation>
 <translation id="674580074662200768">Opdater passet på en sikker måde</translation>
+<translation id="6749473226660745022">Billeder</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Politikkens værdi</translation>
 <translation id="6753434778807740853">Slet post <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3708,6 +3712,7 @@ Yderligere oplysninger:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Betalingshandlers</translation>
 <translation id="7366594738862061263">Se, hvordan Chrome beskytter dine adgangskoder</translation>
+<translation id="7366909168761621528">Browserdata</translation>
 <translation id="7370751048350026847">Vi anbefaler, at du ikke indsætter indholdet på dette website</translation>
 <translation id="7372526636730851647">Foto (blankt)</translation>
 <translation id="7372973238305370288">søgeresultat</translation>
@@ -4296,6 +4301,7 @@ Yderligere oplysninger:
 <translation id="8350416046273606058">Genvejen må ikke indeholde mellemrum: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Opret note</translation>
 <translation id="8352849934814541340">Administratoren af denne enhed har installeret apps til yderligere funktioner. De pågældende apps har adgang til nogle af dine data.</translation>
+<translation id="8353273112634584260">Leveret af Personlig intelligens med Gemini. Dine anmodninger, sidetitler og webadresser kan blive gennemgået for at gøre forbedret autofyld endnu bedre.</translation>
 <translation id="8355270400102541638">Lokal nedbrudskontekst:</translation>
 <translation id="8362914115861174987">Oversæt til</translation>
 <translation id="8363502534493474904">Deaktivere flytilstand</translation>
@@ -4656,6 +4662,7 @@ Yderligere oplysninger:
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Prøv Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Hold fingeren på |<ph name="ACCELERATOR" />| for at afslutte fuld skærm</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Sikkerhedsfejl</translation>
 <translation id="9035699147763101514">Leveret af Personlig intelligens med Gemini. Administrer dine valg i indstillingerne.</translation>
 <translation id="9035824888276246493">Gem sikkerhedskoder</translation>

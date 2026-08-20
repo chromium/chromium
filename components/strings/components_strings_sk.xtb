@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Vyberte povolenie pre <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Chcete uložiť IBAN?</translation>
 <translation id="1113869188872983271">&amp;Vrátiť späť zmenu poradia</translation>
+<translation id="1117709830616495622">Táto funkcia využíva inteligenciu na mieru s Gemini.</translation>
 <translation id="111897705806685148">Použiť prístupový kľúč z iného zariadenia</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, stlačením klávesov Tab a potom Enter spravujte, ktoré informácie z Chromu sa ukladajú vo vašom účte Google</translation>
 <translation id="1121990216147052230">Vytvor mi zoznam úloh</translation>
@@ -1170,6 +1171,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3005723025932146533">Zobraziť uloženú kópiu</translation>
 <translation id="300580149047131921">Nedávno použité</translation>
 <translation id="3006864083554020786">adresa domova</translation>
+<translation id="3008410317623852235">Teraz môžete vyhľadávať a vypĺňať informácie z Gmailu a ďalších zdrojov.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, stláčaním klávesa Tab prehliadajte dostupné akcie a stlačením klávesa Enter vybranú akciu aktivujte.</translation>
 <translation id="3010991137650052245">Ak chcete používať povolenie <ph name="PERMISSION" /> na tomto webe, udeľte prístup službe <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3014726756341138577">Pokročilé funkcie tlačiarne</translation>
@@ -2315,6 +2317,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="4941627891654116707">Veľkosť písma</translation>
 <translation id="4943620199112228840">Používať vaše mikrofóny</translation>
 <translation id="4943872375798546930">Žiadne výsledky</translation>
+<translation id="494701040141924538">Rozumiem, zavrieť upozornenie</translation>
 <translation id="495170559598752135">Akcie</translation>
 <translation id="4953689047182316270">Reagovať na udalosti dostupnosti</translation>
 <translation id="4954505713046251871">Webová adresa a obsah stránky sa zdieľajú s Googlom, aby vám mohol ponúkať návrhy a zlepšovať túto funkciu</translation>
@@ -3364,6 +3367,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6743841972744298686">Nastavenia synchronizácie</translation>
 <translation id="6745212570062463886">Automaticky dopĺňajte svoje meno a e‑mailovú adresu zo svojho účtu Google</translation>
 <translation id="674580074662200768">Bezpečne si aktualizujte pas</translation>
+<translation id="6749473226660745022">Fotky</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Hodnota pravidla</translation>
 <translation id="6753434778807740853">Odstrániť záznam <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3703,6 +3707,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Obslužné nástroje platieb</translation>
 <translation id="7366594738862061263">Ďalšie informácie o tom, ako Chrome chráni vaše heslá</translation>
+<translation id="7366909168761621528">Údaje prehliadania</translation>
 <translation id="7370751048350026847">Tento obsah neodporúčame prilepiť na tento web</translation>
 <translation id="7372526636730851647">Fotka (lesklá)</translation>
 <translation id="7372973238305370288">výsledok vyhľadávania</translation>
@@ -4291,6 +4296,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8350416046273606058">Skratka nemôže obsahovať medzery: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Vytvoriť poznámku</translation>
 <translation id="8352849934814541340">Správca tohto zariadenia nainštaloval aplikácie pre ďalšie funkcie. Aplikácie majú prístup k niektorým vašim údajom.</translation>
+<translation id="8353273112634584260">Táto funkcia využíva inteligenciu na mieru s Gemini. Vaše žiadosti, názvy stránok a webové adresy môžu byť skontrolované s cieľom zlepšiť vylepšené automatické dopĺňanie.</translation>
 <translation id="8355270400102541638">Miestny kontext zrútenia:</translation>
 <translation id="8362914115861174987">Preklad do jazyka</translation>
 <translation id="8363502534493474904">Vypnúť režim v lietadle</translation>
@@ -4651,6 +4657,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="9026253329950610248">Weby Google</translation>
 <translation id="9027020981272345766">Vyskúšať Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Ak chcete ukončiť režim celej obrazovky, pridržte |<ph name="ACCELERATOR" />|</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Chyba zabezpečenia</translation>
 <translation id="9035699147763101514">Využíva inteligenciu na mieru s Gemini. Svoje voľby môžete spravovať v nastaveniach.</translation>
 <translation id="9035824888276246493">Ukladať bezpečnostné kódy</translation>

@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Kies toestemming vir <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Stoor IBAN?</translation>
 <translation id="1113869188872983271">Ontdoen herrangskikking</translation>
+<translation id="1117709830616495622">Aangedryf deur Persoonlike Intelligensie met Gemini.</translation>
 <translation id="111897705806685148">Gebruik toegangsleutel van ’n ander toestel</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om te bestuur watter Chrome-inligting jy in jou Google-rekening stoor</translation>
 <translation id="1121990216147052230">Maak vir my ’n doenlys</translation>
@@ -1170,6 +1171,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3005723025932146533">Wys die kopie wat gestoor is</translation>
 <translation id="300580149047131921">Onlangs gebruik</translation>
 <translation id="3006864083554020786">huisadres</translation>
+<translation id="3008410317623852235">Jy kan nou inligting vanaf Gmail en meer vind en invul.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab om deur beskikbare handelinge te blaai, en dan Enter om die gekose handeling uit te voer.</translation>
 <translation id="3010991137650052245">Gee vir <ph name="SHORT_PRODUCT_NAME" /> toegang sodat jy jou <ph name="PERMISSION" /> op hierdie werf kan gebruik</translation>
 <translation id="3014726756341138577">Gevorderde drukkerkenmerke</translation>
@@ -2319,6 +2321,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4941627891654116707">Lettergrootte</translation>
 <translation id="4943620199112228840">Gebruik jou mikrofone</translation>
 <translation id="4943872375798546930">Geen resultate nie</translation>
+<translation id="494701040141924538">Het dit, maak kennisgewing toe</translation>
 <translation id="495170559598752135">Handelinge</translation>
 <translation id="4953689047182316270">Reageer op toeganklikheidgebeurtenisse</translation>
 <translation id="4954505713046251871">Die bladsy se URL en inhoud word met Google gedeel om voorstelle te maak en hierdie kenmerk beter te maak</translation>
@@ -3369,6 +3372,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="6743841972744298686">Sinkroniseringinstellings</translation>
 <translation id="6745212570062463886">Outovul jou naam en e-posadres uit jou Google-rekening</translation>
 <translation id="674580074662200768">Dateer paspoort veilig op</translation>
+<translation id="6749473226660745022">Foto's</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Beleidwaarde</translation>
 <translation id="6753434778807740853">Vee inskrywing <ph name="ENTRY_VOICEOVER" /> uit</translation>
@@ -3707,6 +3711,7 @@ Bykomende besonderhede:
 <translation id="7366117520888504990">198x275 mm</translation>
 <translation id="7366362069757178916">Betalinghanteerders</translation>
 <translation id="7366594738862061263">Vind uit hoe Chrome jou wagwoorde beskerm</translation>
+<translation id="7366909168761621528">Blaaierdata</translation>
 <translation id="7370751048350026847">Dit word nie aanbeveel om hierdie inhoud op hierdie webwerf te plak nie.</translation>
 <translation id="7372526636730851647">Foto (glans)</translation>
 <translation id="7372973238305370288">soekresultaat</translation>
@@ -4295,6 +4300,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8350416046273606058">Kortpad kan nie spasies bevat nie: “<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="8351131234907093545">Skep nota</translation>
 <translation id="8352849934814541340">Die administrateur van hierdie toestel het apps vir bykomende funksies geïnstalleer. Apps het toegang tot sommige van jou data.</translation>
+<translation id="8353273112634584260">Aangedryf deur Persoonlike Intelligensie met Gemini. Jou versoeke, bladsytitels en URL’e kan nagegaan word om Gevorderde Outovul te verbeter.</translation>
 <translation id="8355270400102541638">Konteks van plaaslike omval:</translation>
 <translation id="8362914115861174987">Vertaal in</translation>
 <translation id="8363502534493474904">Vliegtuigmodus afskakel</translation>
@@ -4654,6 +4660,7 @@ Bykomende besonderhede:
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Probeer Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Druk en hou |<ph name="ACCELERATOR" />| om uit volskerm te gaan</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Sekuriteitsfout</translation>
 <translation id="9035699147763101514">Aangedryf deur Persoonlike Intelligensie met Gemini. Bestuur jou keuses in instellings.</translation>
 <translation id="9035824888276246493">Stoor sekuriteitskodes</translation>

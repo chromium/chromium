@@ -372,6 +372,7 @@
 <translation id="4676059169848868271">Pentru a permite aplicației <ph name="APP_NAME" /> să folosească urmărirea mâinilor, activează urmărirea mâinilor și în <ph name="BEGIN_LINK" />setările de sistem<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Gestionează-ți cardurile</translation>
 <translation id="4722332387043141878">Site-urile folosesc de obicei senzorii de mișcare și de lumină ai dispozitivului pentru funcții cum ar fi realitatea virtuală sau monitorizarea activității de fitness.</translation>
+<translation id="4748783296226936791">Site-urile se conectează de obicei la dispozitive HID pentru funcții care folosesc tastaturi, controlere de joc și alte dispozitive care nu sunt utilizate frecvent</translation>
 <translation id="4755971844837804407">Când opțiunea este activată, site-urile îți pot afișa orice anunț. Când opțiunea este dezactivată, site-urile nu pot afișa anunțuri deranjante sau înșelătoare.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Activează Navigarea sigură</translation>
@@ -456,6 +457,7 @@
 <translation id="5700761515355162635">Sunt permise cookie-urile terță parte</translation>
 <translation id="5706552988683188916">Astfel, se șterg cookie-urile și alte date privind site-urile pentru <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Site-urile pot afișa solicitări de conectare de la servicii de identitate</translation>
+<translation id="5719854774000914513">Site-urile pot solicita permisiunea de a se conecta la dispozitive HID</translation>
 <translation id="5740126560802162366">Site-urile pot salva date pe dispozitiv</translation>
 <translation id="5743425052258407233">Istoricul apare pe toate dispozitivele tale. Astfel, poți continua ceea ce făceai.</translation>
 <translation id="5749158352074143502">Continuă cu această filă</translation>
@@ -575,6 +577,7 @@
 <translation id="6950072572526089586">Un site pe care îl accesezi poate salva informații despre ce faci, astfel încât să funcționeze conform așteptărilor, de exemplu, pentru a te menține conectat(ă) la un site sau pentru a salva articole în coșul de cumpărături. Adesea, site-urile salvează temporar aceste informații pe dispozitiv.</translation>
 <translation id="6964291282260073066">WebGPU este dezactivat.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6972629891077993081">Dispozitive HID</translation>
 <translation id="6980507581230208647">Temă roz</translation>
 <translation id="6980861169612950611">Ștergi datele privind site-ul? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accesibilitate</translation>
@@ -732,6 +735,7 @@ Protecția avansată gestionează următoarele setări Chrome:</translation>
 <translation id="8593422116412089302">Când opțiunea este activată, site-urile pot solicita să folosească informațiile pe care le-au salvat despre tine. Când opțiunea este dezactivată, site-urile nu îți pot solicita să folosească informațiile pe care le-au salvat despre tine.</translation>
 <translation id="8609465669617005112">Mutați mai sus</translation>
 <translation id="8617611086246832542">Când opțiunea este activată, apare afișarea pe desktop a site-urilor. Când opțiunea este dezactivată, apare afișarea pe mobil a site-urilor.</translation>
+<translation id="8625916342247441948">Nu permite site-urilor să se conecteze la dispozitive HID</translation>
 <translation id="8670078035093027626">Foaia din partea de jos a browserului prestabilit, deschisă la înălțime completă</translation>
 <translation id="8676316391139423634">Când opțiunea este activată, site-urile pot solicita permisiunea de a-ți urmări mâinile. Când opțiunea este dezactivată, site-urile nu îți pot urmări mâinile.</translation>
 <translation id="8676374126336081632">Șterge textul introdus</translation>

@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">ለ<ph name="PERMISSION_NAME" /> ፈቃድ አቀናብር</translation>
 <translation id="1113000785583998331">አይቢኤኤን ይቀመጥ?</translation>
 <translation id="1113869188872983271">&amp;እንደገና ደርድርን ቀልብስ</translation>
+<translation id="1117709830616495622">በGemini በግል ብልሃት የተጎላበተ።</translation>
 <translation id="111897705806685148">የይለፍ ቁልፍን ከሌላ መሣሪያ ይጠቀሙ</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ Google መለያዎ ውስጥ ምን የChrome መረጃ እንደሚያስቀምጡ ለማስተዳደር ትርን ከዚያም አስገባን ይጫኑ</translation>
 <translation id="1121990216147052230">የሚደረጉ ነገሮች ዝርዝር አዘጋጅልኝ</translation>
@@ -1170,6 +1171,7 @@
 <translation id="3005723025932146533">የተቀመጠ ቅጂ አሳይ</translation>
 <translation id="300580149047131921">በቅርቡ ጥቅም ላይ የዋለ</translation>
 <translation id="3006864083554020786">የቤት አድራሻ</translation>
+<translation id="3008410317623852235">አሁን ከGmail እና ሌሎችም መረጃ ማግኘት እና መሙላት ይችላሉ።</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ የሚገኙ እርምጃዎችን ለማሰስ Tabን በመቀጠል የተመረጠውን እርምጃ ለመፈጸም Enterን ይጫኑ።</translation>
 <translation id="3010991137650052245">በዚህ ጣቢያ ላይ የእርስዎን <ph name="PERMISSION" /> ለመጠቀም ለ<ph name="SHORT_PRODUCT_NAME" /> መዳረሻ ይስጡ</translation>
 <translation id="3014726756341138577">የላቁ የአታሚ ባህሪያት</translation>
@@ -2318,6 +2320,7 @@
 <translation id="4941627891654116707">የቅርፀ-ቁምፊ መጠን</translation>
 <translation id="4943620199112228840">ማይክሮፎኖቾን መጠቀም</translation>
 <translation id="4943872375798546930">ውጤቶች የሉም</translation>
+<translation id="494701040141924538">ገባኝ፣ ማሳወቂያን ዝጋ</translation>
 <translation id="495170559598752135">እርምጃዎች</translation>
 <translation id="4953689047182316270">ለተደራሽነት ክስተቶች ምላሽ መስጠት</translation>
 <translation id="4954505713046251871">ጥቆማዎችን ለማቅረብ እና ይህን ባህሪ ለማሻሻል የገፁ ዩአርኤል እና ይዘት ከGoogle ጋር ይጋራሉ</translation>
@@ -3368,6 +3371,7 @@
 <translation id="6743841972744298686">ቅንብሮችን ያስምሩ</translation>
 <translation id="6745212570062463886">ከእርስዎ Google መለያ የእርስዎን ስም እና የኢሜይል አድራሻ በራስ ይሙሉ</translation>
 <translation id="674580074662200768">ፓስፖርትን ደኅንነቱ በተጠበቀ መልኩ ያዘምኑ</translation>
+<translation id="6749473226660745022">ፎቶዎች</translation>
 <translation id="6751487147225428522">አርኦሲ 8ኬ</translation>
 <translation id="6753269504797312559">የመምሪያ እሴት</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> ግቤትን ሰርዝ</translation>
@@ -3707,6 +3711,7 @@
 <translation id="7366117520888504990">198 x 275 ሚሜ</translation>
 <translation id="7366362069757178916">የክፍያ ተቆጣጣሪዎች</translation>
 <translation id="7366594738862061263">Chrome እንዴት የይለፍ ቃላትዎን እንደሚጠብቅ ይወቁ</translation>
+<translation id="7366909168761621528">የአሰሳ ውሂብ</translation>
 <translation id="7370751048350026847">ይህንን ይዘት ወደዚህ ጣቢያ መለጠፍ አይመከርም</translation>
 <translation id="7372526636730851647">ፎቶ (አንጸባራቂ)</translation>
 <translation id="7372973238305370288">የፍለጋ ውጤት</translation>
@@ -4295,6 +4300,7 @@
 <translation id="8350416046273606058">አቋራጭ ክፍተቶችን መያዝ አይችልም፦ «<ph name="SHORTCUT_NAME" />»</translation>
 <translation id="8351131234907093545">ማስታወሻን ይፍጠሩ</translation>
 <translation id="8352849934814541340">የዚህ መሣሪያ አስተዳዳሪ ለተጨማሪ ተግባራት መተግበሪያዎችን ጭኗል። መተግበሪያዎች የአንዳንድ ውሂብዎ መዳረሻ አላቸው።</translation>
+<translation id="8353273112634584260">በGemini በግል ብልሃት የተጎላበተ። የተሻሻለ ራስ-ሙላን ለማሻሻል የእርስዎ ጥያቄዎች፣ የገጽ ርዕሶች እና ዩአርኤሎች ሊገመገሙ ይችላሉ።</translation>
 <translation id="8355270400102541638">የአካባቢያዊ ስንክል አውድ፦</translation>
 <translation id="8362914115861174987">ወደዚህ መተርጎም</translation>
 <translation id="8363502534493474904">የአውሮፕላን ሁነታን ማጥፋት</translation>
@@ -4655,6 +4661,7 @@
 <translation id="9026253329950610248">Google ጣቢያዎች</translation>
 <translation id="9027020981272345766">Chrome Enterprise Coreን ይሞክሩ</translation>
 <translation id="9027531288681624875">ከሙሉ ማያ ገጽ ለመውጣት |<ph name="ACCELERATOR" />|ን ተጭነው ይያዙ</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">የደህንነት ጥበቃ ስህተት</translation>
 <translation id="9035699147763101514">በGemini በግል ብልሃት የተጎላበተ። በቅንብሮች ውስጥ ምርጫዎችዎን ያስተዳድሩ።</translation>
 <translation id="9035824888276246493">የደህንነት ኮዶችን ያስቀምጡ</translation>

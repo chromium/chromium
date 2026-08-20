@@ -70,6 +70,7 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> کے لیے اجازت منتخب کریں</translation>
 <translation id="1113000785583998331">‏‫IBAN کو محفوظ کریں؟</translation>
 <translation id="1113869188872983271">دوبارہ ترتیب &amp;کالعدم کریں</translation>
+<translation id="1117709830616495622">‏‫Gemini کے ساتھ ذاتی ذہانت کے ذریعے تقویت یافتہ۔</translation>
 <translation id="111897705806685148">کسی اور آلے سے پاس کی استعمال کریں</translation>
 <translation id="1119009590493440389">‏‫<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />، آپ اپنے Google اکاؤنٹ میں Chrome کی کن معلومات کو محفوظ کرتے ہیں اس کا نظم کرنے کے لیے ٹیب پھر Enter کلید دبائیں</translation>
 <translation id="1121990216147052230">میرے لیے 'کرنے کے کاموں' کی ایک فہرست بنائیں</translation>
@@ -1170,6 +1171,7 @@
 <translation id="3005723025932146533">محفوظ کردہ کاپی دکھائیں</translation>
 <translation id="300580149047131921">حال ہی میں استعمال شدہ</translation>
 <translation id="3006864083554020786">گھر کا پتہ</translation>
+<translation id="3008410317623852235">‏اب آپ Gmail اور مزید سے معلومات تلاش اور پُر کر سکتے ہیں۔</translation>
 <translation id="3009036448238594149">‏<ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />، دستیاب کارروائیوں کو براؤز کرنے کے لیے ٹیب دبائیں، پھر منتخب کارروائی کو رو بہ عمل لانے کے لیے Enter دبائیں۔</translation>
 <translation id="3010991137650052245">اس سائٹ پر اپنا <ph name="PERMISSION" /> استعمال کرنے کے لیے، <ph name="SHORT_PRODUCT_NAME" /> کو رسائی فراہم کریں</translation>
 <translation id="3014726756341138577">پرنٹر کی جدید ترین خصوصیات</translation>
@@ -2320,6 +2322,7 @@
 <translation id="4941627891654116707">فونٹ سائز</translation>
 <translation id="4943620199112228840">اپنے مائیکروفون کا استعمال کریں</translation>
 <translation id="4943872375798546930">کوئی نتائج نہیں ہیں</translation>
+<translation id="494701040141924538">سمجھ آ گئی، نوٹس بند کریں</translation>
 <translation id="495170559598752135">کارروائیاں</translation>
 <translation id="4953689047182316270">ایکسیسبیلٹی ایونٹس کا جواب دیں</translation>
 <translation id="4954505713046251871">‏تجاویز کی پیشکش کرنے اور اس خصوصیت کو بہتر بنانے کیلئے، صفحے کے URL اور مواد کا Google کے ساتھ اشتراک کیا جاتا ہے</translation>
@@ -3371,6 +3374,7 @@
 <translation id="6743841972744298686">مطابقت پذیری کی ترتیبات</translation>
 <translation id="6745212570062463886">‏اپنے Google اکاؤنٹ سے اپنا نام اور ای میل پتہ آٹو فل کریں</translation>
 <translation id="674580074662200768">پاسپورٹ کو محفوظ طریقے سے اپ ڈیٹ کریں</translation>
+<translation id="6749473226660745022">تصاویر</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">پالیسی کی قدر</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> کا اندراج حذف کریں</translation>
@@ -3709,6 +3713,7 @@
 <translation id="7366117520888504990">‏‎198 x 275 مل میٹر</translation>
 <translation id="7366362069757178916">ادائیگی کے ہینڈلرز</translation>
 <translation id="7366594738862061263">‏اس بارے میں جانیں کہ Chrome آپ کے پاس ورڈز کی حفاظت کیسے کرتا ہے</translation>
+<translation id="7366909168761621528">براؤزنگ ڈیٹا</translation>
 <translation id="7370751048350026847">اس مواد کو اس سائٹ پر پیسٹ کرنے کی تجویز نہیں کی جاتی ہے</translation>
 <translation id="7372526636730851647">تصویر (گلوسی)</translation>
 <translation id="7372973238305370288">تلاش کا نتیجہ</translation>
@@ -4297,6 +4302,7 @@
 <translation id="8350416046273606058">شارٹ کٹ میں اسپیسز شامل نہیں ہو سکتے: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">نوٹ بنائیں</translation>
 <translation id="8352849934814541340">اس آلے کے منتظم نے اضافی فنکشنز کیلئے ایپلیکیشنز انسٹال کی ہیں۔ ایپلیکیشنز کو آپ کے کچھ ڈیٹا تک رسائی حاصل ہوتی ہے۔</translation>
+<translation id="8353273112634584260">‏‫Gemini کے ساتھ ذاتی ذہانت کے ذریعے تقویت یافتہ۔ بہتر کردہ آٹو فل کو بہتر بنانے کے لیے آپ کی درخواستوں، صفحہ کے عنوانات اور URLs کا جائزہ لیا جا سکتا ہے۔</translation>
 <translation id="8355270400102541638">مقامی ناکامی کا سیاق و سباق:</translation>
 <translation id="8362914115861174987">اس میں ترجمہ کریں</translation>
 <translation id="8363502534493474904">ہوائی جہاز وض‏ع کو آف کیا جا رہا ہے</translation>
@@ -4656,6 +4662,7 @@
 <translation id="9026253329950610248">‏‫Google سائٹس</translation>
 <translation id="9027020981272345766">‏‫Chrome Enterprise Core آزمائیں</translation>
 <translation id="9027531288681624875">پوری اسکرین سے باہر نکلنے کے لیے، |<ph name="ACCELERATOR" />| کو چھوئیں اور دبائے رکھیں</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">سیکیورٹی کی خرابی</translation>
 <translation id="9035699147763101514">‏‫Gemini کے ساتھ ذاتی ذہانت کے ذریعے تقویت یافتہ۔ ترتیبات میں اپنے انتخاب کا نظم کریں۔</translation>
 <translation id="9035824888276246493">سیکیورٹی کوڈز محفوظ کریں</translation>

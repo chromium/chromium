@@ -372,6 +372,7 @@
 <translation id="4676059169848868271">Ukuze uvumele i-<ph name="APP_NAME" /> ukuthi isebenzise ukulandelela ngesandla, vula nokulandelela ngesandla <ph name="BEGIN_LINK" />kumasethingi ohlelo<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Lawula amakhadi akho</translation>
 <translation id="4722332387043141878">Amasayithi avamise ukusebenzisa izinzwa zokunyakaza nezokukhanya zedivayisi yakho ezakhini ezifana nento engekho ngokoqobo noma ukulandelela ukufaneleka</translation>
+<translation id="4748783296226936791">Amasayithi avame ukuxhuma kumadivayisi we-HID ngokwezakhi ezisebenzisa amakhibhodi angavamile, izilawuli zamageyimu, namanye amadivayisi</translation>
 <translation id="4755971844837804407">Lapho ivuliwe, amasayithi angakubonisa noma yisiphi isikhangiso. Lapho ivaliwe, amasayithi awakwazi ukukubonisa izikhangiso eziphazamisayo noma ezikhohlisayo.</translation>
 <translation id="4779083564647765204">Sondeza</translation>
 <translation id="4807122856660838973">Vula Ukubhrawuza Ngokuphephile</translation>
@@ -456,6 +457,7 @@
 <translation id="5700761515355162635">Amakhukhi enkampani engahlangene ngqo avunyelwe</translation>
 <translation id="5706552988683188916">Lokhu kusula amakhukhi nenye idatha yesayithi le-<ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Amasayithi angabonisa imiyalo yokungena ngemvume kusukela kumasevisi kamazisi</translation>
+<translation id="5719854774000914513">Amasayithi angacela ukuxhumeka kumadivayisi we-HID</translation>
 <translation id="5740126560802162366">Amasayithi angalondoloza idatha kudivayisi yakho</translation>
 <translation id="5743425052258407233">Thola umlando wakho kuwo wonke amadivayisi akho, ukuze ukwazi ukuqhubeka lapho ugcine khona</translation>
 <translation id="5749158352074143502">Qhubeka nale thebhu</translation>
@@ -575,6 +577,7 @@
 <translation id="6950072572526089586">Isayithi oyivakashelayo ikwazi ukulondoloza ulwazi olumayelana nokwenzayo ukuze isebenze ngendlela oyilindele — ngokwesibonelo, ukukugcina ungene ngemvume kusayithi noma ukulondoloza izinto kubhasikidi wakho wokuthenga. Ngokuvamile amasayithi alondoloza lolu lwazi okwesikhashana kudivayisi yakho.</translation>
 <translation id="6964291282260073066">"I-WebGPU" ivaliwe.</translation>
 <translation id="6965382102122355670">KULUNGILE</translation>
+<translation id="6972629891077993081">Amadivayisi we-HID</translation>
 <translation id="6980507581230208647">Itimu yeRose</translation>
 <translation id="6980861169612950611">Sula idatha yesayithi? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Ukufinyeleleka</translation>
@@ -732,6 +735,7 @@ Ukuvikela Okuthuthukile kulawula la masethingi eChrome:</translation>
 <translation id="8593422116412089302">Lapho evuliwe, amasayithi angacela ukusebenzisa ulwazi alulondolozile olumayelana nawe. Lapho ivaliwe, amasayithi awakwazi ukukucela ukuthi asebenzise ulwazi alulondolozile olumayelana nawe.</translation>
 <translation id="8609465669617005112">Hambisa phezulu</translation>
 <translation id="8617611086246832542">Lapho ivuliwe, kuboniswa ukubuka kwedeskithophu yamawebhusayithi. Lapho ivaliwe, kuboniswa ukubuka kweselula yamawebhusayithi.</translation>
+<translation id="8625916342247441948">Ungavumeli amasayithi ukuba axhume kumadivayisi we-HID</translation>
 <translation id="8670078035093027626">Ishidi eliphansi lebhrawuza evuleka ngokuzenzekela livuleke ekuphakameni okugcwele</translation>
 <translation id="8676316391139423634">Uma kuvuliwe, amasayithi angacela ukulandelela izandla zakho. Uma kuvaliwe, amasayithi angeke alandelele izandla zakho.</translation>
 <translation id="8676374126336081632">Sula okokufaka</translation>

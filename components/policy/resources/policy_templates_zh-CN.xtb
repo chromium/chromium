@@ -172,6 +172,16 @@
 <translation id="1100840127293327071">默认不勾选用于保留现有浏览数据的选项</translation>
 <translation id="1105572260329131950">使用默认图标表示安全连接</translation>
 <translation id="1105711894873068933"><ph name="LACROS_NAME" /> 停用后，系统会在用户下次登录时移除所有用户数据。</translation>
+<translation id="1106279506320506502">指定是否启用隔离模式。
+
+隔离模式是一种仅供企业使用的临时浏览模式。
+它支持与数据泄露防护相关的企业政策和强制安装的扩展程序。
+
+如果设为“1 - 已启用”，系统会启用隔离模式并停用无痕模式。
+
+如果设为“0 - 已停用”或未设置，则会停用隔离模式。
+
+此政策需要“<ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />”许可才能生效。</translation>
 <translation id="1106342730891876476">共享设置</translation>
 <translation id="1107538157073168076">停用数据洞见扩展程序</translation>
 <translation id="1110426799149444997">停用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索。</translation>
@@ -1623,6 +1633,17 @@ Chrome 政策的优先级高于此政策，例如：如果某个扩展程序已�
 <translation id="2057317273526988987">允许访问指定的一系列网址</translation>
 <translation id="205807990145127714">要针对信号强度事件报告的遥测数据。</translation>
 <translation id="2060153898336610735">根据当前语言自动设置</translation>
+<translation id="2060316966423154087">指定用户能否让 <ph name="PRODUCT_NAME" /> 使用生成式 AI 更好地了解表单并帮助他们填写更多字段。
+
+0 = 效果与 1 相同。在 M153 之前，此设置允许 Google 使用相关数据改进其 AI 模型。相关数据可能包括提示、输入、输出、素材和书面反馈，具体取决于相应功能。除非下文另有说明，否则默认值是 0。
+
+1 表示允许使用相应功能，但不允许 Google 使用相关数据（包括提示、输入、输出、素材和书面反馈）改进模型。对于受 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企业用户和受 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，默认值是 1。
+
+2 表示不允许使用此功能。
+
+如果此政策未设置，其行为将由 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策决定。
+
+如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="2061123930713023976">允许调试网络数据包捕获流程</translation>
 <translation id="2061810934846663491">为远程访问主机配置所需的域名</translation>
 <translation id="2062632109797189011">重新启用已弃用的 window.webkitStorageInfo API</translation>
@@ -2842,6 +2863,7 @@ PAC 样式的字符串：
 
 如果未设置，则意味着 <ph name="BLOCK_POPUPS_POLICY_NAME" /> 政策适用，但用户可以更改此设置。</translation>
 <translation id="2796714419743648316">针对各应用的使用时限的许可名单</translation>
+<translation id="2799223571221894425">重新启动</translation>
 <translation id="2801065672151277034">证书管理设置</translation>
 <translation id="2801155097555584385">设定电池充电自定义开始充电值（以百分比表示）</translation>
 <translation id="2801378553855965587">停用 <ph name="GOOGLE_CALENDAR_NAME" />集成。</translation>
@@ -3416,19 +3438,6 @@ PAC 样式的字符串：
 <translation id="3150351525324499342">默认情况下不在工具栏中显示 <ph name="PRODUCT_NAME" /> 图标，但允许用户选择是否显示</translation>
 <translation id="3152135410085709340">允许这些网站使用 PDF 查看器对 file:// 网址进行本地文件访问</translation>
 <translation id="3152425128389603870">使“统一桌面”功能可供用户使用，并使其在默认情况下处于启用状态</translation>
-<translation id="3157506194753687842">控制是否允许 <ph name="GEMINI_SPARK_PRODUCT_NAME" /> 智能体连接到 <ph name="PRODUCT_NAME" /> 并使用自动浏览功能。
-
-0 = 允许 <ph name="GEMINI_SPARK_PRODUCT_NAME" /> 连接到 <ph name="PRODUCT_NAME" /> 并使用自动浏览功能
-
-1 = 不允许 <ph name="GEMINI_SPARK_PRODUCT_NAME" /> 连接到 <ph name="PRODUCT_NAME" /> 或使用自动浏览功能
-
-警告：如果允许 <ph name="GEMINI_SPARK_PRODUCT_NAME" /> 连接到 <ph name="PRODUCT_NAME" /> 并使用自动浏览功能，<ph name="GEMINI_SPARK_PRODUCT_NAME" /> 智能体将能够使用活跃的浏览器会话在 <ph name="PRODUCT_NAME" /> 客户端上执行自主的多步操作。这涉及重大的安全风险，包括凭证泄露风险、本地网络入站访问风险以及情境感知信号的丢失。现有的管理和安全控制措施可能无法得到遵守。
-
-建议管理员在启用此功能之前，仔细评估组织的网络威胁模型、合规性和隐私权准则。
-
-如果 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 应用或 <ph name="PRODUCT_NAME" /> 自动浏览政策已停用，则此政策不会生效。例如，可通过 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 政策停用 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 应用。如需详细了解 <ph name="PRODUCT_NAME" /> 中的 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />，请访问 https://support.google.com/chrome/a?p=gemini_in_chrome。
-
-<ph name="PRODUCT_NAME" /> 自动浏览和 <ph name="GEMINI_SPARK_PRODUCT_NAME" /> 仅在部分国家/地区推出，且仅支持部分语言。将此政策设为 0（即已启用）并不能保证该功能一定会生效；其启用情况仍取决于实际的可用性。如需详细了解推出情况，请查看企业版版本说明：https://chromeenterprise.google/resources/release-notes/。</translation>
 <translation id="3159375329008977062">允许用户通过界面导出/导入 Crostini 容器</translation>
 <translation id="3163167792874598128">如果此政策未设置或已启用，弹出式提醒“App Store 评分”可能每年最多向用户显示 1 次。
 如果此政策已停用，系统将不会向用户显示弹出式提醒“App Store 评分”。</translation>
@@ -5168,7 +5177,6 @@ LocalNetworkAccessIpAddressSpaceOverrides 政策的覆盖设置优先于此政�
 用户无法覆盖管理员的选择。如果未设置此政策，用户将获得消费者体验，即可以自由修改系统位置信息设置，并且默认值为 <ph name="GLS_ALLOWED" />。
 
 注意：此政策已弃用 <ph name="ARC_GLS_POLICY_NAME" /> 政策。此外，如果您设置了此政策，<ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> 将不再影响 <ph name="PRODUCT_OS_NAME" /> 上的 <ph name="ANDROID_NAME" /> 位置偏好设置。</translation>
-<translation id="4340826578810728651">允许 <ph name="GEMINI_SPARK_PRODUCT_NAME" /> 连接到 <ph name="PRODUCT_NAME" /> 并使用自动浏览功能</translation>
 <translation id="4341199399451274159">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> 来指定搜索服务提供商支持的字符编码。编码是 UTF-8、GB2312 和 ISO-8859-1 之类的代码页名称。系统会按照您指定的顺序尝试这些编码。
 
       如果您不设置 <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />，系统将使用 UTF-8。</translation>
@@ -5850,6 +5858,7 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
 如果此政策已停用，系统不会向用户显示弹出式提醒“Credential Provider 扩展程序”。</translation>
 <translation id="4768446404233019970">在传输层安全协议 (TLS) 中启用 3DES 加密套件</translation>
 <translation id="4770334626033858263">用于生成和验证家长访问码的配置。</translation>
+<translation id="477383002672213319">允许使用增强型自动填充功能，但不改进 AI 模型（在 M153 之前会改进 AI 模型）。</translation>
 <translation id="4773997835955617342">旨在为手动创建的新票据更改建议的 <ph name="KRB5_CONFIG" /> 配置。
 
       如果此政策已启用，系统会使用“KerberosCustomPrefilledConfig”政策的值作为建议的配置，并会将其显示在 Kerberos 身份验证对话框内的“高级”部分中。
@@ -7104,6 +7113,13 @@ Microsoft SharePoint 和 OneDrive 卡片需要由管理员进行额外配置。�
 <translation id="5537400155400537818">已停用：CSS 缩放将保留标准化之前的旧行为。</translation>
 <translation id="5537587542872235553">允许强制安装的独立式 Web 应用 (IWA) 和自助服务终端应用使用 Device Attributes API</translation>
 <translation id="553806128266843748">一个布尔值标记，用于表明是否启用节流功能。</translation>
+<translation id="5540415024237352600">此政策将在 M153 中弃用，并将在未来版本中不再受支持（不再有效）。在 <ph name="MAC_OS_NAME" /> 上，系统现已永久启用为安装渐进式 Web 应用 (PWA) 时创建的原生应用使用临时签名的功能。这可确保每个已安装的应用都有一个对于 <ph name="MAC_OS_NAME" /> 系统组件唯一的身份。
+
+如果已启用或未设置此政策，系统会允许为在安装 PWA 时创建的原生应用使用临时签名。这可确保每个已安装的应用都有一个对于 <ph name="MAC_OS_NAME" /> 系统组件唯一的身份。
+
+如果已停用此政策，安装 PWA 时创建的每个原生应用都将具有相同的身份。这可能会干扰 <ph name="MAC_OS_NAME" /> 功能。
+
+仅当使用的端点安全解决方案会阻止使用临时签名的应用时，才应停用此政策。</translation>
 <translation id="5540885720415375851">允许使用“本地设备发现”功能</translation>
 <translation id="5542235730745104308">如果此政策设为 True，<ph name="PRODUCT_NAME" /> 会使用内置的备用错误页面（例如“找不到网页”）。如果此政策设为 False，<ph name="PRODUCT_NAME" /> 将一律不使用备用错误页面。
 

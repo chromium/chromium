@@ -372,6 +372,7 @@
 <translation id="4676059169848868271"><ph name="APP_NAME" /> uygulamasının, el takibi özelliğini kullanmasına izin vermek için <ph name="BEGIN_LINK" />sistem ayarlarında<ph name="END_LINK" /> el takibini de etkinleştirin.</translation>
 <translation id="4688045258817337666">Kartlarınızı yönetme</translation>
 <translation id="4722332387043141878">Sanal gerçeklik veya fitness takibi gibi özelliklerin kullanılması için siteler genellikle cihazınızın hareket ve ışık sensörlerini kullanır</translation>
+<translation id="4748783296226936791">Yaygın olmayan klavye, oyun kumandası ve başka cihazları kullanan özellikler için siteler genellikle HID cihazlara bağlanır</translation>
 <translation id="4755971844837804407">Bu düğme açıkken siteler size tüm reklamları gösterebilir. Düğme kapalıyken siteler size araya giren veya yanıltıcı reklamlar gösteremez.</translation>
 <translation id="4779083564647765204">Yakınlaştır</translation>
 <translation id="4807122856660838973">Güvenli Tarama'yı açın</translation>
@@ -456,6 +457,7 @@
 <translation id="5700761515355162635">Üçüncü taraf çerezlerine izin verildi</translation>
 <translation id="5706552988683188916">Bu işlem, <ph name="WEBSITE" /> için çerezleri ve diğer site verilerini siler</translation>
 <translation id="571222594670061844">Siteler, kimlik hizmetlerinden gelen oturum açma istemlerini gösterebilir</translation>
+<translation id="5719854774000914513">Siteler, HID cihazlarına bağlanmak isteyebilir</translation>
 <translation id="5740126560802162366">Siteler, cihazınıza veri kaydedebilir</translation>
 <translation id="5743425052258407233">Tüm cihazlarınızda geçmişinizi görüntüleyin, böylece kaldığınız yerden kolayca devam edebilirsiniz</translation>
 <translation id="5749158352074143502">Bu sekmeyle devam et</translation>
@@ -575,6 +577,7 @@
 <translation id="6950072572526089586">Ziyaret ettiğiniz bir site, yaptığınız işlemlerle ilgili bilgileri kaydedebilir. Bu bilgileri, beklendiği gibi çalışmak, örneğin bir sitede oturumunuzu açık tutmak veya alışveriş sepetinizdeki öğeleri kaydetmek için kullanabilir. Genellikle siteler bu bilgileri geçici olarak cihazınıza kaydeder.</translation>
 <translation id="6964291282260073066">"WebGPU" devre dışıdır.</translation>
 <translation id="6965382102122355670">Tamam</translation>
+<translation id="6972629891077993081">HID cihazlar</translation>
 <translation id="6980507581230208647">Gül rengi tema</translation>
 <translation id="6980861169612950611">Site verileri silinsin mi? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Erişilebilirlik</translation>
@@ -732,6 +735,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:</translation>
 <translation id="8593422116412089302">Bu düğme açıkken siteler hakkınızda kaydettikleri bilgileri kullanmak isteyebilir. Düğme kapalıyken siteler hakkınızda kaydettikleri bilgileri kullanmak isteyemez.</translation>
 <translation id="8609465669617005112">Yukarı taşı</translation>
 <translation id="8617611086246832542">Bu düğme açıkken web sitelerinin masaüstü görünümü gösterilir. Düğme kapalıyken web sitelerinin mobil cihaz görünümü gösterilir.</translation>
+<translation id="8625916342247441948">Sitelerin HID cihazlara bağlanmasına izin verme</translation>
 <translation id="8670078035093027626">Varsayılan tarayıcı alt sayfası tam ekran olarak açıldı</translation>
 <translation id="8676316391139423634">Düğme açıkken siteler ellerinizi izlemek için izin isteyebilir. Düğme kapalıyken siteler ellerinizi izleyemez.</translation>
 <translation id="8676374126336081632">Girişi temizle</translation>

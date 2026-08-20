@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Odaberite dopuštenje: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Želite li spremiti IBAN?</translation>
 <translation id="1113869188872983271">&amp;Poništi promjenu rasporeda</translation>
+<translation id="1117709830616495622">Omogućuje osobna inteligencija s Geminijem.</translation>
 <translation id="111897705806685148">Upotrijebi pristupni ključ s drugog uređaja</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste upravljali time koje podatke iz Chromea spremate na svoj Google račun</translation>
 <translation id="1121990216147052230">Izradi mi popis obaveza</translation>
@@ -1170,6 +1171,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3005723025932146533">Prikaži spremljenu kopiju</translation>
 <translation id="300580149047131921">Nedavno korišteno</translation>
 <translation id="3006864083554020786">kućna adresa</translation>
+<translation id="3008410317623852235">Sada možete pronaći i popuniti informacije s Gmaila i iz drugih izvora.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab da biste pregledali dostupne radnje, a zatim Enter da biste izvršili odabranu radnju.</translation>
 <translation id="3010991137650052245">Ako želite da se na ovoj web-lokaciji upotrebljava <ph name="PERMISSION" />, odobrite pristup za <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3014726756341138577">Napredne značajke pisača</translation>
@@ -2318,6 +2320,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="4941627891654116707">Veličina fonta</translation>
 <translation id="4943620199112228840">upotrebu mikrofona</translation>
 <translation id="4943872375798546930">Nema rezultata</translation>
+<translation id="494701040141924538">Shvaćam, zatvori obavijest</translation>
 <translation id="495170559598752135">Radnje</translation>
 <translation id="4953689047182316270">Odgovori na događaje pristupačnosti</translation>
 <translation id="4954505713046251871">Da bi se ponudili prijedlozi i poboljšala ta značajka, URL i sadržaj stranice dijele se s Googleom</translation>
@@ -3368,6 +3371,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="6743841972744298686">Postavke sinkronizacije</translation>
 <translation id="6745212570062463886">Automatski popunite ime i e-adresu s Google računa</translation>
 <translation id="674580074662200768">Sigurno ažurirajte putovnicu</translation>
+<translation id="6749473226660745022">Fotografije</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Vrijednost pravila</translation>
 <translation id="6753434778807740853">Izbrišite unos <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3707,6 +3711,7 @@ Dodatne pojedinosti:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Rukovatelji plaćanjem</translation>
 <translation id="7366594738862061263">Saznajte više o tome kako Chrome štiti vaše zaporke</translation>
+<translation id="7366909168761621528">Podaci o pregledavanju</translation>
 <translation id="7370751048350026847">Ne preporučuje se lijepiti ovaj sadržaj na ovu web-lokaciju</translation>
 <translation id="7372526636730851647">Fotografija (sjajna)</translation>
 <translation id="7372973238305370288">rezultat pretraživanja</translation>
@@ -4295,6 +4300,7 @@ Dodatne pojedinosti:
 <translation id="8350416046273606058">Prečac ne smije sadržavati razmake: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="8351131234907093545">Izrada bilješke</translation>
 <translation id="8352849934814541340">Administrator uređaja instalirao je aplikacije za dodatne funkcije. Aplikacije imaju pristup nekim vašim podacima.</translation>
+<translation id="8353273112634584260">Omogućuje osobna inteligencija s Geminijem. Vaši zahtjevi, naslovi stranica i URL-ovi mogu se pregledati radi poboljšanja poboljšanog automatskog popunjavanja.</translation>
 <translation id="8355270400102541638">Lokalni kontekst rušenja:</translation>
 <translation id="8362914115861174987">Jezik prijevoda</translation>
 <translation id="8363502534493474904">isključite način rada u zrakoplovu</translation>
@@ -4655,6 +4661,7 @@ Dodatne pojedinosti:
 <translation id="9026253329950610248">Google web-lokacije</translation>
 <translation id="9027020981272345766">Isprobajte Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Da biste zatvorili prikaz na cijelom zaslonu, pritisnite i zadržite |<ph name="ACCELERATOR" />|</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Sigurnosna pogreška</translation>
 <translation id="9035699147763101514">Omogućuje osobna inteligencija s Geminijem. Svojim odabirima možete upravljati u postavkama.</translation>
 <translation id="9035824888276246493">Spremi sigurnosne kodove</translation>

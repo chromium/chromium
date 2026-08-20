@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">Recupera le password salvate in altre app</translation>
 <translation id="4431224949908513835">Seleziona un metodo di pagamento da inserire.</translation>
 <translation id="4432122368769493392">Impostazioni</translation>
+<translation id="4439968635693513370">Programma il tuo weekend con</translation>
 <translation id="4442550905108052454">Apri <ph name="BEGIN_BOLD" />Impostazioni<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Altre opzioni per <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Puoi far scorrere il bordo per andare avanti o indietro.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">Puoi riaprire gli elementi chiusi dalle sezioni Schede recenti o Gruppi di schede. Le schede fissate non verranno chiuse.</translation>
 <translation id="4547181496285029457">Torna alla scheda recente</translation>
 <translation id="4552042254369397518">Copia in corso…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Altre passkey</translation>
 <translation id="4564893319561643483">Nascondi "<ph name="TITLE" />"</translation>
 <translation id="456502772933839252">Condivisione di <ph name="PAGE_TITLE" /> in corso…</translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">La tua organizzazione ti richiede di navigare in privato. I gruppi di schede non vengono sincronizzati in modalità Incognito.
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">Acquista in completa sicurezza con</translation>
 <translation id="467189612236587057">Comunica con un'attività commerciale avviando una telefonata</translation>
 <translation id="4673565891421389203">L'accesso con l'account gestito ti aiuta a mantenere separata la navigazione relativa alla tua organizzazione (tra cui schede, cronologia e password) dall'altra navigazione.
 
@@ -1389,6 +1392,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="560322036295180549">Opzione disattivata dall'organizzazione</translation>
 <translation id="5611398002774823980">Salva nell'account</translation>
+<translation id="5612225021788368236">Chiudi la promozione del browser predefinito</translation>
 <translation id="561269594905823128">Tocca <ph name="BEGIN_BOLD" />Seleziona il file<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Ordina per Più recenti</translation>
 <translation id="5614553682702429503">Salvare la password?</translation>
@@ -2474,6 +2478,7 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="9029650858822697271">Il tuo account è stato disconnesso</translation>
 <translation id="9032405509996909363">Conferma eliminazione dei dati di navigazione</translation>
 <translation id="9035699147763101514">Basato su Personal Intelligence con Gemini. Gestisci le tue scelte nelle impostazioni.</translation>
+<translation id="9038526468059454274">Riassumi con</translation>
 <translation id="9039373489628511875">Larghezza di banda</translation>
 <translation id="9042893549633094279">Privacy e sicurezza</translation>
 <translation id="9055291197094969722">Crea gruppi di schede per organizzare le schede aperte e mantenere la produttività</translation>

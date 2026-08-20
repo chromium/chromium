@@ -202,6 +202,7 @@
 <translation id="1829244130665387512">या पृष्ठामध्ये शोधा</translation>
 <translation id="1832459821645506983">होय, मी तयार आहे</translation>
 <translation id="1845958458910716240">तुमच्या डेटाचे संरक्षण करण्यासाठी, तुम्ही अलीकडे भेट न दिलेल्या साइटच्या परवानग्या Chrome ला काढून टाकू द्या</translation>
+<translation id="1851551847729706116">या टॅबवर <ph name="TAB_NAME" /> शेअर करत आहे</translation>
 <translation id="1869691326892615940">सुरक्षित पासवर्ड, जलद साइन-इन</translation>
 <translation id="1871098866036088250">Chrome ब्राउझरमध्ये उघडा</translation>
 <translation id="1877026089748256423">Chrome कालबाह्य आहे</translation>
@@ -306,7 +307,6 @@
 <translation id="2238038374973843156">गट दुसऱ्या विंडोवर हलवा</translation>
 <translation id="2247789808226901522">कार्ड एक्स्पायर झाले आहे</translation>
 <translation id="2251809247798634662">नवीन गुप्त विंडो</translation>
-<translation id="2253927598983295051"><ph name="APP_NAME" /> सोबत काय शेअर करायचे ते निवडा</translation>
 <translation id="2261570557291037252">अधिक ॲप माहिती</translation>
 <translation id="2276696007612801991">तुमचे पासवर्ड तपासण्यासाठी तुमच्या Google खात्यामध्ये साइन इन करा</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, निवडलेला गुप्त टॅब</translation>
@@ -379,7 +379,6 @@
 <translation id="2527779675047087889">क्लिपबोर्डवरील आशय लपवा</translation>
 <translation id="2531209299761896527">नवीन विंडोमध्ये टॅब उघडण्यासाठी पिंच करा, धरून ठेवा आणि ड्रॅग करा</translation>
 <translation id="2532336938189706096">वेब दृश्य</translation>
-<translation id="253498598929009420">साइट तुमच्या स्क्रीनवरील आशय पाहू शकेल</translation>
 <translation id="2535807170289627159">सर्व टॅब</translation>
 <translation id="2536728043171574184">या पेजची ऑफलाइन प्रत पाहत आहे</translation>
 <translation id="2537574774089209541">तुम्ही ब्राउझ करत असताना Gemini चा सहज ॲक्सेस मिळावा यासाठी काही टूल हलवली आहेत.</translation>
@@ -536,6 +535,7 @@
 <translation id="3158667104057012316">मॅन्युअल ऑर्डरनुसार क्रमाने लावत आहे</translation>
 <translation id="3159335509547415276">ब्लॉक केलेल्या खात्यांविषयी जाणून घ्या</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, नवीन टॅबमध्ये उघडते</translation>
+<translation id="3164329792803560526"><ph name="APP_NAME" /> यावर हा टॅब शेअर करत आहे</translation>
 <translation id="3166827708714933426">टॅब आणि विंडो शॉर्टकट</translation>
 <translation id="3167258285411721858">तुम्ही <ph name="HOST_NAME" /> साठी मोबाइल साइटची विनंती करू शकता</translation>
 <translation id="3177338796769255211">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
@@ -623,6 +623,7 @@
 <translation id="3557336313807607643">संपर्कांमध्ये जोडा</translation>
 <translation id="3560831525486613327">नवीन टॅब पेज उघडा</translation>
 <translation id="3563767357928833671">क्लिपबोर्डचा आशय दाखवला</translation>
+<translation id="356407858591811361">नवीन गुप्त विंडो उघडा</translation>
 <translation id="3566639033325271639">सेटिंग्ज अपडेट करा</translation>
 <translation id="3568945271227339929">एकही पासवर्ड धोक्यात नाही</translation>
 <translation id="3575464060651642446">या डिव्हाइसवरील पासवर्ड तपासत आहे…</translation>
@@ -885,6 +886,7 @@
 <translation id="4601095002996233687">संशयास्पद डाउनलोडसाठी तपशीलवार स्कॅनची सुविधा.</translation>
 <translation id="4606559747793337066">साइट किंवा अ‍ॅपद्वारे त्याच्या पेजवरील लिंक खाजगीरीत्या प्रीलोड करण्याची विनंती केली गेल्यास, Chrome हे कुकीशिवाय Google सर्व्हरद्वारे पेज एन्क्रिप्ट आणि प्रीलोड करते. यामुळे, प्रीलोड केलेल्या साइटपासून तुमची ओळख लपवली जाते.</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> उघडा</translation>
+<translation id="4619615317237390068">अन्य डिव्हाइसमधील टॅब</translation>
 <translation id="4624065194742029982">Chrome चा गुप्त मोड</translation>
 <translation id="4634124774493850572">पासवर्ड वापरा</translation>
 <translation id="463471994228293091">{PASSWORDS_COUNT,plural, =1{१ पासवर्ड आणि इतर आयटम फक्त या डिव्हाइसवर सेव्ह केले आहेत. तो तुमच्या इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या Google खाते मध्ये सेव्ह करा.}other{# पासवर्ड आणि इतर आयटम फक्त या डिव्हाइसवर सेव्ह केले आहेत. ते तुमच्या इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या Google खाते मध्ये सेव्ह करा.}}</translation>
@@ -1550,6 +1552,7 @@
 <translation id="7173338713290252554">संपूर्ण वेबवरील किमतीचा इतिहास</translation>
 <translation id="7177466738963138057">तुम्ही हे नंतर सेटिंग्ज मध्ये बदलू शकता.</translation>
 <translation id="7177873915659574692">QR कोड तयार करू शकत नाही. URL मध्ये <ph name="CHARACTER_LIMIT" /> पेक्षा जास्त वर्ण आहेत.</translation>
+<translation id="7179032284363038560">हे डिव्हाइस वापरणाऱ्या इतरांना तुमची अ‍ॅक्टिव्हिटी दिसणार नाही, जेणेकरून तुम्ही आणखी खाजगीरीत्या ब्राउझ करू शकता. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="7182051712900867547">वेगळे खाते वापरा</translation>
 <translation id="7182520625618447753">कस्टमाइझ केलेल्या ब्राउझिंग अनुभवासाठी तुमच्या अ‍ॅड्रेस बारची स्थिती सर्वत वरती किंवा तळाशी स्विच करा</translation>
 <translation id="7183517696921903380">अ‍ॅप फिल्टर शीट उघडली आहे.</translation>
@@ -1856,7 +1859,6 @@
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> टॅब गट}other{<ph name="TAB_GROUPS_MANY" /> टॅब गट}}</translation>
 <translation id="8387617938027387193">हे तुम्हीच आहात याची पडताळणी करा</translation>
 <translation id="8393700583063109961">संदेश पाठवा</translation>
-<translation id="8396098434728053815">टॅब ऑडिओदेखील शेअर करा</translation>
 <translation id="8398389123831319859">गुप्त मोडवर स्विच करण्यासाठी दोनदा टॅप करून धरून ठेवा</translation>
 <translation id="8412037385861858490">Chrome वर तुमचे काम सुरक्षित ठेवण्यासाठी, तुम्ही Chrome मध्ये साइन-इन केलेले असताना तुमची संस्था विशिष्ट माहिती पाहू किंवा व्यवस्थापित करू शकेल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">संपूर्ण इतिहास दर्शवा</translation>
@@ -1937,7 +1939,6 @@
 <translation id="8683039184091909753">इमेज</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, निवडलेला टॅब</translation>
 <translation id="8696297579102085705">तुमच्या डिव्हाइसवर पाठवा</translation>
-<translation id="8697753151306746444">त्याऐवजी विंडो किंवा स्क्रीन शेअर करा</translation>
 <translation id="8699120352855309748">या भाषांचे भाषांतर करणे ऑफर करू नका</translation>
 <translation id="8700565880437506364">सादर आहे Chrome मधील Gemini</translation>
 <translation id="8712637175834984815">समजले</translation>
@@ -1976,6 +1977,7 @@
 <translation id="885480114717186641">तुम्ही <ph name="HOST_NAME" /> साठी डेस्कटॉप साइटची विनंती करू शकता</translation>
 <translation id="8856607253650333758">वर्णने मिळवा</translation>
 <translation id="8863714995118816041"><ph name="SITE_NAME" /> ला पुन्हा परवानग्या दिल्या आहेत</translation>
+<translation id="8864055848767439877"><ph name="TAB_NAME" /> <ph name="APP_NAME" />वर शेअर करत आहे</translation>
 <translation id="8865415417596392024">तुमच्या खात्यामधील Chrome डेटा</translation>
 <translation id="8872506776304248286">अनुप्रयोगामध्ये उघडा</translation>
 <translation id="8880275451109933094">दोन पेज व्ह्यू</translation>
@@ -2082,6 +2084,7 @@
 <translation id="930834144334005936">सद्य मोड <ph name="MODE_NAME" /> हा शोध वर रीसेट करा</translation>
 <translation id="938850635132480979">एरर: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">सांकेतिक पासफ्रेझ एंटर करा</translation>
+<translation id="939736085109172342">नवीन फोल्‍डर</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, पिन केलेला चित्रात-चित्र गुप्त टॅब</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
 <translation id="948276827484905248">QR कोड तयार करा</translation>

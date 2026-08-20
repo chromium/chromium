@@ -372,6 +372,7 @@
 <translation id="4676059169848868271">Pokud aplikaci <ph name="APP_NAME" /> chcete umožnit používat sledování rukou, zapněte sledování rukou také v <ph name="BEGIN_LINK" />nastavení systému<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Správa karet</translation>
 <translation id="4722332387043141878">Weby obvykle používají senzory pohybu a světla na zařízení kvůli funkcím, jako je virtuální realita nebo sledování fitness aktivit</translation>
+<translation id="4748783296226936791">Weby se k zařízením HID obvykle připojují kvůli funkcím, které používají neobvyklé klávesnice, herní ovladače a jiná zařízení</translation>
 <translation id="4755971844837804407">Když je tato možnost zapnutá, weby vám mohou zobrazovat jakékoliv reklamy. Když je vypnutá, weby nemohou zobrazovat rušivé ani zavádějící reklamy.</translation>
 <translation id="4779083564647765204">Lupa</translation>
 <translation id="4807122856660838973">Zapnout Bezpečné prohlížení</translation>
@@ -456,6 +457,7 @@
 <translation id="5700761515355162635">Soubory cookie třetích stran jsou povoleny</translation>
 <translation id="5706552988683188916">Touto akcí smažete soubory cookie a další data webu <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Weby mohou zobrazovat výzvy k přihlášení od služeb ověření identity</translation>
+<translation id="5719854774000914513">Weby mohou žádat o připojení k zařízením HID</translation>
 <translation id="5740126560802162366">Weby mohou ukládat data na vašem zařízení</translation>
 <translation id="5743425052258407233">Synchronizujte svou historii do všech svých zařízení, abyste mohli snadno pokračovat, kde jste přestali</translation>
 <translation id="5749158352074143502">Pokračovat s touto kartou</translation>
@@ -575,6 +577,7 @@
 <translation id="6950072572526089586">Web, který navštívíte, může ukládat informace o tom, co děláte, aby fungoval podle očekávání – například abyste zůstali přihlášeni nebo v košíku zůstaly přidané položky. Weby tato data často ukládají dočasně na vašem zařízení.</translation>
 <translation id="6964291282260073066">WebGPU je deaktivováno.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6972629891077993081">Zařízení HID</translation>
 <translation id="6980507581230208647">Růžový motiv</translation>
 <translation id="6980861169612950611">Vymazat data webu? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Usnadnění</translation>
@@ -732,6 +735,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:</translation>
 <translation id="8593422116412089302">Když je tato možnost zapnutá, mohou weby žádat o použití informací, které si o vás uložily. Když je vypnutá, weby o použití informací, které si o vás uložily, žádat nemohou.</translation>
 <translation id="8609465669617005112">Posunout nahoru</translation>
 <translation id="8617611086246832542">Když je tato možnost zapnutá, zobrazuje se verze webů pro počítače. Když je vypnutá, zobrazuje se verze webů pro mobilní zařízení.</translation>
+<translation id="8625916342247441948">Nepovolovat webům připojení k zařízením HID</translation>
 <translation id="8670078035093027626">Spodní panel výchozího prohlížeče je otevřený na celou výšku</translation>
 <translation id="8676316391139423634">Když je tato možnost zapnutá, můžou weby žádat o sledování vašich rukou. Když je vypnutá, weby vaše ruce sledovat nemůžou.</translation>
 <translation id="8676374126336081632">Vymazat vstup</translation>

@@ -716,6 +716,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1554640914375980459">Flash the screen when you receive notifications. Use flash notifications with caution if you're light sensitive.</translation>
 <translation id="1555130319947370107">Blue</translation>
 <translation id="1556127816860282890">Background activity and some visual effects, like smooth scrolling, may be limited</translation>
+<translation id="1557806604681757705">your computer</translation>
 <translation id="1557939148300698553">Create profile</translation>
 <translation id="155803912725350982">Slow keys</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -1025,6 +1026,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1784707308176068866">Run in the background when requested by a cooperating native application</translation>
 <translation id="1784849162047402014">Device is low on disk space</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Uninstalling ‘<ph name="APP_NAME" />’ will also uninstall this app:}other{Uninstalling ‘<ph name="APP_NAME" />’ will also uninstall these apps:}}</translation>
+<translation id="1785698972112179866">Sign in to get your bookmarks and more from <ph name="DEVICE" /></translation>
 <translation id="1786290960428378411">Requesting to read and change</translation>
 <translation id="1789543093145556097">Always hide</translation>
 <translation id="179021551944139249">Add link to reading list</translation>
@@ -8646,6 +8648,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 This can include information about installed software, files, your browser, the device's operating system and IP addresses.</translation>
 <translation id="7683834360226457448">Low vision display tools</translation>
 <translation id="7684212569183643648">Installed by Your Administrator</translation>
+<translation id="7684547908663093354">Sign in to get your passwords and more from <ph name="DEVICE" /></translation>
 <translation id="7684718995427157417">To create and test your apps, enable the Android Debug Bridge (ADB). Note that this action allows installation of Android apps that haven't been verified by Google, and requires a factory reset to disable.</translation>
 <translation id="7684803937028953000">Your organisation blocked the local download of this file.</translation>
 <translation id="7684913007876670600">To show a simplified view of this page, open the side panel and select Reading mode</translation>
@@ -9066,6 +9069,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' moved.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8013181884974864006">Contextual tasks</translation>
+<translation id="8013462234418290522">Sign in to get your saved info and more from <ph name="DEVICE" /></translation>
 <translation id="8013534738634318212">These sites are in a group defined by <ph name="RWS_OWNER" />. Sites in a group can see your activity in the group.</translation>
 <translation id="8013993649590906847">If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google.</translation>
 <translation id="8014154204619229810">The updater is currently running. Refresh in a minute to check again.</translation>
@@ -9551,6 +9555,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8377625247046155446">This passkey will only be saved on this device. It will remain on this device after you close all incognito windows.</translation>
 <translation id="837790003026572432">Casting tab audio is not supported on this device</translation>
 <translation id="8378714024927312812">Managed by your organisation</translation>
+<translation id="8378855320830505539">Region</translation>
 <translation id="8379988659465232385">Name cannot be empty</translation>
 <translation id="8379991678458444070">Get back here fast by bookmarking this tab</translation>
 <translation id="8380266723152870797">Window name</translation>

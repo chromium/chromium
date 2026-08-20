@@ -479,7 +479,7 @@
 <translation id="2496180316473517155">浏览记录</translation>
 <translation id="2496626742194544812">转到第一个标签页</translation>
 <translation id="2499505845365628575">您可在“<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />”中找到您的所有浏览记录。</translation>
-<translation id="251033673027346551">请前往 Google 钱包管理<ph name="BEGIN_LINK" />数据和隐私偏好设置<ph name="END_LINK" />。</translation>
+<translation id="251033673027346551">请前往 Google 钱包，管理<ph name="BEGIN_LINK" />数据和隐私偏好设置<ph name="END_LINK" />。</translation>
 <translation id="2511117522375201202">您有 <ph name="NUMBER_OF_PASSWORDS" /> 个已泄露的密码，这可能会给您带来安全风险。</translation>
 <translation id="2512709994717613803"><ph name="LEVEL_NUMBER" /> 级</translation>
 <translation id="2513103768503127042">您的标签页分组会显示在此处</translation>
@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">获取其他应用中已保存的密码</translation>
 <translation id="4431224949908513835">选择要填充的付款方式。</translation>
 <translation id="4432122368769493392">设置…</translation>
+<translation id="4439968635693513370">规划周末，尽在</translation>
 <translation id="4442550905108052454">打开<ph name="BEGIN_BOLD" />设置<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> 的更多选项</translation>
 <translation id="4455710003856931944">滑动边缘即可返回或前进。</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">您可以从最近打开的标签页或标签页分组部分重新打开已关闭的项。固定标签页不会关闭。</translation>
 <translation id="4547181496285029457">返回到最近打开的标签页</translation>
 <translation id="4552042254369397518">正在复制…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">更多通行密钥</translation>
 <translation id="4564893319561643483">隐藏“<ph name="TITLE" />”</translation>
 <translation id="456502772933839252">正在分享“<ph name="PAGE_TITLE" />”</translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">、</translation>
 <translation id="4669618761237477717">您的组织要求您进行私密浏览。在无痕模式下，系统不会同步标签页分组。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">放心购物，尽在</translation>
 <translation id="467189612236587057">拨打电话联系商家</translation>
 <translation id="4673565891421389203">登录受管理的账号后，您就能将与组织相关的浏览数据（包括标签页、历史记录和密码）与其他浏览数据分开。
 
@@ -1307,6 +1310,7 @@
 <translation id="5300589172476337783">显示</translation>
 <translation id="5311061401280561833">已授予摄像头和麦克风使用权</translation>
 <translation id="5313967007315987356">添加网站</translation>
+<translation id="5315029634103634221">Gemini 是一款 AI 工具，可能会出错。<ph name="BEGIN_LINK" />详细了解发送给 Google 的相关数据<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">没有可导入的对象</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">保存</translation>
@@ -1389,6 +1393,7 @@
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="560322036295180549">已被贵组织关闭</translation>
 <translation id="5611398002774823980">保存到账号</translation>
+<translation id="5612225021788368236">关闭默认浏览器宣传内容</translation>
 <translation id="561269594905823128">点按<ph name="BEGIN_BOLD" />选择文件<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">按新近度排序</translation>
 <translation id="5614553682702429503">要保存密码吗？</translation>
@@ -2474,6 +2479,7 @@
 <translation id="9029650858822697271">您已退出账号</translation>
 <translation id="9032405509996909363">确认删除浏览数据</translation>
 <translation id="9035699147763101514">由 Gemini 中的个性化智能服务提供支持。您可以在设置中管理自己的选择。</translation>
+<translation id="9038526468059454274">轻松总结，尽在</translation>
 <translation id="9039373489628511875">带宽</translation>
 <translation id="9042893549633094279">隐私与安全</translation>
 <translation id="9055291197094969722">创建标签页分组，可以整理打开的标签页，畅享清爽高效的浏览体验</translation>

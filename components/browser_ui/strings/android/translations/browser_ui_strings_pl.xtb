@@ -372,6 +372,7 @@
 <translation id="4676059169848868271">Aby umożliwić <ph name="APP_NAME" /> śledzenie rąk, włącz tę opcję w <ph name="BEGIN_LINK" />ustawieniach systemu<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Zarządzanie kartami</translation>
 <translation id="4722332387043141878">Strony zwykle używają dostępnych na urządzeniu czujników ruchu i światła do obsługi funkcji takich jak rzeczywistość wirtualna czy śledzenie aktywności</translation>
+<translation id="4748783296226936791">Witryny zwykle łączą się z urządzeniami HID w celu obsługi funkcji, które korzystają z niestandardowych klawiatur, kontrolerów gier i innych urządzeń</translation>
 <translation id="4755971844837804407">Gdy ta opcja jest włączona, strony internetowe mogą wyświetlać dowolne reklamy. Gdy jest wyłączona, strony nie mogą wyświetlać reklam uciążliwych ani wprowadzających w błąd.</translation>
 <translation id="4779083564647765204">Powiększ</translation>
 <translation id="4807122856660838973">Włącz Bezpieczne przeglądanie</translation>
@@ -456,6 +457,7 @@
 <translation id="5700761515355162635">Pliki cookie innych firm są dozwolone</translation>
 <translation id="5706552988683188916">Spowoduje to usunięcie plików cookie i innych danych witryny <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Witryny mogą wyświetlać prośby o zalogowanie się pochodzące od usług tożsamości</translation>
+<translation id="5719854774000914513">Witryny mogą prosić o zgodę na połączenie z urządzeniami HID</translation>
 <translation id="5740126560802162366">Witryny mogą zapisywać dane na Twoim urządzeniu</translation>
 <translation id="5743425052258407233">Zyskaj dostęp do swojej historii na wszystkich urządzeniach, aby móc łatwo wznawiać przeglądanie od ostatniego miejsca</translation>
 <translation id="5749158352074143502">Kontynuuj na tej karcie</translation>
@@ -575,6 +577,7 @@
 <translation id="6950072572526089586">Aby strona, na którą wchodzisz, działała zgodnie z oczekiwaniami – na przykład nie wylogowywała Cię lub pokazywała produkty w koszyku na zakupy – może ona zapisywać informacje o tym, co robisz. Strony często zapisują te informacje tymczasowo na Twoim urządzeniu.</translation>
 <translation id="6964291282260073066">Opcja „WebGPU” jest wyłączona.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6972629891077993081">Urządzenia HID</translation>
 <translation id="6980507581230208647">Motyw różowy</translation>
 <translation id="6980861169612950611">Usunąć dane witryny? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Ułatwienia dostępu</translation>
@@ -732,6 +735,7 @@ Ochrona zaawansowana kontroluje te ustawienia Chrome:</translation>
 <translation id="8593422116412089302">Gdy ta opcja jest włączona, strony internetowe mogą prosić o zgodę na wykorzystanie zapisanych informacji o Tobie. Gdy jest wyłączona, nie mogą o to prosić.</translation>
 <translation id="8609465669617005112">W górę</translation>
 <translation id="8617611086246832542">Gdy ta opcja jest włączona, strony internetowe są wyświetlane w wersji na komputery. Gdy jest wyłączona, strony są wyświetlane w wersji na urządzenia mobilne.</translation>
+<translation id="8625916342247441948">Nie zezwalaj witrynom na łączenie się z urządzeniami HID</translation>
 <translation id="8670078035093027626">Plansza dolna przeglądarki domyślnej otwarta na całą wysokość</translation>
 <translation id="8676316391139423634">Gdy ta opcja jest włączona, witryny mogą prosić o zgodę na śledzenie Twoich rąk. Gdy jest wyłączona, nie mogą śledzić Twoich rąk.</translation>
 <translation id="8676374126336081632">Wyczyść wpisany tekst</translation>

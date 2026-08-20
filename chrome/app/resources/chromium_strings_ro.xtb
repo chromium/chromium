@@ -75,6 +75,7 @@
 <translation id="1857749206890802997">Descarcă Chromium pe telefon pentru a deschide sau a crea grupuri de file noi din mers.</translation>
 <translation id="185970820835152459">Îți poți gestiona Conturile Google la care te-ai conectat. Conturile tale Google sunt folosite pentru browserul Chromium, pentru Magazinul Play, pentru Gmail și pentru multe altele. Dacă vrei să adaugi un cont pentru altcineva, de exemplu, pentru un membru al familiei, adaugă noua persoană pe <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Caută folosind Căutarea de imagini</translation>
+<translation id="1863837059069884561"><ph name="EXISTING_USER" /> s-a conectat deja. Pentru a separa navigarea, conectează-te la Chromium în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />. În plus, vei putea accesa marcajele și alte date de pe <ph name="DEVICE" />.</translation>
 <translation id="1880677175115548835">Selectează text</translation>
 <translation id="1881322772814446296">Vă conectați cu un cont gestionat și îi permiteți administratorului acestuia controlul asupra profilului dvs. Chromium. Datele Chromium, cum ar fi aplicațiile, marcajele, istoricul, parolele și alte setări vor fi asociate definitiv cu <ph name="USER_NAME" />. Veți putea să ștergeți aceste date prin intermediul Tabloului de bord pentru Conturi Google, însă nu veți putea să asociați aceste date cu alt cont. Aveți opțiunea de a crea un profil nou, pentru a păstra separat datele Chromium existente. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium economisește energia bateriei limitând activitatea de fundal și efectele vizuale, cum ar fi derularea lină și ratele de cadre video. <ph name="BEGIN_LINK" />Află mai multe despre Economisirea energiei<ph name="END_LINK" /></translation>
@@ -133,6 +134,7 @@
 <translation id="2418322681019544463">Deschide linkuri în Chromium din orice aplicație și menține browserul accesibil în bara de activități</translation>
 <translation id="2425157128016763890">Dă clic pe butonul Rezumă pentru a trimite acest document la Gemini în Chromium pentru a obține o prezentare generală rapidă și a pune întrebări suplimentare</translation>
 <translation id="2440750600860946460">Cu <ph name="BEGIN_LINK" />instrumentele din Chromium<ph name="END_LINK" />, navighezi în siguranță și deții controlul</translation>
+<translation id="2449487342837813167"><ph name="EXISTING_USER" /> s-a conectat deja. Pentru a separa navigarea, conectează-te la Chromium în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />. În plus, vei putea accesa parolele și alte date pe toate dispozitivele.</translation>
 <translation id="2451727308784734061">Folosește comanda rapidă pentru a accesa rapid Managerul de parole. Poți muta comanda rapidă pe ecranul de pornire sau în lansatorul de aplicații al computerului.</translation>
 <translation id="2478295928299953161">Chromium se va închide în curând</translation>
 <translation id="2483889755041906834">În Chromium</translation>
@@ -405,6 +407,7 @@
 
 Dacă această pagină nu funcționează conform așteptărilor, încearcă să permiți optimizarea.</translation>
 <translation id="5575874067957905201">Afișează Gemini în Chromium în bara de meniu Mac și activează comanda rapidă de la tastatură</translation>
+<translation id="5576587363991567745"><ph name="EXISTING_USER" /> s-a conectat deja. Pentru a separa navigarea, conectează-te la Chromium în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />. În plus, vei putea accesa informațiile salvate și alte date de pe <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Eroare la pornire: rulează programul de instalare ca utilizator obișnuit, nu ca administrator.</translation>
 <translation id="5580770360767802657">Folosește Chromium în mod prestabilit și fixează-l</translation>
 <translation id="5596627076506792578">Mai multe opțiuni</translation>
@@ -579,6 +582,7 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="7213407614656404070">Folosește Chromium când dai clic pe linkuri în mesaje, documente și alte aplicații</translation>
 <translation id="7216228761061470870">Când folosești Căutarea de imagini pe computer, titlul paginii, adresa URL și conținutul, inclusiv PDF-urile, sunt trimise la server</translation>
 <translation id="7223968959479464213">Manager de activități - Chromium</translation>
+<translation id="7227958669698166857"><ph name="EXISTING_USER" /> s-a conectat deja. Pentru a separa navigarea, conectează-te la Chromium în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />. În plus, vei putea accesa informațiile salvate și alte date pe toate dispozitivele.</translation>
 <translation id="7252276985725323153">Începe să navighezi instantaneu: Chromium se poate lansa acum când pornește Windows.</translation>
 <translation id="7274695763216404502">S-a fixat! Folosește din nou Căutarea de imagini din bara de instrumente</translation>
 <translation id="7288567540154601580">File și extensii</translation>
@@ -648,6 +652,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="7888981273428720788">Setează Chromium ca browser prestabilit</translation>
 <translation id="7934340546140346950">Chromium face automat upgrade conexiunilor nesecurizate la HTTPS, dacă este posibil</translation>
 <translation id="7937630085815544518">Ai fost conectat(ă) la Chromium ca <ph name="USER_EMAIL_ADDRESS" />. Folosește același cont pentru a te conecta din nou.</translation>
+<translation id="7944602660083060118"><ph name="EXISTING_USER" /> s-a conectat deja. Pentru a separa navigarea, conectează-te la Chromium în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />. În plus, vei putea accesa marcajele și alte date pe toate dispozitivele.</translation>
 <translation id="7975919845073681630">Aceasta este o instalare secundară a browserului Chromium și nu poate fi setat ca browser prestabilit.</translation>
 <translation id="7997934263947464652">Extensiile, aplicațiile și temele din surse necunoscute pot să dăuneze dispozitivului. Chromium recomandă să le instalezi numai din <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8000759043835159571">Beneficiază de tot ce este mai bun la Google cu aplicația Chromium pe <ph name="DEVICE_TYPE" /></translation>
@@ -679,6 +684,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8232193495299001329">Chromium nu poate verifica de unde provine această extensie. Ar putea fi nesigură. Elimin-o din Chromium ca să nu mai poată vedea și modifica datele tale de pe site-urile pe care le accesezi, inclusiv informațiile cu caracter personal.</translation>
 <translation id="8248265253516264921">Dacă o imagine nu are o descriere utilă, Chromium va încerca să o completeze. Pentru a crea descrieri, imaginile sunt trimise la Google. Poți dezactiva această opțiune oricând din setări.</translation>
 <translation id="8254601181414348851">Te conectezi la Chromium cu un profil nou?</translation>
+<translation id="8262224117913639129"><ph name="EXISTING_USER" /> s-a conectat deja. Pentru a separa navigarea, conectează-te la Chromium în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />. În plus, vei putea accesa parolele și alte date de pe <ph name="DEVICE" />.</translation>
 <translation id="8277334259226003205">Afișează Gemini în Chromium în bara de sistem și activează comanda rapidă de la tastatură</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium te avertizează<ph name="END_LINK" /> cu privire la site-urile și descărcările nesigure</translation>
 <translation id="8295827201165805317">Nu ai accesat recent site-ul. Chromium a eliminat <ph name="PERMISSION" />.</translation>

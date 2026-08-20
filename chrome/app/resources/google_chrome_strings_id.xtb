@@ -144,6 +144,7 @@
 <translation id="2424440923901031101">Ekstensi ini melanggar kebijakan Chrome Web Store dan mungkin tidak aman. Hapus dari Chrome agar ekstensi ini tidak dapat lagi melihat dan mengubah data Anda di situs yang Anda kunjungi, termasuk info pribadi Anda.</translation>
 <translation id="2467438592969358367">Google Chrome ingin mengekspor sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="2472092250898121027">Ekstensi ini berisi malware dan tidak aman. Hapus dari Chrome agar ekstensi ini tidak dapat lagi melihat dan mengubah data Anda di situs yang Anda kunjungi, termasuk info pribadi Anda.</translation>
+<translation id="2482846200327569645"><ph name="EXISTING_USER" /> sudah login. Agar penjelajahan Anda tetap terpisah, login ke Chrome di profil Anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapatkan bookmark dan data lainnya dari <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Uninstal</translation>
 <translation id="2513154137948333830">Perlu memulai ulang: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2523492931736391680">Pekerjaan Anda diamankan di Chrome</translation>
@@ -195,6 +196,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="2916983411556218750">Mari siapkan Chrome Anda</translation>
 <translation id="2926952073016206995">Chrome memerlukan izin kamera untuk situs ini</translation>
 <translation id="2945997411976714835">Error penginstalan: Proses penginstal gagal dimulai.</translation>
+<translation id="2959224682348913614"><ph name="EXISTING_USER" /> sudah login. Agar penjelajahan Anda tetap terpisah, login ke Chrome di profil Anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapatkan sandi dan data lainnya dari <ph name="DEVICE" />.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Login Jaringan - Chrome</translation>
 <translation id="2970681950995291301">Untuk menghapus Akun Google Anda dari Chrome, logout dari Chrome di halaman Setelan</translation>
 <translation id="2976869732253036751">Dapatkan notifikasi pemantauan harga dengan Chrome di ponsel Anda</translation>
@@ -214,6 +216,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="3073571714401714450">Aktifkan/nonaktifkan Gemini di Chrome Dev</translation>
 <translation id="3080151273017101988">Terus jalankan apl latar belakang saat Google Chrome ditutup</translation>
 <translation id="308397506772922478">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun Anda<ph name="END_LINK" /></translation>
+<translation id="3089427491314610412"><ph name="EXISTING_USER" /> sudah login. Agar penjelajahan Anda tetap terpisah, login ke Chrome di profil Anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapatkan info tersimpan dan data lainnya dari <ph name="DEVICE" />.</translation>
 <translation id="3100998948628680988">Beri nama profil Chrome Anda</translation>
 <translation id="310459126943037700">Gagal mengakhiri tugas.</translation>
 <translation id="3104828284009500087">Telusuri apa saja di halaman</translation>
@@ -226,6 +229,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="3140883423282498090">Perubahan Anda akan berlaku pada peluncuran ulang Google Chrome selanjutnya.</translation>
 <translation id="3149510190863420837">Aplikasi Chrome</translation>
 <translation id="3161522574479303604">Semua bahasa</translation>
+<translation id="318555301233810762"><ph name="EXISTING_USER" /> sudah login. Agar penjelajahan Anda tetap terpisah, login ke Chrome di profil Anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapatkan bookmark dan data lainnya semua perangkat Anda.</translation>
 <translation id="319199214552513804">Untuk mendapatkan ekstensi ini dan yang lainnya di semua komputer Anda, login ke Chrome</translation>
 <translation id="3196187562065225381">Chrome memblokir download ini karena file tersebut berbahaya</translation>
 <translation id="3222857603094643834">Telusuri apa saja di halaman ini dengan Google Lens</translation>
@@ -264,6 +268,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="3598673391539778844">Tampilkan Gemini di Chrome di area notifikasi</translation>
 <translation id="3622716124581627104">Identifikasi berbagai hal atau tempat, serta salin atau terjemahkan teks. Saat Anda menggunakan Google Lens, screenshot halaman akan dikirim ke Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Kini, menggunakan Chrome dengan Akun Google Anda dan di komputer bersama jadi lebih mudah.</translation>
+<translation id="3628103251823745322"><ph name="EXISTING_USER" /> sudah login. Agar penjelajahan Anda tetap terpisah, login ke Chrome di profil Anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapatkan info tersimpan dan data lainnya di semua perangkat Anda.</translation>
 <translation id="3635073343384702370">Chrome dapat memeriksa sandi jika Anda menyimpannya</translation>
 <translation id="3636970668267555808">Dapatkan akses mudah ke fitur yang Anda kenal, suka, dan percaya dengan menyetel Chrome sebagai browser default.</translation>
 <translation id="3667616615096815454">Tidak dapat menginstal, aplikasi tidak dikenali oleh server.</translation>
@@ -587,6 +592,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6933858244219479645">Sistem ChromeOS</translation>
 <translation id="6938166777909186039">Untuk mendapatkan update Google Chrome berikutnya, Anda perlu Windows 10 atau yang lebih baru. Komputer ini menggunakan Windows 8.1.</translation>
 <translation id="6943584222992551122">Data browsing pengguna ini akan dihapus dari perangkat ini. Untuk memulihkan data, login ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
+<translation id="6962628299694876291"><ph name="EXISTING_USER" /> sudah login. Agar penjelajahan Anda tetap terpisah, login ke Chrome di profil Anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapatkan sandi dan data lainnya semua perangkat Anda.</translation>
 <translation id="6965382102122355670">Oke</translation>
 <translation id="6967962315388095737">Inbound rule untuk Google Chrome Beta guna mengizinkan traffic mDNS.</translation>
 <translation id="6979589607440534284">Pelajari alasan Chrome memblokir beberapa file, terbuka di tab baru</translation>

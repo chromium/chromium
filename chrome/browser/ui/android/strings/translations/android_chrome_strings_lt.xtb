@@ -202,6 +202,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="1829244130665387512">Surasti puslapyje</translation>
 <translation id="1832459821645506983">Taip, sutinku</translation>
 <translation id="1845958458910716240">Kad apsaugotumėte duomenis, leiskite „Chrome“ pašalinti svetainių, kuriose pastaruoju metu nesilankėte, leidimus</translation>
+<translation id="1851551847729706116">„<ph name="TAB_NAME" />“ bendrinamas su šiuo skirtuku</translation>
 <translation id="1869691326892615940">Saugesni slaptažodžiai, spartesnis prisijungimas</translation>
 <translation id="1871098866036088250">Atidaryti naršyklėje „Chrome“</translation>
 <translation id="1877026089748256423">„Chrome“ versija yra pasenusi</translation>
@@ -306,7 +307,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2238038374973843156">Perkelti grupę į kitą langą</translation>
 <translation id="2247789808226901522">Kortelės galiojimo laikas baigėsi</translation>
 <translation id="2251809247798634662">Naujas inkognito langas</translation>
-<translation id="2253927598983295051">Su „<ph name="APP_NAME" />“ bendrintinos informacijos pasirinkimas</translation>
 <translation id="2261570557291037252">Daugiau informacijos apie programą</translation>
 <translation id="2276696007612801991">Prisijunkite prie „Google“ paskyros, kad patikrintumėte slaptažodžius</translation>
 <translation id="2281243904606300427">„<ph name="TAB_TITLE" />“ pasirinktas inkognito skirtukas</translation>
@@ -379,7 +379,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2527779675047087889">Slėpti iškarpinės turinį</translation>
 <translation id="2531209299761896527">Suimkite, palaikykite ir vilkite, kad atidarytumėte skirtukus naujame lange</translation>
 <translation id="2532336938189706096">Žiniatinklio rodinys</translation>
-<translation id="253498598929009420">Svetainė galės matyti jūsų ekrano turinį</translation>
 <translation id="2535807170289627159">Visi skirtukai</translation>
 <translation id="2536728043171574184">Žiūrima neprisijungus naudojama šio puslapio kopija</translation>
 <translation id="2537574774089209541">Kai kurie įrankiai perkelti, kad galėtumėte lengvai pasiekti „Gemini“ naršydami</translation>
@@ -536,6 +535,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3158667104057012316">Rūšiuojama neautomatiškai</translation>
 <translation id="3159335509547415276">Sužinokite apie užblokuotas paskyras</translation>
 <translation id="3161699713309727585"><ph name="BUTTON_TEXT" />, atidaroma naujame skirtuke</translation>
+<translation id="3164329792803560526">Bendrinamas šis skirtukas su „<ph name="APP_NAME" />“</translation>
 <translation id="3166827708714933426">Skirtukų ir langų spartieji klavišai</translation>
 <translation id="3167258285411721858">Galite pateikti <ph name="HOST_NAME" /> svetainės mobiliesiems užklausą</translation>
 <translation id="3177338796769255211">Prisijunkite, kad visuose įrenginiuose gautumėte žymes ir kt.</translation>
@@ -885,6 +885,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4601095002996233687">Nuodugnus įtartinų atsisiuntimų nuskaitymas.</translation>
 <translation id="4606559747793337066">Kai svetainė ar programa paprašo privačiai iš anksto įkelti nuorodas savo puslapyje, „Chrome“ šifruoja ir iš anksto įkelia puslapius per „Google“ serverius be slapukų. Taip slepiama jūsų tapatybė nuo iš anksto įkeltos svetainės.</translation>
 <translation id="4616150815774728855">Atidaryti „<ph name="WEBAPK_NAME" />“</translation>
+<translation id="4619615317237390068">Skirtukai iš kitų įrenginių</translation>
 <translation id="4624065194742029982">„Chrome“ inkognito režimas</translation>
 <translation id="4634124774493850572">Naudoti slaptažodį</translation>
 <translation id="463471994228293091">{PASSWORDS_COUNT,plural, =1{Vienas slaptažodis ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje.}one{# slaptažodis ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje.}few{# slaptažodžiai ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje.}many{# slaptažodžio ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje.}other{# slaptažodžių ir kiti elementai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje.}}</translation>
@@ -1856,7 +1857,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> skirtukų grupė}one{<ph name="TAB_GROUPS_MANY" /> skirtukų grupė}few{<ph name="TAB_GROUPS_MANY" /> skirtukų grupės}many{<ph name="TAB_GROUPS_MANY" /> skirtukų grupės}other{<ph name="TAB_GROUPS_MANY" /> skirtukų grupių}}</translation>
 <translation id="8387617938027387193">Jūsų tapatybės patvirtinimas</translation>
 <translation id="8393700583063109961">Siųsti pranešimą</translation>
-<translation id="8396098434728053815">Taip pat bendrinti skirtuko garso įrašą</translation>
 <translation id="8398389123831319859">Dukart palieskite ir palaikykite, kad perjungtumėte į inkognito režimą</translation>
 <translation id="8412037385861858490">Kad apsaugotų jūsų darbą sistemoje „Chrome“, jūsų organizacija galės peržiūrėti arba tvarkyti tam tikrą informaciją, kai būsite prisijungę prie „Chrome“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Rodyti visą istoriją</translation>
@@ -1937,7 +1937,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8683039184091909753">vaizdas</translation>
 <translation id="8688183792442786085">„<ph name="TAB_TITLE" />“, pasirinktas skirtukas</translation>
 <translation id="8696297579102085705">Siųsti į įrenginį</translation>
-<translation id="8697753151306746444">Vietoj to bendrinkite langą ar ekraną</translation>
 <translation id="8699120352855309748">Nesiūlyti versti šių kalbų</translation>
 <translation id="8700565880437506364">Pristatome „Gemini“ naršyklėje „Chrome“</translation>
 <translation id="8712637175834984815">Supratau</translation>
@@ -1976,6 +1975,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="885480114717186641">Galite pateikti <ph name="HOST_NAME" /> svetainės kompiuteriams užklausą</translation>
 <translation id="8856607253650333758">Gauti aprašus</translation>
 <translation id="8863714995118816041">Svetainei <ph name="SITE_NAME" /> vėl suteikti leidimai</translation>
+<translation id="8864055848767439877">Bendrinamas skirtukas „<ph name="TAB_NAME" />“ su „<ph name="APP_NAME" />“</translation>
 <translation id="8865415417596392024">„Chrome“ duomenys jūsų paskyroje</translation>
 <translation id="8872506776304248286">Atidaryti programoje</translation>
 <translation id="8880275451109933094">Dviejų puslapių peržiūra</translation>
@@ -2082,6 +2082,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="930834144334005936">Iš naujo nustatyti dabartinį režimą „<ph name="MODE_NAME" />“ į „Paieška“</translation>
 <translation id="938850635132480979">Klaida: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Įvesti slaptafrazę</translation>
+<translation id="939736085109172342">Naujas aplankas</translation>
 <translation id="94161319503679839">„<ph name="TAB_TITLE" />“, prisegtas vaizdo vaizde inkognito skirtukas</translation>
 <translation id="945522503751344254">Siųsti atsiliepimą</translation>
 <translation id="948276827484905248">Sukurti QR kodą</translation>

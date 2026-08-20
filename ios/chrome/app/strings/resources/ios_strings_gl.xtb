@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">Accede a contrasinais gardados noutras aplicacións</translation>
 <translation id="4431224949908513835">Selecciona un método de pago para inserilo.</translation>
 <translation id="4432122368769493392">Configuración…</translation>
+<translation id="4439968635693513370">Planifica a fin de semana con</translation>
 <translation id="4442550905108052454">Abre <ph name="BEGIN_BOLD" />Settings<ph name="END_BOLD" /> (Configuración)</translation>
 <translation id="4445840280797509738">Máis opcións para <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Podes pasar o dedo polo bordo para avanzar ou retroceder.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">Podes volver abrir os elementos pechados nas seccións de pestanas recentes ou grupos de pestanas. As pestanas fixadas non se pecharán.</translation>
 <translation id="4547181496285029457">Volver á pestana recente</translation>
 <translation id="4552042254369397518">Copiando…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Máis claves de acceso</translation>
 <translation id="4564893319561643483">Ocultar <ph name="TITLE" /></translation>
 <translation id="456502772933839252">Compartindo <ph name="PAGE_TITLE" /></translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Segundo as políticas da túa organización, debes navegar de forma privada. Os grupos de pestanas non se sincronizarán no modo de incógnito.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">Compra con confianza con</translation>
 <translation id="467189612236587057">Contactar cunha empresa iniciando unha chamada telefónica</translation>
 <translation id="4673565891421389203">Iniciar sesión coa túa conta xestionada axudarache a separar a navegación relacionada coa túa organización, como as pestanas, o historial e os contrasinais, da outra navegación que fagas.
 
@@ -1389,6 +1392,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5596627076506792578">Máis opcións</translation>
 <translation id="560322036295180549">Opción desactivada pola túa organización</translation>
 <translation id="5611398002774823980">Gardar na conta</translation>
+<translation id="5612225021788368236">Pechar a promoción do navegador predeterminado</translation>
 <translation id="561269594905823128">Toca <ph name="BEGIN_BOLD" />Select your file<ph name="END_BOLD" /> (Selecciona o teu ficheiro)</translation>
 <translation id="5613297089029360427">Ordenar por máis recente</translation>
 <translation id="5614553682702429503">Queres gardar o contrasinal?</translation>
@@ -2474,6 +2478,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="9029650858822697271">Pechouse a túa sesión</translation>
 <translation id="9032405509996909363">Confirmar a eliminación dos datos de navegación</translation>
 <translation id="9035699147763101514">Con tecnoloxía de Intelixencia personalizada de Gemini. Xestiona as túas opcións na configuración.</translation>
+<translation id="9038526468059454274">Resume con</translation>
 <translation id="9039373489628511875">Largura de banda</translation>
 <translation id="9042893549633094279">Privacidade e seguranza</translation>
 <translation id="9055291197094969722">Crea grupos de pestanas para organizar as que estean abertas e seguir mantendo a produtividade</translation>

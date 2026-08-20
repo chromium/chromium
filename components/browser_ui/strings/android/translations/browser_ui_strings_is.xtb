@@ -372,6 +372,7 @@
 <translation id="4676059169848868271">Til að leyfa <ph name="APP_NAME" /> að nota rakningu handahreyfinga skaltu líka kveikja á rakningu handahreyfinga í <ph name="BEGIN_LINK" />kerfisstillingum<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Stjórnaðu kortunum þínum</translation>
 <translation id="4722332387043141878">Vefsvæði nota yfirleitt hreyfi- og birtuskynjara tækisins þíns fyrir eiginleika á borð við sýndarveruleika eða hreystimælingar</translation>
+<translation id="4748783296226936791">Yfirleitt tengjast vefsvæði HID-tækjum vegna eiginleika sem nota óalgeng lyklaborð, leikjafjarstýringar og önnur tæki</translation>
 <translation id="4755971844837804407">Þegar kveikt er á þessu geta vefsvæði birt þér hvaða auglýsingar sem er. Þegar slökkt er á þessu geta vefsvæði ekki sýnt ágengar eða villandi auglýsingar.</translation>
 <translation id="4779083564647765204">Aðdráttur</translation>
 <translation id="4807122856660838973">Kveikja á öruggri vefskoðun</translation>
@@ -456,6 +457,7 @@
 <translation id="5700761515355162635">Fótspor þriðju aðila leyfð</translation>
 <translation id="5706552988683188916">Þetta eyðir fótsporum og öðrum vefsvæðagögnum fyrir <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Vefsvæði geta nú birt innskráningartilkynningar frá auðkenningarþjónustum</translation>
+<translation id="5719854774000914513">Vefsvæði geta beðið um að tengjast HID-tækjum</translation>
 <translation id="5740126560802162366">Vefsvæði geta vistað gögn í tækinu þínu</translation>
 <translation id="5743425052258407233">Fáðu ferilinn þinn í öllum tækjunum þínum, svo þú getir auðveldlega haldið áfram þar sem frá var horfið</translation>
 <translation id="5749158352074143502">Halda áfram á þessum flipa</translation>
@@ -575,6 +577,7 @@
 <translation id="6950072572526089586">Vefsvæði sem þú skoðar getur vistað upplýsingar um það sem þú ert að gera svo það virki sem skyldi — svo sem til að viðhalda innskráningu þinni á vefsvæði eða til að vista vörur í innkaupakörfunni þinni. Oft vista vefsvæði þessar upplýsingar í tækinu tímabundið.</translation>
 <translation id="6964291282260073066">Slökkt er á „WebGPU“.</translation>
 <translation id="6965382102122355670">Í lagi</translation>
+<translation id="6972629891077993081">HID-tæki</translation>
 <translation id="6980507581230208647">Rósaþema</translation>
 <translation id="6980861169612950611">Eyða vefsvæðagögnum? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Aðgengi</translation>
@@ -732,6 +735,7 @@
 <translation id="8593422116412089302">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að nota upplýsingar sem þau hafa vistað um þig. Þegar slökkt er á þessu geta vefsvæði ekki beðið þig um að fá að nota upplýsingar sem þau hafa vistað um þig.</translation>
 <translation id="8609465669617005112">Færa upp</translation>
 <translation id="8617611086246832542">Þegar kveikt er á þessu er tölvuútgáfa vefsvæða sýnd. Þegar slökkt er á þessu er símaútgáfa vefsvæða sýnd.</translation>
+<translation id="8625916342247441948">Ekki leyfa vefsvæðum að tengjast HID-tækjum</translation>
 <translation id="8670078035093027626">Blað neðst í sjálfgefnum vafra, opið til fulls</translation>
 <translation id="8676316391139423634">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að rekja handahreyfingarnar þínar. Þegar slökkt er á þessu geta vefsvæði ekki rakið handahreyfingarnar þínar.</translation>
 <translation id="8676374126336081632">Hreinsa innslátt</translation>

@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">Sử dụng mật khẩu đã lưu trong các ứng dụng khác</translation>
 <translation id="4431224949908513835">Chọn phương thức thanh toán cần điền.</translation>
 <translation id="4432122368769493392">Cài đặt…</translation>
+<translation id="4439968635693513370">Lên kế hoạch cuối tuần bằng</translation>
 <translation id="4442550905108052454">Mở phần <ph name="BEGIN_BOLD" />Cài đặt<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Lựa chọn khác cho <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Bạn có thể vuốt từ mép này để quay lại mục trước hoặc chuyển đến mục tiếp theo.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">Bạn có thể mở lại các thẻ đã đóng trong phần các thẻ gần đây hoặc nhóm thẻ. Các thẻ được ghim sẽ không bị đóng.</translation>
 <translation id="4547181496285029457">Quay lại thẻ truy cập gần đây</translation>
 <translation id="4552042254369397518">Đang sao chép…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Khoá truy cập khác</translation>
 <translation id="4564893319561643483">Ẩn "<ph name="TITLE" />"</translation>
 <translation id="456502772933839252">Đang chia sẻ <ph name="PAGE_TITLE" /></translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Tổ chức của bạn yêu cầu bạn duyệt web ở chế độ riêng tư. Nhóm thẻ không được đồng bộ hoá ở chế độ ẩn danh.
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">Tự tin mua sắm bằng</translation>
 <translation id="467189612236587057">Gọi điện thoại để liên hệ với doanh nghiệp</translation>
 <translation id="4673565891421389203">Khi đăng nhập bằng tài khoản được quản lý, bạn có thể tách biệt hoạt động duyệt web liên quan đến tổ chức (trong đó có các thẻ, nhật ký và mật khẩu) với hoạt động duyệt web khác của mình.
 
@@ -1307,6 +1310,7 @@
 <translation id="5300589172476337783">Hiển thị</translation>
 <translation id="5311061401280561833">Đã cho phép truy cập vào camera và micrô</translation>
 <translation id="5313967007315987356">Thêm trang web</translation>
+<translation id="5315029634103634221">Gemini là một AI và có thể mắc sai sót. <ph name="BEGIN_LINK" />Tìm hiểu thêm về dữ liệu có liên quan được gửi đến Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Không có gì để nhập</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> trên <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Lưu</translation>
@@ -1389,6 +1393,7 @@
 <translation id="5596627076506792578">Tuỳ chọn khác</translation>
 <translation id="560322036295180549">Do tổ chức của bạn tắt</translation>
 <translation id="5611398002774823980">Lưu vào tài khoản</translation>
+<translation id="5612225021788368236">Đóng thông báo quảng bá về trình duyệt mặc định</translation>
 <translation id="561269594905823128">Nhấn vào <ph name="BEGIN_BOLD" />Chọn tệp của bạn<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Sắp xếp theo mới nhất</translation>
 <translation id="5614553682702429503">Lưu mật khẩu?</translation>
@@ -2474,6 +2479,7 @@
 <translation id="9029650858822697271">Hệ thống đã đăng xuất bạn</translation>
 <translation id="9032405509996909363">Xác nhận yêu cầu xoá dữ liệu duyệt web</translation>
 <translation id="9035699147763101514">Dựa trên Trí thông minh cá nhân của Gemini. Quản lý lựa chọn của bạn trong phần cài đặt.</translation>
+<translation id="9038526468059454274">Tóm tắt bằng</translation>
 <translation id="9039373489628511875">Băng thông</translation>
 <translation id="9042893549633094279">Quyền riêng tư và bảo mật</translation>
 <translation id="9055291197094969722">Tạo nhóm thẻ để sắp xếp các thẻ đang mở và giữ vững hiệu quả</translation>

@@ -75,6 +75,7 @@
 <translation id="1857749206890802997">Töltse le a Chromiumot a telefonjára, hogy útközben is megnyithasson vagy létrehozhasson új lapcsoportokat.</translation>
 <translation id="185970820835152459">Kezelheti a bejelentkezett Google-fiókjait. Google-fiókjait használhatja a Chromium böngészőben, a Play Áruházban, a Gmailben és még sok más helyen. Ha más számára szeretne hozzáadni fiókot (például családtagjának), inkább új személyt adjon hozzá <ph name="DEVICE_TYPE" /> eszközéhez. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Keresés a Képkeresővel</translation>
+<translation id="1863837059069884561"><ph name="EXISTING_USER" /> már bejelentkezett. Ha szeretné elkülöníteni böngészési tevékenységeit, jelentkezzen be a Chromiumban a saját profiljába a következő e-mail-címmel: <ph name="USER_EMAIL_ADDRESS" />. Egyebek mellett a(z) <ph name="DEVICE" /> eszközön lévő könyvjelzőihez is hozzáférhet.</translation>
 <translation id="1880677175115548835">Szöveg kijelölése</translation>
 <translation id="1881322772814446296">Kezelt fiókkal jelentkezik be, és annak adminisztrátora számára hozzáférést biztosít Chromium-profiljához. Chromium-adatait – például alkalmazásait, könyvjelzőit, előzményeit, jelszavait és más beállításait – a rendszer véglegesen társítja a(z) <ph name="USER_NAME" /> fiókhoz. Ezen adatokat a Google-fiók Irányítópultján törölheti, de más fiókhoz nem társíthatja őket. Létrehozhat egy új profilt is meglévő Chromium-adatainak elkülönített tárolásához. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">A Chromium kíméli az akkumulátort: korlátozza a háttértevékenységeket és a vizuális effekteket, például a finomgörgetést és a videók képkockasebességét. <ph name="BEGIN_LINK" />További információ az Energiatakarékos módról<ph name="END_LINK" />.</translation>
@@ -133,6 +134,7 @@
 <translation id="2418322681019544463">Bármelyik alkalmazásból megnyithatja a linkeket a Chromiumban, és a böngésző a tálcán is hozzáférhető marad</translation>
 <translation id="2425157128016763890">A Összegzés gombra kattintva megoszthatja ezt a dokumentumot a Geminivel a Chromiumban, hogy gyors áttekintést kapjon, és utánkövető kérdéseket tehessen fel</translation>
 <translation id="2440750600860946460">A <ph name="BEGIN_LINK" />Chromium eszközeivel<ph name="END_LINK" /> biztonságosan böngészhet, és kézben tarthatja az irányítást</translation>
+<translation id="2449487342837813167"><ph name="EXISTING_USER" /> már bejelentkezett. Ha szeretné elkülöníteni böngészési tevékenységeit, jelentkezzen be a Chromiumban a saját profiljába a következő e-mail-címmel: <ph name="USER_EMAIL_ADDRESS" />. Egyebek mellett a jelszavaihoz is hozzáférhet bármely eszközén.</translation>
 <translation id="2451727308784734061">Parancsikon segítségével gyorsan megnyithatja a Jelszókezelőt. A parancsikont áthelyezheti a számítógép kezdőképernyőjére vagy az alkalmazásindítóba.</translation>
 <translation id="2478295928299953161">A Chromium hamarosan bezáródik</translation>
 <translation id="2483889755041906834">A Chromiumban</translation>
@@ -405,6 +407,7 @@
 
 Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás engedélyezésével.</translation>
 <translation id="5575874067957905201">A Gemini a Chromiumban szolgáltatás megjelenítése a Mac menüsorán, valamint a billentyűparancs bekapcsolása</translation>
+<translation id="5576587363991567745"><ph name="EXISTING_USER" /> már bejelentkezett. Ha szeretné elkülöníteni böngészési tevékenységeit, jelentkezzen be a Chromiumban a saját profiljába a következő e-mail-címmel: <ph name="USER_EMAIL_ADDRESS" />. Egyebek mellett a(z) <ph name="DEVICE" /> eszközön lévő mentett adataihoz is hozzáférhet.</translation>
 <translation id="5579324208890605088">Indítási hiba: normál felhasználóként futtassa a telepítőt, ne rendszergazdaként.</translation>
 <translation id="5580770360767802657">Használja a Chromiumot alapértelmezett böngészőként, és tűzze ki a tálcára</translation>
 <translation id="5596627076506792578">További lehetőségek</translation>
@@ -577,6 +580,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="7213407614656404070">Mostantól bármikor használhatja a Chromiumot, amikor üzenetekben, dokumentumokban és más alkalmazásokban található linkekre kattint</translation>
 <translation id="7216228761061470870">Amikor számítógépen használja a Képkeresőt, a rendszer elküldi az oldal címét, URL-jét és tartalmát (beleértve a PDF-eket is) a szervernek.</translation>
 <translation id="7223968959479464213">Feladatkezelő -- Chromium</translation>
+<translation id="7227958669698166857"><ph name="EXISTING_USER" /> már bejelentkezett. Ha szeretné elkülöníteni böngészési tevékenységeit, jelentkezzen be a Chromiumban a saját profiljába a következő e-mail-címmel: <ph name="USER_EMAIL_ADDRESS" />. Egyebek mellett a mentett adataihoz is hozzáférhet bármely eszközén.</translation>
 <translation id="7252276985725323153">Azonnal elkezdheti a böngészést: a Chromium mostantól a Windows indításakor is elindulhat.</translation>
 <translation id="7274695763216404502">Sikeres kitűzés. Ha megint használni szeretné a Képkeresőt, megteheti az eszköztárból</translation>
 <translation id="7288567540154601580">Lapok és bővítmények</translation>
@@ -646,6 +650,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="7888981273428720788">A Chromium beállítása alapértelmezettként</translation>
 <translation id="7934340546140346950">A Chromium automatikusan frissíti a nem biztonságos kapcsolatokat HTTPS-re, amikor lehetséges.</translation>
 <translation id="7937630085815544518"><ph name="USER_EMAIL_ADDRESS" /> néven volt bejelentkezve a Chromiumba. Kérjük, ugyanazzal a fiókkal jelentkezzen be újra.</translation>
+<translation id="7944602660083060118"><ph name="EXISTING_USER" /> már bejelentkezett. Ha szeretné elkülöníteni böngészési tevékenységeit, jelentkezzen be a Chromiumban a saját profiljába a következő e-mail-címmel: <ph name="USER_EMAIL_ADDRESS" />. Egyebek mellett a könyvjelzőihez is hozzáférhet bármely eszközén.</translation>
 <translation id="7975919845073681630">Ez a Chromium második telepítése, amelyet nem állíthat be az alapértelmezett böngészővé.</translation>
 <translation id="7997934263947464652">Az ismeretlen forrásból származó bővítmények, alkalmazások és témák károsíthatják az eszközt. A Chromium azt javasolja, hogy csak a következő helyről telepítse őket: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8000759043835159571">Hozza ki a legtöbbet a Google-ból a Chromium alkalmazással <ph name="DEVICE_TYPE" /> eszközén</translation>
@@ -677,6 +682,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8232193495299001329">A Chromium nem tudja ellenőrizni, hogy honnan származik a bővítmény, amely lehet, hogy nem biztonságos. Távolítsa el a Chromiumból, hogy a bővítmény a továbbiakban már ne láthassa és módosíthassa az Ön adatait a felkeresett webhelyeken (a személyes adatokat is beleértve).</translation>
 <translation id="8248265253516264921">Ha valamelyik kép nem rendelkezik hasznos leírással, akkor a Chromium igyekszik leírást adni róla. A Google automatikusan megkapja a leírások létrehozásához szükséges képeket. A funkciót a beállítások között bármikor kikapcsolhatja.</translation>
 <translation id="8254601181414348851">Új profilban jelentkezik be a Chromiumba?</translation>
+<translation id="8262224117913639129"><ph name="EXISTING_USER" /> már bejelentkezett. Ha szeretné elkülöníteni böngészési tevékenységeit, jelentkezzen be a Chromiumban a saját profiljába a következő e-mail-címmel: <ph name="USER_EMAIL_ADDRESS" />. Egyebek mellett a(z) <ph name="DEVICE" /> eszközön lévő jelszavaihoz is hozzáférhet.</translation>
 <translation id="8277334259226003205">A Gemini a Chromiumban szolgáltatás megjelenítése a tálcán, valamint a billentyűparancs bekapcsolása</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />A Chromium figyelmezteti<ph name="END_LINK" /> a nem biztonságos webhelyekre és letöltésekre</translation>
 <translation id="8295827201165805317">Nem látogatta meg mostanában. A Chromium eltávolította a következőt: <ph name="PERMISSION" />.</translation>

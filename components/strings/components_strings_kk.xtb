@@ -70,6 +70,7 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> үшін рұқсатты таңдаңыз</translation>
 <translation id="1113000785583998331">IBAN нөмірін сақтау керек пе?</translation>
 <translation id="1113869188872983271">&amp;Қайта ретке келтіру әрекетін болдырмау</translation>
+<translation id="1117709830616495622">Gemini-дағы Personal Intelligence арқылы істейді.</translation>
 <translation id="111897705806685148">Басқа құрылғыдағы кіру кілтін пайдалану</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Google аккаунтыңызда сақталатын Chrome ақпаратын басқару үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="1121990216147052230">Маған тапсырмалар тізімін жасап бер</translation>
@@ -1170,6 +1171,7 @@
 <translation id="3005723025932146533">Сақталған көшірмені көрсету</translation>
 <translation id="300580149047131921">Соңғы қолданылған</translation>
 <translation id="3006864083554020786">үй мекенжайы</translation>
+<translation id="3008410317623852235">Енді Gmail-дегі және басқа жерлердегі ақпаратты тауып, толтыра аласыз.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, қолжетімді әрекеттерді шолу үшін Tab пернесін басып, таңдалған әрекетті орындау үшін Enter пернесін басыңыз.</translation>
 <translation id="3010991137650052245">Бұл сайтта <ph name="PERMISSION" /> пайдалану үшін <ph name="SHORT_PRODUCT_NAME" /> қызметіне рұқсат беріңіз.</translation>
 <translation id="3014726756341138577">Озық принтер функциялары</translation>
@@ -2318,6 +2320,7 @@
 <translation id="4941627891654116707">Қаріп өлшемі</translation>
 <translation id="4943620199112228840">Микрофондарды пайдалану</translation>
 <translation id="4943872375798546930">Нәтижесіз</translation>
+<translation id="494701040141924538">Хабарландыруды жабу</translation>
 <translation id="495170559598752135">Әрекеттер</translation>
 <translation id="4953689047182316270">Арнайы мүмкіндіктер оқиғаларына жауап беру</translation>
 <translation id="4954505713046251871">Ұсыныстарды қалыптастыру және бұл функцияны жақсарту үшін беттің URL мекенжайы мен контенті Google-ға жіберіледі.</translation>
@@ -3368,6 +3371,7 @@
 <translation id="6743841972744298686">Синхрондау параметрлері</translation>
 <translation id="6745212570062463886">Аты-жөніңіз бен электрондық мекенжайыңызды Google аккаунтыңыздан автоматты түрде толтырыңыз</translation>
 <translation id="674580074662200768">Паспортты қауіпсіз жаңартыңыз</translation>
+<translation id="6749473226660745022">Фотосуреттер</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Саясат мәні</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> жазбасын жою</translation>
@@ -3706,6 +3710,7 @@
 <translation id="7366117520888504990">198 x 275 мм</translation>
 <translation id="7366362069757178916">Төлем өңдегіштері</translation>
 <translation id="7366594738862061263">Chrome-ның құпия сөздерді қорғау жолы туралы ақпарат</translation>
+<translation id="7366909168761621528">Шолу деректері</translation>
 <translation id="7370751048350026847">Әкімші бұл контентті осы сайтқа қоймауға кеңес береді</translation>
 <translation id="7372526636730851647">Фотосурет (жылтыр)</translation>
 <translation id="7372973238305370288">іздеу нәтижесі</translation>
@@ -4294,6 +4299,7 @@
 <translation id="8350416046273606058">Жылдам пәрменде бос орындар болмауы керек: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Ескертпе жасау</translation>
 <translation id="8352849934814541340">Бұл құрылғының әкімшісі қосымша функциялар үшін қолданбалар орнатты. Қолданбалар кейбір деректерді пайдалана алады.</translation>
+<translation id="8353273112634584260">Gemini-дағы Personal Intelligence арқылы істейді. Сұрауларыңыз, бет атаулары мен URL мекенжайлары дұрысталған автотолтыру функциясын жақсарту үшін тексерілуі мүмкін.</translation>
 <translation id="8355270400102541638">Пайдаланушы компьютеріндегі жаңылыс мәнмәтіні:</translation>
 <translation id="8362914115861174987">Аударма тілі:</translation>
 <translation id="8363502534493474904">Ұшақ режимін сөндіру</translation>
@@ -4653,6 +4659,7 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Chrome Enterprise Core нұсқасын пайдаланып көру</translation>
 <translation id="9027531288681624875">Толық экран режимінен шығу үшін |<ph name="ACCELERATOR" />| пернесін басып тұрыңыз</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Қауіпсіздік қатесі</translation>
 <translation id="9035699147763101514">Gemini-дағы Personal Intelligence арқылы істейді. Таңдауларыңызды параметрлерде реттей аласыз.</translation>
 <translation id="9035824888276246493">Қауіпсіздік кодтарын сақтау</translation>

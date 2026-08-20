@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">Dapatkan sandi tersimpan di aplikasi lainnya</translation>
 <translation id="4431224949908513835">Pilih metode pembayaran untuk diisi.</translation>
 <translation id="4432122368769493392">Setelan…</translation>
+<translation id="4439968635693513370">Buat rencana akhir pekan dengan</translation>
 <translation id="4442550905108052454">Buka <ph name="BEGIN_BOLD" />Setelan<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Opsi lainnya untuk <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Anda dapat menggeser tepi untuk kembali atau maju.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">Anda dapat membuka kembali item yang ditutup dari bagian tab terbaru atau grup tab. Tab yang disematkan tidak akan ditutup.</translation>
 <translation id="4547181496285029457">Kembali ke tab terbaru</translation>
 <translation id="4552042254369397518">Menyalin…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Kunci sandi lainnya</translation>
 <translation id="4564893319561643483">Sembunyikan "<ph name="TITLE" />"</translation>
 <translation id="456502772933839252">Membagikan <ph name="PAGE_TITLE" /></translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Organisasi mengharuskan Anda menjelajah secara pribadi. Grup tab tidak disinkronkan dalam mode Samaran.
 <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">Belanja nyaman dengan</translation>
 <translation id="467189612236587057">Terhubung dengan bisnis melalui panggilan telepon</translation>
 <translation id="4673565891421389203">Login dengan akun terkelola Anda akan membantu penjelajahan yang terkait dengan organisasi Anda (termasuk tab, histori, dan sandi) terpisah dari penjelajahan lainnya.
 
@@ -1389,6 +1392,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5596627076506792578">Opsi lainnya</translation>
 <translation id="560322036295180549">Dinonaktifkan oleh organisasi Anda</translation>
 <translation id="5611398002774823980">Simpan di akun</translation>
+<translation id="5612225021788368236">Tutup promo browser default</translation>
 <translation id="561269594905823128">Ketuk <ph name="BEGIN_BOLD" />Pilih file Anda<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Urutkan menurut yang terbaru</translation>
 <translation id="5614553682702429503">Simpan sandi?</translation>
@@ -2474,6 +2478,7 @@ Untuk melanjutkan dari komputer, beralihlah ke <ph name="OTHER_EMAIL" />. Anda a
 <translation id="9029650858822697271">Anda telah logout</translation>
 <translation id="9032405509996909363">Konfirmasi penghapusan data penjelajahan</translation>
 <translation id="9035699147763101514">Didukung oleh Kecerdasan Personal dengan Gemini. Kelola pilihan Anda di setelan.</translation>
+<translation id="9038526468059454274">Buat ringkasan dengan</translation>
 <translation id="9039373489628511875">Bandwidth</translation>
 <translation id="9042893549633094279">Privasi dan keamanan</translation>
 <translation id="9055291197094969722">Buat grup tab untuk mengatur tab yang terbuka dan tetap produktif</translation>

@@ -372,6 +372,7 @@
 <translation id="4676059169848868271">如要允許「<ph name="APP_NAME" />」追蹤手勢，請同時在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中開啟手勢追蹤功能。</translation>
 <translation id="4688045258817337666">管理資訊卡</translation>
 <translation id="4722332387043141878">網站通常會使用裝置的動作和光線感應器，以提供虛擬實境或追蹤健身狀況等功能</translation>
+<translation id="4748783296226936791">網站通常會連接 HID 裝置，以提供使用非標準鍵盤、遊戲控制器和其他裝置等功能</translation>
 <translation id="4755971844837804407">開咗之後，網站可以向你顯示任何廣告。閂咗之後，網站唔可以顯示滋擾性或者誤導廣告。</translation>
 <translation id="4779083564647765204">縮放</translation>
 <translation id="4807122856660838973">開啟「安全瀏覽」功能</translation>
@@ -456,6 +457,7 @@
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
 <translation id="5706552988683188916">此操作會刪除 <ph name="WEBSITE" /> 的 Cookie 和其他網站資料</translation>
 <translation id="571222594670061844">網站可顯示來自身分服務的登入提示</translation>
+<translation id="5719854774000914513">網站可要求連接 USB 裝置</translation>
 <translation id="5740126560802162366">網站可在裝置上儲存資料</translation>
 <translation id="5743425052258407233">讓記錄同步到你的所有裝置，方便你繼續執行先前的工作</translation>
 <translation id="5749158352074143502">繼續使用此分頁</translation>
@@ -575,6 +577,7 @@
 <translation id="6950072572526089586">你瀏覽的網站可儲存你在網站上的活動資料，以便正常運作，例如在網站上保持登入狀態或儲存購物車內的商品。網站通常會暫時在裝置上儲存這些資料。</translation>
 <translation id="6964291282260073066">已停用「WebGPU」。</translation>
 <translation id="6965382102122355670">確定</translation>
+<translation id="6972629891077993081">HID 裝置</translation>
 <translation id="6980507581230208647">玫瑰色主題</translation>
 <translation id="6980861169612950611">要刪除網站資料嗎？<ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">協助工具</translation>
@@ -732,6 +735,7 @@
 <translation id="8593422116412089302">開咗之後，網站可以要求使用同你相關嘅既有資料。閂咗之後，網站唔可以要求使用同你相關嘅既有資料。</translation>
 <translation id="8609465669617005112">向上移</translation>
 <translation id="8617611086246832542">開咗之後，系統會用桌面電腦檢視模式顯示網站。閂咗之後，系統會用流動裝置檢視模式顯示網站。</translation>
+<translation id="8625916342247441948">不允許網站連接 HID 裝置</translation>
 <translation id="8670078035093027626">預設瀏覽器頁底面板宜家顯示喺成個畫面</translation>
 <translation id="8676316391139423634">開啟後，網站可以要求追蹤你的手部動作。關閉後，網站便不能追蹤你的手部動作。</translation>
 <translation id="8676374126336081632">清除輸入</translation>

@@ -372,6 +372,7 @@
 <translation id="4676059169848868271">To let <ph name="APP_NAME" /> use hand tracking, also turn on hand tracking in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Manage your cards</translation>
 <translation id="4722332387043141878">Sites usually use your device's motion and light sensors for features like virtual reality or fitness tracking</translation>
+<translation id="4748783296226936791">Sites usually connect to HID devices for features that use uncommon keyboards, game controllers and other devices</translation>
 <translation id="4755971844837804407">When on, sites can show any ad to you. When off, sites can't show intrusive or misleading ads.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Turn on Safe Browsing</translation>
@@ -456,6 +457,7 @@
 <translation id="5700761515355162635">Third-party cookies allowed</translation>
 <translation id="5706552988683188916">This deletes cookies and other site data for <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Sites can show sign-in prompts from identity services</translation>
+<translation id="5719854774000914513">Sites can ask to connect to HID devices</translation>
 <translation id="5740126560802162366">Sites can save data on your device</translation>
 <translation id="5743425052258407233">Get your history on all your devices, so that you can easily pick up where you left off</translation>
 <translation id="5749158352074143502">Continue with this tab</translation>
@@ -575,6 +577,7 @@
 <translation id="6950072572526089586">A site you visit can save info about what you’re doing so that it works as expected – for example, to keep you signed in to a site or to save items in your shopping basket. Often sites save this info temporarily on your device.</translation>
 <translation id="6964291282260073066">'WebGPU' is disabled.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6972629891077993081">HID devices</translation>
 <translation id="6980507581230208647">Rose theme</translation>
 <translation id="6980861169612950611">Delete site data? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accessibility</translation>
@@ -732,6 +735,7 @@ Advanced Protection controls these Chrome settings:</translation>
 <translation id="8593422116412089302">When on, sites can ask to use information that they've saved about you. When off, sites can't ask to use info that they've saved about you.</translation>
 <translation id="8609465669617005112">Move up</translation>
 <translation id="8617611086246832542">When on, the desktop view of websites is shown. When off, the mobile view of websites is shown.</translation>
+<translation id="8625916342247441948">Don't allow sites to connect to HID devices</translation>
 <translation id="8670078035093027626">Default browser bottom sheet opened at full height</translation>
 <translation id="8676316391139423634">When on, sites can ask to track your hands. When off, sites can't track your hands.</translation>
 <translation id="8676374126336081632">Clear input</translation>

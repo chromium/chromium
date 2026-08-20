@@ -77,6 +77,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1857749206890802997">Atsisiųskite „Chromium“ į telefoną, kad galėtumėte atidaryti arba kurti naujas skirtukų grupes keliaudami.</translation>
 <translation id="185970820835152459">Galite tvarkyti „Google“ paskyras, prie kurių prisijungiate. Jūsų „Google“ paskyros naudojamos naršyklei „Chromium“, „Play“ parduotuvei, „Gmail“ ir kt. Jei norite kam nors pridėti paskyrą, pvz., šeimos grupės nariui, pridėkite naują asmenį prie „<ph name="DEVICE_TYPE" />“ įrenginio. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Paieška naudojant vaizdų paiešką</translation>
+<translation id="1863837059069884561"><ph name="EXISTING_USER" /> jau prisijungė. Jei norite atskirti naršymą, prisijunkite prie „Chromium“ savo profilyje kaip <ph name="USER_EMAIL_ADDRESS" />. Be to, žymes ir kitus duomenis pasieksite <ph name="DEVICE" />.</translation>
 <translation id="1880677175115548835">Pasirinkti tekstą</translation>
 <translation id="1881322772814446296">Prisijungiate su valdoma paskyra ir leidžiate jos administratoriui valdyti jūsų „Chromium“ profilį. „Chromium“ duomenys, pvz., programos, žymės, istorija, slaptažodžiai ir kiti nustatymai, bus visam laikui susieti su <ph name="USER_NAME" />. Galėsite ištrinti šiuos duomenis naudodami „Google“ paskyrų informacijos suvestinę, bet negalėsite susieti šių duomenų su kita paskyra. Galite pasirinktinai sukurti naują profilį, kad esami „Chromium“ duomenys būtų saugomi atskirai. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">„Chromium“ taupo akumuliatoriaus energiją, apribodama veiklą fone ir vaizdo efektus, pvz., tolygų slinkimą ir vaizdo įrašų kadrų dažnį. <ph name="BEGIN_LINK" />Sužinokite daugiau apie Energijos taupymo priemonę<ph name="END_LINK" /></translation>
@@ -135,6 +136,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2418322681019544463">Atidarykite nuorodas naršyklėje „Chromium“ iš bet kurios programos ir palikite ją pasiekiamą užduočių juostoje</translation>
 <translation id="2425157128016763890">Spustelėkite mygtuką „Apibendrinti“, kad bendrintumėte šį dokumentą su „Gemini“ naršyklėje „Chromium“ ir gautumėte trumpą apžvalgą bei užduotumėte papildomų klausimų</translation>
 <translation id="2440750600860946460">Naudodami <ph name="BEGIN_LINK" />„Chromium“ įrankius<ph name="END_LINK" /> galite saugiai naršyti ir valdyti situaciją</translation>
+<translation id="2449487342837813167"><ph name="EXISTING_USER" /> jau prisijungė. Jei norite atskirti naršymą, prisijunkite prie „Chromium“ savo profilyje kaip <ph name="USER_EMAIL_ADDRESS" />. Be to, slaptažodžius ir kitas funkcijas pasieksite visuose įrenginiuose.</translation>
 <translation id="2451727308784734061">Naudodami šaukinį galite greitai pasiekti Slaptažodžių tvarkyklę. Šaukinį galite perkelti į kompiuterio pagrindinį ekraną ar programų paleidimo priemonę.</translation>
 <translation id="2478295928299953161">„Chromium“ netrukus bus uždaryta</translation>
 <translation id="2483889755041906834">Naudojant „Chromium“</translation>
@@ -407,6 +409,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 
 Jei šis puslapis neveikia taip, kaip tikimasi, pabandykite leisti naudoti optimizavimą.</translation>
 <translation id="5575874067957905201">Rodyti „Gemini“ naršyklėje „Chromium“ kompiuterio „Mac“ meniu juostoje ir įjungti sparčiuosius klavišus</translation>
+<translation id="5576587363991567745"><ph name="EXISTING_USER" /> jau prisijungė. Jei norite atskirti naršymą, prisijunkite prie „Chromium“ savo profilyje kaip <ph name="USER_EMAIL_ADDRESS" />. Be to, išsaugotą informaciją ir kitas funkcijas pasieksite iš <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Paleisties klaida: diegimo programą paleiskite kaip įprastas naudotojas, o ne administratorius.</translation>
 <translation id="5580770360767802657">„Chromium“ naudojimas pagal numatytuosius nustatymus ir jos prisegimas</translation>
 <translation id="5596627076506792578">Daugiau parinkčių</translation>
@@ -581,6 +584,7 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="7213407614656404070">Naudokite „Chromium“ bet kada spustelėję nuorodas pranešimuose, dokumentuose ir kitose programose</translation>
 <translation id="7216228761061470870">Kai naudojate vaizdų paiešką staliniame kompiuteryje, puslapio pavadinimas, URL ir turinys, įskaitant PDF failus, siunčiami į serverį</translation>
 <translation id="7223968959479464213">Užduočių tvarkytuvė – „Chromium“</translation>
+<translation id="7227958669698166857"><ph name="EXISTING_USER" /> jau prisijungė. Jei norite atskirti naršymą, prisijunkite prie „Chromium“ savo profilyje kaip <ph name="USER_EMAIL_ADDRESS" />. Be to, išsaugotą informaciją ir kitas funkcijas pasieksite visuose įrenginiuose.</translation>
 <translation id="7252276985725323153">Pradėkite naršyti akimirksniu: „Chromium“ dabar galima paleisti paleidus „Windows“.</translation>
 <translation id="7274695763216404502">Prisegta! Vėl naudokite vaizdų paiešką iš įrankių juostos</translation>
 <translation id="7288567540154601580">Skirtukai ir plėtiniai</translation>
@@ -650,6 +654,7 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="7888981273428720788">„Chromium“ nustatymas kaip numatytosios naršyklės</translation>
 <translation id="7934340546140346950">„Chromium“ automatiškai naujovina nesaugius ryšius į HTTPS, kai tai įmanoma</translation>
 <translation id="7937630085815544518">Buvote prisijungę prie „Chromium“ kaip <ph name="USER_EMAIL_ADDRESS" />. Prisijungdami vėl naudokite tą pačią paskyrą.</translation>
+<translation id="7944602660083060118"><ph name="EXISTING_USER" /> jau prisijungė. Jei norite atskirti naršymą, prisijunkite prie „Chromium“ savo profilyje kaip <ph name="USER_EMAIL_ADDRESS" />. Be to, žymes ir kitas funkcijas pasieksite visuose įrenginiuose.</translation>
 <translation id="7975919845073681630">Tai yra antrinis „Chromium“ diegimas, todėl ji negali būti nustatyta kaip numatytoji naršyklė.</translation>
 <translation id="7997934263947464652">Plėtiniai, programos ir temos iš nežinomų šaltinių gali pakenkti jūsų įrenginiui. „Chromium“ rekomenduoja įdiegti tik iš čia: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8000759043835159571">Išnaudokite visas „Google“ galimybes, naudodami „Chromium“ programą įrenginyje „<ph name="DEVICE_TYPE" />“</translation>
@@ -681,6 +686,7 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="8232193495299001329">„Chromium“ negali patvirtinti, iš kur gaunamas šis plėtinys, ir jis gali būti nesaugus. Pašalinkite jį iš „Chromium“, kad jis nebematytų ir negalėtų pakeisti jūsų duomenų svetainėse, kuriose lankotės, įskaitant jūsų asmens informaciją.</translation>
 <translation id="8248265253516264921">Jei nebus naudingo vaizdo aprašo, „Chromium“ bandys jums jį pateikti. Kad būtų galima kurti aprašus, vaizdai siunčiami į sistemą „Google“. Šią parinktį galite bet kada išjungti skiltyje „Nustatymai“.</translation>
 <translation id="8254601181414348851">Prisijungti prie „Chromium“ naujame profilyje?</translation>
+<translation id="8262224117913639129"><ph name="EXISTING_USER" /> jau prisijungė. Jei norite atskirti naršymą, prisijunkite prie „Chromium“ savo profilyje kaip <ph name="USER_EMAIL_ADDRESS" />. Be to, slaptažodžius ir kitas funkcijas pasieksite <ph name="DEVICE" />.</translation>
 <translation id="8277334259226003205">Rodyti „Gemini“ naršyklėje „Chromium“ sistemos juostelėje ir įjungti sparčiuosius klavišus</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />„Chromium“ jus įspėja<ph name="END_LINK" /> apie nesaugias svetaines ir atsisiuntimus</translation>
 <translation id="8295827201165805317">Pastaruoju metu nesilankėte. „Chromium“ pašalino <ph name="PERMISSION" />.</translation>

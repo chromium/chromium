@@ -372,6 +372,7 @@
 <translation id="4676059169848868271">Para permitir que <ph name="APP_NAME" /> use el seguimiento de manos, también debes activar esta función en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Administra tus tarjetas</translation>
 <translation id="4722332387043141878">Por lo general, los sitios utilizan los sensores de movimiento y de luz del dispositivo en funciones como el seguimiento de la actividad física o la realidad virtual</translation>
+<translation id="4748783296226936791">Por lo general, los sitios se conectan a dispositivos HID para usarlos en funciones que utilizan teclados poco habituales, controles de juegos y otros dispositivos.</translation>
 <translation id="4755971844837804407">Cuando esta opción está activada, los sitios pueden mostrarte cualquier anuncio. Cuando está desactivada, los sitios no pueden mostrar anuncios intrusivos o engañosos.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Activa la Navegación segura</translation>
@@ -456,6 +457,7 @@
 <translation id="5700761515355162635">Se permiten las cookies de terceros</translation>
 <translation id="5706552988683188916">Esta acción borra las cookies y otros datos de sitios para <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Los sitios pueden mostrarte mensajes de acceso de servicios de identidad</translation>
+<translation id="5719854774000914513">Permitir que los sitios soliciten permiso para conectarse a dispositivos HID</translation>
 <translation id="5740126560802162366">Los sitios pueden guardar datos en tu dispositivo</translation>
 <translation id="5743425052258407233">Obtén tu historial en todos los dispositivos para que puedas retomar fácilmente la navegación</translation>
 <translation id="5749158352074143502">Continuar en esta pestaña</translation>
@@ -575,6 +577,7 @@
 <translation id="6950072572526089586">Un sitio que visitas puede guardar información sobre tu actividad para que funcione como esperas (por ejemplo, para mantener el acceso a un sitio o guardar artículos en tu carrito de compras). A menudo, los sitios guardan esta información de forma temporal en tu dispositivo.</translation>
 <translation id="6964291282260073066">Se inhabilitó "WebGPU".</translation>
 <translation id="6965382102122355670">Aceptar</translation>
+<translation id="6972629891077993081">Dispositivos HID</translation>
 <translation id="6980507581230208647">Tema rosa</translation>
 <translation id="6980861169612950611">¿Quieres borrar los datos del sitio? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accesibilidad</translation>
@@ -732,6 +735,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:<
 <translation id="8593422116412089302">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar la información que guardaron sobre ti. Cuando está desactivada, los sitios no pueden solicitar permiso para usar la información que guardaron sobre ti.</translation>
 <translation id="8609465669617005112">Subir</translation>
 <translation id="8617611086246832542">Cuando esta opción está activada, se muestra la vista para computadoras de escritorio de los sitios web. Cuando está desactivada, se muestra la vista para dispositivos móviles de los sitios web.</translation>
+<translation id="8625916342247441948">No permitir que los sitios se conecten a dispositivos HID</translation>
 <translation id="8670078035093027626">Hoja inferior del navegador predeterminado abierta en tamaño completo</translation>
 <translation id="8676316391139423634">Cuando esta opción está activada, los sitios pueden solicitar permiso para hacer un seguimiento de tus manos. Cuando está desactivada, los sitios no pueden hacer un seguimiento de tus manos.</translation>
 <translation id="8676374126336081632">Borrar entrada</translation>

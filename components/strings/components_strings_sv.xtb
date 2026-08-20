@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Välj behörighet för <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Vill du spara IBAN?</translation>
 <translation id="1113869188872983271">&amp;Ångra Ändra ordning</translation>
+<translation id="1117709830616495622">Drivs av Personlig intelligens med Gemini.</translation>
 <translation id="111897705806685148">Använd nyckeln från en annan enhet</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill hantera vilken Chrome-information du sparar i Google-kontot</translation>
 <translation id="1121990216147052230">Skapa en att göra-lista åt mig</translation>
@@ -1170,6 +1171,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3005723025932146533">Visa sparad kopia</translation>
 <translation id="300580149047131921">Användes nyligen</translation>
 <translation id="3006864083554020786">hemadress</translation>
+<translation id="3008410317623852235">Nu kan du söka efter och fylla i information från Gmail med mera.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb för att bläddra bland tillgängliga åtgärder och sedan på Retur för att utföra den valda åtgärden.</translation>
 <translation id="3010991137650052245">Om du vill använda <ph name="PERMISSION" /> på den här webbplatsen ska du ge <ph name="SHORT_PRODUCT_NAME" /> åtkomst</translation>
 <translation id="3014726756341138577">Avancerade skrivarfunktioner</translation>
@@ -2319,6 +2321,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4941627891654116707">Teckenstorlek</translation>
 <translation id="4943620199112228840">använda mikrofonerna</translation>
 <translation id="4943872375798546930">Inga resultat</translation>
+<translation id="494701040141924538">OK, stäng meddelandet</translation>
 <translation id="495170559598752135">Åtgärder</translation>
 <translation id="4953689047182316270">Svara på tillgänglighetshändelser</translation>
 <translation id="4954505713046251871">För att kunna ge förslag och förbättra den här funktionen delas sidans webbadress och innehåll med Google</translation>
@@ -3369,6 +3372,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6743841972744298686">Synkroniseringsinställningar</translation>
 <translation id="6745212570062463886">Fyll i ditt namn och din e-postadress automatiskt från ditt Google-konto</translation>
 <translation id="674580074662200768">Uppdatera passet på ett säkert sätt</translation>
+<translation id="6749473226660745022">Foton</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Policyvärde</translation>
 <translation id="6753434778807740853">Radera post <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3708,6 +3712,7 @@ Mer information.
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Betalningshanterare</translation>
 <translation id="7366594738862061263">Läs mer om hur dina lösenord skyddas i Chrome</translation>
+<translation id="7366909168761621528">Webbinformation</translation>
 <translation id="7370751048350026847">Vi rekommenderar inte att klistra in innehållet på den här webbplatsen</translation>
 <translation id="7372526636730851647">Foto (blankt)</translation>
 <translation id="7372973238305370288">sökresultat</translation>
@@ -4296,6 +4301,7 @@ Mer information.
 <translation id="8350416046273606058">Genvägen får inte innehålla blanksteg: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="8351131234907093545">Skapa anteckning</translation>
 <translation id="8352849934814541340">Administratören för enheten har installerat appar för ytterligare funktioner. Apparna har åtkomst till en del av din data.</translation>
+<translation id="8353273112634584260">Drivs av Personlig intelligens med Gemini. Dina begäranden, sidrubriker och webbadresser kan granskas för att göra förbättrad autofyll ännu bättre.</translation>
 <translation id="8355270400102541638">Kontext för lokal krasch:</translation>
 <translation id="8362914115861174987">Översätt till</translation>
 <translation id="8363502534493474904">inaktivera flygplansläget</translation>
@@ -4656,6 +4662,7 @@ Mer information:
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Testa Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Avsluta helskärmsläget genom att hålla nere |<ph name="ACCELERATOR" />|</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Säkerhetsfel</translation>
 <translation id="9035699147763101514">Drivs av Personlig intelligens med Gemini. Hantera dina val i inställningarna.</translation>
 <translation id="9035824888276246493">Spara säkerhetskoder</translation>

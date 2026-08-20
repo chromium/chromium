@@ -372,6 +372,7 @@
 <translation id="4676059169848868271"><ph name="APP_NAME" /> ilovasi qoʻllar holatini kuzatishi uchun <ph name="BEGIN_LINK" />tizim sozlamalari<ph name="END_LINK" /> orqali bu parametrni yoqing.</translation>
 <translation id="4688045258817337666">Kartalarni boshqarish</translation>
 <translation id="4722332387043141878">Saytlar odatda virtual reallik yoki qadam sanash kabi funksiyalar uchun qurilmadagi harakat va yorugʻlik sensorlaridan foydalanadi</translation>
+<translation id="4748783296226936791">Saytlar odatda notanish klaviatura, oʻyin joystiklari va hokazo qurilmalardan foydalanish uchun HID qurilmalarga ulanadi</translation>
 <translation id="4755971844837804407">Yoqilsa, saytlar sizga reklama koʻrsatishi mumkin. Oʻchirilsa, yoqimsiz yoki befoyda reklamalar koʻrsatilmaydi.</translation>
 <translation id="4779083564647765204">Masshtab</translation>
 <translation id="4807122856660838973">Saytlarni xavfsiz kezish rejimini yoqish</translation>
@@ -456,6 +457,7 @@
 <translation id="5700761515355162635">Tashqi cookie fayllarga ruxsat berilgan</translation>
 <translation id="5706552988683188916"><ph name="WEBSITE" /> uchun cookie fayllar va sayt maʼlumotlarini oʻchiradi</translation>
 <translation id="571222594670061844">Saytlar shaxsni tasdiqlash xizmatlariga kirish oynalarini chiqarishi mumkin</translation>
+<translation id="5719854774000914513">Saytlar HID qurilmalarga ulanishga ruxsat soʻray oladi</translation>
 <translation id="5740126560802162366">Saytlar maʼlumotlarni qurilmangizda saqlashi mumkin</translation>
 <translation id="5743425052258407233">Brauzer tarixini barcha qurilmalarda oling va ishni kelgan joyidan oson davom ettiring</translation>
 <translation id="5749158352074143502">Shu varaqda davom etish</translation>
@@ -575,6 +577,7 @@
 <translation id="6950072572526089586">Ochilgan saytlar sizni hisobda qoldirish yoki mahsulotlarni xarid savatida saqlash uchun saytdagi harakatlaringiz haqidagi maʼlumotlarni saqlashi mumkin. Odatda bu maʼlumotlar qurilmangizda vaqtincha saqlanadi.</translation>
 <translation id="6964291282260073066">“WebGPU” faolsizlantirilgan.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6972629891077993081">HID qurilmalar</translation>
 <translation id="6980507581230208647">Atirgulrang mavzu</translation>
 <translation id="6980861169612950611">Sayt maʼlumotlari oʻchirilsinmi? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Qulayliklar</translation>
@@ -732,6 +735,7 @@ Kuchaytirilgan himoya boshqaruvida quyidagi Chrome sozlamalari mavjud:</translat
 <translation id="8593422116412089302">Yoqilsa, saytlar siz haqingizda saqlagan maʼlumotlardan foydalanishni soʻrashi mumkin. Oʻchirilsa, bunday ruxsatlar taqiqlanadi.</translation>
 <translation id="8609465669617005112">Tepaga o‘tish</translation>
 <translation id="8617611086246832542">Yoqilsa, saytlarning desktop versiyasi koʻrinadi. Oʻchirilsa, saytlarning mobil versiyasi koʻrinadi.</translation>
+<translation id="8625916342247441948">Saytlarga HID qurilmalarga ulanishni taqiqlash</translation>
 <translation id="8670078035093027626">Birlamchi brauzer quyi ekrani toʻliq hajmda ochildi</translation>
 <translation id="8676316391139423634">Yoqilsa, saytlar qoʻllaringiz holatini kuzatishga ruxsat soʻrashi mumkin. Yoqilmasa, saytlar qoʻllaringiz holatini kuzatmaydi.</translation>
 <translation id="8676374126336081632">Tozalash</translation>

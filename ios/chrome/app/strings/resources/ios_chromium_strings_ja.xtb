@@ -253,6 +253,7 @@ Chromium を使いやすくするためにデータを使用するその他の�
 <translation id="6154098560469640583">メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chromium で開くよう設定できます</translation>
 <translation id="6157162508956739031">Chromium からパスワードやパスキーを自動入力して、アプリやサイトにすばやくログインできます</translation>
 <translation id="6170619162539716595">Chromium で Google マップを使用して、検出された住所までの経路やローカル情報を取得できるようにします。</translation>
+<translation id="6170834619568075230">Google レンズ in Chromium を使用して、あらゆるものを検索できます</translation>
 <translation id="6244277266078678766">データは、<ph name="USER_EMAIL" /> のパスワード マネージャーに保存されます</translation>
 <translation id="6268381023930128611">Chromium からログアウトしますか？</translation>
 <translation id="6301717043141881464">保存したパスワードを他のアプリで簡単に使用できるようするには、Chromium の自動入力を選択します</translation>
@@ -379,6 +380,7 @@ Chromium を使いやすくするためにデータを使用するその他の�
 <translation id="9177628952266852500"><ph name="EMAIL" />。Chromium は管理されています。</translation>
 <translation id="921174536258924340">Chromium ですべてのパスワードを確認できませんでした。明日もう一度お試しいただくか、<ph name="BEGIN_LINK" />Google アカウント内のパスワードをご確認ください<ph name="END_LINK" />。</translation>
 <translation id="924957577793602335">Chromium を独自にカスタマイズ</translation>
+<translation id="925642420047255224">メッセージ、ドキュメント、他のアプリでタップしたリンクを常に Chromium で開くよう設定できます</translation>
 <translation id="981812233959540767">Chromium Dino ゲームをプレイ</translation>
 <translation id="985602178874221306">Chromium 開発者</translation>
 <translation id="986520777495807752">Chromium を既定に設定</translation>
