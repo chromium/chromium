@@ -73,7 +73,7 @@ if (is_android) {
     if (is_cronet_build) {
       # Cronet's min sdk version support policy is different from the rest of
       # Chromium; Cronet explicitly supports older devices.
-      default_min_sdk_version = 23
+      default_min_sdk_version = 24
     }
 
     # Static analysis can be either "on" or "off" or "build_server". This
