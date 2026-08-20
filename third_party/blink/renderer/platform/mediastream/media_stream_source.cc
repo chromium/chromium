@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/webaudio_destination_consumer.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "ui/display/types/display_constants.h"
 
 namespace blink {
@@ -124,29 +125,24 @@ MediaStreamSource::MediaStreamSource(
       remote_(remote),
       ready_state_(ready_state),
       platform_source_(std::move(platform_source)) {
-  SendLogMessage(UNSAFE_TODO(
-      String::Format(
-          "MediaStreamSource({id=%s}, {type=%s}, {name=%s}, {remote=%d}, "
-          "{ready_state=%s})",
-          id.Utf8().c_str(), StreamTypeToString(type), name.Utf8().c_str(),
-          remote, ReadyStateToString(ready_state))
-          .Utf8()));
+  SendLogMessage(Format("MediaStreamSource({{id={}}}, {{type={}}}, "
+                        "{{name={}}}, {{remote={}}}, {{ready_state={}}})",
+                        id, StreamTypeToString(type), name, remote,
+                        ReadyStateToString(ready_state))
+                     .Utf8());
   if (platform_source_)
     platform_source_->SetOwner(this);
 }
 
 void MediaStreamSource::SetGroupId(const String& group_id) {
-  SendLogMessage(
-      String::Format("SetGroupId({group_id=%s})", group_id.Utf8().c_str())
-          .Utf8());
+  SendLogMessage(StrCat({"SetGroupId({group_id=", group_id, "})"}).Utf8());
   group_id_ = group_id;
 }
 
 void MediaStreamSource::SetReadyState(ReadyState ready_state) {
-  SendLogMessage(UNSAFE_TODO(
-      String::Format("SetReadyState({id=%s}, {ready_state=%s})",
-                     Id().Utf8().c_str(), ReadyStateToString(ready_state))
-          .Utf8()));
+  SendLogMessage(StrCat({"SetReadyState(id=", Id(), ", ready_state=",
+                         ReadyStateToString(ready_state), ")"})
+                     .Utf8());
   if (ready_state_ != kReadyStateEnded && ready_state_ != ready_state) {
     ready_state_ = ready_state;
 
@@ -175,11 +171,10 @@ void MediaStreamSource::SetAudioProcessingProperties(
     bool noise_supression,
     bool voice_isolation) {
   SendLogMessage(
-      UNSAFE_TODO(String::Format(
-                      "%s({echo_cancellation=%s}, {auto_gain_control=%d}, "
-                      "{noise_supression=%d}, {voice_isolation=%d})",
-                      __func__, EchoCancellationModeToString(echo_cancellation),
-                      auto_gain_control, noise_supression, voice_isolation))
+      Format("{}({{echo_cancellation={}}}, {{auto_gain_control={}}}, "
+             "{{noise_supression={}}}, {{voice_isolation={}}})",
+             __func__, EchoCancellationModeToString(echo_cancellation),
+             auto_gain_control, noise_supression, voice_isolation)
           .Utf8());
   echo_cancellation_ = echo_cancellation;
   auto_gain_control_ = auto_gain_control;

@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkM44.h"
@@ -283,8 +284,8 @@ AffineTransform& AffineTransform::Zoom(double zoom_factor) {
 String AffineTransform::ToString(bool as_matrix) const {
   if (as_matrix) {
     // Return as a matrix in row-major order.
-    return String::Format("[%lg,%lg,%lg,\n%lg,%lg,%lg]", A(), C(), E(), B(),
-                          D(), F());
+    return Format("[{:g},{:g},{:g},\n{:g},{:g},{:g}]", A(), C(), E(), B(), D(),
+                  F());
   }
 
   if (IsIdentity())
@@ -295,13 +296,13 @@ String AffineTransform::ToString(bool as_matrix) const {
     return StrCat({ToString(true), " (degenerate)"});
 
   if (IsIdentityOrTranslation()) {
-    return String::Format("translation(%lg,%lg)", decomp->translate[0],
-                          decomp->translate[1]);
+    return Format("translation({:g},{:g})", decomp->translate[0],
+                  decomp->translate[1]);
   }
 
   double angle = Rad2deg(std::asin(decomp->quaternion.z())) * 2;
-  return String::Format(
-      "translation(%lg,%lg), scale(%lg,%lg), angle(%lgdeg), skewxy(%lg)",
+  return Format(
+      "translation({:g},{:g}), scale({:g},{:g}), angle({:g}deg), skewxy({:g})",
       decomp->translate[0], decomp->translate[1], decomp->scale[0],
       decomp->scale[1], angle, decomp->skew[0]);
 }

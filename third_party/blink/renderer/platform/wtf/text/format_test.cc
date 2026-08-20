@@ -194,8 +194,8 @@ TEST(FormatTest, TypeSpecifierPointer) {
 
 TEST(FormatTest, TypeSpecifierFloat) {
   EXPECT_EQ("3.141592653589793", Format("{}", 3.141592653589793));
-  EXPECT_EQ("3.141592653589793", Format("{:g}", 3.141592653589793));
-  EXPECT_EQ("3.141592653589793", Format("{:G}", 3.141592653589793));
+  EXPECT_EQ("3.14159", Format("{:g}", 3.141592653589793));
+  EXPECT_EQ("3.14159", Format("{:G}", 3.141592653589793));
 
   EXPECT_EQ("3.141592653589793", Format("{:}", 3.141592653589793));
   EXPECT_EQ("3.141590", Format("{:f}", 3.14159));

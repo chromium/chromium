@@ -129,6 +129,16 @@ void FormatDouble(double val,
     success = converter.ToExponential(val, precision.value_or(-1), &dc_builder);
   } else if (type == 'f' || type == 'F') {
     success = converter.ToFixed(val, precision.value_or(6), &dc_builder);
+  } else if (type == 'g' || type == 'G') {
+    uint32_t prec = precision.value_or(6);
+    if (prec == 0) {
+      // For 'g' and 'G' formatting (which use ToPrecision), the precision
+      // represents the number of significant digits. A precision of 0 is
+      // treated as 1 by printf-like functions. Also, double_conversion's
+      // ToPrecision requires at least 1 digit (kMinPrecisionDigits).
+      prec = 1;
+    }
+    success = converter.ToPrecision(val, prec, &dc_builder);
   } else {
     if (precision.has_value()) {
       if (precision.value() == 0) {

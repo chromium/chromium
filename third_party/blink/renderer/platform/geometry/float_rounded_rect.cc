@@ -328,10 +328,10 @@ std::ostream& operator<<(std::ostream& ostream,
 }
 
 String FloatRoundedRect::Radii::ToString() const {
-  return String::Format(
-      "tl:%s; tr:%s; bl:%s; br:%s", TopLeft().ToString().c_str(),
-      TopRight().ToString().c_str(), BottomLeft().ToString().c_str(),
-      BottomRight().ToString().c_str());
+  return StrCat({"tl:", String(TopLeft().ToString()),
+                 "; tr:", String(TopRight().ToString()),
+                 "; bl:", String(BottomLeft().ToString()),
+                 "; br:", String(BottomRight().ToString())});
 }
 
 String FloatRoundedRect::ToString() const {

@@ -10,8 +10,7 @@ namespace blink {
 
 template <typename ValueType>
 String PhysicalFixedOffset<ValueType>::ToString() const {
-  return String::Format("%s,%s", left.ToString().Ascii().c_str(),
-                        top.ToString().Ascii().c_str());
+  return StrCat({left.ToString(), ",", top.ToString()});
 }
 
 template <typename ValueType>
