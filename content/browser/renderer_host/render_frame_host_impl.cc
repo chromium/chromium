@@ -1285,14 +1285,15 @@ bool BoostRendererInitiatedNavigation() {
 }
 
 std::optional<std::string_view> GetHostnameMinusRegistry(const GURL& url) {
-  const size_t registry_length =
-      net::registry_controlled_domains::GetRegistryLength(
+  ASSIGN_OR_RETURN(
+      const size_t registry_length,
+      net::registry_controlled_domains::GetRegistry(
           url, net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
-          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES)
+          .transform(&std::string_view::size));
 
   const std::string_view hostname = url.host();
-  if (registry_length == 0 || registry_length == std::string::npos ||
-      registry_length >= hostname.length()) {
+  if (registry_length == 0 || registry_length >= hostname.length()) {
     return std::nullopt;
   }
 

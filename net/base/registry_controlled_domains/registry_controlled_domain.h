@@ -146,7 +146,7 @@ enum PrivateRegistryFilter {
   INCLUDE_PRIVATE_REGISTRIES
 };
 
-// This enum is a required parameter to the GetRegistryLength functions
+// This enum is a required parameter to the GetRegistry functions
 // declared for this service. Whenever there is no matching rule in the
 // effective-TLD data (or in the default data, if the resource failed to
 // load), the result will be dependent on which enum value was passed in.
@@ -220,32 +220,32 @@ NET_EXPORT bool SameDomainOrHost(const GURL& gurl,
                                  const url::Origin& origin,
                                  PrivateRegistryFilter filter);
 
-// Finds the length in bytes of the registrar portion of the host in the
-// given GURL.  Returns std::string::npos if the GURL is invalid or has no
-// host (e.g. a file: URL).  Returns 0 if the GURL has multiple trailing dots,
-// is an IP address, has no subcomponents, or is itself a recognized registry
-// identifier.  The result is also dependent on the UnknownRegistryFilter.
-// If no matching rule is found in the effective-TLD data (or in
-// the default data, if the resource failed to load), returns 0 if
-// |unknown_filter| is EXCLUDE_UNKNOWN_REGISTRIES, or the length of the last
-// subcomponent if |unknown_filter| is INCLUDE_UNKNOWN_REGISTRIES.
+// Finds the registrar portion of the host in the given GURL.  Returns
+// std::nullopt if the GURL is invalid or has no host (e.g. a file: URL).
+// Returns "" if the GURL has multiple trailing dots, is an IP address, has no
+// subcomponents, or is itself a recognized registry identifier.  The result is
+// also dependent on the UnknownRegistryFilter.  If no matching rule is found in
+// the effective-TLD data (or in the default data, if the resource failed to
+// load), returns "" if |unknown_filter| is EXCLUDE_UNKNOWN_REGISTRIES, or the
+// last subcomponent if |unknown_filter| is INCLUDE_UNKNOWN_REGISTRIES.
+//
+// The returned string_view has the same lifetime as the `gurl` argument.
 //
 // Examples:
-//   http://www.google.com/file.html -> 3                 (com)
-//   http://..google.com/file.html   -> 3                 (com)
-//   http://google.com./file.html    -> 4                 (com)
-//   http://a.b.co.uk/file.html      -> 5                 (co.uk)
-//   file:///C:/bar.html             -> std::string::npos (no host)
-//   http://foo.com../file.html      -> 0                 (multiple trailing
-//                                                         dots)
-//   http://192.168.0.1/file.html    -> 0                 (IP address)
-//   http://bar/file.html            -> 0                 (no subcomponents)
-//   http://co.uk/file.html          -> 0                 (host is a registry)
-//   http://foo.bar/file.html        -> 0 or 3, depending (no rule; assume
-//                                                         bar)
-NET_EXPORT size_t GetRegistryLength(const GURL& gurl,
-                                    UnknownRegistryFilter unknown_filter,
-                                    PrivateRegistryFilter private_filter);
+//   http://www.google.com/file.html -> "com"
+//   http://..google.com/file.html   -> "com"
+//   http://google.com./file.html    -> "com."
+//   http://a.b.co.uk/file.html      -> "co.uk"
+//   file:///C:/bar.html             -> std::nullopt (no host)
+//   http://foo.com../file.html      -> ""           (multiple trailing dots)
+//   http://192.168.0.1/file.html    -> ""           (IP address)
+//   http://bar/file.html            -> ""           (no subcomponents)
+//   http://co.uk/file.html          -> ""           (host is a registry)
+//   http://foo.bar/file.html        -> "" or "bar"  (no rule; assume bar)
+NET_EXPORT std::optional<std::string_view> GetRegistry(
+    const GURL& gurl,
+    UnknownRegistryFilter unknown_filter,
+    PrivateRegistryFilter private_filter);
 
 // Returns true if the given host name has a registry-controlled domain. The
 // host name will be internally canonicalized. Also returns true for invalid
@@ -264,17 +264,23 @@ NET_EXPORT bool HostHasRegistryControlledDomain(
 NET_EXPORT bool HostIsRegistryIdentifier(std::string_view canon_host,
                                          PrivateRegistryFilter private_filter);
 
-// Like GetRegistryLength, but takes a previously-canonicalized host instead of
-// a GURL. Prefer the GURL version or HasRegistryControlledDomain to eliminate
-// the possibility of bugs with non-canonical hosts.
+// Like GetRegistry, but takes a previously-canonicalized host instead of a
+// GURL. Prefer the GURL version or HasRegistryControlledDomain to eliminate the
+// possibility of bugs with non-canonical hosts.
 //
 // If you have a non-canonical host name, use the "Permissive" version instead.
+//
+// Returns the length of the registry, or std::string::npos if the input was
+// invalid or had no host.
+//
+// TODO(https://crbug.com/548509154): Rewrite this to return the substring, and
+// update callers.
 NET_EXPORT size_t
 GetCanonicalHostRegistryLength(std::string_view canon_host,
                                UnknownRegistryFilter unknown_filter,
                                PrivateRegistryFilter private_filter);
 
-// Like GetRegistryLength for a potentially non-canonicalized hostname.  This
+// Like GetRegistry for a potentially non-canonicalized hostname.  This
 // splits the input into substrings at '.' characters, then attempts to
 // piecewise-canonicalize the substrings. After finding the registry length of
 // the concatenated piecewise string, it then maps back to the corresponding
@@ -297,8 +303,14 @@ GetCanonicalHostRegistryLength(std::string_view canon_host,
 //
 // The string won't be trimmed, so things like trailing spaces will be
 // considered part of the host and therefore won't match any TLD. It will
-// return std::string::npos like GetRegistryLength() for empty input, but
+// return std::string::npos like GetRegistry() for empty input, but
 // because invalid portions are skipped, it won't return npos in any other case.
+//
+// Returns the length of the registry, or std::string::npos if the input was
+// invalid or had no host.
+//
+// TODO(https://crbug.com/548509154): Rewrite this to return the substring, and
+// update callers.
 NET_EXPORT size_t
 PermissiveGetHostRegistryLength(std::string_view host,
                                 UnknownRegistryFilter unknown_filter,

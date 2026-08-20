@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/input_method/url_utils.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/strings/strcat.h"
@@ -17,9 +18,11 @@ namespace input_method {
 // Checks if domain is a sub-domain of url
 bool IsSubDomain(const GURL& url, std::string_view domain) {
   const size_t registryLength =
-      net::registry_controlled_domains::GetRegistryLength(
+      net::registry_controlled_domains::GetRegistry(
           url, net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
-          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES)
+          .transform(&std::string_view::size)
+          .value_or(std::string_view::npos);
   // Localhost is valid and we want to deny features on it but has not registry.
   if (registryLength == 0 && domain != "localhost") {
     return false;

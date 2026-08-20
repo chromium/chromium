@@ -205,7 +205,7 @@ std::optional<int> LookupStringInFixedSet(base::span<const uint8_t> graph,
 // implemented here to allow inlining of
 // LookupStringInFixedSet::GetResultForCurrentSequence() and
 // LookupStringInFixedSet::Advance() at compile time. Tests on x86_64 linux
-// indicated about 10% increased runtime cost for GetRegistryLength() in average
+// indicated about 10% increased runtime cost for GetRegistry() in average
 // if the implementation of this function was separated from the lookup methods.
 std::optional<DomainRuleTags> LookupSuffixInReversedSet(
     base::span<const uint8_t> graph,

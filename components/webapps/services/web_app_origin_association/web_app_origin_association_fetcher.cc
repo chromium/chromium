@@ -5,6 +5,7 @@
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_fetcher.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -79,19 +80,20 @@ bool ShouldFetchAssociationFile(const GURL& resource_url) {
   if (resource_url.HostIsIPAddress())
     return true;
 
-  const size_t registry_length =
-      net::registry_controlled_domains::GetRegistryLength(
+  const std::optional<size_t> registry_length =
+      net::registry_controlled_domains::GetRegistry(
           resource_url,
           // Reject unknown registries (registries that don't have any matches
           // in effective TLD names).
           net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
           // Skip matching private registries that allow external users to
           // specify sub-domains, e.g. glitch.me, as this is allowed.
-          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES)
+          .transform(&std::string_view::size);
 
   // Host cannot be a TLD or invalid.
-  if (registry_length == 0 || registry_length == std::string::npos ||
-      registry_length >= resource_url.GetHost().length()) {
+  if (!registry_length.has_value() || *registry_length == 0 ||
+      *registry_length >= resource_url.GetHost().length()) {
     return false;
   }
 

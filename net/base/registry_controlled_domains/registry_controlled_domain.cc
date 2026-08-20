@@ -547,11 +547,17 @@ bool SameDomainOrHost(const GURL& gurl,
   return SameDomainOrHost(gurl.host(), origin.host(), filter);
 }
 
-size_t GetRegistryLength(const GURL& gurl,
-                         UnknownRegistryFilter unknown_filter,
-                         PrivateRegistryFilter private_filter) {
-  return GetRegistryLengthImpl(gurl.host(), unknown_filter, private_filter)
-      .registry_length;
+std::optional<std::string_view> GetRegistry(
+    const GURL& gurl,
+    UnknownRegistryFilter unknown_filter,
+    PrivateRegistryFilter private_filter) {
+  std::string_view host = gurl.host();
+  size_t length = GetRegistryLengthImpl(host, unknown_filter, private_filter)
+                      .registry_length;
+  if (length == std::string::npos) {
+    return std::nullopt;
+  }
+  return host.substr(host.length() - length);
 }
 
 bool HostHasRegistryControlledDomain(std::string_view host,

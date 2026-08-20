@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -405,12 +406,13 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
       return;
 
     // Disallow eTLDs from setting include_subdomains policies.
-    if (policy.include_subdomains &&
-        registry_controlled_domains::GetRegistryLength(
-            policy.key.origin.GetURL(),
-            registry_controlled_domains::INCLUDE_UNKNOWN_REGISTRIES,
-            registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES) == 0) {
-      return;
+    if (policy.include_subdomains) {
+      GURL gurl = policy.key.origin.GetURL();
+      if (registry_controlled_domains::GetRegistry(
+              gurl, registry_controlled_domains::INCLUDE_UNKNOWN_REGISTRIES,
+              registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES) == "") {
+        return;
+      }
     }
 
     // If a policy for this NelPolicyKey already existed, remove the old policy.

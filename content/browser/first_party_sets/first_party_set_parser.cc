@@ -129,18 +129,19 @@ bool IsSingletonSet(const std::vector<SetsMap::value_type>& set_entries,
 // Removes the TLD from a SchemefulSite, if possible. (It is not possible if
 // the site has no final subcomponent.)
 std::optional<std::string> RemoveTldFromSite(const net::SchemefulSite& site) {
-  const size_t tld_length = net::registry_controlled_domains::GetRegistryLength(
-      site.GetURL(),
-      net::registry_controlled_domains::INCLUDE_UNKNOWN_REGISTRIES,
-      net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  GURL gurl = site.GetURL();
+  const size_t tld_length =
+      net::registry_controlled_domains::GetRegistry(
+          gurl, net::registry_controlled_domains::INCLUDE_UNKNOWN_REGISTRIES,
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)
+          .transform(&std::string_view::size)
+          .value_or(std::string_view::npos);
   if (tld_length == 0) {
     return std::nullopt;
   }
   const std::string serialized = site.Serialize();
   return serialized.substr(0, serialized.size() - tld_length);
 }
-
-
 
 class ParseContext {
  public:
