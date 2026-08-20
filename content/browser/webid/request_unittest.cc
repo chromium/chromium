@@ -9789,4 +9789,46 @@ TEST_F(RequestTest, ActiveRequestReplacesPassiveRequestNoRace) {
   }
 }
 
+// Verifies that calling LoginToIdP when the login popup is already open
+// refocuses the popup without re-registering the IdpSigninStatus observer or
+// resetting state, and that query parameters are preserved.
+TEST_F(RequestTest, LoginToIdPRefocusesWhenPopupAlreadyOpen) {
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.identity_providers[0].domain_hint = kDomainHint;
+
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
+
+  auto dialog_controller =
+      std::make_unique<TestDialogController>(kConfigurationValid);
+  base::WeakPtr<TestDialogController> weak_dialog_controller =
+      dialog_controller->AsWeakPtr();
+  SetDialogController(std::move(dialog_controller));
+
+  std::string expected_url =
+      std::string(kIdpLoginUrl) + "?domain_hint=domain%40corp.com";
+  std::unique_ptr<WebContents> modal(CreateTestWebContents());
+  EXPECT_CALL(*weak_dialog_controller,
+              ShowModalDialog(GURL(expected_url), _, _, _, _))
+      .Times(2)
+      .WillRepeatedly(::testing::Return(modal.get()));
+
+  // AddIdpSigninStatusObserver should only be called once when opening the
+  // popup the first time, and NOT again when LoginToIdP is called while the
+  // popup is already open.
+  EXPECT_CALL(*test_permission_delegate_, AddIdpSigninStatusObserver).Times(1);
+
+  RunDontWaitForCallback(parameters, kConfigurationValid);
+  EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
+
+  // First LoginToIdP call: opens the popup, adds observer, sets dialog_type_.
+  SimulateLoginToIdP();
+  EXPECT_EQ(request_->GetDialogType(), Request::DialogType::kLoginToIdpPopup);
+
+  // Second LoginToIdP call while popup is already open: refocuses the popup
+  // without re-registering observer or resetting state.
+  SimulateLoginToIdP();
+  EXPECT_EQ(request_->GetDialogType(), Request::DialogType::kLoginToIdpPopup);
+}
+
 }  // namespace content::webid
