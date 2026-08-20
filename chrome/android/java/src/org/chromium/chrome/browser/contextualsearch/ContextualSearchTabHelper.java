@@ -70,12 +70,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     private @Nullable TemplateUrlService mTemplateUrlService;
 
     private final TemplateUrlServiceObserver mTemplateUrlServiceObserver =
-            new TemplateUrlServiceObserver() {
-                @Override
-                public void onTemplateURLServiceChanged() {
-                    ContextualSearchTabHelper.this.onTemplateURLServiceChanged();
-                }
-            };
+            ContextualSearchTabHelper.this::onTemplateURLServiceChanged;
 
     /** The WebContents associated with the Tab which this helper is monitoring, unless detached. */
     private @Nullable WebContents mWebContents;

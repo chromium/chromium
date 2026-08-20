@@ -42,7 +42,7 @@ public class ContextualSearchFieldTrial {
      */
     public static boolean isEnabled() {
         if (sEnabled == null) sEnabled = detectEnabled();
-        return sEnabled.booleanValue();
+        return sEnabled;
     }
 
     /**

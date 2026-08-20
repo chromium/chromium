@@ -367,7 +367,7 @@ class ContextualSearchInternalStateController {
                 mStateHandler.completeSearch();
                 break;
             default:
-                Log.w(TAG, "Warning: unexpected startWorkingOn " + String.valueOf(state));
+                Log.w(TAG, "Warning: unexpected startWorkingOn %d", state);
                 break;
         }
     }
@@ -385,7 +385,7 @@ class ContextualSearchInternalStateController {
         assert mDidStartWork;
 
         if (mState == InternalState.IDLE || mState == InternalState.UNDEFINED) {
-            Log.w(TAG, "Warning, the " + String.valueOf(state) + " state was aborted.");
+            Log.w(TAG, "Warning, the %d state was aborted.", state);
             return;
         }
 
@@ -464,7 +464,7 @@ class ContextualSearchInternalStateController {
                 // Resting state
                 break;
             default:
-                Log.e(TAG, "The state " + String.valueOf(state) + " is not transitional!");
+                Log.e(TAG, "The state %d is not transitional!", state);
                 assert false;
         }
     }

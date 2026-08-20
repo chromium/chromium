@@ -13,7 +13,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.ViewTreeObserver.OnGlobalFocusChangeListener;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -295,12 +294,9 @@ public class ContextualSearchManager
 
         final View controlContainer = mActivity.findViewById(R.id.control_container);
         mOnFocusChangeListener =
-                new OnGlobalFocusChangeListener() {
-                    @Override
-                    public void onGlobalFocusChanged(View oldFocus, View newFocus) {
-                        if (controlContainer != null && controlContainer.hasFocus()) {
-                            hideContextualSearch(StateChangeReason.UNKNOWN);
-                        }
+                (View oldFocus, View newFocus) -> {
+                    if (controlContainer != null && controlContainer.hasFocus()) {
+                        hideContextualSearch(StateChangeReason.UNKNOWN);
                     }
                 };
 
@@ -1772,15 +1768,11 @@ public class ContextualSearchManager
                         InternalState.WAITING_FOR_POSSIBLE_TAP_NEAR_PREVIOUS);
                 new Handler()
                         .postDelayed(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        // We may have been destroyed.
-                                        if (mSearchPanel != null) mSearchPanel.hideCaption();
-                                        mInternalStateController.notifyFinishedWorkOn(
-                                                InternalState
-                                                        .WAITING_FOR_POSSIBLE_TAP_NEAR_PREVIOUS);
-                                    }
+                                () -> {
+                                    // We may have been destroyed.
+                                    if (mSearchPanel != null) mSearchPanel.hideCaption();
+                                    mInternalStateController.notifyFinishedWorkOn(
+                                            InternalState.WAITING_FOR_POSSIBLE_TAP_NEAR_PREVIOUS);
                                 },
                                 TAP_NEAR_PREVIOUS_DETECTION_DELAY_MS);
             }
@@ -1798,14 +1790,10 @@ public class ContextualSearchManager
                         InternalState.WAITING_FOR_POSSIBLE_TAP_ON_TAP_SELECTION);
                 new Handler()
                         .postDelayed(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
+                                () ->
                                         mInternalStateController.notifyFinishedWorkOn(
                                                 InternalState
-                                                        .WAITING_FOR_POSSIBLE_TAP_ON_TAP_SELECTION);
-                                    }
-                                },
+                                                        .WAITING_FOR_POSSIBLE_TAP_ON_TAP_SELECTION),
                                 TAP_ON_TAP_SELECTION_DELAY_MS);
             }
 
