@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.LargeTest;
+import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
 import org.junit.After;
@@ -75,6 +76,7 @@ import org.chromium.chrome.test.util.AdvancedProtectionTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSetting;
@@ -126,6 +128,8 @@ public class PrivacySettingsFragmentTest {
 
     private UserActionTester mActionTester;
     @Mock private SettingsNavigation mSettingsNavigation;
+
+    @Mock private SettingsIndexData mSearchIndexDataMock;
 
     private void waitForOptionsMenu() {
         CriteriaHelper.pollUiThread(
@@ -657,5 +661,41 @@ public class PrivacySettingsFragmentTest {
 
     private PrefService getPrefService() {
         return UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.UNIVERSAL_OPT_OUT_SETTINGS)
+    public void testSearchableIndex_UniversalOptOutSettings_RemovedWhenNonEligible() {
+        var indexProvider = PrivacySettings.SEARCH_INDEX_DATA_PROVIDER;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ENABLED, false);
+                    getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ELIGIBLE, false);
+                    indexProvider.updateDynamicPreferences(
+                            mSettingsActivityTestRule.getActivity(),
+                            mSearchIndexDataMock,
+                            ProfileManager.getLastUsedRegularProfile());
+                });
+
+        verify(mSearchIndexDataMock)
+                .removeEntry(indexProvider.getUniqueId(PrivacySettings.PREF_UNIVERSAL_OPT_OUT));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.UNIVERSAL_OPT_OUT_SETTINGS)
+    public void testSearchableIndex_UniversalOptOutSettings_RemovedWhenFeatureDisabled() {
+        var indexProvider = PrivacySettings.SEARCH_INDEX_DATA_PROVIDER;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    indexProvider.updateDynamicPreferences(
+                            mSettingsActivityTestRule.getActivity(),
+                            mSearchIndexDataMock,
+                            ProfileManager.getLastUsedRegularProfile());
+                });
+
+        verify(mSearchIndexDataMock)
+                .removeEntry(indexProvider.getUniqueId(PrivacySettings.PREF_UNIVERSAL_OPT_OUT));
     }
 }

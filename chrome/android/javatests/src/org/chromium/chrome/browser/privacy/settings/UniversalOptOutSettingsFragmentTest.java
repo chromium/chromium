@@ -8,15 +8,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 
 import androidx.preference.Preference;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -31,6 +36,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -46,8 +52,9 @@ public class UniversalOptOutSettingsFragmentTest {
     public final SettingsActivityTestRule<UniversalOptOutSettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(UniversalOptOutSettings.class);
 
-    private static final String PREF_UNIVERSAL_OPT_OUT_SWITCH = "universal_opt_out_switch";
-    private static final String PREF_UNIVERSAL_OPT_OUT_INFO_TEXT = "universal_opt_out_info_text";
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private SettingsIndexData mSearchIndexDataMock;
 
     @Before
     public void setUp() {
@@ -73,7 +80,8 @@ public class UniversalOptOutSettingsFragmentTest {
 
         mSettingsActivityTestRule.startSettingsActivity();
         UniversalOptOutSettings fragment = mSettingsActivityTestRule.getFragment();
-        ChromeSwitchPreference switchPref = fragment.findPreference(PREF_UNIVERSAL_OPT_OUT_SWITCH);
+        ChromeSwitchPreference switchPref =
+                fragment.findPreference(UniversalOptOutSettings.PREF_UNIVERSAL_OPT_OUT_SWITCH);
         assertNotNull(switchPref);
 
         assertFalse(switchPref.isChecked());
@@ -89,7 +97,8 @@ public class UniversalOptOutSettingsFragmentTest {
 
         mSettingsActivityTestRule.startSettingsActivity();
         UniversalOptOutSettings fragment = mSettingsActivityTestRule.getFragment();
-        ChromeSwitchPreference switchPref = fragment.findPreference(PREF_UNIVERSAL_OPT_OUT_SWITCH);
+        ChromeSwitchPreference switchPref =
+                fragment.findPreference(UniversalOptOutSettings.PREF_UNIVERSAL_OPT_OUT_SWITCH);
         assertNotNull(switchPref);
 
         assertTrue(switchPref.isChecked());
@@ -105,7 +114,8 @@ public class UniversalOptOutSettingsFragmentTest {
 
         mSettingsActivityTestRule.startSettingsActivity();
         UniversalOptOutSettings fragment = mSettingsActivityTestRule.getFragment();
-        ChromeSwitchPreference switchPref = fragment.findPreference(PREF_UNIVERSAL_OPT_OUT_SWITCH);
+        ChromeSwitchPreference switchPref =
+                fragment.findPreference(UniversalOptOutSettings.PREF_UNIVERSAL_OPT_OUT_SWITCH);
         assertNotNull(switchPref);
 
         assertFalse(
@@ -125,7 +135,8 @@ public class UniversalOptOutSettingsFragmentTest {
     public void testInfoTextIsDisplayed() {
         mSettingsActivityTestRule.startSettingsActivity();
         UniversalOptOutSettings fragment = mSettingsActivityTestRule.getFragment();
-        Preference infoTextPref = fragment.findPreference(PREF_UNIVERSAL_OPT_OUT_INFO_TEXT);
+        Preference infoTextPref =
+                fragment.findPreference(UniversalOptOutSettings.PREF_UNIVERSAL_OPT_OUT_INFO_TEXT);
         assertNotNull(infoTextPref);
 
         String expectedSummary =
@@ -143,5 +154,53 @@ public class UniversalOptOutSettingsFragmentTest {
                 ApplicationProvider.getApplicationContext()
                         .getString(R.string.universal_opt_out_sub_page_title);
         assertEquals(expectedTitle, fragment.getPageTitle().get());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.UNIVERSAL_OPT_OUT_SETTINGS)
+    public void testSearchableIndex_RemovedWhenNonEligible() {
+        var indexProvider = UniversalOptOutSettings.SEARCH_INDEX_DATA_PROVIDER;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ENABLED, false);
+                    getPrefService().setBoolean(Pref.UNIVERSAL_OPT_OUT_ELIGIBLE, false);
+                    indexProvider.updateDynamicPreferences(
+                            mSettingsActivityTestRule.getActivity(),
+                            mSearchIndexDataMock,
+                            ProfileManager.getLastUsedRegularProfile());
+                });
+
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                UniversalOptOutSettings.PREF_UNIVERSAL_OPT_OUT_SWITCH));
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                UniversalOptOutSettings.PREF_UNIVERSAL_OPT_OUT_INFO_TEXT));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.UNIVERSAL_OPT_OUT_SETTINGS)
+    public void testSearchableIndex_RemovedWhenFeatureDisabled() {
+        var indexProvider = UniversalOptOutSettings.SEARCH_INDEX_DATA_PROVIDER;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    indexProvider.updateDynamicPreferences(
+                            mSettingsActivityTestRule.getActivity(),
+                            mSearchIndexDataMock,
+                            ProfileManager.getLastUsedRegularProfile());
+                });
+
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                UniversalOptOutSettings.PREF_UNIVERSAL_OPT_OUT_SWITCH));
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                UniversalOptOutSettings.PREF_UNIVERSAL_OPT_OUT_INFO_TEXT));
     }
 }
