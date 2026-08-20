@@ -17,6 +17,7 @@ _default_allowed_violations = [
 
   # Internal-only webui resources (but no .grd).
   "../../chrome/browser/ttc/resources/internal/*",
+  "../../chrome/browser/nearby_sharing/internal/*",
 
   # TODO(b/452971335): Audit entries below.
   "../../chrome/browser/internal/resources/additional_modules_list.input",
