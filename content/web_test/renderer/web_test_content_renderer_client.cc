@@ -80,6 +80,9 @@ blink::WebFrameWidget* CreateWebTestWebFrameWidget(
 WebTestContentRendererClient::WebTestContentRendererClient()
     : ShellContentRendererClient(/*is_browsertest=*/false) {
   blink::SetWebTestMode(true);
+  blink::SetIsRunningSingleProcessWebTest(
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSingleProcess));
   g_client = this;
 
   // Web tests subclass these types, so we inject factory methods to replace

@@ -88,6 +88,12 @@ BLINK_EXPORT v8::Isolate* CreateMainThreadIsolate();
 BLINK_EXPORT void SetWebTestMode(bool);
 BLINK_EXPORT bool WebTestMode();
 
+// Tells Blink whether the current process is running with
+// switches::kSingleProcess while running web tests. Blink can't read that
+// switch directly (content_switches.h is above its layer), so the embedder
+// pushes the value down instead.
+BLINK_EXPORT void SetIsRunningSingleProcessWebTest(bool);
+
 // Alters whether the browser can handle focus events while running web tests.
 BLINK_EXPORT void SetBrowserCanHandleFocusForWebTest(bool);
 

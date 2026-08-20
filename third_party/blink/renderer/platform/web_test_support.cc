@@ -35,6 +35,7 @@
 namespace blink {
 
 static bool g_is_running_web_test = false;
+static bool g_is_running_single_process_web_test = false;
 static bool g_is_font_antialiasing_enabled = false;
 static bool g_is_subpixel_positioning_allowed = true;
 
@@ -46,6 +47,10 @@ void SetWebTestMode(bool value) {
 
 bool WebTestMode() {
   return g_is_running_web_test;
+}
+
+void SetIsRunningSingleProcessWebTest(bool value) {
+  g_is_running_single_process_web_test = value;
 }
 
 void SetFontAntialiasingEnabledForTest(bool value) {
@@ -60,6 +65,10 @@ bool FontAntialiasingEnabledForTest() {
 
 bool WebTestSupport::IsRunningWebTest() {
   return g_is_running_web_test;
+}
+
+bool WebTestSupport::CanRegisterUkmRecorderDelegateForWebTest() {
+  return !g_is_running_single_process_web_test;
 }
 
 bool WebTestSupport::IsFontAntialiasingEnabledForTest() {

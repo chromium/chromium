@@ -8447,7 +8447,8 @@ ukm::UkmRecorder* Document::UkmRecorder() {
     Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
         factory.BindNewPipeAndPassReceiver());
     auto mojo_recorder = ukm::MojoUkmRecorder::Create(*factory);
-    if (WebTestSupport::IsRunningWebTest()) {
+    if (WebTestSupport::IsRunningWebTest() &&
+        WebTestSupport::CanRegisterUkmRecorderDelegateForWebTest()) {
       ukm::DelegatingUkmRecorder::Get()->AddDelegate(
           mojo_recorder->GetWeakPtr());
     }

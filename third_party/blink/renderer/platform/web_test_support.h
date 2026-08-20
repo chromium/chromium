@@ -45,6 +45,15 @@ class WebTestSupport {
   PLATFORM_EXPORT static bool IsFontAntialiasingEnabledForTest();
   PLATFORM_EXPORT static bool IsTextSubpixelPositioningAllowedForTest();
 
+  // Whether it's safe to register a MojoUkmRecorder as a
+  // DelegatingUkmRecorder delegate when running web tests. This is false
+  // when running web tests single-process (e.g. tvOS, which always does
+  // so, or any other platform run with --single-process for debugging):
+  // there, the mojo recorder's IPC loops back to the same
+  // DelegatingUkmRecorder singleton, causing UKM entries to be
+  // exponentially duplicated.
+  PLATFORM_EXPORT static bool CanRegisterUkmRecorderDelegateForWebTest();
+
  private:
   // In harfbuzz_shaper_test.cc. It knows how to restore the settings.
   friend class ScopedSubpixelOverride;
