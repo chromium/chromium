@@ -514,7 +514,7 @@ void TapDoneButtonOnInfobarModal() {
 - (void)testPermissionsAfterTabSwitch {
   // TODO(crbug.com/40921852): Failing on iOS17.
   if (@available(iOS 17.0, *)) {
-    XCTSkip(@"Failing on iOS17");
+    EARL_GREY_TEST_DISABLED(@"Failing on iOS17.");
   }
 
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
