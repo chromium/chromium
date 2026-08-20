@@ -1378,24 +1378,6 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveCache) {
           StoragePartition::REMOVE_KEEPALIVE_LOADS_ATTEMPTING_RETRY);
 }
 
-TEST_F(BrowsingDataRemoverImplTest, RemoveAggregationServiceData) {
-  BlockUntilBrowsingDataRemoved(
-      base::Time(), base::Time::Max(),
-      BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE, false);
-  StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
-  EXPECT_EQ(removal_data.remove_mask,
-            StoragePartition::REMOVE_DATA_MASK_AGGREGATION_SERVICE);
-}
-
-TEST_F(BrowsingDataRemoverImplTest, RemovePrivateAggregationData) {
-  BlockUntilBrowsingDataRemoved(
-      base::Time(), base::Time::Max(),
-      BrowsingDataRemover::DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL, false);
-  StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
-  EXPECT_EQ(removal_data.remove_mask,
-            StoragePartition::REMOVE_DATA_MASK_PRIVATE_AGGREGATION_INTERNAL);
-}
-
 TEST_F(BrowsingDataRemoverImplTest, RemoveDeviceBoundSessions) {
   BlockUntilBrowsingDataRemoved(
       base::Time(), base::Time::Max(),

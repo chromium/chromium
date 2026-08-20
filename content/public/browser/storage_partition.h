@@ -199,7 +199,6 @@ class CONTENT_EXPORT StoragePartition {
     // Public explainer here:
     // https://github.com/WICG/turtledove/blob/main/FLEDGE.md
     REMOVE_DATA_MASK_INTEREST_GROUPS = 1 << 12,
-    REMOVE_DATA_MASK_AGGREGATION_SERVICE = 1 << 13,
     // Shared storage data as part of the Shared Storage API.
     // Public explainer: https://github.com/pythagoraskitty/shared-storage
     REMOVE_DATA_MASK_SHARED_STORAGE = 1 << 14,
@@ -209,7 +208,6 @@ class CONTENT_EXPORT StoragePartition {
     // https://github.com/WICG/turtledove/blob/main/FLEDGE.md
     REMOVE_DATA_MASK_INTEREST_GROUP_PERMISSIONS_CACHE = 1 << 15,
 
-    REMOVE_DATA_MASK_PRIVATE_AGGREGATION_INTERNAL = 1 << 17,
     REMOVE_DATA_MASK_INTEREST_GROUPS_INTERNAL = 1 << 18,
     // Device bound sessions. Public explainer:
     // https://github.com/WICG/dbsc/blob/main/README.md

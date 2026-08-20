@@ -1323,7 +1323,6 @@ void WebTestControlHost::OnTestFinished() {
       content::StoragePartition::REMOVE_DATA_MASK_MEDIA_LICENSES |
       // Internal flags manage browser-internal state, not website data, and
       // should not be cleared.
-      content::StoragePartition::REMOVE_DATA_MASK_PRIVATE_AGGREGATION_INTERNAL |
       content::StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS_INTERNAL |
       // These flags are designed for explicit user actions in settings.
       content::StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS_USER_CLEAR |
