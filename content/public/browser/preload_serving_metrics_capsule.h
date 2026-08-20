@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_PRELOAD_SERVING_METRICS_CAPSULE_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/time/time.h"
 #include "content/common/content_export.h"
@@ -28,7 +29,7 @@ class CONTENT_EXPORT PreloadServingMetricsCapsule {
 
   virtual void RecordPreloadServingMetricsByNavigationInitiator(
       bool did_nav_use_bfcache,
-      const std::string& navigation_initiator_string,
+      std::string_view navigation_initiator_string,
       bool is_url_srp) const = 0;
 
   // Records FirstContentfulPaint
@@ -36,7 +37,9 @@ class CONTENT_EXPORT PreloadServingMetricsCapsule {
   // The parameter `corrected_first_contentful_paint` is the return value of
   // `page_load_metrics::CorrectEventAsNavigationOrActivationOrigined()`.
   virtual void RecordFirstContentfulPaint(
-      base::TimeDelta corrected_first_contentful_paint) const = 0;
+      base::TimeDelta corrected_first_contentful_paint,
+      std::string_view navigation_initiator_string,
+      bool is_url_srp) const = 0;
 };
 
 }  // namespace content

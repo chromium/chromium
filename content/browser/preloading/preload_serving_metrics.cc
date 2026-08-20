@@ -5,7 +5,9 @@
 #include "content/browser/preloading/preload_serving_metrics.h"
 
 #include <sstream>
+#include <string_view>
 
+#include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -326,7 +328,7 @@ void PreloadServingMetrics::RecordMetricsForNonPrerenderNavigationCommitted()
 
 void PreloadServingMetrics::RecordPreloadServingMetricsByNavigationInitiator(
     bool did_nav_use_bfcache,
-    const std::string& navigation_initiator_string,
+    std::string_view navigation_initiator_string,
     bool is_url_srp) const {
   UsedInstantLoad used_instant_load;
   if (did_nav_use_bfcache) {
@@ -474,7 +476,9 @@ void PreloadServingMetrics::RecordMetricsForPrerenderInitialNavigationFailed()
 }
 
 void PreloadServingMetrics::RecordFirstContentfulPaint(
-    base::TimeDelta corrected_first_contentful_paint) const {
+    base::TimeDelta corrected_first_contentful_paint,
+    std::string_view navigation_initiator_string,
+    bool is_url_srp) const {
   const bool is_prerender_used = !!prerender_initial_preload_serving_metrics;
   const PrefetchMatchMetrics* meaningful_prefetch_match_metrics =
       GetMeaningfulPrefetchMatchMetrics();
@@ -500,17 +504,30 @@ void PreloadServingMetrics::RecordFirstContentfulPaint(
                     "NavigationToFirstContentfulPaint",
                     suffix}),
       corrected_first_contentful_paint);
-  PAGE_LOAD_HISTOGRAM(
-      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-      "NavigationToFirstContentfulPaint."
-      "WithoutFiltering.All.All.All",
-      corrected_first_contentful_paint);
-  PAGE_LOAD_HISTOGRAM(
-      base::StrCat({"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-                    "NavigationToFirstContentfulPaint."
-                    "WithoutFiltering.All.All.",
-                    used_instant_load_suffix}),
-      corrected_first_contentful_paint);
+
+  const std::array<std::string_view, 2> navigation_initiators = {
+      "All", navigation_initiator_string};
+  static constexpr std::string_view kAllOnly[] = {"All"};
+  static constexpr std::string_view kAllAndSrp[] = {"All", "SRP"};
+  const base::span<const std::string_view> srp_alls =
+      is_url_srp ? base::span<const std::string_view>(kAllAndSrp)
+                 : base::span<const std::string_view>(kAllOnly);
+  const std::array<std::string_view, 2> used_instant_loads = {
+      "All", used_instant_load_suffix};
+
+  for (const auto navigation_initiator : navigation_initiators) {
+    for (const auto srp_all : srp_alls) {
+      for (const auto used_instant_load : used_instant_loads) {
+        PAGE_LOAD_HISTOGRAM(
+            base::StrCat({"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+                          "NavigationToFirstContentfulPaint."
+                          "WithoutFiltering.",
+                          navigation_initiator, ".", srp_all, ".",
+                          used_instant_load}),
+            corrected_first_contentful_paint);
+      }
+    }
+  }
 
   if (is_prefetch_actual_match) {
     if (base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread)) {
@@ -525,12 +542,18 @@ void PreloadServingMetrics::RecordFirstContentfulPaint(
                         "NavigationToFirstContentfulPaint.WithPrefetch",
                         pre_prefetch_suffix}),
           corrected_first_contentful_paint);
-      PAGE_LOAD_HISTOGRAM(
-          base::StrCat({"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-                        "NavigationToFirstContentfulPaint."
-                        "WithoutFiltering.All.All.Prefetch",
-                        pre_prefetch_suffix}),
-          corrected_first_contentful_paint);
+      for (const auto navigation_initiator : navigation_initiators) {
+        for (const auto srp_all : srp_alls) {
+          PAGE_LOAD_HISTOGRAM(
+              base::StrCat(
+                  {"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+                   "NavigationToFirstContentfulPaint."
+                   "WithoutFiltering.",
+                   navigation_initiator, ".", srp_all, ".Prefetch",
+                   pre_prefetch_suffix}),
+              corrected_first_contentful_paint);
+        }
+      }
     }
   }
 }
@@ -563,16 +586,19 @@ void PreloadServingMetricsCapsuleImpl::
 void PreloadServingMetricsCapsuleImpl::
     RecordPreloadServingMetricsByNavigationInitiator(
         bool did_nav_use_bfcache,
-        const std::string& navigation_initiator_string,
+        std::string_view navigation_initiator_string,
         bool is_url_srp) const {
   preload_serving_metrics_->RecordPreloadServingMetricsByNavigationInitiator(
       did_nav_use_bfcache, navigation_initiator_string, is_url_srp);
 }
 
 void PreloadServingMetricsCapsuleImpl::RecordFirstContentfulPaint(
-    base::TimeDelta corrected_first_contentful_paint) const {
+    base::TimeDelta corrected_first_contentful_paint,
+    std::string_view navigation_initiator_string,
+    bool is_url_srp) const {
   preload_serving_metrics_->RecordFirstContentfulPaint(
-      std::move(corrected_first_contentful_paint));
+      std::move(corrected_first_contentful_paint), navigation_initiator_string,
+      is_url_srp);
 }
 
 }  // namespace content

@@ -50,6 +50,19 @@ chromium-metrics-reviews@google.com.
   <variant name="Positive" summary=""/>
 </variants>
 
+<variants name="InitiatorLocation">
+  <variant name="All"
+      summary="All initiator locations. No additional condition."/>
+  <variant name="BookmarkBar" summary="Initiated from BookmarkBar"/>
+  <variant name="LinkClick" summary="Initiated by a link click"/>
+  <variant name="NewTabPage" summary="Initiated from NewTabPage"/>
+  <variant name="OmniboxDefaultSearchEngine"
+      summary="Initiated from OmniboxDefaultSearchEngine"/>
+  <variant name="OmniboxDirectUrlInput"
+      summary="Initiated from OmniboxDirectUrlInput"/>
+  <variant name="Other" summary="Initiated from other"/>
+</variants>
+
 <variants name="NavigationDestinationSuffix">
   <variant name="All" summary="All navigations"/>
   <variant name="SRP" summary="Navigation to Google Search Result Page"/>
@@ -453,15 +466,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PreloadServingMetrics.PageLoad.Clients.PaintTiming.NavigationToFirstContentfulPaint.WithoutFiltering.All.All.{UsedInstantLoad}"
+    name="PreloadServingMetrics.PageLoad.Clients.PaintTiming.NavigationToFirstContentfulPaint.WithoutFiltering.{InitiatorLocation}.{NavigationDestinationSuffix}.{UsedInstantLoad}"
     units="ms" expires_after="2027-02-07">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
     FirstContentfulPaint without foreground filtering.
 
-    Recorded when {UsedInstantLoad}.
+    Recorded when {InitiatorLocation}, {NavigationDestinationSuffix}, and
+    {UsedInstantLoad}.
   </summary>
+  <token key="InitiatorLocation" variants="InitiatorLocation"/>
+  <token key="NavigationDestinationSuffix"
+      variants="NavigationDestinationSuffix"/>
   <token key="UsedInstantLoad" variants="UsedInstantLoad"/>
 </histogram>
 

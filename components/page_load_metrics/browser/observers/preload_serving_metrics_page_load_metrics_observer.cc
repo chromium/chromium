@@ -125,12 +125,13 @@ void PreloadServingMetricsPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
   // `OnFirstContentfulPaintInPage()` is called after `OnCommit()` (or
   // `DidActivatePrerenderedPage()` for prerender).
   CHECK(preload_serving_metrics_capsule_);
+  CHECK(navigation_initiator_string_.has_value());
 
   base::TimeDelta corrected =
       page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
           GetDelegate(), timing.paint_timing->first_contentful_paint.value());
   preload_serving_metrics_capsule_->RecordFirstContentfulPaint(
-      std::move(corrected));
+      std::move(corrected), *navigation_initiator_string_, is_url_srp_);
 }
 
 void PreloadServingMetricsPageLoadMetricsObserver::OnComplete(

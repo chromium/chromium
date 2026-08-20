@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/time/time.h"
@@ -226,11 +227,13 @@ struct CONTENT_EXPORT PreloadServingMetrics final {
   void RecordMetricsForNonPrerenderNavigationCommitted() const;
   void RecordPreloadServingMetricsByNavigationInitiator(
       bool did_nav_use_bfcache,
-      const std::string& navigation_initiator_string,
+      std::string_view navigation_initiator_string,
       bool is_url_srp) const;
   void RecordMetricsForPrerenderInitialNavigationFailed() const;
   void RecordFirstContentfulPaint(
-      base::TimeDelta corrected_first_contentful_paint) const;
+      base::TimeDelta corrected_first_contentful_paint,
+      std::string_view navigation_initiator_string,
+      bool is_url_srp) const;
 
   // Added per prefetch matching.
   std::vector<std::unique_ptr<PrefetchMatchMetrics>>
@@ -262,10 +265,12 @@ class CONTENT_EXPORT PreloadServingMetricsCapsuleImpl final
   void RecordMetricsForNonPrerenderNavigationCommitted() const override;
   void RecordPreloadServingMetricsByNavigationInitiator(
       bool did_nav_use_bfcache,
-      const std::string& navigation_initiator_string,
+      std::string_view navigation_initiator_string,
       bool is_url_srp) const override;
   void RecordFirstContentfulPaint(
-      base::TimeDelta corrected_first_contentful_paint) const override;
+      base::TimeDelta corrected_first_contentful_paint,
+      std::string_view navigation_initiator_string,
+      bool is_url_srp) const override;
 
  private:
   explicit PreloadServingMetricsCapsuleImpl(
