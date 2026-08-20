@@ -142,16 +142,54 @@ CSSSelector::CSSSelector(MatchType match_type,
   data_.rare_data_->attribute_ = attribute;
 }
 
+// static
+const AtomicString& CSSSelector::NameForInlineSelectorListPseudo(
+    PseudoType pseudo_type) {
+  DEFINE_STATIC_LOCAL(const AtomicString, is_atom, ("is"));
+  DEFINE_STATIC_LOCAL(const AtomicString, where_atom, ("where"));
+  DEFINE_STATIC_LOCAL(const AtomicString, not_atom, ("not"));
+  DEFINE_STATIC_LOCAL(const AtomicString, has_atom, ("has"));
+  switch (pseudo_type) {
+    case kPseudoIs:
+      return is_atom;
+    case kPseudoWhere:
+      return where_atom;
+    case kPseudoNot:
+      return not_atom;
+    case kPseudoHas:
+      return has_atom;
+    default:
+      NOTREACHED();
+  }
+}
+
 void CSSSelector::CreateRareData() {
   DCHECK_NE(Match(), kTag);
   DCHECK_NE(Match(), kUniversalTag);
   if (HasRareData()) {
     return;
   }
-  // This transitions the DataUnion from |value_| to |rare_data_| and thus needs
-  // to be careful to correctly manage explicitly destruction of |value_|
-  // followed by placement new of |rare_data_|. A straight-assignment will
-  // compile and may kinda work, but will be undefined behavior.
+  // This transitions the DataUnion from |value_| (or |selector_list_|) to
+  // |rare_data_| and thus needs to be careful to correctly manage explicit
+  // destruction of the old member followed by placement new of |rare_data_|.
+  // A straight-assignment will compile and may kinda work, but will be
+  // undefined behavior.
+  if (HasInlineSelectorList()) {
+    CSSSelectorList* selector_list = data_.selector_list_.Get();
+    auto* rare_data = MakeGarbageCollected<RareData>(
+        NameForInlineSelectorListPseudo(GetPseudoType()));
+    rare_data->selector_list_ = selector_list;
+    // Clear the tag bit _before_ touching the union, so that a concurrent
+    // Oilpan marker (which dispatches on the tag bits, see Trace()) never
+    // sees the RareData pointer as a CSSSelectorList. While neither bit is
+    // set nothing is traced; both objects are kept alive by the stack
+    // (conservative scanning) meanwhile.
+    bits_.set<HasInlineSelectorListField>(false);
+    data_.selector_list_.~Member<CSSSelectorList>();
+    new (&data_.rare_data_) Member<RareData>(rare_data);
+    bits_.set<HasRareDataField>(true);
+    return;
+  }
   auto* rare_data = MakeGarbageCollected<RareData>(data_.value_);
   data_.value_.~AtomicString();
   new (&data_.rare_data_) Member<RareData>(rare_data);
@@ -578,6 +616,14 @@ std::optional<CSSSelector> CSSSelector::Renest(StyleRule* new_parent) const {
       selector.data_.rare_data_ = new_rare_data;
       return selector;
     }
+  } else if (HasInlineSelectorList()) {
+    CSSSelectorList* old_list = data_.selector_list_.Get();
+    CSSSelectorList* new_list = old_list->Renest(new_parent);
+    if (old_list != new_list) {
+      CSSSelector selector(*this);
+      selector.data_.selector_list_ = new_list;
+      return selector;
+    }
   }
   // Note that :scope (which isn't handled by any of the branches above)
   // does not need re-nesting, because it does not contain any reference
@@ -823,7 +869,8 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
                          DCHECK(entry.string);
                          return std::string_view(entry.string) < latin1_name;
                        });
-  if (match == pseudo_type_map_end || match->string != name) {
+  if (match == pseudo_type_map_end ||
+      std::string_view(match->string) != latin1_name) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -981,16 +1028,18 @@ void CSSSelector::UpdatePseudoPage(const AtomicString& value,
   bits_.set<PseudoTypeField>(type);
 }
 
-void CSSSelector::UpdatePseudoType(const AtomicString& value,
+void CSSSelector::UpdatePseudoType(AtomicString value,
                                    const CSSParserContext& context,
                                    bool has_arguments,
                                    CSSParserMode mode) {
   DCHECK(Match() == kPseudoClass || Match() == kPseudoElement);
-  AtomicString lower_value = value.ToAsciiLower();
+  if (!value.ContainsNoAsciiUpper()) [[unlikely]] {
+    value = value.ToAsciiLower();
+  }
   PseudoType pseudo_type = CSSSelectorParser::ParsePseudoType(
-      lower_value, has_arguments, context.GetDocument());
+      value, has_arguments, context.GetDocument());
   SetPseudoType(pseudo_type);
-  SetValue(lower_value);
+  SetValue(std::move(value));
 
   switch (GetPseudoType()) {
     case kPseudoAfter:
@@ -1631,6 +1680,19 @@ void CSSSelector::SetArgumentList(
 }
 
 void CSSSelector::SetSelectorList(CSSSelectorList* selector_list) {
+  if (HasInlineSelectorList()) {
+    data_.selector_list_ = selector_list;
+    return;
+  }
+  if (!HasRareData() && Match() == kPseudoClass &&
+      CanStoreSelectorListInline(GetPseudoType()) &&
+      data_.value_ == NameForInlineSelectorListPseudo(GetPseudoType())) {
+    // Same care as in CreateRareData(): switch the active union member.
+    data_.value_.~AtomicString();
+    new (&data_.selector_list_) Member<CSSSelectorList>(selector_list);
+    bits_.set<HasInlineSelectorListField>(true);
+    return;
+  }
   CreateRareData();
   data_.rare_data_->selector_list_ = selector_list;
 }
@@ -2172,6 +2234,8 @@ void CSSSelector::Trace(Visitor* visitor) const {
     visitor->Trace(data_.parent_rule_);
   } else if (HasRareDataForOilpan()) {
     visitor->Trace(data_.rare_data_);
+  } else if (HasInlineSelectorListForOilpan()) {
+    visitor->Trace(data_.selector_list_);
   }
 }
 
@@ -2187,8 +2251,8 @@ const CSSSelector* CSSSelector::SelectorListOrParent() const {
     } else {
       return nullptr;
     }
-  } else if (HasRareData() && data_.rare_data_->selector_list_) {
-    return data_.rare_data_->selector_list_->First();
+  } else if (const CSSSelectorList* selector_list = SelectorList()) {
+    return selector_list->First();
   } else {
     return nullptr;
   }

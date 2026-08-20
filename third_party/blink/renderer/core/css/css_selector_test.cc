@@ -170,6 +170,82 @@ TEST(CSSSelector, ScopeContainingAndLegacyCaseInsensitiveAreIndependent) {
   }
 }
 
+// :is(), :where(), :not() and :has() store their selector list directly in
+// the CSSSelector (see CSSSelector::HasInlineSelectorList()) rather than in a
+// RareData; make sure that representation behaves like the general one.
+TEST(CSSSelector, InlineSelectorList) {
+  test::TaskEnvironment task_environment;
+  for (const char* text :
+       {":is(.a, .b)", ":where(.a)", ":not(.a .b)", ":has(> .a)"}) {
+    SCOPED_TRACE(text);
+    CSSSelectorList* list = css_test_helpers::ParseSelectorList(text);
+    ASSERT_TRUE(list->IsValid());
+    const CSSSelector* selector = list->First();
+    ASSERT_TRUE(selector);
+    EXPECT_TRUE(selector->HasInlineSelectorList());
+    EXPECT_FALSE(selector->HasRareData());
+    ASSERT_TRUE(selector->SelectorList());
+    EXPECT_TRUE(selector->SelectorList()->IsValid());
+    EXPECT_EQ(selector->SelectorText(), String(text));
+    EXPECT_EQ(list->SelectorsText(), String(text));
+
+    // Copies keep the representation and the list.
+    CSSSelector copy(*selector);
+    EXPECT_TRUE(copy.HasInlineSelectorList());
+    EXPECT_EQ(copy.SelectorList(), selector->SelectorList());
+    EXPECT_EQ(copy.Value(), selector->Value());
+
+    // Setting anything else (here: an argument) transparently moves the
+    // list into a RareData.
+    CSSSelector mutable_copy(*selector);
+    mutable_copy.SetArgument(AtomicString("x"));
+    EXPECT_FALSE(mutable_copy.HasInlineSelectorList());
+    EXPECT_TRUE(mutable_copy.HasRareData());
+    EXPECT_EQ(mutable_copy.SelectorList(), selector->SelectorList());
+    EXPECT_EQ(mutable_copy.Value(), selector->Value());
+    EXPECT_EQ(mutable_copy.Argument(), AtomicString("x"));
+
+    // So does SetValue(), which needs the value slot the list occupies.
+    CSSSelector revalued(*selector);
+    revalued.SetValue(AtomicString("Is"), /*match_lower_case=*/true);
+    EXPECT_FALSE(revalued.HasInlineSelectorList());
+    EXPECT_TRUE(revalued.HasRareData());
+    EXPECT_EQ(revalued.SelectorList(), selector->SelectorList());
+    EXPECT_EQ(revalued.Value(), AtomicString("is"));
+    EXPECT_EQ(revalued.SerializingValue(), AtomicString("Is"));
+    CSSSelector revalued_plain(*selector);
+    revalued_plain.SetValue(AtomicString("x"));
+    EXPECT_TRUE(revalued_plain.HasRareData());
+    EXPECT_EQ(revalued_plain.SelectorList(), selector->SelectorList());
+    EXPECT_EQ(revalued_plain.Value(), AtomicString("x"));
+  }
+
+  // The name is implied by the pseudo type, so it must serialize in
+  // lowercase even if written otherwise.
+  CSSSelectorList* upper = css_test_helpers::ParseSelectorList(":IS(.a)");
+  ASSERT_TRUE(upper->IsValid());
+  EXPECT_TRUE(upper->First()->HasInlineSelectorList());
+  EXPECT_EQ(upper->First()->Value(), AtomicString("is"));
+  EXPECT_EQ(upper->SelectorsText(), ":is(.a)");
+
+  // A :has() that needs one of its RareData flags (here: a pseudo-class in
+  // its argument) gets a RareData; the list and the flag both survive.
+  CSSSelectorList* has = css_test_helpers::ParseSelectorList(":has(.a:hover)");
+  ASSERT_TRUE(has->IsValid());
+  EXPECT_FALSE(has->First()->HasInlineSelectorList());
+  EXPECT_TRUE(has->First()->HasRareData());
+  EXPECT_TRUE(has->First()->ContainsPseudoInsideHasPseudoClass());
+  ASSERT_TRUE(has->First()->SelectorList());
+  EXPECT_EQ(has->SelectorsText(), ":has(.a:hover)");
+
+  // Pseudo-classes with other data keep using RareData.
+  CSSSelectorList* nth =
+      css_test_helpers::ParseSelectorList(":nth-child(2n of .a)");
+  ASSERT_TRUE(nth->IsValid());
+  EXPECT_FALSE(nth->First()->HasInlineSelectorList());
+  EXPECT_TRUE(nth->First()->HasRareData());
+}
+
 TEST(CSSSelector, Specificity_Slotted) {
   test::TaskEnvironment task_environment;
   EXPECT_EQ(Specificity("::slotted(.a)"), Specificity(".a::first-line"));

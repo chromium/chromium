@@ -1524,8 +1524,8 @@ bool CSSSelectorParser::ConsumeId(CSSParserTokenStream& stream) {
   }
   CSSSelector selector;
   selector.SetMatch(CSSSelector::kId);
-  AtomicString value = stream.Consume().Value().ToAtomicString();
-  selector.SetValue(value, IsQuirksModeBehavior(context_->Mode()));
+  selector.SetValue(stream.Consume().Value().ToAtomicString(),
+                    IsQuirksModeBehavior(context_->Mode()));
   output_.push_back(std::move(selector));
   return true;
 }
@@ -1539,8 +1539,8 @@ bool CSSSelectorParser::ConsumeClass(CSSParserTokenStream& stream) {
   }
   CSSSelector selector;
   selector.SetMatch(CSSSelector::kClass);
-  AtomicString value = stream.Consume().Value().ToAtomicString();
-  selector.SetValue(value, IsQuirksModeBehavior(context_->Mode()));
+  selector.SetValue(stream.Consume().Value().ToAtomicString(),
+                    IsQuirksModeBehavior(context_->Mode()));
   output_.push_back(std::move(selector));
   return true;
 }
