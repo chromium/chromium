@@ -11,6 +11,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "components/send_tab_to_self/fake_send_tab_to_self_model.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator_delegate.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_modal_delegate.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -27,10 +29,11 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
@@ -62,12 +65,8 @@ class SendTabToSelfCoordinatorTest : public PlatformTest {
 
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.AddTestingFactory(
-        IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
-    test_profile_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetFactoryWithDelegate(
+        AuthenticationServiceFactory::GetFactoryWithDelegateForTesting(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     test_profile_builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
@@ -84,6 +83,9 @@ class SendTabToSelfCoordinatorTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     SendTabToSelfBrowserAgent::CreateForBrowser(browser_.get());
     view_controller_ = [[UIViewController alloc] init];
+
+    // Sign in a primary identity for testing.
+    SignInFakeIdentity();
 
     mock_delegate_ =
         OCMStrictProtocolMock(@protocol(SendTabToSelfCoordinatorDelegate));
@@ -128,6 +130,18 @@ class SendTabToSelfCoordinatorTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
+  void SignInFakeIdentity() {
+    FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+    FakeSystemIdentityManager* system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    system_identity_manager->AddIdentity(fake_identity);
+    AuthenticationService* auth_service =
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
+    auth_service->SignIn(fake_identity,
+                         signin_metrics::AccessPoint::kStartPage);
+  }
+
   SendTabToSelfCoordinator* CreateCoordinator() {
     coordinator_ = [[SendTabToSelfCoordinator alloc]
         initWithBaseViewController:view_controller_
@@ -149,7 +163,7 @@ class SendTabToSelfCoordinatorTest : public PlatformTest {
              targetDeviceCacheGUID:cacheGUID
                   targetDeviceName:@(kTargetDeviceName)
                         entryPoint:send_tab_to_self::ShareEntryPoint::
-                                       kShareSheet];
+                                       kShareSheetDirectShare];
     coordinator_.delegate = mock_delegate_;
     return coordinator_;
   }
@@ -213,7 +227,12 @@ TEST_F(SendTabToSelfCoordinatorTest, SendsTabDirectToDeviceSuccessfully) {
       });
 
   // Trigger direct-send via start.
+  base::HistogramTester histogram_tester;
   [coordinator_ start];
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.InvokedEntryPoint",
+      send_tab_to_self::ShareEntryPoint::kShareSheetDirectShare, 1);
 
   // Wait for both the stop callback and the snackbar presentation to complete
   // asynchronously.
@@ -222,6 +241,20 @@ TEST_F(SendTabToSelfCoordinatorTest, SendsTabDirectToDeviceSuccessfully) {
 
   EXPECT_OCMOCK_VERIFY(mock_delegate_);
   EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
+}
+
+// Tests that calling start on a generic coordinator records the kShareSheet
+// bucket for Sharing.SendTabToSelf.InvokedEntryPoint.
+TEST_F(SendTabToSelfCoordinatorTest,
+       StartGeneric_RecordsInvokedEntryPointHistogram) {
+  CreateCoordinator();
+
+  base::HistogramTester histogram_tester;
+  [coordinator_ start];
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.InvokedEntryPoint",
+      send_tab_to_self::ShareEntryPoint::kShareSheet, 1);
 }
 
 // Tests that initializing the coordinator in direct-send mode and calling

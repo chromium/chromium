@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/reading_list_activity.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/request_desktop_or_mobile_site_activity.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/activities/send_tab_to_self_activity.h"
+#import "ios/chrome/browser/sharing/ui_bundled/activity_services/activity_service_histograms.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/activity_type_util.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/data/chrome_activity_image_source.h"
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/data/chrome_activity_item_source.h"
@@ -421,11 +422,10 @@ TEST_F(ActivityServiceMediatorTest, ShareFinished_Cancel) {
                           activityType:copyActivityString
                              completed:NO];
 
-  // Verify histogram is logged. Values are hardcoded as they are encapsulated
-  // away.
+  // Verify histogram is logged.
   const char histogramName[] = "Mobile.Share.TabShareButton.Actions";
-  int cancelAction = 1;
-  histograms_tester_.ExpectBucketCount(histogramName, cancelAction, 1);
+  histograms_tester_.ExpectBucketCount(
+      histogramName, static_cast<int>(ShareActionType::Cancel), 1);
 }
 
 TEST_F(ActivityServiceMediatorTest, ShareCancelled) {
@@ -435,11 +435,10 @@ TEST_F(ActivityServiceMediatorTest, ShareCancelled) {
                           activityType:nil
                              completed:NO];
 
-  // Verify histogram is logged. Values are hardcoded as they are encapsulated
-  // away.
+  // Verify histogram is logged.
   const char histogramName[] = "Mobile.Share.TabShareButton.Actions";
-  int cancelAction = 1;
-  histograms_tester_.ExpectBucketCount(histogramName, cancelAction, 1);
+  histograms_tester_.ExpectBucketCount(
+      histogramName, static_cast<int>(ShareActionType::Cancel), 1);
 }
 
 TEST_F(ActivityServiceMediatorTest, PrintPrefDisabled) {
@@ -552,4 +551,33 @@ TEST_F(
     EXPECT_NSEQ(@"John • Phone", [phone_activity activityTitle]);
     EXPECT_NSEQ(@"John • Tablet", [tablet_activity activityTitle]);
   }
+}
+
+// Tests that completing a share flow with the generic Send Tab to Self activity
+// logs the correct SendTabToSelf bucket in Mobile.Share.<Scenario>.Actions.
+TEST_F(ActivityServiceMediatorTest, ShareFinished_SendTabToSelf) {
+  NSString* sendTabToSelfActivityString =
+      @"com.google.chrome.sendTabToSelfActivity";
+  [mediator_ shareFinishedWithScenario:SharingScenario::TabShareButton
+                          activityType:sendTabToSelfActivityString
+                             completed:YES];
+
+  const char histogramName[] = "Mobile.Share.TabShareButton.Actions";
+  histograms_tester_.ExpectBucketCount(
+      histogramName, static_cast<int>(ShareActionType::SendTabToSelf), 1);
+}
+
+// Tests that completing a share flow with a device-specific Send Tab to Self
+// activity logs the correct SendTabToSelf bucket in
+// Mobile.Share.<Scenario>.Actions.
+TEST_F(ActivityServiceMediatorTest, ShareFinished_SendTabToSelfDeviceSpecific) {
+  NSString* deviceSpecificActivityString =
+      @"com.google.chrome.sendTabToSelfActivity.target_device_guid";
+  [mediator_ shareFinishedWithScenario:SharingScenario::TabShareButton
+                          activityType:deviceSpecificActivityString
+                             completed:YES];
+
+  const char histogramName[] = "Mobile.Share.TabShareButton.Actions";
+  histograms_tester_.ExpectBucketCount(
+      histogramName, static_cast<int>(ShareActionType::SendTabToSelf), 1);
 }
