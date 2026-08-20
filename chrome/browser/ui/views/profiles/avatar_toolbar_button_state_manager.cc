@@ -1000,7 +1000,6 @@ class PromoStateProviderCoordinator
       case ButtonState::kShowIdentityName:
       case ButtonState::kIncognitoProfile:
       case ButtonState::kGuestSession:
-        break;
       case ButtonState::kNormal:
       case ButtonState::kManagement:
         CHECK(!collapse_timer_.IsRunning());
@@ -1195,19 +1194,26 @@ class PromoStateProviderCoordinator
       promo_type_ = promo_info.type;
     }
 
+    if (old_promo_type != promo_type_ || !promo_type_.has_value()) {
+      if (collapse_timer_.IsRunning()) {
+        collapse_timer_.Stop();
+      }
+      before_promo_used_elapsed_timer_.reset();
+    }
+
     if (old_promo_type != promo_type_) {
       promo_type_changed_callbacks_.Notify();
     }
   }
 
   void Collapse() {
-    if (!promo_type_.has_value()) {
-      return;
-    }
-    if (IsPromoShowing()) {
+    if (collapse_timer_.IsRunning()) {
       collapse_timer_.Stop();
     }
     before_promo_used_elapsed_timer_.reset();
+    if (!promo_type_.has_value()) {
+      return;
+    }
     promo_type_.reset();
     promo_type_changed_callbacks_.Notify();
   }
