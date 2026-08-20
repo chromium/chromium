@@ -10,6 +10,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -220,6 +221,20 @@ public class ListMenuItemViewBinder {
         } else if (propertyKey == ListMenuItemProperties.ORDER) {
             // Not tracked intentionally because it's used by clients to keep track of items. The
             // order field is used to recreate a SelectionMenuItem when an item is clicked.
+        } else if (propertyKey == ListMenuItemProperties.CHECKABLE
+                || propertyKey == ListMenuItemProperties.CHECKED) {
+            view.setAccessibilityDelegate(
+                    new View.AccessibilityDelegate() {
+                        @Override
+                        public void onInitializeAccessibilityNodeInfo(
+                                View host, AccessibilityNodeInfo info) {
+                            super.onInitializeAccessibilityNodeInfo(host, info);
+                            info.setCheckable(true);
+                            info.setChecked(
+                                    model.containsKey(ListMenuItemProperties.CHECKED)
+                                            && model.get(ListMenuItemProperties.CHECKED));
+                        }
+                    });
         } else {
             assert false : "Supplied propertyKey not implemented in ListMenuItemProperties.";
         }

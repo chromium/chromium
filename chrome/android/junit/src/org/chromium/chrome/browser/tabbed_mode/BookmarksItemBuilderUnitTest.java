@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabbed_mode;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -470,6 +471,12 @@ public class BookmarksItemBuilderUnitTest {
         assertEquals(
                 mContext.getString(R.string.bookmark_bar_setting_always_show),
                 alwaysShowItem.model.get(AppMenuItemProperties.TITLE));
+        assertTrue(alwaysHideItem.model.get(AppMenuItemProperties.CHECKABLE));
+        assertTrue(alwaysHideItem.model.get(AppMenuItemProperties.CHECKED));
+        assertTrue(onlyNtpItem.model.get(AppMenuItemProperties.CHECKABLE));
+        assertFalse(onlyNtpItem.model.get(AppMenuItemProperties.CHECKED));
+        assertTrue(alwaysShowItem.model.get(AppMenuItemProperties.CHECKABLE));
+        assertFalse(alwaysShowItem.model.get(AppMenuItemProperties.CHECKED));
         assertNotNull(alwaysHideItem.model.get(AppMenuItemProperties.ICON));
         assertTrue(
                 !(alwaysHideItem.model.get(AppMenuItemProperties.ICON) instanceof ColorDrawable));
@@ -505,6 +512,12 @@ public class BookmarksItemBuilderUnitTest {
         assertEquals(AppMenuHandler.AppMenuItemType.STANDARD, alwaysHideItem.type);
         assertEquals(AppMenuHandler.AppMenuItemType.STANDARD, onlyNtpItem.type);
         assertEquals(AppMenuHandler.AppMenuItemType.STANDARD, alwaysShowItem.type);
+        assertTrue(alwaysHideItem.model.get(AppMenuItemProperties.CHECKABLE));
+        assertFalse(alwaysHideItem.model.get(AppMenuItemProperties.CHECKED));
+        assertTrue(onlyNtpItem.model.get(AppMenuItemProperties.CHECKABLE));
+        assertFalse(onlyNtpItem.model.get(AppMenuItemProperties.CHECKED));
+        assertTrue(alwaysShowItem.model.get(AppMenuItemProperties.CHECKABLE));
+        assertTrue(alwaysShowItem.model.get(AppMenuItemProperties.CHECKED));
         assertTrue(alwaysHideItem.model.get(AppMenuItemProperties.ICON) instanceof ColorDrawable);
         assertEquals(
                 Color.TRANSPARENT,

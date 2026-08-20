@@ -467,6 +467,8 @@ public class BookmarksItemBuilder implements Destroyable {
         if (!isSelected) {
             model.set(AppMenuItemProperties.ICON, new ColorDrawable(Color.TRANSPARENT));
         }
+        model.set(AppMenuItemProperties.CHECKABLE, true);
+        model.set(AppMenuItemProperties.CHECKED, isSelected);
         return AppMenuItemUtils.createStandardListItem(model, /* showIcon= */ true);
     }
 
