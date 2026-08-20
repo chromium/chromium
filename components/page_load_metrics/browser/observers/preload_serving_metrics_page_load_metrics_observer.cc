@@ -10,6 +10,59 @@
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/page_transition_types.h"
 
+namespace {
+
+std::string GetNavigationInitiatorString(
+    content::NavigationHandle* navigation_handle) {
+  if (ui::PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
+                                   ui::PAGE_TRANSITION_RELOAD)) {
+    return "Reload";
+  }
+
+  if ((navigation_handle->GetPageTransition() &
+       ui::PAGE_TRANSITION_FORWARD_BACK) ||
+      navigation_handle->IsServedFromBackForwardCache()) {
+    int history_offset = navigation_handle->GetNavigationEntryOffset();
+    if (history_offset > 0) {
+      return "Forward";
+    }
+
+    if (history_offset < 0) {
+      return "Backward";
+    }
+
+    return "Other";
+  }
+
+  auto* user_data =
+      page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
+          *navigation_handle);
+  if (user_data) {
+    return user_data->navigation_type_string();
+  }
+
+  if (navigation_handle->IsRendererInitiated() &&
+      navigation_handle->HasUserGesture() &&
+      ui::PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
+                                   ui::PAGE_TRANSITION_LINK)) {
+    return "LinkClick";
+  }
+
+  return "Other";
+}
+
+}  // namespace
+
+PreloadServingMetricsPageLoadMetricsObserver::NavigationData::NavigationData() =
+    default;
+PreloadServingMetricsPageLoadMetricsObserver::NavigationData::
+    ~NavigationData() = default;
+PreloadServingMetricsPageLoadMetricsObserver::NavigationData::NavigationData(
+    NavigationData&&) = default;
+PreloadServingMetricsPageLoadMetricsObserver::NavigationData&
+PreloadServingMetricsPageLoadMetricsObserver::NavigationData::operator=(
+    NavigationData&&) = default;
+
 PreloadServingMetricsPageLoadMetricsObserver::
     PreloadServingMetricsPageLoadMetricsObserver() = default;
 
@@ -44,38 +97,23 @@ PreloadServingMetricsPageLoadMetricsObserver::OnPrerenderStart(
   return CONTINUE_OBSERVING;
 }
 
-void PreloadServingMetricsPageLoadMetricsObserver::
-    RetrieveNavigationInitiatorLocationAndSrp(
-        content::NavigationHandle* navigation_handle) {
-  auto* user_data =
-      page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
+PreloadServingMetricsPageLoadMetricsObserver::NavigationData
+PreloadServingMetricsPageLoadMetricsObserver::CreateNavigationData(
+    content::NavigationHandle* navigation_handle,
+    bool used_bfcache) {
+  NavigationData navigation_data;
+  navigation_data.preload_serving_metrics_capsule =
+      content::PreloadServingMetricsCapsule::TakeFromNavigationHandle(
           *navigation_handle);
-  if (ui::PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
-                                   ui::PAGE_TRANSITION_RELOAD)) {
-    navigation_initiator_string_ = "Reload";
-  } else if ((navigation_handle->GetPageTransition() &
-              ui::PAGE_TRANSITION_FORWARD_BACK) ||
-             navigation_handle->IsServedFromBackForwardCache()) {
-    int history_offset = navigation_handle->GetNavigationEntryOffset();
-    if (history_offset > 0) {
-      navigation_initiator_string_ = "Forward";
-    } else if (history_offset < 0) {
-      navigation_initiator_string_ = "Backward";
-    } else {
-      navigation_initiator_string_ = "Other";
-    }
-  } else if (user_data) {
-    navigation_initiator_string_ = user_data->navigation_type_string();
-  } else if (navigation_handle->IsRendererInitiated() &&
-             navigation_handle->HasUserGesture() &&
-             ui::PageTransitionCoreTypeIs(
-                 navigation_handle->GetPageTransition(),
-                 ui::PAGE_TRANSITION_LINK)) {
-    navigation_initiator_string_ = "LinkClick";
-  } else {
-    navigation_initiator_string_ = "Other";
-  }
-  is_url_srp_ = google_util::IsGoogleSearchUrl(navigation_handle->GetURL());
+  CHECK(navigation_data.preload_serving_metrics_capsule);
+
+  navigation_data.used_bfcache = used_bfcache;
+  navigation_data.navigation_initiator_string =
+      GetNavigationInitiatorString(navigation_handle);
+  navigation_data.is_url_srp =
+      google_util::IsGoogleSearchUrl(navigation_handle->GetURL());
+
+  return navigation_data;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -90,48 +128,37 @@ PreloadServingMetricsPageLoadMetricsObserver::OnCommit(
     return CONTINUE_OBSERVING;
   }
 
-  RetrieveNavigationInitiatorLocationAndSrp(navigation_handle);
-
-  // Take `PreloadServingMetrics` of non prerender navigation.
-  preload_serving_metrics_capsule_ =
-      content::PreloadServingMetricsCapsule::TakeFromNavigationHandle(
-          *navigation_handle);
-  CHECK(preload_serving_metrics_capsule_);
+  navigation_data_ =
+      CreateNavigationData(navigation_handle, /*used_bfcache=*/false);
 
   return CONTINUE_OBSERVING;
 }
 
 void PreloadServingMetricsPageLoadMetricsObserver::DidActivatePrerenderedPage(
     content::NavigationHandle* navigation_handle) {
-  RetrieveNavigationInitiatorLocationAndSrp(navigation_handle);
-
-  // Take `PreloadServingMetrics` of prerender activation navigation.
-  preload_serving_metrics_capsule_ =
-      content::PreloadServingMetricsCapsule::TakeFromNavigationHandle(
-          *navigation_handle);
-  CHECK(preload_serving_metrics_capsule_);
+  navigation_data_ =
+      CreateNavigationData(navigation_handle, /*used_bfcache=*/false);
 }
 
 void PreloadServingMetricsPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  // Note that
-  // `preload_serving_metrics_capsule_` can be null if the page entered
-  // BackForwardCache before FCP occurred (which resets the capsule) or if FCP
-  // timing is delivered out of order.
-  if (has_entered_bfcache_) {
+  // `navigation_data_` can be null if the page entered BackForwardCache before
+  // FCP occurred (which resets `navigation_data_`) or if FCP timing is
+  // delivered out of order.
+  //
+  // TODO(https://crbug.com/539388005): `PLMO::OnFirstContentfulPaintInPage()`
+  // is not expected to be called between `PLMO::OnEnterBackForwardCache()` and
+  // `PLMO::OnRestoreFromBackForwardCache()`, but currently it is happening.
+  if (!navigation_data_) {
     return;
   }
-
-  // `OnFirstContentfulPaintInPage()` is called after `OnCommit()` (or
-  // `DidActivatePrerenderedPage()` for prerender).
-  CHECK(preload_serving_metrics_capsule_);
-  CHECK(navigation_initiator_string_.has_value());
 
   base::TimeDelta corrected =
       page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
           GetDelegate(), timing.paint_timing->first_contentful_paint.value());
-  preload_serving_metrics_capsule_->RecordFirstContentfulPaint(
-      std::move(corrected), *navigation_initiator_string_, is_url_srp_);
+  navigation_data_->preload_serving_metrics_capsule->RecordFirstContentfulPaint(
+      corrected, navigation_data_->navigation_initiator_string,
+      navigation_data_->is_url_srp);
 }
 
 void PreloadServingMetricsPageLoadMetricsObserver::OnComplete(
@@ -150,8 +177,7 @@ page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PreloadServingMetricsPageLoadMetricsObserver::OnEnterBackForwardCache(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   MaybeRecord();
-  has_entered_bfcache_ = true;
-  preload_serving_metrics_capsule_.reset();
+  navigation_data_.reset();
   return CONTINUE_OBSERVING;
 }
 
@@ -159,34 +185,26 @@ void PreloadServingMetricsPageLoadMetricsObserver::
     OnRestoreFromBackForwardCache(
         const page_load_metrics::mojom::PageLoadTiming& timing,
         content::NavigationHandle* navigation_handle) {
-  has_restored_from_bfcache_ = true;
-  RetrieveNavigationInitiatorLocationAndSrp(navigation_handle);
-  // Take a PreloadServingMetrics of the NavigationHandle representing the
-  // navigation that used BFCache. Note that the NavigationHandle differs from
-  // the one created this PLMO, and the PreloadServingMetrics for it has been
-  // reset.
-  preload_serving_metrics_capsule_ =
-      content::PreloadServingMetricsCapsule::TakeFromNavigationHandle(
-          *navigation_handle);
+  navigation_data_ =
+      CreateNavigationData(navigation_handle, /*used_bfcache=*/true);
 }
 
 void PreloadServingMetricsPageLoadMetricsObserver::MaybeRecord() {
   // Record if the navigation is non prerender and committed; or if the
   // navigations are prerender initial/activation navigation and activated.
 
-  if (!preload_serving_metrics_capsule_) {
+  if (!navigation_data_) {
     return;
   }
 
-  CHECK(navigation_initiator_string_.has_value());
-
-  preload_serving_metrics_capsule_
+  navigation_data_->preload_serving_metrics_capsule
       ->RecordMetricsForNonPrerenderNavigationCommitted();
   // TODO(https://crbug.com/517725655): PreloadServingMetricsCapsule is taken
   // for BFCache, and this part should be re-visited again to explore better
   // ways to record this case.
-  preload_serving_metrics_capsule_
+  navigation_data_->preload_serving_metrics_capsule
       ->RecordPreloadServingMetricsByNavigationInitiator(
-          has_restored_from_bfcache_, *navigation_initiator_string_,
-          is_url_srp_);
+          navigation_data_->used_bfcache,
+          navigation_data_->navigation_initiator_string,
+          navigation_data_->is_url_srp);
 }

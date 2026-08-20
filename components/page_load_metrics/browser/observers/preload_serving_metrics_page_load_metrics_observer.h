@@ -58,26 +58,24 @@ class PreloadServingMetricsPageLoadMetricsObserver
 
   void MaybeRecord();
 
-  void RetrieveNavigationInitiatorLocationAndSrp(
-      content::NavigationHandle* navigation_handle);
+  struct NavigationData {
+    NavigationData();
+    ~NavigationData();
+    NavigationData(NavigationData&&);
+    NavigationData& operator=(NavigationData&&);
 
-  std::unique_ptr<content::PreloadServingMetricsCapsule>
-      preload_serving_metrics_capsule_;
+    std::unique_ptr<content::PreloadServingMetricsCapsule>
+        preload_serving_metrics_capsule;
+    bool used_bfcache;
+    std::string navigation_initiator_string;
+    bool is_url_srp;
+  };
 
-  // TODO(https://crbug.com/517725655): There is a long term refactoring plan
-  // for the PageLoadMetricsObserver. Please refer to the document fore more
-  // details
-  // https://docs.google.com/document/d/1d9k-YDEdT35LDVN3BkILyDVqZKlv-b6F0yV_OZRVIQk/edit?resourcekey=0-Jr0Dysk9Cabb0vZlG-ESXg&tab=t.0#heading=h.dygbqkif9aw5
-  std::optional<std::string> navigation_initiator_string_;
-  bool is_url_srp_ = false;
-  // TODO(https://crbug.com/539388005): `PLMO::OnFirstContentfulPaintInPage()`
-  // is not expected to be called between `PLMO::OnEnterBackForwardCache()` and
-  // `PLMO::OnRestoreFromBackForwardCache()`, but currently it is happening. To
-  // avoid this issue, `has_entered_bfcache_` is introduced and used in FCP
-  // recording to avoid crash. Remove this variable once the problem is
-  // resolved.
-  bool has_entered_bfcache_ = false;
-  bool has_restored_from_bfcache_ = false;
+  static NavigationData CreateNavigationData(
+      content::NavigationHandle* navigation_handle,
+      bool used_bfcache);
+
+  std::optional<NavigationData> navigation_data_;
 };
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_PRELOAD_SERVING_METRICS_PAGE_LOAD_METRICS_OBSERVER_H_
