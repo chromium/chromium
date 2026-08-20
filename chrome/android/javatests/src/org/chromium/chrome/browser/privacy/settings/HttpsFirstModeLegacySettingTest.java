@@ -26,7 +26,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.util.concurrent.ExecutionException;
@@ -41,8 +41,8 @@ import java.util.concurrent.ExecutionException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(PER_CLASS)
 public class HttpsFirstModeLegacySettingTest {
-    private final SettingsActivityTestRule<PrivacySettings> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(PrivacySettings.class);
+    private final SettingsTestRule<PrivacySettings> mSettingsActivityTestRule =
+            new SettingsTestRule<>(PrivacySettings.class);
 
     private static final String PREF_HTTPS_FIRST_MODE_LEGACY = "https_first_mode_legacy";
 

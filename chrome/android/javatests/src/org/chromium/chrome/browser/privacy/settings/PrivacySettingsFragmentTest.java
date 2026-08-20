@@ -67,7 +67,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideInteractions;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
@@ -101,8 +101,8 @@ public class PrivacySettingsFragmentTest {
     // Name of the histogram to record the entry on Privacy Guide via the S&P link-row.
     public static final String ENTRY_EXIT_HISTOGRAM = "Settings.PrivacyGuide.EntryExit";
 
-    public final SettingsActivityTestRule<PrivacySettings> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(PrivacySettings.class);
+    public final SettingsTestRule<PrivacySettings> mSettingsActivityTestRule =
+            new SettingsTestRule<>(PrivacySettings.class);
 
     public final SigninTestRule mSigninTestRule = new SigninTestRule();
     private static final int RENDER_TEST_REVISION = 2;
