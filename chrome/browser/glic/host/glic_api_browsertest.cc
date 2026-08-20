@@ -515,57 +515,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testMetrics) {
   histogram_tester->ExpectTotalCount("Glic.TabContext.UploadTime", 1);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain,
-                       testDaisyChainRecursiveAndInput) {
-  RunTestSequence(InstrumentTab(kFirstTab),
-                  NavigateWebContents(kFirstTab, page_url()),
-                  OpenGlic(GlicInstrumentMode::kHostAndContents));
-
-  // 1. Trigger "createTab" from the first tab's Glic panel.
-  ExecuteJsTest({.params = base::Value("createTab")});
-
-  // 2. Verify new tab opened and switch to it.
-  auto* tab_strip = browser()->tab_strip_model();
-  ASSERT_TRUE(base::test::RunUntil([&]() { return tab_strip->count() == 2; }));
-  tab_strip->ActivateTabAt(1);
-
-  // 3. Wait for Glic to open in the new (second) tab.
-  TrackGlicInstanceWithTabIndex(1);
-  WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents);
-
-  // 4. Verify no action yet.
-  histogram_tester->ExpectTotalCount(
-      "Glic.Instance.AutoOpenedPanel.FirstAction.GlicContents", 0);
-
-  // 5. Trigger "createTab" (recursive) from the second tab's panel.
-  ExecuteJsTest({.params = base::Value("createTab")});
-
-  // 6. Verify third tab opened.
-  ASSERT_TRUE(base::test::RunUntil([&]() { return tab_strip->count() == 3; }));
-  tab_strip->ActivateTabAt(2);
-
-  // 7. Verify recursive metric for the second tab (which was daisy chained).
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return histogram_tester->GetBucketCount(
-               "Glic.Instance.AutoOpenedPanel.FirstAction.GlicContents",
-               DaisyChainFirstAction::kRecursiveDaisyChain) == 1;
-  }));
-
-  // 8. Open Glic in the new (third) tab.
-  TrackGlicInstanceWithTabIndex(2);
-  WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents);
-
-  // 9. Trigger "inputSubmitted" in the third tab's panel.
-  ExecuteJsTest({.params = base::Value("inputSubmitted")});
-
-  // 10. Verify inputSubmitted metric for the third tab.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return histogram_tester->GetBucketCount(
-               "Glic.Instance.AutoOpenedPanel.FirstAction.GlicContents",
-               DaisyChainFirstAction::kInputSubmitted) == 1;
-  }));
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain, testNewTabMetrics) {
   // 1. Open Glic in first tab.
   RunTestSequence(InstrumentTab(kFirstTab),

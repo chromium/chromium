@@ -48,6 +48,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
+#include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/test_support/fake_contextual_cueing_service.h"
@@ -235,9 +236,9 @@ std::vector<std::string> GetTestSuiteNames() {
       "NewGlicGetHostCapabilityApiTest",
       "NewGlicApiTestUserStatusCheckTest",
       "NewGlicApiTestWithPixelOutput",
+      "NewGlicApiTestWithNewTabDaisyChain",
 #if !BUILDFLAG(IS_ANDROID)
       "NewGlicApiTestWithFileUploadPolicyEnabled",
-      "NewGlicApiTestWithNewTabDaisyChain",
 #endif
   };
 
@@ -445,7 +446,6 @@ class NewGlicApiTestWithFastTimeout : public NewGlicApiTest {
   base::test::ScopedFeatureList features_fast_timeout_;
 };
 
-#if !BUILDFLAG(IS_ANDROID)
 class NewGlicApiTestWithNewTabDaisyChain : public NewGlicApiTest {
  public:
   NewGlicApiTestWithNewTabDaisyChain() {
@@ -454,6 +454,9 @@ class NewGlicApiTestWithNewTabDaisyChain : public NewGlicApiTest {
   }
 
   void SetUpOnMainThread() override {
+    // Daisy chaining side panels across tabs is only supported on Desktop
+    // platforms (including Desktop Android).
+    SKIP_TEST_FOR_NON_DESKTOP_ANDROID();
     NewGlicApiTest::SetUpOnMainThread();
     GetProfile()->GetPrefs()->SetBoolean(
         prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled, true);
@@ -462,7 +465,6 @@ class NewGlicApiTestWithNewTabDaisyChain : public NewGlicApiTest {
  private:
   base::test::ScopedFeatureList daisy_chain_features_;
 };
-#endif
 
 class NewGlicApiMultiProfileTest : public NewGlicApiTest {
  public:
@@ -2706,6 +2708,64 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithNewTabDaisyChain,
   ContinueJsTest();
 }
 #endif
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithNewTabDaisyChain,
+                       testDaisyChainRecursiveAndInput) {
+  ASSERT_OK_AND_ASSIGN(auto* tab0_instance, OpenGlicForActiveTab());
+  base::HistogramTester histogram_tester;
+
+  // 1. Trigger "createTab" from the first tab's Glic panel.
+  ExecuteJsTest(
+      {.params = base::Value("createTab"), .instance = tab0_instance});
+
+  // 2. Verify new tab opened and switch to it.
+  ASSERT_OK(
+      RunUntilEqual([&]() { return GetTabListInterface()->GetTabCount(); }, 2));
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetTab(1);
+  ActivateTab(tab1);
+
+  // 3. Wait for Glic to open in the new (second) tab.
+  ASSERT_OK_AND_ASSIGN(auto* tab1_instance, WaitForGlicOpen(tab1));
+
+  // 4. Verify no action yet.
+  histogram_tester.ExpectTotalCount(
+      "Glic.Instance.AutoOpenedPanel.FirstAction.GlicContents", 0);
+
+  // 5. Trigger "createTab" (recursive) from the second tab's panel.
+  ExecuteJsTest(
+      {.params = base::Value("createTab"), .instance = tab1_instance});
+
+  // 6. Verify third tab opened.
+  ASSERT_OK(
+      RunUntilEqual([&]() { return GetTabListInterface()->GetTabCount(); }, 3));
+  tabs::TabInterface* tab2 = GetTabListInterface()->GetTab(2);
+  ActivateTab(tab2);
+
+  // 7. Verify recursive metric for the second tab (which was daisy chained).
+  ASSERT_OK(RunUntilEqual(
+      [&]() {
+        return histogram_tester.GetBucketCount(
+            "Glic.Instance.AutoOpenedPanel.FirstAction.GlicContents",
+            DaisyChainFirstAction::kRecursiveDaisyChain);
+      },
+      1));
+
+  // 8. Open Glic in the new (third) tab.
+  ASSERT_OK_AND_ASSIGN(auto* tab2_instance, WaitForGlicOpen(tab2));
+
+  // 9. Trigger "inputSubmitted" in the third tab's panel.
+  ExecuteJsTest(
+      {.params = base::Value("inputSubmitted"), .instance = tab2_instance});
+
+  // 10. Verify inputSubmitted metric for the third tab.
+  ASSERT_OK(RunUntilEqual(
+      [&]() {
+        return histogram_tester.GetBucketCount(
+            "Glic.Instance.AutoOpenedPanel.FirstAction.GlicContents",
+            DaisyChainFirstAction::kInputSubmitted);
+      },
+      1));
+}
 
 #if !BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/520959831): Fix flaky test.
@@ -5290,13 +5350,14 @@ INSTANTIATE_TEST_SUITE_P(,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestWithNewTabDaisyChain,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+
 #if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(,
                          NewGlicApiTestWithFileUploadPolicyEnabled,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         NewGlicApiTestWithNewTabDaisyChain,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 #endif
@@ -5332,11 +5393,11 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestWithSkills);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestWithSkillsDisabled);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicOnboardingApiTest);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestSystemSettingsTest);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    NewGlicApiTestWithNewTabDaisyChain);
 #if !BUILDFLAG(IS_ANDROID)
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     NewGlicApiTestWithFileUploadPolicyEnabled);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
-    NewGlicApiTestWithNewTabDaisyChain);
 #endif
 #endif
 }  // namespace glic

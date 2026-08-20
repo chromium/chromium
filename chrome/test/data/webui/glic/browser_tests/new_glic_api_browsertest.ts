@@ -2673,6 +2673,38 @@ class ApiTests extends ApiTestFixtureBase {
   }
 }
 
+class DaisyChainApiTests extends ApiTestFixtureBase {
+  async clickLinkInGlicUi() {
+    const link = document.createElement('a');
+    link.setAttribute('href', location.href);
+    link.setAttribute('target', '_blank');
+    document.body.appendChild(link);
+    link.click();
+  }
+
+  // Helper to handle the daisy chain actions.
+  async handleDaisyChainStep(action: string) {
+    await this.client.waitForInitialize();
+    await this.client.waitForFirstOpen();
+
+    if (action === 'createTab') {
+      await this.clickLinkInGlicUi();
+    } else if (action === 'inputSubmitted') {
+      assertDefined(this.host.getMetrics);
+      const metrics = this.host.getMetrics();
+      assertDefined(metrics);
+      assertDefined(metrics.onUserInputSubmitted);
+      metrics.onUserInputSubmitted(WebClientMode.TEXT);
+    } else {
+      assertTrue(false, `Unexpected daisy chain action: ${action}`);
+    }
+  }
+
+  async testDaisyChainRecursiveAndInput() {
+    await this.handleDaisyChainStep(this.testParams);
+  }
+}
+
 class FaviconTest extends ApiTests {
   async testFaviconLoadsWithGetTabById() {
     const fetchBlobForTab = (tabId: string): Observable<Blob|undefined> => {
@@ -3511,6 +3543,7 @@ class NotifyPanelWillOpenTest extends ApiTestFixtureBase {
 
 const TEST_FIXTURES: Array<typeof ApiTestFixtureBase> = [
   ApiTests,
+  DaisyChainApiTests,
   AdditionalContextQueuedTest,
   FaviconTest,
   FaviconOmittedTest,

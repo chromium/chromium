@@ -260,10 +260,6 @@ class DaisyChainApiTests extends ApiTestFixtureBase {
     }
   }
 
-  async testDaisyChainRecursiveAndInput() {
-    await this.handleDaisyChainStep(this.testParams);
-  }
-
   async testNewTabMetrics() {
     await this.handleDaisyChainStep(this.testParams);
   }
