@@ -3340,6 +3340,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void DisableUnloadTimerForTesting();
 
   bool IsFullCookieAccessAllowed() override;
+  bool IsStorageAccessRestricted() override;
 
   void SimulateDiscardShutdownKeepAliveTimeoutForTesting();
 

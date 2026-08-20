@@ -13733,6 +13733,14 @@ bool RenderFrameHostImpl::IsFullCookieAccessAllowed() {
       GetLastCommittedURL(), GetStorageKey(), GetCookieSettingOverrides());
 }
 
+bool RenderFrameHostImpl::IsStorageAccessRestricted() {
+  return GetLastCommittedOrigin().opaque() || IsCredentialless() ||
+         IsNestedWithinFencedFrame() ||
+         IsSandboxed(
+             network::mojom::WebSandboxFlags::kStorageAccessByUserActivation) ||
+         GetStorageKey().ForbidsUnpartitionedStorageAccess();
+}
+
 void RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver(
     mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver) {
   CHECK_CURRENTLY_ON(BrowserThread::UI);

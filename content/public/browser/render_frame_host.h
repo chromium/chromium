@@ -1238,6 +1238,10 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // Returns true if this RenderFrameHost has access to cookies.
   virtual bool IsFullCookieAccessAllowed() = 0;
 
+  // Returns true if this RenderFrameHost is disallowed from interacting with
+  // unpartitioned storage and the Storage Access API.
+  virtual bool IsStorageAccessRestricted() = 0;
+
   // Sets the Storage Access API status for this RenderFrameHost.
   //
   // Note: this is not trusted by the browser. This input alone does not grant
