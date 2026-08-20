@@ -15,9 +15,9 @@
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(AshSessionRestorePageLoadMetricsObserverTest,
   ASSERT_EQ(restored_web_contents->GetVisibleURL().GetPath(),
             kTestUrlRelativePath);
 
-  Browser* const manual_browser =
+  BrowserWindowInterface* const manual_browser =
       CreateBrowser(ProfileManager::GetActiveUserProfile());
   ASSERT_TRUE(manual_browser);
   ASSERT_EQ(GetLastActiveBrowserWindowInterfaceWithAnyProfile(),
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(AshSessionRestorePageLoadMetricsObserverTest,
       manual_browser, embedded_test_server()->GetURL(kTestUrlRelativePath)));
 
   content::WebContents* const manual_web_contents =
-      manual_browser->tab_strip_model()->GetActiveWebContents();
+      manual_browser->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(manual_web_contents);
 
   SimulateMouseClick(manual_web_contents);
@@ -346,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(AshSessionRestorePageLoadMetricsObserverTest,
             kTestUrlRelativePath);
   const int restored_tab_index = tab_strip_model->active_index();
   ASSERT_TRUE(AddTabAtIndexToBrowser(
-      browser->GetBrowserForMigrationOnly(), restored_tab_index + 1,
+      browser, restored_tab_index + 1,
       embedded_test_server()->GetURL(kTestUrlRelativePath),
       ui::PAGE_TRANSITION_TYPED));
 

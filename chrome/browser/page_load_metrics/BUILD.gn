@@ -339,6 +339,7 @@ if (!is_android) {
       "//chrome/browser/search_engines",
       "//chrome/browser/ssl:cert_verifier_test_support",
       "//chrome/browser/subresource_filter:test_support",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/waap",
       "//chrome/browser/ui/waap:window_metrics_manager",
       "//chrome/browser/ui/webui:webui_util",

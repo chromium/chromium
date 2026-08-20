@@ -150,6 +150,7 @@ source_set("pdf_extension_test_base") {
     ":pdf_extension_test_utils",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//components/guest_view/browser",

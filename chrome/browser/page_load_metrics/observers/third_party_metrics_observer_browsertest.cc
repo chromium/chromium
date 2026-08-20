@@ -6,7 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -181,7 +181,7 @@ class ThirdPartyMetricsObserverBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   net::EmbeddedTestServer* https_server() {
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
                        OneFirstPartyFrame_NoTimingRecorded) {
   base::HistogramTester histogram_tester;
   page_load_metrics::PageLoadMetricsTestWaiter waiter(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   NavigateToPageWithFrameAndWaitForFrame("a.com", &waiter);
 
   // Navigate the frame to a first-party.
@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   base::HistogramTester histogram_tester;
 
   page_load_metrics::PageLoadMetricsTestWaiter waiter(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   NavigateToPageWithFrameAndWaitForFrame("a.com", &waiter);
 
   // Navigate the frame to a third-party.
@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   base::HistogramTester histogram_tester;
 
   page_load_metrics::PageLoadMetricsTestWaiter waiter(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   NavigateToPageWithFrameAndWaitForFrame("a.com", &waiter);
 
   // Navigate the frame to a third-party.
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   base::HistogramTester histogram_tester;
 
   page_load_metrics::PageLoadMetricsTestWaiter waiter(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   NavigateToPageWithFrameAndWaitForFrame("a.com", &waiter);
 
   // Navigate the frame to a third-party page.

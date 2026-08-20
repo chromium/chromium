@@ -22,7 +22,7 @@
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/webui_url_constants.h"
@@ -422,7 +422,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, BeepThenNoBeep) {
   RunTestsInJsModuleNewTab("nobeep_test.js", "test-beep.pdf");
 
   // Make sure there are two PDFs in the same process.
-  const int tab_count = browser()->tab_strip_model()->count();
+  const int tab_count = browser()->GetTabStripModel()->count();
   EXPECT_EQ(2, tab_count);
   EXPECT_EQ(1, CountPDFProcesses());
 }
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, MAYBE_NoBeepThenBeep) {
   RunTestsInJsModuleNewTab("beep_test.js", "test-beep.pdf");
 
   // Make sure there are two PDFs in the same process.
-  const int tab_count = browser()->tab_strip_model()->count();
+  const int tab_count = browser()->GetTabStripModel()->count();
   EXPECT_EQ(2, tab_count);
   EXPECT_EQ(1, CountPDFProcesses());
 }

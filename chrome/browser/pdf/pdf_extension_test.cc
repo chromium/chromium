@@ -46,7 +46,6 @@
 #include "chrome/browser/plugins/plugin_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_manager_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -390,9 +389,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutOopifOverride,
   ui_test_utils::TabAddedWaiter add_tab1(browser());
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   add_tab1.Wait();
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
   WebContents* new_web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
+      browser()->GetTabStripModel()->GetWebContentsAt(1);
   ASSERT_EQ(new_web_contents, GetActiveWebContents());
   const GURL non_pdf_url(embedded_test_server()->GetURL("/title1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_pdf_url));
@@ -410,10 +409,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutOopifOverride,
   // the middle of initialization. In https://crbug.com/40214326, the extension
   // process exited here and caused a crash when the second PDF resumed.
   EXPECT_EQ(2U, GetGuestViewManager()->GetCurrentGuestCount());
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
-  browser()->tab_strip_model()->CloseWebContentsAt(
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
+  browser()->GetTabStripModel()->CloseWebContentsAt(
       0, TabCloseTypes::CLOSE_USER_GESTURE);
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
   // `TestGuestViewManager` manages the guests by the order of creation.
   GetGuestViewManager()->WaitForFirstGuestDeleted();
   EXPECT_EQ(1U, GetGuestViewManager()->GetCurrentGuestCount());
@@ -608,9 +607,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionBlobNavigationTest, NewTab) {
   ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), "openBlobPdfInNewTab()"));
   navigation_observer.Wait();
 
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 2);
   WebContents* new_tab_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
+      browser()->GetTabStripModel()->GetWebContentsAt(1);
   EXPECT_TRUE(EnsureFullPagePDFHasLoadedWithValidFrameTree(
       new_tab_contents, /*allow_multiple_frames=*/false));
 }
@@ -626,9 +625,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionBlobNavigationTest,
   ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), "openBlobPdfInNewTab()"));
   navigation_observer.Wait();
 
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 2);
   EXPECT_TRUE(EnsureFullPagePDFHasLoadedWithValidFrameTree(
-      browser()->tab_strip_model()->GetWebContentsAt(1),
+      browser()->GetTabStripModel()->GetWebContentsAt(1),
       /*allow_multiple_frames=*/false));
 }
 
@@ -1857,14 +1856,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, CtrlLeft) {
                        GetLinkPosition(extension_host));
   ui_test_utils::TabAddedWaiter(browser()).Wait();
 
-  int tab_count = browser()->tab_strip_model()->count();
+  int tab_count = browser()->GetTabStripModel()->count();
   ASSERT_EQ(2, tab_count);
 
   WebContents* active_web_contents = GetActiveWebContents();
   ASSERT_EQ(web_contents, active_web_contents);
 
   WebContents* new_web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
+      browser()->GetTabStripModel()->GetWebContentsAt(1);
   ASSERT_TRUE(new_web_contents);
   ASSERT_NE(web_contents, new_web_contents);
 
@@ -1884,14 +1883,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, Middle) {
                        GetLinkPosition(extension_host));
   ui_test_utils::TabAddedWaiter(browser()).Wait();
 
-  int tab_count = browser()->tab_strip_model()->count();
+  int tab_count = browser()->GetTabStripModel()->count();
   ASSERT_EQ(2, tab_count);
 
   WebContents* active_web_contents = GetActiveWebContents();
   ASSERT_EQ(web_contents, active_web_contents);
 
   WebContents* new_web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
+      browser()->GetTabStripModel()->GetWebContentsAt(1);
   ASSERT_TRUE(new_web_contents);
   ASSERT_NE(web_contents, new_web_contents);
 
@@ -1913,7 +1912,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, CtrlShiftLeft) {
                        GetLinkPosition(extension_host));
   ui_test_utils::TabAddedWaiter(browser()).Wait();
 
-  int tab_count = browser()->tab_strip_model()->count();
+  int tab_count = browser()->GetTabStripModel()->count();
   ASSERT_EQ(2, tab_count);
 
   WebContents* active_web_contents = GetActiveWebContents();
@@ -1935,7 +1934,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, ShiftMiddle) {
       blink::WebMouseEvent::Button::kMiddle, GetLinkPosition(extension_host));
   ui_test_utils::TabAddedWaiter(browser()).Wait();
 
-  int tab_count = browser()->tab_strip_model()->count();
+  int tab_count = browser()->GetTabStripModel()->count();
   ASSERT_EQ(2, tab_count);
 
   WebContents* active_web_contents = GetActiveWebContents();
@@ -1957,13 +1956,13 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, ShiftLeft) {
   SimulateMouseClickAt(
       extension_host, GetEmbedderWebContents(), blink::WebInputEvent::kShiftKey,
       blink::WebMouseEvent::Button::kLeft, GetLinkPosition(extension_host));
-  Browser* new_browser = ui_test_utils::WaitForBrowserToOpen();
+  BrowserWindowInterface* new_browser = ui_test_utils::WaitForBrowserToOpen();
   ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
 
   ASSERT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());
 
   WebContents* active_web_contents =
-      new_browser->tab_strip_model()->GetActiveWebContents();
+      new_browser->GetTabStripModel()->GetActiveWebContents();
   ASSERT_NE(web_contents, active_web_contents);
 
   const GURL& url = active_web_contents->GetVisibleURL();
@@ -2007,14 +2006,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, OpenPDFWithReplaceState) {
 
   // We should have two tabs now. One with the PDF and the second for
   // example.com
-  int tab_count = browser()->tab_strip_model()->count();
+  int tab_count = browser()->GetTabStripModel()->count();
   ASSERT_EQ(2, tab_count);
 
   WebContents* active_web_contents = GetActiveWebContents();
   ASSERT_EQ(web_contents, active_web_contents);
 
   WebContents* new_web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
+      browser()->GetTabStripModel()->GetWebContentsAt(1);
   ASSERT_TRUE(new_web_contents);
   ASSERT_NE(web_contents, new_web_contents);
 
@@ -2099,14 +2098,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, CtrlLeft) {
                        GetLinkPosition(extension_host));
   ui_test_utils::TabAddedWaiter(browser()).Wait();
 
-  int tab_count = browser()->tab_strip_model()->count();
+  int tab_count = browser()->GetTabStripModel()->count();
   ASSERT_EQ(2, tab_count);
 
   WebContents* active_web_contents = GetActiveWebContents();
   ASSERT_EQ(web_contents, active_web_contents);
 
   WebContents* new_web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
+      browser()->GetTabStripModel()->GetWebContentsAt(1);
   ASSERT_TRUE(new_web_contents);
   ASSERT_NE(web_contents, new_web_contents);
 
@@ -2127,14 +2126,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, Middle) {
                        GetLinkPosition(extension_host));
   ui_test_utils::TabAddedWaiter(browser()).Wait();
 
-  int tab_count = browser()->tab_strip_model()->count();
+  int tab_count = browser()->GetTabStripModel()->count();
   ASSERT_EQ(2, tab_count);
 
   WebContents* active_web_contents = GetActiveWebContents();
   ASSERT_EQ(web_contents, active_web_contents);
 
   WebContents* new_web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
+      browser()->GetTabStripModel()->GetWebContentsAt(1);
   ASSERT_TRUE(new_web_contents);
   ASSERT_NE(web_contents, new_web_contents);
 
@@ -2155,13 +2154,13 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, ShiftLeft) {
   SimulateMouseClickAt(
       extension_host, GetEmbedderWebContents(), blink::WebInputEvent::kShiftKey,
       blink::WebMouseEvent::Button::kLeft, GetLinkPosition(extension_host));
-  Browser* new_browser = ui_test_utils::WaitForBrowserToOpen();
+  BrowserWindowInterface* new_browser = ui_test_utils::WaitForBrowserToOpen();
   ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
 
   ASSERT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());
 
   WebContents* active_web_contents =
-      new_browser->tab_strip_model()->GetActiveWebContents();
+      new_browser->GetTabStripModel()->GetActiveWebContents();
   ASSERT_NE(web_contents, active_web_contents);
 
   const GURL& url = active_web_contents->GetVisibleURL();
@@ -2640,7 +2639,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
 // https://crbug.com/41343805).
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PostMessageForZeroSizedEmbed) {
   content::DOMMessageQueue queue(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
                      "/pdf/post_message_zero_sized_embed.html")));
@@ -2916,7 +2915,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfVisibility) {
   GURL url = embedded_test_server()->GetURL("/pdf/pdf_embed.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_EQ(content::Visibility::VISIBLE, web_contents->GetVisibility());
 
   web_contents->WasHidden();
@@ -3608,9 +3607,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutOopifOverride,
                        PdfNavigationDuringProfileShutdown) {
   // Open an Incognito window and navigate it to a page with a PDF embedded in
   // an iframe.
-  Browser* incognito = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
   content::WebContents* incognito_contents =
-      incognito->tab_strip_model()->GetActiveWebContents();
+      incognito->GetTabStripModel()->GetActiveWebContents();
   incognito_contents->GetController().LoadURL(
       embedded_test_server()->GetURL("/pdf/test-cross-site-iframe.html"),
       content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
@@ -3712,14 +3711,14 @@ class PDFExtensionIncognitoTest : public PDFExtensionTest {
     PDFExtensionTest::TearDownOnMainThread();
   }
 
-  Browser* incognito_browser() { return incognito_browser_; }
+  BrowserWindowInterface* incognito_browser() { return incognito_browser_; }
 
   content::WebContents* GetIncognitoActiveWebContents() {
     return incognito_browser()->tab_strip_model()->GetActiveWebContents();
   }
 
  private:
-  raw_ptr<Browser> incognito_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> incognito_browser_ = nullptr;
 };
 
 // Test that full page PDF viewer successfully loads in incognito.
@@ -4285,9 +4284,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
   ui_test_utils::TabAddedWaiter add_tab1(browser());
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   add_tab1.Wait();
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
   WebContents* web_contents2 =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
+      browser()->GetTabStripModel()->GetWebContentsAt(1);
   ASSERT_EQ(web_contents2, GetActiveWebContents());
   const GURL non_pdf_url(embedded_test_server()->GetURL("/title1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_pdf_url));
@@ -4313,13 +4312,13 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
   // the middle of initialization. Historically, with GuestView PDF in
   // https://crbug.com/40214326, the extension process exited here and caused a
   // crash when the second PDF resumed.
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
   content::WebContentsDestroyedWatcher destroyed_watcher(
-      browser()->tab_strip_model()->GetWebContentsAt(0));
-  browser()->tab_strip_model()->CloseWebContentsAt(
+      browser()->GetTabStripModel()->GetWebContentsAt(0));
+  browser()->GetTabStripModel()->CloseWebContentsAt(
       0, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
   // Resume the PDF load and ensure the second PDF loads without crashing.
   test_mime_handler_stream_manager2->ResumeExtensionNavigation(
@@ -4379,9 +4378,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
 IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
                        PdfNavigationDuringProfileShutdown) {
   // Open an Incognito window.
-  Browser* incognito = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
   content::WebContents* incognito_contents =
-      incognito->tab_strip_model()->GetActiveWebContents();
+      incognito->GetTabStripModel()->GetActiveWebContents();
 
   // Create the `pdf::TestMimeHandlerStreamManager` before the PDF navigation,
   // since the test needs to delay the PDF extension URL navigation.
@@ -4443,7 +4442,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
 
   // The `content::WebContents` needs to be deleted before the browser can be
   // destroyed.
-  incognito->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
+  incognito->GetTabStripModel()->DetachAndDeleteWebContentsAt(0);
   BrowserManagerService::SynchronouslyDestroyBrowser(incognito);
 
   // The test succeeds if it doesn't crash when the posted PDF task attempts to

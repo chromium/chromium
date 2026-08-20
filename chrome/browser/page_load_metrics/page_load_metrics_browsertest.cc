@@ -56,6 +56,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -225,7 +226,7 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
 
   void MakeComponentFullscreen(const std::string& id) {
     EXPECT_TRUE(content::ExecJs(
-        browser()->tab_strip_model()->GetActiveWebContents(),
+        browser()->GetTabStripModel()->GetActiveWebContents(),
         "document.getElementById(\"" + id + "\").webkitRequestFullscreen();"));
   }
 
@@ -285,7 +286,7 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
       const char* observer_name,
       content::WebContents* web_contents = nullptr) {
     if (!web_contents)
-      web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+      web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
     return std::make_unique<PageLoadMetricsTestWaiter>(web_contents,
                                                        observer_name);
   }
@@ -437,7 +438,7 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* web_contents() const {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   content::RenderFrameHost* RenderFrameHost() const {
@@ -504,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PageLCPImagePriority) {
   // Force layout and thus the visibility-based priority to be set, before the
   // loading is finished.
   content::EvalJsResult result =
-      EvalJs(browser()->tab_strip_model()->GetActiveWebContents(), R"(
+      EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(), R"(
       new Promise(resolve => {
         const forceLayout = () => {
           document.querySelector('img').offsetTop;
@@ -527,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PageLCPImagePriority) {
   // Wait on an LCP entry to make sure we have one to report when navigating
   // away.
   content::EvalJsResult result2 =
-      EvalJs(browser()->tab_strip_model()->GetActiveWebContents(), R"(
+      EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(), R"(
  (async () => {
    await new Promise(resolve => {
      (new PerformanceObserver(list => {
@@ -631,7 +632,7 @@ class PageLoadMetricsBrowserTestAnimatedLCP
     // Then wait some more to ensure the timestamp is not too close to the point
     // where the second frame is sent.
     content::EvalJsResult result =
-        EvalJs(browser()->tab_strip_model()->GetActiveWebContents(), R"(
+        EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(), R"(
 (async () => {
   const double_raf = () => {
     return new Promise(r => {
@@ -653,7 +654,7 @@ class PageLoadMetricsBrowserTestAnimatedLCP
     // Wait on an LCP entry to make sure we have one to report when navigating
     // away.
     content::EvalJsResult result2 =
-        EvalJs(browser()->tab_strip_model()->GetActiveWebContents(), R"(
+        EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(), R"(
  (async () => {
    await new Promise(resolve => {
      (new PerformanceObserver(list => {
@@ -701,7 +702,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   int side_scrollbar_width =
       EvalJs(web_contents,
@@ -1218,7 +1219,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, ChromeErrorPage) {
   // By shutting down the server, we ensure a failure.
   ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
   content::NavigationHandleObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents(), url);
+      browser()->GetTabStripModel()->GetActiveWebContents(), url);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_TRUE(observer.is_error());
   NavigateToUntrackedUrl();
@@ -1768,7 +1769,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   // PageLoadMetricsBrowserTestWithBackForwardCache's
   // UseCounterUkmFeaturesLoggedOnBFCacheEviction test.
   browser()
-      ->tab_strip_model()
+      ->GetTabStripModel()
       ->GetActiveWebContents()
       ->GetController()
       .GetBackForwardCache()
@@ -1818,7 +1819,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAutoupgradesDisabled,
   // PageLoadMetricsBrowserTestWithBackForwardCache's
   // UseCounterUkmFeaturesLoggedOnBFCacheEviction test.
   browser()
-      ->tab_strip_model()
+      ->GetTabStripModel()
       ->GetActiveWebContents()
       ->GetController()
       .GetBackForwardCache()
@@ -2439,7 +2440,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, MAYBE_InputEventsForClick) {
       internal::kHistogramInputCoverageWithoutUserGestureRendererInitiated, 0);
 
   content::SimulateMouseClickAt(
-      browser()->tab_strip_model()->GetActiveWebContents(), 0,
+      browser()->GetTabStripModel()->GetActiveWebContents(), 0,
       blink::WebMouseEvent::Button::kLeft, gfx::Point(100, 100));
   waiter = CreatePageLoadMetricsTestWaiter("waiter");
   waiter->AddPageExpectation(TimingField::kLoadEvent);
@@ -2701,7 +2702,7 @@ class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
     waiter->Wait();
 
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
 
     waiter->AddPageExpectation(TimingField::kSoftNavigationCountUpdated);
@@ -2718,7 +2719,7 @@ class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
     int lcp_startTime = EvalJs(web_contents, get_lcp_startTime).ExtractDouble();
 
     content::SimulateMouseClickAt(
-        browser()->tab_strip_model()->GetActiveWebContents(), 0,
+        browser()->GetTabStripModel()->GetActiveWebContents(), 0,
         blink::WebMouseEvent::Button::kLeft, gfx::Point(100, 100));
 
     // Get the web exposed ICP value only if the feature flag for exposing to
@@ -2848,7 +2849,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 
   waiter = CreatePageLoadMetricsTestWaiter("waiter");
   content::SimulateMouseClickAt(
-      browser()->tab_strip_model()->GetActiveWebContents(), 0,
+      browser()->GetTabStripModel()->GetActiveWebContents(), 0,
       blink::WebMouseEvent::Button::kLeft, gfx::Point(100, 100));
   waiter->AddPageExpectation(TimingField::kLoadEvent);
   waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
@@ -2893,7 +2894,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   waiter->Wait();
   ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
   content::SimulateMouseClickAt(
-      browser()->tab_strip_model()->GetActiveWebContents(), 0,
+      browser()->GetTabStripModel()->GetActiveWebContents(), 0,
       blink::WebMouseEvent::Button::kLeft, gfx::Point(100, 100));
   // Wait for new window to open.
   auto* web_contents = tab_added_waiter.Wait();
@@ -2910,7 +2911,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 
   // Close all pages, which should force logging of histograms persisted at the
   // end of the page load lifetime.
-  browser()->tab_strip_model()->CloseAllTabs();
+  browser()->GetTabStripModel()->CloseAllTabs();
 
   // Navigation should record the metrics twice because of the initial pageload
   // and the second pageload ("/title1.html") initiated by the link click.
@@ -2932,7 +2933,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, FirstInputFromScroll) {
   waiter->Wait();
 
   content::SimulateGestureScrollSequence(
-      browser()->tab_strip_model()->GetActiveWebContents(),
+      browser()->GetTabStripModel()->GetActiveWebContents(),
       gfx::Point(100, 100), gfx::Vector2dF(0, 15));
   NavigateToUntrackedUrl();
 
@@ -2954,8 +2955,9 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, ServiceWorkerMetrics) {
   GURL url = embedded_test_server()->GetURL(
       "/service_worker/create_service_worker.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_EQ("DONE", EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                           "register('fetch_event_pass_through.js');"));
+  EXPECT_EQ("DONE",
+            EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(),
+                   "register('fetch_event_pass_through.js');"));
   waiter->Wait();
 
   // The first load was not controlled, so service worker metrics should not be
@@ -3000,8 +3002,9 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   GURL url = embedded_test_server()->GetURL(
       "/service_worker/create_service_worker.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_EQ("DONE", EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                           "register('empty_fetch_event.js');"));
+  EXPECT_EQ("DONE",
+            EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(),
+                   "register('empty_fetch_event.js');"));
   waiter->Wait();
 
   // The first load was not controlled, so service worker metrics should not be
@@ -3070,7 +3073,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 
   auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Evaluate the height and width of the page as the browser_test can
   // vary the dimensions.
@@ -3193,9 +3196,9 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
       internal::kBackgroundHistogramFirstContentfulPaint, 0);
 
   // Activate the original tab, backgrounding the target tab.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   EXPECT_NE(target_contents,
-            browser()->tab_strip_model()->GetActiveWebContents());
+            browser()->GetTabStripModel()->GetActiveWebContents());
   EXPECT_EQ(content::Visibility::HIDDEN, target_contents->GetVisibility());
 
   // Shutdown the target tab's process and tag it as needs-reload.
@@ -3212,7 +3215,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
                                      TimingField::kFirstContentfulPaint);
   navigation_observer =
       std::make_unique<content::TestNavigationObserver>(target_contents);
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
   navigation_observer->Wait();
   fcp_waiter->Wait();
 
@@ -3270,7 +3273,7 @@ class PageLoadMetricsBrowserTestTerminatedPage
         embedded_test_server()->GetURL("/title1.html"), content::Referrer(),
         ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
 
-    auto* tab_strip_model = browser()->tab_strip_model();
+    auto* tab_strip_model = browser()->GetTabStripModel();
     tab_strip_model->AddWebContents(std::move(web_contents_to_add), -1,
                                     ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                     AddTabTypes::ADD_ACTIVE);
@@ -3282,7 +3285,7 @@ class PageLoadMetricsBrowserTestTerminatedPage
   }
 
   void CloseTab(content::WebContents* contents) {
-    auto* tab_strip_model = browser()->tab_strip_model();
+    auto* tab_strip_model = browser()->GetTabStripModel();
     // Get the total count of tabs.
     int tab_count = tab_strip_model->count();
 
@@ -3336,7 +3339,7 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestDiscardedPage,
     AddNewTab();
 
     // Verify the first tab is backgrounded.
-    EXPECT_NE(contents, browser()->tab_strip_model()->GetActiveWebContents());
+    EXPECT_NE(contents, browser()->GetTabStripModel()->GetActiveWebContents());
   }
 
   // Discard tab.
@@ -3344,7 +3347,7 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestDiscardedPage,
 
   // Verify tab is discarded.
   EXPECT_TRUE(
-      browser()->tab_strip_model()->GetWebContentsAt(1)->WasDiscarded());
+      browser()->GetTabStripModel()->GetWebContentsAt(1)->WasDiscarded());
 
   // Verify page load metric is recorded.
   EXPECT_NEAR(
@@ -3377,7 +3380,7 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestClosedPage,
     AddNewTab();
 
     // Verify the tab is backgrounded.
-    EXPECT_NE(contents, browser()->tab_strip_model()->GetActiveWebContents());
+    EXPECT_NE(contents, browser()->GetTabStripModel()->GetActiveWebContents());
   }
 
   // close tab.
@@ -3576,7 +3579,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, FirstInputDelayFromClick) {
       embedded_test_server()->GetURL("/page_load_metrics/click.html")));
   waiter->Wait();
   content::SimulateMouseClickAt(
-      browser()->tab_strip_model()->GetActiveWebContents(), 0,
+      browser()->GetTabStripModel()->GetActiveWebContents(), 0,
       blink::WebMouseEvent::Button::kLeft, gfx::Point(100, 100));
   waiter2->Wait();
 
@@ -3753,7 +3756,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithBackForwardCache,
   // Go back to URL1. The previous page (URL2) is put into the back-forward
   // cache.
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   web_contents->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents));
 
@@ -3790,7 +3793,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithBackForwardCache,
   // Force the BFCache to evict all entries. This should cause the
   // UseCounter histograms to be logged.
   browser()
-      ->tab_strip_model()
+      ->GetTabStripModel()
       ->GetActiveWebContents()
       ->GetController()
       .GetBackForwardCache()
@@ -4404,10 +4407,10 @@ IN_PROC_BROWSER_TEST_F(DesktopPaintTimingSliceBrowserTest,
   nav_params.disposition = WindowOpenDisposition::NEW_WINDOW;
   Navigate(&nav_params);
 
-  Browser* new_browser = static_cast<Browser*>(
+  BrowserWindowInterface* new_browser = static_cast<Browser*>(
       GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   PageLoadMetricsTestWaiter waiter(
-      new_browser->tab_strip_model()->GetActiveWebContents());
+      new_browser->GetTabStripModel()->GetActiveWebContents());
   waiter.AddPageExpectation(TimingField::kFirstContentfulPaint);
   waiter.AddPageExpectation(TimingField::kLargestContentfulPaint);
   waiter.AddPageExpectation(TimingField::kLoadEvent);
@@ -4436,7 +4439,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaintTimingSliceBrowserTest,
   Navigate(&nav_params);
 
   PageLoadMetricsTestWaiter waiter(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   waiter.AddPageExpectation(TimingField::kFirstContentfulPaint);
   waiter.AddPageExpectation(TimingField::kLargestContentfulPaint);
   waiter.AddPageExpectation(TimingField::kLoadEvent);

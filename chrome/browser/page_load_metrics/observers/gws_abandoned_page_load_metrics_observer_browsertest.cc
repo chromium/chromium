@@ -16,7 +16,7 @@
 #include "chrome/browser/page_load_metrics/observers/gws_abandoned_page_load_metrics_observer_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h"
@@ -197,7 +197,7 @@ std::unique_ptr<PageLoadMetricsTestWaiter>
 GWSAbandonedPageLoadMetricsObserverBrowserTest::
     CreatePageLoadMetricsTestWaiter() {
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   return std::make_unique<PageLoadMetricsTestWaiter>(web_contents);
 }
 
@@ -365,7 +365,7 @@ void GWSAbandonedPageLoadMetricsObserverBrowserTest::TestNavigationAbandonment(
   // Navigate again to another SRP page, so that tests that need to do history
   // navigation before the SRP navigation commits can do so.
   EXPECT_TRUE(content::NavigateToURL(
-      browser()->tab_strip_model()->GetActiveWebContents(), url_non_srp_2()));
+      browser()->GetTabStripModel()->GetActiveWebContents(), url_non_srp_2()));
 
   // Navigate to SRP, but pause it just after we reach the desired milestone.
   content::TestNavigationManager navigation(web_contents, target_url);
@@ -403,7 +403,7 @@ void GWSAbandonedPageLoadMetricsObserverBrowserTest::TestNavigationAbandonment(
   // WebContents we navigate for metrics flushing purposes, so we navigate
   // the active one.
   EXPECT_TRUE(content::NavigateToURL(
-      browser()->tab_strip_model()->GetActiveWebContents(), url_non_srp()));
+      browser()->GetTabStripModel()->GetActiveWebContents(), url_non_srp()));
 
   bool redirected_from_non_srp = (target_url == url_non_srp_redirect_to_srp());
   bool has_redirect =
@@ -1152,7 +1152,7 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
                        content::JsReplace("window.open($1)", url_non_srp())));
     popup_observer.Wait();
     content::WebContents* popup_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
 
     TestNavigationAbandonment(
         AbandonReason::kFrameRemoved, milestone,
@@ -1573,9 +1573,9 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
       {kSRPDomain}, browser()->GetProfile()->GetPrefs());
 
   // Navigate to SRP with incognito mode.
-  Browser* incognito = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
   content::WebContents* web_contents =
-      incognito->tab_strip_model()->GetActiveWebContents();
+      incognito->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::NavigateToURL(web_contents, url_srp()));
 
   // Navigate to a non-SRP page to flush the metrics.
