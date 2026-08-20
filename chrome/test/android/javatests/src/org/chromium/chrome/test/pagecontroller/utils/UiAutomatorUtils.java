@@ -314,7 +314,63 @@ public class UiAutomatorUtils {
     }
 
     /**
+     * Dumps crash logs (native tombstones, crash buffer logcat, and filtered system crash logs) to
+     * logcat.
+     */
+    public void dumpCrashLogs() {
+        // 1. Dump native tombstones from /data/tombstones/
+        try {
+            String tombstoneList = executeShellCommand("ls -t /data/tombstones");
+            if (tombstoneList != null && !tombstoneList.trim().isEmpty()) {
+                String[] files = tombstoneList.split("\\s+");
+                if (files.length > 0 && !files[0].trim().isEmpty()) {
+                    String latestTombstone = files[0].trim();
+                    if (latestTombstone.startsWith("tombstone")) {
+                        Log.e(TAG, "=== CRASH TOMBSTONE: " + latestTombstone + " ===");
+                        String tombstoneContent =
+                                executeShellCommand("cat /data/tombstones/" + latestTombstone);
+                        for (String line : tombstoneContent.split("\n")) {
+                            Log.e(TAG, line);
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            Log.e(TAG, "Failed to extract tombstone from /data/tombstones", ex);
+        }
+
+        // 2. Dump the Android crash buffer (native debuggerd & Java uncaught exceptions)
+        try {
+            String crashLog = executeShellCommand("logcat -d -b crash");
+            if (crashLog != null && !crashLog.trim().isEmpty()) {
+                Log.e(TAG, "=== LOGCAT CRASH BUFFER ===");
+                for (String line : crashLog.split("\n")) {
+                    Log.e(TAG, line);
+                }
+            }
+        } catch (Exception ex) {
+            Log.e(TAG, "Failed to dump logcat crash buffer", ex);
+        }
+
+        // 3. Dump recent fatal signals/logs from DEBUG and AndroidRuntime tags
+        try {
+            String debugLog =
+                    executeShellCommand(
+                            "logcat -d -s DEBUG:V AndroidRuntime:E chromium:E cr_*:E -t 200");
+            if (debugLog != null && !debugLog.trim().isEmpty()) {
+                Log.e(TAG, "=== FILTERED SYSTEM CRASH LOGS ===");
+                for (String line : debugLog.split("\n")) {
+                    Log.e(TAG, line);
+                }
+            }
+        } catch (Exception ex) {
+            Log.e(TAG, "Failed to dump filtered debug logcat", ex);
+        }
+    }
+
+    /**
      * Prints the UiAutomator window hierarchy to logcat.
+     *
      * @param message A leading message for the debug log.
      */
     public void printWindowHierarchy(String message) {

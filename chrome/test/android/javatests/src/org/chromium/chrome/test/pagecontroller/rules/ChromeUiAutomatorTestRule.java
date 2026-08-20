@@ -29,6 +29,7 @@ public class ChromeUiAutomatorTestRule extends TestWatcher {
         super.failed(e, description);
         Log.e(TAG, description.toString() + " failed", e);
         UiAutomatorUtils utils = UiAutomatorUtils.getInstance();
+        utils.dumpCrashLogs();
         utils.printWindowHierarchy("UI hierarchy when " + description.toString() + " failed");
     }
 
