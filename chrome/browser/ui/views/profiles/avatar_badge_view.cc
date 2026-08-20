@@ -4,13 +4,20 @@
 
 #include "chrome/browser/ui/views/profiles/avatar_badge_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_flags.h"
@@ -40,6 +47,12 @@
 #error \
     "HAS_AVATAR_BADGE_SPECS must be defined by the avatar decoration specs header."
 #endif
+
+BASE_FEATURE(kEnabledAiSubscriptionTierNameOverride,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kAiSubscriptionTierNameOverrideMapping{
+    &kEnabledAiSubscriptionTierNameOverride, "ai_tier_override_mapping", "{}"};
 
 namespace {
 
@@ -265,6 +278,21 @@ void PaintAvatarBadgeBackground(gfx::Canvas* canvas,
 
 // static
 std::u16string AvatarBadgeView::GetAvatarBadgeLabel(int tier) {
+  // If a mapping override is provided and the corresponding feature is enabled,
+  // get the tier name from the supplied mapping.
+  if (base::FeatureList::IsEnabled(kEnabledAiSubscriptionTierNameOverride)) {
+    std::optional<base::DictValue> dict = base::JSONReader::ReadDict(
+        kAiSubscriptionTierNameOverrideMapping.Get(), base::JSON_PARSE_RFC);
+    if (dict) {
+      if (const std::string* name =
+              dict->FindString(base::NumberToString(tier))) {
+        return base::UTF8ToUTF16(*name);
+      }
+    }
+  }
+
+  // Fallback to built-in defaults if feature is disabled or tier key is
+  // omitted.
   switch (tier) {
     case 1:
       return std::u16string(kAvatarBadgeLabelTier1);

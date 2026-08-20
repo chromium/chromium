@@ -7839,8 +7839,10 @@ test("unit_tests") {
       "../browser/ui/views/web_apps/progress_delay_unittest.cc",
       "../browser/ui/views/web_apps/view_visible_in_active_widget_notifier_unittest.cc",
     ]
-    sources +=
-        [ "../browser/ui/views/tabs/tab_strip_action_container_unittest.cc" ]
+    sources += [
+      "../browser/ui/views/profiles/avatar_badge_view_unittest.cc",
+      "../browser/ui/views/tabs/tab_strip_action_container_unittest.cc",
+    ]
 
     # TODO(crbug.com/353332589): Remove this dependency when the
     # views/autofill/popup/ unit tests get modularized.
@@ -7859,6 +7861,7 @@ test("unit_tests") {
       "//chrome/browser/ui/tabs:tab_list_bridge",
       "//chrome/browser/ui/views:task_manager_search_bar_view",
       "//chrome/browser/ui/views/extensions:unit_tests",
+      "//chrome/browser/ui/views/profiles:avatar_badge_view",
       "//chrome/browser/ui/views/relaunch_notification:unit_tests",
     ]
     if (is_chromeos) {

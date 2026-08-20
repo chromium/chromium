@@ -9,10 +9,16 @@
 #include <optional>
 #include <string>
 
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "chrome/browser/ui/profiles/avatar_badge_types.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
+
+BASE_DECLARE_FEATURE(kEnabledAiSubscriptionTierNameOverride);
+extern const base::FeatureParam<std::string>
+    kAiSubscriptionTierNameOverrideMapping;
 
 // A custom-painted profile avatar badge with a given text label and optional
 // background wave path.
