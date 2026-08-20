@@ -12,6 +12,7 @@
 
 import './action_chips/action_chips.js';
 import './action_chips/action_chips_proxy.js';
+import './iframe.js';
 import './lens_upload_dialog.js';
 import './middle_slot_promo.js';
 import './modules/module_descriptors.js';
@@ -21,8 +22,12 @@ import './ntp_promo/ntp_promo_proxy.js';
 import './voice_search_overlay.js';
 import 'chrome://resources/cr_components/most_visited/most_visited.js';
 import 'chrome://resources/cr_components/composebox/composebox.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 
 export {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
+export {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+export {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 export type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 export {ComposeboxElement, SubmitButtonIconType, VoiceSearchAction} from 'chrome://resources/cr_components/composebox/composebox.js';
 export {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
@@ -54,6 +59,7 @@ export {FileProxy} from './modules/file_suggestion/file_module_proxy.js';
 export {FileSuggestionElement} from './modules/file_suggestion/file_suggestion.js';
 export {microsoftFilesModuleDescriptor, MicrosoftFilesModuleElement} from './modules/file_suggestion/microsoft_files_module.js';
 export {MicrosoftFilesProxyImpl} from './modules/file_suggestion/microsoft_files_proxy.js';
+export {IframeElement} from './iframe.js';
 export {InfoDialogElement} from './modules/info_dialog.js';
 export {ParentTrustedDocumentProxy} from './modules/microsoft_auth_frame_connector.js';
 export {ModuleDescriptor} from './modules/module_descriptor.js';
