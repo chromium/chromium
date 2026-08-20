@@ -6,20 +6,33 @@ source_set("contextual_cueing") {
   sources = [
     "contextual_cueing_cap_tracker.h",
     "contextual_cueing_cap_tracker.mm",
+    "contextual_cueing_tab_helper.h",
+    "contextual_cueing_tab_helper.mm",
   ]
   public_deps = [
     "//base",
     "//components/contextual_cueing",
+    "//components/page_content_annotations/core",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/web/public",
     "//url",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "contextual_cueing_cap_tracker_unittest.mm" ]
+  sources = [
+    "contextual_cueing_cap_tracker_unittest.mm",
+    "contextual_cueing_tab_helper_unittest.mm",
+  ]
   deps = [
     ":contextual_cueing",
     "//base/test:test_support",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//url",
   ]
