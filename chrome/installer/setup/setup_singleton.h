@@ -50,7 +50,7 @@ class SetupSingleton {
   // SetupSingleton for the same Chrome installation. In the latter case, the
   // method returns true and this SetupSingleton should be released as soon as
   // possible to unblock the other process.
-  bool WaitForInterrupt(const base::TimeDelta& max_time) const;
+  bool WaitForInterrupt(base::TimeDelta max_time) const;
 
  private:
   class ScopedHoldMutex {

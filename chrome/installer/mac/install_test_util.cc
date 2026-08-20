@@ -24,7 +24,7 @@ namespace installer::mac::test {
 void AssertExecutableCompletes(const base::CommandLine& cmd,
                                const base::EnvironmentMap& env,
                                const base::FilePath& working_dir,
-                               const base::TimeDelta& timeout,
+                               base::TimeDelta timeout,
                                std::string* output,
                                int* exit_code) {
   base::ScopedFD read_fd, write_fd;
