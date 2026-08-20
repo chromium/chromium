@@ -380,13 +380,39 @@ public class WebApkValidator {
             Log.e(TAG, "no application info, or metaData retrieved.");
             return true;
         }
+        if (hasSplits(packageInfo)) {
+            Log.e(TAG, "WebApk validation failure - WebAPK is not a single APK.");
+            return true;
+        }
         // Having the startURL in AndroidManifest.xml is a strong signal.
         String startUrl = packageInfo.applicationInfo.metaData.getString(START_URL);
         return TextUtils.isEmpty(startUrl);
     }
 
+    private static boolean hasSplits(PackageInfo packageInfo) {
+        if (packageInfo.splitNames != null && packageInfo.splitNames.length > 0) {
+            return true;
+        }
+        if (packageInfo.applicationInfo != null) {
+            if (packageInfo.applicationInfo.splitNames != null
+                    && packageInfo.applicationInfo.splitNames.length > 0) {
+                return true;
+            }
+            if (packageInfo.applicationInfo.splitSourceDirs != null
+                    && packageInfo.applicationInfo.splitSourceDirs.length > 0) {
+                return true;
+            }
+            if (packageInfo.applicationInfo.splitPublicSourceDirs != null
+                    && packageInfo.applicationInfo.splitPublicSourceDirs.length > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static boolean verifyV1WebApk(PackageInfo packageInfo, String webappPackageName) {
-        if (packageInfo.signatures == null
+        if (hasSplits(packageInfo)
+                || packageInfo.signatures == null
                 || packageInfo.signatures.length != 2
                 || !webappPackageName.startsWith(WEBAPK_PACKAGE_PREFIX)) {
             return false;
@@ -403,7 +429,7 @@ public class WebApkValidator {
     }
 
     private static boolean verifyMapsLite(PackageInfo packageInfo, String webappPackageName) {
-        if (!webappPackageName.equals(MAPSLITE_PACKAGE_NAME)) {
+        if (hasSplits(packageInfo) || !webappPackageName.equals(MAPSLITE_PACKAGE_NAME)) {
             return false;
         }
         String startUrl = packageInfo.applicationInfo.metaData.getString(START_URL);
@@ -425,6 +451,10 @@ public class WebApkValidator {
 
     /** Verify that the comment signed webapk matches the public key. */
     private static boolean verifyCommentSignedWebApk(PackageInfo packageInfo) {
+        if (hasSplits(packageInfo)) {
+            Log.e(TAG, "WebApk validation failure - WebAPK is not a single APK.");
+            return false;
+        }
         PublicKey commentSignedPublicKey;
         try {
             commentSignedPublicKey = getCommentSignedPublicKey();

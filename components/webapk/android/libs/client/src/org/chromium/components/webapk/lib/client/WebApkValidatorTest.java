@@ -838,4 +838,169 @@ public class WebApkValidatorTest {
             throw new AssertionError("URI is invalid.", e);
         }
     }
+
+    /** Tests {@link WebApkValidator#isValidWebApk} returns false if the APK has splitNames. */
+    @Test
+    public void testIsValidWebApkReturnsFalseForSplitApkWithSplitNames() {
+        PackageInfo packageInfo =
+                newPackageInfoWithBrowserSignature(
+                        WEBAPK_PACKAGE_NAME,
+                        new Signature(EXPECTED_SIGNATURE),
+                        TEST_STARTURL,
+                        null);
+        packageInfo.splitNames = new String[] {"split_feature"};
+        mPackageManager.addPackage(packageInfo);
+
+        assertFalse(
+                WebApkValidator.isValidWebApk(RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+    }
+
+    /**
+     * Tests {@link WebApkValidator#isValidWebApk} returns false if the APK has
+     * applicationInfo.splitNames.
+     */
+    @Test
+    public void testIsValidWebApkReturnsFalseForSplitApkWithAppInfoSplitNames() {
+        PackageInfo packageInfo =
+                newPackageInfoWithBrowserSignature(
+                        WEBAPK_PACKAGE_NAME,
+                        new Signature(EXPECTED_SIGNATURE),
+                        TEST_STARTURL,
+                        null);
+        packageInfo.applicationInfo.splitNames = new String[] {"split_feature"};
+        mPackageManager.addPackage(packageInfo);
+
+        assertFalse(
+                WebApkValidator.isValidWebApk(RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+    }
+
+    /**
+     * Tests {@link WebApkValidator#isValidWebApk} returns false if the APK has
+     * applicationInfo.splitSourceDirs.
+     */
+    @Test
+    public void testIsValidWebApkReturnsFalseForSplitApkWithSplitSourceDirs() {
+        PackageInfo packageInfo =
+                newPackageInfoWithBrowserSignature(
+                        WEBAPK_PACKAGE_NAME,
+                        new Signature(EXPECTED_SIGNATURE),
+                        TEST_STARTURL,
+                        null);
+        packageInfo.applicationInfo.splitSourceDirs = new String[] {"/path/to/split.apk"};
+        mPackageManager.addPackage(packageInfo);
+
+        assertFalse(
+                WebApkValidator.isValidWebApk(RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+    }
+
+    /**
+     * Tests {@link WebApkValidator#isValidWebApk} returns false if the APK has
+     * applicationInfo.splitPublicSourceDirs.
+     */
+    @Test
+    public void testIsValidWebApkReturnsFalseForSplitApkWithSplitPublicSourceDirs() {
+        PackageInfo packageInfo =
+                newPackageInfoWithBrowserSignature(
+                        WEBAPK_PACKAGE_NAME,
+                        new Signature(EXPECTED_SIGNATURE),
+                        TEST_STARTURL,
+                        null);
+        packageInfo.applicationInfo.splitPublicSourceDirs = new String[] {"/path/to/split.apk"};
+        mPackageManager.addPackage(packageInfo);
+
+        assertFalse(
+                WebApkValidator.isValidWebApk(RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+    }
+
+    /** Tests {@link WebApkValidator#isValidV1WebApk} returns false if the APK has splits. */
+    @Test
+    public void testIsValidV1WebApkReturnsFalseForSplitApk() {
+        PackageInfo packageInfo =
+                newPackageInfoWithBrowserSignature(
+                        WEBAPK_PACKAGE_NAME,
+                        new Signature(EXPECTED_SIGNATURE),
+                        TEST_STARTURL,
+                        null);
+        packageInfo.splitNames = new String[] {"split_feature"};
+        mPackageManager.addPackage(packageInfo);
+
+        assertFalse(
+                WebApkValidator.isValidV1WebApk(
+                        RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+    }
+
+    /** Tests {@link WebApkValidator#isValidWebApk} returns false for comment signed split APK. */
+    @Test
+    public void testIsValidCommentSignedWebApkReturnsFalseForSplitApk() {
+        String packageName = "com.webapk.a9c419502bb98fcb7";
+        Signature[] signature = new Signature[] {new Signature(SIGNATURE_1)};
+
+        PackageInfo packageInfo =
+                newPackageInfo(
+                        packageName, signature, testFilePath("example.apk"), TEST_STARTURL, null);
+        packageInfo.splitNames = new String[] {"split_feature"};
+        mPackageManager.addPackage(packageInfo);
+
+        assertFalse(WebApkValidator.isValidWebApk(RuntimeEnvironment.application, packageName));
+    }
+
+    /** Tests {@link WebApkValidator#queryBoundWebApkForManifestUrl} returns null for split APK. */
+    @Test
+    public void testQueryBoundWebApkForManifestUrlWithSplitApk() {
+        PackageInfo packageInfo =
+                newPackageInfoWithBrowserSignature(
+                        WEBAPK_PACKAGE_NAME, new Signature(EXPECTED_SIGNATURE), null, MANIFEST_URL);
+        packageInfo.splitNames = new String[] {"split_feature"};
+        mPackageManager.addPackage(packageInfo);
+
+        assertNull(
+                WebApkValidator.queryBoundWebApkForManifestUrl(
+                        RuntimeEnvironment.application, MANIFEST_URL));
+    }
+
+    /** Tests {@link WebApkValidator#canWebApkHandleUrl} returns false for split APK. */
+    @Test
+    public void testCanWebApkHandleUrlReturnsFalseForSplitApk() {
+        try {
+            Intent intent = Intent.parseUri(URL_OF_WEBAPK, Intent.URI_INTENT_SCHEME);
+            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+            intent.setPackage(WEBAPK_PACKAGE_NAME);
+
+            mPackageManager.addResolveInfoForIntent(intent, newResolveInfo(WEBAPK_PACKAGE_NAME));
+            PackageInfo packageInfo =
+                    newPackageInfoWithBrowserSignature(
+                            WEBAPK_PACKAGE_NAME,
+                            new Signature(EXPECTED_SIGNATURE),
+                            TEST_STARTURL,
+                            null);
+            packageInfo.splitNames = new String[] {"split_feature"};
+            mPackageManager.addPackage(packageInfo);
+
+            assertFalse(
+                    WebApkValidator.canWebApkHandleUrl(
+                            RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK, 0));
+        } catch (URISyntaxException e) {
+            throw new AssertionError("URI is invalid.", e);
+        }
+    }
+
+    /**
+     * Tests when override validation is set, {@link WebApkValidator#isValidWebApk} returns false
+     * when the APK has splits.
+     */
+    @Test
+    public void testIsValidWebApkOverridesReturnsFalseForSplitApk() {
+        PackageInfo packageInfo =
+                newPackageInfoWithBrowserSignature(
+                        WEBAPK_PACKAGE_NAME,
+                        new Signature(EXPECTED_SIGNATURE),
+                        TEST_STARTURL,
+                        null);
+        packageInfo.splitNames = new String[] {"split_feature"};
+        mPackageManager.addPackage(packageInfo);
+
+        WebApkValidator.setDisableValidationForTesting(true);
+        assertFalse(
+                WebApkValidator.isValidWebApk(RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+    }
 }
