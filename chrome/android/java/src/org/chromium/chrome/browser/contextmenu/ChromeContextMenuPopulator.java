@@ -564,9 +564,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     pageNavigationGroup.add(createListItem(Item.PRINT_PAGE));
                 }
             } else {
-                if (mItemDelegate instanceof TabContextMenuItemDelegate) {
-                    TabContextMenuItemDelegate tabDelegate =
-                            (TabContextMenuItemDelegate) mItemDelegate;
+                if (mItemDelegate instanceof TabContextMenuItemDelegate tabDelegate) {
                     pageNavigationGroup.add(
                             createListItem(
                                     Item.BACK,
@@ -1581,7 +1579,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     /** Copy the video frame, that triggered the current context menu, to system clipboard. */
     private void copyVideoFrameToClipboard() {
         verifyGenericCopyImageActionIsAllowedByPolicy(
-                mParams.getSrcUrl().getSpec(), () -> mNativeDelegate.copyVideoFrame());
+                mParams.getSrcUrl().getSpec(), mNativeDelegate::copyVideoFrame);
     }
 
     /** Download the video frame, that triggered the current context menu, to the device. */

@@ -164,10 +164,7 @@ class ContextMenuChipController implements View.OnClickListener {
 
         if (!chipRenderParams.isRemoveIconHidden) {
             mChipView.addRemoveIcon();
-            mChipView.setRemoveIconClickListener(
-                    v -> {
-                        dismissChipIfShowing();
-                    });
+            mChipView.setRemoveIconClickListener(v -> dismissChipIfShowing());
         }
 
         mChipView.setOnClickListener(this);

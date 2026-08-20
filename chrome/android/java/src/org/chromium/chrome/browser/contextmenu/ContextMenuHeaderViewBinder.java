@@ -82,13 +82,11 @@ class ContextMenuHeaderViewBinder {
         } else if (propertyKey == ContextMenuHeaderProperties.TITLE_AND_URL_CLICK_LISTENER) {
             final View.OnClickListener listener =
                     model.get(ContextMenuHeaderProperties.TITLE_AND_URL_CLICK_LISTENER);
-            final ContextMenuHeaderTextView header =
-                    (ContextMenuHeaderTextView) view.findViewById(R.id.title_and_url);
+            final ContextMenuHeaderTextView header = view.findViewById(R.id.title_and_url);
             header.setOnClickListener(listener);
         } else if (propertyKey == ContextMenuHeaderProperties.IS_EXPANDED) {
             final boolean isExpanded = model.get(ContextMenuHeaderProperties.IS_EXPANDED);
-            final ContextMenuHeaderTextView header =
-                    (ContextMenuHeaderTextView) view.findViewById(R.id.title_and_url);
+            final ContextMenuHeaderTextView header = view.findViewById(R.id.title_and_url);
             header.setIsExpanded(isExpanded);
         } else if (propertyKey == ContextMenuHeaderProperties.URL_MAX_LINES) {
             final int maxLines = model.get(ContextMenuHeaderProperties.URL_MAX_LINES);

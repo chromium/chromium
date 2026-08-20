@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
-import static org.chromium.ui.listmenu.ListMenuItemProperties.KEY_LISTENER;
-
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
