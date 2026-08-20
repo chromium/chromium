@@ -36,9 +36,10 @@ void LayerWithExternalTexture::SetTransferableResource(
     SwitchToLayer(new_layer);
 
     texture_layer_ = new_layer;
-    // Reset the frame_size_in_dip_ so that SetTextureSize() will not early out,
-    // the frame_size_in_dip_ was for a previous (different) |texture_layer_|.
-    frame_size_in_dip_ = gfx::Size();
+    // Reset the texture_size_in_dip_ so that SetTextureSize() will not early
+    // out, the texture_size_in_dip_ was for a previous (different)
+    // |texture_layer_|.
+    texture_size_in_dip_ = gfx::Size();
   }
 
   if (transfer_release_callback_) {
@@ -57,16 +58,16 @@ void LayerWithExternalTexture::SetTransferableResource(
             transfer_resource_,
             base::BindOnce(
                 [](const gpu::SyncToken& sync_token, bool is_lost) {}),
-            frame_size_in_dip_);
+            texture_size_in_dip_);
   }
 }
 
 void LayerWithExternalTexture::SetTextureSize(gfx::Size texture_size_in_dip) {
-  if (frame_size_in_dip_ == texture_size_in_dip) {
+  if (texture_size_in_dip_ == texture_size_in_dip) {
     return;
   }
 
-  frame_size_in_dip_ = texture_size_in_dip;
+  texture_size_in_dip_ = texture_size_in_dip;
   RecomputeDrawsContentAndUVRect();
   texture_layer_->SetNeedsDisplay();
 }
@@ -83,7 +84,7 @@ std::unique_ptr<Layer> LayerWithExternalTexture::CreateMirror(
             transfer_resource(),
             base::BindOnce(
                 [](const gpu::SyncToken& sync_token, bool is_lost) {}),
-            frame_size_in_dip_);
+            texture_size_in_dip_);
   }
 
   return mirror;
@@ -100,11 +101,11 @@ bool LayerWithExternalTexture::HasTransferableResource() const {
 void LayerWithExternalTexture::RecomputeDrawsContentAndUVRect() {
   gfx::Size size(bounds_.size());
   if (texture_layer_.get()) {
-    size.SetToMin(frame_size_in_dip_);
+    size.SetToMin(texture_size_in_dip_);
     gfx::PointF uv_top_left(0.f, 0.f);
     gfx::PointF uv_bottom_right(
-        static_cast<float>(size.width()) / frame_size_in_dip_.width(),
-        static_cast<float>(size.height()) / frame_size_in_dip_.height());
+        static_cast<float>(size.width()) / texture_size_in_dip_.width(),
+        static_cast<float>(size.height()) / texture_size_in_dip_.height());
     texture_layer_->SetUV(uv_top_left, uv_bottom_right);
   }
 

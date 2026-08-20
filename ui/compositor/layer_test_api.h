@@ -51,8 +51,6 @@ class COMPOSITOR_EXPORT LayerTestApi {
   // Returns the damaged region.
   const cc::Region& damaged_region() const;
 
-  // Returns the frame size in DIP.
-  const gfx::Size& frame_size_in_dip() const;
 
   // Returns true if paint is currently deferred.
   // Note: Only valid for LAYER_TEXTURED.

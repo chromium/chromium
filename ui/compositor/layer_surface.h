@@ -90,6 +90,7 @@ class COMPOSITOR_EXPORT LayerSurface : public Layer {
   void Reset() override;
 
  private:
+  gfx::Size frame_size_in_dip_;
   scoped_refptr<cc::SurfaceLayer> surface_layer_;
 };
 

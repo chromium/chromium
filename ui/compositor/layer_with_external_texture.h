@@ -69,6 +69,7 @@ class COMPOSITOR_EXPORT LayerWithExternalTexture
   const cc::TextureLayer* texture_layer() const { return texture_layer_.get(); }
 
  private:
+  gfx::Size texture_size_in_dip_;
   scoped_refptr<cc::TextureLayer> texture_layer_;
   viz::TransferableResource transfer_resource_;
   viz::ReleaseCallback transfer_release_callback_;

@@ -788,10 +788,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   // A cached copy of |Compositor::device_scale_factor()|.
   float device_scale_factor_;
 
-  // The size of the frame or texture in DIP, set when SetShowDelegatedContent
-  // or SetTransferableResource() was called.
-  gfx::Size frame_size_in_dip_;
-
   // The counter to maintain how many cache render surface requests we have. If
   // the value > 0, means we need to cache the render surface. If the value
   // == 0, means we should not cache the render surface.

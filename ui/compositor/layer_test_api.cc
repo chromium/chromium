@@ -71,9 +71,6 @@ const cc::Region& LayerTestApi::damaged_region() const {
   return layer_->damaged_region_;
 }
 
-const gfx::Size& LayerTestApi::frame_size_in_dip() const {
-  return layer_->frame_size_in_dip_;
-}
 
 bool LayerTestApi::IsPaintDeferred() const {
   CHECK(layer_->AsTextured());
