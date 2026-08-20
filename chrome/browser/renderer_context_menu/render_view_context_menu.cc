@@ -2579,7 +2579,7 @@ void RenderViewContextMenu::AppendPageItems() {
     // Cast
     AppendMediaRouterItem();
 
-    // Send to your devices
+    // Send to your device
     if (GetBrowser() &&
         send_tab_to_self::ShouldDisplayEntryPoint(embedder_web_contents_)) {
       AppendSendTabToSelfItem(/*add_separator=*/false);

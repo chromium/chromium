@@ -2519,13 +2519,13 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
       send_tab_to_self::kSendTabToSelfEnhancedDesktopUI,
       user_education::Metadata(
           151, "mtatarski@google.com",
-          "Show the new badge on Send to Your Devices context menu items.")));
+          "Show the new badge on Send to your device context menu items.")));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(
       send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2,
       user_education::Metadata(
           153, "mtatarski@google.com",
-          "Show the new badge on Send to Your Devices context menu items.")));
+          "Show the new badge on Send to your device context menu items.")));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(
       features::kReadAnythingLineFocus,

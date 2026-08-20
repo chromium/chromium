@@ -1199,7 +1199,7 @@ chromium-metrics-reviews@google.com.
   <int value="60" label="Show Chrome Labs"/>
   <int value="61" label="Install PWA"/>
   <int value="62" label="Open in PWA window"/>
-  <int value="63" label="Send to your devices"/>
+  <int value="63" label="Send to your device"/>
   <int value="64" label="Create QR Code"/>
   <int value="65" label="Customize your Chrome"/>
   <int value="66" label="Close this profile"/>

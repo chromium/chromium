@@ -96,7 +96,7 @@ chromium-metrics-reviews@google.com.
   <variant name="NewTabToRight" summary="the New Tab To Right command"/>
   <variant name="Reload" summary="the Reload command"/>
   <variant name="RemoveFromGroup" summary="the Remove from Group command"/>
-  <variant name="SendTabToSelf" summary="the Send to Your Devices command"/>
+  <variant name="SendTabToSelf" summary="the Send to your device command"/>
   <variant name="SwapWithActiveSplit"
       summary="the Swap with Active Split command"/>
   <variant name="ToggleGrouped" summary="the Toggle group command"/>

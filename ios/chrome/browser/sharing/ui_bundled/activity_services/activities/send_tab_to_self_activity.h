@@ -15,7 +15,7 @@ namespace send_tab_to_self {
 class SendTabToSelfSyncService;
 }  // namespace send_tab_to_self
 
-// Activity representing the generic "Send to your devices" action, which
+// Activity representing the generic "Send to your device" action, which
 // opens a target device selector picker UI when executed. Displayed in the
 // Action (bottom) row of the Share Sheet.
 @interface SendTabToSelfActivity : ChromeActivity
