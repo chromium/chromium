@@ -271,6 +271,16 @@ source_set("browser_desktop_window_tree_host") {
   public = [ "browser_desktop_window_tree_host.h" ]
 }
 
+source_set("browser_view_layout_delegate") {
+  public = [ "layout/browser_view_layout_delegate.h" ]
+  public_deps = [
+    ":browser_view_layout_params",
+    "//base",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
 if (is_win) {
   source_set("minimize_button_metrics_win") {
     public = [ "minimize_button_metrics_win.h" ]
