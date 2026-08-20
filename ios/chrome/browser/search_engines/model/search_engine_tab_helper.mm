@@ -24,8 +24,8 @@ namespace {
 
 // Returns true if the `item`'s transition type is FORM_SUBMIT.
 bool IsFormSubmit(const web::NavigationItem* item) {
-  return ui::PageTransitionCoreTypeIs(item->GetTransitionType(),
-                                      ui::PAGE_TRANSITION_FORM_SUBMIT);
+  return item && ui::PageTransitionCoreTypeIs(item->GetTransitionType(),
+                                              ui::PAGE_TRANSITION_FORM_SUBMIT);
 }
 
 // Generates a keyword from `item`. This code is based on:
@@ -34,7 +34,7 @@ std::u16string GenerateKeywordFromNavigationItem(
     const web::NavigationItem* item) {
   // Don't autogenerate keywords for pages that are the result of form
   // submissions.
-  if (IsFormSubmit(item)) {
+  if (!item || IsFormSubmit(item)) {
     return std::u16string();
   }
 
@@ -150,9 +150,13 @@ void SearchEngineTabHelper::AddTemplateURLByOSDD(const GURL& page_url,
       return;
     }
     item = manager->GetItemAtIndex(index);
-    if (!IsFormSubmit(item)) {
+    if (!item || !IsFormSubmit(item)) {
       break;
     }
+  }
+
+  if (!item) {
+    return;
   }
 
   // Autogenerate a keyword for the autodetected case; in the other cases we'll
@@ -201,6 +205,9 @@ void SearchEngineTabHelper::AddTemplateURLBySearchableURL(
   const web::NavigationItem* current_item = manager->GetItemAtIndex(last_index);
   const web::NavigationItem* previous_item =
       manager->GetItemAtIndex(last_index - 1);
+  if (!previous_item) {
+    return;
+  }
 
   std::u16string keyword(GenerateKeywordFromNavigationItem(previous_item));
   if (keyword.empty()) {
@@ -235,7 +242,7 @@ void SearchEngineTabHelper::AddTemplateURLBySearchableURL(
       previous_item->GetFaviconStatus();
   if (previous_item_favicon_status.url.is_valid()) {
     data.favicon_url = previous_item_favicon_status.url;
-  } else if (current_item->GetReferrer().url.is_valid()) {
+  } else if (current_item && current_item->GetReferrer().url.is_valid()) {
     data.favicon_url =
         TemplateURL::GenerateFaviconURL(current_item->GetReferrer().url);
   } else if (previous_item->GetURL().is_valid()) {

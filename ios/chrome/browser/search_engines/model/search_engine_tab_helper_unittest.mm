@@ -291,3 +291,11 @@ TEST_F(SearchEngineTabHelperIncognitoTest,
   }));
   EXPECT_EQ(old_urls, template_url_service()->GetTemplateURLs());
 }
+
+// Tests that SearchEngineTabHelper does not crash when AddTemplateURLByOSDD is
+// called without a valid navigation item.
+TEST_F(SearchEngineTabHelperTest, AddTemplateURLByOSDDWithNullNavigationItem) {
+  GURL osdd_url = server_.GetURL(kOpenSearchXmlFilePath);
+  SearchEngineTabHelper::FromWebState(web_state())
+      ->AddTemplateURLByOSDD(GURL(), osdd_url);
+}
