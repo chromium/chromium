@@ -92,3 +92,7 @@ crbug.com/437843552 [ Simulator ] HistorySystemEGTest/testSearchSyncedHistory [ 
 crbug.com/545634498 [ iPad Device ] HistorySystemEGTest/testSearchSyncedHistory [ Pass Failure ]
 crbug.com/545633687 [ Simulator ] TabGroupsEGTest/testReopenGroupFromAnotherWindow [ Pass Failure ]
 crbug.com/545633687 [ iPad Device ] TabGroupsEGTest/testReopenGroupFromAnotherWindow [ Pass Failure ]
+
+# Gardening suppression 2026-08-20
+crbug.com/549761710 InternalDiscoverFeedTestCase/testFeedAblationHidesFeed [ Pass Failure ]
+
