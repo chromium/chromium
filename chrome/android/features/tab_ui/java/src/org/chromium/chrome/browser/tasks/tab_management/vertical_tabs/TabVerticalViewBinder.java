@@ -1168,11 +1168,12 @@ class TabVerticalViewBinder {
     }
 
     /**
-     * Configures mouse hover listeners for the tab row view and optional action button.
+     * Configures mouse hover and keyboard focus listeners for the tab row view and optional action
+     * button.
      *
      * <p>When hovered while unselected, applies {@link TabUiThemeUtil#getHoveredTabContainerColor}
      * corresponding to the current incognito state, and restores {@code defaultBackgroundColor} on
-     * exit.
+     * exit. Hover card display is triggered when either mouse hover or keyboard focus is active.
      *
      * @param model the model containing the tab properties.
      * @param view the root ViewGroup representing the tab row item.
@@ -1199,8 +1200,17 @@ class TabVerticalViewBinder {
                 };
 
         setupHoverOrchestration(view, actionButton, onHoverEnter, onHoverExit);
+
+        view.setOnFocusChangeListener((v, hasFocus) -> notifyHoverChange(model, v, hasFocus));
     }
 
+    /**
+     * Configures mouse hover and keyboard focus listeners for the tab group header row view and
+     * optional menu button.
+     *
+     * @param model the model containing the tab group properties.
+     * @param view the root ViewGroup representing the tab group header row item.
+     */
     private static void setupTabGroupHeaderHoverListener(PropertyModel model, ViewGroup view) {
         @Nullable View menuButton = view.findViewById(R.id.menu_button);
 
@@ -1216,6 +1226,9 @@ class TabVerticalViewBinder {
                 };
 
         setupHoverOrchestration(view, menuButton, onHoverEnter, onHoverExit);
+
+        view.setOnFocusChangeListener(
+                (v, hasFocus) -> notifyGroupHeaderHoverChange(model, v, hasFocus));
     }
 
     private static void updateGroupHeaderIcons(
@@ -1228,7 +1241,10 @@ class TabVerticalViewBinder {
         }
     }
 
-    /** Notifies {@link TabHoverCardListener} of hover state transitions on tab items. */
+    /**
+     * Notifies {@link TabHoverCardListener} of hover or keyboard focus state transitions on tab
+     * items.
+     */
     private static void notifyHoverChange(PropertyModel model, View view, boolean isHovered) {
         TabHoverCardListener listener = model.get(TabProperties.TAB_HOVER_CARD_LISTENER);
         if (listener != null) {
@@ -1237,7 +1253,10 @@ class TabVerticalViewBinder {
         }
     }
 
-    /** Notifies {@link TabHoverCardListener} of hover state transitions on tab group headers. */
+    /**
+     * Notifies {@link TabHoverCardListener} of hover or keyboard focus state transitions on tab
+     * group headers.
+     */
     private static void notifyGroupHeaderHoverChange(
             PropertyModel model, View view, boolean isHovered) {
         TabHoverCardListener listener = model.get(TabProperties.TAB_HOVER_CARD_LISTENER);

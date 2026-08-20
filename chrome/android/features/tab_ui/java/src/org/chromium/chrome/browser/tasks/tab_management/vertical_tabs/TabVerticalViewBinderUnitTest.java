@@ -1493,6 +1493,71 @@ public class TabVerticalViewBinderUnitTest {
 
     @Test
     @SmallTest
+    public void testBindTab_Focus_NotifiesHoverCardListener() {
+        mModel.set(TabProperties.TAB_ID, TEST_HEADER_TAB_ID);
+        mModel.set(TabProperties.TAB_HOVER_CARD_LISTENER, mTabHoverCardListener);
+        mModel.set(TabProperties.IS_SELECTED, false);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+
+        // Focus gain
+        mItemView.getOnFocusChangeListener().onFocusChange(mItemView, true);
+        verify(mTabHoverCardListener)
+                .onTabHoverCardStateChanged(TEST_HEADER_TAB_ID, mItemView, /* isHovered= */ true);
+
+        // Focus loss
+        mItemView.getOnFocusChangeListener().onFocusChange(mItemView, false);
+        verify(mTabHoverCardListener)
+                .onTabHoverCardStateChanged(TEST_HEADER_TAB_ID, mItemView, /* isHovered= */ false);
+    }
+
+    @Test
+    @SmallTest
+    public void testBindPinnedTab_Focus_NotifiesHoverCardListener() {
+        ViewGroup pinnedView = inflatePinnedTabView();
+        mModel.set(TabProperties.TAB_ID, TEST_HEADER_TAB_ID);
+        mModel.set(TabProperties.TAB_HOVER_CARD_LISTENER, mTabHoverCardListener);
+        mModel.set(TabProperties.IS_SELECTED, false);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.IS_SELECTED);
+
+        // Focus gain
+        pinnedView.getOnFocusChangeListener().onFocusChange(pinnedView, true);
+        verify(mTabHoverCardListener)
+                .onTabHoverCardStateChanged(TEST_HEADER_TAB_ID, pinnedView, /* isHovered= */ true);
+
+        // Focus loss
+        pinnedView.getOnFocusChangeListener().onFocusChange(pinnedView, false);
+        verify(mTabHoverCardListener)
+                .onTabHoverCardStateChanged(TEST_HEADER_TAB_ID, pinnedView, /* isHovered= */ false);
+    }
+
+    @Test
+    @SmallTest
+    public void testBindTabGroupHeader_Focus_NotifiesHoverCardListener() {
+        ViewGroup headerView = inflateGroupHeaderView();
+        mModel.set(TabProperties.TAB_ID, TEST_HEADER_TAB_ID);
+        mModel.set(TabProperties.TAB_GROUP_HEADER_ID, TEST_TAB_GROUP_ID);
+        mModel.set(TabProperties.TAB_HOVER_CARD_LISTENER, mTabHoverCardListener);
+        TabActionButtonData actionButtonData =
+                new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
+        mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.TAB_ACTION_BUTTON_DATA);
+
+        // Focus gain
+        headerView.getOnFocusChangeListener().onFocusChange(headerView, true);
+        verify(mTabHoverCardListener)
+                .onTabGroupHoverCardStateChanged(
+                        TEST_HEADER_TAB_ID, TEST_TAB_GROUP_ID, headerView, /* isHovered= */ true);
+
+        // Focus loss
+        headerView.getOnFocusChangeListener().onFocusChange(headerView, false);
+        verify(mTabHoverCardListener)
+                .onTabGroupHoverCardStateChanged(
+                        TEST_HEADER_TAB_ID, TEST_TAB_GROUP_ID, headerView, /* isHovered= */ false);
+    }
+
+    @Test
+    @SmallTest
     public void testBindTabGroupHeader_CollapsedState() {
         ViewGroup headerView = inflateGroupHeaderView();
         ImageView expandChevron = headerView.findViewById(R.id.expand_chevron);

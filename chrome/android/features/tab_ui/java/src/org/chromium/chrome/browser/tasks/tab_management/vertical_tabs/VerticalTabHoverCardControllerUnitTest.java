@@ -244,6 +244,58 @@ public class VerticalTabHoverCardControllerUnitTest {
 
     @Test
     @SmallTest
+    public void testKeyboardFocus_ShowsImmediately() {
+        when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
+        when(mTabView1.hasFocus()).thenReturn(true);
+
+        TabHoverCardListener listener = mController.getTabHoverCardListener();
+        assertNotNull(listener);
+
+        listener.onTabHoverCardStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
+
+        // Should show immediately for keyboard focus without needing ShadowLooper delay task flush.
+        verify(mTabHoverCardViewStub).inflate();
+        verify(mTabHoverCardView).show(eq(mTab1), anyFloat(), anyFloat());
+    }
+
+    @Test
+    @SmallTest
+    public void testKeyboardFocus_FocusLost_HidesHoverCard() {
+        when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
+        when(mTabView1.hasFocus()).thenReturn(true);
+
+        TabHoverCardListener listener = mController.getTabHoverCardListener();
+        assertNotNull(listener);
+
+        listener.onTabHoverCardStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
+
+        // Inflation initializes and hides the view before showing.
+        InOrder inOrder = inOrder(mTabHoverCardView);
+        inOrder.verify(mTabHoverCardView).hide();
+        inOrder.verify(mTabHoverCardView).show(eq(mTab1), anyFloat(), anyFloat());
+
+        // Focus lost triggers hide.
+        listener.onTabHoverCardStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ false);
+        inOrder.verify(mTabHoverCardView).hide();
+    }
+
+    @Test
+    @SmallTest
+    public void testKeyboardFocus_SelectedTab_DoNotShowHoverCard() {
+        when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_1);
+        when(mTabView1.hasFocus()).thenReturn(true);
+
+        TabHoverCardListener listener = mController.getTabHoverCardListener();
+        assertNotNull(listener);
+
+        listener.onTabHoverCardStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
+
+        verify(mTabHoverCardViewStub, never()).inflate();
+        verify(mTabHoverCardView, never()).show(any(), anyFloat(), anyFloat());
+    }
+
+    @Test
+    @SmallTest
     public void testGetHoverCardPosition_RegularTab_Expanded() {
         when(mContainerView.getWidth()).thenReturn(EXPANDED_CONTAINER_WIDTH_PX);
 

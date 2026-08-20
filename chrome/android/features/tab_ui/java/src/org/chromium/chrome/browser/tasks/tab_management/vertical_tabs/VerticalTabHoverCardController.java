@@ -34,21 +34,21 @@ public class VerticalTabHoverCardController {
     /** Interface to receive tab and tab group hover card events. */
     public interface TabHoverCardListener {
         /**
-         * Called when a tab item view hover state changes.
+         * Called when a tab item view hover or keyboard focus state changes.
          *
-         * @param tabId The ID of the hovered tab.
-         * @param view The tab item view being hovered.
-         * @param isHovered True if the cursor entered hover state, false if it exited.
+         * @param tabId The ID of the hovered/focused tab.
+         * @param view The tab item view being hovered or focused.
+         * @param isHovered True if hover or keyboard focus became active, false if both exited.
          */
         void onTabHoverCardStateChanged(int tabId, View view, boolean isHovered);
 
         /**
-         * Called when a tab group header view hover state changes.
+         * Called when a tab group header view hover or keyboard focus state changes.
          *
          * @param groupHeaderTabId The tab ID of the group header (or {@link Tab#INVALID_TAB_ID}).
-         * @param tabGroupId The stable ID (Token) of the group being hovered.
-         * @param view The tab group header view being hovered.
-         * @param isHovered True if the cursor entered hover state, false if it exited.
+         * @param tabGroupId The stable ID (Token) of the group being hovered/focused.
+         * @param view The tab group header view being hovered or focused.
+         * @param isHovered True if hover or keyboard focus became active, false if both exited.
          */
         void onTabGroupHoverCardStateChanged(
                 int groupHeaderTabId, @Nullable Token tabGroupId, View view, boolean isHovered);
@@ -143,7 +143,7 @@ public class VerticalTabHoverCardController {
         mLastHoverCardExitTime = INVALID_TIME;
     }
 
-    /** Handles hover state changes on vertical tab item views. */
+    /** Handles hover and keyboard focus state changes on vertical tab item views. */
     private void showOrHideTabHoverCard(int tabId, View view, boolean isHovered) {
         if (isHovered) {
             mCurrentHoveredTabId = tabId;
@@ -158,7 +158,7 @@ public class VerticalTabHoverCardController {
                 return;
             }
 
-            if (shouldShowHoverCardImmediately()) {
+            if (shouldShowHoverCardImmediately(view)) {
                 showHoverCard(tabId, view);
             } else {
                 mPendingHoverCardRunnable = () -> showHoverCard(tabId, view);
@@ -183,7 +183,9 @@ public class VerticalTabHoverCardController {
         return TabHoverCardView.getHoverCardDelay(railWidthDp, minWidthDp, maxWidthDp);
     }
 
-    private boolean shouldShowHoverCardImmediately() {
+    private boolean shouldShowHoverCardImmediately(View view) {
+        // Show immediately if the tab view has keyboard focus.
+        if (view.hasFocus()) return true;
         // Show immediately if a card is already visible while scrubbing across adjacent tabs.
         if (mTabHoverCardView != null && mTabHoverCardView.isShown()) return true;
         // Do not show immediately if no previous hover card has been shown/hidden yet.
