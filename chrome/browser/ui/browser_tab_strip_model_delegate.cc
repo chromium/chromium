@@ -117,7 +117,7 @@ void BrowserTabStripModelDelegate::AddTabAt(
   chrome::AddTabAt(browser_, url, index, foreground, group, pinned);
 }
 
-Browser* BrowserTabStripModelDelegate::CreateNewStripWithTabs(
+BrowserWindowInterface* BrowserTabStripModelDelegate::CreateNewStripWithTabs(
     std::vector<NewStripContents> tabs,
     const gfx::Rect& window_bounds,
     bool maximize) {
@@ -129,9 +129,8 @@ Browser* BrowserTabStripModelDelegate::CreateNewStripWithTabs(
   params.initial_bounds = window_bounds;
   params.initial_show_state = maximize ? ui::mojom::WindowShowState::kMaximized
                                        : ui::mojom::WindowShowState::kNormal;
-  Browser* browser =
-      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
-  TabStripModel* new_model = browser->tab_strip_model();
+  BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
+  TabStripModel* new_model = browser->GetTabStripModel();
 
   for (size_t i = 0; i < tabs.size(); ++i) {
     NewStripContents item = std::move(tabs[i]);

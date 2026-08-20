@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
+
 #include <memory>
 #include <utility>
 
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
@@ -213,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerDesktopWidgetUiTest,
 // activation instead.
 IN_PROC_BROWSER_TEST_F(TabDialogManagerUiTest, DoesNotActivateInactiveWindow) {
   // 1. Create a second browser window and activate it.
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
 
   std::unique_ptr<views::Widget> widget;
 

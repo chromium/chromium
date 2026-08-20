@@ -15,7 +15,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"

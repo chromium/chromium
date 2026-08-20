@@ -17,7 +17,6 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_interface.h"
 
-class Browser;
 class BrowserWindowInterface;
 class GURL;
 
@@ -89,9 +88,10 @@ class TabStripModelDelegate {
     // A bitmask of TabStripModel::AddTabTypes to apply to the added contents.
     int add_types = 0;
   };
-  virtual Browser* CreateNewStripWithTabs(std::vector<NewStripContents> tabs,
-                                          const gfx::Rect& window_bounds,
-                                          bool maximize) = 0;
+  virtual BrowserWindowInterface* CreateNewStripWithTabs(
+      std::vector<NewStripContents> tabs,
+      const gfx::Rect& window_bounds,
+      bool maximize) = 0;
 
   // Notifies the delegate that the specified WebContents will be added to the
   // tab strip (via insertion/appending/replacing existing) and allows it to do

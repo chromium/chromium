@@ -22,13 +22,13 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
@@ -61,6 +61,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/base_window.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
@@ -422,14 +423,10 @@ void SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(
     // NOTE: This action could cause `this` to be deleted. Make sure lines
     // following this have either copied data by value or hold pointers to the
     // objects it needs.
-    Browser* browser_ptr =
-        browser_with_local_group_id
-            ? browser_with_local_group_id->GetBrowserForMigrationOnly()
-            : nullptr;
     tab_group_service->OpenTabGroup(
         saved_group_guid,
         std::make_unique<TabGroupActionContextDesktop>(
-            browser_ptr, OpeningSource::kOpenedFromRevisitUi));
+            browser_with_local_group_id, OpeningSource::kOpenedFromRevisitUi));
   }
 
   // Ensure that the saved group did open in the browser.
@@ -473,13 +470,10 @@ SavedTabGroupUtils::OpenSavedTabGroup(BrowserWindowInterface* browser,
     }
   }
 
-  Browser* browser_ptr =
-      browser ? browser->GetBrowserForMigrationOnly() : nullptr;
-
   std::optional<LocalTabGroupID> opened_group_id =
       tab_group_service->OpenTabGroup(
           saved_group_guid, std::make_unique<TabGroupActionContextDesktop>(
-                                browser_ptr, opening_source));
+                                browser, opening_source));
 
   return opened_group_id;
 }

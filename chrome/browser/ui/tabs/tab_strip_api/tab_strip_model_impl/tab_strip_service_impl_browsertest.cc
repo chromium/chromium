@@ -12,7 +12,6 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window_theme_observer.h"

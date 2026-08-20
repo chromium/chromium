@@ -9,7 +9,6 @@
 #include "base/uuid.h"
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"

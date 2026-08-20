@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"  // nogncheck
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 
+class Browser;
 class GURL;
 
 namespace tab_groups {
@@ -43,9 +44,10 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
                 bool foreground,
                 std::optional<tab_groups::TabGroupId> group,
                 bool pinned) override;
-  Browser* CreateNewStripWithTabs(std::vector<NewStripContents> tabs,
-                                  const gfx::Rect& window_bounds,
-                                  bool maximize) override;
+  BrowserWindowInterface* CreateNewStripWithTabs(
+      std::vector<NewStripContents> tabs,
+      const gfx::Rect& window_bounds,
+      bool maximize) override;
   void WillAddWebContents(content::WebContents* contents) override;
   int GetDragActions() const override;
   bool CanDuplicateContentsAt(int index) override;

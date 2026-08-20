@@ -8,7 +8,6 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/controllers/tab_strip_ui_controller_injector_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"

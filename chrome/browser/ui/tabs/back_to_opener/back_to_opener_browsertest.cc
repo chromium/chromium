@@ -4,7 +4,6 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -400,12 +399,11 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest, OpenerMovedToAnotherWindow) {
   std::unique_ptr<content::WebContents> detached =
       browser()->tab_strip_model()->DetachWebContentsAtForInsertion(
           opener_index);
-  Browser* new_browser =
-      CreateBrowserWindow(BrowserWindowCreateParams(browser()->GetProfile(),
-                                                    /*from_user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
-  new_browser->tab_strip_model()->InsertWebContentsAt(0, std::move(detached),
-                                                      AddTabTypes::ADD_ACTIVE);
+  BrowserWindowInterface* new_browser = CreateBrowserWindow(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
+  new_browser->GetTabStripModel()->InsertWebContentsAt(0, std::move(detached),
+                                                       AddTabTypes::ADD_ACTIVE);
 
   // Back button should still work
   EXPECT_TRUE(controller->HasValidOpener());
@@ -416,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest, OpenerMovedToAnotherWindow) {
   close_watcher.Wait();
 
   // Verify opener in new window is active
-  EXPECT_EQ(new_browser->tab_strip_model()->GetActiveWebContents(),
+  EXPECT_EQ(new_browser->GetTabStripModel()->GetActiveWebContents(),
             opener_contents);
 }
 

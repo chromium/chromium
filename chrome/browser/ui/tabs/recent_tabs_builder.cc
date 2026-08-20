@@ -22,7 +22,6 @@
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"

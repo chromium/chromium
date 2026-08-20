@@ -10,7 +10,6 @@
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -150,41 +149,43 @@ class CollaborationMessagingObserverBrowserTest
         browser()->GetProfile());
   }
 
-  TabStripRegionView* GetTabStripView(Browser* target_browser) {
+  TabStripRegionView* GetTabStripView(BrowserWindowInterface* target_browser) {
     return BrowserView::GetBrowserViewForBrowser(target_browser)
         ->tab_strip_view();
   }
 
-  TabIcon* GetTabIcon(Browser* target_browser, int index) {
+  TabIcon* GetTabIcon(BrowserWindowInterface* target_browser, int index) {
     return views::AsViewClass<TabIcon>(
         GetTabStripView(target_browser)
-            ->GetTabAnchorView(target_browser->tab_strip_model()
+            ->GetTabAnchorView(target_browser->GetTabStripModel()
                                    ->GetTabAtIndex(index)
                                    ->GetHandle())
             ->GetViewByElementId(kTabIconElementId));
   }
 
-  views::View* GetTabGroupHeader(Browser* target_browser,
+  views::View* GetTabGroupHeader(BrowserWindowInterface* target_browser,
                                  const tab_groups::TabGroupId index) {
     return GetTabStripView(target_browser)->GetTabGroupAnchorView(index);
   }
 
-  tabs::TabInterface* GetTabInterface(Browser* target_browser, int index) {
-    return target_browser->tab_strip_model()->GetTabAtIndex(index);
+  tabs::TabInterface* GetTabInterface(BrowserWindowInterface* target_browser,
+                                      int index) {
+    return target_browser->GetTabStripModel()->GetTabAtIndex(index);
   }
 
-  CollaborationMessagingTabData* GetTabDataAtIndex(Browser* target_browser,
-                                                   int index) {
+  CollaborationMessagingTabData* GetTabDataAtIndex(
+      BrowserWindowInterface* target_browser,
+      int index) {
     return tab_groups::CollaborationMessagingTabData::From(
         GetTabInterface(target_browser, index));
   }
 
-  bool AddTab(Browser* target_browser) {
+  bool AddTab(BrowserWindowInterface* target_browser) {
     return AddTabAtIndexToBrowser(target_browser, -1, GURL("about:blank"),
                                   ui::PageTransition::PAGE_TRANSITION_FIRST);
   }
 
-  void AddTabs(Browser* target_browser, int num) {
+  void AddTabs(BrowserWindowInterface* target_browser, int num) {
     for (int i = 0; i < num; i++) {
       AddTab(target_browser);
     }

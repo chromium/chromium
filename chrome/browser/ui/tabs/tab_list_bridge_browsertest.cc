@@ -14,7 +14,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
@@ -152,8 +151,10 @@ MATCHER_P(MatchesTab, expected_url, "") {
 // Creates `num_tabs` tabs and sets their WebContents IDs to match their
 // index with an optional `offset` which is useful if this method is called on
 // multiple browser windows within a single test to prevent duplicate IDs.
-void SetupTabs(Browser* browser, size_t num_tabs, size_t offset = 0u) {
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
+void SetupTabs(BrowserWindowInterface* browser,
+               size_t num_tabs,
+               size_t offset = 0u) {
+  TabStripModel* tab_strip_model = browser->GetTabStripModel();
   ASSERT_TRUE(tab_strip_model);
 
   for (auto i = 0u; i < num_tabs; i++) {
@@ -665,11 +666,10 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest,
       /*trusted_source=*/false, gfx::Rect(), browser()->GetProfile(),
       /*user_gesture=*/true);
   // params.window = window2.release();
-  Browser* browser2 =
-      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* browser2 = CreateBrowserWindow(std::move(params));
   ui_test_utils::DeprecatedFakeActivateBrowser(browser2);
 
-  ASSERT_FALSE(browser2->tab_strip_model()->SupportsTabGroups());
+  ASSERT_FALSE(browser2->GetTabStripModel()->SupportsTabGroups());
 
   TabListInterface* tab_list_interface = TabListInterface::From(browser2);
   ASSERT_TRUE(tab_list_interface);
@@ -1311,8 +1311,8 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, Observer_OnTabMoved) {
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, IsTabListEditable) {
   // Use two tab lists, which means two browsers.
   Profile* profile = browser()->GetProfile();
-  Browser* browser1 = browser();
-  Browser* browser2 = CreateBrowser(profile);
+  BrowserWindowInterface* browser1 = browser();
+  BrowserWindowInterface* browser2 = CreateBrowser(profile);
 
   TabListInterface* tab_list1 = TabListInterface::From(browser1);
   TabListInterface* tab_list2 = TabListInterface::From(browser2);

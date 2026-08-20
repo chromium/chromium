@@ -22,7 +22,7 @@ void TestTabStripModelDelegate::AddTabAt(
     std::optional<tab_groups::TabGroupId> group,
     bool pinned) {}
 
-Browser* TestTabStripModelDelegate::CreateNewStripWithTabs(
+BrowserWindowInterface* TestTabStripModelDelegate::CreateNewStripWithTabs(
     std::vector<NewStripContents> tabs,
     const gfx::Rect& window_bounds,
     bool maximize) {

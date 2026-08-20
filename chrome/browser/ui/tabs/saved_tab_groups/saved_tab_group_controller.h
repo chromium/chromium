@@ -9,7 +9,7 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "components/tab_groups/tab_group_id.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace tab_groups {
 
@@ -20,7 +20,7 @@ class SavedTabGroupController {
   // state in the SavedTabGroupService. Returns the local group id that was
   // opened. If no group was opened, return nullopt.
   virtual std::optional<tab_groups::TabGroupId> OpenSavedTabGroupInBrowser(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const base::Uuid saved_group_guid,
       tab_groups::OpeningSource opening_source) = 0;
 

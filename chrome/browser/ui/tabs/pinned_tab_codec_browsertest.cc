@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/tabs/pinned_tab_test_utils.h"

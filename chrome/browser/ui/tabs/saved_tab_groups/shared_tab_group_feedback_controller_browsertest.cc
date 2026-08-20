@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/shared_tab_group_feedback_controller.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"

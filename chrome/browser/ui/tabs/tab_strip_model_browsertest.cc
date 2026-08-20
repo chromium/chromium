@@ -19,7 +19,6 @@
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -106,7 +105,7 @@ class TabStripModelPreventCloseTest : public PreventCloseTestBase,
               self->observer_.Reset();
             },
             base::Unretained(this)));
-    observer_.Observe(browser->tab_strip_model());
+    observer_.Observe(browser->GetTabStripModel());
   }
 
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
@@ -127,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(TabStripModelPreventCloseTest,
 
   ObserveBrowser(browser);
 
-  TabStripModel* const tab_strip_model = browser->tab_strip_model();
+  TabStripModel* const tab_strip_model = browser->GetTabStripModel();
   EXPECT_EQ(1, tab_strip_model->count());
   EXPECT_EQ(!kShouldPreventClose,
             tab_strip_model->IsTabClosable(tab_strip_model->GetActiveTab()));
@@ -168,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ObserveBrowser(browser);
 
-  TabStripModel* const tab_strip_model = browser->tab_strip_model();
+  TabStripModel* const tab_strip_model = browser->GetTabStripModel();
   EXPECT_NE(0, tab_strip_model->count());
   EXPECT_TRUE(tab_strip_model->IsTabClosable(tab_strip_model->GetActiveTab()));
 

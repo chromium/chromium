@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/converters/tab_converters.h"
 
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"

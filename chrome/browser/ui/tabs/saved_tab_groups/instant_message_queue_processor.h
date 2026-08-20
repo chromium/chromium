@@ -12,7 +12,7 @@
 #include "components/collaboration/public/messaging/message.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace tab_groups {
 

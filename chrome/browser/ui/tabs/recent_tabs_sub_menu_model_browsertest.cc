@@ -29,7 +29,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -193,12 +192,13 @@ class RecentTabsSubMenuModelTest : public InProcessBrowserTest {
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
-  Browser* AddBrowser(Browser* browser, const GURL& url) {
+  BrowserWindowInterface* AddBrowser(BrowserWindowInterface* browser,
+                                     const GURL& url) {
     ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ui_test_utils::NavigateToURLWithDisposition(
         browser, url, WindowOpenDisposition::NEW_WINDOW,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
-    Browser* new_browser = browser_created_observer.Wait();
+    BrowserWindowInterface* new_browser = browser_created_observer.Wait();
     ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
     return new_browser;
   }
@@ -492,14 +492,15 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelSplitTest,
   Init();
   DisableSync();
 
-  Browser* new_browser = AddBrowser(browser(), {GURL("about:blank?0")});
+  BrowserWindowInterface* new_browser =
+      AddBrowser(browser(), {GURL("about:blank?0")});
   ui_test_utils::NavigateToURLWithDisposition(
       new_browser, GURL("about:blank?1"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  new_browser->tab_strip_model()->ActivateTabAt(0);
-  new_browser->tab_strip_model()->AddToNewSplit(
+  new_browser->GetTabStripModel()->ActivateTabAt(0);
+  new_browser->GetTabStripModel()->AddToNewSplit(
       {1}, split_tabs::SplitTabVisualData(),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
 
@@ -542,7 +543,8 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelSplitTest,
   Init();
   DisableSync();
 
-  Browser* new_browser = AddBrowser(browser(), {GURL("about:blank?0")});
+  BrowserWindowInterface* new_browser =
+      AddBrowser(browser(), {GURL("about:blank?0")});
   for (int i = 1; i <= 7; ++i) {
     ui_test_utils::NavigateToURLWithDisposition(
         new_browser, GURL("about:blank?" + base::NumberToString(i)),
@@ -559,17 +561,17 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelSplitTest,
   // Tab 5: Group 2
   // Tab 6: Split 2
   // Tab 7: Split 2
-  new_browser->tab_strip_model()->AddToNewGroup({0, 1});
+  new_browser->GetTabStripModel()->AddToNewGroup({0, 1});
 
-  new_browser->tab_strip_model()->ActivateTabAt(2);
-  new_browser->tab_strip_model()->AddToNewSplit(
+  new_browser->GetTabStripModel()->ActivateTabAt(2);
+  new_browser->GetTabStripModel()->AddToNewSplit(
       {3}, split_tabs::SplitTabVisualData(),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
 
-  new_browser->tab_strip_model()->AddToNewGroup({4, 5});
+  new_browser->GetTabStripModel()->AddToNewGroup({4, 5});
 
-  new_browser->tab_strip_model()->ActivateTabAt(6);
-  new_browser->tab_strip_model()->AddToNewSplit(
+  new_browser->GetTabStripModel()->ActivateTabAt(6);
+  new_browser->GetTabStripModel()->AddToNewSplit(
       {7}, split_tabs::SplitTabVisualData(),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
 
@@ -643,7 +645,8 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelSplitTest,
   Init();
   DisableSync();
 
-  Browser* new_browser = AddBrowser(browser(), {GURL("about:blank?0")});
+  BrowserWindowInterface* new_browser =
+      AddBrowser(browser(), {GURL("about:blank?0")});
   for (int i = 1; i <= 3; ++i) {
     ui_test_utils::NavigateToURLWithDisposition(
         new_browser, GURL("about:blank?" + base::NumberToString(i)),
@@ -652,8 +655,8 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelSplitTest,
   }
 
   // Put Tab 1 and Tab 2 into a split. Tab 0 and Tab 3 remain regular tabs.
-  new_browser->tab_strip_model()->ActivateTabAt(1);
-  new_browser->tab_strip_model()->AddToNewSplit(
+  new_browser->GetTabStripModel()->ActivateTabAt(1);
+  new_browser->GetTabStripModel()->AddToNewSplit(
       {2}, split_tabs::SplitTabVisualData(),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
 
@@ -791,7 +794,8 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
   browser()->tab_strip_model()->CloseSelectedTabs();
   browser()->tab_strip_model()->CloseSelectedTabs();
 
-  Browser* new_browser = AddBrowser(browser(), {GURL("http://wnd1/tab0")});
+  BrowserWindowInterface* new_browser =
+      AddBrowser(browser(), {GURL("http://wnd1/tab0")});
   ui_test_utils::NavigateToURLWithDisposition(
       new_browser, GURL("http://wnd1/tab1"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
