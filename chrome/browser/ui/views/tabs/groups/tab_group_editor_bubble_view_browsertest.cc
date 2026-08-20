@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_view.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -329,11 +330,16 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
                        MoveGroupToNewWindowDisabledWhenOnlyGroup) {
   TabStripModel* tsm = browser()->tab_strip_model();
-  for (int index = tsm->count() - 1; index >= 0; --index) {
-    tabs::TabInterface* tab = tsm->GetTabAtIndex(index);
+  // Collect tabs to close first before closing them to avoid modifying the
+  // underlying tab collection while actively iterating over it.
+  std::vector<tabs::TabInterface*> tabs_to_close;
+  for (tabs::TabInterface* tab : *tsm) {
     if (tab->GetGroup() != group_) {
-      tsm->CloseWebContents(tab->GetContents(), TabCloseTypes::CLOSE_NONE);
+      tabs_to_close.push_back(tab);
     }
+  }
+  for (tabs::TabInterface* tab : tabs_to_close) {
+    tsm->CloseWebContents(tab->GetContents(), TabCloseTypes::CLOSE_NONE);
   }
 
   ShowUi("SetUp");
