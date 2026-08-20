@@ -44,10 +44,6 @@ bool IsPrefixOfEmailEndingWithAtSign(std::u16string_view full_string,
          full_string.starts_with(prefix) && full_string[prefix.size()] == u'@';
 }
 
-bool IsCheckable(const FormFieldData::CheckStatus& check_status) {
-  return check_status != FormFieldData::CheckStatus::kNotCheckable;
-}
-
 std::optional<size_t> FindShortestSubstringMatchInSelect(
     const std::u16string& value,
     bool ignore_whitespace,

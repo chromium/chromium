@@ -373,10 +373,6 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
            {.label = u"Country",
             .name = u"country",
             .form_control_type = FormControlType::kSelectOne},
-           // Add checkable field.
-           {.label = u"Checkable1",
-            .name = u"Checkable1",
-            .form_control_type = FormControlType::kInputCheckbox},
        }});
 
   std::vector<FieldTypeSet> possible_field_types;
@@ -384,13 +380,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
   test::InitializePossibleTypes(possible_field_types, {NAME_LAST});
   test::InitializePossibleTypes(possible_field_types, {EMAIL_ADDRESS});
   test::InitializePossibleTypes(possible_field_types,
-
                                 {PHONE_HOME_WHOLE_NUMBER});
   test::InitializePossibleTypes(possible_field_types,
-
-                                {ADDRESS_HOME_COUNTRY});
-  test::InitializePossibleTypes(possible_field_types,
-
                                 {ADDRESS_HOME_COUNTRY});
 
   std::unique_ptr<FormStructure> form_structure =
@@ -2212,17 +2203,6 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   field.set_host_form_signature(FormSignature(12345UL));
   test_api(form).Append(field);
 
-  // Add checkable field.
-  FormFieldData checkable_field;
-  checkable_field.set_form_control_type(FormControlType::kInputCheckbox);
-  checkable_field.set_check_status(
-      FormFieldData::CheckStatus::kCheckableButUnchecked);
-  checkable_field.set_label(u"Checkable1");
-  checkable_field.set_name(u"Checkable1");
-  checkable_field.set_renderer_id(test::MakeFieldRendererId());
-  checkable_field.set_host_form_signature(form_signature);
-  test_api(form).Append(checkable_field);
-
   std::vector<FormData> forms = {form};
 
   std::vector<FormSignature> expected_signatures;
@@ -2358,42 +2338,6 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   auto [encoded_query6, encoded_signatures6] =
       EncodeAutofillPageQueryRequest(bad_forms);
   EXPECT_TRUE(encoded_signatures6.empty());
-}
-
-TEST_F(AutofillCrowdsourcingEncoding, SkipFieldTest) {
-  FormData form = test::GetFormData({
-      .fields = {{.role = USERNAME},
-                 {.label = u"select",
-                  .name = u"select",
-                  .form_control_type = FormControlType::kInputCheckbox},
-                 {.role = EMAIL_ADDRESS}},
-      .name = u"the-name",
-      .url = "http://cool.com",
-      .action = "http://cool.com/login",
-  });
-
-  std::vector<FormData> forms = {form};
-
-  // Create the expected query and serialize it to a string.
-  AutofillPageQueryRequest query;
-  query.set_client_version(std::string(GetProductNameAndVersionForUserAgent()));
-  AutofillPageQueryRequest::Form* query_form = query.add_forms();
-  query_form->set_signature(CalculateFormSignature(form).value());
-  query_form->set_alternative_signature(
-      CalculateAlternativeFormSignature(form).value());
-  query_form->set_structural_signature(
-      CalculateStructuralFormSignature(form).value());
-
-  query_form->add_fields()->set_signature(239111655U);
-  query_form->add_fields()->set_signature(420638584U);
-
-  const FormSignature kExpectedSignature(18006745212084723782UL);
-
-  auto [encoded_query, encoded_signatures] =
-      EncodeAutofillPageQueryRequest(forms);
-  ASSERT_EQ(encoded_signatures.size(), 1U);
-  EXPECT_EQ(encoded_signatures.front(), kExpectedSignature);
-  EXPECT_THAT(encoded_query, EqualsIgnoringMetadataValues(query));
 }
 
 TEST_F(AutofillCrowdsourcingEncoding,
@@ -3124,10 +3068,7 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse) {
   // Make form 1 data.
   FormData form = test::GetFormData(
       {.fields = {{.label = u"fullname", .name = u"fullname"},
-                  {.label = u"address", .name = u"address"},
-                  // Checkable fields should be ignored in parsing
-                  {.label = u"radio_button",
-                   .form_control_type = FormControlType::kInputRadio}}});
+                  {.label = u"address", .name = u"address"}}});
 
   // Make form 2 data.
   FormData form2 = test::GetFormData(

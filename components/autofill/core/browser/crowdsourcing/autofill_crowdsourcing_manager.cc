@@ -327,10 +327,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
 size_t CountActiveFieldsInForms(const std::vector<FormData>& forms) {
   size_t active_field_count = 0;
   for (const FormData& form : forms) {
-    active_field_count +=
-        std::ranges::count_if(form.fields(), [](const FormFieldData& field) {
-          return !IsCheckable(field.check_status());
-        });
+    active_field_count += form.fields().size();
   }
   return active_field_count;
 }

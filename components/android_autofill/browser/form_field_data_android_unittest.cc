@@ -166,23 +166,6 @@ TEST_F(FormFieldDataAndroidTest, SimilarFieldsAs) {
   EXPECT_FALSE(af.SimilarFieldAs(f2));
 }
 
-// Tests that field similarity checks whether a field is checkable, but not
-// whether it is checked.
-TEST_F(FormFieldDataAndroidTest, SimilarFieldsAs_Checkable) {
-  FormFieldData f1 = CreateTestField();
-  FormFieldData f2 = CreateTestField();
-  f1.set_check_status(FormFieldData::CheckStatus::kCheckableButUnchecked);
-  FormFieldDataAndroid af(&f1);
-
-  // If they are both checkable, they are similar (even if one is checked and
-  // the other is not).
-  f2.set_check_status(FormFieldData::CheckStatus::kChecked);
-  EXPECT_TRUE(af.SimilarFieldAs(f2));
-
-  f2.set_check_status(FormFieldData::CheckStatus::kNotCheckable);
-  EXPECT_FALSE(af.SimilarFieldAs(f2));
-}
-
 // Tests that field labels are similar if they have the same value or were
 // inferred from the same source and that source is not a label tag.
 TEST_F(FormFieldDataAndroidTest, SimilarFieldsAs_Labels) {

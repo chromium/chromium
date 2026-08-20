@@ -486,10 +486,6 @@ void EncodeFormFieldsForUpload(
   DCHECK(!IsMalformed(form));
 
   for (const AutofillField* const field : upload_fields) {
-    // Don't upload checkable fields.
-    if (IsCheckable(field->check_status())) {
-      continue;
-    }
     const EncodeUploadRequestOptions::Field* field_options = nullptr;
     if (auto it = fields.find(field->global_id()); it != fields.end()) {
       field_options = &it->second;
@@ -605,8 +601,7 @@ void EncodeFormForQuery(const FormData& form,
         queried_form_signatures.push_back(form_signature);
 
         for (const auto& field : fields) {
-          if (IsCheckable(field.check_status()) ||
-              !necessary_condition(field)) {
+          if (!necessary_condition(field)) {
             continue;
           }
 

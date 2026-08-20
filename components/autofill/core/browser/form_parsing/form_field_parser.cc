@@ -119,9 +119,8 @@ void MaybePrintMatchLogs(LogManager* log_manager,
 }
 
 bool IsRelevant(const FormFieldData& field) {
-  return !IsCheckable(field.check_status()) &&
-         (field.role() != FormFieldData::RoleAttribute::kPresentation ||
-          field.IsSelectElement());
+  return field.role() != FormFieldData::RoleAttribute::kPresentation ||
+         field.IsSelectElement();
 }
 
 }  // namespace

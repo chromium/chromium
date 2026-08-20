@@ -85,7 +85,6 @@ public class FormFieldData {
             String id,
             String[] optionValues,
             String[] optionContents,
-            boolean isCheckField,
             int maxLength,
             String heuristicType,
             String serverType,
@@ -118,8 +117,6 @@ public class FormFieldData {
             mControlType = ControlType.LIST;
         } else if (mDatalistValues != null && mDatalistValues.length != 0) {
             mControlType = ControlType.DATALIST;
-        } else if (isCheckField) {
-            mControlType = ControlType.TOGGLE;
         } else {
             mControlType = ControlType.TEXT;
         }
@@ -254,7 +251,6 @@ public class FormFieldData {
             String id,
             String[] optionValues,
             String[] optionContents,
-            boolean isCheckField,
             int maxLength,
             String heuristicType,
             String serverType,
@@ -281,7 +277,6 @@ public class FormFieldData {
                 id,
                 optionValues,
                 optionContents,
-                isCheckField,
                 maxLength,
                 heuristicType,
                 serverType,

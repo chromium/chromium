@@ -105,34 +105,6 @@ TEST_F(FormShouldBeParsedTest, FalseIfNoFields) {
   EXPECT_FALSE(ShouldBeParsed(form_structure(), {.min_required_fields = 1}));
 }
 
-// Forms with only checkable fields should not be parsed.
-TEST_F(FormShouldBeParsedTest, IgnoresCheckableFields) {
-  // Start with a single checkable field.
-  {
-    FormFieldData field;
-    field.set_check_status(FormFieldData::CheckStatus::kCheckableButUnchecked);
-    field.set_form_control_type(FormControlType::kInputRadio);
-    AddField(field);
-  }
-  EXPECT_FALSE(ShouldBeParsed(form_structure()));
-  EXPECT_FALSE(ShouldBeParsed(form_structure(), {.min_required_fields = 1}));
-
-  // Add a second checkable field.
-  {
-    FormFieldData field;
-    field.set_check_status(FormFieldData::CheckStatus::kCheckableButUnchecked);
-    field.set_form_control_type(FormControlType::kInputCheckbox);
-    AddField(field);
-  }
-  EXPECT_FALSE(ShouldBeParsed(form_structure()));
-  EXPECT_FALSE(ShouldBeParsed(form_structure(), {.min_required_fields = 1}));
-
-  // Add one text field.
-  AddTextField();
-  EXPECT_TRUE(ShouldBeParsed(form_structure()));
-  EXPECT_TRUE(ShouldBeParsed(form_structure(), {.min_required_fields = 1}));
-}
-
 // Forms with at least one text field should be parsed.
 TEST_F(FormShouldBeParsedTest, TrueIfOneTextField) {
   AddTextField();

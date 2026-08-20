@@ -1396,38 +1396,35 @@ void FormFiller::AppendFillLogEvents(
     const FieldFillingSkipReason skip_reason =
         skip_reasons.at(field_id).empty() ? FieldFillingSkipReason::kNotSkipped
                                           : *skip_reasons.at(field_id).begin();
-    if (!IsCheckable(field->check_status())) {
-      if (skip_reason == FieldFillingSkipReason::kNotSkipped) {
-        field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
-            .fill_event_id = fill_event_id,
-            .had_value_before_filling = ToOptionalBoolean(has_value_before),
-            .autofill_skipped_status = skip_reason,
-            .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
-            .had_value_after_filling =
-                ToOptionalBoolean(safe_field_ids.contains(field_id)),
-            .filling_prevented_by_iframe_security_policy =
-                OptionalBoolean::kFalse,
-            .was_refill = ToOptionalBoolean(is_refill),
-        });
-      } else {
-        const bool skipped_because_of_security_policy =
-            skip_reasons.at(field_id).size() == 1 &&
-            skip_reason == FieldFillingSkipReason::kIframeSecurityPolicy;
-        field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
-            .fill_event_id = fill_event_id,
-            .had_value_before_filling = ToOptionalBoolean(has_value_before),
-            .autofill_skipped_status = skip_reason,
-            .was_autofilled_before_security_policy =
-                skipped_because_of_security_policy ? OptionalBoolean::kTrue
-                                                   : OptionalBoolean::kFalse,
-            .had_value_after_filling = ToOptionalBoolean(has_value_before),
-            .filling_prevented_by_iframe_security_policy =
-                skipped_because_of_security_policy
-                    ? OptionalBoolean::kTrue
-                    : OptionalBoolean::kUndefined,
-            .was_refill = ToOptionalBoolean(is_refill),
-        });
-      }
+    if (skip_reason == FieldFillingSkipReason::kNotSkipped) {
+      field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
+          .fill_event_id = fill_event_id,
+          .had_value_before_filling = ToOptionalBoolean(has_value_before),
+          .autofill_skipped_status = skip_reason,
+          .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
+          .had_value_after_filling =
+              ToOptionalBoolean(safe_field_ids.contains(field_id)),
+          .filling_prevented_by_iframe_security_policy =
+              OptionalBoolean::kFalse,
+          .was_refill = ToOptionalBoolean(is_refill),
+      });
+    } else {
+      const bool skipped_because_of_security_policy =
+          skip_reasons.at(field_id).size() == 1 &&
+          skip_reason == FieldFillingSkipReason::kIframeSecurityPolicy;
+      field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
+          .fill_event_id = fill_event_id,
+          .had_value_before_filling = ToOptionalBoolean(has_value_before),
+          .autofill_skipped_status = skip_reason,
+          .was_autofilled_before_security_policy =
+              skipped_because_of_security_policy ? OptionalBoolean::kTrue
+                                                 : OptionalBoolean::kFalse,
+          .had_value_after_filling = ToOptionalBoolean(has_value_before),
+          .filling_prevented_by_iframe_security_policy =
+              skipped_because_of_security_policy ? OptionalBoolean::kTrue
+                                                 : OptionalBoolean::kUndefined,
+          .was_refill = ToOptionalBoolean(is_refill),
+      });
     }
   }
 }

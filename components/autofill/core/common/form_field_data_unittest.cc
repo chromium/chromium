@@ -75,7 +75,7 @@ void WriteSection1(const FormFieldData& data, base::Pickle* pickle) {
 void WriteSection3(const FormFieldData& data, base::Pickle* pickle) {
   // These two booleans are for <input type=checkboxk> and <input type=radio>:
   pickle->WriteBool(false);  // Whether the element is checked.
-  pickle->WriteBool(IsCheckable(data.check_status()));
+  pickle->WriteBool(false);  // Whether the element is checkable.
 }
 
 void WriteSection4(const FormFieldData& data, base::Pickle* pickle) {
