@@ -15,6 +15,7 @@ enum class GeminiFirstRunStepIdentifier {
   kPromo,
   kConsent,
   kVisualRich,
+  kLightweight,
 };
 
 // Delegate protocol for a step to notify the container of dynamic changes.

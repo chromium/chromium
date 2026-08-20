@@ -11,6 +11,7 @@
 
 #import "base/check.h"
 #import "base/metrics/field_trial_params.h"
+#import "base/notreached.h"
 #import "base/strings/string_split.h"
 #import "base/strings/string_util.h"
 #import "base/time/time.h"
@@ -858,7 +859,12 @@ bool IsGeminiCoordinatorTeardownFixEnabled() {
 
 const char kGeminiFREExperimentParam[] = "variant";
 const char kGeminiFREExperimentParamVisualRich[] = "visual-rich";
-const char kGeminiFREExperimentParamLightweight[] = "lightweight";
+const char kGeminiFREExperimentParamLightweightConvenience[] =
+    "lightweight-convenience";
+const char kGeminiFREExperimentParamLightweightPageSharing[] =
+    "lightweight-page-sharing";
+const char kGeminiFREExperimentParamLightweightDiverse[] =
+    "lightweight-diverse";
 
 BASE_FEATURE(kGeminiFREExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -881,7 +887,24 @@ bool IsGeminiLightweightFREEnabled() {
   }
   std::string variant = base::GetFieldTrialParamValueByFeature(
       kGeminiFREExperiment, kGeminiFREExperimentParam);
-  return variant == kGeminiFREExperimentParamLightweight;
+  return variant == kGeminiFREExperimentParamLightweightConvenience ||
+         variant == kGeminiFREExperimentParamLightweightPageSharing ||
+         variant == kGeminiFREExperimentParamLightweightDiverse;
+}
+
+GeminiLightweightFREVariant GetGeminiLightweightFREVariant() {
+  std::string variant = base::GetFieldTrialParamValueByFeature(
+      kGeminiFREExperiment, kGeminiFREExperimentParam);
+  if (variant == kGeminiFREExperimentParamLightweightPageSharing) {
+    return GeminiLightweightFREVariant::kPageSharing;
+  }
+  if (variant == kGeminiFREExperimentParamLightweightDiverse) {
+    return GeminiLightweightFREVariant::kDiverse;
+  }
+  if (variant == kGeminiFREExperimentParamLightweightConvenience) {
+    return GeminiLightweightFREVariant::kConvenience;
+  }
+  NOTREACHED();
 }
 
 // Meant for experiments only.

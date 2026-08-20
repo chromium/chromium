@@ -31,8 +31,10 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
 namespace {
@@ -149,10 +151,15 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 - (std::vector<GeminiFirstRunStepIdentifier>)stepsForFirstRunType:
     (GeminiFirstRunType)firstRunType {
-  // Visual rich FRE should not be used for live entry point.
-  if (firstRunType != GeminiFirstRunType::kLive &&
-      IsGeminiVisualRichFREEnabled()) {
-    return {GeminiFirstRunStepIdentifier::kVisualRich};
+  // Visual rich and Lightweight first run experiment variants are single-step
+  // onboarding flows that are not used for the live entry point.
+  if (firstRunType != GeminiFirstRunType::kLive) {
+    if (IsGeminiVisualRichFREEnabled()) {
+      return {GeminiFirstRunStepIdentifier::kVisualRich};
+    }
+    if (IsGeminiLightweightFREEnabled()) {
+      return {GeminiFirstRunStepIdentifier::kLightweight};
+    }
   }
   // Using std::vector to avoid boxing C++ enum class values into NSNumber.
   std::vector<GeminiFirstRunStepIdentifier> steps;
@@ -211,6 +218,22 @@ const CGFloat kPromoMaxImpressionCount = 3;
 - (BOOL)shouldShowImageRemixRow {
   return gemini::IsFeatureAvailable(gemini::Feature::kImageRemix,
                                     _identityManager);
+}
+
+- (NSString*)lightweightPromoTitle {
+  int titleStringID;
+  switch (GetGeminiLightweightFREVariant()) {
+    case GeminiLightweightFREVariant::kPageSharing:
+      titleStringID = IDS_IOS_BWG_LIGHTWEIGHT_PROMO_PAGE_SHARING_TITLE;
+      break;
+    case GeminiLightweightFREVariant::kDiverse:
+      titleStringID = IDS_IOS_BWG_LIGHTWEIGHT_PROMO_DIVERSE_TITLE;
+      break;
+    case GeminiLightweightFREVariant::kConvenience:
+      titleStringID = IDS_IOS_BWG_LIGHTWEIGHT_PROMO_CONVENIENCE_TITLE;
+      break;
+  }
+  return l10n_util::GetNSString(titleStringID);
 }
 
 // Did consent to Gemini.

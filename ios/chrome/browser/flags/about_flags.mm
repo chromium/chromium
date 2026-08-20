@@ -1054,12 +1054,22 @@ const FeatureEntry::FeatureVariation kBWGPromoConsentVariations[] = {
 
 const FeatureEntry::FeatureParam kGeminiFREExperimentVisualRich[] = {
     {kGeminiFREExperimentParam, kGeminiFREExperimentParamVisualRich}};
-const FeatureEntry::FeatureParam kGeminiFREExperimentLightweight[] = {
-    {kGeminiFREExperimentParam, kGeminiFREExperimentParamLightweight}};
+const FeatureEntry::FeatureParam kGeminiFREExperimentLightweightConvenience[] =
+    {{kGeminiFREExperimentParam,
+      kGeminiFREExperimentParamLightweightConvenience}};
+const FeatureEntry::FeatureParam kGeminiFREExperimentLightweightPageSharing[] =
+    {{kGeminiFREExperimentParam,
+      kGeminiFREExperimentParamLightweightPageSharing}};
+const FeatureEntry::FeatureParam kGeminiFREExperimentLightweightDiverse[] = {
+    {kGeminiFREExperimentParam, kGeminiFREExperimentParamLightweightDiverse}};
 
 const FeatureEntry::FeatureVariation kGeminiFREExperimentVariations[] = {
     {"Visual Rich", kGeminiFREExperimentVisualRich, nullptr},
-    {"Lightweight", kGeminiFREExperimentLightweight, nullptr},
+    {"Lightweight (Convenience)", kGeminiFREExperimentLightweightConvenience,
+     nullptr},
+    {"Lightweight (Page Sharing)", kGeminiFREExperimentLightweightPageSharing,
+     nullptr},
+    {"Lightweight (Diverse)", kGeminiFREExperimentLightweightDiverse, nullptr},
 };
 
 const FeatureEntry::FeatureParam kGeminiExperimentalGuidedOnboardingForce[] = {
