@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_ui_data.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_test_utils.h"
@@ -173,6 +174,86 @@ TEST_F(ONCUtilsTest, ImportNetworksForUser_ImportONCWithRemoveField) {
       network_handler_test_helper_->service_test()->FindServiceMatchingGUID(
           kPolicyGuid);
   ASSERT_TRUE(service_path.empty());
+}
+
+TEST_F(ONCUtilsTest,
+       ImportNetworksForUser_EthernetWritesUserProxyAndDNSToSharedProfile) {
+  // FakeShillManagerClient::SetupDefaultEnvironment() created /service/eth1 in
+  // the shared profile (/profile/default). This mirrors real devices where the
+  // active Ethernet service is auto-saved to the shared profile.
+  const char kEthServicePath[] = "/service/eth1";
+  const std::string kSharedProfilePath =
+      NetworkProfileHandler::GetSharedProfilePath();  // "/profile/default"
+
+  // Precondition: the Ethernet service lives in the SHARED profile, not in the
+  // importing user's profile (/profile/1).
+  ASSERT_EQ(kSharedProfilePath,
+            network_handler_test_helper_->GetServiceStringProperty(
+                kEthServicePath, shill::kProfileProperty));
+  ASSERT_TRUE(network_handler_test_helper_
+                  ->GetServiceStringProperty(kEthServicePath,
+                                             shill::kProxyConfigProperty)
+                  .empty());
+
+  // Policies must be initialized for SetProperties() to proceed.
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  NetworkHandler::Get()->managed_network_configuration_handler()->SetPolicy(
+      ::onc::ONC_SOURCE_USER_POLICY, user->username_hash(), base::ListValue(),
+      base::DictValue());
+  NetworkHandler::Get()->managed_network_configuration_handler()->SetPolicy(
+      ::onc::ONC_SOURCE_DEVICE_POLICY, std::string(), base::ListValue(),
+      base::DictValue());
+
+  // Malicious ONC the unprivileged user imports via chrome://network
+  const char kAttackerPacUrl[] = "http://203.0.113.1/pac.js";
+  const char kAttackerDns[] = "203.0.113.53";
+  base::DictValue eth_config =
+      base::DictValue()
+          .Set(::onc::network_config::kGUID, "evil-eth")
+          .Set(::onc::network_config::kType, ::onc::network_config::kEthernet)
+          .Set(::onc::network_config::kEthernet,
+               base::DictValue().Set(::onc::ethernet::kAuthentication,
+                                     ::onc::ethernet::kAuthenticationNone))
+          .Set(::onc::network_config::kNameServersConfigType,
+               ::onc::network_config::kIPConfigTypeStatic)
+          .Set(::onc::network_config::kStaticIPConfig,
+               base::DictValue()
+                   .Set(::onc::ipconfig::kType, ::onc::ipconfig::kIPv4)
+                   .Set(::onc::ipconfig::kNameServers,
+                        base::ListValue().Append(kAttackerDns)))
+          .Set(::onc::network_config::kProxySettings,
+               base::DictValue()
+                   .Set(::onc::proxy::kType, ::onc::proxy::kPAC)
+                   .Set(::onc::proxy::kPAC, kAttackerPacUrl));
+
+  std::string error;
+  int created = ImportNetworksForUser(
+      user, base::ListValue().Append(std::move(eth_config)), &error);
+
+  // THE IMPORT SHOULD BE REJECTED ----
+  EXPECT_EQ(0, created);
+
+  // Assert that the validation error was caught and returned
+  EXPECT_FALSE(error.empty());
+  EXPECT_EQ("Ethernet configuration via user import is not allowed.", error);
+
+  // Assert that the Ethernet service remains cleanly in the shared profile
+  EXPECT_EQ(kSharedProfilePath,
+            network_handler_test_helper_->GetServiceStringProperty(
+                kEthServicePath, shill::kProfileProperty));
+
+  // Assert that the attacker-controlled PAC proxy was NOT written
+  std::string proxy_config =
+      network_handler_test_helper_->GetServiceStringProperty(
+          kEthServicePath, shill::kProxyConfigProperty);
+  EXPECT_EQ(std::string::npos, proxy_config.find(kAttackerPacUrl));
+
+  // Assert that StaticIPConfig was never populated with the rogue DNS
+  EXPECT_TRUE(network_handler_test_helper_
+                  ->GetServiceStringProperty(kEthServicePath,
+                                             shill::kStaticIPConfigProperty)
+                  .empty());
 }
 
 TEST_F(ONCUtilsTest, ProxySettingsToProxyConfig) {
