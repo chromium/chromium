@@ -2852,6 +2852,12 @@ std::unique_ptr<base::DictValue> BuildRequestHeaders(
     const GURL& referrer) {
   auto headers_dict = std::make_unique<base::DictValue>();
   for (net::HttpRequestHeaders::Iterator it(headers); it.GetNext();) {
+    // Skip case variants of the referer header if it's added below.
+    if (!referrer.is_empty() &&
+        base::EqualsCaseInsensitiveASCII(it.name(),
+                                         net::HttpRequestHeaders::kReferer)) {
+      continue;
+    }
     headers_dict->Set(it.name(), it.value());
   }
 

@@ -4,6 +4,19 @@
 
   await dp.Network.enable();
 
+  // Verify requestWillBeSent does not report the referer twice under
+  // different casings.
+  const reportedRefererEntries = [];
+  dp.Network.onRequestWillBeSent(event => {
+    if (event.params.type !== 'Document')
+      return;
+    const headers = event.params.request.headers;
+    reportedRefererEntries.push(
+        Object.keys(headers)
+            .filter(name => name.toLowerCase() === 'referer')
+            .map(name => `${name}: ${headers[name]}`));
+  });
+
   async function get_navigation_headers(url) {
     return await session.evaluateAsync(`(async () => {
       const iframe = document.createElement('iframe');
@@ -16,6 +29,13 @@
         });
       });
     })();`);
+  }
+
+  async function log_navigation(label, url) {
+    testRunner.log(label);
+    testRunner.log(await get_navigation_headers(url));
+    testRunner.log(`requestWillBeSent referer entries: ${
+        JSON.stringify(reportedRefererEntries.splice(0))}`);
   }
 
   // The url returns the HTTP_REFERER header in the response body.
@@ -43,10 +63,8 @@
     await dp.Network.setExtraHTTPHeaders({headers: testCase});
 
     testRunner.log(`\nTest case: ${JSON.stringify(testCase)}:`);
-    testRunner.log('Direct navigation:');
-    testRunner.log(await get_navigation_headers(test_url));
-    testRunner.log('Redirect:');
-    testRunner.log(await get_navigation_headers(redirect_url));
+    await log_navigation('Direct navigation:', test_url);
+    await log_navigation('Redirect:', redirect_url);
   }
 
   testRunner.completeTest();
