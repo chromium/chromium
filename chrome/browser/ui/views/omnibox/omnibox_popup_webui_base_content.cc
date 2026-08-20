@@ -316,6 +316,21 @@ void OmniboxPopupWebUIBaseContent::UpdateAutoFill() {
 #endif
 
 void OmniboxPopupWebUIBaseContent::Detach() {
+  if (base::FeatureList::IsEnabled(
+          omnibox::kOmniboxWebUIDeferShowUntilVisualStateReady)) {
+    if (auto* web_contents = GetWebContents()) {
+      if (auto* rwh =
+              web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost()) {
+        blink::WebMouseEvent mouse_event(
+            blink::WebInputEvent::Type::kMouseLeave,
+            blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now());
+        rwh->ForwardMouseEvent(mouse_event);
+      }
+      if (popup_presenter_ && !popup_presenter_->ShouldReceiveFocus()) {
+        web_contents->ClearFocusedElement();
+      }
+    }
+  }
   if (!popup_presenter_->ShouldDetachWebContentsOnHide()) {
     return;
   }

@@ -27,12 +27,12 @@ class OmniboxPopupPresenter : public OmniboxPopupPresenterBase {
 
   void Hide() override;
   std::string_view GetPopupMetricPrefix() const override;
+  bool ShouldReceiveFocus() const override;
 
  protected:
   // OmniboxPopupPresenterBase overrides:
   void WidgetDestroyed() override;
   bool ShouldShowLocationBarCutout() const override;
-  bool ShouldReceiveFocus() const override;
   bool ShouldHideForInitialLayout() const override;
   std::optional<base::TimeDelta> ShouldDeferUntilVisualStateReady()
       const override;

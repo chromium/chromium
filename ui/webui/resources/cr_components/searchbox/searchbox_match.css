@@ -304,8 +304,10 @@
       var(--color-searchbox-results-button-selected-hover);
 }
 
-:host-context(.vertical) .container:hover #remove,
-:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])):host-context(.vertical) #remove {
+:host-context(.vertical) .container:hover #remove:not([hidden]),
+:host-context(cr-searchbox-match[selected]):host-context(.vertical) #remove:not([hidden]),
+#remove:focus-visible:not([hidden]),
+#remove.selected:not([hidden]) {
   display: inline-flex;
 }
 
