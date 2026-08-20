@@ -433,6 +433,9 @@ debugger API *may* in some cases also sidestep other typical restrictions, such
 as host permissions or file access. This is the reason for the broad security
 warning associated with the debugger API.
 
+The debugger API requires screenshot permissions (e.g. enterprise policies that
+disable screenshots will prevent attaching the debugger).
+
 The debugger permission does not allow automating parts of the Chromium
 browser unrelated to websites. Automating WebUI or settings, installing
 extensions, downloading and executing a native binary, or executing custom

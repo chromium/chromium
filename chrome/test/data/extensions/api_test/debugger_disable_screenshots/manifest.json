@@ -1,0 +1,12 @@
+{
+  "name": "Debugger Disable Screenshots Test",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": ["debugger", "tabs"],
+  "host_permissions": ["http://a.test/*"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  }
+}
+

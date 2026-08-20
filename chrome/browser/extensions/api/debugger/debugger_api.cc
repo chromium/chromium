@@ -33,6 +33,8 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_entry.h"
@@ -45,6 +47,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
@@ -111,6 +114,10 @@ constexpr char kDetachedWhileHandlingError[] =
     "Detached while handling command.";
 constexpr char kFileUrlsRequireFileAccess[] =
     "Cannot navigate to a file URL without local file access.";
+constexpr char kDebuggerDisabledByScreenshotPolicy[] =
+    "Screenshot capture is restricted by policy.";
+constexpr char kDebuggerDisabledByTargetDlpPolicy[] =
+    "Screenshot capture is restricted on this target.";
 
 constexpr char kTabTargetType[] = "tab";
 constexpr char kBackgroundPageTargetType[] = "background page";
@@ -978,6 +985,22 @@ ExtensionFunction::ResponseAction DebuggerAttachFunction::Run() {
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
+
+  // Attaching the debugger grants screenshot capabilities, so reject if
+  // screenshot capture is disabled globally by enterprise policy.
+  if (profile->GetPrefs()->GetBoolean(prefs::kDisableScreenshots)) {
+    return RespondNow(Error(kDebuggerDisabledByScreenshotPolicy));
+  }
+
+  // Reject if screenshot capture is restricted on this specific target (e.g.
+  // by Data Leak Prevention (DLP) policy).
+  content::WebContents* web_contents = agent_host_->GetWebContents();
+  if (web_contents && !ExtensionsBrowserClient::Get()
+                           ->IsScreenshotRestricted(web_contents)
+                           .has_value()) {
+    return RespondNow(Error(kDebuggerDisabledByTargetDlpPolicy));
+  }
+
   auto host = std::make_unique<ExtensionDevToolsClientHost>(
       profile, agent_host_.get(), extension(), worker_id(), debuggee_);
 

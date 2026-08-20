@@ -25,9 +25,11 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_content_manager.h"
+#endif
 #include "chrome/browser/extensions/api/debugger/debugger_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
@@ -41,12 +43,13 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_closed_waiter.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
-#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -1432,5 +1435,42 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
                                {.custom_arg = custom_arg.c_str()}))
       << message_;
 }
+
+IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
+                       AttachRejectedWhenScreenshotsDisabled) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url = embedded_test_server()->GetURL("a.test", "/english_page.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+
+  profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots, true);
+
+  ASSERT_TRUE(RunExtensionTest(
+      "debugger_disable_screenshots",
+      {.custom_arg = "Screenshot capture is restricted by policy."}))
+      << message_;
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Target-level screenshot restrictions via Data Leak Prevention (DLP) are
+// currently only supported on ChromeOS.
+IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
+                       AttachRejectedWhenScreenshotsRestrictedByDlp) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url = embedded_test_server()->GetURL("a.test", "/english_page.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+
+  policy::MockDlpContentManager mock_dlp_content_manager;
+  policy::ScopedDlpContentObserverForTesting scoped_dlp_content_observer(
+      &mock_dlp_content_manager);
+  EXPECT_CALL(mock_dlp_content_manager,
+              IsScreenshotApiRestricted(web_contents()))
+      .WillOnce(testing::Return(true));
+
+  ASSERT_TRUE(RunExtensionTest(
+      "debugger_disable_screenshots",
+      {.custom_arg = "Screenshot capture is restricted on this target."}))
+      << message_;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions
