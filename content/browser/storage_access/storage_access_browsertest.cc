@@ -59,8 +59,7 @@ class StorageAccessBrowserTest : public ContentBrowserTest,
 
   bool is_cookie_access_allowed() const { return GetParam(); }
 
-  base::expected<void, std::optional<std::string>> expected_handle_result()
-      const {
+  base::expected<void, std::string> expected_handle_result() const {
     if (is_cookie_access_allowed()) {
       return base::ok();
     }
@@ -68,18 +67,14 @@ class StorageAccessBrowserTest : public ContentBrowserTest,
     return expected_restricted_handle_result();
   }
 
-  base::expected<void, std::optional<std::string>>
-  expected_restricted_handle_result() const {
-    if constexpr (DCHECK_IS_ON()) {
-      return base::unexpected(
-          "Binding a StorageAccessHandle requires third-party cookie access "
-          "and an unrestricted frame context.");
-    }
-    return base::unexpected(std::nullopt);
+  base::expected<void, std::string> expected_restricted_handle_result() const {
+    return base::unexpected(
+        "Binding a StorageAccessHandle requires third-party cookie access "
+        "and an unrestricted frame context.");
   }
 
  protected:
-  [[nodiscard]] base::expected<void, std::optional<std::string>>
+  [[nodiscard]] base::expected<void, std::string>
   BindStorageAccessHandleInFrame(RenderFrameHostImpl* target_host) {
     // Setup message interceptor.
     std::optional<std::string> received_error;
@@ -103,14 +98,13 @@ class StorageAccessBrowserTest : public ContentBrowserTest,
     // Cleanup message interceptor.
     mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 
-    if (received_error || !storage_remote.is_connected()) {
-      return base::unexpected(received_error);
+    if (received_error) {
+      return base::unexpected(received_error.value());
     }
     return base::ok();
   }
 
-  [[nodiscard]] base::expected<void, std::optional<std::string>>
-  BindStorageAccessHandle() {
+  [[nodiscard]] base::expected<void, std::string> BindStorageAccessHandle() {
     // Load website.
     EXPECT_TRUE(NavigateToURL(shell(), embedded_https_test_server().GetURL(
                                            "a.test", "/simple_page.html")));
