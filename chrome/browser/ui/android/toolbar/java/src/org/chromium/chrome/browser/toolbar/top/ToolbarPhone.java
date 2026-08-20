@@ -357,7 +357,7 @@ public class ToolbarPhone extends ToolbarLayout
         super(context, attrs);
         mToolbarSidePadding = OmniboxResourceProvider.getToolbarSidePadding(context);
         mToolbarSidePaddingForNtp = OmniboxResourceProvider.getToolbarSidePaddingForNtp(context);
-        mIsAuroraEnabled = NewTabPageUtils.isNtpAuroraButtonColorEnabled();
+        mIsAuroraEnabled = NewTabPageUtils.isNtpAuroraEnabled();
         mBackgroundHeightIncreaseWhenFocus =
                 OmniboxResourceProvider.getLocationBarBackgroundOnFocusHeightIncrease(context);
         mToolbarBackgroundColorForNtp =
