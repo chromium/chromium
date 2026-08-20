@@ -73,6 +73,10 @@ class CORE_EXPORT AdTracker : public ScriptAncestryTracker {
 
   bool IsKnownAdScript(ExecutionContext*, const String& url);
 
+  const HashMap<V8ScriptId, AdProvenance>& GetAdScripts() const {
+    return ad_scripts_;
+  }
+
   // Retrieves the ancestry chain of a given ad script (inclusive) and the
   // triggering filterlist rule. See `AdScriptAncestry` for more details on the
   // populated fields.

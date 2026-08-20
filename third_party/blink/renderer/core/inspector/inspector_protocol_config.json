@@ -19,6 +19,10 @@
                 "domain": "Audits"
             },
             {
+                "domain": "Ads",
+                "include": ["getAdScripts"]
+            },
+            {
                 "domain": "CacheStorage",
                 "async": ["requestCacheNames", "requestEntries", "deleteCache", "deleteEntry", "requestCachedResponse"]
             },

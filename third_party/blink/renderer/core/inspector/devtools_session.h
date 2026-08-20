@@ -37,6 +37,7 @@ class DocumentLoader;
 class InspectorAgent;
 class LocalFrame;
 class InspectorAccessibilityAgent;
+class InspectorAdsAgent;
 class InspectorAuditsAgent;
 class InspectorCSSAgent;
 class InspectorCacheStorageAgent;
@@ -151,7 +152,8 @@ class CORE_EXPORT DevToolsSession
 
   template <typename T>
   bool IsDomainAvailableToUntrustedClient() {
-    return std::disjunction_v<std::is_same<T, InspectorAuditsAgent>,
+    return std::disjunction_v<std::is_same<T, InspectorAdsAgent>,
+                              std::is_same<T, InspectorAuditsAgent>,
                               std::is_same<T, InspectorCSSAgent>,
                               std::is_same<T, InspectorCacheStorageAgent>,
                               std::is_same<T, InspectorAccessibilityAgent>,

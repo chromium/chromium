@@ -48,3 +48,23 @@ experimental domain Ads
   command getAdMetrics
     returns
       AdMetrics metrics
+
+  # An ad script.
+  # Note: when the script is a transitive ad script, we only fill in the
+  # immediate ancestor script in the provenance's adScriptAncestry field (as its
+  # first entry), rather than filling in the full ancestry. This saves work for
+  # the backend, and the frontend can reconstruct the full ancestry if
+  # necessary.
+  type AdScript extends object
+    properties
+      # The script ID.
+      Runtime.ScriptId scriptId
+      # The ad provenance.
+      Network.AdProvenance provenance
+
+  # Retrieves ad scripts for the current page. To minimize payload size, this
+  # only returns the newly tracked ad scripts since the last call to
+  # getAdScripts (i.e., the delta).
+  command getAdScripts
+    returns
+      array of AdScript newScripts

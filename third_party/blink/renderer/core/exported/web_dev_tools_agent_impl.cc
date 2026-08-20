@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/inspector/devtools_agent.h"
 #include "third_party/blink/renderer/core/inspector/devtools_session.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
+#include "third_party/blink/renderer/core/inspector/inspector_ads_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_animation_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_crash_report_context_agent.h"
@@ -382,6 +383,8 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
       network_agent,
       &inspected_frames->Root()->GetPage()->GetInspectorIssueStorage(),
       inspected_frames, web_local_frame_impl_->AutofillClient());
+
+  session->CreateAndAppend<InspectorAdsAgent>(inspected_frames);
 
   session->CreateAndAppend<InspectorMediaAgent>(
       inspected_frames, /*worker_global_scope=*/nullptr);

@@ -1,0 +1,6 @@
+Tests that Ads.getAdScripts returns the known ad scripts with provenance.
+
+scripts length: 2
+First script provenance: filterlistRule: ad-script.js|
+Second script provenance: matches First script
+

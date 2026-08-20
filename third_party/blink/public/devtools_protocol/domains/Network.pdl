@@ -1701,6 +1701,9 @@ domain Network
       # The filterlist rule that matched, if any.
       optional string filterlistRule
       # The script ancestry that created the ad, if any.
+      # Note: depending on the context, this may represent the full ancestry up
+      # to the root script, or it may contain only one script representing the
+      # immediate ancestor.
       optional AdAncestry adScriptAncestry
 
   # Fired when additional information about a requestWillBeSent event is available from the

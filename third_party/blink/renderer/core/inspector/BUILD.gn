@@ -31,6 +31,8 @@ inspector_protocol_generate("protocol_sources") {
   outputs = [
     "inspector/protocol/accessibility.cc",
     "inspector/protocol/accessibility.h",
+    "inspector/protocol/ads.cc",
+    "inspector/protocol/ads.h",
     "inspector/protocol/animation.cc",
     "inspector/protocol/animation.h",
     "inspector/protocol/audits.cc",
