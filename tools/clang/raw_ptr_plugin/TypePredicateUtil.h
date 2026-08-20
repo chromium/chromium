@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "clang/AST/Decl.h"
-#include "clang/AST/DeclTemplate.h"
 #include "clang/AST/Type.h"
 #include "llvm/ADT/ScopeExit.h"
 
@@ -27,7 +26,6 @@ enum class InductionRule : unsigned {
   kBaseClass = (1 << 5),
   kVirtualBaseClass = (1 << 6),
   kField = (1 << 7),
-  kTemplateArgument = (1 << 8),
 };
 
 constexpr InductionRule operator|(InductionRule a, InductionRule b) {
@@ -229,28 +227,6 @@ class TypePredicate {
       }
     }
 
-    // Check template parameters.
-    if constexpr ((Rules & InductionRule::kTemplateArgument) !=
-                  InductionRule::kNone) {
-      if (auto* field_record_template =
-              clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {
-        const auto& template_args = field_record_template->getTemplateArgs();
-        for (unsigned i = 0; i < template_args.size(); i++) {
-          if (template_args[i].getKind() != clang::TemplateArgument::Type) {
-            continue;
-          }
-          match->MergeSubResult(
-              GetMatchResult(template_args[i].getAsType().getTypePtrOrNull(),
-                             visited),
-              field_record_template->getTemplateKeywordLoc());
-
-          // Verdict finalized: early return.
-          if (match->verdict_ == MatchResult::kMatch) {
-            return match;
-          }
-        }
-      }
-    }
 
     // All reachable types have been traversed but the root type has not
     // been marked as a match; therefore it must be no match.
