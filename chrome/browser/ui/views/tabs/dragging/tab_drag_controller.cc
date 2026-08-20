@@ -736,8 +736,17 @@ TabDragController::Liveness TabDragController::Drag(
 
     StartDrag();
 
-    if (drag_data_.num_dragging_tabs() ==
-        source_context_->GetTabStripModel()->count()) {
+    TabStripModel* const model = source_context_->GetTabStripModel();
+    const bool is_dragging_all_tabs =
+        drag_data_.num_dragging_tabs() == model->count();
+
+    // In focus mode, dragging the focused group header should move the window,
+    // as the focused group represents all visible unpinned tabs.
+    const bool is_dragging_focused_group_header =
+        model->GetFocusedGroup().has_value() &&
+        drag_data_.group_header_id() == model->GetFocusedGroup();
+
+    if (is_dragging_all_tabs || is_dragging_focused_group_header) {
       if (ShouldDragWindowUsingSystemDnD()) {
         return StartSystemDnDSessionIfNecessary(attached_context_,
                                                 point_in_screen);
@@ -1097,10 +1106,15 @@ TabDragController::Liveness TabDragController::DragBrowserToNewTabStrip(
     }
 
 #if !BUILDFLAG(IS_LINUX)
-    // EndMoveLoop is going to snap the window back to its original location.
-    // Hide it so users don't see this. Hiding a window in Linux aura causes
-    // it to lose capture so skip it.
-    browser_widget->Hide();
+    const bool is_dragging_all_tabs =
+        source_context_ && drag_data_.num_dragging_tabs() ==
+                               source_context_->GetTabStripModel()->count();
+    if (is_dragging_new_browser_ || is_dragging_all_tabs) {
+      // EndMoveLoop is going to snap the window back to its original location.
+      // Hide it so users don't see this. Hiding a window in Linux aura causes
+      // it to lose capture so skip it.
+      browser_widget->Hide();
+    }
 #endif
     // Does not immediately exit the move loop - that only happens when control
     // returns to the event loop. The rest of this method will complete before

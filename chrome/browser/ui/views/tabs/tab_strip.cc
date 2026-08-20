@@ -558,9 +558,25 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     }
     CHECK(first_dragged_tab_model_index.has_value());
 
-    if (!can_insert_into_groups &&
-        GetTabStripModel()->GetFocusedGroup().has_value()) {
-      return first_dragged_tab_model_index.value();
+    const std::optional<tab_groups::TabGroupId> focused_group =
+        GetTabStripModel()->GetFocusedGroup();
+    if (focused_group.has_value() &&
+        !GetTabStripModel()->IsTabPinned(
+            first_dragged_tab_model_index.value())) {
+      if (!can_insert_into_groups) {
+        return first_dragged_tab_model_index.value();
+      }
+      const gfx::Range group_range =
+          tab_strip_->controller_->ListTabsInGroup(*focused_group);
+      if (!group_range.is_empty()) {
+        const int index = CalculateInsertionIndex(
+            dragged_bounds, first_dragged_tab_model_index.value(),
+            num_dragged_tabs, can_insert_into_groups);
+        const int min_index = static_cast<int>(group_range.start());
+        const int max_index =
+            static_cast<int>(group_range.end() - num_dragged_tabs);
+        return std::clamp(index, min_index, std::max(min_index, max_index));
+      }
     }
 
     const int index = CalculateInsertionIndex(
