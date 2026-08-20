@@ -45,6 +45,7 @@ class Point;
 
 // A LocationBar implementation using WebUI.
 class WebUILocationBar : public LocationBar,
+                         public LocationBarTesting,
                          public ContentSettingImageViewDelegate,
                          public WebUIReadOnlyOmnibox::UpdatePropagator,
                          public OmniboxPopupPresenterDelegate {
@@ -118,6 +119,8 @@ class WebUILocationBar : public LocationBar,
   void ResetTabState(content::WebContents* contents) override;
   bool HasSecurityStateChanged() override;
   LocationBarTesting* GetLocationBarForTesting() override;
+  bool TestContentSettingImagePressed(size_t index) override;
+  bool IsContentSettingBubbleShowing(size_t index) override;
 
   // Left hand side (LHS) chip events (called from WebUIToolbarWebView)
   void OnLhsChipMousePressed(

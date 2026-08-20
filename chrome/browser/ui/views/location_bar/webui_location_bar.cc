@@ -654,8 +654,15 @@ bool WebUILocationBar::HasSecurityStateChanged() {
 }
 
 LocationBarTesting* WebUILocationBar::GetLocationBarForTesting() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return this;
+}
+
+bool WebUILocationBar::TestContentSettingImagePressed(size_t index) {
+  return content_setting_image_control_.TestPressed(index);
+}
+
+bool WebUILocationBar::IsContentSettingBubbleShowing(size_t index) {
+  return content_setting_image_control_.IsBubbleShowing(index);
 }
 
 void WebUILocationBar::OnLhsChipMousePressed(

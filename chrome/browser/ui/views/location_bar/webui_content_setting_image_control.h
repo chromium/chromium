@@ -69,6 +69,8 @@ class WebUIContentSettingImageControl {
           callback);
 
   bool IsBubbleShowing() const;
+  bool TestPressed(size_t index);
+  bool IsBubbleShowing(size_t index) const;
 
   void SetSuppressionThresholdForTesting(base::TimeDelta threshold) {
     bubble_reopen_suppressor_.SetSuppressionThresholdForTesting(threshold);

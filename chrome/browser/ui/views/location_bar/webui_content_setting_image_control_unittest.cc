@@ -456,3 +456,36 @@ TEST_F(WebUIContentSettingImageControlTest, MouseClickSuppression) {
   control_->ShowContentSettingsBubble(
       ImageType::kPopups, /*is_pointer_interaction=*/true, base::DoNothing());
 }
+
+TEST_F(WebUIContentSettingImageControlTest, TestPressed) {
+  std::vector<std::unique_ptr<ContentSettingImageModel>> models;
+  auto cookies_model_ptr = std::make_unique<MockContentSettingImageModel>(
+      ImageType::kCookies, ContentSettingsType::COOKIES);
+  auto* cookies_model = cookies_model_ptr.get();
+  models.push_back(std::move(cookies_model_ptr));
+
+  auto popups_model_ptr = std::make_unique<MockContentSettingImageModel>(
+      ImageType::kPopups, ContentSettingsType::POPUPS);
+  models.push_back(std::move(popups_model_ptr));
+
+  control_->InitForTesting(std::move(models));
+
+  // Out of bounds index should return false.
+  EXPECT_FALSE(control_->TestPressed(2));
+
+  // Hidden model should return false.
+  cookies_model->set_visible(false);
+  control_->ProcessContentSettingState(web_contents());
+  EXPECT_FALSE(control_->TestPressed(0));
+
+  // Visible model should attempt to show bubble and return true.
+  cookies_model->set_visible(true);
+  control_->ProcessContentSettingState(web_contents());
+  EXPECT_CALL(
+      *cookies_model,
+      CreateBubbleModelImpl(delegate_->GetContentSettingBubbleModelDelegate(),
+                            testing::Ref(web_contents()->GetPrimaryPage())))
+      .WillOnce(testing::Return(
+          testing::ByMove(std::unique_ptr<ContentSettingBubbleModel>())));
+  EXPECT_TRUE(control_->TestPressed(0));
+}

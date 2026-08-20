@@ -524,6 +524,7 @@ class WebAppIntegrationTestDriver {
   Browser* app_browser() { return app_browser_; }
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
   IconLabelBubbleView* pwa_install_view();
+  bool IsPwaInstallIconVisible();
 
   const net::EmbeddedTestServer& GetTestServerForSiteMode(Site site_mode) const;
 

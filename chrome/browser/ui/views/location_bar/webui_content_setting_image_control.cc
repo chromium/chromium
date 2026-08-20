@@ -235,3 +235,19 @@ WebUIContentSettingImageControl::ShowContentSettingsBubbleImpl(ImageType type) {
 
   return std::monostate();
 }
+
+bool WebUIContentSettingImageControl::TestPressed(size_t index) {
+  if (index >= models_.size() || !models_[index]->is_visible()) {
+    return false;
+  }
+  auto result = ShowContentSettingsBubbleImpl(models_[index]->image_type());
+  return result.has_value();
+}
+
+bool WebUIContentSettingImageControl::IsBubbleShowing(size_t index) const {
+  if (index >= models_.size()) {
+    return false;
+  }
+  return IsBubbleShowing() &&
+         last_tracked_bubble_type_ == models_[index]->image_type();
+}

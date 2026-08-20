@@ -40,6 +40,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -169,6 +170,7 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -1533,12 +1535,8 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
               web_app::InstallDialogDeactivateAction::kKeepOpen);
 
   BrowserAddedWaiter browser_added_waiter;
-  views::test::PropertyWaiter(
-      base::BindRepeating(&views::View::GetVisible,
-                          base::Unretained(pwa_install_view())),
-      /*expected_value=*/true)
-      .Wait();
-  ASSERT_TRUE(pwa_install_view()->GetVisible());
+  ASSERT_TRUE(
+      base::test::RunUntil([this]() { return IsPwaInstallIconVisible(); }));
   WebAppTestInstallWithOsHooksObserver install_observer(profile());
   install_observer.BeginListening();
   actions::ActionManager::Get()
@@ -3624,12 +3622,8 @@ void WebAppIntegrationTestDriver::CheckInstallIconShown() {
         webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
     app_banner_manager->WaitForInstallableCheck();
   }
-  views::test::PropertyWaiter(
-      base::BindRepeating(&views::View::GetVisible,
-                          base::Unretained(pwa_install_view())),
-      /*expected_value=*/true)
-      .Wait();
-  EXPECT_TRUE(pwa_install_view()->GetVisible());
+  EXPECT_TRUE(
+      base::test::RunUntil([this]() { return IsPwaInstallIconVisible(); }));
   AfterStateCheckAction();
 }
 
@@ -3645,7 +3639,7 @@ void WebAppIntegrationTestDriver::CheckInstallIconNotShown() {
         webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
     app_banner_manager->WaitForInstallableCheck();
   }
-  EXPECT_FALSE(pwa_install_view()->GetVisible());
+  EXPECT_FALSE(IsPwaInstallIconVisible());
   AfterStateCheckAction();
 }
 
@@ -5076,6 +5070,13 @@ IconLabelBubbleView* WebAppIntegrationTestDriver::pwa_install_view() {
           kActionInstallPwa);
   CHECK(pwa_install_view);
   return pwa_install_view;
+}
+
+bool WebAppIntegrationTestDriver::IsPwaInstallIconVisible() {
+  ui::ElementContext context = views::ElementTrackerViews::GetContextForView(
+      BrowserView::GetBrowserViewForBrowser(browser()));
+  return ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kInstallPwaElementId, context);
 }
 
 const net::EmbeddedTestServer&

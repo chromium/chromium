@@ -32,7 +32,6 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
 const char kFirstPermissionRow[] = "FirstPermissionRow";
 const char kSecondPermissionRow[] = "SecondPermissionRow";
-const char kLocationBarView[] = "LocationBarView";
 
 }  // namespace
 
@@ -88,7 +87,7 @@ class DashboardKombuchaInteractiveUITest : public InteractiveBrowserTest {
   }
 
   void OverrideVisibleUrlInLocationBar(const std::u16string& text) {
-    OmniboxView* omnibox_view = GetLocationBarView()->GetOmniboxView();
+    OmniboxView* omnibox_view = GetLocationBar()->GetOmniboxView();
 
     // The pixel tests are sensitive to the URL displayed in the omnibox, as the
     // port number of the test server varies. To prevent flakiness, we override
@@ -161,16 +160,12 @@ class DashboardKombuchaInteractiveUITest : public InteractiveBrowserTest {
     return state_change;
   }
 
-  LocationBarView* GetLocationBarView() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->toolbar()
-        ->location_bar_view();
+  LocationBar* GetLocationBar() {
+    return BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBar();
   }
 
   PermissionDashboardController* GetDashboardController() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->GetLocationBar()
-        ->GetPermissionDashboardController();
+    return GetLocationBar()->GetPermissionDashboardController();
   }
 
  private:
@@ -184,16 +179,15 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()), Do([this]() {
-        GetLocationBarView()->GetChipController()->DoNotCollapseForTesting();
+        GetLocationBar()->GetChipController()->DoNotCollapseForTesting();
       }),
       ExecuteJs(kWebContentsElementId, "requestNotification"),
       // Make sure the request chip is visible.
       WaitForShow(PermissionChipView::kPermissionRequestChipElementId),
       CheckChipIsRequest(true),
-      NameView(kLocationBarView, GetLocationBarView()),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
-      Screenshot(kLocationBarView, "PermissionChipClickTest_RequestChip",
+      Screenshot(kLocationBarElementId, "PermissionChipClickTest_RequestChip",
                  "7663434"),
       // Make sure the permission popup bubble is visible.
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
@@ -227,10 +221,10 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest, CameraUsingTest) {
       ExecuteJs(kWebContentsElementId, "requestCamera"),
       WaitForShow(PermissionChipView::kIndicatorChipElementId),
       CheckChipIsRequest(false), CheckChipText(IDS_CAMERA_IN_USE),
-      NameView(kLocationBarView, GetLocationBarView()),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
-      Screenshot(kLocationBarView, "CameraUsingTest_IndicatorChip", "7663434"),
+      Screenshot(kLocationBarElementId, "CameraUsingTest_IndicatorChip",
+                 "7663434"),
       PressButton(PermissionChipView::kIndicatorChipElementId),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
       Do([this]() { SetStaticSiteName(u"test.com"); }),
@@ -281,10 +275,9 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       ExecuteJs(kWebContentsElementId, "requestCamera"),
       WaitForShow(PermissionChipView::kIndicatorChipElementId),
       CheckChipIsRequest(false), CheckChipText(IDS_CAMERA_IN_USE),
-      NameView(kLocationBarView, GetLocationBarView()),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
-      Screenshot(kLocationBarView,
+      Screenshot(kLocationBarElementId,
                  "CameraUsingTestWithSystemBlock_IndicatorChip", "7663434"),
       PressButton(PermissionChipView::kIndicatorChipElementId),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
@@ -327,10 +320,9 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       ExecuteJs(kWebContentsElementId, "requestMicrophone"),
       WaitForShow(PermissionChipView::kIndicatorChipElementId),
       CheckChipIsRequest(false), CheckChipText(IDS_MICROPHONE_IN_USE),
-      NameView(kLocationBarView, GetLocationBarView()),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
-      Screenshot(kLocationBarView, "MicrophoneUsingTest_IndicatorChip",
+      Screenshot(kLocationBarElementId, "MicrophoneUsingTest_IndicatorChip",
                  "7663434"),
       PressButton(PermissionChipView::kIndicatorChipElementId),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
@@ -378,10 +370,9 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       ExecuteJs(kWebContentsElementId, "requestMicrophone"),
       WaitForShow(PermissionChipView::kIndicatorChipElementId),
       CheckChipIsRequest(false), CheckChipText(IDS_MICROPHONE_IN_USE),
-      NameView(kLocationBarView, GetLocationBarView()),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
-      Screenshot(kLocationBarView,
+      Screenshot(kLocationBarElementId,
                  "MicrophoneUsingTestWithSystemBlock_IndicatorChip", "7663434"),
       PressButton(PermissionChipView::kIndicatorChipElementId),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
@@ -500,11 +491,10 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       ExecuteJs(kWebContentsElementId, "requestCameraAndMicrophone"),
       WaitForShow(PermissionChipView::kIndicatorChipElementId),
       CheckChipIsRequest(false), CheckChipText(IDS_MICROPHONE_CAMERA_IN_USE),
-      NameView(kLocationBarView, GetLocationBarView()),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
-      Screenshot(kLocationBarView, "CameraAndMicrophoneUsingTest_IndicatorChip",
-                 "7663434"),
+      Screenshot(kLocationBarElementId,
+                 "CameraAndMicrophoneUsingTest_IndicatorChip", "7663434"),
       PressButton(PermissionChipView::kIndicatorChipElementId),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
       Do([this]() { SetStaticSiteName(u"test.com"); }),
@@ -557,10 +547,9 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       ExecuteJs(kWebContentsElementId, "requestCamera"),
       WaitForShow(PermissionChipView::kIndicatorChipElementId),
       CheckChipIsRequest(false), CheckChipText(IDS_CAMERA_NOT_ALLOWED),
-      NameView(kLocationBarView, GetLocationBarView()),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
-      Screenshot(kLocationBarView,
+      Screenshot(kLocationBarElementId,
                  "CameraPermissionBlockedInUseTest_IndicatorChip", "7663434"),
       PressButton(PermissionChipView::kIndicatorChipElementId),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
@@ -597,10 +586,9 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       ExecuteJs(kWebContentsElementId, "requestMicrophone"),
       WaitForShow(PermissionChipView::kIndicatorChipElementId),
       CheckChipIsRequest(false), CheckChipText(IDS_MICROPHONE_NOT_ALLOWED),
-      NameView(kLocationBarView, GetLocationBarView()),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
-      Screenshot(kLocationBarView,
+      Screenshot(kLocationBarElementId,
                  "MicrophonePermissionBlockedInUseTest_IndicatorChip",
                  "7663434"),
       PressButton(PermissionChipView::kIndicatorChipElementId),
@@ -640,10 +628,9 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       WaitForShow(PermissionChipView::kIndicatorChipElementId),
       CheckChipIsRequest(false),
       CheckChipText(IDS_MICROPHONE_CAMERA_NOT_ALLOWED),
-      NameView(kLocationBarView, GetLocationBarView()),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
-      Screenshot(kLocationBarView,
+      Screenshot(kLocationBarElementId,
                  "CameraAndMicrophonePermissionsBlockedInUseTest_IndicatorChip",
                  "7663434"),
       PressButton(PermissionChipView::kIndicatorChipElementId),
@@ -691,11 +678,10 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       WaitForStateChange(kWebContentsElementId, GetCameraStreamStateChange()),
       WaitForShow(PermissionChipView::kIndicatorChipElementId),
       CheckChipIsRequest(false), CheckChipText(IDS_CAMERA_IN_USE),
-      NameView(kLocationBarView, GetLocationBarView()),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
-      Screenshot(kLocationBarView, "CameraAllowStartStopTest_IndicatorChip",
-                 "7663434"),
+      Screenshot(kLocationBarElementId,
+                 "CameraAllowStartStopTest_IndicatorChip", "7663434"),
       ExecuteJs(kWebContentsElementId, "stopCamera"),
       WaitForHide(PermissionChipView::kIndicatorChipElementId));
 }
@@ -714,11 +700,10 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       ExecuteJs(kWebContentsElementId, "requestCamera"),
       WaitForShow(PermissionChipView::kIndicatorChipElementId),
       CheckChipIsRequest(false), CheckChipText(IDS_CAMERA_NOT_ALLOWED),
-      NameView(kLocationBarView, GetLocationBarView()),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
-      Screenshot(kLocationBarView, "CameraBlockStartStopTest_IndicatorChip",
-                 "7663434"),
+      Screenshot(kLocationBarElementId,
+                 "CameraBlockStartStopTest_IndicatorChip", "7663434"),
       // Blocked indicator disappears by itself after a short delay, but
       // DoNotCollapseForTesting() prevents it. Thus, hide it manually.
       Do([this]() { GetDashboardController()->HideIndicatorsForTesting(); }),
@@ -740,11 +725,10 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       WaitForStateChange(kWebContentsElementId, GetMicStreamStateChange()),
       WaitForShow(PermissionChipView::kIndicatorChipElementId),
       CheckChipText(IDS_MICROPHONE_IN_USE),
-      NameView(kLocationBarView, GetLocationBarView()),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
-      Screenshot(kLocationBarView, "MicrophoneAllowStartStopTest_IndicatorChip",
-                 "7663434"),
+      Screenshot(kLocationBarElementId,
+                 "MicrophoneAllowStartStopTest_IndicatorChip", "7663434"),
       ExecuteJs(kWebContentsElementId, "stopMic"),
       WaitForHide(PermissionChipView::kIndicatorChipElementId));
 }
@@ -762,10 +746,9 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       EnsureNotPresent(PermissionChipView::kPermissionRequestChipElementId),
       ExecuteJs(kWebContentsElementId, "requestMicrophone"),
       WaitForShow(PermissionChipView::kIndicatorChipElementId),
-      NameView(kLocationBarView, GetLocationBarView()),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
-      Screenshot(kLocationBarView, "MicBlockStartStopTest_IndicatorChip",
+      Screenshot(kLocationBarElementId, "MicBlockStartStopTest_IndicatorChip",
                  "7663434"),
       // Blocked indicator disappears by itself after a short delay, but
       // DoNotCollapseForTesting() prevents it. Thus, hide it manually.
@@ -786,10 +769,9 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       EnsureNotPresent(PermissionChipView::kPermissionRequestChipElementId),
       ExecuteJs(kWebContentsElementId, "requestCamera"),
       WaitForShow(PermissionChipView::kIndicatorChipElementId),
-      NameView(kLocationBarView, GetLocationBarView()),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot not supported in all test modes."),
-      Screenshot(kLocationBarView, "SuppressPageInfoReopen_IndicatorChip",
+      Screenshot(kLocationBarElementId, "SuppressPageInfoReopen_IndicatorChip",
                  "7663434"),
       // Clicking on LHS indicator opens PageInfo, the second click should hide
       // PageInfo.
