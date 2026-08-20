@@ -492,7 +492,7 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     }
 
     /** Sets the search box hint text. */
-    void setUrlBarHintText(String hintText) {
+    void setUrlBarHintText(CharSequence hintText) {
         mModel.set(UrlBarProperties.HINT_TEXT, hintText);
     }
 

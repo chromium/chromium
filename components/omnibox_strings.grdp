@@ -74,8 +74,11 @@
       Always show <ph name="AI_ENGINE_NAME">$1<ex>AI Mode</ex></ph>
     </message>
   </if>
-  <message name="IDS_AI_MODE_OMNIBOX_PLACEHOLDER" desc="The text shown and announced, prompting the user to use the omnibox AI mode entrypoint. conditionally displayed in the Omnibox when it is focused with no input and AI Mode is enabled." formatter_data="android_java">
+  <message name="IDS_AI_MODE_OMNIBOX_PLACEHOLDER" desc="The text shown and announced, prompting the user to use the omnibox AI mode entrypoint. conditionally displayed in the Omnibox when it is focused with no input and AI Mode is enabled.">
     Press tab then enter to ask <ph name="AI_ENGINE_NAME">$1<ex>AI Mode</ex></ph>
+  </message>
+  <message name="IDS_AI_MODE_OMNIBOX_PLACEHOLDER_ANDROID" desc="The text shown and announced, prompting the user to use the omnibox AI mode entrypoint. conditionally displayed in the Omnibox when it is focused with no input and AI Mode is enabled." formatter_data="android_java">
+    <ph name="TAB_KEY">&lt;tab_key&gt; &lt;/tab_key&gt;</ph> Press tab then enter to ask <ph name="AI_ENGINE_NAME">$1<ex>AI Mode</ex></ph>
   </message>
 
   <message name="IDS_EMPTY_KEYWORD_VALUE" desc="Shown in the location bar drop down when the user enters a string that matches a chrome keyword, but they haven't entered any text following the chrome keyword">

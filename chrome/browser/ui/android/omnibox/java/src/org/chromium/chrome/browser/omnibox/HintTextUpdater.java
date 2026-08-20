@@ -4,7 +4,11 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import android.graphics.Paint;
+import android.graphics.Paint.FontMetricsInt;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.text.style.ImageSpan;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -29,6 +33,8 @@ import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeUtils;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.url.GURL;
 
 /**
@@ -40,7 +46,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
     private final OmniboxResourceProvider mResourceProvider;
     private final LocationBarDataProvider mLocationBarDataProvider;
     private final LocationBarEmbedderUiOverrides mEmbedderUiOverrides;
-    private final Callback<String> mUpdateHintTextCallback;
+    private final Callback<CharSequence> mUpdateHintTextCallback;
     private final MonotonicObservableSupplier<SearchEngineService> mSearchEngineServiceSupplier;
     private final FuseboxCoordinator mFuseboxCoordinator;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
@@ -71,7 +77,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
             MonotonicObservableSupplier<SearchEngineService> searchEngineServiceSupplier,
             FuseboxCoordinator fuseboxCoordinator,
             MonotonicObservableSupplier<Profile> profileSupplier,
-            Callback<String> updateHintTextCallback) {
+            Callback<CharSequence> updateHintTextCallback) {
         mResourceProvider = resourceProvider;
         mLocationBarDataProvider = locationBarDataProvider;
         mEmbedderUiOverrides = embedderUiOverrides;
@@ -174,10 +180,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
 
         if (useAimActivationOrEmptyHint()) {
             if (triggerOrAlreadyShowingActivationHint()) {
-                mUpdateHintTextCallback.onResult(
-                        mResourceProvider.getString(
-                                R.string.ai_mode_omnibox_placeholder,
-                                mResourceProvider.getString(R.string.ai_mode_entrypoint_label)));
+                mUpdateHintTextCallback.onResult(getAimActivationHintWithSpan());
             } else {
                 mUpdateHintTextCallback.onResult("");
             }
@@ -293,5 +296,37 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
             }
             mAimHintShownThisSession = false;
         }
+    }
+
+    /**
+     * An ImageSpan that dynamically scales its drawable to match the text size of the rendering
+     * view's paint.
+     */
+    static class TextSizedImageSpan extends ImageSpan {
+        public TextSizedImageSpan(Drawable drawable) {
+            super(drawable, ImageSpan.ALIGN_CENTER);
+        }
+
+        @Override
+        public int getSize(
+                Paint paint, CharSequence text, int start, int end, @Nullable FontMetricsInt fm) {
+            Drawable drawable = getDrawable();
+            int size = Math.round(paint.getTextSize());
+            drawable.setBounds(0, 0, size, size);
+            return super.getSize(paint, text, start, end, fm);
+        }
+    }
+
+    private CharSequence getAimActivationHintWithSpan() {
+        String rawHint =
+                mResourceProvider.getString(
+                        R.string.ai_mode_omnibox_placeholder_android,
+                        mResourceProvider.getString(R.string.ai_mode_entrypoint_label));
+        Drawable keyboardTabDrawable = mResourceProvider.getDrawable(R.drawable.ic_keyboard_tab);
+        if (keyboardTabDrawable == null) {
+            return rawHint;
+        }
+        ImageSpan imageSpan = new TextSizedImageSpan(keyboardTabDrawable);
+        return SpanApplier.applySpans(rawHint, new SpanInfo("<tab_key>", "</tab_key>", imageSpan));
     }
 }

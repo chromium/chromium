@@ -421,9 +421,9 @@ public class UrlBarCoordinator
     }
 
     /**
-     * @see UrlBarMediator#setUrlBarHintText(String)
+     * @see UrlBarMediator#setUrlBarHintText(CharSequence)
      */
-    public void setUrlBarHintText(String hintTextRes) {
+    public void setUrlBarHintText(CharSequence hintTextRes) {
         mMediator.setUrlBarHintText(hintTextRes);
     }
 

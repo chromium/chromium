@@ -141,7 +141,7 @@ class UrlBarProperties {
             new WritableBooleanPropertyKey();
 
     /** Specifies the url bar hint text. */
-    public static final WritableObjectPropertyKey<String> HINT_TEXT =
+    public static final WritableObjectPropertyKey<CharSequence> HINT_TEXT =
             new WritableObjectPropertyKey<>();
 
     /** Specifies the color for url bar hint text. */

@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.omnibox;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -13,6 +15,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.MockitoHelper.clearInvocations;
+
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
+import android.text.Spanned;
+import android.text.style.ImageSpan;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -62,7 +69,7 @@ public class HintTextUpdaterUnitTest {
     @Mock private SearchEngineService mSearchEngineService;
     @Mock private AutocompleteInput mAutocompleteInput;
     @Mock private LocationBarEmbedderUiOverrides mEmbedderUiOverrides;
-    @Mock private Callback<String> mUpdateHintTextCallback;
+    @Mock private Callback<CharSequence> mUpdateHintTextCallback;
     @Mock private FuseboxSessionState mFuseboxSessionState;
     @Mock private ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
     @Mock private FuseboxCoordinator mFuseboxCoordinator;
@@ -78,7 +85,7 @@ public class HintTextUpdaterUnitTest {
     private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createMonotonic();
 
-    @Captor private ArgumentCaptor<String> mHintTextCaptor;
+    @Captor private ArgumentCaptor<CharSequence> mHintTextCaptor;
     @Captor private ArgumentCaptor<SearchEngineNameObserver> mSearchEngineNameObserverCaptor;
 
     private final SettableNonNullObservableSupplier<String> mUserTextSupplier =
@@ -332,7 +339,27 @@ public class HintTextUpdaterUnitTest {
         clearInvocations(mUpdateHintTextCallback);
         mUpdater.onTitleChanged();
 
-        verify(mUpdateHintTextCallback).onResult(eq("Press tab then enter to ask AI Mode"));
+        verify(mUpdateHintTextCallback).onResult(mHintTextCaptor.capture());
+        CharSequence hintText = mHintTextCaptor.getValue();
+        assertTrue(hintText.toString().contains("Press tab then enter to ask AI Mode"));
+
+        assertTrue(hintText instanceof Spanned);
+        Spanned spanned = (Spanned) hintText;
+        ImageSpan[] imageSpans = spanned.getSpans(0, spanned.length(), ImageSpan.class);
+        Drawable drawable = imageSpans[0].getDrawable();
+        assertNotNull(drawable);
+
+        // Verify dynamic sizing when measured with different Paint text sizes.
+        Paint paint = new Paint();
+        paint.setTextSize(20f);
+        imageSpans[0].getSize(paint, hintText, 0, spanned.length(), null);
+        assertEquals(20, drawable.getBounds().width());
+        assertEquals(20, drawable.getBounds().height());
+
+        paint.setTextSize(48f);
+        imageSpans[0].getSize(paint, hintText, 0, spanned.length(), null);
+        assertEquals(48, drawable.getBounds().width());
+        assertEquals(48, drawable.getBounds().height());
     }
 
     @Test
