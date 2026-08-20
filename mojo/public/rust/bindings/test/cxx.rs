@@ -3,11 +3,25 @@
 // found in the LICENSE file.
 
 chromium::import! {
+    "//mojo/public/rust/bindings";
     "//mojo/public/rust/system";
 }
 
+use crate::tests::BindRustMathServiceReceiver;
+
 #[cxx::bridge(namespace = "bindings_unittests::mojom")]
 pub mod ffi {
+    #[namespace = "mojo::rust::bindings"]
+    unsafe extern "C++" {
+        include!("mojo/public/rust/bindings/multiplex_router/cpp_interop/associated_endpoint_rust_adapter.h");
+        type AssociatedEndpointRustAdapter =
+            super::bindings::cxx_associated_endpoint::ffi::AssociatedEndpointRustAdapter;
+    }
+
+    extern "Rust" {
+        fn BindRustMathServiceReceiver(adapter: UniquePtr<AssociatedEndpointRustAdapter>);
+    }
+
     unsafe extern "C++" {
         include!("mojo/public/rust/bindings/test/cpp/cxx_shim.h");
         include!("mojo/public/rust/bindings/test/cpp/add_seven_service.h");
@@ -34,5 +48,21 @@ pub mod ffi {
         );
 
         fn CreateCppAssociatedSender(handle: UniquePtr<ScopedMessagePipeHandleWrapper>);
+        fn CreateAssociatedSenderInteropTest(handle: UniquePtr<ScopedMessagePipeHandleWrapper>);
+
+        type AssociatedSenderTestRemote;
+
+        fn CreateAssociatedSenderTestRemote(
+            handle: UniquePtr<ScopedMessagePipeHandleWrapper>,
+        ) -> UniquePtr<AssociatedSenderTestRemote>;
+
+        fn RequestRemote(
+            self: Pin<&mut AssociatedSenderTestRemote>,
+        ) -> UniquePtr<AssociatedEndpointRustAdapter>;
+
+        fn SendReceiver(
+            self: Pin<&mut AssociatedSenderTestRemote>,
+            receiver_adapter: UniquePtr<AssociatedEndpointRustAdapter>,
+        );
     }
 }

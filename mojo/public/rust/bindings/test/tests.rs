@@ -353,11 +353,11 @@ fn test_handle_passing() {
             let mut recvs = math_receivers_clone.lock().unwrap();
             // We use a helper closure: Bind the given handle and set it to
             // expect a result of `expected`.
-            let mut bind = |h, expected: u32| {
+            let mut bind = |handle, expected: u32| {
                 let service = NotifyingMathService {
                     f: Box::new(move |n| expect_eq!(n, expected)) as Box<dyn FnMut(u32) + Send>,
                 };
-                recvs.push(PendingReceiver::<dyn MathService>::new(h).bind(service));
+                recvs.push(PendingReceiver::<dyn MathService>::new(handle).bind(service));
             };
             bind(h1, 2);
             bind(h2, 4);
@@ -729,9 +729,8 @@ fn test_cpp_associated_sender() {
 
         // 1. Send Remote to C++
         let (math_rem, math_rec) = PendingAssociatedRemote::<dyn MathService>::new_pair();
-        let _math_receiver = math_rec.bind(crate::state_objects::NotifyingMathService {
-            f: math_response_closure!(count, 0, 3),
-        });
+        let _math_receiver =
+            math_rec.bind(NotifyingMathService { f: math_response_closure!(count, 0, 3) });
         remote.SendRemote(math_rem);
 
         // 2. Send Receiver to C++
@@ -755,7 +754,7 @@ fn test_cpp_associated_sender() {
         let f = math_response_closure!(count, 2, 50, quit);
         let active_receivers_clone = active_receivers.clone();
         remote.RequestReceiver(move |math_rec| {
-            let receiver = math_rec.bind(crate::state_objects::NotifyingMathService { f });
+            let receiver = math_rec.bind(NotifyingMathService { f });
             active_receivers_clone.lock().unwrap().push(receiver);
         });
 
@@ -787,11 +786,8 @@ fn test_associated_disconnect() {
         let run_loop = RunLoop::new();
         let quit = run_loop.get_quit_closure();
 
-        let _math_receiver_1 = assoc_p_rec_1.bind_with_options(
-            crate::state_objects::SaturatingMathService {},
-            None,
-            Some(Box::new(quit)),
-        );
+        let _math_receiver_1 =
+            assoc_p_rec_1.bind_with_options(SaturatingMathService {}, None, Some(Box::new(quit)));
 
         // Drop the remote end, which is stored in assoc_impl.send_remote
         drop(assoc_impl.send_remote.lock().unwrap().take());
@@ -826,7 +822,7 @@ fn test_bad_control_message() {
     let (handle0, handle1) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
 
     let pending_receiver = PendingReceiver::<dyn MathService>::new(handle0);
-    let _receiver = pending_receiver.bind(crate::state_objects::WrappingMathService {});
+    let _receiver = pending_receiver.bind(WrappingMathService {});
 
     // Send a bad control message on handle1 (wrong message name)
     let header = MessageHeader::new(
@@ -919,11 +915,8 @@ fn test_associated_disconnect_cpp() {
             let run_loop = RunLoop::new();
             let quit = run_loop.get_quit_closure();
 
-            let _math_receiver = assoc_p_rec.bind_with_options(
-                crate::state_objects::SaturatingMathService {},
-                None,
-                Some(Box::new(quit)),
-            );
+            let _math_receiver =
+                assoc_p_rec.bind_with_options(SaturatingMathService {}, None, Some(Box::new(quit)));
 
             // Send a message that will drop the remote on the other side.
             remote.ClearActiveEndpoints();
@@ -934,4 +927,160 @@ fn test_associated_disconnect_cpp() {
 
     // Make sure to clean up the self-owned receiver on the other side
     RunLoop::new().run_until_idle();
+}
+
+/// Create a new self-owned receiver which is associated with a C++
+/// primary endpoint.
+#[allow(non_snake_case)] // Only called from C++ via a cxx bridge
+pub fn BindRustMathServiceReceiver(
+    adapter: cxx::UniquePtr<bindings::CxxPendingAssociatedEndpoint>,
+) {
+    let pending_receiver = PendingAssociatedReceiver::<dyn MathService>::from_cpp(adapter);
+    pending_receiver.bind_self_owned(SaturatingMathService {});
+}
+
+/// Ensure that we can attach a Rust associated interface endpoint to a primary
+/// pipe endpoint in C++.
+///
+/// Overall strategy:
+/// 1. Create an associated pair and send the receiver to C++ to be bound there.
+/// 2. It's bound to a state object that calls back into Rust to create an
+///    associated endpoint (`BindRustMathServiceReceiver`).
+/// 3. We then request a remote in order to invoke that state object; the
+///    corresponding receiver will be bound to the primary (C++) pipe.
+/// 4. Finally, we send a message to make sure it all works properly.
+///
+/// We then perform steps (3) and (4) again, but invoking `SendReceiver` to
+/// cover the case where C++ parses the receiver instead of serializing it.
+///
+/// Note that this test (and the one after it) send Receivers and keep the
+/// Remote in Rust. This is for convenience, so we don't have to do as much on
+/// the C++ side. Pending remotes and receivers are the same type under the
+/// hood, so we're not sacrificing coverage by doing so.
+#[gtest(RustBindingsAPI, TestAssociatedInteropCppPrimaryReceiver)]
+fn test_associated_interop_cpp_primary_receiver() {
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
+    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+
+    let (pending_remote, pending_receiver) =
+        PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
+
+    let mut remote = pending_remote.bind();
+
+    let receiver_wrapper =
+        system::scoped_handle_interop::ScopedMessagePipeHandleWrapper::from_message_endpoint(
+            pending_receiver.into_endpoint(),
+        );
+
+    crate::cxx::ffi::CreateAssociatedSenderInteropTest(receiver_wrapper);
+
+    // At this point, we've set up the primary pipe; the other end is now in
+    // C++.
+
+    let math_remote = Arc::new(Mutex::new(None));
+    let math_remote_clone = math_remote.clone();
+
+    let run_loop = RunLoop::new();
+    let quit = run_loop.get_quit_closure();
+
+    remote.RequestRemote(move |pending_remote| {
+        *math_remote_clone.lock().unwrap() = Some(pending_remote.bind());
+        quit();
+    });
+    run_loop.run();
+
+    let mut math_remote =
+        math_remote.lock().unwrap().take().expect("Should have received PendingAssociatedRemote");
+
+    // At this point, we've set up the associated interface on both sides. All
+    // the stuff we want to test has already been done, we just want to make
+    // sure it worked.
+
+    let run_loop = RunLoop::new();
+    let quit = run_loop.get_quit_closure();
+
+    math_remote.Add(100, 200, move |result| {
+        assert_eq!(result, 300);
+        quit();
+    });
+    run_loop.run();
+
+    // Now we do the same thing, but create the associated pair in Rust and
+    // send one endpoint from here instead of having C++ provide them for us.
+    let (pending_math_remote, pending_math_receiver) =
+        PendingAssociatedRemote::<dyn MathService>::new_pair();
+
+    remote.SendReceiver(pending_math_receiver);
+
+    let mut math_remote2 = pending_math_remote.bind();
+
+    let run_loop = RunLoop::new();
+    let quit = run_loop.get_quit_closure();
+
+    math_remote2.Add(500, 300, move |result| {
+        assert_eq!(result, 800);
+        quit();
+    });
+    run_loop.run();
+}
+
+/// This is similar to `TestAssociatedInteropCppPrimaryRemote`, but tests the
+/// two cases where the C++ end of the pipe is the sending side. In order to
+/// send an associated endpoint from Rust via a C++ pipe, we first need to
+/// convert it into a form that can be serialized by C++, and which will
+/// associate the other end with the Remote during the serialization process.
+#[gtest(RustBindingsAPI, TestAssociatedInteropCppPrimaryRemote)]
+fn test_associated_interop_cpp_primary_remote() {
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
+    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+
+    let (pending_remote, pending_receiver) =
+        PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
+
+    let _receiver = pending_receiver.bind(AssociatedSenderInteropRustImpl {});
+
+    let remote_wrapper =
+        system::scoped_handle_interop::ScopedMessagePipeHandleWrapper::from_message_endpoint(
+            pending_remote.into_endpoint(),
+        );
+
+    let mut cxx_remote = crate::cxx::ffi::CreateAssociatedSenderTestRemote(remote_wrapper);
+
+    // At this point, we've set up the primary pipe; _this_ end (the remote) is
+    // managed by C++
+
+    // Check that we can receive an associated endpoint via a C++ pipe.
+    let cxx_pending_remote = cxx_remote.pin_mut().RequestRemote();
+    let pending_math_remote1 =
+        PendingAssociatedRemote::<dyn MathService>::from_cpp(cxx_pending_remote);
+    let mut math_remote1 = pending_math_remote1.bind();
+
+    // At this point, `math_remote_1` is a Rust associated remote that sends its
+    // messages via `cxx_remote`.
+
+    let run_loop = RunLoop::new();
+    let quit = run_loop.get_quit_closure();
+
+    math_remote1.Add(100, 200, move |result| {
+        assert_eq!(result, 300);
+        quit();
+    });
+    run_loop.run();
+
+    // Check that we can send an associated endpoint via a C++ pipe.
+    let (pending_math_remote2, pending_math_receiver2_cpp) =
+        PendingAssociatedRemote::<dyn MathService>::new_pair_cpp();
+
+    let mut math_remote2 = pending_math_remote2.bind();
+
+    cxx_remote.pin_mut().SendReceiver(pending_math_receiver2_cpp);
+
+    let run_loop = RunLoop::new();
+    let quit = run_loop.get_quit_closure();
+
+    math_remote2.Add(500, 300, move |result| {
+        assert_eq!(result, 800);
+        quit();
+    });
+    run_loop.run();
 }

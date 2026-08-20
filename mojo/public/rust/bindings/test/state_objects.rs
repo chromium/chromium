@@ -219,3 +219,32 @@ impl AssociatedSender for AssociatedSenderImpl {
 }
 
 bindings::register_mojom_state_object_impls!(impl AssociatedSender for AssociatedSenderImpl);
+
+pub struct AssociatedSenderInteropRustImpl;
+
+impl AssociatedSender for AssociatedSenderInteropRustImpl {
+    fn SendRemote(&mut self, _remote: PendingAssociatedRemote<dyn MathService>) {}
+
+    fn SendReceiver(&mut self, receiver: PendingAssociatedReceiver<dyn MathService>) {
+        receiver.bind_self_owned(SaturatingMathService {});
+    }
+
+    fn RequestRemote(
+        &mut self,
+        response_callback: impl Send + 'static + FnOnce(PendingAssociatedRemote<dyn MathService>),
+    ) {
+        let (remote, receiver) = PendingAssociatedRemote::<dyn MathService>::new_pair();
+        receiver.bind_self_owned(SaturatingMathService {});
+        response_callback(remote);
+    }
+
+    fn RequestReceiver(
+        &mut self,
+        _response_callback: impl Send + 'static + FnOnce(PendingAssociatedReceiver<dyn MathService>),
+    ) {
+    }
+
+    fn ClearActiveEndpoints(&mut self) {}
+}
+
+bindings::register_mojom_state_object_impls!(impl AssociatedSender for AssociatedSenderInteropRustImpl);

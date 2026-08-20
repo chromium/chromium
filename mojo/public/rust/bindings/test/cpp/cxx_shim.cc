@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/rust/bindings/test/cxx.rs.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace bindings_unittests::mojom {
@@ -125,6 +126,75 @@ void CreateCppAssociatedSender(
   mojo::PendingReceiver<AssociatedSender> receiver(wrapper->take_handle());
   mojo::MakeSelfOwnedReceiver(std::make_unique<AssociatedSenderImpl>(),
                               std::move(receiver));
+}
+
+class AssociatedSenderInteropTestImpl : public AssociatedSender {
+ public:
+  AssociatedSenderInteropTestImpl() = default;
+  ~AssociatedSenderInteropTestImpl() override = default;
+
+  void SendRemote(mojo::PendingAssociatedRemote<MathService> remote) override {}
+  void SendReceiver(
+      mojo::PendingAssociatedReceiver<MathService> receiver) override {
+    auto adapter = mojo::rust::bindings::MakeAssociatedEndpointRustAdapter(
+        std::move(receiver));
+    BindRustMathServiceReceiver(std::move(adapter));
+  }
+
+  void RequestRemote(RequestRemoteCallback callback) override {
+    mojo::PendingAssociatedRemote<MathService> remote;
+    mojo::PendingAssociatedReceiver<MathService> receiver =
+        remote.InitWithNewEndpointAndPassReceiver();
+    auto adapter = mojo::rust::bindings::MakeAssociatedEndpointRustAdapter(
+        std::move(receiver));
+    std::move(callback).Run(std::move(remote));
+    BindRustMathServiceReceiver(std::move(adapter));
+  }
+
+  void RequestReceiver(RequestReceiverCallback callback) override {}
+  void ClearActiveEndpoints() override {}
+};
+
+void CreateAssociatedSenderInteropTest(
+    std::unique_ptr<mojo::rust::ScopedMessagePipeHandleWrapper> wrapper) {
+  mojo::PendingReceiver<AssociatedSender> receiver(wrapper->take_handle());
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<AssociatedSenderInteropTestImpl>(), std::move(receiver));
+}
+
+AssociatedSenderTestRemote::AssociatedSenderTestRemote(
+    std::unique_ptr<mojo::rust::ScopedMessagePipeHandleWrapper> wrapper)
+    : remote_(
+          mojo::PendingRemote<AssociatedSender>(wrapper->take_handle(), 0)) {}
+
+AssociatedSenderTestRemote::~AssociatedSenderTestRemote() = default;
+
+CxxPendingAssociatedEndpoint AssociatedSenderTestRemote::RequestRemote() {
+  base::RunLoop run_loop;
+  CxxPendingAssociatedEndpoint result;
+  remote_->RequestRemote(base::BindOnce(
+      [](base::OnceClosure quit, CxxPendingAssociatedEndpoint* result,
+         mojo::PendingAssociatedRemote<MathService> pending_remote) {
+        *result = mojo::rust::bindings::MakeAssociatedEndpointRustAdapter(
+            std::move(pending_remote));
+        std::move(quit).Run();
+      },
+      run_loop.QuitClosure(), &result));
+  run_loop.Run();
+  return result;
+}
+
+void AssociatedSenderTestRemote::SendReceiver(
+    CxxPendingAssociatedEndpoint receiver_adapter) {
+  mojo::PendingAssociatedReceiver<MathService> pending_receiver =
+      mojo::rust::bindings::PassPendingAssociatedReceiver<MathService>(
+          std::move(receiver_adapter));
+  remote_->SendReceiver(std::move(pending_receiver));
+}
+
+std::unique_ptr<AssociatedSenderTestRemote> CreateAssociatedSenderTestRemote(
+    std::unique_ptr<mojo::rust::ScopedMessagePipeHandleWrapper> wrapper) {
+  return std::make_unique<AssociatedSenderTestRemote>(std::move(wrapper));
 }
 
 }  // namespace bindings_unittests::mojom

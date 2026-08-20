@@ -13,6 +13,7 @@ rust_static_library("bindings_unittests") {
     "tests.rs",
   ]
   cxx_bindings = [ "cxx.rs" ]
+  visibility = [ "//mojo/public/rust/*" ]
 
   deps = [
     ":bindings_unittests_mojom_rust",
@@ -37,9 +38,11 @@ source_set("math_service_cpp") {
     "cpp/cxx_shim.h",
   ]
   deps = [
+    ":bindings_unittests_cxx_generated_gen",
     ":bindings_unittests_mojom",
     "../../system",
     "//mojo/public/cpp/bindings",
+    "//mojo/public/rust/bindings:cpp_router_handle_cc",
     "//testing/gtest",
   ]
 }
