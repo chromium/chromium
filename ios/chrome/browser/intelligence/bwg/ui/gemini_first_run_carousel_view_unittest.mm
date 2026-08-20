@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/test/task_environment.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -46,23 +47,26 @@ class GeminiFirstRunCarouselViewTest : public PlatformTest {
     PlatformTest::SetUp();
 
     slide1_ = [[GeminiFirstRunCarouselSlide alloc]
-        initWithAnimationName:@"FRE_Summarize_Slide"
-            darkAnimationName:@"FRE_Summarize_Slide_Dark"
-             animationNameRTL:@"FRE_Summarize_Slide_RTL"
-         darkAnimationNameRTL:@"FRE_Summarize_Slide_Dark_RTL"
-                        title:@"Summarize with Gemini"];
+              initWithAnimationName:kLottieAnimationFRESummarizeSlideName
+                  darkAnimationName:kLottieAnimationFRESummarizeSlideDarkName
+                   animationNameRTL:kLottieAnimationFRESummarizeSlideRTLName
+               darkAnimationNameRTL:kLottieAnimationFRESummarizeSlideDarkRTLName
+                              title:@"Summarize with Gemini"
+        animationAccessibilityLabel:@"Summarize artwork"];
     slide2_ = [[GeminiFirstRunCarouselSlide alloc]
-        initWithAnimationName:@"FRE_Shopping_Slide"
-            darkAnimationName:@"FRE_Shopping_Slide_Dark"
-             animationNameRTL:@"FRE_Shopping_Slide_RTL"
-         darkAnimationNameRTL:@"FRE_Shopping_Slide_Dark_RTL"
-                        title:@"Shop with Gemini"];
+              initWithAnimationName:kLottieAnimationFREShoppingSlideName
+                  darkAnimationName:kLottieAnimationFREShoppingSlideDarkName
+                   animationNameRTL:kLottieAnimationFREShoppingSlideRTLName
+               darkAnimationNameRTL:kLottieAnimationFREShoppingSlideDarkRTLName
+                              title:@"Shop with Gemini"
+        animationAccessibilityLabel:@"Shop artwork"];
     slide3_ = [[GeminiFirstRunCarouselSlide alloc]
-        initWithAnimationName:@"FRE_Planning_Slide"
-            darkAnimationName:@"FRE_Planning_Slide_Dark"
-             animationNameRTL:@"FRE_Planning_Slide_RTL"
-         darkAnimationNameRTL:@"FRE_Planning_Slide_Dark_RTL"
-                        title:@"Plan with Gemini"];
+              initWithAnimationName:kLottieAnimationFREPlanningSlideName
+                  darkAnimationName:kLottieAnimationFREPlanningSlideDarkName
+                   animationNameRTL:kLottieAnimationFREPlanningSlideRTLName
+               darkAnimationNameRTL:kLottieAnimationFREPlanningSlideDarkRTLName
+                              title:@"Plan with Gemini"
+        animationAccessibilityLabel:@"Plan artwork"];
   }
 
   base::test::TaskEnvironment task_environment_;

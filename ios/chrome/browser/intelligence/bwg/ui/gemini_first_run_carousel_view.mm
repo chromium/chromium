@@ -61,6 +61,7 @@ const base::TimeDelta kAutoScrollInterval = base::Seconds(3);
     CHECK(slides.count > 1);
     _slides = [slides copy];
     _slideViews = [NSMutableArray array];
+    self.shouldGroupAccessibilityChildren = YES;
 
     [self setupSubviews];
     [self setupConstraints];

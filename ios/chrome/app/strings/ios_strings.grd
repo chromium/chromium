@@ -1534,11 +1534,20 @@
       <message name="IDS_IOS_BWG_PROMO_CAROUSEL_GEMINI_IN_CHROME" desc="Product branding suffix text for the Gemini Promo carousel slide titles.">
           Gemini in Chrome
       </message>
+      <message name="IDS_IOS_BWG_PROMO_CAROUSEL_PLANNING_ANIMATION_ACCESSIBILITY_LABEL" desc="Accessibility label for the third Gemini Promo carousel slide animation.">
+          Prompt: Add this to my calendar, 3 of 3
+      </message>
       <message name="IDS_IOS_BWG_PROMO_CAROUSEL_PLANNING_TITLE" desc="Planning slide title text prefix for the Gemini Promo carousel.">
           Plan your weekend with
       </message>
+      <message name="IDS_IOS_BWG_PROMO_CAROUSEL_SHOPPING_ANIMATION_ACCESSIBILITY_LABEL" desc="Accessibility label for the second Gemini Promo carousel slide animation.">
+          Prompt: Which should I buy? 2 of 3
+      </message>
       <message name="IDS_IOS_BWG_PROMO_CAROUSEL_SHOPPING_TITLE" desc="Shopping slide title text prefix for the Gemini Promo carousel.">
           Shop confidently with
+      </message>
+      <message name="IDS_IOS_BWG_PROMO_CAROUSEL_SUMMARIZE_ANIMATION_ACCESSIBILITY_LABEL" desc="Accessibility label for the first Gemini Promo carousel slide animation.">
+          Prompt: Summarize this article, 1 of 3
       </message>
       <message name="IDS_IOS_BWG_PROMO_CAROUSEL_SUMMARIZE_TITLE" desc="Summarize slide title text prefix for the Gemini Promo carousel.">
           Sum it up with

@@ -213,23 +213,32 @@ const CGFloat kCompactTopPadding = 27.0;
 
   NSArray<GeminiFirstRunCarouselSlide*>* slides = @[
     [[GeminiFirstRunCarouselSlide alloc]
-        initWithAnimationName:kLottieAnimationFRESummarizeSlideName
-            darkAnimationName:kLottieAnimationFRESummarizeSlideDarkName
-             animationNameRTL:kLottieAnimationFRESummarizeSlideRTLName
-         darkAnimationNameRTL:kLottieAnimationFRESummarizeSlideDarkRTLName
-                        title:summarizeTitle],
+              initWithAnimationName:kLottieAnimationFRESummarizeSlideName
+                  darkAnimationName:kLottieAnimationFRESummarizeSlideDarkName
+                   animationNameRTL:kLottieAnimationFRESummarizeSlideRTLName
+               darkAnimationNameRTL:kLottieAnimationFRESummarizeSlideDarkRTLName
+                              title:summarizeTitle
+        animationAccessibilityLabel:
+            l10n_util::GetNSString(
+                IDS_IOS_BWG_PROMO_CAROUSEL_SUMMARIZE_ANIMATION_ACCESSIBILITY_LABEL)],
     [[GeminiFirstRunCarouselSlide alloc]
-        initWithAnimationName:kLottieAnimationFREShoppingSlideName
-            darkAnimationName:kLottieAnimationFREShoppingSlideDarkName
-             animationNameRTL:kLottieAnimationFREShoppingSlideRTLName
-         darkAnimationNameRTL:kLottieAnimationFREShoppingSlideDarkRTLName
-                        title:shoppingTitle],
+              initWithAnimationName:kLottieAnimationFREShoppingSlideName
+                  darkAnimationName:kLottieAnimationFREShoppingSlideDarkName
+                   animationNameRTL:kLottieAnimationFREShoppingSlideRTLName
+               darkAnimationNameRTL:kLottieAnimationFREShoppingSlideDarkRTLName
+                              title:shoppingTitle
+        animationAccessibilityLabel:
+            l10n_util::GetNSString(
+                IDS_IOS_BWG_PROMO_CAROUSEL_SHOPPING_ANIMATION_ACCESSIBILITY_LABEL)],
     [[GeminiFirstRunCarouselSlide alloc]
-        initWithAnimationName:kLottieAnimationFREPlanningSlideName
-            darkAnimationName:kLottieAnimationFREPlanningSlideDarkName
-             animationNameRTL:kLottieAnimationFREPlanningSlideRTLName
-         darkAnimationNameRTL:kLottieAnimationFREPlanningSlideDarkRTLName
-                        title:planningTitle],
+              initWithAnimationName:kLottieAnimationFREPlanningSlideName
+                  darkAnimationName:kLottieAnimationFREPlanningSlideDarkName
+                   animationNameRTL:kLottieAnimationFREPlanningSlideRTLName
+               darkAnimationNameRTL:kLottieAnimationFREPlanningSlideDarkRTLName
+                              title:planningTitle
+        animationAccessibilityLabel:
+            l10n_util::GetNSString(
+                IDS_IOS_BWG_PROMO_CAROUSEL_PLANNING_ANIMATION_ACCESSIBILITY_LABEL)],
   ];
 
   _carouselView = [[GeminiFirstRunCarouselView alloc] initWithSlides:slides];

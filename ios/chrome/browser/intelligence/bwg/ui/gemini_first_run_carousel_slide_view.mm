@@ -35,7 +35,8 @@ const CGFloat kSlideTitleMaxFontSize = 40.0;
                     darkAnimationName:(NSString*)darkAnimationName
                      animationNameRTL:(NSString*)animationNameRTL
                  darkAnimationNameRTL:(NSString*)darkAnimationNameRTL
-                                title:(NSString*)title {
+                                title:(NSString*)title
+          animationAccessibilityLabel:(NSString*)animationAccessibilityLabel {
   self = [super init];
   if (self) {
     CHECK(animationName.length);
@@ -43,11 +44,13 @@ const CGFloat kSlideTitleMaxFontSize = 40.0;
     CHECK(animationNameRTL.length);
     CHECK(darkAnimationNameRTL.length);
     CHECK(title.length);
+    CHECK(animationAccessibilityLabel.length);
     _animationName = [animationName copy];
     _darkAnimationName = [darkAnimationName copy];
     _animationNameRTL = [animationNameRTL copy];
     _darkAnimationNameRTL = [darkAnimationNameRTL copy];
     _title = [title copy];
+    _animationAccessibilityLabel = [animationAccessibilityLabel copy];
   }
   return self;
 }
@@ -69,6 +72,7 @@ const CGFloat kSlideTitleMaxFontSize = 40.0;
   if (self) {
     CHECK(slide);
     _slide = slide;
+    self.shouldGroupAccessibilityChildren = YES;
 
     [self setupSubviews];
     [self setupConstraints];
@@ -137,6 +141,9 @@ const CGFloat kSlideTitleMaxFontSize = 40.0;
   _animationContainer.translatesAutoresizingMaskIntoConstraints = NO;
   _animationContainer.layer.cornerRadius = kLottieAnimationCornerRadius;
   _animationContainer.layer.masksToBounds = YES;
+  _animationContainer.isAccessibilityElement = YES;
+  _animationContainer.accessibilityTraits = UIAccessibilityTraitImage;
+  _animationContainer.accessibilityLabel = _slide.animationAccessibilityLabel;
 
   // Configure title label.
   _titleLabel = [[UILabel alloc] init];
@@ -148,6 +155,7 @@ const CGFloat kSlideTitleMaxFontSize = 40.0;
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisVertical];
   _titleLabel.accessibilityLabel = _slide.title;
+  _titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
 
   // Vertical stack view containing the animation container and title label.
   _contentStack = [[UIStackView alloc]
