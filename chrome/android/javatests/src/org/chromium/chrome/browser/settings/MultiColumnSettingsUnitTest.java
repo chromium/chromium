@@ -16,6 +16,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.TypedValue;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -538,6 +540,49 @@ public class MultiColumnSettingsUnitTest {
                             "In single-column mode, onCreateInitialDetailFragment should return"
                                     + " null",
                             settings.onCreateInitialDetailFragment());
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    public void testUpdateHeaderPaneFocusability() {
+        mBlankUiActivityTestRule.launchActivity(null);
+        BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TestMultiColumnSettings settings = new TestMultiColumnSettings();
+                    settings.setIsTwoColumnForTesting(false);
+
+                    activity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .add(android.R.id.content, settings)
+                            .commitNow();
+
+                    ViewGroup headerGroup =
+                            settings.requireView().findViewById(R.id.preferences_header);
+                    assertNotNull(headerGroup);
+
+                    // In single-column mode with detail pane open, header descendants are blocked.
+                    settings.showDetailFragment(new TestFragment(), false, null);
+                    assertEquals(
+                            ViewGroup.FOCUS_BLOCK_DESCENDANTS,
+                            headerGroup.getDescendantFocusability());
+                    assertEquals(
+                            View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS,
+                            headerGroup.getImportantForAccessibility());
+
+                    // In two-column mode, header descendants are allowed.
+                    settings.setIsTwoColumnForTesting(true);
+                    settings.updateHeaderPaneFocusability();
+                    assertEquals(
+                            ViewGroup.FOCUS_AFTER_DESCENDANTS,
+                            headerGroup.getDescendantFocusability());
+                    assertEquals(
+                            View.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+                            headerGroup.getImportantForAccessibility());
                 });
     }
 

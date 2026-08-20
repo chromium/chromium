@@ -407,8 +407,28 @@ public class SettingsMenuHelperUnitTest {
         View navigationButton = getNavigationButton();
         assertNotNull(navigationButton);
         assertTrue(navigationButton.isClickable());
+        assertTrue(navigationButton.isFocusable());
         assertNull(ViewCompat.getAccessibilityDelegate(navigationButton));
         assertEquals(mActivity.getString(R.string.back), navigationButton.getContentDescription());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
+    public void testUpdateNavigationIcon_BackButtonFocus_SettingsInTab() {
+        mActivity.setContentView(mToolbar);
+
+        SettingsMenuHelper.updateNavigationIcon(
+                mToolbar,
+                mActivity,
+                /* show= */ true,
+                /* isMultiColumn= */ false,
+                /* isMainSettings= */ false);
+
+        View navigationButton = getNavigationButton();
+        assertNotNull(navigationButton);
+        assertTrue(navigationButton.isFocusable());
+        assertTrue(navigationButton.isFocused());
     }
 
     /** Returns the navigation button on the toolbar. */

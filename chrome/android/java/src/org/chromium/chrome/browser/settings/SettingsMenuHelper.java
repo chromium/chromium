@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.settings;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
@@ -216,7 +219,11 @@ public class SettingsMenuHelper {
                 // Ensure TalkBack announces this as a button. Must occur after icon is set.
                 View navigationButton = getNavigationButtonView(toolbar);
                 navigationButton.setClickable(true);
+                navigationButton.setFocusable(true);
                 ViewCompat.setAccessibilityDelegate(navigationButton, null);
+                if (SettingsInTab.isEnabled()) {
+                    requestAccessibilityFocus(navigationButton);
+                }
             }
         } else {
             // Clear any custom accessibility delegate. Must occur before clearing the icon.
@@ -227,6 +234,35 @@ public class SettingsMenuHelper {
             // Hide the icon.
             toolbar.setNavigationIcon(null);
         }
+    }
+
+    /**
+     * Requests view focus and notifies the accessibility framework to move screen reader (TalkBack)
+     * accessibility focus to the view.
+     */
+    public static void requestAccessibilityFocus(View view) {
+        if (view.isAttachedToWindow()) {
+            focusAndSendAccessibilityEvent(view);
+            return;
+        }
+        view.addOnAttachStateChangeListener(
+                new View.OnAttachStateChangeListener() {
+                    @Override
+                    public void onViewAttachedToWindow(View v) {
+                        v.removeOnAttachStateChangeListener(this);
+                        focusAndSendAccessibilityEvent(v);
+                    }
+
+                    @Override
+                    public void onViewDetachedFromWindow(View v) {}
+                });
+    }
+
+    @SuppressLint("AccessibilityFocus")
+    private static void focusAndSendAccessibilityEvent(View view) {
+        view.requestFocus();
+        view.performAccessibilityAction(AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
+        view.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 
     private static View getNavigationButtonView(Toolbar toolbar) {

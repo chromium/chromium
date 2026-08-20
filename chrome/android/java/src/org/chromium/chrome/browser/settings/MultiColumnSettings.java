@@ -270,6 +270,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         }
         transaction.commit();
         getSlidingPaneLayout().open();
+        updateHeaderPaneFocusability();
 
         // When navigating in Single Activity mode, the new fragment's view might not be
         // laid out yet when it requests focus. If it requests focus while it has zero
@@ -448,11 +449,38 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
                 });
         view.post(
                 () -> {
+                    updateHeaderPaneFocusability();
                     for (Observer o : mObservers) o.onHeaderLayoutUpdated();
                     if (mOnCreateViewRunnable != null) mOnCreateViewRunnable.run();
                 });
         mDetailView = detailView;
         return view;
+    }
+
+    /**
+     * Updates descendant focusability and accessibility for the header pane. When the detail pane
+     * is opened in single-column mode, the header pane is hidden behind the detail pane, so its
+     * descendants must be blocked from keyboard focus and hidden from accessibility to prevent
+     * keyboard tab navigation and screen readers from traversing obscured header items.
+     */
+    void updateHeaderPaneFocusability() {
+        // May be called before the view is inflated.
+        if (getView() == null) return;
+
+        View headerView = getView().findViewById(R.id.preferences_header);
+        // View may not exist in tests.
+        if (headerView == null) return;
+
+        ViewGroup headerGroup = (ViewGroup) headerView;
+        boolean isHeaderObscured = !isTwoColumn() && isLayoutOpen();
+        if (isHeaderObscured) {
+            headerGroup.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+            headerGroup.setImportantForAccessibility(
+                    View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+        } else {
+            headerGroup.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
+            headerGroup.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+        }
     }
 
     /** Sets the Profile required for generating the search index. Called by the host Activity. */
@@ -558,6 +586,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
                 int oldTop,
                 int oldRight,
                 int oldBottom) {
+            updateHeaderPaneFocusability();
             boolean prevSlideable = mSlideable;
             mSlideable = getSlidingPaneLayout().isSlideable();
             if (prevSlideable != mSlideable) {
@@ -595,6 +624,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
             @SlideState int prevState = mState;
             mState = SlideState.OPENED;
             mOffset = 0f;
+            updateHeaderPaneFocusability();
             maybeNotifyObserver(prevState, mState);
         }
 
@@ -603,6 +633,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
             @SlideState int prevState = mState;
             mState = SlideState.CLOSED;
             mOffset = 1f;
+            updateHeaderPaneFocusability();
             maybeNotifyObserver(prevState, mState);
         }
 
@@ -986,6 +1017,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
 
         @SlideState
         int initState = getSlidingPaneLayout().isOpen() ? SlideState.OPENED : SlideState.CLOSED;
+        updateHeaderPaneFocusability();
         for (Observer o : mObservers) {
             o.onSlideStateUpdated(initState);
         }
