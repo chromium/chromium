@@ -47,7 +47,6 @@
 #include "extensions/browser/service_worker/service_worker_keepalive.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_api.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"

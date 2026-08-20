@@ -52,7 +52,6 @@
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_api.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/mojom/context_type.mojom.h"
@@ -344,10 +343,8 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
 
   const bool is_worker_request = IsRequestFromServiceWorker(*params);
 
-  base::ListValue arguments = std::move(params->arguments);
-
   scoped_refptr<ExtensionFunction> function = CreateExtensionFunction(
-      *params, std::move(arguments), extension, render_process_id,
+      *params, std::move(params->arguments), extension, render_process_id,
       is_worker_request, render_frame_host_url, params->context_type,
       ExtensionAPI::GetSharedInstance(), std::move(callback),
       render_frame_host);
