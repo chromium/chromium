@@ -7,7 +7,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/metrics/histogram_functions.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/renderer/core/ad_tracker/lazy_stack_trace.h"
 #include "third_party/blink/renderer/core/ad_tracker/script_ancestry_tracker.h"
@@ -181,12 +180,8 @@ AdTracker::AdScriptAncestry AdTracker::GetAncestry(V8ScriptId script_id) {
     return ancestry;
   }
 
-  HashSet<V8ScriptId> seen_script_ids;
-  bool duplicate = false;
-
   ancestry.ancestry_chain.emplace_back(metadata->context_id, script_id,
                                        metadata->url);
-  seen_script_ids.insert(script_id);
 
   AdProvenance ad_provenance = it->value;
   while (true) {
@@ -194,11 +189,6 @@ AdTracker::AdScriptAncestry AdTracker::GetAncestry(V8ScriptId script_id) {
         absl::Overload{
             [&](NoProvenance) { return true; },
             [&](V8ScriptId marked_script_id) {
-              // Prevent an infinite loop due to cycles.
-              if (!seen_script_ids.insert(marked_script_id).is_new_entry) {
-                duplicate = true;
-                return true;
-              }
               const ScriptAncestryTracker::ScriptMetadata* parent_metadata =
                   GetScriptMetadata(marked_script_id);
               if (!parent_metadata) {
@@ -230,10 +220,6 @@ AdTracker::AdScriptAncestry AdTracker::GetAncestry(V8ScriptId script_id) {
       break;
     }
   }
-
-  base::UmaHistogramBoolean(
-      "Navigation.IframeCreated.AdTracker.DuplicateAncestryScriptId",
-      duplicate);
 
   return ancestry;
 }

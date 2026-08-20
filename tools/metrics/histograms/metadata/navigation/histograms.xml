@@ -1484,18 +1484,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.IframeCreated.AdTracker.DuplicateAncestryScriptId"
-    enum="Boolean" expires_after="2026-09-27">
-  <owner>jkarlin@chromium.org</owner>
-  <owner>yaoxia@chromium.org</owner>
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    Records whether a duplicate ad script ID was detected during when an iframe
-    was created, indicating a cycle.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.InitiatorType.All" enum="NavigationInitiatorType"
     expires_after="2027-02-07">
   <owner>robertlin@chromium.org</owner>
