@@ -535,14 +535,14 @@ ResourceResponse::GetCrossOriginEmbedderPolicy() const {
   if (value.IsNull()) {
     return network::mojom::CrossOriginEmbedderPolicyValue::kNone;
   }
-  using Item = net::structured_headers::Item;
   const auto item = net::structured_headers::ParseItem(value.Utf8());
-  if (!item || item->item.Type() != Item::kTokenType) {
+  const std::string* token = item ? item->item.GetIfToken() : nullptr;
+  if (!token) {
     return network::mojom::CrossOriginEmbedderPolicyValue::kNone;
   }
-  if (item->item.GetString() == "require-corp") {
+  if (*token == "require-corp") {
     return network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
-  } else if (item->item.GetString() == "credentialless") {
+  } else if (*token == "credentialless") {
     return network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless;
   } else {
     return network::mojom::CrossOriginEmbedderPolicyValue::kNone;

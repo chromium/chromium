@@ -18,7 +18,11 @@ bool ParseAllowCrossOriginEventReportingFromHeader(
 
   std::optional<net::structured_headers::ParameterizedItem> item =
       net::structured_headers::ParseItem(*header_value);
-  return item && item->item.is_boolean() && item->item.GetBoolean();
+  if (!item) {
+    return false;
+  }
+  const bool* value = item->item.GetIfBoolean();
+  return value && *value;
 }
 
 }  // namespace network

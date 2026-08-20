@@ -33,8 +33,8 @@ std::optional<PolicyValue> ItemToPolicyValue(
     mojom::blink::DocumentPolicyFeature feature) {
   switch (type) {
     case mojom::blink::PolicyValueType::kBool: {
-      if (item.is_boolean()) {
-        return PolicyValue::CreateBool(item.GetBoolean());
+      if (const bool* value = item.GetIfBoolean()) {
+        return PolicyValue::CreateBool(*value);
       } else {
         return std::nullopt;
       }
@@ -50,11 +50,12 @@ std::optional<PolicyValue> ItemToPolicyValue(
           return std::nullopt;
       }
     case mojom::blink::PolicyValueType::kEnum: {
-      if (item.Type() != net::structured_headers::Item::ItemType::kTokenType) {
+      const std::string* token = item.GetIfToken();
+      if (!token) {
         return std::nullopt;
       }
       std::optional<int32_t> enum_value =
-          DocumentPolicyEnumTokenToValue(feature, item.GetString());
+          DocumentPolicyEnumTokenToValue(feature, *token);
       if (!enum_value) {
         return std::nullopt;
       }
@@ -67,9 +68,11 @@ std::optional<PolicyValue> ItemToPolicyValue(
 
 std::optional<std::string> ItemToString(
     const net::structured_headers::Item& item) {
-  if (item.Type() != net::structured_headers::Item::ItemType::kTokenType)
+  const std::string* token = item.GetIfToken();
+  if (!token) {
     return std::nullopt;
-  return item.GetString();
+  }
+  return *token;
 }
 
 struct ParsedFeature {
