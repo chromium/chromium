@@ -1860,3 +1860,7 @@ crbug.com/452389538 virtual/prefetch-force-off-the-main-thread-wculf/external/wp
 
 # OOM crash on Windows, marked as WontFix
 crbug.com/379516106 [ Win ] external/wpt/css/css-overflow/scrollbar-large-scale-in-iframe.html [ Skip ]
+
+# requestStorageAccessFor is disabled and will be removed.
+external/wpt/top-level-storage-access-api/* [ Skip ]
+external/wpt/html/anonymous-iframe/requestStorageAccessFor.tentative.https.window.html [ Skip ]

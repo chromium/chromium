@@ -2237,7 +2237,6 @@ interface Document : Node
     method releaseEvents
     method replaceChildren
     method requestStorageAccess
-    method requestStorageAccessFor
     method setSequentialFocusStartingPoint
     method startViewTransition
     method webkitCancelFullScreen

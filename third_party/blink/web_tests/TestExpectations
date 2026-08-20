@@ -9207,8 +9207,6 @@ crbug.com/531865773 external/wpt/webrtc-stats/supported-stats.https.html [ Failu
 # Mac14 failure after import. Disabling on all platforms proactively.
 crbug.com/532703006 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation-view-transition-mixed-change.html [ Failure Pass ]
 
-# Partially fixed by CL 8076718 (`is_outermost_main_frame` plumbing to Network Service)
-crbug.com/533331915 external/wpt/top-level-storage-access-api/requestStorageAccessFor.sub.https.window.html [ Crash Failure Pass ]
 
 # Gardener 2026-07-14
 crbug.com/485657219 external/wpt/fetch/fetch-later/quota/max-payload.https.window.html [ Failure Pass ]

@@ -443,12 +443,12 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForBrowserTest,
-                       RsaForOriginEnabledByDefault) {
+                       RsaForOriginDisabledByDefault) {
   NavigateToPageWithFrame(kHostA);
-  // Ensure that the proposed extension is enabled by default
+  // Ensure that the proposed extension is disabled by default
   EXPECT_EQ(
       EvalJs(GetPrimaryMainFrame(), "\"requestStorageAccessFor\" in document"),
-      true);
+      false);
 }
 
 class RequestStorageAccessForEnabledBrowserTest
