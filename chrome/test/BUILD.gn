@@ -6370,7 +6370,6 @@ test("unit_tests") {
   } else {
     # !is_android
     sources += [
-      "../browser/browser_commands_unittest.cc",
       "../browser/ui/accelerator_table_unittest.cc",
       "../browser/ui/browser_manager_service_factory_unittest.cc",
       "../browser/ui/browser_unittest.cc",
