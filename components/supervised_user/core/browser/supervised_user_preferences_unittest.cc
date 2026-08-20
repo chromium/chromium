@@ -8,6 +8,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
@@ -52,24 +53,26 @@ TEST_F(SupervisedUserPreferencesTest, RegisterProfilePrefsAndCheckDefaults) {
 }
 
 TEST_F(SupervisedUserPreferencesTest, ToggleParentalControlsSetsUserId) {
-  EnableParentalControls(*supervised_user_test_environment_.pref_service());
+  supervised_user_test_environment_.EnableSupervisedAccount();
   EXPECT_EQ(supervised_user_test_environment_.pref_service()->GetString(
                 prefs::kSupervisedUserId),
             kChildAccountSUID);
 
-  DisableParentalControls(*supervised_user_test_environment_.pref_service());
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Signing out of the supervised account on ChromeOS not supported.
+  supervised_user_test_environment_.DisableSupervisedAccount();
   EXPECT_EQ(supervised_user_test_environment_.pref_service()->GetString(
                 prefs::kSupervisedUserId),
             std::string());
+#endif
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SupervisedUserPreferencesTest, ToggleParentalControlsSetsChildStatus) {
-  EnableParentalControls(*supervised_user_test_environment_.pref_service());
-  EXPECT_TRUE(IsChildAccountStatusKnown(
+  EXPECT_FALSE(IsChildAccountStatusKnown(
       *supervised_user_test_environment_.pref_service()));
 
-  DisableParentalControls(*supervised_user_test_environment_.pref_service());
+  supervised_user_test_environment_.EnableSupervisedAccount();
   EXPECT_TRUE(IsChildAccountStatusKnown(
       *supervised_user_test_environment_.pref_service()));
 }

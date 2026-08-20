@@ -129,7 +129,7 @@ class SupervisedUserLogRecordTest : public ::testing::Test {
         is_opted_in_to_parental_supervision);
     GetIdentityTestEnv()->UpdateAccountInfoForAccount(account_info);
 
-    EnableParentalControls(*supervised_user_test_environment_.pref_service());
+    supervised_user_test_environment_.EnableSupervisedAccount();
     // Set the Family Link `Permissions` switch to default value. In prod it's
     // done by the `SupervisedUserPrefStore`, but that requires fully
     // operational Profile.

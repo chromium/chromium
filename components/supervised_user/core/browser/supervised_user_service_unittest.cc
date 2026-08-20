@@ -202,19 +202,8 @@ class SupervisedUserServiceWebFilterTypeTransitionsTest
 // state and 3 states of web filter type for Family Link. Each state can
 // transition to any other state. "FamilyUser.WebFilterType" is a legacy
 // histogram but is still asserted.
-class SupervisedUserServiceFamilyLinkWebFilterTypeTransitionsTest
-    : public SupervisedUserServiceWebFilterTypeTransitionsTest {
- protected:
-  void EnableParentalControls() {
-    ::supervised_user::EnableParentalControls(
-        *supervised_user_test_environment_->pref_service_syncable());
-  }
-
-  void DisableParentalControls() {
-    ::supervised_user::DisableParentalControls(
-        *supervised_user_test_environment_->pref_service_syncable());
-  }
-};
+using SupervisedUserServiceFamilyLinkWebFilterTypeTransitionsTest =
+    SupervisedUserServiceWebFilterTypeTransitionsTest;
 
 TEST_F(SupervisedUserServiceFamilyLinkWebFilterTypeTransitionsTest,
        FromUnsupervisedToSupervisedWithAllowAllSites) {
@@ -228,7 +217,7 @@ TEST_F(SupervisedUserServiceFamilyLinkWebFilterTypeTransitionsTest,
                                      0);
   histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 0);
 
-  EnableParentalControls();
+  supervised_user_test_environment_->EnableSupervisedAccount();
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kAllowAllSites);
   histogram_tester_.ExpectBucketCount(
       "SupervisedUsers.WebFilterType.FamilyLink", WebFilterType::kAllowAllSites,
@@ -236,12 +225,15 @@ TEST_F(SupervisedUserServiceFamilyLinkWebFilterTypeTransitionsTest,
   histogram_tester_.ExpectBucketCount("FamilyUser.WebFilterType",
                                       WebFilterType::kAllowAllSites, 1);
 
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Signing out of the supervised account on ChromeOS not supported.
   // Disable parental controls. No more metrics are emitted.
-  DisableParentalControls();
+  supervised_user_test_environment_->DisableSupervisedAccount();
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kDisabled);
   histogram_tester_.ExpectTotalCount("SupervisedUsers.WebFilterType.FamilyLink",
                                      1);
   histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 1);
+#endif
 }
 
 TEST_F(SupervisedUserServiceFamilyLinkWebFilterTypeTransitionsTest,
@@ -256,7 +248,7 @@ TEST_F(SupervisedUserServiceFamilyLinkWebFilterTypeTransitionsTest,
                                      0);
   histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 0);
 
-  EnableParentalControls();
+  supervised_user_test_environment_->EnableSupervisedAccount();
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kCertainSites);
   histogram_tester_.ExpectBucketCount(
       "SupervisedUsers.WebFilterType.FamilyLink", WebFilterType::kCertainSites,
@@ -264,12 +256,16 @@ TEST_F(SupervisedUserServiceFamilyLinkWebFilterTypeTransitionsTest,
   histogram_tester_.ExpectBucketCount("FamilyUser.WebFilterType",
                                       WebFilterType::kCertainSites, 1);
 
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Signing out of the supervised account on ChromeOS not supported.
+
   // Disable parental controls. No more metrics are emitted.
-  DisableParentalControls();
+  supervised_user_test_environment_->DisableSupervisedAccount();
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kDisabled);
   histogram_tester_.ExpectTotalCount("SupervisedUsers.WebFilterType.FamilyLink",
                                      1);
   histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 1);
+#endif
 }
 
 TEST_F(SupervisedUserServiceFamilyLinkWebFilterTypeTransitionsTest,
@@ -283,7 +279,7 @@ TEST_F(SupervisedUserServiceFamilyLinkWebFilterTypeTransitionsTest,
                                      0);
   histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 0);
 
-  EnableParentalControls();
+  supervised_user_test_environment_->EnableSupervisedAccount();
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kTryToBlockMatureSites);
   histogram_tester_.ExpectBucketCount(
       "SupervisedUsers.WebFilterType.FamilyLink",
@@ -291,12 +287,16 @@ TEST_F(SupervisedUserServiceFamilyLinkWebFilterTypeTransitionsTest,
   histogram_tester_.ExpectBucketCount("FamilyUser.WebFilterType",
                                       WebFilterType::kTryToBlockMatureSites, 1);
 
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Signing out of the supervised account on ChromeOS not supported.
+
   // Disable parental controls. No more metrics are emitted.
-  DisableParentalControls();
+  supervised_user_test_environment_->DisableSupervisedAccount();
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kDisabled);
   histogram_tester_.ExpectTotalCount("SupervisedUsers.WebFilterType.FamilyLink",
                                      1);
   histogram_tester_.ExpectTotalCount("FamilyUser.WebFilterType", 1);
+#endif
 }
 
 TEST_F(SupervisedUserServiceFamilyLinkWebFilterTypeTransitionsTest,
@@ -311,7 +311,8 @@ TEST_F(SupervisedUserServiceFamilyLinkWebFilterTypeTransitionsTest,
   histogram_tester_.ExpectBucketCount("FamilyUser.WebFilterType",
                                       WebFilterType::kTryToBlockMatureSites, 1);
 
-  SetWebFilterType(WebFilterType::kAllowAllSites);
+  supervised_user_test_environment_->SetWebFilterType(
+      WebFilterType::kAllowAllSites);
   EXPECT_EQ(GetWebFilterType(), WebFilterType::kAllowAllSites);
   histogram_tester_.ExpectBucketCount(
       "SupervisedUsers.WebFilterType.FamilyLink", WebFilterType::kAllowAllSites,
@@ -419,7 +420,6 @@ class SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest
     return AreAndroidParentalControlsEffectiveForTesting(
         *supervised_user_test_environment_->pref_service());
   }
-
 };
 
 // All enabled -> only browser filter enabled -> all disabled -> only search

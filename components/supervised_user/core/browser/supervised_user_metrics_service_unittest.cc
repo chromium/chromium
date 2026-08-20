@@ -94,7 +94,7 @@ TEST_F(SupervisedUserMetricsServiceTest, NewDayAfterSupervisedUserDetected) {
   task_environment_.FastForwardBy(base::Days(1) + base::Hours(1));
   EXPECT_EQ(0, GetDayIdPref());
 
-  EnableParentalControls(*supervised_user_test_environment_->pref_service());
+  supervised_user_test_environment_->EnableSupervisedAccount();
   EXPECT_EQ(SupervisedUserMetricsService::GetDayIdForTesting(base::Time::Now()),
             GetDayIdPref());
 }

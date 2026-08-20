@@ -161,6 +161,8 @@ class SupervisedUserTestEnvironment {
   // Simulators of parental controls. Instance methods use services from this
   // test environment, while static methods are suitable for heavier testing
   // profile use.
+  void EnableSupervisedAccount();
+  void DisableSupervisedAccount();
 
   // SetWebFilterType methods simulate the custodian modifying "Google Chrome
   // and Web" settings.

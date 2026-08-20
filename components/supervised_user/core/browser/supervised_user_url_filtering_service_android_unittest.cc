@@ -55,7 +55,7 @@ class SupervisedUserUrlFilteringServiceWebFilterTypeAndroidTest
 TEST_P(SupervisedUserUrlFilteringServiceWebFilterTypeAndroidTest,
        WebFilterTypeTest) {
   if (GetParam().family_link != WebFilterType::kDisabled) {
-    EnableParentalControls(*test_environment().pref_service());
+    test_environment().EnableSupervisedAccount();
     test_environment().SetWebFilterType(GetParam().family_link);
   }
 
@@ -166,7 +166,7 @@ class SupervisedUserUrlFilteringServiceSyncBehaviorAndroidTest
 
 TEST_F(SupervisedUserUrlFilteringServiceSyncBehaviorAndroidTest,
        EnabledDeviceParentalControls_DontAffectSyncBehavior) {
-  EnableParentalControls(*test_environment().pref_service());
+  test_environment().EnableSupervisedAccount();
   test_environment().SetWebFilterType(WebFilterType::kCertainSites);
   test_environment().SetManualFilterForHost("http://google.com",
                                             /*allowlist=*/true);
@@ -208,7 +208,7 @@ class SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest
 
 TEST_F(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
        OnlyFamilyLinkFilterIsUsed) {
-  EnableParentalControls(*test_environment().pref_service());
+  test_environment().EnableSupervisedAccount();
   ASSERT_FALSE(
       test_environment().device_parental_controls().IsWebFilteringEnabled());
 
@@ -283,7 +283,7 @@ TEST_F(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
 TEST_F(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
        DeviceParenalControlsHavePriorityOverFamilyLink) {
   // Both systems are enabled.
-  EnableParentalControls(*test_environment().pref_service());
+  test_environment().EnableSupervisedAccount();
   test_environment()
       .device_parental_controls()
       .SetBrowserContentFiltersEnabledForTesting(true);
@@ -323,7 +323,7 @@ TEST_F(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
 TEST_F(SupervisedUserUrlFilteringServiceAsyncBehaviorAndroidTest,
        FamilyLinkIsFallbackToDeviceParentalControls) {
   // Both systems are enabled.
-  EnableParentalControls(*test_environment().pref_service());
+  test_environment().EnableSupervisedAccount();
   test_environment()
       .device_parental_controls()
       .SetBrowserContentFiltersEnabledForTesting(true);

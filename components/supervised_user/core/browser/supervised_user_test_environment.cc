@@ -22,6 +22,7 @@
 #include "components/supervised_user/core/browser/supervised_user_synthetic_field_trial_service_delegate.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/sync_change_processor.h"
@@ -91,6 +92,29 @@ void SetManualFilter(std::string_view content_pack_setting,
   dict_to_insert.Set(entry, allowlist);
   settings_service.SetLocalSetting(content_pack_setting,
                                    std::move(dict_to_insert));
+}
+
+AccountInfo GetOrCreatePrimaryAccount(
+    signin::IdentityTestEnvironment& identity_test_env) {
+  constexpr char kDefaultEmail[] = "name@gmail.com";
+
+  signin::IdentityManager* identity_manager =
+      identity_test_env.identity_manager();
+
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return identity_manager->FindExtendedAccountInfo(
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  }
+
+  std::vector<CoreAccountInfo> accounts =
+      identity_manager->GetAccountsWithRefreshTokens();
+  if (!accounts.empty()) {
+    return identity_test_env.MakePrimaryAccountAvailable(
+        accounts.front().email, signin::ConsentLevel::kSignin);
+  }
+
+  return identity_test_env.MakePrimaryAccountAvailable(
+      kDefaultEmail, signin::ConsentLevel::kSignin);
 }
 }  // namespace
 
@@ -250,6 +274,19 @@ void SupervisedUserTestEnvironment::Shutdown() {
   service_->Shutdown();
   child_account_service_->Shutdown();
   pref_store_environment_.Shutdown();
+}
+
+void SupervisedUserTestEnvironment::EnableSupervisedAccount() {
+  AccountInfo account = GetOrCreatePrimaryAccount(identity_test_env_);
+  UpdateSupervisionStatusForAccount(account,
+                                    identity_test_env_.identity_manager(),
+                                    /*is_subject_to_parental_controls=*/true);
+  CHECK(IsSubjectToParentalControls(*pref_store_environment_.pref_service()));
+}
+
+void SupervisedUserTestEnvironment::DisableSupervisedAccount() {
+  identity_test_env_.ClearPrimaryAccount();
+  CHECK(!IsSubjectToParentalControls(*pref_store_environment_.pref_service()));
 }
 
 void SupervisedUserTestEnvironment::SetWebFilterType(

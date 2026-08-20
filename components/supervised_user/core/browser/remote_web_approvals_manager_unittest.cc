@@ -92,7 +92,7 @@ class MockPermissionRequestCreator : public PermissionRequestCreator {
 class RemoteWebApprovalsManagerTest : public ::testing::Test {
  protected:
   RemoteWebApprovalsManagerTest() {
-    EnableParentalControls(*supervised_user_test_environment_.pref_service());
+    supervised_user_test_environment_.EnableSupervisedAccount();
   }
 
   RemoteWebApprovalsManagerTest(const RemoteWebApprovalsManagerTest&) = delete;
