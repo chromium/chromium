@@ -44,6 +44,11 @@ OmniboxEverywhereBackgroundModeManager::OmniboxEverywhereBackgroundModeManager(
       base::BindRepeating(
           &OmniboxEverywhereBackgroundModeManager::OnPrefChanged,
           base::Unretained(this)));
+  hotkey_string_pref_member_.Init(
+      prefs::kOmniboxEverywhereHotkey, g_browser_process->local_state(),
+      base::BindRepeating(
+          &OmniboxEverywhereBackgroundModeManager::UpdateStatusIconContextMenu,
+          base::Unretained(this)));
   OnPrefChanged();
 }
 

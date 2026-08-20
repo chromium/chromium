@@ -8,14 +8,19 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/template_url.h"
@@ -81,7 +86,9 @@ class OmniboxEverywhereControllerTest : public ChromeViewsTestBase {
   }
 
   void TearDown() override {
-    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
+    if (TestingBrowserProcess::GetGlobal()->GetFeatures()) {
+      TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
+    }
     ChromeViewsTestBase::TearDown();
   }
 
@@ -381,4 +388,89 @@ TEST_F(OmniboxEverywhereControllerTest,
   // Re-activating bwi1 updates target profile back to profile_.
   controller.OnBrowserActivated(&bwi1);
   EXPECT_EQ(&profile_, controller.target_profile());
+}
+
+TEST_F(OmniboxEverywhereControllerTest, ControllerUpdatesCustomHotkey) {
+  TestingPrefServiceSimple* local_state =
+      TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+
+  FakeGlobalAcceleratorListener fake_listener;
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }),
+      &fake_listener);
+
+  ui::Accelerator default_hotkey(ui::VKEY_SPACE, ui::EF_ALT_DOWN);
+  EXPECT_TRUE(fake_listener.IsRegistered(default_hotkey));
+
+  ui::Accelerator new_hotkey(ui::VKEY_SPACE,
+                             ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  local_state->SetString(omnibox_everywhere::prefs::kOmniboxEverywhereHotkey,
+                         "Ctrl+Shift+Space");
+
+  EXPECT_FALSE(fake_listener.IsRegistered(default_hotkey));
+  EXPECT_TRUE(fake_listener.IsRegistered(new_hotkey));
+}
+
+TEST_F(OmniboxEverywhereControllerTest,
+       ControllerUpdatesCustomHotkeyWhileSuspended) {
+  TestingPrefServiceSimple* local_state =
+      TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+
+  FakeGlobalAcceleratorListener fake_listener;
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }),
+      &fake_listener);
+
+  ui::Accelerator default_hotkey(ui::VKEY_SPACE, ui::EF_ALT_DOWN);
+  EXPECT_TRUE(fake_listener.IsRegistered(default_hotkey));
+
+  // Simulate WebUI <cr-shortcut-input> setting shortcut suspension during key
+  // capture so key combinations aren't intercepted globally while typing.
+  fake_listener.SetShortcutHandlingSuspended(true);
+  EXPECT_FALSE(fake_listener.IsRegistered(default_hotkey));
+
+  ui::Accelerator new_hotkey(ui::VKEY_SPACE,
+                             ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  local_state->SetString(omnibox_everywhere::prefs::kOmniboxEverywhereHotkey,
+                         "Ctrl+Shift+Space");
+
+  // While suspended, the platform listener should not be actively listening for
+  // any hotkeys so keyboard events are not intercepted.
+  EXPECT_TRUE(fake_listener.IsShortcutHandlingSuspended());
+  EXPECT_FALSE(fake_listener.IsRegistered(default_hotkey));
+  EXPECT_FALSE(fake_listener.IsRegistered(new_hotkey));
+
+  // When key capture finishes and suspension ends, the new hotkey should be
+  // actively registered with the platform listener and the old one should not.
+  fake_listener.SetShortcutHandlingSuspended(false);
+  EXPECT_FALSE(fake_listener.IsRegistered(default_hotkey));
+  EXPECT_TRUE(fake_listener.IsRegistered(new_hotkey));
+}
+
+TEST_F(OmniboxEverywhereControllerTest, ControllerLoadsCustomHotkeyOnStartup) {
+  TestingPrefServiceSimple* local_state =
+      TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  local_state->SetString(omnibox_everywhere::prefs::kOmniboxEverywhereHotkey,
+                         "Ctrl+Shift+Space");
+
+  FakeGlobalAcceleratorListener fake_listener;
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }),
+      &fake_listener);
+
+  ui::Accelerator default_hotkey(ui::VKEY_SPACE, ui::EF_ALT_DOWN);
+  ui::Accelerator custom_hotkey(ui::VKEY_SPACE,
+                                ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+
+  EXPECT_FALSE(fake_listener.IsRegistered(default_hotkey));
+  EXPECT_TRUE(fake_listener.IsRegistered(custom_hotkey));
 }

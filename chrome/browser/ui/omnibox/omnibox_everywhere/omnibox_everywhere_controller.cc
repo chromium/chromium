@@ -45,6 +45,11 @@ OmniboxEverywhereController::OmniboxEverywhereController(
         base::BindRepeating(
             &OmniboxEverywhereController::UpdateHotkeyRegistration,
             base::Unretained(this)));
+    hotkey_string_pref_member_.Init(
+        prefs::kOmniboxEverywhereHotkey, g_browser_process->local_state(),
+        base::BindRepeating(
+            &OmniboxEverywhereController::UpdateHotkeyRegistration,
+            base::Unretained(this)));
   }
   UpdateHotkeyRegistration();
 
@@ -152,6 +157,23 @@ void OmniboxEverywhereController::UpdateHotkeyRegistration() {
     return;
   }
 
+  // When the user enters a new shortcut in the settings WebUI,
+  // <cr-shortcut-input> suspends global shortcut handling via
+  // SetShortcutHandlingSuspended(true) so that typing key combinations in
+  // the input field does not trigger global listeners or native system
+  // actions.
+  //
+  // However, `GlobalAcceleratorListener::RegisterAccelerator()` rejects new
+  // registrations while suspended (it returns false if
+  // `IsShortcutHandlingSuspended()` is true). To ensure the hotkey is
+  // cleanly unregistered and re-registered while the user is still
+  // interacting with the settings UI, we temporarily restore the suspension
+  // state to false for the registration updates, and then immediately reinstate
+  // the original suspension state until the user finishes key capture.
+  const bool shortcut_handling_suspended =
+      listener_->IsShortcutHandlingSuspended();
+  listener_->SetShortcutHandlingSuspended(false);
+
   listener_->UnregisterAccelerators(this);
 
   const bool is_enabled =
@@ -165,6 +187,8 @@ void OmniboxEverywhereController::UpdateHotkeyRegistration() {
       listener_->RegisterAccelerator(hotkey, this);
     }
   }
+
+  listener_->SetShortcutHandlingSuspended(shortcut_handling_suspended);
 }
 
 void OmniboxEverywhereController::OnInvoke(InvocationSource source,

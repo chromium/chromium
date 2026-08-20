@@ -59,6 +59,7 @@ class OmniboxEverywhereBackgroundModeManager
   void Reset();
 
   BooleanPrefMember background_mode_pref_member_;
+  StringPrefMember hotkey_string_pref_member_;
   raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;

@@ -118,6 +118,7 @@ class OmniboxEverywhereController
   void UpdateHotkeyRegistration();
 
   BooleanPrefMember hotkey_pref_member_;
+  StringPrefMember hotkey_string_pref_member_;
   std::unique_ptr<OmniboxEverywhereUIManager> ui_manager_;
   std::unique_ptr<OmniboxEverywhereBackgroundModeManager>
       background_mode_manager_;

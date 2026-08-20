@@ -15,6 +15,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -131,6 +132,36 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest, ContextMenuStructure) {
   EXPECT_TRUE(menu->GetAcceleratorForCommandId(
       IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE, &accelerator));
   EXPECT_EQ(accelerator, prefs::GetDefaultOmniboxEverywhereHotkey());
+}
+
+TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
+       ContextMenuUpdatesOnCustomHotkeyChange) {
+  bool callback_called = false;
+  OmniboxEverywhereBackgroundModeManager manager(base::BindRepeating(
+      [](bool* called) { *called = true; }, &callback_called));
+
+  StatusIcon* status_icon = manager.status_icon_for_testing();
+  ASSERT_NE(status_icon, nullptr);
+
+  StatusIconMenuModel* menu = status_icon->GetContextMenuForTesting();
+  ASSERT_NE(menu, nullptr);
+
+  ui::Accelerator accelerator;
+  EXPECT_TRUE(menu->GetAcceleratorForCommandId(
+      IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE, &accelerator));
+  EXPECT_EQ(accelerator, prefs::GetDefaultOmniboxEverywhereHotkey());
+
+  // Update custom hotkey pref and verify the status icon context menu updates.
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetString(
+      prefs::kOmniboxEverywhereHotkey, "Ctrl+Shift+Space");
+
+  menu = status_icon->GetContextMenuForTesting();
+  ASSERT_NE(menu, nullptr);
+  EXPECT_TRUE(menu->GetAcceleratorForCommandId(
+      IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE, &accelerator));
+  EXPECT_EQ(
+      accelerator,
+      ui::Accelerator(ui::VKEY_SPACE, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN));
 }
 
 TEST_F(OmniboxEverywhereBackgroundModeManagerTest, ExecuteToggleCommand) {
