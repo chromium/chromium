@@ -3,8 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
+
+#include <string_view>
+
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/test/fake_server.h"
+
+namespace {
+using testing::AllOf;
+using testing::Contains;
+using testing::ExplainMatchResult;
+}  // namespace
 
 ServerDeviceInfoMatchChecker::ServerDeviceInfoMatchChecker(
     const Matcher& matcher)
@@ -25,18 +34,16 @@ bool ServerDeviceInfoMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
       fake_server()->GetSyncEntitiesByDataType(syncer::DEVICE_INFO);
 
   testing::StringMatchResultListener result_listener;
-  const bool matches =
-      testing::ExplainMatchResult(matcher_, entities, &result_listener);
+  const bool matches = ExplainMatchResult(matcher_, entities, &result_listener);
   *os << result_listener.str();
   return matches;
 }
 
 namespace device_info_helper {
 
-bool WaitForFullDeviceInfoCommitted(const std::string& cache_guid) {
+bool WaitForFullDeviceInfoCommitted(std::string_view cache_guid) {
   return ServerDeviceInfoMatchChecker(
-             testing::Contains(
-                 testing::AllOf(HasCacheGuid(cache_guid), HasSharingFields())))
+             Contains(AllOf(HasCacheGuid(cache_guid), HasSharingFields())))
       .Wait();
 }
 

@@ -6,9 +6,8 @@
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_DEVICE_INFO_HELPER_H_
 
 #include <ostream>
-#include <string>
+#include <string_view>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,7 +52,7 @@ MATCHER_P(HasCacheGuid, expected_cache_guid, "") {
   return arg.specifics().device_info().cache_guid() == expected_cache_guid;
 }
 
-bool WaitForFullDeviceInfoCommitted(const std::string& cache_guid);
+bool WaitForFullDeviceInfoCommitted(std::string_view cache_guid);
 
 }  // namespace device_info_helper
 
