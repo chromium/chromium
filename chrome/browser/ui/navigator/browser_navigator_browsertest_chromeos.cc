@@ -17,7 +17,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
@@ -79,9 +78,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
   // The page should not be opened, and the browser should still sit at the
   // default about:blank page.
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+            browser()->GetTabStripModel()->GetActiveWebContents()->GetURL());
 
   // As a sanity check unset the locked fullscreen state and make sure that the
   // navigation happens (the following EXPECTs fail if the next line isn't
@@ -93,17 +92,13 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
   // The original browser should still be at the same page, but the newly
   // opened browser should sit on the chrome:version page.
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+            browser()->GetTabStripModel()->GetActiveWebContents()->GetURL());
+  EXPECT_EQ(1, params.browser->GetTabStripModel()->count());
   EXPECT_EQ(
-      1,
-      params.browser->GetBrowserForMigrationOnly()->tab_strip_model()->count());
-  EXPECT_EQ(GURL(chrome::kChromeUIVersionURL),
-            params.browser->GetBrowserForMigrationOnly()
-                ->tab_strip_model()
-                ->GetActiveWebContents()
-                ->GetURL());
+      GURL(chrome::kChromeUIVersionURL),
+      params.browser->GetTabStripModel()->GetActiveWebContents()->GetURL());
 }
 
 // Verify that page navigation is allowed in locked fullscreen mode when locked
@@ -127,16 +122,13 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
   // The original browser should still be at the same page, but the newly
   // opened browser should sit on the chrome:version page.
   ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
-  ASSERT_EQ(
-      1,
-      params.browser->GetBrowserForMigrationOnly()->tab_strip_model()->count());
-  EXPECT_EQ(kUrl, params.browser->GetBrowserForMigrationOnly()
-                      ->tab_strip_model()
-                      ->GetActiveWebContents()
-                      ->GetURL());
+            browser()->GetTabStripModel()->GetActiveWebContents()->GetURL());
+  ASSERT_EQ(1, params.browser->GetTabStripModel()->count());
+  EXPECT_EQ(
+      kUrl,
+      params.browser->GetTabStripModel()->GetActiveWebContents()->GetURL());
 }
 
 // Subclass that tests navigation while in the Guest session.
@@ -158,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(BrowserGuestSessionNavigatorTest,
   Browser* incognito_browser = CreateIncognitoBrowser();
 
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
   EXPECT_EQ(1, incognito_browser->tab_strip_model()->count());
 
   // Navigate to the settings page.

@@ -143,6 +143,7 @@ if (!is_android) {
       "//chrome/browser/renderer_host",
       "//chrome/browser/ui:browser_init_state",
       "//chrome/browser/ui:chrome_pages",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/page_info",
       "//chrome/browser/ui/search:test_support_ui",

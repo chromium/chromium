@@ -23,9 +23,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -287,7 +287,7 @@ std::unique_ptr<base::HistogramSamples> ManagePasswordsTest::GetSamples(
 
 ManagePasswordsUIController* ManagePasswordsTest::GetController() {
   return ManagePasswordsUIController::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 }
 
 password_manager::TestPasswordStore*

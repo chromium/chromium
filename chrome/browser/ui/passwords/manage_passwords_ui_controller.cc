@@ -1191,8 +1191,7 @@ void ManagePasswordsUIController::MaybeShowIOSPasswordPromo() {
     }
   } else {
     ios_promos_utils::VerifyIOSPromoEligibility(
-        desktop_to_mobile_promos::PromoType::kPassword,
-        browser->GetBrowserForMigrationOnly());
+        desktop_to_mobile_promos::PromoType::kPassword, browser);
   }
 }
 

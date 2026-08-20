@@ -14,10 +14,10 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/status_icons/status_tray.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
@@ -578,7 +578,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
   Profile* profile2 = profile_manager->GetProfile(profile2_path);
   ASSERT_TRUE(profile2);
 
-  Browser* browser2 = CreateBrowser(profile2);
+  BrowserWindowInterface* browser2 = CreateBrowser(profile2);
   ASSERT_TRUE(browser2);
 
   // Activating browser2 updates controller's target profile to profile2.

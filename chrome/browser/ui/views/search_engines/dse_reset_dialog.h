@@ -7,12 +7,12 @@
 
 #include "components/omnibox/browser/autocomplete_match.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace search_engines {
 // Shows a bubble informing the user that their
 // default search engine settings have been reset.
-void MaybeShowSearchEngineResetNotification(Browser* browser,
+void MaybeShowSearchEngineResetNotification(BrowserWindowInterface* browser,
                                             AutocompleteMatch::Type match_type);
 }  // namespace search_engines
 

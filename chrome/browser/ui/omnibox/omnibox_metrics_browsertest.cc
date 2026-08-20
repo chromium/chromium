@@ -8,8 +8,8 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxMetricsTest, LogSearchEngineUsed_PostNavigation) {
                                 WindowOpenDisposition::CURRENT_TAB);
 
   content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   histogram_tester.ExpectUniqueSample("Omnibox.SearchEngineType",
                                       SEARCH_ENGINE_OTHER, 1);

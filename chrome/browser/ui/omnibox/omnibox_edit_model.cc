@@ -124,8 +124,8 @@
 #include "url/url_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/desktop_query_contextualizer_delegate.h"  // nogncheck
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -804,10 +804,11 @@ void OmniboxEditModel::PopulateActiveTabContext() {
     return;
   }
 
-  Browser* browser = static_cast<ChromeOmniboxClient*>(client)->browser();
+  BrowserWindowInterface* browser =
+      static_cast<ChromeOmniboxClient*>(client)->browser();
   SearchboxContextData* searchbox_context_data =
       browser ? browser->GetFeatures().searchbox_context_data() : nullptr;
-  TabStripModel* tab_strip = browser ? browser->tab_strip_model() : nullptr;
+  TabStripModel* tab_strip = browser ? browser->GetTabStripModel() : nullptr;
   tabs::TabInterface* tab = tab_strip ? tab_strip->GetActiveTab() : nullptr;
   content::WebContents* web_contents = tab ? tab->GetContents() : nullptr;
 

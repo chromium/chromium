@@ -6,7 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/password_manager/password_change_delegate_mock.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/tabs/public/tab_interface.h"
@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
       browser(), GURL("data:text/html,<input id='test_input'>")));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Focus the input field.
   EXPECT_TRUE(content::ExecJs(

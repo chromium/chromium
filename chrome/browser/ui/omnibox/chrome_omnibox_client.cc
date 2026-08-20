@@ -59,10 +59,10 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -220,7 +220,7 @@ ExtensionControlledDialogResult SettingDialogResultToExtensionDialogResult(
 }  // namespace
 
 ChromeOmniboxClient::ChromeOmniboxClient(LocationBar* location_bar,
-                                         Browser* browser,
+                                         BrowserWindowInterface* browser,
                                          Profile* profile)
     : location_bar_(location_bar),
       browser_(browser),

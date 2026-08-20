@@ -20,7 +20,7 @@
 #include "ui/gfx/image/image.h"
 
 class AiModeButtonService;
-class Browser;
+class BrowserWindowInterface;
 class ChromeAutocompleteSchemeClassifier;
 class GURL;
 class LocationBar;
@@ -37,7 +37,7 @@ class OmniboxPopupCloser;
 class ChromeOmniboxClient final : public OmniboxClient {
  public:
   ChromeOmniboxClient(LocationBar* location_bar,
-                      Browser* browser,
+                      BrowserWindowInterface* browser,
                       Profile* profile);
   ChromeOmniboxClient(const ChromeOmniboxClient&) = delete;
   ChromeOmniboxClient& operator=(const ChromeOmniboxClient&) = delete;
@@ -159,7 +159,7 @@ class ChromeOmniboxClient final : public OmniboxClient {
   void MaybePrewarmForDefaultSearchEngine(PrewarmTrigger trigger) override;
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
   Profile* profile() { return profile_; }
-  Browser* browser() { return browser_; }
+  BrowserWindowInterface* browser() { return browser_; }
 
   // Update shortcuts when a navigation succeeds.
   static void OnSuccessfulNavigation(Profile* profile,
@@ -175,7 +175,7 @@ class ChromeOmniboxClient final : public OmniboxClient {
 
   // Implemented by `LocationBarView` which owns `OmniboxView` which owns this.
   const raw_ptr<LocationBar> location_bar_;
-  const raw_ptr<Browser, DanglingUntriaged> browser_;
+  const raw_ptr<BrowserWindowInterface, DanglingUntriaged> browser_;
   const raw_ptr<Profile> profile_;
   std::unique_ptr<ChromeAutocompleteSchemeClassifier> scheme_classifier_;
   std::vector<BitmapFetcherService::RequestId> request_ids_;

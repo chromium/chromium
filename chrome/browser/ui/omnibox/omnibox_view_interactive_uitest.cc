@@ -34,10 +34,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -229,7 +229,7 @@ class OmniboxViewTest : public InProcessBrowserTest {
                 base::Unretained(this)));
   }
 
-  static void GetOmniboxViewForBrowser(const Browser* browser,
+  static void GetOmniboxViewForBrowser(const BrowserWindowInterface* browser,
                                        OmniboxView** omnibox_view) {
     const BrowserWindow* window = BrowserWindow::FromBrowser(browser);
     ASSERT_TRUE(window);
@@ -259,7 +259,7 @@ class OmniboxViewTest : public InProcessBrowserTest {
     return browser()->GetFeatures().omnibox_popup_closer();
   }
 
-  static void SendKeyForBrowser(const Browser* browser,
+  static void SendKeyForBrowser(const BrowserWindowInterface* browser,
                                 ui::KeyboardCode key,
                                 int modifiers) {
     ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
@@ -279,7 +279,7 @@ class OmniboxViewTest : public InProcessBrowserTest {
     }
   }
 
-  void ExpectBrowserClosed(Browser* browser,
+  void ExpectBrowserClosed(BrowserWindowInterface* browser,
                            ui::KeyboardCode key,
                            int modifiers) {
     ui_test_utils::BrowserDestroyedObserver observer(browser);
@@ -299,17 +299,17 @@ class OmniboxViewTest : public InProcessBrowserTest {
   }
 
   void WaitForTabOpenOrClose(int expected_tab_count) {
-    int tab_count = browser()->tab_strip_model()->count();
+    int tab_count = browser()->GetTabStripModel()->count();
     if (tab_count == expected_tab_count) {
       return;
     }
 
     while (!HasFailure() &&
-           browser()->tab_strip_model()->count() != expected_tab_count) {
+           browser()->GetTabStripModel()->count() != expected_tab_count) {
       content::RunMessageLoop();
     }
 
-    ASSERT_EQ(expected_tab_count, browser()->tab_strip_model()->count());
+    ASSERT_EQ(expected_tab_count, browser()->GetTabStripModel()->count());
   }
 
   void WaitForAutocompleteControllerDone() {
@@ -485,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_BrowserAccelerators) {
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
-  int tab_count = browser()->tab_strip_model()->count();
+  int tab_count = browser()->GetTabStripModel()->count();
 
   // Create a new Tab.
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
@@ -493,13 +493,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_BrowserAccelerators) {
 
   // Select the first Tab.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_1, kCtrlOrCmdMask));
-  ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
+  ASSERT_EQ(0, browser()->GetTabStripModel()->active_index());
 
   chrome::FocusLocationBar(browser());
 
   // Select the second Tab.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_2, kCtrlOrCmdMask));
-  ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->active_index());
 
   chrome::FocusLocationBar(browser());
 
@@ -540,7 +540,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_BrowserAccelerators) {
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, PopupAccelerators) {
   // Create a popup.
-  Browser* popup = CreateBrowserForPopup(browser()->GetProfile());
+  BrowserWindowInterface* popup =
+      CreateBrowserForPopup(browser()->GetProfile());
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(popup));
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(popup, &omnibox_view));
@@ -705,12 +706,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, ClearUserTextAfterBackgroundCommit) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
   omnibox_view->SetUserText(u"foo");
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Create another tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, url1, ui::PAGE_TRANSITION_TYPED));
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->active_index());
 
   // Navigate in the first tab, currently in the background.
   GURL url2("data:text/html,page2");
@@ -721,7 +722,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, ClearUserTextAfterBackgroundCommit) {
 
   // Switch back to the first tab.  The user text should be cleared, and the
   // omnibox should have the new URL.
-  browser()->tab_strip_model()->ActivateTabAt(
+  browser()->GetTabStripModel()->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_EQ(ASCIIToUTF16(url2.spec()), omnibox_view->GetText());
@@ -732,7 +733,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, AltEnter) {
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   omnibox_view->SetUserText(chrome::kChromeUIHistoryURL16);
-  int tab_count = browser()->tab_strip_model()->count();
+  int tab_count = browser()->GetTabStripModel()->count();
   // alt-Enter opens a new tab.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_RETURN, ui::EF_ALT_DOWN));
   ASSERT_NO_FATAL_FAILURE(WaitForTabOpenOrClose(tab_count + 1));
@@ -1243,7 +1244,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, PersistKeywordModeOnTabSwitch) {
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   // Switch back to the first tab.
-  browser()->tab_strip_model()->ActivateTabAt(
+  browser()->GetTabStripModel()->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
@@ -1256,10 +1257,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, PersistKeywordModeOnTabSwitch) {
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
 
   // Switch to the second tab and back to the first.
-  browser()->tab_strip_model()->ActivateTabAt(
+  browser()->GetTabStripModel()->ActivateTabAt(
       1, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
-  browser()->tab_strip_model()->ActivateTabAt(
+  browser()->GetTabStripModel()->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
@@ -1442,9 +1443,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
   ASSERT_NE(match, nullptr);
 
   TestOmniboxNavigationObserver omnibox_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   content::TestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents(), 1);
+      browser()->GetTabStripModel()->GetActiveWebContents(), 1);
 
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_RETURN, 0));
   observer.Wait();
@@ -1469,9 +1470,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
   ASSERT_NE(match, nullptr);
 
   TestOmniboxNavigationObserver omnibox_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   content::TestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents(), 1);
+      browser()->GetTabStripModel()->GetActiveWebContents(), 1);
 
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_RETURN, 0));
   observer.Wait();
@@ -1861,13 +1862,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewAiModeTest,
   // Wait for navigation to complete. We expect it to navigate to chess://aim/
   // or similar URL.
   content::TestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   observer.Wait();
 
   // Verify that the navigation occurred to an 'aim' URL and check session
   // transfer.
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL current_url = web_contents->GetLastCommittedURL();
   EXPECT_TRUE(current_url.spec().find("q=test+query") != std::string::npos);
 

@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -39,7 +40,8 @@ namespace {
 const char kDefaultSearchEngineResetNotificationShown[] =
     "Search.DefaultSearchEngineResetNotificationShown";
 
-void OpenLearnMoreLink(Browser* browser, const ui::Event& event) {
+void OpenLearnMoreLink(BrowserWindowInterface* browser,
+                       const ui::Event& event) {
   const GURL kLearnMoreUrl(
       "https://support.google.com/chrome?p=chrome_reset_settings");
   browser->OpenURL(
@@ -82,7 +84,7 @@ bool NeedsDseResetNotification(Profile* profile,
 }
 
 void ShowSearchEngineResetNotification(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     DefaultSearchManager* default_search_manager) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   if (!browser_view) {
@@ -136,7 +138,7 @@ void ShowSearchEngineResetNotification(
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 void MaybeShowSearchEngineResetNotification(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     AutocompleteMatch::Type match_type) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // Ensure it is a non-navigation search query.

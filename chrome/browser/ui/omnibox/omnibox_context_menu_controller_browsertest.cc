@@ -15,9 +15,9 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -154,7 +154,7 @@ class OmniboxContextMenuControllerBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   tabs::TabInterface* AddTabToBrowser(int index, const GURL& url) {
@@ -163,14 +163,14 @@ class OmniboxContextMenuControllerBrowserTest : public InProcessBrowserTest {
                                 /*check_navigation_success=*/false)) {
       return nullptr;
     }
-    return browser()->tab_strip_model()->GetTabAtIndex(index);
+    return browser()->GetTabStripModel()->GetTabAtIndex(index);
   }
 
   base::TimeTicks ActivateTabAndGetRecentTime(
       tabs::TabInterface* tab,
       base::TimeTicks previous_time = base::TimeTicks()) {
-    int index = browser()->tab_strip_model()->GetIndexOfTab(tab);
-    browser()->tab_strip_model()->ActivateTabAt(index);
+    int index = browser()->GetTabStripModel()->GetIndexOfTab(tab);
+    browser()->GetTabStripModel()->ActivateTabAt(index);
     auto get_last_active_time = [](tabs::TabInterface* t) {
       content::WebContents* wc = t->GetContents();
       return std::max(wc->GetLastActiveTimeTicks(),
@@ -211,7 +211,7 @@ class OmniboxInlineTabsContextMenuBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
  private:
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   GURL url2(embedded_test_server()->GetURL("/title2.html"));
   ASSERT_TRUE(AddTabAtIndex(2, url2, ui::PAGE_TRANSITION_TYPED));
 
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   OmniboxContextMenuController controller(omnibox_popup_file_selector.get(),
                                           web_contents);
@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
 
   // Case 1: Active tab is tab 1, which is a tab that can be added
   // as context. Therefore, label it as 'current tab'.
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
   {
     OmniboxContextMenuController controller(omnibox_popup_file_selector.get(),
                                             web_contents);
@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
 
   // Case 2: Active tab is tab 0 (non-addable tab for context), so tab label
   // should say 'recent tab' instead for other most recent tab.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   {
     OmniboxContextMenuController controller(omnibox_popup_file_selector.get(),
                                             web_contents);
@@ -484,7 +484,7 @@ class OmniboxContextMenuControllerPecBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
  private:
@@ -1139,7 +1139,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
 
   // Select the tab -> This should add the tab to the context (stage it).
   {
-    tabs::TabInterface* tab = browser()->tab_strip_model()->GetTabAtIndex(1);
+    tabs::TabInterface* tab = browser()->GetTabStripModel()->GetTabAtIndex(1);
     ASSERT_TRUE(tab);
     int32_t tab_id = tab->GetHandle().raw_value();
 
@@ -1381,19 +1381,19 @@ class TestActiveTaskContextProviderObserver
 IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
                        UnderlinesNotClearedOnOtherTabsOpeningOrClosing) {
   // Start with tab 1 (index 0) active.
-  tabs::TabInterface* tab1 = browser()->tab_strip_model()->GetTabAtIndex(0);
+  tabs::TabInterface* tab1 = browser()->GetTabStripModel()->GetTabAtIndex(0);
 
   // Add tab 2 (index 1) with a normal web URL.
   GURL url2(embedded_test_server()->GetURL("/title2.html"));
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, url2,
                                      ui::PAGE_TRANSITION_TYPED,
                                      /*check_navigation_success=*/false));
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // Tab 1 is active.
-  ASSERT_EQ(tab1, browser()->tab_strip_model()->GetActiveTab());
+  ASSERT_EQ(tab1, browser()->GetTabStripModel()->GetActiveTab());
 
-  tabs::TabInterface* tab2 = browser()->tab_strip_model()->GetTabAtIndex(1);
+  tabs::TabInterface* tab2 = browser()->GetTabStripModel()->GetTabAtIndex(1);
 
   // Register test observer.
   auto* active_task_context_provider =
@@ -1417,10 +1417,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 2, url3,
                                      ui::PAGE_TRANSITION_TYPED,
                                      /*check_navigation_success=*/false));
-  tabs::TabInterface* tab3 = browser()->tab_strip_model()->GetTabAtIndex(2);
+  tabs::TabInterface* tab3 = browser()->GetTabStripModel()->GetTabAtIndex(2);
 
   // Ensure tab 1 is active, then add tab 3 to tab 1's local underlines list.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   active_task_context_provider->AddLocalTabUnderline(tab3->GetHandle());
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return observer.last_context_tabs().contains(tab2->GetHandle()) &&
@@ -1428,15 +1428,15 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   }));
 
   // Switch active tab to tab 3.
-  browser()->tab_strip_model()->ActivateTabAt(2);
-  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+  browser()->GetTabStripModel()->ActivateTabAt(2);
+  ASSERT_EQ(3, browser()->GetTabStripModel()->count());
 
   // Close tab 3, removing it from tab 1's underlines.
-  browser()->tab_strip_model()->CloseWebContentsAt(
+  browser()->GetTabStripModel()->CloseWebContentsAt(
       2, TabCloseTypes::CLOSE_USER_GESTURE);
 
   // Switch back to tab 1 (index 0).
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // Verify that tab 2 is still in the local underlines of tab 1, instead of
   // being deselected (due to tab 3 being deselected) like in previous bugs.
@@ -1757,7 +1757,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
       OmniboxPopupState::kAim);
 
   // Get the tab IDs.
-  auto* tab_strip_model = browser()->tab_strip_model();
+  auto* tab_strip_model = browser()->GetTabStripModel();
   auto* tab1 = tab_strip_model->GetTabAtIndex(1);
   int32_t tab1_id = tab1->GetHandle().raw_value();
 
@@ -1876,7 +1876,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxInlineTabsContextMenuBrowserTest,
   GURL url2(embedded_test_server()->GetURL("/title2.html"));
   ASSERT_TRUE(AddTabAtIndex(2, url2, ui::PAGE_TRANSITION_TYPED));
 
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   auto owning_window = gfx::NativeWindow();
   auto omnibox_popup_file_selector =

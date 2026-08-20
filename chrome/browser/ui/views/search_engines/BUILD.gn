@@ -21,6 +21,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//chrome/browser/ui:chrome_pages",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/toolbar",
     "//components/prefs",
@@ -33,4 +34,3 @@ source_set("impl") {
     "//url",
   ]
 }
-
