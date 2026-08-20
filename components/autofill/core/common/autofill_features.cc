@@ -445,6 +445,14 @@ BASE_FEATURE_PARAM(std::string,
                    &kAutofillAmbientAutofill,
                    "ambient_autofill_eligible_tiers",
                    "");
+// A comma-separated list of EntityType string names (e.g. "Passport,Driver's
+// license,Vehicle") supported for Ambient Autofill. If empty, no entity types
+// are supported.
+BASE_FEATURE_PARAM(std::string,
+                   kAutofillAmbientAutofillSupportedEntityTypes,
+                   &kAutofillAmbientAutofill,
+                   "ambient_autofill_supported_entity_types",
+                   "");
 BASE_FEATURE_PARAM(std::string,
                    kAutofillAmbientAutofillEnabledDevices,
                    &kAutofillAmbientAutofill,

@@ -120,7 +120,10 @@ class AutofillAiPermissionUtilsTest : public ::testing::Test {
          {features::kAutofillAiWalletVehicleRegistration, {}},
          {features::kAutofillAiWalletFlightReservation, {}},
          {features::kAutofillAmbientAutofill,
-          {{"ambient_autofill_eligible_tiers", "1"}}},
+          {{"ambient_autofill_eligible_tiers", "1"},
+           {"ambient_autofill_supported_entity_types",
+            "Passport,Driver's license,Vehicle,National Id Card,Flight "
+            "Reservation,Order,Shipment"}}},
          {features::kAutofillAiServerModel,
           {{"autofill_ai_model_use_cache_results", "true"}}}},
         // TODO(crbug.com/477163013): Once this feature launches, kLogToMqls can
@@ -618,6 +621,51 @@ TEST_F(AutofillAiPermissionUtilsTest, kTypeSupportsAmbientAutofillData) {
     EXPECT_FALSE(MayPerformAutofillAiAction(
         client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
         EntityType(type)));
+  }
+}
+
+TEST_F(AutofillAiPermissionUtilsTest,
+       kTypeSupportsAmbientAutofillData_ParamOverrides) {
+  client().set_personal_context_eligibility_state(
+      personal_context::PersonalContextEligibilityState::kEligible);
+
+  // Overriding supported types using string names.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        features::kAutofillAmbientAutofill,
+        {{"ambient_autofill_eligible_tiers", "1"},
+         {"ambient_autofill_supported_entity_types",
+          "Passport,Driver's license,Flight Reservation"}});
+
+    EXPECT_TRUE(MayPerformAutofillAiAction(
+        client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
+        EntityType(kPassport)));
+    EXPECT_TRUE(MayPerformAutofillAiAction(
+        client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
+        EntityType(kFlightReservation)));
+    EXPECT_TRUE(MayPerformAutofillAiAction(
+        client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
+        EntityType(kDriversLicense)));
+
+    EXPECT_FALSE(MayPerformAutofillAiAction(
+        client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
+        EntityType(kKnownTravelerNumber)));
+    EXPECT_FALSE(MayPerformAutofillAiAction(
+        client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
+        EntityType(kNationalIdCard)));
+    EXPECT_FALSE(MayPerformAutofillAiAction(
+        client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
+        EntityType(kVehicle)));
+    EXPECT_FALSE(MayPerformAutofillAiAction(
+        client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
+        EntityType(kShipment)));
+    EXPECT_FALSE(MayPerformAutofillAiAction(
+        client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
+        EntityType(kOrder)));
+    EXPECT_FALSE(MayPerformAutofillAiAction(
+        client(), AutofillAiAction::kTypeSupportsAmbientAutofillData,
+        EntityType(kRedressNumber)));
   }
 }
 

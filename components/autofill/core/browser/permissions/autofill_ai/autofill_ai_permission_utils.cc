@@ -83,6 +83,39 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   }
 }
 
+// Returns whether the current Android hardware model is configured as eligible
+// for Ambient Autofill by feature parameters.
+[[nodiscard]] bool IsAndroidDeviceEligibleForAmbientAutofill() {
+#if BUILDFLAG(IS_ANDROID)
+  const std::string model_name = base::SysInfo::HardwareModelName();
+  const std::string enabled_devices_str =
+      features::kAutofillAmbientAutofillEnabledDevices.Get();
+  return std::ranges::contains(
+      base::SplitStringPiece(enabled_devices_str, ",", base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY),
+      model_name);
+#else
+  return false;
+#endif
+}
+
+// Returns the set of supported entity types configured by the feature parameter
+// for Ambient Autofill.
+DenseSet<EntityType> GetAutofillAmbientAutofillSupportedEntityTypes() {
+  const std::string type_list =
+      features::kAutofillAmbientAutofillSupportedEntityTypes.Get();
+
+  const std::vector<std::string_view> type_pieces = base::SplitStringPiece(
+      type_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  DenseSet<EntityType> supported_types;
+  for (std::string_view piece : type_pieces) {
+    if (std::optional<EntityType> type = StringToEntityType(piece)) {
+      supported_types.insert(*type);
+    }
+  }
+  return supported_types;
+}
+
 // Checks whether `country_code` belongs to a country where Wallet is
 // supported.
 [[nodiscard]] bool IsWalletSupportedCountry(
@@ -378,18 +411,9 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
       if (!entity_type) {
         return false;
       }
-      switch (entity_type->name()) {
-        case EntityTypeName::kPassport:
-        case EntityTypeName::kDriversLicense:
-        case EntityTypeName::kNationalIdCard:
-        case EntityTypeName::kFlightReservation:
-        case EntityTypeName::kShipment:
-        case EntityTypeName::kOrder:
-        case EntityTypeName::kVehicle:
-          break;
-        case EntityTypeName::kRedressNumber:
-        case EntityTypeName::kKnownTravelerNumber:
-          return false;
+      if (!GetAutofillAmbientAutofillSupportedEntityTypes().contains(
+              *entity_type)) {
+        return false;
       }
       if (!personal_context_pref_enabled) {
         return false;
@@ -703,22 +727,6 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
   }
 
   return true;
-}
-
-// Returns whether the current Android hardware model is configured as eligible
-// for Ambient Autofill by feature parameters.
-[[nodiscard]] bool IsAndroidDeviceEligibleForAmbientAutofill() {
-#if BUILDFLAG(IS_ANDROID)
-  const std::string model_name = base::SysInfo::HardwareModelName();
-  const std::string enabled_devices_str =
-      features::kAutofillAmbientAutofillEnabledDevices.Get();
-  return std::ranges::contains(
-      base::SplitStringPiece(enabled_devices_str, ",", base::TRIM_WHITESPACE,
-                             base::SPLIT_WANT_NONEMPTY),
-      model_name);
-#else
-  return false;
-#endif
 }
 
 }  // namespace
