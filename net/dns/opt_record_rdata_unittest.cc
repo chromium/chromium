@@ -4,6 +4,8 @@
 
 #include "net/dns/opt_record_rdata.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <array>
 #include <cstdint>
@@ -12,7 +14,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/big_endian.h"
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"

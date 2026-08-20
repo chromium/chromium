@@ -20,6 +20,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ptr.h"
@@ -53,8 +54,9 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
 // buffer directly.
 //
 // TODO(davidben): Ideally we would load these structures through memcpy, or
-// a little-endian variant of base/big_endian.h, rather than type-punning
-// pointers. This code currently depends on Chromium disabling strict aliasing.
+// base::SpanReader or base/numerics/byte_conversions.h, rather than
+// type-punning pointers. This code currently depends on Chromium disabling
+// strict aliasing.
 #pragma pack(push, 1)
   struct Entry {
     static int CompareById(const void* void_key, const void* void_entry);

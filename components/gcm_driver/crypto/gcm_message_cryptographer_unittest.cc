@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "components/gcm_driver/crypto/gcm_message_cryptographer.h"
+
+#include <stddef.h>
+#include <stdint.h>
 
 #include <array>
 #include <memory>
 #include <string_view>
 
 #include "base/base64url.h"
-#include "base/big_endian.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "components/gcm_driver/crypto/message_payload_parser.h"

@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <string>
 #include <string_view>
 #include <type_traits>
 #include <vector>
 
-#include "base/big_endian.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"

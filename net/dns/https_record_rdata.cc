@@ -4,6 +4,7 @@
 
 #include "net/dns/https_record_rdata.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
@@ -13,10 +14,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/big_endian.h"
 #include "base/check.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/containers/to_vector.h"
 #include "base/dcheck_is_on.h"
 #include "base/immediate_crash.h"

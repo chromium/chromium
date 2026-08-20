@@ -4,6 +4,8 @@
 
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <array>
 #include <list>
@@ -17,7 +19,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/big_endian.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

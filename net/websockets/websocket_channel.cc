@@ -6,17 +6,18 @@
 
 #include <limits.h>  // for INT_MAX
 #include <stddef.h>
+#include <stdint.h>
 #include <string.h>
 
 #include <algorithm>
 #include <array>
 #include <iterator>
+#include <optional>
 #include <ostream>
 #include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/big_endian.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"

@@ -4,6 +4,9 @@
 
 #include "net/dns/opt_record_rdata.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <algorithm>
 #include <memory>
 #include <numeric>
@@ -13,7 +16,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/big_endian.h"
 #include "base/check_is_test.h"
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"

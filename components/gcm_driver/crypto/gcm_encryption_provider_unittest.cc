@@ -7,12 +7,12 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <string>
 
 #include "base/base64.h"
 #include "base/base64url.h"
-#include "base/big_endian.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"

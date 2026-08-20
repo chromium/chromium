@@ -4,9 +4,11 @@
 
 #include "media/muxers/mp4_box_writer.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <string_view>
 
-#include "base/big_endian.h"
 #include "media/muxers/box_byte_stream.h"
 #include "media/muxers/mp4_muxer_context.h"
 #include "media/muxers/output_position_tracker.h"

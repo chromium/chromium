@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/big_endian.h"
+#include "base/numerics/byte_conversions.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include "base/check.h"
 #include "base/containers/span.h"
-#include "base/numerics/byte_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/google_benchmark/src/include/benchmark/benchmark.h"
 
@@ -125,7 +125,7 @@ void BM_ReadBigEndianMisaligned(::benchmark::State& state) {
 // --gtest_filter and --gtest_list_tests.
 // TODO(https://crbug.com/40251982): Clean this up after transitioning to
 // --benchmark_filter and --benchmark_list_tests.
-TEST(BigEndianPerfTest, All) {
+TEST(ByteConversionsPerfTest, All) {
   BENCHMARK_FOR_INT_TYPES(BM_WriteBigEndianAligned);
   BENCHMARK_FOR_INT_TYPES(BM_WriteBigEndianMisaligned);
   BENCHMARK_FOR_INT_TYPES(BM_ReadBigEndianAligned);

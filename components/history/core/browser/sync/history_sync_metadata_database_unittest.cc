@@ -4,7 +4,6 @@
 
 #include "components/history/core/browser/sync/history_sync_metadata_database.h"
 
-#include "base/big_endian.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "components/history/core/browser/url_row.h"

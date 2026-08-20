@@ -4,6 +4,8 @@
 
 #include "chrome/browser/thumbnail/cc/thumbnail_cache.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <cmath>
 #include <ranges>
@@ -12,7 +14,6 @@
 
 #include "base/android/application_status_listener.h"
 #include "base/android/path_utils.h"
-#include "base/big_endian.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"

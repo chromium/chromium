@@ -4,12 +4,15 @@
 
 #include "media/muxers/mp4_muxer.h"
 
+#include <stdint.h>
+
 #include <algorithm>
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <vector>
 
-#include "base/big_endian.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/path_service.h"

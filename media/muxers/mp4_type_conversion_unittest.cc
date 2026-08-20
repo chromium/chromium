@@ -4,7 +4,8 @@
 
 #include "media/muxers/mp4_type_conversion.h"
 
-#include "base/big_endian.h"
+#include <stdint.h>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

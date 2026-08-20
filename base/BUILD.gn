@@ -275,7 +275,6 @@ component("base") {
     "base64url.cc",
     "base64url.h",
     "base_switches.h",
-    "big_endian.h",
     "bit_cast.h",
     "bits.h",
     "byte_size.cc",
@@ -3249,7 +3248,7 @@ executable("containers_memory_benchmark") {
 
 test("base_perftests") {
   sources = [
-    "big_endian_perftest.cc",
+    "byte_conversions_perftest.cc",
     "hash/hash_perftest.cc",
     "json/json_perftest.cc",
     "memory/shared_memory_region_perftest.cc",

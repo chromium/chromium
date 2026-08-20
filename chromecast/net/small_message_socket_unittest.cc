@@ -4,11 +4,15 @@
 
 #include "chromecast/net/small_message_socket.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/big_endian.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/test/task_environment.h"
 #include "chromecast/net/fake_stream_socket.h"
 #include "chromecast/net/io_buffer_pool.h"

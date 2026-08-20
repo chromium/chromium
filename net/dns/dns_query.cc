@@ -4,12 +4,15 @@
 
 #include "net/dns/dns_query.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <optional>
 #include <string_view>
 #include <utility>
 
-#include "base/big_endian.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
