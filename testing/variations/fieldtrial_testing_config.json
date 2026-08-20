@@ -1125,6 +1125,21 @@
             ]
         }
     ],
+    "AndroidResourceMemoryOptimization": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidResourceMemoryOptimization"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidSandboxRendererProcessPolicy": [
         {
             "platforms": [

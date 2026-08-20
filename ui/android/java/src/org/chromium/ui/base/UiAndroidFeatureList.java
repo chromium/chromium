@@ -124,6 +124,11 @@ public class UiAndroidFeatureList {
             newMutableFlagWithSafeDefault(
                     UiAndroidFeatures.SUPPORT_KEYBOARD, /* defaultValue= */ true);
 
+    public static final MutableFlagWithSafeDefault sAndroidResourceMemoryOptimization =
+            newMutableFlagWithSafeDefault(
+                    UiAndroidFeatures.ANDROID_RESOURCE_MEMORY_OPTIMIZATION,
+                    /* defaultValue= */ false);
+
     public static final List<CachedFlag> sFlagsCachedUiAndroid =
             List.of(
                     sAndroidUseDisplayTopology,

@@ -14,6 +14,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.base.UiAndroidFeatureList;
 
 /** Simple bitmap capture approach simply calling {@link View#draw(Canvas)}. */
 @NullMarked
@@ -64,6 +65,9 @@ public class SoftwareDraw implements ViewResourceAdapter.CaptureMechanism {
             }
 
             onBitmapCapture.onResult(mBitmap);
+            if (UiAndroidFeatureList.sAndroidResourceMemoryOptimization.isEnabled()) {
+                dropCachedBitmap();
+            }
             return !isEmpty;
         }
     }
