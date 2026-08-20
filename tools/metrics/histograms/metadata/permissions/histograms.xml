@@ -55,6 +55,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Quota"/>
   <variant name="RegisterProtocolHandler"/>
   <variant name="SecurityKeyAttestation"/>
+  <variant name="Sensors"/>
   <variant name="StorageAccess"/>
   <variant name="TopLevelStorageAccess"/>
   <variant name="U2fApiRequest"/>
@@ -207,6 +208,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".PointerLock" summary="Pointer lock permission"/>
   <variant name=".ProtectedMedia" summary="Protected media permission actions"/>
   <variant name=".PushMessaging" summary="Push messaging permission actions"/>
+  <variant name=".Sensors" summary="Sensors permission actions"/>
   <variant name=".StorageAccess"
       summary="Storage Access API permission actions"/>
   <variant name=".TopLevelStorageAccess"

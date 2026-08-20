@@ -103,6 +103,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   <variant name="Quota"/>
   <variant name="RegisterProtocolHandler"/>
   <variant name="SecurityKeyAttestation"/>
+  <variant name="Sensors"/>
   <variant name="StorageAccess"/>
   <variant name="TopLevelStorageAccess"/>
   <variant name="U2fApiRequest"/>
