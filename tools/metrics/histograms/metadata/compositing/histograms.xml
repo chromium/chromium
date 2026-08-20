@@ -421,6 +421,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.Display.GpuStartedDrawToScheduleOverlayUs"
+    units="microseconds" expires_after="2027-08-01">
+  <owner>magchen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    This is logged once per frame, if the output surface provides timing
+    information and overlays are used. It measures the time between the GPU
+    thread starting a draw and the GPU thread starting scheduling overlays. Only
+    reported for platforms supporting high resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.Display.OverlayProcessorOzone.MaxPlanesSupported"
     units="units" expires_after="2027-02-07">
   <owner>harthuang@google.com</owner>

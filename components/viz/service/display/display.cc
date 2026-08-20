@@ -1269,6 +1269,16 @@ void Display::DidReceiveSwapBuffersAck(gpu::SwapBuffersCompleteParams params,
         "Compositing.Display.DrawToScheduleOverlay",
         draw_start_to_overlay_start, kDrawToSwapMin, kDrawToSwapMax,
         kDrawToSwapUsBuckets);
+
+    if (!timings.gpu_started_draw.is_null()) {
+      DCHECK_LE(timings.gpu_started_draw, timings.gpu_started_overlay);
+      base::TimeDelta gpu_draw_to_overlay_start =
+          timings.gpu_started_overlay - timings.gpu_started_draw;
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Compositing.Display.GpuStartedDrawToScheduleOverlayUs",
+          gpu_draw_to_overlay_start, kDrawToSwapMin, kDrawToSwapMax,
+          kDrawToSwapUsBuckets);
+    }
   }
 
   if (!timings.viz_scheduled_draw.is_null()) {
