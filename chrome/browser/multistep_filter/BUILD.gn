@@ -100,6 +100,7 @@ source_set("browser_tests") {
       "//chrome/browser/sync",
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_actions",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/toasts",
       "//chrome/common",
       "//chrome/test:test_support",

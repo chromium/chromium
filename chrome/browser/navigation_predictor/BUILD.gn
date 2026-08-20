@@ -32,9 +32,7 @@ source_set("navigation_predictor") {
   ]
 
   if (enable_device_bound_sessions) {
-    public_deps += [
-      "//chrome/browser/net",
-    ]
+    public_deps += [ "//chrome/browser/net" ]
   }
 }
 
@@ -90,7 +88,6 @@ if (!is_android) {
     ]
     data = [ "test/preloading_heuristics.tflite" ]
     deps = [
-    "//chrome/browser/subresource_filter:test_support",
       ":impl",
       ":navigation_predictor",
       "//chrome/browser/battery",
@@ -100,6 +97,8 @@ if (!is_android) {
       "//chrome/browser/preloading:prefs",
       "//chrome/browser/preloading:test_support",
       "//chrome/browser/search_engines",
+      "//chrome/browser/subresource_filter:test_support",
+      "//chrome/browser/ui/browser_window",
       "//chrome/common",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
@@ -109,9 +108,7 @@ if (!is_android) {
     ]
 
     if (enable_device_bound_sessions) {
-      deps += [
-        "//chrome/browser/net",
-      ]
+      deps += [ "//chrome/browser/net" ]
     }
   }
 }

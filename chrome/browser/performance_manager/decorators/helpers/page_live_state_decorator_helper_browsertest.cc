@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
@@ -21,7 +21,7 @@ IN_PROC_BROWSER_TEST_F(PageLiveStateDecoratorHelperTabsBrowserTest,
   // Create a tab, it's associated PageNode should be the active one.
   chrome::AddTabAt(browser(), GURL("http://foo/1"), 0, true);
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   testing::TestPageNodeProperty(
       contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsActiveTab, true);
@@ -29,7 +29,7 @@ IN_PROC_BROWSER_TEST_F(PageLiveStateDecoratorHelperTabsBrowserTest,
   // Create another tab. This immediately makes it the active tab.
   chrome::AddTabAt(browser(), GURL("http://foo/2"), 0, true);
   content::WebContents* other_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   EXPECT_NE(contents, other_contents);
   testing::TestPageNodeProperty(
       contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
@@ -39,7 +39,7 @@ IN_PROC_BROWSER_TEST_F(PageLiveStateDecoratorHelperTabsBrowserTest,
       &PageLiveStateDecorator::Data::IsActiveTab, true);
 
   // Reactivate the initial tab, the previously active tab is now inactive.
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
   testing::TestPageNodeProperty(
       contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsActiveTab, true);
@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(PageLiveStateDecoratorHelperTabsBrowserTest,
       &PageLiveStateDecorator::Data::IsActiveTab, false);
 
   // Deleting a tab automatically makes another one active.
-  browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(1);
+  browser()->GetTabStripModel()->DetachAndDeleteWebContentsAt(1);
   testing::TestPageNodeProperty(
       other_contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsActiveTab, true);
@@ -59,17 +59,17 @@ IN_PROC_BROWSER_TEST_F(PageLiveStateDecoratorHelperTabsBrowserTest,
   // Create a tab, it's associated PageNode should be the active one.
   chrome::AddTabAt(browser(), GURL("http://foo/1"), 0, true);
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   testing::TestPageNodeProperty(
       contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsPinnedTab, false);
 
-  browser()->tab_strip_model()->SetTabPinned(0, true);
+  browser()->GetTabStripModel()->SetTabPinned(0, true);
   testing::TestPageNodeProperty(
       contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsPinnedTab, true);
 
-  browser()->tab_strip_model()->SetTabPinned(0, false);
+  browser()->GetTabStripModel()->SetTabPinned(0, false);
   testing::TestPageNodeProperty(
       contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsPinnedTab, false);
@@ -79,21 +79,21 @@ IN_PROC_BROWSER_TEST_F(PageLiveStateDecoratorHelperTabsBrowserTest,
                        ReplacePinnedTab) {
   chrome::AddTabAt(browser(), GURL("http://foo/1"), 0, true);
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
 
   // Pin tab. Check status.
-  browser()->tab_strip_model()->SetTabPinned(0, true);
+  browser()->GetTabStripModel()->SetTabPinned(0, true);
   testing::TestPageNodeProperty(
       contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsPinnedTab, true);
 
   // Replace with new contents.
-  browser()->tab_strip_model()->DiscardWebContents(
+  browser()->GetTabStripModel()->DiscardWebContents(
       contents, content::WebContents::Create(content::WebContents::CreateParams(
                     browser()->GetProfile())));
 
   // Check pinned status of replaced contents.
-  contents = browser()->tab_strip_model()->GetWebContentsAt(0);
+  contents = browser()->GetTabStripModel()->GetWebContentsAt(0);
   testing::TestPageNodeProperty(
       contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsPinnedTab, true);

@@ -27,9 +27,9 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -224,13 +224,13 @@ class PageDiscardingHelperBrowserTest
     observer.Wait();
     favicon_watcher.Wait();
 
-    return browser()->tab_strip_model()->GetIndexOfWebContents(contents);
+    return browser()->GetTabStripModel()->GetIndexOfWebContents(contents);
   }
 
   void UpdatePageTitle(int index) {
     constexpr char16_t kNewTitle[] = u"New title";
     content::WebContents* contents =
-        browser()->tab_strip_model()->GetWebContentsAt(index);
+        browser()->GetTabStripModel()->GetWebContentsAt(index);
     content::TitleWatcher title_watcher(contents, kNewTitle);
     ASSERT_TRUE(content::ExecJs(
         contents, base::StrCat({"document.title = '",
@@ -240,7 +240,7 @@ class PageDiscardingHelperBrowserTest
 
   void UpdateFavicon(int index) {
     content::WebContents* contents =
-        browser()->tab_strip_model()->GetWebContentsAt(index);
+        browser()->GetTabStripModel()->GetWebContentsAt(index);
     // Change the favicon link from "icon.png" to "icon.svg".
     FaviconWatcher favicon_watcher(contents);
     ASSERT_TRUE(content::ExecJs(
@@ -251,7 +251,7 @@ class PageDiscardingHelperBrowserTest
 
   base::WeakPtr<PageNode> GetPageNodeAtIndex(int index) {
     return PerformanceManager::GetPrimaryPageNodeForWebContents(
-        browser()->tab_strip_model()->GetWebContentsAt(index));
+        browser()->GetTabStripModel()->GetWebContentsAt(index));
   }
 
   void ExpectImmediateDiscard(
@@ -291,7 +291,7 @@ class PageDiscardingHelperBrowserTest
         {page_node.get()}, discard_reason);
     EXPECT_EQ(discard_success, expected_result);
     EXPECT_EQ(
-        browser()->tab_strip_model()->GetWebContentsAt(index)->WasDiscarded(),
+        browser()->GetTabStripModel()->GetWebContentsAt(index)->WasDiscarded(),
         expected_result);
   }
 
@@ -316,7 +316,7 @@ class PageDiscardingHelperBrowserTest
   }
 
   content::WebContents* GetWebContentsAt(int index) {
-    return browser()->tab_strip_model()->GetWebContentsAt(index);
+    return browser()->GetTabStripModel()->GetWebContentsAt(index);
   }
 
  private:
@@ -341,7 +341,7 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
 
       // A foreground page blocks URGENT, PROACTIVE and SUGGESTED discards.
       const int index2 = OpenNewBackgroundPage();
-      browser()->tab_strip_model()->ActivateTabAt(index2);
+      browser()->GetTabStripModel()->ActivateTabAt(index2);
       switch (discard_reason) {
         case DiscardReason::EXTERNAL:
         case DiscardReason::FROZEN_WITH_GROWING_MEMORY:
@@ -373,9 +373,9 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
 
       // Updating favicon in the foreground does not block discards.
       const int index2 = OpenNewBackgroundPage();
-      browser()->tab_strip_model()->ActivateTabAt(index2);
+      browser()->GetTabStripModel()->ActivateTabAt(index2);
       UpdatePageTitle(index2);
-      browser()->tab_strip_model()->ActivateTabAt(index1);
+      browser()->GetTabStripModel()->ActivateTabAt(index1);
       ExpectImmediateDiscard(index2, discard_reason, true);
     }
 
@@ -397,9 +397,9 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
 
       // Updating favicon in the foreground does not block discards.
       const int index2 = OpenNewBackgroundPage();
-      browser()->tab_strip_model()->ActivateTabAt(index2);
+      browser()->GetTabStripModel()->ActivateTabAt(index2);
       UpdateFavicon(index2);
-      browser()->tab_strip_model()->ActivateTabAt(index1);
+      browser()->GetTabStripModel()->ActivateTabAt(index1);
       ExpectImmediateDiscard(index2, discard_reason, true);
     }
   }
@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
   ASSERT_TRUE(helper);
 
   OpenNewBackgroundPage();
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), 2);
   base::WeakPtr<PageNode> page_to_discard = GetPageNodeAtIndex(1);
 
   // Keep-alive the process hosting the background page's main frame, to prevent
@@ -553,11 +553,11 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
                        MAYBE_DiscardedTabEligibleForSuccessiveDiscards) {
   // Add a new background tab.
   OpenNewBackgroundPage();
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), 2);
 
-  tabs::TabInterface* tab1 = browser()->tab_strip_model()->GetTabAtIndex(0);
-  tabs::TabInterface* tab2 = browser()->tab_strip_model()->GetTabAtIndex(1);
-  EXPECT_EQ(browser()->tab_strip_model()->GetActiveTab(), tab1);
+  tabs::TabInterface* tab1 = browser()->GetTabStripModel()->GetTabAtIndex(0);
+  tabs::TabInterface* tab2 = browser()->GetTabStripModel()->GetTabAtIndex(1);
+  EXPECT_EQ(browser()->GetTabStripModel()->GetActiveTab(), tab1);
 
   // Attempt to discard the background tab.
   const auto attempt_discard = [this]() {
@@ -586,16 +586,16 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
 
   // Activate and reload the discarded background page.
   content::TestNavigationObserver reload_waiter(tab2->GetContents(), 1);
-  browser()->tab_strip_model()->ActivateTabAt(1);
-  EXPECT_EQ(browser()->tab_strip_model()->GetActiveTab(), tab2);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
+  EXPECT_EQ(browser()->GetTabStripModel()->GetActiveTab(), tab2);
   reload_waiter.Wait();
 
   EXPECT_FALSE(tab1->GetContents()->WasDiscarded());
   EXPECT_FALSE(tab2->GetContents()->WasDiscarded());
 
   // Background the discarded tab again and attempt another discard.
-  browser()->tab_strip_model()->ActivateTabAt(0);
-  EXPECT_EQ(browser()->tab_strip_model()->GetActiveTab(), tab1);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+  EXPECT_EQ(browser()->GetTabStripModel()->GetActiveTab(), tab1);
   attempt_discard();
 
   // Ensure the background tab has been discarded again.
@@ -609,12 +609,12 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
                        DiscardingFrozenTabCorrectlyTransitionsLifecycleState) {
   // Add a new background tab.
   OpenNewBackgroundPage();
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), 2);
 
-  tabs::TabInterface* tab1 = browser()->tab_strip_model()->GetTabAtIndex(0);
-  tabs::TabInterface* tab2 = browser()->tab_strip_model()->GetTabAtIndex(1);
+  tabs::TabInterface* tab1 = browser()->GetTabStripModel()->GetTabAtIndex(0);
+  tabs::TabInterface* tab2 = browser()->GetTabStripModel()->GetTabAtIndex(1);
 
-  EXPECT_EQ(browser()->tab_strip_model()->GetActiveTab(), tab1);
+  EXPECT_EQ(browser()->GetTabStripModel()->GetActiveTab(), tab1);
 
   // Ensure the off-thread page node has registered the background tab as idle.
   PageNodeIdleWaiter page_node_idle_waiter(GetPageNodeAtIndex(1));

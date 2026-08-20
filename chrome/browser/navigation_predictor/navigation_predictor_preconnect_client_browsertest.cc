@@ -23,7 +23,7 @@
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
@@ -198,9 +198,9 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTest,
   WaitForPreresolveCount(2);
   EXPECT_EQ(2, preresolve_done_count_);
 
-  browser()->tab_strip_model()->GetActiveWebContents()->WasHidden();
+  browser()->GetTabStripModel()->GetActiveWebContents()->WasHidden();
 
-  browser()->tab_strip_model()->GetActiveWebContents()->WasShown();
+  browser()->GetTabStripModel()->GetActiveWebContents()->WasShown();
 
   // After showing the contents again, there should be another preconnect client
   // preconnect.
@@ -409,7 +409,7 @@ class NavigationPredictorPreconnectClientFencedFrameBrowserTest
   }
 
   content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
  private:
@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(loading_predictor);
 
   auto* primary_main_frame = browser()
-                                 ->tab_strip_model()
+                                 ->GetTabStripModel()
                                  ->GetActiveWebContents()
                                  ->GetPrimaryMainFrame();
   loading_predictor->PrepareForPageLoad(
