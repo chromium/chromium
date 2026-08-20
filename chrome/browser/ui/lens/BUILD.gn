@@ -208,6 +208,7 @@ if (!is_android) {
     ]
 
     deps = [
+      "//components/omnibox/common:features",
       ":backend_logic_impl",
       ":lens",
       "//build:branding_buildflags",
@@ -329,6 +330,7 @@ if (!is_android) {
     ]
 
     deps = [
+      "//components/omnibox/common:features",
       ":backend_logic_impl",
       ":lens",
       "//base/test:test_support",
@@ -354,6 +356,7 @@ if (!is_android) {
       "lens_search_feature_flag_utils_browsertest.cc",
     ]
     deps = [
+      "//components/omnibox/common:features",
       ":backend_logic_impl",
       ":lens",
       ":test_support",
@@ -443,6 +446,7 @@ if (!is_android) {
       "lens_permission_bubble_controller_interactive_uitest.cc",
     ]
     deps = [
+      "//components/omnibox/common:features",
       ":backend_logic_impl",
       ":lens",
       ":test_support",
@@ -500,6 +504,7 @@ if (!is_android) {
       "lens_searchbox_controller_unittest.cc",
     ]
     deps = [
+      "//components/omnibox/common:features",
       ":backend_logic_impl",
       ":lens",
       ":test_support",
