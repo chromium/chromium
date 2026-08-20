@@ -584,36 +584,49 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   ShowAndVerifyUi();
 }
 
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_AutofillAi_SubMenu DISABLED_InvokeUi_AutofillAi_SubMenu
-#else
-#define MAYBE_InvokeUi_AutofillAi_SubMenu InvokeUi_AutofillAi_SubMenu
-#endif
-IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
-                       MAYBE_InvokeUi_AutofillAi_SubMenu) {
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_AutofillAi_SubMenu) {
+  Suggestion source_attribution(
+      u"From Photos · Pippi Långstrump · Sweden · LR1234567",
+      SuggestionType::kAutofillAiSourceAttribution);
+  source_attribution.trailing_icon = Suggestion::Icon::kOpenInNew;
+
   Suggestion remove_suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),
       SuggestionType::kRemoveAutofillAi);
   remove_suggestion.icon = Suggestion::Icon::kClose;
-  PrepareSuggestions({std::move(remove_suggestion)});
+
+  Suggestion manage_suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
+      SuggestionType::kManageEnhancedAutofill);
+  manage_suggestion.icon = Suggestion::Icon::kSettings;
+
+  PrepareSuggestions(
+      {std::move(source_attribution), Suggestion(SuggestionType::kSeparator),
+       std::move(remove_suggestion), std::move(manage_suggestion)});
   ShowAndVerifyUi(/*popup_has_parent=*/true);
 }
 
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_AutofillAi_SubMenu_Selected \
-  DISABLED_InvokeUi_AutofillAi_SubMenu_Selected
-#else
-#define MAYBE_InvokeUi_AutofillAi_SubMenu_Selected \
-  InvokeUi_AutofillAi_SubMenu_Selected
-#endif
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
-                       MAYBE_InvokeUi_AutofillAi_SubMenu_Selected) {
+                       InvokeUi_AutofillAi_SubMenu_Selected) {
+  Suggestion source_attribution(
+      u"From Photos · Pippi Långstrump · Sweden · LR1234567",
+      SuggestionType::kAutofillAiSourceAttribution);
+  source_attribution.trailing_icon = Suggestion::Icon::kOpenInNew;
+
   Suggestion remove_suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),
       SuggestionType::kRemoveAutofillAi);
   remove_suggestion.icon = Suggestion::Icon::kClose;
-  PrepareSuggestions({std::move(remove_suggestion)});
-  PrepareSelectedCell(CellIndex{0, CellType::kContent});
+
+  Suggestion manage_suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
+      SuggestionType::kManageEnhancedAutofill);
+  manage_suggestion.icon = Suggestion::Icon::kSettings;
+
+  PrepareSuggestions(
+      {std::move(source_attribution), Suggestion(SuggestionType::kSeparator),
+       std::move(remove_suggestion), std::move(manage_suggestion)});
+  PrepareSelectedCell(CellIndex{3, CellType::kContent});
   ShowAndVerifyUi(/*popup_has_parent=*/true);
 }
 

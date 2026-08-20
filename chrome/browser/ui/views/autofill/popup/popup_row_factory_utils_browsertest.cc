@@ -163,7 +163,12 @@ const Suggestion kExpandableSuggestions[] = {
     CreateSuggestionWithChildren(
         u"Fill_autofill_ai",
         SuggestionType::kFillAutofillAi,
-        {Suggestion(u"Remove_this_info", SuggestionType::kRemoveAutofillAi)})};
+        {Suggestion(u"Source_attribution",
+                    SuggestionType::kAutofillAiSourceAttribution),
+         Suggestion(SuggestionType::kSeparator),
+         Suggestion(u"Remove_this_info", SuggestionType::kRemoveAutofillAi),
+         Suggestion(u"Manage_enhanced_autofill",
+                    SuggestionType::kManageEnhancedAutofill)})};
 
 const Suggestion kBnplSuggestions[] = {
     CreateBnplSuggestion(u"Bnpl_linked",
