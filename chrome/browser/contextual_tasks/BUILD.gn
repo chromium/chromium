@@ -209,6 +209,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/views/permissions:permission_prompt_observer",
       "//chrome/browser/ui/webui:webui_util",
       "//components/policy/core/browser",
     ]
