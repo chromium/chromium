@@ -144,9 +144,15 @@ bool WinHttpReturnsExpectedProxy(const GURL& pac_url,
     return true;
   }
 
+  // Windows' system resolver does not support WebSocket URLs in proxy.pac
+  // (ERROR_WINHTTP_UNRECOGNIZED_SCHEME). Convert ws/wss to http/https.
+  GURL http_test_url = test_url.SchemeIsWSOrWSS()
+                           ? ChangeWebSocketSchemeToHttpScheme(test_url)
+                           : test_url;
+
   // Store wide strings in local variables to avoid dangling pointers.
   std::wstring pac_url_wide = base::ASCIIToWide(pac_url.spec());
-  std::wstring test_url_wide = base::ASCIIToWide(test_url.spec());
+  std::wstring test_url_wide = base::ASCIIToWide(http_test_url.spec());
 
   // Configure auto-proxy options with our PAC URL.
   WINHTTP_AUTOPROXY_OPTIONS auto_proxy_options = {0};
