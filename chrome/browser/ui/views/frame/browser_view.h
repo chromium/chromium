@@ -86,6 +86,7 @@ class MultiContentsView;
 class OrganizerPanelView;
 class ScrimView;
 class SidePanel;
+class SidePanelAnimationContentView;
 class TabDragTarget;
 class TabSearchBubbleHost;
 class TabStrip;
@@ -207,9 +208,10 @@ class BrowserView : public BrowserWindow,
   // handled by BrowserViewLayout. Used when opening the side panel using
   // SidePanelUI::ShowFrom which animates the side panel content from provided
   // bounds.
-  void SetSidePanelAnimationContent(views::View* content);
+  SidePanelAnimationContentView* SetSidePanelAnimationContent(
+      std::unique_ptr<SidePanelAnimationContentView> content);
   // Returns side panel content if it is currently parented to the BrowserView.
-  views::View* GetSidePanelAnimationContent();
+  SidePanelAnimationContentView* GetSidePanelAnimationContent();
 
   // Returns all the ContentsContainerViews that belong to this browser.
   std::vector<raw_ptr<ContentsContainerView, DanglingUntriaged>>

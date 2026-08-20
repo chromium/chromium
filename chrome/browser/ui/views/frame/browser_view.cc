@@ -202,6 +202,7 @@
 #include "chrome/browser/ui/views/sharing_hub/screenshot/screenshot_captured_bubble.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_animation_content_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
@@ -1252,20 +1253,26 @@ gfx::Size BrowserView::GetWebAppFrameToolbarPreferredSize() const {
                                 : gfx::Size();
 }
 
-void BrowserView::SetSidePanelAnimationContent(views::View* content) {
+SidePanelAnimationContentView* BrowserView::SetSidePanelAnimationContent(
+    std::unique_ptr<SidePanelAnimationContentView> content) {
   CHECK(!content || !GetSidePanelAnimationContent());
+  SidePanelAnimationContentView* content_ptr = content.get();
+  SidePanelAnimationContentView* current = GetSidePanelAnimationContent();
+  GetBrowserViewLayout()->set_side_panel_animation_content(content_ptr);
   if (content) {
     // Insert the animation content at the scrim's index so that the scrim
     // covers the animation content when it is visible.
     const std::optional<size_t> scrim_index =
         GetIndexOf(side_panel_content_transition_scrim_view_.get());
     CHECK(scrim_index.has_value());
-    AddChildViewAt(content, *scrim_index);
+    AddChildViewAt(std::move(content), *scrim_index);
+  } else if (current) {
+    RemoveChildViewT(current);
   }
-  GetBrowserViewLayout()->set_side_panel_animation_content(content);
+  return content_ptr;
 }
 
-views::View* BrowserView::GetSidePanelAnimationContent() {
+SidePanelAnimationContentView* BrowserView::GetSidePanelAnimationContent() {
   return GetBrowserViewLayout()->side_panel_animation_content();
 }
 

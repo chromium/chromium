@@ -50,6 +50,7 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
  private:
   struct HorizontalLayout;
   struct SeparatorInfo;
+  struct SidePanelContentAnimation;
   struct TransientLayoutData;
   struct VerticalTabStripAnimation;
 
@@ -93,7 +94,7 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
   VerticalTabStripAnimation CalculateVerticalTabStripAnimation();
   int GetCollapsedVerticalTabStripRelativeTop() const;
   SeparatorInfo CalculateSeparatorInfo() const;
-  double CalculateScrimOpacity() const;
+  SidePanelContentAnimation CalculateSidePanelContentAnimation() const;
 
   std::unique_ptr<TransientLayoutData> layout_data_;
 

@@ -22,6 +22,7 @@ class InfoBarContainerView;
 class MultiContentsView;
 class OrganizerPanelView;
 class SidePanel;
+class SidePanelAnimationContentView;
 class TabStrip;
 class TabStripRegionView;
 class VerticalTabStripRegionView;
@@ -77,7 +78,7 @@ struct BrowserViewLayoutViews {
   raw_ptr<InfoBarContainerView> infobar_container = nullptr;
   raw_ptr<MultiContentsView> multi_contents_view = nullptr;
   raw_ptr<SidePanel> side_panel = nullptr;
-  raw_ptr<views::View> side_panel_animation_content = nullptr;
+  raw_ptr<SidePanelAnimationContentView> side_panel_animation_content = nullptr;
 
   // The contents separator used for when the top container is overlaid.
   // Note: when `SideBySide` feature is disabled, this separator is also
@@ -127,10 +128,11 @@ class BrowserViewLayout : public views::LayoutManager {
   void set_bookmark_bar(BookmarkBarView* bookmark_bar) {
     views_.bookmark_bar = bookmark_bar;
   }
-  void set_side_panel_animation_content(views::View* contents_to_animate) {
+  void set_side_panel_animation_content(
+      SidePanelAnimationContentView* contents_to_animate) {
     views_.side_panel_animation_content = contents_to_animate;
   }
-  views::View* side_panel_animation_content() {
+  SidePanelAnimationContentView* side_panel_animation_content() {
     return views_.side_panel_animation_content;
   }
 

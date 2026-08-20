@@ -23,12 +23,10 @@ DEFINE_CLASS_BROWSER_ANIMATION_MOTION(SidePanelAnimations, kClose);
 
 DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kPanelWidth);
 DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kMainAreaShadow);
-DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kContentTop);
-DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kContentLeft);
-DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kContentBottom);
-DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kContentWidth);
 DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations,
                                         kContentScrimOpacity);
+DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations,
+                                        kContentTransitionOffset);
 
 SidePanelAnimations::SidePanelAnimations() {
   SetSequenceParams(kSidePanel, Persist(kPanelWidth), Persist(kMainAreaShadow));
@@ -62,25 +60,27 @@ SidePanelAnimations::GroupInfos SidePanelAnimations::GenerateAnimations()
       Sequence(kMainAreaShadow, StartingValue(1.0),
                Segment(StartMs(0), LengthMs(100), ToValue(0.0)));
 
-  return Groups(Group(
-      kSidePanel,
-      Motion(kOpen, TotalDurationMs(kDefaultAnimationMs), tween,
-             Animate(kPanelWidth, FromValue(0.0), ToValue(1.0)),
-             show_shadow_sequence),
-      Motion(kOpenWithContentTransition, TotalDurationMs(400),
-             gfx::Tween::Type::LINEAR,
-             Snap(kContentTop, FromValue(0.0), ToValue(1.0), AtMs(100)),
-             Snap(kContentBottom, FromValue(0.0), ToValue(1.0), AtMs(100)),
-             Snap(kContentLeft, FromValue(0.0), ToValue(1.0), AtMs(100)),
-             Snap(kContentWidth, FromValue(0.0), ToValue(1.0), AtMs(100)),
-             Snap(kPanelWidth, FromValue(0.0), ToValue(1.0), AtMs(100)),
-             Sequence(kContentScrimOpacity, StartingValue(0.0),
-                      Segment(StartMs(0), LengthMs(100), ToValue(1.0),
-                              gfx::Tween::Type::ACCEL_30_DECEL_20_85),
-                      Segment(StartMs(150), LengthMs(100), ToValue(0.0),
-                              gfx::Tween::Type::ACCEL_5_70_DECEL_90)),
-             show_shadow_sequence),
-      Motion(kClose, TotalDurationMs(kDefaultAnimationMs), tween,
-             Animate(kPanelWidth, FromValue(1.0), ToValue(0.0)),
-             hide_shadow_sequence)));
+  return Groups(
+      Group(kSidePanel,
+            Motion(kOpen, TotalDurationMs(kDefaultAnimationMs), tween,
+                   Animate(kPanelWidth, FromValue(0.0), ToValue(1.0)),
+                   show_shadow_sequence),
+            Motion(kOpenWithContentTransition, TotalDurationMs(400),
+                   gfx::Tween::Type::LINEAR,
+                   Snap(kPanelWidth, FromValue(0.0), ToValue(1.0), AtMs(100)),
+                   Sequence(kContentScrimOpacity, StartingValue(0.0),
+                            Segment(StartMs(0), LengthMs(100), ToValue(1.0),
+                                    gfx::Tween::Type::ACCEL_30_DECEL_20_85),
+                            Segment(StartMs(150), LengthMs(100), ToValue(0.0),
+                                    gfx::Tween::Type::ACCEL_5_70_DECEL_90)),
+                   Sequence(kContentTransitionOffset, StartingValue(0.0),
+                            Segment(StartMs(0), LengthMs(100), ToValue(-100.0),
+                                    gfx::Tween::Type::ACCEL_30_DECEL_20_85),
+                            Segment(StartMs(100), LengthMs(0), ToValue(125.0)),
+                            Segment(StartMs(100), LengthMs(300), ToValue(0.0),
+                                    gfx::Tween::Type::ACCEL_5_70_DECEL_90)),
+                   show_shadow_sequence),
+            Motion(kClose, TotalDurationMs(kDefaultAnimationMs), tween,
+                   Animate(kPanelWidth, FromValue(1.0), ToValue(0.0)),
+                   hide_shadow_sequence)));
 }
