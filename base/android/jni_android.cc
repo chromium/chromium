@@ -93,8 +93,6 @@ void InitVM(JavaVM* vm) {
   g_out_of_memory_error_class = static_cast<jclass>(
       env->NewGlobalRef(env->FindClass("java/lang/OutOfMemoryError")));
   DCHECK(g_out_of_memory_error_class);
-  // Cache the jclass to ensure it doesn't fail during crash reporting.
-  org_chromium_base_JniAndroid_clazz(env);
 }
 
 void CheckException(JNIEnv* env) {
