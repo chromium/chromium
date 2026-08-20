@@ -191,11 +191,14 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                 @Override
                 public void onLayoutChange(
                         View view, int i, int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
-                    if (mPinnedTabsCoordinator != null) {
-                        updatePinnedTabsStripOnScroll(
-                                /* shouldShowSearchBox= */ true, /* forced= */ true);
-                    }
                     mTabListCoordinator.getContainerView().removeOnLayoutChangeListener(this);
+                    view.post(
+                            () -> {
+                                if (mPinnedTabsCoordinator != null) {
+                                    updatePinnedTabsStripOnScroll(
+                                            /* shouldShowSearchBox= */ true, /* forced= */ true);
+                                }
+                            });
                 }
             };
 
@@ -1237,9 +1240,15 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     }
 
     private void addOnLayoutChangedAfterInitialScrollListener() {
-        mTabListCoordinator
-                .getContainerView()
-                .addOnLayoutChangeListener(mOnLayoutChangedAfterInitialScrollListener);
+        TabListRecyclerView containerView = mTabListCoordinator.getContainerView();
+        containerView.addOnLayoutChangeListener(mOnLayoutChangedAfterInitialScrollListener);
+        containerView.post(
+                () -> {
+                    if (mPinnedTabsCoordinator != null) {
+                        updatePinnedTabsStripOnScroll(
+                                /* shouldShowSearchBox= */ true, /* forced= */ true);
+                    }
+                });
     }
 
     private void updatePinnedTabsStripOnScroll(boolean shouldShowSearchBox, boolean forced) {
