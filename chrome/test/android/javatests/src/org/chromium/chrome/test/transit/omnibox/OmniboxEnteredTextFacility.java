@@ -14,7 +14,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 
 /**
- * Represents test entered into the Omnibox.
+ * Represents the Omnibox in a state where text has been entered in conventional mode.
  *
  * <p>TODO(crbug.com/345808144): Make this a child of OmniboxFacility when Facilities can have
  * children like Stations.
@@ -30,13 +30,10 @@ public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
         declareEnterCondition(omniboxFacility.urlBarElement.matches(withText(mText)));
         if (mText.isEmpty()) {
             declareEnterCondition(omniboxFacility.deleteButtonElement.absent());
-            if (omniboxFacility.getHostStation().isIncognito()) {
+            if (omniboxFacility.getHostStation().isIncognito()
+                    || OmniboxCapabilities.isDesktopPlatform()) {
                 declareEnterCondition(omniboxFacility.micButtonElement.absent());
-            } else if (!OmniboxCapabilities.isDesktopPlatform()) {
-                // Non-desktop platform devices should show mic button.
-                // Mic behaviour on desktop platform devices is still WIP.
-                // TODO(crbug.com/521341182): Revisit the mic visibility check when desktop platform
-                // behaviour is more stable.
+            } else {
                 declareEnterCondition(omniboxFacility.micButtonElement.present());
             }
         } else {
