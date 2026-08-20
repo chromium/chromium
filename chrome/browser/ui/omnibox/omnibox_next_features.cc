@@ -109,7 +109,8 @@ BASE_FEATURE(kEnergyEffectInOmnibox, ENABLED);
 BASE_FEATURE(kWebUIOmniboxDynamicAiModeButton, DISABLED);
 
 // If enabled, prevents closing the AIM popup while file chooser is open.
-BASE_FEATURE(kOmniboxKeepOpenOnFileSelection, ENABLED);
+// Disabled due to focus restoration and popup deactivation issues.
+BASE_FEATURE(kOmniboxKeepOpenOnFileSelection, DISABLED);
 
 // Decodes a proto object from its serialized Base64 string representation.
 // Returns true if decoding and parsing succeed, false otherwise.

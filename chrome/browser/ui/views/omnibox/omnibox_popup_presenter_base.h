@@ -88,7 +88,8 @@ class OmniboxPopupPresenterBase
 
   // Creates and returns a new deactivation blocker. The caller is responsible
   // for managing the lifecycle of the returned blocker (typically via
-  // std::unique_ptr).
+  // std::unique_ptr). Returns nullptr if
+  // `omnibox::kOmniboxKeepOpenOnFileSelection` is disabled.
   virtual std::unique_ptr<OmniboxPopupDeactivationBlocker>
   CreateDeactivationBlocker();
   virtual void OnFileSelectionClosed();
