@@ -3520,12 +3520,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testDoNothing) {
   ExecuteJsTest();
 }
 
-#if BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/545315239): Re-enable on Android.
-#define MAYBE_testDefaultInvocationSource DISABLED_testDefaultInvocationSource
-#else
 #define MAYBE_testDefaultInvocationSource testDefaultInvocationSource
-#endif
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testDefaultInvocationSource) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();

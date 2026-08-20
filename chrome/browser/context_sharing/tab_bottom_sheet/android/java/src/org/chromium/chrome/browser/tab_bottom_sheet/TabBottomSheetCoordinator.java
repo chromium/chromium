@@ -98,6 +98,7 @@ public class TabBottomSheetCoordinator {
     private boolean mIsShowingTabBottomSheet;
     private boolean mExpectingLayoutChange;
     private boolean mInitialContainerSizeChanged;
+    private boolean mPendingExpansion;
 
     private @Nullable KeyboardVisibilityListener mKeyboardVisibilityListener;
     private @Nullable ModalDialogManager mObservedModalDialogManager;
@@ -161,12 +162,14 @@ public class TabBottomSheetCoordinator {
         createSheetContent();
         assert mSheetContent != null : "TabBottomSheetContent must not be null";
 
+        mPendingExpansion = startsExpanded;
         if (mBottomSheetController.requestShowContent(mSheetContent, animate)) {
             onSheetContentShown(animate, startsExpanded);
             registerSystemObservers();
             mIsShowingTabBottomSheet = true;
             return true;
         } else {
+            mPendingExpansion = false;
             // This happens when either.
             // 1) If the sheet content is null.
             // 2) The bottom sheet is null.
@@ -267,6 +270,7 @@ public class TabBottomSheetCoordinator {
                             mSheetEventsCallback.onBottomSheetOpened(/* isExpanded= */ false);
                         }
                     }
+                    mPendingExpansion = false;
                 });
     }
 
@@ -405,7 +409,9 @@ public class TabBottomSheetCoordinator {
                     // The sheet is considered expanded if it's in HALF, FULL, or SCROLLING above
                     // peek.
                     boolean isExpanded = state != SheetState.PEEK;
-                    mSheetEventsCallback.onBottomSheetOpened(isExpanded);
+                    if (!mPendingExpansion || isExpanded) {
+                        mSheetEventsCallback.onBottomSheetOpened(isExpanded);
+                    }
                 }
                 updateRoundingEdges();
 
