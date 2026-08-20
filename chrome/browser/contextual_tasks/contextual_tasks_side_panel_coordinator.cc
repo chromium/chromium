@@ -153,12 +153,12 @@ std::unique_ptr<content::WebContents> CreateWebContents(
   }
   webui::SetBrowserWindowInterface(web_contents.get(), browser_window);
 
-  // Add the side panel params to the url being loaded into the WebContents.
-  // This is important since loading begins before the WebContents is
-  // attached to a side panel and therefore the navigation handler won't
+  // Apply required side panel URL changes to the url being loaded into the
+  // WebContents. This is important since loading begins before the WebContents
+  // is attached to a side panel and therefore the navigation handler won't
   // trigger.
-  url = contextual_tasks::ContextualTasksUiService::AddCommonSidePanelParams(
-      url, web_contents.get());
+  url = contextual_tasks::ContextualTasksUiService::
+      AddRequiredSidePanelUrlChanges(url, web_contents.get());
   web_contents->GetController().LoadURL(url, content::Referrer(),
                                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                         std::string());

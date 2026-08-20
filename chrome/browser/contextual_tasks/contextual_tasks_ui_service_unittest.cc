@@ -2399,6 +2399,44 @@ TEST_F(ContextualTasksUiServiceTest, ForcedEmbeddedPageHostOverride) {
   EXPECT_EQ("", contextual_tasks::GetForcedEmbeddedPageHost());
 }
 
+TEST_F(ContextualTasksUiServiceTest,
+       AddRequiredSidePanelUrlChanges_WithHostOverride) {
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  contextual_tasks::SetForcedEmbeddedPageHostOverride("test.google.com");
+
+  GURL url("https://www.google.com/search?q=test");
+  GURL new_url = ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
+      url, web_contents.get());
+
+  EXPECT_EQ("test.google.com", new_url.host());
+  std::string gsc_val;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(new_url, "gsc", &gsc_val));
+  EXPECT_EQ("2", gsc_val);
+  std::string q_val;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(new_url, "q", &q_val));
+  EXPECT_EQ("test", q_val);
+
+  contextual_tasks::SetForcedEmbeddedPageHostOverride("");
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       AddRequiredSidePanelUrlChanges_SignInDomain_NotOverridden) {
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  contextual_tasks::SetForcedEmbeddedPageHostOverride("test.google.com");
+
+  GURL signin_url("https://login.corp.google.com/signin");
+  GURL new_url = ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
+      signin_url, web_contents.get());
+
+  EXPECT_EQ("login.corp.google.com", new_url.host());
+
+  contextual_tasks::SetForcedEmbeddedPageHostOverride("");
+}
+
 TEST_F(ContextualTasksUiServiceTest, HandleNavigation_DisplayUrlRewritten) {
   GURL display_url("chrome://google.com/search?udm=50&q=test+query");
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
