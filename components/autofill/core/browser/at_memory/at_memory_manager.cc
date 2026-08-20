@@ -493,12 +493,9 @@ void AtMemoryManager::OnPopupHidden() {
     CancelPendingQueries();
   }
   popup_state_.reset();
-  // TODO(crbug.com/535486238): Consider moving `target_field_origin_`,
-  // `credit_card_fetch_in_progress_`, and `ccam_observation_` into
+  // TODO(crbug.com/535486238): Consider moving `target_field_origin_` into
   // `state_manager_`.
   target_field_origin_ = url::Origin();
-  credit_card_fetch_in_progress_ = false;
-  ccam_observation_.Reset();
 }
 
 IsAsync AtMemoryManager::FillOrPreviewSearchResult(
@@ -576,8 +573,9 @@ IsAsync AtMemoryManager::FillSearchResult(
     case MemoryDataType::kCreditCardNumber:
     case MemoryDataType::kCreditCardSecurityCode: {
       CHECK(std::holds_alternative<std::string>(payload.identifier));
-      return FillCreditCard(std::get<std::string>(payload.identifier), form_id,
-                            field_id, suggestion, std::move(metrics));
+      FillCreditCard(std::get<std::string>(payload.identifier), form_id,
+                     field_id, suggestion, std::move(metrics));
+      return IsAsync(false);
     }
     case MemoryDataType::kPassportNumber:
     case MemoryDataType::kDriversLicenseNumber:
@@ -1145,34 +1143,7 @@ IsAsync AtMemoryManager::FillIban(
           std::move(metrics), identifier));
 }
 
-void AtMemoryManager::OnCreditCardFetchStarted(CreditCardAccessManager&,
-                                               const CreditCard&) {
-  credit_card_fetch_in_progress_ = true;
-}
-
-void AtMemoryManager::OnCreditCardFetchSucceeded(CreditCardAccessManager&,
-                                                 const CreditCard&) {
-  credit_card_fetch_in_progress_ = false;
-  ccam_observation_.Reset();
-}
-
-void AtMemoryManager::OnCreditCardFetchFailed(CreditCardAccessManager&,
-                                              const CreditCard*) {
-  if (credit_card_fetch_in_progress_) {
-    credit_card_fetch_in_progress_ = false;
-    ccam_observation_.Reset();
-    client_->HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
-                             FillingProduct::kAtMemory);
-  }
-}
-
-void AtMemoryManager::OnCreditCardAccessManagerDestroyed(
-    CreditCardAccessManager&) {
-  credit_card_fetch_in_progress_ = false;
-  ccam_observation_.Reset();
-}
-
-IsAsync AtMemoryManager::FillCreditCard(
+void AtMemoryManager::FillCreditCard(
     const std::string& guid,
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
@@ -1184,28 +1155,19 @@ IsAsync AtMemoryManager::FillCreditCard(
     credit_card_access_manager = bam->GetCreditCardAccessManager();
   }
   if (!credit_card_access_manager) {
-    return IsAsync(false);
+    return;
   }
 
   const PersonalDataManager& pdm = client_->GetPersonalDataManager();
   const CreditCard* credit_card =
       pdm.payments_data_manager().GetCreditCardByGUID(guid);
   if (!credit_card) {
-    return IsAsync(false);
-  }
-
-  if (credit_card_fetch_in_progress_) {
-    return IsAsync(true);
+    return;
   }
 
   if (metrics) {
     metrics->OnFetchPiiStarted(
         AtMemoryMetricsRecorder::FetchPiiSource::kCreditCard);
-  }
-
-  if (!ccam_observation_.IsObservingSource(credit_card_access_manager)) {
-    ccam_observation_.Reset();
-    ccam_observation_.Observe(credit_card_access_manager);
   }
 
   // TODO(crbug.com/497795513): Consider caching fetched cards.
@@ -1220,9 +1182,6 @@ IsAsync AtMemoryManager::FillCreditCard(
             if (!manager) {
               return;
             }
-            manager->client_->HideSuggestions(
-                SuggestionHidingReason::kAcceptSuggestion,
-                FillingProduct::kAtMemory);
             if (metrics) {
               metrics->OnFetchPiiCompleted();
               metrics->MarkFilled();
@@ -1255,7 +1214,6 @@ IsAsync AtMemoryManager::FillCreditCard(
           },
           fill_weak_ptr_factory_.GetWeakPtr(), form_id, field_id, suggestion,
           std::move(metrics)));
-  return IsAsync(credit_card_fetch_in_progress_);
 }
 
 IsAsync AtMemoryManager::FillSensitivePersonalContextData(
