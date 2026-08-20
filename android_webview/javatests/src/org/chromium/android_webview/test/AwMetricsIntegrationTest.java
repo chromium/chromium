@@ -87,9 +87,6 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
 
     @Before
     public void setUp() throws Exception {
-        mContentsClient = new TestAwContentsClient();
-        mTestContainerView = mRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        mAwContents = mTestContainerView.getAwContents();
         // Kick off the metrics consent-fetching process. MetricsTestPlatformServiceBridge mocks out
         // user consent for when we query it with
         // AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(), so metrics consent is guaranteed
@@ -139,6 +136,11 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
                     AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(
                             /* updateMetricsConsent= */ true);
                 });
+
+        // Creat WebView after initializing metrics consent to ensure startup metrics are captured.
+        mContentsClient = new TestAwContentsClient();
+        mTestContainerView = mRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        mAwContents = mTestContainerView.getAwContents();
     }
 
     @Test

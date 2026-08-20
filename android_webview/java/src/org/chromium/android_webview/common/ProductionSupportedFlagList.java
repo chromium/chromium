@@ -1462,6 +1462,9 @@ public final class ProductionSupportedFlagList {
                 "Enables draining the prefetch queue before loading the URL in the WebView"
                         + " navigate method"),
         Flag.baseFeature(
+                AwFeatures.CREATE_SPARE_RENDERER_FOR_DEFAULT_PROFILE,
+                "When enabled, creates a spare renderer process for the default WebView profile."),
+        Flag.baseFeature(
                 AwFeatures.WEBVIEW_SINGLE_SHARED_CONTEXT_STATE,
                 "Allows Webview to allocate and share a single shared context for all the"
                         + " webview instances."),

@@ -12,6 +12,10 @@ namespace android_webview::features {
 
 // Alphabetical:
 
+// When enabled, creates a spare renderer for the default webview profile
+BASE_FEATURE(kCreateSpareRendererForDefaultProfile,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Post Chromium startup in the WebView constructor. Only has any effect
 // when kStartupNonBlockingWebViewConstructor is enabled.
 BASE_FEATURE(kPostChromiumStartupInWebViewConstructor,

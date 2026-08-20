@@ -150,7 +150,8 @@ AwBrowserContext* AwBrowserContextStore::Get(const std::string& name,
     // as it's needed for launching processes.
     if (content::BrowserThread::IsThreadInitialized(
             content::BrowserThread::IO) &&
-        !is_default) {
+        (!is_default || base::FeatureList::IsEnabled(
+                            features::kCreateSpareRendererForDefaultProfile))) {
       content::SpareRenderProcessHostManager::Get().WarmupSpare(
           entry->instance.get());
     }

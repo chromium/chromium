@@ -15,6 +15,7 @@ namespace android_webview::features {
 // alongside the definition of their values in the .cc file.
 
 // Alphabetical:
+BASE_DECLARE_FEATURE(kCreateSpareRendererForDefaultProfile);
 BASE_DECLARE_FEATURE(kPostChromiumStartupInWebViewConstructor);
 BASE_DECLARE_FEATURE(kPrerender2WarmUpCompositorForWebView);
 BASE_DECLARE_FEATURE(kStartupNonBlockingWebViewConstructor);
