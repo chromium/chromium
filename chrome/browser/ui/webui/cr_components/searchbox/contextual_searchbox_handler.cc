@@ -48,11 +48,6 @@
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
-#include "media/base/media_switches.h"
-#include "skia/ext/image_operations.h"
-#include "ui/base/base_window.h"
-#include "ui/base/mojom/ui_base_types.mojom-shared.h"
-#include "ui/gfx/geometry/size.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_tab_favicon_helper.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_utils.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
@@ -64,6 +59,7 @@
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/input_state_model.h"
 #include "components/contextual_search/pref_names.h"
+#include "components/contextual_tasks/public/account_utils.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/prefs.h"
@@ -90,10 +86,15 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/url_constants.h"
+#include "media/base/media_switches.h"
+#include "skia/ext/image_operations.h"
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
+#include "ui/base/base_window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
+#include "ui/gfx/geometry/size.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/base64.h"
@@ -2468,16 +2469,10 @@ void ContextualSearchboxHandler::UpdateDriveConsentPref(
                     static_cast<int>(consent_state));
 }
 
-// TODO(crbug.com/545561312): Move this check to a common helper shared across
-// contextual search/tasks.
 bool ContextualSearchboxHandler::IsSignedInWithValidCredentials() const {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-  return identity_manager &&
-         identity_manager->HasPrimaryAccountWithRefreshToken(
-             signin::ConsentLevel::kSignin) &&
-         !identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-             identity_manager->GetPrimaryAccountId(
-                 signin::ConsentLevel::kSignin));
+  return contextual_tasks::IsSignedInToBrowserWithValidCredentials(
+      identity_manager);
 }
 
 drive_picker::DriveDisclaimerController*

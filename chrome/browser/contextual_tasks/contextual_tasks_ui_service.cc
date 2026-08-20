@@ -2378,24 +2378,8 @@ bool ContextualTasksUiService::IsUrlForPrimaryAccount(const GURL& url) {
 }
 
 bool ContextualTasksUiService::IsSignedInToBrowserWithValidCredentials() {
-  if (!identity_manager_) {
-    return false;
-  }
-
-  // If the primary account doesn't have a refresh token, the <webview> will
-  // not be properly authenticated, so treat this as signed out.
-  if (!identity_manager_->HasPrimaryAccountWithRefreshToken(
-          signin::ConsentLevel::kSignin)) {
-    return false;
-  }
-
-  // Verify that the primary account refresh token does not have any errors. If
-  // it does, the <webview> will not be properly authenticated, so treat as
-  // signed out.
-  const CoreAccountId primary_account =
-      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  return !identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
-      primary_account);
+  return contextual_tasks::IsSignedInToBrowserWithValidCredentials(
+      identity_manager_);
 }
 
 bool ContextualTasksUiService::CookieJarContainsPrimaryAccount() {
