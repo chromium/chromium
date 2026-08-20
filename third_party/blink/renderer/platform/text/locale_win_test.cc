@@ -307,4 +307,9 @@ TEST_F(LocaleWinTest, localizedNumberRoundTrip) {
   TestNumbers(kChineseTW);
 }
 
+TEST_F(LocaleWinTest, CreateWithNullLocale) {
+  std::unique_ptr<Locale> locale = Locale::Create(String());
+  EXPECT_EQ(12u, locale->MonthLabels().size());
+}
+
 }  // namespace blink
