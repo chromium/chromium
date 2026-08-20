@@ -557,10 +557,6 @@ public class WebViewChromiumAwInit {
         return mInitState.get() == INIT_FINISHED;
     }
 
-    boolean isChromiumInitStarted() {
-        return mInitState.get() != INIT_NOT_STARTED;
-    }
-
     /**
      * If UI thread is not set, Android main looper will be set as the UI thread.
      *

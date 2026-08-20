@@ -103,7 +103,7 @@ public class SharedStatics {
     }
 
     public String getDefaultUserAgent(Context context) {
-        if (!mAwInit.isChromiumInitStarted()) {
+        if (!mAwInit.isChromiumInitialized()) {
             mAwInit.maybeSetChromiumUiThread(Looper.getMainLooper());
             RecordHistogram.recordBooleanHistogram(
                     "Android.WebView.Static.GetDefaultUserAgentCalledOnUiThreadIfChromiumNotStarted",
@@ -149,7 +149,7 @@ public class SharedStatics {
         // TODO(437338203): When we clean this up after it ships to 100%, we can remove all the
         // triggerAndWaitForChromiumStarted calls in the methods that use shouldPost, since they
         // will always be no-ops.
-        return shouldEnableStaticMethodsNotTriggerStartup() && !mAwInit.isChromiumInitStarted();
+        return shouldEnableStaticMethodsNotTriggerStartup() && !mAwInit.isChromiumInitialized();
     }
 
     public void setWebContentsDebuggingEnabled(boolean enable) {

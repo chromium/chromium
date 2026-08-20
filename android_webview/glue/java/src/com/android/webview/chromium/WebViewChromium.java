@@ -387,7 +387,7 @@ class WebViewChromium
     @Override
     public boolean overlayHorizontalScrollbar() {
         forbidBuilderConfiguration();
-        if (!mAwInit.isChromiumInitStarted()) {
+        if (!mAwInit.isChromiumInitialized()) {
             return true;
         }
         if (checkNeedsPost()) {
