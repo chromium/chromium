@@ -37,7 +37,7 @@ class SiteTokenProviderService : public KeyedService,
   void UpdateState();
 
   // Returns the site token for `domain` if one exists.
-  std::string GetTokenForDomain(std::string_view domain) const;
+  virtual std::string GetTokenForDomain(std::string_view domain) const;
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(

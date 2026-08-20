@@ -120,6 +120,12 @@ inline constexpr char kChromeOsHelpViaWebUIURL[] =
 // widgets instead of using HTML.
 inline constexpr char kChromeNativeScheme[] = "chrome-native";
 
+// The chrome-experimental-site-token: scheme is used to retrieve site-specific
+// tokens.
+inline constexpr char kChromeExperimentalSiteTokenScheme[] =
+    "chrome-experimental-site-token";
+inline constexpr char kChromeExperimentalSiteTokenHost[] = "token";
+
 // The URL of safe section in Chrome page (https://www.google.com/chrome).
 inline constexpr char16_t kChromeSafePageURL[] =
     u"https://www.google.com/chrome/#safe";

@@ -278,6 +278,12 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
 #if BUILDFLAG(IS_ANDROID)
   schemes->local_schemes.push_back(url::kContentScheme);
 #endif
+
+  schemes->standard_schemes.push_back(
+      chrome::kChromeExperimentalSiteTokenScheme);
+  schemes->secure_schemes.push_back(chrome::kChromeExperimentalSiteTokenScheme);
+  schemes->cors_enabled_schemes.push_back(
+      chrome::kChromeExperimentalSiteTokenScheme);
 }
 
 std::u16string ChromeContentClient::GetLocalizedString(int message_id) {

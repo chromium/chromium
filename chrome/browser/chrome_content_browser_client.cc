@@ -173,6 +173,7 @@
 #include "chrome/browser/site_protection/site_familiarity_process_selection_deferring_condition.h"
 #include "chrome/browser/site_protection/site_familiarity_process_selection_user_data.h"
 #include "chrome/browser/site_protection/site_familiarity_utils.h"
+#include "chrome/browser/site_token_provider/site_token_url_loader_factory.h"
 #include "chrome/browser/speech/chrome_speech_recognition_manager_delegate.h"
 #include "chrome/browser/speech/on_device_speech_recognition_util.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
@@ -331,6 +332,7 @@
 #include "components/site_isolation/pref_names.h"
 #include "components/site_isolation/preloaded_isolated_origins.h"
 #include "components/site_isolation/site_isolation_policy.h"
+#include "components/site_token_provider/features.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/translate/core/common/translate_switches.h"
@@ -6550,6 +6552,13 @@ void ChromeContentBrowserClient::
                                       factories);
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+  if (base::FeatureList::IsEnabled(
+          site_token_provider::features::kSiteTokenProviderEnabled)) {
+    factories->emplace(chrome::kChromeExperimentalSiteTokenScheme,
+                       site_token_provider::SiteTokenURLLoaderFactory::Create(
+                           render_process_id));
+  }
 }
 
 void ChromeContentBrowserClient::WillCreateURLLoaderFactory(
