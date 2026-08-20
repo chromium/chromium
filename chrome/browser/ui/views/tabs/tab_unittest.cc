@@ -14,6 +14,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
@@ -1313,6 +1314,70 @@ TEST_F(TabTest, SingleElementCentering) {
     EXPECT_TRUE(GetTabTitle(tab)->GetVisible());
   }
 }
+TEST_F(TabTest, HorizontalPinnedTabStyle_UpdatedEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {tabs::kTabStripUnification, tabs::kNewHorizontalPinnedTabStyling}, {});
+
+  auto controller = std::make_unique<FakeTabSlotController>();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  Tab* tab = widget->SetContentsView(
+      std::make_unique<Tab>(tabs::TabHandle(1), controller.get()));
+  tabs::TabData data;
+  data.pinned = true;
+  tab->SetDataForTesting(data);
+
+  // When inactive, pinned tabs have stroke thickness 1 (border) and squarcle
+  // path.
+  EXPECT_FALSE(tab->IsActive());
+  EXPECT_EQ(tab->tab_style_views()->GetStrokeThickness(), 1);
+  SkPath inactive_path =
+      tab->tab_style_views()->GetPath(TabStyle::PathType::kActiveTab, 1.0f, {});
+  EXPECT_TRUE(inactive_path.isRRect(nullptr));
+
+  // When active, stroke thickness is 0 and uses folder path.
+  controller->set_active_tab(tab);
+  tab->ActiveStateChanged();
+  EXPECT_TRUE(tab->IsActive());
+  EXPECT_EQ(tab->tab_style_views()->GetStrokeThickness(), 0);
+  SkPath active_path =
+      tab->tab_style_views()->GetPath(TabStyle::PathType::kActiveTab, 1.0f, {});
+  EXPECT_FALSE(active_path.isRRect(nullptr));
+}
+
+TEST_F(TabTest, HorizontalPinnedTabStyle_UpdatedDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({tabs::kTabStripUnification}, {});
+
+  auto controller = std::make_unique<FakeTabSlotController>();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  Tab* tab = widget->SetContentsView(
+      std::make_unique<Tab>(tabs::TabHandle(1), controller.get()));
+  tabs::TabData data;
+  data.pinned = true;
+  tab->SetDataForTesting(data);
+
+  // When disabled, inactive pinned tabs match the folder structure with
+  // extended border tabs with no border (stroke thickness 0, non-RRect folder
+  // path).
+  EXPECT_FALSE(tab->IsActive());
+  EXPECT_EQ(tab->tab_style_views()->GetStrokeThickness(), 0);
+  SkPath inactive_path =
+      tab->tab_style_views()->GetPath(TabStyle::PathType::kActiveTab, 1.0f, {});
+  EXPECT_FALSE(inactive_path.isRRect(nullptr));
+
+  // When active, pinned tab still has no stroke and uses folder path.
+  controller->set_active_tab(tab);
+  tab->ActiveStateChanged();
+  EXPECT_TRUE(tab->IsActive());
+  EXPECT_EQ(tab->tab_style_views()->GetStrokeThickness(), 0);
+  SkPath active_path =
+      tab->tab_style_views()->GetPath(TabStyle::PathType::kActiveTab, 1.0f, {});
+  EXPECT_FALSE(active_path.isRRect(nullptr));
+}
+
 #if BUILDFLAG(IS_MAC)
 class TestContextMenuController : public views::ContextMenuController {
  public:

@@ -92,6 +92,8 @@ BASE_DECLARE_FEATURE(kBackToOpener);
 
 BASE_DECLARE_FEATURE(kTabStripUnification);
 
+BASE_DECLARE_FEATURE(kNewHorizontalPinnedTabStyling);
+
 BASE_DECLARE_FEATURE(kMigrateEverythingMenuPinnedToTabstrip);
 
 bool IsSplitViewHorizontalIndirectAccessEnabled();
@@ -101,6 +103,8 @@ bool IsVerticalTabsFeatureEnabled();
 bool IsVerticalTabsExpandOnHoverFeatureEnabled();
 
 bool IsExpandOnHoverClickDelayEnabled();
+
+bool IsNewHorizontalPinnedTabStylingEnabled();
 
 }  // namespace tabs
 

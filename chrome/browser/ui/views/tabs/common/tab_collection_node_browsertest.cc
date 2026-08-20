@@ -722,6 +722,110 @@ IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest,
   }));
 }
 
+IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest,
+                       HorizontalPinnedTabStyleUpdatedDisabled) {
+  if (!is_horizontal()) {
+    GTEST_SKIP() << "Test applies only to horizontal tab strip.";
+  }
+  AppendTab();
+  AppendPinnedTab();
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !root_node()->children().empty(); }));
+
+  const auto* pinned_node = pinned_collection_node();
+  ASSERT_EQ(pinned_node->children().size(), 1u);
+  auto* pinned_tab_view =
+      views::AsViewClass<TabView>(pinned_node->children()[0]->view());
+  ASSERT_NE(pinned_tab_view, nullptr);
+
+  // Activate the unpinned tab so the pinned tab becomes inactive.
+  tab_strip_model()->ActivateTabAt(
+      tab_strip_model()->IndexOfFirstNonPinnedTab());
+  ASSERT_FALSE(pinned_tab_view->IsActive());
+
+  // When disabled (default), inactive pinned tabs match the folder structure
+  // with extended border tabs with no border (stroke thickness 0, non-RRect
+  // folder path).
+  EXPECT_EQ(pinned_tab_view->tab_styling()->GetStrokeThickness(), 0);
+  SkPath inactive_path = pinned_tab_view->tab_styling()->GetPath(
+      TabStyle::PathType::kActiveTab, 1.0f, {});
+  EXPECT_FALSE(inactive_path.isRRect(nullptr));
+
+  // When active, pinned tab still has no stroke and uses folder path.
+  tab_strip_model()->ActivateTabAt(0);
+  ASSERT_TRUE(pinned_tab_view->IsActive());
+  EXPECT_EQ(pinned_tab_view->tab_styling()->GetStrokeThickness(), 0);
+  SkPath active_path = pinned_tab_view->tab_styling()->GetPath(
+      TabStyle::PathType::kActiveTab, 1.0f, {});
+  EXPECT_FALSE(active_path.isRRect(nullptr));
+}
+
+class TabCollectionNodePinnedUpdatedEnabledBrowserTest
+    : public TabCollectionNodeBrowserTest {
+ public:
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    auto enabled = VerticalTabsBrowserTestMixin<
+        InProcessBrowserTest>::GetEnabledFeatures();
+    enabled.push_back({tabs::kTabStripUnification, {}});
+    enabled.push_back({tabs::kNewHorizontalPinnedTabStyling, {}});
+    return enabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(TabCollectionNodePinnedUpdatedEnabledBrowserTest,
+                       HorizontalPinnedTabStyleUpdatedEnabled) {
+  if (!is_horizontal()) {
+    GTEST_SKIP() << "Test applies only to horizontal tab strip.";
+  }
+  AppendTab();
+  AppendPinnedTab();
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !root_node()->children().empty(); }));
+
+  const auto* pinned_node = pinned_collection_node();
+  ASSERT_EQ(pinned_node->children().size(), 1u);
+  auto* pinned_tab_view =
+      views::AsViewClass<TabView>(pinned_node->children()[0]->view());
+  ASSERT_NE(pinned_tab_view, nullptr);
+
+  // Activate the unpinned tab so the pinned tab becomes inactive.
+  tab_strip_model()->ActivateTabAt(
+      tab_strip_model()->IndexOfFirstNonPinnedTab());
+  ASSERT_FALSE(pinned_tab_view->IsActive());
+
+  // In the horizontal tab strip, with updated pinned tab style enabled:
+  // Inactive pinned tab has stroke thickness 1 and squarcle RRect path.
+  EXPECT_EQ(pinned_tab_view->tab_styling()->GetStrokeThickness(), 1);
+  SkPath inactive_path = pinned_tab_view->tab_styling()->GetPath(
+      TabStyle::PathType::kActiveTab, 1.0f, {});
+  EXPECT_TRUE(inactive_path.isRRect(nullptr));
+
+  // When active, stroke thickness is 0 and uses folder path.
+  tab_strip_model()->ActivateTabAt(0);
+  ASSERT_TRUE(pinned_tab_view->IsActive());
+  EXPECT_EQ(pinned_tab_view->tab_styling()->GetStrokeThickness(), 0);
+  SkPath active_path = pinned_tab_view->tab_styling()->GetPath(
+      TabStyle::PathType::kActiveTab, 1.0f, {});
+  EXPECT_FALSE(active_path.isRRect(nullptr));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TabCollectionNodePinnedUpdatedEnabledBrowserTest,
+    testing::Values(TabStripOrientation::kVertical,
+                    TabStripOrientation::kHorizontal),
+    [](const testing::TestParamInfo<TabStripOrientation>& info) {
+      switch (info.param) {
+        case TabStripOrientation::kVertical:
+          return "Vertical";
+        case TabStripOrientation::kHorizontal:
+          return "Horizontal";
+      }
+    });
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     TabCollectionNodeBrowserTest,
