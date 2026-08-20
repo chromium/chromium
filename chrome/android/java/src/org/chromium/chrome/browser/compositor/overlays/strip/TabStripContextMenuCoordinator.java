@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoord
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripMenuMetricsUtils.StripMenuAction;
 import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
-import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicHelper;
 import org.chromium.chrome.browser.glic.GlicUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -249,7 +248,7 @@ public class TabStripContextMenuCoordinator {
         Profile profile = mTabModel.getProfile();
         if (profile != null) {
             profile = profile.getOriginalProfile();
-            if (GlicEnabling.isEnabledForProfile(profile)) {
+            if (GlicUtils.isTabStripGlicSupported(profile)) {
                 itemList.add(BasicListMenu.buildMenuDivider(isIncognito));
 
                 boolean isPinned = GlicUtils.isButtonPinnedToTabStrip(profile);

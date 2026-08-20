@@ -1474,7 +1474,7 @@ public class StripLayoutTrailingButtonsCoordinator {
                 || !mSideUiStateProvider.canShowSideUi(SideUiId.SIDE_PANEL)) {
             return false;
         }
-        return GlicEnabling.isEnabledForProfile(mProfile)
+        return GlicUtils.isTabStripGlicSupported(mProfile)
                 && GlicUtils.isButtonPinnedToTabStrip(mProfile);
     }
 
