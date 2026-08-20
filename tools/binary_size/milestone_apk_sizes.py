@@ -181,13 +181,13 @@ def _DownloadAndAnalyze(signed_prefix, staging_dir, android_go_system_gz=False):
   # Separate where spreadsheet has computed columns for easier copy/paste.
   _DumpCsvAndClear(metrics)
   metrics['System Image Size (arm32)'] = sum(
-    x.GetApkSize() for x in system_apks
+    x.GetCompressedSize() for x in system_apks
   )
   metrics['System Image Size (arm64)'] = sum(
-    x.GetApkSize() for x in system_apks_64
+    x.GetCompressedSize() for x in system_apks_64
   )
   metrics['System Image Size (arm64-high)'] = sum(
-    x.GetApkSize() for x in system_apks_64_high
+    x.GetCompressedSize() for x in system_apks_64_high
   )
 
   go_install_size = chrome.GetAndroidGoSize() + webview.GetAndroidGoSize()
