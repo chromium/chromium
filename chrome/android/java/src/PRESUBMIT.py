@@ -54,7 +54,7 @@ def _CommonChecks(input_api, output_api):
 def _CheckNotificationConstructors(input_api, output_api):
   files_to_skip = (
       'chrome/android/java/src/org/chromium/chrome/browser/notifications/'
-      'ChromeNotificationWrapperCompatBuilder.java',
+      'ChromeNotificationWrapperBuilder.java',
   )
   error_msg = '''
   Android Notification Construction Check failed:

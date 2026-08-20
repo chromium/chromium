@@ -48,7 +48,7 @@ public class NotificationWrapperBuilderFactory {
                         ChromeChannelDefinitions.getInstance(),
                         context.getResources());
 
-        return new ChromeNotificationWrapperCompatBuilder(
+        return new ChromeNotificationWrapperBuilder(
                 context, channelId, channelsInitializer, metadata);
     }
 }

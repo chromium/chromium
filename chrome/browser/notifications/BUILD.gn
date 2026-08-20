@@ -628,7 +628,7 @@ if (!is_android) {
 if (is_android) {
   android_library("java") {
     sources = [
-      "android/java/src/org/chromium/chrome/browser/notifications/ChromeNotificationWrapperCompatBuilder.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/ChromeNotificationWrapperBuilder.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationBuilderBase.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationConstants.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationIntentInterceptor.java",

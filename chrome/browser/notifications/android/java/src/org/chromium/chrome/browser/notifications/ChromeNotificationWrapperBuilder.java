@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,8 +22,8 @@ import org.chromium.components.browser_ui.notifications.channels.ChannelsInitial
  * NotificationIntentInterceptor}.
  */
 @NullMarked
-public class ChromeNotificationWrapperCompatBuilder extends NotificationWrapperCompatBuilder {
-    ChromeNotificationWrapperCompatBuilder(
+public class ChromeNotificationWrapperBuilder extends NotificationWrapperCompatBuilder {
+    ChromeNotificationWrapperBuilder(
             Context context,
             String channelId,
             ChannelsInitializer channelsInitializer,
