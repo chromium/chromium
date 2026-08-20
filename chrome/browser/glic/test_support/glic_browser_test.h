@@ -20,6 +20,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -211,6 +212,17 @@ template <typename Trigger>
   }
   LOG(ERROR) << message;
   return false;
+}
+
+[[nodiscard]] inline TestResult<> WaitForUserActionCount(
+    const base::UserActionTester& user_action_tester,
+    std::string_view action,
+    int expected_count) {
+  return RunUntilEqual<int>(
+      [&]() { return user_action_tester.GetActionCount(action); },
+      expected_count,
+      base::StrCat({"User action ", action,
+                    " count != ", base::NumberToString(expected_count)}));
 }
 
 [[nodiscard]] inline TestResult<> WaitForWindowActive(

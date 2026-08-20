@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FileUploadPolicyState, FormFactor, HostCapability, InvocationSource, PanelStateKind, Platform, SbThreatType, ScreenshotEncryptionScheme, ScrollToErrorReason, SkillSource, SkillsWebClientEvent, WebClientMode} from '/glic/glic_api/glic_api.js';
+import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FileUploadPolicyState, FormFactor, HostCapability, InvocationSource, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, SbThreatType, ScreenshotEncryptionScheme, ScrollToErrorReason, SkillSource, SkillsWebClientEvent, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {AdditionalContext, CounterAbuseVerdict, ExperimentalTriggeringUpdate, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, ScrollToError, TabContextResult, TabData, UserConfirmationDialogRequest, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 import {Subject} from '/glic/observable.js';
 
@@ -2717,6 +2717,30 @@ class ApiTests extends ApiTestFixtureBase {
     const blob = await tabData?.favicon?.();
     assertEquals(blob?.type, 'image/bmp');
     assertTrue(checkDefined(blob).size > 0);
+  }
+
+  async testMetrics() {
+    assertDefined(this.host.getMetrics);
+    const metrics = this.host.getMetrics();
+    assertDefined(metrics);
+    assertDefined(metrics.onResponseRated);
+    assertDefined(metrics.onUserInputSubmitted);
+    assertDefined(metrics.onReaction);
+    assertDefined(metrics.onContextUploadStarted);
+    assertDefined(metrics.onContextUploadCompleted);
+    assertDefined(metrics.onResponseStarted);
+    assertDefined(metrics.onResponseStopped);
+    assertDefined(metrics.onSessionTerminated);
+    assertDefined(metrics.onClosedCaptionsShown);
+    metrics.onResponseRated(true);
+    metrics.onUserInputSubmitted(WebClientMode.TEXT);
+    metrics.onContextUploadStarted();
+    metrics.onContextUploadCompleted();
+    metrics.onReaction(MetricUserInputReactionType.MODEL);
+    metrics.onResponseStarted();
+    metrics.onResponseStopped({cause: ResponseStopCause.USER});
+    metrics.onSessionTerminated();
+    metrics.onClosedCaptionsShown();
   }
 }
 

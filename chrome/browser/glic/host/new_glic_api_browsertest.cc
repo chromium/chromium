@@ -5262,6 +5262,31 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
   ContinueJsTest({.instance = tab1_instance});
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testMetrics) {
+  glic::GlicHistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicClosedCaptioningEnabled,
+                                       true);
+  ASSERT_OK(OpenGlicForActiveTab());
+
+  ExecuteJsTest();
+
+  ASSERT_OK(WaitForUserActionCount(user_action_tester,
+                                   "GlicContextUploadStarted", 1));
+  ASSERT_OK(WaitForUserActionCount(user_action_tester,
+                                   "GlicContextUploadCompleted", 1));
+  ASSERT_OK(
+      WaitForUserActionCount(user_action_tester, "GlicReactionModelled", 1));
+  ASSERT_OK(
+      WaitForUserActionCount(user_action_tester, "GlicResponseStopByUser", 1));
+  ASSERT_OK(histogram_tester.WaitForBucketCount(
+      "Glic.Response.ClosedCaptionsShown", /*sample=*/true,
+      /*expected_bucket_count=*/1));
+  ASSERT_OK(
+      histogram_tester.WaitForTotalCount("Glic.TabContext.UploadTime", 1));
+}
+
 auto DefaultTestParamSet() {
   return testing::Values(TestParams{});
 }

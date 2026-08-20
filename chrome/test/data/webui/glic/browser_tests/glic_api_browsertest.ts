@@ -1,7 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {HostCapability, MetricUserInputReactionType, PanelStateKind, ResponseStopCause, WebClientMode} from '/glic/glic_api/glic_api.js';
+import {HostCapability, PanelStateKind} from '/glic/glic_api/glic_api.js';
 import type {TabData} from '/glic/glic_api/glic_api.js';
 
 import {ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertTrue, checkDefined, mapObservable, observeSequence, testMain} from './browser_test_base.js';
@@ -50,32 +50,6 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(screenshot.heightPixels > 0);
     assertTrue(screenshot.data.byteLength > 0);
     assertEquals(screenshot.mimeType, 'image/jpeg');
-  }
-
-
-
-  async testMetrics() {
-    assertDefined(this.host.getMetrics);
-    const metrics = this.host.getMetrics();
-    assertDefined(metrics);
-    assertDefined(metrics.onResponseRated);
-    assertDefined(metrics.onUserInputSubmitted);
-    assertDefined(metrics.onReaction);
-    assertDefined(metrics.onContextUploadStarted);
-    assertDefined(metrics.onContextUploadCompleted);
-    assertDefined(metrics.onResponseStarted);
-    assertDefined(metrics.onResponseStopped);
-    assertDefined(metrics.onSessionTerminated);
-    assertDefined(metrics.onClosedCaptionsShown);
-    metrics.onResponseRated(true);
-    metrics.onUserInputSubmitted(WebClientMode.TEXT);
-    metrics.onContextUploadStarted();
-    metrics.onContextUploadCompleted();
-    metrics.onReaction(MetricUserInputReactionType.MODEL);
-    metrics.onResponseStarted();
-    metrics.onResponseStopped({cause: ResponseStopCause.USER});
-    metrics.onSessionTerminated();
-    metrics.onClosedCaptionsShown();
   }
 
   // Helper function to pin the active tab. Asserts the tab is pinned, and

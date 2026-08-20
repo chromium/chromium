@@ -91,6 +91,23 @@ class GlicHistogramTester {
     return base::ok();
   }
 
+  [[nodiscard]] TestResult<> WaitForTotalCount(
+      std::string_view name,
+      base::HistogramBase::Count32 expected_count) const {
+    base::HistogramBase::Count32 actual_count = 0;
+    bool success = base::test::RunUntil([&]() {
+      actual_count = GetTotalCount(name);
+      return actual_count == expected_count;
+    });
+    if (!success) {
+      return base::unexpected(base::StringPrintf(
+          "Timeout waiting for histogram total count. Expected %d, got %d for "
+          "histogram %s",
+          expected_count, actual_count, std::string(name).c_str()));
+    }
+    return base::ok();
+  }
+
   std::vector<base::Bucket> GetAllSamples(std::string_view name) const {
     CollectHistograms();
     return tester_.GetAllSamples(name);

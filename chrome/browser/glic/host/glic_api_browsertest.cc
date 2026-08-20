@@ -473,29 +473,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testCaptureScreenshot) {
   ExecuteJsTest();
 }
 
-
-// TODO(crbug.com/438812885): This is flaky.
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testMetrics) {
-  browser()->GetProfile()->GetPrefs()->SetBoolean(
-      prefs::kGlicClosedCaptioningEnabled, true);
-
-  ExecuteJsTest();
-  // Sleeping here is needed so that the calls made from the web client are
-  // handled by the browser before the check below.
-  sleepWithRunLoop(base::Milliseconds(100));
-
-  histogram_tester->ExpectUniqueSample("Glic.Response.ClosedCaptionsShown",
-                                       true, 1);
-  EXPECT_EQ(1, user_action_tester->GetActionCount("GlicContextUploadStarted"));
-  EXPECT_EQ(1,
-            user_action_tester->GetActionCount("GlicContextUploadCompleted"));
-  EXPECT_EQ(1, user_action_tester->GetActionCount("GlicReactionModelled"));
-  EXPECT_EQ(1, user_action_tester->GetActionCount("GlicResponseStopByUser"));
-  histogram_tester->ExpectTotalCount("Glic.FirstReaction.Text.Modelled.Time",
-                                     1);
-  histogram_tester->ExpectTotalCount("Glic.TabContext.UploadTime", 1);
-}
-
 // TODO(crbug.com/441588906): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
                        DISABLED_testFetchInactiveTabScreenshot) {
