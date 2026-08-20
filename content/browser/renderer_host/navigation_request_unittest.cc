@@ -20,6 +20,7 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/process_selection_user_data.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_client.h"
@@ -1085,10 +1086,49 @@ TEST_F(NavigationRequestTest, SanitizeRedirectsForCommitErrorPage) {
   EXPECT_EQ(start_url, request->original_url());
 }
 
+// Helper class that turns off subframe error page isolation. Used for tests
+// that rely on subframe error pages staying in the current process rather than
+// going into an isolated error process.
+class NavigationRequestWithoutSubframeErrorPageIsolationTest
+    : public NavigationRequestTest {
+ public:
+  NavigationRequestWithoutSubframeErrorPageIsolationTest() = default;
+
+  void SetUp() override {
+    NavigationRequestTest::SetUp();
+    browser_client_ =
+        std::make_unique<NoSubframeErrorPageIsolationContentBrowserClient>();
+    old_client_ = SetBrowserClientForTesting(browser_client_.get());
+  }
+
+  void TearDown() override {
+    SetBrowserClientForTesting(old_client_);
+    browser_client_.reset();
+    NavigationRequestTest::TearDown();
+  }
+
+ private:
+  class NoSubframeErrorPageIsolationContentBrowserClient
+      : public TestContentBrowserClient {
+   public:
+    NoSubframeErrorPageIsolationContentBrowserClient() = default;
+    bool ShouldIsolateErrorPage(bool in_main_frame) override {
+      if (!in_main_frame) {
+        return false;
+      }
+      return TestContentBrowserClient::ShouldIsolateErrorPage(in_main_frame);
+    }
+  };
+
+  std::unique_ptr<NoSubframeErrorPageIsolationContentBrowserClient>
+      browser_client_;
+  raw_ptr<ContentBrowserClient> old_client_ = nullptr;
+};
+
 // Test that when a redirected subframe navigation is blocked and the resulting
 // error page commits in the initiator's process, the final URL is reduced to
 // its origin in the parameters sent to the renderer. See crbug.com/517156678.
-TEST_F(NavigationRequestTest,
+TEST_F(NavigationRequestWithoutSubframeErrorPageIsolationTest,
        SanitizeRedirectsForCommitErrorPageInCurrentProcess) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -1144,7 +1184,7 @@ TEST_F(NavigationRequestTest,
 }
 
 TEST_F(
-    NavigationRequestTest,
+    NavigationRequestWithoutSubframeErrorPageIsolationTest,
     SanitizeRedirectsForCommitErrorPageInCurrentProcess_FinalURLFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -1202,7 +1242,7 @@ TEST_F(
   }
 }
 
-TEST_F(NavigationRequestTest,
+TEST_F(NavigationRequestWithoutSubframeErrorPageIsolationTest,
        DontSanitizeRedirectsForCommitErrorPageInCurrentProcessSameOrigin) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -1261,7 +1301,7 @@ TEST_F(NavigationRequestTest,
 // error page in the initiator's process, all redirect URLs are reduced to
 // origin.
 TEST_F(
-    NavigationRequestTest,
+    NavigationRequestWithoutSubframeErrorPageIsolationTest,
     SanitizeRedirectsForCommitErrorPageInCurrentProcessMultipleRedirectsSameOriginWithEachOther) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
