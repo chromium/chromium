@@ -34,11 +34,6 @@ int LensTranslateToggleMode() {
   return kLensTranslateToggleModeFeature.Get();
 }
 
-BASE_FEATURE(kLensUnaryApisWithHttpTransportEnabled,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kLensUnaryHttpTransportEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensUnaryApiSalientTextEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensSingleTapTextSelectionDisabled,

@@ -6738,16 +6738,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "lens-unary-apis-with-http-transport-enabled",
-    "owners": ["cmyang@google.com", "brandonli@google.com"],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "lens-unary-http-transport-enabled",
-    "owners": ["cmyang@google.com", "brandonli@google.com", "lihailong@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "lens-updated-feedback-entrypoint",
     "owners": ["juanmojica@google.com", "lens-chrome@google.com"],
     "expiry_milestone": 152

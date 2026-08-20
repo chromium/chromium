@@ -25,12 +25,6 @@ extern const char kLensTranslateToggleMode[];
 // Integer that maps to the translate toggle mode enum.
 int LensTranslateToggleMode();
 
-// Whether to use unary APIs with HTTP transport.
-BASE_DECLARE_FEATURE(kLensUnaryApisWithHttpTransportEnabled);
-
-// Whether to use HTTP transport for unary requests.
-BASE_DECLARE_FEATURE(kLensUnaryHttpTransportEnabled);
-
 // Whether to enable the unary salient text API.
 BASE_DECLARE_FEATURE(kLensUnaryApiSalientTextEnabled);
 

@@ -1367,16 +1367,6 @@ inline constexpr char kLensUnaryApiSalientTextEnabledName[] =
 inline constexpr char kLensUnaryApiSalientTextEnabledDescription[] =
     "Enables the unary salient text API.";
 
-inline constexpr char kLensUnaryApisWithHttpTransportEnabledName[] =
-    "Lens unary APIs with HTTP transport enabled";
-inline constexpr char kLensUnaryApisWithHttpTransportEnabledDescription[] =
-    "Enables the unary APIs with HTTP transport.";
-
-inline constexpr char kLensUnaryHttpTransportEnabledName[] =
-    "Lens unary HTTP transport enabled";
-inline constexpr char kLensUnaryHttpTransportEnabledDescription[] =
-    "Enables the HTTP transport for unary requests.";
-
 inline constexpr char kLocationBarBadgeMigrationName[] =
     "LocationBarBadgeMigration";
 inline constexpr char kLocationBarBadgeMigrationDescription[] =
