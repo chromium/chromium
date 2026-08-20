@@ -552,6 +552,8 @@ Called by update_bad_message_reasons.py.-->
   <int value="372" label="RFH_BLOB_URL_STORE_ASSOCIATED_PDF_PROCESS_BLOCKED"/>
   <int value="373" label="RFH_BLOB_URL_STORE_RECEIVER_PDF_PROCESS_BLOCKED"/>
   <int value="374" label="RFH_DOWNLOAD_URL_INVALID_REFERRER"/>
+  <int value="375" label="HSI_PLAY_HAPTICS_INVALID_INTENSITY"/>
+  <int value="376" label="HSI_PLAY_HAPTICS_IN_FENCED_FRAME"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

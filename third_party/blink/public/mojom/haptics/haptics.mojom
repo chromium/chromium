@@ -1,0 +1,23 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// The semantic haptic effects exposed by navigator.playHaptics(). Each value
+// maps to a platform waveform in the browser-process backend.
+enum HapticEffect {
+  kHint,
+  kEdge,
+  kTick,
+  kAlign,
+};
+
+// Renderer-facing interface for the Web Haptics API. Implemented by
+// content::HapticsService in the browser process, which is the authoritative
+// security boundary that enforces checks for API calls.
+interface HapticsService {
+  // Plays |effect| at |intensity| (normalized to [0.0, 1.0]) on the most recent
+  // input device.
+  PlayHaptics(HapticEffect effect, double intensity);
+};

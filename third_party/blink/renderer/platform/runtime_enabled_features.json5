@@ -6968,6 +6968,10 @@
       implied_by: ["WebGPUMapSyncOnWorkers"],
     },
     {
+      name: "WebHaptics",
+      status: "experimental",
+    },
+    {
       name: "WebHID",
       status: {"Android": "experimental", "default": "stable"},
     },

@@ -6753,6 +6753,7 @@ interface Navigator
     method getGamepads
     method getUserMedia
     method javaEnabled
+    method playHaptics
     method queryHandwritingRecognizer
     method requestMIDIAccess
     method requestMediaKeySystemAccess

@@ -400,6 +400,8 @@ enum BadMessageReason {
   RFH_BLOB_URL_STORE_ASSOCIATED_PDF_PROCESS_BLOCKED = 372,
   RFH_BLOB_URL_STORE_RECEIVER_PDF_PROCESS_BLOCKED = 373,
   RFH_DOWNLOAD_URL_INVALID_REFERRER = 374,
+  HSI_PLAY_HAPTICS_INVALID_INTENSITY = 375,
+  HSI_PLAY_HAPTICS_IN_FENCED_FRAME = 376,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

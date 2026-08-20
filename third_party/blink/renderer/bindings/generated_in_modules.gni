@@ -1702,6 +1702,8 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_handwriting_input_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_handwriting_recognition_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_handwriting_recognition_type.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_haptic_effect.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_haptic_effect.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_hardware_preference.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_hardware_preference.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_hdr_metadata_type.cc",

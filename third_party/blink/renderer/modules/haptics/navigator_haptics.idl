@@ -1,0 +1,14 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// The predefined, semantic haptic effect names.
+enum HapticEffect { "hint", "edge", "tick", "align" };
+
+[
+    ImplementedAs=HapticsController,
+    RuntimeEnabled=WebHaptics,
+    MeasureAs="WebDXFeature::kDRAFT_Haptics"
+] partial interface Navigator {
+    undefined playHaptics(HapticEffect effect, optional double intensity = 1);
+};

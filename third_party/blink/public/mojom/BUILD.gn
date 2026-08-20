@@ -134,6 +134,7 @@ mojom("mojom_platform") {
     "forms/form_control_type.mojom",
     "frame/policy_container.mojom",
     "geolocation/geolocation_service.mojom",
+    "haptics/haptics.mojom",
     "hid/hid.mojom",
     "hyphenation/hyphenation.mojom",
     "idle/idle_manager.mojom",

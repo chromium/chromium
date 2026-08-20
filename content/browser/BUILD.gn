@@ -1107,6 +1107,8 @@ source_set("browser") {
     "handwriting/handwriting_recognition_service_impl.h",
     "handwriting/handwriting_recognizer_impl.cc",
     "handwriting/handwriting_recognizer_impl.h",
+    "haptics/haptics_service_impl.cc",
+    "haptics/haptics_service_impl.h",
     "hid/hid_service.cc",
     "hid/hid_service.h",
     "host_zoom_level_context.cc",

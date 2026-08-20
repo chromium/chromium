@@ -7116,6 +7116,7 @@ interface Navigator
     method getUserMedia
     method install
     method javaEnabled
+    method playHaptics
     method queryHandwritingRecognizer
     method registerProtocolHandler
     method requestMIDIAccess
