@@ -5710,6 +5710,13 @@ inline constexpr char kNtpVisionName[] = "New tab page vision";
 inline constexpr char kNtpVisionDescription[] =
     "Enable the new vision of the new tab page";
 
+inline constexpr char kOnDemandBackgroundTabContextCaptureOptimizationName[] =
+    "On-Demand Background Tab Context Capture Optimization";
+inline constexpr char
+    kOnDemandBackgroundTabContextCaptureOptimizationDescription[] =
+        "Enables performance, memory, and lifecycle optimizations for "
+        "on-demand background tab context capture.";
+
 inline constexpr char kOneStepAimAccessName[] = "One Step AI Mode Access";
 inline constexpr char kOneStepAimAccessDescription[] =
     "Enables one-step entry points to AI Mode from widgets and shortcuts.";

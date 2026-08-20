@@ -650,6 +650,8 @@ public abstract class ChromeFeatureList {
     public static final String ONE_STEP_AIM_ACCESS = "OneStepAimAccess";
     public static final String ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE =
             "OnDemandBackgroundTabContextCapture";
+    public static final String ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION =
+            "OnDemandBackgroundTabContextCaptureOptimization";
     public static final String ON_STARTUP_WINDOW_POLICY = "OnStartupWindowPolicy";
     public static final String OPEN_DOWNLOAD_IN_FILES_APP_IF_NO_HANDLER_FOUND =
             "OpenDownloadInFilesAppIfNoHandlerFound";
@@ -1728,6 +1730,10 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD, true);
     public static final MutableFlagWithSafeDefault sOnDemandBackgroundTabContextCapture =
             newMutableFlagWithSafeDefault(ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE, true);
+    public static final MutableFlagWithSafeDefault
+            sOnDemandBackgroundTabContextCaptureOptimization =
+                    newMutableFlagWithSafeDefault(
+                            ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION, false);
     public static final MutableFlagWithSafeDefault sPdfLauncherActivity =
             newMutableFlagWithSafeDefault(PDF_LAUNCHER_ACTIVITY, true);
     public static final MutableFlagWithSafeDefault sRecordSuppressionMetrics =

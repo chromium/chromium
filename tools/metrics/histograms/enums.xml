@@ -9935,6 +9935,8 @@ from previous Chrome versions.
   <int value="-1476593544" label="Apb144Patch6:disabled"/>
   <int value="-1475773986" label="FeedBoCSigninInterstitial:enabled"/>
   <int value="-1475681031" label="AutomotiveBackButtonBarStreamline:enabled"/>
+  <int value="-1474738324"
+      label="OnDemandBackgroundTabContextCaptureOptimization:disabled"/>
   <int value="-1474724634"
       label="OverrideLanguagePrefsForHrefTranslate:enabled"/>
   <int value="-1473878093" label="HideArcMediaNotifications:disabled"/>
@@ -10507,6 +10509,8 @@ from previous Chrome versions.
   <int value="-1304666215" label="UseMLKEM:enabled"/>
   <int value="-1304558220" label="EnableViewPpd:disabled"/>
   <int value="-1304401930" label="CSSContainerQueries:enabled"/>
+  <int value="-1304128583"
+      label="OnDemandBackgroundTabContextCaptureOptimization:enabled"/>
   <int value="-1304027501" label="OmniboxHideSuggestionGroupHeaders:enabled"/>
   <int value="-1303986525" label="CCTBeforeUnload:enabled"/>
   <int value="-1303979994" label="UseSCContentSharingPicker:enabled"/>

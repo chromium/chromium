@@ -13834,6 +13834,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"one-step-aim-access", flag_descriptions::kOneStepAimAccessName,
      flag_descriptions::kOneStepAimAccessDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kOneStepAimAccess)},
+    {"on-demand-background-tab-context-capture-optimization",
+     flag_descriptions::kOnDemandBackgroundTabContextCaptureOptimizationName,
+     flag_descriptions::
+         kOnDemandBackgroundTabContextCaptureOptimizationDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kOnDemandBackgroundTabContextCaptureOptimization)},
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
