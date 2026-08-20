@@ -1744,9 +1744,15 @@ void URLRequestHttpJob::SetPlatformLocalNetworkAccessGranted() {
 
   int rv = transaction_->RestartIgnoringLastError(base::BindOnce(
       &URLRequestHttpJob::OnStartCompleted, base::Unretained(this)));
-  // RestartIgnoringLastError() always returns ERR_IO_PENDING. See
-  // HttpNetworkTransaction.
-  CHECK_EQ(rv, ERR_IO_PENDING);
+  if (rv == ERR_IO_PENDING) {
+    return;
+  }
+
+  // The transaction started synchronously, but we need to notify the
+  // URLRequest delegate via the message loop.
+  TaskRunner(priority_)->PostTask(
+      FROM_HERE, base::BindOnce(&URLRequestHttpJob::OnStartCompleted,
+                                weak_factory_.GetWeakPtr(), rv));
 }
 
 void URLRequestHttpJob::CancelPlatformLocalNetworkAccessRequest() {
