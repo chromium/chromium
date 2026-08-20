@@ -118,6 +118,7 @@ void QueryAlmanacApiWithContext(
     std::move(callback).Run(base::unexpected(
         QueryError{QueryError::kBadRequest,
                    "Unavailable for incognito and system profiles"}));
+    return;
   }
 
   base::OnceCallback<void(const std::string&)> query_with_request_body =

@@ -10,7 +10,9 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/apps/almanac_api_client/device_info_manager_factory.h"
 #include "chrome/browser/apps/almanac_api_client/proto/test_request.pb.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "content/public/test/browser_task_environment.h"
@@ -56,9 +58,16 @@ class AlmanacApiUtilTest : public testing::Test {
 
   base::expected<TestProto, QueryError> QueryEndpointWithContext(
       proto::TestRequest request) {
+    return QueryEndpointWithContextForProfile(profile_.get(),
+                                              std::move(request));
+  }
+
+  base::expected<TestProto, QueryError> QueryEndpointWithContextForProfile(
+      Profile* profile,
+      proto::TestRequest request) {
     base::test::TestFuture<base::expected<TestProto, QueryError>> future;
     QueryAlmanacApiWithContext<proto::TestRequest, TestProto>(
-        profile_.get(), "endpoint", request, TRAFFIC_ANNOTATION_FOR_TESTS,
+        profile, "endpoint", request, TRAFFIC_ANNOTATION_FOR_TESTS,
         /*max_response_size=*/1024 * 1024,
         /*error_histogram_name=*/std::nullopt, future.GetCallback());
     return future.Get();
@@ -173,6 +182,23 @@ TEST_F(AlmanacApiUtilTest, QueryAlmanacApiWithContext_AddsContext) {
   EXPECT_EQ(sent_request.package_id(), "web:foo");
   EXPECT_TRUE(sent_request.has_device_context());
   EXPECT_TRUE(sent_request.has_user_context());
+}
+
+// Profiles without a DeviceInfoManager (incognito, system and Ash internal
+// profiles) must fail cleanly: the callback runs once with kBadRequest and the
+// null manager is never dereferenced.
+TEST_F(AlmanacApiUtilTest, QueryAlmanacApiWithContext_NoDeviceInfoManager) {
+  Profile* incognito_profile = profile_->GetOffTheRecordProfile(
+      Profile::OTRProfileID::PrimaryID(), /*create_if_needed=*/true);
+  ASSERT_EQ(DeviceInfoManagerFactory::GetForProfile(incognito_profile),
+            nullptr);
+
+  base::expected<TestProto, QueryError> result =
+      QueryEndpointWithContextForProfile(incognito_profile,
+                                         proto::TestRequest());
+
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().type, QueryError::kBadRequest);
 }
 
 }  // namespace
