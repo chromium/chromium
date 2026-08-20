@@ -5,8 +5,8 @@
 #include "base/command_line.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/search/instant_test_base.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPUiTest, Reloads) {
   SetupInstant(browser()->GetProfile(), base_url, ntp_url);
 
   // Verify that at the start of the test the tab contents has focus.
-  browser()->tab_strip_model()->GetActiveWebContents()->Focus();
+  browser()->GetTabStripModel()->GetActiveWebContents()->Focus();
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 

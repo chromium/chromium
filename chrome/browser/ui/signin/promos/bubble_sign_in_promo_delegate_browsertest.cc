@@ -14,7 +14,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
@@ -49,24 +48,26 @@ class BubbleSignInPromoDelegateTest : public InProcessBrowserTest {
     return IdentityManagerFactory::GetForProfile(profile());
   }
 
-  void ReplaceBlank(Browser* browser);
+  void ReplaceBlank(BrowserWindowInterface* browser);
 
-  void SignInBrowser(Browser* browser);
+  void SignInBrowser(BrowserWindowInterface* browser);
 };
 
 // The default browser created for tests start with one tab open on
 // about:blank.  The sign-in page is a singleton that will
 // replace this tab.  This function replaces about:blank with another URL
 // so that the sign in page goes into a new tab.
-void BubbleSignInPromoDelegateTest::ReplaceBlank(Browser* browser) {
+void BubbleSignInPromoDelegateTest::ReplaceBlank(
+    BrowserWindowInterface* browser) {
   ShowSingletonTabOverwritingNTP(browser, GURL("chrome:version"),
                                  NavigateParams::IGNORE_AND_NAVIGATE);
 }
 
-void BubbleSignInPromoDelegateTest::SignInBrowser(Browser* browser) {
+void BubbleSignInPromoDelegateTest::SignInBrowser(
+    BrowserWindowInterface* browser) {
   auto delegate =
       std::make_unique<BubbleSignInPromoForSyncableDataTypeDelegate>(
-          *browser->tab_strip_model()->GetActiveWebContents(),
+          *browser->GetTabStripModel()->GetActiveWebContents(),
           signin_metrics::AccessPoint::kBookmarkBubble,
           syncer::LocalDataItemModel::DataId());
   delegate->OnSignIn(AccountInfo());
@@ -74,43 +75,43 @@ void BubbleSignInPromoDelegateTest::SignInBrowser(Browser* browser) {
 
 IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest, OnSignInLinkClicked) {
   ReplaceBlank(browser());
-  int starting_tab_count = browser()->tab_strip_model()->count();
+  int starting_tab_count = browser()->GetTabStripModel()->count();
   SignInBrowser(browser());
-  EXPECT_EQ(starting_tab_count + 1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(starting_tab_count + 1, browser()->GetTabStripModel()->count());
 }
 
 IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest,
                        OnSignInLinkClickedReusesBlank) {
-  int starting_tab_count = browser()->tab_strip_model()->count();
+  int starting_tab_count = browser()->GetTabStripModel()->count();
   SignInBrowser(browser());
-  EXPECT_EQ(starting_tab_count, browser()->tab_strip_model()->count());
+  EXPECT_EQ(starting_tab_count, browser()->GetTabStripModel()->count());
 }
 
 IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest,
                        OnSignInLinkClickedIncognito_RegularBrowserWithTabs) {
   ReplaceBlank(browser());
-  int starting_tab_count = browser()->tab_strip_model()->count();
+  int starting_tab_count = browser()->GetTabStripModel()->count();
   EXPECT_GT(starting_tab_count, 0);
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   int starting_tab_count_incognito =
-      incognito_browser->tab_strip_model()->count();
+      incognito_browser->GetTabStripModel()->count();
 
   SignInBrowser(incognito_browser);
 
-  int tab_count = browser()->tab_strip_model()->count();
+  int tab_count = browser()->GetTabStripModel()->count();
   // A full-tab signin page is used.
   EXPECT_EQ(starting_tab_count + 1, tab_count);
 
   // No effect is expected on the incognito browser.
-  int tab_count_incognito = incognito_browser->tab_strip_model()->count();
+  int tab_count_incognito = incognito_browser->GetTabStripModel()->count();
   EXPECT_EQ(starting_tab_count_incognito, tab_count_incognito);
 }
 
 IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest,
                        OnSignInLinkClickedIncognito_RegularBrowserClosed) {
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   int starting_tab_count_incognito =
-      incognito_browser->tab_strip_model()->count();
+      incognito_browser->GetTabStripModel()->count();
   // Close the main browser.
   CloseBrowserSynchronously(browser());
 
@@ -125,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest,
   EXPECT_EQ(1, new_regular_browser->GetTabStripModel()->count());
 
   // No effect is expected on the incognito browser.
-  int tab_count_incognito = incognito_browser->tab_strip_model()->count();
+  int tab_count_incognito = incognito_browser->GetTabStripModel()->count();
   EXPECT_EQ(starting_tab_count_incognito, tab_count_incognito);
 }
 
@@ -133,14 +134,14 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest,
 // if the provided browser is invalidated.
 IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest, BrowserRemoved) {
   // Create an extra browser.
-  Browser* extra_browser = CreateBrowser(profile());
+  BrowserWindowInterface* extra_browser = CreateBrowser(profile());
   ReplaceBlank(extra_browser);
 
-  int starting_tab_count = extra_browser->tab_strip_model()->count();
+  int starting_tab_count = extra_browser->GetTabStripModel()->count();
 
   std::unique_ptr<BubbleSignInPromoDelegate> delegate =
       std::make_unique<BubbleSignInPromoForSyncableDataTypeDelegate>(
-          *extra_browser->tab_strip_model()->GetActiveWebContents(),
+          *extra_browser->GetTabStripModel()->GetActiveWebContents(),
           signin_metrics::AccessPoint::kBookmarkBubble,
           syncer::LocalDataItemModel::DataId());
 
@@ -148,12 +149,12 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest, BrowserRemoved) {
 
   // Close all tabs in the original browser.  Run all pending messages
   // to make sure the browser window closes before continuing.
-  browser()->tab_strip_model()->CloseAllTabs();
+  browser()->GetTabStripModel()->CloseAllTabs();
   content::RunAllPendingInMessageLoop();
 
   delegate->OnSignIn(AccountInfo());
 
-  int tab_count = extra_browser->tab_strip_model()->count();
+  int tab_count = extra_browser->GetTabStripModel()->count();
   // A new tab should have been opened in the extra browser, which should be
   // visible.
   EXPECT_EQ(starting_tab_count + 1, tab_count);
@@ -169,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest,
   base::test::TestFuture<void> future;
 
   DefaultBubbleSignInPromoDelegate delegate(
-      *browser()->tab_strip_model()->GetActiveWebContents(),
+      *browser()->GetTabStripModel()->GetActiveWebContents(),
       signin_metrics::AccessPoint::kSendTabToSelfPromo, future.GetCallback());
 
   delegate.OnSignIn(info);
@@ -184,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest,
   base::test::TestFuture<void> future;
 
   DefaultBubbleSignInPromoDelegate delegate(
-      *browser()->tab_strip_model()->GetActiveWebContents(),
+      *browser()->GetTabStripModel()->GetActiveWebContents(),
       signin_metrics::AccessPoint::kSendTabToSelfPromo, future.GetCallback());
 
   delegate.OnSignIn(AccountInfo());
@@ -225,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest,
   base::test::TestFuture<void> future;
 
   DefaultBubbleSignInPromoDelegate delegate(
-      *browser()->tab_strip_model()->GetActiveWebContents(),
+      *browser()->GetTabStripModel()->GetActiveWebContents(),
       signin_metrics::AccessPoint::kSendTabToSelfPromo, future.GetCallback());
 
   // 2. Trigger OnSignIn. This should open the reauth tab.
@@ -255,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest,
   base::test::TestFuture<void> future;
 
   DefaultBubbleSignInPromoDelegate delegate(
-      *browser()->tab_strip_model()->GetActiveWebContents(),
+      *browser()->GetTabStripModel()->GetActiveWebContents(),
       signin_metrics::AccessPoint::kSendTabToSelfPromo, future.GetCallback());
 
   delegate.OnSignIn(AccountInfo());
@@ -267,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest,
   ASSERT_TRUE(sign_in_tab);
 
   content::WebContentsDestroyedWatcher watcher(sign_in_tab);
-  browser()->tab_strip_model()->CloseWebContents(
+  browser()->GetTabStripModel()->CloseWebContents(
       sign_in_tab, TabCloseTypes::CLOSE_USER_GESTURE);
   watcher.Wait();
 

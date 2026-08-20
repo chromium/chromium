@@ -7,8 +7,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/search/instant_test_base.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest, EmbeddedMostVisitedIframe) {
   // an Instant process.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   InstantService* instant_service =
       InstantServiceFactory::GetForProfile(browser()->GetProfile());
   EXPECT_TRUE(instant_service->IsInstantProcess(
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest,
   GURL non_instant_url = https_test_server().GetURL("example.com", "/");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_instant_url));
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Add a chrome-search://most-visited/title.html?rid=1&fs=0 subframe and
   // verify that the resource is not allowed to load.
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_P(
   GURL non_instant_url = https_test_server().GetURL("example.com", "/");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_instant_url));
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Start a renderer initiated navigation to the chrome-search://
   // url and verify that the resource is not allowed to load.
@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest,
   GURL non_instant_url = https_test_server().GetURL("example.com", "/");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_instant_url));
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   GURL redirect_url =
       https_test_server().GetURL("example.com", "/redirect-to-chrome-search");
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest,
   // an Instant process.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   InstantService* instant_service =
       InstantServiceFactory::GetForProfile(browser()->GetProfile());
   EXPECT_TRUE(instant_service->IsInstantProcess(
@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest,
   GURL non_instant_url = https_test_server().GetURL("example.com", "/");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_instant_url));
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Verify that the process is not marked as an Instant process.
   InstantService* instant_service =
@@ -355,7 +355,7 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest, VerifySiteInstance) {
   SetupInstant(browser()->GetProfile(), base_url, ntp_url);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Sanity check: the NTP should be provided by |ntp_url| and not by
   // chrome://new-tab-page [1P WebUI NTP] or chrome://newtab [incognito].
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest, VerifyCanUseSpareProcess) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_test_server().GetURL("/title1.html")));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::RenderProcessHost* old_process =
       web_contents->GetPrimaryMainFrame()->GetProcess();
 

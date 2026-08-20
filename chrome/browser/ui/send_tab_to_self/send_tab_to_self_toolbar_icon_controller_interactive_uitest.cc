@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
@@ -99,11 +100,12 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerInteractiveUiTest,
   RunTestSequence(
       InstrumentTab(kFirstTab, 0), SimulateReceivingNewEntries(),
       // Check that two new tabs have been opened and the first one is active.
-      PollUntil([this]() { return browser()->tab_strip_model()->count() == 3; },
-                "polling until all the tabs are opened"),
+      PollUntil(
+          [this]() { return browser()->GetTabStripModel()->count() == 3; },
+          "polling until all the tabs are opened"),
       PollUntil(
           [this]() {
-            return browser()->tab_strip_model()->active_index() == 1;
+            return browser()->GetTabStripModel()->active_index() == 1;
           },
           "polling until the new tab is active"),
 
@@ -160,10 +162,12 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerInteractiveUiTest,
       // background.
       InContext(kOriginalContext, ActivateSurface(kBrowserViewElementId)),
       // Check that two new tabs have been opened in the background.
-      PollUntil([this]() { return browser()->tab_strip_model()->count() == 3; },
-                "polling until all the tabs are opened"),
+      PollUntil(
+          [this]() { return browser()->GetTabStripModel()->count() == 3; },
+          "polling until all the tabs are opened"),
       CheckResult(
-          [this]() { return browser()->tab_strip_model()->active_index(); }, 0),
+          [this]() { return browser()->GetTabStripModel()->active_index(); },
+          0),
 
       // Check that the toast is shown.
       WaitForShow(toasts::ToastView::kToastViewId),
@@ -190,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerInteractiveUiTest,
       }),
       PollUntil(
           [this]() {
-            return browser()->tab_strip_model()->active_index() == 1;
+            return browser()->GetTabStripModel()->active_index() == 1;
           },
           "polling until the latest tab is active"));
 }

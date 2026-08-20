@@ -6,8 +6,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -58,7 +58,7 @@ class InstantExtendedTest : public InProcessBrowserTest,
         BrowserWindow::FromBrowser(browser())->GetLocationBar();
     if (location_bar->GetOmniboxController()->edit_model()->has_focus()) {
       content::WebContents* active_tab =
-          browser()->tab_strip_model()->GetActiveWebContents();
+          browser()->GetTabStripModel()->GetActiveWebContents();
       OmniboxTabHelper::FromWebContents(active_tab)
           ->OnFocusChanged(OMNIBOX_FOCUS_VISIBLE,
                            OMNIBOX_FOCUS_CHANGE_EXPLICIT);
@@ -75,7 +75,7 @@ class InstantExtendedTest : public InProcessBrowserTest,
 
   void PressEnterAndWaitForLoadStop() {
     content::TestNavigationObserver observer(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
     BrowserWindow::FromBrowser(browser())
         ->GetLocationBar()
         ->GetOmniboxController()
@@ -96,22 +96,22 @@ IN_PROC_BROWSER_TEST_F(InstantExtendedTest, NoMostVisitedChangedOnTabSwitch) {
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
 
   // Make sure new tab received the onmostvisitedchanged event once.
   content::WebContents* active_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   UpdateSearchState(active_tab);
   EXPECT_EQ(1, on_most_visited_change_calls_);
 
   // Activate the previous tab.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // Switch back to new tab.
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
 
   // Confirm that new tab got no onmostvisitedchanged event.
-  active_tab = browser()->tab_strip_model()->GetActiveWebContents();
+  active_tab = browser()->GetTabStripModel()->GetActiveWebContents();
   UpdateSearchState(active_tab);
   EXPECT_EQ(1, on_most_visited_change_calls_);
 }
@@ -131,20 +131,20 @@ IN_PROC_BROWSER_TEST_F(InstantExtendedTest, MAYBE_NavigateBackToNTP) {
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
 
   SetOmniboxText("flowers");
   PressEnterAndWaitForLoadStop();
 
   // Navigate back to NTP.
   content::WebContents* active_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(active_tab->GetController().CanGoBack());
   content::TestNavigationObserver back_observer(active_tab);
   active_tab->GetController().GoBack();
   back_observer.Wait();
 
-  active_tab = browser()->tab_strip_model()->GetActiveWebContents();
+  active_tab = browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(search::IsInstantNTP(active_tab));
 }
 
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(InstantExtendedTest,
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   content::WebContents* active_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   UpdateSearchState(active_tab);
   EXPECT_EQ(1, on_most_visited_change_calls_);
 
@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(InstantExtendedTest,
   PressEnterAndWaitForLoadStop();
 
   // Navigate back to NTP.
-  active_tab = browser()->tab_strip_model()->GetActiveWebContents();
+  active_tab = browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(active_tab->GetController().CanGoBack());
   content::TestNavigationObserver back_observer(active_tab);
   active_tab->GetController().GoBack();
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(InstantExtendedTest,
 
   // Verify that onmostvisitedchange event is dispatched when we navigate from
   // SRP to NTP.
-  active_tab = browser()->tab_strip_model()->GetActiveWebContents();
+  active_tab = browser()->GetTabStripModel()->GetActiveWebContents();
   UpdateSearchState(active_tab);
   EXPECT_EQ(1, on_most_visited_change_calls_);
 }
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(InstantExtendedTest, Referrer) {
 
   // Simulate going to a result.
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::NavigateToURLFromRenderer(contents, result_url));
 
   EXPECT_TRUE(content::WaitForLoadStop(contents));

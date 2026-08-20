@@ -9,8 +9,8 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -71,8 +71,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfActivationTrackerBrowserTest,
   content::WaitForLoadStop(target_contents);
 
   // Ensure Tab 0 is still active.
-  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 0);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+  ASSERT_EQ(browser()->GetTabStripModel()->active_index(), 0);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
 
   // Attach the activation tracker to Tab 2.
   SendTabToSelfActivationTracker::CreateForWebContents(target_contents,
@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfActivationTrackerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfActivationTrackerBrowserTest,
                        RestoreTrackerOnRestart) {
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
 
   // Expect at least 3 tabs.
   ASSERT_GE(tab_strip->count(), 3);
@@ -136,8 +136,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfActivationTrackerBrowserTest,
   content::WaitForLoadStop(target_contents);
 
   // Ensure Tab 0 is still active.
-  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 0);
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+  ASSERT_EQ(browser()->GetTabStripModel()->active_index(), 0);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
 
   // Attach the activation tracker to Tab 2.
   SendTabToSelfActivationTracker::CreateForWebContents(target_contents,
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfActivationTrackerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfActivationTrackerBrowserTest,
                        RestoreAndCloseTrackerOnRestart) {
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
 
   // Expect at least 3 tabs.
   ASSERT_GE(tab_strip->count(), 3);

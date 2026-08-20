@@ -6,7 +6,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"

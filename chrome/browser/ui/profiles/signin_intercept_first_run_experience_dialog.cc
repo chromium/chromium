@@ -19,8 +19,8 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/profiles/profile_customization_synced_theme_waiter.h"
@@ -422,7 +422,7 @@ void SigninInterceptFirstRunExperienceDialog::
 }
 
 SigninInterceptFirstRunExperienceDialog::
-    SigninInterceptFirstRunExperienceDialog(Browser* browser,
+    SigninInterceptFirstRunExperienceDialog(BrowserWindowInterface* browser,
                                             const CoreAccountId& account_id,
                                             bool is_forced_intercept,
                                             base::OnceClosure on_close_callback)

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/signin/signin_view_controller.h"
+
 #include <optional>
 #include <utility>
 
@@ -17,13 +19,12 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
-#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -67,7 +68,7 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kEmailConfirmationCompleted);
 // Synchronously waits for the Sync confirmation to be closed.
 class SyncConfirmationClosedObserver : public LoginUIService::Observer {
  public:
-  explicit SyncConfirmationClosedObserver(Browser* browser)
+  explicit SyncConfirmationClosedObserver(BrowserWindowInterface* browser)
       : browser_(browser) {
     DCHECK(browser_);
     login_ui_service_observation_.Observe(
@@ -89,7 +90,7 @@ class SyncConfirmationClosedObserver : public LoginUIService::Observer {
     run_loop_.Quit();
   }
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
   base::RunLoop run_loop_;
   base::ScopedObservation<LoginUIService, LoginUIService::Observer>
       login_ui_service_observation_{this};
@@ -115,7 +116,7 @@ class SignInViewControllerBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest, Accelerators) {
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
   browser()->GetFeatures().signin_view_controller()->ShowSignin(
       signin_metrics::AccessPoint::kSettings);
 
@@ -133,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest, Accelerators) {
 
   wait_for_new_tab.Wait();
 
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
 }
 
 class SignInViewControllerInteractiveBrowserTest

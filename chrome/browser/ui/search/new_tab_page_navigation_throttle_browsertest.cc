@@ -5,7 +5,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
@@ -56,7 +56,7 @@ class NewTabPageNavigationThrottleTest : public InProcessBrowserTest {
   }
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetWebContentsAt(0);
+    return browser()->GetTabStripModel()->GetWebContentsAt(0);
   }
 
   net::EmbeddedTestServer* https_test_server() { return &https_test_server_; }
@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleNoBrowserInitiatedLinksTest,
   EXPECT_EQ(ntp_url, NavigateToNewTabPage());
 
   const GURL page_url = https_test_server()->GetURL("/simple.html");
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   OverrideNavigationParamsObserver observer(web_contents);
   EXPECT_TRUE(content::NavigateToURLFromRenderer(web_contents, page_url));
 
@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleBrowserInitiatedLinksTest,
   EXPECT_EQ(ntp_url, NavigateToNewTabPage());
 
   const GURL page_url = https_test_server()->GetURL("/simple.html");
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   OverrideNavigationParamsObserver observer(web_contents);
   EXPECT_TRUE(content::NavigateToURLFromRenderer(web_contents, page_url));
 
@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleNoBrowserInitiatedLinksTest,
   EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, NavigateToNewTabPage());
 
   const GURL page_url = https_test_server()->GetURL("/simple.html");
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   OverrideNavigationParamsObserver observer(web_contents);
   EXPECT_TRUE(content::NavigateToURLFromRenderer(web_contents, page_url));
 
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleBrowserInitiatedLinksTest,
   EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, NavigateToNewTabPage());
 
   const GURL page_url = https_test_server()->GetURL("/simple.html");
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   OverrideNavigationParamsObserver observer(web_contents);
   EXPECT_TRUE(content::NavigateToURLFromRenderer(web_contents, page_url));
 
@@ -378,7 +378,7 @@ class NewTabPageNavigationThrottleFencedFrameTest
   }
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
  private:

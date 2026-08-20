@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
 #include "google_apis/gaia/core_account_id.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 // First run experience modal dialog shown after the user created a new profile
 // through the signin interception.
@@ -66,7 +66,7 @@ class SigninInterceptFirstRunExperienceDialog
   };
 
   explicit SigninInterceptFirstRunExperienceDialog(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const CoreAccountId& account_id,
       bool is_forced_intercept,
       base::OnceClosure on_close_callback);
@@ -126,7 +126,7 @@ class SigninInterceptFirstRunExperienceDialog
   void ProfileCustomizationCloseOnCompletion(
       ProfileCustomizationHandler::CustomizationResult customization_result);
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
   const CoreAccountId account_id_;
   const bool is_forced_intercept_;
 
