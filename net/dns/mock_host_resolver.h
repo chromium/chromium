@@ -350,6 +350,10 @@ class MockHostResolverBase : public HostResolver {
   // Returns the priority of the request with the given id.
   RequestPriority request_priority(size_t id);
 
+  // Returns the number of times ChangeRequestPriority() has been called for the
+  // request with the given id.
+  size_t num_change_request_priority_calls(size_t id);
+
   // Returns NetworkAnonymizationKey of the request with the given id.
   const NetworkAnonymizationKey& request_network_anonymization_key(size_t id);
 

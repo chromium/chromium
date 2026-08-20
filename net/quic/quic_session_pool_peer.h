@@ -123,6 +123,11 @@ class QuicSessionPoolPeer {
       QuicSessionPool* pool,
       const QuicSessionKey& session_key);
 
+  static void ActivateAndMapSessionToAliasKey(
+      QuicSessionPool* pool,
+      const QuicSessionAliasKey& key,
+      QuicChromiumClientSession* session);
+
   static void SetAlarmFactory(
       QuicSessionPool* pool,
       std::unique_ptr<quic::QuicAlarmFactory> alarm_factory);

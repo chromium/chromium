@@ -238,6 +238,10 @@ class MockHostResolverBase::RequestBase {
 
   RequestPriority priority() const { return priority_; }
 
+  size_t num_change_request_priority_calls() const {
+    return num_change_request_priority_calls_;
+  }
+
   void set_id(size_t id) {
     DCHECK_GT(id, 0u);
     DCHECK_EQ(0u, id_);
@@ -288,6 +292,7 @@ class MockHostResolverBase::RequestBase {
   const NetworkAnonymizationKey network_anonymization_key_;
   const ResolveHostParameters parameters_;
   RequestPriority priority_;
+  size_t num_change_request_priority_calls_ = 0;
   int host_resolver_flags_;
 
   AddressList address_results_;
@@ -384,6 +389,7 @@ class MockHostResolverBase::RequestImpl
   }
 
   void ChangeRequestPriority(RequestPriority priority) override {
+    num_change_request_priority_calls_++;
     priority_ = priority;
   }
 
@@ -462,6 +468,7 @@ class MockHostResolverBase::ServiceEndpointRequestImpl
   }
 
   void ChangeRequestPriority(RequestPriority priority) override {
+    num_change_request_priority_calls_++;
     priority_ = priority;
   }
 
@@ -992,6 +999,11 @@ const HostResolver::Host& MockHostResolverBase::request_full_host(size_t id) {
 RequestPriority MockHostResolverBase::request_priority(size_t id) {
   DCHECK(request(id));
   return request(id)->priority();
+}
+
+size_t MockHostResolverBase::num_change_request_priority_calls(size_t id) {
+  DCHECK(request(id));
+  return request(id)->num_change_request_priority_calls();
 }
 
 const NetworkAnonymizationKey&

@@ -179,6 +179,13 @@ QuicSessionPoolPeer::DetermineQuicSessionEstablishmentReasonForTesting(
   return pool->DetermineQuicSessionEstablishmentReason(session_key);
 }
 
+void QuicSessionPoolPeer::ActivateAndMapSessionToAliasKey(
+    QuicSessionPool* pool,
+    const QuicSessionAliasKey& key,
+    QuicChromiumClientSession* session) {
+  pool->ActivateAndMapSessionToAliasKey(session, key, std::set<std::string>());
+}
+
 void QuicSessionPoolPeer::SetAlarmFactory(
     QuicSessionPool* pool,
     std::unique_ptr<quic::QuicAlarmFactory> alarm_factory) {
