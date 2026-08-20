@@ -27,6 +27,8 @@ DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kContentTop);
 DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kContentLeft);
 DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kContentBottom);
 DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations, kContentWidth);
+DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(SidePanelAnimations,
+                                        kContentScrimOpacity);
 
 SidePanelAnimations::SidePanelAnimations() {
   SetSequenceParams(kSidePanel, Persist(kPanelWidth), Persist(kMainAreaShadow));
@@ -53,9 +55,6 @@ SidePanelAnimations::GroupInfos SidePanelAnimations::GenerateAnimations()
   const gfx::Tween::Type tween = use_flyover
                                      ? gfx::Tween::Type::ACCEL_80_DECEL_20
                                      : gfx::Tween::Type::ACCEL_45_DECEL_88;
-  const gfx::Tween::Type content_transition_tween =
-      gfx::Tween::Type::ACCEL_45_DECEL_88;
-
   const auto show_shadow_sequence =
       Sequence(kMainAreaShadow, StartingValue(0.0),
                Segment(StartMs(150), LengthMs(100), ToValue(1.0)));
@@ -68,15 +67,18 @@ SidePanelAnimations::GroupInfos SidePanelAnimations::GenerateAnimations()
       Motion(kOpen, TotalDurationMs(kDefaultAnimationMs), tween,
              Animate(kPanelWidth, FromValue(0.0), ToValue(1.0)),
              show_shadow_sequence),
-      Motion(kOpenWithContentTransition, TotalDurationMs(kDefaultAnimationMs),
-             content_transition_tween,
-             Snap(kPanelWidth, FromValue(0.0), ToValue(1.0), AtPercent(0.0)),
-             Snap(kContentTop, FromValue(0.0), ToValue(1.0), AtPercent(0.0)),
-             Snap(kContentBottom, FromValue(0.0), ToValue(1.0), AtPercent(0.0)),
-             Animate(kContentLeft, FromValue(0.0), ToValue(1.0)),
-             Sequence(kContentWidth, StartingValue(0.0),
-                      Segment(StartMs(0), LengthMs(200), ToValue(1.0),
-                              content_transition_tween)),
+      Motion(kOpenWithContentTransition, TotalDurationMs(400),
+             gfx::Tween::Type::LINEAR,
+             Snap(kContentTop, FromValue(0.0), ToValue(1.0), AtMs(100)),
+             Snap(kContentBottom, FromValue(0.0), ToValue(1.0), AtMs(100)),
+             Snap(kContentLeft, FromValue(0.0), ToValue(1.0), AtMs(100)),
+             Snap(kContentWidth, FromValue(0.0), ToValue(1.0), AtMs(100)),
+             Snap(kPanelWidth, FromValue(0.0), ToValue(1.0), AtMs(100)),
+             Sequence(kContentScrimOpacity, StartingValue(0.0),
+                      Segment(StartMs(0), LengthMs(100), ToValue(1.0),
+                              gfx::Tween::Type::ACCEL_30_DECEL_20_85),
+                      Segment(StartMs(150), LengthMs(100), ToValue(0.0),
+                              gfx::Tween::Type::ACCEL_5_70_DECEL_90)),
              show_shadow_sequence),
       Motion(kClose, TotalDurationMs(kDefaultAnimationMs), tween,
              Animate(kPanelWidth, FromValue(1.0), ToValue(0.0)),

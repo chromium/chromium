@@ -179,9 +179,6 @@ class SidePanel : public views::AccessiblePaneView,
 
   // Subscription for animation updates.
   base::CallbackListSubscription animation_subscription_;
-
-  // Cache of recent animation values.
-  std::map<BrowserAnimationSequence, double> last_animation_values_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_H_

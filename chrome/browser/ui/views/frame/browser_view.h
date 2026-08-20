@@ -1230,6 +1230,7 @@ class BrowserView : public BrowserWindow,
   // This is currently not used on macOS where the platform draws a native
   // scrim for window modals (NSWindow sheet).
   raw_ptr<ScrimView> window_scrim_view_ = nullptr;
+  raw_ptr<ScrimView> side_panel_content_transition_scrim_view_ = nullptr;
 
   // Anchor point for help bubbles and other dialogs that want to reliably
   // anchor outside the content area of the window.

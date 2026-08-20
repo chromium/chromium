@@ -93,6 +93,7 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
   VerticalTabStripAnimation CalculateVerticalTabStripAnimation();
   int GetCollapsedVerticalTabStripRelativeTop() const;
   SeparatorInfo CalculateSeparatorInfo() const;
+  double CalculateScrimOpacity() const;
 
   std::unique_ptr<TransientLayoutData> layout_data_;
 

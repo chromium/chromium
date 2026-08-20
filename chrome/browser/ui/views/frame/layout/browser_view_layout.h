@@ -60,6 +60,7 @@ struct BrowserViewLayoutViews {
   // NOTE: If you add a view, try to add it as a views::View, which makes
   // testing much easier.
   raw_ptr<views::View> window_scrim = nullptr;
+  raw_ptr<views::View> side_panel_content_transition_scrim = nullptr;
   raw_ptr<views::View> main_background_region = nullptr;
   raw_ptr<views::View> main_shadow_overlay = nullptr;
   raw_ptr<views::View> top_container = nullptr;

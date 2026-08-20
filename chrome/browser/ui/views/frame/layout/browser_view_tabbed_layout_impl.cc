@@ -9,17 +9,20 @@
 #include <optional>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
+#include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/animations/side_panel_animations.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners.h"
@@ -45,6 +48,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
@@ -178,6 +182,7 @@ struct BrowserViewTabbedLayoutImpl::TransientLayoutData {
   HorizontalLayout horizontal_layout;
   VerticalTabStripAnimation vertical_tab_strip_animation;
   SeparatorInfo separator_info;
+  double scrim_opacity = 0.0;
 };
 
 BrowserViewTabbedLayoutImpl::BrowserViewTabbedLayoutImpl(
@@ -233,6 +238,14 @@ BrowserViewTabbedLayoutImpl::CalculateSeparatorInfo() const {
   }
 
   return info;
+}
+
+double BrowserViewTabbedLayoutImpl::CalculateScrimOpacity() const {
+  auto* const controller = delegate().GetAnimationController();
+  const std::optional<double> animation_value =
+      controller->GetCurrentValue(SidePanelAnimations::kSidePanel,
+                                  SidePanelAnimations::kContentScrimOpacity);
+  return animation_value.value_or(0.0);
 }
 
 // Inset the leading edge of the tabstrip by the size of the swoop of the
@@ -1243,6 +1256,29 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
         transition_button_opacity);
   }
 
+  if (IsParentedTo(views().side_panel_content_transition_scrim,
+                   views().browser_view)) {
+    const bool is_scrim_visible = layout_data_->scrim_opacity > 0.0;
+    gfx::Rect scrim_bounds;
+    if (is_scrim_visible) {
+      int scrim_top = params.visual_client_area.y();
+      if (!horizontal_layout.force_top_container_to_top &&
+          IsParentedTo(views().top_container, views().browser_view)) {
+        // The top container was already laid out, so we can use its top edge.
+        scrim_top =
+            layout.GetBoundsFor(views().top_container, views().browser_view)
+                ->y();
+      }
+
+      scrim_bounds =
+          gfx::Rect(unclipped_contents_region.x(), scrim_top,
+                    unclipped_contents_region.width(),
+                    browser_params.visual_client_area.bottom() - scrim_top);
+    }
+    layout.AddChild(views().side_panel_content_transition_scrim, scrim_bounds,
+                    is_scrim_visible);
+  }
+
   return layout;
 }
 
@@ -1391,6 +1427,7 @@ void BrowserViewTabbedLayoutImpl::DoPreLayoutComputations(
   layout_data_->vertical_tab_strip_animation =
       CalculateVerticalTabStripAnimation();
   layout_data_->separator_info = CalculateSeparatorInfo();
+  layout_data_->scrim_opacity = CalculateScrimOpacity();
 }
 
 void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
@@ -1651,6 +1688,9 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     toolbar_background->SetCornerColor(frame_color);
     top_container_background->SetCornerColor(frame_color);
   }
+
+  views().side_panel_content_transition_scrim->layer()->SetOpacity(
+      layout_data_->scrim_opacity);
 
   // Clip the side panel so it doesn't run off the edge of the browser or into
   // the vertical tab strip.

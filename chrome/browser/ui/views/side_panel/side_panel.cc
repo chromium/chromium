@@ -496,23 +496,7 @@ void SidePanel::OnAnimationProgressed(
     case BrowserAnimationUpdate::kStarted:
       break;
     case BrowserAnimationUpdate::kProgressed:
-      if (const auto width = controller->GetCurrentValue(
-              kAnimationGroup, SidePanelAnimations::kPanelWidth)) {
-        if (last_animation_values_[SidePanelAnimations::kPanelWidth] !=
-            *width) {
-          last_animation_values_[SidePanelAnimations::kPanelWidth] = *width;
-          InvalidateLayout();
-        }
-      }
-      if (const auto content_left = controller->GetCurrentValue(
-              kAnimationGroup, SidePanelAnimations::kContentLeft)) {
-        if (last_animation_values_[SidePanelAnimations::kContentLeft] !=
-            *content_left) {
-          last_animation_values_[SidePanelAnimations::kContentLeft] =
-              *content_left;
-          browser_view_->InvalidateLayout();
-        }
-      }
+      InvalidateLayout();
       break;
     case BrowserAnimationUpdate::kEnded: {
       const auto motion = controller->GetCurrentMotion(kAnimationGroup);
@@ -534,11 +518,9 @@ void SidePanel::OnAnimationProgressed(
         views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
             kOpenAnimationCompletedEvent, this);
       }
-      last_animation_values_.clear();
       break;
     }
     case BrowserAnimationUpdate::kCanceled:
-      last_animation_values_.clear();
       break;
   }
 }

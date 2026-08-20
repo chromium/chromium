@@ -27,6 +27,7 @@ class SidePanelAnimations : public CachingBrowserAnimationProvider {
   DECLARE_CLASS_BROWSER_ANIMATION_SEQUENCE(kContentBottom);
   DECLARE_CLASS_BROWSER_ANIMATION_SEQUENCE(kContentLeft);
   DECLARE_CLASS_BROWSER_ANIMATION_SEQUENCE(kContentWidth);
+  DECLARE_CLASS_BROWSER_ANIMATION_SEQUENCE(kContentScrimOpacity);
 
   // CachingBrowserAnimationProvider:
   GroupInfos GenerateAnimations() const override;
