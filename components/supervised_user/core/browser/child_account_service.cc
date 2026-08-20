@@ -53,13 +53,13 @@ ChildAccountService::ChildAccountService(
       BindRepeating(&ChildAccountService::OnSupervisionStatusChanged,
                     base::Unretained(this)));
   OnSupervisionStatusChanged();
+
+  identity_manager_observer_.Observe(identity_manager);
 }
 
 ChildAccountService::~ChildAccountService() = default;
 
 void ChildAccountService::Init() {
-  identity_manager_->AddObserver(this);
-
   std::move(check_user_child_status_callback_)
       .Run(supervised_user::IsSubjectToParentalControls(user_prefs_.get()));
 
@@ -76,7 +76,7 @@ void ChildAccountService::Init() {
 }
 
 void ChildAccountService::Shutdown() {
-  identity_manager_->RemoveObserver(this);
+  identity_manager_observer_.Reset();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

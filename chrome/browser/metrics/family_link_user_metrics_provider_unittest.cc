@@ -77,7 +77,7 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
         /*policy_service=*/std::nullopt, /*shared_url_loader_factory=*/nullptr);
 
     // Services are lazily created, so we need to access them to force their
-    // creation.
+    // creation and initialization.
     CHECK(SupervisedUserServiceFactory::GetForProfile(profile));
     CHECK(ChildAccountServiceFactory::GetForProfile(profile));
 
@@ -91,6 +91,10 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
         is_subject_to_parental_controls);
     mutator.set_is_opted_in_to_parental_supervision(
         is_opted_in_to_parental_supervision);
+    account = AccountInfo::Builder(account)
+                  .SetIsChildAccount(
+                      signin::TriboolFromBool(is_subject_to_parental_controls))
+                  .Build();
     signin::UpdateAccountInfoForAccount(
         IdentityManagerFactory::GetForProfile(profile), account);
 

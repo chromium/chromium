@@ -111,7 +111,19 @@ class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
     return source->weak_factory_.GetWeakPtr();
   }
 
+  // Creates a primary account that has consistent child status
+  CoreAccountInfo MakePrimaryChildAccountAvailable() {
+    AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
+    account = AccountInfo::Builder(account)
+                  .SetIsChildAccount(signin::TriboolFromBool(true))
+                  .Build();
+    identity_test_env()->UpdateAccountInfoForAccount(account);
+    return identity_test_env()->SetPrimaryAccount(
+        kTestEmail, signin::ConsentLevel::kSignin);
+  }
+
   kidsmanagement::FamilyRole role_;
+
  private:
   // Creates a Java instance of FamilyInfoFeedbackSource.
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObjectForTesting() {
@@ -130,10 +142,7 @@ class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
 // Tests that the parental control sites value for a child user is recorded.
 TEST_P(FamilyInfoFeedbackSourceForChildFilterBehaviorTest,
        GetChildFilteringBehaviour) {
-  CoreAccountInfo primary_account =
-      identity_test_env()->MakePrimaryAccountAvailable(
-          kTestEmail, signin::ConsentLevel::kSignin);
-
+  CoreAccountInfo primary_account = MakePrimaryChildAccountAvailable();
   supervised_user_test_util::SetWebFilterType(profile(), GetParam());
 
   kidsmanagement::ListMembersResponse members =
