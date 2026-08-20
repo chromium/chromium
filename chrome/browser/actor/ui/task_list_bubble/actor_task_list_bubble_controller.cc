@@ -154,8 +154,8 @@ void ActorTaskListBubbleController::OnTaskRowClicked(actor::TaskId task_id) {
     last_tab->GetBrowserWindowInterface()->GetWindow()->Activate();
     if (auto* glic_service =
             glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile)) {
-      glic_service->ToggleUI(browser_, /*prevent_close=*/true,
-                             glic::mojom::InvocationSource::kActorTaskIcon);
+      glic_service->ShowUI(browser_,
+                           glic::mojom::InvocationSource::kActorTaskIcon);
       if (auto* instance = glic_service->GetInstanceForTab(last_tab)) {
         instance->NotifyActorTaskListRowClicked(task_id.value());
       }
