@@ -102,6 +102,7 @@
           'Google Chrome',
         ],
         'win_args': [
+          '--exit-after-n-crashes-or-timeouts=2',
           '--additional-driver-flag=--enable-features=OnDeviceModelGpuAudioInput:on_device_model_audio_input_vram_min/5000',
         ],
         'swarming': {
@@ -204,6 +205,7 @@
           'Google Chrome',
         ],
         'win_args': [
+          '--exit-after-n-crashes-or-timeouts=2',
           '--additional-driver-flag=--enable-features=OnDeviceModelGpuAudioInput:on_device_model_audio_input_vram_min/5000',
         ],
         'swarming': {
@@ -303,6 +305,7 @@
           'Google Chrome',
         ],
         'win_args': [
+          '--exit-after-n-crashes-or-timeouts=2',
           '--additional-driver-flag=--enable-features=OnDeviceModelGpuAudioInput:on_device_model_audio_input_vram_min/5000',
         ],
         'swarming': {

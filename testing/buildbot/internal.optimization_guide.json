@@ -2665,6 +2665,7 @@
           "--release",
           "--timeout-multiplier=5",
           "--child-processes=1",
+          "--exit-after-n-crashes-or-timeouts=2",
           "--additional-driver-flag=--enable-features=OnDeviceModelGpuAudioInput:on_device_model_audio_input_vram_min/5000",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
@@ -3410,6 +3411,7 @@
           "--release",
           "--timeout-multiplier=5",
           "--child-processes=1",
+          "--exit-after-n-crashes-or-timeouts=2",
           "--additional-driver-flag=--enable-features=OnDeviceModelGpuAudioInput:on_device_model_audio_input_vram_min/5000",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
