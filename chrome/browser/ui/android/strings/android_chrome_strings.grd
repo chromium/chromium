@@ -3599,7 +3599,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Pick up where you left off
       </message>
       <message name="IDS_SIGNIN_DEEP_LINK_FLOW_SIGNIN_SUBTITLE" desc="Subtitle of the screen shown when an signed-out user starts a sigin flow with a signin deep link.">
-        You scanned a QR code to sign in to Chrome. Confirm that you want to get the passwords, bookmarks, and more from this profile.
+        You scanned a QR code to sign in to Chrome. You’ll get the passwords, bookmarks, and more from this account.
       </message>
       <message name="IDS_SIGNIN_DEEP_LINK_FLOW_SIGNIN_DISMISS_BUTTON" desc="Text of the dismiss button shown on the screen displayed when an signed-out user starts a sigin flow with a signin deep link.">
         Stay signed out
