@@ -462,7 +462,11 @@ VariationsService::VariationsService(
 #endif
 }
 
-VariationsService::~VariationsService() = default;
+VariationsService::~VariationsService() {
+  for (auto& observer : observer_list_) {
+    observer.OnVariationsServiceDestroyed();
+  }
+}
 
 void VariationsService::PerformPreMainMessageLoopStartup() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

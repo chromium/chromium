@@ -96,6 +96,9 @@ class VariationsService
     // variations server.
     virtual void OnSeedFetched() {}
 
+    // Called when the VariationsService is being destroyed.
+    virtual void OnVariationsServiceDestroyed() {}
+
    protected:
     virtual ~Observer() = default;
   };

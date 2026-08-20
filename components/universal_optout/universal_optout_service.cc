@@ -101,7 +101,7 @@ UniversalOptOutService::UniversalOptOutService(
     signin::IdentityManager& identity_manager,
     const base::Clock& clock)
     : pref_service_(pref_service),
-      variations_service_(variations_service),
+      variations_service_(&variations_service),
       identity_manager_(identity_manager),
       clock_(clock) {
   variations_service_observation_.Observe(&variations_service);
@@ -113,10 +113,16 @@ UniversalOptOutService::~UniversalOptOutService() = default;
 
 void UniversalOptOutService::Shutdown() {
   variations_service_observation_.Reset();
+  variations_service_ = nullptr;
 }
 
 void UniversalOptOutService::OnSeedFetched() {
   RecordLocationAndUpdateEligibility();
+}
+
+void UniversalOptOutService::OnVariationsServiceDestroyed() {
+  variations_service_observation_.Reset();
+  variations_service_ = nullptr;
 }
 
 bool UniversalOptOutService::IsEligible() const {
@@ -142,6 +148,10 @@ void UniversalOptOutService::RecordLocationAndUpdateEligibility() {
 void UniversalOptOutService::RecordLocation(
     base::Time current_day,
     ScopedDictPrefUpdate& history_update) {
+  if (!variations_service_) {
+    return;
+  }
+
   // TODO(b/538460105): Check RegionalCapabilitiesService country matches the
   // target location.
   std::string geo_level1 = variations_service_->GetLatestGeoLevel1();
