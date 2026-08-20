@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -15,12 +16,14 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_request_utils.h"
@@ -451,22 +454,29 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest, DownloadSetsTargetNetwork) {
       /*port=*/0, GetLoopbackAddressForNetwork(network)));
   GURL url = embedded_test_server()->GetURL("127.0.0.1", "/title1.html");
 
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir download_dir;
+  ASSERT_TRUE(download_dir.CreateUniqueTempDir());
+
   content::DownloadManager* download_manager =
       GetProfile()->GetDownloadManager();
   auto params =
       content::DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
           web_contents.get(), url, TRAFFIC_ANNOTATION_FOR_TESTS);
-  // Necessary to prevent the download to trigger checks for whether the
+  params->set_file_path(
+      download_dir.GetPath().AppendASCII("test_download.html"));
+  params->set_transient(true);
+  // Necessary to prevent the download from triggering checks for whether the
   // download is allowed.
   params->set_content_initiated(false);
-  download_manager->DownloadUrl(std::move(params));
-  // TODO(crbug.com/543377467): Wait for the download to complete and check it
-  // succeeds.
 
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return test_client.CountBoundNetwork(URLLoaderFactoryType::kDownload,
-                                         network) == 1;
-  }));
+  content::DownloadTestObserverTerminal download_observer(
+      download_manager, 1,
+      content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
+  download_manager->DownloadUrl(std::move(params));
+  download_observer.WaitForFinished();
+  EXPECT_EQ(1u, download_observer.NumDownloadsSeenInState(
+                    download::DownloadItem::COMPLETE));
 
   VerifyFactoryCounts(
       test_client, network,
