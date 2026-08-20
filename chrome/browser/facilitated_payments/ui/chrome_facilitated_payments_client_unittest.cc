@@ -352,3 +352,16 @@ TEST_F(ChromeFacilitatedPaymentsClientTest,
 
   EXPECT_FALSE(base_client().IsInChromeCustomTabMode());
 }
+
+// Test that initializing ChromeFacilitatedPaymentsClient creates a default
+// PixAccountLinkingManager that handles flow initialization without crashing.
+TEST_F(ChromeFacilitatedPaymentsClientTest,
+       PixAccountLinkingManager_InitializedByDefault) {
+  const url::Origin kPageOrigin =
+      url::Origin::Create(GURL("https://example.com"));
+  auto client = std::make_unique<ChromeFacilitatedPaymentsClient>(
+      web_contents(), &optimization_guide_decider_);
+
+  EXPECT_NO_FATAL_FAILURE(static_cast<payments::facilitated::FacilitatedPaymentsClient&>(*client)
+      .InitPixAccountLinkingFlow(kPageOrigin));
+}

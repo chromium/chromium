@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/facilitated_payments/android/device_delegate_android.h"
+#include "components/facilitated_payments/content/browser/facilitated_payments_api_client_factory.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/browser/payment_link_manager.h"
@@ -50,6 +51,10 @@ ChromeFacilitatedPaymentsClient::ChromeFacilitatedPaymentsClient(
       optimization_guide_decider_(optimization_guide_decider),
       is_cct_callback_(std::move(is_cct_callback)),
       device_delegate_(web_contents) {
+  pix_account_linking_manager_ =
+      std::make_unique<payments::facilitated::PixAccountLinkingManager>(
+          this, payments::facilitated::GetFacilitatedPaymentsApiClientCreator(
+                    web_contents->GetPrimaryMainFrame()->GetGlobalId()));
   RegisterAllowlists();
 }
 
