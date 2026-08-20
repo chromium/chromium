@@ -200,6 +200,8 @@ class ProfileAttributesStorage {
       const base::FilePath& profile_path) const;
   void NotifyProfileManagementIdChanged(
       const base::FilePath& profile_path) const;
+  void NotifyProfileIsGlicEligibleChanged(
+      const base::FilePath& profile_path) const;
 
   // Returns a pref dictionary key of a profile at `profile_path`.
   std::string StorageKeyFromProfilePath(

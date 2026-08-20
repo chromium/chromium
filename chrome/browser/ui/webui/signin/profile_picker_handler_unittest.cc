@@ -452,3 +452,49 @@ TEST_F(ProfilePickerHandlerGlicVersionTest, FilteringProfileEntries) {
 
   InitializeMainViewAndVerifyProfileList({eligible_1, eligible_2});
 }
+
+TEST_F(ProfilePickerHandlerGlicVersionTest, ChangeGlicEligibility) {
+  ProfileAttributesEntry* eligible_1 = CreateTestingProfile("E1");
+  eligible_1->SetIsGlicEligible(true);
+  ProfileAttributesEntry* ineligible_1 = CreateTestingProfile("I1");
+  ineligible_1->SetIsGlicEligible(false);
+
+  InitializeMainViewAndVerifyProfileList({eligible_1});
+  web_ui()->ClearTrackedCalls();
+
+  // Test that regular updates that trigger PushProfilesList() work.
+  eligible_1->SetLocalProfileName(u"E1 Renamed", false);
+  VerifyProfileListWasPushed({eligible_1});
+  web_ui()->ClearTrackedCalls();
+
+  // Profile becomes Glic eligible: added to list and pushed.
+  ineligible_1->SetIsGlicEligible(true);
+  VerifyProfileListWasPushed({eligible_1, ineligible_1});
+  web_ui()->ClearTrackedCalls();
+
+  // Test that regular updates that trigger PushProfilesList() work with
+  // multiple profiles.
+  ineligible_1->SetLocalProfileName(u"I1 Renamed", false);
+  VerifyProfileListWasPushed({eligible_1, ineligible_1});
+  web_ui()->ClearTrackedCalls();
+
+  // Profile becomes ineligible: removed from list.
+  ineligible_1->SetIsGlicEligible(false);
+  VerifyProfileWasRemoved(ineligible_1->GetPath());
+  web_ui()->ClearTrackedCalls();
+
+  // Trigger PushProfilesList() after removal to verify profiles_order_ remains
+  // consistent.
+  eligible_1->SetLocalProfileName(u"E1 Renamed Again", false);
+  VerifyProfileListWasPushed({eligible_1});
+  web_ui()->ClearTrackedCalls();
+
+  // Last profile becomes ineligible: removed from list.
+  eligible_1->SetIsGlicEligible(false);
+  VerifyProfileWasRemoved(eligible_1->GetPath());
+  web_ui()->ClearTrackedCalls();
+
+  // Trigger PushProfilesList() on empty list to verify no crash.
+  eligible_1->SetLocalProfileName(u"E1 Final", false);
+  VerifyProfileListWasPushed({});
+}

@@ -654,7 +654,10 @@ int ProfileAttributesEntry::GetAiSubscriptionTier() const {
 }
 
 void ProfileAttributesEntry::SetIsGlicEligible(bool value) {
-  SetBool(kIsGlicEligible, value);
+  if (SetBool(kIsGlicEligible, value)) {
+    profile_attributes_storage_->NotifyProfileIsGlicEligibleChanged(
+        profile_path_);
+  }
 }
 
 void ProfileAttributesEntry::SetAiSubscriptionTier(int tier) {

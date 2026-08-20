@@ -947,6 +947,13 @@ void ProfileAttributesStorage::NotifyProfileManagementIdChanged(
   }
 }
 
+void ProfileAttributesStorage::NotifyProfileIsGlicEligibleChanged(
+    const base::FilePath& profile_path) const {
+  for (auto& observer : observer_list_) {
+    observer.OnProfileIsGlicEligibleChanged(profile_path);
+  }
+}
+
 std::string ProfileAttributesStorage::StorageKeyFromProfilePath(
     const base::FilePath& profile_path) const {
   DCHECK_EQ(user_data_dir_, profile_path.DirName());

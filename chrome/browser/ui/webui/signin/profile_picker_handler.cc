@@ -893,8 +893,9 @@ ProfilePickerHandler::GetProfilesAttributesForDisplay() {
   // Vector of nullptr entries.
   std::vector<ProfileAttributesEntry*> entries(number_of_profiles);
   for (ProfileAttributesEntry* entry : ordered_entries) {
-    DCHECK(profiles_order_.find(entry->GetPath()) != profiles_order_.end());
-    size_t index = profiles_order_[entry->GetPath()];
+    const auto it = profiles_order_.find(entry->GetPath());
+    DCHECK(it != profiles_order_.end());
+    size_t index = it->second;
     DCHECK_LT(index, number_of_profiles);
     DCHECK(!entries[index]);
     entries[index] = entry;
@@ -966,6 +967,9 @@ void ProfilePickerHandler::OnProfileAdded(const base::FilePath& profile_path) {
   if (entry->IsOmitted()) {
     return;
   }
+  if (is_glic_version_ && !entry->IsGlicEligible()) {
+    return;
+  }
 
   AddProfileToListAndPushUpdates(profile_path);
 }
@@ -984,7 +988,7 @@ void ProfilePickerHandler::OnProfileIsOmittedChanged(
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile_path);
   CHECK(entry);
-  if (entry->IsOmitted()) {
+  if (entry->IsOmitted() || (is_glic_version_ && !entry->IsGlicEligible())) {
     RemoveProfileFromListAndPushUpdates(profile_path);
   } else {
     AddProfileToListAndPushUpdates(profile_path);
@@ -1016,6 +1020,28 @@ void ProfilePickerHandler::OnProfileSupervisedUserIdChanged(
     const base::FilePath& profile_path) {
   MaybeUpdateGuestMode();
   PushProfilesList();
+}
+
+void ProfilePickerHandler::OnProfileIsGlicEligibleChanged(
+    const base::FilePath& profile_path) {
+  if (!is_glic_version_) {
+    return;
+  }
+
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path);
+  CHECK(entry);
+  if (entry->IsOmitted()) {
+    return;
+  }
+
+  if (entry->IsGlicEligible()) {
+    AddProfileToListAndPushUpdates(profile_path);
+  } else {
+    RemoveProfileFromListAndPushUpdates(profile_path);
+  }
 }
 
 void ProfilePickerHandler::DidFirstVisuallyNonEmptyPaint() {
