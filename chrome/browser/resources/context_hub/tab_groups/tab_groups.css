@@ -119,6 +119,24 @@ section {
   border-bottom-right-radius: 4px;
 }
 
+.chat-feedback-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 2px;
+  margin-top: 6px;
+}
+
+.chat-feedback-btn {
+  --cr-icon-button-size: 24px;
+  --cr-icon-button-icon-size: 14px;
+  --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+}
+
+.chat-feedback-btn[aria-pressed='true'] {
+  --cr-icon-button-fill-color: var(--google-blue-600);
+}
+
 .chat-input-section {
   display: flex;
   align-items: center;
@@ -171,6 +189,31 @@ section {
 }
 
 /* Groups Styles */
+.unconfirmed-groups-section h2 {
+  color: var(--cr-primary-text-color);
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+}
+
+.canvas-feedback-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.canvas-feedback-actions cr-icon-button {
+  --cr-icon-button-size: 32px;
+  --cr-icon-button-icon-size: 18px;
+  --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+}
+
+.canvas-feedback-actions cr-icon-button[aria-pressed='true'] {
+  --cr-icon-button-fill-color: var(--google-blue-600);
+}
+
 .groups-container {
   display: flex;
   flex-direction: column;

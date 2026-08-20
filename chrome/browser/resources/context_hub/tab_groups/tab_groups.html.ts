@@ -85,7 +85,21 @@ export function getHtml(this: TabGroupsElement) {
                                 </cr-collapse>
                             </div>
                         `)}
-                    </div>
+                        </div>
+                        <div class="canvas-feedback-actions">
+                            <cr-icon-button
+                                iron-icon="${this.getCanvasThumbsUpIcon_()}"
+                                title="Like grouping"
+                                aria-pressed="${this.canvasFeedbackLiked_ === true}"
+                                @click="${this.onCanvasThumbsUpClick_}">
+                            </cr-icon-button>
+                            <cr-icon-button
+                                iron-icon="${this.getCanvasThumbsDownIcon_()}"
+                                title="Dislike grouping"
+                                aria-pressed="${this.canvasFeedbackLiked_ === false}"
+                                @click="${this.onCanvasThumbsDownClick_}">
+                            </cr-icon-button>
+                        </div>
                     </div>
 
                     ${this.ungroupedTabs_.length > 0 ? html`
@@ -183,9 +197,28 @@ export function getHtml(this: TabGroupsElement) {
             </div>
 
             <div class="chat-messages" id="chat-messages">
-                ${this.chatHistory_.map(msg => html`
+                ${this.chatHistory_.map((msg, index) => html`
                     <div class="message-bubble ${msg.role === ChatRole.kUser ? 'user' : 'assistant'}">
                         <div class="message-content">${msg.content}</div>
+                        ${index === this.chatHistory_.length - 1 &&
+                            msg.role === ChatRole.kAssistant ? html`
+                            <div class="chat-feedback-actions">
+                                <cr-icon-button class="chat-feedback-btn"
+                                    iron-icon="${this.getChatThumbsUpIcon_()}"
+                                    title="Like response"
+                                    aria-pressed="${
+                                        this.chatFeedbackLiked_ === true}"
+                                    @click="${this.onChatThumbsUpClick_}">
+                                </cr-icon-button>
+                                <cr-icon-button class="chat-feedback-btn"
+                                    iron-icon="${this.getChatThumbsDownIcon_()}"
+                                    title="Dislike response"
+                                    aria-pressed="${
+                                        this.chatFeedbackLiked_ === false}"
+                                    @click="${this.onChatThumbsDownClick_}">
+                                </cr-icon-button>
+                            </div>
+                        ` : ''}
                     </div>
                 `)}
             </div>
