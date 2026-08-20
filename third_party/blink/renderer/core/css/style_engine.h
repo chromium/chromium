@@ -555,7 +555,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       InvalidationScope,
       bool invalidate_slotted,
       bool invalidate_part);
-  void ScheduleCustomElementInvalidations(HashSet<AtomicString> tag_names);
   void ScheduleInvalidationsForHasPseudoAffectedByInsertionOrRemoval(
       ContainerNode* parent,
       Node* node_before_change,

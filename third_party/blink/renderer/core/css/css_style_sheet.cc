@@ -246,10 +246,6 @@ void CSSStyleSheet::DidMutate(Mutation mutation) {
   if (!document || !document->IsActive()) {
     return;
   }
-  if (!custom_element_tag_names_.empty()) {
-    document->GetStyleEngine().ScheduleCustomElementInvalidations(
-        custom_element_tag_names_);
-  }
   bool invalidate_matched_properties_cache = false;
   if (ownerNode() && ownerNode()->isConnected()) {
     document->GetStyleEngine().SetNeedsActiveStyleUpdate(
