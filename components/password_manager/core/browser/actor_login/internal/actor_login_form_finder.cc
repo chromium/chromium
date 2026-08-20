@@ -17,6 +17,7 @@
 #include "base/functional/concurrent_callbacks.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -84,13 +85,23 @@ bool IsValidFrameAndOriginToFill(
     return false;
   }
 
-  bool is_same_origin =
-      driver->GetLastCommittedOrigin().IsSameOriginWith(main_frame_origin);
+  // TODO(crbug.com/539923959): The following is done to provide a close-enough
+  // value for iOS. Remove the flag guard once iOS has implemented
+  // `IOSPasswordManagerDriver::HasCrossOriginAncestor()`; this relies on the
+  // ancestors of a web frame being trackable.
+#if BUILDFLAG(IS_IOS)
+  bool has_cross_origin_ancestor =
+      !driver->GetLastCommittedOrigin().IsSameOriginWith(main_frame_origin);
+#else
+  bool has_cross_origin_ancestor = driver->HasCrossOriginAncestor();
+#endif
 
   // We can fill a form if its frame context is considered safe and not overly
-  // nested. A "fillable context" is either the primary main frame itself, or
-  // a direct child of the primary main frame that is not a fenced frame.
-  return is_same_origin || driver->IsInPrimaryMainFrame() ||
+  // nested. A "fillable context" is either the primary main frame itself,
+  // a direct child of the primary main frame that is not a fenced frame, or
+  // a nested frame that is same-origin with the main frame and has no
+  // cross-origin ancestors.
+  return !has_cross_origin_ancestor || driver->IsInPrimaryMainFrame() ||
          driver->IsDirectChildOfPrimaryMainFrame();
 }
 
