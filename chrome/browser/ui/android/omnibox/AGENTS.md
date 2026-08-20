@@ -40,8 +40,23 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
 *   **Placement**: Ensure logic is implemented in the correct architectural location as early as possible in the flow.
 *   **Reusability**: Structure components and logic to be reusable where applicable.
 
+## Feature Flags
+
+When introducing or modifying Omnibox feature flags:
+*   **C++ Definitions**:
+    *   Declare the feature in `components/omnibox/common/omnibox_features.h` (`BASE_DECLARE_FEATURE(kOmniboxFoo);`).
+    *   Define the feature in `components/omnibox/common/omnibox_features.cc` (`BASE_FEATURE(kOmniboxFoo, DISABLED);`).
+    *   Expose it to Java by adding `&kOmniboxFoo` to `kFeaturesExposedToJava` in `components/omnibox/common/omnibox_features.cc`. This automatically generates `OmniboxFeatureList.OMNIBOX_FOO`.
+*   **Java Wrapper**:
+    *   In `components/omnibox/common/android/java/src/org/chromium/components/omnibox/OmniboxFeatures.java`, define a `CachedFlag` via `newFlag(OmniboxFeatureList.OMNIBOX_FOO, FeatureState.DISABLED)`.
+    *   Expose a public accessor `isFooEnabled()`, and if needed for Robolectric unit tests, a `@Nullable Boolean` test override setter (`setFooForTesting(@Nullable Boolean)`).
+*   **chrome://flags Exposure**:
+    *   Add name and description constants to `chrome/browser/flag_descriptions.h` (`kOmniboxFooName`, `kOmniboxFooDescription`).
+    *   Add the entry under `#if BUILDFLAG(IS_ANDROID)` in `chrome/browser/about_flags.cc` using `FEATURE_VALUE_TYPE(omnibox::kOmniboxFoo)`.
+
 ## Testing
 
+*   **Test File Registration**: When creating a new unit test file (e.g. `FooUnitTest.java`), always register it in `chrome/browser/ui/android/omnibox/BUILD.gn` under the `robolectric_tests` `sources` list so `an -t` and GN correctly resolve the build target.
 *   **Mocking with Annotations**: Declare mock objects (`@Mock`) and argument captors (`@Captor`) as class fields using Mockito annotations. Avoid creating inline mocks in test methods using `mock(...)` or `ArgumentCaptor.forClass(...)`.
 *   **Annotation Placement**: Field-level test annotations (`@Rule`, `@Mock`, `@Spy`, `@Captor`) must precede access modifiers (e.g., `@Mock private Foo mFoo;`). `@Rule` fields must be declared `public final` (e.g., `@Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();`).
 *   **Naming Conventions**: To clearly distinguish unit tests from integration/instrumentation/render tests, unit test files must be named `*UnitTest.java` (e.g., AutocompleteMediatorUnitTest).
