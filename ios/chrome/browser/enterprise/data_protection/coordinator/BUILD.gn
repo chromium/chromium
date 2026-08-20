@@ -19,6 +19,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/enterprise/data_controls/model",
     "//ios/chrome/browser/enterprise/data_controls/model:ios_rules_service",
     "//ios/chrome/browser/enterprise/data_protection/model",
+    "//ios/chrome/browser/enterprise/data_protection/ui",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/model/browser",
