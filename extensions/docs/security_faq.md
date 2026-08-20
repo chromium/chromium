@@ -436,6 +436,11 @@ warning associated with the debugger API.
 The debugger API requires screenshot permissions (e.g. enterprise policies that
 disable screenshots will prevent attaching the debugger).
 
+The debugger API is disabled entirely if any runtime blocked hosts are configured
+by enterprise policy (e.g. `ExtensionSettings` specifying `runtime_blocked_hosts`).
+Because raw DevTools Protocol access cannot be safely constrained to specific origins,
+attaching the debugger is rejected on all hosts, including any listed in `runtime_allowed_hosts`.
+
 The debugger permission does not allow automating parts of the Chromium
 browser unrelated to websites. Automating WebUI or settings, installing
 extensions, downloading and executing a native binary, or executing custom

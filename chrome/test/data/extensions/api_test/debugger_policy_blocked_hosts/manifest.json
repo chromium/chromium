@@ -1,0 +1,12 @@
+{
+  "name": "Debugger Policy Blocked Hosts Test",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": ["debugger", "tabs"],
+  "host_permissions": ["http://a.test/*", "http://b.test/*"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  }
+}
+
