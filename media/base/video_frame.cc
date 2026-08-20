@@ -523,8 +523,8 @@ scoped_refptr<VideoFrame> VideoFrame::WrapMappableSharedImage(
   }
   uint64_t modifier = gfx::NativePixmapHandle::kNoModifier;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  bool is_native_buffer = !shared_image->IsSharedMemoryForVideoFrame();
-  if (is_native_buffer) {
+  if (shared_image->GetGpuMemoryBufferType() ==
+      gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
     const auto gmb_handle = shared_image->CloneGpuMemoryBufferHandle();
     if (gmb_handle.is_null() ||
         gmb_handle.native_pixmap_handle().planes.empty()) {

@@ -730,4 +730,39 @@ TEST_F(VideoFrameStructTraitsTest, MappableSharedImageVideoFrame) {
   ASSERT_EQ(frame->shared_image()->mailbox(), shared_image->mailbox());
 }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+TEST_F(VideoFrameStructTraitsTest,
+       MappableSharedImageWithoutNativePixmapFails) {
+  auto si_size = gfx::Size(100, 100);
+  gpu::SharedImageMetadata metadata;
+  metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
+  metadata.size = si_size;
+  metadata.color_space = gfx::ColorSpace::CreateSRGB();
+  metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
+  metadata.alpha_type = kOpaque_SkAlphaType;
+  metadata.usage = gpu::SharedImageUsageSet();
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      gpu::ClientSharedImage::CreateForTesting(metadata);
+
+  auto exported_si = shared_image->Export();
+  auto mojo_si_data = mojom::SharedImageVideoFrameData::New(
+      std::move(exported_si), gpu::SyncToken(), /*is_mappable=*/true);
+
+  auto mojo_frame = mojom::VideoFrame::New(
+      PIXEL_FORMAT_ABGR, si_size, gfx::Rect(si_size), si_size,
+      base::Seconds(100),
+      mojom::VideoFrameData::NewSharedImageData(std::move(mojo_si_data)),
+      VideoFrameMetadata(), gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata());
+
+  auto message = mojom::VideoFrame::SerializeAsMessage(&mojo_frame);
+  mojo::ScopedMessageHandle handle = message.TakeMojoMessage();
+  message = mojo::Message::CreateFromMessageHandle(&handle);
+
+  scoped_refptr<VideoFrame> new_frame;
+  // Should fail deserialization safely without crashing on CHECK.
+  EXPECT_FALSE(mojom::VideoFrame::DeserializeFromMessage(std::move(message),
+                                                         &new_frame));
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace media
