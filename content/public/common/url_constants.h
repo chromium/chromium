@@ -44,8 +44,6 @@ inline constexpr char kChromeUIMediaInternalsHost[] = "media-internals";
 inline constexpr char kChromeUIMemoryExhaustHost[] = "memory-exhaust";
 inline constexpr char kChromeUINetworkErrorHost[] = "network-error";
 inline constexpr char kChromeUINetworkErrorsListingHost[] = "network-errors";
-inline constexpr char kChromeUIPrivateAggregationInternalsHost[] =
-    "private-aggregation-internals";
 inline constexpr char kChromeUIProcessInternalsHost[] = "process-internals";
 inline constexpr char kChromeUIQuotaInternalsHost[] = "quota-internals";
 inline constexpr char kChromeUIResourcesHost[] = "resources";
