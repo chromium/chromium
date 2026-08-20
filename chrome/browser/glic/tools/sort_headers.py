@@ -55,6 +55,7 @@ class GuardedBranch:
     full_cond: str
     outer_cond: str = ""
     includes: list[IncludeItem] = field(default_factory=list)
+    nested_chains: list['GuardedChain'] = field(default_factory=list)
     preamble: list[str] = field(default_factory=list)
     comment: str = ""
 
@@ -289,7 +290,11 @@ def parse_if(state: ParseState) -> bool:
                            preamble=pre_lines,
                            comment=branch_comment)
     chain = GuardedChain(branches=[branch], start_line_idx=state.i)
-    state.current_group.guarded_chains.append(chain)
+
+    if not state.if_stack:
+        state.current_group.guarded_chains.append(chain)
+    else:
+        state.if_stack[-1].branch.nested_chains.append(chain)
 
     frame = IfStackFrame(
         type='IF',
@@ -398,6 +403,16 @@ def parse_endif(state: ParseState) -> bool:
     return True
 
 
+def chain_has_includes(chain: GuardedChain) -> bool:
+    for b in chain.branches:
+        if b.includes:
+            return True
+        for nc in b.nested_chains:
+            if chain_has_includes(nc):
+                return True
+    return False
+
+
 def parse_file_includes(
     lines: list[str]
 ) -> tuple[list[str], list[IncludeGroup | CommentItem], list[str]]:
@@ -469,8 +484,7 @@ def parse_file_includes(
     for item in state.items:
         if isinstance(item, IncludeGroup):
             item.guarded_chains = [
-                c for c in item.guarded_chains if any(
-                    len(b.includes) > 0 for b in c.branches)
+                c for c in item.guarded_chains if chain_has_includes(c)
             ]
             if item.unguarded_includes or item.guarded_chains:
                 valid_items.append(item)
@@ -504,78 +518,127 @@ def format_inc_list(inc_list: list[IncludeItem]) -> list[str]:
     return out
 
 
+def normalize_cond(cond: str) -> str:
+    return cond.strip()
+
+
+def merge_branches(dest: GuardedBranch, src: GuardedBranch):
+    dest.includes.extend(src.includes)
+    dest.nested_chains.extend(src.nested_chains)
+    if dest.nested_chains:
+        dest.nested_chains = merge_guarded_chains(dest.nested_chains)
+
+
+def find_matching_branch(chain: GuardedChain,
+                         cond: str) -> GuardedBranch | None:
+    """Finds a branch in chain matching cond (or !cond for ELSE)."""
+    cond = normalize_cond(cond)
+    if len(chain.branches) == 1 and chain.branches[0].type == 'IF':
+        if normalize_cond(chain.branches[0].raw_cond) == cond:
+            return chain.branches[0]
+    elif (len(chain.branches) == 2 and chain.branches[0].type == 'IF'
+          and chain.branches[1].type == 'ELSE'):
+        if_cond = normalize_cond(chain.branches[0].raw_cond)
+        if if_cond == cond:
+            return chain.branches[0]
+        if (normalize_cond(negate_condition(if_cond)) == cond
+                or if_cond == normalize_cond(negate_condition(cond))):
+            return chain.branches[1]
+    return None
+
+
+def merge_guarded_chains(chains: list[GuardedChain]) -> list[GuardedChain]:
+    for chain in chains:
+        for b in chain.branches:
+            if b.nested_chains:
+                b.nested_chains = merge_guarded_chains(b.nested_chains)
+
+    merged: list[GuardedChain] = []
+    for chain in chains:
+        # Case 1: single IF branch -> try to merge into an existing chain
+        if len(chain.branches) == 1 and chain.branches[0].type == 'IF':
+            c_cond = chain.branches[0].raw_cond
+            target = next(
+                (target for existing in merged
+                 if (target := find_matching_branch(existing, c_cond))),
+                None,
+            )
+            if target:
+                merge_branches(target, chain.branches[0])
+                continue
+
+        # Case 2: IF...ELSE -> absorb any prior matching single IF chains
+        if (len(chain.branches) == 2 and chain.branches[0].type == 'IF'
+                and chain.branches[1].type == 'ELSE'):
+            i = 0
+            while i < len(merged):
+                existing = merged[i]
+                if (len(existing.branches) == 1
+                        and existing.branches[0].type == 'IF'):
+                    target = find_matching_branch(
+                        chain, existing.branches[0].raw_cond)
+                    if target:
+                        merge_branches(target, existing.branches[0])
+                        merged.pop(i)
+                        continue
+                i += 1
+
+        merged.append(chain)
+
+    return merged
+
+
+def format_branch(branch: GuardedBranch) -> list[str]:
+    lines = []
+    if branch.type == 'IF':
+        lines.append(f"#if {branch.raw_cond}{branch.comment}\n")
+    elif branch.type == 'ELIF':
+        lines.append(f"#elif {branch.raw_cond}{branch.comment}\n")
+    elif branch.type == 'ELSE':
+        lines.append(f"#else{branch.comment}\n")
+
+    if branch.includes:
+        lines.extend(format_inc_list(branch.includes))
+
+    if branch.nested_chains:
+        for nested_chain in branch.nested_chains:
+            nested_lines = format_chain(nested_chain)
+            if nested_lines:
+                if (lines and lines[-1] != "\n"
+                        and not lines[-1].startswith("#if")
+                        and not lines[-1].startswith("#elif")
+                        and not lines[-1].startswith("#else")):
+                    lines.append("\n")
+                lines.extend(nested_lines)
+
+    return lines
+
+
+def format_chain(chain: GuardedChain) -> list[str]:
+    lines = []
+    has_any = False
+    for b in chain.branches:
+        if b.includes or any(chain_has_includes(nc) for nc in b.nested_chains):
+            has_any = True
+            lines.extend(b.preamble)
+            lines.extend(format_branch(b))
+    if has_any:
+        lines.append(f"#endif{chain.endif_comment}\n")
+        return lines
+    return []
+
+
 def format_include_group(group: IncludeGroup) -> list[list[str]]:
     """Formats an IncludeGroup into blocks of line lists."""
-    cond_counts = {}
-    for chain in group.guarded_chains:
-        for b in chain.branches:
-            if b.includes:
-                cond_counts[b.full_cond] = cond_counts.get(b.full_cond, 0) + 1
-
-    chain_can_preserve = {}
-    for chain in group.guarded_chains:
-        can = True
-        for b in chain.branches:
-            if b.outer_cond != '' or (b.includes
-                                      and cond_counts.get(b.full_cond, 0) > 1):
-                can = False
-                break
-        chain_can_preserve[chain] = can
-
-    formatted_guarded_blocks = []
-    handled_chains = set()
-
-    for chain in group.guarded_chains:
-        if chain in handled_chains:
-            continue
-        if chain_can_preserve[chain]:
-            handled_chains.add(chain)
-            lines_chain = []
-            has_any_inc = False
-            for b in chain.branches:
-                if b.includes:
-                    has_any_inc = True
-                    lines_chain.extend(b.preamble)
-                    if b.type == 'IF':
-                        lines_chain.append(f"#if {b.raw_cond}{b.comment}\n")
-                    elif b.type == 'ELIF':
-                        lines_chain.append(f"#elif {b.raw_cond}{b.comment}\n")
-                    elif b.type == 'ELSE':
-                        lines_chain.append(f"#else{b.comment}\n")
-                    lines_chain.extend(format_inc_list(b.includes))
-            if has_any_inc:
-                lines_chain.append(f"#endif{chain.endif_comment}\n")
-                formatted_guarded_blocks.append(lines_chain)
-
-    unhandled_branches_by_cond = {}
-    cond_order = []
-    cond_comment_map = {}
-
-    for chain in group.guarded_chains:
-        if chain not in handled_chains:
-            for b in chain.branches:
-                if b.includes:
-                    cond = b.full_cond
-                    if cond not in unhandled_branches_by_cond:
-                        unhandled_branches_by_cond[cond] = []
-                        cond_order.append(cond)
-                        cond_comment_map[cond] = chain.endif_comment
-                    unhandled_branches_by_cond[cond].extend(b.includes)
-
-    for cond in cond_order:
-        branch_incs = unhandled_branches_by_cond[cond]
-        if branch_incs:
-            lines_b = [f"#if {cond}\n"]
-            lines_b.extend(format_inc_list(branch_incs))
-            lines_b.append(f"#endif{cond_comment_map.get(cond, '')}\n")
-            formatted_guarded_blocks.append(lines_b)
-
     blocks_to_output = []
     if group.unguarded_includes:
         blocks_to_output.append(format_inc_list(group.unguarded_includes))
 
-    for gb in formatted_guarded_blocks:
-        blocks_to_output.append(gb)
+    merged_chains = merge_guarded_chains(group.guarded_chains)
+    for chain in merged_chains:
+        chain_lines = format_chain(chain)
+        if chain_lines:
+            blocks_to_output.append(chain_lines)
 
     return blocks_to_output
 

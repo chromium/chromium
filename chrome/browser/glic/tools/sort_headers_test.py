@@ -344,6 +344,41 @@ class SortHeadersTest(unittest.TestCase):
         result = sort_headers.sort_file_content(content, "foo.cc")
         self.assertEqual(result, expected)
 
+    def test_nested_guarded_blocks_preserved(self):
+        content = ('#if BUILDFLAG(IS_ANDROID)\n'
+                   '#include "dev_ui/buildflags.h"\n'
+                   '#include "b.h"\n'
+                   '#include "a.h"\n'
+                   '\n'
+                   '#if BUILDFLAG(DFMIFY_DEV_UI)\n'
+                   '#include "d.h"\n'
+                   '#include "c.h"\n'
+                   '#endif  // BUILDFLAG(DFMIFY_DEV_UI)\n'
+                   '#else  // BUILDFLAG(IS_ANDROID)\n'
+                   '#include "f.h"\n'
+                   '#include "e.h"\n'
+                   '#endif  // BUILDFLAG(IS_ANDROID)\n'
+                   '\n'
+                   '#if !BUILDFLAG(IS_ANDROID)\n'
+                   '#include "g.h"\n'
+                   '#endif\n')
+        expected = ('#if BUILDFLAG(IS_ANDROID)\n'
+                    '#include "a.h"\n'
+                    '#include "b.h"\n'
+                    '#include "dev_ui/buildflags.h"\n'
+                    '\n'
+                    '#if BUILDFLAG(DFMIFY_DEV_UI)\n'
+                    '#include "c.h"\n'
+                    '#include "d.h"\n'
+                    '#endif  // BUILDFLAG(DFMIFY_DEV_UI)\n'
+                    '#else   // BUILDFLAG(IS_ANDROID)\n'
+                    '#include "e.h"\n'
+                    '#include "f.h"\n'
+                    '#include "g.h"\n'
+                    '#endif  // BUILDFLAG(IS_ANDROID)\n')
+        result = sort_headers.sort_file_content(content, "foo.cc")
+        self.assertEqual(result, expected)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "content/public/common/content_switches.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -57,6 +56,7 @@
 #include "components/variations/service/test_variations_service.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_switches.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
