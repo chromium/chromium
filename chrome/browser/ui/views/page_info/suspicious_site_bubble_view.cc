@@ -231,7 +231,7 @@ void SuspiciousSiteBubbleView::OpenHelpCenter() {
       return;
     }
     web_contents()->OpenURL(
-        content::OpenURLParams(GURL(chrome::kUnsafeSiteWarningHelpCenterURL),
+        content::OpenURLParams(GURL(chrome::kSafeBrowsingHelpCenterURL),
                                content::Referrer(),
                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                ui::PAGE_TRANSITION_LINK, false),
