@@ -38,9 +38,8 @@ class TabListContainerProperties {
     public static final PropertyModel.WritableObjectPropertyKey<Integer> INITIAL_SCROLL_INDEX =
             new PropertyModel.WritableObjectPropertyKey<>(true);
 
-    /** Same as {@link TabListMode}. */
-    public static final PropertyModel.WritableIntPropertyKey MODE =
-            new PropertyModel.WritableIntPropertyKey();
+    public static final PropertyModel.WritableIntDefPropertyKey<TabListMode> MODE =
+            new PropertyModel.WritableIntDefPropertyKey<>(TabListMode.GRID);
 
     /**
      * A property which is set to focus on the passed tab index for accessibility. Integer, but not
