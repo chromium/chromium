@@ -96,8 +96,6 @@ constexpr std::string_view kNoticeInteractionsHistogram =
   _consumer = consumer;
 
   [_consumer setNoticeVisible:_noticeIsVisible];
-  [_consumer
-      updateTableViewBackgroundStyle:[self currentTableViewBackgroundStyle]];
 
   if (_noticeIsVisible && !_noticeShownMetricLogged) {
     _noticeShownMetricLogged = YES;
@@ -132,8 +130,6 @@ constexpr std::string_view kNoticeInteractionsHistogram =
   _noticeIsVisible = NO;
   _noticeInteractionLogged = YES;
   [self.consumer setNoticeVisible:NO];
-  [self.consumer
-      updateTableViewBackgroundStyle:[self currentTableViewBackgroundStyle]];
   base::UmaHistogramEnumeration(
       kNoticeInteractionsHistogram,
       autofill::AutofillMetrics::PopupNoticeInteractions::kAcknowledged);
@@ -200,15 +196,6 @@ constexpr std::string_view kNoticeInteractionsHistogram =
                                                     index:index++]];
   }
   [self.consumer setSearchResults:searchItems];
-}
-
-- (AtMemoryBackgroundStyle)currentTableViewBackgroundStyle {
-  // TODO(crbug.com/540877897): Verify if there are any recent fills. If yes,
-  // show kDefaultStyle.
-  if (!_noticeIsVisible && !_searchResults.has_value()) {
-    return AtMemoryBackgroundStyle::kEmptyStyle;
-  }
-  return AtMemoryBackgroundStyle::kDefaultStyle;
 }
 
 @end

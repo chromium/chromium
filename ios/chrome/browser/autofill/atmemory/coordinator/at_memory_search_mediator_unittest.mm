@@ -278,8 +278,6 @@ TEST_F(AtMemorySearchMediatorTest, ShowsNoticeInitiallyIfEligible) {
   first_run_service_.set_should_show_at_memory_notice(true);
 
   OCMExpect([mock_consumer_ setNoticeVisible:YES]);
-  OCMExpect([mock_consumer_
-      updateTableViewBackgroundStyle:AtMemoryBackgroundStyle::kDefaultStyle]);
 
   CreateMediator();
 
@@ -292,8 +290,6 @@ TEST_F(AtMemorySearchMediatorTest, HidesNoticeInitiallyIfNotEligible) {
   first_run_service_.set_should_show_at_memory_notice(false);
 
   OCMExpect([mock_consumer_ setNoticeVisible:NO]);
-  OCMExpect([mock_consumer_
-      updateTableViewBackgroundStyle:AtMemoryBackgroundStyle::kEmptyStyle]);
 
   CreateMediator();
 
@@ -306,8 +302,6 @@ TEST_F(AtMemorySearchMediatorTest, AcknowledgeNoticeAcksServiceAndUpdatesUI) {
   CreateMediator();
 
   OCMExpect([mock_consumer_ setNoticeVisible:NO]);
-  OCMExpect([mock_consumer_
-      updateTableViewBackgroundStyle:AtMemoryBackgroundStyle::kEmptyStyle]);
 
   [mediator_ acknowledgePrivacyNotice];
 

@@ -7,14 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-enum class AtMemoryBackgroundStyle {
-  // The default background style.
-  kDefaultStyle,
-  // Zero-state background style shown on the initial screen when no recent
-  // fills exist and the notice is hidden.
-  kEmptyStyle,
-};
-
 enum class AtMemoryErrorType {
   // The server couldn't be reached.
   kNoConnectionError,
@@ -45,9 +37,6 @@ enum class AtMemoryErrorType {
 
 // Sets search results to display in the UI.
 - (void)setSearchResults:(NSArray<AtMemorySearchItem*>*)searchResults;
-
-// Displays the table view background for the given `style`.
-- (void)updateTableViewBackgroundStyle:(AtMemoryBackgroundStyle)style;
 
 @end
 
