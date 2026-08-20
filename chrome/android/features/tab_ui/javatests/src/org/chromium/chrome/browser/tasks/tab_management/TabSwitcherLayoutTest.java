@@ -44,7 +44,9 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.os.SystemClock;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -104,6 +106,7 @@ import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
@@ -853,6 +856,48 @@ public class TabSwitcherLayoutTest {
         mergeNormalTabsToGroupWithDialog(cta, 1);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
+    }
+
+    @Test
+    @MediumTest
+    public void testDragAndDropMergeTabs_DoesNotCrash() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+
+        int[] card0Location = new int[2];
+        int[] card1Location = new int[2];
+        int[] card0Dimensions = new int[2];
+        int[] card1Dimensions = new int[2];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    RecyclerView recyclerView = cta.findViewById(R.id.tab_list_recycler_view);
+                    RecyclerView.ViewHolder vh0 = recyclerView.findViewHolderForAdapterPosition(0);
+                    RecyclerView.ViewHolder vh1 = recyclerView.findViewHolderForAdapterPosition(1);
+                    vh0.itemView.getLocationOnScreen(card0Location);
+                    vh1.itemView.getLocationOnScreen(card1Location);
+                    card0Dimensions[0] = vh0.itemView.getWidth();
+                    card0Dimensions[1] = vh0.itemView.getHeight();
+                    card1Dimensions[0] = vh1.itemView.getWidth();
+                    card1Dimensions[1] = vh1.itemView.getHeight();
+                });
+
+        float startX = card0Location[0] + card0Dimensions[0] / 2f;
+        float startY = card0Location[1] + card0Dimensions[1] / 2f;
+        float endX = card1Location[0] + card1Dimensions[0] / 2f;
+        float endY = card1Location[1] + card1Dimensions[1] / 2f;
+
+        long downTime = SystemClock.uptimeMillis();
+        TouchCommon.dragStart(cta, startX, startY, downTime);
+        SystemClock.sleep(ViewConfiguration.getLongPressTimeout() + 100);
+        TouchCommon.dragTo(cta, startX, endX, startY, endY, /* stepCount= */ 20, downTime);
+        SystemClock.sleep(100);
+        TouchCommon.dragEnd(cta, endX, endY, downTime);
+
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+        verifyTabModelTabCount(cta, 2, 0);
     }
 
     @Test
