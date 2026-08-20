@@ -146,12 +146,9 @@ AwBrowserContext* AwBrowserContextStore::Get(const std::string& name,
     }
     entry->instance =
         std::make_unique<AwBrowserContext>(name, entry->path, is_default);
-    // Ensure this code path is only taken if the IO thread is already running,
-    // as it's needed for launching processes.
-    if (content::BrowserThread::IsThreadInitialized(
-            content::BrowserThread::IO) &&
-        (!is_default || base::FeatureList::IsEnabled(
-                            features::kCreateSpareRendererForDefaultProfile))) {
+
+    if (!is_default || base::FeatureList::IsEnabled(
+                           features::kCreateSpareRendererForDefaultProfile)) {
       content::SpareRenderProcessHostManager::Get().WarmupSpare(
           entry->instance.get());
     }
