@@ -16,6 +16,8 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
@@ -84,6 +86,46 @@ class PermissionUpdateRequester implements PermissionCallback {
             return;
         }
 
+        Activity activity = windowAndroid.getActivity().get();
+        if (activity == null) {
+            PermissionUpdateRequesterJni.get().onPermissionResult(mNativePtr, false);
+            return;
+        }
+
+        if (mActivityStateListener != null) {
+            ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
+            mActivityStateListener = null;
+        }
+
+        // Non-tab WebContents (e.g. side-panel / bottom-sheet) may not receive
+        // onRequestPermissionsResult directly, so listen for activity resume as well.
+        mActivityStateListener =
+                new ActivityStateListener() {
+                    @Override
+                    public void onActivityStateChange(Activity activity, int newState) {
+                        if (newState == ActivityState.DESTROYED) {
+                            if (mActivityStateListener != null) {
+                                ApplicationStatus.unregisterActivityStateListener(this);
+                                mActivityStateListener = null;
+                            }
+                            if (mNativePtr != 0) {
+                                long ptr = mNativePtr;
+                                mNativePtr = 0;
+                                PermissionUpdateRequesterJni.get().onPermissionResult(ptr, false);
+                            }
+                        } else if (newState == ActivityState.RESUMED) {
+                            if (mActivityStateListener != null) {
+                                ApplicationStatus.unregisterActivityStateListener(this);
+                                mActivityStateListener = null;
+                            }
+                            PostTask.postTask(
+                                    TaskTraits.UI_DEFAULT,
+                                    PermissionUpdateRequester.this::notifyPermissionResult);
+                        }
+                    }
+                };
+        ApplicationStatus.registerStateListenerForActivity(mActivityStateListener, activity);
+
         boolean canRequestAllPermissions = true;
         for (int i = 0; i < mAndroidPermisisons.length; i++) {
             canRequestAllPermissions &=
@@ -91,35 +133,9 @@ class PermissionUpdateRequester implements PermissionCallback {
                             || windowAndroid.canRequestPermission(mAndroidPermisisons[i]));
         }
 
-        Activity activity = windowAndroid.getActivity().get();
         if (canRequestAllPermissions) {
             windowAndroid.requestPermissions(mAndroidPermisisons, this);
         } else {
-            if (activity == null) {
-                PermissionUpdateRequesterJni.get().onPermissionResult(mNativePtr, false);
-                return;
-            }
-
-            mActivityStateListener =
-                    new ActivityStateListener() {
-                        @Override
-                        public void onActivityStateChange(Activity activity, int newState) {
-                            if (newState == ActivityState.DESTROYED) {
-                                ApplicationStatus.unregisterActivityStateListener(this);
-                                mActivityStateListener = null;
-
-                                PermissionUpdateRequesterJni.get()
-                                        .onPermissionResult(mNativePtr, false);
-                            } else if (newState == ActivityState.RESUMED) {
-                                ApplicationStatus.unregisterActivityStateListener(this);
-                                mActivityStateListener = null;
-
-                                notifyPermissionResult();
-                            }
-                        }
-                    };
-            ApplicationStatus.registerStateListenerForActivity(mActivityStateListener, activity);
-
             Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
             settingsIntent.setData(
                     Uri.parse("package:" + ContextUtils.getApplicationContext().getPackageName()));
@@ -130,6 +146,10 @@ class PermissionUpdateRequester implements PermissionCallback {
 
     @Override
     public void onRequestPermissionsResult(String[] permissions, int[] grantResults) {
+        if (mActivityStateListener != null) {
+            ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
+            mActivityStateListener = null;
+        }
         notifyPermissionResult();
     }
 
@@ -147,7 +167,9 @@ class PermissionUpdateRequester implements PermissionCallback {
             }
         }
         if (mNativePtr != 0) {
-            PermissionUpdateRequesterJni.get().onPermissionResult(mNativePtr, hasAllPermissions);
+            long ptr = mNativePtr;
+            mNativePtr = 0;
+            PermissionUpdateRequesterJni.get().onPermissionResult(ptr, hasAllPermissions);
         }
     }
 
