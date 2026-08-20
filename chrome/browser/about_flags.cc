@@ -6894,6 +6894,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxAsyncViewInflationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxAsyncViewInflation)},
 
+    {"omnibox-debounce-keyboard-visibility",
+     flag_descriptions::kOmniboxDebounceKeyboardVisibilityName,
+     flag_descriptions::kOmniboxDebounceKeyboardVisibilityDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxDebounceKeyboardVisibility)},
+
     {"omnibox-fusebox-async-inflation",
      flag_descriptions::kOmniboxFuseboxAsyncInflationName,
      flag_descriptions::kOmniboxFuseboxAsyncInflationDescription, kOsAndroid,

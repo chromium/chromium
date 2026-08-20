@@ -13,6 +13,8 @@ import android.view.View.OnLongClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
@@ -20,11 +22,17 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.TextSelection;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.ViewRectProvider;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /** Coordinates the interactions with the UrlBar text component. */
 @NullMarked
@@ -32,7 +40,24 @@ public class UrlBarCoordinator
         implements UrlBarEditingTextStateProvider,
                 UrlFocusChangeListener,
                 KeyboardVisibilityDelegate.KeyboardVisibilityListener {
+
+    @IntDef({
+        KeyboardState.HIDDEN,
+        KeyboardState.HIDING,
+        KeyboardState.SHOWING,
+        KeyboardState.SHOWN
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @Target(ElementType.TYPE_USE)
+    @interface KeyboardState {
+        int HIDDEN = 0;
+        int HIDING = 1;
+        int SHOWING = 2;
+        int SHOWN = 3;
+    }
+
     private static final int KEYBOARD_HIDE_DELAY_MS = 150;
+    private static final int KEYBOARD_DEBOUNCE_DELAY_MS = 150;
 
     private final UrlBar mUrlBar;
     private final UrlBarMediator mMediator;
@@ -41,7 +66,9 @@ public class UrlBarCoordinator
     private final Callback<UrlBarFocusChangeInfo> mFocusChangeCallback;
     private final Callback<Boolean> mTextWrappedCallback;
     private final ObserverList<Callback<Boolean>> mTextWrapListeners = new ObserverList<>();
+    private final Runnable mKeyboardTransitionRunnable = this::resolveKeyboardTransition;
     private @Nullable Runnable mKeyboardHideTask;
+    private @KeyboardState int mKeyboardState = KeyboardState.HIDDEN;
     private boolean mIsReparenting;
     private boolean mHasFocus;
     private boolean mTextIsWrapped;
@@ -106,6 +133,10 @@ public class UrlBarCoordinator
                         textChangeListener,
                         richTextChangeListener,
                         keyDownListener);
+        mKeyboardState =
+                mKeyboardVisibilityDelegate.isKeyboardShowing(urlBar)
+                        ? KeyboardState.SHOWN
+                        : KeyboardState.HIDDEN;
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(this);
     }
 
@@ -114,7 +145,10 @@ public class UrlBarCoordinator
         mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(this);
         if (mKeyboardHideTask != null) {
             mUrlBar.removeCallbacks(mKeyboardHideTask);
+            mKeyboardHideTask = null;
         }
+        mUrlBar.removeCallbacks(mKeyboardTransitionRunnable);
+        mKeyboardState = KeyboardState.HIDDEN;
         mUrlBar.destroy();
     }
 
@@ -292,6 +326,14 @@ public class UrlBarCoordinator
     // KeyboardVisibilityDelegate.KeyboardVisibilityListener implementation.
     @Override
     public void keyboardVisibilityChanged(boolean isKeyboardShowing) {
+        if (OmniboxFeatures.isDebounceKeyboardVisibilityEnabled()) {
+            // When the OS notifies us that the keyboard visibility has changed (e.g. user
+            // dismissed via back gesture or IME completed showing), any pending debounce
+            // transition is obsolete because the OS has reached a steady state. Clear the
+            // pending transition task and synchronize our internal state with reality.
+            mUrlBar.removeCallbacks(mKeyboardTransitionRunnable);
+            mKeyboardState = isKeyboardShowing ? KeyboardState.SHOWN : KeyboardState.HIDDEN;
+        }
         // The cursor visibility should follow soft keyboard visibility and should be hidden
         // when keyboard is dismissed for any reason (including scroll).
         mUrlBar.setCursorVisible(isKeyboardShowing);
@@ -339,6 +381,11 @@ public class UrlBarCoordinator
      *     improve the animation smoothness.
      */
     public void setKeyboardVisibility(boolean showKeyboard, boolean shouldDelayHiding) {
+        if (OmniboxFeatures.isDebounceKeyboardVisibilityEnabled()) {
+            setKeyboardVisibilityDebounced(showKeyboard);
+            return;
+        }
+
         // Cancel pending jobs to prevent any possibility of keyboard flicker.
         if (mKeyboardHideTask != null) {
             mUrlBar.removeCallbacks(mKeyboardHideTask);
@@ -361,6 +408,36 @@ public class UrlBarCoordinator
             mUrlBar.postDelayed(mKeyboardHideTask, shouldDelayHiding ? KEYBOARD_HIDE_DELAY_MS : 0);
             // Convert the keyboard back to resize mode (delay the change for an arbitrary amount
             // of time in hopes the keyboard will be completely hidden before making this change).
+        }
+    }
+
+    private void setKeyboardVisibilityDebounced(boolean showKeyboard) {
+        boolean isCurrentlyShowing =
+                mKeyboardState == KeyboardState.SHOWN || mKeyboardState == KeyboardState.SHOWING;
+        if (showKeyboard == isCurrentlyShowing) {
+            return;
+        }
+
+        // If we are currently in a transiting state (HIDING or SHOWING) and a request in the
+        // opposite direction arrives, the OS was never actually instructed to change visibility
+        // (the debounce timer hasn't fired yet). We can fast-cancel the pending task and
+        // immediately transition back to the corresponding steady state (SHOWN or HIDDEN)
+        // without calling into Android's InputMethodManager.
+        if (mKeyboardState == KeyboardState.HIDING || mKeyboardState == KeyboardState.SHOWING) {
+            mUrlBar.removeCallbacks(mKeyboardTransitionRunnable);
+            mKeyboardState = showKeyboard ? KeyboardState.SHOWN : KeyboardState.HIDDEN;
+            return;
+        }
+
+        mKeyboardState = showKeyboard ? KeyboardState.SHOWING : KeyboardState.HIDING;
+        mUrlBar.postDelayed(mKeyboardTransitionRunnable, KEYBOARD_DEBOUNCE_DELAY_MS);
+    }
+
+    private void resolveKeyboardTransition() {
+        if (mKeyboardState == KeyboardState.SHOWING) {
+            mKeyboardVisibilityDelegate.showKeyboard(mUrlBar);
+        } else if (mKeyboardState == KeyboardState.HIDING) {
+            mKeyboardVisibilityDelegate.hideKeyboard(mUrlBar);
         }
     }
 

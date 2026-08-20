@@ -3582,6 +3582,12 @@ inline constexpr char kOmniboxCrossDeviceTabZeroSuggestName[] =
 inline constexpr char kOmniboxCrossDeviceTabZeroSuggestDescription[] =
     "Enables showing cross-device tabs in the omnibox zero-state.";
 
+inline constexpr char kOmniboxDebounceKeyboardVisibilityName[] =
+    "Debounce Keyboard Visibility";
+inline constexpr char kOmniboxDebounceKeyboardVisibilityDescription[] =
+    "Enables debouncing of show and hide transitions for the soft keyboard in "
+    "the Omnibox.";
+
 inline constexpr char kOmniboxDiagnosticsName[] =
     "Omnibox Diagnostics (restart twice)";
 inline constexpr char kOmniboxDiagnosticsDescription[] =

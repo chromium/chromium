@@ -239,6 +239,9 @@ BASE_FEATURE(kOmniboxWebUIPopupMarkAsHidden, ENABLED);
 // OmniboxEditModel.
 BASE_FEATURE(kWebUISearchboxWithoutModelController, DISABLED);
 
+// If enabled, debounces soft keyboard show/hide transitions in the Omnibox.
+BASE_FEATURE(kOmniboxDebounceKeyboardVisibility, DISABLED);
+
 // Feature used to default typed navigations to use HTTPS instead of HTTP.
 // This only applies to navigations that don't have a scheme such as
 // "example.com". Presently, typing "example.com" in a clean browsing profile
@@ -532,6 +535,7 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kStarterPackExpansion,
       &kOmniboxSearchPrefetchOnEnterKeyDown,
       &kOmniboxAimImageDownscaling,
+      &kOmniboxDebounceKeyboardVisibility,
       &kOmniboxSessionlessVoiceSearch};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);

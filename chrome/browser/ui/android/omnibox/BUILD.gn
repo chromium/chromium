@@ -539,6 +539,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/SpannableAutocompleteEditTextModelUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/UndoStackCaptureUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/UrlBarContextMenuHelperUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/UrlBarCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/UrlBarDataUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/UrlBarMediatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/UrlBarUnitTest.java",

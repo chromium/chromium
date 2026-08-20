@@ -14714,6 +14714,7 @@ from previous Chrome versions.
   <int value="12016364" label="OmniboxBubbleUrlSuggestions:enabled"/>
   <int value="12423208" label="ImprovedSettingsUIOnDesktop:enabled"/>
   <int value="13976438" label="ReduceTransferSizeUpdatedIPC:disabled"/>
+  <int value="14744795" label="OmniboxDebounceKeyboardVisibility:disabled"/>
   <int value="14817184" label="FilesSearchV2:enabled"/>
   <int value="15614295" label="Portals:enabled"/>
   <int value="15872227"
@@ -18575,6 +18576,7 @@ from previous Chrome versions.
   <int value="1226962257" label="SendTabToSelfGesture:enabled"/>
   <int value="1227132914" label="DeclarativePerformanceObserver:disabled"/>
   <int value="1227397136" label="MahiSummarizeSelected:enabled"/>
+  <int value="1227608882" label="OmniboxDebounceKeyboardVisibility:enabled"/>
   <int value="1227633129" label="NtpChromeCartModule:disabled"/>
   <int value="1228054141"
       label="OverrideUnsupportedPageLanguageForHrefTranslate:enabled"/>
