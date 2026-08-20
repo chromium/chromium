@@ -14,6 +14,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.TextFragmentReceiver;
@@ -138,8 +140,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                             ShareParams params,
                             ChromeShareExtras chromeShareExtras,
                             long shareStartTime) {
-                        if (params.getLinkToTextSuccessful() != null
-                                && params.getLinkToTextSuccessful()
+                        if (params.getLinkToTextSuccessful() == TriState.TRUE
                                 && !TextUtils.isEmpty(params.getUrl())) {
                             Clipboard.getInstance().copyUrlToClipboard(new GURL(params.getUrl()));
                         } else {
@@ -253,7 +254,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                                         LinkToTextHelper.getUrlToShare(mShareUrl, selector))
                                 .setText(mSelectedText, SHARE_TEXT_TEMPLATE)
                                 .setPreviewText(getPreviewText(), SHARE_TEXT_TEMPLATE)
-                                .setLinkToTextSuccessful(true)
+                                .setLinkToTextSuccessful(TriState.TRUE)
                                 .build();
         mShareTextParams =
                 new ShareParams.Builder(
@@ -261,7 +262,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                                 mTab.getTitle(),
                                 /* url= */ "")
                         .setText(mSelectedText)
-                        .setLinkToTextSuccessful(!isSelectorEmpty)
+                        .setLinkToTextSuccessful(TriStateUtils.from(!isSelectorEmpty))
                         .build();
         mChromeOptionShareCallback.showShareSheet(
                 getShareParams(isSelectorEmpty ? LinkToggleState.NO_LINK : LinkToggleState.LINK),

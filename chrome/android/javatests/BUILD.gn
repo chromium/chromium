@@ -1811,6 +1811,7 @@ java_group("common_unit_test_deps_java") {
   deps = [
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:tristate_java",
     "//chrome/android:base_module_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android:chrome_java",

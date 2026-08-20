@@ -37,6 +37,7 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TriState;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -596,7 +597,7 @@ public class ShareDelegateImplUnitTest {
                                 mWindowAndroid, "", JUnitTestGURLs.TEXT_FRAGMENT_URL.getSpec())
                         .setBypassFixingDomDistillerUrl(true)
                         .setText("text")
-                        .setLinkToTextSuccessful(true)
+                        .setLinkToTextSuccessful(TriState.TRUE)
                         .build();
         extras =
                 new ChromeShareExtras.Builder()
@@ -631,7 +632,7 @@ public class ShareDelegateImplUnitTest {
                                         List.of(
                                                 Uri.parse("content://path/to/image1"),
                                                 Uri.parse("content://path/to/image2"))))
-                        .setLinkToTextSuccessful(true)
+                        .setLinkToTextSuccessful(TriState.TRUE)
                         .setFileContentType("image/png")
                         .build();
         extras =

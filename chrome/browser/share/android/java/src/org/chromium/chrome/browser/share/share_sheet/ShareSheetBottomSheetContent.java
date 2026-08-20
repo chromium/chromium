@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.TriState;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -121,16 +122,14 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         // Set |mLinkGenerationState| to invalid value of |MAX| if |getLinkToTextSuccessful|
         // is not set in order to distinguish it from failure state. |getLinkToTextSuccessful| will
         // be set only for link to text.
-        if (mParams.getLinkToTextSuccessful() == null) {
+        if (mParams.getLinkToTextSuccessful() == TriState.NOT_SET) {
             mLinkGenerationState = LinkGeneration.MAX;
+        } else if (mParams.getLinkToTextSuccessful() == TriState.TRUE) {
+            mLinkGenerationState = LinkGeneration.LINK;
+            mLinkToggleState = LinkToggleState.LINK;
         } else {
-            if (mParams.getLinkToTextSuccessful()) {
-                mLinkGenerationState = LinkGeneration.LINK;
-                mLinkToggleState = LinkToggleState.LINK;
-            } else {
-                mLinkGenerationState = LinkGeneration.FAILURE;
-                mLinkToggleState = LinkToggleState.NO_LINK;
-            }
+            mLinkGenerationState = LinkGeneration.FAILURE;
+            mLinkToggleState = LinkToggleState.NO_LINK;
         }
         createContentView();
     }

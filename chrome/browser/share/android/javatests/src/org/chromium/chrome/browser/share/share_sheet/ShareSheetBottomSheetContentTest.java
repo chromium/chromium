@@ -36,6 +36,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TriState;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
@@ -44,8 +45,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
-import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -100,7 +101,7 @@ public final class ShareSheetBottomSheetContentTest {
                 new ShareParams.Builder(/* window= */ null, sTitle, sUrl)
                         .setText(sText)
                         .setSingleImageUri(sImageUri)
-                        .setLinkToTextSuccessful(true)
+                        .setLinkToTextSuccessful(TriState.TRUE)
                         .build();
         // Pretend the feature engagement feature is already initialized. Otherwise
         // UserEducationHelper#requestShowIph() calls get dropped during test.

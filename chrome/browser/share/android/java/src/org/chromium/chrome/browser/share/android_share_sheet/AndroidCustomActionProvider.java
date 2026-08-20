@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TriState;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -202,8 +203,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
     @Override
     protected void maybeAddCopyFirstPartyOption() {
         // getLinkToTextSuccessful is only populated when an link is generated for share.
-        if (mShareParams.getLinkToTextSuccessful() != null
-                && mShareParams.getLinkToTextSuccessful()
+        if (mShareParams.getLinkToTextSuccessful() == TriState.TRUE
                 && mChromeShareExtras != null
                 && mChromeShareExtras.getDetailedContentType()
                         == ChromeShareExtras.DetailedContentType.HIGHLIGHTED_TEXT) {
