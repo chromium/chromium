@@ -48,6 +48,11 @@ bool IsAccessibilityPruneRedundantInlineConnectivityEnabled() {
       ::features::kAccessibilityPruneRedundantInlineConnectivity);
 }
 
+BASE_FEATURE(kAccessibilityCheckAXNodeIDs, base::FEATURE_ENABLED_BY_DEFAULT);
+bool IsAccessibilityCheckAXNodeIDsEnabled() {
+  return base::FeatureList::IsEnabled(::features::kAccessibilityCheckAXNodeIDs);
+}
+
 BASE_FEATURE(kAccessibilityTextFormatting, base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityTextFormattingEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityTextFormatting);

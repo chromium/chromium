@@ -55,6 +55,10 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kAccessibilityPruneRedundantInlineConnectivity);
 AX_BASE_EXPORT bool IsAccessibilityPruneRedundantInlineConnectivityEnabled();
 
+// Check AXNodeIDs sent over Mojo
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityCheckAXNodeIDs);
+AX_BASE_EXPORT bool IsAccessibilityCheckAXNodeIDsEnabled();
+
 // Enables the addition of text formatting information to the Android
 // AccessibilityNodeInfo accessibility tree.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityTextFormatting);

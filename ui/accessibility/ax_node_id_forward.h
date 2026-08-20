@@ -8,6 +8,13 @@
 #include <limits.h>
 #include <stdint.h>
 
+#include "ui/accessibility/ax_base_export.h"
+
+// Forward declare to avoid compile-size error.
+namespace features {
+AX_BASE_EXPORT bool IsAccessibilityCheckAXNodeIDsEnabled();
+}
+
 namespace ui {
 
 // Defines the type used for AXNode IDs, which are unique for a given context,
@@ -38,7 +45,8 @@ static constexpr AXNodeID kLastGeneratedRendererNodeID = INT_MIN;
 // Validation for AXNodeID from a renderer.
 // Browser reserves [-1,000,000,000, -1] for internal nodes.
 constexpr bool IsValidAXNodeIDFromRenderer(int32_t id) {
-  return id >= kInvalidAXNodeID || id <= ui::kFirstGeneratedRendererNodeID;
+  return id >= kInvalidAXNodeID || id <= ui::kFirstGeneratedRendererNodeID ||
+         !features::IsAccessibilityCheckAXNodeIDsEnabled();
 }
 
 }  // namespace ui
