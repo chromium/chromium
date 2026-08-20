@@ -159,11 +159,15 @@ public class PdfCoordinator
     /** A PdfSandboxHandle representing the active pdf session. */
     private @Nullable PdfSandboxHandle mPdfSandboxHandle;
 
+    private @Nullable AlertDialog mAlertDialog;
+
     /**
      * Whether the pdf has been loaded, despite of success or failure, for the current mUri. This is
      * used to ensure we load the pdf at most once. If mUri was updated, this is reset to false.
      */
     private boolean mIsPdfLoaded;
+
+    private boolean mHasMadeAnyChanges;
 
     boolean mIsInitialZoomPass = true;
     private boolean mIsDefaultZoomPending;
@@ -741,14 +745,22 @@ public class PdfCoordinator
 
                                     @Override
                                     public void resumeWith(Object result) {
-                                        if (result != kotlin.Unit.INSTANCE) {
+                                        boolean isSuccess = result == kotlin.Unit.INSTANCE;
+                                        if (!isSuccess) {
                                             Log.e(TAG, "Async PDF write failed: " + result);
                                         }
                                         PostTask.postTask(
                                                 TaskTraits.USER_BLOCKING_MAY_BLOCK,
                                                 () -> {
                                                     cleanupWriteResources(finalPfd, handle);
-                                                    ThreadUtils.postOnUiThread(() -> finishExitingEditMode());
+                                                    ThreadUtils.postOnUiThread(
+                                                            () -> {
+                                                                if (isSuccess
+                                                                        && mDelegate != null) {
+                                                                    mDelegate.onEditsApplied();
+                                                                }
+                                                                finishExitingEditMode();
+                                                            });
                                                 });
                                     }
                                 };
@@ -769,7 +781,13 @@ public class PdfCoordinator
                                     TaskTraits.USER_BLOCKING_MAY_BLOCK,
                                     () -> {
                                         cleanupWriteResources(finalPfd, handle);
-                                        ThreadUtils.postOnUiThread(() -> finishExitingEditMode());
+                                        ThreadUtils.postOnUiThread(
+                                                () -> {
+                                                    if (mDelegate != null) {
+                                                        mDelegate.onEditsApplied();
+                                                    }
+                                                    finishExitingEditMode();
+                                                });
                                     });
                         }
                         success = true;
@@ -1150,6 +1168,10 @@ public class PdfCoordinator
         if (mToolbarCoordinator != null) {
             mToolbarCoordinator.destroy();
         }
+        if (mAlertDialog != null) {
+            mAlertDialog.dismiss();
+            mAlertDialog = null;
+        }
         if (mChromePdfViewerFragment == null) {
             return;
         }
@@ -1252,6 +1274,35 @@ public class PdfCoordinator
         if (mToolbarCoordinator != null) {
             mToolbarCoordinator.resetTwoPagesPerRow();
         }
+
+        if (hasChanges()) {
+            showReloadConfirmationDialog(this::performReload);
+        } else {
+            performReload();
+        }
+    }
+
+    @Override
+    public boolean hasChanges() {
+        return mChromePdfViewerFragment != null
+                && (mChromePdfViewerFragment.hasUnsavedChanges() || mHasMadeAnyChanges);
+    }
+
+    @Override
+    public void showReloadConfirmationDialog(Runnable onConfirm) {
+        if (mActivity == null || mActivity.isFinishing() || mActivity.isDestroyed()) {
+            return;
+        }
+        if (mActivity instanceof ModalDialogManagerHolder) {
+            ModalDialogManager modalDialogManager =
+                    ((ModalDialogManagerHolder) mActivity).getModalDialogManager();
+            showReloadModalDialog(modalDialogManager, onConfirm);
+        } else {
+            showReloadAlertDialog(onConfirm);
+        }
+    }
+
+    private void performReload() {
         int page = -1;
         float zoom = -1f;
         boolean pending = false;
@@ -1292,7 +1343,81 @@ public class PdfCoordinator
         loadPdfInternal();
     }
 
+    private void showReloadModalDialog(ModalDialogManager manager, Runnable onConfirm) {
+        ModalDialogProperties.Controller controller =
+                new ModalDialogProperties.Controller() {
+                    @Override
+                    public void onDismiss(
+                            PropertyModel model, @DialogDismissalCause int dismissalCause) {}
+
+                    @Override
+                    public void onClick(PropertyModel model, int buttonType) {
+                        if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
+                            manager.dismissDialog(
+                                    model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                            onConfirm.run();
+                        } else if (buttonType == ModalDialogProperties.ButtonType.NEGATIVE) {
+                            manager.dismissDialog(
+                                    model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+                        }
+                    }
+                };
+
+        PropertyModel model =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, controller)
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .with(
+                                ModalDialogProperties.TITLE,
+                                mActivity.getString(
+                                        R.string.pdf_unsaved_changes_dialog_reload_title))
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                mActivity.getString(R.string.pdf_unsaved_changes_dialog_message))
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                mActivity.getResources(),
+                                R.string.pdf_unsaved_changes_dialog_reload_button)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                mActivity.getResources(),
+                                R.string.pdf_unsaved_changes_dialog_cancel_button)
+                        .with(
+                                ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
+                        .build();
+
+        manager.showDialog(model, ModalDialogType.APP);
+    }
+
+    private void showReloadAlertDialog(Runnable onConfirm) {
+        if (mAlertDialog != null) {
+            mAlertDialog.dismiss();
+        }
+        mAlertDialog =
+                new AlertDialog.Builder(mActivity)
+                        .setTitle(R.string.pdf_unsaved_changes_dialog_reload_title)
+                        .setMessage(R.string.pdf_unsaved_changes_dialog_message)
+                        .setPositiveButton(
+                                R.string.pdf_unsaved_changes_dialog_reload_button,
+                                (dialog, which) -> {
+                                    dialog.dismiss();
+                                    onConfirm.run();
+                                })
+                        .setNegativeButton(
+                                R.string.pdf_unsaved_changes_dialog_cancel_button,
+                                (dialog, which) -> dialog.dismiss())
+                        .setOnDismissListener(
+                                dialog -> {
+                                    if (mAlertDialog == dialog) {
+                                        mAlertDialog = null;
+                                    }
+                                })
+                        .show();
+    }
+
     private void loadPdfInternal() {
+        mHasMadeAnyChanges = false;
         if (mUri != null) {
             if (sSkipLoadPdfForTesting) {
                 mIsPdfLoaded = true;
@@ -1601,6 +1726,11 @@ public class PdfCoordinator
     }
 
     @Override
+    public void onEditsApplied() {
+        mHasMadeAnyChanges = true;
+    }
+
+    @Override
     public void onViewportChanged(int pageIndex, float zoomLevel) {
         assert mToolbarCoordinator != null;
         // AndroidX PDF Viewport is not initialized to 100% zoom on the initial pass. For PDF V2, we
@@ -1793,12 +1923,27 @@ public class PdfCoordinator
     }
 
     private void showAlertDialog(View dialogView) {
-        new AlertDialog.Builder(mActivity)
-                .setTitle(R.string.pdf_document_properties)
-                .setView(dialogView)
-                .setPositiveButton(
-                        R.string.pdf_properties_close, (dialog, which) -> dialog.dismiss())
-                .show();
+        if (mAlertDialog != null) {
+            mAlertDialog.dismiss();
+        }
+        mAlertDialog =
+                new AlertDialog.Builder(mActivity)
+                        .setTitle(R.string.pdf_document_properties)
+                        .setView(dialogView)
+                        .setPositiveButton(
+                                R.string.pdf_properties_close, (dialog, which) -> dialog.dismiss())
+                        .setOnDismissListener(
+                                dialog -> {
+                                    if (mAlertDialog == dialog) {
+                                        mAlertDialog = null;
+                                    }
+                                })
+                        .show();
+    }
+
+    @VisibleForTesting
+    @Nullable AlertDialog getAlertDialogForTesting() {
+        return mAlertDialog;
     }
 
     @Nullable PdfToolbarCoordinator getToolbarCoordinatorForTesting() {

@@ -25,6 +25,12 @@ public interface PdfCoordinatorInterface {
     /** Reloads the pdf document. */
     void reload();
 
+    /** Returns whether there are any unsaved or applied changes. */
+    boolean hasChanges();
+
+    /** Shows the reload confirmation dialog and runs onConfirm if confirmed. */
+    void showReloadConfirmationDialog(Runnable onConfirm);
+
     /** Called after pdf download complete. */
     void onDownloadComplete(String pdfFilePath, String pdfFileName);
 

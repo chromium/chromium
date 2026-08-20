@@ -55,5 +55,8 @@ public interface PdfActionsDelegate {
 
     /** Returns the URI of the PDF document. */
     @Nullable Uri getUri();
+
+    /** Called when edits are successfully applied to the PDF. */
+    void onEditsApplied();
 }
 

@@ -4,14 +4,19 @@
 
 package org.chromium.chrome.browser.pdf;
 
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -1500,7 +1505,7 @@ public class PdfCoordinatorUnitTest {
         File tempFile = File.createTempFile("test_pdf", ".pdf");
         tempFile.deleteOnExit();
         FileWriter writer = new FileWriter(tempFile);
-        writer.write("dummy pdf content");
+        writer.write("test pdf content");
         writer.close();
 
         mPdfCoordinator =
@@ -1546,8 +1551,11 @@ public class PdfCoordinatorUnitTest {
 
         assertEquals(tempFile.getName(), fileNameValue.getText().toString());
         assertEquals("5", pageCountValue.getText().toString());
-        assertEquals("17 B", fileSizeValue.getText().toString());
+        assertEquals("16 B", fileSizeValue.getText().toString());
         assertEquals("2.78 × 5.56 in (71 × 141 mm)", pageSizeValue.getText().toString());
+
+        mPdfCoordinator.destroy();
+        assertFalse("Dialog should be dismissed on destroy", latestDialog.isShowing());
     }
 
     @Test
@@ -1567,7 +1575,7 @@ public class PdfCoordinatorUnitTest {
             File tempFile = File.createTempFile("test_pdf", ".pdf");
             tempFile.deleteOnExit();
             FileWriter writer = new FileWriter(tempFile);
-            writer.write("dummy pdf content");
+            writer.write("test pdf content");
             writer.close();
 
             PdfCoordinator pdfCoordinator =
@@ -1648,7 +1656,7 @@ public class PdfCoordinatorUnitTest {
 
             assertEquals(tempFile.getName(), fileNameValue.getText().toString());
             assertEquals("5", pageCountValue.getText().toString());
-            assertEquals("17 B", fileSizeValue.getText().toString());
+            assertEquals("16 B", fileSizeValue.getText().toString());
             assertEquals("2.78 × 5.56 in (71 × 141 mm)", pageSizeValue.getText().toString());
         }
     }
@@ -1852,6 +1860,127 @@ public class PdfCoordinatorUnitTest {
         // For sync completion, it should finish immediately
         assertFalse(shadowFragment.getEditModeEnabled());
         assertTrue(fakeHandle.mClosed);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testReload_NoUnsavedChanges() {
+        createPdfCoordinator();
+        PdfCoordinator.ChromePdfViewerFragment originalFragment =
+                mPdfCoordinator.mChromePdfViewerFragment;
+        PdfCoordinator.ChromePdfViewerFragment spyFragment = spy(originalFragment);
+        mPdfCoordinator.mChromePdfViewerFragment = spyFragment;
+        doReturn(false).when(spyFragment).hasUnsavedChanges();
+
+        mPdfCoordinator.reload();
+
+        assertNotSame(originalFragment, mPdfCoordinator.mChromePdfViewerFragment);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testReload_WithUnsavedChanges_Dismiss() throws Exception {
+        try (var controller =
+                org.robolectric.Robolectric.buildActivity(TestModalDialogActivity.class)) {
+            TestModalDialogActivity customActivity = controller.get();
+            customActivity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI_DayNight);
+            controller.setup();
+            FakeModalDialogManager fakeModalDialogManager =
+                    new FakeModalDialogManager(ModalDialogType.APP);
+            customActivity.setModalDialogManager(fakeModalDialogManager);
+
+            PdfCoordinator pdfCoordinator =
+                    new PdfCoordinator(
+                            mNativePageHost,
+                            mProfile,
+                            customActivity,
+                            FILE_PATH,
+                            PDF_TITLE,
+                            TAB_ID,
+                            PDF_URL,
+                            mPdfFragmentViewTracker);
+            PdfView pdfView = new PdfView(customActivity);
+            pdfView.layout(0, 0, 500, PDF_CONTENT_HEIGHT);
+            pdfCoordinator.mChromePdfViewerFragment.setPdfViewForTesting(pdfView);
+            ViewGroup contentView = customActivity.findViewById(android.R.id.content);
+            contentView.addView(pdfCoordinator.getView());
+            ShadowLooper.idleMainLooper();
+
+            PdfCoordinator.ChromePdfViewerFragment originalFragment =
+                    pdfCoordinator.mChromePdfViewerFragment;
+            PdfCoordinator.ChromePdfViewerFragment spyFragment = spy(originalFragment);
+            pdfCoordinator.mChromePdfViewerFragment = spyFragment;
+            doReturn(true).when(spyFragment).hasUnsavedChanges();
+
+            pdfCoordinator.reload();
+
+            // Dialog should be shown
+            PropertyModel dialogModel = fakeModalDialogManager.getShownDialogModel();
+            assertNotNull("Modal dialog should be shown", dialogModel);
+            assertEquals(
+                    customActivity.getString(R.string.pdf_unsaved_changes_dialog_reload_title),
+                    dialogModel.get(ModalDialogProperties.TITLE));
+            assertEquals(
+                    customActivity.getString(R.string.pdf_unsaved_changes_dialog_message),
+                    dialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
+
+            // Click Cancel (Negative button)
+            fakeModalDialogManager.clickNegativeButton();
+
+            // Verify dialog is dismissed and reload did NOT happen
+            assertNull(fakeModalDialogManager.getShownDialogModel());
+            assertSame(spyFragment, pdfCoordinator.mChromePdfViewerFragment);
+        }
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testReload_WithUnsavedChanges_Confirm() throws Exception {
+        try (var controller =
+                org.robolectric.Robolectric.buildActivity(TestModalDialogActivity.class)) {
+            TestModalDialogActivity customActivity = controller.get();
+            customActivity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI_DayNight);
+            controller.setup();
+            FakeModalDialogManager fakeModalDialogManager =
+                    new FakeModalDialogManager(ModalDialogType.APP);
+            customActivity.setModalDialogManager(fakeModalDialogManager);
+
+            PdfCoordinator pdfCoordinator =
+                    new PdfCoordinator(
+                            mNativePageHost,
+                            mProfile,
+                            customActivity,
+                            FILE_PATH,
+                            PDF_TITLE,
+                            TAB_ID,
+                            PDF_URL,
+                            mPdfFragmentViewTracker);
+            PdfView pdfView = new PdfView(customActivity);
+            pdfView.layout(0, 0, 500, PDF_CONTENT_HEIGHT);
+            pdfCoordinator.mChromePdfViewerFragment.setPdfViewForTesting(pdfView);
+            ViewGroup contentView = customActivity.findViewById(android.R.id.content);
+            contentView.addView(pdfCoordinator.getView());
+            ShadowLooper.idleMainLooper();
+
+            PdfCoordinator.ChromePdfViewerFragment originalFragment =
+                    pdfCoordinator.mChromePdfViewerFragment;
+            PdfCoordinator.ChromePdfViewerFragment spyFragment = spy(originalFragment);
+            pdfCoordinator.mChromePdfViewerFragment = spyFragment;
+            doReturn(true).when(spyFragment).hasUnsavedChanges();
+
+            pdfCoordinator.reload();
+
+            // Dialog should be shown
+            PropertyModel dialogModel = fakeModalDialogManager.getShownDialogModel();
+            assertNotNull("Modal dialog should be shown", dialogModel);
+
+            // Click Reload (Positive button)
+            fakeModalDialogManager.clickPositiveButton();
+
+            // Verify dialog is dismissed and reload DID happen (fragment changed)
+            assertNull(fakeModalDialogManager.getShownDialogModel());
+            assertNotSame(spyFragment, pdfCoordinator.mChromePdfViewerFragment);
+        }
     }
 
     @Test
@@ -2094,6 +2223,138 @@ public class PdfCoordinatorUnitTest {
                 0,
                 PdfCoordinator.ChromePdfViewerFragment.calculateCurrentPage(
                         mockPdfView, 0, twoPageRow0Locations));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testReload_WithAppliedChanges_ShowsConfirmation() throws Exception {
+        ChromeFileProvider.setGeneratedUriForTesting(
+                Uri.parse("content://com.android.chrome.provider/test.pdf"));
+        createPdfCoordinator();
+
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(mPdfCoordinator.mChromePdfViewerFragment, "test_pdf_tag")
+                .commitNow();
+
+        ShadowEditablePdfViewerFragment shadowFragment =
+                Shadow.extract(mPdfCoordinator.mChromePdfViewerFragment);
+        shadowFragment.setHasUnsavedChanges(true);
+
+        File tempFile = File.createTempFile("test_pdf", ".pdf");
+        tempFile.deleteOnExit();
+        ParcelFileDescriptor pfd =
+                ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_WRITE_ONLY);
+
+        TestContentProvider provider = new TestContentProvider(pfd);
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.authority = "com.android.chrome.provider";
+        provider.attachInfo(mActivity, providerInfo);
+        ShadowContentResolver.registerProviderInternal("com.android.chrome.provider", provider);
+
+        // Exit edit mode, which calls applyDraftEdits
+        mPdfCoordinator.setEditMode(false);
+
+        FakePdfWriteHandle fakeHandle = new FakePdfWriteHandle();
+
+        // Trigger onApplyEditsSuccess
+        mPdfCoordinator.mChromePdfViewerFragment.onApplyEditsSuccess(fakeHandle);
+
+        // Resume continuation to simulate success
+        assertNotNull(fakeHandle.mContinuation);
+        fakeHandle.mContinuation.resumeWith(kotlin.Unit.INSTANCE);
+
+        // Wait for post tasks to run (finishExitingEditMode is posted)
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        // Now reload should show confirmation dialog.
+        mPdfCoordinator.reload();
+
+        // Verify dialog is shown.
+        androidx.appcompat.app.AlertDialog latestDialog =
+                (androidx.appcompat.app.AlertDialog) ShadowDialog.getLatestDialog();
+        assertNotNull("Dialog should be shown", latestDialog);
+        assertTrue("Dialog should be showing", latestDialog.isShowing());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testReload_WithoutChanges_DoesNotShowConfirmation() throws Exception {
+        createPdfCoordinator();
+        ShadowEditablePdfViewerFragment shadowFragment =
+                Shadow.extract(mPdfCoordinator.mChromePdfViewerFragment);
+        shadowFragment.setHasUnsavedChanges(false);
+
+        mPdfCoordinator.reload();
+
+        androidx.appcompat.app.AlertDialog latestDialog =
+                (androidx.appcompat.app.AlertDialog) ShadowDialog.getLatestDialog();
+        if (latestDialog != null) {
+            assertFalse("Dialog should not be showing", latestDialog.isShowing());
+        }
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testDestroy_DismissesAlertDialog() {
+        createPdfCoordinator();
+        mPdfCoordinator.showReloadConfirmationDialog(() -> {});
+
+        androidx.appcompat.app.AlertDialog latestDialog =
+                (androidx.appcompat.app.AlertDialog) ShadowDialog.getLatestDialog();
+        assertNotNull("Dialog should be shown", latestDialog);
+        assertTrue("Dialog should be showing", latestDialog.isShowing());
+        assertSame(latestDialog, mPdfCoordinator.getAlertDialogForTesting());
+
+        mPdfCoordinator.destroy();
+
+        assertFalse("Dialog should be dismissed on destroy", latestDialog.isShowing());
+        assertNull(mPdfCoordinator.getAlertDialogForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testShowAlertDialog_DismissesPreviousAlertDialog() {
+        createPdfCoordinator();
+        mPdfCoordinator.showReloadConfirmationDialog(() -> {});
+
+        androidx.appcompat.app.AlertDialog firstDialog =
+                (androidx.appcompat.app.AlertDialog) ShadowDialog.getLatestDialog();
+        assertNotNull("First dialog should be shown", firstDialog);
+        assertTrue("First dialog should be showing", firstDialog.isShowing());
+        assertSame(firstDialog, mPdfCoordinator.getAlertDialogForTesting());
+
+        mPdfCoordinator.showReloadConfirmationDialog(() -> {});
+
+        androidx.appcompat.app.AlertDialog secondDialog =
+                (androidx.appcompat.app.AlertDialog) ShadowDialog.getLatestDialog();
+        assertNotNull("Second dialog should be shown", secondDialog);
+        assertNotSame(firstDialog, secondDialog);
+        assertFalse("First dialog should be dismissed", firstDialog.isShowing());
+        assertTrue("Second dialog should be showing", secondDialog.isShowing());
+        assertSame(secondDialog, mPdfCoordinator.getAlertDialogForTesting());
+
+        mPdfCoordinator.destroy();
+
+        assertFalse("Second dialog should be dismissed on destroy", secondDialog.isShowing());
+        assertNull(mPdfCoordinator.getAlertDialogForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testAlertDialog_DismissResetsAlertDialogField() {
+        createPdfCoordinator();
+        mPdfCoordinator.showReloadConfirmationDialog(() -> {});
+
+        androidx.appcompat.app.AlertDialog dialog =
+                (androidx.appcompat.app.AlertDialog) ShadowDialog.getLatestDialog();
+        assertNotNull(dialog);
+        assertSame(dialog, mPdfCoordinator.getAlertDialogForTesting());
+
+        dialog.dismiss();
+        ShadowLooper.idleMainLooper();
+        assertNull(mPdfCoordinator.getAlertDialogForTesting());
     }
 
     @Implements(PdfView.class)

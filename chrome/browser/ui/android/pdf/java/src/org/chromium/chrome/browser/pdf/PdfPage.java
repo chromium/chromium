@@ -11,6 +11,8 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import java.io.File;
+
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -24,8 +26,6 @@ import org.chromium.chrome.modules.on_demand.OnDemandModule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
-
-import java.io.File;
 
 /** Native page that displays pdf file. */
 @NullMarked
@@ -192,15 +192,23 @@ public class PdfPage extends BasicNativePage {
             // or content://) instead of a web URL. If so, we call the existing flow to reload the
             // document by re-creating the fragment using the existing local file.
             if (redownloadUrl != null) {
-                String filepath = mPdfCoordinator.getFilepath();
-                if (mIsIncognito) {
-                    PdfContentProvider.removeContentUri(filepath);
+                Runnable performRedownload =
+                        () -> {
+                            String filepath = mPdfCoordinator.getFilepath();
+                            if (mIsIncognito) {
+                                PdfContentProvider.removeContentUri(filepath);
+                            }
+                            maybeDeleteTransientFile(filepath);
+                            mPdfCoordinator.resetLoadState();
+                            LoadUrlParams params = new LoadUrlParams(redownloadUrl);
+                            params.setShouldReplaceCurrentEntry(true);
+                            mHost.loadUrl(params, mIsIncognito);
+                        };
+                if (mPdfCoordinator.hasChanges()) {
+                    mPdfCoordinator.showReloadConfirmationDialog(performRedownload);
+                } else {
+                    performRedownload.run();
                 }
-                maybeDeleteTransientFile(filepath);
-                mPdfCoordinator.resetLoadState();
-                LoadUrlParams params = new LoadUrlParams(redownloadUrl);
-                params.setShouldReplaceCurrentEntry(true);
-                mHost.loadUrl(params, mIsIncognito);
             } else {
                 mPdfCoordinator.reload();
             }
