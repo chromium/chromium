@@ -27,9 +27,17 @@ if ! gh auth status &> /dev/null; then
 fi
 
 # Check cargo / cddlconv dependency
+REQUIRED_CDDLCONV_VERSION="0.1.9"
 if ! command -v cddlconv &> /dev/null; then
   echo "Error: 'cddlconv' is required but not installed." >&2
-  echo "Please install it using cargo: 'cargo install cddlconv@0.1.7'" >&2
+  echo "Please install it using cargo: 'cargo install cddlconv@$REQUIRED_CDDLCONV_VERSION'" >&2
+  exit 1
+fi
+
+CDDLCONV_VERSION=$(cddlconv --version | awk '{print $2}')
+if [ "$CDDLCONV_VERSION" != "$REQUIRED_CDDLCONV_VERSION" ]; then
+  echo "Error: 'cddlconv' version $REQUIRED_CDDLCONV_VERSION is required, but found $CDDLCONV_VERSION." >&2
+  echo "Please install it using cargo: 'cargo install cddlconv@$REQUIRED_CDDLCONV_VERSION'" >&2
   exit 1
 fi
 
