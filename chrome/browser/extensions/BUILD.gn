@@ -2691,15 +2691,6 @@ source_set("browser_tests") {
   if (enable_extensions) {
     sources += [
       # TODO(crbug.com/469417243): Move to BUILD.gn files closer to sources.
-      "//chrome/browser/controlled_frame/controlled_frame_apitest.cc",
-      "//chrome/browser/controlled_frame/controlled_frame_contextmenus_browsertest.cc",
-      "//chrome/browser/controlled_frame/controlled_frame_dialog_browsertest.cc",
-      "//chrome/browser/controlled_frame/controlled_frame_disabled_permission_browsertest.cc",
-      "//chrome/browser/controlled_frame/controlled_frame_new_window_browsertest.cc",
-      "//chrome/browser/controlled_frame/controlled_frame_permission_request_browsertest.cc",
-      "//chrome/browser/controlled_frame/controlled_frame_wpt_browsertest.cc",
-      "//chrome/browser/controlled_frame/scoped_test_driver_proxy.cc",
-      "//chrome/browser/controlled_frame/scoped_test_driver_proxy.h",
       "//chrome/browser/notifications/notification_permission_context_apitest.cc",
       "//chrome/browser/page_load_metrics/observers/serp_page_load_metrics_observer_browsertest.cc",
       "//chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_browsertest.cc",

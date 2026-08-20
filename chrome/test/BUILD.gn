@@ -3665,6 +3665,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/apps/platform_apps:browser_test_support",
         "//chrome/browser/apps/platform_apps:browser_tests",
+        "//chrome/browser/controlled_frame:browser_tests",
         "//chrome/browser/extensions:browser_tests",
         "//chrome/browser/guest_view:browser_tests",
         "//chrome/browser/web_applications/extensions",
