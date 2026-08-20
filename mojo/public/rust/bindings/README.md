@@ -532,7 +532,69 @@ bind/drop them the same way.
 
 #### Associating with a C++ pipe
 
-<https://crbug.com/540355135>
+Sometimes, you may want to create an associated endpoint on a pipe that already
+exists in C++ code (that is, attach to a C++ `Remote` or `Receiver`) (for example,
+attaching a frame-associated interface to `content::mojom::RenderFrameHost` or
+`blink::mojom::LocalFrame`).
+In order to do so, you'll need to convert one of your pending endpoints to a form
+that C++ can send over a pipe.
+
+To do so, create your pending endpoints using `new_pair_cpp` instead of `new_pair`:
+
+```Rust
+let (p_remote, p_receiver_cpp) =
+    PendingAssociatedRemote::<dyn MathService>::new_pair_cpp();
+
+let mut math_remote = p_remote.bind();
+```
+
+This returns a tuple containing:
+1. A normal Rust `PendingAssociatedRemote` (or `PendingAssociatedReceiver`),
+   which you can bind and use in Rust. Note that this endpoint is managed
+   by C++ under the hood and cannot be sent in a Mojo message.
+2. A `cxx::UniquePtr<CxxPendingAssociatedEndpoint>`, which can be converted
+   into a C++ `PendingAssociated*` and therefore sent in a Mojo message via the
+   C++ endpoint:
+
+```cpp
+#include "mojo/public/rust/bindings/multiplex_router/cpp_interop/associated_endpoint_rust_adapter.h"
+
+mojo::rust::bindings::CxxPendingAssociatedEndpoint p_receiver_cpp =
+    GetFromRustOverFFI();
+
+mojo::PendingAssociatedReceiver<MathService> pending_receiver =
+    mojo::rust::bindings::PassPendingAssociatedReceiver<MathService>(
+        std::move(p_receiver_cpp));
+
+// Send `pending_receiver` in a message to associate the pair with that pipe
+```
+
+##### Receiving a C++ associated endpoint in Rust
+
+The same process can be applied in reverse when receiving the pending endpoint
+via C++. After extracting it from the Mojo message, first convert the
+C++ `PendingAssociated*` using `MakeAssociatedEndpointRustAdapter`:
+
+```cpp
+// In the response handler for a mojo message
+
+mojo::rust::bindings::CxxPendingAssociatedEndpoint endpoint_adapter =
+    mojo::rust::bindings::MakeAssociatedEndpointRustAdapter(
+        std::move(pending_receiver));
+```
+
+Then you can pass `endpoint_adapter` across FFI to Rust, and convert it into
+a Rust pending associated endpoint using `from_cpp()`:
+
+```Rust
+let p_receiver =
+    PendingAssociatedReceiver::<dyn MathService>::from_cpp(endpoint_adapter);
+
+let mut math_receiver = p_receiver.bind(some_state_object);
+```
+
+Once bound, you can use the `Remote` or `Receiver` to communicate over the C++
+message pipe just like any other associated endpoint.
 
 ### Versioning
 
