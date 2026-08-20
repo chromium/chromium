@@ -184,7 +184,8 @@ Profile* SkillsUiTabController::GetProfile() {
 
 void SkillsUiTabController::InvokeSkill(std::string_view skill_id,
                                         std::string_view skill_name,
-                                        std::string_view skill_icon) {
+                                        std::string_view skill_icon,
+                                        bool auto_submit) {
   if (!SkillsServiceFactory::IsSkillsEnabledForProfile(GetProfile())) {
     return;
   }
@@ -258,9 +259,13 @@ void SkillsUiTabController::InvokeSkill(std::string_view skill_id,
       options.target = std::move(*target_);
     }
     target_.reset();
-    service->InvokeWithAutoSubmit(
-        glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
-        std::move(options));
+    if (auto_submit) {
+      service->InvokeWithAutoSubmit(
+          glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
+          std::move(options));
+    } else {
+      service->Invoke(std::move(options));
+    }
   }
 }
 

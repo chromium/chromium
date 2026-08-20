@@ -51,7 +51,8 @@ class SkillsUiTabControllerInterface {
   // Invokes the skill with skill_id in sidepanel.
   virtual void InvokeSkill(std::string_view skill_id,
                            std::string_view skill_name,
-                           std::string_view skill_icon) = 0;
+                           std::string_view skill_icon,
+                           bool auto_submit) = 0;
 
   // Sends a prompt to the side panel.
   virtual void SendPrompt(std::string_view prompt) = 0;

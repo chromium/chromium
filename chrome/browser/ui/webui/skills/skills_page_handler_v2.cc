@@ -215,18 +215,19 @@ void SkillsPageHandlerV2::InvokeSkill(const std::string& skill_id,
     return;
   }
   tabs::TabInterface* tab =
-      tabs::TabInterface::GetFromContents(&web_contents_.get());
+      tabs::TabInterface::MaybeGetFromContents(&web_contents_.get());
   if (!tab) {
     return;
   }
   if (auto* tab_controller = SkillsUiTabControllerInterface::From(tab)) {
-    tab_controller->InvokeSkill(skill_id, skill_name, skill_icon);
+    tab_controller->InvokeSkill(skill_id, skill_name, skill_icon,
+                                /*auto_submit=*/true);
   }
 }
 
 void SkillsPageHandlerV2::SendPrompt(const std::string& prompt) {
   tabs::TabInterface* tab =
-      tabs::TabInterface::GetFromContents(&web_contents_.get());
+      tabs::TabInterface::MaybeGetFromContents(&web_contents_.get());
   if (!tab) {
     return;
   }
