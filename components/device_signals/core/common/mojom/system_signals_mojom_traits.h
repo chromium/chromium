@@ -31,17 +31,17 @@ struct StructTraits<device_signals::mojom::ExecutableMetadataDataView,
     return input.is_running;
   }
 
-  static std::optional<std::vector<std::string>> public_keys_hashes(
+  static const std::optional<std::vector<std::string>>& public_keys_hashes(
       const device_signals::ExecutableMetadata& input) {
     return input.public_keys_hashes;
   }
 
-  static std::optional<std::string> product_name(
+  static const std::optional<std::string>& product_name(
       const device_signals::ExecutableMetadata& input) {
     return input.product_name;
   }
 
-  static std::optional<std::string> version(
+  static const std::optional<std::string>& version(
       const device_signals::ExecutableMetadata& input) {
     return input.version;
   }
@@ -50,7 +50,7 @@ struct StructTraits<device_signals::mojom::ExecutableMetadataDataView,
     return input.is_os_verified;
   }
 
-  static std::optional<std::string> subject_name(
+  static const std::optional<std::string>& subject_name(
       const device_signals::ExecutableMetadata& input) {
     return input.subject_name;
   }
@@ -72,13 +72,13 @@ struct StructTraits<device_signals::mojom::FileSystemItemDataView,
     return input.presence;
   }
 
-  static std::optional<std::string> sha256_hash(
+  static const std::optional<std::string>& sha256_hash(
       const device_signals::FileSystemItem& input) {
     return input.sha256_hash;
   }
 
-  static std::optional<device_signals::ExecutableMetadata> executable_metadata(
-      const device_signals::FileSystemItem& input) {
+  static const std::optional<device_signals::ExecutableMetadata>&
+  executable_metadata(const device_signals::FileSystemItem& input) {
     return input.executable_metadata;
   }
 
