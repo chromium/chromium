@@ -52,9 +52,10 @@ BocaManagerFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   CHECK(boca_util::IsEnabled(
       ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile)));
-  auto service =
-      std::make_unique<BocaManager>(profile, g_browser_process->local_state(),
-                                    g_browser_process->GetApplicationLocale());
+  auto service = std::make_unique<BocaManager>(
+      g_browser_process->local_state(),
+      g_browser_process->GetApplicationLocale(), profile,
+      IdentityManagerFactory::GetForProfile(profile));
   return service;
 }
 

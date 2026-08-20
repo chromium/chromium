@@ -58,8 +58,9 @@ std::unique_ptr<KeyedService> BuildBocaManagerWithIdentity(
   *adaptor_out = std::move(identity_adaptor);
 
   return std::make_unique<ash::BocaManager>(
-      profile, g_browser_process->local_state(),
-      g_browser_process->GetApplicationLocale());
+      g_browser_process->local_state(),
+      g_browser_process->GetApplicationLocale(), profile,
+      identity_adaptor->identity_test_env()->identity_manager());
 }
 
 std::string GetRequestBodyString(
