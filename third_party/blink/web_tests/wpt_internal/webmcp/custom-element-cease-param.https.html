@@ -24,27 +24,12 @@
   <my-param name="my-param"></my-param>
 </form>
 <script>
-  async function waitForFormToolSchemaToMatch(expected_schema) {
-    await new Promise(resolve => {
-      const ac = new AbortController();
-      document.modelContext.addEventListener('toolchange', async e => {
-        const [tool] = await document.modelContext.getTools();
-        if (tool && tool.inputSchema === expected_schema) {
-          resolve();
-          ac.abort();
-        }
-
-        // Otherwise, keep listening for the schema match!
-      }, {signal: ac.signal});
-    });
-  }
-
   promise_test(async t => {
-    await waitForFormToolSchemaToMatch(`{"type":"object","properties":{"my-param":{"type":"string"}},"required":[]}`);
+    await waitForFormToolSchemaToMatch({"type":"object","properties":{"my-param":{"type":"string"}},"required":[]});
 
     let myParam = document.querySelector('my-param');
     myParam.stopBeingToolParameter();
 
-    await waitForFormToolSchemaToMatch(`{"type":"object","properties":{},"required":[]}`);
+    await waitForFormToolSchemaToMatch({"type":"object","properties":{},"required":[]});
   }, 'Form-associated custom element ceasing to be a parameter');
 </script>
