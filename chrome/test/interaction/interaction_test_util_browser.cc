@@ -251,6 +251,9 @@ class InteractionTestUtilSimulatorBrowser
         LOG(ERROR) << "WebContents not associated with any UI element.";
         return ui::test::ActionResult::kFailed;
       }
+    } else if (auto* const web_el = el->AsA<ui::TrackedElementWebUI>()) {
+      is_web_contents = true;
+      view = web_el->GetWebView();
     }
     if (!view) {
       return ui::test::ActionResult::kNotAttempted;
