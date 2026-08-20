@@ -75,6 +75,63 @@ source_set("send_tab_to_self") {
   ]
 }
 
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "send_tab_to_self_bubble_browsertest.cc",
+    "send_tab_to_self_bubble_controller_browsertest.cc",
+    "send_tab_to_self_toolbar_bubble_view_browsertest.cc",
+  ]
+  deps = [
+    ":send_tab_to_self",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:command_ids",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/notifications:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/renderer_context_menu",
+    "//chrome/browser/send_tab_to_self",
+    "//chrome/browser/signin",
+    "//chrome/browser/signin:signin_browser_test_base",
+    "//chrome/browser/signin:test_support",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/send_tab_to_self",
+    "//chrome/browser/ui/signin",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/toasts",
+    "//chrome/browser/ui/toasts/api:toasts",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//components/send_tab_to_self",
+    "//components/send_tab_to_self:test_support",
+    "//components/signin/public/base:signin_buildflags",
+    "//components/signin/public/identity_manager",
+    "//components/strings:components_strings",
+    "//components/tabs:public",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//google_apis",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/events:events_base",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
+    "//ui/strings:ui_strings",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}
+
 source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -96,5 +153,41 @@ source_set("interactive_ui_tests") {
     "//content/test:test_support",
     "//ui/base",
     "//ui/views",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "send_tab_to_self_device_picker_bubble_view_unittest.cc",
+    "send_tab_to_self_no_target_device_bubble_view_unittest.cc",
+    "send_tab_to_self_promo_bubble_view_unittest.cc",
+  ]
+  deps = [
+    ":send_tab_to_self",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/browser/signin:test_support",
+    "//chrome/browser/ui/signin",
+    "//chrome/test:test_support",
+    "//components/send_tab_to_self",
+    "//components/signin/public/base:signin_buildflags",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/strings:components_strings",
+    "//content/test:test_support",
+    "//google_apis",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/accessibility:ax_base",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
   ]
 }
