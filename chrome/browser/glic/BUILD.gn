@@ -809,7 +809,10 @@ source_set("unit_tests") {
       "//components/skills/public:metrics",
     ]
   } else {
-    sources += [ "common/glic_tab_observer_android_unittest.cc" ]
+    sources += [
+      "common/glic_tab_observer_android_unittest.cc",
+      "widget/glic_side_panel_ui_android_unittest.cc",
+    ]
 
     deps += [
       "//chrome/browser/glic/common",

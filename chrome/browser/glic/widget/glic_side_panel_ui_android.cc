@@ -14,6 +14,7 @@
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/glic/common/panel_focus_dependent_hotkey_manager.h"
 #include "chrome/browser/glic/common/panel_visibility_dependent_hotkey_manager.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_android.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/glic/widget/conversions.h"
@@ -22,11 +23,13 @@
 #include "chrome/browser/ui/browser_window/public/browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/common/chrome_features.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/drop_data.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/android/accelerator_manager_android.h"
@@ -278,6 +281,18 @@ void GlicSidePanelUi::SidePanelStateChanged(
 
 GlicSidePanelCoordinator* GlicSidePanelUi::GetGlicSidePanelCoordinator() const {
   return GlicSidePanelCoordinator::GetForTab(tab_.get());
+}
+
+bool GlicSidePanelUi::CanDragEnter(
+    content::WebContents* source,
+    const content::DropData& data,
+    blink::DragOperationsMask operations_allowed) {
+  if (!base::FeatureList::IsEnabled(features::kGlicDragAndDropFileUpload) ||
+      !base::FeatureList::IsEnabled(
+          features::kGlicDragAndDropFileUploadAndroid)) {
+    return false;
+  }
+  return !data.filenames.empty() || !data.file_system_files.empty();
 }
 
 void GlicSidePanelUi::RequestMediaAccessPermission(

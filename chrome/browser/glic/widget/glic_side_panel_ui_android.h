@@ -37,6 +37,7 @@ class FileChooserParams;
 namespace content {
 class FileSelectListener;
 class RenderFrameHost;
+struct DropData;
 }  // namespace content
 
 namespace input {
@@ -96,6 +97,9 @@ class GlicSidePanelUi
       const input::NativeWebKeyboardEvent& event) override;
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
+  bool CanDragEnter(content::WebContents* source,
+                    const content::DropData& data,
+                    blink::DragOperationsMask operations_allowed) override;
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,

@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentCaptor.captor;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -21,6 +22,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.ContextThemeWrapper;
+import android.view.DragAndDropPermissions;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -37,6 +40,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -697,6 +701,61 @@ public class TabBottomSheetWebUiUnitTest {
         webUi.setWebContents(mWebContents, true);
 
         assertFalse(webUi.isDisableActionModeSelectionMenuCalled());
+    }
+
+    @Test
+    public void
+            testTabBottomSheetWebUiContainer_dispatchDragEvent_requestsAndReleasesPermissions() {
+        Activity activity = Mockito.spy(Robolectric.buildActivity(Activity.class).setup().get());
+        TabBottomSheetWebUiContainer container = new TabBottomSheetWebUiContainer(activity, null);
+
+        DragAndDropPermissions mockPermissions1 = mock(DragAndDropPermissions.class);
+        DragAndDropPermissions mockPermissions2 = mock(DragAndDropPermissions.class);
+        DragEvent dragStartedEvent = mock(DragEvent.class);
+        when(dragStartedEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_STARTED);
+
+        DragEvent dropEvent1 = mock(DragEvent.class);
+        when(dropEvent1.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        doReturn(mockPermissions1).when(activity).requestDragAndDropPermissions(dropEvent1);
+
+        DragEvent dropEvent2 = mock(DragEvent.class);
+        when(dropEvent2.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        doReturn(mockPermissions2).when(activity).requestDragAndDropPermissions(dropEvent2);
+
+        container.dispatchDragEvent(dragStartedEvent);
+        verify(activity, times(0)).requestDragAndDropPermissions(any());
+
+        container.dispatchDragEvent(dropEvent1);
+        verify(activity, times(1)).requestDragAndDropPermissions(dropEvent1);
+        verify(mockPermissions1, times(0)).release();
+
+        // Consecutive drop releases previous permissions.
+        container.dispatchDragEvent(dropEvent2);
+        verify(mockPermissions1, times(1)).release();
+        verify(activity, times(1)).requestDragAndDropPermissions(dropEvent2);
+        verify(mockPermissions2, times(0)).release();
+
+        // A new drag session starting releases previous drag permissions.
+        container.dispatchDragEvent(dragStartedEvent);
+        verify(mockPermissions2, times(1)).release();
+    }
+
+    @Test
+    public void testTabBottomSheetWebUiContainer_onDetachedFromWindow_releasesPermissions() {
+        Activity activity = Mockito.spy(Robolectric.buildActivity(Activity.class).setup().get());
+        TabBottomSheetWebUiContainer container = new TabBottomSheetWebUiContainer(activity, null);
+
+        DragAndDropPermissions mockPermissions = mock(DragAndDropPermissions.class);
+        DragEvent dropEvent = mock(DragEvent.class);
+        when(dropEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        doReturn(mockPermissions).when(activity).requestDragAndDropPermissions(dropEvent);
+
+        container.dispatchDragEvent(dropEvent);
+        verify(activity, times(1)).requestDragAndDropPermissions(dropEvent);
+        verify(mockPermissions, times(0)).release();
+
+        container.onDetachedFromWindow();
+        verify(mockPermissions, times(1)).release();
     }
 
     private static class TestTabBottomSheetWebUi extends TabBottomSheetWebUi {

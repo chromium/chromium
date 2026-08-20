@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.DragAndDropPermissions;
+import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -32,6 +36,7 @@ public class TabBottomSheetWebUiContainer extends FrameLayout {
 
     private @Nullable TouchHandler mTouchHandler;
     private boolean mIsDispatchingToHandler;
+    private @Nullable DragAndDropPermissions mDragAndDropPermissions;
 
     public TabBottomSheetWebUiContainer(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -55,5 +60,32 @@ public class TabBottomSheetWebUiContainer extends FrameLayout {
             }
         }
         return super.dispatchTouchEvent(event);
+    }
+
+    @Override
+    public boolean dispatchDragEvent(DragEvent event) {
+        if (event.getAction() == DragEvent.ACTION_DRAG_STARTED) {
+            releaseDragAndDropPermissions();
+        } else if (event.getAction() == DragEvent.ACTION_DROP) {
+            releaseDragAndDropPermissions();
+            Activity activity = ContextUtils.activityFromContext(getContext());
+            if (activity != null) {
+                mDragAndDropPermissions = activity.requestDragAndDropPermissions(event);
+            }
+        }
+        return super.dispatchDragEvent(event);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        releaseDragAndDropPermissions();
+    }
+
+    private void releaseDragAndDropPermissions() {
+        if (mDragAndDropPermissions != null) {
+            mDragAndDropPermissions.release();
+            mDragAndDropPermissions = null;
+        }
     }
 }

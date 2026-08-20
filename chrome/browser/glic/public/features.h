@@ -10,10 +10,12 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 
 namespace features {
 
 BASE_DECLARE_FEATURE(kGlicAndroidSidePanel);
+BASE_DECLARE_FEATURE(kGlicDragAndDropFileUploadAndroid);
 
 BASE_DECLARE_FEATURE(kGlicClearTurnIdOnPanelWillOpen);
 BASE_DECLARE_FEATURE(kGlicChromeStatusIcon);
