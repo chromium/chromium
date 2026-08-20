@@ -794,10 +794,7 @@ bool LayoutObject::IsInTopOrViewTransitionLayer() const {
   if (IsViewTransitionRoot()) {
     return true;
   }
-  if (Element* element = DynamicTo<Element>(GetNode())) {
-    return StyleRef().IsRenderedInTopLayer(*element);
-  }
-  return false;
+  return !IsDocumentElement() && Parent()->IsLayoutView();
 }
 
 void LayoutObject::NotifyPriorityScrollAnchorStatusChanged() {

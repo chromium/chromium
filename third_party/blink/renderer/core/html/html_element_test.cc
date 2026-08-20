@@ -451,4 +451,38 @@ TEST_F(HTMLElementTest, MapElementDynamicIdAndNameChanges) {
   EXPECT_EQ(nullptr, scope.GetImageMap("#new_id"));
 }
 
+TEST_F(HTMLElementTest, PopoverHideImmediatelyCrash) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container {
+        position: fixed;
+        container-type: inline-size;
+        width: 200px;
+      }
+      @container (inline-size > 150px) {
+        #target { color: pink; }
+      }
+    </style>
+    <div id="container">
+      <div id="pop" popover></div>
+      <div id="target"></div>
+    </div>
+  )HTML");
+
+  HTMLElement* popover =
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("pop")));
+  Element* container = GetDocument().getElementById(AtomicString("container"));
+
+  popover->ShowPopoverInternal(/*invoker=*/nullptr, &ASSERT_NO_EXCEPTION);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  popover->HidePopoverInternal(
+      /*invoker=*/nullptr, HidePopoverFocusBehavior::kNone,
+      HidePopoverTransitionBehavior::kNoEventsNoWaiting, &ASSERT_NO_EXCEPTION);
+  container->SetInlineStyleProperty(CSSPropertyID::kWidth, "100px");
+
+  UpdateAllLifecyclePhasesForTest();
+}
+
 }  // namespace blink
