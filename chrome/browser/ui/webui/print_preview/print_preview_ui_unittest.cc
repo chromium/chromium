@@ -6,28 +6,24 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <vector>
 
 #include "base/memory/ref_counted_memory.h"
-#include "chrome/browser/printing/print_preview_dialog_controller.h"
-#include "chrome/browser/printing/print_preview_test.h"
-#include "chrome/browser/printing/print_view_manager.h"
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
-#include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "components/prefs/pref_service.h"
-#include "components/web_modal/web_contents_modal_dialog_manager.h"
-#include "content/public/browser/site_instance.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_ui.h"
-#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "content/public/test/test_web_ui.h"
+#include "printing/backend/test_print_backend.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/print_job_constants.h"
 
-using content::WebContents;
-using web_modal::WebContentsModalDialogManager;
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "chrome/browser/printing/oop_features.h"
+#include "chrome/browser/printing/print_backend_service_test_impl.h"
+#include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#endif
 
 namespace printing {
 
@@ -38,12 +34,6 @@ scoped_refptr<base::RefCountedBytes> CreateTestData() {
       "%PDF-1.4123461023561203947516345165913487104781236491654192345192345";
   std::vector<unsigned char> preview_data(std::begin(kBlob), std::end(kBlob));
   return base::MakeRefCounted<base::RefCountedBytes>(preview_data);
-}
-
-bool IsShowingWebContentsModalDialog(WebContents* tab) {
-  WebContentsModalDialogManager* web_contents_modal_dialog_manager =
-      WebContentsModalDialogManager::FromWebContents(tab);
-  return web_contents_modal_dialog_manager->IsDialogActive();
 }
 
 // A fake that just ignores `BadMessageReceived()` calls.
@@ -68,29 +58,9 @@ class FakePrintPreviewUI : public PrintPreviewUI {
   ~FakePrintPreviewUI() override = default;
 };
 
-// Hands out `FakePrintPreviewUI` instances instead of real ones.
-class TestPrintPreviewUIConfig
-    : public content::DefaultWebUIConfig<FakePrintPreviewUI> {
- public:
-  TestPrintPreviewUIConfig()
-      : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIPrintHost) {}
-  TestPrintPreviewUIConfig(const TestPrintPreviewUIConfig&) = delete;
-  TestPrintPreviewUIConfig& operator=(const TestPrintPreviewUIConfig&) = delete;
-  ~TestPrintPreviewUIConfig() override = default;
-
-  // content::DefaultWebUIConfig:
-  bool IsWebUIEnabled(content::BrowserContext* browser_context) override {
-    return true;
-  }
-  bool ShouldHandleURL(const GURL& url) override {
-    return url.GetPath() == "/";
-  }
-};
-
 }  // namespace
 
-class PrintPreviewUIUnitTest : public PrintPreviewTest {
+class PrintPreviewUIUnitTest : public ChromeRenderViewHostTestHarness {
  public:
   PrintPreviewUIUnitTest() = default;
 
@@ -101,57 +71,44 @@ class PrintPreviewUIUnitTest : public PrintPreviewTest {
 
  protected:
   void SetUp() override {
-    PrintPreviewTest::SetUp();
+    ChromeRenderViewHostTestHarness::SetUp();
 
-    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+    test_print_backend_ = base::MakeRefCounted<TestPrintBackend>();
+    PrintBackend::SetPrintBackendForTesting(test_print_backend_.get());
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+    if (IsOopPrintingEnabled()) {
+      print_backend_service_ = PrintBackendServiceTestImpl::LaunchForTesting(
+          test_remote_, test_print_backend_, /*sandboxed=*/true);
+    }
+#endif
+
+    test_web_ui_.set_web_contents(web_contents());
+    preview_ui_ = std::make_unique<FakePrintPreviewUI>(&test_web_ui_);
+    preview_ui_->SetPreviewUIId();
   }
 
-  PrintPreviewUI* StartPrintPreview() {
-    WebContents* initiator =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    if (!initiator) {
-      ADD_FAILURE();
-      return nullptr;
-    }
-
-    EXPECT_FALSE(IsShowingWebContentsModalDialog(initiator));
-
-    auto* controller = PrintPreviewDialogController::GetInstance();
-    if (!controller) {
-      ADD_FAILURE();
-      return nullptr;
-    }
-
-    PrintViewManager* print_view_manager =
-        PrintViewManager::FromWebContents(initiator);
-    print_view_manager->PrintPreviewNow(initiator->GetPrimaryMainFrame(),
-                                        /*has_selection=*/false);
-    WebContents* preview_dialog =
-        controller->GetOrCreatePreviewDialogForTesting(initiator);
-
-    EXPECT_NE(initiator, preview_dialog);
-    EXPECT_EQ(1, browser()->tab_strip_model()->count());
-    EXPECT_TRUE(IsShowingWebContentsModalDialog(initiator));
-
-    PrintPreviewUI* preview_ui =
-        preview_dialog->GetWebUI()->GetController()->GetAs<PrintPreviewUI>();
-    if (!preview_ui) {
-      ADD_FAILURE();
-      return nullptr;
-    }
-
-    preview_ui->SetPreviewUIId();
-    return preview_ui;
+  void TearDown() override {
+    preview_ui_.reset();
+    PrintBackend::SetPrintBackendForTesting(/*print_backend=*/nullptr);
+    ChromeRenderViewHostTestHarness::TearDown();
   }
+
+  PrintPreviewUI* GetPreviewUi() { return preview_ui_.get(); }
 
  private:
-  content::ScopedWebUIConfigRegistration webui_registration_{
-      std::make_unique<TestPrintPreviewUIConfig>()};
+  content::TestWebUI test_web_ui_;
+  std::unique_ptr<FakePrintPreviewUI> preview_ui_;
+  scoped_refptr<TestPrintBackend> test_print_backend_;
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  mojo::Remote<mojom::PrintBackendService> test_remote_;
+  std::unique_ptr<PrintBackendServiceTestImpl> print_backend_service_;
+#endif
 };
 
 // Create/Get a preview tab for initiator.
 TEST_F(PrintPreviewUIUnitTest, PrintPreviewData) {
-  PrintPreviewUI* preview_ui = StartPrintPreview();
+  PrintPreviewUI* preview_ui = GetPreviewUi();
   ASSERT_TRUE(preview_ui);
 
   scoped_refptr<base::RefCountedMemory> data =
@@ -178,7 +135,7 @@ TEST_F(PrintPreviewUIUnitTest, PrintPreviewData) {
 
 // Set and get the individual draft pages.
 TEST_F(PrintPreviewUIUnitTest, PrintPreviewDraftPages) {
-  PrintPreviewUI* preview_ui = StartPrintPreview();
+  PrintPreviewUI* preview_ui = GetPreviewUi();
   ASSERT_TRUE(preview_ui);
 
   scoped_refptr<base::RefCountedMemory> data =
@@ -221,7 +178,7 @@ TEST_F(PrintPreviewUIUnitTest, PrintPreviewDraftPages) {
 
 // Test the browser-side print preview cancellation functionality.
 TEST_F(PrintPreviewUIUnitTest, ShouldCancelRequest) {
-  PrintPreviewUI* preview_ui = StartPrintPreview();
+  PrintPreviewUI* preview_ui = GetPreviewUi();
   ASSERT_TRUE(preview_ui);
 
   // Test the initial state.
@@ -248,23 +205,8 @@ TEST_F(PrintPreviewUIUnitTest, ShouldCancelRequest) {
 
 // Ensures that a failure cancels all pending actions.
 TEST_F(PrintPreviewUIUnitTest, PrintPreviewFailureCancelsPendingActions) {
-  WebContents* initiator = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(initiator);
-
-  auto* controller = PrintPreviewDialogController::GetInstance();
-  ASSERT_TRUE(controller);
-
-  WebContents* preview_dialog =
-      controller->GetOrCreatePreviewDialogForTesting(initiator);
-
-  EXPECT_NE(initiator, preview_dialog);
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_TRUE(IsShowingWebContentsModalDialog(initiator));
-
-  PrintPreviewUI* preview_ui =
-      preview_dialog->GetWebUI()->GetController()->GetAs<PrintPreviewUI>();
+  PrintPreviewUI* preview_ui = GetPreviewUi();
   ASSERT_TRUE(preview_ui);
-  preview_ui->SetPreviewUIId();
 
   constexpr int kRequestId = 1;
   preview_ui->OnPrintPreviewRequest(kRequestId);
@@ -275,7 +217,7 @@ TEST_F(PrintPreviewUIUnitTest, PrintPreviewFailureCancelsPendingActions) {
 }
 
 TEST_F(PrintPreviewUIUnitTest, GetPageToNupConvertIndexWithNoPagesToRender) {
-  PrintPreviewUI* preview_ui = StartPrintPreview();
+  PrintPreviewUI* preview_ui = GetPreviewUi();
   ASSERT_TRUE(preview_ui);
 
   // There are no pages to render, so all calls fail.
@@ -285,7 +227,7 @@ TEST_F(PrintPreviewUIUnitTest, GetPageToNupConvertIndexWithNoPagesToRender) {
 
 TEST_F(PrintPreviewUIUnitTest,
        GetPageToNupConvertIndexWithPartialPagesToRender) {
-  PrintPreviewUI* preview_ui = StartPrintPreview();
+  PrintPreviewUI* preview_ui = GetPreviewUi();
   ASSERT_TRUE(preview_ui);
 
   auto params = mojom::DidStartPreviewParams::New();
@@ -313,7 +255,7 @@ TEST_F(PrintPreviewUIUnitTest,
 }
 
 TEST_F(PrintPreviewUIUnitTest, GetPageToNupConvertIndexWithAllPagesToRender) {
-  PrintPreviewUI* preview_ui = StartPrintPreview();
+  PrintPreviewUI* preview_ui = GetPreviewUi();
   ASSERT_TRUE(preview_ui);
 
   auto params = mojom::DidStartPreviewParams::New();
