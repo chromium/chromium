@@ -391,10 +391,22 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
     return scroll_jank_v4_result_id_;
   }
 
+  // The `DispatchStage::kGenerated` timestamp of the scroll begin event which
+  // started this event's scroll, i.e. the timestamp the input pipeline
+  // assigned to the gesture at its source.
+  //
+  // See `scroll_begin_generated_timestamp_` for the cases where this is null
+  // and for how the value is propagated.
   base::TimeTicks scroll_begin_generated_timestamp() const {
     return scroll_begin_generated_timestamp_;
   }
 
+  // The timestamp of when the scroll begin event which started this event's
+  // scroll arrived in the renderer compositor. Effectively the ID of the
+  // scroll that this event belongs to.
+  //
+  // See `scroll_begin_arrival_timestamp_` for the case where this is null and
+  // for how the value is propagated.
   base::TimeTicks scroll_begin_arrival_timestamp() const {
     return scroll_begin_arrival_timestamp_;
   }
@@ -468,6 +480,8 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
 
   // The timestamp of when the scroll begin event which started the scroll
   // containing this scroll event arrived in the renderer compositor.
+  //
+  // Null if this event arrived before any scroll begins.
   //
   // If the most recent `ScrollEventMetrics` of type
   // `EventType::kGestureScrollBegin` were created via

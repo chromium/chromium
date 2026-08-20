@@ -31,6 +31,10 @@ constexpr base::TimeTicks MicrosSinceEpoch(int64_t micros) {
   return base::TimeTicks() + base::Microseconds(micros);
 }
 
+// The decider ignores which scroll a frame's updates belong to, so every frame
+// in this file uses the same arbitrary scroll ID.
+constexpr base::TimeTicks kScrollId = MillisSinceEpoch(1);
+
 using ScrollDamage = ScrollJankV4Frame::ScrollDamage;
 using DamagingFrame = ScrollJankV4Frame::DamagingFrame;
 using NonDamagingFrame = ScrollJankV4Frame::NonDamagingFrame;
@@ -179,7 +183,7 @@ class ParameterizedScrollJankV4DeciderTest : public ScrollJankV4DeciderTest {
   //
   //    ```
   //    decider.DecideJankForFrameWithRealScrollUpdates(
-  //        ScrollUpdates(Real{R}, /* synthetic= */ std::nullopt),
+  //        ScrollUpdates(Real{R}, /* synthetic= */ std::nullopt, kScrollId),
   //        DamagingFrame{D}, BeginFrameArgsForScrollJank{A});
   //    ```
   //
@@ -197,7 +201,7 @@ class ParameterizedScrollJankV4DeciderTest : public ScrollJankV4DeciderTest {
   //
   //    ```
   //    decider.DecideJankForFrameWithSyntheticScrollUpdatesOnly(
-  //        ScrollUpdates(/* real= */ std::nullopt, Synthetic{S}),
+  //        ScrollUpdates(/* real= */ std::nullopt, Synthetic{S}, kScrollId),
   //        NonDamagingFrame{}, BeginFrameArgsForScrollJank{A},
   //        /* future_real_updates= */ F);
   //    ```
@@ -242,13 +246,14 @@ class ParameterizedScrollJankV4DeciderTest : public ScrollJankV4DeciderTest {
                         frame_type.has_synthetic_inputs
                             ? std::make_optional(
                                   GET_FRAME_RECIPE_PARAM_OR_FAIL(if_synthetic))
-                            : std::nullopt),
+                            : std::nullopt,
+                        kScrollId),
           damage, args);
     }
 
     return decider_.DecideJankForFrameWithSyntheticScrollUpdatesOnly(
         ScrollUpdates(/* real= */ std::nullopt,
-                      GET_FRAME_RECIPE_PARAM_OR_FAIL(if_synthetic)),
+                      GET_FRAME_RECIPE_PARAM_OR_FAIL(if_synthetic), kScrollId),
         damage, args,
         GET_FRAME_RECIPE_PARAM_OR_FAIL(if_synthetic_only.future_real_updates));
 #undef GET_FRAME_RECIPE_PARAM_OR_FAIL
@@ -592,7 +597,7 @@ TEST_P(DoublyParameterizedScrollJankV4DeciderTest,
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 2.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       DamagingFrame{.presentation_ts = MillisSinceEpoch(148)},
       CreateBeginFrameArgs(MillisSinceEpoch(132)));
   EXPECT_THAT(result1, kHasNoMissedVsyncs);
@@ -653,7 +658,7 @@ TEST_F(ScrollJankV4DeciderTest, ScrollWithZeroVsyncs) {
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 2.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(148)}},
       CreateBeginFrameArgs(MillisSinceEpoch(132)));
   EXPECT_THAT(result1, kHasNoMissedVsyncs);
@@ -666,7 +671,7 @@ TEST_F(ScrollJankV4DeciderTest, ScrollWithZeroVsyncs) {
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 2.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(149)}},
       CreateBeginFrameArgs(MillisSinceEpoch(133)));
   EXPECT_THAT(result2, kHasNoMissedVsyncs);
@@ -680,7 +685,7 @@ TEST_F(ScrollJankV4DeciderTest, ScrollWithHugeNumberOfMissedVsyncs) {
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 2.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(32)}},
       CreateBeginFrameArgs(MillisSinceEpoch(16)));
   EXPECT_THAT(result1, kHasNoMissedVsyncs);
@@ -691,7 +696,7 @@ TEST_F(ScrollJankV4DeciderTest, ScrollWithHugeNumberOfMissedVsyncs) {
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 2.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(16032)}},
       {.frame_time = MillisSinceEpoch(16016),
        .interval = base::Microseconds(1)});
@@ -732,7 +737,7 @@ TEST_F(ScrollJankV4DeciderTest, EvaluatesEachScrollSeparately) {
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 4.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(116)}},
       CreateBeginFrameArgs(MillisSinceEpoch(100)));
   EXPECT_THAT(result1, kHasNoMissedVsyncs);
@@ -747,7 +752,7 @@ TEST_F(ScrollJankV4DeciderTest, EvaluatesEachScrollSeparately) {
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 4.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(164)}},
       CreateBeginFrameArgs(MillisSinceEpoch(148)));
   EXPECT_THAT(result2, kHasNoMissedVsyncs);
@@ -757,7 +762,7 @@ TEST_F(ScrollJankV4DeciderTest, EvaluatesEachScrollSeparately) {
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 4.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(180)}},
       CreateBeginFrameArgs(MillisSinceEpoch(164)));
   EXPECT_THAT(result3, kHasNoMissedVsyncs);
@@ -775,7 +780,7 @@ TEST_F(ScrollJankV4DeciderTest, EvaluatesEachScrollSeparatelyScrollStartOnly) {
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 4.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(116)}},
       CreateBeginFrameArgs(MillisSinceEpoch(100)));
   EXPECT_THAT(result1, kHasNoMissedVsyncs);
@@ -789,7 +794,7 @@ TEST_F(ScrollJankV4DeciderTest, EvaluatesEachScrollSeparatelyScrollStartOnly) {
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 4.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(164)}},
       CreateBeginFrameArgs(MillisSinceEpoch(148)));
   EXPECT_THAT(result2, kHasNoMissedVsyncs);
@@ -799,7 +804,7 @@ TEST_F(ScrollJankV4DeciderTest, EvaluatesEachScrollSeparatelyScrollStartOnly) {
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 4.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(180)}},
       CreateBeginFrameArgs(MillisSinceEpoch(164)));
   EXPECT_THAT(result3, kHasNoMissedVsyncs);
@@ -817,7 +822,7 @@ TEST_F(ScrollJankV4DeciderTest, EvaluatesEachScrollSeparatelyScrollEndOnly) {
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 4.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(116)}},
       CreateBeginFrameArgs(MillisSinceEpoch(100)));
   EXPECT_THAT(result1, kHasNoMissedVsyncs);
@@ -831,7 +836,7 @@ TEST_F(ScrollJankV4DeciderTest, EvaluatesEachScrollSeparatelyScrollEndOnly) {
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 4.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(164)}},
       CreateBeginFrameArgs(MillisSinceEpoch(148)));
   EXPECT_THAT(result2, kHasNoMissedVsyncs);
@@ -841,7 +846,7 @@ TEST_F(ScrollJankV4DeciderTest, EvaluatesEachScrollSeparatelyScrollEndOnly) {
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 4.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(180)}},
       CreateBeginFrameArgs(MillisSinceEpoch(164)));
   EXPECT_THAT(result3, kHasNoMissedVsyncs);
@@ -877,7 +882,7 @@ TEST_P(SinglyParameterizedScrollJankV4DeciderTest,
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 2.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(116)}},
       CreateBeginFrameArgs(MillisSinceEpoch(100)));
   EXPECT_THAT(result1, kHasNoMissedVsyncs);
@@ -920,7 +925,7 @@ TEST_P(SinglyParameterizedScrollJankV4DeciderTest,
                    .has_inertial_input = false,
                    .total_raw_delta_pixels = 2.0f,
                    .max_abs_inertial_raw_delta_pixels = 0.0f},
-              /* synthetic= */ std::nullopt),
+              /* synthetic= */ std::nullopt, kScrollId),
           ScrollDamage{
               DamagingFrame{.presentation_ts = MillisSinceEpoch(1156)}},
           CreateBeginFrameArgs(MillisSinceEpoch(1140)));
@@ -985,7 +990,7 @@ TEST_P(SinglyParameterizedScrollJankV4DeciderTest,
                    .has_inertial_input = false,
                    .total_raw_delta_pixels = 2.0f,
                    .max_abs_inertial_raw_delta_pixels = 0.0f},
-              /* synthetic= */ std::nullopt),
+              /* synthetic= */ std::nullopt, kScrollId),
           ScrollDamage{
               DamagingFrame{.presentation_ts = MillisSinceEpoch(1124)}},
           CreateBeginFrameArgs(MillisSinceEpoch(1108)));
@@ -1004,7 +1009,7 @@ TEST_P(SinglyParameterizedScrollJankV4DeciderTest,
                    .has_inertial_input = false,
                    .total_raw_delta_pixels = 2.0f,
                    .max_abs_inertial_raw_delta_pixels = 0.0f},
-              /* synthetic= */ std::nullopt),
+              /* synthetic= */ std::nullopt, kScrollId),
           ScrollDamage{
               DamagingFrame{.presentation_ts = MillisSinceEpoch(1156)}},
           CreateBeginFrameArgs(MillisSinceEpoch(1140)));
@@ -2051,7 +2056,7 @@ TEST_P(ScrollJankV4DeciderRunningConsistentyTests,
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 0.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(164)}},
       CreateBeginFrameArgs(MillisSinceEpoch(148)));
   EXPECT_THAT(result1, kHasNoMissedVsyncs);
@@ -2063,7 +2068,7 @@ TEST_P(ScrollJankV4DeciderRunningConsistentyTests,
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 0.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(180)}},
       CreateBeginFrameArgs(MillisSinceEpoch(164)));
   EXPECT_THAT(result2, kHasNoMissedVsyncs);
@@ -2075,7 +2080,7 @@ TEST_P(ScrollJankV4DeciderRunningConsistentyTests,
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 0.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(196)}},
       CreateBeginFrameArgs(MillisSinceEpoch(180)));
   EXPECT_THAT(result3, kHasNoMissedVsyncs);
@@ -2116,7 +2121,7 @@ TEST_P(ScrollJankV4DeciderRunningConsistentyTests,
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 0.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(260)}},
       CreateBeginFrameArgs(MillisSinceEpoch(244)));
   EXPECT_THAT(result4,
@@ -2206,7 +2211,7 @@ TEST_F(ScrollJankV4DeciderTest, JankyNonDamagingFrames) {
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 5.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(148)}},
       CreateBeginFrameArgs(MillisSinceEpoch(132)));
   EXPECT_THAT(result1, kHasNoMissedVsyncs);
@@ -2217,7 +2222,7 @@ TEST_F(ScrollJankV4DeciderTest, JankyNonDamagingFrames) {
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 5.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{NonDamagingFrame{}},
       CreateBeginFrameArgs(MillisSinceEpoch(148)));
   EXPECT_THAT(result2, kHasNoMissedVsyncs);
@@ -2228,7 +2233,7 @@ TEST_F(ScrollJankV4DeciderTest, JankyNonDamagingFrames) {
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 5.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{NonDamagingFrame{}},
       CreateBeginFrameArgs(MillisSinceEpoch(180)));
   EXPECT_THAT(result3,
@@ -2240,7 +2245,7 @@ TEST_F(ScrollJankV4DeciderTest, JankyNonDamagingFrames) {
                          .has_inertial_input = true,
                          .total_raw_delta_pixels = 2.0f,
                          .max_abs_inertial_raw_delta_pixels = 2.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{NonDamagingFrame{}},
       CreateBeginFrameArgs(MillisSinceEpoch(196)));
   EXPECT_THAT(result4, kHasNoMissedVsyncs);
@@ -2251,7 +2256,7 @@ TEST_F(ScrollJankV4DeciderTest, JankyNonDamagingFrames) {
                          .has_inertial_input = true,
                          .total_raw_delta_pixels = 2.0f,
                          .max_abs_inertial_raw_delta_pixels = 2.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{NonDamagingFrame{}},
       CreateBeginFrameArgs(MillisSinceEpoch(244)));
   EXPECT_THAT(result5, HasMissedVsyncs(JankReason::kMissedVsyncDuringFling, 2));
@@ -2262,7 +2267,7 @@ TEST_F(ScrollJankV4DeciderTest, JankyNonDamagingFrames) {
                          .has_inertial_input = true,
                          .total_raw_delta_pixels = 2.0f,
                          .max_abs_inertial_raw_delta_pixels = 2.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(292)}},
       CreateBeginFrameArgs(MillisSinceEpoch(260)));
   EXPECT_THAT(result6, kHasNoMissedVsyncs);
@@ -2294,7 +2299,7 @@ TEST_F(ScrollJankV4DeciderTest,
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 0.1f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(148)}},
       CreateBeginFrameArgs(MillisSinceEpoch(132)));
   EXPECT_THAT(result1, kHasNoMissedVsyncs);
@@ -2305,7 +2310,7 @@ TEST_F(ScrollJankV4DeciderTest,
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 0.1f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{NonDamagingFrame{}},
       CreateBeginFrameArgs(MillisSinceEpoch(164)));
   EXPECT_THAT(
@@ -2319,7 +2324,7 @@ TEST_F(ScrollJankV4DeciderTest,
                          .has_inertial_input = true,
                          .total_raw_delta_pixels = 0.1f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(196)}},
       CreateBeginFrameArgs(MillisSinceEpoch(180)));
   EXPECT_THAT(result3, kHasNoMissedVsyncs);
@@ -2330,7 +2335,7 @@ TEST_F(ScrollJankV4DeciderTest,
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 0.1f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{NonDamagingFrame{}},
       CreateBeginFrameArgs(MillisSinceEpoch(196)));
   EXPECT_THAT(result4, kHasNoMissedVsyncs);
@@ -2341,7 +2346,7 @@ TEST_F(ScrollJankV4DeciderTest,
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 0.1f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       ScrollDamage{NonDamagingFrame{}},
       CreateBeginFrameArgs(MillisSinceEpoch(244)));
   EXPECT_THAT(
@@ -2376,7 +2381,7 @@ TEST_F(ScrollJankV4DeciderTest,
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 2.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       DamagingFrame{.presentation_ts = MillisSinceEpoch(132)},
       CreateBeginFrameArgs(MillisSinceEpoch(116)));
   EXPECT_THAT(result1, kHasNoMissedVsyncs);
@@ -2388,7 +2393,8 @@ TEST_F(ScrollJankV4DeciderTest,
                .has_inertial_input = false,
                .total_raw_delta_pixels = 2.0f,
                .max_abs_inertial_raw_delta_pixels = 0.0f},
-          Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(148)}),
+          Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(148)},
+          kScrollId),
       DamagingFrame{.presentation_ts = MillisSinceEpoch(164)},
       CreateBeginFrameArgs(MillisSinceEpoch(148)));
   EXPECT_THAT(
@@ -2427,7 +2433,7 @@ TEST_F(ScrollJankV4DeciderTest,
                          .has_inertial_input = false,
                          .total_raw_delta_pixels = 2.0f,
                          .max_abs_inertial_raw_delta_pixels = 0.0f},
-                    /* synthetic= */ std::nullopt),
+                    /* synthetic= */ std::nullopt, kScrollId),
       DamagingFrame{.presentation_ts = MillisSinceEpoch(132)},
       CreateBeginFrameArgs(MillisSinceEpoch(116)));
   EXPECT_THAT(result1, kHasNoMissedVsyncs);
@@ -2439,7 +2445,8 @@ TEST_F(ScrollJankV4DeciderTest,
                .has_inertial_input = false,
                .total_raw_delta_pixels = 2.0f,
                .max_abs_inertial_raw_delta_pixels = 0.0f},
-          Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(132)}),
+          Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(132)},
+          kScrollId),
       DamagingFrame{.presentation_ts = MillisSinceEpoch(164)},
       CreateBeginFrameArgs(MillisSinceEpoch(148)));
   EXPECT_THAT(
@@ -2455,7 +2462,8 @@ TEST_F(ScrollJankV4DeciderTest, IsValidFrame) {
               .first_input_generation_ts = MillisSinceEpoch(80),
               .last_input_generation_ts = MillisSinceEpoch(80),
           },
-          Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(80)}),
+          Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(80)},
+          kScrollId),
       DamagingFrame{.presentation_ts = MillisSinceEpoch(100)},
       CreateBeginFrameArgs(MillisSinceEpoch(90))));
 }
@@ -2469,7 +2477,8 @@ TEST_F(ScrollJankV4DeciderTest,
               .first_input_generation_ts = MillisSinceEpoch(80),
               .last_input_generation_ts = MillisSinceEpoch(80),
           },
-          Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(80)}),
+          Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(80)},
+          kScrollId),
       DamagingFrame{.presentation_ts = MillisSinceEpoch(100)},
       CreateBeginFrameArgs(MillisSinceEpoch(101))));
 }
@@ -2483,7 +2492,8 @@ TEST_F(ScrollJankV4DeciderTest,
               .first_input_generation_ts = MillisSinceEpoch(80),
               .last_input_generation_ts = MillisSinceEpoch(101),
           },
-          Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(80)}),
+          Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(80)},
+          kScrollId),
       DamagingFrame{.presentation_ts = MillisSinceEpoch(100)},
       CreateBeginFrameArgs(MillisSinceEpoch(90))));
 }
@@ -2499,7 +2509,8 @@ TEST_F(ScrollJankV4DeciderTest,
           },
           Synthetic{
               .first_input_begin_frame_ts = MillisSinceEpoch(101),
-          }),
+          },
+          kScrollId),
       DamagingFrame{.presentation_ts = MillisSinceEpoch(100)},
       CreateBeginFrameArgs(MillisSinceEpoch(90))));
 }
@@ -2513,7 +2524,8 @@ TEST_F(ScrollJankV4DeciderTest, IsNotValidFrameWithFirstInputAfterLastInput) {
               .first_input_generation_ts = MillisSinceEpoch(81),
               .last_input_generation_ts = MillisSinceEpoch(80),
           },
-          Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(80)}),
+          Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(80)},
+          kScrollId),
       DamagingFrame{.presentation_ts = MillisSinceEpoch(100)},
       CreateBeginFrameArgs(MillisSinceEpoch(90))));
 }
@@ -2529,7 +2541,8 @@ TEST_F(ScrollJankV4DeciderTest,
           },
           Synthetic{
               .first_input_begin_frame_ts = MillisSinceEpoch(91),
-          }),
+          },
+          kScrollId),
       DamagingFrame{.presentation_ts = MillisSinceEpoch(100)},
       CreateBeginFrameArgs(MillisSinceEpoch(90))));
 }
@@ -2541,7 +2554,8 @@ TEST_F(ScrollJankV4DeciderTest, IsNotValidFrameWithZeroInterval) {
               .first_input_generation_ts = MillisSinceEpoch(80),
               .last_input_generation_ts = MillisSinceEpoch(80),
           },
-          Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(80)}),
+          Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(80)},
+          kScrollId),
       DamagingFrame{.presentation_ts = MillisSinceEpoch(100)},
       {.frame_time = MillisSinceEpoch(90), .interval = base::TimeDelta()}));
 }
@@ -2553,7 +2567,8 @@ TEST_F(ScrollJankV4DeciderTest, IsNotValidFrameWithNegativeInterval) {
               .first_input_generation_ts = MillisSinceEpoch(80),
               .last_input_generation_ts = MillisSinceEpoch(80),
           },
-          Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(80)}),
+          Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(80)},
+          kScrollId),
       DamagingFrame{.presentation_ts = MillisSinceEpoch(100)},
       {.frame_time = MillisSinceEpoch(90), .interval = -kVsyncInterval}));
 }

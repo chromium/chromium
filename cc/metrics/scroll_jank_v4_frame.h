@@ -118,22 +118,23 @@ struct CC_EXPORT ScrollJankV4Frame {
       // At least one of `real` or `synthetic` must contain a value.
       ScrollUpdates(std::optional<Real> real,
                     std::optional<Synthetic> synthetic,
-                    std::optional<base::TimeTicks>
-                        scroll_begin_arrival_timestamp = std::nullopt);
+                    base::TimeTicks scroll_begin_arrival_timestamp);
 
       bool operator==(const ScrollUpdates&) const = default;
 
       const std::optional<Real>& real() const { return real_; }
       const std::optional<Synthetic>& synthetic() const { return synthetic_; }
-      const std::optional<base::TimeTicks>& scroll_begin_arrival_timestamp()
-          const {
+      base::TimeTicks scroll_begin_arrival_timestamp() const {
         return scroll_begin_arrival_timestamp_;
       }
 
      private:
       const std::optional<Real> real_;
       const std::optional<Synthetic> synthetic_;
-      const std::optional<base::TimeTicks> scroll_begin_arrival_timestamp_;
+      // Effectively the ID of the scroll these updates belong to. Null if the
+      // updates arrived before any scroll begin; see
+      // `ScrollEventMetrics::scroll_begin_arrival_timestamp()`.
+      const base::TimeTicks scroll_begin_arrival_timestamp_;
     };
 
     // A stage that corresponds to a single scroll end event
@@ -215,8 +216,7 @@ template <typename T>
   requires IsOneOf<T,
                    ScrollJankV4Frame::Stage::ScrollUpdates::Real,
                    ScrollJankV4Frame::Stage::ScrollUpdates::Synthetic,
-                   EventMetrics::TraceId,
-                   base::TimeTicks>
+                   EventMetrics::TraceId>
 inline std::ostream& operator<<(std::ostream& os,
                                 const std::optional<T>& value) {
   if (value.has_value()) {

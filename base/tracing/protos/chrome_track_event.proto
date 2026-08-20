@@ -1092,7 +1092,7 @@ message EventLatency {
 
       // The timestamp of when the scroll begin event which started the scroll
       // containing this frame's scroll updates arrived in the renderer
-      // compositor.
+      // compositor. Zero if those updates arrived before any scroll begin.
       //
       // This value effectively serves as the ID of the scroll that this frame
       // belongs to. Can be joined with `EventLatency.scroll_begin_arrival_us`.
