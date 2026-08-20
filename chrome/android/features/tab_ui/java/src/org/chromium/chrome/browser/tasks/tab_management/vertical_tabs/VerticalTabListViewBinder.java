@@ -38,11 +38,6 @@ public class VerticalTabListViewBinder {
         if (VerticalTabListProperties.EXPAND_OR_COLLAPSE_ON_HOVER_LISTENER == propertyKey) {
             view.setExpandOrCollapseOnHoverListener(
                     model.get(VerticalTabListProperties.EXPAND_OR_COLLAPSE_ON_HOVER_LISTENER));
-        } else if (VerticalTabListProperties.ON_GRID_CLICK_LISTENER == propertyKey) {
-            View gridButton = view.findViewById(R.id.grid_button);
-            assert gridButton != null;
-            gridButton.setOnClickListener(
-                    model.get(VerticalTabListProperties.ON_GRID_CLICK_LISTENER));
         } else if (VerticalTabListProperties.ON_SEARCH_CLICK_LISTENER == propertyKey) {
             View searchButton = view.findViewById(R.id.tab_search_button);
             assert searchButton != null;
@@ -107,11 +102,6 @@ public class VerticalTabListViewBinder {
             ImageViewCompat.setImageTintList(collapseButton, iconTint);
         }
 
-        @Nullable ImageView gridButton = view.findViewById(R.id.grid_button);
-        if (gridButton != null) {
-            ImageViewCompat.setImageTintList(gridButton, iconTint);
-        }
-
         @Nullable ImageView searchButton = view.findViewById(R.id.tab_search_button);
         if (searchButton != null) {
             ImageViewCompat.setImageTintList(searchButton, iconTint);
@@ -133,9 +123,6 @@ public class VerticalTabListViewBinder {
                                 R.color.incognito_vertical_tabs_button_background_color)
                         : null;
 
-        if (gridButton != null) {
-            ViewCompat.setBackgroundTintList(gridButton, buttonBgTint);
-        }
         if (searchButton != null) {
             ViewCompat.setBackgroundTintList(searchButton, buttonBgTint);
         }

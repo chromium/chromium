@@ -79,7 +79,6 @@ import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
-import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
@@ -577,14 +576,6 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testVTGridButtonTouch_UpdatesLastTouchPointToLocalCoordinates() {
-        createCoordinator();
-        View gridButton = mCoordinator.getView().findViewById(R.id.grid_button);
-        assertViewTouchUpdatesLastTouchPoint(gridButton, 15, 25);
-    }
-
-    @Test
-    @SmallTest
     public void testVTTabSearchButtonTouch_UpdatesLastTouchPointToLocalCoordinates() {
         createCoordinator();
         View tabSearchButton = mCoordinator.getView().findViewById(R.id.tab_search_button);
@@ -1048,16 +1039,6 @@ public class VerticalTabListCoordinatorUnitTest {
     // =============================================================================================
     // Header Controls & Window Layout Tests
     // =============================================================================================
-
-    @Test
-    @SmallTest
-    public void testGridButtonClick() {
-        createCoordinator();
-        ImageButton gridButton = mCoordinator.getView().findViewById(R.id.grid_button);
-        assertNotNull(gridButton);
-        gridButton.performClick();
-        verify(mVerticalTabsActionDelegate).openHubPane(PaneId.TAB_GROUPS);
-    }
 
     @Test
     @SmallTest

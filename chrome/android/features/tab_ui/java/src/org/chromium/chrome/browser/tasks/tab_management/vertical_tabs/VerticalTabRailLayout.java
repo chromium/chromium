@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.ui.base.LocalizationUtils;
 
 /**
  * Root layout for the vertical tab rail container. Encapsulates child view layout styling based on
@@ -38,17 +37,15 @@ import org.chromium.ui.base.LocalizationUtils;
 // click handlers) from VerticalTabListCoordinator to VerticalTabRailLayout.
 @NullMarked
 public class VerticalTabRailLayout extends ConstraintLayout {
-    private static final int HEADER_BUTTON_COUNT_SINGLE_ROW = 3;
+    private static final int HEADER_BUTTON_COUNT_SINGLE_ROW = 2;
     private @Nullable Callback<@RailCollapseState Integer> mExpandOrCollapseOnHoverListener;
 
     private VerticalTabListRecyclerView mRecyclerView;
     private TabListRecyclerView mPinnedTabsRecyclerView;
     private View mSpacerView;
     private LinearLayout mHeaderContainer;
-    private LinearLayout mTabActionButtonsContainer;
     private LinearLayout mFooterContainer;
     private ImageButton mCollapseButton;
-    private View mGridButton;
     private View mSearchButton;
     private View mHeaderSpacer;
     private View mNewTabButton;
@@ -84,19 +81,11 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         mHeaderContainer = findViewById(R.id.vertical_tab_header_container);
         assert mHeaderContainer != null;
 
-        mTabActionButtonsContainer = findViewById(R.id.tab_action_buttons_container);
-        assert mTabActionButtonsContainer != null;
-
         mFooterContainer = findViewById(R.id.vertical_tab_footer_container);
         assert mFooterContainer != null;
 
         mCollapseButton = findViewById(R.id.collapse_button);
         assert mCollapseButton != null;
-
-        mGridButton = findViewById(R.id.grid_button);
-        assert mGridButton != null;
-        TooltipCompat.setTooltipText(
-                mGridButton, getContext().getString(R.string.accessibility_tab_groups));
 
         mSearchButton = findViewById(R.id.tab_search_button);
         assert mSearchButton != null;
@@ -155,11 +144,6 @@ public class VerticalTabRailLayout extends ConstraintLayout {
     /** Returns the header container view. */
     public LinearLayout getHeaderContainer() {
         return mHeaderContainer;
-    }
-
-    /** Returns the tab action buttons container view. */
-    public LinearLayout getTabActionButtonsContainer() {
-        return mTabActionButtonsContainer;
     }
 
     /** Returns the footer container view. */
@@ -358,52 +342,13 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         // Horizontal header spacer
         mHeaderSpacer.setVisibility(showSingleRowHeader ? View.VISIBLE : View.GONE);
 
-        // Tab actions container (for grid and search buttons)
-        ViewGroup.LayoutParams tabActionParams = mTabActionButtonsContainer.getLayoutParams();
-        tabActionParams.width =
-                (!isCollapsed && !showSingleRowHeader)
-                        ? ViewGroup.LayoutParams.MATCH_PARENT
-                        : ViewGroup.LayoutParams.WRAP_CONTENT;
-
-        mTabActionButtonsContainer.setOrientation(
-                isCollapsed ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
-        mTabActionButtonsContainer.setGravity(
-                isCollapsed ? Gravity.CENTER_HORIZONTAL : Gravity.NO_GRAVITY);
-
-        // Grid button
-        boolean fillRowSpace = !isCollapsed && !showSingleRowHeader;
-
-        LinearLayout.LayoutParams gridParams =
-                (LinearLayout.LayoutParams) mGridButton.getLayoutParams();
-        gridParams.width = fillRowSpace ? 0 : mButtonSizePx;
-        gridParams.height = mButtonSizePx;
-        gridParams.weight = fillRowSpace ? 1.0f : 0.0f;
-        gridParams.setMarginEnd(isCollapsed ? 0 : mHeaderButtonGapPx);
-        gridParams.bottomMargin = isCollapsed ? mHeaderButtonGapPx : 0;
-        boolean isRtl = LocalizationUtils.isLayoutRtl();
-        mGridButton.setBackgroundResource(
-                isCollapsed
-                        ? R.drawable.vertical_tabs_top_rounded_button_background
-                        : (isRtl
-                                ? R.drawable.vertical_tabs_right_rounded_button_background
-                                : R.drawable.vertical_tabs_left_rounded_button_background));
-
         // Search button
         LinearLayout.LayoutParams searchParams =
                 (LinearLayout.LayoutParams) mSearchButton.getLayoutParams();
-        searchParams.width = fillRowSpace ? 0 : mButtonSizePx;
+        searchParams.width = mButtonSizePx;
         searchParams.height = mButtonSizePx;
-        searchParams.weight = fillRowSpace ? 1.0f : 0.0f;
-        mSearchButton.setBackgroundResource(
-                isCollapsed
-                        ? R.drawable.vertical_tabs_bottom_rounded_button_background
-                        : (isRtl
-                                ? R.drawable.vertical_tabs_left_rounded_button_background
-                                : R.drawable.vertical_tabs_right_rounded_button_background));
 
         mCollapseButton.setLayoutParams(collapseParams);
-        mTabActionButtonsContainer.setLayoutParams(tabActionParams);
-        mGridButton.setLayoutParams(gridParams);
         mSearchButton.setLayoutParams(searchParams);
         updateFooterLayout();
     }
