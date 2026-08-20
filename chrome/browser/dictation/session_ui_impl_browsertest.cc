@@ -683,7 +683,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
     }),
     InAnyContext(CheckViewProperty(
         DictationOverlayView::kWaveformElementIdForTesting,
-        &WaveformViewButton::audio_level_for_testing, 0.5f))
+        &WaveformViewButton::audio_level_for_testing, 0.05f))
   );
   // clang-format on
 }

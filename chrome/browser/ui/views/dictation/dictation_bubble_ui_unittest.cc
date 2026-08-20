@@ -114,12 +114,12 @@ TEST_F(DictationBubbleUiTest, AudioLevelPropagatesToWaveform) {
   // Initial audio level should be 0.
   EXPECT_FLOAT_EQ(waveform_view->audio_level_for_testing(), 0.0f);
 
-  // Update audio level. Note the boost factor in WaveformView::SetAudioLevel.
+  // Update audio level.
   bubble->UpdateAudioLevel(0.05f);
-  EXPECT_FLOAT_EQ(waveform_view->audio_level_for_testing(), 0.5f);
+  EXPECT_FLOAT_EQ(waveform_view->audio_level_for_testing(), 0.05f);
 
   bubble->UpdateAudioLevel(0.2f);
-  EXPECT_FLOAT_EQ(waveform_view->audio_level_for_testing(), 1.0f);
+  EXPECT_FLOAT_EQ(waveform_view->audio_level_for_testing(), 0.2f);
 }
 
 TEST_F(DictationBubbleUiTest, FinalizingWaveAnimation) {
@@ -173,6 +173,52 @@ TEST_F(DictationBubbleUiTest, FinalizingWaveAnimation) {
     EXPECT_FLOAT_EQ(pause_animation_state.size, 2.0f);
     EXPECT_FLOAT_EQ(pause_animation_state.center_y, baseline_y);
   }
+}
+
+TEST_F(DictationBubbleUiTest, AudioLevelMath) {
+  auto bubble = std::make_unique<DictationBubbleUi>(
+      anchor_view_, base::DoNothing(), base::DoNothing());
+  bubble->Show();
+  bubble->SetState(UiState::kTranscribing);
+
+  views::View* contents_view = bubble->GetContentsView();
+  ASSERT_NE(contents_view, nullptr);
+  views::View* waveform_view_raw =
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          DictationBubbleUi::kWaveformElementIdForTesting,
+          views::ElementTrackerViews::GetContextForView(contents_view));
+  ASSERT_NE(waveform_view_raw, nullptr);
+
+  auto* waveform_view = views::AsViewClass<WaveformView>(waveform_view_raw);
+  ASSERT_NE(waveform_view, nullptr);
+
+  // Constants that match what WaveformView uses.
+  const float kMinBarHeight = 4.0f;
+  const float kMaxBarHeight = 20.0f;
+  const size_t center_index = waveform_view->GetCenterBarIndex();
+
+  // Test Silence (0.0f level). Should result in minimum height.
+  waveform_view->SetAudioLevel(0.0f);
+  waveform_view->UpdatePhysics(base::Milliseconds(50));
+  float height_silence = waveform_view->GetTargetHeightForBar(
+      center_index, kMinBarHeight, kMaxBarHeight);
+  EXPECT_FLOAT_EQ(height_silence, kMinBarHeight);
+
+  // Test Small noise (0.05f level). Should still be relatively small, but above
+  // min. We advance physics again to propagate it to audio_history_[0].
+  waveform_view->SetAudioLevel(0.05f);
+  waveform_view->UpdatePhysics(base::Milliseconds(50));
+  float height_small = waveform_view->GetTargetHeightForBar(
+      center_index, kMinBarHeight, kMaxBarHeight);
+  EXPECT_GT(height_small, kMinBarHeight);
+
+  // Test Max level (1.0f level). Should be fully at max height.
+  waveform_view->SetAudioLevel(1.0f);
+  waveform_view->UpdatePhysics(base::Milliseconds(50));
+  float height_max = waveform_view->GetTargetHeightForBar(
+      center_index, kMinBarHeight, kMaxBarHeight);
+  EXPECT_GT(height_max, height_small);
+  EXPECT_FLOAT_EQ(height_max, kMaxBarHeight);
 }
 
 TEST_F(DictationBubbleUiTest, WaveformCollapseWhenInactive) {

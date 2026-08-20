@@ -136,7 +136,7 @@ TEST_F(DictationOverlayViewTest, AudioLevelPropagatesToWaveform) {
   EXPECT_FLOAT_EQ(waveform_view->audio_level_for_testing(), 0.0f);
 
   overlay->UpdateAudioLevel(0.05f);
-  EXPECT_FLOAT_EQ(waveform_view->audio_level_for_testing(), 0.5f);
+  EXPECT_FLOAT_EQ(waveform_view->audio_level_for_testing(), 0.05f);
 }
 
 TEST_F(DictationOverlayViewTest, SubviewSizingAndMargin) {
