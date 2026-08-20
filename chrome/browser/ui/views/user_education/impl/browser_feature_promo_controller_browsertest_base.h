@@ -135,11 +135,6 @@ class BrowserFeaturePromoControllerTestBase : public InteractiveBrowserTest {
   const base::TimeDelta kLessThanNewSession;
   const base::TimeDelta kMoreThanNewSession;
 
- private:
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context);
-  static std::unique_ptr<KeyedService> MakeTestTracker(
-      content::BrowserContext* context);
-
   void ResetSessionDataImpl(base::TimeDelta since_session_start,
                             base::TimeDelta idle_time,
                             BrowserView* browser_view);
@@ -147,6 +142,18 @@ class BrowserFeaturePromoControllerTestBase : public InteractiveBrowserTest {
   void AdvanceTimeImpl(std::optional<base::TimeDelta> until_new_last_active,
                        base::TimeDelta until_new_now,
                        bool send_update);
+
+  raw_ptr<FeaturePromoControllerImpl> controller_ = nullptr;
+  UserEducationContextPtr user_education_context_;
+  raw_ptr<testing::NiceMock<feature_engagement::test::MockTracker>>
+      mock_tracker_ = nullptr;
+  std::unique_ptr<test::UserEducationSessionTestUtil> test_util_;
+  int custom_callback_count_ = 0;
+
+ private:
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context);
+  static std::unique_ptr<KeyedService> MakeTestTracker(
+      content::BrowserContext* context);
 
   void OnCustomPromoAction(const base::Feature* feature,
                            const UserEducationContextPtr& context,
@@ -156,14 +163,8 @@ class BrowserFeaturePromoControllerTestBase : public InteractiveBrowserTest {
   // destroyed last, preventing feature state changes during member destruction.
   base::test::ScopedFeatureList scoped_feature_list_;
   base::CallbackListSubscription create_services_subscription_;
-  raw_ptr<FeaturePromoControllerImpl> controller_ = nullptr;
-  UserEducationContextPtr user_education_context_;
-  raw_ptr<testing::NiceMock<feature_engagement::test::MockTracker>>
-      mock_tracker_ = nullptr;
   FeaturePromoControllerImpl::TestLock lock_;
   base::Time now_;
-  std::unique_ptr<test::UserEducationSessionTestUtil> test_util_;
-  int custom_callback_count_ = 0;
 };
 
 }  // namespace user_education

@@ -175,10 +175,6 @@ source_set("unit_tests") {
     "views_tutorial_unittest.cc",
   ]
 
-  if (!is_chrome_for_testing) {
-    sources += [ "impl/browser_feature_promo_controller_unittest.cc" ]
-  }
-
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
   deps = [
@@ -211,6 +207,7 @@ source_set("browser_tests") {
     "browser_user_education_service_browsertest.cc",
     "help_bubble_factory_views_browsertest.cc",
     "help_bubble_view_timeout_browsertest.cc",
+    "impl/browser_feature_promo_controller_browsertest.cc",
     "impl/browser_feature_promo_controller_browsertest_base.cc",
     "impl/browser_feature_promo_controller_browsertest_base.h",
     "impl/browser_feature_promo_policy_browsertest.cc",
