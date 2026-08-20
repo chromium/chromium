@@ -45,7 +45,6 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.DeviceRestriction;
-import org.chromium.webapk.lib.common.WebApkConstants;
 
 import java.util.concurrent.TimeoutException;
 
@@ -54,8 +53,6 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public final class WebApkActivityTest {
     private static final String TEST_WEBAPK_PACKAGE_NAME = "org.chromium.webapk.for.testing";
-    private static final String TEST_WEBAPK_ID =
-            WebApkConstants.WEBAPK_ID_PREFIX + TEST_WEBAPK_PACKAGE_NAME;
 
     @Rule public final WebApkActivityTestRule mActivityTestRule = new WebApkActivityTestRule();
 

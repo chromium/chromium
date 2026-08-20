@@ -65,8 +65,6 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     public final FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
-    private static final String TAG = "PwaUniInstallIntegrTest";
-
     private static final String HISTOGRAM_DIALOG_TYPE =
             "WebApk.UniversalInstall.DialogShownForAppType";
     private static final String HISTOGRAM_DIALOG_ACTION = "WebApk.UniversalInstall.DialogAction";
