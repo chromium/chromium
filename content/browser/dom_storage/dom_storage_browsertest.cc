@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+#include <string>
+#include <string_view>
+#include <vector>
+
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -10,18 +15,22 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/features.h"
 #include "components/services/storage/dom_storage/local_storage_impl.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
+#include "components/services/storage/public/mojom/session_storage_control.mojom.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/session_storage_usage_info.h"
@@ -37,8 +46,12 @@
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -159,6 +172,45 @@ class DOMStorageBrowserTest : public base::test::WithFeatureOverride,
     loop.Run();
   }
 
+  std::string CreateSessionStorageNamespace() {
+    std::string namespace_id =
+        base::Uuid::GenerateRandomV4().AsLowercaseString();
+    context_wrapper()->GetSessionStorageControl()->CreateNamespace(
+        namespace_id);
+    return namespace_id;
+  }
+
+  mojo::Remote<blink::mojom::StorageArea> BindSessionStorageArea(
+      const blink::StorageKey& storage_key,
+      const std::string& namespace_id) {
+    mojo::Remote<blink::mojom::StorageArea> area;
+    context_wrapper()->GetSessionStorageControl()->BindStorageArea(
+        storage_key, namespace_id, area.BindNewPipeAndPassReceiver());
+    return area;
+  }
+
+  void PutSessionStorageValue(mojo::Remote<blink::mojom::StorageArea>& area,
+                              std::string_view value) {
+    base::test::TestFuture<bool> future;
+    area->Put(/*key=*/{'k', 'e', 'y'},
+              /*value=*/std::vector<uint8_t>(value.begin(), value.end()),
+              /*client_old_value=*/std::nullopt,
+              /*source=*/nullptr, future.GetCallback());
+    ASSERT_TRUE(future.Get());
+  }
+
+  std::optional<std::string> GetSessionStorageValue(
+      mojo::Remote<blink::mojom::StorageArea>& area) {
+    base::test::TestFuture<std::vector<blink::mojom::KeyValuePtr>> future;
+    area->GetAll(/*new_observer=*/mojo::NullRemote(), future.GetCallback());
+    for (const auto& key_value : future.Take()) {
+      if (key_value->key == std::vector<uint8_t>({'k', 'e', 'y'})) {
+        return std::string(key_value->value.begin(), key_value->value.end());
+      }
+    }
+    return std::nullopt;
+  }
+
   // The size is recorded on a blocking task in the StorageService, so poll
   // until the sample reaches the browser process.
   void ExpectNonZeroOnDiskSize(const std::string& histogram) {
@@ -178,6 +230,158 @@ static const bool kNotIncognito = false;
 
 IN_PROC_BROWSER_TEST_P(DOMStorageBrowserTest, SanityCheck) {
   SimpleTest(GetTestUrl("dom_storage", "sanity_check.html"), kNotIncognito);
+}
+
+IN_PROC_BROWSER_TEST_P(DOMStorageBrowserTest,
+                       ClearDataForStorageKeyClearsSessionStorage) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL target_url =
+      embedded_test_server()->GetURL("localhost", "/empty.html");
+  const GURL other_url =
+      embedded_test_server()->GetURL("127.0.0.1", "/empty.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), target_url));
+  ASSERT_TRUE(ExecJs(shell(), R"(
+    localStorage.setItem('key', 'target-local');
+    sessionStorage.setItem('key', 'target-session');
+  )"));
+
+  ASSERT_TRUE(NavigateToURL(shell(), other_url));
+  ASSERT_TRUE(ExecJs(shell(), R"(
+    localStorage.setItem('key', 'other-local');
+    sessionStorage.setItem('key', 'other-session');
+  )"));
+  CommitSessionStorage();
+
+  base::RunLoop loop;
+  partition()->ClearData(
+      StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE,
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(target_url)),
+      base::Time(), base::Time::Max(), loop.QuitClosure());
+  loop.Run();
+
+  EXPECT_EQ("other-local",
+            EvalJs(shell(), "localStorage.getItem('key')").ExtractString());
+  EXPECT_EQ("other-session",
+            EvalJs(shell(), "sessionStorage.getItem('key')").ExtractString());
+
+  ASSERT_TRUE(NavigateToURL(shell(), target_url));
+  EXPECT_TRUE(
+      EvalJs(shell(), "localStorage.getItem('key') === null").ExtractBool());
+  EXPECT_TRUE(
+      EvalJs(shell(), "sessionStorage.getItem('key') === null").ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_P(DOMStorageBrowserTest,
+                       ClearDataForStorageKeyUsesFullStorageKey) {
+  const url::Origin shared_origin =
+      url::Origin::Create(GURL("https://resource.test"));
+  const blink::StorageKey target_key = blink::StorageKey::Create(
+      shared_origin, net::SchemefulSite(GURL("https://top-a.test")),
+      blink::mojom::AncestorChainBit::kCrossSite,
+      /*third_party_partitioning_allowed=*/true);
+  const blink::StorageKey sibling_key = blink::StorageKey::Create(
+      shared_origin, net::SchemefulSite(GURL("https://top-b.test")),
+      blink::mojom::AncestorChainBit::kCrossSite,
+      /*third_party_partitioning_allowed=*/true);
+
+  const std::string namespace_a = CreateSessionStorageNamespace();
+  const std::string namespace_b = CreateSessionStorageNamespace();
+  auto target_area_a = BindSessionStorageArea(target_key, namespace_a);
+  auto target_area_b = BindSessionStorageArea(target_key, namespace_b);
+  auto sibling_area_a = BindSessionStorageArea(sibling_key, namespace_a);
+  auto sibling_area_b = BindSessionStorageArea(sibling_key, namespace_b);
+  PutSessionStorageValue(target_area_a, "target-a");
+  PutSessionStorageValue(target_area_b, "target-b");
+  PutSessionStorageValue(sibling_area_a, "sibling-a");
+  PutSessionStorageValue(sibling_area_b, "sibling-b");
+
+  base::RunLoop loop;
+  partition()->ClearData(StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE,
+                         target_key, base::Time(), base::Time::Max(),
+                         loop.QuitClosure());
+  loop.Run();
+
+  EXPECT_EQ(std::nullopt, GetSessionStorageValue(target_area_a));
+  EXPECT_EQ(std::nullopt, GetSessionStorageValue(target_area_b));
+  EXPECT_EQ("sibling-a", GetSessionStorageValue(sibling_area_a));
+  EXPECT_EQ("sibling-b", GetSessionStorageValue(sibling_area_b));
+}
+
+IN_PROC_BROWSER_TEST_P(DOMStorageBrowserTest,
+                       ClearDataWithNullMatcherClearsAllSessionStorage) {
+  const std::string namespace_id = CreateSessionStorageNamespace();
+  auto area_a =
+      BindSessionStorageArea(blink::StorageKey::CreateFirstParty(
+                                 url::Origin::Create(GURL("https://a.test"))),
+                             namespace_id);
+  auto area_b =
+      BindSessionStorageArea(blink::StorageKey::CreateFirstParty(
+                                 url::Origin::Create(GURL("https://b.test"))),
+                             namespace_id);
+  PutSessionStorageValue(area_a, "a");
+  PutSessionStorageValue(area_b, "b");
+
+  base::RunLoop loop;
+  partition()->ClearData(StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE,
+                         blink::StorageKey(), base::Time(), base::Time::Max(),
+                         loop.QuitClosure());
+  loop.Run();
+
+  EXPECT_EQ(std::nullopt, GetSessionStorageValue(area_a));
+  EXPECT_EQ(std::nullopt, GetSessionStorageValue(area_b));
+}
+
+IN_PROC_BROWSER_TEST_P(DOMStorageBrowserTest,
+                       ClearDataCombinesSessionStorageFilterAndPolicy) {
+  const url::Origin filtered_origin =
+      url::Origin::Create(GURL("https://filtered.test"));
+  const blink::StorageKey target_key = blink::StorageKey::Create(
+      filtered_origin, net::SchemefulSite(GURL("https://top-a.test")),
+      blink::mojom::AncestorChainBit::kCrossSite,
+      /*third_party_partitioning_allowed=*/true);
+  const blink::StorageKey policy_rejected_key = blink::StorageKey::Create(
+      filtered_origin, net::SchemefulSite(GURL("https://top-b.test")),
+      blink::mojom::AncestorChainBit::kCrossSite,
+      /*third_party_partitioning_allowed=*/true);
+  const blink::StorageKey filter_rejected_key = blink::StorageKey::Create(
+      url::Origin::Create(GURL("https://unfiltered.test")),
+      net::SchemefulSite(GURL("https://top-a.test")),
+      blink::mojom::AncestorChainBit::kCrossSite,
+      /*third_party_partitioning_allowed=*/true);
+
+  const std::string namespace_id = CreateSessionStorageNamespace();
+  auto target_area = BindSessionStorageArea(target_key, namespace_id);
+  auto policy_rejected_area =
+      BindSessionStorageArea(policy_rejected_key, namespace_id);
+  auto filter_rejected_area =
+      BindSessionStorageArea(filter_rejected_key, namespace_id);
+  PutSessionStorageValue(target_area, "target");
+  PutSessionStorageValue(policy_rejected_area, "policy-rejected");
+  PutSessionStorageValue(filter_rejected_area, "filter-rejected");
+
+  auto filter_builder = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kDelete,
+      BrowsingDataFilterBuilder::OriginMatchingMode::kOriginInAllContexts);
+  filter_builder->AddOrigin(filtered_origin);
+  auto policy_matcher = base::BindLambdaForTesting(
+      [target_key, filter_rejected_key](const blink::StorageKey& storage_key,
+                                        storage::SpecialStoragePolicy*) {
+        return storage_key == target_key || storage_key == filter_rejected_key;
+      });
+
+  base::RunLoop loop;
+  partition()->ClearData(StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE,
+                         filter_builder.get(), std::move(policy_matcher),
+                         /*cookie_deletion_filter=*/nullptr,
+                         /*perform_storage_cleanup=*/false, base::Time(),
+                         base::Time::Max(), loop.QuitClosure());
+  loop.Run();
+
+  EXPECT_EQ(std::nullopt, GetSessionStorageValue(target_area));
+  EXPECT_EQ("policy-rejected", GetSessionStorageValue(policy_rejected_area));
+  EXPECT_EQ("filter-rejected", GetSessionStorageValue(filter_rejected_area));
 }
 
 // TODO(crbug.com/488417166): Fix flakiness on android-x86-rel and re-enable.

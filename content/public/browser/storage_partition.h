@@ -188,6 +188,7 @@ class CONTENT_EXPORT StoragePartition {
     REMOVE_DATA_MASK_COOKIES = 1 << 1,
     REMOVE_DATA_MASK_FILE_SYSTEMS = 1 << 2,
     REMOVE_DATA_MASK_INDEXEDDB = 1 << 3,
+    // Includes both local storage and session storage.
     REMOVE_DATA_MASK_LOCAL_STORAGE = 1 << 4,
     REMOVE_DATA_MASK_SHADER_CACHE = 1 << 5,
     REMOVE_DATA_MASK_WEBSQL_DEPRECATED = 1 << 6,
@@ -233,8 +234,6 @@ class CONTENT_EXPORT StoragePartition {
   // inside this StoragePartition for the given |storage_origin|.
   // |callback| is called when data deletion is done or at least the deletion is
   // scheduled.
-  // Note session dom storage is not cleared even if you specify
-  // REMOVE_DATA_MASK_LOCAL_STORAGE.
   // No notification is dispatched upon completion.
   //
   // TODO(ajwong): Right now, the embedder may have some
