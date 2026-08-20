@@ -655,7 +655,9 @@ class PDFExtensionJSInk2TextTest : public PDFExtensionJSTest {
     auto enabled = PDFExtensionJSTest::GetEnabledFeatures();
     enabled.push_back(
         {chrome_pdf::features::kPdfInk2,
-         {{chrome_pdf::features::kPdfInk2TextAnnotations.name, "true"}}});
+         {{chrome_pdf::features::kPdfInk2TextAnnotations.name, "true"},
+          {chrome_pdf::features::kPdfInk2TextAnnotationsExtraStyles.name,
+           "true"}}});
     return enabled;
   }
 };

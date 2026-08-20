@@ -78,6 +78,10 @@ BASE_FEATURE(kPdfInk2, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables text annotations.
 const base::FeatureParam<bool> kPdfInk2TextAnnotations{
     &kPdfInk2, "text-annotations", false};
+
+// Enables extra text styling (e.g. strikethrough, underline).
+const base::FeatureParam<bool> kPdfInk2TextAnnotationsExtraStyles{
+    &kPdfInk2, "text-annotations-extra-styles", false};
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
