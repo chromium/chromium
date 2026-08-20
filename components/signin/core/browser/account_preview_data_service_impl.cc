@@ -97,22 +97,24 @@ void RecordSuccessfulFetchingMetrics(
 AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
     IdentityManager* identity_manager,
     syncer::SyncService* sync_service,
-    PrefService* pref_service,
+    PrefService* local_state,
+    PrefService* profile_prefs,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<WaitForNetworkCallbackHelper> network_delay_helper,
     version_info::Channel channel,
     const metrics::ProfileMetricsService* profile_metrics_service)
     : identity_manager_(identity_manager),
       sync_service_(sync_service),
-      pref_service_(pref_service),
+      local_state_(local_state),
+      profile_prefs_(profile_prefs),
       url_loader_factory_(std::move(url_loader_factory)),
       network_delay_helper_(std::move(network_delay_helper)),
       channel_(channel),
-      metrics_recorder_(*pref_service,
+      metrics_recorder_(*profile_prefs,
                         *identity_manager,
                         *profile_metrics_service) {
   CHECK(network_delay_helper_);
-  pref_change_registrar_.Init(pref_service_);
+  pref_change_registrar_.Init(profile_prefs_);
   pref_change_registrar_.Add(
       prefs::kSigninAllowed,
       base::BindRepeating(
@@ -132,7 +134,7 @@ bool AccountPreviewDataServiceImpl::IsRateLimited() const {
   }
 
   base::Time last_429_time =
-      pref_service_->GetTime(prefs::kAccountPreviewDataLast429TimePref);
+      profile_prefs_->GetTime(prefs::kAccountPreviewDataLast429TimePref);
   if (last_429_time.is_null()) {
     return false;
   }
@@ -205,7 +207,7 @@ void AccountPreviewDataServiceImpl::UpdateExternalAppAccount(
     return;
   }
 
-  if (!pref_service_->GetBoolean(prefs::kSigninAllowed)) {
+  if (!profile_prefs_->GetBoolean(prefs::kSigninAllowed)) {
     ClearExternalAppAccount();
     return;
   }
@@ -319,8 +321,8 @@ void AccountPreviewDataServiceImpl::OnSingleFetchCompleted(
     std::optional<AccountPreviewData> data,
     bool hit_429) {
   if (hit_429) {
-    pref_service_->SetTime(prefs::kAccountPreviewDataLast429TimePref,
-                           base::Time::Now());
+    profile_prefs_->SetTime(prefs::kAccountPreviewDataLast429TimePref,
+                            base::Time::Now());
   }
 
   if (data.has_value()) {
@@ -397,7 +399,7 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
     ClearAllDataAndResults();
     if (cause == FetchTriggerCause::kPeriodicRefresh) {
       // Treat `prefs::kAccountPreviewNonPeriodicFetchCountPref` pref.
-      int count = pref_service_->GetInteger(
+      int count = profile_prefs_->GetInteger(
           prefs::kAccountPreviewNonPeriodicFetchCountPref);
       // Only record when previous non-periodic fetches occurred (meaning there
       // were some valid accounts) to ensure we do not record when a profile
@@ -405,7 +407,8 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
       if (count > 0) {
         RecordNonPeriodicFetchesUntilNextPeriodicRefresh(count);
       }
-      pref_service_->ClearPref(prefs::kAccountPreviewNonPeriodicFetchCountPref);
+      profile_prefs_->ClearPref(
+          prefs::kAccountPreviewNonPeriodicFetchCountPref);
     }
     if (all_data_available_callback_for_testing_) {
       std::move(all_data_available_callback_for_testing_).Run();
@@ -464,7 +467,7 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
     return;
   }
 
-  RecordSuccessfulFetchingMetrics(pref_service_, accounts.size(),
+  RecordSuccessfulFetchingMetrics(profile_prefs_, accounts.size(),
                                   gaia_ids_to_fetch.size(), cause);
 
   // Reset the periodic timer if all data was fetched and this refresh was not
@@ -552,7 +555,7 @@ AccountPreviewDataServiceImpl::ComputePreferredAccount() const {
   // Get candidate accounts in platform display priority order (where index 0 is
   // the platform's default account for promos).
   std::vector<AccountInfo> ordered_accounts =
-      GetOrderedAccountsForDisplay(identity_manager_, pref_service_);
+      GetOrderedAccountsForDisplay(identity_manager_, local_state_);
 
 #if BUILDFLAG(IS_ANDROID)
   std::optional<GaiaId> external_app_account =
@@ -616,7 +619,7 @@ bool AccountPreviewDataServiceImpl::HaveAccountsMutatedSinceLastFetch(
     const std::vector<CoreAccountInfo>& accounts) const {
   absl::flat_hash_set<std::string> last_used_gaia_ids;
   for (const auto& val :
-       pref_service_->GetList(prefs::kAccountPreviewDataLastFetchAccounts)) {
+       profile_prefs_->GetList(prefs::kAccountPreviewDataLastFetchAccounts)) {
     if (const std::string* str = val.GetIfString()) {
       last_used_gaia_ids.insert(*str);
     }
@@ -638,10 +641,10 @@ void AccountPreviewDataServiceImpl::RecordAccountsUsedForLastFetch() {
     for (const auto& [account_id, gaia_id] : account_id_to_gaia_id_) {
       account_list.Append(gaia_id.ToString());
     }
-    pref_service_->SetList(prefs::kAccountPreviewDataLastFetchAccounts,
-                           std::move(account_list));
+    profile_prefs_->SetList(prefs::kAccountPreviewDataLastFetchAccounts,
+                            std::move(account_list));
   } else {
-    pref_service_->ClearPref(prefs::kAccountPreviewDataLastFetchAccounts);
+    profile_prefs_->ClearPref(prefs::kAccountPreviewDataLastFetchAccounts);
   }
 }
 
@@ -666,7 +669,7 @@ void AccountPreviewDataServiceImpl::OnAllFetchesCompleted(
 std::optional<AccountPreviewDataService::AccountPreviewPreference>
 AccountPreviewDataServiceImpl::ReadPreferredAccountFromPrefs() const {
   const base::DictValue& dict =
-      pref_service_->GetDict(prefs::kAccountPreviewPreference);
+      profile_prefs_->GetDict(prefs::kAccountPreviewPreference);
   const std::string* gaia_id_str =
       dict.FindString(kPreferredAccountDictGaiaIdKey);
   if (!gaia_id_str || gaia_id_str->empty()) {
@@ -716,7 +719,7 @@ AccountPreviewDataServiceImpl::ReadPreferredAccountFromPrefs() const {
 void AccountPreviewDataServiceImpl::WritePreferredAccountToPrefs(
     std::optional<AccountPreviewPreference> preference) {
   if (!preference.has_value()) {
-    pref_service_->ClearPref(prefs::kAccountPreviewPreference);
+    profile_prefs_->ClearPref(prefs::kAccountPreviewPreference);
     return;
   }
 
@@ -734,17 +737,17 @@ void AccountPreviewDataServiceImpl::WritePreferredAccountToPrefs(
   dict.Set(kPreferredAccountDictDataTypesKey, std::move(data_types_list));
   dict.Set(kPreferredAccountDictOtherDeviceFormFactorKey,
            static_cast<int>(preference->other_device_form_factor));
-  pref_service_->SetDict(prefs::kAccountPreviewPreference, std::move(dict));
+  profile_prefs_->SetDict(prefs::kAccountPreviewPreference, std::move(dict));
 }
 
 void AccountPreviewDataServiceImpl::ResetTimer() {
-  pref_service_->SetTime(prefs::kAccountPreviewDataLastUpdatePref,
-                         base::Time::Now());
+  profile_prefs_->SetTime(prefs::kAccountPreviewDataLastUpdatePref,
+                          base::Time::Now());
   CreateAndStartRepeatingTimer();
 }
 
 void AccountPreviewDataServiceImpl::OnSigninAllowedPrefChanged() {
-  if (pref_service_->GetBoolean(prefs::kSigninAllowed)) {
+  if (profile_prefs_->GetBoolean(prefs::kSigninAllowed)) {
     if (!identity_manager_observation_.IsObserving()) {
       identity_manager_observation_.Observe(identity_manager_);
       CreateAndStartRepeatingTimer();
@@ -771,7 +774,7 @@ void AccountPreviewDataServiceImpl::OnSigninAllowedPrefChanged() {
 
 void AccountPreviewDataServiceImpl::CreateAndStartRepeatingTimer() {
   repeating_timer_ = std::make_unique<PersistentRepeatingTimer>(
-      pref_service_, prefs::kAccountPreviewDataLastUpdatePref,
+      profile_prefs_, prefs::kAccountPreviewDataLastUpdatePref,
       std::max(switches::kAccountPreviewDataPeriodicRefreshTiming.Get(),
                kMinPeriodicRefreshInterval),
       base::BindRepeating(
@@ -823,7 +826,7 @@ void AccountPreviewDataServiceImpl::ProcessAccountRemoval(
     FetchTriggerCause trigger_cause) {
   account_id_to_gaia_id_.erase(account_id);
   if (account_id_to_gaia_id_.empty()) {
-    pref_service_->ClearPref(prefs::kAccountPreviewDataLastFetchAccounts);
+    profile_prefs_->ClearPref(prefs::kAccountPreviewDataLastFetchAccounts);
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -862,7 +865,7 @@ void AccountPreviewDataServiceImpl::ClearMemoryData() {
 }
 
 void AccountPreviewDataServiceImpl::ClearStoredResults() {
-  pref_service_->ClearPref(prefs::kAccountPreviewDataLastFetchAccounts);
+  profile_prefs_->ClearPref(prefs::kAccountPreviewDataLastFetchAccounts);
   WritePreferredAccountToPrefs(/*preference=*/std::nullopt);
 }
 
@@ -880,7 +883,7 @@ AccountPreviewDataServiceImpl::ReadExternalAppAccountFromPrefs() const {
   }
 
   const base::DictValue& dict =
-      pref_service_->GetDict(prefs::kAccountPreviewExternalAppAccount);
+      profile_prefs_->GetDict(prefs::kAccountPreviewExternalAppAccount);
   const std::string* gaia_id_str =
       dict.FindString(kExternalAppAccountDictGaiaIdKey);
   if (!gaia_id_str || gaia_id_str->empty()) {
@@ -912,17 +915,17 @@ void AccountPreviewDataServiceImpl::WriteExternalAppAccountToPrefs(
   base::DictValue dict;
   dict.Set(kExternalAppAccountDictGaiaIdKey, gaia_id.ToString());
   dict.Set(kExternalAppAccountDictTimestampKey, base::TimeToValue(timestamp));
-  pref_service_->SetDict(prefs::kAccountPreviewExternalAppAccount,
-                         std::move(dict));
+  profile_prefs_->SetDict(prefs::kAccountPreviewExternalAppAccount,
+                          std::move(dict));
 }
 
 void AccountPreviewDataServiceImpl::ClearExternalAppAccount() {
-  pref_service_->ClearPref(prefs::kAccountPreviewExternalAppAccount);
+  profile_prefs_->ClearPref(prefs::kAccountPreviewExternalAppAccount);
 }
 
 void AccountPreviewDataServiceImpl::CleanUpExternalAppAccountIfExpired() {
   const base::DictValue& dict =
-      pref_service_->GetDict(prefs::kAccountPreviewExternalAppAccount);
+      profile_prefs_->GetDict(prefs::kAccountPreviewExternalAppAccount);
   if (dict.empty()) {
     return;
   }

@@ -111,7 +111,7 @@ base::flat_set<GaiaId> GetAllGaiaIdsForKeyedPreferences(
 
 std::vector<AccountInfo> GetOrderedAccountsForDisplay(
     const IdentityManager* identity_manager,
-    const PrefService* prefs) {
+    const PrefService* local_state) {
   CHECK(identity_manager);
 
   std::vector<AccountInfo> accounts;
@@ -124,7 +124,7 @@ std::vector<AccountInfo> GetOrderedAccountsForDisplay(
     AccountInfo primary_account = identity_manager->FindExtendedAccountInfo(
         identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin));
     if (!primary_account.email.empty() &&
-        IsAccountAllowed(prefs, primary_account.email)) {
+        IsAccountAllowed(local_state, primary_account.email)) {
       accounts.push_back(std::move(primary_account));
     }
   }
@@ -140,7 +140,7 @@ std::vector<AccountInfo> GetOrderedAccountsForDisplay(
     // Some device accounts may not be in Chrome.
     const AccountInfo& account_to_use =
         extended_info.IsEmpty() ? account : extended_info;
-    if (IsAccountAllowed(prefs, account_to_use.email)) {
+    if (IsAccountAllowed(local_state, account_to_use.email)) {
       accounts.push_back(account_to_use);
     }
   }
@@ -157,7 +157,7 @@ std::vector<AccountInfo> GetOrderedAccountsForDisplay(
     if (account.account_id == primary_account_id) {
       continue;
     }
-    if (IsAccountAllowed(prefs, account.email)) {
+    if (IsAccountAllowed(local_state, account.email)) {
       accounts.push_back(account);
     }
   }
@@ -174,7 +174,7 @@ std::vector<AccountInfo> GetOrderedAccountsForDisplay(
     if (listed_account.id == primary_account_id) {
       continue;
     }
-    if (!IsAccountAllowed(prefs, listed_account.email)) {
+    if (!IsAccountAllowed(local_state, listed_account.email)) {
       continue;
     }
     auto it = std::ranges::find(accounts_with_tokens, listed_account.id,
@@ -186,13 +186,6 @@ std::vector<AccountInfo> GetOrderedAccountsForDisplay(
 #endif
 
   return accounts;
-}
-
-AccountInfo GetDefaultAccountForPromo(const IdentityManager* identity_manager,
-                                      const PrefService* prefs) {
-  std::vector<AccountInfo> accounts =
-      GetOrderedAccountsForDisplay(identity_manager, prefs);
-  return accounts.empty() ? AccountInfo() : std::move(accounts.front());
 }
 
 }  // namespace signin

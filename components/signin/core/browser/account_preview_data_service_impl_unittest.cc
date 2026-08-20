@@ -101,17 +101,18 @@ class AccountPreviewDataServiceTest : public testing::Test {
   void SetUp() override {
     AccountPreviewDataService::RegisterProfilePrefs(prefs_.registry());
     SigninPrefs::RegisterProfilePrefs(prefs_.registry());
-    prefs_.registry()->RegisterStringPref(prefs::kGoogleServicesUsernamePattern,
-                                          std::string());
+    local_state_.registry()->RegisterStringPref(
+        prefs::kGoogleServicesUsernamePattern, std::string());
     prefs_.registry()->RegisterBooleanPref(prefs::kSigninAllowed, true);
     prefs_.SetBoolean(prefs::kSigninAllowed, true);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
     auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
     network_delay_helper_ = helper.get();
     service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-        identity_test_env_.identity_manager(), &sync_service_, &prefs_,
-        test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
-        version_info::Channel::UNKNOWN, &profile_metrics_service_);
+        identity_test_env_.identity_manager(), &sync_service_, &local_state_,
+        &prefs_, test_url_loader_factory_.GetSafeWeakWrapper(),
+        std::move(helper), version_info::Channel::UNKNOWN,
+        &profile_metrics_service_);
   }
 
   void TearDown() override {
@@ -124,6 +125,7 @@ class AccountPreviewDataServiceTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   network::TestURLLoaderFactory test_url_loader_factory_;
+  TestingPrefServiceSimple local_state_;
   TestingPrefServiceSimple prefs_;
   IdentityTestEnvironment identity_test_env_;
   syncer::TestSyncService sync_service_;
@@ -434,6 +436,35 @@ TEST_F(AccountPreviewDataServiceTest, GetPreferredAccountForPromo) {
               testing::Optional(testing::Field(
                   &AccountPreviewPreference::gaia_id, account1.gaia)));
 }
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreferredAccountForPromoRespectsUsernamePatternPolicy) {
+  local_state_.SetString(prefs::kGoogleServicesUsernamePattern, "*@gmail.com");
+
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  MockSuccessfulFetch(&test_url_loader_factory_);
+
+  base::RunLoop all_data_available_loop;
+  service_->SetAllDataAvailableCallbackForTesting(
+      all_data_available_loop.QuitClosure());
+
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("account1@example.com");
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts(
+      {{account1.email, account1.gaia}, {account2.email, account2.gaia}});
+#endif
+
+  all_data_available_loop.Run();
+
+  // account1@example.com is disallowed by pattern *@gmail.com, so account2
+  // should be preferred even though account1 was added first.
+  EXPECT_THAT(service_->GetPreferredAccountForPromo(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, account2.gaia)));
+}
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -512,8 +543,8 @@ TEST_F(AccountPreviewDataServiceTest, PeriodicRefreshDefersUntilTokensLoaded) {
   auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
   network_delay_helper_ = helper.get();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), &sync_service_, &prefs_,
-      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+      identity_test_env_.identity_manager(), &sync_service_, &local_state_,
+      &prefs_, test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
       version_info::Channel::UNKNOWN, &profile_metrics_service_);
 
   // Verify that it did NOT fetch yet.
@@ -550,8 +581,8 @@ TEST_F(AccountPreviewDataServiceTest, NoFetchOnStartupIfTimerNotExpired) {
   auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
   network_delay_helper_ = helper.get();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), &sync_service_, &prefs_,
-      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+      identity_test_env_.identity_manager(), &sync_service_, &local_state_,
+      &prefs_, test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
       version_info::Channel::UNKNOWN, &profile_metrics_service_);
 
   // Verify that it did NOT fetch yet.
@@ -1298,8 +1329,8 @@ TEST_F(AccountPreviewDataServiceTest, AccountsNotMutatedSkipsFetch) {
   auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
   network_delay_helper_ = helper.get();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), &sync_service_, &prefs_,
-      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+      identity_test_env_.identity_manager(), &sync_service_, &local_state_,
+      &prefs_, test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
       version_info::Channel::UNKNOWN, &profile_metrics_service_);
 
   base::RunLoop run_loop;
@@ -1336,8 +1367,8 @@ TEST_F(AccountPreviewDataServiceTest,
   auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
   network_delay_helper_ = helper.get();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), &sync_service_, &prefs_,
-      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+      identity_test_env_.identity_manager(), &sync_service_, &local_state_,
+      &prefs_, test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
       version_info::Channel::UNKNOWN, &profile_metrics_service_);
 
   MockSuccessfulFetch(&test_url_loader_factory_);
@@ -1371,8 +1402,8 @@ TEST_F(AccountPreviewDataServiceTest, AccountsMutatedRemovalTriggersFetch) {
   auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
   network_delay_helper_ = helper.get();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), &sync_service_, &prefs_,
-      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+      identity_test_env_.identity_manager(), &sync_service_, &local_state_,
+      &prefs_, test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
       version_info::Channel::UNKNOWN, &profile_metrics_service_);
 
   MockSuccessfulFetch(&test_url_loader_factory_);
@@ -1427,8 +1458,8 @@ TEST_F(AccountPreviewDataServiceTest, PeriodicRefreshTimingParam) {
   auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
   network_delay_helper_ = helper.get();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), &sync_service_, &prefs_,
-      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+      identity_test_env_.identity_manager(), &sync_service_, &local_state_,
+      &prefs_, test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
       version_info::Channel::UNKNOWN, &profile_metrics_service_);
 
   MockSuccessfulFetch(&test_url_loader_factory_);
@@ -1461,8 +1492,8 @@ TEST_F(AccountPreviewDataServiceTest,
   auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
   network_delay_helper_ = helper.get();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), &sync_service_, &prefs_,
-      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+      identity_test_env_.identity_manager(), &sync_service_, &local_state_,
+      &prefs_, test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
       version_info::Channel::UNKNOWN, &profile_metrics_service_);
 
   MockSuccessfulFetch(&test_url_loader_factory_);
@@ -1589,9 +1620,10 @@ TEST_F(AccountPreviewDataServiceTest, NullSyncService) {
   auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
   network_delay_helper_ = helper.get();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), /*sync_service=*/nullptr, &prefs_,
-      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
-      version_info::Channel::UNKNOWN, &profile_metrics_service_);
+      identity_test_env_.identity_manager(), /*sync_service=*/nullptr,
+      &local_state_, &prefs_, test_url_loader_factory_.GetSafeWeakWrapper(),
+      std::move(helper), version_info::Channel::UNKNOWN,
+      &profile_metrics_service_);
 
   base::RunLoop all_fetches_run_loop;
   service_->SetAllDataAvailableCallbackForTesting(
@@ -1874,8 +1906,8 @@ TEST_F(AccountPreviewDataServiceTest,
   auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
   network_delay_helper_ = helper.get();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), &sync_service_, &prefs_,
-      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+      identity_test_env_.identity_manager(), &sync_service_, &local_state_,
+      &prefs_, test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
       version_info::Channel::UNKNOWN, &profile_metrics_service_);
 
   // Tokens are loaded, so RefreshAccountIdToGaiaIdMapping() ran.
@@ -2007,8 +2039,8 @@ TEST_F(AccountPreviewDataServiceTest,
   auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
   network_delay_helper_ = helper.get();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), &sync_service_, &prefs_,
-      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+      identity_test_env_.identity_manager(), &sync_service_, &local_state_,
+      &prefs_, test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
       version_info::Channel::UNKNOWN, &profile_metrics_service_);
 
   // Stored external app account is not in IdentityManager, so it should be
@@ -2243,8 +2275,8 @@ TEST_F(AccountPreviewDataServiceTest,
   auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
   network_delay_helper_ = helper.get();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), &sync_service_, &prefs_,
-      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+      identity_test_env_.identity_manager(), &sync_service_, &local_state_,
+      &prefs_, test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
       version_info::Channel::UNKNOWN, &profile_metrics_service_);
 
   EXPECT_TRUE(service_->IsRateLimitedForTesting());

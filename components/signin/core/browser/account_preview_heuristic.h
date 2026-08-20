@@ -42,8 +42,7 @@ struct AccountPreviewHeuristicContext {
 // The first account in the list (`accounts[0]`) must be the default account
 // (i.e. the candidate account that would be promoted by default in the absence
 // of account previews, as determined by
-// `signin::GetOrderedAccountsForDisplay()` or
-// `signin::GetDefaultAccountForPromo()`).
+// `signin::GetOrderedAccountsForDisplay()`).
 //
 // Priorities:
 // 1. If the default account is not a regular account, it is selected.

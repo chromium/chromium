@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/account_preview_data_service_factory.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -65,7 +66,8 @@ AccountPreviewDataServiceFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<signin::AccountPreviewDataServiceImpl>(
       IdentityManagerFactory::GetForProfile(profile),
-      SyncServiceFactory::GetForProfile(profile), profile->GetPrefs(),
+      SyncServiceFactory::GetForProfile(profile),
+      g_browser_process->local_state(), profile->GetPrefs(),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       std::move(network_delay_helper), chrome::GetChannel(),

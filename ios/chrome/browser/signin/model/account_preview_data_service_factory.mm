@@ -13,6 +13,7 @@
 #import "components/signin/ios/browser/wait_for_network_callback_helper_ios.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -57,7 +58,8 @@ AccountPreviewDataServiceFactory::BuildServiceInstanceFor(
 
   return std::make_unique<signin::AccountPreviewDataServiceImpl>(
       IdentityManagerFactory::GetForProfile(profile),
-      SyncServiceFactory::GetForProfile(profile), profile->GetPrefs(),
+      SyncServiceFactory::GetForProfile(profile),
+      GetApplicationContext()->GetLocalState(), profile->GetPrefs(),
       profile->GetSharedURLLoaderFactory(),
       std::make_unique<WaitForNetworkCallbackHelperIOS>(), ::GetChannel(),
       profile_metrics_service);
