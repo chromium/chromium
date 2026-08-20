@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
   GURL url = embedded_test_server()->GetURL(
       "example.com", "/password/update_form_empty_fields.html");
 
-  content::TestNavigationObserver observer(url.GetWithEmptyPath());
+  content::TestNavigationObserver observer(url);
   observer.StartWatchingNewWebContents();
 
   delegate->StartPasswordChangeFlow(CreateStoredCredential(url),
@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
   GURL url = embedded_test_server()->GetURL(
       "example.com", "/password/update_form_empty_fields.html");
 
-  content::TestNavigationObserver observer(url.GetWithEmptyPath());
+  content::TestNavigationObserver observer(url);
   observer.StartWatchingNewWebContents();
 
   delegate->StartPasswordChangeFlow(CreateStoredCredential(url),

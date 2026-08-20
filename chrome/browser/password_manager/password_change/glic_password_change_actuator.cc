@@ -219,7 +219,7 @@ void GlicPasswordChangeActuator::Start() {
   }
 
   content::OpenURLParams open_url_params(
-      target_url.GetWithEmptyPath(), content::Referrer(),
+      target_url, content::Referrer(),
       WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
       /*is_renderer_initiated=*/false);
