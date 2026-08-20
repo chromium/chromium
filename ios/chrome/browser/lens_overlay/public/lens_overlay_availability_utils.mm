@@ -70,9 +70,6 @@ bool IsLensOverlayEntrypointAvailable(LensOverlayEntrypoint entrypoint,
           IsVisibleURLNewTabPage(web_state)) {
         return false;
       }
-      if (IsLensOverlayVisible(web_state)) {
-        return false;
-      }
       bool is_portrait =
           trait_collection ? !IsCompactHeight(trait_collection) : true;
       bool portrait_override =
