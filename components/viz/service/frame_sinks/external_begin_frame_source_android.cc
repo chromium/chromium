@@ -9,9 +9,11 @@
 #include <algorithm>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/android/android_info.h"
 #include "base/android/jni_android.h"
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -28,6 +30,8 @@
 #include "components/viz/service/service_jni_headers/ExternalBeginFrameSourceAndroid_jni.h"
 
 namespace {
+
+constexpr base::TimeDelta kMinDerivedVsyncInterval = base::Milliseconds(1);
 
 base::TimeTicks ToTimeTicks(int64_t time_nanos) {
   // Warning: It is generally unsafe to manufacture TimeTicks values. The
@@ -53,6 +57,8 @@ class ExternalBeginFrameSourceAndroid::AChoreographerImpl {
   ~AChoreographerImpl();
 
   void SetEnabled(bool enabled);
+  void SetSupportedRefreshRates(
+      const base::flat_map<base::TimeDelta, float>& supported_rates);
 
  private:
   static void FrameCallback64(int64_t frame_time_nanos, void* data);
@@ -67,10 +73,16 @@ class ExternalBeginFrameSourceAndroid::AChoreographerImpl {
   void SetVsyncPeriod(int64_t vsync_period_nanos);
   void RequestVsyncIfNeeded();
 
+  std::optional<base::TimeDelta> SnapToClosestSupportedVsyncInterval(
+      base::TimeDelta interval) const;
+  std::optional<base::TimeDelta> CalculateDeadlineDerivedInterval(
+      const std::optional<PossibleDeadlines>& possible_deadlines) const;
+
   const raw_ptr<ExternalBeginFrameSourceAndroid> client_;
   const raw_ptr<AChoreographer> achoreographer_;
 
   base::TimeDelta vsync_period_;
+  std::vector<base::TimeDelta> supported_intervals_;
   bool vsync_notification_enabled_ = false;
 
   // This is a heap-allocated WeakPtr to this object. The WeakPtr is either
@@ -227,6 +239,73 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::RefreshRateCallback(
     void* data) {
   static_cast<AChoreographerImpl*>(data)->SetVsyncPeriod(vsync_period_nanos);
 }
+
+void ExternalBeginFrameSourceAndroid::AChoreographerImpl::
+    SetSupportedRefreshRates(
+        const base::flat_map<base::TimeDelta, float>& supported_rates) {
+  supported_intervals_.clear();
+  supported_intervals_.reserve(supported_rates.size());
+  for (const auto& [interval, rate] : supported_rates) {
+    supported_intervals_.push_back(interval);
+  }
+}
+
+std::optional<base::TimeDelta> ExternalBeginFrameSourceAndroid::
+    AChoreographerImpl::SnapToClosestSupportedVsyncInterval(
+        base::TimeDelta interval) const {
+  if (supported_intervals_.empty()) {
+    return std::nullopt;
+  }
+  const auto it = std::lower_bound(supported_intervals_.begin(),
+                                   supported_intervals_.end(), interval);
+  if (it == supported_intervals_.begin()) {
+    return *it;
+  }
+  if (it == supported_intervals_.end()) {
+    return *(it - 1);
+  }
+  const base::TimeDelta next_interval = *it;
+  const base::TimeDelta prev_interval = *(it - 1);
+  return (next_interval - interval < interval - prev_interval) ? next_interval
+                                                               : prev_interval;
+}
+
+std::optional<base::TimeDelta> ExternalBeginFrameSourceAndroid::
+    AChoreographerImpl::CalculateDeadlineDerivedInterval(
+        const std::optional<PossibleDeadlines>& possible_deadlines) const {
+  if (base::android::android_info::sdk_int() <
+          base::android::android_info::SDK_VERSION_BAKLAVA ||
+      !possible_deadlines.has_value() ||
+      possible_deadlines->deadlines.size() < 2u ||
+      !base::FeatureList::IsEnabled(
+          features::kCalculateDeadlineDerivedInterval)) {
+    return std::nullopt;
+  }
+
+  const base::TimeDelta timeline_derived_interval =
+      possible_deadlines->deadlines[1].present_delta -
+      possible_deadlines->deadlines[0].present_delta;
+  if (timeline_derived_interval < kMinDerivedVsyncInterval) {
+    return std::nullopt;
+  }
+
+  const std::optional<base::TimeDelta> snapped_supported_interval =
+      SnapToClosestSupportedVsyncInterval(timeline_derived_interval);
+  if (!snapped_supported_interval.has_value()) {
+    return timeline_derived_interval;
+  }
+
+  const double snap_tolerance =
+      features::kCalculateDeadlineDerivedIntervalSnapToleranceParam.Get();
+  const base::TimeDelta snap_distance =
+      (timeline_derived_interval - *snapped_supported_interval).magnitude();
+  if (snap_distance > snap_tolerance * timeline_derived_interval) {
+    return timeline_derived_interval;
+  }
+
+  return *snapped_supported_interval;
+}
+
 void ExternalBeginFrameSourceAndroid::AChoreographerImpl::OnVSync(
     int64_t frame_time_nanos,
     std::optional<PossibleDeadlines> possible_deadlines,
@@ -235,8 +314,11 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::OnVSync(
   DCHECK(self);
   self_for_frame_callback_.reset(self);
   if (vsync_notification_enabled_) {
+    const std::optional<base::TimeDelta> deadline_derived_interval =
+        CalculateDeadlineDerivedInterval(possible_deadlines);
     client_->OnVSyncImpl(frame_time_nanos, vsync_period_,
-                         std::move(possible_deadlines));
+                         std::move(possible_deadlines),
+                         deadline_derived_interval);
     RequestVsyncIfNeeded();
   }
 }
@@ -297,13 +379,15 @@ void ExternalBeginFrameSourceAndroid::OnVSync(JNIEnv* env,
                                               int64_t time_micros,
                                               int64_t period_micros) {
   OnVSyncImpl(time_micros * 1000, base::Microseconds(period_micros),
-              /*possible_deadlines=*/std::nullopt);
+              /*possible_deadlines=*/std::nullopt,
+              /*deadline_derived_interval=*/std::nullopt);
 }
 
 void ExternalBeginFrameSourceAndroid::OnVSyncImpl(
     int64_t time_nanos,
     base::TimeDelta vsync_period,
-    std::optional<PossibleDeadlines> possible_deadlines) {
+    std::optional<PossibleDeadlines> possible_deadlines,
+    std::optional<base::TimeDelta> deadline_derived_interval) {
   DCHECK_EQ(base::TimeTicks::GetClock(),
             base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);
   base::TimeTicks frame_time = ToTimeTicks(time_nanos);
@@ -315,6 +399,7 @@ void ExternalBeginFrameSourceAndroid::OnVSyncImpl(
   auto begin_frame_args = begin_frame_args_generator_.GenerateBeginFrameArgs(
       source_id(), frame_time, deadline, vsync_period,
       GetMinimumFrameInterval());
+  begin_frame_args.deadline_derived_interval = deadline_derived_interval;
   if (features::IsAndroidFrameDeadlineEnabled()) {
     begin_frame_args.possible_deadlines = std::move(possible_deadlines);
   }
@@ -325,6 +410,13 @@ void ExternalBeginFrameSourceAndroid::UpdateRefreshRate(float refresh_rate) {
   if (j_object_) {
     Java_ExternalBeginFrameSourceAndroid_updateRefreshRate(
         base::android::AttachCurrentThread(), j_object_, refresh_rate);
+  }
+}
+
+void ExternalBeginFrameSourceAndroid::SetSupportedRefreshRates(
+    const base::flat_map<base::TimeDelta, float>& supported_rates) {
+  if (achoreographer_) {
+    achoreographer_->SetSupportedRefreshRates(supported_rates);
   }
 }
 

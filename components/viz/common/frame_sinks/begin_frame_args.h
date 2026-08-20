@@ -256,6 +256,14 @@ struct VIZ_COMMON_EXPORT BeginFrameArgs {
   // `frame_time`.
   std::optional<PossibleDeadlines> possible_deadlines;
 
+  // VSync interval derived from `possible_deadlines` (aka frame timelines)
+  // provided by the OS. Populated on recent Android versions when
+  // `features::kCalculateDeadlineDerivedInterval` is enabled. See
+  // `ExternalBeginFrameSourceAndroid::AChoreographerImpl::
+  // CalculateDeadlineDerivedInterval()`. Unlike `possible_deadlines`, this
+  // field IS serialized over Mojo.
+  std::optional<base::TimeDelta> deadline_derived_interval;
+
  private:
   BeginFrameArgs(uint64_t source_id,
                  uint64_t sequence_number,

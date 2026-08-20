@@ -62,6 +62,11 @@ struct StructTraits<viz::mojom::BeginFrameArgsDataView, viz::BeginFrameArgs> {
     return args.unthrottled_interval;
   }
 
+  static std::optional<base::TimeDelta> deadline_derived_interval(
+      const viz::BeginFrameArgs& args) {
+    return args.deadline_derived_interval;
+  }
+
   static viz::BeginFrameId frame_id(const viz::BeginFrameArgs& args) {
     return args.frame_id;
   }

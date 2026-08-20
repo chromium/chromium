@@ -37,6 +37,8 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceAndroid
 
   void OnVSync(JNIEnv* env, int64_t time_micros, int64_t period_micros);
   void UpdateRefreshRate(float refresh_rate) override;
+  void SetSupportedRefreshRates(
+      const base::flat_map<base::TimeDelta, float>& supported_rates) override;
 
  private:
   class AChoreographerImpl;
@@ -47,7 +49,8 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceAndroid
   void SetEnabled(bool enabled);
   void OnVSyncImpl(int64_t time_nanos,
                    base::TimeDelta vsync_period,
-                   std::optional<PossibleDeadlines> possible_deadlines);
+                   std::optional<PossibleDeadlines> possible_deadlines,
+                   std::optional<base::TimeDelta> deadline_derived_interval);
 
   std::unique_ptr<AChoreographerImpl> achoreographer_;
   base::android::ScopedJavaGlobalRef<jobject> j_object_;

@@ -70,6 +70,9 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDrmBlackFullscreenOptimization);
 #if BUILDFLAG(IS_ANDROID)
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kUseFrameIntervalDeciderAdaptiveFrameRate);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kCalculateDeadlineDerivedInterval);
+VIZ_COMMON_EXPORT extern const base::FeatureParam<double>
+    kCalculateDeadlineDerivedIntervalSnapToleranceParam;
 #endif
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseMultipleOverlays);
 VIZ_COMMON_EXPORT extern const char kMaxOverlaysParam[];

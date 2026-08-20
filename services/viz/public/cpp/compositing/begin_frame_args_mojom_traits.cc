@@ -63,7 +63,8 @@ StructTraits<viz::mojom::BeginFrameArgsDataView, viz::BeginFrameArgs>::Read(
       !data.ReadType(&out->type) ||
       !data.ReadDispatchTime(&out->dispatch_time) ||
       !data.ReadClientArrivalTime(&out->client_arrival_time) ||
-      !data.ReadUnthrottledInterval(&unthrottled_interval)) {
+      !data.ReadUnthrottledInterval(&unthrottled_interval) ||
+      !data.ReadDeadlineDerivedInterval(&out->deadline_derived_interval)) {
     return base::unexpected(DeserializationError());
   }
 

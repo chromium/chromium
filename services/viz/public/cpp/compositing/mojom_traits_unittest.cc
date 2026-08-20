@@ -155,6 +155,7 @@ TEST_F(CompositingStructTraitsTest, BeginFrameArgs) {
   EXPECT_EQ(on_critical_path, output.on_critical_path);
   EXPECT_EQ(animate_only, output.animate_only);
   EXPECT_EQ(unthrottled_interval, output.unthrottled_interval);
+  EXPECT_EQ(std::nullopt, output.deadline_derived_interval);
 }
 
 TEST_F(CompositingStructTraitsTest, BeginFrameArgsWithUnthrottledInterval) {
@@ -199,6 +200,37 @@ TEST_F(CompositingStructTraitsTest, BeginFrameArgsWithUnthrottledInterval) {
     BeginFrameArgs output;
     mojo::test::SerializeAndDeserialize<mojom::BeginFrameArgs>(input, output);
     EXPECT_EQ(interval, output.unthrottled_interval);
+  }
+}
+
+TEST_F(CompositingStructTraitsTest, BeginFrameArgsWithDeadlineDerivedInterval) {
+  const base::TimeTicks frame_time = base::TimeTicks::Now();
+  const base::TimeTicks deadline = base::TimeTicks::Now();
+  const base::TimeDelta interval = base::Milliseconds(1337);
+  const BeginFrameArgs::BeginFrameArgsType type = BeginFrameArgs::NORMAL;
+  const uint64_t source_id = 5;
+  const uint64_t sequence_number = 10;
+
+  {
+    // Test where deadline_derived_interval is set.
+    BeginFrameArgs input =
+        BeginFrameArgs::Create(BEGINFRAME_FROM_HERE, source_id, sequence_number,
+                               frame_time, deadline, interval, type);
+    input.deadline_derived_interval = base::Milliseconds(8);
+    BeginFrameArgs output;
+    mojo::test::SerializeAndDeserialize<mojom::BeginFrameArgs>(input, output);
+    EXPECT_EQ(base::Milliseconds(8), output.deadline_derived_interval);
+  }
+
+  {
+    // Test where deadline_derived_interval is nullopt.
+    BeginFrameArgs input =
+        BeginFrameArgs::Create(BEGINFRAME_FROM_HERE, source_id, sequence_number,
+                               frame_time, deadline, interval, type);
+    input.deadline_derived_interval = std::nullopt;
+    BeginFrameArgs output;
+    mojo::test::SerializeAndDeserialize<mojom::BeginFrameArgs>(input, output);
+    EXPECT_EQ(std::nullopt, output.deadline_derived_interval);
   }
 }
 
