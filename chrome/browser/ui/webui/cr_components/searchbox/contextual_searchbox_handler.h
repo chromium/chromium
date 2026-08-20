@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/task/bind_post_task.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -37,6 +38,7 @@
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
@@ -47,14 +49,12 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
 #include "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
+#include "content/public/browser/desktop_media_id.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #endif
 
 class DesktopMediaPickerController;
 class DesktopMediaPickerFactory;
-
-namespace content {
-struct DesktopMediaID;
-}
 
 namespace content::desktop_capture {
 class ScreenshotCaptureRequest;
@@ -146,6 +146,9 @@ class ContextualSearchboxHandler
 #endif
 {
  public:
+  // TODO(crbug.com/549716561): Refactor screensharing and screenshot capture
+  // logic out of ContextualSearchboxHandler into a dedicated controller
+  // (similar to DrivePickerHostController).
   class ScreenshareDelegate {
    public:
     virtual ~ScreenshareDelegate() = default;
@@ -548,11 +551,24 @@ class ContextualSearchboxHandler
       drive_picker::DriveDisclaimerController::DisclaimerStatus status);
   drive_picker::DriveDisclaimerController* GetDriveDisclaimerController();
 
+  template <typename Method, typename... Args>
+  auto BindToUIThread(Method method, Args&&... args) {
+    return base::BindPostTask(
+        content::GetUIThreadTaskRunner({}),
+        base::BindOnce(method, weak_ptr_factory_.GetWeakPtr(),
+                       std::forward<Args>(args)...));
+  }
+
   void FallbackToChromeDefaultPicker(bool prefer_entire_screen,
                                      StartScreenshareCallback callback);
   void OnChromeDefaultPickerResults(StartScreenshareCallback callback,
                                     const std::string& err,
                                     content::DesktopMediaID source);
+  void OnNativePickerCreated(content::DesktopMediaID::Id id);
+  void OnNativePickerSourceSelected(content::DesktopMediaID::Type type,
+                                    StartScreenshareCallback callback,
+                                    webrtc::DesktopCapturer::Source source);
+  void OnNativePickerCancelled(StartScreenshareCallback callback);
   void CaptureAndUploadScreenshot(content::DesktopMediaID source,
                                   StartScreenshareCallback callback);
   void OnScreenshotCaptured(StartScreenshareCallback callback,

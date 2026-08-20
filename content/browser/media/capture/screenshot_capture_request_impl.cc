@@ -178,8 +178,14 @@ void SetDesktopCapturerForTesting(  // IN-TEST
 std::unique_ptr<ScreenshotCaptureRequest> CreateScreenshotCaptureRequest(
     DesktopMediaID source,
     base::OnceCallback<void(const ::SkBitmap&)> callback) {
+  std::unique_ptr<webrtc::DesktopCapturer> capturer =
+      std::exchange(GetInjectedDesktopCapturer(), nullptr);
+
 #if BUILDFLAG(IS_MAC)
-  if (source.id_type == DesktopMediaID::IdType::kNativePickerSession) {
+  // Check for native picker sessions in production. An injected test capturer
+  // takes precedence so tests can mock frame capture without OS dependencies.
+  if (!capturer &&
+      source.id_type == DesktopMediaID::IdType::kNativePickerSession) {
     auto request =
         std::make_unique<MacScreenshotCaptureRequest>(std::move(callback));
     CaptureScreenshotFromMacNativePicker(
@@ -189,8 +195,6 @@ std::unique_ptr<ScreenshotCaptureRequest> CreateScreenshotCaptureRequest(
   }
 #endif
 
-  std::unique_ptr<webrtc::DesktopCapturer> capturer =
-      std::move(GetInjectedDesktopCapturer());
   if (!capturer) {
     auto options = CreateDesktopCaptureOptions();
     if (source.type == content::DesktopMediaID::TYPE_SCREEN) {

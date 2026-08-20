@@ -26,6 +26,19 @@ CreateScreenshotCaptureRequest(
 CONTENT_EXPORT void SetDesktopCapturerForTesting(  // IN-TEST
     std::unique_ptr<webrtc::DesktopCapturer> capturer);
 
+using OpenNativePickerCallbackForTesting = base::RepeatingCallback<void(
+    content::DesktopMediaID::Type type,
+    base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
+    base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
+    base::OnceCallback<void()> cancel_callback,
+    base::OnceCallback<void()> error_callback)>;
+
+// Sets a custom OpenNativeScreenCapturePicker callback implementation for
+// testing.
+CONTENT_EXPORT void
+SetOpenNativeScreenCapturePickerCallbackForTesting(  // IN-TEST
+    OpenNativePickerCallbackForTesting callback);
+
 }  // namespace content::desktop_capture
 
 #endif  // CONTENT_BROWSER_MEDIA_CAPTURE_SCREENSHOT_CAPTURE_REQUEST_IMPL_H_

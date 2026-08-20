@@ -98,7 +98,9 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/base64.h"
-#include "base/task/bind_post_task.h"
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory_impl.h"
@@ -2496,6 +2498,9 @@ ContextualSearchboxHandler::GetDriveDisclaimerController() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// TODO(crbug.com/549716561): Refactor screensharing and screenshot capture
+// logic out of ContextualSearchboxHandler into a dedicated controller (similar
+// to DrivePickerHostController).
 void ContextualSearchboxHandler::StartScreenshare(
     bool prefer_entire_screen,
     StartScreenshareCallback callback) {
@@ -2504,13 +2509,70 @@ void ContextualSearchboxHandler::StartScreenshare(
     std::move(callback).Run(std::nullopt);
     return;
   }
-  FallbackToChromeDefaultPicker(prefer_entire_screen, std::move(callback));
+  bool use_native_picker = false;
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::MacOSMajorVersion() >= 14) {
+    use_native_picker =
+        base::FeatureList::IsEnabled(media::kUseSCContentSharingPicker);
+  }
+#endif
+
+  if (!use_native_picker) {
+    FallbackToChromeDefaultPicker(prefer_entire_screen, std::move(callback));
+    return;
+  }
+
+  content::DesktopMediaID::Type target_capture_type =
+      prefer_entire_screen ? content::DesktopMediaID::TYPE_SCREEN
+                           : content::DesktopMediaID::TYPE_WINDOW;
+
+  auto [picker_selected_callback, remaining_callback] =
+      base::SplitOnceCallback(std::move(callback));
+  auto [picker_cancelled_callback, fallback_callback] =
+      base::SplitOnceCallback(std::move(remaining_callback));
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &content::desktop_capture::OpenNativeScreenCapturePicker,
+          target_capture_type,
+          BindToUIThread(&ContextualSearchboxHandler::OnNativePickerCreated),
+          BindToUIThread(
+              &ContextualSearchboxHandler::OnNativePickerSourceSelected,
+              target_capture_type, std::move(picker_selected_callback)),
+          BindToUIThread(&ContextualSearchboxHandler::OnNativePickerCancelled,
+                         std::move(picker_cancelled_callback)),
+          BindToUIThread(
+              &ContextualSearchboxHandler::FallbackToChromeDefaultPicker,
+              prefer_entire_screen, std::move(fallback_callback))));
 #else
   std::move(callback).Run(std::nullopt);
 #endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+void ContextualSearchboxHandler::OnNativePickerCreated(
+    content::DesktopMediaID::Id /*session_id*/) {
+  NotifyScreensharePickerOpened();
+}
+
+void ContextualSearchboxHandler::OnNativePickerSourceSelected(
+    content::DesktopMediaID::Type capture_type,
+    StartScreenshareCallback callback,
+    webrtc::DesktopCapturer::Source selected_source) {
+  content::DesktopMediaID media_id(capture_type, selected_source.id);
+#if BUILDFLAG(IS_MAC)
+  media_id.id_type = content::DesktopMediaID::IdType::kNativePickerSession;
+#endif
+  CaptureAndUploadScreenshot(media_id, std::move(callback));
+}
+
+void ContextualSearchboxHandler::OnNativePickerCancelled(
+    StartScreenshareCallback callback) {
+  NotifyScreensharePickerClosed();
+  std::move(callback).Run(std::nullopt);
+}
+
 void ContextualSearchboxHandler::FallbackToChromeDefaultPicker(
     bool prefer_entire_screen,
     StartScreenshareCallback callback) {
@@ -2572,10 +2634,16 @@ void ContextualSearchboxHandler::CaptureAndUploadScreenshot(
     content::DesktopMediaID source,
     StartScreenshareCallback callback) {
   is_capturing_ = true;
-  auto captured_callback = base::BindPostTask(
-      content::GetUIThreadTaskRunner({}),
-      base::BindOnce(&ContextualSearchboxHandler::OnScreenshotCaptured,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  auto captured_callback = BindToUIThread(
+      &ContextualSearchboxHandler::OnScreenshotCaptured, std::move(callback));
+
+#if BUILDFLAG(IS_MAC)
+  if (source.id_type == content::DesktopMediaID::IdType::kNativePickerSession) {
+    active_screenshot_request_ = content::desktop_capture::CaptureScreenshot(
+        source, std::move(captured_callback));
+    return;
+  }
+#endif
 
   content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,

@@ -5,6 +5,7 @@
 #include "content/public/browser/desktop_capture.h"
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "content/browser/media/capture/pip_screen_capture_coordinator.h"
 #include "content/browser/media/capture/screenshot_capture_request_impl.h"
@@ -130,12 +131,25 @@ bool ShouldEnumerateCurrentProcessWindows() {
 #endif
 }
 
+namespace {
+OpenNativePickerCallbackForTesting& GetCallbackForTesting() {
+  static base::NoDestructor<OpenNativePickerCallbackForTesting> callback;
+  return *callback;
+}
+}  // namespace
+
 void OpenNativeScreenCapturePicker(
     content::DesktopMediaID::Type type,
     base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
     base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
     base::OnceCallback<void()> cancel_callback,
     base::OnceCallback<void()> error_callback) {
+  if (const auto& testing_callback = GetCallbackForTesting()) {
+    testing_callback.Run(type, std::move(created_callback),
+                         std::move(picker_callback), std::move(cancel_callback),
+                         std::move(error_callback));
+    return;
+  }
   auto* manager = content::MediaStreamManager::GetInstance();
   if (!manager) {
     if (error_callback) {
@@ -163,6 +177,11 @@ void GetApplicationAudioCaptureId(
                                                 std::move(callback));
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+void SetOpenNativeScreenCapturePickerCallbackForTesting(  // IN-TEST
+    OpenNativePickerCallbackForTesting callback) {
+  GetCallbackForTesting() = std::move(callback);  // IN-TEST
+}
 
 std::unique_ptr<ScreenshotCaptureRequest> CaptureScreenshot(
     DesktopMediaID source,
