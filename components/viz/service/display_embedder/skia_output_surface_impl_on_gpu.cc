@@ -1548,10 +1548,6 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     return;
   }
 
-  // End write access before sending the result to avoid racing with the
-  // client's subsequent readback.
-  mailbox_access_data.scoped_write.reset();
-
   // We conditionally move from request (if `should_wait_for_gpu_work` is true),
   // DCHECK that we don't accidentally enter this codepath after the request was
   // moved from.
@@ -1559,6 +1555,10 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
 
   switch (request->result_destination()) {
     case CopyOutputRequest::ResultDestination::kSharedImage: {
+      // End write access before sending the result to avoid racing with the
+      // client's subsequent readback. Nothing below borrows from it.
+      mailbox_access_data.scoped_write.reset();
+
       if (request->has_blit_request()) {
         request->SendResult(std::make_unique<CopyOutputSharedImageResult>(
             CopyOutputResult::Format::NV12, geometry.result_selection,
@@ -1601,6 +1601,12 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
             &CopyOutputResultSkiaNV12::OnNV12PlaneReadbackDone,
             context.release());
       }
+
+      // `plane_surfaces` is borrowed from `scoped_write`, and
+      // SkiaImageRepresentation::ScopedWriteAccess requires every reference to
+      // the surfaces it returns to be gone before it is destroyed, so end
+      // write access only once the readbacks have been issued.
+      mailbox_access_data.scoped_write.reset();
 
       break;
     }
