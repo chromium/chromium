@@ -13,14 +13,23 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
+#include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
@@ -39,6 +48,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -289,6 +299,19 @@ class GlicSelectionObserverTest : public ChromeRenderViewHostTestHarness {
 
   void CallCopyLinkToHighlight(content::WeakDocumentPtr weak_document_ptr) {
     observer_->CopyLinkToHighlight(weak_document_ptr);
+  }
+
+  void InvokeGlicFromSelectionAffordance(
+      std::u16string selected_text,
+      bool is_widget,
+      base::WeakPtr<content::WebContents> web_contents,
+      GlicNudgeActivity activity,
+      std::u16string prompt_override = u"",
+      const GlicSkillOption& skill = {},
+      const std::string& skill_prompt = "") {
+    GlicSelectionObserver::InvokeGlicFromSelectionAffordance(
+        selected_text, is_widget, web_contents, activity, prompt_override,
+        skill, skill_prompt);
   }
 
   std::optional<GURL> GetGeneratedLink() const {
@@ -1270,14 +1293,169 @@ TEST_F(GlicSelectionObserverTest, SelectionWordCountMetrics) {
   base::HistogramTester histogram_tester;
 
   std::u16string text = u"   one   two\nthree\t ";
-  GlicSelectionObserver::InvokeGlicFromSelectionAffordance(
-      text, /*is_widget=*/true, web_contents()->GetWeakPtr(),
-      GlicNudgeActivity::kNudgeClicked);
+  InvokeGlicFromSelectionAffordance(text, /*is_widget=*/true,
+                                    web_contents()->GetWeakPtr(),
+                                    GlicNudgeActivity::kNudgeClicked);
 
   histogram_tester.ExpectUniqueSample(
       "Glic.Selection.WidgetClicked.SelectionLength.PreFre", text.length(), 1);
   histogram_tester.ExpectUniqueSample(
       "Glic.Selection.WidgetClicked.SelectionWordCount.PreFre", 3, 1);
+}
+
+class GlicSelectionObserverPromptTest : public GlicSelectionObserverTest {
+ public:
+  void SetUp() override {
+    TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+        /*profile_manager=*/true);
+    GlicSelectionObserverTest::SetUp();
+    observer_.reset();
+
+    GlicKeyedServiceFactory::GetInstance()->SetTestingFactory(
+        profile(),
+        base::BindRepeating(&GlicSelectionObserverPromptTest::CreateService,
+                            base::Unretained(this)));
+
+    GlicKeyedServiceFactory::GetGlicKeyedService(profile(), /*create=*/true);
+    RecreateObserver();
+  }
+
+  void TearDown() override {
+    observer_.reset();
+    mock_service_ = nullptr;
+    GlicSelectionObserverTest::TearDown();
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
+  }
+
+  std::unique_ptr<KeyedService> CreateService(
+      content::BrowserContext* context) {
+    Profile* profile = Profile::FromBrowserContext(context);
+    auto service = std::make_unique<testing::NiceMock<MockGlicKeyedService>>(
+        context, IdentityManagerFactory::GetForProfile(profile),
+        TestingBrowserProcess::GetGlobal()->profile_manager(),
+        &glic_profile_manager_,
+        ContextualCueingServiceFactory::GetForProfile(profile),
+        actor::ActorKeyedServiceFactory::GetActorKeyedService(profile));
+    mock_service_ = service.get();
+    return service;
+  }
+
+  MockGlicKeyedService* mock_glic_service() { return mock_service_; }
+
+ protected:
+  GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass_;
+  GlicProfileManager glic_profile_manager_;
+  raw_ptr<MockGlicKeyedService> mock_service_ = nullptr;
+};
+
+TEST_F(GlicSelectionObserverPromptTest,
+       InvokeGlicFromSelectionAffordanceExplainCta) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGlicSelectionPrompt,
+        {{"auto_send_prompt", "true"}, {"cta", "explain"}}}},
+      {});
+
+  tabs::MockTabInterface mock_tab;
+  MockBrowserWindowInterface mock_bwi;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillRepeatedly(testing::Return(&mock_bwi));
+
+  EXPECT_CALL(
+      *mock_glic_service(),
+      InvokeWithAutoSubmit(
+          testing::_,
+          testing::Field(&GlicInvokeOptions::prompts,
+                         testing::ElementsAre(l10n_util::GetStringUTF8(
+                             IDS_GLIC_SELECTION_AUTO_SEND_PROMPT_EXPLAIN)))))
+      .Times(1);
+
+  InvokeGlicFromSelectionAffordance(u"Sample selected text", /*is_widget=*/true,
+                                    web_contents()->GetWeakPtr(),
+                                    GlicNudgeActivity::kNudgeClicked);
+}
+
+TEST_F(GlicSelectionObserverPromptTest,
+       InvokeGlicFromSelectionAffordanceTellMeAboutThisCta) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGlicSelectionPrompt,
+        {{"auto_send_prompt", "true"}, {"cta", "tell_me_about_this"}}}},
+      {});
+
+  tabs::MockTabInterface mock_tab;
+  MockBrowserWindowInterface mock_bwi;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillRepeatedly(testing::Return(&mock_bwi));
+
+  EXPECT_CALL(
+      *mock_glic_service(),
+      InvokeWithAutoSubmit(
+          testing::_,
+          testing::Field(&GlicInvokeOptions::prompts,
+                         testing::ElementsAre(l10n_util::GetStringUTF8(
+                             IDS_GLIC_SELECTION_AUTO_SEND_PROMPT_TELL_ME)))))
+      .Times(1);
+
+  InvokeGlicFromSelectionAffordance(u"Sample selected text", /*is_widget=*/true,
+                                    web_contents()->GetWeakPtr(),
+                                    GlicNudgeActivity::kNudgeClicked);
+}
+
+TEST_F(GlicSelectionObserverPromptTest,
+       InvokeGlicFromSelectionAffordancePromptOverride) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGlicSelectionPrompt,
+        {{"auto_send_prompt", "true"}, {"cta", "explain"}}}},
+      {});
+
+  tabs::MockTabInterface mock_tab;
+  MockBrowserWindowInterface mock_bwi;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillRepeatedly(testing::Return(&mock_bwi));
+
+  EXPECT_CALL(*mock_glic_service(),
+              InvokeWithAutoSubmit(
+                  testing::_,
+                  testing::Field(&GlicInvokeOptions::prompts,
+                                 testing::ElementsAre(
+                                     "Tell me more about \"Sample text\""))))
+      .Times(1);
+
+  InvokeGlicFromSelectionAffordance(
+      u"Sample text", /*is_widget=*/true, web_contents()->GetWeakPtr(),
+      GlicNudgeActivity::kNudgeClicked,
+      /*prompt_override=*/u"Tell me more about \"Sample text\"");
+}
+
+TEST_F(GlicSelectionObserverPromptTest,
+       InvokeGlicFromSelectionAffordanceAutoSendDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGlicSelectionPrompt, {{"auto_send_prompt", "false"}}}}, {});
+
+  tabs::MockTabInterface mock_tab;
+  MockBrowserWindowInterface mock_bwi;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillRepeatedly(testing::Return(&mock_bwi));
+
+  EXPECT_CALL(
+      *mock_glic_service(),
+      Invoke(testing::Field(&GlicInvokeOptions::prompts, testing::IsEmpty())))
+      .Times(1);
+
+  InvokeGlicFromSelectionAffordance(u"Sample selected text", /*is_widget=*/true,
+                                    web_contents()->GetWeakPtr(),
+                                    GlicNudgeActivity::kNudgeClicked);
 }
 
 }  // namespace glic

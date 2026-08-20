@@ -670,21 +670,18 @@ void GlicSelectionObserver::InvokeGlicFromSelectionAffordance(
                 InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
                 std::move(options));
           } else {
-            std::u16string effective_prompt =
-                !prompt_override.empty() ? prompt_override : selected_text;
-            if (!effective_prompt.empty() ||
-                features::kGlicSelectionAutoSendPrompt.Get()) {
-              std::string prompt;
-              if (!effective_prompt.empty()) {
-                prompt = base::UTF16ToUTF8(effective_prompt);
-              } else {
-                std::string cta = features::kGlicSelectionPromptCta.Get();
+            if (!prompt_override.empty()) {
+              options.prompts.push_back(base::UTF16ToUTF8(prompt_override));
+              glic_keyed_service->InvokeWithAutoSubmit(
+                  InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
+                  std::move(options));
+            } else if (features::kGlicSelectionAutoSendPrompt.Get()) {
+              std::string cta = features::kGlicSelectionPromptCta.Get();
+              std::string prompt = l10n_util::GetStringUTF8(
+                  IDS_GLIC_SELECTION_AUTO_SEND_PROMPT_TELL_ME);
+              if (cta == features::kGlicSelectionPromptCtaExplain) {
                 prompt = l10n_util::GetStringUTF8(
-                    IDS_GLIC_SELECTION_AUTO_SEND_PROMPT_TELL_ME);
-                if (cta == features::kGlicSelectionPromptCtaExplain) {
-                  prompt = l10n_util::GetStringUTF8(
-                      IDS_GLIC_SELECTION_AUTO_SEND_PROMPT_EXPLAIN);
-                }
+                    IDS_GLIC_SELECTION_AUTO_SEND_PROMPT_EXPLAIN);
               }
               options.prompts.push_back(prompt);
               glic_keyed_service->InvokeWithAutoSubmit(
