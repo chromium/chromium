@@ -116,6 +116,9 @@ mojom("mojom") {
   }
 
   enabled_features = []
+  if (chrome_wide_echo_cancellation_supported) {
+    enabled_features += [ "chrome_wide_echo_cancellation" ]
+  }
   if (allow_oop_video_decoder) {
     enabled_features += [ "allow_oop_video_decoder" ]
   }

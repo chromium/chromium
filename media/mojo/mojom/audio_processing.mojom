@@ -22,6 +22,9 @@ struct AudioProcessingSettings {
   bool automatic_gain_control;
   bool multi_channel_capture_processing;
   bool use_loopback_aec_reference;
+
+  [EnableIf=chrome_wide_echo_cancellation]
+  bool voice_isolation;
 };
 
 // This interface is hosted in the audio service and called from the renderer.

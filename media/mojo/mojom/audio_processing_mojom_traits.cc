@@ -29,6 +29,9 @@ bool StructTraits<media::mojom::AudioProcessingSettingsDataView,
   out_settings->multi_channel_capture_processing =
       input.multi_channel_capture_processing();
   out_settings->use_loopback_aec_reference = input.use_loopback_aec_reference();
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  out_settings->voice_isolation = input.voice_isolation();
+#endif
   return true;
 }
 

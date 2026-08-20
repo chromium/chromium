@@ -5,6 +5,7 @@
 #include "media/mojo/mojom/audio_processing_mojom_traits.h"
 
 #include "media/base/audio_processing.h"
+#include "media/media_buildflags.h"
 #include "media/mojo/mojom/audio_processing.mojom.h"
 #include "media/mojo/mojom/traits_test_service.test-mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -27,6 +28,9 @@ TEST(AudioProcessingMojomTraitsTest, AudioProcessingSettings) {
   settings_in.automatic_gain_control = !settings_in.automatic_gain_control;
   settings_in.multi_channel_capture_processing =
       !settings_in.multi_channel_capture_processing;
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  settings_in.voice_isolation = !settings_in.voice_isolation;
+#endif
 
   mojo::test::SerializeAndDeserialize<media::mojom::AudioProcessingSettings>(
       settings_in, settings_out);
