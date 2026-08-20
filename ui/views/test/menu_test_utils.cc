@@ -94,27 +94,6 @@ void TestMenuDelegate::PerformDrop(
   output_drag_op = ui::mojom::DragOperation::kCopy;
 }
 
-// MenuControllerTestApi ------------------------------------------------------
-
-MenuControllerTestApi::MenuControllerTestApi()
-    : controller_(MenuController::GetActiveInstance()->AsWeakPtr()) {}
-
-MenuControllerTestApi::~MenuControllerTestApi() = default;
-
-void MenuControllerTestApi::ClearState() {
-  if (!controller_) {
-    return;
-  }
-  controller_->ClearStateForTest();
-}
-
-void MenuControllerTestApi::SetShowing(bool showing) {
-  if (!controller_) {
-    return;
-  }
-  controller_->showing_ = showing;
-}
-
 void DisableMenuClosureAnimations() {
 #if BUILDFLAG(IS_MAC)
   MenuClosureAnimationMac::DisableAnimationsForTesting();

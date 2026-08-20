@@ -1641,11 +1641,6 @@ bool MenuController::IsCancelAllTimerRunningForTest() {
   return cancel_all_timer_.IsRunning();
 }
 
-void MenuController::ClearStateForTest() {
-  state_ = State();
-  pending_state_ = State();
-}
-
 // static
 void MenuController::TurnOffMenuSelectionHoldForTest() {
   menu_selection_hold_time = base::TimeDelta();

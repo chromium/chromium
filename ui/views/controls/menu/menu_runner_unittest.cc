@@ -680,38 +680,6 @@ class MenuRunnerImplTest : public MenuRunnerTest {
   ~MenuRunnerImplTest() override = default;
 };
 
-// Tests that when nested menu runners are destroyed out of order, that
-// MenuController is not accessed after it has been destroyed. This should not
-// crash on ASAN bots.
-TEST_F(MenuRunnerImplTest, NestedMenuRunnersDestroyedOutOfOrder) {
-  internal::MenuRunnerImpl* menu_runner =
-      new internal::MenuRunnerImpl(CreateMenuItemView());
-  menu_runner->RunMenuAt(owner(), nullptr, gfx::Rect(),
-                         MenuAnchorPosition::kTopLeft);
-
-  std::unique_ptr<TestMenuDelegate> menu_delegate2(new TestMenuDelegate);
-  MenuItemView* menu_item_view2 = new MenuItemView(menu_delegate2.get());
-  menu_item_view2->AppendMenuItem(1, u"One");
-
-  internal::MenuRunnerImpl* menu_runner2 = new internal::MenuRunnerImpl(
-      base::WrapUnique<MenuItemView>(menu_item_view2));
-  menu_runner2->RunMenuAt(
-      owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-      ui::mojom::MenuSourceType::kNone, MenuRunner::IS_NESTED);
-
-  // Hide the controller so we can test out of order destruction.
-  MenuControllerTestApi menu_controller;
-  menu_controller.SetShowing(false);
-
-  // This destroyed MenuController
-  menu_runner->OnMenuClosed(internal::MenuControllerDelegate::NOTIFY_DELEGATE,
-                            nullptr, 0);
-
-  // This should not access the destroyed MenuController
-  menu_runner2->Release();
-  ResetMenuItemView();
-  menu_runner->Release();
-}
 
 // Regression test demonstrating that the host_-exists branch of
 // SubmenuView::ShowAt lacks a WeakPtr liveness guard after ShowMenuHost.
@@ -784,21 +752,24 @@ TEST_F(MenuRunnerImplTest, SubmenuReentrantDestructionDuringReshow) {
   EXPECT_TRUE(fired);
 }
 
-// Tests that when there are two separate MenuControllers, and the active one is
-// deleted first, that shutting down the MenuRunner of the original
-// MenuController properly closes its controller. This should not crash on ASAN
-// bots.
+// Tests that when a MenuRunner's MenuController becomes inactive while a
+// second MenuController is active (e.g. during drag-and-drop), releasing the
+// original MenuRunner after the active MenuController has already been
+// destroyed still properly cleans up its own MenuController rather than
+// skipping cleanup because MenuController::GetActiveInstance() is null
+// (crbug.com/683087).
 TEST_F(MenuRunnerImplTest, MenuRunnerDestroyedWithNoActiveController) {
   internal::MenuRunnerImpl* menu_runner =
       new internal::MenuRunnerImpl(CreateMenuItemView());
   menu_runner->RunMenuAt(owner(), nullptr, gfx::Rect(),
                          MenuAnchorPosition::kTopLeft,
                          ui::mojom::MenuSourceType::kNone, 0);
+  EXPECT_TRUE(menu_runner->IsRunning());
 
-  // Hide the menu, and clear its item selection state.
-  MenuControllerTestApi menu_controller;
-  menu_controller.SetShowing(false);
-  menu_controller.ClearState();
+  // Simulate a drag starting from the active menu controller.
+  base::WeakPtr<MenuController> controller1 =
+      MenuController::GetActiveInstance()->AsWeakPtr();
+  controller1->OnDragDropWillStart();
 
   std::unique_ptr<TestMenuDelegate> menu_delegate2(new TestMenuDelegate);
   MenuItemView* menu_item_view2 = new MenuItemView(menu_delegate2.get());
@@ -809,23 +780,26 @@ TEST_F(MenuRunnerImplTest, MenuRunnerDestroyedWithNoActiveController) {
   menu_runner2->RunMenuAt(
       owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
       ui::mojom::MenuSourceType::kNone, MenuRunner::FOR_DROP);
+  EXPECT_TRUE(menu_runner2->IsRunning());
 
-  EXPECT_NE(menu_controller.controller(), MenuController::GetActiveInstance());
-  menu_controller.SetShowing(true);
+  EXPECT_NE(controller1.get(), MenuController::GetActiveInstance());
+  controller1->OnDragDropCompleted(true);
 
   // Close the runner with the active menu first.
   menu_runner2->Release();
-  // Even though there is no active menu, this should still cleanup the
-  // controller that it created.
+  EXPECT_EQ(nullptr, MenuController::GetActiveInstance());
+
+  // Even though there is no active menu, releasing menu_runner should still
+  // clean up the controller that it created.
   ResetMenuItemView();
   menu_runner->Release();
 
-  // This is not expected to run, however this is from the origin ASAN stack
-  // traces. So regressions will be caught with the same stack trace.
-  if (menu_controller.controller()) {
-    menu_controller.controller()->Cancel(MenuController::ExitType::kAll);
+  // If controller1 was not destroyed when menu_runner was released, attempting
+  // to cancel it will access the deleted menu_runner delegate (UAF).
+  if (controller1) {
+    controller1->Cancel(MenuController::ExitType::kAll);
   }
-  EXPECT_EQ(nullptr, menu_controller.controller());
+  EXPECT_EQ(nullptr, controller1.get());
 }
 
 // Test class which overrides the ViewsDelegate. Allowing to simulate shutdown
@@ -866,6 +840,7 @@ TEST_F(MenuRunnerDestructionTest, MenuRunnerDestroyedDuringReleaseRef) {
   menu_runner->RunMenuAt(owner(), nullptr, gfx::Rect(),
                          MenuAnchorPosition::kTopLeft,
                          ui::mojom::MenuSourceType::kNone, 0);
+  EXPECT_TRUE(menu_runner->IsRunning());
 
   base::RunLoop run_loop;
   static_cast<ReleaseRefTestViewsDelegate*>(test_views_delegate())
@@ -876,16 +851,17 @@ TEST_F(MenuRunnerDestructionTest, MenuRunnerDestroyedDuringReleaseRef) {
       }));
 
   base::WeakPtr<internal::MenuRunnerImpl> ref(MenuRunnerAsWeakPtr(menu_runner));
-  MenuControllerTestApi menu_controller;
   // This will release the ref on ViewsDelegate. The test version will release
   // |menu_runner| simulating device shutdown.
-  menu_controller.controller()->Cancel(MenuController::ExitType::kAll);
-  // Both the |menu_runner| and |menu_controller| should have been deleted.
-  EXPECT_EQ(nullptr, menu_controller.controller());
+  menu_runner->Cancel();
+  // Both the |menu_runner| and active menu controller should have been deleted.
+  EXPECT_EQ(nullptr, MenuController::GetActiveInstance());
   run_loop.Run();
   EXPECT_EQ(nullptr, ref);
 }
 
+// Tests that normally canceling a menu runner fires the kFocusAfterMenuClose
+// accessibility event on the previously focused view (crbug.com/1022592).
 TEST_F(MenuRunnerImplTest, FocusOnMenuClose) {
   internal::MenuRunnerImpl* menu_runner =
       new internal::MenuRunnerImpl(CreateMenuItemView());
@@ -905,9 +881,7 @@ TEST_F(MenuRunnerImplTest, FocusOnMenuClose) {
   // Open the menu.
   menu_runner->RunMenuAt(owner(), nullptr, gfx::Rect(),
                          MenuAnchorPosition::kTopLeft);
-
-  MenuControllerTestApi menu_controller;
-  menu_controller.SetShowing(false);
+  EXPECT_TRUE(menu_runner->IsRunning());
 
   // Test that closing the menu sends the kFocusAfterMenuClose event.
   bool focus_after_menu_close_sent = false;
@@ -923,8 +897,8 @@ TEST_F(MenuRunnerImplTest, FocusOnMenuClose) {
           &focus_after_menu_close_sent);
   button->GetViewAccessibility().set_accessibility_events_callback(
       std::move(accessibility_events_callback));
-  menu_runner->OnMenuClosed(internal::MenuControllerDelegate::NOTIFY_DELEGATE,
-                            nullptr, 0);
+
+  menu_runner->Cancel();
 
   EXPECT_TRUE(focus_after_menu_close_sent);
 
@@ -937,6 +911,9 @@ TEST_F(MenuRunnerImplTest, FocusOnMenuClose) {
   menu_runner->Release();
 }
 
+// Tests that releasing a running menu runner directly (which sets
+// delete_after_run_ = true) properly fires the kFocusAfterMenuClose
+// accessibility event on the previously focused view (crbug.com/1022592).
 TEST_F(MenuRunnerImplTest, FocusOnMenuCloseDeleteAfterRun) {
   // Create test button that has focus.
   LabelButton* button = new LabelButton(
@@ -953,26 +930,10 @@ TEST_F(MenuRunnerImplTest, FocusOnMenuCloseDeleteAfterRun) {
       new internal::MenuRunnerImpl(CreateMenuItemView());
   menu_runner->RunMenuAt(owner(), nullptr, gfx::Rect(),
                          MenuAnchorPosition::kTopLeft);
+  EXPECT_TRUE(menu_runner->IsRunning());
 
-  // Hide the menu, and clear its item selection state.
-  MenuControllerTestApi menu_controller;
-  menu_controller.SetShowing(false);
-  menu_controller.ClearState();
-
-  std::unique_ptr<TestMenuDelegate> menu_delegate2(new TestMenuDelegate);
-  MenuItemView* menu_item_view2 = new MenuItemView(menu_delegate2.get());
-  menu_item_view2->AppendMenuItem(1, u"One");
-
-  internal::MenuRunnerImpl* menu_runner2 = new internal::MenuRunnerImpl(
-      base::WrapUnique<MenuItemView>(menu_item_view2));
-  menu_runner2->RunMenuAt(
-      owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-      ui::mojom::MenuSourceType::kNone, MenuRunner::FOR_DROP);
-
-  EXPECT_NE(menu_controller.controller(), MenuController::GetActiveInstance());
-  menu_controller.SetShowing(true);
-
-  // Test that closing the menu sends the kFocusAfterMenuClose event.
+  // Test that closing the menu sends the kFocusAfterMenuClose event when
+  // MenuRunner is released directly.
   bool focus_after_menu_close_sent = false;
   ViewAccessibility::AccessibilityEventsCallback accessibility_events_callback =
       base::BindRepeating(
@@ -986,10 +947,7 @@ TEST_F(MenuRunnerImplTest, FocusOnMenuCloseDeleteAfterRun) {
           &focus_after_menu_close_sent);
   button->GetViewAccessibility().set_accessibility_events_callback(
       std::move(accessibility_events_callback));
-  menu_runner2->Release();
 
-  EXPECT_TRUE(focus_after_menu_close_sent);
-  focus_after_menu_close_sent = false;
   ResetMenuItemView();
   menu_runner->Release();
 
@@ -1000,12 +958,7 @@ TEST_F(MenuRunnerImplTest, FocusOnMenuCloseDeleteAfterRun) {
   button->GetViewAccessibility().set_accessibility_events_callback(
       base::DoNothing());
 
-  // This is not expected to run, however this is from the origin ASAN stack
-  // traces. So regressions will be caught with the same stack trace.
-  if (menu_controller.controller()) {
-    menu_controller.controller()->Cancel(MenuController::ExitType::kAll);
-  }
-  EXPECT_EQ(nullptr, menu_controller.controller());
+  EXPECT_EQ(nullptr, MenuController::GetActiveInstance());
 }
 
 // Tests that passing a histogram name to RunMenuAt records a histogram entry.

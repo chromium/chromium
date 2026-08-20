@@ -67,7 +67,6 @@ class MenuRunnerImpl;
 }  // namespace internal
 
 namespace test {
-class MenuControllerTestApi;
 class MenuControllerUITest;
 }  // namespace test
 
@@ -259,10 +258,6 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   // Only used for testing.
   bool IsCancelAllTimerRunningForTest();
 
-  // Only used for testing. Clears |state_| and |pending_state_| without
-  // notifying any menu items.
-  void ClearStateForTest();
-
   // Only used for testing.
   static void TurnOffMenuSelectionHoldForTest();
 
@@ -323,7 +318,6 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   friend class MenuHostRootView;
   friend class MenuItemView;
   friend class SubmenuView;
-  friend class test::MenuControllerTestApi;
   friend class test::MenuControllerUITest;
 
   struct MenuPart;
