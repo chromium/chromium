@@ -376,7 +376,13 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
   EXPECT_FALSE(helper()->IsTooltipVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(TooltipBrowserTest, ResetTooltipOnClosingWindow) {
+// TODO(crbug.com/549855061): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ResetTooltipOnClosingWindow DISABLED_ResetTooltipOnClosingWindow
+#else
+#define MAYBE_ResetTooltipOnClosingWindow ResetTooltipOnClosingWindow
+#endif
+IN_PROC_BROWSER_TEST_F(TooltipBrowserTest, MAYBE_ResetTooltipOnClosingWindow) {
   NavigateToURL("/tooltip.html");
 
   // Trigger the tooltip from the cursor.
