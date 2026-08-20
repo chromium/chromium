@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.view.View;
 
 import org.chromium.base.Token;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.MediaState;
@@ -98,6 +99,15 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
     }
 
     /**
+     * Handles UI model updates when a tab closure is undone in the tab model.
+     *
+     * @param tab The {@link Tab} whose closure was undone.
+     */
+    void tabClosureUndone(Tab tab) {
+        onTabAdded(tab);
+    }
+
+    /**
      * Resolves the UI index in {@link #mModelList} of the card representing the given tab in this
      * layout.
      *
@@ -111,6 +121,28 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
      */
     int getUiIndexForTab(int tabId) {
         return mModelList.indexFromTabId(tabId);
+    }
+
+    /**
+     * Records user action metrics when a tab item is clicked in the UI list.
+     *
+     * <p>Subclasses can override to customize or suppress metrics (e.g. {@link
+     * GroupedLayoutDelegate}).
+     *
+     * @param tabId The ID of the tab that was selected.
+     */
+    void recordTabSelection(int tabId) {
+        Tab tab = mMediator.getCurrentTabModelChecked().getTabById(tabId);
+        if (tab != null
+                && tab.getIsPinned()
+                && mMediator.getComponentId() == TabComponentId.VERTICAL_TABS) {
+            RecordUserAction.record("MobileTabSwitched.VerticalTabsPinned");
+        } else {
+            RecordUserAction.record(
+                    "MobileTabSwitched."
+                            + TabUiMetricsHelper.getComponentNameForMetrics(
+                                    mMediator.getComponentId()));
+        }
     }
 
     /**

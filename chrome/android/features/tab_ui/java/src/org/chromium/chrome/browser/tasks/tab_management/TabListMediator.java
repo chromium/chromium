@@ -473,21 +473,7 @@ public class TabListMediator implements TabListNotificationHandler {
                 public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
                     if (mModelList.indexFromTabId(tabId) == TabModel.INVALID_TAB_INDEX) return;
 
-                    if (mLayoutType == TabListLayoutType.FLAT
-                            || mLayoutType == TabListLayoutType.NESTED) {
-                        // We filtered the tab switching related metric for components that takes
-                        // actions on all related tabs (e.g. GTS) because that component can
-                        // switch to different TabModel before switching tabs, while this class
-                        // only contains information for all tabs that are in the same TabModel,
-                        // more specifically:
-                        //   * For MobileTabSwitched, as compared to the VTS, we need to account for
-                        //     MobileTabReturnedToCurrentTab action. This action is defined as
-                        // return to the
-                        //     same tab as before entering the component, and we don't have this
-                        // information
-                        //     here.
-                        recordTabSelection(tabId);
-                    }
+                    mTabListLayoutDelegate.recordTabSelection(tabId);
                     if (mMultiSelectHelper != null) {
                         int modifiers = triggeringMotion != null ? triggeringMotion.metaState : 0;
                         if (mMultiSelectHelper.handleTabClick(tabId, modifiers)) {
@@ -501,24 +487,6 @@ public class TabListMediator implements TabListNotificationHandler {
                 public void run(
                         View view, String syncId, @Nullable MotionEventInfo triggeringMotion) {
                     // Intentional no-op.
-                }
-
-                /**
-                 * Records MobileTabSwitched for the component. This method only records UMA for
-                 * components other than TabSwitcher.
-                 */
-                private void recordTabSelection(int tabId) {
-                    Tab tab = getCurrentTabModelChecked().getTabById(tabId);
-                    if (tab != null
-                            && tab.getIsPinned()
-                            && mComponentId == TabComponentId.VERTICAL_TABS) {
-                        RecordUserAction.record("MobileTabSwitched.VerticalTabsPinned");
-                    } else {
-                        RecordUserAction.record(
-                                "MobileTabSwitched."
-                                        + TabUiMetricsHelper.getComponentNameForMetrics(
-                                                mComponentId));
-                    }
                 }
             };
 
@@ -970,27 +938,8 @@ public class TabListMediator implements TabListNotificationHandler {
                         assert mShowingTabs;
 
                         addObserversForTab(tab);
-                        mTabListLayoutDelegate.onTabAdded(tab);
+                        mTabListLayoutDelegate.tabClosureUndone(tab);
                         recordUndoCloseMetrics(tab.getId());
-                        // TODO(yuezhanggg): clean up updateTab() calls in this class.
-                        if (mLayoutType == TabListLayoutType.GROUPED) {
-                            TabModel tabModel = getCurrentTabModelChecked();
-                            int filterIndex = tabModel.representativeIndexOf(tab);
-                            if (filterIndex == TabList.INVALID_TAB_INDEX
-                                    || !tabModel.isTabInTabGroup(tab)
-                                    || filterIndex >= mModelList.size()) {
-                                return;
-                            }
-                            Tab currentGroupSelectedTab =
-                                    tabModel.getRepresentativeTabAt(filterIndex);
-                            assumeNonNull(currentGroupSelectedTab);
-
-                            int tabListModelIndex = mModelList.indexOfNthTabCard(filterIndex);
-                            assert mModelList.indexFromTabId(currentGroupSelectedTab.getId())
-                                    == tabListModelIndex;
-
-                            updateTab(tabListModelIndex, currentGroupSelectedTab, false, false);
-                        }
                     }
 
                     @Override
@@ -1964,6 +1913,11 @@ public class TabListMediator implements TabListNotificationHandler {
     @TabActionState
     int getTabActionState() {
         return mTabActionState;
+    }
+
+    @TabComponentId
+    int getComponentId() {
+        return mComponentId;
     }
 
     void bindTabActionStateProperties(

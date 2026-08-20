@@ -35,6 +35,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
@@ -89,6 +90,32 @@ public class NestedLayoutDelegateUnitTest {
     @Test
     public void testRequiresThumbnailUpdateOnSelect() {
         assertFalse(mDelegate.requiresThumbnailUpdateOnSelect());
+    }
+
+    @Test
+    public void testRecordTabSelection_Vertical_StandardTab() {
+        when(mMediator.getComponentId()).thenReturn(TabComponentId.VERTICAL_TABS);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mTab1.getIsPinned()).thenReturn(false);
+
+        var userActionTester = new UserActionTester();
+        mDelegate.recordTabSelection(TAB1_ID);
+
+        assertTrue(userActionTester.getActions().contains("MobileTabSwitched.VerticalTabs"));
+        userActionTester.tearDown();
+    }
+
+    @Test
+    public void testRecordTabSelection_Vertical_PinnedTab() {
+        when(mMediator.getComponentId()).thenReturn(TabComponentId.VERTICAL_TABS);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mTab1.getIsPinned()).thenReturn(true);
+
+        var userActionTester = new UserActionTester();
+        mDelegate.recordTabSelection(TAB1_ID);
+
+        assertTrue(userActionTester.getActions().contains("MobileTabSwitched.VerticalTabsPinned"));
+        userActionTester.tearDown();
     }
 
     @Test
@@ -199,6 +226,16 @@ public class NestedLayoutDelegateUnitTest {
     }
 
     @Test
+    public void testTabClosureUndone() {
+        setupTabsInModel(mTab1);
+        when(mTab1.getTabGroupId()).thenReturn(null);
+
+        mDelegate.tabClosureUndone(mTab1);
+
+        verify(mMediator).addTabInfoToModelForTab(eq(mTab1), eq(0), anyBoolean());
+    }
+
+    @Test
     public void testOnFaviconUpdated() {
         PropertyModel model = addTabToModelList(TAB1_ID, null);
 
@@ -253,9 +290,9 @@ public class NestedLayoutDelegateUnitTest {
         addTabToModelList(TAB1_ID, null);
         addTabToModelList(TAB2_ID, null);
 
-        View parentView = new FrameLayout(ApplicationProvider.getApplicationContext());
+        FrameLayout parentView = new FrameLayout(ApplicationProvider.getApplicationContext());
         View closeButton = new View(ApplicationProvider.getApplicationContext());
-        ((FrameLayout) parentView).addView(closeButton);
+        parentView.addView(closeButton);
 
         mDelegate.prepareTabCloseAnimation(closeButton, 1);
 
@@ -267,9 +304,9 @@ public class NestedLayoutDelegateUnitTest {
         addTabToModelList(TAB1_ID, null);
         addTabToModelList(TAB2_ID, null);
 
-        View parentView = new FrameLayout(ApplicationProvider.getApplicationContext());
+        FrameLayout parentView = new FrameLayout(ApplicationProvider.getApplicationContext());
         View closeButton = new View(ApplicationProvider.getApplicationContext());
-        ((FrameLayout) parentView).addView(closeButton);
+        parentView.addView(closeButton);
 
         mDelegate.prepareTabCloseAnimation(closeButton, 0);
 

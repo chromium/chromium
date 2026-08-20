@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -84,6 +85,18 @@ public class GroupedLayoutDelegateUnitTest {
     @Test
     public void testRequiresThumbnailUpdateOnSelect() {
         assertTrue(mDelegate.requiresThumbnailUpdateOnSelect());
+    }
+
+    @Test
+    public void testRecordTabSelection_NoOp() {
+        when(mMediator.getComponentId()).thenReturn(TabComponentId.GRID_TAB_SWITCHER);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+
+        var userActionTester = new UserActionTester();
+        mDelegate.recordTabSelection(TAB1_ID);
+
+        assertTrue(userActionTester.getActions().isEmpty());
+        userActionTester.tearDown();
     }
 
     @Test
@@ -244,6 +257,30 @@ public class GroupedLayoutDelegateUnitTest {
         when(mTabModel.getRepresentativeTabAt(0)).thenReturn(mTab1);
 
         mDelegate.didAddTab(mTab2, TabLaunchType.FROM_RESTORE);
+
+        verify(mMediator).updateTab(0, mTab1, false, false);
+    }
+
+    @Test
+    public void testTabClosureUndone_StandaloneTab() {
+        when(mTabModel.getIndividualTabAndGroupCount()).thenReturn(1);
+        setupRepresentativeTab(mTab1, mTab1, 0);
+
+        mDelegate.tabClosureUndone(mTab1);
+
+        verify(mMediator).addTabCardToModel(mTab1, 0);
+        verify(mMediator, never()).updateTab(anyInt(), any(), anyBoolean(), anyBoolean());
+    }
+
+    @Test
+    public void testTabClosureUndone_InTabGroup_UpdatesGroupCard() {
+        createAndAddPropertyModel(TAB1_ID);
+        when(mMediator.isTabInTabGroup(mTab2)).thenReturn(true);
+        when(mTabModel.isTabInTabGroup(mTab2)).thenReturn(true);
+        when(mTabModel.representativeIndexOf(mTab2)).thenReturn(0);
+        when(mTabModel.getRepresentativeTabAt(0)).thenReturn(mTab1);
+
+        mDelegate.tabClosureUndone(mTab2);
 
         verify(mMediator).updateTab(0, mTab1, false, false);
     }
