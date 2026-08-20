@@ -1159,10 +1159,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
           callback) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  bool ShouldDispatchPagehideDuringCommit(
-      content::BrowserContext* browser_context,
-      const GURL& destination_url) override;
-
 #if BUILDFLAG(IS_WIN)
   void OnTracingServiceStarted() override;
   void OnTracingServiceStopped() override;

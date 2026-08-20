@@ -3187,14 +3187,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // navigations even if there was no user activation.
   virtual bool AllowNonActivatedCrossOriginPaintHolding();
 
-  // Indicates whether this client requires dispatching the pagehide &
-  // visibilitychange events before the commit of a new document, when
-  // navigating same-site to `destination_url` and doing a BrowsingInstance
-  // swap, which used to fire those events at that timing.
-  virtual bool ShouldDispatchPagehideDuringCommit(
-      BrowserContext* browser_context,
-      const GURL& destination_url);
-
   // Called when the tracing service is started.
   virtual void OnTracingServiceStarted() {}
 

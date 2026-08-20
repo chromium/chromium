@@ -140,29 +140,8 @@ void PageLifecycleStateManager::SetIsInBackForwardCache(
     SetBackForwardCacheEntered(BackForwardCacheEntered::kNo);
   }
 
-  NavigationControllerImpl& controller =
-      render_view_host_impl_->frame_tree()->controller();
-  if (navigation_request_url.has_value() &&
-      navigation_request_url->SchemeIsHTTPOrHTTPS() &&
-      url::Origin::Create(*navigation_request_url)
-          .IsSameOriginWith(controller.GetLastCommittedEntry()->GetURL()) &&
-      !GetContentClient()->browser()->ShouldDispatchPagehideDuringCommit(
-          render_view_host_impl_->frame_tree()
-              ->controller()
-              .GetBrowserContext(),
-          *navigation_request_url) &&
-      !features::kSkipPagehideInCommitForDSENavigationDelay.Get().is_zero()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &PageLifecycleStateManager::SendUpdatesToRendererIfNeeded,
-            weak_ptr_factory_.GetWeakPtr(), std::move(page_restore_params),
-            base::NullCallback()),
-        features::kSkipPagehideInCommitForDSENavigationDelay.Get());
-  } else {
-    SendUpdatesToRendererIfNeeded(std::move(page_restore_params),
-                                  base::NullCallback());
-  }
+  SendUpdatesToRendererIfNeeded(std::move(page_restore_params),
+                                base::NullCallback());
 }
 
 blink::mojom::PageLifecycleStatePtr

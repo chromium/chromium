@@ -9323,23 +9323,6 @@ void ChromeContentBrowserClient::AddExtraPartForTesting(
   AddExtraPart(std::move(part));
 }
 
-bool ChromeContentBrowserClient::ShouldDispatchPagehideDuringCommit(
-    content::BrowserContext* browser_context,
-    const GURL& destination_url) {
-  if (!base::FeatureList::IsEnabled(
-          features::kSkipPagehideInCommitForDSENavigation)) {
-    return true;
-  }
-  auto* template_url_service = TemplateURLServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(browser_context));
-  // Allow not dispatching pagehide during commit when navigating to a DSE
-  // results page, to prioritize committing that page instead of running
-  // events on the previous page.
-  return !template_url_service ||
-         !template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
-             destination_url);
-}
-
 #if BUILDFLAG(IS_WIN)
 void ChromeContentBrowserClient::OnTracingServiceStarted() {
   CHECK(!windows_system_tracing_client_);
