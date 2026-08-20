@@ -393,8 +393,7 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
     params: unknown,
   ): Session.UnsubscribeByAttributesRequest | Session.UnsubscribeByIdRequest {
     return params as
-      | Session.UnsubscribeByAttributesRequest
-      | Session.UnsubscribeByIdRequest;
+      Session.UnsubscribeByAttributesRequest | Session.UnsubscribeByIdRequest;
   }
   // keep-sorted end
 

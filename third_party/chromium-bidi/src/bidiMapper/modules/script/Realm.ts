@@ -696,12 +696,10 @@ export abstract class Realm {
     } catch (error: any) {
       // Heuristic to determine if the problem is in the unknown handler.
       // Ignore the error if so.
-      if (
-        !(
-          error.code === CdpErrorConstants.GENERIC_ERROR &&
-          error.message === 'Invalid remote object id'
-        )
-      ) {
+      if (!(
+        error.code === CdpErrorConstants.GENERIC_ERROR &&
+        error.message === 'Invalid remote object id'
+      )) {
         throw error;
       }
     }

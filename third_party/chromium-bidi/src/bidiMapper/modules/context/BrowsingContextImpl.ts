@@ -1462,14 +1462,12 @@ export class BrowsingContextImpl {
               ...startNodes: Node[]
             ) => {
               const locateNodesUsingCss = (element: Node) => {
-                if (
-                  !(
-                    element instanceof HTMLElement ||
-                    element instanceof Document ||
-                    element instanceof DocumentFragment ||
-                    element instanceof SVGElement
-                  )
-                ) {
+                if (!(
+                  element instanceof HTMLElement ||
+                  element instanceof Document ||
+                  element instanceof DocumentFragment ||
+                  element instanceof SVGElement
+                )) {
                   throw new Error(
                     'startNodes in css selector should be HTMLElement, SVGElement or Document or DocumentFragment',
                   );
@@ -1958,9 +1956,7 @@ export class BrowsingContextImpl {
     userAgent: string | null | undefined,
     acceptLanguage: string | null | undefined,
     clientHints:
-      | UAClientHints.UserAgentClientHints.ClientHintsMetadata
-      | null
-      | undefined,
+      UAClientHints.UserAgentClientHints.ClientHintsMetadata | null | undefined,
   ) {
     await Promise.all(
       this.#getAllRelatedCdpTargets().map(

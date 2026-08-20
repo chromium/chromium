@@ -319,14 +319,10 @@ if (
 // If WPT tests themselves or the expectations update failed, return failure.
 let exitCode = 0;
 if ((runResult?.status ?? 0) !== 0) {
-  if (
-    !(
-      FAIL_NO_TEST === 'false' &&
-      runResult.output
-        .toString()
-        .includes('Unable to find any tests at the path')
-    )
-  ) {
+  if (!(
+    FAIL_NO_TEST === 'false' &&
+    runResult.output.toString().includes('Unable to find any tests at the path')
+  )) {
     log('WPT test run failed');
     exitCode = runResult.status;
   }

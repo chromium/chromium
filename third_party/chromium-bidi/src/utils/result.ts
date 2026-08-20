@@ -16,5 +16,4 @@
  */
 
 export type Result<T, E = Error> =
-  | {kind: 'success'; value: T}
-  | {kind: 'error'; error: E};
+  {kind: 'success'; value: T} | {kind: 'error'; error: E};

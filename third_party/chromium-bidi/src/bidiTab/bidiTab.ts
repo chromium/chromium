@@ -50,8 +50,7 @@ declare global {
 
     // Required to prevent the user from closing the tab.
     onbeforeunload:
-      | ((this: WindowEventHandlers, ev: BeforeUnloadEvent) => any)
-      | null;
+      ((this: WindowEventHandlers, ev: BeforeUnloadEvent) => any) | null;
   }
 }
 

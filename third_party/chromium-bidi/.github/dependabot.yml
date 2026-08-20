@@ -9,6 +9,8 @@ updates:
       interval: daily
       time: '05:00'
       timezone: Europe/Berlin
+    cooldown:
+      default-days: 7
     open-pull-requests-limit: 1
     labels:
       - 'dependencies'
@@ -20,6 +22,8 @@ updates:
       interval: monthly
       time: '05:00'
       timezone: Europe/Berlin
+    cooldown:
+      default-days: 7
     groups:
       all:
         patterns:
@@ -29,6 +33,8 @@ updates:
     directory: examples/
     schedule:
       interval: monthly
+    cooldown:
+      default-days: 7
     groups:
       all:
         patterns:
@@ -40,6 +46,8 @@ updates:
       interval: monthly
       time: '05:00'
       timezone: Europe/Berlin
+    cooldown:
+      default-days: 7
     groups:
       all:
         patterns:
@@ -52,6 +60,8 @@ updates:
       day: 'sunday'
       time: '05:00'
       timezone: Europe/Berlin
+    cooldown:
+      default-days: 7
     groups:
       all:
         patterns:
@@ -63,4 +73,8 @@ updates:
       - dependency-name: devtools-protocol
       - dependency-name: chai
         versions: ['>=5.0.0']
+        update-types: ['version-update:semver-major']
+      # typescript-eslint does not support TypeScript 7 yet.
+      - dependency-name: typescript
+        versions: ['>=7.0.0']
         update-types: ['version-update:semver-major']

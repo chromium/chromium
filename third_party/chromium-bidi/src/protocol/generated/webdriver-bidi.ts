@@ -65,11 +65,7 @@ export type Event = {
 } & EventData &
   Extensible;
 export type EventData =
-  | BrowsingContextEvent
-  | InputEvent
-  | LogEvent
-  | NetworkEvent
-  | ScriptEvent;
+  BrowsingContextEvent | InputEvent | LogEvent | NetworkEvent | ScriptEvent;
 export type Extensible = {
   [key: string]: any;
 };
@@ -297,8 +293,7 @@ export namespace Session {
 }
 export namespace Session {
   export type UnsubscribeParameters =
-    | Session.UnsubscribeByAttributesRequest
-    | Session.UnsubscribeByIdRequest;
+    Session.UnsubscribeByAttributesRequest | Session.UnsubscribeByIdRequest;
 }
 export namespace Session {
   export type UnsubscribeResult = EmptyResult;
@@ -444,8 +439,7 @@ export namespace Browser {
 }
 export namespace Browser {
   export type DownloadBehavior =
-    | Browser.DownloadBehaviorAllowed
-    | Browser.DownloadBehaviorDenied;
+    Browser.DownloadBehaviorAllowed | Browser.DownloadBehaviorDenied;
 }
 export namespace Browser {
   export type DownloadBehaviorAllowed = {
@@ -646,8 +640,7 @@ export namespace BrowsingContext {
 }
 export namespace BrowsingContext {
   export type ClipRectangle =
-    | BrowsingContext.BoxClipRectangle
-    | BrowsingContext.ElementClipRectangle;
+    BrowsingContext.BoxClipRectangle | BrowsingContext.ElementClipRectangle;
 }
 export namespace BrowsingContext {
   export type ElementClipRectangle = {
@@ -1860,8 +1853,7 @@ export namespace Network {
   export type ContinueWithAuthParameters = {
     request: Network.Request;
   } & (
-    | Network.ContinueWithAuthCredentials
-    | Network.ContinueWithAuthNoCredentials
+    Network.ContinueWithAuthCredentials | Network.ContinueWithAuthNoCredentials
   );
 }
 export namespace Network {
@@ -2084,9 +2076,7 @@ export type ScriptResult =
   | Script.GetRealmsResult
   | Script.RemovePreloadScriptResult;
 export type ScriptEvent =
-  | Script.Message
-  | Script.RealmCreated
-  | Script.RealmDestroyed;
+  Script.Message | Script.RealmCreated | Script.RealmDestroyed;
 export namespace Script {
   export type Channel = string;
 }
@@ -2105,8 +2095,7 @@ export namespace Script {
 }
 export namespace Script {
   export type EvaluateResult =
-    | Script.EvaluateResultSuccess
-    | Script.EvaluateResultException;
+    Script.EvaluateResultSuccess | Script.EvaluateResultException;
 }
 export namespace Script {
   export type EvaluateResultSuccess = {
@@ -2325,8 +2314,7 @@ export namespace Script {
 }
 export namespace Script {
   export type RemoteReference =
-    | Script.SharedReference
-    | Script.RemoteObjectReference;
+    Script.SharedReference | Script.RemoteObjectReference;
 }
 export namespace Script {
   export type SharedReference = {
@@ -2741,9 +2729,7 @@ export namespace Script {
   };
 }
 export type StorageCommand =
-  | Storage.DeleteCookies
-  | Storage.GetCookies
-  | Storage.SetCookie;
+  Storage.DeleteCookies | Storage.GetCookies | Storage.SetCookie;
 export type StorageResult =
   | Storage.DeleteCookiesResult
   | Storage.GetCookiesResult
@@ -2860,9 +2846,7 @@ export namespace Log {
 }
 export namespace Log {
   export type Entry =
-    | Log.GenericLogEntry
-    | Log.ConsoleLogEntry
-    | Log.JavascriptLogEntry;
+    Log.GenericLogEntry | Log.ConsoleLogEntry | Log.JavascriptLogEntry;
 }
 export namespace Log {
   export type BaseLogEntry = {
@@ -2897,9 +2881,7 @@ export namespace Log {
   };
 }
 export type InputCommand =
-  | Input.PerformActions
-  | Input.ReleaseActions
-  | Input.SetFiles;
+  Input.PerformActions | Input.ReleaseActions | Input.SetFiles;
 export type InputResult =
   | Input.PerformActionsResult
   | Input.ReleaseActionsResult
@@ -2949,9 +2931,7 @@ export namespace Input {
 }
 export namespace Input {
   export type KeySourceAction =
-    | Input.PauseAction
-    | Input.KeyDownAction
-    | Input.KeyUpAction;
+    Input.PauseAction | Input.KeyDownAction | Input.KeyUpAction;
 }
 export namespace Input {
   export type PointerSourceActions = {
@@ -3124,8 +3104,7 @@ export namespace Input {
 }
 export type WebExtensionCommand = WebExtension.Install | WebExtension.Uninstall;
 export type WebExtensionResult =
-  | WebExtension.InstallResult
-  | WebExtension.UninstallResult;
+  WebExtension.InstallResult | WebExtension.UninstallResult;
 export namespace WebExtension {
   export type Extension = string;
 }

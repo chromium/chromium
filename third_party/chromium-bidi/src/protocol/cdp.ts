@@ -31,9 +31,7 @@ export type Command = {
   id: JsUint;
 } & CommandData;
 export type CommandData =
-  | SendCommandCommand
-  | GetSessionCommand
-  | ResolveRealmCommand;
+  SendCommandCommand | GetSessionCommand | ResolveRealmCommand;
 
 export interface CommandResponse {
   type: 'success';
@@ -41,9 +39,7 @@ export interface CommandResponse {
   result: ResultData;
 }
 export type ResultData =
-  | SendCommandResult
-  | GetSessionResult
-  | ResolveRealmResult;
+  SendCommandResult | GetSessionResult | ResolveRealmResult;
 
 export interface SendCommandCommand {
   method: 'goog:cdp.sendCommand';

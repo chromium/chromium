@@ -23,7 +23,9 @@ import {EventEmitter} from '../utils/EventEmitter.js';
 import type {MapperCdpConnection} from './CdpConnection.js';
 
 export type CdpEvents = {
-  [Property in keyof ProtocolMapping.Events]: ProtocolMapping.Events[Property][0];
+  [
+    Property in keyof ProtocolMapping.Events
+  ]: ProtocolMapping.Events[Property][0];
 };
 
 /** An error that will be thrown if/when the connection is closed. */

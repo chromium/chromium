@@ -392,12 +392,10 @@ export class BrowsingContextProcessor {
     } catch (error: any) {
       // Swallow error that arise from the page being destroyed
       // Example is navigating to faulty SSL certificate
-      if (
-        !(
-          error.code === CdpErrorConstants.GENERIC_ERROR &&
-          error.message === 'Not attached to an active page'
-        )
-      ) {
+      if (!(
+        error.code === CdpErrorConstants.GENERIC_ERROR &&
+        error.message === 'Not attached to an active page'
+      )) {
         throw error;
       }
     }

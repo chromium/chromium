@@ -146,8 +146,7 @@ export type Command = (
 ) & {'goog:channel'?: GoogChannel};
 
 export type CommandResponse =
-  | WebDriverBidi.CommandResponse
-  | Cdp.CommandResponse;
+  WebDriverBidi.CommandResponse | Cdp.CommandResponse;
 
 export type BluetoothEvent =
   | ExternalSpecEvent<WebDriverBidiBluetooth.Bluetooth.RequestDevicePromptUpdated>
@@ -159,10 +158,7 @@ export type SpeculationEvent =
   ExternalSpecEvent<WebDriverBidiSpeculation.Speculation.PrefetchStatusUpdated>;
 
 export type Event =
-  | WebDriverBidi.Event
-  | Cdp.Event
-  | BluetoothEvent
-  | SpeculationEvent;
+  WebDriverBidi.Event | Cdp.Event | BluetoothEvent | SpeculationEvent;
 
 export const EVENT_NAMES = new Set([
   // keep-sorted start
@@ -182,10 +178,7 @@ export type ResultData = WebDriverBidi.ResultData | Cdp.ResultData;
 export type GoogChannel = string | null;
 
 export type Message = (
-  | WebDriverBidi.Message
-  | Cdp.Message
-  | BluetoothEvent
-  | SpeculationEvent
+  WebDriverBidi.Message | Cdp.Message | BluetoothEvent | SpeculationEvent
 ) & {
   'goog:channel'?: GoogChannel;
 };
