@@ -1080,7 +1080,7 @@ class CrossbenchTest(object):
         default_args.append('--disable-field-trial-config')
       else:
         # See http://shortn/_xGSaVM9P5g
-        default_args.append('--enable-field-trial-config')
+        default_args.append('--enable-field-trial-config=benchmarking')
     if self.options.luci_chromium:
       default_args.append('--headless')
     return default_args
