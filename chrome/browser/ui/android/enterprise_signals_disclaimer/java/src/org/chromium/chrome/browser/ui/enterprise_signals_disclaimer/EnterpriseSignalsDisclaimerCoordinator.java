@@ -29,10 +29,9 @@ public class EnterpriseSignalsDisclaimerCoordinator {
         void showInfoPage(String url);
     }
 
-    private final BottomSheetController mBottomSheetController;
-    private final EnterpriseSignalsDisclaimerBottomSheetView mSheetContent;
     private final EnterpriseSignalsDisclaimerMediator mMediator;
     private final PropertyModelChangeProcessor mModelChangeProcessor;
+    private final EnterpriseSignalsDisclaimerHost mDisclaimerHost;
 
     /**
      * Constructs an {@link EnterpriseSignalsDisclaimerCoordinator}.
@@ -50,32 +49,35 @@ public class EnterpriseSignalsDisclaimerCoordinator {
             BottomSheetController bottomSheetController,
             SigninManager signinManager,
             Delegate delegate) {
-        mBottomSheetController = bottomSheetController;
-        mSheetContent = new EnterpriseSignalsDisclaimerBottomSheetView(context);
-
         final IdentityManager identityManager = signinManager.getIdentityManager();
         assert identityManager.hasPrimaryAccount();
-
         mMediator = new EnterpriseSignalsDisclaimerMediator(context, identityManager, delegate);
+
+        var view = new EnterpriseSignalsDisclaimerBottomSheetView(context);
+        mDisclaimerHost = new BottomSheetDisclaimerHost(bottomSheetController, view);
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
-                        mMediator.getModel(),
-                        mSheetContent,
-                        EnterpriseSignalsDisclaimerViewBinder::bind);
+                        mMediator.getModel(), view, EnterpriseSignalsDisclaimerViewBinder::bind);
     }
 
-    /** Shows the enterprise signals disclaimer bottom sheet. */
-    public boolean show() {
-        return mBottomSheetController.requestShowContent(mSheetContent, /* animate= */ true);
+    /**
+     * Attempts to show the enterprise signals disclaimer. If the dialog cannot be shown it will be
+     * put in a queue and shown whenever possible.
+     */
+    public void show() {
+        mDisclaimerHost.show();
     }
 
-    public boolean isShowing() {
-        return mBottomSheetController.getCurrentSheetContent() == mSheetContent;
+    /**
+     * @return true if dialog is being shown or is in queue, false otherwise.
+     */
+    public boolean isActive() {
+        return mDisclaimerHost.isActive();
     }
 
     /** Destroys the coordinator, hiding the sheet and cleaning up resources. */
     public void destroy() {
-        mBottomSheetController.hideContent(mSheetContent, /* animate= */ false);
+        mDisclaimerHost.hide();
         mModelChangeProcessor.destroy();
         mMediator.destroy();
     }

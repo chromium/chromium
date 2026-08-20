@@ -118,15 +118,15 @@ public class EnterpriseSignalsDisclaimerController {
     /**
      * Attempts to show the enterprise signals disclaimer bottom sheet if necessary.
      *
-     * @return True if the disclaimer was shown, false otherwise.
+     * @return true if the disclaimer was shown (or put in a queue), false otherwise.
      */
     public boolean maybeShow() {
         if (mIsDestroyed) {
             return false;
         }
 
-        // The disclaimer is already being shown, no need to show again.
-        if (mCoordinator != null && mCoordinator.isShowing()) {
+        // The disclaimer is already being shown or will be shown in the future.
+        if (mCoordinator != null && mCoordinator.isActive()) {
             return false;
         }
 
@@ -150,7 +150,8 @@ public class EnterpriseSignalsDisclaimerController {
                         mActivity, mBottomSheetController, mSigninManager, mDelegate);
         // If the dialog is not shown immediately it will be queued by the controller and shown
         // whenever possible.
-        return mCoordinator.show();
+        mCoordinator.show();
+        return true;
     }
 
     public void destroy() {

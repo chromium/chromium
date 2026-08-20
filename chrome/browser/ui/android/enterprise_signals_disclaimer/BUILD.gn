@@ -6,9 +6,11 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/BottomSheetDisclaimerHost.java",
     "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerBottomSheetView.java",
     "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerController.java",
     "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerHost.java",
     "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerMediator.java",
     "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerProperties.java",
     "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerView.java",
@@ -59,6 +61,7 @@ robolectric_library("junit") {
   testonly = true
 
   sources = [
+    "junit/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/BottomSheetDisclaimerHostUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerControllerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerMediatorUnitTest.java",
   ]
@@ -112,6 +115,7 @@ android_library("javatests") {
     "//components/browser_ui/bottomsheet/android:factory_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android:manager_java",
+    "//components/browser_ui/bottomsheet/android/test:java",
     "//components/browser_ui/widget/android:java",
     "//components/signin/public/android:java",
     "//components/signin/public/android:signin_java_test_support",

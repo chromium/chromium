@@ -20,6 +20,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 @NullMarked
 class EnterpriseSignalsDisclaimerBottomSheetView extends EnterpriseSignalsDisclaimerView
         implements BottomSheetContent {
+    private @Nullable Runnable mOnDestroyedCallback;
 
     /**
      * Constructs an {@link EnterpriseSignalsDisclaimerBottomSheetView}.
@@ -28,6 +29,10 @@ class EnterpriseSignalsDisclaimerBottomSheetView extends EnterpriseSignalsDiscla
      */
     public EnterpriseSignalsDisclaimerBottomSheetView(Context context) {
         super(context);
+    }
+
+    public void setOnDestroyedCallback(Runnable callback) {
+        mOnDestroyedCallback = callback;
     }
 
     // BottomSheetContent implementation:
@@ -47,7 +52,12 @@ class EnterpriseSignalsDisclaimerBottomSheetView extends EnterpriseSignalsDiscla
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        if (mOnDestroyedCallback != null) {
+            mOnDestroyedCallback.run();
+            mOnDestroyedCallback = null;
+        }
+    }
 
     @Override
     public int getPriority() {

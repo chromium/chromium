@@ -63,7 +63,6 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
 
         when(mSigninManager.getIdentityManager()).thenReturn(mIdentityManager);
         when(mCoordinatorFactory.create(any(), any(), any(), any())).thenReturn(mCoordinator);
-        when(mCoordinator.show()).thenReturn(true);
 
         mIdentityManager.setPrimaryAccount(TestAccounts.ACCOUNT1);
     }
@@ -183,10 +182,10 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
         Assert.assertNotNull(controller);
         Assert.assertTrue(controller.maybeShow());
 
-        when(mCoordinator.isShowing()).thenReturn(true);
+        when(mCoordinator.isActive()).thenReturn(true);
         Assert.assertFalse(controller.maybeShow());
 
-        verify(mCoordinator).isShowing();
+        verify(mCoordinator).isActive();
     }
 
     @Test
@@ -215,9 +214,7 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
         when(mCoordinatorFactory.create(any(), any(), any(), any()))
                 .thenReturn(coordinator1)
                 .thenReturn(coordinator2);
-        when(coordinator1.show()).thenReturn(true);
-        when(coordinator1.isShowing()).thenReturn(false);
-        when(coordinator2.show()).thenReturn(true);
+        when(coordinator1.isActive()).thenReturn(false);
 
         EnterpriseSignalsDisclaimerController controller = createController();
         Assert.assertNotNull(controller);

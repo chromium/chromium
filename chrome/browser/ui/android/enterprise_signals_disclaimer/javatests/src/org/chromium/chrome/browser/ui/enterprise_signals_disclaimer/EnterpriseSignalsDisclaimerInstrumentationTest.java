@@ -13,9 +13,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
+import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.filters.LargeTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,13 +28,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -39,14 +44,17 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
 import org.chromium.components.signin.test.util.TestAccounts;
 
 /** Instrumentation tests for {@link EnterpriseSignalsDisclaimerController}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+@DoNotBatch(reason = "Testing browser startup prevents batching")
 @EnableFeatures(ChromeFeatureList.ANDROID_DEVICE_SIGNALS_DISCLAIMER)
 public class EnterpriseSignalsDisclaimerInstrumentationTest {
-
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
@@ -77,12 +85,26 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
     @After
     public void tearDown() {
+        mManagedBrowserUtilsMock = null;
         ManagedBrowserUtilsJni.setInstanceForTesting(null);
+        mSigninTestRule.forceSignOut();
+        mSigninTestRule.removeAccount(TestAccounts.MANAGED_ACCOUNT.getId());
     }
 
-    @Test
-    @LargeTest
-    public void disclaimerShowsOnStartup() {
+    private AppCompatActivity activity() {
+        return mActivityTestRule.getActivity();
+    }
+
+    private BottomSheetController bottomSheetController() {
+        BottomSheetController instance =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                BottomSheetControllerProvider.from(
+                                        mActivityTestRule.getActivity().getWindowAndroid()));
+        return instance;
+    }
+
+    private void verifyActivityShowingSignalsDisclaimer() {
         onView(withId(R.id.disclaimer_title)).check(matches(isDisplayed()));
         onView(withId(R.id.disclaimer_description)).check(matches(isDisplayed()));
 
@@ -93,9 +115,100 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         onView(withId(R.id.disclaimer_cancel_button))
                 .perform(scrollTo())
                 .check(matches(isDisplayed()));
+    }
 
-        // Closes the activity and waits for destruction. This is called to cover
-        // TabbedRootUiCoordinator destroying EnterpriseSignalsDisclaimerController.
-        ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());
+    private BottomSheetContent showTestBottomSheetDisclaimer() {
+        TestBottomSheetContent fakeContent =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            View view = new View(activity());
+                            view.setMinimumHeight(200);
+                            TestBottomSheetContent content =
+                                    new TestBottomSheetContent(
+                                            activity(),
+                                            BottomSheetContent.ContentPriority.HIGH,
+                                            false,
+                                            view);
+                            content.setCanBeSuppressed(false);
+                            return content;
+                        });
+
+        final BottomSheetController bottomSheetController = bottomSheetController();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    bottomSheetController.requestShowContent(fakeContent, /* animate= */ false);
+                });
+        return fakeContent;
+    }
+
+    @Test
+    @LargeTest
+    public void disclaimerShowsOnStartup() {
+        verifyActivityShowingSignalsDisclaimer();
+    }
+
+    @Test
+    @LargeTest
+    @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+    public void disclaimerIsQueuedIfOtherDialogIsShown() {
+        final BottomSheetContent fakeContent = showTestBottomSheetDisclaimer();
+        final BottomSheetController bottomSheetController = bottomSheetController();
+
+        Assert.assertEquals(fakeContent, bottomSheetController.getCurrentSheetContent());
+
+        final Profile profile =
+                ThreadUtils.runOnUiThreadBlocking(ProfileManager::getLastUsedRegularProfile);
+        final EnterpriseSignalsDisclaimerController controller =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                EnterpriseSignalsDisclaimerController.maybeCreateForProfile(
+                                        profile, bottomSheetController, activity(), url -> {}));
+        Assert.assertNotNull(controller);
+        Assert.assertTrue(ThreadUtils.runOnUiThreadBlocking(controller::maybeShow));
+
+        // The existing dialog should still be showing.
+        Assert.assertEquals(fakeContent, bottomSheetController.getCurrentSheetContent());
+
+        // Close the currently open dialog, this should cause our dialog to be shown.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> bottomSheetController.hideContent(fakeContent, /* animate= */ false));
+
+        verifyActivityShowingSignalsDisclaimer();
+
+        ThreadUtils.runOnUiThreadBlocking(controller::destroy);
+    }
+
+    @Test
+    @LargeTest
+    public void disclaimerCannotBeSuppressed() {
+        verifyActivityShowingSignalsDisclaimer();
+
+        final BottomSheetContent fakeContent = showTestBottomSheetDisclaimer();
+        Assert.assertNotEquals(fakeContent, bottomSheetController().getCurrentSheetContent());
+    }
+
+    @Test
+    @LargeTest
+    @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+    public void disclaimerCannotBeQueuedTwice() {
+        final BottomSheetContent fakeContent = showTestBottomSheetDisclaimer();
+        final BottomSheetController bottomSheetController = bottomSheetController();
+        Assert.assertEquals(fakeContent, bottomSheetController.getCurrentSheetContent());
+
+        final Profile profile =
+                ThreadUtils.runOnUiThreadBlocking(ProfileManager::getLastUsedRegularProfile);
+        final EnterpriseSignalsDisclaimerController controller =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                EnterpriseSignalsDisclaimerController.maybeCreateForProfile(
+                                        profile, bottomSheetController, activity(), url -> {}));
+        Assert.assertNotNull(controller);
+
+        Assert.assertTrue(ThreadUtils.runOnUiThreadBlocking(controller::maybeShow));
+
+        // Attempt to queue up again, should return false because the first is already in queue.
+        Assert.assertFalse(ThreadUtils.runOnUiThreadBlocking(controller::maybeShow));
+
+        ThreadUtils.runOnUiThreadBlocking(controller::destroy);
     }
 }
