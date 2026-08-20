@@ -520,6 +520,7 @@ void X11Window::Hide() {
 
   connection_->WithdrawWindow(xwindow_);
   window_mapped_in_client_ = false;
+  map_pending_ = false;
 }
 
 void X11Window::Close() {
@@ -2016,6 +2017,7 @@ void X11Window::Map(bool inactive) {
 
   connection_->MapWindow({xwindow_});
   window_mapped_in_client_ = true;
+  OnMapPending();
 
   // TODO(thomasanderson): Find out why this flush is necessary.
   connection_->Flush();
@@ -2359,6 +2361,7 @@ void X11Window::HandleEvent(const x11::Event& xev) {
     OnWindowMapped();
   } else if (xev.As<x11::UnmapNotifyEvent>()) {
     window_mapped_in_server_ = false;
+    map_pending_ = false;
     has_pointer_ = false;
     has_pointer_grab_ = false;
     has_pointer_focus_ = false;
@@ -2420,8 +2423,19 @@ void X11Window::UpdateWMUserTime(Event* event) {
   }
 }
 
+void X11Window::OnMapPending() {
+  map_pending_ = true;
+  // If no pointer events are being delivered, any cached pointer location may
+  // be arbitrarily old.  Drop it so that the first query made while the map is
+  // pending fetches a fresh location; see X11ScreenOzone::GetCursorScreenPoint.
+  if (!X11WindowManager::GetInstance()->IsTrackingPointer()) {
+    X11EventSource::GetInstance()->ClearLastCursorLocation();
+  }
+}
+
 void X11Window::OnWindowMapped() {
   window_mapped_in_server_ = true;
+  map_pending_ = false;
   // Some WMs only respect maximize hints after the window has been mapped.
   // Check whether we need to re-do a maximization.
   if (should_maximize_after_map_) {
@@ -2494,7 +2508,16 @@ void X11Window::UpdateWindowProperties(
     return;
   }
 
+  const bool was_minimized = IsMinimized();
   window_properties_ = new_window_properties;
+
+  // A window manager restoring a minimized window clears _NET_WM_STATE_HIDDEN
+  // and maps it.  Until the resulting MapNotify arrives we are in the same
+  // situation as after Map(): the server has not yet been able to tell us
+  // whether the pointer is inside the window.
+  if (was_minimized && !IsMinimized() && !window_mapped_in_server_) {
+    OnMapPending();
+  }
 
   // Ignore requests by the window manager to enter or exit fullscreen (e.g. as
   // a result of pressing a window manager accelerator key). Chrome does not

@@ -94,6 +94,15 @@ class X11ScreenOzone : public PlatformScreen,
     bool is_suspending_ = false;
   };
 
+  // Returns the pointer location in screen pixel coordinates, using the
+  // location cached by X11EventSource when it is known to be current and
+  // falling back to a server round trip otherwise.
+  gfx::Point GetCursorScreenPointPx() const;
+
+  // Returns true if X11EventSource::last_cursor_location() reflects the
+  // current pointer position, i.e. pointer events are being delivered to us.
+  bool IsCachedCursorLocationCurrent() const;
+
   // ui::XDisplayManager::Delegate:
   void OnXDisplayListUpdated() override;
 

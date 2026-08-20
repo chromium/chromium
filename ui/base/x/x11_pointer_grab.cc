@@ -134,4 +134,8 @@ void UngrabPointer() {
   connection->UngrabPointer().IgnoreError();
 }
 
+bool HasActivePointerGrab() {
+  return g_grab_window != x11::Window::None;
+}
+
 }  // namespace ui

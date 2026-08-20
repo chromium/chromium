@@ -14,6 +14,9 @@
 #include "ui/display/display_observer.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/font_render_params.h"
+#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/event.h"
+#include "ui/gfx/x/xproto.h"
 #include "ui/ozone/platform/x11/x11_window.h"
 #include "ui/ozone/platform/x11/x11_window_manager.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
@@ -109,13 +112,79 @@ class X11ScreenOzoneTest : public testing::Test {
   std::unique_ptr<X11Window> CreatePlatformWindow(
       MockPlatformWindowDelegate* delegate,
       const gfx::Rect& bounds,
-      gfx::AcceleratedWidget* widget = nullptr) {
+      gfx::AcceleratedWidget* widget = nullptr,
+      PlatformWindowType type = PlatformWindowType::kWindow) {
     EXPECT_CALL(*delegate, OnAcceleratedWidgetAvailable(_))
         .WillOnce(StoreWidget(widget));
     PlatformWindowInitProperties init_params(bounds);
+    init_params.type = type;
     auto window = std::make_unique<X11Window>(delegate);
     window->Initialize(std::move(init_params));
     return window;
+  }
+
+  // Moves the X server's pointer to |root_px|.
+  void WarpPointer(const gfx::Point& root_px) {
+    auto* connection = x11::Connection::Get();
+    connection->WarpPointer({.dst_window = connection->default_root(),
+                             .dst_x = static_cast<int16_t>(root_px.x()),
+                             .dst_y = static_cast<int16_t>(root_px.y())});
+    connection->Sync();
+  }
+
+  // Dispatches a synthetic EnterNotify/LeaveNotify for |window| with the
+  // pointer at |root_px|, as the server would when the pointer crosses the
+  // window boundary.
+  void DispatchCrossingEvent(X11Window* window,
+                             bool enter,
+                             const gfx::Point& root_px) {
+    auto* connection = x11::Connection::Get();
+    const gfx::Rect bounds = window->GetBoundsInPixels();
+    x11::CrossingEvent crossing{
+        .opcode = enter ? x11::CrossingEvent::EnterNotify
+                        : x11::CrossingEvent::LeaveNotify,
+        .detail = x11::NotifyDetail::Nonlinear,
+        .root = connection->default_root(),
+        .event = static_cast<x11::Window>(window->GetWidget()),
+        .root_x = static_cast<int16_t>(root_px.x()),
+        .root_y = static_cast<int16_t>(root_px.y()),
+        .event_x = static_cast<int16_t>(root_px.x() - bounds.x()),
+        .event_y = static_cast<int16_t>(root_px.y() - bounds.y()),
+        .mode = x11::NotifyMode::Normal,
+    };
+    x11::Event event(/*send_event=*/false, std::move(crossing));
+    connection->DispatchEvent(event);
+  }
+
+  // Dispatches a synthetic MotionNotify for |window| at |root_px|.
+  void DispatchMotionEvent(X11Window* window, const gfx::Point& root_px) {
+    auto* connection = x11::Connection::Get();
+    const gfx::Rect bounds = window->GetBoundsInPixels();
+    x11::MotionNotifyEvent motion{
+        .root = connection->default_root(),
+        .event = static_cast<x11::Window>(window->GetWidget()),
+        .root_x = static_cast<int16_t>(root_px.x()),
+        .root_y = static_cast<int16_t>(root_px.y()),
+        .event_x = static_cast<int16_t>(root_px.x() - bounds.x()),
+        .event_y = static_cast<int16_t>(root_px.y() - bounds.y()),
+        .same_screen = 1,
+    };
+    x11::Event event(/*send_event=*/false, std::move(motion));
+    connection->DispatchEvent(event);
+  }
+
+  // Dispatches a synthetic MapNotify/UnmapNotify for |window|, as the server
+  // would once the window is actually (un)mapped.
+  void DispatchMapEvent(X11Window* window, bool mapped) {
+    const auto xwindow = static_cast<x11::Window>(window->GetWidget());
+    x11::Event event =
+        mapped ? x11::Event(
+                     /*send_event=*/false,
+                     x11::MapNotifyEvent{.event = xwindow, .window = xwindow})
+               : x11::Event(/*send_event=*/false,
+                            x11::UnmapNotifyEvent{.event = xwindow,
+                                                  .window = xwindow});
+    x11::Connection::Get()->DispatchEvent(event);
   }
 
   MockDisplayObserver display_observer_;
@@ -453,6 +522,80 @@ TEST_F(X11ScreenOzoneTest, DeviceScaleFactorChange) {
   displays[1].set_device_scale_factor(1.f);
   UpdateDisplayListForTest(displays);
   EXPECT_EQ(1.f, gfx::GetFontRenderParamsDeviceScaleFactor());
+}
+
+// Exercises GetCursorScreenPoint()'s choice between the event-derived cached
+// location and a server round trip.
+TEST_F(X11ScreenOzoneTest, GetCursorScreenPoint) {
+  // This test moves and reads back the X server's real pointer, which is shared
+  // with every other client of the display, including other instances of this
+  // test when the launcher runs it in parallel.  Grab the server so that their
+  // requests are held back until this test is done.
+  x11::ScopedXGrabServer grab_server(x11::Connection::Get());
+
+  // Phase 1: no window contains the pointer and there is no grab, so no
+  // pointer events are delivered and every query must consult the server.
+  // Regression test for https://crbug.com/408614162.
+  WarpPointer({123, 456});
+  EXPECT_EQ(gfx::Point(123, 456), screen()->GetCursorScreenPoint());
+  // A second query must not return the previously obtained location.
+  WarpPointer({321, 234});
+  EXPECT_EQ(gfx::Point(321, 234), screen()->GetCursorScreenPoint());
+  // The same holds when a window exists but the pointer is not inside it.
+  MockPlatformWindowDelegate delegate;
+  constexpr gfx::Rect kBounds(400, 400, 200, 150);
+  auto window = CreatePlatformWindow(&delegate, kBounds, nullptr,
+                                     PlatformWindowType::kMenu);
+  ASSERT_FALSE(window->has_pointer());
+  WarpPointer({111, 222});
+  EXPECT_EQ(gfx::Point(111, 222), screen()->GetCursorScreenPoint());
+
+  // Phase 2: while the pointer is inside a window, pointer events keep the
+  // cached location current and it is used without a round trip.
+  DispatchCrossingEvent(window.get(), /*enter=*/true, {450, 460});
+  ASSERT_TRUE(window->has_pointer());
+  EXPECT_EQ(gfx::Point(450, 460), screen()->GetCursorScreenPoint());
+  // Park the real pointer elsewhere.  |window| is not mapped, so this
+  // generates no events; if GetCursorScreenPoint() were to round trip it would
+  // observe this location instead of the event-supplied one.
+  WarpPointer({700, 500});
+  EXPECT_EQ(gfx::Point(450, 460), screen()->GetCursorScreenPoint());
+  DispatchMotionEvent(window.get(), {470, 480});
+  EXPECT_EQ(gfx::Point(470, 480), screen()->GetCursorScreenPoint());
+  // Once the pointer leaves the window, events no longer track it and the
+  // server is consulted again.
+  DispatchCrossingEvent(window.get(), /*enter=*/false, {399, 480});
+  ASSERT_FALSE(window->has_pointer());
+  EXPECT_EQ(gfx::Point(700, 500), screen()->GetCursorScreenPoint());
+
+  // Phase 3: between MapWindow and MapNotify the server cannot yet have
+  // reported whether the pointer is inside the new window, so the cached
+  // location is reused rather than issuing a QueryPointer per call
+  // (https://crbug.com/739898).  MapNotify is synthesized below so that this
+  // does not depend on how (or whether) a window manager maps the window.
+  WarpPointer({200, 200});
+  window->Show(/*inactive=*/true);
+  ASSERT_TRUE(window->IsMapPending());
+  // The first query round trips and caches the result...
+  EXPECT_EQ(gfx::Point(200, 200), screen()->GetCursorScreenPoint());
+  // ... and subsequent queries reuse it while the map is pending.
+  WarpPointer({250, 250});
+  EXPECT_EQ(gfx::Point(200, 200), screen()->GetCursorScreenPoint());
+  // Once MapNotify has been processed the pointer is known to be outside the
+  // window, so the server is consulted again.
+  DispatchMapEvent(window.get(), /*mapped=*/true);
+  ASSERT_FALSE(window->IsMapPending());
+  ASSERT_FALSE(window->has_pointer());
+  EXPECT_EQ(gfx::Point(250, 250), screen()->GetCursorScreenPoint());
+
+  // Phase 4: a window that the window manager unmaps while it is still shown
+  // from the client's point of view (e.g. when it is minimized) is not
+  // awaiting a MapNotify, so queries keep going to the server.
+  DispatchMapEvent(window.get(), /*mapped=*/false);
+  ASSERT_TRUE(window->IsVisible());
+  ASSERT_FALSE(window->IsMapPending());
+  WarpPointer({300, 300});
+  EXPECT_EQ(gfx::Point(300, 300), screen()->GetCursorScreenPoint());
 }
 
 }  // namespace ui

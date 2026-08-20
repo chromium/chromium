@@ -26,6 +26,11 @@ void ChangeActivePointerGrabCursor(scoped_refptr<ui::X11Cursor> cursor);
 // Ungrabs the pointer.
 COMPONENT_EXPORT(UI_BASE_X) void UngrabPointer();
 
+// Returns true if this client currently holds an active pointer grab
+// established via GrabPointer().  While a grab is active, pointer events are
+// delivered to this client regardless of which window the pointer is over.
+COMPONENT_EXPORT(UI_BASE_X) bool HasActivePointerGrab();
+
 }  // namespace ui
 
 #endif  // UI_BASE_X_X11_POINTER_GRAB_H_

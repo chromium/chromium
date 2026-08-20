@@ -70,26 +70,6 @@ gfx::PointF PointDipToPx(const DisplayList& displays, gfx::Point point_dip) {
   return gfx::PointF(display.native_origin()) + delta_px;
 }
 
-gfx::Point GetCursorScreenPointPx(x11::Connection& connection) {
-  if (ui::X11EventSource::HasInstance()) {
-    auto point_in_pixels =
-        ui::X11EventSource::GetInstance()->last_cursor_location();
-    if (point_in_pixels.has_value()) {
-      return point_in_pixels.value();
-    }
-  }
-  // This call is expensive so we explicitly only call it when
-  // X11EventSource doesn't have a last_cursor_location set.
-  auto response = connection.QueryPointer({connection.default_root()}).Sync();
-  auto point_in_pixels =
-      response ? gfx::Point(response->root_x, response->root_y) : gfx::Point();
-  if (ui::X11EventSource::HasInstance()) {
-    ui::X11EventSource::GetInstance()->set_last_cursor_location(
-        point_in_pixels);
-  }
-  return point_in_pixels;
-}
-
 }  // namespace
 
 X11ScreenOzone::X11ScreenOzone()
@@ -143,7 +123,7 @@ display::Display X11ScreenOzone::GetDisplayForAcceleratedWidget(
 gfx::Point X11ScreenOzone::GetCursorScreenPoint() const {
   // TODO(danakj): Should this be rounded? Or kept as a floating point?
   return gfx::ToFlooredPoint(
-      PointPxToDip(GetAllDisplays(), GetCursorScreenPointPx(*connection_)));
+      PointPxToDip(GetAllDisplays(), GetCursorScreenPointPx()));
 }
 
 bool X11ScreenOzone::IsAcceleratedWidgetUnderCursor(
@@ -272,6 +252,43 @@ void X11ScreenOzone::OnDeviceScaleFactorChanged() {
   x11_display_manager_->DispatchDelayedDisplayListUpdate();
 }
 #endif
+
+gfx::Point X11ScreenOzone::GetCursorScreenPointPx() const {
+  auto* event_source =
+      X11EventSource::HasInstance() ? X11EventSource::GetInstance() : nullptr;
+  if (event_source && event_source->last_cursor_location().has_value() &&
+      IsCachedCursorLocationCurrent()) {
+    return event_source->last_cursor_location().value();
+  }
+
+  // Round trip to the server.  This is comparatively expensive, so it is only
+  // done when the cached location cannot be relied upon.
+  auto response =
+      connection_->QueryPointer({connection_->default_root()}).Sync();
+  auto point_in_pixels =
+      response ? gfx::Point(response->root_x, response->root_y) : gfx::Point();
+  if (event_source) {
+    event_source->set_last_cursor_location(point_in_pixels);
+  }
+  return point_in_pixels;
+}
+
+bool X11ScreenOzone::IsCachedCursorLocationCurrent() const {
+  // X11EventSource::last_cursor_location() is updated from pointer events.
+  // The server delivers those only while the pointer is inside one of our
+  // windows or while we hold an active pointer grab; otherwise the cached
+  // value goes stale as soon as the pointer moves.
+  if (window_manager_->IsTrackingPointer()) {
+    return true;
+  }
+  // Between a MapWindow request and the resulting MapNotify, the server has
+  // not yet had the opportunity to send the EnterNotify that would tell us the
+  // pointer is over the new window.  Keep using the cached value during that
+  // interval so that showing a window costs at most one QueryPointer rather
+  // than one per call (https://crbug.com/739898).  X11Window::Map() drops any
+  // location cached before the map request that could not be trusted.
+  return window_manager_->HasWindowPendingMap();
+}
 
 void X11ScreenOzone::OnXDisplayListUpdated() {
   float scale_factor =

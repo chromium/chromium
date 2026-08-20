@@ -42,6 +42,16 @@ class X11WindowManager {
   void RemoveWindow(X11Window* window);
   X11Window* GetWindow(gfx::AcceleratedWidget widget) const;
 
+  // Returns true if pointer events are currently being delivered to Chrome,
+  // i.e. the pointer is inside one of the windows or Chrome holds an active
+  // pointer grab.  While this is true, X11EventSource::last_cursor_location()
+  // is kept up to date by those events.
+  bool IsTrackingPointer() const;
+
+  // Returns true if any window has requested to be mapped but has not yet
+  // received the corresponding MapNotify.
+  bool HasWindowPendingMap() const;
+
   void MouseOnWindow(X11Window* delegate);
 
   const X11Window* window_mouse_currently_on_for_test() const {
