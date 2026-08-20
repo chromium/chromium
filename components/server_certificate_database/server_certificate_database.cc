@@ -88,9 +88,6 @@ sql::InitStatus ServerCertificateDatabase::InitInternal(
                        /*compatible_version=*/kCurrentDatabaseVersion)) {
     return sql::InitStatus::INIT_FAILURE;
   }
-  if (meta_table.GetCompatibleVersionNumber() > kCurrentDatabaseVersion) {
-    return sql::INIT_TOO_NEW;
-  }
 
   if (!CreateTable(db_)) {
     return sql::INIT_FAILURE;
