@@ -2390,7 +2390,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         assertNull(
-                "Send to Your Device menu item should not be present when displayReason is null",
+                "Send to your device menu item should not be present when displayReason is null",
                 findItemByMenuId(modelList, R.id.send_to_your_device_menu_id));
     }
 

@@ -1072,7 +1072,7 @@ class AppMenuModelSendTabToSelfEnhancedDisabledTest
 };
 
 // Tests that when kSendTabToSelfEnhancedDesktopUIv2 feature is enabled, the
-// "Send to Your Devices" item in the Save and Share submenu is a submenu model.
+// "Send to your device" item in the Save and Share submenu is a submenu model.
 IN_PROC_BROWSER_TEST_F(AppMenuModelSendTabToSelfEnhancedEnabledTest,
                        SendTabToSelfSaveAndShareSubmenuEnabled) {
   auto* sync_service = static_cast<StubSendTabToSelfSyncService*>(
@@ -1100,7 +1100,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelSendTabToSelfEnhancedEnabledTest,
 }
 
 // Tests that when kSendTabToSelfEnhancedDesktopUIv2 feature is disabled, the
-// "Send to Your Devices" item in the Save and Share submenu remains a simple
+// "Send to your device" item in the Save and Share submenu remains a simple
 // command.
 IN_PROC_BROWSER_TEST_F(AppMenuModelSendTabToSelfEnhancedDisabledTest,
                        SendTabToSelfSaveAndShareSubmenuDisabled) {

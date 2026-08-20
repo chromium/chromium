@@ -15,7 +15,7 @@ enum class ShareEntryPoint;
 }
 
 // Returns a ChangeProfileContinuation that opens the provided URL and the
-// option to Send to Your Device. This URL usually comes from a tab with this
+// option to Send to your device. This URL usually comes from a tab with this
 // URL in the previous profile. In this case, it’s the caller responsibility to
 // close this tab before the profile switching.
 
