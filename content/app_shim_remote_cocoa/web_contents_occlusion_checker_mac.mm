@@ -420,6 +420,25 @@ bool IsBrowserProcess() {
   _updatingOcclusionStates = NO;
 }
 
+// Returns NO for windows that cannot visually obscure the windows beneath
+// them: faded windows, non-opaque windows without an opaque background
+// (e.g. an embedder's transparent overlay shows the covered content through
+// it) and windows that let mouse events pass through. This mirrors
+// gfx::IsWindowVisibleAndFullyOpaque, which the Windows occlusion tracker
+// uses to ignore translucent layered windows and WS_EX_TRANSPARENT windows.
+- (BOOL)windowCanOccludeOtherWindows:(NSWindow*)window {
+  if ([window alphaValue] < 1.0 || [window ignoresMouseEvents]) {
+    return NO;
+  }
+  if ([window isOpaque]) {
+    return YES;
+  }
+  // Non-opaque windows still hide what's beneath them as long as they paint
+  // an opaque background (embedders clear -isOpaque just to get rounded
+  // corners).
+  return [[window backgroundColor] alphaComponent] >= 1.0;
+}
+
 // Returns YES if `window` is occluded, either according to macOS or via
 // our manual occlusion calculation.
 - (BOOL)isWindowOccluded:(NSWindow*)window
@@ -459,6 +478,11 @@ bool IsBrowserProcess() {
     // fresh. We'll recompute `window`'s occlusion state after the move or
     // resize ends.
     if (nextWindow == _windowResizingOrMoving) {
+      continue;
+    }
+
+    // Skip windows that can't visually cover the web contents beneath them.
+    if (![self windowCanOccludeOtherWindows:nextWindow]) {
       continue;
     }
 

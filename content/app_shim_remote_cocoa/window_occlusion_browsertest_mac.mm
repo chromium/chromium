@@ -629,6 +629,45 @@ IN_PROC_BROWSER_TEST_F(WindowOcclusionBrowserTestMac,
   }
 }
 
+// Checks that a window which cannot visually cover the content beneath it
+// (faded, click-through, or non-opaque with a clear background) does not
+// occlude window_a's web contents.
+IN_PROC_BROWSER_TEST_F(WindowOcclusionBrowserTestMac,
+                       ManualOcclusionDetectionIgnoresNonOccludingWindows) {
+  InitWindowA();
+
+  // Size and position the second window so that it exactly covers the
+  // first.
+  InitWindowB(window_a_.frame);
+  WaitForOcclusionUpdate();
+  EXPECT_EQ(WindowAWebContentsVisibility(),
+            remote_cocoa::mojom::Visibility::kOccluded);
+
+  auto expect_window_a_visibility =
+      [&](remote_cocoa::mojom::Visibility visibility) {
+        PostNotification(NSWindowDidChangeOcclusionStateNotification,
+                         window_a_);
+        EXPECT_EQ(WindowAWebContentsVisibility(), visibility);
+      };
+
+  // A faded window_b lets window_a's web contents show through.
+  window_b_.alphaValue = 0.5;
+  expect_window_a_visibility(remote_cocoa::mojom::Visibility::kVisible);
+  window_b_.alphaValue = 1.0;
+  expect_window_a_visibility(remote_cocoa::mojom::Visibility::kOccluded);
+
+  // As does a click-through window_b.
+  window_b_.ignoresMouseEvents = YES;
+  expect_window_a_visibility(remote_cocoa::mojom::Visibility::kVisible);
+  window_b_.ignoresMouseEvents = NO;
+  expect_window_a_visibility(remote_cocoa::mojom::Visibility::kOccluded);
+
+  // As does a non-opaque window_b with a clear background.
+  window_b_.opaque = NO;
+  window_b_.backgroundColor = NSColor.clearColor;
+  expect_window_a_visibility(remote_cocoa::mojom::Visibility::kVisible);
+}
+
 // Checks manual occlusion detection as windows change display order.
 IN_PROC_BROWSER_TEST_F(WindowOcclusionBrowserTestMac,
                        ManualOcclusionDetectionOnWindowOrderChange) {
