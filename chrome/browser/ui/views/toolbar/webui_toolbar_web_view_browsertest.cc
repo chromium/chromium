@@ -5441,8 +5441,15 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewContentSettingsBrowserTest,
   }));
 }
 
+// TODO(crbug.com/549794757): Failing on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ContentSettingIconSuppressionE2E \
+  DISABLED_ContentSettingIconSuppressionE2E
+#else
+#define MAYBE_ContentSettingIconSuppressionE2E ContentSettingIconSuppressionE2E
+#endif
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewContentSettingsBrowserTest,
-                       ContentSettingIconSuppressionE2E) {
+                       MAYBE_ContentSettingIconSuppressionE2E) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   ASSERT_TRUE(webui_toolbar_view);
   views::WebView* web_ui_view = webui_toolbar_view->GetWebViewForTesting();
