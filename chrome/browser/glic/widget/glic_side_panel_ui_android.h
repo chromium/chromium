@@ -91,6 +91,11 @@ class GlicSidePanelUi
   void OnMicrophoneStatusChanged(mojom::MicrophoneStatus status) override {}
 
   // web_contents_delegate_android::WebContentsDelegateAndroid:
+  content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
+      content::WebContents* source,
+      const input::NativeWebKeyboardEvent& event) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,

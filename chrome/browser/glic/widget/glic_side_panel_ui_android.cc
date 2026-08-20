@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/widget/glic_side_panel_ui_android.h"
 
 #include "base/android/jni_android.h"
+#include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
@@ -27,10 +28,12 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/android/accelerator_manager_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/base_window.h"
 #include "ui/content_accelerators/accelerator_util.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "components/printing/browser/print_composite_client.h"
@@ -230,6 +233,16 @@ void GlicSidePanelUi::OnBrowserDeactivated(BrowserWindowInterface* browser) {
 }
 
 namespace {
+
+BASE_FEATURE(kGlicEscapeHandling, base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsUnmodifiedEscapeKeyDown(const input::NativeWebKeyboardEvent& event) {
+  return event.windows_key_code == ui::VKEY_ESCAPE &&
+         (event.GetType() == input::NativeWebKeyboardEvent::Type::kRawKeyDown ||
+          event.GetType() == input::NativeWebKeyboardEvent::Type::kKeyDown) &&
+         !(event.GetModifiers() & blink::WebInputEvent::kKeyModifiers);
+}
+
 EmbedderCloseReason MapStateToCloseReason(
     GlicSidePanelCoordinator::State state) {
   switch (state) {
@@ -324,6 +337,52 @@ void GlicSidePanelUi::Zoom(mojom::ZoomAction zoom_action) {
 
 BrowserWindowInterface* GlicSidePanelUi::GetBrowserWindowInterface() {
   return tab_ ? tab_->GetBrowserWindowInterface() : nullptr;
+}
+
+// TODO(crbug.com/542609750): Remove once unified keyboard handling is
+// supported on Android.
+content::KeyboardEventProcessingResult GlicSidePanelUi::PreHandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  if (!base::FeatureList::IsEnabled(kGlicEscapeHandling)) {
+    return web_contents_delegate_android::WebContentsDelegateAndroid::
+        PreHandleKeyboardEvent(source, event);
+  }
+
+  if (IsUnmodifiedEscapeKeyDown(event)) {
+    if (tab_ && tab_->GetContents()) {
+      if (auto* delegate = tab_->GetContents()->GetDelegate()) {
+        auto result =
+            delegate->PreHandleKeyboardEvent(tab_->GetContents(), event);
+        if (result != content::KeyboardEventProcessingResult::NOT_HANDLED) {
+          // If the primary tab handled Escape (e.g. exiting fullscreen mode or
+          // pointer lock), also close the side panel.
+          Close(CloseOptions());
+          return result;
+        }
+      }
+    }
+  }
+  return web_contents_delegate_android::WebContentsDelegateAndroid::
+      PreHandleKeyboardEvent(source, event);
+}
+
+// TODO(crbug.com/542609750): Remove once unified keyboard handling is
+// supported on Android.
+bool GlicSidePanelUi::HandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  if (!base::FeatureList::IsEnabled(kGlicEscapeHandling)) {
+    return web_contents_delegate_android::WebContentsDelegateAndroid::
+        HandleKeyboardEvent(source, event);
+  }
+
+  if (IsUnmodifiedEscapeKeyDown(event)) {
+    Close(CloseOptions());
+    return true;
+  }
+  return web_contents_delegate_android::WebContentsDelegateAndroid::
+      HandleKeyboardEvent(source, event);
 }
 
 }  // namespace glic
