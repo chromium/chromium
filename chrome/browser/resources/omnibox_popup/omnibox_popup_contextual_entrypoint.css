@@ -55,6 +55,9 @@
 }
 
 #lensSearchIcon {
+  --color-composebox-font-light: var(--color-omnibox-text);
+  --color-composebox-voice-button-hover-background:
+      var(--color-omnibox-action-icon-hover);
   margin-inline-start: auto;
   margin-inline-end: 16px;
 }
