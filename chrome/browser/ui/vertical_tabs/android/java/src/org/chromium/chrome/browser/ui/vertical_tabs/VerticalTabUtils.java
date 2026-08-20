@@ -117,6 +117,15 @@ public class VerticalTabUtils {
     }
 
     /**
+     * Returns whether the current device is a tablet (excluding desktop form factor) for sizing
+     * calculations.
+     */
+    public static boolean isTablet(Context context) {
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && !DeviceInfo.isDesktop();
+    }
+
+    /**
      * Returns whether the current device is eligible for Vertical Tabs. Vertical Tabs require the
      * AndroidVerticalTabs feature flag to be enabled and the device to be a tablet form factor.
      */

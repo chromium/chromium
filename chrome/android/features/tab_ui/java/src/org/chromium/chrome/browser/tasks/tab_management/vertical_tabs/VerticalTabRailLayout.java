@@ -120,10 +120,18 @@ public class VerticalTabRailLayout extends ConstraintLayout {
 
         // Update header dimensions
         Resources res = getContext().getResources();
-        mButtonSizePx = res.getDimensionPixelSize(R.dimen.vertical_tabs_header_button_size);
+        boolean isTablet = VerticalTabUtils.isTablet(getContext());
+        mButtonSizePx =
+                res.getDimensionPixelSize(
+                        isTablet
+                                ? R.dimen.vertical_tabs_header_button_size_tablet
+                                : R.dimen.vertical_tabs_header_button_size);
         mHeaderButtonGapPx = res.getDimensionPixelSize(R.dimen.vertical_tabs_header_button_gap);
         mIncognitoChipSizePx =
-                res.getDimensionPixelSize(R.dimen.vertical_tabs_footer_button_height);
+                res.getDimensionPixelSize(
+                        isTablet
+                                ? R.dimen.vertical_tabs_footer_button_height_tablet
+                                : R.dimen.vertical_tabs_footer_button_height);
         mFooterButtonGapPx = res.getDimensionPixelSize(R.dimen.vertical_tabs_footer_button_gap);
         int horizontalPadding =
                 res.getDimensionPixelSize(R.dimen.vertical_tabs_rail_horizontal_margin) * 2;
@@ -413,8 +421,7 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         mFooterContainer.setGravity(
                 isCollapsed ? Gravity.CENTER_HORIZONTAL : Gravity.CENTER_VERTICAL);
 
-        Resources res = getResources();
-        int newTabHeight = res.getDimensionPixelSize(R.dimen.vertical_tabs_footer_button_height);
+        int newTabHeight = mIncognitoChipSizePx;
 
         LinearLayout.LayoutParams newTabParams =
                 (LinearLayout.LayoutParams) mNewTabButton.getLayoutParams();
@@ -441,5 +448,15 @@ public class VerticalTabRailLayout extends ConstraintLayout {
     @Px
     int getMinSingleButtonRowWidthPxForTesting() {
         return mMinSingleButtonRowWidthPx;
+    }
+
+    @Px
+    int getButtonSizePxForTesting() {
+        return mButtonSizePx;
+    }
+
+    @Px
+    int getIncognitoChipSizePxForTesting() {
+        return mIncognitoChipSizePx;
     }
 }

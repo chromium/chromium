@@ -21,6 +21,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -41,6 +42,7 @@ public class VerticalTabUtilsUnitTest {
 
     @After
     public void tearDown() {
+        DeviceInfo.resetIsDesktopForTesting();
         VerticalTabUtils.resetSharedPrefsForTesting();
     }
 
@@ -316,5 +318,29 @@ public class VerticalTabUtilsUnitTest {
 
         // Should respect preference (true).
         assertTrue(VerticalTabUtils.isVerticalTabsEnabled(mContext));
+    }
+
+    @Test
+    @SmallTest
+    @Config(qualifiers = "sw600dp")
+    public void testIsTablet_TrueOnTabletNonDesktop() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        assertTrue(VerticalTabUtils.isTablet(mContext));
+    }
+
+    @Test
+    @SmallTest
+    @Config(qualifiers = "sw600dp")
+    public void testIsTablet_FalseOnDesktop() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertFalse(VerticalTabUtils.isTablet(mContext));
+    }
+
+    @Test
+    @SmallTest
+    @Config(qualifiers = "sw400dp")
+    public void testIsTablet_FalseOnPhone() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        assertFalse(VerticalTabUtils.isTablet(mContext));
     }
 }
