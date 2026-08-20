@@ -1187,6 +1187,11 @@ source_set("platform_browser_tests") {
   if (!is_android || enable_desktop_android_extensions) {
     deps += [ "//chrome/browser/ui/prefs:browser_tests" ]
   }
+
+  if (enable_extensions_core) {
+    deps += [ "//chrome/renderer/extensions:platform_browser_tests" ]
+  }
+
   if (enable_extensions) {
     deps += [
       "//chrome/browser/apps/platform_apps:browser_test_support",

@@ -152,3 +152,25 @@ source_set("unit_tests") {
     sources += [ "api/accessibility_private_hooks_delegate_unittest.cc" ]
   }
 }
+
+source_set("platform_browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "script_context_browsertest.cc" ]
+
+  deps = [
+    ":extensions",
+    "//base",
+    "//chrome/test:test_support",
+    "//content/public/renderer",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/common:mojom",
+    "//extensions/renderer",
+    "//testing/gtest",
+    "//third_party/blink/public:blink_headers",
+    "//url",
+  ]
+}
