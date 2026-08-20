@@ -36,6 +36,15 @@ found in the LICENSE file.
             android:paddingBottom="@dimen/settings_item_default_padding"
             app:primaryText="@string/bookmark_bar_setting_always_show" />
 
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+            android:id="@+id/only_show_on_ntp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/min_touch_target_size"
+            android:paddingTop="@dimen/settings_item_default_padding"
+            android:paddingBottom="@dimen/settings_item_default_padding"
+            app:primaryText="@string/bookmark_bar_setting_only_show_bookmarks_bar_on_ntp" />
+
     </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
 
 </LinearLayout>
