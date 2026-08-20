@@ -14,7 +14,6 @@
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/session_crashed_bubble.h"
 #include "chrome/browser/ui/startup/automation_infobar_delegate.h"
@@ -118,7 +117,11 @@ void AddInfoBarsIfNecessary(BrowserWindowInterface* browser,
   if (!browser || !profile) {
     return;
   }
-  auto* web_contents = browser->GetTabStripModel()->GetActiveWebContents();
+  tabs::TabInterface* active_tab = browser->GetActiveTabInterface();
+  if (!active_tab) {
+    return;
+  }
+  auto* web_contents = active_tab->GetContents();
   if (!web_contents) {
     return;
   }

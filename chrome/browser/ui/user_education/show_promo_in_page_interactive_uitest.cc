@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/user_education/show_promo_in_page.h"
+
 #include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/user_education/show_promo_in_page.h"
 #include "chrome/browser/ui/user_education/user_education_types.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -139,8 +140,9 @@ class ShowPromoInPageUiTest : public InteractiveBrowserTest {
   }
 
   auto ExpectTabCount(int count) {
-    return CheckResult([this] { return browser()->tab_strip_model()->count(); },
-                       count, "Check tab strip count.");
+    return CheckResult(
+        [this] { return browser()->GetTabStripModel()->count(); }, count,
+        "Check tab strip count.");
   }
 
   auto ExpectWindowCount(int count) {
@@ -172,7 +174,7 @@ class ShowPromoInPageUiTest : public InteractiveBrowserTest {
                            kBrowserViewElementId,
                            [](BrowserView* browser_view) {
                              return browser_view->browser()
-                                 ->tab_strip_model()
+                                 ->GetTabStripModel()
                                  ->GetActiveTab()
                                  ->GetContents()
                                  ->GetURL();
@@ -183,7 +185,7 @@ class ShowPromoInPageUiTest : public InteractiveBrowserTest {
       steps += CheckView(
           kBrowserViewElementId,
           [](BrowserView* browser_view) {
-            return browser_view->browser()->tab_strip_model()->active_index();
+            return browser_view->browser()->GetTabStripModel()->active_index();
           },
           *index);
     }

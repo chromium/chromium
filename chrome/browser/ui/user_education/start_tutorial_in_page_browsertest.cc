@@ -8,9 +8,9 @@
 
 #include "base/test/mock_callback.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -92,8 +92,8 @@ class StartTutorialInPageBrowserTest : public InteractiveBrowserTest {
         ->tutorial_service_for_testing();
   }
 
-  bool VerifyPage(Browser* browser, const char* pageURL) {
-    auto url = browser->tab_strip_model()->GetActiveWebContents()->GetURL();
+  bool VerifyPage(BrowserWindowInterface* browser, const char* pageURL) {
+    auto url = browser->GetTabStripModel()->GetActiveWebContents()->GetURL();
     return url == GURL(pageURL);
   }
 };
@@ -114,9 +114,9 @@ IN_PROC_BROWSER_TEST_F(StartTutorialInPageBrowserTest,
   base::RunLoop run_loop;
   auto quit_closure = run_loop.QuitClosure();
 
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
   EXPECT_EQ(kStartingPageURL,
-            browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
+            browser()->GetTabStripModel()->GetWebContentsAt(0)->GetURL());
   EXPECT_CALL(tutorial_triggered, Run).WillOnce([&](TutorialService* service) {
     EXPECT_EQ(service, &tutorial_service);
     EXPECT_TRUE(service->IsRunningTutorial(kTestTutorialId));
@@ -131,9 +131,9 @@ IN_PROC_BROWSER_TEST_F(StartTutorialInPageBrowserTest,
   run_loop.Run();
 
   EXPECT_TRUE(GetTutorialService()->IsRunningTutorial(kTestTutorialId));
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
   EXPECT_EQ(kStartingPageURL,
-            browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
+            browser()->GetTabStripModel()->GetWebContentsAt(0)->GetURL());
 
   // Cancelling tutorial will clean up handle.
   tutorial_service.CancelTutorialIfRunning(kTestTutorialId);
@@ -155,9 +155,9 @@ IN_PROC_BROWSER_TEST_F(StartTutorialInPageBrowserTest, StartTutorialInNewTab) {
   base::RunLoop run_loop;
   auto quit_closure = run_loop.QuitClosure();
 
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
   EXPECT_EQ(kStartingPageURL,
-            browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
+            browser()->GetTabStripModel()->GetWebContentsAt(0)->GetURL());
   EXPECT_CALL(tutorial_triggered, Run).WillOnce([&](TutorialService* service) {
     EXPECT_EQ(service, &tutorial_service);
     EXPECT_TRUE(service->IsRunningTutorial(kTestTutorialId));
@@ -173,11 +173,11 @@ IN_PROC_BROWSER_TEST_F(StartTutorialInPageBrowserTest, StartTutorialInNewTab) {
   run_loop.Run();
 
   EXPECT_TRUE(GetTutorialService()->IsRunningTutorial(kTestTutorialId));
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
   EXPECT_EQ(kStartingPageURL,
-            browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
+            browser()->GetTabStripModel()->GetWebContentsAt(0)->GetURL());
   EXPECT_EQ(kTargetPageURL,
-            browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+            browser()->GetTabStripModel()->GetWebContentsAt(1)->GetURL());
 
   // Cancelling tutorial will clean up handle.
   tutorial_service.CancelTutorialIfRunning(kTestTutorialId);
@@ -200,9 +200,9 @@ IN_PROC_BROWSER_TEST_F(StartTutorialInPageBrowserTest,
   base::RunLoop run_loop;
   auto quit_closure = run_loop.QuitClosure();
 
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
   EXPECT_EQ(kStartingPageURL,
-            browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
+            browser()->GetTabStripModel()->GetWebContentsAt(0)->GetURL());
   EXPECT_CALL(tutorial_triggered, Run).WillOnce([&](TutorialService* service) {
     EXPECT_EQ(service, &tutorial_service);
     EXPECT_TRUE(service->IsRunningTutorial(kTestTutorialId));
@@ -219,9 +219,9 @@ IN_PROC_BROWSER_TEST_F(StartTutorialInPageBrowserTest,
   run_loop.Run();
 
   EXPECT_TRUE(GetTutorialService()->IsRunningTutorial(kTestTutorialId));
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->count());
   EXPECT_EQ(kTargetPageURL,
-            browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
+            browser()->GetTabStripModel()->GetWebContentsAt(0)->GetURL());
 
   // Cancelling tutorial will clean up handle.
   tutorial_service.CancelTutorialIfRunning(kTestTutorialId);

@@ -133,32 +133,30 @@ void PrependTabs(const StartupTabs& from, StartupTabs* to) {
   to->insert(to->begin(), from.begin(), from.end());
 }
 
-Browser* GetExistingBrowserForOpenBehavior(
+BrowserWindowInterface* GetExistingBrowserForOpenBehavior(
     Profile* profile,
     chrome::startup::IsProcessStartup process_startup) {
   BrowserWindowInterface* current_browser =
       ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
-  Browser* workspace_browser =
-      current_browser ? current_browser->GetBrowserForMigrationOnly() : nullptr;
+  BrowserWindowInterface* workspace_browser = current_browser;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   // On Windows and ChromeOS we specifically want to select the last active
   // window on the current workspace if possible, see crbug.com/497494119.
   ProfileBrowserCollection::GetForProfile(profile)->ForEach(
       [&](BrowserWindowInterface* window) {
-        Browser* const candidate = window->GetBrowserForMigrationOnly();
         if (window->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL) {
           return true;
         }
 
         BrowserWindow* const browser_window =
-            BrowserWindow::FromBrowser(candidate);
+            BrowserWindow::FromBrowser(window);
         if (!browser_window) {
           return true;
         }
 
         if (browser_window->IsOnCurrentWorkspace()) {
-          workspace_browser = candidate;
+          workspace_browser = window;
           return false;
         }
         return true;
@@ -177,8 +175,6 @@ Browser* GetExistingBrowserForOpenBehavior(
     GlobalBrowserCollection::GetInstance()->ForEach(
         [&, current_workspace,
          match_original_profiles](BrowserWindowInterface* window) {
-          Browser* const candidate = window->GetBrowserForMigrationOnly();
-
           Profile* const candidate_profile = window->GetProfile();
           if (match_original_profiles) {
             if (candidate_profile->GetOriginalProfile() !=
@@ -194,14 +190,14 @@ Browser* GetExistingBrowserForOpenBehavior(
           }
 
           BrowserWindow* const browser_window =
-              BrowserWindow::FromBrowser(candidate);
+              BrowserWindow::FromBrowser(window);
           if (!browser_window) {
             return true;
           }
 
           if (browser_window->IsVisibleOnAllWorkspaces() ||
               browser_window->GetWorkspace() == current_workspace) {
-            workspace_browser = candidate;
+            workspace_browser = window;
             return false;
           }
           return true;

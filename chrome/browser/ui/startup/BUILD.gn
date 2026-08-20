@@ -401,6 +401,7 @@ if (!is_android) {
         "//chrome/browser/first_run",
         "//chrome/browser/profiles:profile",
         "//chrome/browser/profiles:profile_util",
+        "//chrome/browser/ui/browser_window",
         "//chrome/common:constants",
         "//chrome/common:non_code_constants",
         "//chrome/test:test_support_ui",

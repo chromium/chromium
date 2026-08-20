@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_switches.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/startup/buildflags.h"
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_view_with_modal.h"
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win_test_data.h"

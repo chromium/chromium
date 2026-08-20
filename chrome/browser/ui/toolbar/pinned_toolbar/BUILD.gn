@@ -64,6 +64,7 @@ if (!is_android) {
       ":pinned_toolbar",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/views/contextual_tasks",
       "//chrome/common:constants",

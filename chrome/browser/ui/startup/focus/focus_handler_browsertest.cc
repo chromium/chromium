@@ -17,9 +17,9 @@
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -52,12 +52,12 @@ class FocusHandlerBrowserTest : public InProcessBrowserTest {
   }
 
   int GetActiveTabIndex() {
-    return browser()->tab_strip_model()->active_index();
+    return browser()->GetTabStripModel()->active_index();
   }
 
   GURL GetActiveTabURL() {
     return browser()
-        ->tab_strip_model()
+        ->GetTabStripModel()
         ->GetActiveWebContents()
         ->GetLastCommittedURL();
   }
@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerWebAppBrowserTest,
   webapps::AppId app_id = InstallTestApp("Test App");
   std::string manifest_id = GetManifestIdForApp(app_id);
 
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
   ASSERT_TRUE(app_browser);
   ASSERT_EQ(app_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerWebAppBrowserTest,
   webapps::AppId app_id = InstallTestApp("Test App", "/app");
   std::string manifest_id = GetManifestIdForApp(app_id);
 
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
   ASSERT_TRUE(app_browser);
 
@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerWebAppBrowserTest,
   webapps::AppId app_id = InstallTestApp("Test App", "/app");
   std::string manifest_id = GetManifestIdForApp(app_id);
 
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
   ASSERT_TRUE(app_browser);
 
@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerWebAppBrowserTest,
   webapps::AppId app_id = InstallTestApp("Test App", "/app");
   std::string manifest_id = GetManifestIdForApp(app_id);
 
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
   ASSERT_TRUE(app_browser);
 

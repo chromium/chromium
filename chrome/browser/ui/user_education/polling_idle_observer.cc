@@ -8,7 +8,7 @@
 #include <optional>
 
 #include "base/check.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "components/user_education/common/session/user_education_idle_observer.h"
 #include "components/user_education/common/session/user_education_idle_policy.h"
