@@ -20,6 +20,7 @@
 #include "ui/gfx/native_ui_types.h"
 
 class Profile;
+class ScopedKeepAlive;
 
 namespace omnibox_everywhere {
 
@@ -33,6 +34,8 @@ enum class InvocationSource {
   kProfilePicker,
   // Triggered from the status tray/menu bar icon.
   kStatusTrayIcon,
+  // Triggered by command-line switch or OS shortcut.
+  kCommandLine,
 };
 
 // Coordinator class that manages the Omnibox Everywhere desktop feature.
@@ -55,6 +58,15 @@ class OmniboxEverywhereController
   void OnInvoke(InvocationSource source,
                 Profile* profile,
                 gfx::NativeWindow context = gfx::NativeWindow());
+
+  // Launches Omnibox Everywhere triggered during startup.
+  // Loads profile asynchronously if not yet loaded in memory and holds a
+  // ScopedKeepAlive during initialization.
+  // Returns true if launch was initiated/handled, false if no eligible profile
+  // exists.
+  bool InvokeForStartup(InvocationSource source,
+                        Profile* fallback_profile,
+                        gfx::NativeWindow context = gfx::NativeWindow());
 
   OmniboxEverywhereUIManager* ui_manager() { return ui_manager_.get(); }
   const OmniboxEverywhereUIManager* ui_manager() const {
@@ -100,6 +112,13 @@ class OmniboxEverywhereController
   void OnStatusIconClicked();
   void OnProfilePicked(Profile* new_profile);
   void InvokeForActiveBrowserProfile(InvocationSource source);
+
+  // Invokes UI for the provided profile path.
+  // Returns true if launch was initiated/handled, false if the path didn't
+  // resolve into a valid profile.
+  bool InvokeForProfilePath(const base::FilePath& profile_path,
+                            InvocationSource source,
+                            gfx::NativeWindow context = gfx::NativeWindow());
 
   // Returns the current target profile for Omnibox Everywhere.
   Profile* GetTargetProfile() const;

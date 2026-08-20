@@ -239,6 +239,7 @@ source_set("impl") {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/navigator",
+      "//chrome/browser/ui/omnibox/omnibox_everywhere",
       "//chrome/browser/ui/startup/focus",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tab_group",

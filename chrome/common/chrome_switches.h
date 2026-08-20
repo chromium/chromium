@@ -155,6 +155,7 @@ extern const char kNoProxyServer[];
 extern const char kNoStartupWindow[];
 extern const char kNotebookHomeURL[];
 extern const char kOnTheFlyMhtmlHashComputation[];
+extern const char kOmniboxEverywhere[];
 extern const char kOpenInNewWindow[];
 extern const char kFocus[];
 extern const char kFocusResultFile[];

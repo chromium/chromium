@@ -495,6 +495,9 @@ const char kNotebookHomeURL[] = "notebook-home-url";
 const char kOnTheFlyMhtmlHashComputation[] =
     "on-the-fly-mhtml-hash-computation";
 
+// Directly launches the Omnibox Everywhere desktop UI widget.
+const char kOmniboxEverywhere[] = "omnibox-everywhere";
+
 // Launches URL in new browser window.
 const char kOpenInNewWindow[] = "new-window";
 

@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -692,6 +693,34 @@ IN_PROC_BROWSER_TEST_F(
   // closed.
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_FALSE(controller->IsVisible());
+}
+
+class OmniboxEverywhereCommandLineBrowserTest
+    : public OmniboxEverywhereBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    OmniboxEverywhereBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kOmniboxEverywhere);
+  }
+};
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_LaunchesWidgetOnStartup LaunchesWidgetOnStartup
+#else
+#define MAYBE_LaunchesWidgetOnStartup DISABLED_LaunchesWidgetOnStartup
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereCommandLineBrowserTest,
+                       MAYBE_LaunchesWidgetOnStartup) {
+  GlobalFeatures* features = g_browser_process->GetFeatures();
+  ASSERT_TRUE(features);
+  auto* controller = features->omnibox_everywhere_controller();
+  ASSERT_TRUE(controller);
+
+  // Verify that the Omnibox Everywhere widget is visible on startup when
+  // launched with --omnibox-everywhere.
+  EXPECT_TRUE(controller->IsVisible());
+  ASSERT_TRUE(controller->target_profile());
+  EXPECT_FALSE(controller->target_profile()->IsOffTheRecord());
 }
 
 }  // namespace omnibox_everywhere

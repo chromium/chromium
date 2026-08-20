@@ -474,3 +474,117 @@ TEST_F(OmniboxEverywhereControllerTest, ControllerLoadsCustomHotkeyOnStartup) {
   EXPECT_FALSE(fake_listener.IsRegistered(default_hotkey));
   EXPECT_TRUE(fake_listener.IsRegistered(custom_hotkey));
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_OnInvokeCommandLineShowsUI OnInvokeCommandLineShowsUI
+#else
+#define MAYBE_OnInvokeCommandLineShowsUI DISABLED_OnInvokeCommandLineShowsUI
+#endif
+TEST_F(OmniboxEverywhereControllerTest, MAYBE_OnInvokeCommandLineShowsUI) {
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }));
+
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kCommandLine,
+                      &profile_, GetContext());
+  EXPECT_EQ(&profile_, controller.target_profile());
+  EXPECT_TRUE(controller.IsVisible());
+
+  // Repeated kCommandLine invocation should keep the widget open (not
+  // toggle-closed).
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kCommandLine,
+                      &profile_, GetContext());
+  EXPECT_TRUE(controller.IsVisible());
+}
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_InvokeForStartupWithLoadedProfile \
+  InvokeForStartupWithLoadedProfile
+#else
+#define MAYBE_InvokeForStartupWithLoadedProfile \
+  DISABLED_InvokeForStartupWithLoadedProfile
+#endif
+TEST_F(OmniboxEverywhereControllerTest,
+       MAYBE_InvokeForStartupWithLoadedProfile) {
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }));
+
+  // Launching from command line with an eligible profile succeeds and shows UI.
+  EXPECT_TRUE(controller.InvokeForStartup(
+      omnibox_everywhere::InvocationSource::kCommandLine, &profile_,
+      GetContext()));
+  EXPECT_EQ(&profile_, controller.target_profile());
+  EXPECT_TRUE(controller.IsVisible());
+}
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_InvokeForStartupIneligibleFails InvokeForStartupIneligibleFails
+#else
+#define MAYBE_InvokeForStartupIneligibleFails \
+  DISABLED_InvokeForStartupIneligibleFails
+#endif
+TEST_F(OmniboxEverywhereControllerTest, MAYBE_InvokeForStartupIneligibleFails) {
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }));
+
+  // Launching with null profile fails and does not show UI.
+  EXPECT_FALSE(controller.InvokeForStartup(
+      omnibox_everywhere::InvocationSource::kCommandLine, nullptr,
+      GetContext()));
+  EXPECT_FALSE(controller.IsVisible());
+
+  // Launching with off-the-record profile fails.
+  Profile* otr_profile =
+      profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(otr_profile);
+  EXPECT_FALSE(controller.InvokeForStartup(
+      omnibox_everywhere::InvocationSource::kCommandLine, otr_profile,
+      GetContext()));
+  EXPECT_FALSE(controller.IsVisible());
+
+  // Launching with non-Google DSE profile fails.
+  TestingProfile non_dse_profile;
+  EXPECT_FALSE(controller.InvokeForStartup(
+      omnibox_everywhere::InvocationSource::kCommandLine, &non_dse_profile,
+      GetContext()));
+  EXPECT_FALSE(controller.IsVisible());
+}
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_InvokeForStartupIgnoresInvalidPersistedPath \
+  InvokeForStartupIgnoresInvalidPersistedPath
+#else
+#define MAYBE_InvokeForStartupIgnoresInvalidPersistedPath \
+  DISABLED_InvokeForStartupIgnoresInvalidPersistedPath
+#endif
+TEST_F(OmniboxEverywhereControllerTest,
+       MAYBE_InvokeForStartupIgnoresInvalidPersistedPath) {
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }));
+
+  TestingPrefServiceSimple* local_state =
+      TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  // Set an invalid persisted profile path that does not exist in storage.
+  local_state->SetFilePath(
+      omnibox_everywhere::prefs::kLastTargetProfileDir,
+      base::FilePath(FILE_PATH_LITERAL("non_existent_profile_path")));
+
+  // InvokeForStartup should ignore invalid persisted path and fallback to
+  // the provided eligible fallback_profile.
+  EXPECT_TRUE(controller.InvokeForStartup(
+      omnibox_everywhere::InvocationSource::kCommandLine, &profile_,
+      GetContext()));
+  EXPECT_EQ(&profile_, controller.target_profile());
+  EXPECT_TRUE(controller.IsVisible());
+}

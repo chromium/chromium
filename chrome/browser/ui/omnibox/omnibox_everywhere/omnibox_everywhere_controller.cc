@@ -11,6 +11,9 @@
 #include "chrome/browser/background/omnibox_everywhere/omnibox_everywhere_background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
@@ -18,11 +21,14 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/base_window.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/widget/widget.h"
 
 namespace omnibox_everywhere {
 
@@ -127,6 +133,93 @@ bool OmniboxEverywhereController::IsProfileEligible(Profile* profile) const {
          OmniboxEverywhereServiceFactory::GetForProfile(profile);
 }
 
+bool OmniboxEverywhereController::InvokeForProfilePath(
+    const base::FilePath& profile_path,
+    InvocationSource source,
+    gfx::NativeWindow context) {
+  if (!g_browser_process || !g_browser_process->profile_manager()) {
+    return false;
+  }
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile* persisted_profile = profile_manager->GetProfileByPath(profile_path);
+
+  // If the profile persisted in local pref is already loaded, check
+  // eligibility.
+  if (persisted_profile) {
+    if (IsProfileEligible(persisted_profile)) {
+      OnInvoke(source, persisted_profile, context);
+      return true;
+    }
+    return false;
+  }
+
+  // Check whether `profile_path` points to a valid Profile on disk.
+  const bool is_valid_profile_path =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path) != nullptr;
+  if (!is_valid_profile_path) {
+    return false;
+  }
+
+  // Hold a browser keep-alive while we asynchronously load the persisted
+  // profile and attempt to invoke the UI.
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::OMNIBOX_EVERYWHERE_STARTUP,
+      KeepAliveRestartOption::DISABLED);
+
+  views::Widget* widget =
+      context ? views::Widget::GetWidgetForNativeWindow(context) : nullptr;
+  base::WeakPtr<views::Widget> context_widget =
+      widget ? widget->GetWeakPtr() : nullptr;
+
+  profile_manager->CreateProfileAsync(
+      profile_path,
+      base::BindOnce(
+          [](base::WeakPtr<OmniboxEverywhereController> controller,
+             std::unique_ptr<ScopedKeepAlive> /*keep_alive*/,
+             base::WeakPtr<views::Widget> context_widget,
+             InvocationSource source, Profile* profile) {
+            if (controller && controller->IsProfileEligible(profile)) {
+              gfx::NativeWindow safe_context =
+                  context_widget ? context_widget->GetNativeWindow()
+                                 : gfx::NativeWindow();
+              controller->OnInvoke(source, profile, safe_context);
+            }
+          },
+          weak_factory_.GetWeakPtr(), std::move(keep_alive), context_widget,
+          source));
+  return true;
+}
+
+bool OmniboxEverywhereController::InvokeForStartup(InvocationSource source,
+                                                   Profile* fallback_profile,
+                                                   gfx::NativeWindow context) {
+  if (auto* target_profile = GetTargetProfile()) {
+    OnInvoke(source, target_profile, context);
+    return true;
+  }
+
+  base::FilePath persisted_path =
+      g_browser_process && g_browser_process->local_state()
+          ? g_browser_process->local_state()->GetFilePath(
+                prefs::kLastTargetProfileDir)
+          : base::FilePath();
+  if (!persisted_path.empty() &&
+      InvokeForProfilePath(persisted_path, source, context)) {
+    return true;
+  }
+
+  // Cannot invoke with the persisted profile so try invoking with
+  // `fallback_profile`.
+  if (IsProfileEligible(fallback_profile)) {
+    OnInvoke(source, fallback_profile, context);
+    return true;
+  }
+
+  return false;
+}
+
 base::FilePath OmniboxEverywhereController::GetPersistedTargetProfilePath()
     const {
   if (g_browser_process && g_browser_process->local_state()) {
@@ -209,6 +302,7 @@ void OmniboxEverywhereController::OnInvoke(InvocationSource source,
       }
       break;
     case InvocationSource::kProfilePicker:
+    case InvocationSource::kCommandLine:
       ui_manager_->ShowForProfile(profile, context);
       break;
   }
@@ -264,7 +358,10 @@ void OmniboxEverywhereController::ShutdownForProfile(Profile* profile) {
 }
 
 Profile* OmniboxEverywhereController::GetTargetProfile() const {
-  return target_profile_;
+  if (target_profile_ && IsProfileEligible(target_profile_)) {
+    return target_profile_;
+  }
+  return nullptr;
 }
 
 void OmniboxEverywhereController::ExitBackgroundMode() {

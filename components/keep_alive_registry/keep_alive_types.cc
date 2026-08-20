@@ -97,6 +97,8 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "OMNIBOX_EVERYWHERE";
     case KeepAliveOrigin::OMNIBOX_EVERYWHERE_UI:
       return out << "OMNIBOX_EVERYWHERE_UI";
+    case KeepAliveOrigin::OMNIBOX_EVERYWHERE_STARTUP:
+      return out << "OMNIBOX_EVERYWHERE_STARTUP";
     case KeepAliveOrigin::FETCH_KEEPALIVE_REQUEST:
       return out << "FETCH_KEEPALIVE_REQUEST";
   }
