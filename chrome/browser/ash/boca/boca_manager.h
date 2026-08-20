@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "chrome/browser/ash/boca/boca_app_client_impl.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_manager.h"
 #include "chromeos/ash/components/boca/babelorca/soda_installer.h"
@@ -22,10 +20,6 @@
 #include "components/prefs/pref_service.h"
 
 class Profile;
-
-namespace signin {
-class IdentityManager;
-}  // namespace signin
 
 namespace user_manager {
 class User;
@@ -42,22 +36,18 @@ class BocaManager : public KeyedService {
  public:
   // Constructor used only in test
   BocaManager(
-      Profile* profile,
-      signin::IdentityManager* identity_manager,
       std::unique_ptr<boca::OnTaskSessionManager> on_task_session_manager,
       std::unique_ptr<boca::SessionClientImpl> session_client_impl,
       std::unique_ptr<boca::BocaSessionManager> boca_session_manager,
       std::unique_ptr<boca::InvalidationServiceImpl> invalidation_service_impl,
       std::unique_ptr<boca::BabelOrcaManager> babel_orca_manager,
       std::unique_ptr<boca::BocaMetricsManager> boca_metrics_manager,
-      std::unique_ptr<boca::SpotlightSessionManager> spotlight_session_manager);
+      std::unique_ptr<boca::SpotlightSessionManager> spotlight_session_manager,
+      Profile* profile);
 
-  // `local_state`, `profile` and `identity_manager` must not be nullptr
-  // and must outlive this.
-  BocaManager(PrefService* local_state,
-              const std::string& application_locale,
-              Profile* profile,
-              signin::IdentityManager* identity_manager);
+  BocaManager(Profile* profile,
+              PrefService* global_prefs,
+              const std::string& application_locale);
   ~BocaManager() override;
 
   // KeyedService:
@@ -87,9 +77,6 @@ class BocaManager : public KeyedService {
  private:
   void AddObservers(const user_manager::User* user);
 
-  const raw_ptr<Profile> profile_;
-  const raw_ref<signin::IdentityManager> identity_manager_;
-
   std::unique_ptr<babelorca::SodaInstaller> soda_installer_;
   std::unique_ptr<boca::SessionClientImpl> session_client_impl_;
   std::unique_ptr<boca::BocaSessionManager> boca_session_manager_;
@@ -98,6 +85,7 @@ class BocaManager : public KeyedService {
   std::unique_ptr<boca::BabelOrcaManager> babel_orca_manager_;
   std::unique_ptr<boca::BocaMetricsManager> boca_metrics_manager_;
   std::unique_ptr<boca::SpotlightSessionManager> spotlight_session_manager_;
+  const raw_ptr<Profile> profile_;
 };
 }  // namespace ash
 

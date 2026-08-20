@@ -158,7 +158,6 @@ class BocaManagerProducerTest : public BocaManagerTest {
 
     auto* boca_session_manager_ptr = boca_session_manager_.get();
     boca_manager_ = std::make_unique<BocaManager>(
-        /*profile=*/nullptr, identity_test_env_.identity_manager(),
         std::make_unique<boca::OnTaskSessionManager>(
             /*system_web_app_manager=*/nullptr, /*extensions_manager=*/nullptr,
             boca_session_manager_ptr),
@@ -173,7 +172,8 @@ class BocaManagerProducerTest : public BocaManagerTest {
         std::make_unique<boca::SpotlightSessionManager>(
             boca_session_manager_ptr,
             /*spotlight_notification_handler=*/nullptr,
-            /*spotlight_crd_manager=*/nullptr, /*spotlight_service=*/nullptr));
+            /*spotlight_crd_manager=*/nullptr, /*spotlight_service=*/nullptr),
+        /*profile=*/nullptr);
   }
 
   std::unique_ptr<BocaManager> boca_manager_;
@@ -221,7 +221,6 @@ class BocaManagerConsumerTest : public BocaManagerTest {
 
     auto* boca_session_manager_ptr = boca_session_manager_.get();
     boca_manager_ = std::make_unique<BocaManager>(
-        /*profile=*/nullptr, identity_test_env_.identity_manager(),
         std::make_unique<boca::OnTaskSessionManager>(
             /*system_web_app_manager=*/nullptr, /*extensions_manager=*/nullptr,
             boca_session_manager_ptr),
@@ -236,7 +235,8 @@ class BocaManagerConsumerTest : public BocaManagerTest {
         std::make_unique<boca::SpotlightSessionManager>(
             boca_session_manager_ptr,
             /*spotlight_notification_handler=*/nullptr,
-            /*spotlight_crd_manager=*/nullptr, /*spotlight_service=*/nullptr));
+            /*spotlight_crd_manager=*/nullptr, /*spotlight_service=*/nullptr),
+        /*profile=*/nullptr);
   }
 
   std::unique_ptr<BocaManager> boca_manager_;
