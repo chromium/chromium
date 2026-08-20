@@ -324,15 +324,6 @@ public class BookmarkManagerCoordinator
         bookmarkDelegateSupplier.set(/* object= */ mMediator);
 
         if (isDesktopLayoutEnabled) {
-            BookmarkSearchBoxRow searchBoxView =
-                    mMainView.findViewById(R.id.desktop_search_box_row);
-            PropertyModel searchBoxPropertyModel = mMediator.getOrCreateSearchBoxPropertyModel();
-            mSearchBoxChangeProcessor =
-                    PropertyModelChangeProcessor.create(
-                            searchBoxPropertyModel,
-                            searchBoxView,
-                            BookmarkSearchBoxRowViewBinder.createViewBinder());
-
             updateDesktopSearchBoxMargins();
             updateDesktopSearchBoxPosition(activity.getResources().getConfiguration());
         }
@@ -747,10 +738,26 @@ public class BookmarkManagerCoordinator
         if (!BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
             return;
         }
-        View searchBoxView = mMainView.findViewById(R.id.desktop_search_box_row);
+        BookmarkSearchBoxRow searchBoxView = mMainView.findViewById(R.id.desktop_search_box_row);
         boolean isSmallScreen = config.screenWidthDp < BookmarkUtils.WIDE_DISPLAY_THRESHOLD_DP;
         if (searchBoxView != null) {
             searchBoxView.setVisibility(isSmallScreen ? View.GONE : View.VISIBLE);
+            if (isSmallScreen) {
+                if (mSearchBoxChangeProcessor != null) {
+                    mSearchBoxChangeProcessor.destroy();
+                    mSearchBoxChangeProcessor = null;
+                }
+            } else {
+                if (mSearchBoxChangeProcessor == null) {
+                    PropertyModel searchBoxPropertyModel =
+                            mMediator.getOrCreateSearchBoxPropertyModel();
+                    mSearchBoxChangeProcessor =
+                            PropertyModelChangeProcessor.create(
+                                    searchBoxPropertyModel,
+                                    searchBoxView,
+                                    BookmarkSearchBoxRowViewBinder.createViewBinder());
+                }
+            }
         }
         mMediator.setSearchBoxInline(isSmallScreen);
     }
@@ -762,6 +769,10 @@ public class BookmarkManagerCoordinator
 
     @Nullable BackPressManager getBackPressManagerForTesting() {
         return mBackPressManager;
+    }
+
+    @Nullable PropertyModelChangeProcessor getSearchBoxChangeProcessorForTesting() {
+        return mSearchBoxChangeProcessor;
     }
 
     ComponentCallbacks getComponentCallbacksForTesting() {

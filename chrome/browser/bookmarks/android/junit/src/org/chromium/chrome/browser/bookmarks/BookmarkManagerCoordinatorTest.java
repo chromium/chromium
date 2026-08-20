@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
@@ -406,6 +407,7 @@ public class BookmarkManagerCoordinatorTest {
         View searchBoxView = mCoordinator.getView().findViewById(R.id.desktop_search_box_row);
         assertNotNull(searchBoxView);
         assertEquals(View.GONE, searchBoxView.getVisibility());
+        assertNull(mCoordinator.getSearchBoxChangeProcessorForTesting());
     }
 
     @Test
@@ -416,6 +418,7 @@ public class BookmarkManagerCoordinatorTest {
         View searchBoxView = mCoordinator.getView().findViewById(R.id.desktop_search_box_row);
         assertNotNull(searchBoxView);
         assertEquals(View.VISIBLE, searchBoxView.getVisibility());
+        assertNotNull(mCoordinator.getSearchBoxChangeProcessorForTesting());
     }
 
     @Test
@@ -426,6 +429,7 @@ public class BookmarkManagerCoordinatorTest {
         View searchBoxView = mCoordinator.getView().findViewById(R.id.desktop_search_box_row);
         assertNotNull(searchBoxView);
         assertEquals(View.GONE, searchBoxView.getVisibility());
+        assertNull(mCoordinator.getSearchBoxChangeProcessorForTesting());
 
         // Resize to wide screen (1200dp).
         RuntimeEnvironment.setQualifiers("w1200dp-h1000dp");
@@ -433,6 +437,7 @@ public class BookmarkManagerCoordinatorTest {
                 .getComponentCallbacksForTesting()
                 .onConfigurationChanged(mActivity.getResources().getConfiguration());
         assertEquals(View.VISIBLE, searchBoxView.getVisibility());
+        assertNotNull(mCoordinator.getSearchBoxChangeProcessorForTesting());
 
         // Resize back to narrow screen (800dp).
         RuntimeEnvironment.setQualifiers("w800dp-h1000dp");
@@ -440,5 +445,6 @@ public class BookmarkManagerCoordinatorTest {
                 .getComponentCallbacksForTesting()
                 .onConfigurationChanged(mActivity.getResources().getConfiguration());
         assertEquals(View.GONE, searchBoxView.getVisibility());
+        assertNull(mCoordinator.getSearchBoxChangeProcessorForTesting());
     }
 }
