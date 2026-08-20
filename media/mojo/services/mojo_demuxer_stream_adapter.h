@@ -65,7 +65,7 @@ class MEDIA_MOJO_EXPORT MojoDemuxerStreamAdapter : public DemuxerStream {
 
   void OnBufferRead(scoped_refptr<DecoderBuffer> buffer);
 
-  void UpdateConfig(const std::optional<AudioDecoderConfig>& audio_config,
+  bool UpdateConfig(const std::optional<AudioDecoderConfig>& audio_config,
                     const std::optional<VideoDecoderConfig>& video_config);
 
   // See constructor for descriptions.
