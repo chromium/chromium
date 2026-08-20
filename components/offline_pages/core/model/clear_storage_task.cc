@@ -161,7 +161,8 @@ ClearStorageTask::~ClearStorageTask() = default;
 
 void ClearStorageTask::Run() {
   TRACE_EVENT_BEGIN("offline_pages", "ClearStorageTask running",
-                    perfetto::Track::FromPointer(this));
+                    perfetto::NamedTrack::FromPointer(
+                        "offline_pages::ClearStorageTask", this));
   archive_manager_->GetStorageStats(
       base::BindOnce(&ClearStorageTask::OnGetStorageStatsDone,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -193,10 +194,12 @@ void ClearStorageTask::InformClearStorageDone(size_t pages_cleared,
                                               ClearStorageResult result) {
   std::move(callback_).Run(pages_cleared, result);
   TaskComplete();
-  TRACE_EVENT_END(
-      "offline_pages",
-      /* ClearStorageTask running */ perfetto::Track::FromPointer(this),
-      "result", static_cast<int>(result), "pages_cleared", pages_cleared);
+  TRACE_EVENT_END("offline_pages",
+                  /* ClearStorageTask running */
+                  perfetto::NamedTrack::FromPointer(
+                      "offline_pages::ClearStorageTask", this),
+                  "result", static_cast<int>(result), "pages_cleared",
+                  pages_cleared);
 }
 
 }  // namespace offline_pages

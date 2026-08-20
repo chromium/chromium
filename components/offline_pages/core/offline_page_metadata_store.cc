@@ -425,23 +425,27 @@ StoreState OfflinePageMetadataStore::GetStateForTesting() const {
 
 void OfflinePageMetadataStore::OnOpenStart(base::TimeTicks last_closing_time) {
   TRACE_EVENT_BEGIN("offline_pages", "Metadata Store",
-                    perfetto::Track::FromPointer(this), "is reopen",
-                    !last_closing_time.is_null());
+                    perfetto::NamedTrack::FromPointer(
+                        "offline_pages::OfflinePageMetadataStore", this),
+                    "is reopen", !last_closing_time.is_null());
   TRACE_EVENT_BEGIN("offline_pages", "Metadata Store: Initializing",
-                    perfetto::Track::FromPointer(this));
+                    perfetto::NamedTrack::FromPointer(
+                        "offline_pages::OfflinePageMetadataStore", this));
 }
 
 void OfflinePageMetadataStore::OnOpenDone(bool success) {
-  TRACE_EVENT_END(
-      "offline_pages",
-      /*Metadata Store: Initializing */ perfetto::Track::FromPointer(this),
-      "succeeded", success);
+  TRACE_EVENT_END("offline_pages",
+                  /*Metadata Store: Initializing */
+                  perfetto::NamedTrack::FromPointer(
+                      "offline_pages::OfflinePageMetadataStore", this),
+                  "succeeded", success);
 }
 
 void OfflinePageMetadataStore::OnTaskBegin(bool is_initialized) {
   TRACE_EVENT_BEGIN("offline_pages", "Metadata Store: task execution",
-                    perfetto::Track::FromPointer(this), "is store loaded",
-                    is_initialized);
+                    perfetto::NamedTrack::FromPointer(
+                        "offline_pages::OfflinePageMetadataStore", this),
+                    "is store loaded", is_initialized);
 }
 
 void OfflinePageMetadataStore::OnTaskRunComplete() {
@@ -449,13 +453,15 @@ void OfflinePageMetadataStore::OnTaskRunComplete() {
   // times to the background thread and back.
   TRACE_EVENT_END(
       "offline_pages",
-      /* Metadata Store: task execution*/ perfetto::Track::FromPointer(this));
+      /* Metadata Store: task execution*/ perfetto::NamedTrack::FromPointer(
+          "offline_pages::OfflinePageMetadataStore", this));
 }
 
 void OfflinePageMetadataStore::OnTaskReturnComplete() {
   TRACE_EVENT_END(
       "offline_pages",
-      /* Metadata Store: task execution */ perfetto::Track::FromPointer(this));
+      /* Metadata Store: task execution */ perfetto::NamedTrack::FromPointer(
+          "offline_pages::OfflinePageMetadataStore", this));
 }
 
 void OfflinePageMetadataStore::OnCloseStart(
@@ -464,15 +470,18 @@ void OfflinePageMetadataStore::OnCloseStart(
     return;
   }
   TRACE_EVENT_BEGIN("offline_pages", "Metadata Store: Closing",
-                    perfetto::Track::FromPointer(this));
+                    perfetto::NamedTrack::FromPointer(
+                        "offline_pages::OfflinePageMetadataStore", this));
 }
 
 void OfflinePageMetadataStore::OnCloseComplete() {
   TRACE_EVENT_END(
       "offline_pages",
-      /* Metadata Store: Closing */ perfetto::Track::FromPointer(this));
+      /* Metadata Store: Closing */ perfetto::NamedTrack::FromPointer(
+          "offline_pages::OfflinePageMetadataStore", this));
   TRACE_EVENT_END("offline_pages",
-                  /* Metadata Store */ perfetto::Track::FromPointer(this));
+                  /* Metadata Store */ perfetto::NamedTrack::FromPointer(
+                      "offline_pages::OfflinePageMetadataStore", this));
 }
 
 }  // namespace offline_pages

@@ -238,7 +238,8 @@ StartupMaintenanceTask::~StartupMaintenanceTask() = default;
 
 void StartupMaintenanceTask::Run() {
   TRACE_EVENT_BEGIN("offline_pages", "StartupMaintenanceTask running",
-                    perfetto::Track::FromPointer(this));
+                    perfetto::NamedTrack::FromPointer(
+                        "offline_pages::StartupMaintenanceTask", this));
   store_->Execute(
       base::BindOnce(&StartupMaintenanceSync,
                      archive_manager_->GetTemporaryArchivesDir(),
@@ -249,10 +250,10 @@ void StartupMaintenanceTask::Run() {
 }
 
 void StartupMaintenanceTask::OnStartupMaintenanceDone(bool result) {
-  TRACE_EVENT_END(
-      "offline_pages",
-      /* StartupMaintenanceTask running */ perfetto::Track::FromPointer(this),
-      "result", result);
+  TRACE_EVENT_END("offline_pages", /* StartupMaintenanceTask running */
+                  perfetto::NamedTrack::FromPointer(
+                      "offline_pages::StartupMaintenanceTask", this),
+                  "result", result);
   TaskComplete();
 }
 
