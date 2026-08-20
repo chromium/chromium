@@ -129,67 +129,6 @@ class BrowserViewTest : public TestWithBrowserView {
   }
 };
 
-// Test basic construction and initialization.
-TEST_F(BrowserViewTest, BrowserView) {
-  // The window is owned by the native widget, not the test class.
-  EXPECT_FALSE(window());
-
-  EXPECT_TRUE(browser_view()->browser());
-
-  // Test initial state.
-  EXPECT_TRUE(browser_view()->GetTabStripVisible());
-  EXPECT_FALSE(browser_view()->GetIncognito());
-  EXPECT_FALSE(browser_view()->GetGuestSession());
-  EXPECT_TRUE(browser_view()->GetIsNormalType());
-  EXPECT_FALSE(browser_view()->IsFullscreen());
-  EXPECT_FALSE(browser_view()->IsBookmarkBarVisible());
-  EXPECT_FALSE(browser_view()->IsBookmarkBarAnimating());
-
-  // Test action item creation.
-  BrowserActions* browser_actions = BrowserActions::From(browser());
-
-  ASSERT_NE(browser_actions->root_action_item(), nullptr);
-  EXPECT_GE(
-      browser_actions->root_action_item()->GetChildren().children().size(),
-      1UL);
-
-  actions::ActionItemVector actions;
-  auto& manager = actions::ActionManager::GetForTesting();
-  manager.GetActions(actions);
-
-  actions::ActionItem* customize_chrome_action = manager.FindAction(
-      kActionSidePanelShowCustomizeChrome, browser_actions->root_action_item());
-  EXPECT_EQ(customize_chrome_action->GetText(),
-            l10n_util::GetStringUTF16(IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE));
-  EXPECT_EQ(customize_chrome_action->GetImage(),
-            ui::ImageModel::FromVectorIcon(
-                features::IsRoundedIconsEnabled()
-                    ? vector_icons::kEditIcon
-                    : vector_icons::kEditChromeRefreshOldIcon,
-                ui::kColorIcon));
-  EXPECT_EQ(customize_chrome_action->GetEnabled(), true);
-}
-
-#if BUILDFLAG(IS_CHROMEOS)
-TEST_F(BrowserViewTest, OnTaskLockedBrowserView) {
-  Browser* const browser = browser_view()->browser();
-  ASSERT_TRUE(browser);
-  ash::boca::OnTaskLockedController::From(browser)->set_locked_for_on_task(
-      true);
-  EXPECT_FALSE(browser_view()->CanMinimize());
-  EXPECT_FALSE(browser_view()->ShouldShowCloseButton());
-}
-
-TEST_F(BrowserViewTest, OnTaskUnlockedBrowserView) {
-  Browser* const browser = browser_view()->browser();
-  ASSERT_TRUE(browser);
-  ash::boca::OnTaskLockedController::From(browser)->set_locked_for_on_task(
-      false);
-  EXPECT_TRUE(browser_view()->CanMinimize());
-  EXPECT_TRUE(browser_view()->ShouldShowCloseButton());
-}
-#endif
-
 namespace {
 // A thin wrapper around `Browser` to ensure that it's destructed in the right
 // order.
@@ -337,51 +276,6 @@ TEST_F(BrowserViewTest, DISABLED_BrowserViewLayout) {
   EXPECT_EQ(contents_web_view->y(), devtools_web_view->y());
 
   BookmarkBarView::DisableAnimationsForTesting(false);
-}
-
-// TODO(crbug.com/40656637): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_FindBarBoundingBoxLocationBar \
-  DISABLED_FindBarBoundingBoxLocationBar
-#else
-#define MAYBE_FindBarBoundingBoxLocationBar FindBarBoundingBoxLocationBar
-#endif
-// Test the find bar's bounding box when the location bar is visible.
-TEST_F(BrowserViewTest, MAYBE_FindBarBoundingBoxLocationBar) {
-  ASSERT_FALSE(base::i18n::IsRTL());
-  const views::View* location_bar = browser_view()->GetLocationBarView();
-  const views::View* contents_container = browser_view()->contents_container();
-
-  // Make sure we are testing the case where the location bar is visible.
-  EXPECT_TRUE(location_bar->GetVisible());
-  const gfx::Rect find_bar_bounds = browser_view()->GetFindBarBoundingBox();
-  const gfx::Rect location_bar_bounds =
-      location_bar->ConvertRectToWidget(location_bar->GetLocalBounds());
-  const gfx::Rect contents_bounds = contents_container->ConvertRectToWidget(
-      contents_container->GetLocalBounds());
-
-  const gfx::Rect target(
-      location_bar_bounds.x(), location_bar_bounds.bottom(),
-      location_bar_bounds.width(),
-      contents_bounds.bottom() - location_bar_bounds.bottom());
-  EXPECT_EQ(target.ToString(), find_bar_bounds.ToString());
-}
-
-// Test the find bar's bounding box when the location bar is not visible.
-TEST_F(BrowserViewTest, FindBarBoundingBoxNoLocationBar) {
-  ASSERT_FALSE(base::i18n::IsRTL());
-  const views::View* location_bar = browser_view()->GetLocationBarView();
-  const views::View* contents_container = browser_view()->contents_container();
-
-  // Make sure we are testing the case where the location bar is absent.
-  browser_view()->GetLocationBarView()->SetVisible(false);
-  EXPECT_FALSE(location_bar->GetVisible());
-  const gfx::Rect find_bar_bounds = browser_view()->GetFindBarBoundingBox();
-  gfx::Rect contents_bounds = contents_container->ConvertRectToWidget(
-      contents_container->GetLocalBounds());
-  contents_bounds.Inset(gfx::Insets::TLBR(0, 0, 0, gfx::scrollbar_size()));
-
-  EXPECT_EQ(contents_bounds.ToString(), find_bar_bounds.ToString());
 }
 
 // Tests that a browser window is correctly associated to a WebContents that
@@ -557,41 +451,6 @@ TEST_F(BrowserViewTest, TitleAudioIndicators) {
 }
 #endif
 
-TEST_F(BrowserViewTest, RotatePaneFocusFromView) {
-  // Browser widget must be visible for ui::ElementIdentifiers to resolve.
-  browser_view()->GetWidget()->Show();
-
-  auto dialog_model = ui::DialogModel::Builder()
-                          .SetTitle(u"test")
-                          .SetIsAlertDialog()
-                          .AddOkButton(base::DoNothing())
-                          .Build();
-  views::BubbleAnchor anchor =
-      browser_view()->toolbar_button_provider()->GetBubbleAnchor(std::nullopt);
-
-  auto bubble = std::make_unique<views::BubbleDialogModelHost>(
-      std::move(dialog_model), anchor, views::BubbleBorder::TOP_RIGHT);
-  auto* bubble_ptr = bubble.get();
-  auto* widget = views::BubbleDialogDelegate::CreateBubbleDeprecated(
-      std::move(bubble), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
-  widget->Show();
-
-  // OK button cannot be retrieved until CreateBubble has been called.
-  auto* ok_button = bubble_ptr->GetOkButton();
-
-  auto* focus_manager = widget->GetFocusManager();
-  focus_manager->SetKeyboardAccessible(true);
-
-  // Initial rotation should return a "rotated" result.
-  EXPECT_TRUE(browser_view()->RotatePaneFocusFromView(nullptr, true, true));
-  EXPECT_EQ(ok_button, focus_manager->GetStoredFocusView());
-
-  // Next rotation should not return a "rotated" result and should not change
-  // the focus.
-  EXPECT_FALSE(browser_view()->RotatePaneFocusFromView(nullptr, true, false));
-  EXPECT_EQ(ok_button, focus_manager->GetStoredFocusView());
-}
-
 TEST_F(BrowserViewTest, AccessibleProperties) {
   ui::AXNodeData data;
 
@@ -682,107 +541,6 @@ TEST_F(BrowserViewTest, UpdateAccessibleURLOnTabSelection) {
       .GetAccessibleNodeData(&node_data);
   EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kUrl),
             url2);
-}
-
-//  Macs do not have fullscreen policy.
-#if !BUILDFLAG(IS_MAC)
-
-TEST_F(BrowserViewTest, CanFullscreenPolicyWatcher) {
-  auto* fullscreen_pref_path = prefs::kFullscreenAllowed;
-  EXPECT_TRUE(browser_view()->CanFullscreen());
-
-  browser_view()->GetProfile()->GetPrefs()->SetBoolean(fullscreen_pref_path,
-                                                       false);
-  EXPECT_FALSE(browser_view()->CanFullscreen());
-
-  browser_view()->GetProfile()->GetPrefs()->SetBoolean(fullscreen_pref_path,
-                                                       true);
-  EXPECT_TRUE(browser_view()->CanFullscreen());
-}
-
-class BrowserViewPipTest : public TestWithBrowserView {
- public:
-  BrowserViewPipTest()
-      : TestWithBrowserView(Browser::TYPE_PICTURE_IN_PICTURE) {}
-
-  BrowserViewPipTest(const BrowserViewPipTest&) = delete;
-  BrowserViewPipTest& operator=(const BrowserViewPipTest&) = delete;
-
-  ~BrowserViewPipTest() override = default;
-};
-
-// Pip is used to test reverting back to not allowed to fullscreen state.
-TEST_F(BrowserViewPipTest, CanFullscreenPolicyDoesNotEnableFullscreen) {
-  auto* fullscreen_pref_path = prefs::kFullscreenAllowed;
-  EXPECT_FALSE(browser_view()->CanFullscreen());
-
-  browser_view()->GetProfile()->GetPrefs()->SetBoolean(fullscreen_pref_path,
-                                                       false);
-  EXPECT_FALSE(browser_view()->CanFullscreen());
-
-  // This should have no effect, because pip is not allowed to enter fullscreen.
-  browser_view()->GetProfile()->GetPrefs()->SetBoolean(fullscreen_pref_path,
-                                                       true);
-  EXPECT_FALSE(browser_view()->CanFullscreen());
-}
-
-#endif  // !BUILDFLAG(IS_MAC)
-
-class BrowserViewHostedAppTest : public TestWithBrowserView {
- public:
-  BrowserViewHostedAppTest()
-      : TestWithBrowserView(Browser::TYPE_POPUP,
-                            BrowserWithTestWindowTest::HostedApp()) {}
-
-  BrowserViewHostedAppTest(const BrowserViewHostedAppTest&) = delete;
-  BrowserViewHostedAppTest& operator=(const BrowserViewHostedAppTest&) = delete;
-
-  ~BrowserViewHostedAppTest() override = default;
-};
-
-// Test basic layout for hosted apps.
-TEST_F(BrowserViewHostedAppTest, Layout) {
-  // Add a tab because the browser starts out without any tabs at all.
-  AddTab(browser(), GURL("about:blank"));
-
-  const int contents_container_y = browser_view()->contents_container()->y();
-
-  // The tabstrip, toolbar and bookmark bar should not be visible for hosted
-  // apps.
-  EXPECT_FALSE(
-      browser_view()->horizontal_tab_strip_for_testing()->GetVisible());
-  EXPECT_FALSE(browser_view()->toolbar()->GetVisible());
-  EXPECT_FALSE(browser_view()->IsBookmarkBarVisible());
-
-  const auto* const frame_view =
-      browser_view()->browser_widget()->GetFrameView();
-
-  gfx::Point header_offset;
-  views::View::ConvertPointToTarget(browser_view(), frame_view, &header_offset);
-
-  const auto params = frame_view->GetBrowserLayoutParams();
-
-#if BUILDFLAG(IS_MAC)
-  // The system paints the caption area, so the contents start at the top of
-  // the layout.
-  const int bottom_of_header = 0;
-#else
-  // The position of the bottom of the header (the bar with the window
-  // controls) in the coordinates of the browser view.
-  const int bottom_of_header = base::ClampCeil(
-      std::max(params.leading_exclusion.ContentWithPadding().height(),
-               params.trailing_exclusion.ContentWithPadding().height()));
-#endif
-
-  // The top of the browser view in the coordinates of the frame.
-  const int top_inset = bottom_of_header + params.visual_client_area.y();
-
-  // The web contents should be flush with the bottom of the header.
-  EXPECT_EQ(bottom_of_header, contents_container_y);
-
-  // The find bar should be aligned with the bottom of the header in the
-  // coordinates of the frame.
-  EXPECT_EQ(top_inset, browser_view()->GetFindBarBoundingBox().y());
 }
 
 using BrowserViewWindowTypeTest = BrowserWithTestWindowTest;

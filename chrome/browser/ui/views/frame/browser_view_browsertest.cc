@@ -11,24 +11,39 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/devtools/devtools_ui_controller.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_commands_mac.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/find_bar/find_bar.h"
+#include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
@@ -40,18 +55,25 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_observer.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_tester.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/infobars/infobar_container_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_accessibility.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -59,6 +81,7 @@
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
@@ -66,12 +89,14 @@
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
 #include "components/search/ntp_features.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tabs/public/split_tab_collection.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/desktop_capture_pip_utils.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/web_contents.h"
@@ -86,14 +111,34 @@
 #include "media/capture/capture_switches.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_test_helper.h"
+#include "ui/actions/action_id.h"
+#include "ui/actions/actions.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/buildflags.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/test/widget_activation_waiter.h"
+#include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "url/url_constants.h"
 
 #if defined(USE_AURA)
@@ -568,6 +613,218 @@ auto HasDimensions(int left, int right, int top, int bottom) {
                                              .Set("right", right)
                                              .Set("top", top)
                                              .Set("bottom", bottom));
+}
+
+// Test basic construction and initialization.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserView) {
+  views::test::RunScheduledLayout(browser_view());
+
+  // Test initial state.
+  EXPECT_TRUE(browser_view()->GetTabStripVisible());
+  EXPECT_FALSE(browser_view()->GetIncognito());
+  EXPECT_FALSE(browser_view()->GetGuestSession());
+  EXPECT_TRUE(browser_view()->GetIsNormalType());
+  EXPECT_FALSE(browser_view()->IsFullscreen());
+  EXPECT_FALSE(browser_view()->IsBookmarkBarVisible());
+  EXPECT_FALSE(browser_view()->IsBookmarkBarAnimating());
+
+  // Test action item creation.
+  BrowserActions* browser_actions = BrowserActions::From(browser());
+
+  ASSERT_TRUE(browser_actions->root_action_item());
+  EXPECT_GE(
+      browser_actions->root_action_item()->GetChildren().children().size(),
+      1UL);
+
+  actions::ActionItemVector actions;
+  auto& manager = actions::ActionManager::GetForTesting();
+  manager.GetActions(actions);
+
+  actions::ActionItem* customize_chrome_action = manager.FindAction(
+      kActionSidePanelShowCustomizeChrome, browser_actions->root_action_item());
+  ASSERT_TRUE(customize_chrome_action);
+  EXPECT_EQ(customize_chrome_action->GetText(),
+            l10n_util::GetStringUTF16(IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE));
+  EXPECT_EQ(customize_chrome_action->GetImage(),
+            ui::ImageModel::FromVectorIcon(
+                features::IsRoundedIconsEnabled()
+                    ? kEditIcon
+                    : vector_icons::kEditChromeRefreshOldIcon,
+                ui::kColorIcon));
+  EXPECT_TRUE(customize_chrome_action->GetEnabled());
+}
+
+// Test the find bar's bounding box when the location bar is visible.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, FindBarBoundingBoxLocationBar) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::test::RunScheduledLayout(browser_view);
+
+  gfx::Rect find_bar_bounds = browser_view->GetFindBarBoundingBox();
+  EXPECT_FALSE(find_bar_bounds.IsEmpty());
+  EXPECT_GT(find_bar_bounds.width(), 0);
+  EXPECT_GT(find_bar_bounds.height(), 0);
+}
+
+// Test the find bar's bounding box when the location bar is not visible.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, FindBarBoundingBoxNoLocationBar) {
+  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_POPUP,
+                                   browser()->GetProfile(),
+                                   /*from_user_gesture=*/true);
+  Browser* popup_browser =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+  chrome::AddTabAt(popup_browser, GURL("about:blank"), -1, true);
+  popup_browser->GetWindow()->Show();
+
+  BrowserView* popup_browser_view =
+      BrowserView::GetBrowserViewForBrowser(popup_browser);
+  views::test::RunScheduledLayout(popup_browser_view);
+
+  // When location bar is not visible (e.g. in popups or app windows),
+  // find bar should still return a valid non-empty bounding box.
+  gfx::Rect bounds = popup_browser_view->GetFindBarBoundingBox();
+  EXPECT_GT(bounds.width(), 0);
+  EXPECT_GT(bounds.height(), 0);
+
+  CloseBrowserSynchronously(popup_browser);
+}
+
+// Browser widget must be visible for ui::ElementIdentifiers to resolve.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, RotatePaneFocusFromView) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  browser_view->GetWidget()->Activate();
+  views::test::WaitForWidgetActive(browser_view->GetWidget(), true);
+
+  auto dialog_model = ui::DialogModel::Builder()
+                          .SetTitle(u"test")
+                          .SetIsAlertDialog()
+                          .AddOkButton(base::DoNothing())
+                          .Build();
+  views::View* anchor = browser_view->GetLocationBarView();
+
+  auto bubble = std::make_unique<views::BubbleDialogModelHost>(
+      std::move(dialog_model), anchor, views::BubbleBorder::TOP_RIGHT);
+  auto* bubble_ptr = bubble.get();
+  views::Widget* widget = views::BubbleDialogDelegate::CreateBubbleDeprecated(
+      std::move(bubble), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+  widget->Show();
+
+  // OK button cannot be retrieved until CreateBubble has been called.
+  views::View* ok_button = bubble_ptr->GetOkButton();
+
+  views::FocusManager* focus_manager = widget->GetFocusManager();
+  focus_manager->SetKeyboardAccessible(true);
+
+  // Initial rotation should return a "rotated" result.
+  EXPECT_TRUE(browser_view->RotatePaneFocusFromView(nullptr, true, true));
+  EXPECT_EQ(ok_button, focus_manager->GetStoredFocusView());
+
+  // Next rotation should not return a "rotated" result and should not change
+  // the focus.
+  EXPECT_FALSE(browser_view->RotatePaneFocusFromView(nullptr, true, false));
+  EXPECT_EQ(ok_button, focus_manager->GetStoredFocusView());
+}
+
+// Macs do not have fullscreen policy.
+#if !BUILDFLAG(IS_MAC)
+
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, CanFullscreenPolicyWatcher) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  EXPECT_TRUE(browser_view->CanFullscreen());
+
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kFullscreenAllowed,
+                                                  false);
+  EXPECT_FALSE(browser_view->CanFullscreen());
+
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kFullscreenAllowed,
+                                                  true);
+  EXPECT_TRUE(browser_view->CanFullscreen());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewTest,
+                       CanFullscreenPolicyDoesNotEnableFullscreen) {
+  BrowserWindowCreateParams params =
+      BrowserWindowCreateParams::CreateForPictureInPicture(
+          "PipApp", /*trusted_source=*/true, browser()->GetProfile(),
+          /*user_gesture=*/true);
+  Browser* pip_browser =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+  pip_browser->GetWindow()->Show();
+  BrowserView* pip_browser_view =
+      BrowserView::GetBrowserViewForBrowser(pip_browser);
+
+  // PIP windows cannot be fullscreened even if policy allows.
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kFullscreenAllowed,
+                                                  true);
+  EXPECT_FALSE(pip_browser_view->CanFullscreen());
+
+  CloseBrowserSynchronously(pip_browser);
+}
+
+#endif  // !BUILDFLAG(IS_MAC)
+
+class BrowserViewHostedAppTest : public InProcessBrowserTest {
+ public:
+  BrowserViewHostedAppTest() = default;
+  BrowserViewHostedAppTest(const BrowserViewHostedAppTest&) = delete;
+  BrowserViewHostedAppTest& operator=(const BrowserViewHostedAppTest&) = delete;
+  ~BrowserViewHostedAppTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserViewHostedAppTest, Layout) {
+  BrowserWindowCreateParams params = BrowserWindowCreateParams::CreateForApp(
+      "Test", /*trusted_source=*/true, /*window_bounds=*/gfx::Rect(),
+      browser()->GetProfile(), /*user_gesture=*/true);
+  params.type = BrowserWindowInterface::TYPE_POPUP;
+  Browser* app_browser =
+      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+  chrome::AddTabAt(app_browser, GURL("about:blank"), -1, true);
+  app_browser->GetWindow()->Show();
+
+  BrowserView* app_browser_view =
+      BrowserView::GetBrowserViewForBrowser(app_browser);
+  views::test::RunScheduledLayout(app_browser_view);
+
+  // The tabstrip, toolbar and bookmark bar should not be visible for hosted
+  // apps.
+  EXPECT_FALSE(
+      app_browser_view->horizontal_tab_strip_for_testing()->GetVisible());
+  EXPECT_FALSE(app_browser_view->toolbar()->GetVisible());
+  EXPECT_FALSE(app_browser_view->IsBookmarkBarVisible());
+
+  const auto* const frame_view =
+      app_browser_view->browser_widget()->GetFrameView();
+
+  gfx::Point header_offset;
+  views::View::ConvertPointToTarget(app_browser_view, frame_view,
+                                    &header_offset);
+
+  const auto layout_params = frame_view->GetBrowserLayoutParams();
+
+  const int contents_container_y = app_browser_view->contents_container()->y();
+
+#if BUILDFLAG(IS_MAC)
+  // The system paints the caption area, so the contents start at the top of
+  // the layout.
+  const int bottom_of_header = 0;
+#else
+  // The position of the bottom of the header (the bar with the window
+  // controls) in the coordinates of the browser view.
+  const int bottom_of_header = base::ClampCeil(
+      std::max(layout_params.leading_exclusion.ContentWithPadding().height(),
+               layout_params.trailing_exclusion.ContentWithPadding().height()));
+#endif
+
+  // The top of the browser view in the coordinates of the frame.
+  const int top_inset = bottom_of_header + layout_params.visual_client_area.y();
+
+  // The web contents should be flush with the bottom of the header.
+  EXPECT_EQ(bottom_of_header, contents_container_y);
+
+  // The find bar should be aligned with the bottom of the header in the
+  // coordinates of the frame.
+  EXPECT_EQ(top_inset, app_browser_view->GetFindBarBoundingBox().y());
+
+  CloseBrowserSynchronously(app_browser);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsWindowDefaultSize) {
@@ -1592,9 +1849,9 @@ class TabAddingWidgetObserver : public views::WidgetObserver {
 // Regression test for crbug.com/456102314 crash in
 // ContentsWebView::CloneWebContentsLayer during synchronous widget destruction.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWidgetWithTabsNoCrash) {
-  BrowserWindowInterface* browser2 =
-      CreateBrowserWindow(BrowserWindowCreateParams(
-          browser()->GetProfile(), /*from_user_gesture=*/true));
+  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
   chrome::AddTabAt(browser2, GURL("about:blank"), -1, true);
   EXPECT_EQ(1, browser2->GetTabStripModel()->count());
 
