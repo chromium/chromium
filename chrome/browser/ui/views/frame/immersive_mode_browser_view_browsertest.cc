@@ -415,8 +415,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
                       immersive_mode_controller)
                       ->controller())
                   .IsRevealLocked());
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return immersive_mode_controller->IsRevealed(); }));
+  EXPECT_TRUE(immersive_mode_controller->IsRevealed());
 
   EXPECT_EQ(anchor_view,
             bubble_manager->bubble_view_for_testing()->GetAnchorView());

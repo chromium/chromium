@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -346,10 +345,8 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest,
 
   if (IsPreventCloseEnabled()) {
     EXPECT_EQ(1, browser->tab_strip_model()->count());
-    EXPECT_TRUE(base::test::RunUntil([&] {
-      return IsToastShown(
-          base::StrCat({"prevent_close_toast_id-", installed_app_id}));
-    }));
+    EXPECT_TRUE(IsToastShown(
+        base::StrCat({"prevent_close_toast_id-", installed_app_id})));
   } else {
     EXPECT_EQ(0, browser->tab_strip_model()->count());
   }
@@ -376,10 +373,8 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest,
 
   if (IsPreventCloseEnabled()) {
     EXPECT_EQ(1, browser->tab_strip_model()->count());
-    EXPECT_TRUE(base::test::RunUntil([&] {
-      return IsToastShown(
-          base::StrCat({"prevent_close_toast_id-", installed_app_id}));
-    }));
+    EXPECT_TRUE(IsToastShown(
+        base::StrCat({"prevent_close_toast_id-", installed_app_id})));
   } else {
     EXPECT_EQ(0, browser->tab_strip_model()->count());
   }
