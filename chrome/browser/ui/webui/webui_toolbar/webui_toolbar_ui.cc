@@ -224,6 +224,8 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
                      features::IsWebUILocationBarEnabled());
   source->AddBoolean("enableBackForwardButtons",
                      features::IsWebUIBackForwardButtonEnabled());
+  source->AddBoolean("enableReloadGlowUp",
+                     features::IsToolbarGlowUpReloadEnabled());
   source->AddBoolean("enableGlowUp", features::IsToolbarGlowUpEnabled());
   source->AddBoolean("enablePinnedToolbarActions",
                      features::IsWebUIPinnedToolbarActionsEnabled());

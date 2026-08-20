@@ -3337,6 +3337,13 @@ IN_PROC_BROWSER_TEST_F(WebUIReloadButtonBrowserTest, ClickReloadButton) {
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/")));
 
+    // Clear any hover protection triggered by the setup navigation.
+    EXPECT_TRUE(content::ExecJs(
+        webui_contents,
+        base::StringPrintf(
+            "%s?.dispatchEvent(new PointerEvent('pointerleave'));",
+            GetButtonAppJS(kReloadButtonSelector).c_str())));
+
     // Create a navigation observer on the active tab.
     content::WebContents* active_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -3346,6 +3353,15 @@ IN_PROC_BROWSER_TEST_F(WebUIReloadButtonBrowserTest, ClickReloadButton) {
 
     nav_observer.Wait();
     // If the navigation happened, it means the reload button was activated.
+
+    // Simulate mouse leaving the button to clear hover protection.
+    // Otherwise, the button might remain disabled due to hover protection
+    // during subsequent test cases.
+    EXPECT_TRUE(content::ExecJs(
+        webui_contents,
+        base::StringPrintf(
+            "%s?.dispatchEvent(new PointerEvent('pointerleave'));",
+            GetButtonAppJS(kReloadButtonSelector).c_str())));
   }
 }
 
