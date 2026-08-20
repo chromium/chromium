@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -151,6 +152,12 @@ std::string ComputeHashBlocking(
   return base::HexEncode(hash);
 }
 
+bool ShouldCheckVirtualFile(const base::FilePath& path) {
+  return base::FeatureList::IsEnabled(
+             enterprise_connectors::kEnableDlpFileSystemApi) &&
+         FileAnalysisRequestBase::IsVirtualFile(path);
+}
+
 std::pair<ScanRequestUploadResult, BinaryUploadRequest::Data>
 GetFileDataBlocking(
     const base::FilePath& path,
@@ -181,22 +188,45 @@ GetFileDataBlocking(
   if (file_data.size == 0) {
     return std::make_pair(ScanRequestUploadResult::kSuccess, file_data);
   }
+  // Create a histogram to track the size of files being scanned up to 500MB.
+  base::UmaHistogramCustomCounts("Enterprise.FileAnalysisRequest.FileSize",
+                                 file_data.size / 1024, 1,
+                                 kMaxUploadSizeMetricsKB, 50);
 
-  std::vector<char> buf(kReadFileChunkSize);
-
-  std::optional<size_t> bytes_currently_read =
-      file.ReadAtCurrentPos(base::as_writable_byte_span(buf));
-  if (!bytes_currently_read.has_value()) {
-    // Reset the size to zero since some code assumes an UNKNOWN result is
-    // matched with a zero size.
-    file_data.size = 0;
-    return {ScanRequestUploadResult::kUnknown, file_data};
+  size_t max_file_size_bytes = BinaryUploadService::kMaxUploadSizeBytes;
+  if (base::FeatureList::IsEnabled(kEnableNewUploadSizeLimit)) {
+    max_file_size_bytes = 1024 * 1024 * kMaxContentAnalysisFileSizeMB.Get();
   }
 
-  // Use the first read chunk to get the mimetype as necessary.
   if (detect_mime_type) {
-    file_data.mime_type = GetFileMimeType(
-        path, std::string_view(buf.data(), bytes_currently_read.value()));
+    if (ShouldCheckVirtualFile(path)) {
+      base::FilePath::StringType ext = path.FinalExtension();
+      if (!ext.empty() && ext[0] == FILE_PATH_LITERAL('.')) {
+        ext = ext.substr(1);
+      }
+      net::GetMimeTypeFromExtension(ext, &file_data.mime_type);
+    } else {
+      std::vector<char> buf(kReadFileChunkSize);
+
+      std::optional<size_t> bytes_currently_read =
+          file.ReadAtCurrentPos(base::as_writable_byte_span(buf));
+      if (!bytes_currently_read.has_value()) {
+        // Reset the size to zero since some code assumes an UNKNOWN result is
+        // matched with a zero size.
+        file_data.size = 0;
+        return {ScanRequestUploadResult::kUnknown, file_data};
+      }
+
+      // Use the first read chunk to get the mimetype as necessary.
+
+      file_data.mime_type = GetFileMimeType(
+          path, std::string_view(buf.data(), bytes_currently_read.value()));
+    }
+  }
+
+  if (ShouldCheckVirtualFile(path) && file_data.size > max_file_size_bytes) {
+    file_data.hash = "";
+    return {ScanRequestUploadResult::kFileTooLarge, std::move(file_data)};
   }
 
   // Since we will be sending the deobfuscated file data in the request, set the
@@ -208,16 +238,6 @@ GetFileDataBlocking(
       file_data.size -= overhead.value();
       file_data.is_obfuscated = true;
     }
-  }
-
-  // Create a histogram to track the size of files being scanned up to 500MB.
-  base::UmaHistogramCustomCounts("Enterprise.FileAnalysisRequest.FileSize",
-                                 file_data.size / 1024, 1,
-                                 kMaxUploadSizeMetricsKB, 50);
-
-  size_t max_file_size_bytes = BinaryUploadService::kMaxUploadSizeBytes;
-  if (base::FeatureList::IsEnabled(kEnableNewUploadSizeLimit)) {
-    max_file_size_bytes = 1024 * 1024 * kMaxContentAnalysisFileSizeMB.Get();
   }
 
   // When forced, or if the feature is not enabled, or the file is not large
@@ -486,8 +506,20 @@ void FileAnalysisRequestBase::GetData(
                      weakptr_factory_.GetWeakPtr()));
 }
 
+namespace {
+bool g_is_virtual_file_for_testing = false;
+}  // namespace
+
+// static
+void FileAnalysisRequestBase::SetIsVirtualFileForTesting(bool is_virtual) {
+  g_is_virtual_file_for_testing = is_virtual;
+}
+
 // static
 bool FileAnalysisRequestBase::IsVirtualFile(const base::FilePath& path) {
+  if (g_is_virtual_file_for_testing) {
+    return true;
+  }
 #if BUILDFLAG(IS_CHROMEOS)
   return base::FilePath("/media/fuse").IsParent(path);
 #else

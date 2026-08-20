@@ -49,7 +49,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
-#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "content/public/browser/site_instance.h"
 #endif
 
@@ -369,7 +369,7 @@ void FileSelectHelper::PerformContentAnalysisIfNeeded(
       }
 #if BUILDFLAG(IS_CHROMEOS)
       else if (base::FeatureList::IsEnabled(
-                   enterprise_data_protection::kEnableDlpFileSystemApi) &&
+                   enterprise_connectors::kEnableDlpFileSystemApi) &&
                file->is_file_system()) {
         base::FilePath path =
             MaybeSubstituteFuseboxFilePath(*file->get_file_system());
@@ -435,7 +435,7 @@ void FileSelectHelper::ContentAnalysisCompletionCallback(
     }
 #if BUILDFLAG(IS_CHROMEOS)
     else if (base::FeatureList::IsEnabled(
-                 enterprise_data_protection::kEnableDlpFileSystemApi) &&
+                 enterprise_connectors::kEnableDlpFileSystemApi) &&
              (*it)->is_file_system()) {
       is_scanned =
           !MaybeSubstituteFuseboxFilePath(*(*it)->get_file_system()).empty();

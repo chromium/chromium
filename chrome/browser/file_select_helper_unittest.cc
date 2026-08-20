@@ -42,7 +42,7 @@ using blink::mojom::FileChooserParams;
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
-#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "content/public/browser/storage_partition.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -695,10 +695,10 @@ class FileSelectHelperChromeOSTest : public ChromeRenderViewHostTestHarness {
     feature_list_.Reset();
     if (enabled) {
       feature_list_.InitAndEnableFeature(
-          enterprise_data_protection::kEnableDlpFileSystemApi);
+          enterprise_connectors::kEnableDlpFileSystemApi);
     } else {
       feature_list_.InitAndDisableFeature(
-          enterprise_data_protection::kEnableDlpFileSystemApi);
+          enterprise_connectors::kEnableDlpFileSystemApi);
     }
   }
 

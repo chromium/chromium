@@ -55,7 +55,6 @@ class FileAnalysisRequest
       rar_analyzer_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
 
 #endif
-
   base::WeakPtrFactory<FileAnalysisRequest> weakptr_factory_{this};
 };
 
