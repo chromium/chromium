@@ -5293,6 +5293,21 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, DISABLED_testCaptureScreenshot) {
   ExecuteJsTest();
 }
 
+// TODO(crbug.com/441588906): Flaky on multiple platforms.
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       DISABLED_testFetchInactiveTabScreenshot) {
+  tabs::TabInterface* tab0 = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab0);
+  CreateAndActivateTab(GetSimpleTestUrl());
+
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  ActivateTab(tab0);
+
+  ContinueJsTest();
+}
+
 auto DefaultTestParamSet() {
   return testing::Values(TestParams{});
 }

@@ -2753,6 +2753,40 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(screenshot.data.byteLength > 0);
     assertEquals(screenshot.mimeType, 'image/jpeg');
   }
+
+  async fetchInactiveTabScreenshot(expectNoFocus: boolean = false) {
+    assertDefined(this.host.getFocusedTabStateV2);
+    assertDefined(this.host.getContextFromTab);
+    assertDefined(this.host.pinTabs);
+    assertDefined(this.host.getPinnedTabs);
+
+    // Pin the focused tab.
+    const focusSequence = observeSequence(this.host.getFocusedTabStateV2());
+    let focus = await focusSequence.next();
+    const tabId = checkDefined(focus?.hasFocus?.tabData.tabId);
+    await this.host.pinTabs([tabId]);
+
+    // Select the other tab.
+    await this.advanceToNextStep();
+    focus = await focusSequence.waitFor(
+        (f) => (!!f.hasFocus && f.hasFocus.tabData.tabId !== tabId) ||
+            (expectNoFocus && !!f.hasNoFocus));
+
+    // Get context and verify we have a screenshot.
+    const context = await this.host.getContextFromTab(tabId, {
+      viewportScreenshot: true,
+    });
+    return context;
+  }
+
+  async testFetchInactiveTabScreenshot() {
+    const context = await this.fetchInactiveTabScreenshot();
+    const screenshot = checkDefined(context.viewportScreenshot);
+    assertEquals(screenshot.mimeType, 'image/jpeg');
+    assertTrue(screenshot.data.byteLength > 0);
+    assertTrue(screenshot.widthPixels > 0);
+    assertTrue(screenshot.heightPixels > 0);
+  }
 }
 
 class DaisyChainApiTests extends ApiTestFixtureBase {

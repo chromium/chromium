@@ -4,7 +4,7 @@
 import {HostCapability, PanelStateKind} from '/glic/glic_api/glic_api.js';
 import type {TabData} from '/glic/glic_api/glic_api.js';
 
-import {ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertTrue, checkDefined, mapObservable, observeSequence, testMain} from './browser_test_base.js';
+import {ApiTestFixtureBase, assertDefined, assertFalse, checkDefined, mapObservable, observeSequence, testMain} from './browser_test_base.js';
 import type {SequencedSubscriber} from './browser_test_base.js';
 
 // Test cases here correspond to test cases in glic_api_browsertest.cc.
@@ -115,16 +115,6 @@ class ApiTests extends ApiTestFixtureBase {
       viewportScreenshot: true,
     });
     return context;
-  }
-
-  async testFetchInactiveTabScreenshot() {
-    const context = await this.fetchInactiveTabScreenshot();
-    assertFalse(checkDefined(context.tabData.isObservable));
-    const screenshot = checkDefined(context.viewportScreenshot);
-    assertEquals(screenshot.mimeType, 'image/jpeg');
-    assertTrue(screenshot.data.byteLength > 0);
-    assertTrue(screenshot.widthPixels > 0);
-    assertTrue(screenshot.heightPixels > 0);
   }
 
   async testFetchInactiveTabScreenshotWhileMinimized() {

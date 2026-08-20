@@ -468,21 +468,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testAllTestsAreRegistered) {
   AssertAllTestsRegistered(GetTestSuiteNames());
 }
 
-// TODO(crbug.com/441588906): Flaky on multiple platforms.
-IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
-                       DISABLED_testFetchInactiveTabScreenshot) {
-  // Untested on multi-instance.
-  SKIP_TEST_FOR_MULTI_INSTANCE();
-
-  RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
-
-  ExecuteJsTest();
-
-  browser()->tab_strip_model()->SelectPreviousTab();
-
-  ContinueJsTest();
-}
-
 // TODO(crbug.com/460826488): Enable on ChromeOS.
 // Win-asan is flaky.
 #if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
