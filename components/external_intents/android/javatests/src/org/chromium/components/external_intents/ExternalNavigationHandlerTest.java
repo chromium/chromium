@@ -450,7 +450,8 @@ public class ExternalNavigationHandlerTest {
                     "intent:chrome-urls#Intent;package=com.android.chrome;scheme=CHROME;end;",
                     "intent://com.android.chrome.FileProvider/foo.html#Intent;scheme=content;end;",
                     "intent://com.android.chrome.FileProvider/foo.html#Intent;scheme=CONTENT;end;",
-                    "intent:///x.mhtml#Intent;package=com.android.chrome;action=android.intent.action.VIEW;scheme=file;end;"
+                    "intent:///x.mhtml#Intent;package=com.android.chrome;action="
+                            + "android.intent.action.VIEW;scheme=file;end;"
                 };
         for (String url : urlsToIgnore) {
             checkUrl(url, redirectHandlerForLinkClick())
@@ -2297,6 +2298,116 @@ public class ExternalNavigationHandlerTest {
         OverrideUrlLoadingResult result = mUrlHandler.shouldOverrideUrlLoading(params);
         Assert.assertEquals(OverrideUrlLoadingResultType.NO_OVERRIDE, result.getResultType());
         Assert.assertTrue(mUrlHandler.mStartActivityIntent == null);
+    }
+
+    @Test
+    @SmallTest
+    public void testDesktopBrowserSameTabNavigation_blocksCapturing() {
+        // Verifies that same-tab HTTP/HTTPS navigations in a browser tab are blocked from capturing
+        // when in Desktop Windowing Mode, keeping the user in the browser.
+        mUrlHandler = new ExternalNavigationHandlerForTesting(mDelegate);
+        mDelegate.add(new IntentActivity(YOUTUBE_URL, YOUTUBE_PACKAGE_NAME));
+        ExternalNavigationParams params =
+                new ExternalNavigationParams.Builder(new GURL(YOUTUBE_URL), false)
+                        .setIsMainFrame(true)
+                        .setIsRendererInitiated(true)
+                        .setIsInDesktopWindowingMode(true)
+                        .setIsTabInBrowser(true)
+                        .setIsInitialNavigationInFrame(false)
+                        .setRedirectHandler(redirectHandlerForLinkClick())
+                        .build();
+        OverrideUrlLoadingResult result = mUrlHandler.shouldOverrideUrlLoading(params);
+        Assert.assertEquals(OverrideUrlLoadingResultType.NO_OVERRIDE, result.getResultType());
+        Assert.assertNull(mUrlHandler.mStartActivityIntent);
+    }
+
+    @Test
+    @SmallTest
+    public void testDesktopBrowserSameTabNavigation_doesNotBlockIfInitial() {
+        // Verifies that initial navigations (like loading a URL in a new tab) are not blocked from
+        // capturing, even when in Desktop Windowing Mode.
+        mUrlHandler = new ExternalNavigationHandlerForTesting(mDelegate);
+        mDelegate.add(new IntentActivity(YOUTUBE_URL, YOUTUBE_PACKAGE_NAME));
+        ExternalNavigationParams params =
+                new ExternalNavigationParams.Builder(new GURL(YOUTUBE_URL), false)
+                        .setIsMainFrame(true)
+                        .setIsRendererInitiated(true)
+                        .setIsInDesktopWindowingMode(true)
+                        .setIsTabInBrowser(true)
+                        .setIsInitialNavigationInFrame(true)
+                        .setRedirectHandler(redirectHandlerForLinkClick())
+                        .build();
+        OverrideUrlLoadingResult result = mUrlHandler.shouldOverrideUrlLoading(params);
+        Assert.assertEquals(
+                OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT, result.getResultType());
+        Assert.assertNotNull(mUrlHandler.mStartActivityIntent);
+    }
+
+    @Test
+    @SmallTest
+    public void testDesktopBrowserSameTabNavigation_doesNotBlockIfNotDesktop() {
+        // Verifies that standard mobile navigations are not blocked by the same-tab Desktop mode
+        // rule.
+        mUrlHandler = new ExternalNavigationHandlerForTesting(mDelegate);
+        mDelegate.add(new IntentActivity(YOUTUBE_URL, YOUTUBE_PACKAGE_NAME));
+        ExternalNavigationParams params =
+                new ExternalNavigationParams.Builder(new GURL(YOUTUBE_URL), false)
+                        .setIsMainFrame(true)
+                        .setIsRendererInitiated(true)
+                        .setIsInDesktopWindowingMode(false)
+                        .setIsTabInBrowser(true)
+                        .setIsInitialNavigationInFrame(false)
+                        .setRedirectHandler(redirectHandlerForLinkClick())
+                        .build();
+        OverrideUrlLoadingResult result = mUrlHandler.shouldOverrideUrlLoading(params);
+        Assert.assertEquals(
+                OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT, result.getResultType());
+        Assert.assertNotNull(mUrlHandler.mStartActivityIntent);
+    }
+
+    @Test
+    @SmallTest
+    public void testDesktopBrowserSameTabNavigation_doesNotBlockIfNotBrowserTab() {
+        // Verifies that same-tab navigations occurring in non-browser contexts (like PWAs or Custom
+        // Tabs) are not blocked from capturing, even when in Desktop Windowing Mode.
+        mUrlHandler = new ExternalNavigationHandlerForTesting(mDelegate);
+        mDelegate.add(new IntentActivity(YOUTUBE_URL, YOUTUBE_PACKAGE_NAME));
+        ExternalNavigationParams params =
+                new ExternalNavigationParams.Builder(new GURL(YOUTUBE_URL), false)
+                        .setIsMainFrame(true)
+                        .setIsRendererInitiated(true)
+                        .setIsInDesktopWindowingMode(true)
+                        .setIsTabInBrowser(false)
+                        .setIsInitialNavigationInFrame(false)
+                        .setRedirectHandler(redirectHandlerForLinkClick())
+                        .build();
+        OverrideUrlLoadingResult result = mUrlHandler.shouldOverrideUrlLoading(params);
+        Assert.assertEquals(
+                OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT, result.getResultType());
+        Assert.assertNotNull(mUrlHandler.mStartActivityIntent);
+    }
+
+    @Test
+    @SmallTest
+    public void testDesktopBrowserSameTabNavigation_doesNotBlockIfNotHttp() {
+        // Verifies that same-tab navigations to custom schemes (non-HTTP/HTTPS protocols) are not
+        // blocked on Desktop, since the browser cannot render them natively.
+        mUrlHandler = new ExternalNavigationHandlerForTesting(mDelegate);
+        String customUrl = "customscheme://test";
+        mDelegate.add(new IntentActivity(customUrl, "customapp"));
+        ExternalNavigationParams params =
+                new ExternalNavigationParams.Builder(new GURL(customUrl), false)
+                        .setIsMainFrame(true)
+                        .setIsRendererInitiated(true)
+                        .setIsInDesktopWindowingMode(true)
+                        .setIsTabInBrowser(true)
+                        .setIsInitialNavigationInFrame(false)
+                        .setRedirectHandler(redirectHandlerForLinkClick())
+                        .build();
+        OverrideUrlLoadingResult result = mUrlHandler.shouldOverrideUrlLoading(params);
+        Assert.assertEquals(
+                OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT, result.getResultType());
+        Assert.assertNotNull(mUrlHandler.mStartActivityIntent);
     }
 
     @Test
