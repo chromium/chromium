@@ -13,12 +13,11 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -27,10 +26,12 @@
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -354,9 +355,14 @@ void TetherNotificationPresenter::ShowNotification(
   }
 
   showing_notification_id_ = notification->id();
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
-      NotificationHandler::Type::TRANSIENT, *notification,
-      /*metadata=*/nullptr);
+  const user_manager::User& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  notification = std::make_unique<message_center::Notification>(
+      CreateUserScopedNotificationId(notification->id(), user.username_hash()),
+      *notification);
+  notification->set_profile_id(user.GetAccountId().GetUserEmail());
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 }
 
 void TetherNotificationPresenter::OpenSettingsAndRemoveNotification(
@@ -377,8 +383,19 @@ void TetherNotificationPresenter::RemoveNotificationIfVisible(
     hotspot_nearby_device_id_.reset();
   }
 
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
-      NotificationHandler::Type::TRANSIENT, notification_id);
+  auto* message_center = message_center::MessageCenter::Get();
+  // During normal browser shutdown, `ash::Shell` destroys `MessageCenter`
+  // before `ProfileManager` shuts down `TetherService`. `NotificationRemover`
+  // then asks for the presenter to remove the component's notifications.
+  if (!message_center) {
+    return;
+  }
+
+  const user_manager::User& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  message_center->RemoveNotification(
+      CreateUserScopedNotificationId(notification_id, user.username_hash()),
+      /*by_user=*/false);
 }
 
 bool TetherNotificationPresenter::AreNotificationsEnabled() {
