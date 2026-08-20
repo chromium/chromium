@@ -163,6 +163,9 @@ constexpr auto kSimplePolicyMap = std::to_array<PolicyToPreferenceMapEntry>({
   { policy::key::kAutofillPredictionSettings,
     optimization_guide::prefs::kAutofillPredictionImprovementsEnterprisePolicyAllowed,
     base::Value::Type::INTEGER },
+  { policy::key::kFindAndFillWithGeminiSettings,
+    optimization_guide::prefs::kFindAndFillWithGeminiSettings,
+    base::Value::Type::INTEGER },
   { policy::key::kDownloadRestrictions,
     policy::policy_prefs::kDownloadRestrictions,
     base::Value::Type::INTEGER },
@@ -311,6 +314,9 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
       policy::key::kAutofillPredictionSettings,
       optimization_guide::prefs::
           kAutofillPredictionImprovementsEnterprisePolicyAllowed);
+  gen_ai_default_policies.emplace_back(
+      policy::key::kFindAndFillWithGeminiSettings,
+      optimization_guide::prefs::kFindAndFillWithGeminiSettings);
   handlers->AddHandler(
       std::make_unique<policy::GenAiDefaultSettingsPolicyHandler>(
           std::move(gen_ai_default_policies)));

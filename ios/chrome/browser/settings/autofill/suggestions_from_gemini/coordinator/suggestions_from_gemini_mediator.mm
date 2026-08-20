@@ -44,8 +44,7 @@
     _prefChangeRegistrar.Init(prefService);
     _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
     _prefObserverBridge->ObserveChangesForPreference(
-        optimization_guide::prefs::
-            kAutofillPredictionImprovementsEnterprisePolicyAllowed,
+        optimization_guide::prefs::kFindAndFillWithGeminiSettings,
         &_prefChangeRegistrar);
   }
   return self;
@@ -74,8 +73,7 @@
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   if (preferenceName ==
-      optimization_guide::prefs::
-          kAutofillPredictionImprovementsEnterprisePolicyAllowed) {
+      optimization_guide::prefs::kFindAndFillWithGeminiSettings) {
     if (self.consumer) {
       [self.consumer setSuggestionsFromGeminiPolicyState:
                          GetSuggestionsFromGeminiPolicyState(_prefService)];

@@ -16,22 +16,18 @@ SuggestionsFromGeminiPolicyState GetSuggestionsFromGeminiPolicyState(
 
   BOOL allowedWithoutLogging =
       pref_service->IsManagedPreference(
-          optimization_guide::prefs::
-              kAutofillPredictionImprovementsEnterprisePolicyAllowed) &&
+          optimization_guide::prefs::kFindAndFillWithGeminiSettings) &&
       pref_service->GetInteger(
-          optimization_guide::prefs::
-              kAutofillPredictionImprovementsEnterprisePolicyAllowed) ==
+          optimization_guide::prefs::kFindAndFillWithGeminiSettings) ==
           static_cast<int>(
               optimization_guide::model_execution::prefs::
                   ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
 
   BOOL disabledByPolicy =
       pref_service->IsManagedPreference(
-          optimization_guide::prefs::
-              kAutofillPredictionImprovementsEnterprisePolicyAllowed) &&
+          optimization_guide::prefs::kFindAndFillWithGeminiSettings) &&
       pref_service->GetInteger(
-          optimization_guide::prefs::
-              kAutofillPredictionImprovementsEnterprisePolicyAllowed) ==
+          optimization_guide::prefs::kFindAndFillWithGeminiSettings) ==
           static_cast<int>(optimization_guide::model_execution::prefs::
                                ModelExecutionEnterprisePolicyValue::kDisable);
 
