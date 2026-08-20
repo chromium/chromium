@@ -1380,6 +1380,27 @@ const FeatureEntry::FeatureVariation kNewTabPageUICleanupVariations[] = {
      kNewTabPageUICleanupFakeboxBackgroundAndShadow, nullptr},
 };
 
+constexpr FeatureEntry::FeatureParam kAimButtonRefactorOneMerchandisingChip[] =
+    {{kAimButtonRefactorArmParam, "1"}};
+constexpr FeatureEntry::FeatureParam kAimButtonRefactorTwoMerchandisingChips[] =
+    {{kAimButtonRefactorArmParam, "2"}};
+constexpr FeatureEntry::FeatureParam kAimButtonRefactorAimAsModule[] = {
+    {kAimButtonRefactorArmParam, "3"}};
+constexpr FeatureEntry::FeatureParam kAimButtonRefactorAimAsMvt[] = {
+    {kAimButtonRefactorArmParam, "4"}};
+constexpr FeatureEntry::FeatureParam kAimButtonRefactorNoChips[] = {
+    {kAimButtonRefactorArmParam, "5"}};
+
+constexpr FeatureEntry::FeatureVariation kAimButtonRefactorVariations[] = {
+    {" - One Merchandising Chip", kAimButtonRefactorOneMerchandisingChip,
+     nullptr},
+    {" - Two Merchandising Chips", kAimButtonRefactorTwoMerchandisingChips,
+     nullptr},
+    {" - AIM as Module", kAimButtonRefactorAimAsModule, nullptr},
+    {" - AIM as MVT", kAimButtonRefactorAimAsMvt, nullptr},
+    {" - No Chips", kAimButtonRefactorNoChips, nullptr},
+};
+
 const FeatureEntry::FeatureParam
     kGeminiContextualSuggestionsCuesWithOnDeviceClassifierCPU[] = {
         {kGeminiContextualSuggestionsCuesOnDeviceClassifierParam, "true"},
@@ -2965,6 +2986,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"saas-usage-reporting", flag_descriptions::kSaasUsageReportingName,
      flag_descriptions::kSaasUsageReportingDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(enterprise_reporting::kSaasUsageReporting)},
+    {"aim-button-refactor", flag_descriptions::kAimButtonRefactorName,
+     flag_descriptions::kAimButtonRefactorDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kAimButtonRefactor,
+                                    kAimButtonRefactorVariations,
+                                    "AimButtonRefactor")},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

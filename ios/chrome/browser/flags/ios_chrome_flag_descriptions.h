@@ -52,6 +52,11 @@ inline constexpr char kAiAvatarRingIosName[] = "AiAvatarRing";
 inline constexpr char kAiAvatarRingIosDescription[] =
     "Display a ring around the avatar if the primary account has a AI Tier";
 
+inline constexpr char kAimButtonRefactorName[] = "AIM Button Refactor";
+inline constexpr char kAimButtonRefactorDescription[] =
+    "When enabled, the location and presentation of the AI Mode button on the "
+    "New Tab Page will change.";
+
 inline constexpr char kAimCobrowseName[] = "AimCobrowse";
 inline constexpr char kAimCobrowseDescription[] =
     "Enables the AimCobrowse feature.";
