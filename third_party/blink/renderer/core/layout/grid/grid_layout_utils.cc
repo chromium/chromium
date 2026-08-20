@@ -239,19 +239,26 @@ LayoutUnit ComputeBaselineOffset(const GridItemData& grid_item,
 const LayoutResult* LayoutGridItemForMeasure(
     const GridItemData& grid_item,
     const ConstraintSpace& constraint_space,
-    SizingConstraint sizing_constraint) {
+    SizingConstraint sizing_constraint,
+    bool is_measure_after_layout) {
   const auto& node = grid_item.node;
 
   // Disable side effects during MinMax computation to avoid potential "MinMax
   // after layout" crashes. This is not necessary during the layout pass, and
   // would have a negative impact on performance if used there.
   //
+  // For grid-lanes subgrid baseline alignment, which measures items *after*
+  // their fragments have been stored, writing back would leave an ancestor's
+  // cached fragment referencing a fragment the box no longer owns. Those
+  // callers set `is_measure_after_layout` to keep side effects disabled.
+  //
   // TODO(ikilpatrick): For subgrid, ideally we don't want to disable side
   // effects as it may impact performance significantly; this issue can be
   // avoided by introducing additional cache slots (see crbug.com/1272533).
   std::optional<DisableLayoutSideEffectsScope> disable_side_effects;
   if (!node.GetLayoutBox()->NeedsLayout() &&
-      (sizing_constraint != SizingConstraint::kLayout ||
+      (is_measure_after_layout ||
+       sizing_constraint != SizingConstraint::kLayout ||
        grid_item.is_subgridded_to_parent_grid)) {
     disable_side_effects.emplace();
   }

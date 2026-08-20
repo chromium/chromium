@@ -942,8 +942,8 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
     const GridSizingSubtree& sizing_subtree,
     GridTrackSizingDirection track_direction,
     SizingConstraint sizing_constraint,
-    bool is_track_sizing,
-    BaselineCollectionPhase phase) const {
+    BaselineCollectionPhase phase,
+    bool is_measure_after_layout) const {
   auto& layout_data = sizing_subtree.LayoutData();
 
   if (!layout_data.HasBaselines(track_direction)) {
@@ -1012,7 +1012,7 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
     // the "layout" space (settings constraints in both axes).
     // This means the space is consistent for the phase we are in.
     const auto space =
-        is_track_sizing
+        phase == BaselineCollectionPhase::kBaselinesForTrackSizing
             ? CreateConstraintSpaceForMeasure(subgridded_item, track_direction)
             : CreateConstraintSpaceForLayout(subgridded_item,
                                              subgrid_layout_subtree);
@@ -1024,8 +1024,8 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
       continue;
     }
 
-    const auto* result =
-        LayoutGridItemForMeasure(grid_item, space, sizing_constraint);
+    const auto* result = LayoutGridItemForMeasure(
+        grid_item, space, sizing_constraint, is_measure_after_layout);
 
     MeasureAndStoreItemBaseline(
         *result, grid_item, subgridded_item, space, track_direction,
@@ -1282,7 +1282,8 @@ void GridLayoutAlgorithm::ComputeBaselineAlignment(
     const GridSizingSubtree& sizing_subtree,
     const SubgriddedItemData& opt_subgrid_data,
     const std::optional<GridTrackSizingDirection>& opt_track_direction,
-    SizingConstraint sizing_constraint) const {
+    SizingConstraint sizing_constraint,
+    bool is_measure_after_layout) const {
   DCHECK(sizing_subtree.HasValidRootFor(Node()));
 
   auto& layout_data = sizing_subtree.LayoutData();
@@ -1313,10 +1314,10 @@ void GridLayoutAlgorithm::ComputeBaselineAlignment(
         } else {
           ComputeGridItemBaselines(
               layout_tree, sizing_subtree, track_direction, sizing_constraint,
-              /*is_track_sizing=*/opt_track_direction.has_value(),
               opt_track_direction.has_value()
                   ? BaselineCollectionPhase::kBaselinesForTrackSizing
-                  : BaselineCollectionPhase::kFinalBaselines);
+                  : BaselineCollectionPhase::kFinalBaselines,
+              is_measure_after_layout);
         }
       };
 
@@ -1328,20 +1329,22 @@ void GridLayoutAlgorithm::ComputeBaselineAlignment(
   }
 
   ComputeBaselineAlignmentForEachSubgrid(sizing_subtree, *this, layout_tree,
-                                         opt_track_direction,
-                                         sizing_constraint);
+                                         opt_track_direction, sizing_constraint,
+                                         is_measure_after_layout);
 }
 
 void GridLayoutAlgorithm::ResolveBaselinesInStandaloneAxes(
     const GridSizingSubtree& sizing_subtree,
     GridSizingTree* sizing_tree,
-    SizingConstraint sizing_constraint) const {
+    SizingConstraint sizing_constraint,
+    bool is_measure_after_layout) const {
   ForEachSubgrid(sizing_subtree, *this,
                  [&](const GridLayoutAlgorithm& subgrid_algorithm,
                      const GridSizingSubtree& subgrid_subtree,
                      const SubgriddedItemData& /*subgrid_data*/) {
                    subgrid_algorithm.ResolveBaselinesInStandaloneAxes(
-                       subgrid_subtree, sizing_tree, sizing_constraint);
+                       subgrid_subtree, sizing_tree, sizing_constraint,
+                       is_measure_after_layout);
                  });
 
   // If both axes are subgridded, this grid inherits all its baselines top-down
@@ -1357,8 +1360,8 @@ void GridLayoutAlgorithm::ResolveBaselinesInStandaloneAxes(
     if (!layout_data.HasSubgriddedAxis(track_direction)) {
       ComputeGridItemBaselines(
           layout_tree, sizing_subtree, track_direction, sizing_constraint,
-          /*is_track_sizing=*/false,
-          BaselineCollectionPhase::kBaselinesForStandaloneAxes);
+          BaselineCollectionPhase::kBaselinesForStandaloneAxes,
+          is_measure_after_layout);
     }
   }
 }

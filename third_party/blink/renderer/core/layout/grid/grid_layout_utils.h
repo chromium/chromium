@@ -76,12 +76,16 @@ class BaselineAccumulator {
   virtual std::optional<LayoutUnit> LastBaseline() const = 0;
 };
 
-// Performs a layout of `grid_item` for measurement purposes. Disables layout
-// side effects when appropriate.
+// Performs a layout of `grid_item` for measurement purposes, disabling layout
+// side effects when the resulting fragment must not be written back to the
+// item. Set `is_measure_after_layout` when this item has already been laid out
+// and its fragment stored, as no subsequent layout will overwrite the fragment
+// measured here.
 const LayoutResult* LayoutGridItemForMeasure(
     const GridItemData& grid_item,
     const ConstraintSpace& constraint_space,
-    SizingConstraint sizing_constraint);
+    SizingConstraint sizing_constraint,
+    bool is_measure_after_layout = false);
 
 // Update the provided `available_size`, `min_available_size`, and
 // `max_available_size` to their appropriate values.
@@ -447,7 +451,8 @@ void ComputeBaselineAlignmentForEachSubgrid(
     const LayoutAlgorithmType& algorithm,
     const GridLayoutTree* layout_tree,
     const std::optional<GridTrackSizingDirection>& opt_track_direction,
-    SizingConstraint sizing_constraint) {
+    SizingConstraint sizing_constraint,
+    bool is_measure_after_layout = false) {
   // TODO(almaher): Support grid-lanes subgrids as well.
   ForEachSubgrid(
       sizing_subtree, algorithm,
@@ -457,7 +462,7 @@ void ComputeBaselineAlignmentForEachSubgrid(
         subgrid_algorithm.ComputeBaselineAlignment(
             layout_tree, subgrid_subtree, subgrid_data,
             subgrid_data->RelativeDirectionFilterInSubgrid(opt_track_direction),
-            sizing_constraint);
+            sizing_constraint, is_measure_after_layout);
       });
 }
 

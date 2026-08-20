@@ -27,7 +27,6 @@ class GridSizingSubtree;
 class GridSizingTree;
 class SubgriddedItemData;
 enum class GridItemContributionType;
-struct BoxStrut;
 struct GridItemData;
 struct GridLaneData;
 struct GridLanesGapGeometryState;
@@ -173,6 +172,12 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       BaselineAccumulator* baseline_accumulator,
       GridLanesRunningPositions& running_positions,
       GridLanesDataVector* out_grid_lanes = nullptr);
+
+  // Measures items nested in a subgrid and stores their per-track baselines.
+  void StoreSubgriddedItemBaselines(GridItems& grid_items,
+                                    const GridSizingSubtree& sizing_subtree,
+                                    GridLayoutData& layout_data,
+                                    SizingConstraint sizing_constraint);
 
   // Creates a constraint space for relaying out a stretch-aligned item with
   // its stretched stacking-axis size. `builder_child_index` indexes the item's
@@ -346,7 +351,6 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       const ConstraintSpace space_for_measure,
       GridItemData* virtual_item,
       const bool needs_intrinsic_track_size,
-      const BoxStrut& margins,
       LayoutUnit shared_baseline,
       LayoutUnit& baseline_shim) const;
 
