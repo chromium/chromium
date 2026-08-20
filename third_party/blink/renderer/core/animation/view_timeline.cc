@@ -253,7 +253,7 @@ ViewTimeline* ViewTimeline::Create(Document& document,
   if (v8_inset && v8_inset->IsCSSNumericValueOrStringSequence()) {
     const InsetValueSequence inset_array =
         v8_inset->GetAsCSSNumericValueOrStringSequence();
-    if (inset_array.size() > 2) {
+    if (inset_array.empty() || inset_array.size() > 2) {
       exception_state.ThrowTypeError("Invalid inset");
       return nullptr;
     }

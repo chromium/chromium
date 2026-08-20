@@ -9,5 +9,5 @@ dictionary ViewTimelineOptions {
     ScrollAxis axis = "block";
     // String in CSS format or sequence of TypedOM values.
     // DOMString within sequence is for keyword "auto".
-    (DOMString or sequence<(DOMString or CSSNumericValue)>) inset = [];
+    (DOMString or sequence<(DOMString or CSSNumericValue)>) inset = "auto";
 };
