@@ -113,6 +113,14 @@ struct DowncastTraits<BackgroundColorPaintWorkletInput> {
 
 Animation* BackgroundColorPaintDefinition::GetAnimationIfCompositable(
     const Element* element) {
+  // Prevent compositing when colors are modified at paint-time.
+  // Force a fallback to the main thread to ensure correct frame-by-frame
+  // color-filtering.
+  const ComputedStyle* style = element->GetComputedStyle();
+  if (!style || style->ForceDark() || style->InForcedColorsMode()) {
+    return nullptr;
+  }
+
   ElementAnimations* element_animations = element->GetElementAnimations();
   if (!element_animations) {
     return nullptr;

@@ -410,6 +410,43 @@ TEST_F(BackgroundColorPaintDefinitionTest, MultipleAnimationsFallback) {
             ElementAnimations::CompositedPaintStatus::kNotComposited);
 }
 
+TEST_F(BackgroundColorPaintDefinitionTest, FallbackToMainForcedDarkMode) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes fade-in {
+        from { background-color: transparent; }
+        to { background-color: #ffe; }
+      }
+      #target {
+        height: 100px;
+        width: 100px;
+        animation: fade-in 1s forwards;
+      }
+    </style>
+    <div id ="target">
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  Element* element = GetElementById("target");
+  EXPECT_TRUE(element->GetElementAnimations());
+  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
+  EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kComposited);
+  EXPECT_TRUE(element->GetElementAnimations()
+                  ->Animations()
+                  .begin()
+                  ->key->HasActiveAnimationsOnCompositor());
+
+  GetDocument().GetSettings()->SetForceDarkModeEnabled(true);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNotComposited);
+  EXPECT_FALSE(element->GetElementAnimations()
+                   ->Animations()
+                   .begin()
+                   ->key->HasActiveAnimationsOnCompositor());
+}
+
 // Lack mechanism to re-snapshot keyframes on a change to current color.
 TEST_F(BackgroundColorPaintDefinitionTest, FallbackToMainCurrentColor) {
   SetBodyInnerHTML(R"HTML(

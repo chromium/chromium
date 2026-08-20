@@ -37,6 +37,7 @@ bool NativePaintWorkletData::SetStatus(CompositedPaintStatus status) {
             Animation::CompositorPendingReason::kPendingDowngrade);
       }
       animation_ = nullptr;
+      SetAnimationCurve(nullptr);
     }
     return true;
   }
