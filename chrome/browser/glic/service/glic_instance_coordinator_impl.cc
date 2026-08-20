@@ -205,15 +205,23 @@ void GlicInstanceCoordinatorImpl::CancelInvoke(GlicInstanceImpl* instance) {
   }
 }
 
-void GlicInstanceCoordinatorImpl::OnInvoked() {
+void GlicInstanceCoordinatorImpl::OnInvoked(mojom::InvocationSource source,
+                                            ukm::SourceId source_id) {
   if (onboarding_tracker_) {
-    onboarding_tracker_->OnInvoke();
+    onboarding_tracker_->OnInvoke(source, source_id);
   }
 }
 
-void GlicInstanceCoordinatorImpl::OnUserInputSubmitted() {
+void GlicInstanceCoordinatorImpl::OnUserInputSubmitted(
+    ukm::SourceId source_id) {
   if (onboarding_tracker_) {
-    onboarding_tracker_->OnPrompt();
+    onboarding_tracker_->OnPrompt(source_id);
+  }
+}
+
+void GlicInstanceCoordinatorImpl::OnFreOptInShown(ukm::SourceId source_id) {
+  if (onboarding_tracker_) {
+    onboarding_tracker_->OnFreOptInShown(source_id);
   }
 }
 

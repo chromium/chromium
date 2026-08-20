@@ -85,6 +85,14 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Called when the opt-in CTA is shown.
   void OnOptinImpression();
 
+  // TODO(crbug.com/545714879): Remove OptInShownCallback once
+  // OnFreOptInShown is logged directly or via direct profile helpers instead of
+  // bubbling up to GlicOnboardingTracker.
+  using OptInShownCallback = base::RepeatingCallback<void(ukm::SourceId)>;
+  void SetOptInShownCallback(OptInShownCallback callback) {
+    opt_in_shown_callback_ = std::move(callback);
+  }
+
   // Called when GlicInstanceImpl is destroyed.
   void OnInstanceDestroyed();
 
@@ -340,6 +348,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   bool is_client_ready_ = false;
   bool is_opt_in_pending_ = false;
   bool has_consented_ = false;
+  OptInShownCallback opt_in_shown_callback_;
 
   base::CallbackListSubscription pinned_tabs_changed_subscription_;
   base::CallbackListSubscription tab_pinning_status_subscription_;
