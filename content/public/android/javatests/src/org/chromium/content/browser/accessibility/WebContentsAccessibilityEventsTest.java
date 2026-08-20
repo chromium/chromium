@@ -23,6 +23,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -366,6 +367,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/549376305")
     public void test_ariaCheckedChanged() {
         performTest("aria-checked-changed.html", "aria-checked-changed-expected-android.txt");
     }
@@ -525,6 +527,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/549376305")
     public void test_ariaMeterValueChange() {
         performTest("aria-meter-value-change.html", "aria-meter-value-change-expected-android.txt");
     }
@@ -545,12 +548,14 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/549376305")
     public void test_ariaPressedChanged() {
         performTest("aria-pressed-changed.html", "aria-pressed-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/549376305")
     public void test_ariaPressedChangesButtonRole() {
         performTest(
                 "aria-pressed-changes-button-role.html",
@@ -639,6 +644,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/549376305")
     public void test_ariaSpinbuttonValueBothChanged() {
         performTest(
                 "aria-spinbutton-value-both-change.html",
@@ -647,6 +653,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/549376305")
     public void test_ariaSpinbuttonValueChanged() {
         performTest(
                 "aria-spinbutton-value-change.html",
@@ -663,6 +670,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/549376305")
     public void test_ariaSpinbuttonValuetextChanged() {
         performTest(
                 "aria-spinbutton-valuetext-change.html",
@@ -861,6 +869,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/549376305")
     public void test_descriptionChangedPaneTitle() {
         performTest(
                 "description-changed-pane-title.html",
@@ -893,6 +902,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/549376305")
     public void test_dialogPaneNameChanged() {
         performTest("dialog-pane-name-change.html", "dialog-pane-name-change-expected-android.txt");
     }
@@ -943,6 +953,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/549376305")
     public void test_formRequiredChanged() {
         performTest("form-required-changed.html", "form-required-changed-expected-android.txt");
     }
@@ -1327,6 +1338,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/549376305")
     public void test_pressedStateChanged() {
         performTest("pressed-state-changed.html", "pressed-state-changed-expected-android.txt");
     }
