@@ -72,6 +72,7 @@ source_set("impl") {
     "//chrome/common",
     "//components/bookmarks/browser",
     "//components/history/core/browser",
+    "//components/optimization_guide/content/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/search_engines",
     "//components/sessions",

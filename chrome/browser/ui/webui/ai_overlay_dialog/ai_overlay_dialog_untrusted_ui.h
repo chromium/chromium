@@ -52,6 +52,10 @@ class AiOverlayDialogUntrustedUI
       mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> tools)
       override;
 
+  PageContextMonitor* page_context_monitor() const {
+    return page_context_monitor_.get();
+  }
+
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
 

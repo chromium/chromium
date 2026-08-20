@@ -4,7 +4,9 @@
 
 module ai_overlay_dialog.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.mojom";
+import "third_party/blink/public/mojom/dom/dom_node_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
@@ -40,6 +42,12 @@ struct RawViewportRegionResult {
   int32 width;
   int32 height;
   float scale_factor;
+};
+
+// Result payload containing raw image data bytes and mime type.
+struct ImageBytesResult {
+  mojo_base.mojom.BigBuffer image_bytes;
+  string mime_type;
 };
 
 // Represents a remembered conversational note or user preference entry.
@@ -105,6 +113,13 @@ interface PageHandler {
   // A static enum is used to prevent untrusted renderers from specifying
   // arbitrary file paths. Does nothing if debug logging is not enabled.
   SaveDebugFile(DebugFileType type, string content);
+
+  // Retrieves the raw image content and MIME type for an image or linked image
+  // element on the active page by its numeric DOM node ID.
+  // Returns null if there is no active tab/frame, the node ID does not
+  // correspond to a valid image, or image extraction fails.
+  GetImageBytes(blink.mojom.DOMNodeId dom_node_id)
+      => (ImageBytesResult? result);
 };
 // Implemented by the WebUI (TypeScript/JS). Called by the Browser C++.
 interface Page {

@@ -22,6 +22,11 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_untrusted_ui.h"
+#include "chrome/browser/ui/webui/ai_overlay_dialog/page_context_monitor.h"
+#include "components/optimization_guide/content/browser/page_content_image_extractor.h"
+#include "components/optimization_guide/content/browser/page_content_proto_util.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -93,10 +98,12 @@ namespace ttc {
 AiOverlayDialogPageHandler::AiOverlayDialogPageHandler(
     mojo::PendingReceiver<ai_overlay_dialog::mojom::PageHandler> receiver,
     mojo::PendingRemote<ai_overlay_dialog::mojom::Page> remote,
-    BrowserWindowInterface* browser)
+    BrowserWindowInterface* browser,
+    AiOverlayDialogUntrustedUI* untrusted_ui)
     : receiver_(this, std::move(receiver)),
       page_(std::move(remote)),
-      browser_(browser) {
+      browser_(browser),
+      untrusted_ui_(untrusted_ui) {
   if (auto* controller = AiOverlayDialogController::From(browser_)) {
     controller->AddObserver(this);
     page_->SetInputCaptionsVisible(controller->input_captions_visible());
@@ -382,4 +389,61 @@ void AiOverlayDialogPageHandler::SaveDebugFile(
 
   base::WriteFile(file_path, data_to_write);
 }
+
+void AiOverlayDialogPageHandler::GetImageBytes(
+    const blink::DOMNodeIdType& dom_node_id,
+    GetImageBytesCallback callback) {
+  content::WebContents* contents =
+      browser_ ? (browser_->GetActiveTabInterface()
+                      ? browser_->GetActiveTabInterface()->GetContents()
+                      : nullptr)
+               : nullptr;
+  if (!contents || !contents->GetPrimaryMainFrame()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  std::optional<std::string> document_identifier =
+      optimization_guide::DocumentIdentifierUserData::GetDocumentIdentifier(
+          contents->GetPrimaryMainFrame()->GetGlobalFrameToken());
+  if (!document_identifier.has_value()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  PageContextMonitor* page_context_monitor =
+      untrusted_ui_ ? untrusted_ui_->page_context_monitor() : nullptr;
+  if (!page_context_monitor) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  std::optional<int32_t> resolved_id =
+      page_context_monitor->ResolveImageDomNodeId(*document_identifier,
+                                                  dom_node_id.value());
+  if (!resolved_id.has_value()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  optimization_guide::GetImageBytes(
+      contents, *document_identifier, *resolved_id,
+      base::BindOnce(
+          [](GetImageBytesCallback cb,
+             blink::mojom::AIPageContentImageBytesResultPtr result) {
+            if (!result || result->image_bytes.size() == 0 ||
+                !result->image_info ||
+                !result->image_info->mime_type.has_value() ||
+                result->image_info->mime_type->empty()) {
+              std::move(cb).Run(nullptr);
+              return;
+            }
+            auto out_result = ai_overlay_dialog::mojom::ImageBytesResult::New();
+            out_result->image_bytes = std::move(result->image_bytes);
+            out_result->mime_type = *result->image_info->mime_type;
+            std::move(cb).Run(std::move(out_result));
+          },
+          std::move(callback)));
+}
+
 }  // namespace ttc

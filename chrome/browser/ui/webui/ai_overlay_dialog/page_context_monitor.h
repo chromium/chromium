@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_AI_OVERLAY_DIALOG_PAGE_CONTEXT_MONITOR_H_
 #define CHROME_BROWSER_UI_WEBUI_AI_OVERLAY_DIALOG_PAGE_CONTEXT_MONITOR_H_
 
+#include <optional>
+#include <string_view>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_page_handler.h"
@@ -29,6 +32,10 @@ class PageContextMonitor : public content::WebContentsObserver {
   void DidStopLoading() override;
 
   std::string GetUrlForHash(const std::string& hash) const;
+
+  std::optional<int32_t> ResolveImageDomNodeId(
+      std::string_view document_identifier,
+      int32_t dom_node_id) const;
 
   const std::optional<optimization_guide::proto::AnnotatedPageContent>&
   last_page_content() const {
