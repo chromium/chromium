@@ -145,15 +145,6 @@ bool InitSchema(sql::Database* db, sql::MetaTable* meta_table) {
     return false;
   }
 
-  // This implies that the database was rolled back, without a downgrade path.
-  // This should never happen.
-  if (meta_table->GetCompatibleVersionNumber() > kCurrentVersionNumber) {
-    LOG(ERROR)
-        << "TabStateStorageDatabase has a compatible version greater than the "
-           "current version. Did a rollback occur without a downgrade path?";
-    return false;
-  }
-
   // Do not cache if the schema exists, it may have been razed earlier and needs
   // to be recreated.
   if (!db->DoesTableExist(kTabsTableName) && !CreateSchema(db, meta_table)) {
