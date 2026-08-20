@@ -59,11 +59,13 @@
 #import "ios/chrome/app/deferred_initialization_task_names.h"
 #import "ios/chrome/app/enterprise_app_agent.h"
 #import "ios/chrome/app/launch_screen_view_controller.h"
+#import "ios/chrome/app/legacy_scene_identifier_map.h"
 #import "ios/chrome/app/memory_monitor.h"
 #import "ios/chrome/app/profile/profile_controller.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
+#import "ios/chrome/app/scene_identifier_map.h"
 #import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 #import "ios/chrome/app/startup/chrome_main_starter.h"
 #import "ios/chrome/app/startup/client_registration.h"
@@ -111,7 +113,6 @@
 #import "ios/chrome/browser/share_extension/model/share_extension_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -247,76 +248,6 @@ void BeginMemoryExperimentationAfterDelay() {
                  dispatch_get_main_queue(), ^{
                    ios::provider::BeginMemoryExperimentation();
                  });
-}
-
-// Inserts `session_ids` into the set of discarded sessions for `attrs`.
-void InsertDiscardedSessions(const std::set<std::string>& session_ids,
-                             ProfileAttributesIOS& attrs) {
-  auto discarded_sessions = attrs.GetDiscardedSessions();
-  discarded_sessions.insert(session_ids.begin(), session_ids.end());
-  attrs.SetDiscardedSessions(discarded_sessions);
-}
-
-// Mark all `sessions` as discarded sessions for all profiles.
-void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
-  ProfileAttributesStorageIOS* storage = GetApplicationContext()
-                                             ->GetProfileManager()
-                                             ->GetProfileAttributesStorage();
-
-  // Usually Chrome uses -[SceneState sceneSessionID] as identifier to properly
-  // support devices that do not support multi-window (and which use a constant
-  // identifier). For devices that do not support multi-window the session is
-  // saved at a constant path, so it is harmless to delete files at a path
-  // derived from -persistentIdentifier (since there won't be files deleted).
-  // For devices that do support multi-window, there is data to delete once the
-  // session is garbage collected.
-  //
-  // Thus it is always correct to use -persistentIdentifier here.
-  std::set<std::string> sessionIDs;
-  for (UISceneSession* session in sessions) {
-    sessionIDs.insert(base::SysNSStringToUTF8(session.persistentIdentifier));
-  }
-
-  storage->IterateOverProfileAttributes(
-      base::BindRepeating(&InsertDiscardedSessions, sessionIDs));
-}
-
-// It was found that -application:didDiscardSceneSessions: may be called with
-// UISceneSession* corresponding to SceneState* that are still connected. It
-// caused flakyness of EarlGrey tests (see https://crbug.com/390108895). The
-// behaviour has only been confirmed for EarlGrey tests. Record an histogram
-// counting how many Scenes are discarded while still connected to detect if
-// the issue also reproduce in production (if it were to reproduce, it would
-// cause unexplained tab losses).
-//
-// See https://crbug.com/392575873 for details.
-void RecordDiscardSceneStillConnected(NSSet<UISceneSession*>* scene_sessions,
-                                      NSArray<SceneState*>* connected_scenes) {
-  // iPhone do not use -persistentIdentifier to identify the session data
-  // for a SceneState, so they will never delete data. Only record metric
-  // for iPad since even if the issue reproduce on iPhone, it won't have
-  // any impact.
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-
-  NSUInteger count_discarded_scene_still_connected = 0;
-  NSMutableSet<NSString*>* connected_identifiers = [[NSMutableSet alloc] init];
-  for (SceneState* scene_state in connected_scenes) {
-    [connected_identifiers
-        addObject:base::SysUTF8ToNSString(scene_state.sceneSessionID)];
-  }
-
-  for (UISceneSession* scene_session in scene_sessions) {
-    NSString* persistent_identifier = scene_session.persistentIdentifier;
-    if ([connected_identifiers containsObject:persistent_identifier]) {
-      ++count_discarded_scene_still_connected;
-    }
-  }
-
-  base::UmaHistogramExactLinear(
-      "IOS.Sessions.DiscardedScenesStillConnectedCount",
-      count_discarded_scene_still_connected, 100);
 }
 
 // Possible choices for which profile to use for a scene.
@@ -475,6 +406,9 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   // The object that drives the Chrome startup/shutdown logic.
   std::unique_ptr<IOSChromeMain> _chromeMain;
 
+  // Used to assign identifiers to SceneState objects.
+  std::unique_ptr<SceneIdentifierMap> _sceneIdentifierMap;
+
   // An object to record metrics related to the user's first action.
   std::unique_ptr<FirstUserActionRecorder> _firstUserActionRecorder;
 
@@ -521,6 +455,9 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   // reached a significant stage (e.g. loaded the session and allowed the
   // user to interact with the application, ...).
   ProfileInitStage _highestProfileInitStageReached;
+
+  // Whether any SceneState has been connected (for SceneIdentifierMap).
+  BOOL _anySceneConnected;
 
   // True if the current session began from a cold start. False if the app has
   // entered the background at least once since start up.
@@ -618,9 +555,14 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 
   _chromeMain = [ChromeMainStarter startChromeMain];
 
+  ApplicationContext* applicationContext = GetApplicationContext();
+  _sceneIdentifierMap = std::make_unique<LegacySceneIdentifierMap>(
+      self.appState,
+      applicationContext->GetProfileManager()->GetProfileAttributesStorage(),
+      base::ios::IsMultipleScenesSupported());
+
   // Register the ChangeProfileCommands handler with AccountProfileMapper.
-  GetApplicationContext()
-      ->GetAccountProfileMapper()
+  applicationContext->GetAccountProfileMapper()
       ->SetChangeProfileCommandsHandler(HandlerForProtocol(
           self.appState.appCommandDispatcher, ChangeProfileCommands));
 
@@ -649,7 +591,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   // TODO(crbug.com/40190949): Stop watching for a crash if this is a background
   // fetch.
   if (_userInteracted) {
-    GetApplicationContext()->GetMetricsService()->OnAppEnterForeground();
+    applicationContext->GetMetricsService()->OnAppEnterForeground();
   }
 
   web::WebUIIOSControllerFactory::RegisterFactory(
@@ -939,8 +881,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   applicationContext->GetSystemIdentityManager()
       ->ApplicationDidDiscardSceneSessions(sceneSessions);
 
-  MarkSessionsAsDiscardedForAllProfiles(sceneSessions);
-  RecordDiscardSceneStillConnected(sceneSessions, _appState.connectedScenes);
+  _sceneIdentifierMap->OnSessionsDiscarded(sceneSessions);
 
   crash_keys::SetConnectedScenesCount(_appState.connectedScenes.count);
 }
@@ -1049,6 +990,9 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 
 - (void)profileState:(ProfileState*)profileState
     sceneDisconnected:(SceneState*)sceneState {
+  if (self.appState.connectedScenes.count == 0) {
+    _sceneIdentifierMap->OnLastSceneStateDisconnected(sceneState);
+  }
   if (profileState.connectedScenes.count == 0) {
     [self scheduleDropUnusedProfileControllers];
   }
@@ -1261,6 +1205,10 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   }
 
   _profileControllers.clear();
+
+  // Destroy the SceneIdentifierMap after shutting down all ProfileController
+  // as they will disconnect the Scenes as part of the shut down sequence.
+  _sceneIdentifierMap.reset();
 
   // Cancel any pending deferred startup tasks (the application is shutting
   // down, so there is no point in running them).
@@ -1828,7 +1776,9 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
            attributesStorage:(ProfileAttributesStorageIOS*)storage
                   localState:(PrefService*)localState {
   // Assign an identifier to the SceneState.
-  sceneState.sceneSessionID = SessionIdentifierForScene(sceneState.scene);
+  const BOOL isFirstScene = !std::exchange(_anySceneConnected, YES);
+  _sceneIdentifierMap->AssignIdentifierToSceneState(
+      sceneState, sceneState.scene.session, isFirstScene);
   const std::string_view sceneStateID = sceneState.sceneSessionID;
 
   // Determine which profile to use. The logic is to take the first valid
