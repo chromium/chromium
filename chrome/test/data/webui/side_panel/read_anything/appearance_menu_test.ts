@@ -10,7 +10,6 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-unt
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {assertCheckMarksForDropdown, assertTestSettingsAreNotDefaultSettings, mockMetrics, stubAnimationFrame, TEST_RANDOM_VALUE_SETTINGS} from './common.js';
-import {FakeReadingMode} from './fake_reading_mode.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
@@ -25,8 +24,6 @@ suite('AppearanceMenuElement', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const readingMode = new FakeReadingMode();
-    chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     metrics = mockMetrics();
 
     visualBrowserProxy = new TestVisualBrowserProxy();
@@ -41,7 +38,7 @@ suite('AppearanceMenuElement', () => {
   });
 
   test('theme prop update changes selected items', async () => {
-    const yellowTheme = chrome.readingMode.yellowTheme;
+    const yellowTheme = visualBrowserProxy.getYellowTheme();
     appearanceMenu.settingsPrefs = {
       ...appearanceMenu.settingsPrefs,
       theme: yellowTheme,
@@ -60,26 +57,25 @@ suite('AppearanceMenuElement', () => {
     document.addEventListener(
         ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
 
-    let calledTheme = -1;
-    chrome.readingMode.onThemeChange = (val: number) => calledTheme = val;
-
     const themesToTest = [
-      chrome.readingMode.defaultTheme,
-      chrome.readingMode.lightTheme,
-      chrome.readingMode.darkTheme,
-      chrome.readingMode.yellowTheme,
-      chrome.readingMode.blueTheme,
-      chrome.readingMode.highContrastTheme,
-      chrome.readingMode.lowContrastLightTheme,
-      chrome.readingMode.lowContrastDarkTheme,
+      visualBrowserProxy.getDefaultTheme(),
+      visualBrowserProxy.getLightTheme(),
+      visualBrowserProxy.getDarkTheme(),
+      visualBrowserProxy.getYellowTheme(),
+      visualBrowserProxy.getBlueTheme(),
+      visualBrowserProxy.getHighContrastTheme(),
+      visualBrowserProxy.getLowContrastLightTheme(),
+      visualBrowserProxy.getLowContrastDarkTheme(),
     ];
 
     for (const testTheme of themesToTest) {
+      visualBrowserProxy.resetResolver('onThemeChange');
       appearanceMenu.$.menu.dispatchEvent(
           new CustomEvent(ToolbarEvent.THEME, {detail: {data: testTheme}}));
       await microtasksFinished();
 
-      assertEquals(testTheme, calledTheme);
+      assertEquals(
+          testTheme, await visualBrowserProxy.whenCalled('onThemeChange'));
       const selectedItems = appearanceMenu.$.menu.menuGroups[1]!.items.filter(
           item => item.selected);
       assertEquals(1, selectedItems.length);
@@ -95,7 +91,7 @@ suite('AppearanceMenuElement', () => {
   });
 
   test('restores saved color option', async () => {
-    const color = chrome.readingMode.yellowTheme;
+    const color = visualBrowserProxy.getYellowTheme();
     const startingSelected =
         appearanceMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
     assertNotEquals(color, startingSelected?.data);

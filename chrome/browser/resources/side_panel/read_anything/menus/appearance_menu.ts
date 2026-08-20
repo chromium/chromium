@@ -61,42 +61,42 @@ export class AppearanceMenuElement extends AppearanceMenuElementBase implements
     {
       title: loadTimeData.getString('defaultColorTitle'),
       icon: 'read-anything-20:default-theme-custom',
-      data: chrome.readingMode.defaultTheme,
+      data: this.visualBrowserProxy_.getDefaultTheme(),
     },
     {
       title: loadTimeData.getString('lightColorTitle'),
       icon: 'read-anything-20:light-theme-custom',
-      data: chrome.readingMode.lightTheme,
+      data: this.visualBrowserProxy_.getLightTheme(),
     },
     {
       title: loadTimeData.getString('darkColorTitle'),
       icon: 'read-anything-20:dark-theme-custom',
-      data: chrome.readingMode.darkTheme,
+      data: this.visualBrowserProxy_.getDarkTheme(),
     },
     {
       title: loadTimeData.getString('yellowColorTitle'),
       icon: 'read-anything-20:yellow-theme-custom',
-      data: chrome.readingMode.yellowTheme,
+      data: this.visualBrowserProxy_.getYellowTheme(),
     },
     {
       title: loadTimeData.getString('blueColorTitle'),
       icon: 'read-anything-20:blue-theme-custom',
-      data: chrome.readingMode.blueTheme,
+      data: this.visualBrowserProxy_.getBlueTheme(),
     },
     {
       title: loadTimeData.getString('highContrastColorTitle'),
       icon: 'read-anything-20:high-contrast-theme-custom',
-      data: chrome.readingMode.highContrastTheme,
+      data: this.visualBrowserProxy_.getHighContrastTheme(),
     },
     {
       title: loadTimeData.getString('lowContrastLightColorTitle'),
       icon: 'read-anything-20:low-contrast-light-theme-custom',
-      data: chrome.readingMode.lowContrastLightTheme,
+      data: this.visualBrowserProxy_.getLowContrastLightTheme(),
     },
     {
       title: loadTimeData.getString('lowContrastDarkColorTitle'),
       icon: 'read-anything-20:low-contrast-dark-theme-custom',
-      data: chrome.readingMode.lowContrastDarkTheme,
+      data: this.visualBrowserProxy_.getLowContrastDarkTheme(),
     },
   ];
 
@@ -156,7 +156,7 @@ export class AppearanceMenuElement extends AppearanceMenuElementBase implements
 
   protected onThemeChange_(e: CustomEvent<{data: number}>) {
     const newTheme = e.detail.data;
-    chrome.readingMode.onThemeChange(newTheme);
+    this.visualBrowserProxy_.onThemeChange(newTheme);
     this.logger_.logTextSettingsChange(ReadAnythingSettingsChange.THEME_CHANGE);
     this.settingsPrefs = {
       ...this.settingsPrefs,

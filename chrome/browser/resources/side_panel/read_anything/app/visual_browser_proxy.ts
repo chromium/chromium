@@ -19,9 +19,19 @@ export interface VisualBrowserProxy {
   getWideLetterSpacing(): number;
   getVeryWideLetterSpacing(): number;
 
+  getDefaultTheme(): number;
+  getLightTheme(): number;
+  getDarkTheme(): number;
+  getYellowTheme(): number;
+  getBlueTheme(): number;
+  getHighContrastTheme(): number;
+  getLowContrastLightTheme(): number;
+  getLowContrastDarkTheme(): number;
+
   onFontChange(font: string): void;
   onLineSpacingChange(value: number): void;
   onLetterSpacingChange(value: number): void;
+  onThemeChange(theme: number): void;
   togglePresentation(): void;
 }
 
@@ -66,6 +76,38 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
     return chrome.readingMode.veryWideLetterSpacing;
   }
 
+  getDefaultTheme(): number {
+    return chrome.readingMode.defaultTheme;
+  }
+
+  getLightTheme(): number {
+    return chrome.readingMode.lightTheme;
+  }
+
+  getDarkTheme(): number {
+    return chrome.readingMode.darkTheme;
+  }
+
+  getYellowTheme(): number {
+    return chrome.readingMode.yellowTheme;
+  }
+
+  getBlueTheme(): number {
+    return chrome.readingMode.blueTheme;
+  }
+
+  getHighContrastTheme(): number {
+    return chrome.readingMode.highContrastTheme;
+  }
+
+  getLowContrastLightTheme(): number {
+    return chrome.readingMode.lowContrastLightTheme;
+  }
+
+  getLowContrastDarkTheme(): number {
+    return chrome.readingMode.lowContrastDarkTheme;
+  }
+
   onFontChange(font: string): void {
     chrome.readingMode.onFontChange(font);
   }
@@ -76,6 +118,10 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
 
   onLetterSpacingChange(value: number): void {
     chrome.readingMode.onLetterSpacingChange(value);
+  }
+
+  onThemeChange(theme: number): void {
+    chrome.readingMode.onThemeChange(theme);
   }
 
   togglePresentation(): void {

@@ -17,6 +17,14 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   standardLetterSpacing: number = 0;
   wideLetterSpacing: number = 1;
   veryWideLetterSpacing: number = 2;
+  defaultTheme: number = 0;
+  lightTheme: number = 1;
+  darkTheme: number = 2;
+  yellowTheme: number = 3;
+  blueTheme: number = 4;
+  highContrastTheme: number = 5;
+  lowContrastLightTheme: number = 6;
+  lowContrastDarkTheme: number = 7;
 
   constructor() {
     super([
@@ -30,9 +38,18 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
       'getStandardLetterSpacing',
       'getWideLetterSpacing',
       'getVeryWideLetterSpacing',
+      'getDefaultTheme',
+      'getLightTheme',
+      'getDarkTheme',
+      'getYellowTheme',
+      'getBlueTheme',
+      'getHighContrastTheme',
+      'getLowContrastLightTheme',
+      'getLowContrastDarkTheme',
       'onFontChange',
       'onLineSpacingChange',
       'onLetterSpacingChange',
+      'onThemeChange',
       'togglePresentation',
     ]);
   }
@@ -87,6 +104,46 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
     return this.veryWideLetterSpacing;
   }
 
+  getDefaultTheme(): number {
+    this.methodCalled('getDefaultTheme');
+    return this.defaultTheme;
+  }
+
+  getLightTheme(): number {
+    this.methodCalled('getLightTheme');
+    return this.lightTheme;
+  }
+
+  getDarkTheme(): number {
+    this.methodCalled('getDarkTheme');
+    return this.darkTheme;
+  }
+
+  getYellowTheme(): number {
+    this.methodCalled('getYellowTheme');
+    return this.yellowTheme;
+  }
+
+  getBlueTheme(): number {
+    this.methodCalled('getBlueTheme');
+    return this.blueTheme;
+  }
+
+  getHighContrastTheme(): number {
+    this.methodCalled('getHighContrastTheme');
+    return this.highContrastTheme;
+  }
+
+  getLowContrastLightTheme(): number {
+    this.methodCalled('getLowContrastLightTheme');
+    return this.lowContrastLightTheme;
+  }
+
+  getLowContrastDarkTheme(): number {
+    this.methodCalled('getLowContrastDarkTheme');
+    return this.lowContrastDarkTheme;
+  }
+
   onFontChange(font: string): void {
     this.methodCalled('onFontChange', font);
   }
@@ -97,6 +154,10 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
 
   onLetterSpacingChange(value: number): void {
     this.methodCalled('onLetterSpacingChange', value);
+  }
+
+  onThemeChange(theme: number): void {
+    this.methodCalled('onThemeChange', theme);
   }
 
   togglePresentation(): void {
