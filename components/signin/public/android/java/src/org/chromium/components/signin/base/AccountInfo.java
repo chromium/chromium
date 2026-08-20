@@ -52,7 +52,7 @@ public class AccountInfo extends CoreAccountInfo {
             mCoreAccountInfo = coreAccountInfo;
         }
 
-        /** Creates a builder constructor which holds a copy of {@param accountInfo}. */
+        /** Creates a builder constructor which holds a copy of {@code accountInfo}. */
         public Builder(AccountInfo accountInfo) {
             this(accountInfo.getEmail(), accountInfo.getGaiaId());
             mFullName = accountInfo.getFullName();

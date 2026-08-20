@@ -35,7 +35,7 @@ public class AccountUtils {
     private AccountUtils() {}
 
     /**
-     * Creates an Account object for the given {@param email}. Only used in places where we need to
+     * Creates an Account object for the given {@code email}. Only used in places where we need to
      * talk to Android which is very rare.
      */
     public static Account createAccountFromEmail(String email) {

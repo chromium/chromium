@@ -98,7 +98,7 @@ public class CrossDevicePrefTracker {
     }
 
     /**
-     * Returns all known values for the given {@param prefName} and device information filters.
+     * Returns all known values for the given {@code prefName} and device information filters.
      *
      * @param prefName The canonical name of the pref to query.
      * @param osType The {@link OsType} to use. If null, matches any OS type.
@@ -118,7 +118,7 @@ public class CrossDevicePrefTracker {
     }
 
     /**
-     * Returns all known values for the given {@param prefName} and device information filters.
+     * Returns all known values for the given {@code prefName} and device information filters.
      *
      * @param prefName The canonical name of the pref to query.
      * @param osType The {@link OsType} to use. If null, matches any OS type.

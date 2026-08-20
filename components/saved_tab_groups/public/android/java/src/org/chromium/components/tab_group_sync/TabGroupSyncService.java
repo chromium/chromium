@@ -177,7 +177,7 @@ public interface TabGroupSyncService {
     void addTab(LocalTabGroupId tabGroupId, int tabId, String title, GURL url, int position);
 
     /**
-     * Updates a remote tab corresponding to local tab ID {@param tabId}.
+     * Updates a remote tab corresponding to local tab ID {@code tabId}.
      *
      * @param tabGroupId The local ID of the corresponding tab group.
      * @param tabId The local tab ID of the tab being added.
