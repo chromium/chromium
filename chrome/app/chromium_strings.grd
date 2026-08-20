@@ -2055,6 +2055,14 @@ Chromium is unable to recover your settings.
         <message name="IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH" desc="The body text of the IPH describing that the Contextual Tasks side panel is pinnable.">
           You can pin Contextual Tasks to ask questions as you browse
         </message>
+        <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH" desc="The body text of the IPH describing that the Contextual Tasks ephemeral toolbar button can be used to reopen Contextual Tasks.">
+          You can reopen Contextual Tasks to ask questions while you browse
+        </message>
+        <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH_SCREENREADER"
+          desc="The screen reader text of the IPH describing that the Contextual Tasks ephemeral toolbar button can be used to reopen Contextual Tasks."
+          is_accessibility_with_no_ui="true">
+          From the "Contextual Tasks" button on the toolbar, you can reopen Contextual Tasks to ask questions while you browse
+        </message>
         <message name="IDS_TUTORIAL_CONTEXTUAL_TASKS_STEP1" desc="The body text of the first step of the Contextual Tasks tutorial.">
           Open the overflow menu
         </message>

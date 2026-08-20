@@ -1940,6 +1940,19 @@ void MaybeRegisterChromeFeaturePromos(
               "Triggered automatically when the user opens Contextual Tasks "
               "to smoothly onboard them into the pinning tutorial.")));
 
+  // kIPHContextualTasksEphemeralToolbarButtonFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHContextualTasksEphemeralToolbarButtonFeature,
+          kContextualTasksEphemeralToolbarButtonElementId,
+          IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH,
+          IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+          .SetMetadata(148, "dianaou@google.com",
+                       "Triggered when the ephemeral contextual tasks toolbar "
+                       "button is shown after closing the side panel.")));
+
   // kIPHVerticalTabsExpandOnHoverFeature:
   const auto expand_on_hover_iph_body_string_id =
       tabs::kVerticalTabsExpandOnHoverDefaultEnabled.Get()

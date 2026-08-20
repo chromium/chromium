@@ -62,6 +62,7 @@ class ContextualTasksButton
   void OnShouldUpdateVisibility(bool should_show);
   void OnEligibilityChange(bool is_eligible);
   void MaybeUpdateVisibility();
+  void MaybeShowFeaturePromo();
   void UpdateDropShadow(bool force_paint = false, float initial_opacity = 1.0f);
   void UpdateDropShadowLayerBounds();
   void AnimateShow();

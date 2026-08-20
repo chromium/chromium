@@ -53,6 +53,9 @@ BASE_FEATURE(kIPHComposeMSBBSettingsFeature,
 BASE_FEATURE(kIPHComposeNewBadgeFeature,
              "IPH_ComposeNewBadgeFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHContextualTasksEphemeralToolbarButtonFeature,
+             "IPH_ContextualTasksEphemeralToolbarButton",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDesktopSharedHighlightingFeature,
              "IPH_DesktopSharedHighlighting",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -110,6 +113,12 @@ BASE_FEATURE_ENUM_PARAM(
 BASE_FEATURE(kIPHFocusHelpBubbleScreenReaderPromoFeature,
              "IPH_FocusHelpBubbleScreenReaderPromo",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHGMCCastStartStopFeature,
+             "IPH_GMCCastStartStop",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHGMCLocalMediaCastingFeature,
+             "IPH_GMCLocalMediaCasting",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHGlicPromoFeature,
              "IPH_GlicPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -119,12 +128,6 @@ BASE_FEATURE(kIPHGlicTrustFirstOnboardingShortcutSnoozePromoFeature,
 BASE_FEATURE(kIPHGlicTryItFeature,
              "IPH_GlicTryIt",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHGMCCastStartStopFeature,
-             "IPH_GMCCastStartStop",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHGMCLocalMediaCastingFeature,
-             "IPH_GMCLocalMediaCasting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHMemorySaverModeFeature,
              "IPH_HighEfficiencyMode",
              base::FEATURE_ENABLED_BY_DEFAULT);

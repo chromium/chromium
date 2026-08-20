@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -33,6 +34,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -308,6 +310,16 @@ void ContextualTasksButton::OnImmersiveModeControllerDestroyed() {
 }
 
 void ContextualTasksButton::OnButtonPress() {
+  if (auto* const user_ed =
+          BrowserUserEducationInterface::From(browser_window_interface_);
+      user_ed && user_ed->IsFeaturePromoActive(
+                     feature_engagement::
+                         kIPHContextualTasksEphemeralToolbarButtonFeature)) {
+    user_ed->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHContextualTasksEphemeralToolbarButtonFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  }
+
   auto* controller = contextual_tasks::ContextualTasksPanelController::From(
       browser_window_interface_);
   CHECK(controller);
@@ -478,11 +490,20 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
         "ContextualTasks.EphemeralToolbarButton.Shown"));
     base::UmaHistogramBoolean("ContextualTasks.EphemeralToolbarButton.Shown",
                               true);
+    MaybeShowFeaturePromo();
   } else {
     SetVisible(will_be_visible);
     if (was_visible && !will_be_visible) {
       ClearDropShadow();
     }
+  }
+}
+
+void ContextualTasksButton::MaybeShowFeaturePromo() {
+  if (auto* const user_ed =
+          BrowserUserEducationInterface::From(browser_window_interface_)) {
+    user_ed->MaybeShowFeaturePromo(
+        feature_engagement::kIPHContextualTasksEphemeralToolbarButtonFeature);
   }
 }
 

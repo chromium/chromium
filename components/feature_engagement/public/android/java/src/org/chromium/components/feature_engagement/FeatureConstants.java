@@ -16,8 +16,8 @@ import java.lang.annotation.RetentionPolicy;
  * in //components/feature_engagement/public/feature_constants.h.
  */
 @StringDef({
-    // keep-sorted start
     // FEATURE_CONSTANTS_JAVA_STRING_DEF_START
+    // keep-sorted start
     FeatureConstants.ACCOUNT_SETTINGS_HISTORY_SYNC,
     FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_ADD_TO_BOOKMARKS_FEATURE,
     FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE,
@@ -148,8 +148,8 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.VIDEO_TUTORIAL_NTP_SUMMARY_FEATURE,
     FeatureConstants.VIDEO_TUTORIAL_NTP_VOICE_SEARCH_FEATURE,
     FeatureConstants.VIDEO_TUTORIAL_TRY_NOW_FEATURE
-    // FEATURE_CONSTANTS_JAVA_STRING_DEF_END
     // keep-sorted end
+    // FEATURE_CONSTANTS_JAVA_STRING_DEF_END
 })
 @Retention(RetentionPolicy.SOURCE)
 @NullMarked

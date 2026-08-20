@@ -41,6 +41,8 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHCompanionSidePanelFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHCompanionSidePanelRegionSearchFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHComposeMSBBSettingsFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHComposeNewBadgeFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(
+    kIPHContextualTasksEphemeralToolbarButtonFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHDesktopSharedHighlightingFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHDesktopCustomizeChromeExperimentFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHDesktopCustomizeChromeAutoOpenFeature);
@@ -77,12 +79,12 @@ BASE_DECLARE_FEATURE_PARAM(IPHExtensionsZeroStatePromoVariant,
                            kIPHExtensionsZeroStatePromoVariantParam);
 #endif
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHFocusHelpBubbleScreenReaderPromoFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHGMCCastStartStopFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHGMCLocalMediaCastingFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHGlicPromoFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(
     kIPHGlicTrustFirstOnboardingShortcutSnoozePromoFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHGlicTryItFeature);
-FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHGMCCastStartStopFeature);
-FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHGMCLocalMediaCastingFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHMemorySaverModeFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHMultistepFilterPromoFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHLensOverlayFeature);
@@ -170,8 +172,8 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHExtensionsPinnedByDefaultFeature);
 // org.chromium.components.feature_engagement.FeatureConstants.
 // clang-format off
 #if BUILDFLAG(IS_ANDROID)
-// keep-sorted start case=no
 // FEATURE_CONSTANTS_DECLARE_FEATURE_ANDROID_START
+// keep-sorted start case=no
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHAccountSettingsHistorySync);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationAddToBookmarksFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature);
@@ -299,8 +301,8 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHVideoTutorialNTPSearchFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHVideoTutorialNTPSummaryFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHVideoTutorialNTPVoiceSearchFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHVideoTutorialTryNowFeature);
-// FEATURE_CONSTANTS_DECLARE_FEATURE_ANDROID_END
 // keep-sorted end
+// FEATURE_CONSTANTS_DECLARE_FEATURE_ANDROID_END
 #endif  // BUILDFLAG(IS_ANDROID)
 // clang-format on
 

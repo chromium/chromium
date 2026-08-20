@@ -36,9 +36,11 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -46,6 +48,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -163,8 +166,15 @@ class TestingContextualTasksUiService
 };
 }  // namespace
 
-class ContextualTasksButtonInteractiveTestBase : public InteractiveBrowserTest {
+template <typename T>
+  requires std::derived_from<T, InProcessBrowserTest>
+class ContextualTasksButtonInteractiveTestMixin : public T {
  public:
+  template <typename... Args>
+  explicit ContextualTasksButtonInteractiveTestMixin(Args&&... args)
+      : T(std::forward<Args>(args)...) {}
+  ~ContextualTasksButtonInteractiveTestMixin() override = default;
+
   void SetUpInProcessBrowserTestFixture() override {
     subscription_ =
         BrowserContextDependencyManager::GetInstance()
@@ -210,34 +220,37 @@ class ContextualTasksButtonInteractiveTestBase : public InteractiveBrowserTest {
                                                 GetForProfile(profile)));
                                   }));
                 }));
+    T::SetUpInProcessBrowserTestFixture();
   }
 
   void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
+    T::SetUpOnMainThread();
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            browser()->GetProfile());
+            this->browser()->GetProfile());
   }
 
   void TearDownOnMainThread() override {
     identity_test_env_adaptor_.reset();
-    InProcessBrowserTest::TearDownOnMainThread();
+    T::TearDownOnMainThread();
   }
 
   signin::IdentityTestEnvironment* identity_test_env() {
     return identity_test_env_adaptor_->identity_test_env();
   }
 
-  PrefService* GetPrefService() { return browser()->GetProfile()->GetPrefs(); }
+  PrefService* GetPrefService() {
+    return this->browser()->GetProfile()->GetPrefs();
+  }
 
   TestingContextualTasksUiService* GetTestingService() {
     return static_cast<TestingContextualTasksUiService*>(
         contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
-            browser()->GetProfile()));
+            this->browser()->GetProfile()));
   }
 
   auto SignIntoEligibleAccount() {
-    return Do([&]() {
+    return this->Do([&]() {
       identity_test_env()->MakePrimaryAccountAvailable(
           "primary@example.com", signin::ConsentLevel::kSignin);
       GetTestingService()->GetFakeEligibilityManager()->SetIsEligible(true);
@@ -245,13 +258,13 @@ class ContextualTasksButtonInteractiveTestBase : public InteractiveBrowserTest {
   }
 
   auto SetMockCookieJarContainsPrimaryAccount(bool contains) {
-    return Do([&, contains]() {
+    return this->Do([&, contains]() {
       GetTestingService()->GetFakeEligibilityManager()->SetIsEligible(contains);
     });
   }
 
   auto ClearPrimaryAccount() {
-    return Do([&]() {
+    return this->Do([&]() {
 #if !BUILDFLAG(IS_CHROMEOS)
       identity_test_env()->ClearPrimaryAccount();
 #endif
@@ -261,31 +274,32 @@ class ContextualTasksButtonInteractiveTestBase : public InteractiveBrowserTest {
 
   content::WebContents* GetSidePanelWebContents() {
     auto* controller =
-        contextual_tasks::ContextualTasksPanelController::From(browser());
+        contextual_tasks::ContextualTasksPanelController::From(this->browser());
     return controller->GetActiveWebContents();
   }
 
   contextual_tasks::ContextualTasksUiService* GetUiService() {
     return contextual_tasks::ContextualTasksUiServiceFactory::
-        GetForBrowserContext(browser()->GetProfile());
+        GetForBrowserContext(this->browser()->GetProfile());
   }
 
   auto SetIsAimEligible(bool eligible) {
-    return Do([&, eligible]() {
+    return this->Do([&, eligible]() {
       auto* service = static_cast<TestingAimEligibilityService*>(
-          AimEligibilityServiceFactory::GetForProfile(browser()->GetProfile()));
+          AimEligibilityServiceFactory::GetForProfile(
+              this->browser()->GetProfile()));
       service->SetIsAimEligible(eligible);
       GetTestingService()->GetFakeEligibilityManager()->SetIsEligible(eligible);
     });
   }
 
   GURL GetTestURL() {
-    return embedded_test_server()->GetURL("example.com", "/title1.html");
+    return this->embedded_test_server()->GetURL("example.com", "/title1.html");
   }
 
   contextual_tasks::ContextualTasksService* GetContextualTasksService() {
     return contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
-        browser()->GetProfile());
+        this->browser()->GetProfile());
   }
 
  private:
@@ -294,10 +308,21 @@ class ContextualTasksButtonInteractiveTestBase : public InteractiveBrowserTest {
       identity_test_env_adaptor_;
 };
 
+using ContextualTasksButtonInteractiveTestBase =
+    ContextualTasksButtonInteractiveTestMixin<InteractiveBrowserTest>;
 
-class ContextualTasksEphemeralButtonInteractiveTest
-    : public ContextualTasksButtonInteractiveTestBase {
+template <typename T>
+  requires std::derived_from<T, InProcessBrowserTest>
+class ContextualTasksEphemeralButtonInteractiveTestMixin
+    : public ContextualTasksButtonInteractiveTestMixin<T> {
  public:
+  using Base = ContextualTasksButtonInteractiveTestMixin<T>;
+
+  template <typename... Args>
+  explicit ContextualTasksEphemeralButtonInteractiveTestMixin(Args&&... args)
+      : Base(std::forward<Args>(args)...) {}
+  ~ContextualTasksEphemeralButtonInteractiveTestMixin() override = default;
+
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{contextual_tasks::kContextualTasks,
@@ -307,53 +332,56 @@ class ContextualTasksEphemeralButtonInteractiveTest
          {contextual_tasks::kContextualTasksHideCloseButtonInVerticalTabs, {}},
          {tabs::kVerticalTabs, {}}},
         {});
-    InteractiveBrowserTest::SetUp();
+    Base::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    ContextualTasksButtonInteractiveTestBase::SetUpOnMainThread();
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
-    browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
+    Base::SetUpOnMainThread();
+    this->host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(this->embedded_test_server()->Start());
+    this->browser()
+        ->GetFeatures()
+        .side_panel_ui()
+        ->DisableAnimationsForTesting();
   }
 
-
   auto CreateTaskForTab(int tab_index) {
-    return Do([&, tab_index] {
+    return this->Do([&, tab_index] {
       contextual_tasks::ContextualTask task =
-          GetContextualTasksService()->CreateTask();
+          this->GetContextualTasksService()->CreateTask();
       content::WebContents* const web_contents =
-          browser()->tab_strip_model()->GetWebContentsAt(tab_index);
+          this->browser()->tab_strip_model()->GetWebContentsAt(tab_index);
       SessionID session_id = sessions::SessionTabHelper::IdForTab(web_contents);
-      GetContextualTasksService()->AssociateTabWithTask(task.GetTaskId(),
-                                                        session_id);
-      GetContextualTasksService()->UpdateThreadForTask(
+      this->GetContextualTasksService()->AssociateTabWithTask(task.GetTaskId(),
+                                                              session_id);
+      this->GetContextualTasksService()->UpdateThreadForTask(
           task.GetTaskId(), contextual_tasks::ThreadType::kAiMode,
           "test_server_id", std::nullopt, "Test Title");
     });
   }
 
   auto RemoveTaskFromTab(int tab_index) {
-    return Do([&, tab_index] {
+    return this->Do([&, tab_index] {
       content::WebContents* const web_contents =
-          browser()->tab_strip_model()->GetWebContentsAt(tab_index);
+          this->browser()->tab_strip_model()->GetWebContentsAt(tab_index);
       SessionID session_id = sessions::SessionTabHelper::IdForTab(web_contents);
       std::optional<contextual_tasks::ContextualTask> task =
-          GetContextualTasksService()->GetContextualTaskForTab(session_id);
+          this->GetContextualTasksService()->GetContextualTaskForTab(
+              session_id);
       if (task.has_value()) {
-        GetContextualTasksService()->DisassociateTabFromTask(
+        this->GetContextualTasksService()->DisassociateTabFromTask(
             task.value().GetTaskId(), session_id);
       }
     });
   }
 
-  // Simulate opening the contextual task side panel as if you clicked on a link
-  // in a contextual task.
   auto SimulateOpeningContextualTaskSidePanel() {
-    return Do([&] {
-      contextual_tasks::ContextualTasksPanelController::From(browser())->Show();
+    return this->Do([&] {
+      contextual_tasks::ContextualTasksPanelController::From(this->browser())
+          ->Show();
       content::WebContents* side_panel_contents =
-          contextual_tasks::ContextualTasksPanelController::From(browser())
+          contextual_tasks::ContextualTasksPanelController::From(
+              this->browser())
               ->GetActiveWebContents();
       if (side_panel_contents) {
         contextual_tasks::GetWebUiInterface(side_panel_contents)
@@ -362,19 +390,18 @@ class ContextualTasksEphemeralButtonInteractiveTest
     });
   }
 
-  // Simulate closing the contextual task side panel as if you clicked on the
-  // close button in the contextual task side panel.
   auto SimulateClosingContextualTaskSidePanel() {
-    return Do([&] {
-      contextual_tasks::ContextualTasksPanelController::From(browser())
+    return this->Do([&] {
+      contextual_tasks::ContextualTasksPanelController::From(this->browser())
           ->Close();
     });
   }
 
   auto SimulateNavigateToAiPage() {
-    return Do([&]() {
+    return this->Do([&]() {
       content::WebContents* side_panel_contents =
-          contextual_tasks::ContextualTasksPanelController::From(browser())
+          contextual_tasks::ContextualTasksPanelController::From(
+              this->browser())
               ->GetActiveWebContents();
       contextual_tasks::GetWebUiInterface(side_panel_contents)
           ->SetIsAiPage(true);
@@ -384,6 +411,9 @@ class ContextualTasksEphemeralButtonInteractiveTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+using ContextualTasksEphemeralButtonInteractiveTest =
+    ContextualTasksEphemeralButtonInteractiveTestMixin<InteractiveBrowserTest>;
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
                        ButtonShowsAfterSidePanelWasClosed) {
@@ -560,6 +590,38 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
         ASSERT_NE(action_item, nullptr);
         EXPECT_FALSE(action_item->GetVisible());
       }));
+}
+
+using ContextualTasksEphemeralButtonPromoInteractiveTestBase =
+    ContextualTasksEphemeralButtonInteractiveTestMixin<
+        InteractiveFeaturePromoTest>;
+
+class ContextualTasksEphemeralButtonPromoInteractiveTest
+    : public ContextualTasksEphemeralButtonPromoInteractiveTestBase {
+ public:
+  ContextualTasksEphemeralButtonPromoInteractiveTest()
+      : ContextualTasksEphemeralButtonPromoInteractiveTestBase(
+            UseDefaultTrackerAllowingPromos(
+                {feature_engagement::
+                     kIPHContextualTasksEphemeralToolbarButtonFeature})) {}
+  ~ContextualTasksEphemeralButtonPromoInteractiveTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPromoInteractiveTest,
+                       ShowsPromoWhenEphemeralButtonAppears) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      WaitForPromo(
+          feature_engagement::kIPHContextualTasksEphemeralToolbarButtonFeature),
+      PressButton(kContextualTasksEphemeralToolbarButtonElementId),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
 
 class ContextualTasksEphemeralBrandedButtonInteractiveTest

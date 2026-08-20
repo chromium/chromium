@@ -415,10 +415,12 @@ DEFINE_VARIATION_PARAM(kIPHBatterySaverModeFeature, "IPH_BatterySaverMode");
 DEFINE_VARIATION_PARAM(kIPHCompanionSidePanelFeature, "IPH_CompanionSidePanel");
 DEFINE_VARIATION_PARAM(kIPHCompanionSidePanelRegionSearchFeature,
                        "IPH_CompanionSidePanelRegionSearch");
-DEFINE_VARIATION_PARAM(kIPHComposeNewBadgeFeature,
-                       "IPH_ComposeNewBadgeFeature");
 DEFINE_VARIATION_PARAM(kIPHComposeMSBBSettingsFeature,
                        "IPH_ComposeMSBBSettingsFeature");
+DEFINE_VARIATION_PARAM(kIPHComposeNewBadgeFeature,
+                       "IPH_ComposeNewBadgeFeature");
+DEFINE_VARIATION_PARAM(kIPHContextualTasksEphemeralToolbarButtonFeature,
+                       "IPH_ContextualTasksEphemeralToolbarButton");
 DEFINE_VARIATION_PARAM(kIPHDesktopCustomizeChromeAutoOpenFeature,
                        "IPH_DesktopCustomizeChromeAutoOpen");
 DEFINE_VARIATION_PARAM(kIPHDesktopCustomizeChromeExperimentFeature,
@@ -429,6 +431,9 @@ DEFINE_VARIATION_PARAM(kIPHDiscardRingFeature, "IPH_DiscardRing");
 DEFINE_VARIATION_PARAM(kIPHDownloadEsbPromoFeature, "IPH_DownloadEsbPromo");
 DEFINE_VARIATION_PARAM(kIPHExplicitBrowserSigninPreferenceRememberedFeature,
                        "IPH_ExplicitBrowserSigninPreferenceRemembered");
+DEFINE_VARIATION_PARAM(kIPHGMCCastStartStopFeature, "IPH_GMCCastStartStop");
+DEFINE_VARIATION_PARAM(kIPHGMCLocalMediaCastingFeature,
+                       "IPH_GMCLocalMediaCasting");
 DEFINE_VARIATION_PARAM(kIPHGlicPromoFeature, "IPH_GlicPromo");
 DEFINE_VARIATION_PARAM(kIPHGlicTrustFirstOnboardingShortcutSnoozePromoFeature,
                        "IPH_GlicTrustFirstOnboardingShortcutSnoozePromo");
@@ -445,9 +450,6 @@ DEFINE_VARIATION_PARAM(kIPHExtensionsZeroStatePromoFeature,
 DEFINE_VARIATION_PARAM(kIPHExtensionsPinnedByDefaultFeature,
                        "IPH_ExtensionsPinnedByDefault");
 #endif
-DEFINE_VARIATION_PARAM(kIPHGMCCastStartStopFeature, "IPH_GMCCastStartStop");
-DEFINE_VARIATION_PARAM(kIPHGMCLocalMediaCastingFeature,
-                       "IPH_GMCLocalMediaCasting");
 // The feature is used in Finch experiments so it is unable to be renamed
 // alongside the variable name.
 DEFINE_VARIATION_PARAM(kIPHMemorySaverModeFeature, "IPH_HighEfficiencyMode");
@@ -648,8 +650,8 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
     kIPHDemoModeChoiceVariations[] = {
 // clang-format off
 #if BUILDFLAG(IS_ANDROID)
-// keep-sorted start case=no
 // VARIATION_ENTRY_ANDROID_START
+// keep-sorted start case=no
         VARIATION_ENTRY(kIPHAccountSettingsHistorySync),
         VARIATION_ENTRY(kIPHAdaptiveButtonInTopToolbarCustomizationAddToBookmarksFeature),
         VARIATION_ENTRY(kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature),
@@ -765,8 +767,8 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHVideoTutorialNTPSummaryFeature),
         VARIATION_ENTRY(kIPHVideoTutorialNTPVoiceSearchFeature),
         VARIATION_ENTRY(kIPHVideoTutorialTryNowFeature),
-// VARIATION_ENTRY_ANDROID_END
 // keep-sorted end
+// VARIATION_ENTRY_ANDROID_END
 #else
 // keep-sorted start case=no
         VARIATION_ENTRY(kIPHiOSAddressPromoDesktopFeature),
@@ -867,6 +869,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHCompanionSidePanelRegionSearchFeature),
         VARIATION_ENTRY(kIPHComposeMSBBSettingsFeature),
         VARIATION_ENTRY(kIPHComposeNewBadgeFeature),
+        VARIATION_ENTRY(kIPHContextualTasksEphemeralToolbarButtonFeature),
         VARIATION_ENTRY(kIPHDesktopCustomizeChromeAutoOpenFeature),
         VARIATION_ENTRY(kIPHDesktopCustomizeChromeExperimentFeature),
         VARIATION_ENTRY(kIPHDesktopPwaInstallFeature),
@@ -944,7 +947,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHAutofillOmniboxPaymentChipFeature),
         VARIATION_ENTRY(kIPHAutofillVirtualCardCVCSuggestionFeature),
         VARIATION_ENTRY(kIPHAutofillVirtualCardSuggestionFeature),
-
 // keep-sorted end
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) ||

@@ -18,8 +18,8 @@ namespace {
 const base::Feature* const kAllFeatures[] = {
     &kIPHDummyFeature,  // Ensures non-empty array for all platforms.
 #if BUILDFLAG(IS_ANDROID)
-    // keep-sorted start case=no
     // ALL_FEATURES_ANDROID_START
+    // keep-sorted start case=no
     &kIPHAccountSettingsHistorySync,
     &kIPHAdaptiveButtonInTopToolbarCustomizationAddToBookmarksFeature,
     &kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature,
@@ -142,8 +142,8 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHVideoTutorialNTPSummaryFeature,
     &kIPHVideoTutorialNTPVoiceSearchFeature,
     &kIPHVideoTutorialTryNowFeature,
+    // keep-sorted end
 // ALL_FEATURES_ANDROID_END
-// keep-sorted end
 #else
     // keep-sorted start case=no
     &kIPHiOSAddressPromoDesktopFeature,
@@ -268,6 +268,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHCompanionSidePanelRegionSearchFeature,
     &kIPHComposeMSBBSettingsFeature,
     &kIPHComposeNewBadgeFeature,
+    &kIPHContextualTasksEphemeralToolbarButtonFeature,
     &kIPHDesktopCustomizeChromeAutoOpenFeature,
     &kIPHDesktopCustomizeChromeExperimentFeature,
     &kIPHDesktopPwaInstallFeature,
