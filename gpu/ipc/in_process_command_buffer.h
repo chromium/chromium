@@ -63,7 +63,6 @@ struct GpuFenceHandle;
 namespace gpu {
 class SharedContextState;
 class GpuProcessShmCount;
-class GpuTaskSchedulerHelper;
 class FenceSyncReleaseDelegate;
 class SharedImageInterface;
 
@@ -301,10 +300,8 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   base::WaitableEvent flush_event_;
   const raw_ptr<CommandBufferTaskExecutor> task_executor_;
 
-  // If no SingleTaskSequence is passed in, create our own.
-  std::unique_ptr<GpuTaskSchedulerHelper> task_scheduler_holder_;
-
-  // Pointer to the SingleTaskSequence that actually does the scheduling.
+  // Pointer to the SingleTaskSequence that actually does the scheduling. Owned
+  // by `shared_image_interface_`.
   raw_ptr<SingleTaskSequence> task_sequence_;
   scoped_refptr<SharedImageInterfaceInProcess> shared_image_interface_;
 

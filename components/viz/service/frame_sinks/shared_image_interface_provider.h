@@ -19,7 +19,7 @@ class WaitableEvent;
 namespace gpu {
 class SharedImageInterface;
 class SharedImageInterfaceInProcess;
-class SchedulerSequence;
+class SingleTaskSequence;
 }  // namespace gpu
 
 namespace viz {
@@ -41,13 +41,14 @@ class VIZ_SERVICE_EXPORT SharedImageInterfaceProvider
   bool NeedsNewSharedImageInterface();
 
   void CreateSharedImageInterface();
-  void CreateSharedImageInterfaceOnGpu(base::WaitableEvent* event);
+  void CreateSharedImageInterfaceOnGpu(
+      std::unique_ptr<gpu::SingleTaskSequence> scheduler_sequence,
+      base::WaitableEvent* event);
   void OnContextLost() override;
 
   // These are accessed by both threads, but compositor threads blocks when GPU
   // work thread is happening.
   const raw_ptr<GpuServiceImpl> gpu_service_;
-  std::unique_ptr<gpu::SchedulerSequence> scheduler_sequence_;
   scoped_refptr<gpu::SharedImageInterfaceInProcess> shared_image_interface_;
 
   // These are accessed by both threads and are synchronized by the lock.

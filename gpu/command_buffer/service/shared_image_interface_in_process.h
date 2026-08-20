@@ -50,7 +50,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   // schedules on; it is used to ensure that some parts of initialization and
   // destruction happen on the GPU thread.
   static scoped_refptr<SharedImageInterfaceInProcess> Create(
-      SingleTaskSequence* task_sequence,
+      std::unique_ptr<SingleTaskSequence> task_sequence,
       const GpuPreferences& gpu_preferences,
       const GpuDriverBugWorkarounds& gpu_workarounds,
       const GpuFeatureInfo& gpu_feature_info,
@@ -63,6 +63,8 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   SharedImageInterfaceInProcess(const SharedImageInterfaceInProcess&) = delete;
   SharedImageInterfaceInProcess& operator=(
       const SharedImageInterfaceInProcess&) = delete;
+
+  SingleTaskSequence* task_sequence() const { return task_sequence_.get(); }
 
   // SharedImageInterface:
   scoped_refptr<ClientSharedImage> CreateSharedImage(
@@ -86,7 +88,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
  private:
   // Private to ensure `Initialize()` is always called after construction.
   SharedImageInterfaceInProcess(
-      SingleTaskSequence* task_sequence,
+      std::unique_ptr<SingleTaskSequence> task_sequence,
       SharedImageManager* shared_image_manager,
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner);
 
@@ -101,10 +103,8 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   void SetUpOnGpu(std::unique_ptr<SetUpOnGpuParams> params);
   void DestroyOnGpu(base::WaitableEvent* completion);
 
-  // Used to schedule work on the gpu thread. This is a raw pointer for now
-  // since the ownership of SingleTaskSequence would be the same as the
-  // SharedImageInterfaceInProcess.
-  raw_ptr<SingleTaskSequence> task_sequence_;
+  // Used to schedule work on the gpu thread.
+  const std::unique_ptr<SingleTaskSequence> task_sequence_;
 
   base::OnceCallback<std::unique_ptr<SharedImageFactory>()> create_factory_;
 
