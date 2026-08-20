@@ -6,6 +6,7 @@
 
 #import "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
+#import "base/check.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -111,6 +112,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
                         completeURL:(NSURL*)completeURL
                     applicationMode:(ApplicationModeForTabOpening)mode
                forceApplicationMode:(BOOL)forceApplicationMode {
+  CHECK(!IsEnableNewStartupFlowEnabled());
   self = [super initWithExternalURL:externalURL
                         completeURL:net::GURLWithNSURL(completeURL)
                         sourceAppID:declaredSourceApp
