@@ -355,6 +355,12 @@ namespace media {
 // Whether we should allow color space changes to flush AcceleratedVideoDecoder.
 BASE_FEATURE(kAVDColorSpaceChanges, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether VideoFrameConverter accurately maps RGB to YUV color spaces
+// instead of always coercing to Rec.601.
+// TODO(crbug.com/467555325): Remove after M153 reaches stable.
+BASE_FEATURE(kAccurateVideoFrameConverterColorSpace,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether AOM/VPX decoders should use the presentation thread type.
 BASE_FEATURE(kAomVpxUsePresentationThreadType,
              base::FEATURE_DISABLED_BY_DEFAULT);

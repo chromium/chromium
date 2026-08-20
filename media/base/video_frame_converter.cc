@@ -4,7 +4,9 @@
 
 #include "media/base/video_frame_converter.h"
 
+#include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_frame_converter_internals.h"
 #include "media/base/video_util.h"
 #include "third_party/libyuv/include/libyuv.h"
@@ -32,13 +34,44 @@ gfx::ColorSpace VideoFrameConverter::GetDestinationColorSpace(
     return src_cs;  // YUV color spaces are unchanged.
   }
 
-  // TODO(crbug.com/467555325): Make the destination color space dependent on
-  // the source color space.
-  return gfx::ColorSpace::CreateREC601();
+  if (!base::FeatureList::IsEnabled(kAccurateVideoFrameConverterColorSpace)) {
+    return gfx::ColorSpace::CreateREC601();
+  }
+
+  // Invalid color spaces are coerced to limited range BT.709.
+  if (!src_cs.IsValid()) {
+    return gfx::ColorSpace::CreateREC709();
+  }
+
+  const auto primary_id = src_cs.GetPrimaryID();
+  const auto transfer_id = src_cs.GetTransferID();
+  const auto range_id = src_cs.GetRangeID();
+
+  gfx::ColorSpace::MatrixID matrix_id;
+  if (transfer_id == gfx::ColorSpace::TransferID::PQ ||
+      transfer_id == gfx::ColorSpace::TransferID::HLG ||
+      primary_id == gfx::ColorSpace::PrimaryID::BT2020) {
+    matrix_id = gfx::ColorSpace::MatrixID::BT2020_NCL;
+  } else if (primary_id == gfx::ColorSpace::PrimaryID::SMPTE170M ||
+             primary_id == gfx::ColorSpace::PrimaryID::BT470M ||
+             primary_id == gfx::ColorSpace::PrimaryID::BT470BG) {
+    matrix_id = gfx::ColorSpace::MatrixID::SMPTE170M;
+  } else {
+    // Default to BT.709 matrix for BT.709, P3, and any other SDR gamuts.
+    matrix_id = gfx::ColorSpace::MatrixID::BT709;
+  }
+
+  return gfx::ColorSpace(primary_id, transfer_id, matrix_id, range_id);
 }
 
 EncoderStatus VideoFrameConverter::ConvertAndScale(const VideoFrame& src_frame,
                                                    VideoFrame& dest_frame) {
+  // Ensure color space and HDR metadata is propagated as necessary.
+  const auto dest_color_space = GetDestinationColorSpace(src_frame);
+  dest_frame.set_color_space(dest_color_space);
+  dest_frame.set_hdr_metadata(
+      dest_color_space.IsHDR() ? src_frame.hdr_metadata() : gfx::HDRMetadata());
+
   TRACE_EVENT2("media", "ConvertAndScale", "src_frame",
                src_frame.AsHumanReadableString(), "dest_frame",
                dest_frame.AsHumanReadableString());
@@ -210,7 +243,6 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleRGB(
 
   const bool is_abgr = src_frame->format() == PIXEL_FORMAT_XBGR ||
                        src_frame->format() == PIXEL_FORMAT_ABGR;
-  dest_frame.set_color_space(GetDestinationColorSpace(*src_frame));
   const auto* matrix = internals::GetArgbConstantsForColorSpace(
       dest_frame.ColorSpace(), is_abgr);
 
@@ -280,9 +312,6 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleRGB(
 EncoderStatus VideoFrameConverter::ConvertAndScaleI4xxx(
     const VideoFrame* src_frame,
     VideoFrame& dest_frame) {
-  // Converting between YUV formats doesn't change the color space.
-  dest_frame.set_color_space(src_frame->ColorSpace());
-
   switch (dest_frame.format()) {
     case PIXEL_FORMAT_I420:
     case PIXEL_FORMAT_I420A:
@@ -394,9 +423,6 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleNVxx(
          src_frame->format() == PIXEL_FORMAT_NV16 ||
          src_frame->format() == PIXEL_FORMAT_NV24);
 
-  // Converting between YUV formats doesn't change the color space.
-  dest_frame.set_color_space(src_frame->ColorSpace());
-
   if (src_frame->format() == PIXEL_FORMAT_NV16 ||
       src_frame->format() == PIXEL_FORMAT_NV24) {
     if (src_frame->format() == PIXEL_FORMAT_NV24 &&
@@ -502,8 +528,6 @@ EncoderStatus VideoFrameConverter::ConvertAndScaleNVxx(
 EncoderStatus VideoFrameConverter::ConvertAndScaleHBD(
     const VideoFrame* src_frame,
     VideoFrame& dest_frame) {
-  dest_frame.set_color_space(src_frame->ColorSpace());
-
   VideoPixelFormat target_hbd_format = PIXEL_FORMAT_UNKNOWN;
   bool is_12bit = src_frame->format() == PIXEL_FORMAT_YUV420P12 ||
                   src_frame->format() == PIXEL_FORMAT_YUV422P12 ||
@@ -591,8 +615,6 @@ EncoderStatus VideoFrameConverter::ConvertAndScalePx10(
   DCHECK(src_frame->format() == PIXEL_FORMAT_P010LE ||
          src_frame->format() == PIXEL_FORMAT_P210LE ||
          src_frame->format() == PIXEL_FORMAT_P410LE);
-
-  dest_frame.set_color_space(src_frame->ColorSpace());
 
   if (src_frame->format() == PIXEL_FORMAT_P010LE &&
       (dest_frame.format() == PIXEL_FORMAT_NV12 ||
