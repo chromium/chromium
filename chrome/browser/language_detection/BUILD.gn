@@ -31,6 +31,7 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser/optimization_guide",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/metrics:content",

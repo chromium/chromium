@@ -138,6 +138,7 @@ if (!is_android) {
       ":impl",
       ":lookalikes",
       ":test_support",
+      "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/lookalikes/core",

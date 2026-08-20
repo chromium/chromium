@@ -22,9 +22,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, CloseResetsReplacements) {
           kWebContentsId,
           base::BindLambdaForTesting([&](ui::TrackedElement* el) {
             content::WebContents* web_contents =
-                browser()->tab_strip_model()->GetActiveWebContents();
+                browser()->GetTabStripModel()->GetActiveWebContents();
             auto* manager = IndigoImageReplacementManager::GetOrCreateForPage(
                 web_contents->GetPrimaryPage());
             manager->RegisterImageReplacement(
@@ -586,7 +586,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ShowToolbarWhileInactiveDeferred) {
       // Trigger toolbar showing on the background tab (Tab 1)
       Do(base::BindLambdaForTesting([&]() {
         content::WebContents* tab1_contents =
-            browser()->tab_strip_model()->GetWebContentsAt(0);
+            browser()->GetTabStripModel()->GetWebContentsAt(0);
         auto* tab1 = tabs::TabInterface::GetFromContents(tab1_contents);
         auto* controller = IndigoPageActionController::From(tab1);
         ASSERT_TRUE(controller);
@@ -936,22 +936,22 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, TabDiscarding) {
   // Navigate first tab to a URL to initialize an IndigoPageActionController.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_TRUE(IndigoPageActionController::From(
-      browser()->tab_strip_model()->GetActiveTab()));
+      browser()->GetTabStripModel()->GetActiveTab()));
 
   // Open a new tab to background the first one.
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
 
   // Discard the first tab.
   std::unique_ptr<content::WebContents> new_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(browser()->GetProfile()));
-  browser()->tab_strip_model()->DiscardWebContents(
-      browser()->tab_strip_model()->GetWebContentsAt(0),
+  browser()->GetTabStripModel()->DiscardWebContents(
+      browser()->GetTabStripModel()->GetWebContentsAt(0),
       std::move(new_contents));
 
   // Switch back to the discarded tab and navigate it again.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 }
 
