@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -55,17 +55,17 @@ class MediaStreamFocusDelegateTest : public InProcessBrowserTest {
     chrome::AddTabAt(browser(), GURL("http://foo/2"), -1, true);
 
     // Actually activate the widget to avoid faking it.
-    browser()->tab_strip_model()->ActivateTabAt(0);
+    browser()->GetTabStripModel()->ActivateTabAt(0);
     browser()->GetWindow()->Activate();
-    browser()->tab_strip_model()->GetWebContentsAt(0)->Focus();
+    browser()->GetTabStripModel()->GetWebContentsAt(0)->Focus();
 
     delegate_ = std::make_unique<MediaStreamFocusDelegate>(
-        browser()->tab_strip_model()->GetWebContentsAt(0));
+        browser()->GetTabStripModel()->GetWebContentsAt(0));
   }
 
   content::DesktopMediaID DesktopMediaIDForTabAt(int index) const {
     content::WebContents* const tab =
-        browser()->tab_strip_model()->GetWebContentsAt(index);
+        browser()->GetTabStripModel()->GetWebContentsAt(index);
     return content::DesktopMediaID(
         content::DesktopMediaID::TYPE_WEB_CONTENTS,
         content::DesktopMediaID::kNullId,
@@ -92,52 +92,52 @@ class MediaStreamFocusDelegateTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(MediaStreamFocusDelegateTest,
                        FirstSetFocusTrueFocusesTab) {
-  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 0);
+  ASSERT_EQ(browser()->GetTabStripModel()->active_index(), 0);
   SetFocus(DesktopMediaIDForTabAt(1), true);
-  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 1);
+  EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(MediaStreamFocusDelegateTest,
                        SecondSetFocusTrueHasNoEffect) {
   // Setup - repeated from FirstSetFocusTrueFocusesTab, but as an assumption.
-  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 0);
+  ASSERT_EQ(browser()->GetTabStripModel()->active_index(), 0);
   SetFocus(DesktopMediaIDForTabAt(1), true);
-  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
+  ASSERT_EQ(browser()->GetTabStripModel()->active_index(), 1);
 
   // Reset the explicit decision flag to avoid killing the renderer
   delegate_->ResetExplicitDecisionForTesting();
 
   // Test - focus unchanged.
   SetFocus(DesktopMediaIDForTabAt(0), true);
-  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 1);
+  EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(MediaStreamFocusDelegateTest,
                        SetFocusFalseClosesFocusWindow) {
-  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 0);
+  ASSERT_EQ(browser()->GetTabStripModel()->active_index(), 0);
 
   // Calling SetFocus(false) does not change focus.
   SetFocus(DesktopMediaIDForTabAt(1), false);
-  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 0);
+  EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 0);
 
   // Reset the explicit decision flag to avoid killing the renderer
   delegate_->ResetExplicitDecisionForTesting();
 
   // Focus can no longer change by new calls to SetFocus(true).
   SetFocus(DesktopMediaIDForTabAt(1), true);
-  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 0);
+  EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 0);
 }
 
 IN_PROC_BROWSER_TEST_F(MediaStreamFocusDelegateTest,
                        ChangeOfTabClosesFocusWindow) {
   // Setup.
-  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 0);
-  browser()->tab_strip_model()->ActivateTabAt(2);
-  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 2);
+  ASSERT_EQ(browser()->GetTabStripModel()->active_index(), 0);
+  browser()->GetTabStripModel()->ActivateTabAt(2);
+  ASSERT_EQ(browser()->GetTabStripModel()->active_index(), 2);
 
   // Test - SetFocus has had no effect.
   SetFocus(DesktopMediaIDForTabAt(1), true);
-  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 2);
+  EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 2);
 }
 
 IN_PROC_BROWSER_TEST_F(MediaStreamFocusDelegateTest,

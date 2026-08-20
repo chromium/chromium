@@ -24,8 +24,8 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -754,7 +754,7 @@ class WebRtcAppWindowCaptureBrowserTestWithPicker
     chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
     GURL url = embedded_test_server()->GetURL(test_url);
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 };
 
@@ -829,11 +829,11 @@ IN_PROC_BROWSER_TEST_F(WebRtcSameOriginPolicyBrowserTest,
   // the target tab is focused, so that we can navigate it easily. If it is
   // already focused, this will just no-op.
   int target_index =
-      browser()->tab_strip_model()->GetIndexOfWebContents(target_tab);
-  browser()->tab_strip_model()->ActivateTabAt(
+      browser()->GetTabStripModel()->GetIndexOfWebContents(target_tab);
+  browser()->GetTabStripModel()->ActivateTabAt(
       target_index, TabStripUserGestureDetails(
                         TabStripUserGestureDetails::GestureType::kOther));
-  ASSERT_EQ(target_tab, browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_EQ(target_tab, browser()->GetTabStripModel()->GetActiveWebContents());
 
   // We navigate to a FileURL so that the origin will change, which should
   // trigger the capture to end.
@@ -869,11 +869,11 @@ IN_PROC_BROWSER_TEST_F(WebRtcSameOriginPolicyBrowserTest,
   // the target tab is focused, so that we can navigate it easily. If it is
   // already focused, this will just no-op.
   int target_index =
-      browser()->tab_strip_model()->GetIndexOfWebContents(target_tab);
-  browser()->tab_strip_model()->ActivateTabAt(
+      browser()->GetTabStripModel()->GetIndexOfWebContents(target_tab);
+  browser()->GetTabStripModel()->ActivateTabAt(
       target_index, TabStripUserGestureDetails(
                         TabStripUserGestureDetails::GestureType::kOther));
-  ASSERT_EQ(target_tab, browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_EQ(target_tab, browser()->GetTabStripModel()->GetActiveWebContents());
 
   // We navigate using the test server so that the origin doesn't change.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -1382,9 +1382,9 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
   EXPECT_EQ(GetShareThisTabInsteadButtonLabel(other_tab),
             kShareThisTabInsteadMessage);
 
-  browser()->tab_strip_model()->ActivateTabAt(
-      browser()->tab_strip_model()->GetIndexOfWebContents(other_tab));
-  while (browser()->tab_strip_model()->GetActiveWebContents() != other_tab) {
+  browser()->GetTabStripModel()->ActivateTabAt(
+      browser()->GetTabStripModel()->GetIndexOfWebContents(other_tab));
+  while (browser()->GetTabStripModel()->GetActiveWebContents() != other_tab) {
     base::RunLoop().RunUntilIdle();
   }
 
@@ -1397,7 +1397,8 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
 
   // When "Share this tab instead" fails for other_tab, the focus goes back to
   // the captured tab. Wait until that happens:
-  while (browser()->tab_strip_model()->GetActiveWebContents() != captured_tab) {
+  while (browser()->GetTabStripModel()->GetActiveWebContents() !=
+         captured_tab) {
     base::RunLoop().RunUntilIdle();
   }
 

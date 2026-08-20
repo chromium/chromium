@@ -14,7 +14,7 @@
 #include "chrome/browser/media/clear_key_cdm_test_helper.h"
 #include "chrome/browser/media/media_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -231,7 +231,7 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
                           kNoSessionToLoad, false, play_count, expected_title);
     // Check KeyMessage received for all key systems.
     EXPECT_EQ(true, content::EvalJs(
-                        browser()->tab_strip_model()->GetActiveWebContents(),
+                        browser()->GetTabStripModel()->GetActiveWebContents(),
                         "document.querySelector('video').receivedKeyMessage;"));
   }
 
@@ -510,7 +510,7 @@ class EncryptedMediaVisibilityRatioReportTest : public EncryptedMediaTestBase {
     ukm_recorder_->SetOnAddEntryCallback(Media_WebMediaPlayerState::kEntryName,
                                          run_loop.QuitClosure());
 
-    browser()->tab_strip_model()->CloseWebContentsAt(
+    browser()->GetTabStripModel()->CloseWebContentsAt(
         0, TabCloseTypes::CLOSE_USER_GESTURE);
     run_loop.Run();
 
@@ -1070,7 +1070,7 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaReportMetricsTest, RecordUkmTest) {
     RunSimpleEncryptedMediaTest("bear-320x240-av_enc-a.webm",
                                 media::kExternalClearKeyKeySystem, SrcType::SRC,
                                 PlayCount::ONCE);
-    browser()->tab_strip_model()->CloseWebContentsAt(
+    browser()->GetTabStripModel()->CloseWebContentsAt(
         0, TabCloseTypes::CLOSE_USER_GESTURE);
     run_loop.Run();
 
@@ -1118,7 +1118,7 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaReportMetricsTest, RecordUkmTest) {
     RunSimpleEncryptedMediaTest("bear-320x240-av_enc-a.webm",
                                 media::kExternalClearKeyKeySystem, SrcType::SRC,
                                 PlayCount::ONCE);
-    browser()->tab_strip_model()->CloseWebContentsAt(
+    browser()->GetTabStripModel()->CloseWebContentsAt(
         0, TabCloseTypes::CLOSE_USER_GESTURE);
     run_loop.Run();
 
@@ -1170,7 +1170,7 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_MessageTypeTest) {
   // 'individualization-request'.
   EXPECT_EQ(3,
             content::EvalJs(
-                browser()->tab_strip_model()->GetActiveWebContents(),
+                browser()->GetTabStripModel()->GetActiveWebContents(),
                 "document.querySelector('video').receivedMessageTypes.size;"));
 }
 
@@ -1388,7 +1388,7 @@ class MediaFoundationEncryptedMediaTest : public EncryptedMediaTestBase {
 
     // Check KeyMessage received for all key systems.
     EXPECT_EQ(true, content::EvalJs(
-                        browser()->tab_strip_model()->GetActiveWebContents(),
+                        browser()->GetTabStripModel()->GetActiveWebContents(),
                         "document.querySelector('video').receivedKeyMessage;"));
   }
 

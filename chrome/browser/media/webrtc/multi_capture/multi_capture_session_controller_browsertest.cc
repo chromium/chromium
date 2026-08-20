@@ -8,7 +8,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_session_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test.h"

@@ -23,8 +23,8 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_common.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -259,7 +259,7 @@ WebRtcTestBase::OpenPageAndGetUserMediaInNewTabWithConstraints(
   chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* new_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   // Accept if necessary, but don't expect a prompt (because auto-accept is also
   // okay).
   permissions::PermissionRequestManager::FromWebContents(new_tab)
@@ -283,7 +283,7 @@ content::WebContents* WebRtcTestBase::OpenTestPageInNewTab(
   GURL url = embedded_test_server()->GetURL(test_page);
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* new_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   // Accept if necessary, but don't expect a prompt (because auto-accept is also
   // okay).
   permissions::PermissionRequestManager::FromWebContents(new_tab)

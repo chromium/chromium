@@ -10,7 +10,7 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -71,7 +71,7 @@ class DisplayMediaAccessHandlerTest
 
   void SetSystemAudioSetting(bool enabled) {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     HostContentSettingsMap* content_settings =
         HostContentSettingsMapFactory::GetForProfile(
             web_contents->GetBrowserContext());
@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest, ShowPickerByDefault) {
   SetSystemAudioSetting(false);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   // If the video stream is requested, the picker should still show up.
   run_loop_ = std::make_unique<base::RunLoop>();
   EXPECT_EQ(true, content::EvalJs(web_contents->GetPrimaryMainFrame(),
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest, RejectNoVideoByDefault) {
   SetSystemAudioSetting(false);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_THAT(
       content::EvalJs(web_contents->GetPrimaryMainFrame(),
                       R"((async () => {
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest, ForceSystemAudio) {
   SetSystemAudioSetting(true);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   // It is expected to get a system audio track and no video track.
   EXPECT_EQ(true, content::EvalJs(web_contents->GetPrimaryMainFrame(),
                                   R"((async () => {
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest,
   SetSystemAudioSetting(true);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_THAT(
       content::EvalJs(web_contents->GetPrimaryMainFrame(),
                       R"((async () => {
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest,
   SetSystemAudioSetting(true);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_THAT(
       content::EvalJs(web_contents->GetPrimaryMainFrame(),
                       R"((async () => {
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest,
   SetSystemAudioSetting(true);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   // If the video stream is requested, the picker should still show up.
   run_loop_ = std::make_unique<base::RunLoop>();
   EXPECT_EQ(true, content::EvalJs(web_contents->GetPrimaryMainFrame(),

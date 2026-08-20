@@ -19,7 +19,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/clear_key_cdm_test_helper.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -442,7 +442,7 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
     DVLOG(1) << "command: " << command;
 
     auto result = ExecuteCommand(
-        browser()->tab_strip_model()->GetActiveWebContents(), command);
+        browser()->GetTabStripModel()->GetActiveWebContents(), command);
     DVLOG(1) << "result: " << result;
 
     return result;
