@@ -14,7 +14,7 @@
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
-#include "components/private_verification_tokens/common/athm_ffi.h"
+#include "components/private_verification_tokens/common/athm_ffi/athm_ffi.h"
 #include "crypto/hash.h"
 
 namespace private_verification_tokens {

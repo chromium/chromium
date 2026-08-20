@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/containers/to_vector.h"
-#include "components/private_verification_tokens/common/athm_ffi.h"
+#include "components/private_verification_tokens/common/athm_ffi/athm_ffi.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_parameters.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_public_key.h"
 #include "crypto/hash.h"
@@ -33,7 +33,7 @@ PrivacyPassAthmBatchRequest::Create(const IssuerConfig& issuer_config,
   }
 
   // Derive client protocol parameters using the deployment ID and bucket count.
-  auto params = AthmParameters::create(
+  auto params = AthmParameters::try_new(
       num_buckets, rs_std::SliceRef<const uint8_t>(
                        base::as_byte_span(issuer_config.deployment_id)));
   if (!params.has_value()) {
@@ -51,7 +51,7 @@ PrivacyPassAthmBatchRequest::Create(const IssuerConfig& issuer_config,
   std::vector<uint8_t> batch_request_body;
 
   for (size_t i = 0; i < count; ++i) {
-    auto bridge_result = AthmClientRequest::create(
+    auto bridge_result = AthmClientRequest::try_new(
         rs_std::SliceRef<const uint8_t>(public_key),
         rs_std::SliceRef<const uint8_t>(public_key_proof), *params);
     if (!bridge_result.has_value()) {

@@ -9,7 +9,7 @@
 #include "base/containers/to_vector.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
-#include "components/private_verification_tokens/common/athm_ffi.h"
+#include "components/private_verification_tokens/common/athm_ffi/athm_ffi.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_parameters.h"
 #include "crypto/hash.h"
 #include "third_party/anonymous_tokens/src/anonymous_tokens/cpp/privacy_pass/athm_token_encodings_utils.h"
@@ -21,7 +21,7 @@ namespace private_verification_tokens {
 std::optional<AthmTestIssuer> AthmTestIssuer::Create(
     uint8_t num_buckets,
     base::span<const uint8_t> deployment_id) {
-  auto key_material = AthmKeyMaterial::key_gen(
+  auto key_material = AthmKeyMaterial::try_new(
       num_buckets, rs_std::SliceRef<const uint8_t>(deployment_id));
   if (!key_material.has_value()) {
     return std::nullopt;
@@ -154,7 +154,7 @@ std::optional<AthmTestClient> AthmTestClient::Create(
     base::span<const uint8_t> public_key_proof,
     uint8_t num_buckets,
     base::span<const uint8_t> deployment_id) {
-  auto params = AthmParameters::create(
+  auto params = AthmParameters::try_new(
       num_buckets, rs_std::SliceRef<const uint8_t>(deployment_id));
   if (!params.has_value()) {
     return std::nullopt;
@@ -178,7 +178,7 @@ AthmTestClient::AthmTestClient(AthmTestClient&&) = default;
 AthmTestClient& AthmTestClient::operator=(AthmTestClient&&) = default;
 
 std::optional<AthmClientRequest> AthmTestClient::CreateClientRequest() const {
-  auto bridge_result = AthmClientRequest::create(
+  auto bridge_result = AthmClientRequest::try_new(
       rs_std::SliceRef<const uint8_t>(public_key_),
       rs_std::SliceRef<const uint8_t>(public_key_proof_), params_);
   if (!bridge_result.has_value()) {

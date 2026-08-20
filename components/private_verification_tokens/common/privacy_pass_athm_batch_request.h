@@ -10,7 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/types/expected.h"
-#include "components/private_verification_tokens/common/athm_ffi.h"
+#include "components/private_verification_tokens/common/athm_ffi/athm_ffi.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
 
 namespace private_verification_tokens {
