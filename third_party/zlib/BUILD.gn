@@ -98,10 +98,6 @@ source_set("zlib_adler32_simd") {
       "adler32_simd.c",
       "adler32_simd.h",
     ]
-
-    if (!is_win || is_clang) {
-      cflags = [ "-mssse3" ]
-    }
   }
 
   if (use_arm_neon_optimizations) {
@@ -234,13 +230,6 @@ source_set("zlib_crc32_simd") {
       "crc32_simd.h",
       "crc_folding.c",
     ]
-
-    if (!is_win || is_clang) {
-      cflags = [
-        "-msse4.2",
-        "-mpclmul",
-      ]
-    }
   }
 
   configs += [ ":zlib_internal_config" ]
