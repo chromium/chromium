@@ -15,6 +15,7 @@
 #include "partition_alloc/internal_allocator.h"
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/containers/span.h"
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
 #include "partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h"
 #include "partition_alloc/partition_alloc_config.h"
@@ -1251,7 +1252,7 @@ TEST_P(PartitionAllocThreadCacheTest, Bookkeeping) {
 
   // These allocations all come from the thread-cache.
   for (size_t i = 0; i < kFillCountForMediumBucket; i++) {
-    PA_UNSAFE_TODO(arr[i]) =
+    arr[i] =
         root()->Alloc(root()->AdjustSizeForExtrasSubtract(kMediumSize), "");
     EXPECT_EQ(expected_committed_size, root()->total_size_of_committed_pages_);
     EXPECT_EQ(expected_committed_size, root()->max_size_of_committed_pages_);
@@ -1341,12 +1342,18 @@ TEST_P(PartitionAllocThreadCacheTest, AllocationRecordingAligned) {
   // - Direct-mapped with large alignment
   size_t alloc_count = 0;
   size_t total_size = 0;
-  size_t size_alignments[][2] = {{128, 4},
-                                 {128, 128},
-                                 {1024, 128},
-                                 {128, 1024},
-                                 {128, 2 * internal::PartitionPageSize()},
-                                 {(4 << 20) + 1, 1 << 19}};
+  struct SizeAndAlignment {
+    size_t requested_size;
+    size_t alignment;
+  };
+  const auto size_alignments = std::to_array<SizeAndAlignment>({
+      {.requested_size = 128, .alignment = 4},
+      {.requested_size = 128, .alignment = 128},
+      {.requested_size = 1024, .alignment = 128},
+      {.requested_size = 128, .alignment = 1024},
+      {.requested_size = 128, .alignment = 2 * internal::PartitionPageSize()},
+      {.requested_size = (4 << 20) + 1, .alignment = 1 << 19},
+  });
   for (auto [requested_size, alignment] : size_alignments) {
     void* ptr = root()->AlignedAlloc(alignment, requested_size);
     ASSERT_TRUE(ptr);
@@ -1379,13 +1386,18 @@ TEST_P(PartitionAllocThreadCacheTest, AllocationRecordingRealloc) {
   size_t dealloc_count = 0;
   size_t total_alloc_size = 0;
   size_t total_dealloc_size = 0;
-  size_t size_new_sizes[][2] = {
-      {16, 15},
-      {16, 64},
-      {16, internal::PartitionPageSize() + 1},
-      {4 << 20, 8 << 20},
-      {8 << 20, 4 << 20},
-      {(8 << 20) - internal::SystemPageSize(), 8 << 20}};
+  struct SizeAndNewSize {
+    size_t size;
+    size_t new_size;
+  };
+  const auto size_new_sizes = std::to_array<SizeAndNewSize>({
+      {.size = 16, .new_size = 15},
+      {.size = 16, .new_size = 64},
+      {.size = 16, .new_size = internal::PartitionPageSize() + 1},
+      {.size = 4 << 20, .new_size = 8 << 20},
+      {.size = 8 << 20, .new_size = 4 << 20},
+      {.size = (8 << 20) - internal::SystemPageSize(), .new_size = 8 << 20},
+  });
   for (auto [size, new_size] : size_new_sizes) {
     void* ptr = root()->Alloc(size);
     ASSERT_TRUE(ptr);
