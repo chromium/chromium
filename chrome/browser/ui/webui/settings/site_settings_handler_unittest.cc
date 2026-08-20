@@ -1373,32 +1373,6 @@ TEST_F(SiteSettingsHandlerTest, GetEnforcedDefault) {
   ValidateDefault(CONTENT_SETTING_ALLOW, "policy", 1U);
 }
 
-TEST_F(SiteSettingsHandlerTest, CameraAllowedUrlsPolicy) {
-  base::ListValue allowed_urls;
-  allowed_urls.Append("https://allowed.com");
-  profile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kManagedVideoCaptureAllowedUrls, std::move(allowed_urls));
-
-  base::ListValue get_args;
-  get_args.Append(kCallbackId);
-  get_args.Append("media-stream-camera");
-  handler()->HandleGetExceptionList(get_args);
-
-  // Verify that the exception list contains the policy allowed URL.
-  EXPECT_EQ(1U, web_ui()->call_data().size());
-  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-  EXPECT_EQ("cr.webUIResponse", data.function_name());
-  EXPECT_EQ(kCallbackId, data.arg1()->GetString());
-  ASSERT_TRUE(data.arg2()->GetBool());  // Succeeded
-
-  const base::ListValue& list = data.arg3()->GetList();
-  ASSERT_EQ(1U, list.size());
-  const base::DictValue& exception = list[0].GetDict();
-  EXPECT_EQ("https://allowed.com", *exception.FindString("origin"));
-  EXPECT_EQ("policy", *exception.FindString("source"));
-  EXPECT_EQ("allow", *exception.FindString("setting"));
-}
-
 // Flaky on CrOS and Linux. https://crbug.com/41440409
 TEST_F(SiteSettingsHandlerTest, GetAllSites) {
   SetupModel();

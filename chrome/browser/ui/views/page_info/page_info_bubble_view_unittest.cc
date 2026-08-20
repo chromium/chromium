@@ -54,7 +54,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/common/buildflags.h"
@@ -78,7 +77,6 @@
 #include "ui/events/event_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/toggle_button.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/button_test_api.h"
@@ -220,12 +218,6 @@ class PageInfoBubbleViewTestApi {
 
   views::Label* GetStateLabelAt(int index) {
     return GetPermissionToggleRowAt(index)->state_label_;
-  }
-
-  views::ImageView* GetManagedIconAt(int index) {
-    PermissionToggleRowView* row = GetPermissionToggleRowAt(index);
-    return static_cast<views::ImageView*>(row->GetViewByID(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_MANAGED_ICON));
   }
 
   std::u16string_view GetCookiesSubpageTitle() {
@@ -872,31 +864,6 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithPolicyUsbDevices) {
   views::test::ButtonTestApi(button).NotifyClick(event);
   api_->SetPermissionInfo(list);
   EXPECT_EQ(kExpectedChildren + 1, api_->GetPermissionsCount());
-}
-
-TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithPolicyMic) {
-  // Set the policy to blocked (false).
-  TestingProfile* profile =
-      static_cast<TestingProfile*>(web_contents_helper_->profile());
-  profile->GetTestingPrefService()->SetManagedPref(
-      prefs::kManagedAudioCaptureAllowed, std::make_unique<base::Value>(false));
-
-  PermissionInfoList list;
-  api_->SetPermissionInfo(list);
-  EXPECT_EQ(1u, api_->GetPermissionsCount());
-
-  PermissionToggleRowView* row = api_->GetPermissionToggleRowAt(0);
-  ASSERT_TRUE(row);
-
-  // Verify toggle is not present.
-  EXPECT_FALSE(api_->GetToggleViewAt(0));
-
-  // Verify managed icon is present and has correct tooltip.
-  views::ImageView* managed_icon = api_->GetManagedIconAt(0);
-  ASSERT_TRUE(managed_icon);
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_MANAGED_BY_POLICY),
-      managed_icon->GetTooltipText());
 }
 
 // Test UI construction and reconstruction with both user and policy USB

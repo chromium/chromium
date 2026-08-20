@@ -84,7 +84,7 @@ public class VoiceRecognitionUtil {
         // Fail if strict policy checking is requested but we do not have the way to verify.
         if (strictPolicyCheck && prefService == null) return false;
 
-        return prefService == null || prefService.getBoolean(Pref.MANAGED_AUDIO_CAPTURE_ALLOWED);
+        return prefService == null || prefService.getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
     }
 
     /**

@@ -6,13 +6,10 @@
 
 #include <utility>
 
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/media/webrtc/media_stream_device_permissions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/browser/permission_settings_registry.h"
-#include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -94,42 +91,20 @@ void ExtensionMediaAccessHandler::HandleRequest(
     const extensions::Extension* extension) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(profile);
-
-  content_settings::SettingInfo audio_info;
-  PermissionSetting audio_setting = map->GetPermissionSetting(
-      extension->url(), extension->url(), ContentSettingsType::MEDIASTREAM_MIC,
-      &audio_info);
-  auto* audio_permission_info =
-      content_settings::PermissionSettingsRegistry::GetInstance()->Get(
-          ContentSettingsType::MEDIASTREAM_MIC);
-  bool audio_blocked_by_policy =
-      audio_info.source == content_settings::SettingSource::kPolicy &&
-      audio_permission_info->delegate().IsBlocked(audio_setting);
   bool audio_allowed =
       request.audio_type ==
           blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
       extension->permissions_data()->HasAPIPermission(
           APIPermissionID::kAudioCapture) &&
-      !audio_blocked_by_policy;
-
-  content_settings::SettingInfo video_info;
-  PermissionSetting video_setting = map->GetPermissionSetting(
-      extension->url(), extension->url(),
-      ContentSettingsType::MEDIASTREAM_CAMERA, &video_info);
-  auto* video_permission_info =
-      content_settings::PermissionSettingsRegistry::GetInstance()->Get(
-          ContentSettingsType::MEDIASTREAM_CAMERA);
-  bool video_blocked_by_policy =
-      video_info.source == content_settings::SettingSource::kPolicy &&
-      video_permission_info->delegate().IsBlocked(video_setting);
+      GetDevicePolicy(profile, extension->url(), prefs::kAudioCaptureAllowed,
+                      prefs::kAudioCaptureAllowedUrls) != ALWAYS_DENY;
   bool video_allowed =
       request.video_type ==
           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE &&
       extension->permissions_data()->HasAPIPermission(
           APIPermissionID::kVideoCapture) &&
-      !video_blocked_by_policy;
+      GetDevicePolicy(profile, extension->url(), prefs::kVideoCaptureAllowed,
+                      prefs::kVideoCaptureAllowedUrls) != ALWAYS_DENY;
 
   CheckDevicesAndRunCallback(web_contents, request, std::move(callback),
                              audio_allowed, video_allowed);
