@@ -19,6 +19,8 @@
 - (void)updateContentContainerInsetForOffset:(CGFloat)topOffset;
 - (void)voiceOverStatusDidChange;
 - (BOOL)isVoiceOverRunning;
+- (void)setupSuperviewConstraints;
+- (void)handleFeedPan:(UIPanGestureRecognizer*)gesture;
 @end
 
 class NewTabPageBottomSheetViewControllerTest : public PlatformTest {
@@ -400,4 +402,187 @@ TEST_F(NewTabPageBottomSheetViewControllerTest,
   EXPECT_FLOAT_EQ(1.0, magicStackContainer.alpha);
   EXPECT_FLOAT_EQ(0.0, mvtContainer.alpha);
   EXPECT_FLOAT_EQ(0.0, magicStackTopConstraint.constant);
+}
+
+// Tests that slow upward scrolling in the feed does not alter the bottom
+// sheet's top constraint or reset gesture translation.
+TEST_F(NewTabPageBottomSheetViewControllerTest,
+       TestFeedSlowScrollDoesNotDragSheet) {
+  UIView* superview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 400, 800)];
+  [superview addSubview:view_controller_.view];
+
+  id mock_delegate =
+      OCMProtocolMock(@protocol(NewTabPageBottomSheetViewControllerDelegate));
+  view_controller_.delegate = mock_delegate;
+
+  OCMStub([mock_delegate
+              expandedOffsetForBottomSheetViewController:view_controller_])
+      .andReturn(100.0);
+  OCMStub([mock_delegate
+              restingOffsetForBottomSheetViewController:view_controller_])
+      .andReturn(400.0);
+  OCMStub([mock_delegate
+              collapsedOffsetForBottomSheetViewController:view_controller_])
+      .andReturn(600.0);
+
+  UIViewController* child_vc = [[UIViewController alloc] init];
+  UIScrollView* scroll_view =
+      [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 400, 800)];
+  scroll_view.contentSize = CGSizeMake(400, 2000);
+  [child_vc.view addSubview:scroll_view];
+
+  view_controller_.feedViewController = child_vc;
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_ setupSuperviewConstraints];
+
+  // Set sheet to expanded state.
+  [view_controller_ setValue:@(2) forKey:@"_sheetState"];
+  NSLayoutConstraint* topConstraint =
+      [view_controller_ valueForKey:@"_bottomSheetTopConstraint"];
+  topConstraint.constant = 100.0;
+
+  id mock_gesture = OCMClassMock([UIPanGestureRecognizer class]);
+  OCMStub([mock_gesture translationInView:[OCMArg any]])
+      .andReturn(CGPointMake(0, -5.0));
+  OCMStub([mock_gesture velocityInView:[OCMArg any]])
+      .andReturn(CGPointMake(0, -10.0));
+  OCMStub([mock_gesture state]).andReturn(UIGestureRecognizerStateChanged);
+
+  // Expect that setTranslation: is NEVER called on the feed gesture recognizer.
+  [[mock_gesture reject] setTranslation:CGPointZero inView:[OCMArg any]];
+
+  [view_controller_ handleFeedPan:mock_gesture];
+
+  EXPECT_FLOAT_EQ(100.0, topConstraint.constant);
+  EXPECT_TRUE(scroll_view.bounces);
+  [mock_gesture verify];
+}
+
+// Tests that downward panning when the feed is at contentOffset.y == 0 drags
+// the bottom sheet down by the incremental delta.
+TEST_F(NewTabPageBottomSheetViewControllerTest,
+       TestFeedPullDownAtTopDragsSheetIncrementally) {
+  UIView* superview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 400, 800)];
+  [superview addSubview:view_controller_.view];
+
+  id mock_delegate =
+      OCMProtocolMock(@protocol(NewTabPageBottomSheetViewControllerDelegate));
+  view_controller_.delegate = mock_delegate;
+
+  OCMStub([mock_delegate
+              expandedOffsetForBottomSheetViewController:view_controller_])
+      .andReturn(100.0);
+  OCMStub([mock_delegate
+              restingOffsetForBottomSheetViewController:view_controller_])
+      .andReturn(400.0);
+  OCMStub([mock_delegate
+              collapsedOffsetForBottomSheetViewController:view_controller_])
+      .andReturn(600.0);
+
+  UIViewController* child_vc = [[UIViewController alloc] init];
+  UIScrollView* scroll_view =
+      [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 400, 800)];
+  scroll_view.contentSize = CGSizeMake(400, 2000);
+  [child_vc.view addSubview:scroll_view];
+
+  view_controller_.feedViewController = child_vc;
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_ setupSuperviewConstraints];
+
+  // Set sheet to expanded state.
+  [view_controller_ setValue:@(2) forKey:@"_sheetState"];
+  NSLayoutConstraint* topConstraint =
+      [view_controller_ valueForKey:@"_bottomSheetTopConstraint"];
+  topConstraint.constant = 100.0;
+  scroll_view.contentOffset = CGPointZero;
+
+  __block UIGestureRecognizerState gestureState = UIGestureRecognizerStateBegan;
+  __block CGPoint gestureTranslation = CGPointZero;
+
+  id mock_gesture = OCMClassMock([UIPanGestureRecognizer class]);
+  [[mock_gesture reject] setTranslation:CGPointZero inView:[OCMArg any]];
+  OCMStub([mock_gesture state]).andDo(^(NSInvocation* invocation) {
+    [invocation setReturnValue:&gestureState];
+  });
+  OCMStub([mock_gesture translationInView:[OCMArg any]])
+      .andDo(^(NSInvocation* invocation) {
+        [invocation setReturnValue:&gestureTranslation];
+      });
+  OCMStub([mock_gesture velocityInView:[OCMArg any]]).andReturn(CGPointZero);
+
+  // Step 1: Gesture begins.
+  gestureState = UIGestureRecognizerStateBegan;
+  gestureTranslation = CGPointMake(0, 0.0);
+  [view_controller_ handleFeedPan:mock_gesture];
+  EXPECT_FLOAT_EQ(100.0, topConstraint.constant);
+
+  // Step 2: First downward delta (+15 pt).
+  gestureState = UIGestureRecognizerStateChanged;
+  gestureTranslation = CGPointMake(0, 15.0);
+  [view_controller_ handleFeedPan:mock_gesture];
+  EXPECT_FLOAT_EQ(115.0, topConstraint.constant);
+  EXPECT_FALSE(scroll_view.bounces);
+  EXPECT_FLOAT_EQ(0.0, scroll_view.contentOffset.y);
+
+  // Step 3: Second downward delta (+10 pt, cumulative +25 pt).
+  gestureTranslation = CGPointMake(0, 25.0);
+  [view_controller_ handleFeedPan:mock_gesture];
+  EXPECT_FLOAT_EQ(125.0, topConstraint.constant);
+
+  [mock_gesture verify];
+}
+
+// Tests that downward panning when the feed is scrolled down
+// (contentOffset.y > 0) does not drag the bottom sheet.
+TEST_F(NewTabPageBottomSheetViewControllerTest,
+       TestFeedPullDownWhileScrolledDownDoesNotDragSheet) {
+  UIView* superview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 400, 800)];
+  [superview addSubview:view_controller_.view];
+
+  id mock_delegate =
+      OCMProtocolMock(@protocol(NewTabPageBottomSheetViewControllerDelegate));
+  view_controller_.delegate = mock_delegate;
+
+  OCMStub([mock_delegate
+              expandedOffsetForBottomSheetViewController:view_controller_])
+      .andReturn(100.0);
+  OCMStub([mock_delegate
+              restingOffsetForBottomSheetViewController:view_controller_])
+      .andReturn(400.0);
+  OCMStub([mock_delegate
+              collapsedOffsetForBottomSheetViewController:view_controller_])
+      .andReturn(600.0);
+
+  UIViewController* child_vc = [[UIViewController alloc] init];
+  UIScrollView* scroll_view =
+      [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 400, 800)];
+  scroll_view.contentSize = CGSizeMake(400, 2000);
+  [child_vc.view addSubview:scroll_view];
+
+  view_controller_.feedViewController = child_vc;
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_ setupSuperviewConstraints];
+
+  // Set sheet to expanded state.
+  [view_controller_ setValue:@(2) forKey:@"_sheetState"];
+  NSLayoutConstraint* topConstraint =
+      [view_controller_ valueForKey:@"_bottomSheetTopConstraint"];
+  topConstraint.constant = 100.0;
+
+  // Scrolled 50 pt into feed content.
+  scroll_view.contentOffset = CGPointMake(0, 50.0);
+
+  id mock_gesture = OCMClassMock([UIPanGestureRecognizer class]);
+  [[mock_gesture reject] setTranslation:CGPointZero inView:[OCMArg any]];
+
+  // Pulling down with translation +10.
+  OCMStub([mock_gesture translationInView:[OCMArg any]])
+      .andReturn(CGPointMake(0, 10.0));
+  OCMStub([mock_gesture state]).andReturn(UIGestureRecognizerStateChanged);
+
+  [view_controller_ handleFeedPan:mock_gesture];
+
+  EXPECT_FLOAT_EQ(100.0, topConstraint.constant);
+  EXPECT_TRUE(scroll_view.bounces);
+  [mock_gesture verify];
 }

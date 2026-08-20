@@ -48,6 +48,7 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
 
   CGSize _lastSize;
   CGFloat _initialConstant;
+  CGFloat _lastFeedPanTranslationY;
 
   UIPanGestureRecognizer* _sheetPanGesture;
   __weak UIScrollView* _feedScrollView;
@@ -724,37 +725,35 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
   CGPoint velocity = [gesture velocityInView:superview];
 
   if (gesture.state == UIGestureRecognizerStateBegan) {
-    _initialConstant = _bottomSheetTopConstraint.constant;
+    _lastFeedPanTranslationY = translation.y;
   }
+
+  CGFloat deltaY = translation.y - _lastFeedPanTranslationY;
+  _lastFeedPanTranslationY = translation.y;
 
   CGFloat expandedOffset = [self expandedOffset];
 
-  if (_bottomSheetTopConstraint.constant <= expandedOffset &&
-      translation.y < 0) {
-    _initialConstant = expandedOffset;
-    [gesture setTranslation:CGPointZero inView:superview];
-    _feedScrollView.bounces = YES;
-    return;
+  // If the sheet is docked at the top (expandedOffset) and either the feed is
+  // scrolled down or the user is scrolling further into feed content
+  // (deltaY <= 0), allow UIScrollView to handle scrolling natively without
+  // modifying sheet position.
+  if (_bottomSheetTopConstraint.constant <= expandedOffset) {
+    if (_feedScrollView.contentOffset.y > 0 || deltaY <= 0) {
+      _feedScrollView.bounces = YES;
+      return;
+    }
   }
 
-  if (_bottomSheetTopConstraint.constant <= expandedOffset &&
-      _feedScrollView.contentOffset.y > 0) {
-    _initialConstant = expandedOffset;
-    [gesture setTranslation:CGPointZero inView:superview];
-    _feedScrollView.bounces = YES;
-    return;
-  }
-
+  // Feed is at the top (contentOffset.y <= 0) and user is pulling down
+  // (deltaY > 0), or the sheet is already pulled down
+  // (_bottomSheetTopConstraint.constant > expandedOffset).
   _feedScrollView.contentOffset = CGPointZero;
   _feedScrollView.bounces = NO;
 
-  CGFloat targetConstant = _initialConstant + translation.y;
   CGFloat maxOffset = [self collapsedOffset];
-
+  CGFloat targetConstant = _bottomSheetTopConstraint.constant + deltaY;
   if (targetConstant < expandedOffset) {
     targetConstant = expandedOffset;
-    _initialConstant = expandedOffset;
-    [gesture setTranslation:CGPointZero inView:superview];
   } else if (targetConstant > maxOffset) {
     targetConstant = maxOffset;
   }
@@ -768,6 +767,8 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
     if (_bottomSheetTopConstraint.constant > expandedOffset) {
       [self snapSheetWithVelocity:velocity
                   currentConstant:_bottomSheetTopConstraint.constant];
+    } else {
+      _feedScrollView.bounces = YES;
     }
   } else if (gesture.state == UIGestureRecognizerStateCancelled) {
     [self updateBottomSheetPositionAnimated:YES];
