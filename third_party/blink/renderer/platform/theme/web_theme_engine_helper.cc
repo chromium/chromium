@@ -57,7 +57,7 @@ WebThemeEngineHelper::AndroidScrollbarStyle() {
     DEFINE_STATIC_LOCAL(
         WebThemeEngine::ScrollbarStyle, desktop_style,
         ({/*thumb_thickness=*/8,
-          /*scrollbar_margin=*/0,
+          /*scrollbar_margin=*/4,
           /*color=*/{0.5f, 0.5f, 0.5f, 0.5f},
           /*fade_out_delay=*/ui::GetOverlayScrollbarFadeDelay(),
           /*fade_out_duration=*/ui::GetOverlayScrollbarFadeDuration(),
