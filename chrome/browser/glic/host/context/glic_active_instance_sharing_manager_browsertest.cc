@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/test/run_until.h"
-#include "build/build_config.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -33,14 +32,8 @@ class GlicActiveInstanceSharingManagerBrowserTest : public GlicBrowserTest {
   }
 };
 
-// TODO(crbug.com/544753099): Flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_DelegatesToActiveInstance DISABLED_DelegatesToActiveInstance
-#else
-#define MAYBE_DelegatesToActiveInstance DelegatesToActiveInstance
-#endif
 IN_PROC_BROWSER_TEST_F(GlicActiveInstanceSharingManagerBrowserTest,
-                       MAYBE_DelegatesToActiveInstance) {
+                       DelegatesToActiveInstance) {
   // 1. Initial state: no instance, so no delegate.
   // GlicActiveInstanceSharingManager delegates to nothing if no active
   // instance. We can verify this by checking if it seems empty.

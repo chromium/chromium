@@ -44,6 +44,7 @@
 #include "chrome/browser/glic/test_support/test_result.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
@@ -227,8 +228,9 @@ template <typename Trigger>
 
 [[nodiscard]] inline TestResult<> WaitForWindowActive(
     BrowserWindowInterface* browser) {
-  return RunUntilEqual([&]() { return browser->GetWindow()->IsActive(); }, true,
-                       "Window did not become active");
+  return RunUntilEqual(
+      [&]() { return GetLastActiveBrowserWindowInterfaceWithAnyProfile(); },
+      browser, "Window did not become active");
 }
 
 [[nodiscard]] inline TestResult<> WaitForSidePanelState(
