@@ -8,7 +8,12 @@
 
 #include "base/json/values_util.h"
 #include "base/time/time.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+
+using ::testing::IsEmpty;
+using ::testing::UnorderedElementsAre;
 
 namespace {
 
@@ -198,4 +203,32 @@ TEST_F(ProfileAttributesIOSTest, ClearSessionScopedPreferences) {
   EXPECT_EQ(attributes.GetSessionScopedTimePref(kSession2, kTimePref), never);
   EXPECT_EQ(attributes.GetSessionScopedBoolPref(kSession1, kBoolPref), true);
   EXPECT_EQ(attributes.GetSessionScopedBoolPref(kSession2, kBoolPref), false);
+}
+
+// Tests retrieving the identifier of all known sessions.
+TEST_F(ProfileAttributesIOSTest, GetKnownSessions) {
+  ProfileAttributesIOS attributes =
+      ProfileAttributesIOS::WithAttrs(kProfileName, base::DictValue());
+
+  // Check that no sessions are known for a newly created instance.
+  EXPECT_THAT(attributes.GetKnownSessions(), IsEmpty());
+
+  // Check that setting non-default preferences causes the session identifiers
+  // to be returned by GetKnownSessions().
+  attributes.SetSessionScopedTimePref(kSession1, kTimePref, base::Time::Now());
+  attributes.SetSessionScopedBoolPref(kSession2, kBoolPref, true);
+  EXPECT_THAT(attributes.GetKnownSessions(),
+              UnorderedElementsAre(kSession1, kSession2));
+
+  // Check that clearing the preferences for a session remove it from the
+  // set of sessions returned by GetKnownSessions().
+  attributes.ClearSessionScopedPrefs(kSession2);
+  EXPECT_THAT(attributes.GetKnownSessions(), UnorderedElementsAre(kSession1));
+
+  // Check that setting a preference to a default value causes the session
+  // to be added to the known set, even though ProfileAttributesIOS does
+  // not store the value.
+  attributes.SetSessionScopedBoolPref(kSession2, kBoolPref, false);
+  EXPECT_THAT(attributes.GetKnownSessions(),
+              UnorderedElementsAre(kSession1, kSession2));
 }

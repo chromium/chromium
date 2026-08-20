@@ -332,6 +332,16 @@ const Dict* ProfileAttributesIOS::GetNotificationPermissions() const {
   return Get<Dict>(storage_, {kNotificationPermissions});
 }
 
+std::set<std::string> ProfileAttributesIOS::GetKnownSessions() const {
+  std::set<std::string> sessions;
+  if (const Dict* dict = Get<Dict>(storage_, {kSessionScopedPrefs})) {
+    for (const auto [key, _] : *dict) {
+      sessions.insert(key);
+    }
+  }
+  return sessions;
+}
+
 bool ProfileAttributesIOS::HasSessionScopedPrefs(
     std::string_view session_id) const {
   return Get<Dict>(storage_, {kSessionScopedPrefs, session_id}) != nullptr;

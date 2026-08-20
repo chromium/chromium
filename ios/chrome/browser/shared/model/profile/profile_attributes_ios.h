@@ -69,6 +69,7 @@ class ProfileAttributesIOS {
   bool IsAuthenticated() const;
   SessionIds GetDiscardedSessions() const;
   const base::DictValue* GetNotificationPermissions() const;
+  std::set<std::string> GetKnownSessions() const;
   bool HasSessionScopedPrefs(std::string_view session_id) const;
   bool GetSessionScopedBoolPref(std::string_view session_id,
                                 std::string_view pref_name) const;
