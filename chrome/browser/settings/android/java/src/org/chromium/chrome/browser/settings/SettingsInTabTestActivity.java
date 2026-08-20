@@ -172,6 +172,11 @@ public class SettingsInTabTestActivity extends ChromeBaseAppCompatActivity
     }
 
     @Override
+    public @Nullable Object getSearchCoordinator() {
+        return mFragmentDelegate.getSearchCoordinator();
+    }
+
+    @Override
     public ActivityLifecycleDispatcher getLifecycleDispatcher() {
         return mLifecycleDispatcher;
     }

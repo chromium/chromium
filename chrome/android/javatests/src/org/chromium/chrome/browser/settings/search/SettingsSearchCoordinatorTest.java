@@ -35,8 +35,8 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsActivityInterface;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -45,22 +45,19 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Tests cannot run batched because they launch a Settings activity.")
 public class SettingsSearchCoordinatorTest {
-    @Rule
-    public SettingsActivityTestRule<?> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(null);
+    @Rule public SettingsTestRule<?> mSettingsTestRule = new SettingsTestRule<>(null);
 
     @After
     public void tearDown() {
-        mSettingsActivityTestRule.getActivity().finish();
+        mSettingsTestRule.getActivity().finish();
     }
 
-    private @Nullable SettingsActivity getSettingsActivity() {
+    private @Nullable SettingsActivityInterface getSettingsActivity() {
         for (Activity a :
                 ActivityLifecycleMonitorRegistry.getInstance()
                         .getActivitiesInStage(Stage.RESUMED)) {
-            if (a instanceof SettingsActivity) {
-                SettingsActivity settingsActivity = (SettingsActivity) a;
-                if (!settingsActivity.isDestroyed() && !settingsActivity.isFinishing()) {
+            if (a instanceof SettingsActivityInterface settingsActivity) {
+                if (!a.isDestroyed() && !a.isFinishing()) {
                     return settingsActivity;
                 }
             }
@@ -69,16 +66,16 @@ public class SettingsSearchCoordinatorTest {
     }
 
     private @Nullable SettingsSearchCoordinator getSearchCoordinator() {
-        SettingsActivity settingsActivity = getSettingsActivity();
+        SettingsActivityInterface settingsActivity = getSettingsActivity();
         if (settingsActivity == null) return null;
-        return settingsActivity.getSearchCoordinatorForTesting();
+        return (SettingsSearchCoordinator) settingsActivity.getSearchCoordinator();
     }
 
-    private SettingsActivity waitForSettingsActivity() {
-        final AtomicReference<SettingsActivity> activityRef = new AtomicReference<>();
+    private SettingsActivityInterface waitForSettingsActivity() {
+        final AtomicReference<SettingsActivityInterface> activityRef = new AtomicReference<>();
         CriteriaHelper.pollUiThread(
                 () -> {
-                    SettingsActivity activity = getSettingsActivity();
+                    SettingsActivityInterface activity = getSettingsActivity();
                     if (activity == null) return false;
                     activityRef.set(activity);
                     return true;
@@ -114,7 +111,7 @@ public class SettingsSearchCoordinatorTest {
     @SmallTest
     @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testBasicSearch() throws Exception {
-        mSettingsActivityTestRule.startSettingsActivity();
+        mSettingsTestRule.startSettingsActivity();
 
         CallbackHelper callbackHelper = new CallbackHelper();
         CriteriaHelper.pollUiThread(
@@ -143,9 +140,10 @@ public class SettingsSearchCoordinatorTest {
     @SmallTest
     @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testRecentSearchIsRestored() throws Throwable {
-        mSettingsActivityTestRule.startSettingsActivity();
-        SettingsActivity activity = waitForSettingsActivity();
-        SettingsSearchCoordinator searchCoordinator = activity.getSearchCoordinatorForTesting();
+        mSettingsTestRule.startSettingsActivity();
+        SettingsActivityInterface activity = waitForSettingsActivity();
+        SettingsSearchCoordinator searchCoordinator =
+                (SettingsSearchCoordinator) activity.getSearchCoordinator();
         assertFalse(searchCoordinator.hasRecentSearchEntriesForTesting());
 
         // Search for 'Privacy Guide'.
@@ -155,13 +153,14 @@ public class SettingsSearchCoordinatorTest {
         onView(withText(titleId)).perform(click());
         assertTrue(searchCoordinator.hasRecentSearchEntriesForTesting());
 
-        activity.finish();
-        ApplicationTestUtils.waitForActivityState(activity, Stage.DESTROYED);
+        mSettingsTestRule.getActivity().finish();
+        ApplicationTestUtils.waitForActivityState(mSettingsTestRule.getActivity(), Stage.DESTROYED);
 
         // Verify that recent search is restored from disk after restarting the settings.
-        mSettingsActivityTestRule.startSettingsActivity();
-        SettingsActivity activity2 = waitForSettingsActivity();
-        SettingsSearchCoordinator searchCoordinator2 = activity2.getSearchCoordinatorForTesting();
+        mSettingsTestRule.startSettingsActivity();
+        SettingsActivityInterface activity2 = waitForSettingsActivity();
+        SettingsSearchCoordinator searchCoordinator2 =
+                (SettingsSearchCoordinator) activity2.getSearchCoordinator();
         assertTrue(searchCoordinator2.hasRecentSearchEntriesForTesting());
     }
 
@@ -169,8 +168,8 @@ public class SettingsSearchCoordinatorTest {
     @SmallTest
     @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testHistograms_clickedResult() throws Exception {
-        mSettingsActivityTestRule.startSettingsActivity();
-        SettingsActivity activity = waitForSettingsActivity();
+        mSettingsTestRule.startSettingsActivity();
+        SettingsActivityInterface activity = waitForSettingsActivity();
         var histograms =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -209,8 +208,8 @@ public class SettingsSearchCoordinatorTest {
     @SmallTest
     @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testHistograms_abandonedResults() throws Exception {
-        mSettingsActivityTestRule.startSettingsActivity();
-        SettingsActivity activity = waitForSettingsActivity();
+        mSettingsTestRule.startSettingsActivity();
+        SettingsActivityInterface activity = waitForSettingsActivity();
 
         var histograms =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -237,8 +236,8 @@ public class SettingsSearchCoordinatorTest {
     @SmallTest
     @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testHistograms_abandonedNoResults() throws Exception {
-        mSettingsActivityTestRule.startSettingsActivity();
-        SettingsActivity activity = waitForSettingsActivity();
+        mSettingsTestRule.startSettingsActivity();
+        SettingsActivityInterface activity = waitForSettingsActivity();
 
         var histograms =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -260,7 +259,7 @@ public class SettingsSearchCoordinatorTest {
     @Test
     @SmallTest
     public void testFindViewById() {
-        mSettingsActivityTestRule.startSettingsActivity();
+        mSettingsTestRule.startSettingsActivity();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -275,9 +274,10 @@ public class SettingsSearchCoordinatorTest {
     @Test
     @SmallTest
     public void testEnterSearchStateDoesNotCrash() {
-        mSettingsActivityTestRule.startSettingsActivity();
-        SettingsActivity activity = waitForSettingsActivity();
-        SettingsSearchCoordinator searchCoordinator = activity.getSearchCoordinatorForTesting();
+        mSettingsTestRule.startSettingsActivity();
+        SettingsActivityInterface activity = waitForSettingsActivity();
+        SettingsSearchCoordinator searchCoordinator =
+                (SettingsSearchCoordinator) activity.getSearchCoordinator();
         assertNotNull(searchCoordinator);
 
         // Search UI creation is asynchronous, so wait for the search box to be inflated.

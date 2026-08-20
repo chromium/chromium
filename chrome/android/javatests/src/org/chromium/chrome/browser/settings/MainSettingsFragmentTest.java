@@ -162,8 +162,8 @@ public class MainSettingsFragmentTest {
 
     private final SyncTestRule mSyncTestRule = new SyncTestRule();
 
-    private final SettingsActivityTestRule<MainSettings> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(MainSettings.class);
+    private final SettingsTestRule<MainSettings> mSettingsTestRule =
+            new SettingsTestRule<>(MainSettings.class);
 
     // SettingsActivity needs to be initialized and destroyed with the mock
     // signin environment setup in SyncTestRule
@@ -171,9 +171,7 @@ public class MainSettingsFragmentTest {
 
     @Rule
     public final RuleChain mRuleChain =
-            RuleChain.outerRule(mSyncTestRule)
-                    .around(mHomepageTestRule)
-                    .around(mSettingsActivityTestRule);
+            RuleChain.outerRule(mSyncTestRule).around(mHomepageTestRule).around(mSettingsTestRule);
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -250,9 +248,7 @@ public class MainSettingsFragmentTest {
         onView(withId(R.id.account_management_account_row)).check(matches(isDisplayed()));
 
         View accountRow =
-                mSettingsActivityTestRule
-                        .getActivity()
-                        .findViewById(R.id.account_management_account_row);
+                mSettingsTestRule.getActivity().findViewById(R.id.account_management_account_row);
         ChromeRenderTestRule.sanitize(accountRow);
         mRenderTestRule.render(accountRow, "main_settings_signin_disabled_by_policy_account");
     }
@@ -351,7 +347,7 @@ public class MainSettingsFragmentTest {
         onView(withText(R.string.sign_out)).perform(click());
         Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
 
-        Activity activity = mSettingsActivityTestRule.getActivity();
+        Activity activity = mSettingsTestRule.getActivity();
         final String expectedSnackbarMessage =
                 activity.getString(R.string.sign_out_snackbar_message);
         CriteriaHelper.pollUiThread(
@@ -381,7 +377,7 @@ public class MainSettingsFragmentTest {
         onView(withText(R.string.sign_out)).perform(click());
         Assert.assertNull(mSyncTestRule.getSigninTestRule().getPrimaryAccount());
 
-        Activity activity = mSettingsActivityTestRule.getActivity();
+        Activity activity = mSettingsTestRule.getActivity();
         final String expectedSnackbarMessage =
                 activity.getString(
                         R.string.account_settings_sign_out_snackbar_message_sync_disabled);
@@ -524,10 +520,7 @@ public class MainSettingsFragmentTest {
         // conditions.
         waitForNoView(withId(R.id.promo_card_view));
         View view =
-                mSettingsActivityTestRule
-                        .getActivity()
-                        .findViewById(android.R.id.content)
-                        .getRootView();
+                mSettingsTestRule.getActivity().findViewById(android.R.id.content).getRootView();
         ChromeRenderTestRule.sanitize(view);
         mRenderTestRule.render(view, "main_settings_signed_in_identity_error");
     }
@@ -574,7 +567,7 @@ public class MainSettingsFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     MainSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
-                            mSettingsActivityTestRule.getActivity(),
+                            mSettingsTestRule.getActivity(),
                             mSearchIndexDataMock,
                             mMainSettings.getProfile());
                 });
@@ -600,7 +593,7 @@ public class MainSettingsFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     MainSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
-                            mSettingsActivityTestRule.getActivity(),
+                            mSettingsTestRule.getActivity(),
                             mSearchIndexDataMock,
                             mMainSettings.getProfile());
                 });
@@ -654,7 +647,7 @@ public class MainSettingsFragmentTest {
                 });
         ThreadUtils.runOnUiThreadBlocking(signInPreference::syncStateChanged);
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        mSettingsTestRule.startSettingsActivity();
         onView(allOf(withText(accountInfo.getFullName()), isDisplayed()))
                 .check(matches(isDisplayed()));
         onView(withText(accountInfo.getEmail())).check(doesNotExist());
@@ -686,7 +679,7 @@ public class MainSettingsFragmentTest {
                 });
         ThreadUtils.runOnUiThreadBlocking(signInPreference::syncStateChanged);
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        mSettingsTestRule.startSettingsActivity();
 
         onView(withText(TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME.getEmail()))
                 .check(doesNotExist());
@@ -773,7 +766,7 @@ public class MainSettingsFragmentTest {
                 !DeviceInfo.isAutomotive()
                         && (DeviceInfo.isFoldable()
                                 || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                                        mSettingsActivityTestRule.getActivity()));
+                                        mSettingsTestRule.getActivity()));
         if (!showSetting) {
             Assert.assertNull(
                     "Address Bar should not be shown for for ineligible devices",
@@ -846,7 +839,7 @@ public class MainSettingsFragmentTest {
                 () -> {
                     var indexProvider = MainSettings.SEARCH_INDEX_DATA_PROVIDER;
                     indexProvider.updateDynamicPreferences(
-                            mSettingsActivityTestRule.getActivity(),
+                            mSettingsTestRule.getActivity(),
                             mSearchIndexDataMock,
                             mMainSettings.getProfile());
                 });
@@ -871,7 +864,7 @@ public class MainSettingsFragmentTest {
                 () -> {
                     var indexProvider = MainSettings.SEARCH_INDEX_DATA_PROVIDER;
                     indexProvider.updateDynamicPreferences(
-                            mSettingsActivityTestRule.getActivity(),
+                            mSettingsTestRule.getActivity(),
                             mSearchIndexDataMock,
                             mMainSettings.getProfile());
                 });
@@ -922,7 +915,7 @@ public class MainSettingsFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     MainSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
-                            mSettingsActivityTestRule.getActivity(),
+                            mSettingsTestRule.getActivity(),
                             mSearchIndexDataMock,
                             mMainSettings.getProfile());
                 });
@@ -978,7 +971,7 @@ public class MainSettingsFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     MainSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
-                            mSettingsActivityTestRule.getActivity(),
+                            mSettingsTestRule.getActivity(),
                             mSearchIndexDataMock,
                             mMainSettings.getProfile());
                 });
@@ -1038,13 +1031,13 @@ public class MainSettingsFragmentTest {
     }
 
     private void startSettings() {
-        mSettingsActivityTestRule.startSettingsActivity();
-        mMainSettings = mSettingsActivityTestRule.getFragment();
+        mSettingsTestRule.startSettingsActivity();
+        mMainSettings = mSettingsTestRule.getFragment();
         Assert.assertNotNull("SettingsActivity failed to launch.", mMainSettings);
     }
 
     private void restartSettings() {
-        mSettingsActivityTestRule.finishActivity();
+        mSettingsTestRule.finishActivity();
         startSettings();
     }
 
@@ -1060,9 +1053,7 @@ public class MainSettingsFragmentTest {
     private void waitForOptionsMenu() {
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return mSettingsActivityTestRule
-                                    .getActivity()
-                                    .findViewById(R.id.menu_id_general_help)
+                    return mSettingsTestRule.getActivity().findViewById(R.id.menu_id_general_help)
                             != null;
                 });
     }

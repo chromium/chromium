@@ -26,6 +26,13 @@ public interface SettingsActivityInterface {
      */
     @Nullable Fragment getMultiColumnSettings();
 
+    /**
+     * Returns the SettingsSearchCoordinator if available. Returns it as a generic Object to avoid
+     * circular dependencies. Callers may safely cast the return value to a
+     * SettingsSearchCoordinator object.
+     */
+    @Nullable Object getSearchCoordinator();
+
     /** Changes the desired orientation of this activity. */
     void setRequestedOrientation(int requestedOrientation);
 
