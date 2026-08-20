@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import './omnibox_everywhere_section.js';
 import './site_shortcuts_page.js';
 import './feature_shortcuts_page.js';
 import './keyboard_shortcut_page.js';
@@ -50,15 +51,22 @@ export class SettingsSearchPageIndexElement extends
     return {
       routes_: {type: Object},
       searchSettingsUpdateEnabled_: {type: Boolean},
+      omniboxEverywhereSettingsEnabled_: {type: Boolean},
     };
   }
 
   protected accessor routes_: SettingsRoutes = routes;
   protected accessor searchSettingsUpdateEnabled_: boolean =
       loadTimeData.getBoolean('searchSettingsUpdate');
+  protected accessor omniboxEverywhereSettingsEnabled_: boolean =
+      loadTimeData.getBoolean('omniboxEverywhereSettingsEnabled');
 
   private showDefaultViews_() {
     const defaultViews: string[] = ['parent'];
+
+    if (this.omniboxEverywhereSettingsEnabled_) {
+      defaultViews.push('omniboxEverywhere');
+    }
 
     if (this.searchSettingsUpdateEnabled_) {
       defaultViews.push(

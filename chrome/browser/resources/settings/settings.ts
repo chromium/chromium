@@ -72,11 +72,11 @@ export {SettingsAppearancePageElement, SystemTheme} from './appearance_page/appe
 export {SettingsAppearancePageIndexElement} from './appearance_page/appearance_page_index.js';
 export {HomeUrlInputElement} from './appearance_page/home_url_input.js';
 export {SettingsAutofillAiEntriesListElement} from './autofill_page/autofill_ai_entries_list.js';
+export {SettingsAutofillPageElement} from './autofill_page/autofill_page.js';
+export {SettingsAutofillPageIndexElement} from './autofill_page/autofill_page_index.js';
 export {CollapsibleCardElement} from './autofill_page/collapsible_autofill_settings_card.js';
 export {PasswordCheckReferrer, PasswordManagerImpl, PasswordManagerPage} from './autofill_page/password_manager_proxy.js';
 export type {PasswordManagerProxy} from './autofill_page/password_manager_proxy.js';
-export {SettingsAutofillPageElement} from './autofill_page/autofill_page.js';
-export {SettingsAutofillPageIndexElement} from './autofill_page/autofill_page_index.js';
 export {BaseMixin} from './base_mixin.js';
 // <if expr="not is_chromeos">
 export {DefaultBrowserBrowserProxyImpl} from './default_browser_page/default_browser_browser_proxy.js';
@@ -142,6 +142,9 @@ export {ScrollableMixin} from './scrollable_mixin.js';
 export {ExtensionControlledMessageElement} from './search_page/extension_controlled_message.js';
 export {FeatureShortcutsPageElement} from './search_page/feature_shortcuts_page.js';
 export {KeyboardShortcutPageElement} from './search_page/keyboard_shortcut_page.js';
+export {OmniboxEverywhereBrowserProxyImpl} from './search_page/omnibox_everywhere_browser_proxy.js';
+export type {OmniboxEverywhereBrowserProxy} from './search_page/omnibox_everywhere_browser_proxy.js';
+export {SettingsOmniboxEverywhereSectionElement} from './search_page/omnibox_everywhere_section.js';
 export {SettingsSearchEngineListDialogElement} from './search_page/search_engine_list_dialog.js';
 export {ChoiceMadeLocation, SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from './search_page/search_engines_browser_proxy.js';
 export type {CategorizedTemplateUrls, SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_page/search_engines_browser_proxy.js';
@@ -162,4 +165,3 @@ export {SiteFaviconElement} from './site_favicon.js';
 export {convertDateToWindowsEpoch} from './time.js';
 export {TooltipMixin} from './tooltip_mixin.js';
 export type {TooltipMixinInterface} from './tooltip_mixin.js';
-

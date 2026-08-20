@@ -1071,6 +1071,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, KeyboardShortcutPage) {
   RunTest("settings/keyboard_shortcut_page_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, OmniboxEverywhereSection) {
+  RunTest("settings/omnibox_everywhere_section_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, ProtocolHandlers) {
   RunTest("settings/protocol_handlers_test.js", "mocha.run()");
 }
