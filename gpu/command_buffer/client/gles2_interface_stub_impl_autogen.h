@@ -490,7 +490,6 @@ void GLES2InterfaceStub::ShaderSource(GLuint /* shader */,
                                       GLsizei /* count */,
                                       const GLchar* const* /* str */,
                                       const GLint* /* length */) {}
-void GLES2InterfaceStub::ShallowFinishCHROMIUM() {}
 void GLES2InterfaceStub::OrderingBarrierCHROMIUM() {}
 void GLES2InterfaceStub::MultiDrawArraysWEBGL(GLenum /* mode */,
                                               const GLint* /* firsts */,

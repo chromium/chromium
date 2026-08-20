@@ -19,12 +19,10 @@ Overview
     This extension allows a client to order operations between contexts that
     within the same scheduling group (stream).
 
-    This extension introduces the concept of an "ordering barrier", "shallow
-    flush", and "shallow finish". Ordering barrier generalizes the implicit
-    flush ordering between contexts in a scheduling group (stream). Shallow
-    flush is used to submit commands to the server without a server-side flush.
-    Shallow finish is used to ensure that commands have executed on the server
-    without a server-side finish.
+    This extension introduces the concept of an "ordering barrier" and "shallow
+    flush". Ordering barrier generalizes the implicit flush ordering between
+    contexts in a scheduling group (stream). Shallow flush is used to submit
+    commands to the server without a server-side flush.
 
     Issuing an ordering barrier on a context implies that commands on other
     contexts in the same scheduling group, which haven't been synchronized,
@@ -55,13 +53,6 @@ New Procedures and Functions
     inserts an ordering barrier and submits commands in the current context to
     the server.
 
-    The command
-
-        void ShallowFinishCHROMIUM()
-
-    inserts an ordering barrier, submits commands, and returns after the
-    commands in the current context have executed.
-
 New Tokens
 
     None
@@ -76,3 +67,4 @@ Revision History
 
     12/13/2017  Documented OrderingBarrierCHROMIUM, ShallowFlushCHROMIUM, and
                 ShallowFinishCHROMIUM.
+    08/20/2026  Removed ShallowFinishCHROMIUM.

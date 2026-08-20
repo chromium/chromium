@@ -64,7 +64,6 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   void UseProgram(GLuint program) override;
   void Flush() override;
   void Finish() override;
-  void ShallowFinishCHROMIUM() override;
 
   void BindBuffer(GLenum target, GLuint buffer) override;
   void BindRenderbuffer(GLenum target, GLuint buffer) override;

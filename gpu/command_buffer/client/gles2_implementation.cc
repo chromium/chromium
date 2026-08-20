@@ -1620,18 +1620,6 @@ void GLES2Implementation::Finish() {
   FinishHelper();
 }
 
-void GLES2Implementation::ShallowFinishCHROMIUM() {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  TRACE_EVENT0("gpu", "GLES2::ShallowFinishCHROMIUM");
-  flush_id_ = GenerateNextFlushId();
-  // Flush our command buffer (tell the service to execute up to the flush cmd
-  // and don't return until it completes).
-  helper_->CommandBufferHelper::Finish();
-
-  if (aggressively_free_resources_)
-    FreeEverything();
-}
-
 void GLES2Implementation::FinishHelper() {
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glFinish()");
   TRACE_EVENT0("gpu", "GLES2::Finish");

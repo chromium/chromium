@@ -1050,11 +1050,6 @@ void GLES2TraceImplementation::ShaderSource(GLuint shader,
   gl_->ShaderSource(shader, count, str, length);
 }
 
-void GLES2TraceImplementation::ShallowFinishCHROMIUM() {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::ShallowFinishCHROMIUM");
-  gl_->ShallowFinishCHROMIUM();
-}
-
 void GLES2TraceImplementation::OrderingBarrierCHROMIUM() {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::OrderingBarrierCHROMIUM");
   gl_->OrderingBarrierCHROMIUM();

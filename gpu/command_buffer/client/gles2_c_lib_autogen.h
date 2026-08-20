@@ -731,9 +731,6 @@ void GL_APIENTRY GLES2ShaderSource(GLuint shader,
                                    const GLint* length) {
   gles2::GetGLContext()->ShaderSource(shader, count, str, length);
 }
-void GL_APIENTRY GLES2ShallowFinishCHROMIUM() {
-  gles2::GetGLContext()->ShallowFinishCHROMIUM();
-}
 void GL_APIENTRY GLES2OrderingBarrierCHROMIUM() {
   gles2::GetGLContext()->OrderingBarrierCHROMIUM();
 }
@@ -2330,10 +2327,6 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glShaderSource",
         reinterpret_cast<GLES2FunctionPointer>(glShaderSource),
-    },
-    {
-        "glShallowFinishCHROMIUM",
-        reinterpret_cast<GLES2FunctionPointer>(glShallowFinishCHROMIUM),
     },
     {
         "glOrderingBarrierCHROMIUM",
