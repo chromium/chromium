@@ -812,7 +812,7 @@ public class CrashFileManagerTest {
     }
 
     /**
-     * Utility method that creates (and closes) a file descriptor to {@param minidumpToCopy} and
+     * Utility method that creates (and closes) a file descriptor to {@code minidumpToCopy} and
      * calls CrashFileManager.copyMinidumpFromFD.
      */
     private static void createFdForandCopyFile(
@@ -838,7 +838,7 @@ public class CrashFileManagerTest {
         }
     }
 
-    /** Returns the oldest file in the set of files {@param files}. */
+    /** Returns the oldest file in the set of files {@code files}. */
     private static File getOldestFile(File[] files) {
         File oldestFile = null;
         for (File file : files) {

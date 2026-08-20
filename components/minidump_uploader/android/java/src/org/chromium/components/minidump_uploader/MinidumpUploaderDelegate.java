@@ -29,21 +29,24 @@ public interface MinidumpUploaderDelegate {
     CrashReportingPermissionManager createCrashReportingPermissionManager();
 
     /**
-     * Performs any pre-work necessary for uploading minidumps, then calls the {@param startUploads}
+     * Performs any pre-work necessary for uploading minidumps, then calls the {@code startUploads}
      * continuation to initiate uploading the minidumps.
+     *
      * @param startUploads The continuation to call once any necessary pre-work is completed.
      */
     void prepareToUploadMinidumps(Runnable startUploads);
 
     /**
-     * Record a metric that the {@param minidump} was uploaded successfully.
+     * Record a metric that the {@code minidump} was uploaded successfully.
+     *
      * @param minidump The minidump filename, prior to the upload attempt.
      */
     void recordUploadSuccess(File minidump);
 
     /**
-     * Record a metric that the {@param minidump} failed to be uploaded. This is only called after
+     * Record a metric that the {@code minidump} failed to be uploaded. This is only called after
      * all retries are exhausted.
+     *
      * @param minidump The minidump filename, prior to the upload attempt.
      */
     void recordUploadFailure(File minidump);
