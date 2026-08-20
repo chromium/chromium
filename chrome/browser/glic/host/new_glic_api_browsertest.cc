@@ -5064,6 +5064,54 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
   ContinueJsTest({.instance = tab0_instance});
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       testPanelWillOpenHasRecentlyActiveConversations) {
+  tabs::TabInterface* tab0 = GetTabListInterface()->GetActiveTab();
+  NavigateTab(*tab0,
+              embedded_test_server()->GetURL("/browser_tests/test.html"));
+  ASSERT_OK_AND_ASSIGN(auto* tab0_instance, OpenGlicForActiveTab());
+  ExecuteJsTest(
+      {.params = base::Value("instance1"), .instance = tab0_instance});
+
+  tabs::TabInterface* tab1 = CreateAndActivateTab(
+      embedded_test_server()->GetURL("/browser_tests/test.html"));
+  ASSERT_OK_AND_ASSIGN(auto* tab1_instance, OpenGlicForActiveTab());
+  ExecuteJsTest(
+      {.params = base::Value("instance2"), .instance = tab1_instance});
+
+  tabs::TabInterface* tab2 = CreateAndActivateTab(
+      embedded_test_server()->GetURL("/browser_tests/test.html"));
+  ASSERT_OK_AND_ASSIGN(auto* tab2_instance, OpenGlicForActiveTab());
+  ExecuteJsTest(
+      {.params = base::Value("instance3"), .instance = tab2_instance});
+
+  // Activate tabs in a specific order to set recency: 0, 2, 1.
+  // Instance 1 will be most recent, then 2, then 0.
+  for (tabs::TabInterface* tab : {tab0, tab2, tab1}) {
+    ActivateTab(tab);
+    // Switching tabs does not automatically show the panel on all platforms
+    // (e.g. mobile Android due to peek behavior), so explicitly open Glic for
+    // the active tab to ensure it becomes active.
+    ASSERT_OK(OpenGlicForActiveTab());
+    auto* instance = GetInstanceForTab(tab);
+    ASSERT_TRUE(instance);
+    ASSERT_TRUE(base::test::RunUntil([&]() { return instance->IsActive(); }));
+  }
+
+  // Open a 4th tab to verify.
+  CreateAndActivateTab(
+      embedded_test_server()->GetURL("/browser_tests/test.html"));
+  ASSERT_OK_AND_ASSIGN(auto* tab3_instance, OpenGlicForActiveTab());
+  ExecuteJsTest(
+      {.params = base::Value("instance4"), .instance = tab3_instance});
+
+  // Open a 5th tab to verify.
+  CreateAndActivateTab(
+      embedded_test_server()->GetURL("/browser_tests/test.html"));
+  ASSERT_OK_AND_ASSIGN(auto* tab4_instance, OpenGlicForActiveTab());
+  ExecuteJsTest({.params = base::Value("verify"), .instance = tab4_instance});
+}
+
 auto DefaultTestParamSet() {
   return testing::Values(TestParams{});
 }

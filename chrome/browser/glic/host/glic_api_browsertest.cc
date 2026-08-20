@@ -515,54 +515,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testMetrics) {
   histogram_tester->ExpectTotalCount("Glic.TabContext.UploadTime", 1);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest,
-                       testPanelWillOpenHasRecentlyActiveConversations) {
-  // Open 3 tabs and register a conversation in each.
-  RunTestSequence(InstrumentTab(kFirstTab),
-                  NavigateWebContents(kFirstTab, page_url()),
-                  OpenGlic(GlicInstrumentMode::kHostAndContents,
-                           /*conversation_id=*/std::nullopt));
-  ExecuteJsTest({.params = base::Value("instance1")});
-
-  ASSERT_TRUE(AddTabAtIndex(1, page_url(), ui::PAGE_TRANSITION_TYPED));
-  TrackGlicInstanceWithTabIndex(1);
-  RunTestSequence(InstrumentTab(kSecondTab),
-                  OpenGlic(GlicInstrumentMode::kHostAndContents,
-                           /*conversation_id=*/std::nullopt));
-  ExecuteJsTest({.params = base::Value("instance2")});
-
-  ASSERT_TRUE(AddTabAtIndex(2, page_url(), ui::PAGE_TRANSITION_TYPED));
-  TrackGlicInstanceWithTabIndex(2);
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents,
-                           /*conversation_id=*/std::nullopt));
-  ExecuteJsTest({.params = base::Value("instance3")});
-
-  // Activate tabs in a specific order to set recency: 1, 3, 2.
-  // Instance 2 will be most recent, then 3, then 1.
-  for (int tab_index : {0, 2, 1}) {
-    browser()->tab_strip_model()->ActivateTabAt(tab_index);
-    tabs::TabInterface* tab =
-        browser()->tab_strip_model()->GetTabAtIndex(tab_index);
-    GlicInstance* instance = GetService()->GetInstanceForTab(tab);
-    ASSERT_TRUE(instance);
-    ASSERT_TRUE(base::test::RunUntil([&]() { return instance->IsActive(); }));
-  }
-
-  // Open a 4th tab to verify.
-  ASSERT_TRUE(AddTabAtIndex(3, page_url(), ui::PAGE_TRANSITION_TYPED));
-  TrackGlicInstanceWithTabIndex(3);
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents,
-                           /*conversation_id=*/std::nullopt));
-  ExecuteJsTest({.params = base::Value("instance4")});
-
-  // Open a 5th tab to verify.
-  ASSERT_TRUE(AddTabAtIndex(4, page_url(), ui::PAGE_TRANSITION_TYPED));
-  TrackGlicInstanceWithTabIndex(4);
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents,
-                           /*conversation_id=*/std::nullopt));
-  ExecuteJsTest({.params = base::Value("verify")});
-}
-
 // TODO(crbug.com/517682376): Flaky on ASan, MSan, and Linux/ChromeOS debug.
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
     (!defined(NDEBUG) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)))
