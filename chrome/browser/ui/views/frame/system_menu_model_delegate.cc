@@ -147,6 +147,30 @@ std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
   int string_id;
   switch (command_id) {
     case IDC_RESTORE_TAB:
+#if BUILDFLAG(IS_MAC)
+      string_id = IDS_REOPEN_CLOSED_TABS_MAC;
+      if (IsCommandIdEnabled(command_id)) {
+        sessions::TabRestoreService* trs =
+            TabRestoreServiceFactory::GetForProfile(browser_->GetProfile());
+        DCHECK(trs);
+        trs->LoadTabsFromLastSession();
+        if (!trs->entries().empty()) {
+          switch (trs->entries().front()->type) {
+            case sessions::tab_restore::Type::WINDOW:
+              string_id = IDS_REOPEN_WINDOW_MAC;
+              break;
+            case sessions::tab_restore::Type::GROUP:
+              string_id = IDS_REOPEN_GROUP_MAC;
+              break;
+            case sessions::tab_restore::Type::SPLIT:
+              string_id = IDS_REOPEN_SPLIT_MAC;
+              break;
+            case sessions::tab_restore::Type::TAB:
+              break;
+          }
+        }
+      }
+#else
       string_id = IDS_RESTORE_TAB;
       if (IsCommandIdEnabled(command_id)) {
         sessions::TabRestoreService* trs =
@@ -169,13 +193,20 @@ std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
           }
         }
       }
+#endif
       break;
     case IDC_TOGGLE_VERTICAL_TABS: {
       auto* controller = tabs::VerticalTabStripStateController::From(browser_);
       CHECK(controller);
+#if BUILDFLAG(IS_MAC)
+      string_id = controller->ShouldDisplayVerticalTabs()
+                      ? IDS_SWITCH_TO_HORIZONTAL_TAB_MAC
+                      : IDS_SWITCH_TO_VERTICAL_TAB_MAC;
+#else
       string_id = controller->ShouldDisplayVerticalTabs()
                       ? IDS_SWITCH_TO_HORIZONTAL_TAB
                       : IDS_SWITCH_TO_VERTICAL_TAB;
+#endif
       break;
     }
     case IDC_TOGGLE_VERTICAL_TABS_COLLAPSE: {

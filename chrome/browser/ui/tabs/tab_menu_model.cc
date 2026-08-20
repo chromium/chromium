@@ -503,6 +503,23 @@ void TabMenuModel::Build(int index) {
 
   if (tabs::kVerticalTabsToggleInTabContextMenu.Get() && controller) {
     AddSeparator(ui::NORMAL_SEPARATOR);
+#if BUILDFLAG(IS_MAC)
+    if (controller->ShouldDisplayVerticalTabs()) {
+      AddItemWithStringId(TabStripModel::CommandToggleVertical,
+                          IDS_SWITCH_TO_HORIZONTAL_TAB_MAC);
+    } else {
+      AddItemWithStringId(TabStripModel::CommandToggleVertical,
+                          IDS_SWITCH_TO_VERTICAL_TAB_MAC);
+      const bool use_preview_badge =
+          base::FeatureList::IsEnabled(tabs::kVerticalTabsPreviewBadge);
+      const user_education::DisplayNewBadge show_badge =
+          UserEducationService::MaybeShowNewBadge(
+              tab_strip_->profile(), use_preview_badge
+                                         ? tabs::kVerticalTabsPreviewBadge
+                                         : tabs::kVerticalTabsNewBadge);
+      SetIsNewFeatureAt(GetItemCount() - 1, show_badge);
+    }
+#else
     if (controller->ShouldDisplayVerticalTabs()) {
       AddItemWithStringId(TabStripModel::CommandToggleVertical,
                           IDS_SWITCH_TO_HORIZONTAL_TAB);
@@ -518,6 +535,7 @@ void TabMenuModel::Build(int index) {
                                          : tabs::kVerticalTabsNewBadge);
       SetIsNewFeatureAt(GetItemCount() - 1, show_badge);
     }
+#endif
   }
 
 // Append extension items for the 'tab' context if the feature is enabled.

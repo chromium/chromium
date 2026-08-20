@@ -1195,30 +1195,15 @@ Chromium is unable to recover your settings.
 
       <!-- Page menu. Android has separate strings for its menu -->
       <if expr="not is_android">
-        <if expr="use_titlecase">
-          <then>
-            <message name="IDS_CUSTOMIZE_CHROME" desc="In Title Case: The text label of the Customize Chrome menu item">
-              C&amp;ustomize Your Chromium
-            </message>
-            <message name="IDS_OTHER_CHROME_PROFILES_TITLE" desc="In Title Case: The title of the Other Chrome profiles section">
-              Other Chromium Profiles
-            </message>
-            <message name="IDS_MANAGE_CHROME_PROFILES" desc="In Title Case: The text label of the manage chrome profile item">
-              &amp;Manage Chromium Profiles
-            </message>
-          </then>
-          <else>
-            <message name="IDS_CUSTOMIZE_CHROME" desc="The text label of the Customize Chrome menu item">
-              C&amp;ustomize your Chromium
-            </message>
-            <message name="IDS_OTHER_CHROME_PROFILES_TITLE" desc="The title of the Other Chrome profiles section">
-              Other Chromium profiles
-            </message>
-            <message name="IDS_MANAGE_CHROME_PROFILES" desc="The text label of the manage chrome profile item">
-              &amp;Manage Chromium profiles
-            </message>
-          </else>
-        </if>
+        <message name="IDS_CUSTOMIZE_CHROME" desc="The text label of the Customize Chrome menu item">
+          C&amp;ustomize your Chromium
+        </message>
+        <message name="IDS_OTHER_CHROME_PROFILES_TITLE" desc="The title of the Other Chrome profiles section">
+          Other Chromium profiles
+        </message>
+        <message name="IDS_MANAGE_CHROME_PROFILES" desc="The text label of the manage chrome profile item">
+          &amp;Manage Chromium profiles
+        </message>
       </if>
 
       <message name="IDS_VIEW_PASSWORDS" desc="Item in the app menu which shows Password Manager page">
@@ -2304,21 +2289,45 @@ Chromium is unable to recover your settings.
           Search with Image Search
         </message>
 
-        <message name="IDS_LENS_OVERLAY_IMAGE_ENTRYPOINT_LABEL_ALT3"
-          desc="Label for the Lens overlay command, through which the image will be searched using the Image Search service.">
-          Search this image with Image Search
-        </message>
+        <if expr="use_titlecase">
+          <message name="IDS_LENS_OVERLAY_IMAGE_ENTRYPOINT_LABEL_ALT3"
+            desc="In Title Case: Label for the Lens overlay command, through which the image will be searched using the Image Search service.">
+            Search This Image with Image Search
+          </message>
+          <message name="IDS_LENS_OVERLAY_TAB_ENTRYPOINT_LABEL_CONTEXT_MENU"
+            desc="In Title Case: Label for the Lens overlay command in the context menu, through which the current tab will be searched using the Image Search service.">
+            Search This Tab with Image Search
+          </message>
+          <message name="IDS_LENS_OVERLAY_VIDEO_ENTRYPOINT_LABEL_ALT3"
+            desc="In Title Case: Label for the Lens overlay command, through which the video will be searched using the Image Search service.">
+            Search This Video with Image Search
+          </message>
+          <message name="IDS_LENS_OVERLAY_TAB_ENTRYPOINT_LABEL_V2"
+            desc="In Title Case: Label for the Lens overlay command, through which the current tab will be searched using the Image Search service.">
+            Search with Image Search
+          </message>
+        </if>
+        <if expr="not use_titlecase">
+          <message name="IDS_LENS_OVERLAY_IMAGE_ENTRYPOINT_LABEL_ALT3"
+            desc="Label for the Lens overlay command, through which the image will be searched using the Image Search service.">
+            Search this image with Image Search
+          </message>
+          <message name="IDS_LENS_OVERLAY_TAB_ENTRYPOINT_LABEL_CONTEXT_MENU"
+            desc="Label for the Lens overlay command in the context menu, through which the current tab will be searched using the Image Search service.">
+            Search this tab with Image Search
+          </message>
+          <message name="IDS_LENS_OVERLAY_VIDEO_ENTRYPOINT_LABEL_ALT3"
+            desc="Label for the Lens overlay command, through which the video will be searched using the Image Search service.">
+            Search this video with Image Search
+          </message>
+          <message name="IDS_LENS_OVERLAY_TAB_ENTRYPOINT_LABEL_V2"
+            desc="Label for the Lens overlay command, through which the current tab will be searched using the Image Search service.">
+            Search with Image Search
+          </message>
+        </if>
         <message name="IDS_LENS_OVERLAY_TAB_ENTRYPOINT_LABEL"
           desc="Label for the Lens overlay command, through which the current tab will be searched using the Image Search service.">
           Search this tab with Image Search
-        </message>
-        <message name="IDS_LENS_OVERLAY_TAB_ENTRYPOINT_LABEL_V2"
-          desc="Label for the Lens overlay command, through which the current tab will be searched using the Image Search service.">
-          Search with Image Search
-        </message>
-        <message name="IDS_LENS_OVERLAY_VIDEO_ENTRYPOINT_LABEL_ALT3"
-          desc="Label for the Lens overlay command, through which the video will be searched using the Image Search service.">
-          Search this video with Image Search
         </message>
       </if>
 

@@ -142,7 +142,18 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
   AddItemWithIconMaybe(model, IDC_RESTORE_WINDOW, IDS_RESTORE_WINDOW_MENU,
                        views::kChromeRestoreIcon);
   model->AddSeparator(ui::NORMAL_SEPARATOR);
-#endif
+#endif  // BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_MAC)
+  model->AddItemWithStringId(IDC_NEW_TAB, IDS_NEW_TAB_MAC);
+  model->SetElementIdentifierAt(model->GetIndexOfCommandId(IDC_NEW_TAB).value(),
+                                kSystemMenuNewTabElementId);
+  model->AddItemWithStringId(IDC_RESTORE_TAB, IDS_REOPEN_CLOSED_TABS_MAC);
+  model->SetElementIdentifierAt(
+      model->GetIndexOfCommandId(IDC_RESTORE_TAB).value(),
+      kSystemMenuRestoreTabElementId);
+  model->AddItemWithStringId(IDC_BOOKMARK_ALL_TABS, IDS_BOOKMARK_ALL_TABS_MAC);
+  model->AddItemWithStringId(IDC_NAME_WINDOW, IDS_NAME_WINDOW_MAC);
+#else
   model->AddItemWithStringId(IDC_NEW_TAB, IDS_NEW_TAB);
   model->SetElementIdentifierAt(model->GetIndexOfCommandId(IDC_NEW_TAB).value(),
                                 kSystemMenuNewTabElementId);
@@ -150,12 +161,6 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
   model->SetElementIdentifierAt(
       model->GetIndexOfCommandId(IDC_RESTORE_TAB).value(),
       kSystemMenuRestoreTabElementId);
-
-
-#if BUILDFLAG(IS_MAC)
-  model->AddItemWithStringId(IDC_BOOKMARK_ALL_TABS, IDS_BOOKMARK_ALL_TABS);
-  model->AddItemWithStringId(IDC_NAME_WINDOW, IDS_NAME_WINDOW);
-#else
   AddItemWithIconMaybe(model, IDC_BOOKMARK_ALL_TABS, IDS_BOOKMARK_ALL_TABS,
                        kBookmarkAllTabsChromeRefreshOldIcon);
   AddItemWithIconMaybe(model, IDC_NAME_WINDOW, IDS_NAME_WINDOW,
@@ -179,6 +184,36 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
           tabs::VerticalTabStripStateController::From(browser())) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
 
+#if BUILDFLAG(IS_MAC)
+    if (controller->ShouldDisplayVerticalTabs()) {
+      model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
+                                 IDS_SWITCH_TO_HORIZONTAL_TAB_MAC);
+
+      model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS_COLLAPSE,
+                                 controller->IsCollapsed()
+                                     ? IDS_EXPAND_VERTICAL_TABS
+                                     : IDS_COLLAPSE_VERTICAL_TABS);
+      model->SetElementIdentifierAt(
+          model->GetIndexOfCommandId(IDC_TOGGLE_VERTICAL_TABS_COLLAPSE).value(),
+          kToggleVerticalTabsCollapseElementId);
+    } else {
+      model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
+                                 IDS_SWITCH_TO_VERTICAL_TAB_MAC);
+      const bool use_preview_badge =
+          base::FeatureList::IsEnabled(tabs::kVerticalTabsPreviewBadge);
+      const ui::NewBadgeType badge_type = use_preview_badge
+                                              ? ui::NewBadgeType::kPreview
+                                              : ui::NewBadgeType::kNew;
+      const user_education::DisplayNewBadge show_badge =
+          UserEducationService::MaybeShowNewBadge(
+              browser()->GetProfile(), use_preview_badge
+                                           ? tabs::kVerticalTabsPreviewBadge
+                                           : tabs::kVerticalTabsNewBadge);
+      model->SetIsNewFeatureAt(
+          model->GetIndexOfCommandId(IDC_TOGGLE_VERTICAL_TABS).value(),
+          show_badge, badge_type);
+    }
+#else
     if (controller->ShouldDisplayVerticalTabs()) {
       model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
                                  IDS_SWITCH_TO_HORIZONTAL_TAB);
@@ -212,6 +247,7 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
           model->GetIndexOfCommandId(IDC_TOGGLE_VERTICAL_TABS).value(),
           show_badge, badge_type);
     }
+#endif
     model->SetElementIdentifierAt(
         model->GetIndexOfCommandId(IDC_TOGGLE_VERTICAL_TABS).value(),
         kToggleVerticalTabsElementId);
@@ -237,7 +273,12 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
 
   if (chrome::CanOpenTaskManager()) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
+#if BUILDFLAG(IS_MAC)
+    model->AddItemWithStringId(IDC_TASK_MANAGER_CONTEXT_MENU,
+                               IDS_TASK_MANAGER_MAC);
+#else
     model->AddItemWithStringId(IDC_TASK_MANAGER_CONTEXT_MENU, IDS_TASK_MANAGER);
+#endif
   }
 #if BUILDFLAG(IS_LINUX)
   model->AddSeparator(ui::NORMAL_SEPARATOR);

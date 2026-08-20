@@ -79,7 +79,7 @@ NSMenuItem* BuildAppMenu(NSApplication* nsapp,
                   .command_id(IDC_WEB_APP_SETTINGS)
                   .remove_if(!is_pwa),
               Item().is_separator(),
-              Item(IDS_CLEAR_BROWSING_DATA)
+              Item(IDS_CLEAR_BROWSING_DATA_MAC)
                   .command_id(IDC_CLEAR_BROWSING_DATA)
                   .remove_if(is_pwa),
               Item(IDS_IMPORT_SETTINGS_MENU_MAC)
@@ -321,8 +321,8 @@ NSMenuItem* BuildViewMenu(NSApplication* nsapp,
                    .command_id(IDC_SHOW_AI_MODE_OMNIBOX_BUTTON),
               Item(IDS_CONTEXT_MENU_SHOW_SEARCH_TOOLS)
                   .command_id(IDC_SHOW_SEARCH_TOOLS),
-              Item(IDS_SWITCH_TO_VERTICAL_TAB)
-                  .command_id(IDC_TOGGLE_VERTICAL_TABS)
+               Item(IDS_SWITCH_TO_VERTICAL_TAB_MAC)
+                   .command_id(IDC_TOGGLE_VERTICAL_TABS)
                   .remove_if(!tabs::IsVerticalTabsFeatureEnabled()),
               Item(IDS_VERTICAL_TABS_VIEW_MENU_TOGGLE_COLLAPSE)
                   .command_id(IDC_TOGGLE_VERTICAL_TABS_COLLAPSE)
@@ -413,7 +413,7 @@ NSMenuItem* BuildHistoryMenu(NSApplication* nsapp,
               Item().is_separator()
                   .tag(HistoryMenuBridge::kShowFullSeparator)
                   .remove_if(is_pwa),
-              Item(IDS_HISTORY_SHOWFULLHISTORY_LINK)
+              Item(IDS_HISTORY_SHOWFULLHISTORY_MAC)
                   .command_id(IDC_SHOW_HISTORY)
                   .sf_symbol(
                       @"clock.arrow.trianglehead.counterclockwise.rotate.90")
@@ -434,8 +434,8 @@ NSMenuItem* BuildBookmarksMenu(NSApplication* nsapp,
   }
 
   const int bookmarks_manager_string_id =
-      features::IsMenuSimplificationEnabled() ? IDS_BOOKMARK_MANAGER_V2
-                                              : IDS_BOOKMARK_MANAGER;
+      features::IsMenuSimplificationEnabled() ? IDS_BOOKMARK_MANAGER_V2_MAC
+                                              : IDS_BOOKMARK_MANAGER_MAC;
   // clang-format off
   NSMenuItem* item =
       Item(IDS_BOOKMARKS_MENU)
@@ -445,9 +445,9 @@ NSMenuItem* BuildBookmarksMenu(NSApplication* nsapp,
                   .command_id(IDC_SHOW_BOOKMARK_MANAGER),
               Item().is_separator()
                   .tag(IDC_BOOKMARK_THIS_TAB),
-              Item(IDS_BOOKMARK_THIS_TAB)
+              Item(IDS_BOOKMARK_THIS_TAB_MAC)
                   .command_id(IDC_BOOKMARK_THIS_TAB),
-              Item(IDS_BOOKMARK_ALL_TABS)
+              Item(IDS_BOOKMARK_ALL_TABS_MAC)
                   .command_id(IDC_BOOKMARK_ALL_TABS),
               Item().is_separator()
                   .tag(IDC_BOOKMARK_THIS_TAB),
@@ -493,9 +493,9 @@ NSMenuItem* BuildWindowMenu(NSApplication* nsapp,
               Item(IDS_SHOW_AS_TAB)
                   .command_id(IDC_SHOW_AS_TAB)
                   .remove_if(is_pwa),
-              Item(IDS_NAME_WINDOW)
-                  .command_id(IDC_NAME_WINDOW)
-                  .remove_if(is_pwa),
+               Item(IDS_NAME_WINDOW_MAC)
+                   .command_id(IDC_NAME_WINDOW)
+                   .remove_if(is_pwa),
               Item().is_separator()
                   .remove_if(is_pwa),
               Item(IDS_SHOW_DOWNLOADS_MAC)
