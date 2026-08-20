@@ -122,6 +122,8 @@ class BASE_EXPORT LockMetricTagList {
  private:
   friend class LockMetricsRecorder;
   friend class LockMetricsRecorderTest;
+  friend class TaggedMetricLock;
+  friend class TaggedMetricLockTest;
 
   // Returns the `LockMetricTag` at the given index, or `nullptr` if out of
   // bounds.
