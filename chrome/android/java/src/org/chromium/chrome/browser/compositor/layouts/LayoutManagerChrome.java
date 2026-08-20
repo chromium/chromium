@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManager.ThumbnailChangeListener;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -116,7 +117,9 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
         super(host, contentContainer, tabContentManagerSupplier, toolbarThemeColorProvider);
         // Build Event Filter Handlers
         mToolbarSwipeHandler =
-                createToolbarSwipeHandler(/* supportsSwipeToShowTabSwitcher= */ true);
+                createToolbarSwipeHandler(
+                        /* supportsSwipeToShowTabSwitcher= */ !TabSwitcherUtils
+                                .isGridTabSwitcherDisabled());
 
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mTabContentManagerSupplier.addSyncObserverAndPostIfNonNull(mOnTabContentManager);
@@ -531,15 +534,21 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
                 return false;
             }
 
+            if (direction == ScrollDirection.LEFT || direction == ScrollDirection.RIGHT) {
+                return true;
+            }
+
+            if (!mSupportsSwipeToShowTabSwitcher) {
+                return false;
+            }
+
             Tab tab = getTabModelSelector() != null ? getTabModelSelector().getCurrentTab() : null;
             boolean toolbarShownOnTop = ToolbarPositionController.shouldShowToolbarOnTop(tab);
             @ScrollDirection
             int showTabSwitcherScrollDirection =
                     toolbarShownOnTop ? ScrollDirection.DOWN : ScrollDirection.UP;
 
-            return direction == showTabSwitcherScrollDirection
-                    || direction == ScrollDirection.LEFT
-                    || direction == ScrollDirection.RIGHT;
+            return direction == showTabSwitcherScrollDirection;
         }
     }
 

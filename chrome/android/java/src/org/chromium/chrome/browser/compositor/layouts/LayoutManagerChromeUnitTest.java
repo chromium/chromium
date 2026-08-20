@@ -14,10 +14,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import android.view.MotionEvent;
 import android.view.ViewGroup;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,10 +30,13 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubLayout;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -39,8 +44,11 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
+import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
+import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link LayoutManagerChrome}. */
@@ -77,6 +85,11 @@ public class LayoutManagerChromeUnitTest {
                 .getScenario()
                 .onActivity(
                         (TestActivity activity) -> when(mHost.getContext()).thenReturn(activity));
+    }
+
+    @After
+    public void tearDown() {
+        DeviceInfo.resetIsDesktopForTesting();
     }
 
     @Test
@@ -240,6 +253,90 @@ public class LayoutManagerChromeUnitTest {
         Assert.assertFalse(
                 observer.willAddedTabBeSelected(
                         TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND, /* incognito= */ false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
+    public void testToolbarSwipe_isSwipeEnabled_disabledOnDesktop() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        LayoutManagerChrome layoutManagerChrome = createLayoutManagerChromeSpy();
+        layoutManagerChrome.mStaticLayout = mStaticLayout;
+        when(layoutManagerChrome.getActiveLayout()).thenReturn(mStaticLayout);
+
+        SwipeHandler swipeHandler =
+                layoutManagerChrome.createToolbarSwipeHandler(
+                        /* supportsSwipeToShowTabSwitcher= */ !TabSwitcherUtils
+                                .isGridTabSwitcherDisabled());
+        MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+
+        // Vertical swipe (to show tab switcher) should be disabled.
+        Assert.assertFalse(swipeHandler.isSwipeEnabled(ScrollDirection.DOWN, event));
+        Assert.assertFalse(swipeHandler.isSwipeEnabled(ScrollDirection.UP, event));
+
+        // Horizontal swipe (to switch tabs) should remain enabled.
+        Assert.assertTrue(swipeHandler.isSwipeEnabled(ScrollDirection.LEFT, event));
+        Assert.assertTrue(swipeHandler.isSwipeEnabled(ScrollDirection.RIGHT, event));
+    }
+
+    @Test
+    public void testToolbarSwipe_isSwipeEnabled_enabledOnPhone() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        LayoutManagerChrome layoutManagerChrome = createLayoutManagerChromeSpy();
+        layoutManagerChrome.mStaticLayout = mStaticLayout;
+        when(layoutManagerChrome.getActiveLayout()).thenReturn(mStaticLayout);
+
+        SwipeHandler swipeHandler =
+                layoutManagerChrome.createToolbarSwipeHandler(
+                        /* supportsSwipeToShowTabSwitcher= */ !TabSwitcherUtils
+                                .isGridTabSwitcherDisabled());
+        MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+
+        // Vertical swipe (DOWN for top toolbar) should be enabled.
+        Assert.assertTrue(swipeHandler.isSwipeEnabled(ScrollDirection.DOWN, event));
+
+        // Horizontal swipe should also be enabled.
+        Assert.assertTrue(swipeHandler.isSwipeEnabled(ScrollDirection.LEFT, event));
+        Assert.assertTrue(swipeHandler.isSwipeEnabled(ScrollDirection.RIGHT, event));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
+    public void testToolbarSwipe_onSwipeUpdated_disabledOnDesktop_doesNotShowHub() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        LayoutManagerChrome layoutManagerChrome = createLayoutManagerChromeSpy();
+        layoutManagerChrome.mToolbarSwipeLayout = mToolbarSwipeLayout;
+
+        SwipeHandler swipeHandler =
+                layoutManagerChrome.createToolbarSwipeHandler(
+                        /* supportsSwipeToShowTabSwitcher= */ !TabSwitcherUtils
+                                .isGridTabSwitcherDisabled());
+        MotionEvent startEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 100, 0);
+        MotionEvent moveEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 100, 200, 0);
+
+        swipeHandler.onSwipeStarted(ScrollDirection.UNKNOWN, startEvent);
+        // dy = 100 (downward swipe)
+        swipeHandler.onSwipeUpdated(moveEvent, 0, 0, 0, 100);
+
+        verify(layoutManagerChrome, never()).showLayout(eq(LayoutType.HUB), anyBoolean());
+    }
+
+    @Test
+    public void testToolbarSwipe_onSwipeUpdated_enabledOnPhone_showsHub() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        LayoutManagerChrome layoutManagerChrome = createLayoutManagerChromeSpy();
+        layoutManagerChrome.mToolbarSwipeLayout = mToolbarSwipeLayout;
+
+        SwipeHandler swipeHandler =
+                layoutManagerChrome.createToolbarSwipeHandler(
+                        /* supportsSwipeToShowTabSwitcher= */ true);
+        MotionEvent startEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 100, 0);
+        MotionEvent moveEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 100, 200, 0);
+
+        swipeHandler.onSwipeStarted(ScrollDirection.UNKNOWN, startEvent);
+        // dy = 100 (downward swipe)
+        swipeHandler.onSwipeUpdated(moveEvent, 0, 0, 0, 100);
+
+        verify(layoutManagerChrome).showLayout(eq(LayoutType.HUB), eq(true));
     }
 
     private LayoutManagerChrome createLayoutManagerChromeSpy() {
