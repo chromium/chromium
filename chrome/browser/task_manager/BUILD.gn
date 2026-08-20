@@ -359,13 +359,21 @@ source_set("unit_tests") {
   }
 }
 
-if (!is_android) {
-  source_set("browser_tests") {
-    testonly = true
+source_set("browser_tests") {
+  testonly = true
 
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = []
+  deps = [
+    ":task_manager",
+    ":test_support",
+    "//base",
+    "//content/public/browser",
+    "//content/test:test_support",
+  ]
 
-    sources = [
+  if (!is_android) {
+    sources += [
       "providers/web_contents/background_contents_tag_browsertest.cc",
       "providers/web_contents/devtools_tag_browsertest.cc",
       "providers/web_contents/subframe_task_browsertest.cc",
@@ -375,10 +383,7 @@ if (!is_android) {
       "task_manager_browsertest.cc",
     ]
 
-    deps = [
-      ":task_manager",
-      ":test_support",
-      "//base",
+    deps += [
       "//base/test:test_support",
       "//chrome/browser/background:test_support",
       "//chrome/browser/devtools:test_support",
@@ -393,17 +398,26 @@ if (!is_android) {
       "//components/embedder_support",
       "//components/favicon/content",
       "//components/infobars/content",
-      "//content/public/browser",
       "//content/test:browsertest_support",
-      "//content/test:test_support",
       "//pdf:features",
       "//services/strings",
       "//testing/gmock",
       "//testing/gtest",
     ]
+  }
 
-    if (enable_pdf) {
-      deps += [ "//chrome/browser/pdf:pdf_extension_test_base" ]
-    }
+  if (enable_pdf) {
+    deps += [ "//chrome/browser/pdf:pdf_extension_test_base" ]
+  }
+
+  if (enable_extensions_core) {
+    sources += [ "providers/web_contents/extension_tag_browsertest.cc" ]
+    deps += [
+      "//chrome/browser/extensions:test_support",
+      "//chrome/common:non_code_constants",
+      "//extensions:test_support",
+      "//extensions/common:common_constants",
+      "//ui/gfx",
+    ]
   }
 }
