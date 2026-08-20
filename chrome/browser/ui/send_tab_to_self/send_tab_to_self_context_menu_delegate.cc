@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -103,41 +104,14 @@ std::vector<base::WeakPtr<content::WebContents>> GetWeakWebContentsList(
   return list;
 }
 
-}  // namespace
-
-SendTabToSelfContextMenuDelegate::SendTabToSelfContextMenuDelegate(
-    content::WebContents* primary_web_contents,
-    ShareEntryPoint entry_point,
-    const GURL& target_url,
-    const std::string& target_title)
-    : primary_web_contents_(
-          primary_web_contents ? primary_web_contents->GetWeakPtr() : nullptr),
-      devices_(GetDevicesForDisplay()),
-      entry_point_(entry_point),
-      target_url_(target_url),
-      target_title_(target_title) {
-  web_contents_list_ =
-      GetWeakWebContentsList(base::span_from_ref(primary_web_contents));
-}
-
-SendTabToSelfContextMenuDelegate::SendTabToSelfContextMenuDelegate(
-    content::WebContents* primary_web_contents,
-    base::span<content::WebContents* const> web_contents_list,
-    ShareEntryPoint entry_point)
-    : SendTabToSelfContextMenuDelegate(primary_web_contents, entry_point) {
-  web_contents_list_ = GetWeakWebContentsList(web_contents_list);
-}
-
-SendTabToSelfContextMenuDelegate::~SendTabToSelfContextMenuDelegate() = default;
-
-std::vector<TargetDeviceInfo>
-SendTabToSelfContextMenuDelegate::GetDevicesForDisplay() const {
-  if (!primary_web_contents_) {
-    return {};
-  }
+// Returns the list of target devices to show in the context menu.
+// The returned list is capped at `kMaxDevices`.
+std::vector<TargetDeviceInfo> GetDevicesForDisplay(
+    content::WebContents* web_contents) {
+  CHECK(web_contents);
 
   Profile* profile =
-      Profile::FromBrowserContext(primary_web_contents_->GetBrowserContext());
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   SendTabToSelfSyncService* service =
       SendTabToSelfSyncServiceFactory::GetForProfile(profile);
   if (!service) {
@@ -156,6 +130,34 @@ SendTabToSelfContextMenuDelegate::GetDevicesForDisplay() const {
   return devices;
 }
 
+}  // namespace
+
+SendTabToSelfContextMenuDelegate::SendTabToSelfContextMenuDelegate(
+    content::WebContents* primary_web_contents,
+    ShareEntryPoint entry_point,
+    const GURL& target_url,
+    const std::string& target_title)
+    : primary_web_contents_(primary_web_contents->GetWeakPtr()),
+      devices_(GetDevicesForDisplay(primary_web_contents)),
+      entry_point_(entry_point),
+      target_url_(target_url),
+      target_title_(target_title) {
+  CHECK(primary_web_contents);
+  CHECK(!devices_.empty());
+  web_contents_list_ =
+      GetWeakWebContentsList(base::span_from_ref(primary_web_contents));
+}
+
+SendTabToSelfContextMenuDelegate::SendTabToSelfContextMenuDelegate(
+    content::WebContents* primary_web_contents,
+    base::span<content::WebContents* const> web_contents_list,
+    ShareEntryPoint entry_point)
+    : SendTabToSelfContextMenuDelegate(primary_web_contents, entry_point) {
+  web_contents_list_ = GetWeakWebContentsList(web_contents_list);
+}
+
+SendTabToSelfContextMenuDelegate::~SendTabToSelfContextMenuDelegate() = default;
+
 // static
 std::u16string SendTabToSelfContextMenuDelegate::GetDeviceItemLabel(
     const TargetDeviceInfo& device) {
@@ -171,12 +173,7 @@ void SendTabToSelfContextMenuDelegate::PopulateSubmenu(
                    GetDeviceItemLabel(devices_[i]));
   }
 
-  // TODO(crbug.com/488252159): Implement edge case handling (e.g., no devices
-  // or not signed in) according to design spec.
-
-  if (!devices_.empty()) {
-    model->AddSeparator(ui::NORMAL_SEPARATOR);
-  }
+  model->AddSeparator(ui::NORMAL_SEPARATOR);
   model->AddItemWithStringId(
       IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_MANAGE_DEVICES,
       IDS_SEND_TAB_TO_SELF_MANAGE_DEVICES);

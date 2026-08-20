@@ -30,6 +30,11 @@ inline constexpr int IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE_LAST =
 
 // A delegate class to manage Send Tab to Self items in context menus.
 // Acts as the ui::SimpleMenuModel::Delegate for the submenu.
+//
+// Precondition: Must only be instantiated with a valid, non-null WebContents,
+// when Send Tab To Self is enabled, and when there is at least one target
+// device available to display (e.g. `ShouldOfferFeature()` has been verified by
+// the caller).
 class SendTabToSelfContextMenuDelegate : public ui::SimpleMenuModel::Delegate {
  public:
   // Single-tab flow (e.g., page or hyperlink context menu).
@@ -65,10 +70,6 @@ class SendTabToSelfContextMenuDelegate : public ui::SimpleMenuModel::Delegate {
   void OnMenuWillShow(ui::SimpleMenuModel* source) override;
 
  private:
-  // Returns the list of target devices to show in the context menu.
-  // The returned list is capped at `kMaxDevices`.
-  std::vector<TargetDeviceInfo> GetDevicesForDisplay() const;
-
   // Returns the label to show for a device in the context menu.
   static std::u16string GetDeviceItemLabel(const TargetDeviceInfo& device);
 

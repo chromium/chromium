@@ -112,6 +112,7 @@ source_set("test_support") {
     "//base",
     "//components/autofill/core/common",
     "//components/sync:test_support",
+    "//components/sync_device_info",
     "//testing/gmock",
     "//url",
   ]
