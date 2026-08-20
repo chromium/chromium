@@ -12,9 +12,11 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
@@ -38,6 +40,34 @@
 namespace gtk {
 
 namespace {
+
+// Colors read from the GTK theme, keyed by the CSS selector they were queried
+// with. Each query builds a chain of style contexts and renders into a small
+// bitmap, which costs 50-100 microseconds, and the same selectors are queried
+// for every GTK ColorProvider that is built and again on each theme load. The
+// results only change with the theme, so they are cached until
+// ClearStyleColorCache().
+struct StyleColorCache {
+  base::flat_map<std::string, SkColor> bg;
+  base::flat_map<std::string, SkColor> fg;
+  base::flat_map<std::string, SkColor> border;
+  base::flat_map<std::string, SkColor> separator;
+};
+
+StyleColorCache& GetStyleColorCache() {
+  static base::NoDestructor<StyleColorCache> cache;
+  return *cache;
+}
+
+SkColor GetCachedStyleColor(base::flat_map<std::string, SkColor>& cache,
+                            const std::string& css_selector,
+                            SkColor (*compute)(const std::string&)) {
+  auto it = cache.find(css_selector);
+  if (it == cache.end()) {
+    it = cache.emplace(css_selector, compute(css_selector)).first;
+  }
+  return it->second;
+}
 
 const char kAuraTransientParent[] = "aura-transient-parent";
 
@@ -523,6 +553,8 @@ GtkCssContext GetStyleContextFromCss(const std::string& css_selector) {
   return context;
 }
 
+void ApplyCssProviderToContext(GtkCssContext context, GtkCssProvider* provider);
+
 SkColor GetBgColorFromStyleContext(GtkCssContext context) {
   // Backgrounds are more general than solid colors (eg. gradients),
   // but chromium requires us to boil this down to one color.  We
@@ -530,19 +562,22 @@ SkColor GetBgColorFromStyleContext(GtkCssContext context) {
   // set to a garbage color because a background-image will cover it
   // anyway.  So we instead render the background into a 24x24 bitmap,
   // removing any borders, and hope that we get a good color.
-  ApplyCssToContext(context,
-                    "* {"
-                    "border-radius: 0px;"
-                    "border-style: none;"
-                    "box-shadow: none;"
-                    "}");
+  static base::NoDestructor<ScopedCssProvider> strip_borders(
+      GetCssProvider("* {"
+                     "border-radius: 0px;"
+                     "border-style: none;"
+                     "box-shadow: none;"
+                     "}"));
+  ApplyCssProviderToContext(context, *strip_borders);
   gfx::Size size(24, 24);
   CairoSurface surface(size);
   RenderBackground(size, surface.cairo(), context);
   return surface.GetAveragePixelValue(false);
 }
 
-SkColor GetFgColor(const std::string& css_selector) {
+namespace {
+
+SkColor ComputeFgColor(const std::string& css_selector) {
   auto context = GetStyleContextFromCss(css_selector);
   auto fg = GtkStyleContextGetColor(context);
   if (SkColorGetA(fg) == SK_AlphaOPAQUE) {
@@ -550,6 +585,13 @@ SkColor GetFgColor(const std::string& css_selector) {
   }
   return color_utils::GetResultingPaintColor(
       fg, GetBgColorFromStyleContext(context));
+}
+
+}  // namespace
+
+SkColor GetFgColor(const std::string& css_selector) {
+  return GetCachedStyleColor(GetStyleColorCache().fg, css_selector,
+                             &ComputeFgColor);
 }
 
 ScopedCssProvider GetCssProvider(const std::string& css) {
@@ -582,11 +624,22 @@ void RenderBackground(const gfx::Size& size,
   gtk_render_background(context, cr, 0, 0, size.width(), size.height());
 }
 
-SkColor GetBgColor(const std::string& css_selector) {
+namespace {
+
+SkColor ComputeBgColor(const std::string& css_selector) {
   return GetBgColorFromStyleContext(GetStyleContextFromCss(css_selector));
 }
 
-SkColor GetBorderColor(const std::string& css_selector) {
+}  // namespace
+
+SkColor GetBgColor(const std::string& css_selector) {
+  return GetCachedStyleColor(GetStyleColorCache().bg, css_selector,
+                             &ComputeBgColor);
+}
+
+namespace {
+
+SkColor ComputeBorderColor(const std::string& css_selector) {
   // Borders have the same issue as backgrounds, due to the
   // border-image property.
   auto context = GetStyleContextFromCss(css_selector);
@@ -601,6 +654,13 @@ SkColor GetBorderColor(const std::string& css_selector) {
       border, GetBgColorFromStyleContext(context));
 }
 
+}  // namespace
+
+SkColor GetBorderColor(const std::string& css_selector) {
+  return GetCachedStyleColor(GetStyleColorCache().border, css_selector,
+                             &ComputeBorderColor);
+}
+
 bool ContextHasClass(GtkCssContext context, const std::string& style_class) {
   bool has_class = gtk_style_context_has_class(context, style_class.c_str());
   if (!GtkCheckVersion(4)) {
@@ -610,7 +670,9 @@ bool ContextHasClass(GtkCssContext context, const std::string& style_class) {
   return has_class;
 }
 
-SkColor GetSeparatorColor(const std::string& css_selector) {
+namespace {
+
+SkColor ComputeSeparatorColor(const std::string& css_selector) {
   auto context = GetStyleContextFromCss(css_selector);
   bool horizontal = ContextHasClass(context, "horizontal");
 
@@ -640,6 +702,21 @@ SkColor GetSeparatorColor(const std::string& css_selector) {
   gtk_render_background(context, surface.cairo(), 0, 0, w, h);
   gtk_render_frame(context, surface.cairo(), 0, 0, w, h);
   return surface.GetAveragePixelValue(false);
+}
+
+}  // namespace
+
+SkColor GetSeparatorColor(const std::string& css_selector) {
+  return GetCachedStyleColor(GetStyleColorCache().separator, css_selector,
+                             &ComputeSeparatorColor);
+}
+
+void ClearStyleColorCache() {
+  StyleColorCache& cache = GetStyleColorCache();
+  cache.bg.clear();
+  cache.fg.clear();
+  cache.border.clear();
+  cache.separator.clear();
 }
 
 std::string GetGtkSettingsStringProperty(GtkSettings* settings,

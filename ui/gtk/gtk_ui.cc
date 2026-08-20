@@ -952,6 +952,7 @@ gfx::Size GtkUi::GetPdfPaperSize(printing::PrintingContextLinux* context) {
 #endif
 
 void GtkUi::OnThemeChanged(GtkSettings* settings, GtkParamSpec* param) {
+  ClearStyleColorCache();
   if (SanitizeIconThemeName() || SanitizeThemeName()) {
     return;  // Exit early; modifying the setting re-triggered this function
   }
