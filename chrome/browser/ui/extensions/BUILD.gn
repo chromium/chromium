@@ -345,6 +345,7 @@ source_set("browser_tests") {
     ":extensions",
     "//base/test:test_support",
     "//chrome/browser/extensions",
+    "//chrome/browser/ui/browser_window",
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//extensions:test_support",

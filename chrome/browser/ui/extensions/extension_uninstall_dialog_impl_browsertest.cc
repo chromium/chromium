@@ -12,8 +12,8 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
@@ -55,8 +55,8 @@ scoped_refptr<const extensions::Extension> BuildTestExtension(
   return extensions::ExtensionBuilder(extension_name).Build();
 }
 
-std::string GetActiveUrl(Browser* browser) {
-  return browser->tab_strip_model()
+std::string GetActiveUrl(BrowserWindowInterface* browser) {
+  return browser->GetTabStripModel()
       ->GetActiveWebContents()
       ->GetLastCommittedURL()
       .spec();
@@ -290,12 +290,12 @@ IN_PROC_BROWSER_TEST_P(ParameterizedExtensionUninstallDialogImplBrowserTest,
 
   // There should be 2 tabs open: chrome://about and the extension's uninstall
   // url.
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
   // This navigation can fail, since the uninstall url isn't hooked up to the
   // test server. That's fine, since we only care about the intended target,
   // which is valid.
   content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   // Verifying that the extension's uninstall url is the active tab.
   EXPECT_EQ(kUninstallUrl, GetActiveUrl(browser()));
 
@@ -338,23 +338,23 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
   content::RunAllPendingInMessageLoop();
   // There should be 3 tabs open: chrome://about, the extension's uninstall url,
   // and the CWS Report Abuse survey.
-  EXPECT_EQ(3, browser()->tab_strip_model()->count());
+  EXPECT_EQ(3, browser()->GetTabStripModel()->count());
   // This navigation can fail, since the webstore report abuse url isn't hooked
   // up to the test server. That's fine, since we only care about the intended
   // target, which is valid.
   content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   // The CWS Report Abuse survey should be the active tab. We test this with the
   // actual string for the current "Report Abuse" page for the webstore, to be
   // explicit about what URL we are opening.
   EXPECT_EQ(kReportAbuseUrl, GetActiveUrl(browser()));
   // Similar to the scenario above, this navigation can fail. The uninstall url
   // isn't hooked up to our test server.
-  content::WaitForLoadStop(browser()->tab_strip_model()->GetWebContentsAt(1));
+  content::WaitForLoadStop(browser()->GetTabStripModel()->GetWebContentsAt(1));
   // Verifying that the extension's uninstall url was opened. It should not be
   // the active tab.
   EXPECT_EQ(kUninstallUrl, browser()
-                               ->tab_strip_model()
+                               ->GetTabStripModel()
                                ->GetWebContentsAt(1)
                                ->GetLastCommittedURL()
                                .spec());

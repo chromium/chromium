@@ -7,7 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
 #include "chrome/browser/ui/extensions/controlled_home_dialog_controller_interface.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"

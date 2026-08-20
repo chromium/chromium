@@ -19,8 +19,8 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/extensions/settings_overridden_dialog_controller.h"
@@ -116,7 +116,8 @@ class SettingsOverriddenDialogBrowserTest : public DialogBrowserTest {
 
   // Creates, shows, and returns a dialog anchored to the given `browser`. The
   // dialog is owned by the views framework.
-  views::Widget* ShowSimpleDialog(bool show_icon, Browser* browser) {
+  views::Widget* ShowSimpleDialog(bool show_icon,
+                                  BrowserWindowInterface* browser) {
     SettingsOverriddenDialogController::ShowParams params(
         u"Settings overridden dialog title",
         u"Settings overriden dialog body, which is quite a bit "
@@ -168,7 +169,7 @@ class SettingsOverriddenDialogBrowserTest : public DialogBrowserTest {
       // to succeed. But we can still check that the user was sent to
       // example.com (the new search engine).
       EXPECT_EQ("www.example.com", browser()
-                                       ->tab_strip_model()
+                                       ->GetTabStripModel()
                                        ->GetActiveWebContents()
                                        ->GetLastCommittedURL()
                                        .host());
@@ -245,7 +246,7 @@ class SettingsOverriddenDialogBrowserTest : public DialogBrowserTest {
     ui_test_utils::SendToOmniboxAndSubmit(browser(), "Penguin",
                                           base::TimeTicks::Now());
     content::WaitForLoadStop(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
   }
 
   std::string test_name_;
@@ -326,7 +327,8 @@ IN_PROC_BROWSER_TEST_F(SearchOverriddenLegacyDialogBrowserTest,
 // controller that it was closed without any user action.
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogBrowserTest,
                        DialogWindowClosed) {
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(second_browser);
 
   views::Widget* dialog = ShowSimpleDialog(false, second_browser);

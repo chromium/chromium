@@ -147,10 +147,8 @@ void ExtensionInstallUIDesktop::OnInstallSuccess(
               if (!browser_interface) {
                 return;
               }
-              Browser* browser =
-                  browser_interface->GetBrowserForMigrationOnly();
               BrowserView* browser_view =
-                  BrowserView::GetBrowserViewForBrowser(browser);
+                  BrowserView::GetBrowserViewForBrowser(browser_interface);
               if (!browser_view->toolbar()) {
                 return;
               }

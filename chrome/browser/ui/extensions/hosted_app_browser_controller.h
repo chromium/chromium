@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace gfx {
 class ImageSkia;

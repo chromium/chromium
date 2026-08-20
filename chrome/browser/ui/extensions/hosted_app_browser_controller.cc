@@ -10,8 +10,8 @@
 #include "chrome/browser/extensions/app_tab_helper.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -87,7 +87,7 @@ ui::ImageModel HostedAppBrowserController::GetWindowAppIcon() const {
 #endif
 
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   if (!contents) {
     return GetFallbackAppIcon();
   }

@@ -486,9 +486,10 @@ WebContents* OpenApplication(Profile* profile, apps::AppLaunchParams&& params) {
   return OpenEnabledApplication(profile, params);
 }
 
-Browser* CreateApplicationWindow(Profile* profile,
-                                 const apps::AppLaunchParams& params,
-                                 const GURL& url) {
+BrowserWindowInterface* CreateApplicationWindow(
+    Profile* profile,
+    const apps::AppLaunchParams& params,
+    const GURL& url) {
   const Extension* const extension = GetExtension(profile, params);
 
   std::string app_name;
@@ -525,11 +526,10 @@ Browser* CreateApplicationWindow(Profile* profile,
   browser_params.initial_show_state =
       DetermineWindowShowState(profile, params.container, extension);
 
-  return CreateBrowserWindow(std::move(browser_params))
-      ->GetBrowserForMigrationOnly();
+  return CreateBrowserWindow(std::move(browser_params));
 }
 
-WebContents* NavigateApplicationWindow(Browser* browser,
+WebContents* NavigateApplicationWindow(BrowserWindowInterface* browser,
                                        const apps::AppLaunchParams& params,
                                        const GURL& url,
                                        WindowOpenDisposition disposition) {
@@ -571,7 +571,8 @@ WebContents* OpenApplicationWindow(Profile* profile,
     return nullptr;
   }
 
-  Browser* browser = CreateApplicationWindow(profile, params, url);
+  BrowserWindowInterface* browser =
+      CreateApplicationWindow(profile, params, url);
   WebContents* web_contents = NavigateApplicationWindow(
       browser, params, url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
 

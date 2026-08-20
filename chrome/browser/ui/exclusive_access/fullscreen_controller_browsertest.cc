@@ -11,11 +11,11 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
@@ -47,10 +47,10 @@ namespace {
 
 // In some environments (Linux and Mac) the operation is finished asynchronously
 // and we have to wait until the state change has occurred.
-void WaitForDisplayed(Browser* browser) {
+void WaitForDisplayed(BrowserWindowInterface* browser) {
   base::RunLoop outer_loop;
   auto wait_for_state = base::BindRepeating(
-      [](base::RunLoop* outer_loop, Browser* browser) {
+      [](base::RunLoop* outer_loop, BrowserWindowInterface* browser) {
         ExclusiveAccessManager* manager =
             browser->GetFeatures().exclusive_access_manager();
         if (manager->context()->IsExclusiveAccessBubbleDisplayed()) {
@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, MAYBE_FullscreenOnFileURL) {
   ASSERT_TRUE(AddTabAtIndex(0, file_url, PAGE_TRANSITION_TYPED));
   GetFullscreenController()->EnterFullscreenModeForTab(
       browser()
-          ->tab_strip_model()
+          ->GetTabStripModel()
           ->GetActiveWebContents()
           ->GetPrimaryMainFrame());
 
@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
   EnterActiveTabFullscreen();
   EXPECT_TRUE(GetFullscreenController()->CanEnterFullscreenModeForTab(
       browser()
-          ->tab_strip_model()
+          ->GetTabStripModel()
           ->GetActiveWebContents()
           ->GetPrimaryMainFrame()));
 }
@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
       /*user_initiated=*/false);
   GetFullscreenController()->EnterFullscreenModeForTab(
       browser()
-          ->tab_strip_model()
+          ->GetTabStripModel()
           ->GetActiveWebContents()
           ->GetPrimaryMainFrame(),
       {});
@@ -652,7 +652,7 @@ IN_PROC_BROWSER_TEST_F(
       /*user_initiated=*/false);
   GetFullscreenController()->EnterFullscreenModeForTab(
       browser()
-          ->tab_strip_model()
+          ->GetTabStripModel()
           ->GetActiveWebContents()
           ->GetPrimaryMainFrame(),
       {});

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/extensions/extension_multiple_uninstall_dialog.h"
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_browsertest.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"

@@ -8,9 +8,9 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registrar.h"
@@ -23,7 +23,7 @@ class ExtensionInstalledWatcherBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
   void WaitFor(scoped_refptr<const Extension> extension,
-               Browser* test_browser = nullptr) {
+               BrowserWindowInterface* test_browser = nullptr) {
     if (!test_browser) {
       test_browser = browser();
     }

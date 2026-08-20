@@ -142,6 +142,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/sync",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/views",
       "//chrome/common:constants",
       "//chrome/test:test_support",

@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -62,7 +62,7 @@ class FullscreenControllerStateInteractiveTest
         ->fullscreen_controller();
   }
   content::WebContents* GetActiveWebContents() override {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 };
 

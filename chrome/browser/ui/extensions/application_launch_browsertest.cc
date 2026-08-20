@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(ApplicationLaunchBrowserTest, CreateWindowInDisplay) {
                                apps::LaunchContainer::kLaunchContainerWindow,
                                WindowOpenDisposition::NEW_WINDOW,
                                apps::LaunchSource::kFromAppListGrid, display2);
-  Browser* browser2 =
+  BrowserWindowInterface* browser2 =
       CreateApplicationWindow(browser()->GetProfile(), params, GURL());
   gfx::NativeWindow window2 = browser2->GetWindow()->GetNativeWindow();
   EXPECT_EQ(display2, screen->GetDisplayNearestWindow(window2).id());

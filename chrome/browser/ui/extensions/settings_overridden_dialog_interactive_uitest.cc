@@ -18,8 +18,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_settings_overridden_dialog.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -233,7 +233,7 @@ class SettingsOverriddenDialogInteractiveUiTest
     return CheckResult(
         [this]() {
           return browser()
-              ->tab_strip_model()
+              ->GetTabStripModel()
               ->GetActiveWebContents()
               ->GetLastCommittedURL();
         },
@@ -248,7 +248,7 @@ class SettingsOverriddenDialogInteractiveUiTest
     return CheckResult(
         [this]() {
           return browser()
-              ->tab_strip_model()
+              ->GetTabStripModel()
               ->GetActiveWebContents()
               ->GetLastCommittedURL()
               .host();

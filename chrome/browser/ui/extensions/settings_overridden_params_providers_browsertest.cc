@@ -19,7 +19,7 @@
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
@@ -70,7 +70,7 @@ class SettingsOverriddenParamsProvidersBrowserTest
 #endif
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   // Installs a new extension that controls the default search engine.

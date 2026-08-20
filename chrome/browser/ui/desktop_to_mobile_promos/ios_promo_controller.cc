@@ -9,7 +9,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/desktop_to_mobile_promos/promos_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promo_trigger_service.h"
@@ -56,7 +55,7 @@ const base::Feature& FeatureForIOSPromoType(PromoType promo_type) {
 
 DEFINE_USER_DATA(IOSPromoController);
 
-IOSPromoController::IOSPromoController(Browser* browser)
+IOSPromoController::IOSPromoController(BrowserWindowInterface* browser)
     : browser_(browser),
       scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {
   IOSPromoTriggerService* service =
