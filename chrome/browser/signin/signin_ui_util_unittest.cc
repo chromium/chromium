@@ -185,8 +185,8 @@ TEST_F(SigninUiUtilTest,
   account_preview_data_service()->SetPreferredAccountForPromo(pref);
 
   std::vector<AccountInfo> ordered = GetOrderedAccountsForDisplay(
-      identity_manager(), /*restrict_to_accounts_eligible_for_signin=*/true,
-      account_preview_data_service());
+      identity_manager(), account_preview_data_service(),
+      /*restrict_to_accounts_eligible_for_signin=*/true);
   ASSERT_EQ(ordered.size(), 3u);
   EXPECT_EQ(ordered[0].gaia, account3.gaia);
   EXPECT_EQ(ordered[1].gaia, account1.gaia);

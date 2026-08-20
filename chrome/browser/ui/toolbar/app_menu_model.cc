@@ -46,6 +46,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -792,7 +793,9 @@ bool ProfileSubMenuModel::BuildSyncSection() {
                 : vector_icons::kAccountCircleOldIcon);
         signin_metrics::LogSignInOffered(
             signin_metrics::AccessPoint::kMenu,
-            signin_ui_util::GetSingleAccountForPromos(identity_manager)
+            signin_ui_util::GetSingleAccountForPromos(
+                identity_manager,
+                AccountPreviewDataServiceFactory::GetForProfile(profile_))
                     .IsEmpty()
                 ? signin_metrics::PromoAction::
                       PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT

@@ -523,8 +523,9 @@ TEST_P(BatchUploadServiceWithAvatarPromoEntryPointTest,
   SigninWithFullInfo();
 
   // Simulate the promo being shown twice.
-  signin::AvatarButtonPromoManager avatar_promo_manager(&identity_manager(),
-                                                        &pref_service());
+  signin::AvatarButtonPromoManager avatar_promo_manager(
+      &identity_manager(), /*account_preview_data_service=*/nullptr,
+      &pref_service());
   const int avatar_promo_shown_count = 2;
   for (int i = 0; i < avatar_promo_shown_count; ++i) {
     avatar_promo_manager.RecordPromoShown(GetParam().promo_type);

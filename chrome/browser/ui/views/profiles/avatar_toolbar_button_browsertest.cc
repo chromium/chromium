@@ -35,6 +35,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_promo_util.h"
@@ -2249,8 +2250,9 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
       GetAvatarToolbarButtonInterface(browser());
   AvatarToolbarButtonTestAccessor avatar_accessor(browser());
 
-  AccountInfo account =
-      signin_ui_util::GetSingleAccountForPromos(GetIdentityManager());
+  AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
+      GetIdentityManager(),
+      AccountPreviewDataServiceFactory::GetForProfile(browser()->GetProfile()));
 
   // Reset the count to 0 to avoid being affected by the PRE_ test.
   // The PRE_ test might have triggered the promo during shutdown.

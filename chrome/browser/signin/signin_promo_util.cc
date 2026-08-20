@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
@@ -549,7 +550,8 @@ bool ShouldShowPromoBasedOnImpressionOrDismissalCount(Profile& profile,
   }
 
   AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
-      IdentityManagerFactory::GetForProfile(&profile));
+      IdentityManagerFactory::GetForProfile(&profile),
+      AccountPreviewDataServiceFactory::GetForProfile(&profile));
 
   int show_count = 0;
   switch (type) {
@@ -665,8 +667,9 @@ bool ShouldShowSignInPromoCommon(Profile& profile, SignInPromoType type) {
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(original_profile);
-  AccountInfo promo_account =
-      signin_ui_util::GetSingleAccountForPromos(identity_manager);
+  AccountInfo promo_account = signin_ui_util::GetSingleAccountForPromos(
+      identity_manager,
+      AccountPreviewDataServiceFactory::GetForProfile(original_profile));
 
   // Don't show if sign in can't be offered (ex: signin disallowed).
   if (!CanOfferSignin(original_profile, promo_account.gaia, promo_account.email,
@@ -882,7 +885,8 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
   CHECK(!profile->IsOffTheRecord());
 
   AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
-      IdentityManagerFactory::GetForProfile(profile));
+      IdentityManagerFactory::GetForProfile(profile),
+      AccountPreviewDataServiceFactory::GetForProfile(profile));
   SignInPromoType promo_type = GetSignInPromoTypeFromAccessPoint(access_point);
 
   // Record the pref per profile if there is no account present.
@@ -1050,21 +1054,25 @@ void ComputeProfileMenuAvatarButtonPromoInfo(
 
 AvatarButtonPromoManager::AvatarButtonPromoManager(
     signin::IdentityManager* identity_manager,
+    signin::AccountPreviewDataService* account_preview_data_service,
     PrefService* pref_service)
     : AvatarButtonPromoManager(
           identity_manager,
+          account_preview_data_service,
           pref_service,
           user_education::features::GetNewBadgeShowCount(),
           user_education::features::GetNewBadgeFeatureUsedCount()) {}
 
 AvatarButtonPromoManager::AvatarButtonPromoManager(
     signin::IdentityManager* identity_manager,
+    signin::AccountPreviewDataService* account_preview_data_service,
     PrefService* pref_service,
     int max_shown_count,
     int max_used_count)
     : identity_manager_(identity_manager),
       signin_prefs_(std::make_unique<SigninPrefs>(CHECK_DEREF(pref_service))),
       pref_service_(pref_service),
+      account_preview_data_service_(account_preview_data_service),
       max_shown_count_(max_shown_count),
       max_used_count_(max_used_count) {
   CHECK(identity_manager_);
@@ -1093,8 +1101,8 @@ bool AvatarButtonPromoManager::ShouldShowPromo(
   CHECK(signin_prefs_);
   CHECK(identity_manager_);
 
-  const AccountInfo account =
-      signin_ui_util::GetSingleAccountForPromos(identity_manager_);
+  const AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
+      identity_manager_, account_preview_data_service_);
   auto [promo_shown_count, promo_used_count, promo_last_shown_time,
         last_external_event_time] =
       GetPromoUsageInfo(*pref_service_.get(), *signin_prefs_.get(), promo_type,
@@ -1125,8 +1133,8 @@ void AvatarButtonPromoManager::RecordPromoShown(
   CHECK(identity_manager_);
   CHECK(IsSigninStateAlignedWithPromoType(promo_type));
 
-  const AccountInfo account =
-      signin_ui_util::GetSingleAccountForPromos(identity_manager_);
+  const AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
+      identity_manager_, account_preview_data_service_);
   if (promo_type == ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo) {
     CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
     signin_prefs_->IncrementSyncPromoIdentityPillShownCount(account.gaia);
@@ -1156,8 +1164,8 @@ GaiaId AvatarButtonPromoManager::RecordPromoUsed(
   CHECK(identity_manager_);
   CHECK(IsSigninStateAlignedWithPromoType(promo_type));
 
-  const AccountInfo account =
-      signin_ui_util::GetSingleAccountForPromos(identity_manager_);
+  const AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
+      identity_manager_, account_preview_data_service_);
   if (promo_type == ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo) {
     CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
     signin_prefs_->IncrementSyncPromoIdentityPillUsedCount(account.gaia);
@@ -1209,6 +1217,7 @@ void AvatarButtonPromoManager::OnIdentityManagerShutdown(
   // `Browser` + `TestingProfile` (where the `PrefService` is owned by the
   // profile itself).
   pref_service_ = nullptr;
+  account_preview_data_service_ = nullptr;
   signin_prefs_.reset();
 }
 

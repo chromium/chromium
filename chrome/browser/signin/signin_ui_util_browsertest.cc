@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -591,10 +592,14 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, GetOrderedAccountsForDisplay) {
   auto enable_disclaimer_on_primary_account_change_resetter =
       enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
           browser()->GetProfile());
+  Profile* profile = browser()->GetProfile();
+  auto* account_preview_data_service =
+      AccountPreviewDataServiceFactory::GetForProfile(profile);
   signin::IdentityManager* identity_manager_empty =
-      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
+      IdentityManagerFactory::GetForProfile(profile);
   std::vector<AccountInfo> accounts_empty = GetOrderedAccountsForDisplay(
-      identity_manager_empty, /*restrict_to_accounts_eligible_for_sync=*/true);
+      identity_manager_empty, account_preview_data_service,
+      /*restrict_to_accounts_eligible_for_signin=*/true);
   EXPECT_TRUE(accounts_empty.empty());
 
   // Fill with accounts.
@@ -620,8 +625,9 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, GetOrderedAccountsForDisplay) {
        {kTestEmail1, signin::GetTestGaiaIdForEmail(kTestEmail1)}});
 
   // No primary account set.
-  std::vector<AccountInfo> accounts =
-      GetOrderedAccountsForDisplay(identity_manager, false);
+  std::vector<AccountInfo> accounts = GetOrderedAccountsForDisplay(
+      identity_manager, account_preview_data_service,
+      /*restrict_to_accounts_eligible_for_signin=*/false);
 
   EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail4), accounts[0].gaia);
   EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail3), accounts[1].gaia);
@@ -630,7 +636,9 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, GetOrderedAccountsForDisplay) {
 
   // Set a primary account.
   test_env->SetPrimaryAccount(kTestEmail3, signin::ConsentLevel::kSignin);
-  accounts = GetOrderedAccountsForDisplay(identity_manager, false);
+  accounts = GetOrderedAccountsForDisplay(
+      identity_manager, account_preview_data_service,
+      /*restrict_to_accounts_eligible_for_signin=*/false);
 
   EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail3), accounts[0].gaia);
   EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail4), accounts[1].gaia);
@@ -639,7 +647,9 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, GetOrderedAccountsForDisplay) {
 
   // Set a different primary account.
   test_env->SetPrimaryAccount(kTestEmail1, signin::ConsentLevel::kSignin);
-  accounts = GetOrderedAccountsForDisplay(identity_manager, false);
+  accounts = GetOrderedAccountsForDisplay(
+      identity_manager, account_preview_data_service,
+      /*restrict_to_accounts_eligible_for_signin=*/false);
 
   EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail1), accounts[0].gaia);
   EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail4), accounts[1].gaia);
@@ -651,7 +661,9 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, GetOrderedAccountsForDisplay) {
   test_env->SetCookieAccounts(
       {{kTestEmail4, signin::GetTestGaiaIdForEmail(kTestEmail4)},
        {kTestEmail2, signin::GetTestGaiaIdForEmail(kTestEmail2)}});
-  accounts = GetOrderedAccountsForDisplay(identity_manager, false);
+  accounts = GetOrderedAccountsForDisplay(
+      identity_manager, account_preview_data_service,
+      /*restrict_to_accounts_eligible_for_signin=*/false);
 
   EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail1), accounts[0].gaia);
   EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail4), accounts[1].gaia);

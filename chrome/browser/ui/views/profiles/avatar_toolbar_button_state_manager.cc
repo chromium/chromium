@@ -36,6 +36,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
@@ -1134,7 +1135,10 @@ class PromoStateProviderCoordinator
   explicit PromoStateProviderCoordinator(Profile& profile)
       : profile_(profile),
         identity_manager_(IdentityManagerFactory::GetForProfile(&profile)),
-        promo_manager_(identity_manager_, profile.GetPrefs()) {}
+        promo_manager_(
+            identity_manager_,
+            AccountPreviewDataServiceFactory::GetForProfile(&profile),
+            profile.GetPrefs()) {}
 
   void Trigger() {
     if (promo_type_.has_value()) {

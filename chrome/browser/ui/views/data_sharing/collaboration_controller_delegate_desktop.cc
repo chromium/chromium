@@ -6,6 +6,7 @@
 
 #include "build/branding_buildflags.h"
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
@@ -520,7 +521,9 @@ void CollaborationControllerDelegateDesktop::
   AccountInfo account_for_promo =
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       signin_ui_util::GetSingleAccountForPromos(
-          IdentityManagerFactory::GetForProfile(browser_->GetProfile()));
+          IdentityManagerFactory::GetForProfile(browser_->GetProfile()),
+          AccountPreviewDataServiceFactory::GetForProfile(
+              browser_->GetProfile()));
 #else
       GetAccountInfoFromProfile(browser_->GetProfile());
 #endif

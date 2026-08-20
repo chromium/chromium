@@ -400,8 +400,8 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
 
 std::vector<AccountInfo> GetOrderedAccountsForDisplay(
     const signin::IdentityManager* identity_manager,
-    bool restrict_to_accounts_eligible_for_signin,
-    const signin::AccountPreviewDataService* account_preview_data_service) {
+    const signin::AccountPreviewDataService* account_preview_data_service,
+    bool restrict_to_accounts_eligible_for_signin) {
   const PrefService* prefs = restrict_to_accounts_eligible_for_signin
                                  ? g_browser_process->local_state()
                                  : nullptr;
@@ -427,19 +427,18 @@ std::vector<AccountInfo> GetOrderedAccountsForDisplay(
   return accounts;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 AccountInfo GetSingleAccountForPromos(
     const signin::IdentityManager* identity_manager,
     const signin::AccountPreviewDataService* account_preview_data_service) {
   std::vector<AccountInfo> accounts = GetOrderedAccountsForDisplay(
-      identity_manager,
-      /*restrict_to_accounts_eligible_for_signin=*/true,
-      account_preview_data_service);
+      identity_manager, account_preview_data_service,
+      /*restrict_to_accounts_eligible_for_signin=*/true);
   return accounts.empty() ? AccountInfo() : accounts[0];
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -567,7 +566,8 @@ void SignInAndEnableHistorySync(BrowserWindowInterface* browser,
   // this opens a reauth tab.
   const AccountInfo account_for_promos =
       signin_ui_util::GetSingleAccountForPromos(
-          IdentityManagerFactory::GetForProfile(profile));
+          IdentityManagerFactory::GetForProfile(profile),
+          AccountPreviewDataServiceFactory::GetForProfile(profile));
   signin_ui_util::SignInFromSingleAccountPromo(profile, account_for_promos,
                                                access_point);
 
