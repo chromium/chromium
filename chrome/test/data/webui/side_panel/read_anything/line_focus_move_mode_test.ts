@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-
-import {LineFocusCursorMoveMode, LineFocusLineStyleMode, LineFocusModel, LineFocusMovement, LineFocusNoneMoveMode, LineFocusStaticMoveMode, LineFocusStyle, LineFocusWindowStyleMode, NodeStore, ReadAloudNode, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {LineFocusCursorMoveMode, LineFocusLineStyleMode, LineFocusModel, LineFocusMovement, LineFocusNoneMoveMode, LineFocusStaticMoveMode, LineFocusStyle, LineFocusWindowStyleMode, NodeStore, ReadAloudNode, SpeechController, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {LineFocusMoveMode, MoveModeDelegate} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {FakeReadingMode} from './fake_reading_mode.js';
+import {mockMetrics} from './common.js';
+import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('LineFocusMoveMode', () => {
   let model: LineFocusModel;
@@ -20,10 +20,18 @@ suite('LineFocusMoveMode', () => {
   let scrollDiffReceived: number;
   let instantScrollReceived: boolean|undefined;
   let bufferValReceived: boolean|undefined;
-  let speechLines: number;
-  let keyboardLines: number;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
+  let visualBrowserProxy: TestVisualBrowserProxy;
 
   const defaultHeight = 1000;
+
+  function getKeyboardLines(): number {
+    return metricsBrowserProxy.getCallCount('incrementLineFocusKeyboardLines');
+  }
+
+  function getSpeechLines(): number {
+    return metricsBrowserProxy.getCallCount('incrementLineFocusSpeechLines');
+  }
 
   function createShortContainer(): HTMLElement {
     const container = document.createElement('p');
@@ -35,10 +43,7 @@ suite('LineFocusMoveMode', () => {
   }
 
   function mockLinesCounters() {
-    speechLines = 0;
-    keyboardLines = 0;
-    chrome.readingMode.incrementLineFocusSpeechLines = () => speechLines++;
-    chrome.readingMode.incrementLineFocusKeyboardLines = () => keyboardLines++;
+    metricsBrowserProxy.reset();
   }
 
   function snapForward(mode: LineFocusMoveMode): void {
@@ -59,11 +64,12 @@ suite('LineFocusMoveMode', () => {
   setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const readingMode = new FakeReadingMode();
+    metricsBrowserProxy = mockMetrics();
+    visualBrowserProxy = new TestVisualBrowserProxy();
     // Initialize font size so that the threshold for merging text bounds
     // is correctly calculated and not zero.
-    readingMode.fontSize = 1.5;
-    chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
+    visualBrowserProxy.fontSize = 1.5;
+    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
     model = new LineFocusModel();
     styleMode = new LineFocusLineStyleMode(LineFocusStyle.UNDERLINE, model);
     windowMode =
@@ -104,13 +110,12 @@ suite('LineFocusMoveMode', () => {
 
     test('onActivated starts session', () => {
       model.setSessionActive(false);
-      let started = false;
-      chrome.readingMode.startLineFocusSession = () => started = true;
       const container = createShortContainer();
 
       mode.onActivated(container, defaultHeight);
 
-      assertTrue(started);
+      assertEquals(
+          1, metricsBrowserProxy.getCallCount('startLineFocusSession'));
       assertTrue(model.isSessionActive());
     });
 
@@ -155,13 +160,12 @@ suite('LineFocusMoveMode', () => {
 
     test('onActivated does not restart active session', () => {
       model.setSessionActive(true);
-      let started = false;
-      chrome.readingMode.startLineFocusSession = () => started = true;
       const container = document.createElement('div');
 
       mode.onActivated(container, 100);
 
-      assertFalse(started);
+      assertEquals(
+          0, metricsBrowserProxy.getCallCount('startLineFocusSession'));
       assertTrue(model.isSessionActive());
     });
 
@@ -215,13 +219,15 @@ suite('LineFocusMoveMode', () => {
 
       mode.onWordBoundary(segments1);
       assertLT(0, scrollDiffReceived);
-      assertEquals(1, speechLines);
+      assertEquals(
+          1, metricsBrowserProxy.getCallCount('incrementLineFocusSpeechLines'));
 
       // Mock the panel scroll so the next segment is on the same line.
       model.setFocalPoint(model.getFocalPoint() + scrollDiffReceived);
       mode.onWordBoundary(segments2);
       assertLT(0, scrollDiffReceived);
-      assertEquals(1, speechLines);
+      assertEquals(
+          1, metricsBrowserProxy.getCallCount('incrementLineFocusSpeechLines'));
     });
 
     test('onMouseMove does nothing', () => {
@@ -235,14 +241,6 @@ suite('LineFocusMoveMode', () => {
     });
 
     test('onScrollEnd adds scroll distance', () => {
-      let scrollDistance = 0;
-      let mouseDistance = 0;
-      chrome.readingMode.addLineFocusScrollDistance = y => {
-        scrollDistance = y;
-      };
-      chrome.readingMode.addLineFocusMouseDistance = y => {
-        mouseDistance = y;
-      };
       const top1 = 43;
       const top2 = 55;
       const top3 = 12;
@@ -251,16 +249,30 @@ suite('LineFocusMoveMode', () => {
       assertGT(top2, top3);
 
       mode.onScrollEnd(top1);
-      assertEquals(0, mouseDistance);
-      assertEquals(top1, scrollDistance);
+      assertEquals(
+          0, metricsBrowserProxy.getCallCount('addLineFocusMouseDistance'));
+      assertEquals(
+          1, metricsBrowserProxy.getCallCount('addLineFocusScrollDistance'));
+      assertEquals(
+          top1, metricsBrowserProxy.getArgs('addLineFocusScrollDistance')[0]);
 
       mode.onScrollEnd(top2);
-      assertEquals(0, mouseDistance);
-      assertEquals(top2 - top1, scrollDistance);
+      assertEquals(
+          0, metricsBrowserProxy.getCallCount('addLineFocusMouseDistance'));
+      assertEquals(
+          2, metricsBrowserProxy.getCallCount('addLineFocusScrollDistance'));
+      assertEquals(
+          top2 - top1,
+          metricsBrowserProxy.getArgs('addLineFocusScrollDistance')[1]);
 
       mode.onScrollEnd(top3);
-      assertEquals(0, mouseDistance);
-      assertEquals(top2 - top3, scrollDistance);
+      assertEquals(
+          0, metricsBrowserProxy.getCallCount('addLineFocusMouseDistance'));
+      assertEquals(
+          3, metricsBrowserProxy.getCallCount('addLineFocusScrollDistance'));
+      assertEquals(
+          top2 - top3,
+          metricsBrowserProxy.getArgs('addLineFocusScrollDistance')[2]);
     });
 
     test('onScrollEnd notifies content position change for user scroll', () => {
@@ -341,7 +353,7 @@ suite('LineFocusMoveMode', () => {
       assertEquals(0, model.getCurrentLineIndex());
       assertEquals(oldTop, newTop);
       assertLT(oldScrollDiff, newScrollDiff);
-      assertEquals(1, keyboardLines);
+      assertEquals(1, getKeyboardLines());
 
       // Snap to the second line.
       snapForward(mode);
@@ -350,7 +362,7 @@ suite('LineFocusMoveMode', () => {
       assertEquals(1, model.getCurrentLineIndex());
       assertEquals(oldTop, newTop);
       assertLT(oldScrollDiff, newScrollDiff);
-      assertEquals(2, keyboardLines);
+      assertEquals(2, getKeyboardLines());
 
       // Snap to the last line.
       oldTop = newTop;
@@ -361,7 +373,7 @@ suite('LineFocusMoveMode', () => {
       assertEquals(2, model.getCurrentLineIndex());
       assertEquals(oldTop, newTop);
       assertLT(oldScrollDiff, newScrollDiff);
-      assertEquals(3, keyboardLines);
+      assertEquals(3, getKeyboardLines());
 
       // Snap back to the second line.
       oldTop = newTop;
@@ -372,7 +384,7 @@ suite('LineFocusMoveMode', () => {
       assertEquals(1, model.getCurrentLineIndex());
       assertEquals(oldTop, newTop);
       assertGT(oldScrollDiff, newScrollDiff);
-      assertEquals(4, keyboardLines);
+      assertEquals(4, getKeyboardLines());
 
       // Snap back to the first line.
       oldTop = newTop;
@@ -383,8 +395,8 @@ suite('LineFocusMoveMode', () => {
       assertEquals(0, model.getCurrentLineIndex());
       assertEquals(oldTop, newTop);
       assertGT(oldScrollDiff, newScrollDiff);
-      assertEquals(5, keyboardLines);
-      assertEquals(0, speechLines);
+      assertEquals(5, getKeyboardLines());
+      assertEquals(0, getSpeechLines());
     });
 
     test('snapToNextLine returns true with text bounds', () => {
@@ -419,13 +431,12 @@ suite('LineFocusMoveMode', () => {
 
     test('onActivated starts session', () => {
       model.setSessionActive(false);
-      let started = false;
-      chrome.readingMode.startLineFocusSession = () => started = true;
       const container = document.createElement('div');
 
       mode.onActivated(container, defaultHeight);
 
-      assertTrue(started);
+      assertEquals(
+          1, metricsBrowserProxy.getCallCount('startLineFocusSession'));
       assertTrue(model.isSessionActive());
     });
 
@@ -481,13 +492,12 @@ suite('LineFocusMoveMode', () => {
 
     test('onActivated does not restart active session', () => {
       model.setSessionActive(true);
-      let started = false;
-      chrome.readingMode.startLineFocusSession = () => started = true;
       const container = document.createElement('div');
 
       mode.onActivated(container, defaultHeight);
 
-      assertFalse(started);
+      assertEquals(
+          0, metricsBrowserProxy.getCallCount('startLineFocusSession'));
       assertTrue(model.isSessionActive());
     });
 
@@ -540,10 +550,12 @@ suite('LineFocusMoveMode', () => {
       }];
 
       mode.onWordBoundary(segments1);
-      assertEquals(1, speechLines);
+      assertEquals(
+          1, metricsBrowserProxy.getCallCount('incrementLineFocusSpeechLines'));
 
       mode.onWordBoundary(segments2);
-      assertEquals(1, speechLines);
+      assertEquals(
+          1, metricsBrowserProxy.getCallCount('incrementLineFocusSpeechLines'));
     });
 
     test('onWordBoundary initializes bounds if empty', () => {
@@ -639,14 +651,6 @@ suite('LineFocusMoveMode', () => {
         });
 
     test('onMouseMove adds mouse distance', () => {
-      let scrollDistance = 0;
-      let mouseDistance = 0;
-      chrome.readingMode.addLineFocusScrollDistance = y => {
-        scrollDistance = y;
-      };
-      chrome.readingMode.addLineFocusMouseDistance = y => {
-        mouseDistance = y;
-      };
       const y1 = 43;
       const y2 = 55;
       const y3 = 32;
@@ -655,16 +659,28 @@ suite('LineFocusMoveMode', () => {
       assertGT(y2, y3);
 
       mode.onMouseMove(y1);
-      assertEquals(y1, mouseDistance);
-      assertEquals(0, scrollDistance);
+      assertEquals(
+          1, metricsBrowserProxy.getCallCount('addLineFocusMouseDistance'));
+      assertEquals(
+          y1, metricsBrowserProxy.getArgs('addLineFocusMouseDistance')[0]);
+      assertEquals(
+          0, metricsBrowserProxy.getCallCount('addLineFocusScrollDistance'));
 
       mode.onMouseMove(y2);
-      assertEquals(y2 - y1, mouseDistance);
-      assertEquals(0, scrollDistance);
+      assertEquals(
+          2, metricsBrowserProxy.getCallCount('addLineFocusMouseDistance'));
+      assertEquals(
+          y2 - y1, metricsBrowserProxy.getArgs('addLineFocusMouseDistance')[1]);
+      assertEquals(
+          0, metricsBrowserProxy.getCallCount('addLineFocusScrollDistance'));
 
       mode.onMouseMove(y3);
-      assertEquals(y2 - y3, mouseDistance);
-      assertEquals(0, scrollDistance);
+      assertEquals(
+          3, metricsBrowserProxy.getCallCount('addLineFocusMouseDistance'));
+      assertEquals(
+          y2 - y3, metricsBrowserProxy.getArgs('addLineFocusMouseDistance')[2]);
+      assertEquals(
+          0, metricsBrowserProxy.getCallCount('addLineFocusScrollDistance'));
     });
 
     test('onMouseMove notifies listeners', () => {
@@ -771,14 +787,6 @@ suite('LineFocusMoveMode', () => {
     });
 
     test('onScrollEnd adds scroll distance', () => {
-      let scrollDistance = 0;
-      let mouseDistance = 0;
-      chrome.readingMode.addLineFocusScrollDistance = y => {
-        scrollDistance = y;
-      };
-      chrome.readingMode.addLineFocusMouseDistance = y => {
-        mouseDistance = y;
-      };
       const top1 = 43;
       const top2 = 55;
       const top3 = 12;
@@ -787,16 +795,30 @@ suite('LineFocusMoveMode', () => {
       assertGT(top2, top3);
 
       mode.onScrollEnd(top1);
-      assertEquals(0, mouseDistance);
-      assertEquals(top1, scrollDistance);
+      assertEquals(
+          0, metricsBrowserProxy.getCallCount('addLineFocusMouseDistance'));
+      assertEquals(
+          1, metricsBrowserProxy.getCallCount('addLineFocusScrollDistance'));
+      assertEquals(
+          top1, metricsBrowserProxy.getArgs('addLineFocusScrollDistance')[0]);
 
       mode.onScrollEnd(top2);
-      assertEquals(0, mouseDistance);
-      assertEquals(top2 - top1, scrollDistance);
+      assertEquals(
+          0, metricsBrowserProxy.getCallCount('addLineFocusMouseDistance'));
+      assertEquals(
+          2, metricsBrowserProxy.getCallCount('addLineFocusScrollDistance'));
+      assertEquals(
+          top2 - top1,
+          metricsBrowserProxy.getArgs('addLineFocusScrollDistance')[1]);
 
       mode.onScrollEnd(top3);
-      assertEquals(0, mouseDistance);
-      assertEquals(top2 - top3, scrollDistance);
+      assertEquals(
+          0, metricsBrowserProxy.getCallCount('addLineFocusMouseDistance'));
+      assertEquals(
+          3, metricsBrowserProxy.getCallCount('addLineFocusScrollDistance'));
+      assertEquals(
+          top2 - top3,
+          metricsBrowserProxy.getArgs('addLineFocusScrollDistance')[2]);
     });
 
     test('onTextLocationsChange scrolls to re-center line focus', () => {
@@ -1002,14 +1024,14 @@ suite('LineFocusMoveMode', () => {
       let newTop = model.getTop();
       assertEquals(0, model.getCurrentLineIndex());
       assertLT(oldTop, newTop);
-      assertEquals(1, keyboardLines);
+      assertEquals(1, getKeyboardLines());
 
       // Snap to the second line.
       snapForward(mode);
       newTop = model.getTop();
       assertEquals(1, model.getCurrentLineIndex());
       assertLT(oldTop, newTop);
-      assertEquals(2, keyboardLines);
+      assertEquals(2, getKeyboardLines());
 
       // Snap to the last line.
       oldTop = newTop;
@@ -1017,7 +1039,7 @@ suite('LineFocusMoveMode', () => {
       newTop = model.getTop();
       assertEquals(2, model.getCurrentLineIndex());
       assertLT(oldTop, newTop);
-      assertEquals(3, keyboardLines);
+      assertEquals(3, getKeyboardLines());
 
       // There's only 3 text lines so moving forward should not change position.
       oldTop = newTop;
@@ -1025,7 +1047,7 @@ suite('LineFocusMoveMode', () => {
       newTop = model.getTop();
       assertEquals(2, model.getCurrentLineIndex());
       assertEquals(oldTop, newTop);
-      assertEquals(3, keyboardLines);
+      assertEquals(3, getKeyboardLines());
 
       // Snap back to the second line.
       oldTop = newTop;
@@ -1033,7 +1055,7 @@ suite('LineFocusMoveMode', () => {
       newTop = model.getTop();
       assertEquals(1, model.getCurrentLineIndex());
       assertGT(oldTop, newTop);
-      assertEquals(4, keyboardLines);
+      assertEquals(4, getKeyboardLines());
 
       // Snap back to the first line.
       oldTop = newTop;
@@ -1041,7 +1063,7 @@ suite('LineFocusMoveMode', () => {
       newTop = model.getTop();
       assertEquals(0, model.getCurrentLineIndex());
       assertGT(oldTop, newTop);
-      assertEquals(5, keyboardLines);
+      assertEquals(5, getKeyboardLines());
 
       // Moving back again should not change position.
       oldTop = newTop;
@@ -1049,8 +1071,8 @@ suite('LineFocusMoveMode', () => {
       newTop = model.getTop();
       assertEquals(oldTop, newTop);
       assertEquals(0, model.getCurrentLineIndex());
-      assertEquals(5, keyboardLines);
-      assertEquals(0, speechLines);
+      assertEquals(5, getKeyboardLines());
+      assertEquals(0, getSpeechLines());
     });
 
     test('snapToNextLine scrolls down to line if out of view', () => {
@@ -1076,8 +1098,8 @@ suite('LineFocusMoveMode', () => {
       // The fourth line is partially out of view so scroll to center it.
       snapForward(mode);
       assertLT(0, scrollDiffReceived);
-      assertEquals(4, keyboardLines);
-      assertEquals(0, speechLines);
+      assertEquals(4, getKeyboardLines());
+      assertEquals(0, getSpeechLines());
     });
 
     test('snapToNextLine scrolls up to line if out of view', () => {
@@ -1099,8 +1121,8 @@ suite('LineFocusMoveMode', () => {
       }
 
       assertGT(0, scrollDiffReceived);
-      assertLT(0, keyboardLines);
-      assertEquals(0, speechLines);
+      assertLT(0, getKeyboardLines());
+      assertEquals(0, getSpeechLines());
     });
 
     test('snapToNextLine after user scroll uses current position', () => {
@@ -1110,7 +1132,7 @@ suite('LineFocusMoveMode', () => {
       mode.onScrollEnd(defaultHeight);
       snapForward(mode);
 
-      assertEquals(2, keyboardLines);
+      assertEquals(2, getKeyboardLines());
     });
 
     test('snapToNextLine with window moves by line', () => {
@@ -1130,21 +1152,21 @@ suite('LineFocusMoveMode', () => {
       let newTop = model.getTop();
       assertEquals(1, model.getCurrentLineIndex());
       assertLT(oldTop, newTop);
-      assertEquals(3, keyboardLines);
+      assertEquals(3, getKeyboardLines());
 
       // Snap to the third line.
       snapForward(mode);
       newTop = model.getTop();
       assertEquals(2, model.getCurrentLineIndex());
       assertLT(oldTop, newTop);
-      assertEquals(4, keyboardLines);
+      assertEquals(4, getKeyboardLines());
 
       // Snap to the fourth line.
       snapForward(mode);
       newTop = model.getTop();
       assertEquals(3, model.getCurrentLineIndex());
       assertLT(oldTop, newTop);
-      assertEquals(5, keyboardLines);
+      assertEquals(5, getKeyboardLines());
 
       // Moving forward should not change position.
       oldTop = newTop;
@@ -1152,7 +1174,7 @@ suite('LineFocusMoveMode', () => {
       newTop = model.getTop();
       assertEquals(3, model.getCurrentLineIndex());
       assertEquals(oldTop, newTop);
-      assertEquals(5, keyboardLines);
+      assertEquals(5, getKeyboardLines());
 
       // Snap back to the third line.
       oldTop = newTop;
@@ -1160,7 +1182,7 @@ suite('LineFocusMoveMode', () => {
       newTop = model.getTop();
       assertEquals(2, model.getCurrentLineIndex());
       assertGT(oldTop, newTop);
-      assertEquals(6, keyboardLines);
+      assertEquals(6, getKeyboardLines());
 
       // Snap back to the second line.
       oldTop = newTop;
@@ -1168,7 +1190,7 @@ suite('LineFocusMoveMode', () => {
       newTop = model.getTop();
       assertEquals(1, model.getCurrentLineIndex());
       assertGT(oldTop, newTop);
-      assertEquals(7, keyboardLines);
+      assertEquals(7, getKeyboardLines());
 
       // Moving back again should not change position since the window is 3
       // lines long and it is already surrounding the second line.
@@ -1177,8 +1199,8 @@ suite('LineFocusMoveMode', () => {
       newTop = model.getTop();
       assertEquals(1, model.getCurrentLineIndex());
       assertEquals(oldTop, newTop);
-      assertEquals(7, keyboardLines);
-      assertEquals(0, speechLines);
+      assertEquals(7, getKeyboardLines());
+      assertEquals(0, getSpeechLines());
     });
 
     test('snapToNextLine returns true with text bounds', () => {

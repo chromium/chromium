@@ -442,16 +442,12 @@ suite('ContentController', () => {
       stubAnimationFrame();
       const mockTimer = new MockTimer();
       mockTimer.install();
-      let sentWordsSeen = false;
-      readingMode.updateWordsSeen = () => {
-        sentWordsSeen = true;
-      };
 
       contentController.updateContent();
       mockTimer.tick(MIN_MS_TO_READ);
       mockTimer.uninstall();
 
-      assertTrue(sentWordsSeen);
+      assertEquals(1, metrics.getCallCount('updateWordsSeen'));
     });
 
     test('builds a simple text node', () => {

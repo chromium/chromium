@@ -34,6 +34,8 @@ export interface VisualBrowserProxy {
   getActiveDistillationMethod(): number;
   getDistillationTypeReadability(): number;
 
+  requestImageData(nodeId: number): void;
+
   onFontChange(font: string): void;
   onLineSpacingChange(value: number): void;
   onLetterSpacingChange(value: number): void;
@@ -132,6 +134,10 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
 
   getDistillationTypeReadability(): number {
     return chrome.readingMode.distillationTypeReadability;
+  }
+
+  requestImageData(nodeId: number): void {
+    chrome.readingMode.requestImageData(nodeId);
   }
 
   onFontChange(font: string): void {

@@ -55,6 +55,7 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
       'getLowContrastDarkTheme',
       'getActiveDistillationMethod',
       'getDistillationTypeReadability',
+      'requestImageData',
       'onFontChange',
       'onLineSpacingChange',
       'onLetterSpacingChange',
@@ -176,6 +177,10 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   getDistillationTypeReadability(): number {
     this.methodCalled('getDistillationTypeReadability');
     return this.distillationTypeReadability;
+  }
+
+  requestImageData(nodeId: number): void {
+    this.methodCalled('requestImageData', nodeId);
   }
 
   onFontChange(font: string): void {

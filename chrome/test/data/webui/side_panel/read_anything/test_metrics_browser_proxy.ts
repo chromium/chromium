@@ -36,6 +36,12 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordVoiceLanguageChange',
       'recordCount',
       'recordBoolean',
+      'updateWordsSeen',
+      'startLineFocusSession',
+      'incrementLineFocusKeyboardLines',
+      'incrementLineFocusSpeechLines',
+      'addLineFocusScrollDistance',
+      'addLineFocusMouseDistance',
     ]);
   }
 
@@ -133,5 +139,29 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordBoolean(umaName: string, value: boolean) {
     this.methodCalled('recordBoolean', umaName, value);
+  }
+
+  updateWordsSeen(wordsSeen: number): void {
+    this.methodCalled('updateWordsSeen', wordsSeen);
+  }
+
+  startLineFocusSession(): void {
+    this.methodCalled('startLineFocusSession');
+  }
+
+  incrementLineFocusKeyboardLines(): void {
+    this.methodCalled('incrementLineFocusKeyboardLines');
+  }
+
+  incrementLineFocusSpeechLines(): void {
+    this.methodCalled('incrementLineFocusSpeechLines');
+  }
+
+  addLineFocusScrollDistance(distance: number): void {
+    this.methodCalled('addLineFocusScrollDistance', distance);
+  }
+
+  addLineFocusMouseDistance(distance: number): void {
+    this.methodCalled('addLineFocusMouseDistance', distance);
   }
 }

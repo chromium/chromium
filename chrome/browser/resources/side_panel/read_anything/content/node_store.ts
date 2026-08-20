@@ -4,8 +4,14 @@
 
 import {assert} from '//resources/js/assert.js';
 
+import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
+import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
+import type {AudioBrowserProxy} from '../read_aloud/audio_browser_proxy.js';
+import {AudioBrowserProxyImpl} from '../read_aloud/audio_browser_proxy.js';
 import type {AncestorNode, ReadAloudNode} from '../read_aloud/read_aloud_types.js';
 import {getWordCount, isDistilledByReadability} from '../shared/common.js';
+import type {MetricsBrowserProxy} from '../shared/metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl} from '../shared/metrics_browser_proxy.js';
 import {isRectMostlyVisible} from '../shared/rect_calculations.js';
 
 // A two-way map where each key is unique and each value is unique. The keys are
@@ -85,6 +91,13 @@ export class NodeStore {
   // source AXNode. This is used to synchronize AX node character offsets
   // between the main panel and the side panel.
   private axNodeOffset_: Map<Node, number> = new Map();
+
+  private audioBrowserProxy_: AudioBrowserProxy =
+      AudioBrowserProxyImpl.getInstance();
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
+  private visualBrowserProxy_: VisualBrowserProxy =
+      VisualBrowserProxyImpl.getInstance();
 
   clear() {
     this.hiddenImageNodesIds_.clear();
@@ -191,7 +204,7 @@ export class NodeStore {
     this.wordsSeenLastSavedTime_ = Date.now();
     textShownSinceLastSave.forEach(node => this.textNodesSeen_.add(node));
     const wordsSeen = this.estimateWordCount_(this.textNodesSeen_);
-    chrome.readingMode.updateWordsSeen(wordsSeen);
+    this.metricsBrowserProxy_.updateWordsSeen(wordsSeen);
   }
 
   hasAnyNode(nodes: ReadAloudNode[]): boolean {
@@ -230,7 +243,7 @@ export class NodeStore {
     // highlighting to work with Readability and with the TS text segmentation
     // model.
     if (!isDistilledByReadability() &&
-        chrome.readingMode.isPhraseHighlightingEnabled) {
+        this.audioBrowserProxy_.isPhraseHighlightingEnabled()) {
       assert(
           nodeId !== undefined,
           'trying to replace an element that doesn\'t exist');
@@ -294,7 +307,7 @@ export class NodeStore {
 
   fetchImages(): void {
     for (const nodeId of this.imageNodeIdsToFetch_) {
-      chrome.readingMode.requestImageData(nodeId);
+      this.visualBrowserProxy_.requestImageData(nodeId);
     }
 
     this.imageNodeIdsToFetch_.clear();

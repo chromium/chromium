@@ -3,9 +3,13 @@
 // found in the LICENSE file.
 import {assert} from '//resources/js/assert.js';
 
+import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
+import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
 import type {Segment} from '../read_aloud/read_aloud_types.js';
 import {SpeechController} from '../read_aloud/speech_controller.js';
 import {getRectIndexAtY, getRectsForSegments} from '../shared/dom_queries.js';
+import type {MetricsBrowserProxy} from '../shared/metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl} from '../shared/metrics_browser_proxy.js';
 import {calculateTextBounds} from '../shared/rect_calculations.js';
 
 import type {LineFocusModel} from './line_focus_model.js';
@@ -50,6 +54,10 @@ export abstract class LineFocusMoveMode {
   protected textContentContainer_: HTMLElement|null = null;
   protected viewportHeight_: number = 0;
   protected speechController_ = SpeechController.getInstance();
+  protected metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
+  protected visualBrowserProxy_: VisualBrowserProxy =
+      VisualBrowserProxyImpl.getInstance();
 
   constructor(
       protected model_: LineFocusModel,
@@ -88,7 +96,7 @@ export abstract class LineFocusMoveMode {
       this.initializeSnapIndex(isForward);
       const linesToLog = this.styleMode_.getStyle().lines;
       for (let i = 0; i < linesToLog; i++) {
-        chrome.readingMode.incrementLineFocusKeyboardLines();
+        this.metricsBrowserProxy_.incrementLineFocusKeyboardLines();
       }
     } else {
       this.updateSnapIndex_(currentIndex, isForward);
@@ -106,7 +114,7 @@ export abstract class LineFocusMoveMode {
     const rect = rects[0]!;
     if (Math.abs(this.model_.getFocalPoint() -
                  this.styleMode_.getFocalPointForRect(rect)) > 0.1) {
-      chrome.readingMode.incrementLineFocusSpeechLines();
+      this.metricsBrowserProxy_.incrementLineFocusSpeechLines();
     }
     this.moveToRect(rect);
   }
@@ -173,7 +181,7 @@ export abstract class LineFocusMoveMode {
   protected resetScrollState(newScrollTop: number) {
     const distance =
         Math.round(Math.abs(newScrollTop - this.model_.getLastScrollTop()));
-    chrome.readingMode.addLineFocusScrollDistance(distance);
+    this.metricsBrowserProxy_.addLineFocusScrollDistance(distance);
     this.model_.setLastScrollTop(newScrollTop);
 
     // If the scroll was not initiated by line focus, then reset which line is
@@ -202,14 +210,14 @@ export abstract class LineFocusMoveMode {
     this.model_.setMaxY(maxY);
     this.model_.setTextBounds(bounds);
     this.movementThreshold =
-        BASE_MOVEMENT_THRESHOLD * chrome.readingMode.fontSize;
+        BASE_MOVEMENT_THRESHOLD * this.visualBrowserProxy_.getFontSize();
   }
 
   // Common setup logic for when a movement mode that enables line focus is
   // activated.
   protected setupEnabledMode(container: HTMLElement, height: number): void {
     if (!this.model_.isSessionActive()) {
-      chrome.readingMode.startLineFocusSession();
+      this.metricsBrowserProxy_.startLineFocusSession();
       this.model_.setSessionActive(true);
     }
     this.updatePositions(container, height);
@@ -241,7 +249,7 @@ export abstract class LineFocusMoveMode {
     const clampedIndex = this.styleMode_.clampLineIndex(nextIndex);
     this.model_.setCurrentLineIndex(clampedIndex);
     if (this.model_.getCurrentLineIndex() !== currentIndex) {
-      chrome.readingMode.incrementLineFocusKeyboardLines();
+      this.metricsBrowserProxy_.incrementLineFocusKeyboardLines();
     }
     this.moveToRect(lines[clampedIndex]!);
 
@@ -384,7 +392,7 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
     const previousFocalPoint = this.model_.getFocalPoint();
     this.setFocalPoint(
         Math.max(this.model_.getMinY(), y), LineFocusNotificationType.CONTENT);
-    chrome.readingMode.addLineFocusMouseDistance(
+    this.metricsBrowserProxy_.addLineFocusMouseDistance(
         Math.round(Math.abs(this.model_.getFocalPoint() - previousFocalPoint)));
   }
 
