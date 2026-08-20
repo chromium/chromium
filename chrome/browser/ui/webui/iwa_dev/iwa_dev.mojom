@@ -77,6 +77,10 @@ interface PageHandler {
   SelectAndUpdateAppFromLocalWebBundle(string app_id)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
+  // Sets the update channel for an app installed from an update manifest.
+  SetUpdateChannel(string app_id, string update_channel)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
   // Uninstalls an IWA with a given ID.
   UninstallApp(string app_id) => (bool success);
 

@@ -67,6 +67,9 @@ class IwaDevPageHandler
   void SelectAndUpdateAppFromLocalWebBundle(
       const std::string& app_id,
       SelectAndUpdateAppFromLocalWebBundleCallback callback) override;
+  void SetUpdateChannel(const std::string& app_id,
+                        const std::string& update_channel,
+                        SetUpdateChannelCallback callback) override;
   void UninstallApp(const std::string& app_id,
                     UninstallAppCallback callback) override;
   void UpdateDevProxyInstalledApp(

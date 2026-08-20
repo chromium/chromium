@@ -396,6 +396,64 @@ void IwaDevPageHandler::OnLocalBundleSelectedForUpdate(
                      std::move(callback));
 }
 
+void IwaDevPageHandler::SetUpdateChannel(const std::string& app_id,
+                                         const std::string& update_channel,
+                                         SetUpdateChannelCallback callback) {
+  ASSIGN_OR_RETURN(
+      web_app::UpdateChannel channel,
+      web_app::UpdateChannel::Create(update_channel), [&](auto) {
+        std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+            mojo_base::mojom::Code::kInvalidArgument,
+            "Invalid update channel provided.")));
+      });
+
+  provider_->scheduler().ScheduleCallbackWithResult(
+      "IwaDevPageHandler::SetUpdateChannel",
+      web_app::AppLockDescription(app_id),
+      base::BindOnce(
+          [](const webapps::AppId& app_id, web_app::UpdateChannel channel,
+             web_app::AppLock& lock, base::DictValue&)
+              -> base::expected<std::monostate, mojo_base::mojom::ErrorPtr> {
+            const web_app::WebApp* iwa = lock.registrar().GetAppById(
+                app_id, web_app::WebAppFilter::IsDevModeIsolatedApp());
+            if (!iwa) {
+              return base::unexpected(mojo_base::mojom::Error::New(
+                  mojo_base::mojom::Code::kNotFound, "App not found."));
+            }
+
+            const web_app::IsolationData& isolation_data =
+                *iwa->isolation_data();
+            if (!isolation_data.update_manifest_url()) {
+              return base::unexpected(mojo_base::mojom::Error::New(
+                  mojo_base::mojom::Code::kFailedPrecondition,
+                  "App was not installed from an update manifest."));
+            }
+
+            if (isolation_data.update_channel() == channel) {
+              return std::monostate();
+            }
+
+            {
+              // ScopedRegistryUpdate commits on destruction before observers
+              // are notified.
+              web_app::ScopedRegistryUpdate update =
+                  lock.sync_bridge().BeginUpdate();
+              update->UpdateApp(app_id)->SetIsolationData(
+                  web_app::IsolationData::Builder(isolation_data)
+                      .SetUpdateChannel(std::move(channel))
+                      .Build());
+            }
+            lock.install_manager().NotifyWebAppManifestUpdated(app_id);
+            return std::monostate();
+          },
+          app_id, std::move(channel)),
+      std::move(callback),
+      /*arg_for_shutdown=*/
+      base::expected<std::monostate, mojo_base::mojom::ErrorPtr>(
+          base::unexpected(mojo_base::mojom::Error::New(
+              mojo_base::mojom::Code::kAborted, "Operation aborted."))));
+}
+
 void IwaDevPageHandler::UpdateDevProxyInstalledApp(
     const std::string& app_id,
     UpdateDevProxyInstalledAppCallback callback) {
