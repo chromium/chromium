@@ -11,6 +11,7 @@ assert(!is_ios)
 build_webui("build") {
   grd_prefix = "cr_components_searchbox"
   ts_files = [
+    "keyword_mode_manager.ts",
     "placeholder_text_cycler.ts",
     "searchbox_selection_mixin.ts",
     "searchbox_action.html.ts",
