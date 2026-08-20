@@ -86,7 +86,6 @@ def init(ctx):
         "bad_deps": {
             "./obj/ash/quick_pair/repository/repository/device_address_map.o": "crbug.com/546524333",
             "./obj/ash/quick_pair/repository/repository/device_image_store.o": "crbug.com/546524333",
-            "./obj/chrome/browser/ash/policy/rsu/rsu/lookup_key_uploader.o": "crbug.com/548936817",
             "./obj/chrome/browser/ash/smb_client/smb_client/smbfs_share.o": "crbug.com/548936578",
             "./obj/chrome/browser/speech/impl/cros_speech_recognition_service.o": "crbug.com/548939103",
             "./obj/components/exo/wayland/client_version_test/client_version_test.o": "crbug.com/548936502",

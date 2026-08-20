@@ -10,14 +10,14 @@ static_library("rsu") {
     "lookup_key_uploader.h",
   ]
 
+  public_deps = [ "//components/policy/core/common" ]
+
   deps = [
     "//ash/constants",
     "//base",
-    "//chrome/common:constants",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
-    "//components/policy/core/common",
     "//components/prefs",
   ]
 }
