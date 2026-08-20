@@ -67,15 +67,13 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
            ident == CSSValueID::kPictureInPicture;
   }
 
-  if (RuntimeEnabledFeatures::DesktopPWAsAdditionalWindowingControlsEnabled(
-          context.GetExecutionContext()) &&
+  if (RuntimeEnabledFeatures::DesktopPWAsAdditionalWindowingControlsEnabled() &&
       media_feature == media_feature_names::kDisplayStateMediaFeature) {
     return ident == CSSValueID::kFullscreen || ident == CSSValueID::kNormal ||
            ident == CSSValueID::kMinimized || ident == CSSValueID::kMaximized;
   }
 
-  if (RuntimeEnabledFeatures::DesktopPWAsAdditionalWindowingControlsEnabled(
-          context.GetExecutionContext()) &&
+  if (RuntimeEnabledFeatures::DesktopPWAsAdditionalWindowingControlsEnabled() &&
       media_feature == media_feature_names::kResizableMediaFeature) {
     return ident == CSSValueID::kTrue || ident == CSSValueID::kFalse;
   }

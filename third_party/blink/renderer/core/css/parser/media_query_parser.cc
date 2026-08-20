@@ -102,11 +102,11 @@ bool MediaQueryParser::MediaQueryFeatureSet::IsAllowedWithoutValue(
           RuntimeEnabledFeatures::InvertedColorsEnabled()) ||
          CSSVariableParser::IsValidVariableName(feature) ||
          feature == media_feature_names::kScriptingMediaFeature ||
-         (RuntimeEnabledFeatures::DesktopPWAsAdditionalWindowingControlsEnabled(
-              execution_context) &&
+         (RuntimeEnabledFeatures::
+              DesktopPWAsAdditionalWindowingControlsEnabled() &&
           feature == media_feature_names::kDisplayStateMediaFeature) ||
-         (RuntimeEnabledFeatures::DesktopPWAsAdditionalWindowingControlsEnabled(
-              execution_context) &&
+         (RuntimeEnabledFeatures::
+              DesktopPWAsAdditionalWindowingControlsEnabled() &&
           feature == media_feature_names::kResizableMediaFeature);
 }
 
