@@ -14,7 +14,8 @@
                      userDisplayName:(NSString*)userDisplayName
                               userId:(NSData*)userId
                           privateKey:(NSData*)privateKey
-                        creationDate:(NSDate*)creationDate {
+                        creationDate:(NSDate*)creationDate
+                          hmacSecret:(NSData*)hmacSecret {
   self = [super init];
   if (self) {
     _credentialId = credentialId;
@@ -24,6 +25,7 @@
     _userId = userId;
     _privateKey = privateKey;
     _creationDate = creationDate;
+    _hmacSecret = hmacSecret;
   }
   return self;
 }
@@ -42,13 +44,15 @@
          [self.userId isEqualToData:other.userId] &&
          [self.privateKey isEqualToData:other.privateKey] &&
          (self.creationDate == other.creationDate ||
-          [self.creationDate isEqual:other.creationDate]);
+          [self.creationDate isEqual:other.creationDate]) &&
+         (self.hmacSecret == other.hmacSecret ||
+          [self.hmacSecret isEqual:other.hmacSecret]);
 }
 
 - (NSUInteger)hash {
   return self.userName.hash ^ self.userDisplayName.hash ^ self.rpId.hash ^
          self.credentialId.hash ^ self.userId.hash ^ self.privateKey.hash ^
-         self.creationDate.hash;
+         self.creationDate.hash ^ self.hmacSecret.hash;
 }
 
 @end

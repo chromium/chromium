@@ -15,6 +15,7 @@ source_set("model") {
     ":credential_exchange_types",
     ":credential_export_manager_swift",
     ":credential_import_manager_swift",
+    ":features",
     ":metrics_util",
     "//base",
     "//components/password_manager/core/browser",
@@ -85,6 +86,7 @@ source_set("unit_tests") {
     ":credential_exchange_types",
     ":credential_export_manager_swift",
     ":credential_import_manager_swift",
+    ":features",
     ":model",
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",
@@ -105,4 +107,12 @@ source_set("unit_tests") {
     "//third_party/ocmock",
     "//url",
   ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
 }

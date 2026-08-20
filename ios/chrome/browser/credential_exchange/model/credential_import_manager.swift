@@ -109,7 +109,9 @@ import Foundation
                 userDisplayName: passkey.userDisplayName,
                 userId: passkey.userHandle,
                 privateKey: passkey.key,
-                creationDate: nil))
+                creationDate: nil,
+                // TODO(crbug.com/458337350): Handle hmac_secret.
+                hmacSecret: nil))
           case .address:
             stats.addressCount += 1
           case .apiKey:

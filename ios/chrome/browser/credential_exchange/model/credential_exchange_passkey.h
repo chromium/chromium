@@ -39,6 +39,10 @@
 // Creation date of the credential.
 @property(nonatomic, copy) NSDate* creationDate;
 
+// 32-byte secret used for the WebAuthn PRF / CTAP2.1 hmac-secret extension.
+// (https://fidoalliance.org/specs/cx/cxf-v1.0-ps-20250814.html#dict-fido2-hmac-credentials)
+@property(nonatomic, copy) NSData* hmacSecret;
+
 - (instancetype)initWithCredentialId:(NSData*)credentialId
                                 rpId:(NSString*)rpId
                             userName:(NSString*)userName
@@ -46,6 +50,7 @@
                               userId:(NSData*)userId
                           privateKey:(NSData*)privateKey
                         creationDate:(NSDate*)creationDate
+                          hmacSecret:(NSData*)hmacSecret
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

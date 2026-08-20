@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/credential_exchange/model/credential_exporter.h"
 
+#import <optional>
+
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
@@ -14,6 +16,7 @@
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_passkey.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_password.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_export_manager_swift.h"
+#import "ios/chrome/browser/credential_exchange/model/features.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -108,11 +111,22 @@
       [NSMutableArray arrayWithCapacity:passkeys.size()];
 
   for (const sync_pb::WebauthnCredentialSpecifics& passkey : passkeys) {
-    NSData* privateKey = [self decryptPrivateKeyForPasskey:passkey
-                                     usingTrustedVaultKeys:trustedVaultKeys];
+    std::optional<sync_pb::WebauthnCredentialSpecifics_Encrypted> decrypted =
+        [self decryptEncryptedDataForPasskey:passkey
+                       usingTrustedVaultKeys:trustedVaultKeys];
 
-    if (!privateKey) {
+    if (!decrypted.has_value()) {
       continue;
+    }
+
+    NSData* privateKey = [NSData dataWithBytes:decrypted->private_key().data()
+                                        length:decrypted->private_key().size()];
+    NSData* hmacSecret = nil;
+    if (base::FeatureList::IsEnabled(kCredentialExchangeFidoExtensions)) {
+      if (decrypted->has_hmac_secret() && !decrypted->hmac_secret().empty()) {
+        hmacSecret = [NSData dataWithBytes:decrypted->hmac_secret().data()
+                                    length:decrypted->hmac_secret().size()];
+      }
     }
 
     NSData* credentialId =
@@ -137,27 +151,28 @@
                                                 userDisplayName:userDisplayName
                                                          userId:userId
                                                      privateKey:privateKey
-                                                   creationDate:creationDate];
+                                                   creationDate:creationDate
+                                                     hmacSecret:hmacSecret];
     [exportedPasskeys addObject:exportedPasskey];
   }
   return exportedPasskeys;
 }
 
-// Attempts to decrypt the private key for a given `passkey` with
+// Attempts to decrypt the encrypted data for a given `passkey` with
 // `trustedVaultKeys`.
-- (NSData*)decryptPrivateKeyForPasskey:
-               (const sync_pb::WebauthnCredentialSpecifics&)passkey
-                 usingTrustedVaultKeys:
-                     (const webauthn::SharedKeyList&)trustedVaultKeys {
+- (std::optional<sync_pb::WebauthnCredentialSpecifics_Encrypted>)
+    decryptEncryptedDataForPasskey:
+        (const sync_pb::WebauthnCredentialSpecifics&)passkey
+             usingTrustedVaultKeys:
+                 (const webauthn::SharedKeyList&)trustedVaultKeys {
   sync_pb::WebauthnCredentialSpecifics_Encrypted decrypted;
   for (const webauthn::SharedKey& trustedVaultKey : trustedVaultKeys) {
     if (webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
             trustedVaultKey, passkey, &decrypted)) {
-      return [NSData dataWithBytes:decrypted.private_key().data()
-                            length:decrypted.private_key().size()];
+      return decrypted;
     }
   }
-  return nil;
+  return std::nullopt;
 }
 
 #pragma mark - CredentialExportManagerDelegate

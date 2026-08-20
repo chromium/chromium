@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/credential_exchange/model/credential_exporter.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/password_form_converters.h"
@@ -13,6 +14,7 @@
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_passkey.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_password.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_export_manager_swift.h"
+#import "ios/chrome/browser/credential_exchange/model/features.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -44,7 +46,12 @@ password_manager::StoredCredential CreateStoredCredential() {
   return cred;
 }
 
-sync_pb::WebauthnCredentialSpecifics CreatePasskeySpecifics() {
+struct PasskeyOptions {
+  bool include_hmac_secret = false;
+};
+
+sync_pb::WebauthnCredentialSpecifics CreatePasskeySpecifics(
+    PasskeyOptions options) {
   sync_pb::WebauthnCredentialSpecifics passkey;
   passkey.set_credential_id("1234567890123456");
   passkey.set_rp_id("example.com");
@@ -56,6 +63,9 @@ sync_pb::WebauthnCredentialSpecifics CreatePasskeySpecifics() {
                                       'e', '_', 'k', 'e', 'y'};
   sync_pb::WebauthnCredentialSpecifics_Encrypted encrypted;
   encrypted.set_private_key(private_key.data(), private_key.size());
+  if (options.include_hmac_secret) {
+    encrypted.set_hmac_secret("hmac_secret");
+  }
   webauthn::passkey_model_utils::EncryptWebauthnCredentialSpecificsData(
       GetTrustedVaultKey(), encrypted, &passkey);
   return passkey;
@@ -78,7 +88,8 @@ CredentialExchangePasskey* CreateCredentialExchangePasskey() {
            userDisplayName:@"userDisplayName"
                     userId:ToNSData("user_id")
                 privateKey:ToNSData("private_key")
-              creationDate:[NSDate dateWithTimeIntervalSince1970:123456789.0]];
+              creationDate:[NSDate dateWithTimeIntervalSince1970:123456789.0]
+                hmacSecret:nil];
 }
 
 class CredentialExporterTest : public PlatformTest {
@@ -155,7 +166,75 @@ TEST_F(CredentialExporterTest, ExportsPasskeys) {
                     exporterName:[OCMArg any]];
 
     [exporter startExportWithPasswords:{}
-                              passkeys:{CreatePasskeySpecifics()}
+                              passkeys:{CreatePasskeySpecifics({})}
+                      trustedVaultKeys:{GetTrustedVaultKey()}
+                             userEmail:kUserEmail];
+
+    [mockExportManager verify];
+  }
+}
+
+TEST_F(CredentialExporterTest, ExportsPasskeysWithHmacSecret) {
+  if (!@available(iOS 26, *)) {
+    GTEST_SKIP() << "CredentialExportManager is only available on iOS 26+";
+  } else {
+    id mockExportManager = OCMClassMock([CredentialExportManager class]);
+    OCMStub([mockExportManager alloc]).andReturn(mockExportManager);
+    CredentialExporter* exporter =
+        [[CredentialExporter alloc] initWithWindow:window_
+                                          delegate:mock_delegate_];
+
+    CredentialExchangePasskey* expectedPasskey =
+        CreateCredentialExchangePasskey();
+    expectedPasskey.hmacSecret = ToNSData("hmac_secret");
+
+    [[mockExportManager expect] startExportWithPasswords:@[]
+                                                passkeys:@[ expectedPasskey ]
+                                                  window:window_
+                                               userEmail:kUserEmail
+                                            exporterName:[OCMArg any]];
+
+    [exporter startExportWithPasswords:{}
+                              passkeys:{CreatePasskeySpecifics(
+                                           {.include_hmac_secret = true})}
+                      trustedVaultKeys:{GetTrustedVaultKey()}
+                             userEmail:kUserEmail];
+
+    [mockExportManager verify];
+  }
+}
+
+class CredentialExporterFidoExtensionsDisabledTest
+    : public CredentialExporterTest {
+ protected:
+  base::test::ScopedFeatureList feature_list_{
+      {},
+      {kCredentialExchangeFidoExtensions}};
+};
+
+TEST_F(CredentialExporterFidoExtensionsDisabledTest,
+       ExportsPasskeysWithoutFidoExtensions) {
+  if (!@available(iOS 26, *)) {
+    GTEST_SKIP() << "CredentialExportManager is only available on iOS 26+";
+  } else {
+    id mockExportManager = OCMClassMock([CredentialExportManager class]);
+    OCMStub([mockExportManager alloc]).andReturn(mockExportManager);
+    CredentialExporter* exporter =
+        [[CredentialExporter alloc] initWithWindow:window_
+                                          delegate:mock_delegate_];
+
+    // The input passkey has an `hmac_secret` but because exchanging extensions
+    // is disabled, the exported passkey will not have an `hmac_secret`.
+    [[mockExportManager expect]
+        startExportWithPasswords:@[]
+                        passkeys:@[ CreateCredentialExchangePasskey() ]
+                          window:window_
+                       userEmail:kUserEmail
+                    exporterName:[OCMArg any]];
+
+    [exporter startExportWithPasswords:{}
+                              passkeys:{CreatePasskeySpecifics(
+                                           {.include_hmac_secret = true})}
                       trustedVaultKeys:{GetTrustedVaultKey()}
                              userEmail:kUserEmail];
 

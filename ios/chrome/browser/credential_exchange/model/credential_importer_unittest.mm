@@ -72,7 +72,8 @@ CredentialExchangePasskey* CreateTestPasskey() {
                     userId:ToNSData("user_id")
                 privateKey:[NSData dataWithBytes:pkcs8_key.data()
                                           length:pkcs8_key.size()]
-              creationDate:nil];
+              creationDate:nil
+                hmacSecret:nil];
 }
 
 scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
@@ -395,7 +396,8 @@ TEST_F(CredentialImporterTest, TestImportPasskeyWithInvalidPrivateKey) {
            userDisplayName:@"userDisplayName"
                     userId:ToNSData("user_id")
                 privateKey:ToNSData("invalid_private_key")
-              creationDate:nil];
+              creationDate:nil
+                hmacSecret:nil];
 
   [importer_ onCredentialsTranslatedWithPasswords:@[]
                                          passkeys:@[ passkey ]
@@ -432,7 +434,8 @@ TEST_F(CredentialImporterTest, TestImportPasskeyWithUnsupportedAlgorithm) {
                     userId:ToNSData("user_id")
                 privateKey:[NSData dataWithBytes:rsa_key.data()
                                           length:rsa_key.size()]
-              creationDate:nil];
+              creationDate:nil
+                hmacSecret:nil];
 
   [importer_ onCredentialsTranslatedWithPasswords:@[]
                                          passkeys:@[ passkey ]

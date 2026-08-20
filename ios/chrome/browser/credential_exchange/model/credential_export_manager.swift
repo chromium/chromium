@@ -48,6 +48,7 @@ import UIKit
     let userId: Data
     let privateKey: Data
     let creationDate: Date
+    let hmacSecret: Data?
 
     init?(_ key: CredentialExchangePasskey) {
       self.credentialId = key.credentialId
@@ -57,6 +58,7 @@ import UIKit
       self.userId = key.userId
       self.privateKey = key.privateKey
       self.creationDate = key.creationDate ?? Date()
+      self.hmacSecret = key.hmacSecret
     }
   }
 
@@ -106,7 +108,7 @@ import UIKit
     }
 
     for passkey in passkeys {
-      let passkeyCredential = ASImportableCredential.Passkey(
+      var passkeyCredential = ASImportableCredential.Passkey(
         credentialID: passkey.credentialId,
         relyingPartyIdentifier: passkey.rpId,
         userName: passkey.userName,
@@ -114,6 +116,18 @@ import UIKit
         userHandle: passkey.userId,
         key: passkey.privateKey
       )
+      if #available(iOS 26.4, *) {
+        if let hmacSecret = passkey.hmacSecret, !hmacSecret.isEmpty {
+          let hmacCredentials = ASImportableFIDO2HMACCredential(
+            algorithm: .sha256,
+            credentialWithUV: hmacSecret,
+            credentialWithoutUV: hmacSecret
+          )
+          passkeyCredential.fido2Extensions = ASImportableFIDO2Extensions(
+            hmacCredentials: hmacCredentials
+          )
+        }
+      }
 
       let item = ASImportableItem(
         id: UUID().uuidString.data(using: .utf8)!,
