@@ -16,6 +16,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
@@ -738,18 +739,18 @@ void PolicyProvider::UpdateManagedDefaultSetting(
   // not registered, don't update them.
   const ContentSettingsInfo* info =
       ContentSettingsRegistry::GetInstance()->Get(entry.content_type);
-  if (!info) {
+  if (!info)
     return;
-  }
 
-  // TODO(crbug.com/549652705): The preference is synthesized from enterprise
-  // policy and should never be directly user controlled. However, we cannot
-  // CHECK that here because some users have legacy entries in their Preferences
-  // file. As a long-term solution, we should instead remove the legacy values
-  // instead of ignoring them.
-  if (!prefs_->IsManagedPreference(entry.pref_name)) {
-    return;
-  }
+  // If a pref to manage a default-content-setting was not set (NOTICE:
+  // "HasPrefPath" returns false if no value was set for a registered pref) then
+  // the default value of the preference is used. The default value of a
+  // preference to manage a default-content-settings is CONTENT_SETTING_DEFAULT.
+  // This indicates that no managed value is set. If a pref was set, than it
+  // MUST be managed.
+  CHECK(!prefs_->HasPrefPath(entry.pref_name) ||
+            prefs_->IsManagedPreference(entry.pref_name),
+        base::NotFatalUntil::M154);
 
   int setting = prefs_->GetInteger(entry.pref_name);
   ContentSetting content_setting = IntToContentSetting(setting);
@@ -779,9 +780,11 @@ void PolicyProvider::UpdateManagedAudioVideoCaptureDefaultSetting(
     return;
   }
 
-  // TODO(crbug.com/549652705): Update this once legacy user-controlled
-  // preferences have been cleaned up.
-  if (!prefs_->IsManagedPreference(entry.pref_name)) {
+  CHECK(!prefs_->HasPrefPath(entry.pref_name) ||
+            prefs_->IsManagedPreference(entry.pref_name),
+        base::NotFatalUntil::M154);
+
+  if (!prefs_->HasPrefPath(entry.pref_name)) {
     return;
   }
 
