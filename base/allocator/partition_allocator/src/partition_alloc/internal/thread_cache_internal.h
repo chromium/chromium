@@ -429,7 +429,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   static constexpr uintptr_t kTombstone = 0x1;
   static constexpr uintptr_t kTombstoneMask = ~kTombstone;
 
-  static uint8_t global_limits_[kBucketCount];
+  static std::array<uint8_t, kBucketCount> global_limits_;
   // Index of the largest active bucket. Not all processes/platforms will use
   // all buckets, as using larger buckets increases the memory footprint.
   //

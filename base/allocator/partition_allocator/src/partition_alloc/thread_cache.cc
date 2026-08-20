@@ -85,7 +85,7 @@ static bool g_thread_cache_key_created = false;
 
 namespace internal {
 
-uint8_t ThreadCache::global_limits_[ThreadCache::kBucketCount];
+std::array<uint8_t, ThreadCache::kBucketCount> ThreadCache::global_limits_;
 
 // Start with the normal size, not the maximum one.
 uint16_t ThreadCache::largest_active_bucket_index_ =
@@ -255,9 +255,8 @@ void ThreadCacheRegistry::SetThreadCacheMultiplier(float multiplier) {
       for (int index = 0; index < ThreadCache::kBucketCount; index++) {
         // This is racy, but we don't care if the limit is enforced later, and
         // we really want to avoid atomic instructions on the fast path.
-        tcache->buckets_[index].limit.store(
-            PA_UNSAFE_TODO(ThreadCache::global_limits_[index]),
-            std::memory_order_relaxed);
+        tcache->buckets_[index].limit.store(ThreadCache::global_limits_[index],
+                                            std::memory_order_relaxed);
       }
 
       tcache = tcache->next_;
@@ -446,7 +445,7 @@ void ThreadCache::SetGlobalLimits(PartitionRoot* root, float multiplier) {
     const auto& root_bucket = PA_UNSAFE_TODO(root->buckets_[index]);
     // Invalid bucket.
     if (!root_bucket.active_slot_spans_head) {
-      PA_UNSAFE_TODO(global_limits_[index]) = 0;
+      global_limits_[index] = 0;
       continue;
     }
 
@@ -469,10 +468,10 @@ void ThreadCache::SetGlobalLimits(PartitionRoot* root, float multiplier) {
     constexpr size_t kMinLimit = 1;
     // |PutInBucket()| is called on a full bucket, which should not overflow.
     constexpr size_t kMaxLimit = std::numeric_limits<uint8_t>::max() - 1;
-    PA_UNSAFE_TODO(global_limits_[index]) =
+    global_limits_[index] =
         static_cast<uint8_t>(std::clamp(value, kMinLimit, kMaxLimit));
-    PA_UNSAFE_TODO(PA_DCHECK(global_limits_[index] >= kMinLimit));
-    PA_UNSAFE_TODO(PA_DCHECK(global_limits_[index] <= kMaxLimit));
+    PA_DCHECK(global_limits_[index] >= kMinLimit);
+    PA_DCHECK(global_limits_[index] <= kMaxLimit);
   }
 }
 
@@ -557,7 +556,7 @@ ThreadCache::ThreadCache(PartitionRoot* root)
     Bucket* tcache_bucket = &buckets_[index];
     tcache_bucket->freelist_head = nullptr;
     tcache_bucket->count = 0;
-    tcache_bucket->limit.store(PA_UNSAFE_TODO(global_limits_[index]),
+    tcache_bucket->limit.store(global_limits_[index],
                                std::memory_order_relaxed);
 
     tcache_bucket->slot_size = root_bucket.slot_size;
