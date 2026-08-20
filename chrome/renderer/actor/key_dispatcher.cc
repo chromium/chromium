@@ -225,6 +225,8 @@ void KeyDispatcher::ContinueIncrementalTyping() {
       return;
     }
 
+    base::WeakPtr<KeyDispatcher> weak_this = weak_ptr_factory_.GetWeakPtr();
+
     // When typing into search boxes or overlay inputs, website scripts or
     // autocomplete handlers may automatically trigger full text selection (e.g.
     // via delayed select() calls or in response to initial key events).
@@ -243,12 +245,14 @@ void KeyDispatcher::ContinueIncrementalTyping() {
         if (!range.IsNull() && range.length() > 0 && range.StartOffset() == 0) {
           frame->SetEditableSelectionOffsets(range.EndOffset(),
                                              range.EndOffset());
+          if (!weak_this) {
+            return;
+          }
           has_cleared_auto_selection_ = true;
         }
       }
     }
 
-    base::WeakPtr<KeyDispatcher> weak_this = weak_ptr_factory_.GetWeakPtr();
     WebInputEventResult down_result = CreateAndDispatchKeyEvent(
         *widget, WebInputEvent::Type::kRawKeyDown, params);
 
