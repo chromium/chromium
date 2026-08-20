@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.android.bars_common.IphIntent;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.AimIneligibilityReason;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.CandidateAction;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -120,6 +121,7 @@ public class BottomBarMediator
     private long mGlicAppearedTimeMs = -1;
     private boolean mStartupPromoFlowFinished;
     private boolean mObservingSharedPrefs;
+    private @Host int mHost = Host.TABBED;
 
     /**
      * @param context The context to use for the bottom bar.
@@ -494,11 +496,25 @@ public class BottomBarMediator
         }
     }
 
+    /**
+     * Updates the current host of the bottom bar.
+     *
+     * @param host The {@link Host} where the bottom bar is currently hosted.
+     */
+    public void setParent(@Host int host) {
+        if (mHost == host) return;
+        mHost = host;
+        if (host == Host.TABBED) {
+            updateColorSchemeFromThemeColorProvider();
+        }
+    }
+
     @Override
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
             @BrandedColorScheme int brandedColorScheme) {
+        if (mHost != Host.TABBED) return;
         mModel.set(BottomBarProperties.COLOR_SCHEME, brandedColorScheme);
         mVisibilityDelegate.onBackgroundColorChanged();
     }
@@ -596,6 +612,17 @@ public class BottomBarMediator
                         .build();
         newTabModel.set(ActionProperties.IPH_INTENT, newTabIph);
         mNewTabIphIntent = newTabIph;
+    }
+
+    private void updateColorSchemeFromThemeColorProvider() {
+        @BrandedColorScheme int brandedColorScheme = mThemeColorProvider.getBrandedColorScheme();
+        mModel.set(BottomBarProperties.COLOR_SCHEME, brandedColorScheme);
+        mVisibilityDelegate.onBackgroundColorChanged();
+    }
+
+    /*package*/ @Host
+    int getHostForTesting() {
+        return mHost;
     }
 
     @Override

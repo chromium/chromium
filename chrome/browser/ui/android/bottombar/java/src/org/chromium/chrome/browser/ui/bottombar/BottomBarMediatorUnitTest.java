@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.android.bars_common.IphIntent;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.AimIneligibilityReason;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.GlicIneligibilityReason;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -859,6 +860,63 @@ public class BottomBarMediatorUnitTest {
                         AimIneligibilityReason.DEFAULT_SEARCH_ENGINE_NOT_GOOGLE);
         createMediator(/* shouldIncludeHomeButton= */ false);
         watcher.assertExpected();
+    }
+
+    @Test
+    public void testOnTintChanged_WhenHostTabbed_UpdatesColorSchemeAndNotifiesDelegate() {
+        createMediator(/* shouldIncludeHomeButton= */ false);
+        assertNotNull(mMediator);
+        assertEquals(Host.TABBED, mMediator.getHostForTesting());
+
+        mMediator.onTintChanged(null, null, BrandedColorScheme.INCOGNITO);
+
+        assertEquals(BrandedColorScheme.INCOGNITO, mModel.get(BottomBarProperties.COLOR_SCHEME));
+        verify(mVisibilityDelegate).onBackgroundColorChanged();
+    }
+
+    @Test
+    public void testOnTintChanged_WhenHostHub_SuppressesColorSchemeUpdate() {
+        createMediator(/* shouldIncludeHomeButton= */ false);
+        assertNotNull(mMediator);
+
+        // Set initial color scheme to INCOGNITO
+        mMediator.onTintChanged(null, null, BrandedColorScheme.INCOGNITO);
+        assertEquals(BrandedColorScheme.INCOGNITO, mModel.get(BottomBarProperties.COLOR_SCHEME));
+        verify(mVisibilityDelegate, times(1)).onBackgroundColorChanged();
+
+        // Switch to Hub host
+        mMediator.setParent(Host.HUB);
+        assertEquals(Host.HUB, mMediator.getHostForTesting());
+
+        // When in Hub, onTintChanged (e.g. fired when closing last incognito tab) should be ignored
+        mMediator.onTintChanged(null, null, BrandedColorScheme.APP_DEFAULT);
+
+        // Color scheme in model should NOT have snapped to APP_DEFAULT
+        assertEquals(BrandedColorScheme.INCOGNITO, mModel.get(BottomBarProperties.COLOR_SCHEME));
+        // Visibility delegate should NOT have received another notification
+        verify(mVisibilityDelegate, times(1)).onBackgroundColorChanged();
+    }
+
+    @Test
+    public void testSetParent_TabbedToHubAndBack_UpdatesColorSchemeOnReturn() {
+        createMediator(/* shouldIncludeHomeButton= */ false);
+        assertNotNull(mMediator);
+
+        mMediator.onTintChanged(null, null, BrandedColorScheme.INCOGNITO);
+        assertEquals(BrandedColorScheme.INCOGNITO, mModel.get(BottomBarProperties.COLOR_SCHEME));
+
+        mMediator.setParent(Host.HUB);
+        assertEquals(Host.HUB, mMediator.getHostForTesting());
+
+        // Simulate ThemeColorProvider changing to APP_DEFAULT while in Hub
+        when(mThemeColorProvider.getBrandedColorScheme())
+                .thenReturn(BrandedColorScheme.APP_DEFAULT);
+
+        // When returning to TABBED host, model and delegate should be updated
+        mMediator.setParent(Host.TABBED);
+        assertEquals(Host.TABBED, mMediator.getHostForTesting());
+        assertEquals(BrandedColorScheme.APP_DEFAULT, mModel.get(BottomBarProperties.COLOR_SCHEME));
+        verify(mVisibilityDelegate, times(2)).onBackgroundColorChanged();
     }
 
     private void createMediator(boolean shouldIncludeHomeButton) {

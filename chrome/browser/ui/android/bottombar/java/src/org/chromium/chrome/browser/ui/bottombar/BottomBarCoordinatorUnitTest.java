@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.glic.GlicActionProperties;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -336,6 +337,17 @@ public class BottomBarCoordinatorUnitTest {
                 BottomBarUtils.getBottomBarBackgroundColor(
                         mActivity, BrandedColorScheme.APP_DEFAULT);
         assertEquals(expectedColor, mCoordinator.getBackgroundColor());
+    }
+
+    @Test
+    public void testSetParent_UpdatesHost() {
+        assertEquals(Host.TABBED, mCoordinator.getMediatorForTesting().getHostForTesting());
+
+        mCoordinator.setParent(Host.HUB);
+        assertEquals(Host.HUB, mCoordinator.getMediatorForTesting().getHostForTesting());
+
+        mCoordinator.setParent(Host.TABBED);
+        assertEquals(Host.TABBED, mCoordinator.getMediatorForTesting().getHostForTesting());
     }
 
     @Test
