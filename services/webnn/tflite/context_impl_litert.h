@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "services/webnn/public/cpp/webgpu_context_properties.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/webnn_context_impl.h"
@@ -46,6 +47,7 @@ class ContextImplLiteRt final : public WebNNContextImpl {
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
       base::WeakPtr<WebNNContextProviderInRenderer> context_provider,
       mojom::CreateContextOptionsPtr options,
+      WebGpuContextProperties webgpu_properties,
       scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
 
@@ -67,6 +69,7 @@ class ContextImplLiteRt final : public WebNNContextImpl {
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
       base::WeakPtr<WebNNContextProviderInRenderer> context_provider,
       mojom::CreateContextOptionsPtr options,
+      WebGpuContextProperties webgpu_properties,
       scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
 
@@ -116,6 +119,8 @@ class ContextImplLiteRt final : public WebNNContextImpl {
   std::string_view GetBackendName() const override;
   std::vector<mojom::WebNNExecutionProviderDetailsPtr>
   GetExecutionProvidersInfo() const override;
+
+  WebGpuContextProperties webgpu_properties_;
 
   // Only be used in the GPU-process flow to indicate whether the profile is in
   // incognito.

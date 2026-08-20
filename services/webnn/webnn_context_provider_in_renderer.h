@@ -12,6 +12,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
+#include "services/webnn/public/cpp/in_process_context_provider.h"  // nogncheck
+#include "services/webnn/public/cpp/webgpu_context_properties.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 
@@ -25,7 +27,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderInRenderer
   WebNNContextProviderInRenderer(
       mojo::PendingRemote<mojom::WebNNWeightsFileCreator>
           weights_file_creator_remote,
-      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+      WebGPUContextHelperCallback webgpu_context_helper = {});
   ~WebNNContextProviderInRenderer() override;
 
   WebNNContextProviderInRenderer(const WebNNContextProviderInRenderer&) =
@@ -53,6 +56,16 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderInRenderer
   void RemoveWebNNContextImpl(const blink::WebNNContextToken& handle);
 
  private:
+  static void CreateContextOnWorker(
+      base::WeakPtr<WebNNContextProviderInRenderer> context_provider,
+      mojom::CreateContextOptionsPtr options,
+      CreateWebNNContextCallback callback,
+      mojo::PendingRemote<mojom::WebNNContext> remote,
+      mojo::PendingReceiver<mojom::WebNNContext> receiver,
+      scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+      WebGpuContextProperties webgpu_properties);
+
   void OnCreateWebNNContextImpl(
       CreateWebNNContextCallback callback,
       mojo::PendingRemote<mojom::WebNNContext> remote,
@@ -65,6 +78,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderInRenderer
 
   // Task runner for the main thread (where the Mojo pipe lives).
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+
+  // Callback injected from the Blink ML module to asynchronously initialize
+  // and acquire WebGpuContextProperties (WGPUDevice, WGPUQueue, Dawn procs,
+  // and lifetime holders) when creating a GPU-backed WebNN context.
+  WebGPUContextHelperCallback webgpu_context_helper_;
 
   // Contexts created by this provider. Cleaned up when the provider is
   // destroyed (when the mojo pipe closes).

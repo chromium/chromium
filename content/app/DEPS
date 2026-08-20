@@ -17,6 +17,7 @@ include_rules = [
   "+services/network/public/cpp/features.h",
   "+services/resource_coordinator/public",
   "+services/tracing/public/cpp",
+  "+services/webnn/public/cpp",
   "+third_party/android_toolchain/native_service.h",
   "+third_party/tflite/buildflags.h",
   "+third_party/cpuinfo/src/include/cpuinfo.h",

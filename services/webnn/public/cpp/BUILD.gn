@@ -35,8 +35,11 @@ component("cpp") {
     "range.h",
     "supported_data_types.h",
     "supported_tensors.h",
+    "webgpu_context_properties.h",
     "webnn_errors.cc",
     "webnn_errors.h",
+    "webnn_sandbox_init.cc",
+    "webnn_sandbox_init.h",
     "webnn_trace.cc",
     "webnn_trace.h",
     "webnn_types.h",
@@ -59,13 +62,6 @@ component("cpp") {
     ]
   }
 
-  if (is_win || is_linux) {
-    sources += [
-      "webnn_sandbox_init.cc",
-      "webnn_sandbox_init.h",
-    ]
-  }
-
   configs += [ "//build/config/compiler:prevent_unsafe_narrowing" ]
 
   defines = [ "IS_WEBNN_PUBLIC_CPP_IMPL" ]
@@ -80,6 +76,7 @@ source_set("in_process_context_provider") {
   ]
 
   public_deps = [
+    ":cpp",
     "//base",
     "//mojo/public/cpp/system",
   ]

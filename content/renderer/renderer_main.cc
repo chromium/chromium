@@ -54,6 +54,7 @@
 #include "mojo/public/cpp/bindings/mojo_buildflags.h"
 #include "sandbox/policy/switches.h"
 #include "services/tracing/public/cpp/trace_startup.h"
+#include "services/webnn/public/cpp/webnn_sandbox_init.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -219,6 +220,7 @@ int RendererMain(MainFunctionParams parameters) {
   // zygote_main_linux.cc.  However, calling multiple times from the same thread
   // is OK.
   InitializeWebRtcModuleBeforeSandbox();
+  webnn::PreSandboxWebNNInitialization();
 
   std::optional<LastResortGCPolicy> last_resort_gc_policy;
   if (base::FeatureList::IsEnabled(kMemoryCoordinatorLastResortGC)) {

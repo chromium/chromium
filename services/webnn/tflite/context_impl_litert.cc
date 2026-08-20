@@ -76,13 +76,15 @@ WebNNContextImpl::WebNNContextImplPtr ContextImplLiteRt::CreateForRenderer(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     base::WeakPtr<WebNNContextProviderInRenderer> context_provider,
     mojom::CreateContextOptionsPtr options,
+    WebGpuContextProperties webgpu_properties,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner) {
   DCHECK(owning_task_runner->RunsTasksInCurrentSequence());
   auto task_runner = owning_task_runner;
   return WebNNContextImplPtr(
       new ContextImplLiteRt(std::move(receiver), std::move(context_provider),
-                            std::move(options), std::move(owning_task_runner),
+                            std::move(options), std::move(webgpu_properties),
+                            std::move(owning_task_runner),
                             std::move(main_task_runner)),
       OnTaskRunnerDeleter(std::move(task_runner)));
 }
@@ -91,6 +93,7 @@ ContextImplLiteRt::ContextImplLiteRt(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     base::WeakPtr<WebNNContextProviderInRenderer> context_provider,
     mojom::CreateContextOptionsPtr options,
+    WebGpuContextProperties webgpu_properties,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
     : WebNNContextImpl(std::move(receiver),
@@ -99,7 +102,8 @@ ContextImplLiteRt::ContextImplLiteRt(
                        tflite::GraphBuilderTflite::GetContextProperties(),
                        std::move(options),
                        std::move(owning_task_runner),
-                       std::move(main_task_runner)) {}
+                       std::move(main_task_runner)),
+      webgpu_properties_(std::move(webgpu_properties)) {}
 
 ContextImplLiteRt::~ContextImplLiteRt() = default;
 
@@ -120,7 +124,7 @@ void ContextImplLiteRt::CreateGraphImpl(
     // the graph impl so it can fallback to the default behavior.
     GraphImplLiteRt::CreateAndBuild(
         std::move(graph_info), std::move(compute_resource_info),
-        std::move(constant_operands), *this,
+        std::move(constant_operands), *this, webgpu_properties_,
         /*weights_file=*/base::File(base::File::FILE_ERROR_NOT_FOUND),
         /*session=*/mojo::NullRemote(), std::move(callback));
     return;
@@ -167,8 +171,8 @@ void ContextImplLiteRt::DidOpenWeightsFile(
     mojo::PendingRemote<mojom::WeightsFileSession> session) {
   GraphImplLiteRt::CreateAndBuild(
       std::move(graph_info), std::move(compute_resource_info),
-      std::move(constant_operands), *this, std::move(weights_file),
-      std::move(session), std::move(callback));
+      std::move(constant_operands), *this, webgpu_properties_,
+      std::move(weights_file), std::move(session), std::move(callback));
 }
 
 base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>

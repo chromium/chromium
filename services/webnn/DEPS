@@ -19,6 +19,7 @@ include_rules = [
   "+third_party/fuzztest/src/fuzztest/fuzztest.h",
   "+third_party/fuzztest/src/fuzztest/googletest_fixture_adapter.h",
   "+third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h",
+  "+third_party/dawn/include/dawn",
   "+third_party/litert",
   "+third_party/windows_app_sdk_headers",
   "+third_party/tflite",
