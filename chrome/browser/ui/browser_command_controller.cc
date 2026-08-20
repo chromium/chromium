@@ -1586,10 +1586,8 @@ void BrowserCommandController::HandleCommandWithDisposition(
       auto* service =
           glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile());
       if (service) {
-        glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile())->ToggleUI(
-            browser_,
-            /*prevent_close=*/true,
-            glic::mojom::InvocationSource::kThreeDotsMenu);
+        glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile())->ShowUI(
+            browser_, glic::mojom::InvocationSource::kThreeDotsMenu);
       }
       break;
     }

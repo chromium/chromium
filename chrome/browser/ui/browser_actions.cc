@@ -2251,9 +2251,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                   auto* service =
                       glic::GlicKeyedService::Get(bwi->GetProfile());
                   if (service) {
-                    service->ToggleUI(
-                        bwi, /*prevent_close=*/true,
-                        glic::mojom::InvocationSource::kThreeDotsMenu);
+                    service->ShowUI(
+                        bwi, glic::mojom::InvocationSource::kThreeDotsMenu);
                   }
                 },
                 bwi),
