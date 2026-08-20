@@ -446,6 +446,17 @@ BASE_FEATURE(kFedCmIdPRegistration, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables Lightweight FedCM Mode
 BASE_FEATURE(kFedCmLightweightMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables FedCM Identity Handler (Service Worker interception of FedCM
+// requests). When enabled, IDPs can declare a Service Worker in their
+// .well-known/web-identity file to intercept credentialed FedCM requests
+// (accounts, id-assertion, disconnect).
+// Explainer: https://github.com/w3c-fedid/identity-handler
+// Spec: https://w3c-fedid.github.io/FedCM/
+// Design doc:
+// https://docs.google.com/document/d/1PgiLzfvE8NsSnxgJYA3WUEld0FguPfPETHDPjUb6wlo/
+// Bug: 526074797
+BASE_FEATURE(kFedCmIdentityHandler, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables usage of the FedCM API with metrics endpoint at the same time.
 BASE_FEATURE(kFedCmMetricsEndpoint, base::FEATURE_DISABLED_BY_DEFAULT);
 

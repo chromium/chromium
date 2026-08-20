@@ -154,6 +154,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            kDefault},
           {wf::EnableFedCmDelegation, raw_ref(features::kFedCmDelegation),
            kDefault},
+          {wf::EnableFedCmIdentityHandler,
+           raw_ref(features::kFedCmIdentityHandler), kDefault},
           {wf::EnableFedCmIdPRegistration,
            raw_ref(features::kFedCmIdPRegistration), kDefault},
           {wf::EnableFedCmLightweightMode,
