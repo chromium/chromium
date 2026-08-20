@@ -3871,6 +3871,78 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksComposeboxHandlerTestWithContextManagementEnabled,
+    SetAimThreadRestoredTabs_ClearsAutoSuggestedTabWhenRestored) {
+  SetUpHandler();
+  ASSERT_NE(handler_, nullptr);
+
+  const GURL url("https://example.com");
+  auto suggestion = std::make_unique<contextual_tasks::SuggestedTabInfo>();
+  suggestion->url = url;
+  suggestion->title = u"Example Site";
+  suggestion->tab_id = 42;
+  auto_suggestion_manager_.SetCurrentSuggestion(std::move(suggestion));
+
+  std::vector<searchbox::mojom::TabInfoPtr> restored_tabs;
+  auto tab_info = searchbox::mojom::TabInfo::New();
+  tab_info->url = url;
+  tab_info->title = "Example Site";
+  tab_info->tab_id = 42;
+  restored_tabs.push_back(std::move(tab_info));
+
+  // Verify that UpdateAutoSuggestedTabContext(nullptr) is dispatched to WebUI
+  // to clear the uncommitted suggestion chip.
+  EXPECT_CALL(mock_searchbox_page_,
+              UpdateAutoSuggestedTabContext(testing::_, testing::_))
+      .WillOnce([&](const searchbox::mojom::TabInfoPtr& received_info,
+                    const std::optional<std::string>& invocation_source) {
+        EXPECT_TRUE(received_info.is_null());
+        EXPECT_EQ(invocation_source, std::nullopt);
+      });
+
+  EXPECT_CALL(mock_searchbox_page_, SetAimThreadRestoredTabs(testing::_))
+      .WillOnce([url](const std::vector<searchbox::mojom::TabInfoPtr>& tabs) {
+        ASSERT_EQ(tabs.size(), 1u);
+        EXPECT_EQ(tabs[0]->tab_id, 42);
+        EXPECT_EQ(tabs[0]->url, url);
+      });
+
+  handler_->SetAimThreadRestoredTabs(std::move(restored_tabs));
+  searchbox_page_receiver_.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerTestWithContextManagementEnabled,
+    UpdateSuggestedTabContext_SuppressedIfTabAlreadyRestored) {
+  SetUpHandler();
+  ASSERT_NE(handler_, nullptr);
+
+  const GURL url("https://example.com");
+  auto suggestion = std::make_unique<contextual_tasks::SuggestedTabInfo>();
+  suggestion->url = url;
+  suggestion->title = u"Example Site";
+  suggestion->tab_id = 42;
+  auto_suggestion_manager_.SetCurrentSuggestion(std::move(suggestion));
+
+  // Mock UI indicates tab_id 42 is already restored in the task.
+  EXPECT_CALL(*mock_ui_, GetRestoredTabIds())
+      .WillRepeatedly(testing::Return(std::vector<int32_t>{42}));
+
+  // Expect that auto-suggestion is suppressed (sent as nullptr) because the tab
+  // is already restored.
+  EXPECT_CALL(mock_searchbox_page_,
+              UpdateAutoSuggestedTabContext(testing::_, testing::_))
+      .WillOnce([&](const searchbox::mojom::TabInfoPtr& received_info,
+                    const std::optional<std::string>& invocation_source) {
+        EXPECT_TRUE(received_info.is_null());
+      });
+
+  handler_->UpdateSuggestedTabContext(
+      auto_suggestion_manager_.GetCurrentSuggestion());
+  searchbox_page_receiver_.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerTestWithContextManagementEnabled,
     CacheSubmittedTabsOnInit) {
   class TestSupportsTabHandles : public tabs::SupportsTabHandles {
    public:
