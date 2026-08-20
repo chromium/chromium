@@ -32,13 +32,7 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
   SystemTextfield& operator=(const SystemTextfield&) = delete;
   ~SystemTextfield() override;
 
-  // Set custom colors of text, selected text, selection background, and
-  // textfield background color.
-  void SetTextColorId(ui::ColorId color_id);
-  void SetSelectedTextColorId(ui::ColorId color_id);
-  void SetSelectionBackgroundColorId(ui::ColorId color_id);
   void SetBackgroundColorId(ui::ColorId color_id);
-  void SetPlaceholderTextColorId(ui::ColorId color_id);
   void SetActiveStateChangedCallback(base::RepeatingClosure callback);
   void SetCornerRadius(int corner_radius);
 
@@ -72,12 +66,6 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
 
   // Called when the enabled state is changed.
   void OnEnabledStateChanged();
-  // Update custom color ID.
-  void UpdateColorId(std::optional<ui::ColorId>& src,
-                     ui::ColorId dst,
-                     bool is_background_color);
-  // Updates text and selection text colors.
-  void UpdateTextColor();
 
   Type type_;
   std::unique_ptr<EventHandler> event_handler_;
@@ -90,13 +78,7 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
   // Indicates if the textfield should show background.
   bool show_background_ = false;
 
-  // custom color IDs for text, selected text, selection background, and
-  // textfield background.
-  std::optional<ui::ColorId> text_color_id_;
-  std::optional<ui::ColorId> selected_text_color_id_;
-  std::optional<ui::ColorId> selection_background_color_id_;
   std::optional<ui::ColorId> background_color_id_;
-  std::optional<ui::ColorId> placeholder_text_color_id_;
 
   // Active state changed callback.
   base::RepeatingClosure active_state_changed_callback_;
