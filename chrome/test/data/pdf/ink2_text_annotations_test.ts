@@ -492,6 +492,7 @@ chrome.test.runTests([
     manager.setTextStyles({
       [TextStyle.BOLD]: true,
       [TextStyle.ITALIC]: false,
+      [TextStyle.STRIKETHROUGH]: false,
     });
     await microtasksFinished();
 

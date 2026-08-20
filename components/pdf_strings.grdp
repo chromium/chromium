@@ -392,6 +392,9 @@
       <message name="IDS_PDF_INK2_TEXT_STYLE_ITALIC" desc="The button label for the toggle button to apply italic font styling to a text annotation in the PDF viewer.">
         Italic
       </message>
+      <message name="IDS_PDF_INK2_TEXT_STYLE_STRIKETHROUGH" desc="The button label for the toggle button to apply strikethrough font styling to a text annotation in the PDF viewer.">
+        Strikethrough
+      </message>
       <message name="IDS_PDF_INK2_TEXT_ALIGNMENT" desc="The accessibility label for the group of text alignment options for a text annotation in the PDF viewer. The user can pick one option from the group.">
         Text alignment
       </message>

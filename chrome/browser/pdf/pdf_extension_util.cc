@@ -225,6 +225,7 @@ base::DictValue GetPdfViewerStrings() {
       {"ink2TextFontSize", IDS_PDF_INK2_TEXT_FONT_SIZE},
       {"ink2TextStyleBold", IDS_PDF_INK2_TEXT_STYLE_BOLD},
       {"ink2TextStyleItalic", IDS_PDF_INK2_TEXT_STYLE_ITALIC},
+      {"ink2TextStyleStrikethrough", IDS_PDF_INK2_TEXT_STYLE_STRIKETHROUGH},
       {"ink2TextStyles", IDS_PDF_INK2_TEXT_STYLES},
       {"ink2Tool", IDS_PDF_INK2_ANNOTATION_TOOL},
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)

@@ -99,11 +99,14 @@ chrome.test.runTests([
     manager.setTextStyles({
       [TextStyle.BOLD]: true,
       [TextStyle.ITALIC]: true,
+      [TextStyle.STRIKETHROUGH]: true,
     });
     await microtasksFinished();
     chrome.test.assertEq('700', textboxStyles.getPropertyValue('font-weight'));
     chrome.test.assertEq(
         'italic', textboxStyles.getPropertyValue('font-style'));
+    chrome.test.assertEq(
+        'line-through', textboxStyles.getPropertyValue('text-decoration-line'));
 
     // Color
     const newColor = hexToColor(TEXT_COLORS[1]!.color);

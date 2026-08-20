@@ -792,6 +792,8 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     this.$.textbox.style.fontWeight =
         newAttributes.styles.bold ? 'bold' : 'normal';
     this.$.textbox.style.color = colorToHex(newAttributes.color);
+    this.$.textbox.style.textDecoration =
+        newAttributes.styles.strikethrough ? 'line-through' : 'none';
   }
 
   override onTextAttributesChanged(newAttributes: TextAttributes) {

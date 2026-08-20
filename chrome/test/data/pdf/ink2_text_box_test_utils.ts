@@ -65,6 +65,7 @@ export function getTestAnnotation(
       styles: {
         [TextStyle.BOLD]: false,
         [TextStyle.ITALIC]: false,
+        [TextStyle.STRIKETHROUGH]: false,
       },
       typeface: TextTypeface.SANS_SERIF,
     },

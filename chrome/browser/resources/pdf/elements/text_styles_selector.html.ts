@@ -15,7 +15,7 @@ export function getHtml(this: TextStylesSelectorElement) {
 ${this.getTextStyles_().map(style => html`
   <cr-icon-button class="${this.getActiveClass_(style)}"
       @click="${this.onStyleButtonClick_}" data-style="${style}"
-      iron-icon="pdf-ink:format-${style}"
+      iron-icon="${this.getIcon_(style)}"
       aria-pressed="${this.getAriaPressed_(style)}"
       aria-label="${this.getTitle_(style)}" title="${this.getTitle_(style)}">
   </cr-icon-button>

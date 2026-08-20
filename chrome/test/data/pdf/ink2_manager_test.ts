@@ -360,6 +360,7 @@ chrome.test.runTests([
       styles: {
         bold: false,
         italic: false,
+        strikethrough: false,
       },
     };
     assertTextUpdate(0, expectedAttributes);
@@ -382,21 +383,24 @@ chrome.test.runTests([
 
     // Toggle bold style on.
     manager.toggleTextStyle(TextStyle.BOLD);
-    expectedAttributes.styles = {bold: true, italic: false};
+    expectedAttributes
+        .styles = {bold: true, italic: false, strikethrough: false};
     assertTextUpdate(4, expectedAttributes);
 
     // Toggle italic style on.
     manager.toggleTextStyle(TextStyle.ITALIC);
-    expectedAttributes.styles = {bold: true, italic: true};
+    expectedAttributes
+        .styles = {bold: true, italic: true, strikethrough: false};
     assertTextUpdate(5, expectedAttributes);
 
     // Toggle bold style off.
     manager.toggleTextStyle(TextStyle.BOLD);
-    expectedAttributes.styles = {bold: false, italic: true};
+    expectedAttributes
+        .styles = {bold: false, italic: true, strikethrough: false};
     assertTextUpdate(6, expectedAttributes);
 
     // Set style to bold + italic explicitly.
-    const boldItalic = {bold: true, italic: true};
+    const boldItalic = {bold: true, italic: true, strikethrough: false};
     manager.setTextStyles(boldItalic);
     expectedAttributes.styles = boldItalic;
     assertTextUpdate(7, expectedAttributes);
@@ -436,7 +440,7 @@ chrome.test.runTests([
     manager.setTextAlignment(TextAlignment.CENTER);
     const red = {r: 255, b: 0, g: 0};
     manager.setTextColor(red);
-    const boldItalic = {bold: true, italic: true};
+    const boldItalic = {bold: true, italic: true, strikethrough: false};
     manager.setTextStyles(boldItalic);
 
     const whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
@@ -1148,7 +1152,11 @@ chrome.test.runTests([
         alignment: TextAlignment.CENTER,
         color: {r: 255, g: 0, b: 0},
         size: 18,
-        styles: {[TextStyle.BOLD]: true, [TextStyle.ITALIC]: false},
+        styles: {
+          [TextStyle.BOLD]: true,
+          [TextStyle.ITALIC]: false,
+          [TextStyle.STRIKETHROUGH]: false,
+        },
         typeface: TextTypeface.SERIF,
       },
       textBoxRect: {height: 20, locationX: 100, locationY: 50, width: 100},

@@ -26,7 +26,8 @@ export const DEFAULT_TEXTBOX_WIDTH: number = 222;
 export const MIN_TEXTBOX_SIZE_PX = 24;
 
 export function stylesEqual(style1: TextStyles, style2: TextStyles): boolean {
-  return style1.bold === style2.bold && style1.italic === style2.italic;
+  return style1.bold === style2.bold && style1.italic === style2.italic &&
+      style1.strikethrough === style2.strikethrough;
 }
 
 function getClampedLocation(
@@ -57,6 +58,7 @@ export class Ink2Manager extends EventTarget {
     styles: {
       [TextStyle.BOLD]: false,
       [TextStyle.ITALIC]: false,
+      [TextStyle.STRIKETHROUGH]: false,
     },
   };
   private brushResolver_: PromiseResolver<void>|null = null;
