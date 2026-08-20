@@ -485,6 +485,8 @@ enum class ItemIdentifier {
   TableViewCellContentConfiguration* configuration =
       [[TableViewCellContentConfiguration alloc] init];
   configuration.title = itemIdentifier.title;
+  configuration.titleNumberOfLines = 2;
+  configuration.titleLineBreakMode = NSLineBreakByTruncatingTail;
   configuration.titleColor = [UIColor colorNamed:kTextPrimaryColor];
   configuration.subtitle = itemIdentifier.subtitle;
 
