@@ -16,8 +16,8 @@ Agents that discover skills in `.agents/skills`, such as Gemini CLI and GitHub
 Copilot, can use the setup script to link skills from this directory:
 
 ```sh
-agents/skills/setup.py link chromium-docs histograms
-agents/skills/setup.py uninstall chromium-docs
+agents/skills/setup.py link gerrit-cli histograms
+agents/skills/setup.py uninstall gerrit-cli
 ```
 
 The links are created under `.agents/skills/`, which is gitignored, so they only
@@ -44,7 +44,7 @@ Or to only add individual skills:
 ```json
 {
   "entries": [
-    {"path": "agents/skills/chromium-docs"},
+    {"path": "agents/shared/skills/gerrit-cli"},
     {"path": "agents/skills/histograms"}
   ]
 }
