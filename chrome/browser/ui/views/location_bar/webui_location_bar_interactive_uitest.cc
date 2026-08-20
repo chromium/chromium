@@ -65,7 +65,7 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAimPopupWebViewId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUIToolbarId);
 
 const WebContentsInteractionTestUtil::DeepQuery kOmniboxInputDeepQuery = {
-    "toolbar-app", "location-bar", "readonly-omnibox", "#textInput"};
+    "toolbar-app", "location-bar", "readonly-omnibox", "#textInput", "#input"};
 const WebContentsInteractionTestUtil::DeepQuery kOmniboxAdditionalText = {
     "toolbar-app", "location-bar", "readonly-omnibox", "#additionalText"};
 const WebContentsInteractionTestUtil::DeepQuery kOmniboxInlineAutocomplete = {

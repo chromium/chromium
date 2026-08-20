@@ -5,8 +5,9 @@
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {OmniboxTextColor} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {OmniboxTextColor, SearchboxBrowserProxy} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {LocationBarElement, LocationBarState} from 'chrome://webui-toolbar.top-chrome/app.js';
 
 suite('LocationBar', function() {
@@ -14,6 +15,8 @@ suite('LocationBar', function() {
   let initialState: LocationBarState;
 
   setup(() => {
+    SearchboxBrowserProxy.setInstance(new TestSearchboxBrowserProxy());
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Make first element something else focusable so we don't end up with
     // focus.
@@ -207,8 +210,9 @@ suite('LocationBar', function() {
     await microtasksFinished();
     assertEquals('webui-toolbar:close', clearButton.getAttribute('iron-icon'));
 
-    const omnibox = locationBar.shadowRoot.querySelector('readonly-omnibox')!;
-    const input = omnibox.shadowRoot.querySelector('input')!;
+    const omnibox = locationBar.$.omnibox;
+    const searchbox = omnibox.$.textInput;
+    const input = searchbox.inputElement;
 
     // Test 1: Pointer events (pointerdown + pointerup) should clear the input.
     const rect = clearButton.getBoundingClientRect();
@@ -231,9 +235,8 @@ suite('LocationBar', function() {
     await microtasksFinished();
 
     assertEquals('', input.value);
-    assertEquals(
-        '', omnibox.shadowRoot.querySelector('#textContainer')!.textContent);
-    assertEquals(input, omnibox.shadowRoot.activeElement);
+    assertEquals('', omnibox.$.textContainer.textContent);
+    assertEquals(searchbox, omnibox.shadowRoot.activeElement);
 
     // Enter text and update state to re-enable clear button.
     locationBar.locationBarState = {
@@ -256,7 +259,7 @@ suite('LocationBar', function() {
 
     // Test 2: Mouse click with detail > 0 is ignored by @click listener because
     // mouse clicks are already processed via pointerup in PressHandler.
-    input.value = 'test input';
+    searchbox.setInputText('test input');
     clearButton.dispatchEvent(new MouseEvent('click', {detail: 1}));
     await microtasksFinished();
     assertEquals('test input', input.value);
@@ -267,8 +270,7 @@ suite('LocationBar', function() {
     await microtasksFinished();
 
     assertEquals('', input.value);
-    assertEquals(
-        '', omnibox.shadowRoot.querySelector('#textContainer')!.textContent);
-    assertEquals(input, omnibox.shadowRoot.activeElement);
+    assertEquals('', omnibox.$.textContainer.textContent);
+    assertEquals(searchbox, omnibox.shadowRoot.activeElement);
   });
 });

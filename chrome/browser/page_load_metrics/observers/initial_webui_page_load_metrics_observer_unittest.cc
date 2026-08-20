@@ -19,6 +19,7 @@
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/gmock_matchers.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -88,6 +89,8 @@ class InitialWebUIPageLoadMetricsObserverTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<PageLoadMetricsObserverTester> tester_;
 };
 

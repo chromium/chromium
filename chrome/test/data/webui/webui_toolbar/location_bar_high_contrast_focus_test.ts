@@ -5,8 +5,10 @@
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import type {LocationBarElement, LocationBarState} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {SearchboxBrowserProxy} from 'chrome://webui-toolbar.top-chrome/app.js';
 
 suite('LocationBarHighContrastFocus', function() {
   let locationBar: LocationBarElement;
@@ -28,6 +30,8 @@ suite('LocationBarHighContrastFocus', function() {
   }
 
   setup(() => {
+    SearchboxBrowserProxy.setInstance(new TestSearchboxBrowserProxy());
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Make first element something else focusable so we don't end up with
     // focus. It'll also be handy for transferring focus to.

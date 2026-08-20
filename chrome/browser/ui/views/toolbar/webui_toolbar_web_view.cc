@@ -464,6 +464,9 @@ WebUIToolbarWebView::WebUIToolbarWebView(
 }
 
 WebUIToolbarWebView::~WebUIToolbarWebView() {
+  if (auto* ui = GetWebUIToolbarUI()) {
+    ui->DependenciesDestroying();
+  }
   if (web_contents()) {
     web_contents()->RemoveUserData(
         WebUIToolbarUIDependencyProviderUserData::UserDataKey());
@@ -964,6 +967,10 @@ WebUIToolbarWebView::GetIconTableFetcher() {
 
 CommandUpdater* WebUIToolbarWebView::GetCommandUpdater() {
   return browser_->GetFeatures().browser_command_controller();
+}
+
+OmniboxController* WebUIToolbarWebView::GetOmniboxController() {
+  return location_bar_ ? location_bar_->GetOmniboxController() : nullptr;
 }
 
 toolbar_ui_api::mojom::NavigationControlsStatePtr

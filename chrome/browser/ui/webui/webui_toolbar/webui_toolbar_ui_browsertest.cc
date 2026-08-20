@@ -317,6 +317,8 @@ class WebUIToolbarUIBrowserTest : public InProcessBrowserTest,
             .browser_command_controller());
   }
 
+  OmniboxController* GetOmniboxController() override { return nullptr; }
+
   content::TestWebUI* web_ui() { return web_ui_.get(); }
   WebUIToolbarUI* ui() { return ui_.get(); }
   MockToolbarUIDelegate& toolbar_ui_delegate() { return toolbar_ui_delegate_; }

@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_components/searchbox/searchbox_input.js';
+
+import type {SearchboxInputElement} from '//resources/cr_components/searchbox/searchbox_input.js';
 import {sanitizeTextForPaste} from '//resources/cr_components/searchbox/utils.js';
 import {getInstance as getA11yAnnouncer} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {assertNotReachedCase} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {type Range as MojomRange} from '//resources/mojo/ui/gfx/range/mojom/range.mojom-webui.js';
@@ -28,7 +32,7 @@ export interface ReadonlyOmniboxElement {
     inlineAutocomplete: HTMLElement,
     textContainer: HTMLElement,
     textContainerWrap: HTMLElement,
-    textInput: HTMLInputElement,
+    textInput: SearchboxInputElement,
   };
 }
 
@@ -260,6 +264,8 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   private focusRequestHandle_: FocusRequestHandle =
       INVALID_FOCUS_REQUEST_HANDLE;
 
+  private trackedElementManager_: TrackedElementManager;
+
   // The portion of the text that the user entered or accepted (rather than
   // what's being merely suggested by inline autocompletion).
   private userText: string = '';
@@ -307,6 +313,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
   constructor() {
     super();
+    this.trackedElementManager_ = TrackedElementManager.getInstance();
   }
 
   override connectedCallback() {
@@ -321,6 +328,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     this.browserProxy_.removeFocusRequestListener(this.focusRequestHandle_);
     document.removeEventListener(
         'selectionchange', this.onSelectionChangeBound_);
+    this.trackedElementManager_.stopTracking(this.$.textInput);
   }
 
   override willUpdate(changedProperties: PropertyValues<this>): void {
@@ -350,7 +358,8 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     super.firstUpdated(changedProperties);
     this.$.textContainerWrap.addEventListener(
         'focus', this.onWrapFocus.bind(this));
-    const textInput = this.$.textInput;
+    const textInput: HTMLInputElement =
+        this.$.textInput.inputElement as HTMLInputElement;
     textInput.addEventListener('focus', this.onInputFocus.bind(this));
     textInput.addEventListener('blur', this.onInputBlur.bind(this));
     // Handle gesture/pointer events for touch interactions.
@@ -364,7 +373,6 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     textInput.addEventListener('mousedown', this.onInputMouseDown.bind(this));
     textInput.addEventListener('mouseup', this.onInputMouseUp.bind(this));
     textInput.addEventListener('mousemove', this.onInputMouseMove_.bind(this));
-    textInput.addEventListener('input', this.onInputInput.bind(this));
     textInput.addEventListener('keydown', this.onInputKeyDown.bind(this));
     textInput.addEventListener('keyup', this.onInputKeyUp.bind(this));
     textInput.addEventListener('copy', this.onInputCopy_.bind(this));
@@ -374,6 +382,12 @@ export class ReadonlyOmniboxElement extends CrLitElement {
         'compositionstart', this.onInputCompositionstart_.bind(this));
     textInput.addEventListener(
         'compositionend', this.onInputCompositionend_.bind(this));
+
+    this.trackedElementManager_.startTracking(
+        this.$.textInput, 'kOmniboxElementId');
+    textInput.ariaLabel = this.getAriaLabel_();
+    textInput.ariaAutoComplete = 'both';
+    textInput.ariaKeyShortcuts = this.getAriaKeyShortcut_();
 
     this.addEventListener('contextmenu', this.onContextMenu_.bind(this));
     this.addEventListener('dragstart', this.onDragStart_.bind(this));
@@ -393,8 +407,9 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       this.userText = this.$.textContainer.textContent;
       let selection = this.omniboxViewState.selection;
 
-      // If there is an inline autocompletion, render it as selected text
-      // after the input.
+      // If there is an inline autocompletion, SearchBoxInputElement will
+      // render it as selected text after the input, unless we're composing,
+      // in which case we'll handle it ourselves.
       if (this.omniboxViewState.inlineAutocompletion.length > 0 &&
           !this.isComposing) {
         selection = {
@@ -404,11 +419,12 @@ export class ReadonlyOmniboxElement extends CrLitElement {
         };
       }
 
-      const allText = this.userText +
-          (this.isComposing ? '' : this.omniboxViewState.inlineAutocompletion);
-      if (this.$.textInput.value !== allText) {
-        this.$.textInput.value = allText;
-      }
+      this.$.textInput.setInput({
+        text: this.userText,
+        inline: this.isComposing ? '' :
+                                   this.omniboxViewState.inlineAutocompletion,
+        moveCursorToEnd: false,  // we will set selection separately.
+      });
 
       if (selection) {
         let selectionDirection: SelectionDirection = 'forward';
@@ -418,6 +434,10 @@ export class ReadonlyOmniboxElement extends CrLitElement {
         }
 
         this.setSelection(selection.start, selection.end, selectionDirection);
+      } else {
+        // If we're not changing selection, save what the input element
+        // tells us so we can check it when seeing if we unelide.
+        this.omniboxViewState.selection = this.getMojoSelection();
       }
 
       // Make sure we set the right view visible. Normally we want the <input>
@@ -436,7 +456,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
           this.omniboxViewState.a11yFriendlySuggestionText !==
               changedProperties.get('omniboxViewState')!
                   .a11yFriendlySuggestionText) {
-        const input = this.$.textInput;
+        const input = this.$.textInput.inputElement;
         // Mac VoiceOver seems to prefer announcing change to `input` to
         // the notification; distract it from the input by changing
         // ariaActiveDescendantElement to make it read the right thing.
@@ -488,7 +508,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       // If activateDefaultSearch is on, and text has not been entered,
       // the search will activate with empty box. Do that on this side
       // as well to avoid flicker.
-      this.$.textInput.value = '';
+      this.$.textInput.setInputText('');
       this.updateStateFromTextInput();
     } else if (isUserInitiated) {
       unelision = this.unelide();
@@ -586,7 +606,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       wasAlreadyFocused = false;
     }
 
-    const input = this.$.textInput;
+    const input = this.$.textInput.inputElement;
 
     // Normally, we will select-all when the user releases the button.
     //
@@ -808,34 +828,38 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   }
 
   // Update our `omniboxViewState` to match what got entered into `textInput`.
-  // Also bumps the version.
-  private updateStateFromTextInput(): void {
-    const newValue = this.$.textInput.value;
+  // Returns if changed (and if so, also bumps the version).
+  private updateStateFromTextInput(): boolean {
+    let changed = false;
+    const inputState = this.$.textInput.lastInput();
+    const newUserText = inputState ? inputState.text : '';
     const oldValue = this.userText;
     const oldInline = this.omniboxViewState.inlineAutocompletion;
     const oldAll = oldValue + oldInline;
-
-    this.userText = newValue;
-    ++this.omniboxViewState.uiVersion;
-
-    if (this.isComposing && oldInline.length > 0 &&
-        newValue.length > oldValue.length && oldAll.startsWith(newValue)) {
+    if (oldInline.length > 0 && newUserText.length > oldValue.length &&
+        oldAll.startsWith(newUserText)) {
+      changed = true;
       this.omniboxViewState.inlineAutocompletion =
-          oldAll.substring(newValue.length);
+          oldAll.substring(newUserText.length);
     } else {
-      this.omniboxViewState.inlineAutocompletion = '';
-      this.omniboxViewState.additionalText = '';
+      const newInlineAutocompletion = inputState ? inputState.inline : '';
+      if (this.userText !== newUserText ||
+          this.omniboxViewState.inlineAutocompletion !==
+              newInlineAutocompletion) {
+        changed = true;
+        this.omniboxViewState.inlineAutocompletion = newInlineAutocompletion;
+        this.omniboxViewState.additionalText = '';
+      }
     }
 
-    this.omniboxViewState.selection = this.getMojoSelection();
-    // Sync up the read-only view to have the right text.
-    this.updateTextPiecesFromUserText();
-  }
-
-  private onInputInput(): void {
-    this.omniboxViewState.userInputInProgress = true;
-    this.updateStateFromTextInput();
-    this.sendInputToBrowser(/*unelision=*/ false);
+    if (changed) {
+      this.omniboxViewState.userInputInProgress = true;
+      ++this.omniboxViewState.uiVersion;
+      this.userText = newUserText;
+      this.omniboxViewState.selection = this.getMojoSelection();
+      this.updateTextPiecesFromUserText();
+    }
+    return changed;
   }
 
   private onInputKeyDown(event: KeyboardEvent): void {
@@ -849,47 +873,16 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       this.selectAllOnMouseRelease_ = false;
     }
 
-    const inlineAutocompletion = this.omniboxViewState.inlineAutocompletion;
-    if (inlineAutocompletion.length > 0 && !this.isComposing) {
-      // If the current input state (its value and selection) matches its last
-      // state (text and inline autocompletion) and the user types the next
-      // character in the inline autocompletion, stop the keydown event. Just
-      // move the selection. This is needed to avoid flicker. (Shamelessly
-      // adapted from searchbox_input.ts).
-      const inputValue = this.$.textInput.value;
-      let textPortionLength = this.$.textInput.selectionStart!;
-      const inputSelection = inputValue.substring(
-          textPortionLength, this.$.textInput.selectionEnd!);
-      if (inlineAutocompletion[0]!.toLocaleLowerCase() ===
-              event.key.toLocaleLowerCase() &&
-          inputSelection === inlineAutocompletion &&
-          inputValue === (this.userText + inlineAutocompletion)) {
-        ++textPortionLength;
-        this.$.textInput.selectionStart = textPortionLength;
-        this.userText = inputValue.substr(0, textPortionLength);
-        this.omniboxViewState.inlineAutocompletion =
-            inlineAutocompletion.substr(1);
-        this.omniboxViewState.userInputInProgress = true;
-        this.omniboxViewState.selection = this.getMojoSelection();
-        ++this.omniboxViewState.uiVersion;
-        this.updateTextPiecesFromUserText();
-
-        this.sendInputToBrowser(/*unelision=*/ false);
-        event.preventDefault();
-        return;
-      }
-    }
-
     if (event.key === 'Home') {
       if (this.unelideAndUpdateSelection(UnelisionGesture.HOME_KEY_PRESSED)) {
         if (event.shiftKey) {
+          const input = this.$.textInput.inputElement;
           // Shift-home should select from old selection's start to 0.
           // Note that start here depends on the direction.
           this.setSelection(
               0,
-              this.$.textInput.selectionDirection! === 'backward' ?
-                  this.$.textInput.selectionEnd! :
-                  this.$.textInput.selectionStart!,
+              input.selectionDirection! === 'backward' ? input.selectionEnd! :
+                                                         input.selectionStart!,
               'backward');
         } else {
           // Otherwise just set caret.
@@ -898,6 +891,12 @@ export class ReadonlyOmniboxElement extends CrLitElement {
         this.sendInputToBrowser(/*unelision=*/ true);
         event.preventDefault();
       }
+    }
+
+    // Default behavior of <input type="search"> on Esc is to clear the box,
+    // which is very much not what we want.
+    if (event.key === 'Escape') {
+      event.preventDefault();
     }
 
     this.inputDelegate_.handleKey(this, /*isKeyUp=*/ false, event);
@@ -912,6 +911,12 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     // We want the menu handled on the C++ side, so we let default handling
     // happen, and prevent the toolbar's own handling.
     event.stopPropagation();
+  }
+
+  protected onSearchboxInputTextUpdated_(): void {
+    if (this.updateStateFromTextInput()) {
+      this.sendInputToBrowser(/*unelision=*/ false);
+    }
   }
 
   private checkForSelectionChange_(): void {
@@ -939,7 +944,22 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     if (this.omniboxViewState.inlineAutocompletion.length !== 0) {
       return {start: this.userText.length, end: this.userText.length};
     }
-    return this.getSelection();
+    // selectionStart/End should work since <input> is of appropriate type
+    // for them.
+    const input = this.$.textInput.inputElement;
+    let selection: MojomRange = {
+      start: input.selectionStart || 0,
+      end: input.selectionEnd || 0,
+    };
+
+    if (input.selectionDirection === 'backward') {
+      selection = {
+        end: selection.start,
+        start: selection.end,
+      };
+    }
+
+    return selection;
   }
 
   protected getDragFaviconUrl_(): string {
@@ -957,7 +977,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   }
 
   private populateDataTransfer_(dataTransfer: DataTransfer): boolean {
-    const input = this.$.textInput;
+    const input = this.$.textInput.inputElement;
     const selectionStart = input.selectionStart!;
     const selectionEnd = input.selectionEnd!;
 
@@ -1000,7 +1020,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       e.preventDefault();
       // Go via execCommand to keep Ctrl-Z happy.
       document.execCommand('delete');
-      this.onInputInput();
+      this.onSearchboxInputTextUpdated_();
     }
   }
 
@@ -1022,6 +1042,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       e.preventDefault();
       const sanitizedText = sanitizeTextForPaste(rawText);
       document.execCommand('insertText', false, sanitizedText);
+      this.onSearchboxInputTextUpdated_();
     }
   }
 
@@ -1034,7 +1055,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   }
 
   private updateAdjustedCopyResult_(): void {
-    const input = this.$.textInput;
+    const input = this.$.textInput.inputElement;
     const start = input.selectionStart!;
     const end = input.selectionEnd!;
     if (start !== end) {
@@ -1144,37 +1165,19 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     }
   }
 
-  private getSelection(): MojomRange {
-    // selectionStart/End should work since <input> is of appropriate type
-    // for them.
-    let selection: MojomRange = {
-      start: this.$.textInput.selectionStart || 0,
-      end: this.$.textInput.selectionEnd || 0,
-    };
-
-    if (this.$.textInput.selectionDirection === 'backward') {
-      selection = {
-        end: selection.start,
-        start: selection.end,
-      };
-    }
-
-    return selection;
-  }
-
   private isAllSelected(): boolean {
-    const input = this.$.textInput;
+    const input = this.$.textInput.inputElement;
     return input.selectionStart === 0 &&
         input.selectionEnd === input.value.length;
   }
 
   isCaretAtStart(): boolean {
-    const inputProper = this.$.textInput;
-    return inputProper.selectionStart === 0 && inputProper.selectionEnd === 0;
+    const input = this.$.textInput.inputElement;
+    return input.selectionStart === 0 && input.selectionEnd === 0;
   }
 
   isCaretAtEnd(): boolean {
-    const input = this.$.textInput;
+    const input = this.$.textInput.inputElement;
     const valueLength = input.value.length;
     return input.selectionStart === valueLength &&
         input.selectionEnd === valueLength;
@@ -1215,7 +1218,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       return false;
     }
 
-    const input = this.$.textInput;
+    const input = this.$.textInput.inputElement;
     const originalText = this.userText;
     // Save selection before unelide() since it changes it.
     let selectionStart: number = input.selectionStart!;
@@ -1285,7 +1288,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       return false;
     }
 
-    this.$.textInput.value = this.omniboxViewState.formattedFullUrl;
+    this.$.textInput.setInputText(this.omniboxViewState.formattedFullUrl);
     this.updateStateFromTextInput();
     return true;
   }
@@ -1396,7 +1399,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   }
 
   private maybeClearAccessibilityPseudoFocus_(): void {
-    const input = this.$.textInput;
+    const input = this.$.textInput.inputElement;
     // Make sure we make it clear to the screenreader that the input
     // is what's active if we don't have a friendly announcement text for
     // pseudo-focused suggestion, or if the caret isn't at end, suggesting
@@ -1417,9 +1420,8 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   }
 
   clearInput(): void {
-    this.$.textInput.value = '';
-    this.updateStateFromTextInput();
-    this.sendInputToBrowser(/*unelision=*/ false);
+    this.$.textInput.setInputText('');
+    this.onSearchboxInputTextUpdated_();
     this.$.textInput.focus();
   }
 }

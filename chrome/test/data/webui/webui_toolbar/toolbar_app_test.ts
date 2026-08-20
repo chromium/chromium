@@ -9,9 +9,10 @@ import type {HelpBubbleHandlerInterface} from 'chrome://resources/cr_components/
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {TrackedElementIdentifier} from 'chrome://resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE, resetInitialStateForTesting, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE, resetInitialStateForTesting, SearchboxBrowserProxy, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {LhsChipIdentifier, ToolbarAppElement} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {BrowserProxy, FocusRequestListener, NavigationControlsStateListener} from 'chrome://webui-toolbar.top-chrome/browser_proxy.js';
 import {AvatarToolbarButtonState} from 'chrome://webui-toolbar.top-chrome/shared/toolbar_ui_api_data_model.mojom-webui.js';
@@ -215,6 +216,7 @@ suite('ToolbarAppTest', () => {
 
     browserProxy = new TestToolbarBrowserProxy();
     BrowserProxyImpl.setInstance(browserProxy);
+    SearchboxBrowserProxy.setInstance(new TestSearchboxBrowserProxy());
 
     // Reset C++ injected values to ensure tests start in a clean state.
     const loadTimeDataData = (loadTimeData as any).data_;
@@ -440,7 +442,7 @@ suite('ToolbarAppTest', () => {
     await microtasksFinished();
 
     // Verify it is not initialized yet (since it's waiting for Mojo update)
-    assertEquals(11, startTrackingCalls.length);
+    assertEquals(10, startTrackingCalls.length);
     assertEquals(
         1, browserProxy.toolbarUIHandler.getCallCount('onPageInitialized'));
 
@@ -448,7 +450,7 @@ suite('ToolbarAppTest', () => {
     browserProxy.fireNavigationStateListener([], createMockNavigationState());
     await microtasksFinished();
 
-    assertEquals(20, startTrackingCalls.length);
+    assertEquals(19, startTrackingCalls.length);
     assertEquals(
         2, browserProxy.toolbarUIHandler.getCallCount('onPageInitialized'));
   });

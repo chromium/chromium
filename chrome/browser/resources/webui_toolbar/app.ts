@@ -153,6 +153,7 @@ export type {
   ToolbarActionMixinInterface,
   ToolbarFlatStateSchema,
 };
+export {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 // clang-format on
 
 // LINT.IfChange(InitialWebUIRendererMilestones)

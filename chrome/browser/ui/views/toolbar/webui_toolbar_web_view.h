@@ -188,6 +188,7 @@ class WebUIToolbarWebView
   std::unique_ptr<toolbar_ui_api::IconTableFetcher> GetIconTableFetcher()
       override;
   CommandUpdater* GetCommandUpdater() override;
+  OmniboxController* GetOmniboxController() override;
 
   // ToolbarUIService::ToolbarUIServiceDelegate:
   void HandleContextMenu(toolbar_ui_api::mojom::ContextMenuType menu_type,

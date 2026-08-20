@@ -1230,7 +1230,7 @@ class WebUIToolbarViewsLocationBarInteractiveUiTest
   const WebContentsInteractionTestUtil::DeepQuery kOmniboxDeepQuery = {
       "toolbar-app", "#location-bar", "#omnibox"};
   const WebContentsInteractionTestUtil::DeepQuery kTextInputDeepQuery = {
-      "toolbar-app", "#location-bar", "#omnibox", "#textInput"};
+      "toolbar-app", "#location-bar", "#omnibox", "#textInput", "#input"};
   const WebContentsInteractionTestUtil::DeepQuery kTextSpanDeepQuery = {
       "toolbar-app", "#location-bar", "#omnibox", "#textContainer", "span"};
 
@@ -1817,6 +1817,9 @@ class WebUIToolbarFocusInteractiveUiTestBase
           if (!active) return '';
           let curr = active;
           while (curr && curr !== el) {
+            if (curr.getAttribute('part') === 'searchbox-input') {
+              return 'omnibox-text-input';
+            }
             if (curr.id && curr.id !== 'container' &&
                 curr.id !== 'buttonWrapper' && curr.id !== 'textInput' &&
                 curr.id !== 'button') {
@@ -1824,9 +1827,6 @@ class WebUIToolbarFocusInteractiveUiTestBase
             }
             if (curr.id === 'container') {
               return 'location-icon-container';
-            }
-            if (curr.id === 'textInput') {
-              return 'omnibox-text-input';
             }
             let parent = curr.parentElement || curr.parentNode;
             if (parent && parent.host) {

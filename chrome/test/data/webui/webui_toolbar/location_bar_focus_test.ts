@@ -5,9 +5,10 @@
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE, SearchboxBrowserProxy} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {LocationBarElement, LocationBarState, OmniboxAction} from 'chrome://webui-toolbar.top-chrome/app.js';
 
 class MockToolbarUiHandler extends TestBrowserProxy {
@@ -57,6 +58,7 @@ suite('LocationBarFocus', function() {
     const browserProxy = new MockBrowserProxy();
     uiHandler = browserProxy.toolbarUIHandler;
     BrowserProxyImpl.setInstance(browserProxy as any);
+    SearchboxBrowserProxy.setInstance(new TestSearchboxBrowserProxy());
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Make first element something else focusable so we don't end up with

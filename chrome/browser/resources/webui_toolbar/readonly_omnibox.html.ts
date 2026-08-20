@@ -24,12 +24,11 @@ export function getHtml(this: ReadonlyOmniboxElement) {
        #textInput contains plaintext version of the input plus optionally an
        inline autocompletion rendered as selection.
    -->
-  <input id="textInput"
-        placeholder="${this.getInputPlaceholder_() ?? nothing}"
-        class="${this.getInputClasses_() ?? nothing}"
-        aria-label="${this.getAriaLabel_()}"
-        aria-autocomplete="both"
-        aria-keyshortcuts="${this.getAriaKeyShortcut_()}">
+  <cr-searchbox-input id="textInput"
+      .placeholderText="${this.getInputPlaceholder_()}"
+      class="${this.getInputClasses_() ?? nothing}"
+      @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated_}">
+  </cr-searchbox-input>
   <!-- custom formatting/long line to prevent whitespace below -->
   <div id="textContainer" aria-hidden='true'>${
     this.omniboxViewState.textPieces.map(

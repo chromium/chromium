@@ -43,6 +43,7 @@ build_webui_tests("build") {
   ts_deps = [
     "//chrome/browser/resources/webui_toolbar:build_ts",
     "//chrome/browser/resources/webui_toolbar_shared:build_ts",
+    "//chrome/test/data/webui/cr_components/searchbox:build_ts",
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
@@ -58,6 +59,9 @@ build_webui_tests("build") {
     "chrome://webui-toolbar.top-chrome/shared/*|" +
         rebase_path(
             "$root_gen_dir/chrome/browser/resources/webui_toolbar_shared/tsc/*",
+            target_gen_dir),
+    "chrome://webui-test/cr_components/searchbox/*|" + rebase_path(
+            "$root_gen_dir/chrome/test/data/webui/cr_components/searchbox/tsc/*",
             target_gen_dir),
   ]
 }

@@ -133,6 +133,8 @@ class ToolbarDependencyProvider : public WebUIToolbarUI::DependencyProvider {
         browser_->GetFeatures().browser_command_controller());
   }
 
+  OmniboxController* GetOmniboxController() override { return nullptr; }
+
  private:
   raw_ptr<BrowserWindowInterface> browser_;
   base::WeakPtrFactory<DependencyProvider> weak_factory_{this};

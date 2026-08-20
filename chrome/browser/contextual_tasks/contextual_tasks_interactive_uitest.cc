@@ -2766,7 +2766,8 @@ class ContextualTasksCopyUrlTest : public ContextualTasksInteractiveUiTest,
       ui::Accelerator focus_accelerator,
       ui::Accelerator copy_accelerator) {
     const WebContentsInteractionTestUtil::DeepQuery kTextInputDeepQuery = {
-        "toolbar-app", "location-bar", "readonly-omnibox", "#textInput"};
+        "toolbar-app", "location-bar", "readonly-omnibox", "#textInput",
+        "#input"};
     const WebContentsInteractionTestUtil::DeepQuery kReadonlyOmniboxDeepQuery =
         {"toolbar-app", "location-bar", "readonly-omnibox"};
     if (GetParam()) {
@@ -2852,7 +2853,8 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksCopyUrlTest, FocusAndBlur) {
                                                        &focus_accelerator));
 
   const WebContentsInteractionTestUtil::DeepQuery kTextInputDeepQuery = {
-      "toolbar-app", "location-bar", "readonly-omnibox", "#textInput"};
+      "toolbar-app", "location-bar", "readonly-omnibox", "#textInput",
+      "#input"};
 
   auto focus_omnibox = [this, focus_accelerator, kTextInputDeepQuery,
                         is_webui]() {
