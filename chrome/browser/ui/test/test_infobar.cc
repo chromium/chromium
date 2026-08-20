@@ -8,7 +8,8 @@
 #include <iterator>
 
 #include "chrome/browser/infobars/test_support/infobar_observer.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/tabs/public/tab_interface.h"
@@ -45,19 +46,23 @@ void TestInfoBar::AddExpectedInfoBar(
 }
 
 content::WebContents* TestInfoBar::GetWebContents() {
-  return browser()->tab_strip_model()->GetActiveWebContents();
+  return GetBrowserWindowInterface()
+      ->GetTabStripModel()
+      ->GetActiveWebContents();
 }
 
 const content::WebContents* TestInfoBar::GetWebContents() const {
-  return browser()->tab_strip_model()->GetActiveWebContents();
+  return GetBrowserWindowInterface()
+      ->GetTabStripModel()
+      ->GetActiveWebContents();
 }
 
 tabs::TabInterface* TestInfoBar::GetTab() {
-  return browser()->tab_strip_model()->GetActiveTab();
+  return GetBrowserWindowInterface()->GetTabStripModel()->GetActiveTab();
 }
 
 const tabs::TabInterface* TestInfoBar::GetTab() const {
-  return browser()->tab_strip_model()->GetActiveTab();
+  return GetBrowserWindowInterface()->GetTabStripModel()->GetActiveTab();
 }
 
 infobars::ContentInfoBarManager* TestInfoBar::GetInfoBarManager() {

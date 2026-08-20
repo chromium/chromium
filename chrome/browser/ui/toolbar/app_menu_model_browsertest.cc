@@ -145,7 +145,7 @@ class AppMenuModelTest : public InProcessBrowserTest,
 class TestAppMenuModel : public AppMenuModel {
  public:
   TestAppMenuModel(ui::AcceleratorProvider* provider,
-                   Browser* browser,
+                   BrowserWindowInterface* browser,
                    AppMenuIconController* app_menu_icon_controller)
       : AppMenuModel(provider, browser, app_menu_icon_controller) {}
 
@@ -175,7 +175,7 @@ class TestAppMenuModel : public AppMenuModel {
 class TestLogMetricsAppMenuModel : public AppMenuModel {
  public:
   TestLogMetricsAppMenuModel(ui::AcceleratorProvider* provider,
-                             Browser* browser)
+                             BrowserWindowInterface* browser)
       : AppMenuModel(provider, browser) {}
 
   void ExecuteCommand(int command_id, int event_flags) override {

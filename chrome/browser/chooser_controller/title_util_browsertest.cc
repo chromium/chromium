@@ -6,7 +6,8 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/popup_test_base.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
@@ -47,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(CreateChooserTitlePopUpBrowserTest,
                     server()->GetURL("/simple.html")));
 
   std::string script("open('', '_blank', 'popup,fullscreen')");
-  Browser* popup_browser = OpenPopup(browser(), script);
+  BrowserWindowInterface* popup_browser = OpenPopup(browser(), script);
   ASSERT_TRUE(popup_browser);
   content::RenderFrameHost* rfh = popup_browser->tab_strip_model()
                                       ->GetActiveWebContents()

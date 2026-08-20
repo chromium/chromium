@@ -8,14 +8,15 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/popup_test_base.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/base_window.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
@@ -74,7 +75,7 @@ class WidgetBoundsEqualWaiter final : public views::WidgetObserver {
 IN_PROC_BROWSER_TEST_F(PopupTest, OpenLeftAndTopZeroCoordinates) {
   // Attempt to open a popup at (0,0). Its bounds should match the request, but
   // be adjusted to meet minimum size and available display area constraints.
-  Browser* popup =
+  BrowserWindowInterface* popup =
       OpenPopup(browser(), "open('.', '', 'left=0,top=0,width=50,height=50')");
   const display::Display display = GetDisplayNearestBrowser(popup);
   gfx::Rect expected(popup->GetWindow()->GetBounds().size());
@@ -107,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(PopupTest, OpenClampedToCurrentDisplay) {
   const display::Display display = GetDisplayNearestBrowser(browser());
   for (const char* const features : open_features) {
     const std::string script = "open('.', '', `" + std::string(features) + "`)";
-    Browser* popup = OpenPopup(browser(), script);
+    BrowserWindowInterface* popup = OpenPopup(browser(), script);
     // The popup should be constrained to the opener's available display space.
     EXPECT_EQ(display, GetDisplayNearestBrowser(popup));
     gfx::Rect work_area(display.work_area());
@@ -139,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(PopupTest, MoveClampedToCurrentDisplay) {
   };
   const display::Display display = GetDisplayNearestBrowser(browser());
   for (const char* const script : kMoveScripts) {
-    Browser* popup = OpenPopup(browser(), kOpenPopup);
+    BrowserWindowInterface* popup = OpenPopup(browser(), kOpenPopup);
     gfx::Rect popup_bounds = popup->GetWindow()->GetBounds();
     content::WebContents* popup_contents =
         popup->tab_strip_model()->GetActiveWebContents();
@@ -168,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(PopupTest, ResizeClampedToCurrentDisplay) {
   };
   const display::Display display = GetDisplayNearestBrowser(browser());
   for (const char* const script : kResizeScripts) {
-    Browser* popup = OpenPopup(browser(), kOpenPopup);
+    BrowserWindowInterface* popup = OpenPopup(browser(), kOpenPopup);
     gfx::Rect popup_bounds = popup->GetWindow()->GetBounds();
     content::WebContents* popup_contents =
         popup->tab_strip_model()->GetActiveWebContents();
@@ -190,9 +191,9 @@ IN_PROC_BROWSER_TEST_F(PopupTest, ResizeClampedToCurrentDisplay) {
 IN_PROC_BROWSER_TEST_F(PopupTest, NoopenerPositioning) {
   const char kFeatures[] =
       "left=${screen.availLeft},top=${screen.availTop},width=200,height=200";
-  Browser* noopener_popup = OpenPopup(
+  BrowserWindowInterface* noopener_popup = OpenPopup(
       browser(), "open('.', '', `noopener=1," + std::string(kFeatures) + "`)");
-  Browser* opener_popup =
+  BrowserWindowInterface* opener_popup =
       OpenPopup(browser(), "open('.', '', `" + std::string(kFeatures) + "`)");
 
   WidgetBoundsEqualWaiter(views::Widget::GetWidgetForNativeWindow(
@@ -208,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(PopupTest, NoopenerPositioning) {
 // Regression test for https://crbug.com/512533947: a popup whose document
 // calls window.moveTo() during page load must not shrink on reload.
 IN_PROC_BROWSER_TEST_F(PopupTest, MoveToOnReloadDoesNotShrinkOuterBounds) {
-  Browser* popup = OpenPopup(
+  BrowserWindowInterface* popup = OpenPopup(
       browser(), "open('.', '', 'left=200,top=200,width=600,height=400')");
   ASSERT_TRUE(popup);
   content::WebContents* popup_contents =
@@ -256,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(PopupTest, MoveToOnReloadDoesNotShrinkOuterBounds) {
 // popup whose document calls window.resizeTo() during page load must not
 // silently shift the outer origin on reload.
 IN_PROC_BROWSER_TEST_F(PopupTest, ResizeToOnReloadDoesNotShiftOuterBounds) {
-  Browser* popup = OpenPopup(
+  BrowserWindowInterface* popup = OpenPopup(
       browser(), "open('.', '', 'left=200,top=200,width=600,height=400')");
   ASSERT_TRUE(popup);
   content::WebContents* popup_contents =
@@ -340,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(PopupTest_AdditionalWindowingControls,
     std::string script =
         base::StringPrintf(popup_script, move_command, move_command);
 
-    Browser* popup = OpenPopup(
+    BrowserWindowInterface* popup = OpenPopup(
         browser(), "open('.', '', 'left=0,top=0,width=50,height=50')");
     content::WebContents* popup_contents =
         popup->tab_strip_model()->GetActiveWebContents();

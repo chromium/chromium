@@ -8,7 +8,6 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/common/webui_url_constants.h"
@@ -33,41 +32,40 @@ constexpr char kCastHelpCenterPageUrl[] =
 void CastToolbarButtonUtil::AddCastChildActions(
     actions::ActionItem* cast_action,
     BrowserWindowInterface* bwi) {
-  Browser* const browser = bwi->GetBrowserForMigrationOnly();
   cast_action->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
+              [](BrowserWindowInterface* browser, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 ShowSingletonTab(browser, GURL(kAboutPageUrl));
               },
-              base::Unretained(browser)))
+              base::Unretained(bwi)))
           .SetActionId(kActionMediaRouterAbout)
           .SetText(l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_ABOUT))
           .Build());
 
-  cast_action->AddChild(actions::ActionItem::Builder(
-                            base::BindRepeating(
-                                [](Browser* browser, actions::ActionItem* item,
-                                   actions::ActionInvocationContext context) {
-                                  ShowSingletonTab(browser,
-                                                   GURL(kCastLearnMorePageUrl));
-                                },
-                                base::Unretained(browser)))
-                            .SetActionId(kActionMediaRouterLearnMore)
-                            .SetText(l10n_util::GetStringUTF16(IDS_LEARN_MORE))
-                            .Build());
+  cast_action->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                ShowSingletonTab(browser, GURL(kCastLearnMorePageUrl));
+              },
+              base::Unretained(bwi)))
+          .SetActionId(kActionMediaRouterLearnMore)
+          .SetText(l10n_util::GetStringUTF16(IDS_LEARN_MORE))
+          .Build());
 
   cast_action->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
+              [](BrowserWindowInterface* browser, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 ShowSingletonTab(browser, GURL(kCastHelpCenterPageUrl));
                 base::RecordAction(
                     base::UserMetricsAction("MediaRouter_Ui_Navigate_Help"));
               },
-              base::Unretained(browser)))
+              base::Unretained(bwi)))
           .SetActionId(kActionMediaRouterHelp)
           .SetText(l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_HELP))
           .Build());
@@ -75,7 +73,7 @@ void CastToolbarButtonUtil::AddCastChildActions(
   cast_action->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
+              [](BrowserWindowInterface* browser, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 PrefService* pref_service = browser->GetProfile()->GetPrefs();
                 bool checked = !pref_service->GetBoolean(
@@ -84,23 +82,23 @@ void CastToolbarButtonUtil::AddCastChildActions(
                     media_router::prefs::kMediaRouterMediaRemotingEnabled,
                     checked);
               },
-              base::Unretained(browser)))
+              base::Unretained(bwi)))
           .SetActionId(kActionMediaRouterToggleMediaRemoting)
           .SetText(
               l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_TOGGLE_MEDIA_REMOTING))
-          .SetChecked(browser->GetProfile()->GetPrefs()->GetBoolean(
+          .SetChecked(bwi->GetProfile()->GetPrefs()->GetBoolean(
               media_router::prefs::kMediaRouterMediaRemotingEnabled))
           .Build());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   cast_action->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
+              [](BrowserWindowInterface* browser, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 ShowSingletonTab(browser,
                                  GURL(chrome::kChromeUICastFeedbackURL));
               },
-              base::Unretained(browser)))
+              base::Unretained(bwi)))
           .SetActionId(kActionMediaToolbarContextReportCastIssue)
           .SetText(l10n_util::GetStringUTF16(
               IDS_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE))

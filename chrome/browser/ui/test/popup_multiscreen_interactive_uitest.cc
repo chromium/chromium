@@ -8,10 +8,10 @@
 #include "base/test/run_until.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/fullscreen_test_util.h"
 #include "chrome/browser/ui/test/popup_test_base.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -19,6 +19,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "ui/base/base_window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/virtual_display_util.h"
@@ -101,7 +102,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, Basic) {
     for (const char* url : {"/simple.html", "about:blank"}) {
       const std::string open_script =
           content::JsReplace("open($1, '', 'popup');", url);
-      Browser* popup = OpenPopup(browser(), open_script);
+      BrowserWindowInterface* popup = OpenPopup(browser(), open_script);
       display::Display popup_display = GetDisplayNearestBrowser(popup);
       // The popup should open on the same screen as the opener.
       EXPECT_EQ(opener_display.id(), popup_display.id())
@@ -131,7 +132,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, OpenOnAnotherScreen) {
         const std::string open_script = content::JsReplace(
             "open($1, '', 'left=$2,top=$3,width=200,height=200');", url,
             target_display.work_area().x(), target_display.work_area().y());
-        Browser* popup = OpenPopup(browser(), open_script);
+        BrowserWindowInterface* popup = OpenPopup(browser(), open_script);
         display::Display popup_display = GetDisplayNearestBrowser(popup);
         // The popup only opens on another screen with permission.
         const display::Display& expected_display =
@@ -170,7 +171,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest,
         const std::string open_script = content::JsReplace(
             "w = open($1, '', 'left=$2,top=$3,width=200,height=200');", url,
             opener_display_center.x() - 100, opener_display_center.y() - 100);
-        Browser* popup = OpenPopup(browser(), open_script);
+        BrowserWindowInterface* popup = OpenPopup(browser(), open_script);
         EXPECT_EQ(opener_display, GetDisplayNearestBrowser(popup));
         // Ensure the opener can access the popup window object.
         ASSERT_NE("", EvalJs(opener_contents, "w.location.href"));
@@ -258,7 +259,8 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, CrossOriginIFrame) {
           const std::string open_script = content::JsReplace(
               "w = open($1, '', 'left=$2,top=$3,width=200,height=200');", url,
               target_display.work_area().x(), target_display.work_area().y());
-          Browser* popup = OpenPopup(cross_origin_iframe, open_script);
+          BrowserWindowInterface* popup =
+              OpenPopup(cross_origin_iframe, open_script);
           display::Display popup_display = GetDisplayNearestBrowser(popup);
           // The popup only opens on another screen with permission.
           const display::Display& expected_display =

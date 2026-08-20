@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/popup_test_base.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
@@ -364,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
 class FedCmMixin {
  public:
   // In a bubble view.
-  void ShowAccounts(Browser* browser) {
+  void ShowAccounts(BrowserWindowInterface* browser) {
     delegate_ = std::make_unique<FakeDelegate>(
         browser->GetActiveTabInterface()->GetContents());
     account_selection_view_ = std::make_unique<FedCmAccountSelectionView>(
@@ -657,7 +658,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewPopupTest,
                        CanFitInWebContents) {
   // Normal size popup should work fine.
   {
-    Browser* popup = OpenPopup(
+    BrowserWindowInterface* popup = OpenPopup(
         browser(), "open('.', '', 'left=0,top=0,width=1000,height=1000')");
     ShowAccounts(popup);
     EXPECT_TRUE(account_selection_view_->CanFitInWebContents());
@@ -673,7 +674,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewPopupTest,
   // Too small vertically. Popups have a minimum vertical height so the actual
   // height will be larger, but that's still too small.
   {
-    Browser* popup = OpenPopup(
+    BrowserWindowInterface* popup = OpenPopup(
         browser(), "open('.', '', 'left=0,top=0,width=1000,height=10')");
     ShowAccounts(popup);
     EXPECT_FALSE(account_selection_view_->CanFitInWebContents());
@@ -682,7 +683,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewPopupTest,
 
   // Too small horizontally.
   {
-    Browser* popup = OpenPopup(
+    BrowserWindowInterface* popup = OpenPopup(
         browser(), "open('.', '', 'left=0,top=0,width=10,height=1000')");
     ShowAccounts(popup);
     EXPECT_FALSE(account_selection_view_->CanFitInWebContents());
@@ -691,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewPopupTest,
 
   // Too small in both directions.
   {
-    Browser* popup = OpenPopup(
+    BrowserWindowInterface* popup = OpenPopup(
         browser(), "open('.', '', 'left=0,top=0,width=10,height=10')");
     ShowAccounts(popup);
     EXPECT_FALSE(account_selection_view_->CanFitInWebContents());

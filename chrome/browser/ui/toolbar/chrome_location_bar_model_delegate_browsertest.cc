@@ -11,8 +11,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -24,7 +24,7 @@
 class TestChromeLocationBarModelDelegate
     : public ChromeLocationBarModelDelegate {
  public:
-  explicit TestChromeLocationBarModelDelegate(Browser* browser)
+  explicit TestChromeLocationBarModelDelegate(BrowserWindowInterface* browser)
       : browser_(browser) {}
   ~TestChromeLocationBarModelDelegate() override = default;
 
@@ -51,7 +51,7 @@ class TestChromeLocationBarModelDelegate
   }
 
  private:
-  const raw_ptr<Browser, DanglingUntriaged> browser_;
+  const raw_ptr<BrowserWindowInterface, DanglingUntriaged> browser_;
   net::CertStatus cert_status_ = 0;
 };
 
