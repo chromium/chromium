@@ -13,8 +13,8 @@
 namespace crypto {
 
 // Converts a PublicKey in |key| to a COSE_Key structure, returning the
-// serialized CBOR bytes. Currently, we support keys using the RSA, EC-P256, and
-// ML-DSA algorithms.
+// serialized CBOR bytes. Currently, we support keys using the RSA, EC-P256,
+// Ed25519, and ML-DSA algorithms.
 CRYPTO_EXPORT std::vector<uint8_t> PublicKeyToCoseKey(
     const keypair::PublicKey& key);
 

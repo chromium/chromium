@@ -38,6 +38,10 @@ PrivateKey FixedMldsa87PrivateKeyForTesting();
 PublicKey FixedMldsa87PublicKeyForTesting();
 const base::span<const uint8_t> FixedMldsa87PublicKeyAsCoseForTesting();
 
+PrivateKey FixedEd25519PrivateKeyForTesting();
+PublicKey FixedEd25519PublicKeyForTesting();
+const base::span<const uint8_t> FixedEd25519PublicKeyAsCoseForTesting();
+
 }  // namespace crypto::test
 
 #endif  // CRYPTO_TEST_SUPPORT_H_
