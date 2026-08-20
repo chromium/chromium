@@ -31,7 +31,7 @@ export function getHtml(this: SignInPromoElement) {
         ?hidden="${!this.isDeviceManaged_}"
         class="${this.getDisclaimerVisibilityClass_()}">
       <div id="icon-container">
-        <cr-icon icon="cr:domain" alt=""></cr-icon>
+        <cr-icon icon="cr:domain" aria-hidden="true"></cr-icon>
       </div>
       <p id="disclaimerText">${this.managedDeviceDisclaimer_}</p>
     </div>
