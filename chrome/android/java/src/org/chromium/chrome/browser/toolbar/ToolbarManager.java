@@ -221,6 +221,8 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
@@ -1903,7 +1905,8 @@ public class ToolbarManager
         // after fixing the initialization order.
         var currentSideUiSpecs = sideUiStateProvider.getCurrentSideUiSpecs();
 
-        mControlContainerSideUiObserver = new ToolbarMarginAdjusterForSideUi(mControlContainer);
+        mControlContainerSideUiObserver =
+                new ToolbarMarginAdjusterForSideUi(mControlContainer, mToolbar);
         mControlContainerSideUiObserver.onSideUiSpecsChanged(currentSideUiSpecs);
         mSideUiStateProvider.addObserver(mControlContainerSideUiObserver);
 
@@ -1915,8 +1918,11 @@ public class ToolbarManager
     }
 
     private static class ToolbarMarginAdjusterForSideUi extends ViewMarginAdjusterForSideUi {
-        ToolbarMarginAdjusterForSideUi(View view) {
+        private final TopToolbarCoordinator mToolbar;
+
+        ToolbarMarginAdjusterForSideUi(View view, TopToolbarCoordinator toolbar) {
             super(view, /* forToolbarElement= */ true);
+            mToolbar = toolbar;
         }
 
         @Override
@@ -1933,6 +1939,16 @@ public class ToolbarManager
             Transition transition = super.onPreSideUiSpecsChange(sideUiSpecs);
             super.triggerSynchronousMeasureAndLayout();
             return transition;
+        }
+
+        @Override
+        public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
+            super.onSideUiSpecsChanged(sideUiSpecs);
+            int xOffset = 0;
+            if (sideUiSpecs.getHeightType(AnchorSide.LEFT) == HeightType.TOOLBAR) {
+                xOffset = sideUiSpecs.getWidth(AnchorSide.LEFT);
+            }
+            mToolbar.setXOffset(xOffset);
         }
     }
 

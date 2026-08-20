@@ -1280,6 +1280,17 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         }
     }
 
+    /**
+     * Sets the x-offset of the toolbar scene layer.
+     *
+     * @param xOffset The x-offset in px.
+     */
+    public void setXOffset(float xOffset) {
+        if (mOverlayCoordinator != null) {
+            mOverlayCoordinator.setXOffset(xOffset);
+        }
+    }
+
     void setOverlayCoordinatorForTesting(TopToolbarOverlayCoordinator overlayCoordinator) {
         mOverlayCoordinator = overlayCoordinator;
     }
