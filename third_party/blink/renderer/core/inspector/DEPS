@@ -46,4 +46,9 @@ specific_include_rules = {
     "+net/filter/source_stream_type.h",
     "+third_party/boringssl/src/include",
   ],
+  "locale_controller\\.(h|cc)": [
+    "+base/i18n/language_tag.h",
+    "+base/i18n/icubridge/default_icu_locale.h",
+    "+base/i18n/tag_converters.h",
+  ],
 }

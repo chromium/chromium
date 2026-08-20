@@ -35,6 +35,10 @@ namespace android_webview {
 void InitIcuAndResourceBundleBrowserSide();
 }
 
+namespace blink {
+class LocaleController;
+}
+
 namespace l10n_util {
 std::string GetApplicationLocale(std::string_view, bool);
 }
@@ -57,6 +61,7 @@ class BASE_I18N_EXPORT DefaultIcuLocaleSetterKey {
 
  private:
   friend class ScopedDefaultIcuLocale;
+  friend class ::blink::LocaleController;
   friend void ::android_webview::InitIcuAndResourceBundleBrowserSide();
   friend std::string(::l10n_util::GetApplicationLocale)(std::string_view, bool);
 

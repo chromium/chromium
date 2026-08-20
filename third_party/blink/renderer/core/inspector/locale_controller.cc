@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/inspector/locale_controller.h"
 
-#include "base/i18n/rtl.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/tag_converters.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
@@ -12,7 +13,6 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
-#include "third_party/icu/source/common/unicode/locid.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -39,7 +39,7 @@ void NotifyLocaleChangeOnWorkerThread(WorkerThread* worker_thread) {
 }  // namespace
 
 LocaleController::LocaleController()
-    : embedder_locale_(String(icu::Locale::getDefault().getName())) {}
+    : embedder_locale_(base::i18n::GetDefaultIcuLocale()) {}
 
 String LocaleController::SetLocaleOverride(const String& locale,
                                            bool is_claiming_override) {
@@ -55,19 +55,20 @@ String LocaleController::SetLocaleOverride(const String& locale,
   if (locale.empty()) {
     UpdateLocale(embedder_locale_);
   } else {
-    icu::Locale locale_object(locale.Ascii().data());
-    const char* lang = locale_object.getLanguage();
-    if (!lang || *lang == '\0')
+    std::optional<base::i18n::LanguageTag> language_tag =
+        base::i18n::GetLanguageTagFromString(locale.Ascii());
+    if (!language_tag) {
       return "Invalid locale name";
-    UpdateLocale(locale);
+    }
+    UpdateLocale(*language_tag);
   }
   locale_override_ = locale;
   return String();
 }
 
-void LocaleController::UpdateLocale(const String& locale) {
-  WebString web_locale(locale);
-  base::i18n::SetICUDefaultLocale(web_locale.Ascii());
+void LocaleController::UpdateLocale(const base::i18n::LanguageTag& locale) {
+  base::i18n::SetDefaultIcuLocale(base::i18n::DefaultIcuLocaleSetterKey(),
+                                  locale);
   if (IsMainThread()) {
     UpdateDefaultLocaleInMainIsolates();
   } else {

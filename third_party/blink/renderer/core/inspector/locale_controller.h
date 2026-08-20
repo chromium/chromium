@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_LOCALE_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_LOCALE_CONTROLLER_H_
 
+#include "base/i18n/language_tag.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -23,11 +24,11 @@ class LocaleController {
   LocaleController();
   ~LocaleController() = default;
 
-  void UpdateLocale(const String& locale);
+  void UpdateLocale(const base::i18n::LanguageTag& locale);
 
   base::Lock lock_;
 
-  String embedder_locale_;
+  base::i18n::LanguageTag embedder_locale_;
   String locale_override_ GUARDED_BY(lock_);
 };
 
