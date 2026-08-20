@@ -1,0 +1,48 @@
+<style include="cr-shared-style settings-shared">
+  cr-dialog {
+    --cr-dialog-body-padding-horizontal: 20px;
+    --cr-dialog-border-radius: 12px;
+    --cr-dialog-button-container-padding-bottom: 20px;
+    --cr-dialog-button-container-padding-horizontal: 20px;
+    --cr-dialog-button-container-padding-top: 24px;
+    --cr-dialog-title-slot-padding-bottom: 20px;
+    --cr-dialog-title-slot-padding-end: 20px;
+    --cr-dialog-title-slot-padding-start: 20px;
+    --cr-dialog-title-slot-padding-top: 20px;
+    --cr-dialog-width: 384px;
+  }
+
+  div[slot='title'] {
+    color: var(--cr-primary-text-color);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 22px;
+  }
+
+  ol {
+    color: var(--cr-secondary-text-color);
+    font-size: 14px;
+    line-height: 20px;
+    margin: 0;
+    padding-inline-start: 20px;
+  }
+
+  li {
+    line-height: 20px;
+  }
+</style>
+<cr-dialog id="dialog" show-on-attach close-text="$i18n{close}">
+  <div slot="title">$i18n{gmailOtpRequiredTitle}</div>
+  <div slot="body">
+    <ol>
+      <li>$i18nRaw{gmailOtpRequiredStep1}</li>
+      <li>$i18nRaw{gmailOtpRequiredStep2}</li>
+    </ol>
+  </div>
+  <div slot="button-container">
+    <cr-button id="confirmButton" class="action-button"
+        on-click="onConfirmButtonClick_">
+      $i18n{gotIt}
+    </cr-button>
+  </div>
+</cr-dialog>

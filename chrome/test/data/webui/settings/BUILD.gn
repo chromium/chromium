@@ -66,6 +66,7 @@ build_webui_tests("build") {
     "glic_page_test.ts",
     "glic_subpage_focus_test.ts",
     "glic_subpage_test.ts",
+    "gmail_otp_disclaimer_dialog_test.ts",
     "google_services_page_test.ts",
     "help_page_test.ts",
     "home_url_input_test.ts",
