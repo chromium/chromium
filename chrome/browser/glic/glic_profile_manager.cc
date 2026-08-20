@@ -70,8 +70,8 @@ void AutoOpenGlicPanel() {
                       ->GetLastActiveBrowser();
     pretend_source = mojom::InvocationSource::kTopChromeButton;
   }
-  GlicKeyedServiceFactory::GetGlicKeyedService(profile)->ToggleUI(
-      last_active, /*prevent_close=*/true, pretend_source);
+  GlicKeyedServiceFactory::GetGlicKeyedService(profile)->ShowUI(last_active,
+                                                                pretend_source);
 }
 
 }  // namespace
