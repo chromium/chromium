@@ -102,6 +102,23 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       onKeywordModelChanged: () => {
         this.requestUpdate('inputKeywordModel');
       },
+      onKeywordCleared:
+          (event) => {
+            this.getInputElement().setInput({
+              text: event.restoredText,
+              inline: '',
+              moveCursorToEnd: false,
+            });
+            this.getInputElement().inputElement?.setSelectionRange(
+                event.cursorPosition, event.cursorPosition);
+            this.queryAutocomplete(
+                event.restoredText, /*preventInlineAutocomplete=*/ true,
+                /*isOnFocus=*/ false);
+          },
+      onKeywordEntered:
+          () => {
+            this.getInputElement().setInputText('');
+          },
     });
 
     get inputKeywordModel(): InputKeywordModel|null {
@@ -479,29 +496,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     async handleKeyNavigation(e: KeyboardEvent) {
       if (e.key === 'Backspace') {
         const inputEl = this.getInputElement().inputElement;
-        const cursorAtStart =
-            inputEl.selectionStart === 0 && inputEl.selectionEnd === 0;
-        if (this.keywordModeManager_.isInKeywordMode && cursorAtStart) {
-          const remainingText = inputEl.value;
-          // TODO(b/504669216): Restoring keyword text correctly is more
-          //   complicated than just prepending keyword and a space.
-          const restoredKeywordText =
-              this.keywordModeManager_.activeKeyword + ' ';
-          const restoredText = restoredKeywordText + remainingText;
-          const newCursorPos = restoredKeywordText.length;
-
-          this.keywordModeManager_.exit();
-
-          this.getInputElement().setInput({
-            text: restoredText,
-            inline: '',
-            moveCursorToEnd: false,
-          });
-          inputEl.setSelectionRange(newCursorPos, newCursorPos);
-
-          this.queryAutocomplete(
-              restoredText, /*preventInlineAutocomplete=*/ true,
-              /*isOnFocus=*/ false);
+        if (inputEl && this.keywordModeManager_.handleBackspace(inputEl)) {
           e.preventDefault();
         }
         return;
@@ -677,9 +672,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       const match =
           (e as CustomEvent<{match?: AutocompleteMatch}>).detail.match;
       assert(match?.keywordModel);
-      this.keywordModeManager_.enter(
-          match.keywordModel.keyword, match.keywordModel.chipHint);
-      this.getInputElement().setInputText('');
+      this.keywordModeManager_.handleKeywordClick(match);
     }
 
 
