@@ -62,18 +62,13 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   void SetFrameSequenceNumber(uint64_t frame_sequence_number_) override;
   // Attempts to replace quads from the specified root render pass with
   // overlays. This must be called every frame.
-  void ProcessForOverlays(
-      DisplayResourceProvider* resource_provider,
-      AggregatedRenderPassList* render_passes,
-      const SkM44& output_color_matrix,
-      SurfaceDamageRectList surface_damage_rect_list,
-      const PrimaryPlaneParams& primary_plane_params,
-      CandidateList* overlay_candidates,
-      gfx::Rect* damage_rect)
-      // TODO(petermcneeley) : Restore to "final" once
-      // |OverlayProcessorDelegated| has been reintegrated into
-      // |OverlayProcessorOzone|.
-      override;
+  void ProcessForOverlays(DisplayResourceProvider* resource_provider,
+                          AggregatedRenderPassList* render_passes,
+                          const SkM44& output_color_matrix,
+                          SurfaceDamageRectList surface_damage_rect_list,
+                          const PrimaryPlaneParams& primary_plane_params,
+                          CandidateList* overlay_candidates,
+                          gfx::Rect* damage_rect) override;
 
   OverlayProcessorUsingStrategy();
 

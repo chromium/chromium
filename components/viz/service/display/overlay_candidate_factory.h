@@ -112,8 +112,6 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
                          QuadList::ConstIterator quad_list_begin,
                          QuadList::ConstIterator quad_list_end);
 
-  gfx::Rect GetUnassignedDamage() { return unassigned_surface_damage_; }
-
   // Adjusts candidate for subsampling and cliping for required overlay
   // and logging purposes.
   void HandleClipAndSubsampling(OverlayCandidate& candidate) const;

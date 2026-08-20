@@ -152,10 +152,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
 
   virtual gfx::CALayerResult GetCALayerErrorCode() const;
 
-  // For Lacros, get damage that was not assigned to any overlay candidates
-  // during ProcessForOverlays.
-  virtual gfx::RectF GetUnassignedDamage() const;
-
   // Supports gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90 and
   // gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270 transforms.
   virtual bool SupportsFlipRotateTransform() const;

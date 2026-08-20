@@ -28,7 +28,6 @@ class WaylandOverlayManager : public OverlayManagerOzone {
   // OverlayManagerOzone:
   std::unique_ptr<OverlayCandidatesOzone> CreateOverlayCandidates(
       gfx::AcceleratedWidget w) override;
-  void SetContextDelegated() override;
 
   // Checks if overlay candidates can be displayed as overlays. Modifies
   // |candidates| to indicate if they can.
@@ -41,9 +40,6 @@ class WaylandOverlayManager : public OverlayManagerOzone {
                           gfx::AcceleratedWidget widget) const;
 
   const raw_ptr<WaylandBufferManagerGpu> manager_gpu_;
-
-  // Same as features::IsDelegatedCompositingEnabled.
-  bool is_delegated_context_ = false;
 };
 
 }  // namespace ui

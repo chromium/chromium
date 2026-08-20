@@ -17,20 +17,6 @@
 
 namespace ui {
 
-namespace {
-
-void NotifyOverlayDelegationLimitedCapabilityOnce() {
-  static bool logged_once = false;
-  if (!logged_once) {
-    DLOG(ERROR)
-        << "Subpixel accurate position is not available. Only some quads "
-           "can be forwarded as overlays.";
-    logged_once = true;
-  }
-}
-
-}  // namespace
-
 WaylandOverlayManager::WaylandOverlayManager(
     WaylandBufferManagerGpu* manager_gpu)
     : manager_gpu_(manager_gpu) {}
@@ -39,10 +25,6 @@ WaylandOverlayManager::~WaylandOverlayManager() = default;
 std::unique_ptr<OverlayCandidatesOzone>
 WaylandOverlayManager::CreateOverlayCandidates(gfx::AcceleratedWidget widget) {
   return std::make_unique<WaylandOverlayCandidates>(this, widget);
-}
-
-void WaylandOverlayManager::SetContextDelegated() {
-  is_delegated_context_ = true;
 }
 
 void WaylandOverlayManager::CheckOverlaySupport(
@@ -105,11 +87,6 @@ bool WaylandOverlayManager::CanHandleCandidate(
   // Wayland doesn't support clip_rect, background_color.
   if (candidate.clip_rect || candidate.background_color.has_value()) {
     return false;
-  }
-
-  if (is_delegated_context_) {
-    // Subpixel accurate position is not available.
-    NotifyOverlayDelegationLimitedCapabilityOnce();
   }
 
   // Reject candidates that don't fall on a pixel boundary.

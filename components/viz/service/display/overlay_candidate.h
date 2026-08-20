@@ -45,7 +45,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
  public:
   // When adding or changing these return status' check how the callee uses
   // these failure codes. Currently, these feed into the logging via the enum
-  // |OverlayProcessorDelegated::DelegationStatus|.
+  // |DelegationStatus|.
   enum class CandidateStatus {
     kSuccess,
     kFailNotOverlay,
