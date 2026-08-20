@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -43,6 +44,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp.R;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -120,8 +122,14 @@ public class SearchBoxViewBinderUnitTest {
     public void testApplyWhiteBackground() {
         mPropertyModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND_AND_SHADOW, true);
         Drawable background = mSearchBoxView.getBackground();
-        assertTrue(background instanceof GradientDrawable);
-        assertEquals(Color.WHITE, ((GradientDrawable) background).getColor().getDefaultColor());
+        if (NewTabPageUtils.isNtpAuroraEnabled()) {
+            assertEquals(
+                    R.drawable.fake_search_box_white_with_primary_color_alpha_2,
+                    shadowOf(background).getCreatedFromResId());
+        } else {
+            assertTrue(background instanceof GradientDrawable);
+            assertEquals(Color.WHITE, ((GradientDrawable) background).getColor().getDefaultColor());
+        }
     }
 
     @Test

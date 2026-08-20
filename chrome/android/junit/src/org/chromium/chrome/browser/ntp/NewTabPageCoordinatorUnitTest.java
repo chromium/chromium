@@ -490,7 +490,21 @@ public class NewTabPageCoordinatorUnitTest {
 
         View composeplateView = layout.findViewById(R.id.composeplate_view);
         assertNotNull(composeplateView);
-        assertEquals(expectedBoundedWidth, composeplateView.getLayoutParams().width);
+        int expectedComposeplateWidth = expectedBoundedWidth;
+        if (NewTabPageUtils.isNtpAuroraButtonColorEnabled()) {
+            int margin =
+                    mActivity
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.composeplate_view_lateral_margin);
+            expectedComposeplateWidth -= margin * 2;
+        } else if (NewTabPageUtils.isNtpAuroraEnabled()) {
+            int paddingForShadow =
+                    mActivity
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.search_box_padding_for_shadow_lateral);
+            expectedComposeplateWidth -= paddingForShadow * 2;
+        }
+        assertEquals(expectedComposeplateWidth, composeplateView.getLayoutParams().width);
 
         View logoView = layout.findViewById(R.id.logo_container_view);
         assertNotNull(logoView);
@@ -910,7 +924,10 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    @Features.DisableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2
+    })
     public void
             testOnCustomizedBackgroundChanged_composeplate_uninitializedAndShouldNotApply_doesNotApplyBackground() {
         setupMockSubCoordinators();
@@ -926,8 +943,7 @@ public class NewTabPageCoordinatorUnitTest {
         verify(mMockComposeplate, never()).applyWhiteBackground(anyBoolean());
 
         // If white background is disabled and the member variable was already set to false, verify
-        // applyWhiteBackground
-        // is not called again on the composeplate.
+        // applyWhiteBackground is not called again on the composeplate.
         mCoordinator.setIsWhiteBackgroundOnComposeplateApplied(false);
         assertFalse(NtpCustomizationUtils.shouldApplyWhiteBackgroundOnComposeplate());
 
@@ -1087,6 +1103,10 @@ public class NewTabPageCoordinatorUnitTest {
 
     @Test
     public void testOnDisplayStyleChanged_Phone_Default() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.NTP_AURORA,
+                "padding_style",
+                NewTabPageUtils.PaddingStyle.DEFAULT);
         createCoordinator(/* isLff= */ false);
         verify(mUiConfig, never()).addObserver(any());
     }
