@@ -30,7 +30,6 @@
 #include <limits>
 
 #include "base/bits.h"
-#include "base/feature_list.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/system/sys_info.h"
 #include "gin/array_buffer.h"
@@ -42,19 +41,6 @@
 
 namespace blink {
 
-namespace {
-
-// On ArrayBufferContents allocation failure, this feature enables simulating V8
-// memory pressure to trigger garbage collection and retrying the allocation up
-// to two times. This is expected to reduce OOM crashes. The feature exists to
-// allow quantifying the impact on OOM crashes, CPU usage and user engagement.
-//
-// TODO(crbug.com/371904440): Clean up the feature after running the experiment,
-// no later than in M136.
-BASE_FEATURE(kGCOnArrayBufferAllocationFailure,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace
 
 ArrayBufferContents::ArrayBufferContents(
     const base::subtle::PlatformSharedMemoryRegion& region,
@@ -109,25 +95,15 @@ ArrayBufferContents::ArrayBufferContents(
 
   if (!max_num_elements) {
     // Create a fixed-length ArrayBuffer.
-    void* data = nullptr;
-
-    if (base::FeatureList::IsEnabled(kGCOnArrayBufferAllocationFailure)) {
-      data = AllocateMemoryOrNull(length, policy);
-      if (!data && v8::Isolate::TryGetCurrent() != nullptr) {
-        v8::Isolate::GetCurrent()->RetryCustomAllocate([&]() {
-          return (data = AllocateMemoryOrNull(length, policy)) != nullptr;
-        });
-      }
-      if (!data &&
-          allocation_failure_behavior == AllocationFailureBehavior::kCrash) {
-        data =
-            AllocateMemory<partition_alloc::AllocFlags::kNone>(length, policy);
-      }
-    } else {
-      data = (allocation_failure_behavior == AllocationFailureBehavior::kCrash)
-                 ? AllocateMemory<partition_alloc::AllocFlags::kNone>(length,
-                                                                      policy)
-                 : AllocateMemoryOrNull(length, policy);
+    void* data = AllocateMemoryOrNull(length, policy);
+    if (!data && v8::Isolate::TryGetCurrent() != nullptr) {
+      v8::Isolate::GetCurrent()->RetryCustomAllocate([&]() {
+        return (data = AllocateMemoryOrNull(length, policy)) != nullptr;
+      });
+    }
+    if (!data &&
+        allocation_failure_behavior == AllocationFailureBehavior::kCrash) {
+      data = AllocateMemory<partition_alloc::AllocFlags::kNone>(length, policy);
     }
 
     if (!data) {

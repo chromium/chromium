@@ -1235,7 +1235,6 @@ public final class ProductionSupportedFlagList {
 
         // Features for PerfCombined2025_WebView study
         Flag.baseFeature("ReducePPMs"),
-        Flag.baseFeature("GCOnArrayBufferAllocationFailure"),
         Flag.baseFeature("RemoveCancelledScriptedIdleTasks"),
         Flag.baseFeature("MemoryCacheChangeStrongReferencePruneDelay"),
         Flag.baseFeature("MemoryCacheStrongReference"),
