@@ -15,6 +15,9 @@ namespace readaloud {
 inline constexpr int kAudioSampleRate = 48000;
 inline constexpr media::ChannelLayout kAudioChannelLayout =
     media::CHANNEL_LAYOUT_MONO;
+// 480 frames corresponds to a 10ms buffer duration at 48kHz.
+inline constexpr int kAudioFramesPerBuffer = 480;
+
 // 500 KiB cap.
 inline constexpr size_t kMaxMojoPayloadSizeBytes = 512000;
 inline constexpr base::TimeDelta kAudioBufferMinDuration = base::Seconds(5);

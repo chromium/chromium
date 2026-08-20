@@ -6,6 +6,7 @@ if (is_android) {
   source_set("readaloud") {
     sources = [
       "audio_generation/speech_synthesis_broker.h",
+      "read_aloud_audio_broker.h",
       "read_aloud_playback_session.h",
       "read_aloud_service.h",
       "read_aloud_service_factory.h",
@@ -19,6 +20,7 @@ if (is_android) {
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//content/public/browser",
       "//media",
+      "//media/mojo/mojom",
       "//services/media_session/public/cpp",
     ]
   }
@@ -26,6 +28,7 @@ if (is_android) {
   source_set("impl") {
     sources = [
       "audio_generation/speech_synthesis_broker.cc",
+      "read_aloud_audio_broker.cc",
       "read_aloud_playback_session.cc",
       "read_aloud_service.cc",
       "read_aloud_service_factory.cc",
@@ -35,8 +38,10 @@ if (is_android) {
       "//base/i18n:language_tag",
       "//chrome/browser:browser_process",
       "//chrome/browser/dom_distiller",
+      "//chrome/common:readaloud_constants",
       "//components/dom_distiller/content/browser",
       "//content/public/browser",
+      "//media",
       "//ui/accessibility:ax_base",
     ]
   }
@@ -46,6 +51,9 @@ if (is_android) {
     sources = [
       "android/prefs_unittest.cc",
       "audio_generation/speech_synthesis_broker_unittest.cc",
+      "fake_audio_stream_factory.cc",
+      "fake_audio_stream_factory.h",
+      "read_aloud_audio_broker_unittest.cc",
       "read_aloud_service_factory_unittest.cc",
       "read_aloud_service_unittest.cc",
     ]
@@ -56,6 +64,7 @@ if (is_android) {
       "//chrome/browser/dom_distiller",
       "//chrome/browser/media/router",
       "//chrome/browser/readaloud/android:native",
+      "//chrome/common:readaloud_constants",
       "//chrome/test:test_support",
       "//components/dom_distiller/core",
       "//components/dom_distiller/core:test_support",
@@ -63,6 +72,8 @@ if (is_android) {
       "//components/prefs",
       "//components/sync_preferences:test_support",
       "//content/test:test_support",
+      "//media:test_support",
+      "//services/audio/public/cpp:test_support",
       "//testing/gmock",
       "//testing/gtest",
       "//ui/accessibility:ax_base",
