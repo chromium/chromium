@@ -551,7 +551,9 @@ void RangeTransactionServer::RangeHandler(const HttpRequestInfo* request,
                                                  start, end, length_);
   response_headers->append(content_range);
 
-  if (!request->extra_headers.HasHeader("If-None-Match") || modified_) {
+  if ((!request->extra_headers.HasHeader("If-None-Match") &&
+       !request->extra_headers.HasHeader("If-Modified-Since")) ||
+      modified_) {
     std::string data;
     if (end == start) {
       EXPECT_EQ(0, end % 10);
@@ -570,8 +572,14 @@ void RangeTransactionServer::RangeHandler(const HttpRequestInfo* request,
       int64_t len = end - start + 1;
       std::string content_length =
           base::StringPrintf("Content-Length: %" PRId64 "\n", len);
-      response_headers->replace(response_headers->find("Content-Length:"),
-                                content_length.size(), content_length);
+      size_t length_start = response_headers->find("Content-Length:");
+      CHECK_NE(length_start, std::string::npos);
+      size_t length_end = response_headers->find('\n', length_start);
+      if (length_end == std::string::npos) {
+        length_end = response_headers->length();
+      }
+      response_headers->replace(length_start, length_end - length_start,
+                                content_length);
     }
   } else {
     response_status->assign("HTTP/1.1 304 Not Modified");
@@ -3818,6 +3826,74 @@ TEST_F(HttpCacheRangeGetTest, ParallelValidationRestartDoneHeaders) {
   EXPECT_EQ(4, cache.network_layer()->transaction_count());
   EXPECT_EQ(1, cache.disk_cache()->open_count());
   EXPECT_EQ(1, cache.disk_cache()->create_count());
+}
+
+TEST_F(HttpCacheRangeGetTest, VaryRange) {
+  MockHttpCache cache;
+  cache.disk_cache()->set_double_create_check(false);
+
+  ScopedMockTransaction transaction(kRangeGET_TransactionOK);
+  transaction.response_headers =
+      "Last-Modified: Sat, 18 Apr 2007 01:10:43 GMT\n"
+      "Date: Sat, 18 Apr 2007 02:10:43 GMT\n"
+      "Accept-Ranges: bytes\n"
+      "Vary: range\n"
+      "Content-Length: 10\n";
+
+  RangeTransactionServer range_support;
+  range_support.set_length(60000);
+
+  // Request the transaction's 40-49 range, and get it cached.
+  {
+    std::string headers;
+    RunTransactionTestWithResponse(cache.http_cache(), transaction, &headers);
+    Verify206Response(headers, 40, 49);
+  }
+
+  // Now request an extension.
+  transaction.request_headers = "Range: bytes = 40-59009\r\n" EXTRA_HEADER;
+  MockHttpRequest request(transaction);
+  Context c;
+
+  c.trans = cache.CreateTransaction();
+  ASSERT_TRUE(c.trans);
+
+  int rv = c.callback.GetResult(
+      c.trans->Start(&request, c.callback.callback(), NetLogWithSource()));
+  ASSERT_THAT(rv, IsOk());
+
+  // First read the 40-49 portion.
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(10);
+  rv = c.callback.GetResult(
+      c.trans->Read(buf.get(), buf->size(), c.callback.callback()));
+  EXPECT_EQ(10, rv);
+  EXPECT_EQ(buf->first(10), base::byte_span_from_cstring("rg: 40-49 "));
+
+  // Replace with an in-progress different entry, with a different range, that's
+  // in-flight.
+  Context c2;
+  ScopedMockTransaction transaction2(transaction);
+  transaction2.request_headers = "Range: bytes = 30-39\r\n" EXTRA_HEADER;
+  transaction2.load_flags = LOAD_BYPASS_CACHE;
+  transaction2.data = "rg: 30-39 ";
+  MockHttpRequest request2(transaction2);
+
+  c2.trans = cache.CreateTransaction();
+  ASSERT_TRUE(c2.trans);
+
+  rv = c2.callback.GetResult(
+      c2.trans->Start(&request2, c2.callback.callback(), NetLogWithSource()));
+  ASSERT_THAT(rv, IsOk());
+
+  // Try to read the 50-5059 portion. The right bits should come in.
+  scoped_refptr<IOBufferWithSize> buf2 =
+      base::MakeRefCounted<IOBufferWithSize>(6000);
+  std::ranges::fill(buf2->span(), 'A');
+  rv = c.callback.GetResult(
+      c.trans->Read(buf2.get(), buf2->size(), c.callback.callback()));
+  EXPECT_LE(10, rv);
+  EXPECT_EQ(buf2->first(10), base::byte_span_from_cstring("rg: 50-59 "));
 }
 
 // A test of doing a range request to a cached 301 response
@@ -9591,7 +9667,6 @@ TEST_F(HttpCacheRangeGetTest, Previous200) {
   std::string headers;
   MockTransaction transaction2(kRangeGET_TransactionOK);
   RangeTransactionServer handler;
-  handler.set_not_modified(true);
   RunTransactionTestWithResponse(cache.http_cache(), transaction2, &headers);
 
   // We are expecting a 206.
@@ -9625,7 +9700,7 @@ TEST_F(HttpCacheRangeGetTest, Previous200) {
   base::RunLoop().RunUntilIdle();
 
   // Now we should receive a range from the server and drop the stored entry.
-  handler.set_not_modified(false);
+  handler.set_modified(true);
   transaction2.request_headers = kRangeGET_TransactionOK.request_headers;
   RunTransactionTestWithResponse(cache.http_cache(), transaction2, &headers);
   Verify206Response(headers, 40, 49);

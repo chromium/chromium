@@ -183,6 +183,17 @@ bool PartialData::UpdateFromStoredHeaders(const HttpResponseHeaders* headers,
                                           disk_cache::Entry* entry,
                                           bool truncated,
                                           bool writing_in_progress) {
+  // Vary: range is a very confusing for us when we're gluing things
+  // together, so just give up on it.
+  size_t iter = 0;
+  constexpr std::string_view name = "vary";
+  std::optional<std::string_view> vary_entry;
+  while ((vary_entry = headers->EnumerateHeader(&iter, name))) {
+    if (base::EqualsCaseInsensitiveASCII(vary_entry.value(), "range")) {
+      return false;
+    }
+  }
+
   resource_size_ = 0;
   if (truncated) {
     DCHECK_EQ(headers->response_code(), 200);

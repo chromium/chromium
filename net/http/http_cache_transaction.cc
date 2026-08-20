@@ -1642,18 +1642,18 @@ int HttpCache::Transaction::DoCacheReadResponse() {
   TransitionToState(STATE_CACHE_READ_RESPONSE_COMPLETE);
 
   io_buf_len_ = entry_->GetEntry()->GetDataSize(kResponseInfoIndex);
-  read_buf_ = base::MakeRefCounted<IOBufferWithSize>(io_buf_len_);
+  cache_buf_ = base::MakeRefCounted<IOBufferWithSize>(io_buf_len_);
 
   net_log_.BeginEvent(NetLogEventType::HTTP_CACHE_READ_INFO);
   BeginDiskCacheAccessTimeCount();
-  return entry_->GetEntry()->ReadData(kResponseInfoIndex, 0, read_buf_.get(),
+  return entry_->GetEntry()->ReadData(kResponseInfoIndex, 0, cache_buf_.get(),
                                       io_buf_len_, io_callback_);
 }
 
 int HttpCache::Transaction::DoCacheReadResponseComplete(int result) {
   TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("net"),
                       "DoCacheReadResponseComplete", track_for_state_change_,
-                      "result", result, "io_buf_len", read_buf_->size());
+                      "result", result, "io_buf_len", cache_buf_->size());
   net_log_.EndEventWithNetErrorCode(NetLogEventType::HTTP_CACHE_READ_INFO,
                                     result);
   EndDiskCacheAccessTimeCount(DiskCacheAccessType::kRead);
@@ -1661,8 +1661,8 @@ int HttpCache::Transaction::DoCacheReadResponseComplete(int result) {
   // Record the time immediately before the cached response is parsed.
   read_headers_since_ = TimeTicks::Now();
 
-  if (result != read_buf_->size() ||
-      !HttpCache::ParseResponseInfo(read_buf_->span(), &response_,
+  if (result != cache_buf_->size() ||
+      !HttpCache::ParseResponseInfo(cache_buf_->span(), &response_,
                                     &truncated_)) {
     return OnCacheReadError(result, true);
   }
