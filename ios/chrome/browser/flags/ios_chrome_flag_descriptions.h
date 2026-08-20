@@ -1803,6 +1803,11 @@ inline constexpr char kRemoveExcessNTPsExperimentDescription[] =
     "When enabled, extra tabs with the New Tab Page open and no navigation "
     "history will be removed.";
 
+inline constexpr char kSaasUsageReportingName[] = "Saas Usage Reporting";
+inline constexpr char kSaasUsageReportingDescription[] =
+    "Enable reporting of SaaS usage. This feature only takes effect if a "
+    "related enterprise policy is also configured by an administrator.";
+
 inline constexpr char kSafeBrowsingAvailableName[] =
     "Make Safe Browsing available";
 inline constexpr char kSafeBrowsingAvailableDescription[] =
