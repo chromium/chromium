@@ -40,6 +40,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -87,15 +88,42 @@ public class SendTabToSelfNotificationTest {
         BaseNotificationManagerProxyFactory.setInstanceForTesting(null);
     }
 
+    private static Intent createTapIntent(
+            String guid,
+            String url,
+            @Nullable String scrollToTextFragment,
+            byte @Nullable [] pageContextBytes) {
+        Intent intent = new Intent();
+        intent.setAction(NotificationManager.NOTIFICATION_ACTION_TAP);
+        intent.setData(Uri.parse(url));
+        intent.putExtra(NotificationManager.NOTIFICATION_GUID_EXTRA, guid);
+        if (scrollToTextFragment != null) {
+            intent.putExtra(IntentHandler.EXTRA_SCROLL_TO_TEXT_FRAGMENT, scrollToTextFragment);
+        }
+        if (pageContextBytes != null) {
+            intent.putExtra(IntentHandler.EXTRA_SEND_TAB_TO_SELF_PAGE_CONTEXT, pageContextBytes);
+        }
+        return intent;
+    }
+
+    private static Intent createTapIntent(
+            @Nullable String scrollToTextFragment, byte @Nullable [] pageContextBytes) {
+        return createTapIntent(GUID, URL, scrollToTextFragment, pageContextBytes);
+    }
+
+    private static Intent createTapIntent(byte @Nullable [] pageContextBytes) {
+        return createTapIntent(GUID, URL, null, pageContextBytes);
+    }
+
+    private static Intent createTapIntent() {
+        return createTapIntent(GUID, URL, null, null);
+    }
+
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_SCROLL_POSITION)
     public void testNotificationTap_WithScrollToTextFragment() {
-        Intent intent = new Intent();
-        intent.setAction("send_tab_to_self.tap");
-        intent.setData(Uri.parse(URL));
-        intent.putExtra("send_tab_to_self.notification.guid", GUID);
-        intent.putExtra(IntentHandler.EXTRA_SCROLL_TO_TEXT_FRAGMENT, TEXT_FRAGMENT);
+        Intent intent = createTapIntent(TEXT_FRAGMENT, /* pageContextBytes= */ null);
 
         ThreadUtils.runOnUiThreadBlocking(() -> NotificationManager.handleIntent(intent));
 
@@ -109,10 +137,7 @@ public class SendTabToSelfNotificationTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_SCROLL_POSITION)
     public void testNotificationTap_WithoutScrollToTextFragment() {
-        Intent intent = new Intent();
-        intent.setAction("send_tab_to_self.tap");
-        intent.setData(Uri.parse(URL));
-        intent.putExtra("send_tab_to_self.notification.guid", GUID);
+        Intent intent = createTapIntent();
 
         ThreadUtils.runOnUiThreadBlocking(() -> NotificationManager.handleIntent(intent));
 
@@ -126,11 +151,7 @@ public class SendTabToSelfNotificationTest {
     @SmallTest
     @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_SCROLL_POSITION)
     public void testNotificationTap_FeatureDisabled() {
-        Intent intent = new Intent();
-        intent.setAction("send_tab_to_self.tap");
-        intent.setData(Uri.parse(URL));
-        intent.putExtra("send_tab_to_self.notification.guid", GUID);
-        intent.putExtra(IntentHandler.EXTRA_SCROLL_TO_TEXT_FRAGMENT, TEXT_FRAGMENT);
+        Intent intent = createTapIntent(TEXT_FRAGMENT, /* pageContextBytes= */ null);
 
         ThreadUtils.runOnUiThreadBlocking(() -> NotificationManager.handleIntent(intent));
 
@@ -144,8 +165,8 @@ public class SendTabToSelfNotificationTest {
     @SmallTest
     public void testNotificationDismiss() {
         Intent intent = new Intent();
-        intent.setAction("send_tab_to_self.dismiss");
-        intent.putExtra("send_tab_to_self.notification.guid", GUID);
+        intent.setAction(NotificationManager.NOTIFICATION_ACTION_DISMISS);
+        intent.putExtra(NotificationManager.NOTIFICATION_GUID_EXTRA, GUID);
 
         ThreadUtils.runOnUiThreadBlocking(() -> NotificationManager.handleIntent(intent));
 
@@ -156,11 +177,67 @@ public class SendTabToSelfNotificationTest {
     @SmallTest
     public void testNotificationTimeout() {
         Intent intent = new Intent();
-        intent.setAction("send_tab_to_self.timeout");
-        intent.putExtra("send_tab_to_self.notification.guid", GUID);
+        intent.setAction(NotificationManager.NOTIFICATION_ACTION_TIMEOUT);
+        intent.putExtra(NotificationManager.NOTIFICATION_GUID_EXTRA, GUID);
 
         ThreadUtils.runOnUiThreadBlocking(() -> NotificationManager.handleIntent(intent));
 
         verify(mNativeMock).dismissEntry(eq(mProfile), eq(GUID));
+    }
+
+    /**
+     * Verifies that tapping a notification with serialized page context attaches the page context
+     * extra to the launcher intent when form field propagation is enabled.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_FORM_FIELDS)
+    public void testNotificationTap_WithPageContext() {
+        byte[] pageContextBytes = new byte[] {0x08, 0x01};
+        Intent intent = createTapIntent(pageContextBytes);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> NotificationManager.handleIntent(intent));
+
+        intended(hasComponent(ChromeLauncherActivity.class.getName()));
+        intended(hasData(URL));
+        intended(hasExtra(IntentHandler.EXTRA_SEND_TAB_TO_SELF_PAGE_CONTEXT, pageContextBytes));
+        verify(mNativeMock).markEntryOpened(eq(mProfile), eq(GUID));
+    }
+
+    /**
+     * Verifies that tapping a notification with page context does not attach the page context extra
+     * to the launcher intent when form field propagation is disabled.
+     */
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_FORM_FIELDS)
+    public void testNotificationTap_WithPageContext_FeatureDisabled() {
+        byte[] pageContextBytes = new byte[] {0x08, 0x01};
+        Intent intent = createTapIntent(pageContextBytes);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> NotificationManager.handleIntent(intent));
+
+        intended(hasComponent(ChromeLauncherActivity.class.getName()));
+        intended(hasData(URL));
+        intended(not(hasExtraWithKey(IntentHandler.EXTRA_SEND_TAB_TO_SELF_PAGE_CONTEXT)));
+        verify(mNativeMock).markEntryOpened(eq(mProfile), eq(GUID));
+    }
+
+    /**
+     * Verifies that tapping a notification without page context does not attach the page context
+     * extra to the launcher intent when form field propagation is enabled.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_FORM_FIELDS)
+    public void testNotificationTap_WithoutPageContext() {
+        Intent intent = createTapIntent(/* pageContextBytes= */ null);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> NotificationManager.handleIntent(intent));
+
+        intended(hasComponent(ChromeLauncherActivity.class.getName()));
+        intended(hasData(URL));
+        intended(not(hasExtraWithKey(IntentHandler.EXTRA_SEND_TAB_TO_SELF_PAGE_CONTEXT)));
+        verify(mNativeMock).markEntryOpened(eq(mProfile), eq(GUID));
     }
 }

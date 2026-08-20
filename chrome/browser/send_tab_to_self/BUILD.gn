@@ -75,6 +75,7 @@ source_set("unit_tests") {
       "../android/send_tab_to_self/android_notification_handler_unittest.cc",
     ]
     deps += [
+      "//chrome/android:chrome_jni_headers",
       "//chrome/browser/android/send_tab_to_self",
       "//chrome/browser/ui/android/tab_model:test_support",
       "//components/tabs:test_support",

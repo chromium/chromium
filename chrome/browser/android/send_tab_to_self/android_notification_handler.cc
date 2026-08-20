@@ -25,6 +25,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/page_context.h"
+#include "components/send_tab_to_self/proto_conversions.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/shared_highlighting/core/common/text_fragment.h"
@@ -190,22 +191,25 @@ void AndroidNotificationHandler::ShowNotification(
   std::optional<std::string> internal_scroll_to_text_fragment =
       GetScrollPositionAsTextFragment(&entry);
 
+  std::vector<uint8_t> page_context_bytes;
+  if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields) &&
+      !entry.GetPageContext().form_field_info.fields.empty()) {
+    std::string serialized_page_context =
+        PageContextToProto(entry.GetPageContext()).SerializeAsString();
+    page_context_bytes.assign(serialized_page_context.begin(),
+                              serialized_page_context.end());
+  }
+
   Java_NotificationManager_showNotification(
-      env, ConvertUTF8ToJavaString(env, entry.GetGUID()),
-      ConvertUTF8ToJavaString(env, entry.GetURL().spec()),
-      ConvertUTF8ToJavaString(env, entry.GetTitle()),
-      ConvertUTF8ToJavaString(env, entry.GetDeviceName()),
-      expiration_time.InMillisecondsSinceUnixEpoch(),
+      env, entry.GetGUID(), entry.GetURL().spec(), entry.GetTitle(),
+      entry.GetDeviceName(), expiration_time.InMillisecondsSinceUnixEpoch(),
       send_tab_to_self_notification_receiver_class,
-      internal_scroll_to_text_fragment
-          ? ConvertUTF8ToJavaString(env, *internal_scroll_to_text_fragment)
-          : nullptr);
+      internal_scroll_to_text_fragment, page_context_bytes);
 }
 
 void AndroidNotificationHandler::HideNotification(const std::string& guid) {
   JNIEnv* env = AttachCurrentThread();
-  Java_NotificationManager_hideNotification(env,
-                                            ConvertUTF8ToJavaString(env, guid));
+  Java_NotificationManager_hideNotification(env, guid);
 }
 
 void AndroidNotificationHandler::DismissEntries(

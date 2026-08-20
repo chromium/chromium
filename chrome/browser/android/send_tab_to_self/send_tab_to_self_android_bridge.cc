@@ -9,6 +9,7 @@
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_list.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/page_context.h"
+#include "components/send_tab_to_self/proto_conversions.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -36,7 +38,9 @@
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "content/public/browser/web_contents.h"
+#include "url/android/gurl_android.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/SendTabToSelfAndroidBridge_jni.h"
@@ -386,6 +390,25 @@ static void JNI_SendTabToSelfAndroidBridge_RemoveTargetDeviceListWaiter(
     JNIEnv* env,
     int64_t waiter_ptr) {
   delete reinterpret_cast<TargetDeviceListWaiter*>(waiter_ptr);
+}
+
+static void JNI_SendTabToSelfAndroidBridge_FillWebContents(
+    JNIEnv* env,
+    content::WebContents* web_contents,
+    const std::vector<uint8_t>& page_context_bytes,
+    const GURL& url) {
+  if (!web_contents || page_context_bytes.empty() || !url.is_valid()) {
+    return;
+  }
+
+  sync_pb::PageContext proto;
+  if (!proto.ParseFromArray(page_context_bytes.data(),
+                            page_context_bytes.size())) {
+    return;
+  }
+
+  PageContext page_context = PageContextFromProto(proto);
+  FillWebContents(web_contents, url::Origin::Create(url), page_context);
 }
 
 }  // namespace send_tab_to_self

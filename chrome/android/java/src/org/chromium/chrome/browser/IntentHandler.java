@@ -135,6 +135,14 @@ public class IntentHandler {
     public static final String EXTRA_SCROLL_TO_TEXT_FRAGMENT =
             "com.google.chrome.scroll_to_text_fragment";
 
+    /**
+     * An extra to pass serialized PageContext proto bytes for form field propagation. Carries
+     * sensitive user form data and must only be processed from trusted internal intents validated
+     * with {@link org.chromium.base.IntentUtils#isTrustedIntentFromSelf}.
+     */
+    public static final String EXTRA_SEND_TAB_TO_SELF_PAGE_CONTEXT =
+            "com.google.chrome.send_tab_to_self_page_context";
+
     /** The original intent of the given intent before it was modified. */
     public static final String EXTRA_ORIGINAL_INTENT = "com.android.chrome.original_intent";
 

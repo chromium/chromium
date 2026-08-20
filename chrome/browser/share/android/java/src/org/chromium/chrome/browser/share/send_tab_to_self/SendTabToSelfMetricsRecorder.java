@@ -12,7 +12,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 
@@ -37,28 +36,8 @@ public class SendTabToSelfMetricsRecorder {
     public static void attachScrollObserverToTab(Tab tab, @Nullable String scrollToTextFragment) {
         boolean hasScrollPosition = !TextUtils.isEmpty(scrollToTextFragment);
         recordHasScrollPositionOnOpened(hasScrollPosition);
-        if (tab.getWebContents() != null) {
-            attachScrollObserver(tab.getWebContents(), hasScrollPosition);
-            return;
-        }
-
-        // If the web contents are not available yet, attach an observer to wait for the web
-        // contents to be available.
-        tab.addObserver(
-                new EmptyTabObserver() {
-                    @Override
-                    public void onContentChanged(Tab t) {
-                        if (t.getWebContents() != null) {
-                            attachScrollObserver(t.getWebContents(), hasScrollPosition);
-                            t.removeObserver(this);
-                        }
-                    }
-
-                    @Override
-                    public void onDestroyed(Tab t) {
-                        t.removeObserver(this);
-                    }
-                });
+        SendTabToSelfAndroidBridge.runWhenWebContentsAvailable(
+                tab, webContents -> attachScrollObserver(webContents, hasScrollPosition));
     }
 
     private static void attachScrollObserver(WebContents webContents, boolean hasScrollPosition) {

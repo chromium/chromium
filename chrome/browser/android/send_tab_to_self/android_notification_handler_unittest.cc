@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 
+#include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -30,14 +32,18 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#include "chrome/android/chrome_jni_headers/NotificationManager_jni.h"
+
 namespace send_tab_to_self {
 namespace {
 
 using base::Bucket;
 using base::BucketsAre;
+using testing::AllOf;
 using testing::Eq;
 using testing::NiceMock;
 using testing::Property;
+using testing::Return;
 
 constexpr char kExampleUrl[] = "https://www.example.com/";
 constexpr char kDeviceId[] = "device_id";
@@ -714,7 +720,7 @@ TEST_F(AndroidNotificationHandlerModelNotReadyWithNativeAppSupportTest,
   EXPECT_CALL(*handler(), ShowNotification).Times(0);
   EXPECT_CALL(*handler(), ShowMessageBanner).Times(0);
   EXPECT_CALL(*handler(), OpenInNativeAppIfPossible(GURL(kExampleUrl)))
-      .WillOnce(testing::Return(true));
+      .WillOnce(Return(true));
 
   // Mark the model as ready. This should trigger the auto-open of the pending
   // entry.
@@ -728,5 +734,70 @@ TEST_F(AndroidNotificationHandlerModelNotReadyWithNativeAppSupportTest,
 
   TabModelList::RemoveTabModel(tab_model_.get());
 }
+
+class AndroidNotificationHandlerWithFormFieldsPropagationTest
+    : public AndroidNotificationHandlerTest {
+ public:
+  AndroidNotificationHandlerWithFormFieldsPropagationTest() {
+    feature_list_.InitAndEnableFeature(kSendTabToSelfPropagateFormFields);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verifies that ShowNotification receives the entry containing form field data
+// when Chrome is not in the foreground.
+TEST_F(AndroidNotificationHandlerWithFormFieldsPropagationTest,
+       ShowNotificationWithPageContext) {
+  PageContext page_context;
+  PageContext::FormField field;
+  field.name_attribute = u"username";
+  field.value = u"test_user";
+  page_context.form_field_info.fields.push_back(field);
+
+  const SendTabToSelfEntry* entry = model()->AddEntryRemotely(
+      GURL(kExampleUrl), "Title", kDeviceId, page_context, NavigationHistory());
+  const std::string guid = entry->GetGUID();
+
+  EXPECT_CALL(*handler(),
+              ShowNotification(AllOf(
+                  Property(&SendTabToSelfEntry::GetGUID, Eq(guid)),
+                  Property(&SendTabToSelfEntry::GetPageContext,
+                           Eq(page_context)))));
+
+  // Chrome is in background (no tab model added), so entries are displayed as
+  // notifications.
+  handler()->DisplayNewEntries({entry});
+  EXPECT_FALSE(model()->GetEntryByGUID(guid)->IsOpened());
+}
+
+// Verifies that AndroidNotificationHandler::ShowNotification correctly
+// serializes the entry's PageContext and invokes
+// Java_NotificationManager_showNotification via JNI without errors when form
+// field propagation is enabled.
+TEST_F(AndroidNotificationHandlerWithFormFieldsPropagationTest,
+       ShowNotificationInvokesJavaNotificationManager) {
+  PageContext page_context;
+  PageContext::FormField field;
+  field.name_attribute = u"username";
+  field.value = u"test_user";
+  page_context.form_field_info.fields.push_back(field);
+
+  const SendTabToSelfEntry* entry = model()->AddEntryRemotely(
+      GURL(kExampleUrl), "Title", kDeviceId, page_context, NavigationHistory());
+  const std::string guid = entry->GetGUID();
+
+  AndroidNotificationHandler handler(model());
+  handler.DisplayNewEntries({entry});
+
+  // Verifying that hideNotification returns true confirms that
+  // Java_NotificationManager_showNotification was successfully invoked via JNI
+  // (with the serialized page context byte vector) and recorded an active
+  // notification for `guid` in Java SharedPreferences.
+  JNIEnv* env = base::android::AttachCurrentThread();
+  EXPECT_TRUE(Java_NotificationManager_hideNotification(env, guid));
+}
+
 }  // namespace
 }  // namespace send_tab_to_self

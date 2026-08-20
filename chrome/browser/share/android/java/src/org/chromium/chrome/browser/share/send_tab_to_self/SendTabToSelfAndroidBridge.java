@@ -15,6 +15,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
@@ -27,6 +28,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.SendTabToSelfTabCardLabelData;
@@ -46,6 +48,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -524,6 +527,52 @@ public class SendTabToSelfAndroidBridge {
         SendTabToSelfAndroidBridgeJni.get().removeModelObserver(observerPtr);
     }
 
+    /** Executes the given action once the WebContents of the tab is available. */
+    static void runWhenWebContentsAvailable(Tab tab, Callback<WebContents> action) {
+        if (tab.isDestroyed()) return;
+        WebContents webContents = tab.getWebContents();
+        if (webContents != null) {
+            action.onResult(webContents);
+            return;
+        }
+
+        tab.addObserver(
+                new EmptyTabObserver() {
+                    @Override
+                    public void onContentChanged(Tab t) {
+                        WebContents contents = t.getWebContents();
+                        if (contents == null) {
+                            return;
+                        }
+                        t.removeObserver(this);
+                        action.onResult(contents);
+                    }
+
+                    @Override
+                    public void onDestroyed(Tab t) {
+                        t.removeObserver(this);
+                    }
+                });
+    }
+
+    /**
+     * Fills the web contents of the tab with the form field data in the serialized page context.
+     *
+     * @param tab The tab whose web contents should be filled.
+     * @param pageContext The serialized PageContext protobuf bytes containing form field info.
+     * @param url The URL of the tab navigation.
+     */
+    public static void fillWebContents(Tab tab, byte @Nullable [] pageContext, String url) {
+        if (pageContext == null || pageContext.length == 0) {
+            return;
+        }
+        runWhenWebContentsAvailable(
+                tab,
+                webContents ->
+                        SendTabToSelfAndroidBridgeJni.get()
+                                .fillWebContents(webContents, pageContext, new GURL(url)));
+    }
+
     @NativeMethods
     public interface Natives {
         void sendTabToDevice(
@@ -543,6 +592,11 @@ public class SendTabToSelfAndroidBridge {
                 @JniType("Profile*") Profile profile,
                 String guid,
                 @ShareActivatedEntryPoint int entryPoint);
+
+        void fillWebContents(
+                @JniType("content::WebContents*") @Nullable WebContents webContents,
+                @JniType("std::vector<uint8_t>") byte @Nullable [] pageContext,
+                @JniType("GURL") GURL url);
 
         @JniType("std::vector")
         List<TargetDeviceInfo> getAllTargetDeviceInfos(@JniType("Profile*") Profile profile);

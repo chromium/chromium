@@ -19,7 +19,10 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.provider.Browser;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -51,11 +54,17 @@ import org.chromium.components.external_intents.ExternalNavigationHandler;
  */
 @NullMarked
 public class NotificationManager {
-    private static final String NOTIFICATION_GUID_EXTRA = "send_tab_to_self.notification.guid";
+    @VisibleForTesting
+    public static final String NOTIFICATION_GUID_EXTRA = "send_tab_to_self.notification.guid";
+
     // Action constants for the registered BroadcastReceiver.
-    private static final String NOTIFICATION_ACTION_TAP = "send_tab_to_self.tap";
-    private static final String NOTIFICATION_ACTION_DISMISS = "send_tab_to_self.dismiss";
-    private static final String NOTIFICATION_ACTION_TIMEOUT = "send_tab_to_self.timeout";
+    @VisibleForTesting public static final String NOTIFICATION_ACTION_TAP = "send_tab_to_self.tap";
+
+    @VisibleForTesting
+    public static final String NOTIFICATION_ACTION_DISMISS = "send_tab_to_self.dismiss";
+
+    @VisibleForTesting
+    public static final String NOTIFICATION_ACTION_TIMEOUT = "send_tab_to_self.timeout";
 
     private static boolean openInNativeAppIfPossible(@Nullable Uri uri) {
         if (uri == null) return false;
@@ -114,8 +123,13 @@ public class NotificationManager {
      *     https://wicg.github.io/scroll-to-text-fragment/#syntax) that should be scrolled into view
      *     without applying standard highlight styling. This is used for cross-device scroll
      *     restoration and is expected to be set only for trusted navigations.
+     * @param pageContext The serialized PageContext proto bytes for form field propagation, or
+     *     null.
      */
-    private static void openUrl(@Nullable Uri uri, @Nullable String scrollToTextFragment) {
+    private static void openUrl(
+            @Nullable Uri uri,
+            @Nullable String scrollToTextFragment,
+            byte @Nullable [] pageContext) {
         if (openInNativeAppIfPossible(uri)) {
             return;
         }
@@ -138,10 +152,23 @@ public class NotificationManager {
             intent.putExtra(IntentHandler.EXTRA_SCROLL_TO_TEXT_FRAGMENT, scrollToTextFragment);
         }
 
+        if (pageContext != null
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_FORM_FIELDS)) {
+            intent.putExtra(IntentHandler.EXTRA_SEND_TAB_TO_SELF_PAGE_CONTEXT, pageContext);
+        }
+
         IntentUtils.addTrustedIntentExtras(intent);
         context.startActivity(intent);
     }
 
+    /**
+     * Handles the notification action intents (such as tap, dismiss, or timeout) for Send Tab To
+     * Self notifications.
+     *
+     * @param intent The intent carrying the notification action and associated extras, including
+     *     optional scroll-to-text fragment and serialized page context for form field propagation.
+     */
     public static void handleIntent(Intent intent) {
         final String action = assertNonNull(intent.getAction());
         final String guid = IntentUtils.safeGetStringExtra(intent, NOTIFICATION_GUID_EXTRA);
@@ -155,7 +182,10 @@ public class NotificationManager {
                 String scrollToTextFragment =
                         IntentUtils.safeGetStringExtra(
                                 intent, IntentHandler.EXTRA_SCROLL_TO_TEXT_FRAGMENT);
-                openUrl(intent.getData(), scrollToTextFragment);
+                byte[] pageContext =
+                        IntentUtils.safeGetByteArrayExtra(
+                                intent, IntentHandler.EXTRA_SEND_TAB_TO_SELF_PAGE_CONTEXT);
+                openUrl(intent.getData(), scrollToTextFragment, pageContext);
                 hideNotification(guid);
                 SendTabToSelfAndroidBridge.markEntryOpened(profile, guid);
                 SendTabToSelfAndroidBridge.markEntryActivated(
@@ -182,7 +212,7 @@ public class NotificationManager {
      * hide.
      */
     @CalledByNative
-    private static boolean hideNotification(@Nullable String guid) {
+    private static boolean hideNotification(@JniType("std::string") @Nullable String guid) {
         NotificationSharedPrefManager.ActiveNotification activeNotification =
                 assumeNonNull(NotificationSharedPrefManager.findActiveNotification(guid));
         if (!NotificationSharedPrefManager.removeActiveNotification(guid)) {
@@ -197,21 +227,29 @@ public class NotificationManager {
     /**
      * Displays a notification.
      *
+     * @param guid GUID of the SendTabToSelf entry.
      * @param url URL to open when the user taps on the notification.
      * @param title Title to display within the notification.
+     * @param deviceName Name of the sending device.
      * @param timeoutAtMillis Specifies how long until the notification should be automatically
      *     hidden.
+     * @param broadcastReceiver Class of the broadcast receiver to handle notification actions.
+     * @param scrollToTextFragment The text fragment to scroll to, or null.
+     * @param pageContext The serialized PageContext proto bytes for form field propagation, or
+     *     null.
      * @return whether the notification was successfully displayed
      */
     @CalledByNative
-    private static boolean showNotification(
-            String guid,
-            String url,
-            String title,
-            String deviceName,
+    @VisibleForTesting
+    static boolean showNotification(
+            @JniType("std::string") String guid,
+            @JniType("std::string") String url,
+            @JniType("std::string") String title,
+            @JniType("std::string") String deviceName,
             long timeoutAtMillis,
             Class<? extends BroadcastReceiver> broadcastReceiver,
-            @Nullable String scrollToTextFragment) {
+            @JniType("std::optional<std::string>") @Nullable String scrollToTextFragment,
+            @JniType("std::vector<uint8_t>") byte @Nullable [] pageContext) {
         // A notification associated with this Share entry already exists. Don't display a new one.
         if (NotificationSharedPrefManager.findActiveNotification(guid) != null) {
             return false;
@@ -233,6 +271,11 @@ public class NotificationManager {
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_SCROLL_POSITION)) {
             tapIntent.putExtra(IntentHandler.EXTRA_SCROLL_TO_TEXT_FRAGMENT, scrollToTextFragment);
+        }
+        if (pageContext != null
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_FORM_FIELDS)) {
+            tapIntent.putExtra(IntentHandler.EXTRA_SEND_TAB_TO_SELF_PAGE_CONTEXT, pageContext);
         }
 
         PendingIntentProvider contentIntent =

@@ -254,6 +254,7 @@ import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.qrcode.QrCodeCoordinator;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfGestureDetector;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfMetricsRecorder;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
@@ -3073,12 +3074,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             // Hides the overview page to ensure proper layout change signals are sent.
             hideOverview(/* animate= */ false);
         }
-        maybeAttachSendTabToSelfScrollObserver(resultTab, intent, loadUrlParams);
+        maybeAttachSendTabToSelfObservers(resultTab, intent, loadUrlParams);
 
         return resultTab;
     }
 
-    private void maybeAttachSendTabToSelfScrollObserver(
+    private void maybeAttachSendTabToSelfObservers(
             @Nullable Tab resultTab, Intent intent, LoadUrlParams loadUrlParams) {
         if (resultTab != null
                 && IntentUtils.safeGetBooleanExtra(
@@ -3086,6 +3087,16 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 && IntentUtils.isTrustedIntentFromSelf(intent)) {
             SendTabToSelfMetricsRecorder.attachScrollObserverToTab(
                     resultTab, loadUrlParams.getInternalScrollToTextFragment());
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_FORM_FIELDS)) {
+                byte[] pageContext =
+                        IntentUtils.safeGetByteArrayExtra(
+                                intent, IntentHandler.EXTRA_SEND_TAB_TO_SELF_PAGE_CONTEXT);
+                if (pageContext != null) {
+                    SendTabToSelfAndroidBridge.fillWebContents(
+                            resultTab, pageContext, loadUrlParams.getUrl());
+                }
+            }
         }
     }
 
