@@ -87,9 +87,9 @@ void DevToolsFrontendHost::SetupExtensionsAPI(
 // static
 scoped_refptr<base::RefCountedMemory>
 DevToolsFrontendHost::GetFrontendResourceBytes(std::string_view path) {
-  for (const auto& resource : kDevtoolsResources) {
-    if (path == resource.path) {
-      return GetContentClient()->GetDataResourceBytes(resource.id);
+  for (const auto& [resource_path, id, filepath] : kDevtoolsResources) {
+    if (path == resource_path) {
+      return GetContentClient()->GetDataResourceBytes(id);
     }
   }
   return nullptr;

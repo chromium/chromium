@@ -19,7 +19,6 @@ import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
 import("//ui/base/ui_features.gni")
 import("//ui/qt/qt.gni")
-import("//ui/webui/webui_features.gni")
 
 if (is_android) {
   import("//build/config/android/config.gni")
@@ -92,7 +91,6 @@ buildflag_header("buildflags") {
     "USE_GTK=$use_gtk",
     "USE_QT=$use_qt",
     "ENABLE_PSEUDOLOCALES=$enable_pseudolocales",
-    "LOAD_WEBUI_FROM_DISK=$load_webui_from_disk",
   ]
 }
 
