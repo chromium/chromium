@@ -86,13 +86,17 @@
   -webkit-mask-image: url(//resources/cr_components/searchbox/icons/camera.svg);
 }
 
+:host {
+  --omnibox-everywhere-top-actions-top: 12px;
+}
+
 #profileIcon {
   border-radius: 50%;
   height: 36px;
   pointer-events: none;
   position: absolute;
   right: 16px;
-  top: 10px;
+  top: var(--omnibox-everywhere-top-actions-top, 12px);
   width: 36px;
   z-index: 100;
 }

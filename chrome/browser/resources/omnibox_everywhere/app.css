@@ -14,8 +14,8 @@
 }
 
 omnibox-everywhere-omnibox {
-  --cr-searchbox-height: 56px;
-  --cr-searchbox-icon-left-position: 12px;
+  --cr-searchbox-height: 48px;
+  --cr-searchbox-icon-left-position: 16px;
   --cr-searchbox-icon-top-position: 0;
   --cr-searchbox-min-width: 100%;
 
@@ -123,9 +123,13 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
 #mostVisitedContainer {
   -webkit-app-region: no-drag;
   align-items: center;
+  background-clip: padding-box;
   background-color: var(--color-sys-surface-container-high, #fff);
-  border-radius: 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.08);
+  /* Preserves 2px border width parity with omnibox-everywhere-omnibox and
+   * composebox. */
+  border: 2px solid transparent;
+  border-radius: 28px;
+  box-shadow: 0 4px 20px 2px rgba(0, 0, 0, 0.25);
   box-sizing: border-box;
   display: flex;
   justify-content: center;

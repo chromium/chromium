@@ -99,6 +99,7 @@
   flex-direction: column;
   height: auto;
   min-height: var(--cr-searchbox-height);
+  padding-top: 6px;
   position: relative;
   width: 100%;
 }
@@ -189,10 +190,10 @@ cr-searchbox-input::part(searchbox-input):focus::placeholder {
 }
 
 :host([is-fusebox-enabled]) {
-  --cr-searchbox-border-radius: 30px;
+  --cr-searchbox-border-radius: 28px;
   --cr-searchbox-dropdown-padding-bottom: 10px;
   --cr-searchbox-dropdown-padding-top: 10px;
-  --cr-searchbox-height: 56px;
+  --cr-searchbox-height: 48px;
   /* Cannot touch this searchbox icon size var;
     it's used by the rainbow outline AI button class in
     searchbox_compose_button.css. Should be different
@@ -246,7 +247,7 @@ cr-composebox-contextual-entrypoint-and-menu {
 :host([is-fusebox-enabled]) cr-composebox-contextual-entrypoint-and-menu {
   color: var(--color-searchbox-results-foreground);
   padding-inline-end: 6px;
-  padding-inline-start: 8px;
+  padding-inline-start: 0;
   position: relative;
   z-index: var(--cr-composebox-context-menu-z-index, 1001);
 }
@@ -310,19 +311,19 @@ cr-composebox-contextual-entrypoint-and-menu {
   opacity: 0;
 }
 
-
 :host([is-fusebox-enabled]) .contextualEntrypointContainerCompact {
   box-shadow: none;
   width: auto;
 }
 
 :host([is-fusebox-enabled]) #composeButton {
-  top: 10px;
+  top: var(--omnibox-everywhere-top-actions-top, 12px);
   margin-inline-end: 58px;
 }
 
 #bottomControls {
-  padding-block: 8px;
+  padding-block-start: 4px;
+  padding-block-end: 12px;
 }
 
 #bottomControls #context {

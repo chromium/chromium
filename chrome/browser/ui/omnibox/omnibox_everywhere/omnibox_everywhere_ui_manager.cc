@@ -64,7 +64,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxEverywhereUIManager,
                                       kOmniboxEverywhereElementId);
 
 namespace {
-
 bool IsEphemeral() {
   bool is_ephemeral = false;
   if (g_browser_process && g_browser_process->local_state()) {

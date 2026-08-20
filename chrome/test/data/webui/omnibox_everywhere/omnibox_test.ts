@@ -397,6 +397,32 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     assertFalse(omnibox.hasAttribute('dropdown-is-visible'));
     assertEquals('flex', window.getComputedStyle(bottomControls).display);
   });
+
+  test('balanced layout and element clearances', () => {
+    const inputWrapper =
+        omnibox.shadowRoot.querySelector<HTMLElement>('#inputWrapper');
+    assertTrue(!!inputWrapper);
+    const wrapperStyle = window.getComputedStyle(inputWrapper);
+    assertEquals('28px', wrapperStyle.borderRadius);
+    assertEquals('6px', wrapperStyle.paddingTop);
+
+    const bottomControls =
+        omnibox.shadowRoot.querySelector<HTMLElement>('#bottomControls');
+    assertTrue(!!bottomControls);
+    const bottomControlsStyle = window.getComputedStyle(bottomControls);
+    assertEquals('4px', bottomControlsStyle.paddingTop);
+    assertEquals('12px', bottomControlsStyle.paddingBottom);
+
+    const composeButton =
+        omnibox.shadowRoot.querySelector<HTMLElement>('#composeButton');
+    assertTrue(!!composeButton);
+    assertEquals('12px', window.getComputedStyle(composeButton).top);
+
+    const profileIcon =
+        omnibox.shadowRoot.querySelector<HTMLElement>('#profileIcon');
+    assertTrue(!!profileIcon);
+    assertEquals('12px', window.getComputedStyle(profileIcon).top);
+  });
 });
 
 

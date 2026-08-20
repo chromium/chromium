@@ -12,7 +12,7 @@
   pointer-events: none;
   position: absolute;
   right: 16px;
-  top: 10px;
+  top: var(--omnibox-everywhere-top-actions-top, 12px);
   z-index: 100;
 }
 
