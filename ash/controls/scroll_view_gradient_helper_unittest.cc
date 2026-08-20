@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/controls/scroll_view_gradient_helper.h"
+
 #include <memory>
 
-#include "ash/controls/scroll_view_gradient_helper.h"
 #include "base/memory/raw_ptr.h"
+#include "cc/base/math_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/rect.h"

@@ -15,7 +15,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #include "ui/aura/window_observer.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_solid_color.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace ash {

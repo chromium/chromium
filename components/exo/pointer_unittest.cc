@@ -62,7 +62,7 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/compositor/compositor_switches.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_surface.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"

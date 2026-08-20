@@ -22,25 +22,26 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
-#include "cc/layers/mirror_layer.h"
-#include "cc/layers/nine_patch_layer.h"
 #include "cc/layers/picture_layer.h"
-#include "cc/layers/solid_color_layer.h"
-#include "cc/layers/surface_layer.h"
-#include "cc/layers/texture_layer.h"
 #include "cc/paint/filter_operation.h"
 #include "cc/paint/filter_operations.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
-#include "components/viz/common/resources/transferable_resource.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_delegate.h"
+#include "ui/compositor/layer_mirror.h"
+#include "ui/compositor/layer_nine_patch.h"
+#include "ui/compositor/layer_not_drawn.h"
 #include "ui/compositor/layer_observer.h"
+#include "ui/compositor/layer_solid_color.h"
+#include "ui/compositor/layer_surface.h"
 #include "ui/compositor/layer_test_api.h"
+#include "ui/compositor/layer_textured.h"
 #include "ui/compositor/layer_type.h"
+#include "ui/compositor/layer_with_external_texture.h"
 #include "ui/compositor/paint_context.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/canvas.h"
@@ -51,7 +52,6 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/interpolated_transform.h"
 
 namespace ui {
@@ -79,46 +79,6 @@ void CheckSnapped(float snapped_position) {
 #endif
 
 }  // namespace
-
-////////////////////////////////////////////////////////////////////////////////
-// Layer::LayerMirror:
-
-class Layer::LayerMirror : public LayerDelegate, LayerObserver {
- public:
-  LayerMirror(Layer* source, Layer* dest)
-      : source_(source), dest_(dest) {
-    dest->AddObserver(this);
-    dest->set_delegate(this);
-  }
-
-  LayerMirror(const LayerMirror&) = delete;
-  LayerMirror& operator=(const LayerMirror&) = delete;
-
-  ~LayerMirror() override {
-    dest_->RemoveObserver(this);
-    dest_->set_delegate(nullptr);
-  }
-
-  Layer* dest() { return dest_; }
-
-  // LayerDelegate:
-  void OnPaintLayer(const PaintContext& context) override {
-    if (auto* delegate = source_->delegate())
-      delegate->OnPaintLayer(context);
-  }
-  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
-                                  float new_device_scale_factor) override {}
-
-  // LayerObserver:
-  void LayerDestroyed(Layer* layer) override {
-    DCHECK_EQ(dest_, layer);
-    source_->OnMirrorDestroyed(this);
-  }
-
- private:
-  const raw_ptr<Layer> source_;
-  const raw_ptr<Layer> dest_;
-};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Layer::SubpixelPositionOffsetCache:
@@ -366,7 +326,8 @@ std::unique_ptr<Layer> Layer::Mirror() {
 
 std::unique_ptr<Layer> Layer::Mirror(const LayerMirrorSettings& settings) {
   auto mirror = CreateMirror(settings);
-  mirrors_.emplace_back(std::make_unique<LayerMirror>(this, mirror.get()));
+  mirrors_.emplace_back(
+      std::make_unique<internal::LayerMirror>(this, mirror.get()));
   return mirror;
 }
 
@@ -906,8 +867,9 @@ void Layer::SetIsFastRoundedCorner(bool enable) {
   cc_layer_->SetIsFastRoundedCorner(enable);
   ScheduleDraw();
 
-  for (const auto& mirror : mirrors_)
+  for (const auto& mirror : mirrors_) {
     mirror->dest()->SetIsFastRoundedCorner(enable);
+  }
 }
 
 bool Layer::GetTargetTransformRelativeTo(const Layer* ancestor,
@@ -1520,8 +1482,9 @@ void Layer::SetGradientMaskFromAnimation(
     PropertyChangeReason reason) {
   cc_layer_->SetGradientMask(gradient_mask);
 
-  for (const auto& mirror : mirrors_)
+  for (const auto& mirror : mirrors_) {
     mirror->dest()->SetGradientMaskFromAnimation(gradient_mask, reason);
+  }
 }
 
 void Layer::ScheduleDrawForAnimation() {
@@ -1649,9 +1612,9 @@ void Layer::ResetCompositorForAnimatorsInTree(Compositor* compositor) {
   }
 }
 
-void Layer::OnMirrorDestroyed(LayerMirror* mirror) {
-  const auto it =
-      std::ranges::find(mirrors_, mirror, &std::unique_ptr<LayerMirror>::get);
+void Layer::OnMirrorDestroyed(internal::LayerMirror* mirror) {
+  const auto it = std::ranges::find(
+      mirrors_, mirror, &std::unique_ptr<internal::LayerMirror>::get);
 
   CHECK(it != mirrors_.end());
   mirrors_.erase(it);
@@ -1706,658 +1669,7 @@ bool Layer::GetTransformRelativeToImpl(const Layer* ancestor,
 }
 
 bool Layer::ContainsMirrorForTest(Layer* mirror) const {
-  return std::ranges::contains(mirrors_, mirror, &LayerMirror::dest);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// LayerNotDrawn, public:
-
-LayerNotDrawn::LayerNotDrawn() : Layer(LAYER_NOT_DRAWN) {
-  content_layer_ = cc::PictureLayer::Create(this);
-  cc_layer_ = content_layer_.get();
-  InitializeCcLayer();
-  cc_layer_->SetIsDrawable(false);
-}
-
-LayerNotDrawn::~LayerNotDrawn() {
-  Destroy();
-}
-
-bool LayerNotDrawn::ShouldSchedulePaint() const {
-  // LayerNotDrawn does not draw any content, so it never needs to paint.
-  return false;
-}
-
-scoped_refptr<cc::DisplayItemList> LayerNotDrawn::PaintContentsToDisplayList() {
-  return base::MakeRefCounted<cc::DisplayItemList>();
-}
-
-bool LayerNotDrawn::FillsBoundsCompletely() const {
-  return false;
-}
-
-void LayerNotDrawn::Reset() {
-  content_layer_->ClearClient();
-  content_layer_ = nullptr;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// LayerWithExternalTexture, public:
-
-LayerWithExternalTexture::~LayerWithExternalTexture() = default;
-
-void LayerWithExternalTexture::SetTransferableResource(
-    const viz::TransferableResource& resource,
-    viz::ReleaseCallback release_callback,
-    gfx::Size texture_size_in_dip) {
-  DCHECK(!resource.is_empty());
-  DCHECK(release_callback);
-  DCHECK(!resource.GetIsSoftware());
-  if (!texture_layer_.get()) {
-    // If `FinishAnimationsBeforeSwitchToLayer` returns false, `this` Layer was
-    // destroyed.
-    if (!FinishAnimationsBeforeSwitchToLayer()) {
-      return;
-    }
-    // Incoming resource is assumed to have top-left origin which corresponds to
-    // TextureLayer flipped being false.
-    scoped_refptr<cc::TextureLayer> new_layer = cc::TextureLayer::Create(this);
-    SwitchToLayer(new_layer);
-
-    texture_layer_ = new_layer;
-    // Reset the frame_size_in_dip_ so that SetTextureSize() will not early out,
-    // the frame_size_in_dip_ was for a previous (different) |texture_layer_|.
-    frame_size_in_dip_ = gfx::Size();
-  }
-
-  if (transfer_release_callback_) {
-    std::move(transfer_release_callback_).Run(gpu::SyncToken(), false);
-  }
-
-  transfer_release_callback_ = std::move(release_callback);
-  transfer_resource_ = resource;
-  SetTextureSize(texture_size_in_dip);
-
-  for (const auto& mirror : mirrors_) {
-    // The release callbacks should be empty as only the source layer
-    // should be able to release the texture resource.
-    static_cast<LayerWithExternalTexture*>(mirror->dest())
-        ->SetTransferableResource(
-            transfer_resource_,
-            base::BindOnce(
-                [](const gpu::SyncToken& sync_token, bool is_lost) {}),
-            frame_size_in_dip_);
-  }
-}
-
-void LayerWithExternalTexture::SetTextureSize(gfx::Size texture_size_in_dip) {
-  if (frame_size_in_dip_ == texture_size_in_dip) {
-    return;
-  }
-
-  frame_size_in_dip_ = texture_size_in_dip;
-  RecomputeDrawsContentAndUVRect();
-  texture_layer_->SetNeedsDisplay();
-}
-
-std::unique_ptr<Layer> LayerWithExternalTexture::CreateMirror(
-    const LayerMirrorSettings& settings) {
-  auto mirror = Layer::CreateMirror(settings);
-
-  if (HasTransferableResource()) {
-    // Send an empty release callback because we don't want the resource to be
-    // freed up until the original layer releases it.
-    static_cast<LayerWithExternalTexture*>(mirror.get())
-        ->SetTransferableResource(
-            transfer_resource(),
-            base::BindOnce(
-                [](const gpu::SyncToken& sync_token, bool is_lost) {}),
-            frame_size_in_dip_);
-  }
-
-  return mirror;
-}
-
-bool LayerWithExternalTexture::HasExternalContent() const {
-  return texture_layer_.get();
-}
-
-bool LayerWithExternalTexture::HasTransferableResource() const {
-  return !transfer_resource_.is_empty();
-}
-
-void LayerWithExternalTexture::RecomputeDrawsContentAndUVRect() {
-  gfx::Size size(bounds_.size());
-  if (texture_layer_.get()) {
-    size.SetToMin(frame_size_in_dip_);
-    gfx::PointF uv_top_left(0.f, 0.f);
-    gfx::PointF uv_bottom_right(
-        static_cast<float>(size.width()) / frame_size_in_dip_.width(),
-        static_cast<float>(size.height()) / frame_size_in_dip_.height());
-    texture_layer_->SetUV(uv_top_left, uv_bottom_right);
-  }
-
-  cc_layer_->SetBounds(size);
-}
-
-bool LayerWithExternalTexture::ShouldSchedulePaint() const {
-  // A layer with an external texture needs to schedule a paint when it has a
-  // transferable resource. Even though it doesn't use a delegate to paint
-  // contents, scheduling a paint is necessary to accumulate damage and trigger
-  // a frame draw in the compositor to display the updated texture.
-  return HasTransferableResource();
-}
-
-void LayerWithExternalTexture::OnPaintScheduled() {
-  ScheduleDraw();
-}
-
-bool LayerWithExternalTexture::ShouldCommitDamage() const {
-  // A layer with an external texture needs to commit damage when it has a
-  // transferable resource to display.
-  return HasTransferableResource();
-}
-
-bool LayerWithExternalTexture::PrepareTransferableResource(
-    viz::TransferableResource* resource,
-    viz::ReleaseCallback* release_callback) {
-  if (!transfer_release_callback_) {
-    return false;
-  }
-
-  *resource = transfer_resource_;
-  *release_callback = std::move(transfer_release_callback_);
-  return true;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// LayerWithExternalTexture, protected:
-
-LayerWithExternalTexture::LayerWithExternalTexture(LayerType type)
-    : Layer(type) {}
-
-void LayerWithExternalTexture::Reset() {
-  if (texture_layer_.get()) {
-    texture_layer_->ClearClient();
-  }
-
-  texture_layer_ = nullptr;
-  transfer_resource_ = viz::TransferableResource();
-  if (transfer_release_callback_) {
-    std::move(transfer_release_callback_).Run(gpu::SyncToken(), false);
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// LayerTextured, public:
-
-LayerTextured::LayerTextured() : LayerWithExternalTexture(LAYER_TEXTURED) {
-  content_layer_ = cc::PictureLayer::Create(this);
-  cc_layer_ = content_layer_.get();
-  InitializeCcLayer();
-}
-
-LayerTextured::~LayerTextured() {
-  Destroy();
-}
-
-void LayerTextured::AddDeferredPaintRequest() {
-  ++deferred_paint_requests_;
-  TRACE_COUNTER("ui",
-                perfetto::CounterTrack("DeferredPaintRequests",
-                                       reinterpret_cast<uintptr_t>(this)),
-                deferred_paint_requests_);
-}
-
-void LayerTextured::RemoveDeferredPaintRequest() {
-  DCHECK_GT(deferred_paint_requests_, 0u);
-
-  --deferred_paint_requests_;
-  TRACE_COUNTER("ui",
-                perfetto::CounterTrack("DeferredPaintRequests",
-                                       reinterpret_cast<uintptr_t>(this)),
-                deferred_paint_requests_);
-  if (!deferred_paint_requests_ && !damaged_region_.IsEmpty()) {
-    ScheduleDraw();
-  }
-}
-
-std::unique_ptr<Layer> LayerTextured::Clone() const {
-  auto clone = Layer::Clone();
-  clone->AsTextured()->SetFillsBoundsCompletely(FillsBoundsCompletely());
-  return clone;
-}
-
-bool LayerTextured::ShouldSchedulePaint() const {
-  // LayerTextured only needs to schedule paint if it has a delegate to paint
-  // its contents, or if it has an external transferable resource to display.
-  return delegate_ || LayerWithExternalTexture::ShouldSchedulePaint();
-}
-
-scoped_refptr<cc::DisplayItemList> LayerTextured::PaintContentsToDisplayList() {
-  TRACE_EVENT1("ui", "LayerTextured::PaintContentsToDisplayList", "name",
-               name_);
-  gfx::Rect local_bounds(bounds().size());
-  gfx::Rect invalidation(
-      gfx::IntersectRects(paint_region_.bounds(), local_bounds));
-  paint_region_.Clear();
-  auto display_list = base::MakeRefCounted<cc::DisplayItemList>();
-  if (delegate_) {
-    delegate_->OnPaintLayer(PaintContext(display_list.get(),
-                                         device_scale_factor_, invalidation,
-                                         GetCompositor()->is_pixel_canvas()));
-  }
-  display_list->Finalize();
-  // TODO(domlaskowski): Move mirror invalidation to Layer::SchedulePaint.
-  for (const auto& mirror : mirrors_) {
-    mirror->dest()->SchedulePaint(invalidation);
-  }
-
-  return display_list;
-}
-
-bool LayerTextured::FillsBoundsCompletely() const {
-  return fills_bounds_completely_;
-}
-
-void LayerTextured::SetFillsBoundsCompletely(bool fills_bounds_completely) {
-  fills_bounds_completely_ = fills_bounds_completely;
-}
-
-void LayerTextured::OnPaintScheduled() {
-  if (deferred_paint_requests_) {
-    return;
-  }
-
-  ScheduleDraw();
-}
-
-bool LayerTextured::ShouldCommitDamage() const {
-  // If painting is deferred, we don't commit the accumulated damage yet.
-  if (deferred_paint_requests_) {
-    return false;
-  }
-
-  // Otherwise, we commit damage if we have a delegate to paint our contents,
-  // or if we have an external transferable resource.
-  return delegate_ || LayerWithExternalTexture::ShouldCommitDamage();
-}
-
-void LayerTextured::CommitDamage(const cc::Region& damage) {
-  Layer::CommitDamage(damage);
-  paint_region_.Union(damage);
-}
-
-void LayerTextured::Reset() {
-  LayerWithExternalTexture::Reset();
-
-  if (content_layer_) {
-    content_layer_->ClearClient();
-  }
-
-  content_layer_ = nullptr;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// LayerSolidColor, public:
-
-LayerSolidColor::LayerSolidColor()
-    : LayerWithExternalTexture(LAYER_SOLID_COLOR) {
-  solid_color_layer_ = cc::SolidColorLayer::Create();
-  cc_layer_ = solid_color_layer_.get();
-  InitializeCcLayer();
-
-  cc_layer_->SetSafeOpaqueBackgroundColor(SkColors::kBlack);
-  cc_layer_->SetBackgroundColor(SkColors::kTransparent);
-
-  // For LayerSolidColor, the background color dictates content opaqueness.
-  cc_layer_->SetContentsOpaque(false);
-  fills_bounds_opaquely_ = false;
-}
-
-LayerSolidColor::~LayerSolidColor() {
-  Destroy();
-}
-
-std::unique_ptr<Layer> LayerSolidColor::Clone() const {
-  auto clone = Layer::Clone();
-  clone->AsSolidColor()->SetColor(GetTargetColor());
-  return clone;
-}
-
-bool LayerSolidColor::ShouldSchedulePaint() const {
-  // Only Schedule paint if LayerSolidColor has external content.
-  return texture_layer() && LayerWithExternalTexture::ShouldSchedulePaint();
-}
-
-void LayerSolidColor::OnPaintScheduled() {
-  ScheduleDraw();
-}
-
-void LayerSolidColor::SetShowReflectedLayerSubtree(
-    Layer* subtree_reflected_layer) {
-  DCHECK(subtree_reflected_layer);
-  if (subtree_reflected_layer_ == subtree_reflected_layer) {
-    return;
-  }
-
-  // If `FinishAnimationsBeforeSwitchToLayer` returns false, `this` Layer was
-  // destroyed.
-  if (!FinishAnimationsBeforeSwitchToLayer()) {
-    return;
-  }
-
-  scoped_refptr<cc::MirrorLayer> new_layer =
-      cc::MirrorLayer::Create(subtree_reflected_layer->cc_layer_.get());
-  SwitchToLayer(new_layer);
-
-  mirror_layer_ = std::move(new_layer);
-
-  subtree_reflected_layer_ = subtree_reflected_layer;
-  auto insert_pair =
-      subtree_reflected_layer_->subtree_reflecting_layers_.insert(this);
-  DCHECK(insert_pair.second);
-
-  MatchLayerSize(subtree_reflected_layer_);
-
-  RecomputeDrawsContentAndUVRect();
-}
-
-void LayerSolidColor::SetShowSolidColorContent() {
-  if (solid_color_layer_.get()) {
-    return;
-  }
-
-  // If `FinishAnimationsBeforeSwitchToLayer` returns false, `this` Layer was
-  // destroyed.
-  if (!FinishAnimationsBeforeSwitchToLayer()) {
-    return;
-  }
-
-  scoped_refptr<cc::SolidColorLayer> new_layer = cc::SolidColorLayer::Create();
-  SwitchToLayer(new_layer);
-
-  solid_color_layer_ = new_layer;
-  fills_bounds_opaquely_ = cc_layer_->background_color().isOpaque();
-
-  RecomputeDrawsContentAndUVRect();
-  for (const auto& mirror : mirrors_) {
-    mirror->dest()->AsSolidColor()->SetShowSolidColorContent();
-  }
-}
-
-void LayerSolidColor::SetColor(SkColor4f color) {
-  GetAnimator()->SetColor(color);
-}
-
-SkColor4f LayerSolidColor::GetTargetColor() const {
-  if (animator_ &&
-      animator_->IsAnimatingProperty(LayerAnimationElement::COLOR)) {
-    return animator_->GetTargetColor();
-  }
-  return cc_layer_->background_color();
-}
-
-SkColor4f LayerSolidColor::background_color() const {
-  return cc_layer_->background_color();
-}
-
-void LayerSolidColor::Reset() {
-  LayerWithExternalTexture::Reset();
-  ResetSubtreeReflectedLayer();
-  solid_color_layer_ = nullptr;
-  mirror_layer_ = nullptr;
-}
-
-void LayerSolidColor::SetColorFromAnimation(SkColor4f color,
-                                            PropertyChangeReason reason) {
-  // For LayerSolidColor, the background color dictates content opaqueness.
-  // And `SetContentOpaque()` is called in
-  // `SolidColorLayer::SetBackgroundColor()`.
-  cc_layer_->SetBackgroundColor(color);
-  cc_layer_->SetSafeOpaqueBackgroundColor(color);
-  SetFillsBoundsOpaquelyWithReason(color.isOpaque(), reason);
-}
-
-SkColor4f LayerSolidColor::GetColorForAnimation() const {
-  // The NULL check is here since the underlying solid_color_layer can be
-  // swapped with mirror_layer or textured_layer. See calls to
-  // `SwitchToLayer()`
-  return solid_color_layer_.get() ? solid_color_layer_->background_color()
-                                  : SkColors::kBlack;
-}
-
-void LayerSolidColor::ResetSubtreeReflectedLayer() {
-  if (!subtree_reflected_layer_) {
-    return;
-  }
-
-  size_t result =
-      subtree_reflected_layer_->subtree_reflecting_layers_.erase(this);
-  DCHECK_EQ(1u, result);
-  subtree_reflected_layer_ = nullptr;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// LayerNinePatch, public:
-
-LayerNinePatch::LayerNinePatch() : Layer(LAYER_NINE_PATCH) {
-  nine_patch_layer_ = cc::NinePatchLayer::Create();
-  cc_layer_ = nine_patch_layer_.get();
-  InitializeCcLayer();
-}
-
-LayerNinePatch::~LayerNinePatch() {
-  Destroy();
-}
-
-const gfx::Rect& LayerNinePatch::border() const {
-  return nine_patch_layer_->border();
-}
-
-const gfx::Rect& LayerNinePatch::aperture() const {
-  return nine_patch_layer_->aperture();
-}
-
-const gfx::Rect& LayerNinePatch::occlusion() const {
-  return nine_patch_layer_->occlusion();
-}
-
-bool LayerNinePatch::ShouldSchedulePaint() const {
-  // LayerNinePatch draws a pre-defined image rather than requesting painted
-  // content.
-  return false;
-}
-
-void LayerNinePatch::UpdateNinePatchLayerImage(const gfx::ImageSkia& image) {
-  nine_patch_layer_image_ = image;
-  nine_patch_layer_->SetBitmap(
-      image.GetRepresentation(device_scale_factor()).GetBitmap());
-}
-
-void LayerNinePatch::UpdateNinePatchLayerAperture(
-    const gfx::Rect& aperture_in_dip) {
-  nine_patch_layer_aperture_ = aperture_in_dip;
-
-  // TODO(danakj): Specifying the aperture in DIPs as integers is not sufficient
-  // and means the resulting aperture in pixels will not be exact.
-  gfx::Rect aperture_in_pixel = gfx::ToEnclosingRect(
-      gfx::ConvertRectToPixels(aperture_in_dip, device_scale_factor()));
-  nine_patch_layer_->SetAperture(aperture_in_pixel);
-}
-
-void LayerNinePatch::UpdateNinePatchLayerBorder(const gfx::Rect& border) {
-  nine_patch_layer_->SetBorder(border);
-}
-
-void LayerNinePatch::UpdateNinePatchOcclusion(const gfx::Rect& occlusion) {
-  nine_patch_layer_->SetLayerOcclusion(occlusion);
-}
-
-void LayerNinePatch::HandleDeviceScaleFactorChange() {
-  Layer::HandleDeviceScaleFactorChange();
-
-  if (!nine_patch_layer_image_.isNull()) {
-    UpdateNinePatchLayerImage(nine_patch_layer_image_);
-  }
-
-  UpdateNinePatchLayerAperture(nine_patch_layer_aperture_);
-}
-
-void LayerNinePatch::Reset() {
-  nine_patch_layer_ = nullptr;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// LayerSurface, public:
-
-LayerSurface::LayerSurface() : Layer(LAYER_SURFACE) {
-  surface_layer_ = cc::SurfaceLayer::Create();
-  cc_layer_ = surface_layer_.get();
-
-  InitializeCcLayer();
-  surface_layer_->SetSurfaceHitTestable(true);
-}
-
-LayerSurface::~LayerSurface() {
-  Destroy();
-}
-
-bool LayerSurface::HasExternalContent() const {
-  return true;
-}
-
-bool LayerSurface::ShouldSchedulePaint() const {
-  return false;
-}
-
-void LayerSurface::SetBackgroundColor(SkColor4f color) {
-  surface_layer_->SetBackgroundColor(color);
-  surface_layer_->SetSafeOpaqueBackgroundColor(color);
-
-  for (const auto& mirror : mirrors_) {
-    mirror->dest()->AsSurface()->SetBackgroundColor(color);
-  }
-}
-
-SkColor4f LayerSurface::GetBackgroundColor() const {
-  return surface_layer_->background_color();
-}
-
-std::unique_ptr<Layer> LayerSurface::Clone() const {
-  auto clone = Layer::Clone();
-  auto* cloned_surface = clone->AsSurface();
-
-  cloned_surface->SetBackgroundColor(surface_layer_->background_color());
-  cloned_surface->SetShowSurface(
-      surface_layer_->surface_id(), frame_size_in_dip_,
-      surface_layer_->deadline_in_frames()
-          ? cc::DeadlinePolicy::UseSpecifiedDeadline(
-                *surface_layer_->deadline_in_frames())
-          : cc::DeadlinePolicy::UseDefaultDeadline(),
-      surface_layer_->stretch_content_to_fill_bounds());
-  if (surface_layer_->oldest_acceptable_fallback()) {
-    cloned_surface->SetOldestAcceptableFallback(
-        *surface_layer_->oldest_acceptable_fallback());
-  }
-
-  return clone;
-}
-
-void LayerSurface::SetShowSurface(const viz::SurfaceId& surface_id,
-                                  const gfx::Size& frame_size_in_dip,
-                                  const cc::DeadlinePolicy& deadline_policy,
-                                  bool stretch_content_to_fill_bounds) {
-  surface_layer_->SetSurfaceId(surface_id, deadline_policy);
-  surface_layer_->SetStretchContentToFillBounds(stretch_content_to_fill_bounds);
-
-  frame_size_in_dip_ = frame_size_in_dip;
-  RecomputeDrawsContentAndUVRect();
-
-  for (const auto& mirror : mirrors_) {
-    mirror->dest()->AsSurface()->SetShowSurface(surface_id, frame_size_in_dip,
-                                                deadline_policy,
-                                                stretch_content_to_fill_bounds);
-  }
-}
-
-void LayerSurface::SetShowSurface(const viz::SurfaceId& surface_id,
-                                  const cc::DeadlinePolicy& deadline_policy,
-                                  bool stretch_content_to_fill_bounds) {
-  // Assumes `frame_size_in_dip_` is already set.
-  // TODO(crbug.com/40285157): with surface sync, it should use on `bounds_`.
-  surface_layer_->SetSurfaceId(surface_id, deadline_policy);
-  surface_layer_->SetStretchContentToFillBounds(stretch_content_to_fill_bounds);
-
-  for (const auto& mirror : mirrors_) {
-    mirror->dest()->AsSurface()->SetShowSurface(surface_id, deadline_policy,
-                                                stretch_content_to_fill_bounds);
-  }
-}
-
-void LayerSurface::SetShowReflectedSurface(
-    const viz::SurfaceId& surface_id,
-    const gfx::Size& frame_size_in_pixels) {
-  surface_layer_->SetSurfaceId(surface_id,
-                               cc::DeadlinePolicy::UseInfiniteDeadline());
-  surface_layer_->SetBackgroundColor(SkColors::kBlack);
-  surface_layer_->SetSafeOpaqueBackgroundColor(SkColors::kBlack);
-  surface_layer_->SetStretchContentToFillBounds(true);
-  surface_layer_->SetIsReflection(true);
-
-  // The reflecting surface uses the native size of the reflected display.
-  frame_size_in_dip_ = frame_size_in_pixels;
-  RecomputeDrawsContentAndUVRect();
-}
-
-void LayerSurface::SetOldestAcceptableFallback(
-    const viz::SurfaceId& surface_id) {
-  surface_layer_->SetOldestAcceptableFallback(surface_id);
-
-  for (const auto& mirror : mirrors_) {
-    mirror->dest()->AsSurface()->SetOldestAcceptableFallback(surface_id);
-  }
-}
-
-const viz::SurfaceId* LayerSurface::GetOldestAcceptableFallback() const {
-  if (surface_layer_->oldest_acceptable_fallback()) {
-    return &surface_layer_->oldest_acceptable_fallback().value();
-  }
-
-  return nullptr;
-}
-
-bool LayerSurface::StretchContentToFillBounds() const {
-  return surface_layer_->stretch_content_to_fill_bounds();
-}
-
-void LayerSurface::SetSurfaceSize(gfx::Size surface_size_in_dip) {
-  if (frame_size_in_dip_ == surface_size_in_dip) {
-    return;
-  }
-
-  frame_size_in_dip_ = surface_size_in_dip;
-  RecomputeDrawsContentAndUVRect();
-}
-
-const viz::SurfaceId* LayerSurface::GetSurfaceId() const {
-  if (surface_layer_->surface_id().is_valid()) {
-    return &surface_layer_->surface_id();
-  }
-
-  return nullptr;
-}
-
-void LayerSurface::RecomputeDrawsContentAndUVRect() {
-  gfx::Size size(bounds_.size());
-  // TODO(crbug.com/40285157): with surface sync, size shouldn't rely on
-  // `frame_size_in_dip_` anymore.
-  size.SetToMin(frame_size_in_dip_);
-  cc_layer_->SetBounds(size);
-}
-
-void LayerSurface::Reset() {
-  surface_layer_ = nullptr;
+  return std::ranges::contains(mirrors_, mirror, &internal::LayerMirror::dest);
 }
 
 }  // namespace ui

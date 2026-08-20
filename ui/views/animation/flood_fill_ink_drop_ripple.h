@@ -8,8 +8,9 @@
 #include "base/callback_list.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/compositor/layer_not_drawn.h"
+#include "ui/compositor/layer_textured.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
@@ -19,11 +20,6 @@
 #include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/views_export.h"
-
-namespace ui {
-class LayerNotDrawn;
-class LayerTextured;
-}  // namespace ui
 
 namespace views {
 class CircleLayerDelegate;

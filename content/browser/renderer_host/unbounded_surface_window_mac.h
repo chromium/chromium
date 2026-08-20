@@ -7,12 +7,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
+#include "components/viz/host/host_frame_sink_client.h"
 #include "content/browser/renderer_host/unbounded_surface_window.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/unbounded_element/unbounded_element.mojom.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
-#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/gfx/display_color_spaces.h"
 
@@ -23,8 +23,6 @@
 class NSWindow;
 class NSEvent;
 #endif
-
-#include "components/viz/host/host_frame_sink_client.h"
 
 namespace ui {
 class LayerSurface;

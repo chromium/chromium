@@ -10,7 +10,8 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "third_party/khronos/GLES2/gl2.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_solid_color.h"
+#include "ui/compositor/layer_with_external_texture.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ash {

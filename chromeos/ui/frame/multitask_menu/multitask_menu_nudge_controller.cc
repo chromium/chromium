@@ -17,7 +17,7 @@
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_solid_color.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 #include "ui/gfx/geometry/transform_util.h"

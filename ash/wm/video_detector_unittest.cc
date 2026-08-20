@@ -22,6 +22,7 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/compositor/layer_solid_color.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {

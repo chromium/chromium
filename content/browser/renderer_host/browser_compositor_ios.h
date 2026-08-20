@@ -20,11 +20,8 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer_observer.h"
+#include "ui/compositor/layer_surface.h"
 #include "ui/display/screen_info.h"
-
-namespace ui {
-class LayerSurface;
-}  // namespace ui
 
 namespace content {
 

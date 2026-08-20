@@ -8,8 +8,8 @@
 
 #include "cc/layers/layer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_test_api.h"
+#include "ui/compositor/layer_textured.h"
 
 namespace ui {
 

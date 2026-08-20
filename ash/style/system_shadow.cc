@@ -11,7 +11,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/color/color_provider.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_nine_patch.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"

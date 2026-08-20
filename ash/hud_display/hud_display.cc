@@ -22,7 +22,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_solid_color.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"

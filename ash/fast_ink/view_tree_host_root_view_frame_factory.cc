@@ -22,6 +22,7 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/layer_textured.h"
 #include "ui/compositor/paint_context.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"

@@ -15,7 +15,7 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_surface.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"

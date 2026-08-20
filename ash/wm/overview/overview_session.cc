@@ -61,7 +61,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chromeos/utils/haptics_util.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_solid_color.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"

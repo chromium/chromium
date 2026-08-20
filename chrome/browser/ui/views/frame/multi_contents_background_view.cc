@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ui/views/frame/themed_background.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_solid_color.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 
 MultiContentsBackgroundView::MultiContentsBackgroundView(

@@ -11,11 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/compositor/layer_solid_color.h"
 #include "ui/views/controls/button/label_button.h"
-
-namespace ui {
-class LayerSolidColor;
-}  // namespace ui
 
 namespace arc::input_overlay {
 

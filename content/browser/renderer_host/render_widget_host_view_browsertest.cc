@@ -77,6 +77,7 @@
 #if defined(USE_AURA)
 #include "content/browser/renderer_host/delegated_frame_host.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
+#include "ui/compositor/layer_solid_color.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -93,7 +94,6 @@
 #include "content/public/browser/context_factory.h"
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 #include "ui/compositor/compositor.h"
-#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_test_api.h"
 #include "ui/compositor/recyclable_compositor_mac.h"
 #endif

@@ -70,6 +70,7 @@
 #import "ui/base/test/cocoa_helper.h"
 #import "ui/base/test/scoped_fake_nswindow_focus.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/layer_solid_color.h"
 #include "ui/compositor/recyclable_compositor_mac.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/blink_features.h"

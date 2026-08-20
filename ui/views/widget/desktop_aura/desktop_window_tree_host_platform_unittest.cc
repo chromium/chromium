@@ -21,7 +21,7 @@
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_textured.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"

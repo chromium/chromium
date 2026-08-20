@@ -12,6 +12,7 @@
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"
+#include "ui/compositor/layer_solid_color.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -22,11 +23,7 @@ class PrefRegistrySimple;
 namespace ash {
 class MultitaskMenuNudgeControllerTest;
 class MultitaskMenuNudgeTest;
-}
-
-namespace ui {
-class LayerSolidColor;
-}
+}  // namespace ash
 
 namespace chromeos {
 

@@ -7,7 +7,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_solid_color.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"

@@ -29,7 +29,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_solid_color.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"

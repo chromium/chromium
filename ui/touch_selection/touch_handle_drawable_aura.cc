@@ -19,6 +19,7 @@
 #include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
 #include "ui/touch_selection//vector_icons/vector_icons.h"

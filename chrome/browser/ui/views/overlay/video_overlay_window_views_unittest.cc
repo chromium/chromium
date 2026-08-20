@@ -38,6 +38,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/soda/mock_soda_installer.h"
 #include "components/vector_icons/vector_icons.h"
+#include "components/viz/common/surfaces/surface_id.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"

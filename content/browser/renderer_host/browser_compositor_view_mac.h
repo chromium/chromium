@@ -19,12 +19,12 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer_observer.h"
+#include "ui/compositor/layer_surface.h"
 #include "ui/display/screen_info.h"
 #include "ui/gfx/ca_layer_params.h"
 
 namespace ui {
 class AcceleratedWidgetMacNSView;
-class LayerSurface;
 class RecyclableCompositorMac;
 }  // namespace ui
 

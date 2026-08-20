@@ -59,7 +59,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/compositor/clip_recorder.h"
 #include "ui/compositor/compositor.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_textured.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/paint_context.h"
 #include "ui/compositor/paint_recorder.h"

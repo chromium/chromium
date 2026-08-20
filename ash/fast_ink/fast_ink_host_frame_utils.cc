@@ -9,6 +9,7 @@
 #include "ash/frame_sink/ui_resource.h"
 #include "base/check.h"
 #include "base/logging.h"
+#include "cc/base/math_util.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/texture_draw_quad.h"

@@ -10,7 +10,8 @@
 
 #include "base/functional/bind.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_solid_color.h"
+#include "ui/compositor/layer_textured.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size_conversions.h"

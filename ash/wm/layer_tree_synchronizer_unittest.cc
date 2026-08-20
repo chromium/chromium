@@ -13,7 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/test_windows.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_textured.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"

@@ -29,7 +29,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_surface.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_transform.h"
 #include "ui/display/manager/display_manager.h"

@@ -140,6 +140,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/compositor/layer_solid_color.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"

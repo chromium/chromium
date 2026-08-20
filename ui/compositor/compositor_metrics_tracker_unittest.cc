@@ -7,8 +7,8 @@
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/compositor.h"
-#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/compositor/layer_textured.h"
 #include "ui/compositor/test/compositor_metrics_report_checker.h"
 #include "ui/compositor/test/compositor_metrics_reporter_test_base.h"
 

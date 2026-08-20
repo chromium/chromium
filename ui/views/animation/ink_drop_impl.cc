@@ -9,7 +9,7 @@
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/timer/timer.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_not_drawn.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/animation/ink_drop_util.h"

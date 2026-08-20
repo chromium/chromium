@@ -5,7 +5,7 @@
 #include "ui/touch_selection/touch_selection_magnifier_aura.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_textured.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"

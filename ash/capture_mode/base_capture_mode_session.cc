@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/capture_mode/base_capture_mode_session.h"
+
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_types.h"
@@ -13,7 +14,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ui/aura/client/capture_client.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_textured.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {

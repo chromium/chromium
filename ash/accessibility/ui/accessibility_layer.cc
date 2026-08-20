@@ -5,7 +5,7 @@
 #include "ash/accessibility/ui/accessibility_layer.h"
 
 #include "ui/aura/window.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_textured.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
 

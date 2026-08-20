@@ -6,7 +6,7 @@
 #include "ui/compositor/scoped_layer_request.h"
 
 #include "base/check.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_textured.h"
 
 namespace ui {
 

@@ -12,8 +12,8 @@
 #include "cc/trees/layer_tree_host.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/base_type_conversion.h"
-#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_owner.h"
+#include "ui/compositor/layer_solid_color.h"
 #include "ui/compositor/layer_test_api.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 

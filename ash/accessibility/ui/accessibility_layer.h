@@ -10,15 +10,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/compositor/layer_delegate.h"
+#include "ui/compositor/layer_textured.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace aura {
 class Window;
 }  // namespace aura
-
-namespace ui {
-class LayerTextured;
-}  // namespace ui
 
 namespace ash {
 

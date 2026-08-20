@@ -50,6 +50,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_flags.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/utils/haptics_util.h"
