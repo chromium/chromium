@@ -16,12 +16,11 @@ namespace webnn {
 
 mojo::ScopedMessagePipeHandle CreateInProcessContextProvider(
     mojo::ScopedMessagePipeHandle weights_file_creator_pipe,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    WebGPUContextHelperCallback webgpu_context_helper) {
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   auto provider = std::make_unique<WebNNContextProviderInRenderer>(
       mojo::PendingRemote<mojom::WebNNWeightsFileCreator>(
           std::move(weights_file_creator_pipe), 0u),
-      std::move(task_runner), std::move(webgpu_context_helper));
+      std::move(task_runner));
 
   mojo::PendingRemote<mojom::WebNNContextProvider> pending_remote;
   mojo::MakeSelfOwnedReceiver(std::move(provider),

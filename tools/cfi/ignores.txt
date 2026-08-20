@@ -175,9 +175,6 @@ type:sandbox::TargetServices
 
 ######### Cross-DSO icalls using dynamically resolved symbols crbug.com/771365
 
-# Dawn wire client calling dynamically loaded GPU accelerator callbacks
-src:*third_party/dawn/src/dawn/wire/client/Buffer.cpp
-
 # ANGLE
 src:*third_party/angle/src/common/vulkan/vulkan_icd.cpp
 src:*third_party/angle/src/libANGLE/*
@@ -327,7 +324,6 @@ fun:*unique_ptr*TfLiteDelegate*
 
 # LiteRT: Indirect calls to dynamically loaded LiteRT runtime and accelerators.
 src:*third_party/litert/*
-src:*services/webnn/tflite/*
 
 ######### Uncategorized
 

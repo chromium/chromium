@@ -7,7 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
-#include "build/build_config.h"
 #include "services/webnn/public/cpp/webnn_buildflags.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -16,6 +15,7 @@
 
 namespace webnn {
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 void PreSandboxWebNNInitialization() {
 #if BUILDFLAG(WEBNN_USE_WEBGPU_ACCELERATOR)
 #if BUILDFLAG(IS_WIN)
@@ -34,7 +34,8 @@ void PreSandboxWebNNInitialization() {
 
   dlopen(library_path.value().c_str(), RTLD_LAZY | RTLD_GLOBAL | RTLD_NODELETE);
 #endif
-#endif  // BUILDFLAG(WEBNN_USE_WEBGPU_ACCELERATOR)
+#endif
 }
+#endif
 
 }  // namespace webnn
