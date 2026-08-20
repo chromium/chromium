@@ -3748,7 +3748,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.WebView.PageAttemptResults"
-    enum="WebViewPageAttemptResult" expires_after="2026-09-30">
+    enum="WebViewPageAttemptResult" expires_after="2027-09-30">
   <owner>narms@google.com</owner>
   <owner>android-sre@google.com</owner>
   <summary>
@@ -3762,7 +3762,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.WebView.PageAttempts" enum="Boolean"
-    expires_after="2026-09-30">
+    expires_after="2027-09-30">
   <owner>narms@google.com</owner>
   <owner>android-sre@google.com</owner>
   <summary>
