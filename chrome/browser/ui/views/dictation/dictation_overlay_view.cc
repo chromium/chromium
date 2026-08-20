@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/dictation/waveform_view.h"
 #include "chrome/browser/ui/views/dictation/waveform_view_button.h"
@@ -24,9 +25,11 @@
 #include "ui/color/color_variant.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/image_view.h"
@@ -49,6 +52,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DictationOverlayView,
 namespace {
 
 constexpr int kCornerRadius = 16;
+constexpr int kTeardropCornerRadius = 4;
 
 class DictationOverlayContentsView : public views::View {
   METADATA_HEADER(DictationOverlayContentsView, views::View)
@@ -153,6 +157,18 @@ DictationOverlayView::DictationOverlayView(
 }
 
 DictationOverlayView::~DictationOverlayView() = default;
+
+void DictationOverlayView::OnWidgetInitialized() {
+  views::BubbleDialogDelegate::OnWidgetInitialized();
+  if (GetBubbleFrameView()) {
+    GetBubbleFrameView()->SetRoundedCorners(
+        base::i18n::IsRTL()
+            ? gfx::RoundedCornersF(kCornerRadius, kTeardropCornerRadius,
+                                   kCornerRadius, kCornerRadius)
+            : gfx::RoundedCornersF(kTeardropCornerRadius, kCornerRadius,
+                                   kCornerRadius, kCornerRadius));
+  }
+}
 
 void DictationOverlayView::Show() {
   if (!widget_) {

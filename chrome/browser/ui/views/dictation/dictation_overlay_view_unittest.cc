@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/icu_test_util.h"
 #include "chrome/browser/dictation/test_util.h"
 #include "chrome/browser/ui/views/dictation/ui_state.h"
 #include "chrome/browser/ui/views/dictation/waveform_view.h"
@@ -18,6 +19,8 @@
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/view_utils.h"
@@ -62,6 +65,30 @@ TEST_F(DictationOverlayViewTest, ShowAndReposition) {
   gfx::Point selection_point(100, 200);
   overlay->UpdatePosition(selection_point);
   EXPECT_EQ(overlay->GetAnchorRect(), gfx::Rect(selection_point, gfx::Size()));
+}
+
+TEST_F(DictationOverlayViewTest, TeardropShape_LTR) {
+  base::test::ScopedRestoreICUDefaultLocale scoped_locale("en");
+  auto overlay = std::make_unique<DictationOverlayView>(
+      parent_widget_->GetNativeView(), base::DoNothing());
+
+  overlay->Show();
+  views::BubbleFrameView* frame_view = overlay->GetBubbleFrameView();
+  ASSERT_NE(frame_view, nullptr);
+  EXPECT_EQ(frame_view->GetRoundedCorners(),
+            gfx::RoundedCornersF(4.0f, 16.0f, 16.0f, 16.0f));
+}
+
+TEST_F(DictationOverlayViewTest, TeardropShape_RTL) {
+  base::test::ScopedRestoreICUDefaultLocale scoped_locale("he");
+  auto overlay = std::make_unique<DictationOverlayView>(
+      parent_widget_->GetNativeView(), base::DoNothing());
+
+  overlay->Show();
+  views::BubbleFrameView* frame_view = overlay->GetBubbleFrameView();
+  ASSERT_NE(frame_view, nullptr);
+  EXPECT_EQ(frame_view->GetRoundedCorners(),
+            gfx::RoundedCornersF(16.0f, 4.0f, 16.0f, 16.0f));
 }
 
 TEST_F(DictationOverlayViewTest, StateTransitionsUpdateSubviews) {
@@ -161,11 +188,11 @@ TEST_F(DictationOverlayViewTest, SubviewSizingAndMargin) {
   // Subviews are sized to 20x20 when active.
   EXPECT_EQ(mic_button->GetPreferredSize(), gfx::Size(20, 20));
 
-  // Inactive state overlay preferred size is a 32x32 circle (20px content +
+  // Inactive state overlay preferred size is a 32x32 teardrop (20px content +
   // 12px inset).
   EXPECT_EQ(contents_view->GetPreferredSize(), gfx::Size(32, 32));
 
-  // Transcribing state overlay preferred size remains a 32x32 circle.
+  // Transcribing state overlay preferred size remains a 32x32 teardrop.
   overlay->SetState(UiState::kTranscribing);
   EXPECT_EQ(waveform_view->GetPreferredSize(), gfx::Size(20, 20));
   EXPECT_EQ(contents_view->GetPreferredSize(), gfx::Size(32, 32));
