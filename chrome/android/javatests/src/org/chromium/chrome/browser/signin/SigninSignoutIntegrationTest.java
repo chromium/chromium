@@ -41,7 +41,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.MainSettings;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
@@ -68,11 +68,11 @@ import org.chromium.ui.test.util.MockitoHelper;
                         + " state at the process level.")
 public class SigninSignoutIntegrationTest {
     @Rule
-    public final SettingsActivityTestRule<AccountManagementFragment> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(AccountManagementFragment.class);
+    public final SettingsTestRule<AccountManagementFragment> mSettingsActivityTestRule =
+            new SettingsTestRule<>(AccountManagementFragment.class);
 
-    private final SettingsActivityTestRule<MainSettings> mMainSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(MainSettings.class);
+    private final SettingsTestRule<MainSettings> mMainSettingsActivityTestRule =
+            new SettingsTestRule<>(MainSettings.class);
 
     private final FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
