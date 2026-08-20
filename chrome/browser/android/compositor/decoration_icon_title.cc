@@ -70,9 +70,7 @@ gfx::Size DecorationIconTitle::calculateSize(int icon_width) {
 
 void DecorationIconTitle::handleIconResource(
     ui::AndroidResourceType resource_type) {
-  if (!icon_needs_refresh_ &&
-      base::FeatureList::IsEnabled(
-          chrome::android::kReloadTabUiResourcesIfChanged)) {
+  if (!icon_needs_refresh_) {
     return;
   }
   if (icon_resource_id_ != ui::Resource::kInvalidResourceId) {
