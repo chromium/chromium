@@ -4,547 +4,240 @@
 
 #include "base/numerics/byte_conversions.h"
 
+#include <algorithm>
 #include <array>
 #include <bit>
 #include <concepts>
+#include <cstddef>
 #include <cstdint>
+// libc++ does not yet provide <stdfloat>. See
+// https://github.com/llvm/llvm-project/issues/105196.
+#if __has_include(<stdfloat>)
+#include <stdfloat>  // nocheck
+#endif
+#include <utility>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base::numerics {
 
-TEST(NumericsTest, FromNativeEndian) {
-  // The implementation of FromNativeEndian and FromLittleEndian assumes the
-  // native endian is little. If support of big endian is desired, compile-time
-  // branches will need to be added to the implementation, and the test results
-  // will differ there (they would match FromBigEndian in this test).
-  static_assert(std::endian::native == std::endian::little);
-  {
-    constexpr uint8_t bytes[] = {0x12u};
-    EXPECT_EQ(U8FromNativeEndian(bytes), 0x12u);
-    static_assert(std::same_as<uint8_t, decltype(U8FromNativeEndian(bytes))>);
-    static_assert(U8FromNativeEndian(bytes) == 0x12u);
-  }
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u};
-    EXPECT_EQ(U16FromNativeEndian(bytes), 0x34'12u);
-    static_assert(std::same_as<uint16_t, decltype(U16FromNativeEndian(bytes))>);
-    static_assert(U16FromNativeEndian(bytes) == 0x34'12u);
-  }
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u};
-    EXPECT_EQ(U32FromNativeEndian(bytes), 0x78'56'34'12u);
-    static_assert(std::same_as<uint32_t, decltype(U32FromNativeEndian(bytes))>);
-    static_assert(U32FromNativeEndian(bytes) == 0x78'56'34'12u);
-  }
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u,
-                                 0x90u, 0x12u, 0x34u, 0x56u};
-    EXPECT_EQ(U64FromNativeEndian(bytes), 0x56'34'12'90'78'56'34'12u);
-    static_assert(std::same_as<uint64_t, decltype(U64FromNativeEndian(bytes))>);
-    static_assert(U64FromNativeEndian(bytes) == 0x56'34'12'90'78'56'34'12u);
-  }
+enum class ScopedEnum8 : uint8_t { kA };
+enum class ScopedEnum16 : uint16_t { kA };
+enum class ScopedEnum32 : uint32_t { kA };
+enum class ScopedEnum64 : uint64_t { kA };
+enum class SignedEnum : int32_t { kA };
+enum UnscopedEnum : uint32_t { kUnscopedA };
 
-  {
-    constexpr uint8_t bytes[] = {0x12u};
-    EXPECT_EQ(I8FromNativeEndian(bytes), 0x12);
-    static_assert(std::same_as<int8_t, decltype(I8FromNativeEndian(bytes))>);
-    static_assert(U8FromNativeEndian(bytes) == 0x12);
-  }
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u};
-    EXPECT_EQ(I16FromNativeEndian(bytes), 0x34'12);
-    static_assert(std::same_as<int16_t, decltype(I16FromNativeEndian(bytes))>);
-    static_assert(U16FromNativeEndian(bytes) == 0x34'12);
-  }
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u};
-    EXPECT_EQ(I32FromNativeEndian(bytes), 0x78'56'34'12);
-    static_assert(std::same_as<int32_t, decltype(I32FromNativeEndian(bytes))>);
-    static_assert(U32FromNativeEndian(bytes) == 0x78'56'34'12);
-  }
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u,
-                                 0x90u, 0x12u, 0x34u, 0x56u};
-    EXPECT_EQ(I64FromNativeEndian(bytes), 0x56'34'12'90'78'56'34'12);
-    static_assert(std::same_as<int64_t, decltype(I64FromNativeEndian(bytes))>);
-    static_assert(I64FromNativeEndian(bytes) == 0x56'34'12'90'78'56'34'12);
-  }
-
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u};
-    EXPECT_EQ(FloatFromNativeEndian(bytes), 1.73782443614e+34f);
-    EXPECT_EQ(std::bit_cast<uint32_t>(FloatFromNativeEndian(bytes)),
-              0x78'56'34'12u);
-    static_assert(std::same_as<float, decltype(FloatFromNativeEndian(bytes))>);
-    static_assert(FloatFromNativeEndian(bytes) == 1.73782443614e+34f);
-    static_assert(std::bit_cast<uint32_t>(FloatFromNativeEndian(bytes)) ==
-                  0x78'56'34'12u);
-  }
-
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u,
-                                 0x90u, 0x12u, 0x34u, 0x56u};
-    EXPECT_EQ(DoubleFromNativeEndian(bytes),
-              1.84145159269283616391989849435e107);
-    EXPECT_EQ(std::bit_cast<uint64_t>(DoubleFromNativeEndian(bytes)),
-              0x56'34'12'90'78'56'34'12u);
-    static_assert(
-        std::same_as<double, decltype(DoubleFromNativeEndian(bytes))>);
-    static_assert(DoubleFromNativeEndian(bytes) ==
-                  1.84145159269283616391989849435e107);
-    static_assert(std::bit_cast<uint64_t>(DoubleFromNativeEndian(bytes)) ==
-                  0x56'34'12'90'78'56'34'12u);
-  }
+template <typename T>
+constexpr auto GetLittleEndianBytes() {
+  std::array<uint8_t, sizeof(T)> bytes;
+  std::ranges::generate(bytes, [b = uint8_t{0}]() mutable { return ++b; });
+  return bytes;
 }
 
-TEST(NumericsTest, FromLittleEndian) {
-  // The implementation of FromNativeEndian and FromLittleEndian assumes the
-  // native endian is little. If support of big endian is desired, compile-time
-  // branches will need to be added to the implementation, and the test results
-  // will differ there (they would match FromBigEndian in this test).
-  static_assert(std::endian::native == std::endian::little);
-  {
-    constexpr uint8_t bytes[] = {0x12u};
-    EXPECT_EQ(U8FromLittleEndian(bytes), 0x12u);
-    static_assert(std::same_as<uint8_t, decltype(U8FromLittleEndian(bytes))>);
-    static_assert(U8FromLittleEndian(bytes) == 0x12u);
-  }
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u};
-    EXPECT_EQ(U16FromLittleEndian(bytes), 0x34'12u);
-    static_assert(std::same_as<uint16_t, decltype(U16FromLittleEndian(bytes))>);
-    static_assert(U16FromLittleEndian(bytes) == 0x34'12u);
-  }
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u};
-    EXPECT_EQ(U32FromLittleEndian(bytes), 0x78'56'34'12u);
-    static_assert(std::same_as<uint32_t, decltype(U32FromLittleEndian(bytes))>);
-    static_assert(U32FromLittleEndian(bytes) == 0x78'56'34'12u);
-  }
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u,
-                                 0x90u, 0x12u, 0x34u, 0x56u};
-    EXPECT_EQ(U64FromLittleEndian(bytes), 0x56'34'12'90'78'56'34'12u);
-    static_assert(std::same_as<uint64_t, decltype(U64FromLittleEndian(bytes))>);
-    static_assert(U64FromLittleEndian(bytes) == 0x56'34'12'90'78'56'34'12u);
-  }
-
-  {
-    constexpr uint8_t bytes[] = {0x12u};
-    EXPECT_EQ(I8FromLittleEndian(bytes), 0x12);
-    static_assert(std::same_as<int8_t, decltype(I8FromLittleEndian(bytes))>);
-    static_assert(I8FromLittleEndian(bytes) == 0x12);
-  }
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u};
-    EXPECT_EQ(I16FromLittleEndian(bytes), 0x34'12);
-    static_assert(std::same_as<int16_t, decltype(I16FromLittleEndian(bytes))>);
-    static_assert(I16FromLittleEndian(bytes) == 0x34'12);
-  }
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u};
-    EXPECT_EQ(I32FromLittleEndian(bytes), 0x78'56'34'12);
-    static_assert(std::same_as<int32_t, decltype(I32FromLittleEndian(bytes))>);
-    static_assert(I32FromLittleEndian(bytes) == 0x78'56'34'12);
-  }
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u,
-                                 0x90u, 0x12u, 0x34u, 0x56u};
-    EXPECT_EQ(I64FromLittleEndian(bytes), 0x56'34'12'90'78'56'34'12);
-    static_assert(std::same_as<int64_t, decltype(I64FromLittleEndian(bytes))>);
-    static_assert(I64FromLittleEndian(bytes) == 0x56'34'12'90'78'56'34'12);
-  }
-
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u};
-    EXPECT_EQ(FloatFromLittleEndian(bytes), 1.73782443614e+34f);
-    EXPECT_EQ(std::bit_cast<uint32_t>(FloatFromLittleEndian(bytes)),
-              0x78'56'34'12u);
-    static_assert(std::same_as<float, decltype(FloatFromLittleEndian(bytes))>);
-    static_assert(FloatFromLittleEndian(bytes) == 1.73782443614e+34f);
-    static_assert(std::bit_cast<uint32_t>(FloatFromLittleEndian(bytes)) ==
-                  0x78'56'34'12u);
-  }
-
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u,
-                                 0x90u, 0x12u, 0x34u, 0x56u};
-    EXPECT_EQ(DoubleFromLittleEndian(bytes),
-              1.84145159269283616391989849435e107);
-    EXPECT_EQ(std::bit_cast<uint64_t>(DoubleFromLittleEndian(bytes)),
-              0x56'34'12'90'78'56'34'12u);
-    static_assert(
-        std::same_as<double, decltype(DoubleFromLittleEndian(bytes))>);
-    static_assert(DoubleFromLittleEndian(bytes) ==
-                  1.84145159269283616391989849435e107);
-    static_assert(std::bit_cast<uint64_t>(DoubleFromLittleEndian(bytes)) ==
-                  0x56'34'12'90'78'56'34'12u);
-  }
+template <typename T>
+constexpr auto GetBigEndianBytes() {
+  auto bytes = GetLittleEndianBytes<T>();
+  std::ranges::reverse(bytes);
+  return bytes;
 }
 
-TEST(NumericsTest, FromBigEndian) {
-  // The implementation of FromNativeEndian and FromLittleEndian assumes the
-  // native endian is little. If support of big endian is desired, compile-time
-  // branches will need to be added to the implementation, and the test results
-  // will differ there (they would match FromLittleEndian in this test).
+using TestedTypes = ::testing::Types<
+    // Fixed-width unsigned integers
+    uint8_t,
+    uint16_t,
+    uint32_t,
+    uint64_t,
+    // Fixed-width signed integers
+    int8_t,
+    int16_t,
+    int32_t,
+    int64_t,
+    // Standard integer types
+    char,
+    signed char,
+    unsigned char,
+    short,
+    unsigned short,
+    int,
+    unsigned int,
+    long,
+    unsigned long,
+    long long,           // nocheck
+    unsigned long long,  // nocheck
+    // Character types
+    char8_t,  // nocheck
+    char16_t,
+    char32_t,
+    wchar_t,
+    // Size and pointer types
+    size_t,
+    ptrdiff_t,
+    uintptr_t,
+    intptr_t,
+    // Floating point types
+    float,
+    double,
+    // Enum types
+    ScopedEnum8,
+    ScopedEnum16,
+    ScopedEnum32,
+    ScopedEnum64,
+    SignedEnum,
+    UnscopedEnum
+#if defined(__SIZEOF_INT128__)
+    ,
+    __uint128_t,
+    __int128_t
+#endif
+#if defined(__STDCPP_FLOAT16_T__)
+    ,
+    std::float16_t
+#endif
+#if defined(__STDCPP_BFLOAT16_T__)
+    ,
+    std::bfloat16_t
+#endif
+#if defined(__STDCPP_FLOAT32_T__)
+    ,
+    std::float32_t
+#endif
+#if defined(__STDCPP_FLOAT64_T__)
+    ,
+    std::float64_t
+#endif
+#if defined(__STDCPP_FLOAT128_T__) && defined(__SIZEOF_INT128__)
+    ,
+    std::float128_t
+#endif
+    >;
+
+template <typename T>
+class ByteConversionsTest : public ::testing::Test {};
+
+TYPED_TEST_SUITE(ByteConversionsTest, TestedTypes);
+
+TYPED_TEST(ByteConversionsTest, FromNativeEndian) {
   static_assert(std::endian::native == std::endian::little);
-  {
-    constexpr uint8_t bytes[] = {0x12u};
-    EXPECT_EQ(U8FromBigEndian(bytes), 0x12u);
-    static_assert(U8FromBigEndian(bytes) == 0x12u);
-    static_assert(std::same_as<uint8_t, decltype(U8FromBigEndian(bytes))>);
-  }
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u};
-    EXPECT_EQ(U16FromBigEndian(bytes), 0x12'34u);
-    static_assert(U16FromBigEndian(bytes) == 0x12'34u);
-    static_assert(std::same_as<uint16_t, decltype(U16FromBigEndian(bytes))>);
-  }
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u};
-    EXPECT_EQ(U32FromBigEndian(bytes), 0x12'34'56'78u);
-    static_assert(U32FromBigEndian(bytes) == 0x12'34'56'78u);
-    static_assert(std::same_as<uint32_t, decltype(U32FromBigEndian(bytes))>);
-  }
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u,
-                                 0x90u, 0x12u, 0x34u, 0x56u};
-    EXPECT_EQ(U64FromBigEndian(bytes), 0x12'34'56'78'90'12'34'56u);
-    static_assert(U64FromBigEndian(bytes) == 0x12'34'56'78'90'12'34'56u);
-    static_assert(std::same_as<uint64_t, decltype(U64FromBigEndian(bytes))>);
-  }
+  constexpr auto kLeBytes = GetLittleEndianBytes<TypeParam>();
 
-  {
-    constexpr uint8_t bytes[] = {0x12u};
-    EXPECT_EQ(I8FromBigEndian(bytes), 0x12);
-    static_assert(I8FromBigEndian(bytes) == 0x12);
-    static_assert(std::same_as<int8_t, decltype(I8FromBigEndian(bytes))>);
-  }
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u};
-    EXPECT_EQ(I16FromBigEndian(bytes), 0x12'34);
-    static_assert(I16FromBigEndian(bytes) == 0x12'34);
-    static_assert(std::same_as<int16_t, decltype(I16FromBigEndian(bytes))>);
-  }
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u};
-    EXPECT_EQ(I32FromBigEndian(bytes), 0x12'34'56'78);
-    static_assert(I32FromBigEndian(bytes) == 0x12'34'56'78);
-    static_assert(std::same_as<int32_t, decltype(I32FromBigEndian(bytes))>);
-  }
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u,
-                                 0x90u, 0x12u, 0x34u, 0x56u};
-    EXPECT_EQ(I64FromBigEndian(bytes), 0x12'34'56'78'90'12'34'56);
-    static_assert(I64FromBigEndian(bytes) == 0x12'34'56'78'90'12'34'56);
-    static_assert(std::same_as<int64_t, decltype(I64FromBigEndian(bytes))>);
-  }
-
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u};
-    EXPECT_EQ(FloatFromBigEndian(bytes), 5.6904566139e-28f);
-    EXPECT_EQ(std::bit_cast<uint32_t>(FloatFromBigEndian(bytes)),
-              0x12'34'56'78u);
-    static_assert(std::same_as<float, decltype(FloatFromBigEndian(bytes))>);
-    static_assert(FloatFromBigEndian(bytes) == 5.6904566139e-28f);
-    static_assert(std::bit_cast<uint32_t>(FloatFromBigEndian(bytes)) ==
-                  0x12'34'56'78u);
-  }
-  {
-    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u,
-                                 0x90u, 0x12u, 0x34u, 0x56u};
-    EXPECT_EQ(DoubleFromBigEndian(bytes), 5.62634909901491201382066931077e-221);
-    EXPECT_EQ(std::bit_cast<uint64_t>(DoubleFromBigEndian(bytes)),
-              0x12'34'56'78'90'12'34'56u);
-    static_assert(std::same_as<double, decltype(DoubleFromBigEndian(bytes))>);
-    static_assert(DoubleFromBigEndian(bytes) ==
-                  5.62634909901491201382066931077e-221);
-    static_assert(std::bit_cast<uint64_t>(DoubleFromBigEndian(bytes)) ==
-                  0x12'34'56'78'90'12'34'56u);
-  }
+  EXPECT_EQ(ToNativeEndian<TypeParam>(FromNativeEndian<TypeParam>(kLeBytes)),
+            kLeBytes);
+  static_assert(
+      std::same_as<TypeParam, decltype(FromNativeEndian<TypeParam>(kLeBytes))>);
+  static_assert(ToNativeEndian<TypeParam>(
+                    FromNativeEndian<TypeParam>(kLeBytes)) == kLeBytes);
 }
 
-TEST(NumericsTest, ToNativeEndian) {
-  // The implementation of ToNativeEndian and ToLittleEndian assumes the native
-  // endian is little. If support of big endian is desired, compile-time
-  // branches will need to be added to the implementation, and the test results
-  // will differ there (they would match ToBigEndian in this test).
+TYPED_TEST(ByteConversionsTest, FromLittleEndian) {
   static_assert(std::endian::native == std::endian::little);
-  {
-    constexpr std::array<uint8_t, 1u> bytes = {0x12u};
-    constexpr auto val = uint8_t{0x12u};
-    EXPECT_EQ(U8ToNativeEndian(val), bytes);
-    static_assert(
-        std::same_as<std::array<uint8_t, 1u>, decltype(U8ToNativeEndian(val))>);
-    static_assert(U8ToNativeEndian(val) == bytes);
-  }
-  {
-    constexpr std::array<uint8_t, 2u> bytes = {0x12u, 0x34u};
-    constexpr auto val = uint16_t{0x34'12u};
-    EXPECT_EQ(U16ToNativeEndian(val), bytes);
-    static_assert(std::same_as<std::array<uint8_t, 2u>,
-                               decltype(U16ToNativeEndian(val))>);
-    static_assert(U16ToNativeEndian(val) == bytes);
-  }
-  {
-    constexpr std::array<uint8_t, 4u> bytes = {0x12u, 0x34u, 0x56u, 0x78u};
-    constexpr auto val = uint32_t{0x78'56'34'12u};
-    EXPECT_EQ(U32ToNativeEndian(val), bytes);
-    static_assert(std::same_as<std::array<uint8_t, 4u>,
-                               decltype(U32ToNativeEndian(val))>);
-    static_assert(U32ToNativeEndian(val) == bytes);
-  }
-  {
-    constexpr std::array<uint8_t, 8u> bytes = {0x12u, 0x34u, 0x56u, 0x78u,
-                                               0x90u, 0x12u, 0x34u, 0x56u};
-    constexpr auto val = uint64_t{0x56'34'12'90'78'56'34'12u};
-    EXPECT_EQ(U64ToNativeEndian(val), bytes);
-    static_assert(std::same_as<std::array<uint8_t, 8u>,
-                               decltype(U64ToNativeEndian(val))>);
-    static_assert(U64ToNativeEndian(val) == bytes);
-  }
+  constexpr auto kLeBytes = GetLittleEndianBytes<TypeParam>();
 
-  {
-    constexpr std::array<uint8_t, 1u> bytes = {0x12u};
-    constexpr auto val = int8_t{0x12};
-    EXPECT_EQ(I8ToNativeEndian(val), bytes);
-    static_assert(
-        std::same_as<std::array<uint8_t, 1u>, decltype(I8ToNativeEndian(val))>);
-    static_assert(I8ToNativeEndian(val) == bytes);
-  }
-  {
-    constexpr std::array<uint8_t, 2u> bytes = {0x12u, 0x34u};
-    constexpr auto val = int16_t{0x34'12};
-    EXPECT_EQ(I16ToNativeEndian(val), bytes);
-    static_assert(std::same_as<std::array<uint8_t, 2u>,
-                               decltype(I16ToNativeEndian(val))>);
-    static_assert(I16ToNativeEndian(val) == bytes);
-  }
-  {
-    constexpr std::array<uint8_t, 4u> bytes = {0x12u, 0x34u, 0x56u, 0x78u};
-    constexpr auto val = int32_t{0x78'56'34'12};
-    EXPECT_EQ(I32ToNativeEndian(val), bytes);
-    static_assert(std::same_as<std::array<uint8_t, 4u>,
-                               decltype(I32ToNativeEndian(val))>);
-    static_assert(I32ToNativeEndian(val) == bytes);
-  }
-  {
-    constexpr std::array<uint8_t, 8u> bytes = {0x12u, 0x34u, 0x56u, 0x78u,
-                                               0x90u, 0x12u, 0x34u, 0x56u};
-    constexpr auto val = int64_t{0x56'34'12'90'78'56'34'12};
-    EXPECT_EQ(I64ToNativeEndian(val), bytes);
-    static_assert(std::same_as<std::array<uint8_t, 8u>,
-                               decltype(I64ToNativeEndian(val))>);
-    static_assert(I64ToNativeEndian(val) == bytes);
-  }
-
-  {
-    constexpr std::array<uint8_t, 4u> bytes = {0x12u, 0x34u, 0x56u, 0x78u};
-    constexpr float val = 1.73782443614e+34f;
-    EXPECT_EQ(FloatToNativeEndian(val), bytes);
-    static_assert(std::same_as<std::array<uint8_t, 4u>,
-                               decltype(FloatToNativeEndian(val))>);
-    static_assert(FloatToNativeEndian(val) == bytes);
-  }
-
-  {
-    constexpr std::array<uint8_t, 8u> bytes = {0x12u, 0x34u, 0x56u, 0x78u,
-                                               0x90u, 0x12u, 0x34u, 0x56u};
-    constexpr double val = 1.84145159269283616391989849435e107;
-    EXPECT_EQ(DoubleToNativeEndian(val), bytes);
-    static_assert(std::same_as<std::array<uint8_t, 8u>,
-                               decltype(DoubleToNativeEndian(val))>);
-    static_assert(DoubleToNativeEndian(val) == bytes);
-  }
+  EXPECT_EQ(ToLittleEndian<TypeParam>(FromLittleEndian<TypeParam>(kLeBytes)),
+            kLeBytes);
+  static_assert(
+      std::same_as<TypeParam, decltype(FromLittleEndian<TypeParam>(kLeBytes))>);
+  static_assert(ToLittleEndian<TypeParam>(
+                    FromLittleEndian<TypeParam>(kLeBytes)) == kLeBytes);
 }
 
-TEST(NumericsTest, ToLittleEndian) {
-  // The implementation of ToNativeEndian and ToLittleEndian assumes the native
-  // endian is little. If support of big endian is desired, compile-time
-  // branches will need to be added to the implementation, and the test results
-  // will differ there (they would match ToBigEndian in this test).
+TYPED_TEST(ByteConversionsTest, FromBigEndian) {
   static_assert(std::endian::native == std::endian::little);
-  {
-    constexpr std::array<uint8_t, 1u> bytes = {0x12u};
-    constexpr auto val = uint8_t{0x12u};
-    EXPECT_EQ(U8ToLittleEndian(val), bytes);
-    static_assert(
-        std::same_as<std::array<uint8_t, 1u>, decltype(U8ToLittleEndian(val))>);
-    static_assert(U8ToLittleEndian(val) == bytes);
-  }
-  {
-    constexpr std::array<uint8_t, 2u> bytes = {0x12u, 0x34u};
-    constexpr auto val = uint16_t{0x34'12u};
-    EXPECT_EQ(U16ToLittleEndian(val), bytes);
-    static_assert(std::same_as<std::array<uint8_t, 2u>,
-                               decltype(U16ToLittleEndian(val))>);
-    static_assert(U16ToLittleEndian(val) == bytes);
-  }
-  {
-    constexpr std::array<uint8_t, 4u> bytes = {0x12u, 0x34u, 0x56u, 0x78u};
-    constexpr auto val = uint32_t{0x78'56'34'12u};
-    EXPECT_EQ(U32ToLittleEndian(val), bytes);
-    static_assert(std::same_as<std::array<uint8_t, 4u>,
-                               decltype(U32ToLittleEndian(val))>);
-    static_assert(U32ToLittleEndian(val) == bytes);
-  }
-  {
-    constexpr std::array<uint8_t, 8u> bytes = {0x12u, 0x34u, 0x56u, 0x78u,
-                                               0x90u, 0x12u, 0x34u, 0x56u};
-    constexpr auto val = uint64_t{0x56'34'12'90'78'56'34'12u};
-    EXPECT_EQ(U64ToLittleEndian(val), bytes);
-    static_assert(std::same_as<std::array<uint8_t, 8u>,
-                               decltype(U64ToLittleEndian(val))>);
-    static_assert(U64ToLittleEndian(val) == bytes);
-  }
+  constexpr auto kBeBytes = GetBigEndianBytes<TypeParam>();
+  constexpr auto kLeBytes = GetLittleEndianBytes<TypeParam>();
 
-  {
-    constexpr std::array<uint8_t, 1u> bytes = {0x12u};
-    constexpr auto val = int8_t{0x12};
-    EXPECT_EQ(I8ToLittleEndian(val), bytes);
-    static_assert(
-        std::same_as<std::array<uint8_t, 1u>, decltype(I8ToLittleEndian(val))>);
-    static_assert(I8ToLittleEndian(val) == bytes);
-  }
-  {
-    constexpr std::array<uint8_t, 2u> bytes = {0x12u, 0x34u};
-    constexpr auto val = int16_t{0x34'12};
-    EXPECT_EQ(I16ToLittleEndian(val), bytes);
-    static_assert(std::same_as<std::array<uint8_t, 2u>,
-                               decltype(I16ToLittleEndian(val))>);
-    static_assert(I16ToLittleEndian(val) == bytes);
-  }
-  {
-    constexpr std::array<uint8_t, 4u> bytes = {0x12u, 0x34u, 0x56u, 0x78u};
-    constexpr auto val = int32_t{0x78'56'34'12};
-    EXPECT_EQ(I32ToLittleEndian(val), bytes);
-    static_assert(std::same_as<std::array<uint8_t, 4u>,
-                               decltype(I32ToLittleEndian(val))>);
-    static_assert(I32ToLittleEndian(val) == bytes);
-  }
-  {
-    constexpr std::array<uint8_t, 8u> bytes = {0x12u, 0x34u, 0x56u, 0x78u,
-                                               0x90u, 0x12u, 0x34u, 0x56u};
-    constexpr auto val = int64_t{0x56'34'12'90'78'56'34'12};
-    EXPECT_EQ(I64ToLittleEndian(val), bytes);
-    static_assert(std::same_as<std::array<uint8_t, 8u>,
-                               decltype(I64ToLittleEndian(val))>);
-    static_assert(I64ToLittleEndian(val) == bytes);
-  }
-
-  {
-    constexpr std::array<uint8_t, 4u> bytes = {0x12u, 0x34u, 0x56u, 0x78u};
-    constexpr float val = 1.73782443614e+34f;
-    EXPECT_EQ(FloatToLittleEndian(val), bytes);
-    static_assert(std::same_as<std::array<uint8_t, 4u>,
-                               decltype(FloatToLittleEndian(val))>);
-    static_assert(FloatToLittleEndian(val) == bytes);
-  }
-
-  {
-    constexpr std::array<uint8_t, 8u> bytes = {0x12u, 0x34u, 0x56u, 0x78u,
-                                               0x90u, 0x12u, 0x34u, 0x56u};
-    constexpr double val = 1.84145159269283616391989849435e107;
-    EXPECT_EQ(DoubleToLittleEndian(val), bytes);
-    static_assert(std::same_as<std::array<uint8_t, 8u>,
-                               decltype(DoubleToLittleEndian(val))>);
-    static_assert(DoubleToLittleEndian(val) == bytes);
-  }
+  EXPECT_EQ(ToLittleEndian<TypeParam>(FromBigEndian<TypeParam>(kBeBytes)),
+            kLeBytes);
+  static_assert(
+      std::same_as<TypeParam, decltype(FromBigEndian<TypeParam>(kBeBytes))>);
+  static_assert(ToLittleEndian<TypeParam>(FromBigEndian<TypeParam>(kBeBytes)) ==
+                kLeBytes);
 }
 
-TEST(NumericsTest, ToBigEndian) {
-  // The implementation of ToBigEndian assumes the native endian is little. If
-  // support of big endian is desired, compile-time branches will need to be
-  // added to the implementation, and the test results will differ there (they
-  // would match ToLittleEndian in this test).
+TYPED_TEST(ByteConversionsTest, ToNativeEndian) {
   static_assert(std::endian::native == std::endian::little);
-  {
-    constexpr std::array<uint8_t, 1u> bytes = {0x12u};
-    constexpr auto val = uint8_t{0x12u};
-    EXPECT_EQ(U8ToBigEndian(val), bytes);
-    static_assert(
-        std::same_as<std::array<uint8_t, 1u>, decltype(U8ToBigEndian(val))>);
-    static_assert(U8ToBigEndian(val) == bytes);
-  }
-  {
-    constexpr std::array<uint8_t, 2u> bytes = {0x12u, 0x34u};
-    constexpr auto val = uint16_t{0x12'34u};
-    EXPECT_EQ(U16ToBigEndian(val), bytes);
-    static_assert(
-        std::same_as<std::array<uint8_t, 2u>, decltype(U16ToBigEndian(val))>);
-    static_assert(U16ToBigEndian(val) == bytes);
-  }
-  {
-    constexpr std::array<uint8_t, 4u> bytes = {0x12u, 0x34u, 0x56u, 0x78u};
-    constexpr auto val = uint32_t{0x12'34'56'78u};
-    EXPECT_EQ(U32ToBigEndian(val), bytes);
-    static_assert(
-        std::same_as<std::array<uint8_t, 4u>, decltype(U32ToBigEndian(val))>);
-    static_assert(U32ToBigEndian(val) == bytes);
-  }
-  {
-    constexpr std::array<uint8_t, 8u> bytes = {0x12u, 0x34u, 0x56u, 0x78u,
-                                               0x90u, 0x12u, 0x34u, 0x56u};
-    constexpr auto val = uint64_t{0x12'34'56'78'90'12'34'56u};
-    EXPECT_EQ(U64ToBigEndian(val), bytes);
-    static_assert(
-        std::same_as<std::array<uint8_t, 8u>, decltype(U64ToBigEndian(val))>);
-    static_assert(U64ToBigEndian(val) == bytes);
-  }
+  constexpr auto kLeBytes = GetLittleEndianBytes<TypeParam>();
+  constexpr auto kVal = std::bit_cast<TypeParam>(kLeBytes);
 
-  {
-    constexpr std::array<uint8_t, 1u> bytes = {0x12u};
-    constexpr auto val = int8_t{0x12u};
-    EXPECT_EQ(I8ToBigEndian(val), bytes);
-    static_assert(
-        std::same_as<std::array<uint8_t, 1u>, decltype(I8ToBigEndian(val))>);
-    static_assert(I8ToBigEndian(val) == bytes);
-  }
-  {
-    constexpr std::array<uint8_t, 2u> bytes = {0x12u, 0x34u};
-    constexpr auto val = int16_t{0x12'34u};
-    EXPECT_EQ(I16ToBigEndian(val), bytes);
-    static_assert(
-        std::same_as<std::array<uint8_t, 2u>, decltype(I16ToBigEndian(val))>);
-    static_assert(I16ToBigEndian(val) == bytes);
-  }
-  {
-    constexpr std::array<uint8_t, 4u> bytes = {0x12u, 0x34u, 0x56u, 0x78u};
-    constexpr auto val = int32_t{0x12'34'56'78u};
-    EXPECT_EQ(I32ToBigEndian(val), bytes);
-    static_assert(
-        std::same_as<std::array<uint8_t, 4u>, decltype(I32ToBigEndian(val))>);
-    static_assert(I32ToBigEndian(val) == bytes);
-  }
-  {
-    constexpr std::array<uint8_t, 8u> bytes = {0x12u, 0x34u, 0x56u, 0x78u,
-                                               0x90u, 0x12u, 0x34u, 0x56u};
-    constexpr auto val = int64_t{0x12'34'56'78'90'12'34'56u};
-    EXPECT_EQ(I64ToBigEndian(val), bytes);
-    static_assert(
-        std::same_as<std::array<uint8_t, 8u>, decltype(I64ToBigEndian(val))>);
-    static_assert(I64ToBigEndian(val) == bytes);
-  }
+  EXPECT_EQ(ToNativeEndian<TypeParam>(kVal), kLeBytes);
+  static_assert(std::same_as<std::array<uint8_t, sizeof(TypeParam)>,
+                             decltype(ToNativeEndian<TypeParam>(kVal))>);
+  static_assert(ToNativeEndian<TypeParam>(kVal) == kLeBytes);
+}
 
-  {
-    constexpr std::array<uint8_t, 4u> bytes = {0x12u, 0x34u, 0x56u, 0x78u};
-    constexpr float val = 5.6904566139e-28f;
-    EXPECT_EQ(FloatToBigEndian(val), bytes);
-    static_assert(
-        std::same_as<std::array<uint8_t, 4u>, decltype(FloatToBigEndian(val))>);
-    static_assert(FloatToBigEndian(val) == bytes);
-  }
+TYPED_TEST(ByteConversionsTest, ToLittleEndian) {
+  static_assert(std::endian::native == std::endian::little);
+  constexpr auto kLeBytes = GetLittleEndianBytes<TypeParam>();
+  constexpr auto kVal = std::bit_cast<TypeParam>(kLeBytes);
 
-  {
-    constexpr std::array<uint8_t, 8u> bytes = {0x12u, 0x34u, 0x56u, 0x78u,
-                                               0x90u, 0x12u, 0x34u, 0x56u};
-    constexpr double val = 5.62634909901491201382066931077e-221;
-    EXPECT_EQ(DoubleToBigEndian(val), bytes);
-    static_assert(std::same_as<std::array<uint8_t, 8u>,
-                               decltype(DoubleToBigEndian(val))>);
-    static_assert(DoubleToBigEndian(val) == bytes);
-  }
+  EXPECT_EQ(ToLittleEndian<TypeParam>(kVal), kLeBytes);
+  static_assert(std::same_as<std::array<uint8_t, sizeof(TypeParam)>,
+                             decltype(ToLittleEndian<TypeParam>(kVal))>);
+  static_assert(ToLittleEndian<TypeParam>(kVal) == kLeBytes);
+}
+
+TYPED_TEST(ByteConversionsTest, ToBigEndian) {
+  static_assert(std::endian::native == std::endian::little);
+  constexpr auto kBeBytes = GetBigEndianBytes<TypeParam>();
+  constexpr auto kLeBytes = GetLittleEndianBytes<TypeParam>();
+  constexpr auto kVal = std::bit_cast<TypeParam>(kLeBytes);
+
+  EXPECT_EQ(ToBigEndian<TypeParam>(kVal), kBeBytes);
+  static_assert(std::same_as<std::array<uint8_t, sizeof(TypeParam)>,
+                             decltype(ToBigEndian<TypeParam>(kVal))>);
+  static_assert(ToBigEndian<TypeParam>(kVal) == kBeBytes);
+}
+
+TYPED_TEST(ByteConversionsTest, RoundTrip) {
+  constexpr auto kLeBytes = GetLittleEndianBytes<TypeParam>();
+  constexpr auto kBeBytes = GetBigEndianBytes<TypeParam>();
+
+  EXPECT_EQ(ToLittleEndian<TypeParam>(FromLittleEndian<TypeParam>(kLeBytes)),
+            kLeBytes);
+  EXPECT_EQ(ToBigEndian<TypeParam>(FromBigEndian<TypeParam>(kBeBytes)),
+            kBeBytes);
+  EXPECT_EQ(ToLittleEndian<TypeParam>(FromNativeEndian<TypeParam>(kLeBytes)),
+            kLeBytes);
+
+  static_assert(ToLittleEndian<TypeParam>(
+                    FromLittleEndian<TypeParam>(kLeBytes)) == kLeBytes);
+  static_assert(ToBigEndian<TypeParam>(FromBigEndian<TypeParam>(kBeBytes)) ==
+                kBeBytes);
+  static_assert(ToLittleEndian<TypeParam>(
+                    FromNativeEndian<TypeParam>(kLeBytes)) == kLeBytes);
+}
+
+using TestedEnumTypes = ::testing::Types<ScopedEnum8,
+                                         ScopedEnum16,
+                                         ScopedEnum32,
+                                         ScopedEnum64,
+                                         SignedEnum,
+                                         UnscopedEnum>;
+
+template <typename T>
+class EnumByteConversionsTest : public ::testing::Test {};
+
+TYPED_TEST_SUITE(EnumByteConversionsTest, TestedEnumTypes);
+
+TYPED_TEST(EnumByteConversionsTest, EnumConversions) {
+  constexpr auto kLeBytes = GetLittleEndianBytes<TypeParam>();
+  constexpr auto kBeBytes = GetBigEndianBytes<TypeParam>();
+  constexpr auto kVal = std::bit_cast<TypeParam>(kLeBytes);
+
+  EXPECT_EQ(EnumFromNativeEndian<TypeParam>(kLeBytes), kVal);
+  static_assert(EnumFromNativeEndian<TypeParam>(kLeBytes) == kVal);
+  EXPECT_EQ(EnumToNativeEndian(kVal), kLeBytes);
+  static_assert(EnumToNativeEndian(kVal) == kLeBytes);
+
+  EXPECT_EQ(EnumFromLittleEndian<TypeParam>(kLeBytes), kVal);
+  static_assert(EnumFromLittleEndian<TypeParam>(kLeBytes) == kVal);
+  EXPECT_EQ(EnumToLittleEndian(kVal), kLeBytes);
+  static_assert(EnumToLittleEndian(kVal) == kLeBytes);
+
+  EXPECT_EQ(EnumFromBigEndian<TypeParam>(kBeBytes), kVal);
+  static_assert(EnumFromBigEndian<TypeParam>(kBeBytes) == kVal);
+  EXPECT_EQ(EnumToBigEndian(kVal), kBeBytes);
+  static_assert(EnumToBigEndian(kVal) == kBeBytes);
 }
 
 }  // namespace base::numerics
