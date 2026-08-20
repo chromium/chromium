@@ -172,7 +172,7 @@ def CheckSkillJsonFiles(input_api, output_api, check_personas=False):
 
         try:
             data = json.loads(content)
-            if check_personas and 'personas' in json_path.split(os.sep):
+            if check_personas and 'personas' in pathlib.Path(json_path).parts:
                 rel_path = os.path.relpath(json_path, skill_dir)
                 if not isinstance(data, dict):
                     msg = f'Persona JSON {rel_path} must be a dictionary'
