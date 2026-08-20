@@ -16,11 +16,12 @@
 #include "ui/views/view.h"
 
 namespace content {
-class BrowserContext;
 class NavigationHandle;
 class WebContents;
 struct OpenURLParams;
 }  // namespace content
+
+class BrowserWindowInterface;
 
 namespace input {
 struct NativeWebKeyboardEvent;
@@ -39,7 +40,7 @@ class ContextualTasksWebView
   METADATA_HEADER(ContextualTasksWebView, views::View)
 
  public:
-  explicit ContextualTasksWebView(content::BrowserContext* browser_context);
+  explicit ContextualTasksWebView(BrowserWindowInterface* browser_window);
   ~ContextualTasksWebView() override;
 
   base::WeakPtr<ContextualTasksWebView> GetWeakPtr();
