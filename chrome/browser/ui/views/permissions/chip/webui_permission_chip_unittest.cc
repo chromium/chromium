@@ -112,3 +112,38 @@ TEST_F(WebUIPermissionChipTest, CollapseAnimationEndedReentrancy) {
   chip.OnCollapseAnimationEnded();
   EXPECT_FALSE(chip.GetVisible());
 }
+
+TEST_F(WebUIPermissionChipTest, GetThemeForTesting) {
+  WebUIPermissionChip chip(location_bar_.get());
+  EXPECT_EQ(chip.GetThemeForTesting(), PermissionChipTheme::kNormalVisibility);
+
+  chip.SetTheme(PermissionChipTheme::kInUseActivityIndicator);
+  EXPECT_EQ(chip.GetThemeForTesting(),
+            PermissionChipTheme::kInUseActivityIndicator);
+}
+
+TEST_F(WebUIPermissionChipTest, GetTextForTesting) {
+  WebUIPermissionChip chip(location_bar_.get());
+  EXPECT_TRUE(chip.GetTextForTesting().empty());
+
+  const std::u16string message = u"Camera in use";
+  chip.SetMessage(message);
+  EXPECT_EQ(chip.GetTextForTesting(), message);
+}
+
+TEST_F(WebUIPermissionChipTest, GetIsRequestForTesting) {
+  WebUIPermissionChip chip(location_bar_.get());
+  EXPECT_TRUE(chip.GetIsRequestForTesting());
+
+  chip.SetTheme(PermissionChipTheme::kLowVisibility);
+  EXPECT_TRUE(chip.GetIsRequestForTesting());
+
+  chip.SetTheme(PermissionChipTheme::kInUseActivityIndicator);
+  EXPECT_FALSE(chip.GetIsRequestForTesting());
+
+  chip.SetTheme(PermissionChipTheme::kBlockedActivityIndicator);
+  EXPECT_FALSE(chip.GetIsRequestForTesting());
+
+  chip.SetTheme(PermissionChipTheme::kOnSystemBlockedActivityIndicator);
+  EXPECT_FALSE(chip.GetIsRequestForTesting());
+}

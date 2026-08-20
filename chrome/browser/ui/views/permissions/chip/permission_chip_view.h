@@ -61,10 +61,6 @@ class PermissionChipView : public views::MdTextButton,
   }
   PermissionChipTheme theme() const { return theme_; }
 
-  // Returns whether the theme describes a request state (true) or indicator
-  // state (false).
-  bool GetIsRequestForTesting() const;
-
   void StopAnimationForTesting();
 
   int GetIconViewWidth() const;
@@ -72,6 +68,9 @@ class PermissionChipView : public views::MdTextButton,
   // PermissionChipInterface:
   void SetVisible(bool visible) override;
   bool GetVisible() const override;
+  PermissionChipTheme GetThemeForTesting() const override;
+  std::u16string GetTextForTesting() const override;
+  bool GetIsRequestForTesting() const override;
   void SetChipIcon(const gfx::VectorIcon& icon) override;
   void SetChipIcon(const gfx::VectorIcon* icon) override;
   void SetMessage(std::u16string message) override;

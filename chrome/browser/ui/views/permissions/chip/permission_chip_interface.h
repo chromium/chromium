@@ -49,6 +49,9 @@ class PermissionChipInterface {
 
   virtual void SetVisible(bool visible) = 0;
   virtual bool GetVisible() const = 0;
+  virtual PermissionChipTheme GetThemeForTesting() const = 0;
+  virtual std::u16string GetTextForTesting() const = 0;
+  virtual bool GetIsRequestForTesting() const = 0;
 
   // Customize the chip.
   virtual void SetChipIcon(const gfx::VectorIcon& icon) = 0;

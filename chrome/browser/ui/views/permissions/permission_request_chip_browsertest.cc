@@ -501,11 +501,10 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipSensorBrowserTest,
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return indicator_chip->GetVisible(); }));
 
-  PermissionChipView* chip_view =
-      static_cast<PermissionChipView*>(indicator_chip);
-  EXPECT_EQ(chip_view->GetText(),
+  EXPECT_EQ(indicator_chip->GetTextForTesting(),
             l10n_util::GetStringUTF16(IDS_SENSORS_IN_USE));
-  EXPECT_EQ(chip_view->theme(), PermissionChipTheme::kInUseActivityIndicator);
+  EXPECT_EQ(indicator_chip->GetThemeForTesting(),
+            PermissionChipTheme::kInUseActivityIndicator);
 
   // Navigate away to destroy the document and close Mojo pipes.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
@@ -563,9 +562,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipSensorBrowserTest,
       base::test::RunUntil([&]() { return indicator_chip->GetVisible(); }));
 
   // Verify that the active chip text displays Camera usage.
-  PermissionChipView* chip_view =
-      static_cast<PermissionChipView*>(indicator_chip);
-  EXPECT_EQ(chip_view->GetText(), l10n_util::GetStringUTF16(IDS_CAMERA_IN_USE));
+  EXPECT_EQ(indicator_chip->GetTextForTesting(),
+            l10n_util::GetStringUTF16(IDS_CAMERA_IN_USE));
 
   // Reset capturing state and navigate away to clean up.
   content_settings::PageSpecificContentSettings::GetForFrame(
@@ -626,11 +624,10 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipSensorBrowserTest,
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return indicator_chip->GetVisible(); }));
 
-  PermissionChipView* chip_view =
-      static_cast<PermissionChipView*>(indicator_chip);
-  EXPECT_EQ(chip_view->GetText(),
+  EXPECT_EQ(indicator_chip->GetTextForTesting(),
             l10n_util::GetStringUTF16(IDS_SENSORS_BLOCKED));
-  EXPECT_EQ(chip_view->theme(), PermissionChipTheme::kBlockedActivityIndicator);
+  EXPECT_EQ(indicator_chip->GetThemeForTesting(),
+            PermissionChipTheme::kBlockedActivityIndicator);
 
   // Navigate away to destroy the document and close Mojo pipes.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));

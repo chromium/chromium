@@ -375,6 +375,14 @@ void PermissionChipView::SetChipIcon(const gfx::VectorIcon* icon) {
   UpdateIconAndColors();
 }
 
+PermissionChipTheme PermissionChipView::GetThemeForTesting() const {
+  return theme();
+}
+
+std::u16string PermissionChipView::GetTextForTesting() const {
+  return std::u16string(GetText());
+}
+
 bool PermissionChipView::GetIsRequestForTesting() const {
   switch (theme()) {
     case PermissionChipTheme::kNormalVisibility:

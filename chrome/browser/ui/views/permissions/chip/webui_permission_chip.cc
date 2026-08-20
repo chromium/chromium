@@ -354,3 +354,23 @@ void WebUIPermissionChip::NotifyVisibilityChanged() {
 void WebUIPermissionChip::UpdateState() {
   location_bar_->OnChanged();
 }
+
+std::u16string WebUIPermissionChip::GetTextForTesting() const {
+  return message_;
+}
+
+PermissionChipTheme WebUIPermissionChip::GetThemeForTesting() const {
+  return theme_;
+}
+
+bool WebUIPermissionChip::GetIsRequestForTesting() const {
+  switch (theme_) {
+    case PermissionChipTheme::kNormalVisibility:
+    case PermissionChipTheme::kLowVisibility:
+      return true;
+    case PermissionChipTheme::kBlockedActivityIndicator:
+    case PermissionChipTheme::kOnSystemBlockedActivityIndicator:
+    case PermissionChipTheme::kInUseActivityIndicator:
+      return false;
+  }
+}
