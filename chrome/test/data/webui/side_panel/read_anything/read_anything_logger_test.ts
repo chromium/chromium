@@ -4,18 +4,20 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {LinkStatus, MetricsBrowserProxyImpl, ReadAloudSettingsChange, ReadAnythingLogger, ReadAnythingSettingsAction, ReadAnythingSettingsChange, ReadAnythingVoiceType, SpeechControls, TimeFrom} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {LinkStatus, MetricsBrowserProxyImpl, ReadAloudSettingsChange, ReadAnythingLogger, ReadAnythingSettingsAction, ReadAnythingSettingsChange, ReadAnythingVoiceType, SpeechControls, TimeFrom, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertGT, assertLE, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechSynthesisVoice} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('Logger', () => {
   const defaultSpeechStartTime = 0;
 
   let logger: ReadAnythingLogger;
   let metrics: TestMetricsBrowserProxy;
+  let visualBrowserProxy: TestVisualBrowserProxy;
 
   async function assertTimeMetricIsCalled(
       from: TimeFrom, expectedMetric: string) {
@@ -29,6 +31,8 @@ suite('Logger', () => {
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     metrics = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metrics);
+    visualBrowserProxy = new TestVisualBrowserProxy();
+    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
 
     logger = new ReadAnythingLogger();
   });
@@ -179,26 +183,26 @@ suite('Logger', () => {
   });
 
   test('line focus session with flag enabled', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
     logger.logLineFocusSession();
     assertEquals(1, metrics.getCallCount('recordLineFocusSession'));
   });
 
   test('line focus session with flag disabled', () => {
-    chrome.readingMode.isLineFocusEnabled = false;
+    visualBrowserProxy.lineFocusEnabled = false;
     logger.logLineFocusSession();
     assertEquals(0, metrics.getCallCount('recordLineFocusSession'));
   });
 
   test('line focus toggled with flag enabled', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
     logger.logLineFocusToggled(true);
     logger.logLineFocusToggled(false);
     assertEquals(2, metrics.getCallCount('recordLineFocusToggled'));
   });
 
   test('line focus toggled with flag disabled', () => {
-    chrome.readingMode.isLineFocusEnabled = false;
+    visualBrowserProxy.lineFocusEnabled = false;
     logger.logLineFocusToggled(true);
     logger.logLineFocusToggled(false);
     assertEquals(0, metrics.getCallCount('recordLineFocusToggled'));

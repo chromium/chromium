@@ -36,10 +36,22 @@ export interface VisualBrowserProxy {
 
   requestImageData(nodeId: number): void;
 
+  isLineFocusEnabled(): boolean;
+  getLineFocusOff(): number;
+  getLineFocusSmallStaticWindow(): number;
+  getLineFocusMediumStaticWindow(): number;
+  getLineFocusLargeStaticWindow(): number;
+  getLineFocusSmallCursorWindow(): number;
+  getLineFocusMediumCursorWindow(): number;
+  getLineFocusLargeCursorWindow(): number;
+  getLineFocusStaticLine(): number;
+  getLineFocusCursorLine(): number;
+
   onFontChange(font: string): void;
   onLineSpacingChange(value: number): void;
   onLetterSpacingChange(value: number): void;
   onThemeChange(theme: number): void;
+  onLineFocusChanged(value: number, lastNonDisabledValue: number): void;
   togglePresentation(): void;
 }
 
@@ -140,6 +152,46 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
     chrome.readingMode.requestImageData(nodeId);
   }
 
+  isLineFocusEnabled(): boolean {
+    return chrome.readingMode.isLineFocusEnabled;
+  }
+
+  getLineFocusOff(): number {
+    return chrome.readingMode.lineFocusOff;
+  }
+
+  getLineFocusSmallStaticWindow(): number {
+    return chrome.readingMode.lineFocusSmallStaticWindow;
+  }
+
+  getLineFocusMediumStaticWindow(): number {
+    return chrome.readingMode.lineFocusMediumStaticWindow;
+  }
+
+  getLineFocusLargeStaticWindow(): number {
+    return chrome.readingMode.lineFocusLargeStaticWindow;
+  }
+
+  getLineFocusSmallCursorWindow(): number {
+    return chrome.readingMode.lineFocusSmallCursorWindow;
+  }
+
+  getLineFocusMediumCursorWindow(): number {
+    return chrome.readingMode.lineFocusMediumCursorWindow;
+  }
+
+  getLineFocusLargeCursorWindow(): number {
+    return chrome.readingMode.lineFocusLargeCursorWindow;
+  }
+
+  getLineFocusStaticLine(): number {
+    return chrome.readingMode.lineFocusStaticLine;
+  }
+
+  getLineFocusCursorLine(): number {
+    return chrome.readingMode.lineFocusCursorLine;
+  }
+
   onFontChange(font: string): void {
     chrome.readingMode.onFontChange(font);
   }
@@ -154,6 +206,10 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
 
   onThemeChange(theme: number): void {
     chrome.readingMode.onThemeChange(theme);
+  }
+
+  onLineFocusChanged(value: number, lastNonDisabledValue: number): void {
+    chrome.readingMode.onLineFocusChanged(value, lastNonDisabledValue);
   }
 
   togglePresentation(): void {
