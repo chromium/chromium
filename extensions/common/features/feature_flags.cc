@@ -32,6 +32,7 @@ const base::Feature* kFeatureFlags[] = {
     &extensions_features::kApiProxyOverrideRulesPrivate,
     &extensions_features::kApiTabsSplitView,
     &extensions_features::kExperimentalOmniboxLabs,
+    &extensions_features::kExtensionAsyncListenerRegistration,
     &extensions_features::kExtensionIconVariants,
     &extensions_features::kApiDesktopAndroidNativeMessaging,
     &extensions_features::

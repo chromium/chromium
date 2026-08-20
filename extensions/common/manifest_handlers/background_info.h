@@ -44,6 +44,7 @@ class BackgroundInfo : public Extension::ManifestData {
   static bool HasLazyBackgroundPage(const Extension* extension);
   static bool HasGeneratedBackgroundPage(const Extension* extension);
   static bool AllowJSAccess(const Extension* extension);
+  static bool HasAsyncListenerRegistration(const Extension* extension);
   static bool IsServiceWorkerBased(const Extension* extension);
   static bool HasLazyContext(const Extension* extension) {
     return HasLazyBackgroundPage(extension) || IsServiceWorkerBased(extension);
@@ -76,6 +77,8 @@ class BackgroundInfo : public Extension::ManifestData {
   bool LoadBackgroundPersistent(const Extension* extension,
                                 std::u16string* error);
   bool LoadAllowJSAccess(const Extension* extension, std::u16string* error);
+  bool LoadAsyncListenerRegistration(const Extension* extension,
+                                     std::u16string* error);
 
   // Optional URL to a master page of which a single instance should be always
   // loaded in the background.
@@ -101,6 +104,12 @@ class BackgroundInfo : public Extension::ManifestData {
   // allowing them to run in different processes.
   // Defaults to true.
   bool allow_js_access_;
+
+  // True if the extension opts in to asynchronous listener registration,
+  // deferring events on worker start until the extension signals that its
+  // listeners are registered. Requires a service worker background context.
+  // Defaults to false.
+  bool async_listener_registration_ = false;
 };
 
 // Parses all background/event page-related keys in the manifest.

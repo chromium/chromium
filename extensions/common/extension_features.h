@@ -156,6 +156,12 @@ BASE_DECLARE_FEATURE(kCWSReviewPromptingNativeUI);
 // embedding Chrome App to request access to Human Interface Devices.
 BASE_DECLARE_FEATURE(kEnableWebHidInWebView);
 
+// If enabled, extensions can opt in to asynchronous listener registration via
+// the `background.async_listener_registration` manifest key to defer event
+// dispatch on worker start until the extension signals that its listeners are
+// registered.
+BASE_DECLARE_FEATURE(kExtensionAsyncListenerRegistration);
+
 // If enabled, JS content scripts injected at document start will be compiled
 // in a background thread.
 BASE_DECLARE_FEATURE(kExtensionsBackgroundCompilation);

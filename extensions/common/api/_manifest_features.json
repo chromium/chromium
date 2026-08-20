@@ -84,6 +84,12 @@
     "channel": "stable",
     "extension_types": ["extension", "chromeos_system_extension", "login_screen_extension"]
   },
+  "background.async_listener_registration": {
+    "channel": "stable",
+    "extension_types": ["extension"],
+    "min_manifest_version": 3,
+    "feature_flag": "ExtensionAsyncListenerRegistration"
+  },
   "bluetooth": [{
     // Note: The "bluetooth" manifest permission is used by the
     // chrome.bluetooth, chrome.bluetoothSocket and chrome.bluetoothLowEnergy

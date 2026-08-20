@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
@@ -16,6 +17,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_constants.h"
@@ -397,6 +399,99 @@ TEST_F(ExtensionManifestBackgroundTest, ModuleServiceWorker) {
         BackgroundInfo::GetBackgroundServiceWorkerType(extension.get());
     EXPECT_EQ(BackgroundServiceWorkerType::kClassic, service_worker_type);
   }
+}
+
+TEST_F(ExtensionManifestBackgroundTest, AsyncListenerRegistration) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      extensions_features::kExtensionAsyncListenerRegistration);
+
+  auto get_manifest = [](const char* background_value) {
+    constexpr char kManifestStub[] =
+        R"({
+           "name": "Async Listener Registration Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": { %s }
+         })";
+    std::string manifest_str =
+        base::StringPrintf(kManifestStub, background_value);
+    return base::test::ParseJson(manifest_str).TakeDict();
+  };
+
+  {
+    constexpr char kOptedIn[] =
+        R"("service_worker": "worker.js", "async_listener_registration": true)";
+    scoped_refptr<Extension> extension(
+        LoadAndExpectSuccess(ManifestData(get_manifest(kOptedIn), "opted in")));
+    ASSERT_TRUE(extension);
+    EXPECT_TRUE(BackgroundInfo::HasAsyncListenerRegistration(extension.get()));
+  }
+  {
+    constexpr char kOptedOut[] =
+        R"("service_worker": "worker.js",
+            "async_listener_registration": false)";
+    scoped_refptr<Extension> extension(LoadAndExpectSuccess(
+        ManifestData(get_manifest(kOptedOut), "opted out")));
+    ASSERT_TRUE(extension);
+    EXPECT_FALSE(BackgroundInfo::HasAsyncListenerRegistration(extension.get()));
+  }
+  {
+    // Defaults to false when omitted.
+    constexpr char kNoKey[] = R"("service_worker": "worker.js")";
+    scoped_refptr<Extension> extension(
+        LoadAndExpectSuccess(ManifestData(get_manifest(kNoKey), "no key")));
+    ASSERT_TRUE(extension);
+    EXPECT_FALSE(BackgroundInfo::HasAsyncListenerRegistration(extension.get()));
+  }
+  {
+    constexpr char kNonBoolean[] =
+        R"("service_worker": "worker.js",
+            "async_listener_registration": "yes")";
+    LoadAndExpectError(ManifestData(get_manifest(kNonBoolean), "non-boolean"),
+                       errors::kInvalidBackgroundAsyncListenerRegistration);
+  }
+  {
+    // Requires a service worker background context.
+    constexpr char kNoServiceWorker[] =
+        R"("async_listener_registration": true)";
+    LoadAndExpectError(
+        ManifestData(get_manifest(kNoServiceWorker), "no service worker"),
+        errors::kInvalidBackgroundAsyncListenerRegistrationNoServiceWorker);
+  }
+  {
+    // Background pages cannot opt in.
+    constexpr char kBackgroundPage[] =
+        R"("page": "background.html", "async_listener_registration": true)";
+    LoadAndExpectError(
+        ManifestData(get_manifest(kBackgroundPage), "background page"),
+        errors::kInvalidBackgroundAsyncListenerRegistrationNoServiceWorker);
+  }
+}
+
+TEST_F(ExtensionManifestBackgroundTest, AsyncListenerRegistrationFeatureOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      extensions_features::kExtensionAsyncListenerRegistration);
+
+  // With the feature disabled, the key produces an install warning and is
+  // ignored.
+  constexpr char kManifest[] =
+      R"({
+         "name": "Async Listener Registration Test",
+         "manifest_version": 3,
+         "version": "0.1",
+         "background": {
+           "service_worker": "worker.js",
+           "async_listener_registration": true
+         }
+       })";
+  scoped_refptr<Extension> extension(LoadAndExpectWarning(
+      ManifestData(base::test::ParseJson(kManifest).TakeDict(), "feature off"),
+      "'background.async_listener_registration' requires the "
+      "'ExtensionAsyncListenerRegistration' feature flag to be enabled."));
+  ASSERT_TRUE(extension);
+  EXPECT_FALSE(BackgroundInfo::HasAsyncListenerRegistration(extension.get()));
 }
 
 }  // namespace extensions

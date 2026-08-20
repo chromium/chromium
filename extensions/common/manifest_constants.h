@@ -35,6 +35,8 @@ inline constexpr char kApp[] = "app";
 inline constexpr char kAutomation[] = "automation";
 inline constexpr char kBackground[] = "background";
 inline constexpr char kBackgroundAllowJsAccess[] = "background.allow_js_access";
+inline constexpr char kBackgroundAsyncListenerRegistration[] =
+    "background.async_listener_registration";
 inline constexpr char kBackgroundPage[] = "background.page";
 inline constexpr char kBackgroundPersistent[] = "background.persistent";
 inline constexpr char kBackgroundScripts[] = "background.scripts";
@@ -290,6 +292,12 @@ inline constexpr char16_t kInvalidBackground[] =
     u"Invalid value for 'background_page'.";
 inline constexpr char16_t kInvalidBackgroundAllowJsAccess[] =
     u"Invalid value for 'background.allow_js_access'.";
+inline constexpr char16_t kInvalidBackgroundAsyncListenerRegistration[] =
+    u"Invalid value for 'background.async_listener_registration'.";
+inline constexpr char16_t
+    kInvalidBackgroundAsyncListenerRegistrationNoServiceWorker[] =
+        u"Must specify background.service_worker to use"
+        " background.async_listener_registration.";
 inline constexpr char16_t kInvalidBackgroundCombination[] =
     u"Only one of 'background.page', 'background.scripts', and "
     "'background.service_worker' can be specified.";
