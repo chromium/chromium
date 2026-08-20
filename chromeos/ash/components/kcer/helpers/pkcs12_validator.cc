@@ -32,16 +32,6 @@ constexpr char kPkcs12CertImportFailed[] =
 constexpr int kMaxAttemptUniqueNicknameCreation = 100;
 constexpr const char kDefaultNickname[] = "Unknown org";
 
-// Custom CERTCertificateList object allows to avoid calls to PORT_FreeArena()
-// after every usage of CERTCertificateList.
-struct CERTCertificateListDeleter {
-  void operator()(CERTCertificateList* cert_list) {
-    CERT_DestroyCertificateList(cert_list);
-  }
-};
-using Pkcs12ScopedCERTCertificateList =
-    std::unique_ptr<CERTCertificateList, CERTCertificateListDeleter>;
-
 std::string AddUniqueIndex(std::string old_name, int unique_number) {
   if (unique_number == 0) {
     return old_name;
