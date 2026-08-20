@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_ACTOR_ANDROID_ACTOR_KEYED_SERVICE_ANDROID_H_
 #define CHROME_BROWSER_ACTOR_ANDROID_ACTOR_KEYED_SERVICE_ANDROID_H_
 
+#include <string>
+#include <vector>
+
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
@@ -12,6 +15,8 @@
 #include "base/supports_user_data.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
+
+class TabAndroid;
 
 namespace actor {
 
@@ -27,21 +32,17 @@ class ActorKeyedServiceAndroid : public base::SupportsUserData::Data {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  base::android::ScopedJavaLocalRef<jobjectArray> GetActiveTasks(JNIEnv* env);
+  std::vector<jni_zero::ScopedJavaLocalRef<jobject>> GetActiveTasks();
   int32_t GetActiveTasksCount(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetTask(JNIEnv* env,
                                                      int32_t task_id);
   void StopTask(JNIEnv* env, int32_t task_id, int32_t stop_reason);
 
   // Called by JNI.
-  void SetPreparedBackgroundTab(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& j_tab,
-      const base::android::JavaRef<jstring>& j_glic_trigger_message_id);
+  void SetPreparedBackgroundTab(TabAndroid* tab,
+                                const std::string& glic_trigger_message_id);
 
-  void NotifyBackgroundSetupFailed(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& j_glic_trigger_message_id);
+  void NotifyBackgroundSetupFailed(const std::string& glic_trigger_message_id);
 
  private:
   void OnTaskStateChanged(ActorTask& task);
