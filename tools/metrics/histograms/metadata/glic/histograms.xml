@@ -3452,9 +3452,9 @@ chromium-metrics-reviews@google.com.
   <owner>cuianthony@chromium.org</owner>
   <owner>glic-dev@google.com</owner>
   <summary>
-    The zoom action taken by the user using keyboard shortcuts. Recorded when
-    the user presses the zoom in, zoom out, or reset zoom keyboard shortcuts
-    while the Glic panel is focused.
+    The zoom action taken by the user in the Glic UI. Recorded when the user
+    presses the zoom in, zoom out, or reset zoom keyboard shortcuts while the
+    Glic panel is focused, or uses scroll controls to zoom.
   </summary>
 </histogram>
 
