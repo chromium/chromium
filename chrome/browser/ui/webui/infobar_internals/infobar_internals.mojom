@@ -46,6 +46,9 @@ enum InfoBarType {
   // Local test policies infobar.
   kLocalTestPoliciesApplied,
 
+  // Obsolete system infobar.
+  kObsoleteSystem,
+
   // Page Info infobar.
   kPageInfo,
 

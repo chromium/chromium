@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
 #include "chrome/browser/ui/omnibox/alternate_nav_infobar_delegate.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
+#include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
@@ -202,6 +203,12 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
       /*description=*/
       "The Local Test Policies Applied infobar warns the user that local "
       "test policies are active."));
+
+  infobar_list.emplace_back(InfoBarEntry::New(
+      /*type=*/InfoBarType::kObsoleteSystem, /*name=*/"Obsolete System",
+      /*description=*/
+      "The Obsolete System infobar warns users when their operating "
+      "system is no longer supported. This trigger shows the infobar."));
 
   infobar_list.emplace_back(InfoBarEntry::New(
       /*type=*/InfoBarType::kPageInfo, /*name=*/"Page Info",
@@ -510,6 +517,31 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
             /*auto_expire=*/false, /*should_animate=*/false,
             /*closeable=*/false,
             infobars::InfoBarDelegate::InfobarPriority::kLow));
+      }
+      return true;
+    }
+    case InfoBarType::kObsoleteSystem: {
+      if (!bwi || !bwi->GetActiveTabInterface()) {
+        return false;
+      }
+
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::OBSOLETE_SYSTEM_INFOBAR_DELEGATE)) {
+        if (!browser_infobar_manager) {
+          return false;
+        }
+        browser_infobar_manager->Show(
+            bwi->GetActiveTabInterface(),
+            infobars::InfoBarDelegate::OBSOLETE_SYSTEM_INFOBAR_DELEGATE);
+      } else {
+        content::WebContents* web_contents =
+            bwi->GetActiveTabInterface()->GetContents();
+        infobars::ContentInfoBarManager* infobar_manager =
+            infobars::ContentInfoBarManager::FromWebContents(web_contents);
+        if (!infobar_manager) {
+          return false;
+        }
+        ObsoleteSystemInfoBarDelegate::Create(infobar_manager);
       }
       return true;
     }
