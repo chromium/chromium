@@ -564,7 +564,7 @@ class RustBindgenModule(Module):
         'srcs', 'min_sdk_version', 'crate_name', 'crate_root', 'wrapper_src',
         'source_stem', 'bindgen_flags', 'handle_static_inline',
         'static_inline_library', 'shared_libs', 'static_libs', 'cpp_std',
-        'c_std', 'header_libs', 'whole_static_libs'
+        'c_std', 'header_libs', 'whole_static_libs', 'relative_include'
     }
 
     def __init__(self,
@@ -589,6 +589,7 @@ class RustBindgenModule(Module):
         self.bindgen_flags = set()
         self.handle_static_inline = None
         self.static_inline_library = ""
+        self.relative_include = None
 
 
 class GenruleModule(Module):

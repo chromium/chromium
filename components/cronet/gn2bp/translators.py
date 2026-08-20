@@ -775,6 +775,7 @@ def create_bindgen_module(
 
     if "--wrap-static-fns" in target.common.args:
         module.handle_static_inline = True
+        module.relative_include = True
 
     module.bindgen_flags = get_bindgen_flags(target.common.args)
     # This ensures that any CC file that is being processed through the
@@ -1765,8 +1766,8 @@ def _resolve_dependencies(blueprint, gn, module, target, is_test_target,
                     # previous references.
                     module.name = "lib" + module.name
                     # rust_bindgen generates a .c / .cc file which has include
-                    # defined from the root of the android tree.
-                    module_target.include_dirs.append(".")
+                    # defined by basename only, it's in the module's directory.
+                    module_target.local_include_dirs.add(".")
                     # The rust_bindgen has to know the name of the cc library which is going to
                     # consume it. We don't know that until we add the `rust_bindgen` as a dep.
                     dep_module.static_inline_library = module.name
