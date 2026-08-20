@@ -320,7 +320,8 @@ DocumentPipFrameView::DocumentPipFrameView(DocumentPipHost* host)
   // label. The gap from the chip is the chip's right margin.
   auto window_title = std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_LABEL,
-      views::style::STYLE_PRIMARY);
+      views::style::STYLE_PRIMARY,
+      gfx::DirectionalityMode::DIRECTIONALITY_AS_URL);
   window_title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   window_title->SetProperty(
       views::kFlexBehaviorKey,
