@@ -339,6 +339,8 @@ void WidgetInputHandlerManager::OnFirstContentfulPaint() {
 
 void WidgetInputHandlerManager::SetHost(
     mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host) {
+  DCHECK(main_thread_task_runner_->BelongsToCurrentThread());
+  base::AutoLock lock(host_lock_);
   CHECK(host && !host_);
   if (compositor_thread_default_task_runner_) {
     host_ = mojo::SharedRemote<mojom::blink::WidgetInputHandlerHost>(
@@ -410,7 +412,11 @@ WidgetInputHandlerManager::~WidgetInputHandlerManager() = default;
 
 void WidgetInputHandlerManager::AddInterface(
     mojo::PendingReceiver<mojom::blink::WidgetInputHandler> receiver) {
-  CHECK(host_);
+  DCHECK(main_thread_task_runner_->BelongsToCurrentThread());
+  {
+    base::AutoLock lock(host_lock_);
+    CHECK(host_);
+  }
   if (compositor_thread_default_task_runner_) {
     // Mojo channel bound on compositor thread.
     compositor_thread_default_task_runner_->PostTask(
@@ -521,8 +527,8 @@ void WidgetInputHandlerManager::FindScrollTargetOnMainThread(
 }
 
 void WidgetInputHandlerManager::DidStartScrollingViewport() {
-  if (mojom::blink::WidgetInputHandlerHost* host =
-          GetWidgetInputHandlerHost()) {
+  DCHECK(InputThreadTaskRunner()->BelongsToCurrentThread());
+  if (auto host = GetWidgetInputHandlerHost()) {
     host->DidStartScrollingViewport();
   }
 
@@ -538,8 +544,8 @@ void WidgetInputHandlerManager::SetAllowedTouchAction(
 
 void WidgetInputHandlerManager::ProcessTouchAction(
     cc::TouchAction touch_action) {
-  if (mojom::blink::WidgetInputHandlerHost* host =
-          GetWidgetInputHandlerHost()) {
+  DCHECK(main_thread_task_runner_->BelongsToCurrentThread());
+  if (auto host = GetWidgetInputHandlerHost()) {
     host->SetTouchActionFromMain(touch_action);
   }
 
@@ -548,11 +554,14 @@ void WidgetInputHandlerManager::ProcessTouchAction(
   }
 }
 
-mojom::blink::WidgetInputHandlerHost*
+mojo::SharedRemote<mojom::blink::WidgetInputHandlerHost>
 WidgetInputHandlerManager::GetWidgetInputHandlerHost() {
-  if (host_)
-    return host_.get();
-  return nullptr;
+  base::AutoLock lock(host_lock_);
+  // Returning a copy of the SharedRemote increments the refcount of the
+  // underlying state while under the lock, ensuring it remains valid for the
+  // caller even if host_ is reset on another thread after the lock is
+  // released.
+  return host_;
 }
 
 mojo::SharedRemote<mojom::blink::WidgetInputHandlerHost>
@@ -1245,6 +1254,20 @@ WidgetInputHandlerManager::GetSynchronousCompositorRegistry() {
 
 void WidgetInputHandlerManager::ClearClient() {
   input_event_queue_->ClearClient();
+  {
+    base::AutoLock lock(viz_host_lock_);
+    if (viz_host_) {
+      viz_host_.Disconnect();
+    }
+    viz_host_.reset();
+  }
+  {
+    base::AutoLock lock(host_lock_);
+    if (host_) {
+      host_.Disconnect();
+    }
+    host_.reset();
+  }
 }
 
 void WidgetInputHandlerManager::UpdateBrowserControlsState(

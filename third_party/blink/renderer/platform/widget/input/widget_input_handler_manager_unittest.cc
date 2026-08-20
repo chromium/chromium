@@ -285,6 +285,59 @@ TEST_P(WidgetInputHandlerManagerTest, VizHostRace) {
   }
 }
 
+TEST_P(WidgetInputHandlerManagerTest, MultiThreadedHostAccess) {
+  std::atomic<bool> start_flag{false};
+  std::atomic<int> threads_ready{0};
+  std::atomic<int> threads_finished{0};
+  const int kOpsPerThread = 1000;
+
+  scoped_refptr<WidgetInputHandlerManager> manager =
+      WidgetInputHandlerManager::Create(
+          widget_base_->GetWeakPtr(), frame_widget_input_handler_,
+          /*never_composited=*/false,
+          /*compositor_thread_scheduler=*/nullptr, widget_scheduler_,
+          /*uses_input_handler=*/false,
+          /*allow_scroll_resampling=*/false,
+          /*io_thread_id=*/base::kInvalidThreadId,
+          /*main_thread_id=*/base::PlatformThread::CurrentId());
+
+  mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host_remote;
+  auto receiver = host_remote.InitWithNewPipeAndPassReceiver();
+  manager->SetHost(std::move(host_remote));
+
+  auto reader_runner = base::ThreadPool::CreateSequencedTaskRunner({});
+
+  auto reader_worker = [&]() {
+    threads_ready++;
+    while (!start_flag.load(std::memory_order_acquire)) {
+      std::this_thread::yield();
+    }
+
+    for (int i = 0; i < kOpsPerThread; ++i) {
+      manager->GetWidgetInputHandlerHost();
+    }
+    threads_finished++;
+  };
+
+  reader_runner->PostTask(FROM_HERE, base::BindLambdaForTesting(reader_worker));
+
+  threads_ready++;
+  while (threads_ready.load(std::memory_order_relaxed) < 2) {
+    std::this_thread::yield();
+  }
+
+  start_flag.store(true, std::memory_order_release);
+
+  for (int i = 0; i < kOpsPerThread; ++i) {
+    manager->GetWidgetInputHandlerHost();
+  }
+  threads_finished++;
+
+  while (threads_finished.load(std::memory_order_relaxed) < 2) {
+    std::this_thread::yield();
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          WidgetInputHandlerManagerTest,
                          testing::Bool(),
@@ -292,4 +345,5 @@ INSTANTIATE_TEST_SUITE_P(,
                            return info.param ? "IgnoreInputWhileHidden"
                                              : "ProcessInputWhileHidden";
                          });
+
 }  // namespace blink::test
