@@ -63,8 +63,7 @@ AuthController::AuthController(Profile* profile,
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   if (identity_manager_->GetErrorStateOfRefreshTokenForAccount(
           primary_account) != GoogleServiceAuthError::AuthErrorNone()) {
-    profile_->GetPrefs()->SetBoolean(prefs::kGlicPartitionNeedsCookieSync,
-                                     true);
+    MaybeSetNeedsSync();
   }
 }
 
@@ -174,7 +173,7 @@ void AuthController::OnErrorStateOfRefreshTokenUpdatedForAccount(
       account_info.account_id) {
     return;
   }
-  profile_->GetPrefs()->SetBoolean(prefs::kGlicPartitionNeedsCookieSync, true);
+  MaybeSetNeedsSync();
 }
 
 void AuthController::OnRefreshTokenUpdatedForAccount(
@@ -192,7 +191,7 @@ void AuthController::OnRefreshTokenUpdatedForAccount(
     // unless a sync is explicitly required.
     return;
   }
-  profile_->GetPrefs()->SetBoolean(prefs::kGlicPartitionNeedsCookieSync, true);
+  MaybeSetNeedsSync();
   if (GetTokenState() == TokenState::kOk) {
     DelayedForceSyncCookies(GlicCookieSyncTrigger::kOnRefreshTokenUpdated);
   }
@@ -207,7 +206,7 @@ void AuthController::ForceSyncCookies(GlicCookieSyncTrigger trigger,
 }
 
 void AuthController::OnClientError() {
-  profile_->GetPrefs()->SetBoolean(prefs::kGlicPartitionNeedsCookieSync, true);
+  MaybeSetNeedsSync();
   MaybeSyncCookiesOnError();
 }
 
@@ -216,8 +215,7 @@ void AuthController::OnClientTransientError(
   switch (status_code) {
     case mojo_base::mojom::AbslStatusCode::kUnauthenticated:
     case mojo_base::mojom::AbslStatusCode::kInternal:
-      profile_->GetPrefs()->SetBoolean(prefs::kGlicPartitionNeedsCookieSync,
-                                       true);
+      MaybeSetNeedsSync();
       MaybeSyncCookiesOnError();
       break;
     default:
@@ -307,6 +305,13 @@ void AuthController::MaybeSyncCookiesOnError() {
     last_sync_on_error_time_ = now;
     ForceSyncCookies(GlicCookieSyncTrigger::kMaybeSyncCookiesOnError,
                      base::DoNothing());
+  }
+}
+
+void AuthController::MaybeSetNeedsSync() {
+  if (!profile_->GetPrefs()->GetBoolean(prefs::kGlicPartitionNeedsCookieSync)) {
+    profile_->GetPrefs()->SetBoolean(prefs::kGlicPartitionNeedsCookieSync,
+                                     true);
   }
 }
 
