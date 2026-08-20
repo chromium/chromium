@@ -119,7 +119,7 @@ class ResourcedClientImpl : public ResourcedClient {
 
   // Caches the total memory for reclaim_target_kb sanity check. The default
   // value is 32 GiB in case reading total memory failed.
-  base::ByteSize total_memory_ = base::GiBU(32);
+  base::ByteSize total_memory_ = base::GiB(32);
 
   // A list of observers that are listening on state changes, etc.
   base::ObserverList<Observer> observers_;
@@ -152,7 +152,7 @@ void ResourcedClientImpl::MemoryPressureReceived(dbus::Signal* signal) {
     LOG(ERROR) << "Error reading signal from resourced: " << signal->ToString();
     return;
   }
-  reclaim_target.target = base::KiBU(reclaim_target_kb);
+  reclaim_target.target = base::KiB(reclaim_target_kb);
 
   int64_t signal_origin_timestamp_ms = -1;
   // The signal origin timestamp may not be included by resourced, and if it is,
@@ -234,7 +234,7 @@ void ResourcedClientImpl::MemoryPressureArcContainerReceived(
       return;
   }
 
-  if (base::KiBU(reclaim_target_kb) > total_memory_) {
+  if (base::KiB(reclaim_target_kb) > total_memory_) {
     LOG(ERROR) << "reclaim_target_kb is too large: " << reclaim_target_kb;
     return;
   }
