@@ -313,6 +313,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kLastUsedProfile, std::string());
   registry->RegisterBooleanPref(prefs::kLegacyProfileHidden, false);
   registry->RegisterDictionaryPref(prefs::kLegacyProfileMap);
+  registry->RegisterDictionaryPref(prefs::kSceneSessionIdentifierMap);
+  registry->RegisterStringPref(prefs::kLastConnectedSceneIdentifier, "");
 
   [MemoryDebuggerManager registerLocalState:registry];
   [IncognitoReauthSceneAgent registerLocalState:registry];

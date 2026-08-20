@@ -960,6 +960,14 @@ inline constexpr char kLastRecordedActiveDay[] = "ios.last_recorded_active_day";
 inline constexpr char kLastRecordedActiveDaysInPast28Days[] =
     "ios.last_recorded_active_days_in_past_28_days";
 
+// Mapping from UISceneSession identifiers to SceneState identifiers.
+inline constexpr char kSceneSessionIdentifierMap[] =
+    "ios.multiwindow.scene_session_identifiers";
+
+// Identifier of the last SceneState connected.
+inline constexpr char kLastConnectedSceneIdentifier[] =
+    "ios.multiwindow.last_connect_scene_identifier";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_
