@@ -151,25 +151,29 @@ BASE_FEATURE(kInitImageDecodeLastUseTime, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kThrottleRepeatedNoDamageFrames,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kThrottleRepeatedNoDamageFramesThreshold1(
-    &kThrottleRepeatedNoDamageFrames,
-    "repeated_no_damage_frame_throttling_threshold1",
-    90);
+BASE_FEATURE_PARAM(int,
+                   kThrottleRepeatedNoDamageFramesThreshold1,
+                   &kThrottleRepeatedNoDamageFrames,
+                   "repeated_no_damage_frame_throttling_threshold1",
+                   90);
 
-const base::FeatureParam<int> kThrottleRepeatedNoDamageFramesThreshold2(
-    &kThrottleRepeatedNoDamageFrames,
-    "repeated_no_damage_frame_throttling_threshold2",
-    90);
+BASE_FEATURE_PARAM(int,
+                   kThrottleRepeatedNoDamageFramesThreshold2,
+                   &kThrottleRepeatedNoDamageFrames,
+                   "repeated_no_damage_frame_throttling_threshold2",
+                   90);
 
-const base::FeatureParam<int> kThrottleRepeatedNoDamageFramesIntervalFactor1(
-    &kThrottleRepeatedNoDamageFrames,
-    "repeated_no_damage_frame_throttling_factor1",
-    2);
+BASE_FEATURE_PARAM(int,
+                   kThrottleRepeatedNoDamageFramesIntervalFactor1,
+                   &kThrottleRepeatedNoDamageFrames,
+                   "repeated_no_damage_frame_throttling_factor1",
+                   2);
 
-const base::FeatureParam<int> kThrottleRepeatedNoDamageFramesIntervalFactor2(
-    &kThrottleRepeatedNoDamageFrames,
-    "repeated_no_damage_frame_throttling_factor2",
-    2);
+BASE_FEATURE_PARAM(int,
+                   kThrottleRepeatedNoDamageFramesIntervalFactor2,
+                   &kThrottleRepeatedNoDamageFrames,
+                   "repeated_no_damage_frame_throttling_factor2",
+                   2);
 
 // Enabled on Android, after a field trial showed improvements.
 BASE_FEATURE(kThrottleMainFrameTo60Hz,
