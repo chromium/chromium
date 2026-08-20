@@ -67,7 +67,7 @@ import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment.FragmentTy
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -101,12 +101,12 @@ public class PrivacyGuideFragmentTest {
     @Rule public SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
-    public SettingsActivityTestRule<PrivacyGuideFragment> mPrivacyGuideTestRule =
-            new SettingsActivityTestRule<>(PrivacyGuideFragment.class);
+    public SettingsTestRule<PrivacyGuideFragment> mPrivacyGuideTestRule =
+            new SettingsTestRule<>(PrivacyGuideFragment.class);
 
     @Rule
-    public SettingsActivityTestRule<PrivacySettings> mPrivacySettingsTestRule =
-            new SettingsActivityTestRule<>(PrivacySettings.class);
+    public SettingsTestRule<PrivacySettings> mPrivacySettingsTestRule =
+            new SettingsTestRule<>(PrivacySettings.class);
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
