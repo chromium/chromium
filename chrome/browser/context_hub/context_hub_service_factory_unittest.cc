@@ -17,6 +17,7 @@
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,6 +62,8 @@ class ContextHubServiceFactoryTest : public testing::Test {
             }));
   }
 
+  base::test::ScopedFeatureList optimization_hints_feature_list_{
+      optimization_guide::features::kOptimizationHints};
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   base::CallbackListSubscription create_services_subscription_;

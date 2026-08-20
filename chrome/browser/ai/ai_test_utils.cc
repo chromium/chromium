@@ -142,8 +142,10 @@ void AITestUtils::AITestBase::SetupNullOptimizationGuideKeyedService() {
 }
 
 AITestUtils::AITestManifestBase::AITestManifestBase() {
-  manifest_scoped_feature_list_.InitAndEnableFeature(
-      optimization_guide::kOptimizationGuideManifestBroker);
+  manifest_scoped_feature_list_.InitWithFeatures(
+      {optimization_guide::kOptimizationGuideManifestBroker,
+       optimization_guide::features::kOptimizationHints},
+      {});
 }
 AITestUtils::AITestManifestBase::~AITestManifestBase() = default;
 

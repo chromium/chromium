@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
 #include "components/personal_context/core/personal_context_service.h"
@@ -180,7 +181,8 @@ class ContextHubPageHandlerTest : public testing::Test {
     feature_list.InitWithFeatures(
         {features::kContextHub, features::kMemoryBanks,
          browser::context_hub::mojom::kAutoTabGroups,
-         browser::context_hub::mojom::kAutoTodos},
+         browser::context_hub::mojom::kAutoTodos,
+         optimization_guide::features::kOptimizationHints},
         {});
     return feature_list;
   }
