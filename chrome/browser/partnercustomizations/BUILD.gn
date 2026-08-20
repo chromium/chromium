@@ -29,6 +29,7 @@ android_library("uma_java") {
   deps = [
     ":helper_java",
     "//base:base_java",
+    "//base:tristate_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",

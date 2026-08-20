@@ -65,6 +65,7 @@ android_library("java") {
     "//base:metrics_java",
     "//base:supplier_java",
     "//base:tasks_java",
+    "//base:tristate_java",
     "//chrome/browser/autofill/android:java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",

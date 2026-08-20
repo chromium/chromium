@@ -9,6 +9,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.view.ViewGroup;
 
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
@@ -71,7 +73,7 @@ public class HistoryNavigationCoordinator
 
     private TouchEventProvider mTouchEventProvider;
 
-    private @Nullable Boolean mForceFeatureEnabledForTesting;
+    private @TriState int mForceFeatureEnabledForTesting;
 
     private int mLeftSideUiWidth;
     private int mRightSideUiWidth;
@@ -125,7 +127,6 @@ public class HistoryNavigationCoordinator
             BackActionDelegate backActionDelegate,
             TouchEventProvider touchEventProvider,
             FullscreenManager fullscreenManager) {
-        mForceFeatureEnabledForTesting = null;
         mNavigationLayout =
                 new HistoryNavigationLayout(
                         parentView.getContext(),
@@ -220,8 +221,8 @@ public class HistoryNavigationCoordinator
      * @return {@code} true if the feature is enabled.
      */
     private boolean isFeatureEnabled() {
-        if (mForceFeatureEnabledForTesting != null) {
-            return mForceFeatureEnabledForTesting;
+        if (mForceFeatureEnabledForTesting != TriState.NOT_SET) {
+            return mForceFeatureEnabledForTesting == TriState.TRUE;
         }
 
         if (DeviceInfo.isAutomotive() && mIsFullscreen) {
@@ -428,7 +429,7 @@ public class HistoryNavigationCoordinator
     }
 
     void forceFeatureEnabledForTesting(boolean enable) {
-        mForceFeatureEnabledForTesting = enable;
+        mForceFeatureEnabledForTesting = TriStateUtils.from(enable);
         onNavigationStateChanged();
     }
 }

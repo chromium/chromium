@@ -18,6 +18,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -68,10 +70,10 @@ class PartnerCustomizationsUma {
     private boolean mDidCustomizationCompleteSuccessfully;
 
     /**
-     * Records whether an initial Tab was created after the customization task ran to completion. A
-     * value of {@code null} indicates that we did not yet create the initial Tab.
+     * Records whether an initial Tab was created after the customization task ran to completion.
+     * {@link TriState#NOT_SET} indicates that we did not yet create the initial Tab.
      */
-    private @Nullable Boolean mDidCreateInitialTabAfterCustomization;
+    private @TriState int mDidCreateInitialTabAfterCustomization;
 
     private @Nullable String mHomepageUrlCreated;
 
@@ -120,12 +122,12 @@ class PartnerCustomizationsUma {
         // tab before the Partner Customizations initialization has completed. In this case we
         // ignore everything associated with Tab creation by the second activity altogether by
         // exiting here.
-        if (mDidCreateInitialTabAfterCustomization != null) {
+        if (mDidCreateInitialTabAfterCustomization != TriState.NOT_SET) {
             Log.w(TAG, "Multiple initial Tabs being created, e.g. multi-instance.");
             return;
         }
 
-        mDidCreateInitialTabAfterCustomization = isInitialized;
+        mDidCreateInitialTabAfterCustomization = TriStateUtils.from(isInitialized);
         mHomepageUrlCreated = homepageUrlCreated;
         tryLogInitialTabCustomizationOutcome();
     }
@@ -174,13 +176,13 @@ class PartnerCustomizationsUma {
     }
 
     /**
-     * Tries to complete the Homepage customization.
-     * Called when the async task finishes, and also when the initial tab creation is happening.
-     * When both calls have been made we can log the final outcomes.
+     * Tries to complete the Homepage customization. Called when the async task finishes, and also
+     * when the initial tab creation is happening. When both calls have been made we can log the
+     * final outcomes.
      */
     private void tryLogInitialTabCustomizationOutcome() {
         if (!sIsAnyInitializeAsyncFinalized
-                || mDidCreateInitialTabAfterCustomization == null
+                || mDidCreateInitialTabAfterCustomization == TriState.NOT_SET
                 || sInitialTabOutcomeHasBeenLogged) {
             return;
         }
@@ -208,7 +210,7 @@ class PartnerCustomizationsUma {
         onFinishNativeInitializationOrEnabled(
                 activityLifecycleDispatcher,
                 () -> {
-                    assert mDidCreateInitialTabAfterCustomization != null;
+                    assert mDidCreateInitialTabAfterCustomization != TriState.NOT_SET;
 
                     assumeNonNull(mHomepageCharacterizationHelper);
                     boolean isInitialTabNtpOrOverview =
@@ -409,8 +411,8 @@ class PartnerCustomizationsUma {
         @TaskCompletion int taskCompletion = TaskCompletion.NONE_VALID;
         if (mAsyncCustomizationStartTime != 0) {
             // Check if we've already tried to create an initial tab.
-            if (mDidCreateInitialTabAfterCustomization == null
-                    || mDidCreateInitialTabAfterCustomization) {
+            if (mDidCreateInitialTabAfterCustomization == TriState.NOT_SET
+                    || mDidCreateInitialTabAfterCustomization == TriState.TRUE) {
                 taskCompletion = TaskCompletion.COMPLETED_IN_TIME;
             } else {
                 taskCompletion = TaskCompletion.COMPLETED_TOO_LATE;
