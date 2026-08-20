@@ -1093,13 +1093,6 @@ sql::InitStatus FaviconDatabase::InitImpl(const base::FilePath& db_name) {
     return sql::INIT_FAILURE;
   }
 
-  // Version check. We should not encounter a database too old for us to handle
-  // in the wild, so we try to continue in that case.
-  if (meta_table_.GetCompatibleVersionNumber() > kCurrentVersionNumber) {
-    LOG(WARNING) << "Favicon database is too new.";
-    return sql::INIT_TOO_NEW;
-  }
-
   int cur_version = meta_table_.GetVersionNumber();
 
   if (cur_version == 8) {
