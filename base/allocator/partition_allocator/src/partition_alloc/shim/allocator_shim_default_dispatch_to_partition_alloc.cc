@@ -20,6 +20,7 @@
 #include "partition_alloc/memory_reclaimer.h"
 #include "partition_alloc/partition_alloc.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/containers/span.h"
 #include "partition_alloc/partition_alloc_base/export_template.h"
 #include "partition_alloc/partition_alloc_base/no_destructor.h"
 #include "partition_alloc/partition_alloc_base/numerics/checked_math.h"
@@ -46,6 +47,8 @@ using allocator_shim::AllocatorDispatch;
 namespace allocator_shim {
 
 namespace {
+
+using partition_alloc::internal::base::span;
 
 class SimpleScopedSpinLocker {
  public:
@@ -173,7 +176,7 @@ std::array<
 partition_alloc::PartitionRoot* Allocator(AllocToken alloc_token) {
 #if PA_BUILDFLAG(ENABLE_AUTO_PARTITIONING)
   PA_DCHECK(alloc_token.value() < kNumPartitions);
-  return PA_UNSAFE_TODO(g_roots[alloc_token.value()]).Get();
+  return g_roots[alloc_token.value()].Get();
 #else
   return g_roots[kDefaultPartitionIndex].Get();
 #endif
@@ -687,10 +690,12 @@ PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::BatchMalloc(
     void* context) {
   // No real batching: we could only acquire the lock once for instance, keep it
   // simple for now.
-  for (unsigned i = 0; i < num_requested; i++) {
+  // SAFETY: `results` must point to an array of at least `num_requested`
+  // elements.
+  auto results_span = PA_UNSAFE_BUFFERS(span(results, num_requested));
+  for (auto& result : results_span) {
     // No need to check the results, we crash if it fails.
-    PA_UNSAFE_TODO(results[i]) =
-        Malloc(size, AllocToken(kDefaultPartitionIndex), nullptr);
+    result = Malloc(size, AllocToken(kDefaultPartitionIndex), nullptr);
   }
 
   // Either all succeeded, or we crashed.
@@ -704,8 +709,11 @@ void PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
     BatchFree(void** to_be_freed, unsigned num_to_be_freed, void* context) {
   // No real batching: we could only acquire the lock once for instance, keep it
   // simple for now.
-  for (unsigned i = 0; i < num_to_be_freed; i++) {
-    Free(PA_UNSAFE_TODO(to_be_freed[i]), nullptr);
+  // SAFETY: `to_be_freed` must point to an array of at least `num_to_be_freed`
+  // elements.
+  auto to_be_freed_span = PA_UNSAFE_BUFFERS(span(to_be_freed, num_to_be_freed));
+  for (auto& to_be_freed_element : to_be_freed_span) {
+    Free(to_be_freed_element, nullptr);
   }
 }
 
@@ -1071,29 +1079,27 @@ void ConfigurePartitions(
                      : partition_alloc::PartitionOptions::kDisabled,
       .reporting_mode = memory_tagging_reporting_mode};
 
-  static std::array<partition_alloc::internal::base::NoDestructor<
-                        partition_alloc::PartitionAllocator>,
-                    kNumPartitions>
-      new_main_allocators = {partition_alloc::internal::base::NoDestructor<
-                                 partition_alloc::PartitionAllocator>([&opts] {
-                               opts.thread_cache_index = 0;
-                               return opts;
-                             }())
+  using MainAllocator = partition_alloc::internal::base::NoDestructor<
+      partition_alloc::PartitionAllocator>;
+
+  static std::array<MainAllocator, kNumPartitions> new_main_allocators = {
+      MainAllocator([&opts] {
+        opts.thread_cache_index = 0;
+        return opts;
+      }()),
 #if PA_BUILDFLAG(ENABLE_AUTO_PARTITIONING)
-                                 ,
-                             partition_alloc::internal::base::NoDestructor<
-                                 partition_alloc::PartitionAllocator>([&opts] {
-                               opts.thread_cache_index = 1;
-                               return opts;
-                             }())
+      MainAllocator([&opts] {
+        opts.thread_cache_index = 1;
+        return opts;
+      }()),
 #endif
-      };
+  };
 
   for (size_t alloc_token = 0; alloc_token < kNumPartitions; alloc_token++) {
     // Calling Get() is actually important, even if the return value isn't
     // used, because it has a side effect of initializing the variable, if it
     // wasn't already.
-    auto* current_root = PA_UNSAFE_TODO(g_roots[alloc_token]).Get();
+    auto* current_root = g_roots[alloc_token].Get();
 
     // We've been bitten before by using a static local when initializing a
     // partition. For synchronization, static local variables call into the
@@ -1103,7 +1109,7 @@ void ConfigurePartitions(
     // shouldn't bite us here. Mentioning just in case we move this code
     // earlier.
     partition_alloc::PartitionRoot* new_root =
-        PA_UNSAFE_TODO(new_main_allocators[alloc_token])->root();
+        new_main_allocators[alloc_token]->root();
 
     // Ensure that we switch `new_root` before directing new traffic to it, this
     // ensures that a BucketDistribution is consistent over the life of an
@@ -1118,8 +1124,8 @@ void ConfigurePartitions(
     }
 
     // Now switch traffic to the new partition.
-    PA_UNSAFE_TODO(g_original_roots[alloc_token]) = current_root;
-    PA_UNSAFE_TODO(g_roots[alloc_token]).Replace(new_root);
+    g_original_roots[alloc_token] = current_root;
+    g_roots[alloc_token].Replace(new_root);
 
     // Purge memory, now that the traffic to the original partition is cut off.
     current_root->PurgeMemory(
@@ -1133,7 +1139,7 @@ void ConfigurePartitions(
 // to in `PartitionRoot::Init()`.
 uint32_t GetMainPartitionRootExtrasSize() {
 #if PA_CONFIG(EXTRAS_REQUIRED)
-  return PA_UNSAFE_TODO(g_roots[0]).Get()->settings_.extras_size;
+  return g_roots[0].Get()->settings_.extras_size;
 #else
   return 0;
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)
