@@ -26,7 +26,6 @@
 #include "components/optimization_guide/core/model_execution/test/request_builder.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/forms_classifications.pb.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -138,7 +137,7 @@ class ModelExecutionManagerTest : public testing::Test {
   bool SimulateResponse(const std::string& content,
                         net::HttpStatusCode http_status) {
     return test_url_loader_factory_.SimulateResponseForPendingRequest(
-        switches::GetModelExecutionServiceURL().spec(), content, http_status,
+        GetModelExecutionServiceURL().spec(), content, http_status,
         network::TestURLLoaderFactory::kUrlMatchPrefix);
   }
 
@@ -256,8 +255,7 @@ TEST_F(ModelExecutionManagerTest, MultipleParallelRequestsLimit) {
       /*log_ai_data_request=*/nullptr, ModelExecutionServiceType::kDefault,
       response_holder2.GetCallback());
 
-  test_url_loader_factory()->EraseResponse(
-      switches::GetModelExecutionServiceURL());
+  test_url_loader_factory()->EraseResponse(GetModelExecutionServiceURL());
   EXPECT_TRUE(SimulateSuccessfulResponse());
 
   EXPECT_TRUE(response_holder2.GetFinalStatus());

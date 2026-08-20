@@ -33,6 +33,9 @@ namespace optimization_guide {
 
 namespace {
 
+constexpr char kOptimizationGuideServiceModelExecutionDefaultURL[] =
+    "https://chromemodelexecution-pa.googleapis.com/v1:Execute";
+
 const std::string& ProtoName(ModelBasedCapabilityKey feature) {
   return proto::ModelExecutionFeature_Name(
       ToModelExecutionFeatureProto(feature));
@@ -154,7 +157,7 @@ ModelExecutionManager::ModelExecutionManager(
         model_quality_uploader_service)
     : model_quality_uploader_service_(model_quality_uploader_service),
       optimization_guide_logger_(optimization_guide_logger),
-      model_execution_service_url_(switches::GetModelExecutionServiceURL()),
+      model_execution_service_url_(GetModelExecutionServiceURL()),
       delegate_(std::move(delegate)),
       url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager) {}
@@ -359,6 +362,16 @@ void ModelExecutionManager::OnModelExecuteResponse(
                               base::ok(execute_response->response_metadata()),
                               std::move(execution_info)),
                           std::move(log_entry));
+}
+
+GURL GetModelExecutionServiceURL() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(
+          kOptimizationGuideServiceModelExecutionURLSwitch)) {
+    return GURL(command_line->GetSwitchValueASCII(
+        kOptimizationGuideServiceModelExecutionURLSwitch));
+  }
+  return GURL(kOptimizationGuideServiceModelExecutionDefaultURL);
 }
 
 }  // namespace optimization_guide

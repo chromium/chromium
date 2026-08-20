@@ -24,7 +24,7 @@
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/model_execution/model_execution_manager.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
@@ -153,7 +153,7 @@ ContextualCueingService::ContextualCueingService(
       pref_service_(pref_service),
       template_url_service_(template_url_service),
       identity_manager_(identity_manager),
-      mes_url_(optimization_guide::switches::GetModelExecutionServiceURL()) {
+      mes_url_(optimization_guide::GetModelExecutionServiceURL()) {
   if (optimization_guide_keyed_service_ && IsZeroStateSuggestionsEnabled()) {
     optimization_guide_keyed_service_->RegisterOptimizationTypes(
         {optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS});

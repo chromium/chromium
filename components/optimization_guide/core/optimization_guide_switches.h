@@ -13,17 +13,9 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "url/gurl.h"
 
 namespace optimization_guide {
 namespace switches {
-
-// TODO(crbug.com/514743962): Move to components/optimization_guide/core/model_execution/model_execution_manager.h.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kOptimizationGuideServiceModelExecutionURL[];
-// Return the URL endpoint used for the model execution service.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-GURL GetModelExecutionServiceURL();
 
 // TODO(crbug.com/514743962): Move to components/optimization_guide/core/model_execution/model_execution_fetcher_impl.h.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

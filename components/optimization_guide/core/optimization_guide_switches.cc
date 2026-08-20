@@ -12,13 +12,6 @@
 namespace optimization_guide {
 namespace switches {
 
-// Overrides the Optimization Guide model execution URL.
-const char kOptimizationGuideServiceModelExecutionURL[] =
-    "optimization-guide-service-model-execution-url";
-
-const char kOptimizationGuideServiceModelExecutionDefaultURL[] =
-    "https://chromemodelexecution-pa.googleapis.com/v1:Execute";
-
 const char kDebugLoggingEnabled[] = "enable-optimization-guide-debug-logs";
 
 // Overrides the on-device model file paths for on-device model execution.
@@ -77,16 +70,6 @@ std::optional<base::FilePath> GetOnDeviceModelExecutionOverride() {
 bool ShouldGetFreeDiskSpaceWithUserVisiblePriorityTask() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   return command_line->HasSwitch(kGetFreeDiskSpaceWithUserVisiblePriorityTask);
-}
-
-GURL GetModelExecutionServiceURL() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(
-          switches::kOptimizationGuideServiceModelExecutionURL)) {
-    return GURL(command_line->GetSwitchValueASCII(
-        switches::kOptimizationGuideServiceModelExecutionURL));
-  }
-  return GURL(kOptimizationGuideServiceModelExecutionDefaultURL);
 }
 
 }  // namespace switches

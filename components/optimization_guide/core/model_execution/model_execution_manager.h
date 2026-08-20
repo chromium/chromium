@@ -30,6 +30,13 @@ class IdentityManager;
 
 namespace optimization_guide {
 
+// Overrides the Optimization Guide model execution URL.
+inline constexpr char kOptimizationGuideServiceModelExecutionURLSwitch[] =
+    "optimization-guide-service-model-execution-url";
+
+// Return the URL endpoint used for the model execution service.
+GURL GetModelExecutionServiceURL();
+
 class ModelExecutionFetcher;
 
 class ModelExecutionManager final {

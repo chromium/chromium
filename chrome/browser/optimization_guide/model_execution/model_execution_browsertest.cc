@@ -27,6 +27,7 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/manifest_builder.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
+#include "components/optimization_guide/core/model_execution/model_execution_manager.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
@@ -124,7 +125,7 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
         net::EmbeddedTestServer::TYPE_HTTPS);
     net::EmbeddedTestServer::ServerCertificateConfig cert_config;
     cert_config.dns_names = {
-        switches::GetModelExecutionServiceURL().GetHost(),
+        GetModelExecutionServiceURL().GetHost(),
     };
     model_execution_server_->SetSSLConfig(cert_config);
     model_execution_server_->RegisterRequestHandler(base::BindRepeating(
@@ -151,9 +152,9 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
     cmd->AppendSwitchASCII(
-        switches::kOptimizationGuideServiceModelExecutionURL,
+        kOptimizationGuideServiceModelExecutionURLSwitch,
         model_execution_server_
-            ->GetURL(switches::GetModelExecutionServiceURL().GetHost(), "/")
+            ->GetURL(GetModelExecutionServiceURL().GetHost(), "/")
             .spec());
     cmd->AppendSwitchASCII(
         switches::kModelQualityServiceURL,
