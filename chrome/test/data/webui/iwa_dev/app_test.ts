@@ -418,8 +418,11 @@ suite('<iwa-dev-app>', () => {
 
         clickUpdateButton();
 
-        const appId = await handler.whenCalled('updateManifestInstalledApp');
+        const [appId, options] =
+            await handler.whenCalled('updateManifestInstalledApp');
         assertEquals('test-manifest-app-id', appId);
+        assertDeepEquals(
+            {allowDowngrades: false, pinnedVersion: null}, options);
 
         await waitForUpdateCompletion();
         assertTrue(app.$.toast.open);

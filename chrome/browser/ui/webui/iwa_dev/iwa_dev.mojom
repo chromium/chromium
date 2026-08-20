@@ -16,6 +16,12 @@ struct UpdateInfo {
   string update_channel;
 };
 
+// Runtime options for checking updates on a manifest-installed dev mode IWA.
+struct UpdateManifestOptions {
+  bool allow_downgrades = false;
+  string? pinned_version;
+};
+
 // Represents the installation source and configuration of a dev mode IWA.
 union IwaDevModeSource {
   url.mojom.Origin proxy_origin;         // Local proxy install source
@@ -89,7 +95,7 @@ interface PageHandler {
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Triggers an update for a manifest-installed dev mode app.
-  UpdateManifestInstalledApp(string app_id)
+  UpdateManifestInstalledApp(string app_id, UpdateManifestOptions options)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 };
 

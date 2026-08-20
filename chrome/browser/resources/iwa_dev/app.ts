@@ -79,7 +79,10 @@ export class IwaDevAppElement extends CrLitElement {
               app.appId);
     } else if (app.source.updateInfo) {
       updatePromise =
-          this.browserProxy_.handler.updateManifestInstalledApp(app.appId);
+          this.browserProxy_.handler.updateManifestInstalledApp(app.appId, {
+            allowDowngrades: false,
+            pinnedVersion: null,
+          });
     } else {
       assertNotReached();
     }

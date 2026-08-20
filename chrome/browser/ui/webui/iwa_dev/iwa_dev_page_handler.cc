@@ -13,12 +13,10 @@
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
-#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_check_and_prepare_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
@@ -38,8 +36,10 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/isolated_web_apps/types/iwa_origin.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -462,6 +462,7 @@ void IwaDevPageHandler::UpdateDevProxyInstalledApp(
 
 void IwaDevPageHandler::UpdateManifestInstalledApp(
     const std::string& app_id,
+    iwa_dev::mojom::UpdateManifestOptionsPtr options,
     UpdateManifestInstalledAppCallback callback) {
   if (manifest_update_requests_.contains(app_id)) {
     std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
@@ -485,6 +486,17 @@ void IwaDevPageHandler::UpdateManifestInstalledApp(
     return;
   }
 
+  std::optional<web_app::IwaVersion> pinned_version;
+  if (options->pinned_version) {
+    ASSIGN_OR_RETURN(
+        pinned_version, web_app::IwaVersion::Create(*options->pinned_version),
+        [&](auto) {
+          std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+              mojo_base::mojom::Code::kInvalidArgument,
+              "Invalid pinned version provided.")));
+        });
+  }
+
   manifest_update_requests_.emplace(app_id, std::move(callback));
 
   provider_->isolated_web_app_update_manager().DiscoverAndPrepareUpdate(
@@ -493,8 +505,8 @@ void IwaDevPageHandler::UpdateManifestInstalledApp(
       /*update_channel=*/
       isolation_data.update_channel().value_or(
           web_app::UpdateChannel::default_channel()),
-      /*allow_downgrades=*/false,
-      /*pinned_version=*/std::nullopt,
+      /*allow_downgrades=*/options->allow_downgrades,
+      /*pinned_version=*/std::move(pinned_version),
       /*dev_mode=*/true);
 }
 
