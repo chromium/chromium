@@ -24857,10 +24857,10 @@ IN_PROC_BROWSER_TEST_P(RestrictDuplicateNavsToOriginsBrowserTest,
   EXPECT_TRUE(ExecJs(contents(), script));
   // Run script to ensure that the second link click is already processed.
   EXPECT_TRUE(ExecJs(shell(), "console.log('Success');"));
+  FetchHistogramsFromChildProcesses();
 
   // Wait for the first link click navigation to finish.
   EXPECT_TRUE(nav_manager.WaitForNavigationFinished());
-  FetchHistogramsFromChildProcesses();
 
   bool should_be_ignored =
       ignore_duplicate_navs() &&
