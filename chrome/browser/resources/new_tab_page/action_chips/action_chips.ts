@@ -139,6 +139,12 @@ export class ActionChipsElement extends CrLitElement {
         return 'icon-type-school';
       case IconType.kInkPen:
         return 'icon-type-ink-pen';
+      case IconType.kTab:
+        return 'icon-type-tab';
+      case IconType.kPhotoSpark:
+        return 'icon-type-photo-spark';
+      case IconType.kBolt:
+        return 'icon-type-bolt';
       default:
         return '';
     }
