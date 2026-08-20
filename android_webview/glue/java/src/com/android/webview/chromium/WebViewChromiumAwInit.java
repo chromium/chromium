@@ -24,12 +24,10 @@ import com.android.webview.chromium.ApiCallLogger.ApiCallUserAction;
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwClassPreloader;
-import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwCrashyClassUtils;
 import org.chromium.android_webview.AwDarkMode;
-import org.chromium.android_webview.AwLocaleConfig;
 import org.chromium.android_webview.AwProxyController;
 import org.chromium.android_webview.AwThreadUtils;
 import org.chromium.android_webview.AwTracingController;
@@ -47,7 +45,6 @@ import org.chromium.android_webview.common.AwResource;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.WebViewCachedFlags;
-import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.metrics.TrackExitReasons;
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ApkInfo;
@@ -55,7 +52,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.EarlyTraceEvent;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LoaderErrors;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.metrics.RecordHistogram;
@@ -65,7 +61,6 @@ import org.chromium.build.BuildConfig;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.BrowserStartupController.StartupCallback;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.base.ResourceBundle;
 
 import java.util.ArrayDeque;
 import java.util.Set;
@@ -124,8 +119,6 @@ public class WebViewChromiumAwInit {
 
     private final CountDownLatch mStartupFinished = new CountDownLatch(1);
 
-    private final CountDownLatch mNonUiThreadCapableStartupTasksLatch = new CountDownLatch(1);
-
     // mInitState should only transition from INIT_NOT_STARTED to INIT_FINISHED with possibly
     // INIT_POSTED as an intermediate state. INIT_POSTED is set right before posting `startChromium`
     // on the UI thread in case of async startup.
@@ -166,7 +159,6 @@ public class WebViewChromiumAwInit {
                 }
             };
 
-    @SuppressWarnings("UnusedVariable")
     private final StartupController mStartupController = new StartupController(mStartupDelegate);
 
     private final AtomicInteger mChromiumFirstStartupRequestMode =
@@ -207,37 +199,6 @@ public class WebViewChromiumAwInit {
 
     void setProviderInitOnMainLooperLocation(Throwable t) {
         mStartupDiagnostics.setProviderInitOnMainLooperLocation(t);
-    }
-
-    // These are startup tasks that can either run during provider init or during `startChromium`.
-    // This is extracted out so that we can experiment with calling this in either of these
-    // locations.
-    public void runNonUiThreadCapableStartupTasks() {
-        try {
-            ResourceBundle.setAvailablePakLocales(AwLocaleConfig.getWebViewSupportedPakLocales());
-
-            try (DualTraceEvent ignored2 =
-                    DualTraceEvent.scoped("LibraryLoader.ensureInitialized")) {
-                LibraryLoader.getInstance().ensureInitialized();
-            }
-
-            initPlatSupportLibrary();
-            AwContentsStatics.setCheckClearTextPermitted(
-                    ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion
-                            >= Build.VERSION_CODES.O);
-        } finally {
-            mNonUiThreadCapableStartupTasksLatch.countDown();
-        }
-    }
-
-    private void waitForNonUiThreadCapableStartupTasks() {
-        try (DualTraceEvent e2 =
-                DualTraceEvent.scoped(
-                        "WebViewChromiumAwInit.waitForNonUiThreadCapableStartupTasks")) {
-            mNonUiThreadCapableStartupTasksLatch.await();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     // Initializes a new StartupTaskRunner with a list of tasks to run for chromium startup.
@@ -306,9 +267,9 @@ public class WebViewChromiumAwInit {
 
         if (WebViewCachedFlags.get()
                 .isCachedFeatureEnabled(AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT)) {
-            waitForNonUiThreadCapableStartupTasks();
+            mStartupController.waitForNonUiThreadCapableStartupTasks();
         } else {
-            runNonUiThreadCapableStartupTasks();
+            mStartupController.runNonUiThreadCapableStartupTasks();
         }
         mStartupDelegate.waitForJavaResourcesSetup();
         // NOTE: Finished writing Java resources. From this point on, it's safe
@@ -649,14 +610,6 @@ public class WebViewChromiumAwInit {
         }
     }
 
-    private void initPlatSupportLibrary() {
-        try (DualTraceEvent e =
-                DualTraceEvent.scoped("WebViewChromiumAwInit.initPlatSupportLibrary")) {
-            AwDrawFnImpl.setDrawFnFunctionTable(mStartupDelegate.getDrawFnFunctionTable());
-            AwContents.setAwDrawSWFunctionTable(mStartupDelegate.getDrawSWFunctionTable());
-        }
-    }
-
     public SharedStatics getSharedStatics() {
         return mFactory.getSharedStatics();
     }
@@ -785,6 +738,10 @@ public class WebViewChromiumAwInit {
 
     public Profile getDefaultProfile(@StartupCallSite int callSite) {
         return mDefaultProfileHolder.getDefaultProfile(callSite);
+    }
+
+    public StartupController getStartupController() {
+        return mStartupController;
     }
 
     private final class DefaultProfileHolder {

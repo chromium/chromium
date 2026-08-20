@@ -586,7 +586,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                                                 .WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT_THREAD_POOL)) {
                     PostTask.postTask(
                             TaskTraits.USER_VISIBLE,
-                            () -> mAwInit.runNonUiThreadCapableStartupTasks());
+                            mAwInit.getStartupController()::runNonUiThreadCapableStartupTasks);
                 }
 
                 boolean enableSystemTracing =
@@ -671,7 +671,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                     && !WebViewCachedFlags.get()
                             .isCachedFeatureEnabled(
                                     AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT_THREAD_POOL)) {
-                mAwInit.runNonUiThreadCapableStartupTasks();
+                mAwInit.getStartupController().runNonUiThreadCapableStartupTasks();
             }
 
             FlagOverrideHelper helper =
