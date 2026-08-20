@@ -91,14 +91,6 @@ using test::kTestIPHFeature;
 using test::kTestTutorialIdentifier;
 using test::kTutorialIPHFeature;
 
-// Helper class that provides pass-throughs for protected members of
-// FeaturePromoController[Common].
-class BrowserFeaturePromoControllerTestHelper
-    : public BrowserFeaturePromoController {
- public:
-  using BrowserFeaturePromoController::GetFocusHelpBubbleScreenReaderHint;
-};
-
 BASE_FEATURE(kOneOffIPHFeature,
              "TEST_AnyContextIPHFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -270,18 +262,14 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerTest,
                        GetFocusHelpBubbleScreenReaderHint) {
-  EXPECT_TRUE(static_cast<const BrowserFeaturePromoControllerTestHelper*>(
-                  controller_.get())
-                  ->GetFocusHelpBubbleScreenReaderHint(
-                      FeaturePromoSpecification::PromoType::kToast,
-                      GetAnchorElement(), browser_view())
-                  .empty());
-  EXPECT_FALSE(static_cast<const BrowserFeaturePromoControllerTestHelper*>(
-                   controller_.get())
-                   ->GetFocusHelpBubbleScreenReaderHint(
-                       FeaturePromoSpecification::PromoType::kSnooze,
-                       GetAnchorElement(), browser_view())
-                   .empty());
+  EXPECT_TRUE(
+      GetFocusHelpBubbleScreenReaderHint(
+          FeaturePromoSpecification::PromoType::kToast, GetAnchorElement())
+          .empty());
+  EXPECT_FALSE(
+      GetFocusHelpBubbleScreenReaderHint(
+          FeaturePromoSpecification::PromoType::kSnooze, GetAnchorElement())
+          .empty());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerTest, ShowsStartupBubble) {

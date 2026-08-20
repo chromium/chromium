@@ -122,6 +122,9 @@ class BrowserFeaturePromoControllerTestBase : public InteractiveBrowserTest {
 
   views::View* GetAnchorView();
   ui::TrackedElement* GetAnchorElement();
+  std::u16string GetFocusHelpBubbleScreenReaderHint(
+      FeaturePromoSpecification::PromoType promo_type,
+      ui::TrackedElement* anchor_element);
 
   int custom_callback_count() const { return custom_callback_count_; }
 

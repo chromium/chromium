@@ -26,11 +26,11 @@
 #include "components/user_education/product_messaging/product_messaging_controller.h"
 
 // Declaring these in the global namespace for testing purposes.
-class BrowserFeaturePromoControllerTestBase;
-class BrowserFeaturePromoControllerTestHelper;
 class FeaturePromoLifecycleUiTest;
 
 namespace user_education {
+
+class BrowserFeaturePromoControllerTestBase;
 
 // Manages display of in-product help promos. All IPH displays in Top
 // Chrome should go through here.
@@ -255,7 +255,6 @@ class FeaturePromoControllerImpl : public FeaturePromoController {
 
  private:
   friend BrowserFeaturePromoControllerTestBase;
-  friend BrowserFeaturePromoControllerTestHelper;
   friend FeaturePromoLifecycleUiTest;
 
   struct PromoData;

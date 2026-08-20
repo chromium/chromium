@@ -406,6 +406,14 @@ ui::TrackedElement* BrowserFeaturePromoControllerTestBase::GetAnchorElement() {
   return result;
 }
 
+std::u16string
+BrowserFeaturePromoControllerTestBase::GetFocusHelpBubbleScreenReaderHint(
+    FeaturePromoSpecification::PromoType promo_type,
+    ui::TrackedElement* anchor_element) {
+  return controller_->GetFocusHelpBubbleScreenReaderHint(
+      promo_type, anchor_element, browser_view());
+}
+
 void BrowserFeaturePromoControllerTestBase::OnCustomPromoAction(
     const base::Feature* feature,
     const UserEducationContextPtr& context,
