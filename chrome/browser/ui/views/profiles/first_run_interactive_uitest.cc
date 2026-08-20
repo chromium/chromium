@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <variant>
 
 #include "base/auto_reset.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/signin/process_dice_header_delegate_impl.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
@@ -46,7 +48,9 @@
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/startup/first_run_test_util.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_constants.h"
 #include "chrome/browser/ui/views/profiles/first_run_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_interactive_uitest_base.h"
@@ -56,6 +60,7 @@
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_fetcher.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/browser_resources.h"
@@ -89,6 +94,8 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/user_education/views/help_bubble_view.h"
+#include "components/variations/pref_names.h"
+#include "components/variations/service/variations_service.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -562,11 +569,23 @@ class FirstRunInteractiveUiBaseTest
     return *kQuery;
   }
 
-  GURL GetFinishOrContinueURL() {
+  GURL GetFinishOrContinueURL(bool expected_showcase) {
     return net::AppendQueryParameter(
         GURL(chrome::kChromeUIIntroURL)
             .Resolve(chrome::kChromeUIIntroFinishOrContinueSubPage),
-        "showcase", base::ToString(!GetForcedFeatureShowcaseSteps().empty()));
+        "showcase", base::ToString(expected_showcase));
+  }
+
+  GURL GetFeatureShowcaseUrl(const std::vector<std::string>& steps) const {
+    return net::AppendQueryParameter(GURL(chrome::kChromeUIFeatureShowcaseURL),
+                                     "steps", base::JoinString(steps, ","));
+  }
+
+  GURL GetFeatureShowcaseUrl() const {
+    if (const auto steps = GetForcedFeatureShowcaseSteps()) {
+      return GetFeatureShowcaseUrl(*steps);
+    }
+    return GURL(chrome::kChromeUIFeatureShowcaseURL);
   }
 
   GURL GetWelcomeURL() {
@@ -580,8 +599,15 @@ class FirstRunInteractiveUiBaseTest
     return *kQuery;
   }
 
-  virtual std::vector<std::string> GetForcedFeatureShowcaseSteps() const {
-    return {};
+  // Returns the steps to force via the `--force-fre-feature-showcase-steps`
+  // command-line switch during test execution:
+  // - `std::nullopt`: does not force any steps and real eligibility checking
+  // is invoked.
+  // - Non-empty vector: forces the specified step(s) without eligibility checks
+  // - Empty vector: forces empty list and feature showcase is skipped
+  virtual std::optional<std::vector<std::string>>
+  GetForcedFeatureShowcaseSteps() const {
+    return std::nullopt;
   }
 
   // FirstRunServiceBrowserTestBase:
@@ -592,10 +618,13 @@ class FirstRunInteractiveUiBaseTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     FirstRunServiceBrowserTestBase::SetUpCommandLine(command_line);
-    if (UseRevampedView()) {
-      command_line->AppendSwitchASCII(
-          switches::kForceFreFeatureShowcaseSteps,
-          base::JoinString(GetForcedFeatureShowcaseSteps(), ","));
+    if (!UseRevampedView()) {
+      return;
+    }
+
+    if (const auto steps = GetForcedFeatureShowcaseSteps()) {
+      command_line->AppendSwitchASCII(switches::kForceFreFeatureShowcaseSteps,
+                                      base::JoinString(*steps, ","));
     }
   }
 
@@ -715,7 +744,8 @@ class FirstRunInteractiveUiBaseTest
 
   void SimulateSignIn(const std::string& account_email,
                       const std::string& account_given_name,
-                      bool with_extended_info = true) {
+                      bool with_extended_info = true,
+                      bool with_gemini_capabilities = false) {
     enable_disclaimer_on_primary_account_change_resetter_ =
         enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
             profile());
@@ -746,13 +776,22 @@ class FirstRunInteractiveUiBaseTest
               .Build();
     }
     AccountCapabilitiesTestMutator mutator(&account_info);
+    if (params_.sync_buttons_feature_config !=
+            SyncButtonsFeatureConfig::kDeadlined &&
+        params_.sync_buttons_feature_config !=
+            SyncButtonsFeatureConfig::kButtonsStillLoading) {
+      mutator.SetAllSupportedCapabilities(true);
+    }
     mutator.set_is_subject_to_enterprise_features(account_email ==
                                                   kTestEnterpriseEmail);
 
-    if (params_.with_supervision.has_value()) {
-      mutator.set_is_subject_to_parental_controls(
-          params_.with_supervision.value_or(false));
+    if (with_gemini_capabilities) {
+      mutator.set_can_use_model_execution_features(true);
+      mutator.set_can_use_gemini_in_chrome(true);
     }
+
+    mutator.set_is_subject_to_parental_controls(
+        params_.with_supervision.value_or(false));
 
     switch (params_.sync_buttons_feature_config) {
       case SyncButtonsFeatureConfig::kAsyncNotEqualButtons:
@@ -880,20 +919,47 @@ class FirstRunInteractiveUiBaseTest
         params_.flow_version);
   }
 
-  auto CompleteFinishOrContinueStep(bool start_browsing = true) {
+  auto CompleteFinishOrContinueStep(
+      bool start_browsing = true,
+      std::optional<bool> expected_showcase = std::nullopt) {
+    bool has_showcase = expected_showcase.has_value()
+                            ? expected_showcase.value()
+                            : (GetForcedFeatureShowcaseSteps().has_value() &&
+                               !GetForcedFeatureShowcaseSteps()->empty());
     const DeepQuery& button =
         start_browsing ? GetFinishOrContinueStartBrowsingButtonQuery()
                        : GetFinishOrContinueEducationButtonQuery();
-    return Steps(
-        WaitForWebContentsNavigation(kWebContentsId, GetFinishOrContinueURL()),
-        EnsurePresent(kWebContentsId, button),
-        PressJsButton(kWebContentsId, button));
+    return Steps(WaitForWebContentsNavigation(
+                     kWebContentsId, GetFinishOrContinueURL(has_showcase)),
+                 EnsurePresent(kWebContentsId, button),
+                 PressJsButton(kWebContentsId, button));
   }
 
   auto CompleteWelcomeStep() {
     return Steps(WaitForWebContentsReady(kWebContentsId, GetWelcomeURL()),
                  EnsurePresent(kWebContentsId, GetWelcomeAcceptButtonQuery()),
                  PressJsButton(kWebContentsId, GetWelcomeAcceptButtonQuery()));
+  }
+
+  InteractiveTestApi::MultiStep DeclineHistorySync() {
+    if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
+      return Steps(
+          WaitForWebContentsNavigation(kWebContentsId,
+                                       GetHistorySyncOptinURL()),
+          WaitForButtonVisible(kWebContentsId, GetDontSyncHistoryButtonQuery()),
+          EnsurePresent(kWebContentsId, GetDontSyncHistoryButtonQuery()),
+          PressJsButton(kWebContentsId, GetDontSyncHistoryButtonQuery())
+              .SetMustRemainVisible(false));
+    }
+    GURL sync_page_url = AppendSyncConfirmationQueryParams(
+        GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow,
+        /*is_sync_promo=*/true);
+    return Steps(
+        WaitForWebContentsNavigation(kWebContentsId, std::move(sync_page_url)),
+        WaitForButtonVisible(kWebContentsId, GetDontSyncButtonQuery()),
+        EnsurePresent(kWebContentsId, GetDontSyncButtonQuery()),
+        PressJsButton(kWebContentsId, GetDontSyncButtonQuery())
+            .SetMustRemainVisible(false));
   }
 
  private:
@@ -917,6 +983,13 @@ class FirstRunInteractiveUiTest
           fixture_enabled_features = {})
       : FirstRunInteractiveUiBaseTest(TestParam{.flow_version = GetParam()},
                                       fixture_enabled_features) {}
+
+ protected:
+  // FirstRunInteractiveUiBaseTest:
+  std::optional<std::vector<std::string>> GetForcedFeatureShowcaseSteps()
+      const override {
+    return std::vector<std::string>();
+  }
 };
 
 IN_PROC_BROWSER_TEST_P(FirstRunInteractiveUiTest, SignInError) {
@@ -1093,8 +1166,9 @@ IN_PROC_BROWSER_TEST_P(FirstRunBackNavigationInteractiveUiTest,
       // Finish or Continue step: back navigation should be ignored.
       If([this]() { return UseRevampedView(); },
          Then(Steps(
-             WaitForWebContentsNavigation(kWebContentsId,
-                                          GetFinishOrContinueURL()),
+             WaitForWebContentsNavigation(
+                 kWebContentsId,
+                 GetFinishOrContinueURL(/*expected_showcase=*/false)),
              EnsurePresent(kWebContentsId,
                            GetFinishOrContinueStartBrowsingButtonQuery()),
              SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
@@ -1168,44 +1242,15 @@ IN_PROC_BROWSER_TEST_P(FirstRunInteractiveUiTestWithSyncService, MAYBE_SignIn) {
   // Pulled out of the test sequence because it waits using `RunLoop`s.
   SimulateSignIn(kTestEmail, kTestGivenName);
 
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    GURL history_page_url = GetHistorySyncOptinURL();
-    RunTestSequenceInContext(
-        views::ElementTrackerViews::GetContextForView(view()),
-        // Web Contents already instrumented in the previous sequence.
-        If([this]() { return UseRevampedView(); },
-           Then(WaitForWebContentsNavigation(
-               kWebContentsId,
-               GURL(chrome::kChromeUIIntroURL)
-                   .Resolve(chrome::kChromeUIIntroSignInCelebrationSubPage)))),
-        WaitForWebContentsNavigation(kWebContentsId, history_page_url),
-        // Button is visible once capabilities are loaded or defaulted.
-        WaitForButtonVisible(kWebContentsId, GetDontSyncHistoryButtonQuery()),
-        EnsurePresent(kWebContentsId, GetDontSyncHistoryButtonQuery()),
-        PressJsButton(kWebContentsId, GetDontSyncHistoryButtonQuery())
-            .SetMustRemainVisible(false));
-  } else {
-    GURL sync_page_url = AppendSyncConfirmationQueryParams(
-        GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow,
-        /*is_sync_promo=*/true);
-    RunTestSequenceInContext(
-        views::ElementTrackerViews::GetContextForView(view()),
-        // Web Contents already instrumented in the previous sequence.
-        If([this]() { return UseRevampedView(); },
-           Then(WaitForWebContentsNavigation(
-               kWebContentsId,
-               GURL(chrome::kChromeUIIntroURL)
-                   .Resolve(chrome::kChromeUIIntroSignInCelebrationSubPage)))),
-        WaitForWebContentsNavigation(kWebContentsId, sync_page_url),
-        // Button is visible once capabilities are loaded or defaulted.
-        WaitForButtonVisible(kWebContentsId, GetDontSyncButtonQuery()),
-        EnsurePresent(kWebContentsId, GetDontSyncButtonQuery()),
-        PressJsButton(kWebContentsId, GetDontSyncButtonQuery())
-            .SetMustRemainVisible(false));
-  }
-
   RunTestSequenceInContext(
       views::ElementTrackerViews::GetContextForView(view()),
+      // Web Contents already instrumented in the previous sequence.
+      If([this]() { return UseRevampedView(); },
+         Then(WaitForWebContentsNavigation(
+             kWebContentsId,
+             GURL(chrome::kChromeUIIntroURL)
+                 .Resolve(chrome::kChromeUIIntroSignInCelebrationSubPage)))),
+      DeclineHistorySync(),
       If([this]() { return UseRevampedView(); },
          Then(CompleteFinishOrContinueStep())));
 
@@ -1280,6 +1325,14 @@ class FirstRunParameterizedInteractiveUiTest
                 /*force_chrome_build=*/true));
   }
 
+ protected:
+  // FirstRunInteractiveUiBaseTest:
+  std::optional<std::vector<std::string>> GetForcedFeatureShowcaseSteps()
+      const override {
+    return std::vector<std::string>();
+  }
+
+ public:
   // FirstRunInteractiveUiTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     FirstRunInteractiveUiBaseTest::SetUpCommandLine(command_line);
@@ -2173,33 +2226,13 @@ class FirstRunWithHatsInteractiveUiTest
     return std::string(GetParam().hats_trigger);
   }
 
-  std::vector<std::string> GetForcedFeatureShowcaseSteps() const override {
+  std::optional<std::vector<std::string>> GetForcedFeatureShowcaseSteps()
+      const override {
     return GetParam().forced_showcase_steps;
   }
 
   bool IsFeatureShowcaseEligible() const {
     return !GetParam().forced_showcase_steps.empty();
-  }
-
-  InteractiveTestApi::MultiStep DeclineHistorySync() {
-    if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-      return Steps(
-          WaitForWebContentsNavigation(kWebContentsId,
-                                       GetHistorySyncOptinURL()),
-          WaitForButtonVisible(kWebContentsId, GetDontSyncHistoryButtonQuery()),
-          EnsurePresent(kWebContentsId, GetDontSyncHistoryButtonQuery()),
-          PressJsButton(kWebContentsId, GetDontSyncHistoryButtonQuery())
-              .SetMustRemainVisible(false));
-    }
-    GURL sync_page_url = AppendSyncConfirmationQueryParams(
-        GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow,
-        /*is_sync_promo=*/true);
-    return Steps(
-        WaitForWebContentsNavigation(kWebContentsId, std::move(sync_page_url)),
-        WaitForButtonVisible(kWebContentsId, GetDontSyncButtonQuery()),
-        EnsurePresent(kWebContentsId, GetDontSyncButtonQuery()),
-        PressJsButton(kWebContentsId, GetDontSyncButtonQuery())
-            .SetMustRemainVisible(false));
   }
 
  private:
@@ -2665,8 +2698,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          FirstRunInSearchChoiceRegionInteractiveUiTest,
                          testing::Values(false, true));
 
-// TODO(crbug.com/524526106): Extend this test suite to thoroughly cover the
-// feature showcase step.
 class FirstRunRevampInteractiveUiTest : public FirstRunInteractiveUiBaseTest {
  public:
   explicit FirstRunRevampInteractiveUiTest(
@@ -2684,16 +2715,17 @@ class FirstRunRevampInteractiveUiTest : public FirstRunInteractiveUiBaseTest {
                 FirstRunVersion::Revamped{.sound_enabled = sound_enabled}}) {}
 
  protected:
-  GURL GetFeatureShowcaseUrl() const {
-    return net::AppendQueryParameter(
-        GURL(chrome::kChromeUIFeatureShowcaseURL), "steps",
-        base::JoinString(GetForcedFeatureShowcaseSteps(), ","));
-  }
-
   const DeepQuery& GetFeatureShowcaseDefaultBrowserSkipButtonQuery() const {
     static const base::NoDestructor<DeepQuery> kQuery(
         {"feature-showcase-app", "feature-showcase-default-browser-step",
          "#skip-button"});
+    return *kQuery;
+  }
+
+  const DeepQuery& GetFeatureShowcaseDefaultBrowserConfirmButtonQuery() const {
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"feature-showcase-app", "feature-showcase-default-browser-step",
+         "#confirm-button"});
     return *kQuery;
   }
 
@@ -2704,9 +2736,38 @@ class FirstRunRevampInteractiveUiTest : public FirstRunInteractiveUiBaseTest {
     return *kQuery;
   }
 
+  const DeepQuery& GetFeatureShowcaseGoogleLensConfirmButtonQuery() const {
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"feature-showcase-app", "feature-showcase-google-lens-step",
+         "#confirm-button"});
+    return *kQuery;
+  }
+
+  const DeepQuery& GetFeatureShowcaseGeminiConfirmButtonQuery() const {
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"feature-showcase-app", "feature-showcase-gemini-step",
+         "#confirm-button"});
+    return *kQuery;
+  }
+
+  const DeepQuery& GetFeatureShowcasePasswordManagerConfirmButtonQuery() const {
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"feature-showcase-app", "feature-showcase-password-manager-step",
+         "#confirm-button"});
+    return *kQuery;
+  }
+
+  const DeepQuery& GetFeatureShowcaseThemesConfirmButtonQuery() const {
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"feature-showcase-app",
+         "feature-showcase-themes-and-customization-step", "#confirm-button"});
+    return *kQuery;
+  }
+
   // FirstRunInteractiveUiBaseTest:
-  std::vector<std::string> GetForcedFeatureShowcaseSteps() const override {
-    return {"default-browser", "google-lens"};
+  std::optional<std::vector<std::string>> GetForcedFeatureShowcaseSteps()
+      const override {
+    return std::vector<std::string>{"default-browser", "google-lens"};
   }
 };
 
@@ -3394,7 +3455,8 @@ IN_PROC_BROWSER_TEST_F(FirstRunRevampSoundDisabledInteractiveUiTest,
       PressJsButton(kWebContentsId,
                     GetFeatureShowcaseGoogleLensSkipButtonQuery()),
       // Now wait for navigation to finish or continue step.
-      WaitForWebContentsNavigation(kWebContentsId, GetFinishOrContinueURL()),
+      WaitForWebContentsNavigation(
+          kWebContentsId, GetFinishOrContinueURL(/*expected_showcase=*/true)),
       // Effects button should be present on the finish or continue step (to
       // disable animations).
       WaitForShow(kProfilePickerToolbarEffectsControlButtonElementId),
@@ -3418,8 +3480,9 @@ class FirstRunRevampTurnOnSyncCelebrationInteractiveUiTest
              syncer::kReplaceSyncPromosWithSigninPromosNewSignin}) {}
 
  protected:
-  std::vector<std::string> GetForcedFeatureShowcaseSteps() const override {
-    return {"default-browser"};
+  std::optional<std::vector<std::string>> GetForcedFeatureShowcaseSteps()
+      const override {
+    return std::vector<std::string>{"default-browser"};
   }
 };
 
@@ -3661,3 +3724,400 @@ INSTANTIATE_TEST_SUITE_P(,
                            return base::StrCat(
                                {info.param.key, info.param.value});
                          });
+
+class FirstRunFeatureShowcaseInteractiveUiTest
+    : public FirstRunRevampInteractiveUiTest {
+ public:
+  FirstRunFeatureShowcaseInteractiveUiTest() = default;
+
+ protected:
+  std::optional<std::vector<std::string>> GetForcedFeatureShowcaseSteps()
+      const override {
+    return std::nullopt;
+  }
+
+  void ExpectFeatureShowcaseStepHistograms(
+      FeatureShowcaseStep step,
+      std::string_view step_histogram_suffix,
+      bool eligible,
+      bool shown,
+      std::optional<FeatureShowcaseStepUserAction> action = std::nullopt) {
+    histogram_tester().ExpectBucketCount(
+        "ProfilePicker.FREFlow.FeatureShowcase.StepEligible", step,
+        eligible ? 1 : 0);
+    histogram_tester().ExpectBucketCount(
+        "ProfilePicker.FREFlow.FeatureShowcase.StepShown", step, shown ? 1 : 0);
+
+    if (action.has_value()) {
+      histogram_tester().ExpectUniqueSample(
+          base::StrCat({"ProfilePicker.FREFlow.FeatureShowcase.StepUserAction.",
+                        step_histogram_suffix}),
+          action.value(), 1);
+    } else {
+      histogram_tester().ExpectTotalCount(
+          base::StrCat({"ProfilePicker.FREFlow.FeatureShowcase.StepUserAction.",
+                        step_histogram_suffix}),
+          0);
+    }
+  }
+};
+
+// TODO(crbug.com/366119368): Re-enable this test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_FeatureShowcaseAcceptSteps DISABLED_FeatureShowcaseAcceptSteps
+#else
+#define MAYBE_FeatureShowcaseAcceptSteps FeatureShowcaseAcceptSteps
+#endif
+IN_PROC_BROWSER_TEST_F(FirstRunFeatureShowcaseInteractiveUiTest,
+                       MAYBE_FeatureShowcaseAcceptSteps) {
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  base::test::TestFuture<bool> proceed_future;
+  OpenFirstRun(proceed_future.GetCallback());
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      // Do not sign in to proceed to the feature showcase.
+      CompleteIntroStep(/*sign_in=*/false),
+
+#if BUILDFLAG(IS_WIN)
+      WaitForWebContentsNavigation(
+          kWebContentsId, GetFeatureShowcaseUrl(
+                              {kFeatureShowcaseDefaultBrowserStepIdentifier,
+                               kFeatureShowcaseGoogleLensStepIdentifier,
+                               kFeatureShowcasePasswordManagerStepIdentifier})),
+#else
+      WaitForWebContentsNavigation(
+          kWebContentsId,
+          GetFeatureShowcaseUrl(
+              {kFeatureShowcaseGoogleLensStepIdentifier,
+               kFeatureShowcasePasswordManagerStepIdentifier,
+               kFeatureShowcaseThemesAndCustomizationStepIdentifier})),
+#endif
+
+#if BUILDFLAG(IS_WIN)
+      WaitForButtonEnabled(
+          kWebContentsId, GetFeatureShowcaseDefaultBrowserConfirmButtonQuery()),
+      EnsurePresent(kWebContentsId,
+                    GetFeatureShowcaseDefaultBrowserConfirmButtonQuery()),
+      PressJsButton(kWebContentsId,
+                    GetFeatureShowcaseDefaultBrowserConfirmButtonQuery()),
+#endif
+      WaitForButtonEnabled(kWebContentsId,
+                           GetFeatureShowcaseGoogleLensConfirmButtonQuery()),
+      EnsurePresent(kWebContentsId,
+                    GetFeatureShowcaseGoogleLensConfirmButtonQuery()),
+      PressJsButton(kWebContentsId,
+                    GetFeatureShowcaseGoogleLensConfirmButtonQuery()),
+
+      WaitForButtonEnabled(
+          kWebContentsId,
+          GetFeatureShowcasePasswordManagerConfirmButtonQuery()),
+      EnsurePresent(kWebContentsId,
+                    GetFeatureShowcasePasswordManagerConfirmButtonQuery()),
+      PressJsButton(kWebContentsId,
+                    GetFeatureShowcasePasswordManagerConfirmButtonQuery()),
+
+#if !BUILDFLAG(IS_WIN)
+      WaitForButtonEnabled(kWebContentsId,
+                           GetFeatureShowcaseThemesConfirmButtonQuery()),
+      EnsurePresent(kWebContentsId,
+                    GetFeatureShowcaseThemesConfirmButtonQuery()),
+      PressJsButton(kWebContentsId,
+                    GetFeatureShowcaseThemesConfirmButtonQuery()),
+#endif
+
+      CompleteFinishOrContinueStep(/*start_browsing=*/true,
+                                   /*expected_showcase=*/true));
+
+  WaitForPickerClosed();
+  EXPECT_TRUE(proceed_future.Get());
+  EXPECT_TRUE(GetFirstRunFinishedPrefValue());
+
+#if BUILDFLAG(IS_WIN)
+  ExpectFeatureShowcaseStepHistograms(FeatureShowcaseStep::kDefaultBrowser,
+                                      "DefaultBrowser",
+                                      /*eligible=*/true, /*shown=*/true,
+                                      FeatureShowcaseStepUserAction::kAccepted);
+  ExpectFeatureShowcaseStepHistograms(
+      FeatureShowcaseStep::kThemesAndCustomization, "ThemesAndCustomization",
+      /*eligible=*/false, /*shown=*/false);
+#else
+  ExpectFeatureShowcaseStepHistograms(FeatureShowcaseStep::kDefaultBrowser,
+                                      "DefaultBrowser",
+                                      /*eligible=*/false, /*shown=*/false);
+  ExpectFeatureShowcaseStepHistograms(
+      FeatureShowcaseStep::kThemesAndCustomization, "ThemesAndCustomization",
+      /*eligible=*/true, /*shown=*/true,
+      FeatureShowcaseStepUserAction::kAccepted);
+#endif
+
+  ExpectFeatureShowcaseStepHistograms(FeatureShowcaseStep::kGoogleLens,
+                                      "GoogleLens",
+                                      /*eligible=*/true, /*shown=*/true,
+                                      FeatureShowcaseStepUserAction::kAccepted);
+  ExpectFeatureShowcaseStepHistograms(FeatureShowcaseStep::kPasswordManager,
+                                      "PasswordManager",
+                                      /*eligible=*/true, /*shown=*/true,
+                                      FeatureShowcaseStepUserAction::kAccepted);
+  ExpectFeatureShowcaseStepHistograms(FeatureShowcaseStep::kGemini, "Gemini",
+                                      /*eligible=*/false, /*shown=*/false);
+}
+
+using FirstRunFeatureShowcaseWithSyncInteractiveUiTest =
+    WithTestSyncServiceMixin<FirstRunFeatureShowcaseInteractiveUiTest>;
+
+// TODO(crbug.com/366119368): Re-enable this test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_FeatureShowcaseSkipPasswordManagerIfPinned \
+  DISABLED_FeatureShowcaseSkipPasswordManagerIfPinned
+#else
+#define MAYBE_FeatureShowcaseSkipPasswordManagerIfPinned \
+  FeatureShowcaseSkipPasswordManagerIfPinned
+#endif
+IN_PROC_BROWSER_TEST_F(FirstRunFeatureShowcaseWithSyncInteractiveUiTest,
+                       MAYBE_FeatureShowcaseSkipPasswordManagerIfPinned) {
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  PinnedToolbarActionsModel* model = PinnedToolbarActionsModel::Get(profile());
+  model->UpdatePinnedState(kActionShowPasswordsBubbleOrPage, true);
+
+  base::test::TestFuture<bool> proceed_future;
+  OpenFirstRun(proceed_future.GetCallback());
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      // Do sign in to proceed to the feature showcase.
+      CompleteIntroStep(/*sign_in=*/true),
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GetSigninChromeSyncDiceUrl()));
+
+  ConfigureTestSyncService(SyncServiceFactory::GetForProfile(profile()),
+                           syncer::SyncService::TransportState::ACTIVE);
+  SimulateSignIn(kTestEmail, kTestGivenName);
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      // Wait for sign in celebration
+      If([this]() { return UseRevampedView(); },
+         Then(WaitForWebContentsNavigation(
+             kWebContentsId,
+             GURL(chrome::kChromeUIIntroURL)
+                 .Resolve(chrome::kChromeUIIntroSignInCelebrationSubPage)))),
+      DeclineHistorySync(),
+#if BUILDFLAG(IS_WIN)
+      WaitForWebContentsNavigation(
+          kWebContentsId,
+          GetFeatureShowcaseUrl(
+              {kFeatureShowcaseDefaultBrowserStepIdentifier,
+               kFeatureShowcaseGoogleLensStepIdentifier,
+               kFeatureShowcaseThemesAndCustomizationStepIdentifier})),
+#else
+      WaitForWebContentsNavigation(
+          kWebContentsId,
+          GetFeatureShowcaseUrl(
+              {kFeatureShowcaseGoogleLensStepIdentifier,
+               kFeatureShowcaseThemesAndCustomizationStepIdentifier})),
+#endif
+#if BUILDFLAG(IS_WIN)
+      WaitForButtonEnabled(
+          kWebContentsId, GetFeatureShowcaseDefaultBrowserConfirmButtonQuery()),
+      EnsurePresent(kWebContentsId,
+                    GetFeatureShowcaseDefaultBrowserConfirmButtonQuery()),
+      PressJsButton(kWebContentsId,
+                    GetFeatureShowcaseDefaultBrowserConfirmButtonQuery()),
+#endif
+      WaitForButtonEnabled(kWebContentsId,
+                           GetFeatureShowcaseGoogleLensConfirmButtonQuery()),
+      EnsurePresent(kWebContentsId,
+                    GetFeatureShowcaseGoogleLensConfirmButtonQuery()),
+      PressJsButton(kWebContentsId,
+                    GetFeatureShowcaseGoogleLensConfirmButtonQuery()),
+
+      WaitForButtonEnabled(kWebContentsId,
+                           GetFeatureShowcaseThemesConfirmButtonQuery()),
+      EnsurePresent(kWebContentsId,
+                    GetFeatureShowcaseThemesConfirmButtonQuery()),
+      PressJsButton(kWebContentsId,
+                    GetFeatureShowcaseThemesConfirmButtonQuery()),
+
+      CompleteFinishOrContinueStep(/*start_browsing=*/true,
+                                   /*expected_showcase=*/true));
+
+  WaitForPickerClosed();
+  EXPECT_TRUE(proceed_future.Get());
+  EXPECT_TRUE(GetFirstRunFinishedPrefValue());
+
+#if BUILDFLAG(IS_WIN)
+  ExpectFeatureShowcaseStepHistograms(FeatureShowcaseStep::kDefaultBrowser,
+                                      "DefaultBrowser",
+                                      /*eligible=*/true, /*shown=*/true,
+                                      FeatureShowcaseStepUserAction::kAccepted);
+  ExpectFeatureShowcaseStepHistograms(
+      FeatureShowcaseStep::kThemesAndCustomization, "ThemesAndCustomization",
+      /*eligible=*/false, /*shown=*/false);
+#else
+  ExpectFeatureShowcaseStepHistograms(FeatureShowcaseStep::kDefaultBrowser,
+                                      "DefaultBrowser",
+                                      /*eligible=*/false, /*shown=*/false);
+  ExpectFeatureShowcaseStepHistograms(
+      FeatureShowcaseStep::kThemesAndCustomization, "ThemesAndCustomization",
+      /*eligible=*/true, /*shown=*/true,
+      FeatureShowcaseStepUserAction::kAccepted);
+#endif
+
+  ExpectFeatureShowcaseStepHistograms(FeatureShowcaseStep::kGoogleLens,
+                                      "GoogleLens",
+                                      /*eligible=*/true, /*shown=*/true,
+                                      FeatureShowcaseStepUserAction::kAccepted);
+  ExpectFeatureShowcaseStepHistograms(FeatureShowcaseStep::kPasswordManager,
+                                      "PasswordManager",
+                                      /*eligible=*/false, /*shown=*/false);
+  ExpectFeatureShowcaseStepHistograms(FeatureShowcaseStep::kGemini, "Gemini",
+                                      /*eligible=*/false, /*shown=*/false);
+}
+
+class FirstRunFeatureShowcaseWithGeminiInteractiveUiTest
+    : public FirstRunFeatureShowcaseWithSyncInteractiveUiTest {
+ public:
+  FirstRunFeatureShowcaseWithGeminiInteractiveUiTest() {
+    scoped_feature_list_gemini_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlic,
+                              switches::kFirstRunFeatureShowcaseGeminiStep},
+        /*disabled_features=*/{features::kGlicCountryFiltering});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    FirstRunFeatureShowcaseWithSyncInteractiveUiTest::SetUpCommandLine(
+        command_line);
+    command_line->AppendSwitchASCII(
+        variations::switches::kVariationsOverrideCountry, "US");
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_gemini_;
+};
+
+// TODO(crbug.com/366119368): Re-enable this test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_FeatureShowcaseGeminiExcludesGoogleLens \
+  DISABLED_FeatureShowcaseGeminiExcludesGoogleLens
+#else
+#define MAYBE_FeatureShowcaseGeminiExcludesGoogleLens \
+  FeatureShowcaseGeminiExcludesGoogleLens
+#endif
+IN_PROC_BROWSER_TEST_F(FirstRunFeatureShowcaseWithGeminiInteractiveUiTest,
+                       MAYBE_FeatureShowcaseGeminiExcludesGoogleLens) {
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  base::test::TestFuture<bool> proceed_future;
+  OpenFirstRun(proceed_future.GetCallback());
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      // Do sign in to proceed to the feature showcase.
+      CompleteIntroStep(/*sign_in=*/true),
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GetSigninChromeSyncDiceUrl()));
+
+  ConfigureTestSyncService(SyncServiceFactory::GetForProfile(profile()),
+                           syncer::SyncService::TransportState::ACTIVE);
+  SimulateSignIn(kTestEmail, kTestGivenName, /*with_extended_info=*/true,
+                 /*with_gemini_capabilities=*/true);
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      // Wait for sign in celebration
+      If([this]() { return UseRevampedView(); },
+         Then(WaitForWebContentsNavigation(
+             kWebContentsId,
+             GURL(chrome::kChromeUIIntroURL)
+                 .Resolve(chrome::kChromeUIIntroSignInCelebrationSubPage)))),
+      DeclineHistorySync(),
+#if BUILDFLAG(IS_WIN)
+      WaitForWebContentsNavigation(
+          kWebContentsId, GetFeatureShowcaseUrl(
+                              {kFeatureShowcaseDefaultBrowserStepIdentifier,
+                               kFeatureShowcaseGeminiStepIdentifier,
+                               kFeatureShowcasePasswordManagerStepIdentifier})),
+#else
+      WaitForWebContentsNavigation(
+          kWebContentsId,
+          GetFeatureShowcaseUrl(
+              {kFeatureShowcaseGeminiStepIdentifier,
+               kFeatureShowcasePasswordManagerStepIdentifier,
+               kFeatureShowcaseThemesAndCustomizationStepIdentifier})),
+#endif
+#if BUILDFLAG(IS_WIN)
+      WaitForButtonEnabled(
+          kWebContentsId, GetFeatureShowcaseDefaultBrowserConfirmButtonQuery()),
+      EnsurePresent(kWebContentsId,
+                    GetFeatureShowcaseDefaultBrowserConfirmButtonQuery()),
+      PressJsButton(kWebContentsId,
+                    GetFeatureShowcaseDefaultBrowserConfirmButtonQuery()),
+#endif
+      WaitForButtonEnabled(kWebContentsId,
+                           GetFeatureShowcaseGeminiConfirmButtonQuery()),
+      EnsurePresent(kWebContentsId,
+                    GetFeatureShowcaseGeminiConfirmButtonQuery()),
+      PressJsButton(kWebContentsId,
+                    GetFeatureShowcaseGeminiConfirmButtonQuery()),
+
+      WaitForButtonEnabled(
+          kWebContentsId,
+          GetFeatureShowcasePasswordManagerConfirmButtonQuery()),
+      EnsurePresent(kWebContentsId,
+                    GetFeatureShowcasePasswordManagerConfirmButtonQuery()),
+      PressJsButton(kWebContentsId,
+                    GetFeatureShowcasePasswordManagerConfirmButtonQuery()),
+
+#if !BUILDFLAG(IS_WIN)
+      WaitForButtonEnabled(kWebContentsId,
+                           GetFeatureShowcaseThemesConfirmButtonQuery()),
+      EnsurePresent(kWebContentsId,
+                    GetFeatureShowcaseThemesConfirmButtonQuery()),
+      PressJsButton(kWebContentsId,
+                    GetFeatureShowcaseThemesConfirmButtonQuery()),
+#endif
+
+      CompleteFinishOrContinueStep(/*start_browsing=*/true,
+                                   /*expected_showcase=*/true));
+
+  WaitForPickerClosed();
+  EXPECT_TRUE(proceed_future.Get());
+  EXPECT_TRUE(GetFirstRunFinishedPrefValue());
+
+#if BUILDFLAG(IS_WIN)
+  ExpectFeatureShowcaseStepHistograms(FeatureShowcaseStep::kDefaultBrowser,
+                                      "DefaultBrowser",
+                                      /*eligible=*/true, /*shown=*/true,
+                                      FeatureShowcaseStepUserAction::kAccepted);
+  ExpectFeatureShowcaseStepHistograms(
+      FeatureShowcaseStep::kThemesAndCustomization, "ThemesAndCustomization",
+      /*eligible=*/false, /*shown=*/false);
+#else
+  ExpectFeatureShowcaseStepHistograms(FeatureShowcaseStep::kDefaultBrowser,
+                                      "DefaultBrowser",
+                                      /*eligible=*/false, /*shown=*/false);
+  ExpectFeatureShowcaseStepHistograms(
+      FeatureShowcaseStep::kThemesAndCustomization, "ThemesAndCustomization",
+      /*eligible=*/true, /*shown=*/true,
+      FeatureShowcaseStepUserAction::kAccepted);
+#endif
+
+  ExpectFeatureShowcaseStepHistograms(FeatureShowcaseStep::kGemini, "Gemini",
+                                      /*eligible=*/true, /*shown=*/true,
+                                      FeatureShowcaseStepUserAction::kAccepted);
+  ExpectFeatureShowcaseStepHistograms(FeatureShowcaseStep::kPasswordManager,
+                                      "PasswordManager",
+                                      /*eligible=*/true, /*shown=*/true,
+                                      FeatureShowcaseStepUserAction::kAccepted);
+  ExpectFeatureShowcaseStepHistograms(FeatureShowcaseStep::kGoogleLens,
+                                      "GoogleLens",
+                                      /*eligible=*/false, /*shown=*/false);
+}

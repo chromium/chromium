@@ -9394,6 +9394,8 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/enterprise/idle:interactive_ui_tests",
         "//chrome/browser/ui/startup:test_support_ui",
         "//chrome/browser/ui/views/profiles:profile_picker_toolbar",
+        "//chrome/browser/ui/views/profiles/feature_showcase:metrics",
+        "//chrome/browser/ui/webui/feature_showcase",
         "//chrome/browser/ui/webui/intro",
         "//chrome/browser/ui/webui/whats_new",
         "//components/enterprise/idle",
