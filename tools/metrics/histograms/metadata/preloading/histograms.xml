@@ -190,6 +190,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="UsedInstantLoad">
+  <variant name="All" summary="All navigations. No additional condition."/>
   <variant name="NoInstantLoad" summary="No instant load technology was used."/>
   <variant name="Prefetch" summary="Prefetch was used."/>
   <variant name="Prefetch.WithoutPrePrefetch"

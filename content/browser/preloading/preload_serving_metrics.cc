@@ -501,6 +501,11 @@ void PreloadServingMetrics::RecordFirstContentfulPaint(
                     suffix}),
       corrected_first_contentful_paint);
   PAGE_LOAD_HISTOGRAM(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint."
+      "WithoutFiltering.All.All.All",
+      corrected_first_contentful_paint);
+  PAGE_LOAD_HISTOGRAM(
       base::StrCat({"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
                     "NavigationToFirstContentfulPaint."
                     "WithoutFiltering.All.All.",

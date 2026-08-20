@@ -235,6 +235,7 @@ TEST(PreloadServingMetricsTest, NavigationWithoutPreload) {
   ExpectFCP(histogram_tester, "WithPrefetch", {});
   ExpectFCP(histogram_tester, "WithPrerender", {});
 
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.All", {334});
   ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad", {334});
   ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {});
   ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prerender", {});
@@ -513,6 +514,7 @@ TEST(PreloadServingMetricsTest, NavigationWithPrefetch) {
   ExpectFCP(histogram_tester, "WithPrefetch.WithoutPrePrefetch", {334});
   ExpectFCP(histogram_tester, "WithPrerender", {});
 
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.All", {334});
   ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad", {});
   ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {334});
   ExpectFCP(histogram_tester,
@@ -638,6 +640,7 @@ TEST(PreloadServingMetricsTest, NavigationWithPrefetchWithPrePrefetch) {
   ExpectFCP(histogram_tester, "WithPrefetch.WithoutPrePrefetch", {});
   ExpectFCP(histogram_tester, "WithPrerender", {});
 
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.All", {334});
   ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad", {});
   ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {334});
   ExpectFCP(histogram_tester,
@@ -901,6 +904,7 @@ TEST(PreloadServingMetricsTest,
   ExpectFCP(histogram_tester, "WithPrefetch", {});
   ExpectFCP(histogram_tester, "WithPrerender", {334});
 
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.All", {334});
   ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad", {});
   ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {});
   ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prerender", {334});
@@ -1223,6 +1227,7 @@ TEST(PreloadServingMetricsTest,
   ExpectFCP(histogram_tester, "WithPrefetch", {});
   ExpectFCP(histogram_tester, "WithPrerender", {});
 
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.All", {2157});
   ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad", {2157});
   ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {});
   ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prerender", {});
@@ -1535,6 +1540,7 @@ TEST(
   ExpectFCP(histogram_tester, "WithPrefetch", {});
   ExpectFCP(histogram_tester, "WithPrerender", {});
 
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.All", {10334});
   ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad",
             {10334});
   ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {});
