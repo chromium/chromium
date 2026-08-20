@@ -48,11 +48,17 @@ std::unique_ptr<net::test_server::HttpResponse> HandleSearchRequest(
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->set_code(net::HTTP_OK);
   response->set_content_type("text/html");
-  response->set_content("<html><body>"
-                        "<h1>Fake AIM Page</h1>"
-                        "<p>This is a simulated AIM search results page.</p>"
-                        "<a href=\"/pony.html\" id=\"my_link\" "
-                        "target=\"_blank\">link</a></body></html>");
+  response->set_content(
+      "<html><body>"
+      "<h1>Fake AIM Page</h1>"
+      "<p>This is a simulated AIM search results page.</p>"
+      "<script>"
+      "  "
+      "window.webkit.messageHandlers.AimCobrowseMessageHandler.postMessage({'"
+      "message': 'CgA='});"
+      "</script>"
+      "<a href=\"/pony.html\" id=\"my_link\" "
+      "target=\"_blank\">link</a></body></html>");
   return response;
 }
 
@@ -137,6 +143,11 @@ id<GREYMatcher> CloseButton() {
 
 @implementation AssistantAIMTestCase {
   GURL _defaultURL;
+}
+
+- (GURL)simulatedAimURLForQuery:(const std::string&)query {
+  std::string relativeURL = "/search?udm=50&mtid=dummy_server_id&q=" + query;
+  return self.testServer->GetURL("localhost", relativeURL);
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -475,8 +486,7 @@ id<GREYMatcher> CloseButton() {
   // 2. Navigate the main browser to a simulated AIM URL.
   // The assistant will hide because AIM URLs themselves cannot show the
   // assistant.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(
-                              "localhost", "/search?udm=50&q=HelloWorld")];
+  [ChromeEarlGrey loadURL:[self simulatedAimURLForQuery:"HelloWorld"]];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:CloseButton()];
@@ -617,8 +627,7 @@ id<GREYMatcher> CloseButton() {
 
   // Edit full URL using the test server with localhost hostname to satisfy
   // the IsAimURL check and allow it to load locally.
-  GURL editedURL =
-      self.testServer->GetURL("localhost", "/search?udm=50&q=editedquery");
+  GURL editedURL = [self simulatedAimURLForQuery:"editedquery"];
   NSString* editedURLString = base::SysUTF8ToNSString(editedURL.spec());
   [[EarlGrey
       selectElementWithMatcher:
@@ -680,14 +689,12 @@ id<GREYMatcher> CloseButton() {
   }
 
   // 1. Navigate to fake aim page A.
-  [ChromeEarlGrey
-      loadURL:self.testServer->GetURL("localhost", "/search?udm=50&q=pageA")];
+  [ChromeEarlGrey loadURL:[self simulatedAimURLForQuery:"pageA"]];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // 2. Open a new tab and navigate to a fake aim page B.
   [ChromeEarlGrey openNewTab];
-  [ChromeEarlGrey
-      loadURL:self.testServer->GetURL("localhost", "/search?udm=50&q=pageB")];
+  [ChromeEarlGrey loadURL:[self simulatedAimURLForQuery:"pageB"]];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // 3. Open cobrowse by tapping on a link in fake aim page B.
@@ -706,8 +713,7 @@ id<GREYMatcher> CloseButton() {
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:CloseButton()];
 
   // 5. Query a new thing in this fake AIM webpage A.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(
-                              "localhost", "/search?udm=50&q=pageA_updated")];
+  [ChromeEarlGrey loadURL:[self simulatedAimURLForQuery:"pageA_updated"]];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // 6. Go back to a tab that is not an AIM page.
@@ -808,8 +814,7 @@ id<GREYMatcher> CloseButton() {
   }
 
   // 1. Setup a specific context by navigating to a simulated AIM URL.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(
-                              "localhost", "/search?udm=50&q=persisted_query")];
+  [ChromeEarlGrey loadURL:[self simulatedAimURLForQuery:"persisted_query"]];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // 2. Open cobrowse by tapping on a link in the fake aim page.
@@ -864,13 +869,20 @@ id<GREYMatcher> CloseButton() {
         @"Skipped when kComposeboxServerSideState is enabled.");
   }
 
-  // 1. Start a cobrowse session on a normal URL.
-  OpenCoBrowse(_defaultURL);
+  // 1. Setup a specific context by navigating to a simulated AIM URL.
+  [ChromeEarlGrey loadURL:[self simulatedAimURLForQuery:"persisted_query"]];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // 2. Open cobrowse by tapping on a link in the fake aim page.
+  // This opens a new non-AIM tab (pony.html), which will display the sheet.
+  [ChromeEarlGrey tapWebStateElementWithID:@"my_link"];
+  [ChromeEarlGrey waitForMainTabCount:2];
+
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
 
   MakeHomeSurfaceOpenImmediately();
 
-  // 2. Cold start the app. This simulates returning to the app after it was
+  // 3. Cold start the app. This simulates returning to the app after it was
   // force-closed, which natively triggers the Start Surface NTP to open,
   // preserving the cobrowse session on the background tab.
   [ChromeEarlGrey saveSessionImmediately];

@@ -26,6 +26,7 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
+#import "net/base/url_util.h"
 
 CobrowseBrowserAgent::CobrowseBrowserAgent(Browser* browser)
     : BrowserUserData<CobrowseBrowserAgent>(browser) {
@@ -43,14 +44,30 @@ CobrowseBrowserAgent::CobrowseBrowserAgent(Browser* browser)
   }
 
   SceneState* scene_state = browser_->GetSceneState();
-  if (scene_state && !scene_state.sceneSessionID.empty()) {
-    const auto& map = browser_->GetProfile()->GetPrefs()->GetDict(
-        prefs::kCobrowseSessionActiveMap);
-    is_session_active_ = map.FindString(scene_state.sceneSessionID) != nullptr;
-    if (is_session_active_ && !IsAimCobrowseEligible(browser_->GetProfile())) {
-      SetSessionActive(false);
-    }
+  if (!scene_state || scene_state.sceneSessionID.empty()) {
+    return;
   }
+
+  const auto& map = browser_->GetProfile()->GetPrefs()->GetDict(
+      prefs::kCobrowseSessionActiveMap);
+  const std::string* server_id = map.FindString(scene_state.sceneSessionID);
+
+  if (!server_id || server_id->empty()) {
+    is_session_active_ = false;
+    return;
+  }
+
+  is_session_active_ = true;
+
+  if (!IsAimCobrowseEligible(browser_->GetProfile())) {
+    SetSessionActive(false);
+    return;
+  }
+
+  CobrowseContext* default_context = [CobrowseContext defaultContext];
+  GURL url = net::AppendOrReplaceQueryParameter(default_context.url, "mtid",
+                                                *server_id);
+  context_ = [[CobrowseContext alloc] initWithURL:url];
 }
 
 CobrowseBrowserAgent::~CobrowseBrowserAgent() {
@@ -108,20 +125,29 @@ void CobrowseBrowserAgent::SetCobrowseContext(CobrowseContext* context) {
     return;
   }
 
-  context_ = context;
-  if (is_session_active_) {
-    SceneState* scene_state = browser_->GetSceneState();
-    if (scene_state && !scene_state.sceneSessionID.empty()) {
-      ScopedDictPrefUpdate update(browser_->GetProfile()->GetPrefs(),
-                                  prefs::kCobrowseSessionActiveMap);
-      std::string server_id = "";
-      if (context_) {
-        server_id = base::SysNSStringToUTF8(context_.serverID);
-      }
-      update->Set(scene_state.sceneSessionID, server_id);
-      browser_->GetProfile()->GetPrefs()->CommitPendingWrite();
-    }
+  if (context_ == context || [context_ isEqual:context]) {
+    return;
   }
+
+  context_ = context;
+
+  if (!is_session_active_) {
+    return;
+  }
+
+  SceneState* scene_state = browser_->GetSceneState();
+  if (!scene_state || scene_state.sceneSessionID.empty()) {
+    return;
+  }
+
+  ScopedDictPrefUpdate update(browser_->GetProfile()->GetPrefs(),
+                              prefs::kCobrowseSessionActiveMap);
+  std::string server_id = "";
+  if (context_ && context_.serverID) {
+    server_id = base::SysNSStringToUTF8(context_.serverID);
+  }
+  update->Set(scene_state.sceneSessionID, server_id);
+  browser_->GetProfile()->GetPrefs()->CommitPendingWrite();
 }
 
 void CobrowseBrowserAgent::SetUIStateProvider(UIStateProvider* provider) {
@@ -201,22 +227,30 @@ bool CobrowseBrowserAgent::IsSessionActive() {
 }
 
 void CobrowseBrowserAgent::SetSessionActive(bool active) {
-  is_session_active_ = active;
-  SceneState* scene_state = browser_->GetSceneState();
-  if (scene_state && !scene_state.sceneSessionID.empty()) {
-    ScopedDictPrefUpdate update(browser_->GetProfile()->GetPrefs(),
-                                prefs::kCobrowseSessionActiveMap);
-    if (active) {
-      std::string server_id = "";
-      if (context_) {
-        server_id = base::SysNSStringToUTF8(context_.serverID);
-      }
-      update->Set(scene_state.sceneSessionID, server_id);
-    } else {
-      update->Remove(scene_state.sceneSessionID);
-    }
-    browser_->GetProfile()->GetPrefs()->CommitPendingWrite();
+  if (is_session_active_ == active) {
+    return;
   }
+  is_session_active_ = active;
+
+  SceneState* scene_state = browser_->GetSceneState();
+  if (!scene_state || scene_state.sceneSessionID.empty()) {
+    return;
+  }
+
+  ScopedDictPrefUpdate update(browser_->GetProfile()->GetPrefs(),
+                              prefs::kCobrowseSessionActiveMap);
+  if (!active) {
+    update->Remove(scene_state.sceneSessionID);
+    browser_->GetProfile()->GetPrefs()->CommitPendingWrite();
+    return;
+  }
+
+  std::string server_id = "";
+  if (context_ && context_.serverID) {
+    server_id = base::SysNSStringToUTF8(context_.serverID);
+  }
+  update->Set(scene_state.sceneSessionID, server_id);
+  browser_->GetProfile()->GetPrefs()->CommitPendingWrite();
 }
 
 void CobrowseBrowserAgent::TerminateSession() {
