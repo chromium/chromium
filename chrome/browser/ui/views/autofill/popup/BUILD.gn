@@ -118,3 +118,21 @@ source_set("lazy_loading_image_view") {
     "//ui/views",
   ]
 }
+
+source_set("password_favicon_loader") {
+  public = [ "password_favicon_loader.h" ]
+  sources = [ "password_favicon_loader.cc" ]
+  public_deps = [
+    "//base",
+    "//components/autofill/core/browser",
+  ]
+  deps = [
+    "//chrome/browser/favicon",
+    "//components/favicon/core",
+    "//components/favicon_base",
+    "//components/image_fetcher/core",
+    "//net/traffic_annotation",
+    "//ui/gfx",
+    "//url",
+  ]
+}

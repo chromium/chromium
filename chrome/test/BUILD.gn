@@ -2362,6 +2362,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/user_education:browser_tests",
       "//chrome/browser/ui/views/web_apps:launch_dialogs",
       "//chrome/browser/ui/views/web_apps/isolated_web_apps:installer_base",
+      "//chrome/browser/ui/views/web_apps/isolated_web_apps:user_installability_checker",
       "//chrome/browser/ui/views/webauthn:browser_tests",
       "//chrome/browser/ui/views/webid:browser_tests",
       "//chrome/browser/ui/views/webid:test_support",
@@ -3763,9 +3764,10 @@ if (!is_android) {
         "../browser/ui/web_applications/pwa_install_page_action_browsertest.cc",
       ]
 
-      # TODO(crbug.com/353332589): Remove this dependency when the
-      # views/autofill/popup/ browser tests get modularized.
-      deps += [ "//chrome/browser/ui/views/autofill/popup" ]
+      deps += [
+        "//chrome/browser/ui/views/autofill/popup",
+        "//chrome/browser/ui/views/autofill/popup:password_favicon_loader",
+      ]
       if (is_win) {
         deps +=
             [ "//chrome/browser/ui/views:critical_notification_bubble_view" ]
@@ -7742,6 +7744,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views/translate:unit_tests",
       "//chrome/browser/ui/views/web_apps:progress_delay",
       "//chrome/browser/ui/views/web_apps/isolated_web_apps:installer_base",
+      "//chrome/browser/ui/views/web_apps/isolated_web_apps:user_installability_checker",
       "//chrome/browser/ui/views/web_dialogs:unit_tests",
       "//components/app_constants",
       "//components/commerce/core:pref_names",
@@ -7845,6 +7848,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/ui/views/autofill/popup",
       "//chrome/browser/ui/views/autofill/popup:lazy_loading_image_view",
+      "//chrome/browser/ui/views/autofill/popup:password_favicon_loader",
       "//chrome/browser/ui/views/autofill/popup:popup_centered_text_view",
       "//chrome/browser/ui/views/autofill/popup:popup_separator_view",
       "//chrome/browser/ui/views/autofill/popup:popup_title_view",

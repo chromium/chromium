@@ -40,6 +40,17 @@ source_set("installer_base") {
   ]
 }
 
+source_set("user_installability_checker") {
+  public = [ "isolated_web_app_user_installability_checker.h" ]
+  sources = [ "isolated_web_app_user_installability_checker.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/web_applications",
+    "//components/webapps/isolated_web_apps",
+  ]
+  deps = [ "//chrome/browser/profiles:profile" ]
+}
+
 if (is_chromeos) {
   source_set("multi_capture_notification_details_view") {
     public = [ "multi_capture_notification_details_view.h" ]
