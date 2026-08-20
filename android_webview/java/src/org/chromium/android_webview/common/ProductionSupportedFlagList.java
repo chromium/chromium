@@ -1237,7 +1237,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("ReducePPMs"),
         Flag.baseFeature("GCOnArrayBufferAllocationFailure"),
         Flag.baseFeature("RemoveCancelledScriptedIdleTasks"),
-        Flag.baseFeature("SlimDirectReceiverIpc"),
         Flag.baseFeature("MemoryCacheChangeStrongReferencePruneDelay"),
         Flag.baseFeature("MemoryCacheStrongReference"),
         Flag.baseFeature("ReleaseResourceStrongReferencesOnMemoryPressure"),

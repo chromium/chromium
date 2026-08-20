@@ -238,10 +238,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(double, kCubicBezierY2);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                                           kMaxAnimationDuration);
 
-// When enabled, slim will receive CompositorFrameSink messages directly without
-// the intermediate IO-thread hop.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSlimDirectReceiverIpc);
-
 // When enabled, the overscroll effect will display on non-root scrollers.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kOverscrollEffectOnNonRootScrollers);
 
