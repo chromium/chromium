@@ -19,6 +19,7 @@
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -324,6 +325,28 @@ void DesktopWindowTreeHostLinux::InitModalType(
       // none. The comment in desktop_native_widget_aura.cc suggests that this
       // is rare.
       NOTIMPLEMENTED();
+  }
+}
+
+void DesktopWindowTreeHostLinux::PrepareForMoveLoop(
+    Widget::MoveLoopSource source) {
+  if (auto* wayland_extension =
+          ui::GetWaylandToplevelExtension(*platform_window())) {
+    ui::mojom::DragEventSource event_source =
+        (source == Widget::MoveLoopSource::kMouse)
+            ? ui::mojom::DragEventSource::kMouse
+            : ui::mojom::DragEventSource::kTouch;
+    wayland_extension->StartWindowDraggingSessionIfNeeded(
+        event_source, /*allow_system_drag=*/true);
+  }
+}
+
+void DesktopWindowTreeHostLinux::SetBypassWindowManager(bool bypass) {
+  if (auto* x11_extension = GetX11Extension()) {
+    if (x11_extension->IsWmTiling() &&
+        x11_extension->CanResetOverrideRedirect()) {
+      x11_extension->SetOverrideRedirect(bypass);
+    }
   }
 }
 

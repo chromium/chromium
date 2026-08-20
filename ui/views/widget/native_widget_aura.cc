@@ -1016,6 +1016,10 @@ gfx::Rect NativeWidgetAura::GetWorkAreaBoundsInScreen() const {
   return display::Screen::Get()->GetDisplayNearestWindow(window_).work_area();
 }
 
+void NativeWidgetAura::PrepareForMoveLoop(Widget::MoveLoopSource source) {}
+
+void NativeWidgetAura::SetBypassWindowManager(bool bypass) {}
+
 Widget::MoveLoopResult NativeWidgetAura::RunMoveLoop(
     const gfx::Vector2d& drag_offset,
     Widget::MoveLoopSource source,

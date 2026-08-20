@@ -164,6 +164,8 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   virtual void ClearNativeFocus() = 0;
 
   virtual bool IsMoveLoopSupported() const;
+  virtual void PrepareForMoveLoop(Widget::MoveLoopSource source) {}
+  virtual void SetBypassWindowManager(bool bypass) {}
   virtual Widget::MoveLoopResult RunMoveLoop(
       const gfx::Vector2d& drag_offset,
       Widget::MoveLoopSource source,

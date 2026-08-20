@@ -75,6 +75,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   void Init(const Widget::InitParams& params) override;
   void OnNativeWidgetCreated(const Widget::InitParams& params) override;
   void InitModalType(ui::mojom::ModalType modal_type) override;
+  void PrepareForMoveLoop(Widget::MoveLoopSource source) override;
+  void SetBypassWindowManager(bool bypass) override;
   Widget::MoveLoopResult RunMoveLoop(
       const gfx::Vector2d& drag_offset,
       Widget::MoveLoopSource source,

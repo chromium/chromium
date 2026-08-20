@@ -1256,6 +1256,19 @@ bool DesktopNativeWidgetAura::IsMoveLoopSupported() const {
              : true;
 }
 
+void DesktopNativeWidgetAura::PrepareForMoveLoop(
+    Widget::MoveLoopSource source) {
+  if (desktop_window_tree_host_) {
+    desktop_window_tree_host_->PrepareForMoveLoop(source);
+  }
+}
+
+void DesktopNativeWidgetAura::SetBypassWindowManager(bool bypass) {
+  if (desktop_window_tree_host_) {
+    desktop_window_tree_host_->SetBypassWindowManager(bypass);
+  }
+}
+
 Widget::MoveLoopResult DesktopNativeWidgetAura::RunMoveLoop(
     const gfx::Vector2d& drag_offset,
     Widget::MoveLoopSource source,

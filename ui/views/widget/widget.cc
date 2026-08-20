@@ -951,6 +951,18 @@ bool Widget::IsMoveLoopSupported() const {
   return native_widget_ ? native_widget_->IsMoveLoopSupported() : false;
 }
 
+void Widget::PrepareForMoveLoop(MoveLoopSource source) {
+  if (native_widget_) {
+    native_widget_->PrepareForMoveLoop(source);
+  }
+}
+
+void Widget::SetBypassWindowManager(bool bypass) {
+  if (native_widget_) {
+    native_widget_->SetBypassWindowManager(bypass);
+  }
+}
+
 bool Widget::IsMouseButtonDown() const {
   return native_widget_ ? native_widget_->IsMouseButtonDown() : false;
 }

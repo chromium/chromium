@@ -838,6 +838,16 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Whether calling RunMoveLoop() is supported for the widget.
   bool IsMoveLoopSupported() const;
 
+  // Prepares the widget for an upcoming move loop. On Wayland, this initiates
+  // a drag-and-drop session for window dragging. On other platforms it is a
+  // no-op.
+  void PrepareForMoveLoop(MoveLoopSource source);
+
+  // Sets whether the window should bypass the window manager (e.g. override
+  // redirect on X11). This is used to prevent tiling during dragging.
+  // The bypass state will be automatically restored when the move loop exits.
+  void SetBypassWindowManager(bool bypass);
+
   // Returns true if a mouse button is currently down.
   bool IsMouseButtonDown() const;
 
