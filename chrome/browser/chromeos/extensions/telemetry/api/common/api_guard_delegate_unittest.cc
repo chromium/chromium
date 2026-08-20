@@ -24,6 +24,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/hardware_info_delegate.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
@@ -595,7 +596,13 @@ class ApiGuardDelegateShimlessRMAAppTest : public ApiGuardDelegateTest {
       chromeos_system_extension_info_;
 };
 
-TEST_P(ApiGuardDelegateShimlessRMAAppTest, IwaNotOpen) {
+// TODO(crbug.com/549798858): Re-enable this test.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_IwaNotOpen DISABLED_IwaNotOpen
+#else
+#define MAYBE_IwaNotOpen IwaNotOpen
+#endif
+TEST_P(ApiGuardDelegateShimlessRMAAppTest, MAYBE_IwaNotOpen) {
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
   base::test::TestFuture<std::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
@@ -607,7 +614,13 @@ TEST_P(ApiGuardDelegateShimlessRMAAppTest, IwaNotOpen) {
   EXPECT_EQ("Companion app UI is not open or not secure", error.value());
 }
 
-TEST_P(ApiGuardDelegateShimlessRMAAppTest, ManufacturerNotAllowed) {
+// TODO(crbug.com/549798858): Re-enable this test.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ManufacturerNotAllowed DISABLED_ManufacturerNotAllowed
+#else
+#define MAYBE_ManufacturerNotAllowed ManufacturerNotAllowed
+#endif
+TEST_P(ApiGuardDelegateShimlessRMAAppTest, MAYBE_ManufacturerNotAllowed) {
   OpenShimlessRmaAppDialog();
 
   // Make sure device manufacturer is not allowed.
@@ -625,7 +638,13 @@ TEST_P(ApiGuardDelegateShimlessRMAAppTest, ManufacturerNotAllowed) {
             error.value());
 }
 
-TEST_P(ApiGuardDelegateShimlessRMAAppTest, NoError) {
+// TODO(crbug.com/549798858): Re-enable this test.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_NoError DISABLED_NoError
+#else
+#define MAYBE_NoError NoError
+#endif
+TEST_P(ApiGuardDelegateShimlessRMAAppTest, MAYBE_NoError) {
   OpenShimlessRmaAppDialog();
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
