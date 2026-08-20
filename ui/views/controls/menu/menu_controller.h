@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "ui/base/class_property.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/mojom/menu_source_type.mojom-shared.h"
@@ -130,8 +131,23 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   using AnnotationCallback =
       base::RepeatingCallback<bool(const ui::LocatedEvent& event)>;
 
-  // If a menu is currently active, this returns the controller for it.
+  // Returns any active MenuController (showing_), even if the menu is on
+  // another widget.
+  //
+  // MenuController::GetForOwnerWidget() and MenuItemView::GetMenuController()
+  // should be preferred over GetActiveInstance(), as the MenuController may be
+  // recreated during menu handling.
+  //
+  // TODO(crbug.com/516996291): Rename to GetActive().
   static MenuController* GetActiveInstance();
+
+  // Returns the MenuController currently actively showing on `widget`, or
+  // nullptr if no menu is open on this widget or if it has already
+  // closed/canceled.
+  static MenuController* GetForOwnerWidget(const Widget* widget);
+
+  // Cancels the active menu (including nested menus), if any.
+  static void CancelAllActive(bool disable_animation = false);
 
   MenuController(const MenuController&) = delete;
   MenuController& operator=(const MenuController&) = delete;
@@ -180,7 +196,7 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
 
   // Cancels the current Run. See ExitType for a description of what happens
   // with the various parameters.
-  void Cancel(ExitType type);
+  void Cancel(ExitType type, bool disable_animation = false);
 
   // When is_nested_run() this will add a delegate to the stack. The most recent
   // delegate will be notified. It will be removed upon the exiting of the
@@ -617,6 +633,9 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   // Sets exit type. Calling this can terminate the active nested message-loop.
   void SetExitType(ExitType type);
 
+  // Sets showing_ state and updates owner_'s kMenuControllerKey property.
+  void SetShowing(bool showing);
+
   // Performs the teardown of menus. This will notify the delegate. If
   // |exit_type_| is ExitType::kAll all nested runs will be exited.
   void ExitMenu();
@@ -668,6 +687,10 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   // Updates the direction that a child menu opened in for a menu at `depth`.
   void SetChildMenuOpenDirectionAtDepth(size_t depth,
                                         MenuOpenDirection direction);
+
+  // Clears the association with |owner_|, removing observer and resetting
+  // kMenuControllerKey.
+  void ClearOwner();
 
   // The active instance.
   static MenuController* active_instance_;

@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
-#include "ash/app_menu/menu_util.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/login_status.h"
 #include "ash/public/cpp/metrics_util.h"
@@ -55,6 +54,7 @@
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/window_util.h"
@@ -901,7 +901,7 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
   // Hide the context menu on entering tablet mode to prevent users from
   // accessing forbidden options. Hide the context menu on exiting tablet mode
   // to match behaviors.
-  HideActiveContextMenu();
+  views::MenuController::CancelAllActive(/*disable_animation=*/true);
 
   // Suspend occlusion tracker when entering or exiting tablet mode.
   SuspendOcclusionTracker();

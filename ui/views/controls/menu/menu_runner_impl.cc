@@ -128,32 +128,31 @@ void MenuRunnerImpl::RunMenuAt(
     return;
   }
 
-  MenuController* controller = MenuController::GetActiveInstance();
+  MenuController* controller = nullptr;
+  if (run_types & MenuRunner::IS_NESTED) {
+    controller = parent ? MenuController::GetForOwnerWidget(parent) : nullptr;
+  }
+
   if (controller) {
     controller->SetMenuRoundedCorners(corners);
-    if ((run_types & MenuRunner::IS_NESTED) != 0) {
-      if (controller->for_drop()) {
-        controller->Cancel(MenuController::ExitType::kAll);
-        controller = nullptr;
-      } else {
-        // Only nest the delegate when not cancelling drag-and-drop. When
-        // cancelling this will become the root delegate of the new
-        // MenuController
-        controller->AddNestedDelegate(this);
-      }
-    } else {
-      // There's some other menu open and we're not nested. Cancel the menu.
+    if (controller->for_drop()) {
       controller->Cancel(MenuController::ExitType::kAll);
-      if ((run_types & MenuRunner::FOR_DROP) == 0) {
-        // We can't open another menu, otherwise the message loop would become
-        // twice nested. This isn't necessarily a problem, but generally isn't
-        // expected.
-        return;
-      }
-      // Drop menus don't block the message loop, so it's ok to create a new
-      // MenuController.
       controller = nullptr;
+    } else {
+      controller->AddNestedDelegate(this);
     }
+  } else if (MenuController::GetActiveInstance()) {
+    // There's some other menu open and we're not nested. Cancel the menu.
+    MenuController::CancelAllActive();
+    if ((run_types & MenuRunner::FOR_DROP) == 0) {
+      // We can't open another menu, otherwise the message loop would become
+      // twice nested. This isn't necessarily a problem, but generally isn't
+      // expected.
+      return;
+    }
+    // Drop menus don't block the message loop, so it's ok to create a new
+    // MenuController.
+    controller = nullptr;
   }
 
   running_ = true;

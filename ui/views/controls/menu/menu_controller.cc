@@ -21,6 +21,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "ui/base/class_property.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -75,6 +76,7 @@
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
+#include "ui/wm/core/scoped_animation_disabler.h"
 #endif
 
 #if BUILDFLAG(IS_OZONE)
@@ -88,10 +90,28 @@
 using ui::OSExchangeData;
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(std::vector<views::ViewTracker>*)
+DEFINE_UI_CLASS_PROPERTY_TYPE(views::MenuController*)
 
 namespace views {
 
 namespace {
+
+DEFINE_UI_CLASS_PROPERTY_KEY(views::MenuController*,
+                             kMenuControllerKey,
+                             nullptr)
+
+void CollectWidgets(views::MenuItemView* item,
+                    std::vector<views::Widget*>* widgets) {
+  if (item->HasSubmenu()) {
+    views::SubmenuView* submenu = item->GetSubmenu();
+    if (submenu->GetWidget()) {
+      widgets->push_back(submenu->GetWidget());
+    }
+    for (views::MenuItemView* child : submenu->GetMenuItems()) {
+      CollectWidgets(child, widgets);
+    }
+  }
+}
 
 enum class MenuPartType { kNone, kMenuItem, kScrollUp, kScrollDown };
 
@@ -632,6 +652,18 @@ MenuController* MenuController::GetActiveInstance() {
   return active_instance_;
 }
 
+// static
+MenuController* MenuController::GetForOwnerWidget(const Widget* widget) {
+  return widget ? widget->GetProperty(kMenuControllerKey) : nullptr;
+}
+
+// static
+void MenuController::CancelAllActive(bool disable_animation) {
+  if (active_instance_) {
+    active_instance_->Cancel(ExitType::kAll, disable_animation);
+  }
+}
+
 void MenuController::OnWidgetShowStateChanged(Widget* widget) {
   CHECK_EQ(owner_, widget);
 
@@ -710,15 +742,15 @@ void MenuController::Run(Widget* parent,
     // The context menu should be owned by the same parent.
     DCHECK_EQ(owner_, parent);
   } else {
-    showing_ = true;
-
     if (owner_) {
-      owner_->RemoveObserver(this);
+      CHECK_EQ(owner_, parent);
+    } else {
+      owner_ = parent;
+      if (owner_) {
+        owner_->AddObserver(this);
+      }
     }
-    owner_ = parent;
-    if (owner_) {
-      owner_->AddObserver(this);
-    }
+    SetShowing(true);
 
     native_view_for_gestures_ = native_view_for_gestures;
 
@@ -728,8 +760,9 @@ void MenuController::Run(Widget* parent,
   }
 
 #if BUILDFLAG(IS_MAC)
-  menu_cocoa_watcher_ = std::make_unique<MenuCocoaWatcherMac>(base::BindOnce(
-      &MenuController::Cancel, this->AsWeakPtr(), ExitType::kAll));
+  menu_cocoa_watcher_ = std::make_unique<MenuCocoaWatcherMac>(
+      base::BindOnce(&MenuController::Cancel, this->AsWeakPtr(), ExitType::kAll,
+                     /*disable_animation=*/false));
 #endif
 
   // Reset current state.
@@ -782,7 +815,7 @@ void MenuController::Run(Widget* parent,
   ViewsDelegate::GetInstance()->AddRef();
 }
 
-void MenuController::Cancel(ExitType type) {
+void MenuController::Cancel(ExitType type, bool disable_animation) {
 #if BUILDFLAG(IS_MAC)
   menu_closure_animation_.reset();
 #endif
@@ -801,6 +834,28 @@ void MenuController::Cancel(ExitType type) {
     return;
   }
 
+#if defined(USE_AURA)
+  std::vector<std::unique_ptr<wm::ScopedAnimationDisabler>> animation_disablers;
+  if (disable_animation) {
+    std::vector<Widget*> widgets;
+    MenuItemView* root_item =
+        state_.item
+            ? state_.item->GetRootMenuItem()
+            : (pending_state_.item ? pending_state_.item->GetRootMenuItem()
+                                   : nullptr);
+    if (root_item) {
+      CollectWidgets(root_item, &widgets);
+    }
+    for (Widget* widget : widgets) {
+      if (widget->GetNativeWindow()) {
+        animation_disablers.push_back(
+            std::make_unique<wm::ScopedAnimationDisabler>(
+                widget->GetNativeWindow()));
+      }
+    }
+  }
+#endif
+
   MenuItemView* selected = state_.item;
   SetExitType(type);
 
@@ -813,7 +868,7 @@ void MenuController::Cancel(ExitType type) {
     // If we didn't block the caller we need to notify the menu, which
     // triggers deleting us.
     DCHECK(selected);
-    showing_ = false;
+    SetShowing(false);
     delegate()->OnMenuClosed(internal::MenuControllerDelegate::NOTIFY_DELEGATE,
                              selected->GetRootMenuItem(), accept_event_flags_);
     // WARNING: the call to MenuClosed deletes us.
@@ -827,7 +882,7 @@ void MenuController::Cancel(ExitType type) {
   // trigger nested calls to Cancel. We want to reject these to prevent
   // attempting a nested tear down of this and the delegate.
   if (type == ExitType::kAll) {
-    showing_ = false;
+    SetShowing(false);
   }
 
   // On Windows and Linux the destruction of this menu's Widget leads to the
@@ -1432,7 +1487,7 @@ views::View::DropCallback MenuController::GetDropCallback(
     CloseAllNestedMenus();
 
     // Set state such that we exit.
-    showing_ = false;
+    SetShowing(false);
     SetExitType(ExitType::kAll);
 
     delegate()->OnMenuClosed(
@@ -1497,7 +1552,7 @@ void MenuController::OnDragDropCompleted(bool should_close) {
     // During a drag operation there are several ways in which this can be
     // canceled and deleted. Verify that this is still active before closing
     // the widgets.
-    if (GetActiveInstance() == this) {
+    if (active_instance_ == this) {
       base::WeakPtr<MenuController> this_ref = AsWeakPtr();
       CloseAllNestedMenus();
       Cancel(ExitType::kAll);
@@ -1622,10 +1677,17 @@ void MenuController::UpdateSubmenuSelection(SubmenuView* submenu) {
   }
 }
 
+void MenuController::ClearOwner() {
+  SetShowing(false);
+  if (owner_) {
+    owner_->RemoveObserver(this);
+    owner_ = nullptr;
+  }
+}
+
 void MenuController::OnWidgetDestroying(Widget* widget) {
   DCHECK_EQ(owner_, widget);
-  owner_->RemoveObserver(this);
-  owner_ = nullptr;
+  ClearOwner();
   native_view_for_gestures_ = gfx::NativeView();
 
 #if BUILDFLAG(IS_MAC)
@@ -1641,6 +1703,24 @@ bool MenuController::IsCancelAllTimerRunningForTest() {
   return cancel_all_timer_.IsRunning();
 }
 
+void MenuController::SetShowing(bool showing) {
+  if (showing_ == showing) {
+    return;
+  }
+  showing_ = showing;
+  if (showing_) {
+    active_instance_ = this;
+  } else if (active_instance_ == this) {
+    active_instance_ = nullptr;
+  }
+  if (owner_) {
+    if (showing_) {
+      owner_->SetProperty(kMenuControllerKey, this);
+    } else if (owner_->GetProperty(kMenuControllerKey) == this) {
+      owner_->SetProperty(kMenuControllerKey, nullptr);
+    }
+  }
+}
 // static
 void MenuController::TurnOffMenuSelectionHoldForTest() {
   menu_selection_hold_time = base::TimeDelta();
@@ -2121,9 +2201,7 @@ MenuController::MenuController(bool for_drop,
 
 MenuController::~MenuController() {
   DCHECK(!showing_);
-  if (owner_) {
-    owner_->RemoveObserver(this);
-  }
+  ClearOwner();
   if (active_instance_ == this) {
     active_instance_ = nullptr;
   }
@@ -2706,7 +2784,7 @@ void MenuController::StartCancelAllTimer() {
   cancel_all_timer_.Start(
       FROM_HERE, base::Milliseconds(kCloseOnExitTime),
       base::BindOnce(&MenuController::Cancel, base::Unretained(this),
-                     ExitType::kAll));
+                     ExitType::kAll, /*disable_animation=*/false));
 }
 
 void MenuController::StopCancelAllTimer() {
@@ -3507,8 +3585,8 @@ void MenuController::RepostEventAndCancel(SubmenuView* source,
   // the shallowest menu only.
   menu_closure_animation_ = std::make_unique<MenuClosureAnimationMac>(
       nullptr, state_.item->GetSubmenu(),
-      base::BindOnce(&MenuController::Cancel, base::Unretained(this),
-                     exit_type));
+      base::BindOnce(&MenuController::Cancel, base::Unretained(this), exit_type,
+                     /*disable_animation=*/false));
   menu_closure_animation_->Start();
 #else
   Cancel(exit_type);
@@ -3703,7 +3781,7 @@ raw_ptr<MenuItemView> MenuController::ExitTopMostMenu() {
     menu_pre_target_handler_.reset();
 #endif
 
-    showing_ = false;
+    SetShowing(false);
     did_capture_ = false;
   }
 

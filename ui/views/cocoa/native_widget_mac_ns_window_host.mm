@@ -1042,9 +1042,12 @@ void NativeWidgetMacNSWindowHost::DispatchKeyEvent(ui::KeyEvent* event) {
 
 bool NativeWidgetMacNSWindowHost::DispatchKeyEventToMenuController(
     ui::KeyEvent* event) {
-  MenuController* menu_controller = MenuController::GetActiveInstance();
-  if (menu_controller && root_view_ &&
-      menu_controller->owner() == root_view_->GetWidget()) {
+  if (!root_view_) {
+    return false;
+  }
+  MenuController* menu_controller =
+      MenuController::GetForOwnerWidget(root_view_->GetWidget());
+  if (menu_controller) {
     return menu_controller->OnWillDispatchKeyEvent(event) ==
            ui::POST_DISPATCH_NONE;
   }
@@ -1232,9 +1235,13 @@ bool NativeWidgetMacNSWindowHost::DispatchMonitorEvent(
 
 bool NativeWidgetMacNSWindowHost::GetHasMenuController(
     bool* has_menu_controller) {
-  MenuController* menu_controller = MenuController::GetActiveInstance();
-  *has_menu_controller = menu_controller && root_view_ &&
-                         menu_controller->owner() == root_view_->GetWidget() &&
+  if (!root_view_) {
+    *has_menu_controller = false;
+    return true;
+  }
+  MenuController* menu_controller =
+      MenuController::GetForOwnerWidget(root_view_->GetWidget());
+  *has_menu_controller = menu_controller &&
                          // The editable combobox menu does not swallow keys.
                          !menu_controller->IsEditableCombobox();
   return true;

@@ -8,8 +8,6 @@ component("app_menu") {
   sources = [
     "app_menu_model_adapter.cc",
     "app_menu_model_adapter.h",
-    "menu_util.cc",
-    "menu_util.h",
     "notification_item_view.cc",
     "notification_item_view.h",
     "notification_menu_controller.cc",

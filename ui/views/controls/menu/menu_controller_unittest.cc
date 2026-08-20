@@ -4352,4 +4352,16 @@ TEST_F(MenuControllerTest, DropTargetClearedWhenEmptyMenuItemDestroyed) {
   EXPECT_EQ(GetSubmenuDropItem(submenu), nullptr);
 }
 
+TEST_F(MenuControllerTest, GetForOwnerWidgetAndCancelAllActive) {
+  EXPECT_EQ(nullptr, MenuController::GetForOwnerWidget(owner()));
+  EXPECT_EQ(nullptr, MenuController::GetActiveInstance());
+
+  CreateMenu();
+  EXPECT_EQ(menu_controller(), MenuController::GetForOwnerWidget(owner()));
+  EXPECT_EQ(menu_controller(), MenuController::GetActiveInstance());
+
+  MenuController::CancelAllActive();
+  EXPECT_EQ(MenuController::ExitType::kAll, menu_controller()->exit_type());
+}
+
 }  // namespace views
