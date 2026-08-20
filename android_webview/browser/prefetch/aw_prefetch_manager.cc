@@ -69,9 +69,6 @@ void NotifyStartFailedDuplicate(
 
 }  // namespace
 
-BASE_FEATURE(kWebViewPrefetchDisableBlockUntilHeadTimeout,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Listens to the status of a prefetch request and propagates it to Java
 // callbacks.
 //
@@ -439,8 +436,7 @@ int AwPrefetchManager::StartRequest(
         additional_headers, std::move(request_status_listener),
         base::Seconds(aw_prefetch_manager_data_.GetTtlInSec()),
         /*should_append_variations_header=*/false,
-        base::FeatureList::IsEnabled(
-            kWebViewPrefetchDisableBlockUntilHeadTimeout),
+        /*should_disable_block_until_head_timeout=*/true,
         should_bypass_http_cache);
   } else {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -458,8 +454,7 @@ int AwPrefetchManager::StartRequest(
         std::move(request_status_listener),
         base::Seconds(aw_prefetch_manager_data_.GetTtlInSec()),
         /*should_append_variations_header=*/false,
-        base::FeatureList::IsEnabled(
-            kWebViewPrefetchDisableBlockUntilHeadTimeout),
+        /*should_disable_block_until_head_timeout=*/true,
         should_bypass_http_cache);
     AwBrowserContext::RecordNetworkContextInitializationBlocking(
         "Prefetch", timer.Elapsed(), was_blocked);
