@@ -15,7 +15,6 @@
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -158,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
 IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
                        BubbleContentForNonBlockedMic) {
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
 
   content::RenderFrameHost* main_rfh =
@@ -345,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelPopupTest, PopupsActionsCount) {
       ContentSettingBubbleModel::CreateContentSettingBubbleModel(
           browser()->GetFeatures().content_setting_bubble_model_delegate(),
           browser()
-              ->tab_strip_model()
+              ->GetTabStripModel()
               ->GetActiveWebContents()
               ->GetPrimaryPage(),
           ContentSettingsType::POPUPS));

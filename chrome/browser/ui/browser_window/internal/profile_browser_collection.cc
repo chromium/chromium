@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/android/android_profile_browser_collection_service.h"
 #include "chrome/browser/ui/android/android_profile_browser_collection_service_factory.h"
 #else
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_manager_service.h"
 #include "chrome/browser/ui/browser_manager_service_factory.h"
 #include "chrome/browser/ui/browser_window.h"

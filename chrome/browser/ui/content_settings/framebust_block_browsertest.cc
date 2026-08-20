@@ -16,9 +16,9 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
@@ -85,7 +85,7 @@ class FramebustBlockBrowserTest
   }
 
   content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   FramebustBlockTabHelper* GetFramebustTabHelper() {
@@ -98,7 +98,7 @@ class FramebustBlockBrowserTest
     clicked_index_ = index;
   }
 
-  Browser* browser() { return current_browser_; }
+  BrowserWindowInterface* browser() { return current_browser_; }
 
   void CreateAndSetBrowser() {
     current_browser_ = CreateBrowser(browser()->GetProfile());
@@ -163,7 +163,8 @@ class FramebustBlockBrowserTest
   std::optional<size_t> clicked_index_;
 
   base::OnceClosure blocked_url_added_closure_;
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> current_browser_;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged>
+      current_browser_;
 };
 
 // Tests that clicking an item in the list of blocked URLs trigger a navigation

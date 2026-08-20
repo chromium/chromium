@@ -606,13 +606,11 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     }
 
     if (tabs::IsVerticalTabsFeatureEnabled()) {
-      Browser* raw_browser = browser->GetBrowserForMigrationOnly();
-
       std::optional<bool> restored_state_collapsed =
-          BrowserInitState::From(raw_browser)
+          BrowserInitState::From(browser)
               ->is_vertical_tabs_initially_collapsed();
       std::optional<int> restored_state_uncollapsed_width =
-          BrowserInitState::From(raw_browser)
+          BrowserInitState::From(browser)
               ->get_vertical_tabs_initial_uncollapsed_width();
 
       if (!restored_state_collapsed.has_value() &&
@@ -709,7 +707,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
   browser_select_file_dialog_controller_ =
       std::make_unique<BrowserSelectFileDialogController>(
-          browser->GetProfile(), browser->tab_strip_model(),
+          browser->GetProfile(), browser->GetTabStripModel(),
           BrowserWindow::FromBrowser(browser), browser);
 
   browser_ui_controller_ =

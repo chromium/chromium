@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper_observer.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -283,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(page1->url(), incognito_folder->children()[0]->url());
   EXPECT_EQ(page2->url(), incognito_folder->children()[1]->url());
 
-  const int browser_tabs = browser()->tab_strip_model()->count();
+  const int browser_tabs = browser()->GetTabStripModel()->count();
   const int incognito_tabs = incognito_browser->tab_strip_model()->count();
 
   bookmarks::OpenAllIfAllowed(incognito_browser, {incognito_folder},
@@ -291,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(
                               bookmarks::OpenAllBookmarksContext::kInGroup);
 
   EXPECT_EQ(incognito_tabs, incognito_browser->tab_strip_model()->count());
-  EXPECT_EQ(browser_tabs + 2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(browser_tabs + 2, browser()->GetTabStripModel()->count());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -308,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(
   BookmarkNode* const incognito_page =
       incognito_model->bookmark_bar_node()->children()[0].get();
 
-  const int browser_tabs = browser()->tab_strip_model()->count();
+  const int browser_tabs = browser()->GetTabStripModel()->count();
   const int incognito_tabs = incognito_browser->tab_strip_model()->count();
 
   bookmarks::OpenAllIfAllowed(incognito_browser, {incognito_page},
@@ -316,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(
                               bookmarks::OpenAllBookmarksContext::kInSplit);
 
   EXPECT_EQ(incognito_tabs, incognito_browser->tab_strip_model()->count());
-  EXPECT_EQ(browser_tabs + 1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(browser_tabs + 1, browser()->GetTabStripModel()->count());
 }
 
 
@@ -469,14 +468,15 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllFiltersJavascriptURLs) {
                          GURL("https://www.example.com"));
   bookmark_model->AddURL(folder, 1, u"Script URL", GURL("javascript:alert()"));
 
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
   bookmarks::OpenAllIfAllowed(browser(), {folder},
                               WindowOpenDisposition::NEW_BACKGROUND_TAB,
                               bookmarks::OpenAllBookmarksContext::kNone);
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  EXPECT_EQ(GURL("https://www.example.com"),
-            browser()->tab_strip_model()->GetWebContentsAt(1)->GetVisibleURL());
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
+  EXPECT_EQ(
+      GURL("https://www.example.com"),
+      browser()->GetTabStripModel()->GetWebContentsAt(1)->GetVisibleURL());
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
@@ -493,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
   bookmarks::AddIfNotBookmarked(bookmark_model, bookmark_url, u"Bookmark");
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   BookmarkTabHelper* tab_helper =
       BookmarkTabHelper::FromWebContents(web_contents);
   TestBookmarkTabHelperObserver bookmark_observer(tab_helper);
@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
   // star should disappear.
   GURL error_url = https_server.GetURL("/");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), error_url));
-  web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(
       chrome_browser_interstitials::IsShowingInterstitial(web_contents));
   EXPECT_FALSE(bookmark_observer.is_starred());
@@ -550,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragSingleBookmark) {
       browser()->GetProfile(),
       {{node},
        kDragNodeIndex,
-       browser()->tab_strip_model()->GetActiveWebContents(),
+       browser()->GetTabStripModel()->GetActiveWebContents(),
        ui::mojom::DragEventSource::kMouse,
        expected_point},
       std::move(cb));
@@ -587,7 +587,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, FaviconChangeDuringBookmarkDrag) {
       browser()->GetProfile(),
       {{node},
        kDragNodeIndex,
-       browser()->tab_strip_model()->GetActiveWebContents(),
+       browser()->GetTabStripModel()->GetActiveWebContents(),
        ui::mojom::DragEventSource::kMouse,
        kExpectedPoint},
       std::move(cb));
@@ -638,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragMultipleBookmarks) {
       {
           {node1, node2},
           kDragNodeIndex,
-          browser()->tab_strip_model()->GetActiveWebContents(),
+          browser()->GetTabStripModel()->GetActiveWebContents(),
           ui::mojom::DragEventSource::kMouse,
           expected_point,
       },
@@ -751,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, SameDocumentNavigation) {
   bookmarks::AddIfNotBookmarked(bookmark_model, bookmark_url, u"Bookmark");
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   BookmarkTabHelper* tab_helper =
       BookmarkTabHelper::FromWebContents(web_contents);
   TestBookmarkTabHelperObserver bookmark_observer(tab_helper);
@@ -773,7 +773,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
   bookmarks::AddIfNotBookmarked(bookmark_model, bookmark_url, u"Bookmark");
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   BookmarkTabHelper* tab_helper =
       BookmarkTabHelper::FromWebContents(web_contents);
   TestBookmarkTabHelperObserver bookmark_observer(tab_helper);
@@ -803,7 +803,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, NonCommitURLNavigation) {
   bookmarks::AddIfNotBookmarked(bookmark_model, bookmark_url, u"Bookmark");
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   BookmarkTabHelper* tab_helper =
       BookmarkTabHelper::FromWebContents(web_contents);
   TestBookmarkTabHelperObserver bookmark_observer(tab_helper);
@@ -913,7 +913,7 @@ class BookmarkPrerenderBrowsertest : public BookmarkBrowsertest {
   }
 
   content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
  private:
