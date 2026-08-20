@@ -10,6 +10,7 @@
 // (window.speechSynthesis) for speech playback and voice management.
 export interface AudioBrowserProxy {
   getSpeechRate(): number;
+  getHighlightGranularity(): number;
   getAutoHighlighting(): number;
   getWordHighlighting(): number;
   getPhraseHighlighting(): number;
@@ -25,6 +26,10 @@ export interface AudioBrowserProxy {
 export class AudioBrowserProxyImpl implements AudioBrowserProxy {
   getSpeechRate(): number {
     return chrome.readingMode.speechRate;
+  }
+
+  getHighlightGranularity(): number {
+    return chrome.readingMode.highlightGranularity;
   }
 
   getAutoHighlighting(): number {

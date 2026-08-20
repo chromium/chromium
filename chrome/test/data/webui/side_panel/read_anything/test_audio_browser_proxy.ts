@@ -8,6 +8,7 @@ import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy
 export class TestAudioBrowserProxy extends TestBrowserProxy implements
     AudioBrowserProxy {
   speechRate: number = 1.0;
+  highlightGranularity: number = 0;
   autoHighlighting: number = 0;
   wordHighlighting: number = 1;
   phraseHighlighting: number = 2;
@@ -20,6 +21,7 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'getSpeechRate',
+      'getHighlightGranularity',
       'getAutoHighlighting',
       'getWordHighlighting',
       'getPhraseHighlighting',
@@ -36,6 +38,11 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
   getSpeechRate(): number {
     this.methodCalled('getSpeechRate');
     return this.speechRate;
+  }
+
+  getHighlightGranularity(): number {
+    this.methodCalled('getHighlightGranularity');
+    return this.highlightGranularity;
   }
 
   getAutoHighlighting(): number {
@@ -80,9 +87,11 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
 
   onSpeechRateChange(rate: number): void {
     this.methodCalled('onSpeechRateChange', rate);
+    this.speechRate = rate;
   }
 
   onHighlightGranularityChanged(granularity: number): void {
     this.methodCalled('onHighlightGranularityChanged', granularity);
+    this.highlightGranularity = granularity;
   }
 }
