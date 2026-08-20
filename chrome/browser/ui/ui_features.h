@@ -51,6 +51,8 @@ BASE_DECLARE_FEATURE(kWebuiRefresh2026);
 BASE_DECLARE_FEATURE(kAppMenuGlowUp);
 // Enables the redesigned Settings 2026 refresh features and search UX.
 BASE_DECLARE_FEATURE(kSettingsRefresh2026);
+// Enables search in the app Chrome menu.
+BASE_DECLARE_FEATURE(kChroMenuSearch);
 
 bool IsTabStripDeclutterEnabled();
 bool IsToolbarGlowUpEnabled();
