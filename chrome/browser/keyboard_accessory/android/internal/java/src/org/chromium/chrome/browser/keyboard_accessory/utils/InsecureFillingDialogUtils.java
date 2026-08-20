@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.keyboard_accessory.R;
 public class InsecureFillingDialogUtils {
     /**
      * Displays an alert dialog to warn user that the filling is insecure. May not be displayed if
-     * {@param context} is not valid.
+     * {@code context} is not valid.
      *
      * @param context The Android Context used to display the dialog.
      */

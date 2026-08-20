@@ -227,7 +227,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      *     </ul>
      *
      * @param sublabel Hint for the suggested text. The text that's going to be filled in the
-     *     unfocused fields of the form. If {@see label} is empty, then this must be empty too.
+     *     unfocused fields of the form. If {@code label} is empty, then this must be empty too.
      * @param voiceOver Voice over text read for the keyboard accessory suggestion.
      * @param iconId The resource ID for the icon associated with the suggestion, or 0 for no icon.
      * @param suggestionType Determines the type of the suggestion.

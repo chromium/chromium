@@ -89,7 +89,7 @@ public interface ManualFillingComponent extends BackPressHandler {
     /** A delegate that can be used to request updates for accessory sheets. */
     interface UpdateAccessorySheetDelegate {
         /**
-         * Requests a timely update to the accessory sheet of the given {@param sheetType}. If any
+         * Requests a timely update to the accessory sheet of the given {@code sheetType}. If any
          * sheet can be constructed, the native side will push it, even if it was pushed before.
          *
          * @param sheetType The {@link AccessoryTabType} of the sheet that should be updated.

@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.offline_items_collection.LaunchLocation;
 import org.chromium.components.offlinepages.DeletePageResult;
+import org.chromium.components.offlinepages.SavePageResult;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -90,14 +91,16 @@ public class OfflinePageBridge {
         /**
          * Delivers result of saving a page.
          *
-         * @param savePageResult Result of the saving. Uses {@see
-         *     org.chromium.components.offlinepages.SavePageResult} enum.
+         * @param savePageResult Result of the saving. Uses {@link SavePageResult} enum.
          * @param url URL of the saved page.
          * @see OfflinePageBridge#savePage(WebContents, ClientId, OfflinePageOrigin,
          *     SavePageCallback)
          */
         @CalledByNative
-        void onSavePageDone(int savePageResult, @JniType("std::string") String url, long offlineId);
+        void onSavePageDone(
+                @SavePageResult int savePageResult,
+                @JniType("std::string") String url,
+                long offlineId);
     }
 
     /** Base observer class listeners to be notified of changes to the offline page model. */

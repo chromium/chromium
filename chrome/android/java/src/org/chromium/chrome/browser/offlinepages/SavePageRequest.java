@@ -9,13 +9,13 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.offlinepages.RequestState;
 
 /** Data class representing an underlying request to save a page later. */
 @JNINamespace("offline_pages::android")
 @NullMarked
 public class SavePageRequest {
-    // Int representation of the org.chromium.components.offlinepages.RequestState enum.
-    private final int mRequestState;
+    private final @RequestState int mRequestState;
     private final long mRequestId;
     private final String mUrl;
     private final ClientId mClientId;
@@ -29,8 +29,7 @@ public class SavePageRequest {
      * <p>NOTE: This does not mirror all fields so it cannot be used to create a full
      * SavePageRequest on its own.
      *
-     * @param state Result of the saving. Uses {@see
-     *     org.chromium.components.offlinepages.RequestState} enum.
+     * @param state Result of the saving. Uses {@link RequestState} enum.
      * @param requestId The unique ID of the request.
      * @param url The URL to download
      * @param clientIdNamespace a String that will be the namespace of the client ID of this
@@ -39,7 +38,7 @@ public class SavePageRequest {
      */
     @CalledByNative
     public static SavePageRequest create(
-            int state,
+            @RequestState int state,
             long requestId,
             @JniType("std::string") String url,
             @JniType("std::string") String clientIdNamespace,
@@ -56,7 +55,7 @@ public class SavePageRequest {
     }
 
     private SavePageRequest(
-            int state,
+            @RequestState int state,
             long requestId,
             String url,
             ClientId clientId,
@@ -70,7 +69,7 @@ public class SavePageRequest {
         mAutoFetchNotificationState = autoFetchNotificationState;
     }
 
-    public int getRequestState() {
+    public @RequestState int getRequestState() {
         return mRequestState;
     }
 
