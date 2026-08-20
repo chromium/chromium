@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
+#include "chrome/browser/ui/views/app_menu/bookmarks_dynamic_menu.h"
 #include "chrome/browser/ui/views/toolbar/recent_tabs_dynamic_menu.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -88,7 +89,9 @@ ActionAppMenuManager::ActionAppMenuManager(
     BrowserWindowInterface* browser_window_interface)
     : browser_window_interface_(browser_window_interface),
       recent_tabs_menu_(
-          std::make_unique<RecentTabsDynamicMenu>(browser_window_interface)) {}
+          std::make_unique<RecentTabsDynamicMenu>(browser_window_interface)),
+      bookmarks_menu_(
+          std::make_unique<BookmarksDynamicMenu>(browser_window_interface)) {}
 
 ActionAppMenuManager::~ActionAppMenuManager() = default;
 
@@ -132,6 +135,23 @@ void ActionAppMenuManager::CreateMenuHierarchy() {
 
   chrome_ptr->AddChild(CreateIndirectActionItem(
       kActionManageExtensions, DisplayType::kRow, your_chrome_background));
+
+  auto bookmarks_submenu = CreateIndirectActionItem(
+      kActionBookmarksSubmenu, DisplayType::kRow, your_chrome_background);
+
+  bookmarks_submenu->AddChild(CreateIndirectActionItem(
+      kActionBookmarkThisTab, DisplayType::kRow, your_chrome_background));
+
+  bookmarks_submenu->AddChild(CreateIndirectActionItem(
+      kActionBookmarkAllTabs, DisplayType::kRow, your_chrome_background));
+
+  bookmarks_submenu->SetPopulateChildrenCallback(
+      base::BindRepeating(&BookmarksDynamicMenu::BuildBookmarksActions,
+                          bookmarks_menu_->GetWeakPtr()));
+
+  bookmarks_submenu->PopulateChildItems();
+
+  chrome_ptr->AddChild(std::move(bookmarks_submenu));
 
   // Tools and Actions Heading
   std::unique_ptr<actions::BaseAction> tools_actions_heading =

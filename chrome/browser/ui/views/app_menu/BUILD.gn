@@ -11,10 +11,12 @@ source_set("app_menu") {
     "action_app_menu.h",
     "action_app_menu_manager.h",
     "app_menu_section_action_item.h",
+    "bookmarks_dynamic_menu.h",
   ]
 
   public_deps = [
     "//base",
+    "//chrome/browser/bookmarks",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/views",
@@ -32,6 +34,7 @@ source_set("impl") {
     "action_app_menu.cc",
     "action_app_menu_manager.cc",
     "app_menu_section_action_item.cc",
+    "bookmarks_dynamic_menu.cc",
   ]
 
   deps = [
@@ -39,8 +42,10 @@ source_set("impl") {
     "//base",
     "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
     "//chrome/browser:command_updater_impl",
     "//chrome/browser:global_features",
+    "//chrome/browser/favicon",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search",
     "//chrome/browser/search_engines",

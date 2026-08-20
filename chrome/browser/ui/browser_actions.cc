@@ -1446,6 +1446,12 @@ void BrowserActions::InitializeChromeMenuActions() {
               },
               bwi))
           .SetActionId(kActionBookmarkThisTab)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_BOOKMARK_THIS_TAB)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_BOOKMARK_THIS_TAB)))
+          .SetImage(ui::ImageModel::FromVectorIcon(omnibox::kStarIcon,
+                                                   ui::kColorIcon))
           .Build());
 
   root_action_item_->AddChild(
@@ -3078,6 +3084,12 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionBookmarkAllTabs)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_BOOKMARK_ALL_TABS)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_BOOKMARK_ALL_TABS)))
+          .SetImage(
+              ui::ImageModel::FromVectorIcon(kHotelClassIcon, ui::kColorIcon))
           .Build());
 
   root_action_item_->AddChild(

@@ -17,6 +17,7 @@
 #include "ui/color/color_id.h"
 
 class RecentTabsDynamicMenu;
+class BookmarksDynamicMenu;
 
 // Manages the ActionItem hierarchy for the Action App Menu, including
 // constructing the menu tree and managing dynamic submenus.
@@ -59,6 +60,7 @@ class ActionAppMenuManager {
 
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
   std::unique_ptr<RecentTabsDynamicMenu> recent_tabs_menu_;
+  std::unique_ptr<BookmarksDynamicMenu> bookmarks_menu_;
 };
 
 DECLARE_UI_CLASS_PROPERTY_TYPE(ActionAppMenuManager::DisplayType)

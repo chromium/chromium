@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
+#include "chrome/browser/ui/views/app_menu/bookmarks_dynamic_menu.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"

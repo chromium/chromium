@@ -51,6 +51,9 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionShowHistory, u"History");
   add_action(kActionRecentTabsSubmenu, u"Recent Tabs");
   add_action(kActionManageExtensions, u"Extensions");
+  add_action(kActionBookmarksSubmenu, u"Bookmarks and Lists");
+  add_action(kActionBookmarkThisTab, u"Bookmark This Tab");
+  add_action(kActionBookmarkAllTabs, u"Bookmark All Tabs");
   add_action(kActionPrint, u"Print");
   add_action(kActionFind, u"Find");
   add_action(kActionRecentTabsSeeDeviceTabs, u"See Device Tabs");
