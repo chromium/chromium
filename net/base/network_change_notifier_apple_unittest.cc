@@ -382,7 +382,6 @@ class NetworkChangeNotifierApplePathMonitorTest : public WithTaskEnvironment,
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   NetworkChangeNotifier::DisableForTest disable_for_test_;
 
   bool ShouldUseMonitor(NetworkChangeNotifierApple* notifier) {
@@ -398,7 +397,7 @@ class NetworkChangeNotifierApplePathMonitorTest : public WithTaskEnvironment,
 
 TEST_F(NetworkChangeNotifierApplePathMonitorTest,
        MonitorDisabledWhenFeatureOff) {
-  feature_list_.InitAndDisableFeature(
+  AddScopedFeatureList().InitAndDisableFeature(
       features::kUseNetworkPathMonitorForNetworkChangeNotifier);
 
   auto notifier = CreateNotifier();
@@ -408,7 +407,7 @@ TEST_F(NetworkChangeNotifierApplePathMonitorTest,
 }
 
 TEST_F(NetworkChangeNotifierApplePathMonitorTest, MonitorStartsWhenFeatureOn) {
-  feature_list_.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kUseNetworkPathMonitorForNetworkChangeNotifier);
 
   auto notifier = CreateNotifier();
@@ -418,7 +417,7 @@ TEST_F(NetworkChangeNotifierApplePathMonitorTest, MonitorStartsWhenFeatureOn) {
 }
 
 TEST_F(NetworkChangeNotifierApplePathMonitorTest, MonitorStartIsIdempotent) {
-  feature_list_.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kUseNetworkPathMonitorForNetworkChangeNotifier);
 
   auto notifier = CreateNotifier();

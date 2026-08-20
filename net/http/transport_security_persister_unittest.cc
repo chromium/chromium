@@ -279,16 +279,14 @@ class TransportSecurityPersisterCommitTest
  public:
   TransportSecurityPersisterCommitTest() {
     if (GetParam().empty()) {
-      feature_list_.InitAndDisableFeature(kTransportSecurityFileWriterSchedule);
+      AddScopedFeatureList().InitAndDisableFeature(
+          kTransportSecurityFileWriterSchedule);
     } else {
-      feature_list_.InitAndEnableFeatureWithParameters(
+      AddScopedFeatureList().InitAndEnableFeatureWithParameters(
           kTransportSecurityFileWriterSchedule,
           {{"commit_interval", GetParam()}});
     }
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

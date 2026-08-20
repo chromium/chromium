@@ -76,7 +76,7 @@ class TransportConnectJobTest : public WithTaskEnvironment,
             /*application_settings=*/nullptr,
             /*ignore_certificate_errors=*/nullptr,
             /*enable_early_data=*/nullptr) {
-    scoped_feature_list_.InitAndDisableFeature(features::kHappyEyeballsV2);
+    AddScopedFeatureList().InitAndDisableFeature(features::kHappyEyeballsV2);
   }
 
   ~TransportConnectJobTest() override = default;
@@ -98,8 +98,6 @@ class TransportConnectJobTest : public WithTaskEnvironment,
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   MockHostResolver host_resolver_{/*default_result=*/MockHostResolverBase::
                                       RuleResolver::GetLocalhostResult()};
   MockTransportClientSocketFactory client_socket_factory_;
@@ -1183,8 +1181,7 @@ TEST_F(TransportConnectJobTest, DedupIPEndPoints) {
 class TransportConnectJobRTTFallbackTest : public TransportConnectJobTest {
  public:
   TransportConnectJobRTTFallbackTest() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeaturesAndParameters(
+    AddScopedFeatureList().InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{features::kIPv6FallbackBasedOnRTT,
           {{"IPv6FallbackRTTMultiplier", "2.0"},

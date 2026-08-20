@@ -87,11 +87,14 @@ HttpServerProperties::ServerInfoMapKey CreateSimpleKey(
 
 class HttpServerPropertiesTest : public TestWithTaskEnvironment {
  protected:
+  // The kPartitionConnectionsByNetworkIsolationKey feature must be disabled
+  // before `impl_` is constructed, as the HttpServerProperties constructor
+  // queries the feature.
   HttpServerPropertiesTest()
       : TestWithTaskEnvironment(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        // Many tests assume partitioning is disabled by default.
-        feature_list_(CreateFeatureListWithPartitioningDisabled()),
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+            /*disabled_features=*/
+            {features::kPartitionConnectionsByNetworkIsolationKey}),
         test_tick_clock_(GetMockTickClock()),
         impl_(/*pref_delegate=*/nullptr,
               /*net_log=*/nullptr,
@@ -106,17 +109,6 @@ class HttpServerPropertiesTest : public TestWithTaskEnvironment {
     SchemefulSite site2(GURL("https://bar.test/"));
     network_anonymization_key2_ =
         NetworkAnonymizationKey::CreateSameSite(std::move(site2));
-  }
-
-  // This is a little awkward, but need to create and configure the
-  // ScopedFeatureList before creating the HttpServerProperties.
-  static std::unique_ptr<base::test::ScopedFeatureList>
-  CreateFeatureListWithPartitioningDisabled() {
-    std::unique_ptr<base::test::ScopedFeatureList> feature_list =
-        std::make_unique<base::test::ScopedFeatureList>();
-    feature_list->InitAndDisableFeature(
-        features::kPartitionConnectionsByNetworkIsolationKey);
-    return feature_list;
   }
 
   bool HasAlternativeService(
@@ -170,8 +162,6 @@ class HttpServerPropertiesTest : public TestWithTaskEnvironment {
         ssl_config.alpn_protos,
         testing::ElementsAre(NextProto::kProtoHTTP2, NextProto::kProtoHTTP11));
   }
-
-  std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
 
   raw_ptr<const base::TickClock> test_tick_clock_;
   base::SimpleTestClock test_clock_;
@@ -271,8 +261,7 @@ TEST_F(HttpServerPropertiesTest, SetSupportsSpdyWithNetworkIsolationKey) {
   // With network isolation keys enabled for HttpServerProperties, the
   // NetworkAnonymizationKey argument should be respected.
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
@@ -851,8 +840,7 @@ TEST_F(AlternateProtocolServerPropertiesTest, SetWithNetworkIsolationKey) {
   // Check that with network isolation keys enabled for HttpServerProperties,
   // the NetworkAnonymizationKey argument is respected.
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
@@ -1447,8 +1435,7 @@ TEST_F(AlternateProtocolServerPropertiesTest,
   EXPECT_FALSE(impl_.WasAlternativeServiceRecentlyBroken(
       alternative_service, network_anonymization_key2_));
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
@@ -1583,8 +1570,7 @@ TEST_F(AlternateProtocolServerPropertiesTest,
   EXPECT_FALSE(impl_.WasAlternativeServiceRecentlyBroken(
       alternative_service, network_anonymization_key2_));
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
@@ -1720,8 +1706,7 @@ TEST_F(AlternateProtocolServerPropertiesTest,
   EXPECT_FALSE(impl_.WasAlternativeServiceRecentlyBroken(
       alternative_service, network_anonymization_key2_));
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
@@ -1858,8 +1843,7 @@ TEST_F(AlternateProtocolServerPropertiesTest,
   const AlternativeService alternative_service(NextProto::kProtoHTTP2, "foo",
                                                443);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
@@ -1970,8 +1954,7 @@ TEST_F(AlternateProtocolServerPropertiesTest, ClearCanonical) {
 
 TEST_F(AlternateProtocolServerPropertiesTest,
        CanonicalWithNetworkIsolationKey) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
@@ -2160,8 +2143,7 @@ TEST_F(AlternateProtocolServerPropertiesTest,
   base::TimeTicks future = test_tick_clock_->NowTicks() + base::Seconds(42);
   const base::Time alt_service_expiration = test_clock_.Now() + base::Days(1);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
@@ -2881,8 +2863,7 @@ TEST_F(HttpServerPropertiesTest, SetQuicServerInfo) {
   EXPECT_FALSE(impl_.GetQuicServerInfo(server2, PRIVACY_MODE_ENABLED,
                                        network_anonymization_key1_));
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
@@ -2977,8 +2958,7 @@ TEST_F(HttpServerPropertiesTest,
   std::string server_info1("server_info1");
   std::string server_info2("server_info2");
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
@@ -3205,7 +3185,7 @@ class HttpServerPropertiesQuicHintsTest
       public testing::WithParamInterface<bool> {
  public:
   HttpServerPropertiesQuicHintsTest()
-      : scoped_feature_list_(CreateFeatureList()),
+      : feature_list_init_(InitQuicHintsFeatures(GetParam())),
         properties_(/*pref_delegate=*/nullptr,
                     /*net_log=*/nullptr,
                     /*tick_clock=*/nullptr,
@@ -3214,22 +3194,26 @@ class HttpServerPropertiesQuicHintsTest
  protected:
   bool Enabled() const { return GetParam(); }
 
-  // Create the feature list before constructing the HttpServerProperties.
-  static std::unique_ptr<base::test::ScopedFeatureList> CreateFeatureList() {
-    std::unique_ptr<base::test::ScopedFeatureList> feature_list =
-        std::make_unique<base::test::ScopedFeatureList>();
-    if (GetParam()) {
-      feature_list->InitAndEnableFeatureWithParameters(
+ private:
+  bool InitQuicHintsFeatures(bool enabled) {
+    if (enabled) {
+      AddScopedFeatureList().InitAndEnableFeatureWithParameters(
           features::kConfigureQuicHints,
           {{"quic_hints", kTestQuicHints},
            {"wildcard_quic_hints", kTestWildcardQuicHints}});
     } else {
-      feature_list->InitAndDisableFeature(features::kConfigureQuicHints);
+      AddScopedFeatureList().InitAndDisableFeature(
+          features::kConfigureQuicHints);
     }
-    return feature_list;
+    return true;
   }
 
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+  // Used to configure `AddScopedFeatureList()` before `properties_` is
+  // initialized, as HttpServerProperties processes QUIC hints in its
+  // constructor.
+  bool feature_list_init_;
+
+ protected:
   HttpServerProperties properties_;
 };
 
@@ -3427,8 +3411,7 @@ TEST_F(HttpServerPropertiesTest, RequiresHTTP11) {
   // unpartitioned case is strictly less interesting, and if values are
   // incorrectly being partitioned here, it's not really a big deal, since this
   // is just an optimization.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Since HttpServerProperties caches the feature value, have to create a new

@@ -374,7 +374,8 @@ class SpdyNetworkTransactionTest
       disabled_features.emplace_back(features::kHappyEyeballsV3);
     }
 
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    AddScopedFeatureList().InitWithFeatures(enabled_features,
+                                            disabled_features);
   }
 
   ~SpdyNetworkTransactionTest() override {
@@ -579,7 +580,6 @@ class SpdyNetworkTransactionTest
   }
 
   std::unique_ptr<ChunkedUploadDataStream> upload_chunked_data_stream_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -4601,10 +4601,9 @@ TEST_P(SpdyNetworkTransactionTest,
   const auto kNetworkIsolationKeys = std::to_array(
       {kNetworkIsolationKey1, kNetworkIsolationKey2, NetworkIsolationKey()});
 
-  base::test::ScopedFeatureList feature_list;
   // Need to partition connections by NetworkAnonymizationKey for
   // SpdySessionKeys to include NetworkAnonymizationKeys.
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Do not force SPDY so that sockets can negotiate HTTP/1.1.
@@ -4818,10 +4817,9 @@ TEST_P(SpdyNetworkTransactionTest,
   const auto kNetworkIsolationKeys = std::to_array(
       {kNetworkIsolationKey1, kNetworkIsolationKey2, NetworkIsolationKey()});
 
-  base::test::ScopedFeatureList feature_list;
   // Need to partition connections by NetworkAnonymizationKey for
   // SpdySessionKeys to include NetworkAnonymizationKeys.
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
 
   request_.method = "GET";

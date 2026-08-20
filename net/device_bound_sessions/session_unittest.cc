@@ -44,10 +44,9 @@ class SessionTest : public ::testing::Test, public WithTaskEnvironment {
   SessionTest()
       : WithTaskEnvironment(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         context_(CreateTestURLRequestContextBuilder()->Build()) {
-    feature_list_.InitAndEnableFeature(features::kDeviceBoundSessions);
+    AddScopedFeatureList().InitAndEnableFeature(features::kDeviceBoundSessions);
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<URLRequestContext> context_;
 };
 

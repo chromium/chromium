@@ -91,7 +91,7 @@ class SQLitePersistentReportingAndNelStoreTest
     : public TestWithTaskEnvironment {
  public:
   SQLitePersistentReportingAndNelStoreTest() {
-    feature_list_.InitAndEnableFeature(
+    AddScopedFeatureList().InitAndEnableFeature(
         features::kPartitionConnectionsByNetworkIsolationKey);
   }
 
@@ -234,8 +234,6 @@ class SQLitePersistentReportingAndNelStoreTest
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
-
   // Use origins distinct from those used in origin fields of keys, to avoid any
   // risk of tests passing due to comparing origins that are the same but come
   // from different sources.

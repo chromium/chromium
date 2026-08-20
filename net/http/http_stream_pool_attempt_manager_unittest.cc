@@ -476,7 +476,7 @@ class HttpStreamPoolAttemptManagerTest : public TestWithTaskEnvironment {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
             {features::kNetworkServicePerPriorityTaskQueues}) {
     FLAGS_quic_enable_http3_grease_randomness = false;
-    feature_list_.InitAndEnableFeature(features::kHappyEyeballsV3);
+    AddScopedFeatureList().InitAndEnableFeature(features::kHappyEyeballsV3);
     InitializeSession();
   }
 
@@ -651,7 +651,6 @@ class HttpStreamPoolAttemptManagerTest : public TestWithTaskEnvironment {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   // For NetLog recording test coverage.
   RecordingNetLogObserver net_log_observer_;
 
@@ -1288,8 +1287,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, LimitIgnoringRequestCanceled) {
 // * QuicAttempt fails immediately after the attempt failed.
 // Ensures that we don't attempt any further connections.
 TEST_F(HttpStreamPoolAttemptManagerTest, DoNotAttemptWhileFailing) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   resolver()
       ->AddFakeRequest()
@@ -1896,8 +1894,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, IdleStreamNotUsable) {
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, FeatureParamStreamLimits) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kHappyEyeballsV3,
       {{std::string(HttpStreamPool::kMaxStreamSocketsPerPoolParamName), "2"},
        {std::string(HttpStreamPool::kMaxStreamSocketsPerGroupParamName), "3"}});
@@ -3584,8 +3581,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SpdyMatchingIpSessionRequiresHttp11) {
 // use that session instead of attempting a new connection after the delay.
 TEST_F(HttpStreamPoolAttemptManagerTest,
        SpdyMatchingIpSessionStreamAttemptDelayPassed) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   constexpr base::TimeDelta kDelay = base::Milliseconds(10);
   quic_session_pool()->SetTimeDelayForWaitingJobForTesting(kDelay);
@@ -4706,8 +4702,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SpdySessionAvailableAfterFailure) {
 // This test uses an HTTP/3 Origin frame to make a session usable for
 // the destination.
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicSessionAvailableAfterFailure) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   resolver()
       ->AddFakeRequest()
@@ -4930,8 +4925,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, HavingSpdySessionIsNotStalled) {
 // Tests that when an AttemptManager only allows QUIC, it's not treated as being
 // stalled on the TCP limit, even after the slow timer triggers.
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicOnlyIsNotStalled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   const url::SchemeHostPort destination{GURL(kDefaultDestination)};
 
@@ -5088,8 +5082,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ReuseTypeReusedIdle) {
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicOk) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   // Set `is_quic_known_to_work_on_current_network` to false to check the flag
   // is updated to true after the QUIC attempt succeeds.
@@ -5135,8 +5128,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicOk) {
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicOkSynchronouslyNoTcpAttempt) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndDisableFeature(
+      net::features::kAsyncQuicSession);
 
   resolver()
       ->AddFakeRequest()
@@ -5247,8 +5240,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicBroken) {
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailBeforeTls) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   MockConnectCompleter quic_completer;
   MockQuicData quic_data(quic_version());
@@ -5297,8 +5289,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailBeforeTls) {
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailAfterTls) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   MockConnectCompleter quic_completer;
   MockQuicData quic_data(quic_version());
@@ -5341,8 +5332,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailAfterTls) {
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailNoRemainingJobs) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   MockConnectCompleter quic_completer;
   MockQuicData quic_data(quic_version());
@@ -5390,8 +5380,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailThenFindMatchingSession) {
   constexpr std::string_view kAltDestination = "https://alt.example.org";
   const IPEndPoint kCommonEndPoint = MakeIPEndPoint("2001:db8::1", 443);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   // Set up an alt-service QUIC session to kCommonEndPoint.
 
@@ -5472,8 +5461,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailThenFindMatchingSession) {
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailNonBrokenErrors) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   const int kErrors[] = {ERR_NETWORK_CHANGED, ERR_INTERNET_DISCONNECTED};
   for (const int net_error : kErrors) {
@@ -5551,8 +5539,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicNetErrorDetails) {
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailNonBrokenErrorsUnified) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({net::features::kAsyncQuicSession}, {});
+  AddScopedFeatureList().InitWithFeatures({net::features::kAsyncQuicSession},
+                                          {});
 
   // Verify that the AttemptManager continues to ignore connectivity-related
   // errors that should not mark the protocol as broken.
@@ -5652,8 +5640,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcQuicFailNetworkChangedOriginOk) {
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicCanUseExistingSession) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
       resolver()->AddFakeRequest();
@@ -5765,8 +5752,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
 
 TEST_F(HttpStreamPoolAttemptManagerTest,
        AlternativeSerivcesDisabledQuicSessionExists) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndDisableFeature(
+      net::features::kAsyncQuicSession);
 
   // Prerequisite: Create a QUIC session.
   resolver()
@@ -5992,8 +5979,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicMatchingIpSession) {
 // HTTP/3 Origin frame. In such case, a preconnect request should succeed
 // with the matching QUIC session.
 TEST_F(HttpStreamPoolAttemptManagerTest, H3OriginFrameWhileAttemptingQuic) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   // Step1: Request a stream to create a QUIC session for kDefaultDestination.
 
@@ -6080,8 +6066,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, H3OriginFrameWhileAttemptingQuic) {
 // TLS session.
 TEST_F(HttpStreamPoolAttemptManagerTest,
        QuicExistingSessionAfterAttemptComplete) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   resolver()
       ->ConfigureDefaultResolution()
@@ -6125,8 +6110,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
 // and the second address matches the existing session.
 TEST_F(HttpStreamPoolAttemptManagerTest,
        QuicMatchingIpSessionOnEndpointsUpdated) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   constexpr std::string_view kAltDestination = "https://alt.example.org";
   const IPEndPoint kCommonEndPoint = MakeIPEndPoint("2001:db8::1", 443);
@@ -6331,8 +6315,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
        StreamAttemptDelayPassedTimerkStartTimerOnFirstJob) {
   constexpr base::TimeDelta kDelay = base::Milliseconds(10);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
+  AddScopedFeatureList().InitWithFeaturesAndParameters(
       /*enabled_features=*/
       {{features::kAsyncQuicSession, {}},
        {features::kHappyEyeballsV3,
@@ -6392,8 +6375,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
        StreamAttemptDelayPassedTimerStartOnFirstEndpointUpdate) {
   constexpr base::TimeDelta kDelay = base::Milliseconds(10);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
+  AddScopedFeatureList().InitWithFeaturesAndParameters(
       /*enabled_features=*/
       {{features::kAsyncQuicSession, {}},
        {features::kHappyEyeballsV3,
@@ -6456,8 +6438,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   constexpr base::TimeDelta kQuicDelay = base::Milliseconds(10);
   constexpr base::TimeDelta kDnsDelay = base::Milliseconds(40);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
+  AddScopedFeatureList().InitWithFeaturesAndParameters(
       /*enabled_features=*/
       {{features::kAsyncQuicSession, {}},
        {features::kHappyEyeballsV3,
@@ -6522,8 +6503,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
        StreamAttemptDelayPassedForPreconnectTimerStartOnFirstQuicAttempt) {
   constexpr base::TimeDelta kDelay = base::Milliseconds(40);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
+  AddScopedFeatureList().InitWithFeaturesAndParameters(
       /*enabled_features=*/
       {{features::kAsyncQuicSession, {}},
        {features::kHappyEyeballsV3,
@@ -6582,8 +6562,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
 
 TEST_F(HttpStreamPoolAttemptManagerTest,
        DelayStreamAttemptDisableAlternativeServicesLater) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   constexpr base::TimeDelta kDelay = base::Milliseconds(10);
   quic_session_pool()->SetTimeDelayForWaitingJobForTesting(kDelay);
@@ -6726,8 +6705,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, OriginsToForceQuicOnPreconnectFail) {
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicSessionGoneBeforeUsing) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndDisableFeature(
+      net::features::kAsyncQuicSession);
   origins_to_force_quic_on().insert(
       url::SchemeHostPort(GURL(kDefaultDestination)));
   InitializeSession();
@@ -7132,8 +7111,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcSetPriority) {
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcQuicOk) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   const url::SchemeHostPort kOrigin(url::kHttpsScheme, "origin.example.org",
                                     443);
@@ -7246,8 +7224,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcQuicFailOriginFail) {
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcQuicUseExistingSession) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   const url::SchemeHostPort kOrigin(url::kHttpsScheme, "origin.example.org",
                                     443);
@@ -7504,8 +7481,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
 // Regression test for crbug.com/371894055.
 TEST_F(HttpStreamPoolAttemptManagerTest,
        AsyncQuicSessionDestroyRequestBeforeSessionCreation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   constexpr std::string_view kAltDestination = "https://alt.example.org";
   const IPEndPoint kCommonEndPoint = MakeIPEndPoint("2001:db8::1", 443);
@@ -7795,8 +7771,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
 // Tests that TLS Trust Anchor IDs are not sent when the feature flag is
 // disabled.
 TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDsDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kTLSTrustAnchorIDs);
+  AddScopedFeatureList().InitAndDisableFeature(features::kTLSTrustAnchorIDs);
 
   SSLContextConfig config = ssl_config_service()->GetSSLContextConfig();
   config.trust_anchor_ids = {{0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}};
@@ -7834,8 +7809,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDsDisabled) {
 
 // Tests that TLS Trust Anchor IDs are sent when the feature flag is enabled.
 TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDs) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kTLSTrustAnchorIDs);
+  AddScopedFeatureList().InitAndEnableFeature(features::kTLSTrustAnchorIDs);
 
   SSLContextConfig config = ssl_config_service()->GetSSLContextConfig();
   config.trust_anchor_ids = {{0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}};
@@ -7874,8 +7848,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDs) {
 
 // Tests that TLS Trust Anchor IDs are sent even when ECH is disabled.
 TEST_F(HttpStreamPoolAttemptManagerTest, TrustAnchorIDsEnabledWithECHDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kTLSTrustAnchorIDs);
+  AddScopedFeatureList().InitAndEnableFeature(features::kTLSTrustAnchorIDs);
 
   SSLContextConfig config = ssl_config_service()->GetSSLContextConfig();
   config.trust_anchor_ids = {{0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}};
@@ -7929,8 +7902,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, JobAllowH2Only) {
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, JobAllowH2OnlyCancelQuicAttempt) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   resolver()
       ->AddFakeRequest()
@@ -8022,8 +7994,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, JobAllowH3OnlyFail) {
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, JobAllowH3OnlyCancelTcpBasedAttempt) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   resolver()
       ->AddFakeRequest()
@@ -8142,8 +8113,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, AttemptSyncCompleteCancelAttempt) {
 // Regression test for crbug.com/384965448
 // Ensure that QUIC attempts are canceled when network change happens.
 TEST_F(HttpStreamPoolAttemptManagerTest, NetworkChangeCancelJobs) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   resolver()
       ->AddFakeRequest()
@@ -8204,8 +8174,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, NetworkChangeCancelJobs) {
 // results partially and the failed.
 TEST_F(HttpStreamPoolAttemptManagerTest,
        ServiceEndpointRequestFailedAfterUpdatedCalled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
       resolver()->AddFakeRequest();
@@ -8259,8 +8228,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
 // Ensure that QUIC attempts are canceled when a client certificate is
 // required.
 TEST_F(HttpStreamPoolAttemptManagerTest, ClientAuthRequiredCancelQuic) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   resolver()
       ->AddFakeRequest()
@@ -8308,8 +8276,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ClientAuthRequiredCancelQuic) {
 // Regression test for crbug.com/384965448
 // Ensure that QUIC attempts are canceled when a certificate error happens.
 TEST_F(HttpStreamPoolAttemptManagerTest, CertificateErrorCancelQuic) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   resolver()
       ->AddFakeRequest()
@@ -8438,8 +8405,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
 // another kQuicProtocolError, notice QUIC has been marked as broken, since the
 // transaction started, and retry without QUIC.
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicBrokenWhenSessionCreated) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   resolver()
       ->AddFakeRequest()
@@ -8472,8 +8438,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicBrokenWhenSessionCreated) {
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, SpdyOkQuicOk) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   resolver()
       ->AddFakeRequest()
@@ -8518,8 +8483,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SpdyOkQuicOk) {
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, SpdyOkQuicSlowCanceled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   resolver()
       ->AddFakeRequest()
@@ -8562,8 +8526,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SpdyOkQuicSlowCanceled) {
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, SpdySlowOkQuicCanceled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   resolver()
       ->AddFakeRequest()
@@ -8755,8 +8718,7 @@ TEST_F(HttpStreamPoolAltSvcQuicPreconnectTest,
 // AttemptManager should clean up the limit-ignoring preconnect job.
 TEST_F(HttpStreamPoolAltSvcQuicPreconnectTest,
        AltSvcQuicPreconnectIgnoreLimitCancel) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   resolver()
       ->ConfigureDefaultResolution()
@@ -8790,8 +8752,7 @@ TEST_F(HttpStreamPoolAltSvcQuicPreconnectTest,
 // Test that multiple Alt-Svc QUIC preconnects are coalesced and only one
 // QUIC attempt is triggered.
 TEST_F(HttpStreamPoolAltSvcQuicPreconnectTest, AltSvcQuicMutiplePreconnects) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   resolver()
       ->ConfigureDefaultResolution()
@@ -8891,8 +8852,7 @@ TEST_F(HttpStreamPoolAltSvcQuicPreconnectTest, AltSvcQuicPreconnectFail) {
 // Test that a Group that has Alt-Svc QUIC attempt manager isn't destroyed
 // until QUIC preconnect completes.
 TEST_F(HttpStreamPoolAltSvcQuicPreconnectTest, GroupAlive) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+  AddScopedFeatureList().InitAndEnableFeature(net::features::kAsyncQuicSession);
 
   resolver()
       ->ConfigureDefaultResolution()

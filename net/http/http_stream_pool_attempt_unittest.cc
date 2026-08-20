@@ -253,7 +253,7 @@ class HttpStreamPoolAttemptTest : public TestWithTaskEnvironment {
   HttpStreamPoolAttemptTest()
       : TestWithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    feature_list_.InitAndEnableFeature(features::kHappyEyeballsV3);
+    AddScopedFeatureList().InitAndEnableFeature(features::kHappyEyeballsV3);
     InitialzePool();
   }
 
@@ -274,7 +274,6 @@ class HttpStreamPoolAttemptTest : public TestWithTaskEnvironment {
         SpdySessionDependencies::SpdyCreateSession(&session_deps_);
   }
 
-  base::test::ScopedFeatureList feature_list_;
   SpdySessionDependencies session_deps_;
   std::unique_ptr<HttpNetworkSession> http_network_session_;
 };

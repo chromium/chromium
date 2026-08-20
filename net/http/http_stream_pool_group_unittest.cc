@@ -48,7 +48,7 @@ class HttpStreamPoolGroupTest : public TestWithTaskEnvironment {
                           SecureDnsPolicy::kAllow,
                           /*disable_cert_network_fetches=*/false,
                           handles::kInvalidNetworkHandle) {
-    feature_list_.InitAndEnableFeature(features::kHappyEyeballsV3);
+    AddScopedFeatureList().InitAndEnableFeature(features::kHappyEyeballsV3);
     session_deps_.ignore_ip_address_changes = false;
     InitializePool();
   }
@@ -78,7 +78,6 @@ class HttpStreamPoolGroupTest : public TestWithTaskEnvironment {
   void DestroyHttpNetworkSession() { http_network_session_.reset(); }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   const HttpStreamKey default_test_key_;
   // For creating HttpNetworkSession.
   SpdySessionDependencies session_deps_;

@@ -365,8 +365,7 @@ TEST_F(QuicEndToEndTest, CryptoHandshakeCompleteMetrics) {
 TEST_F(QuicEndToEndTest, ServerHandshakePaddingMetrics) {
   NetLogWithSource net_log;
   SetQuicRestartFlag(tls_server_padding_support, true);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kAddTLSServerHandshakePadding,
       {{"AddTLSServerHandshakePaddingBytes", "128"}});
 
@@ -396,8 +395,7 @@ TEST_F(QuicEndToEndTest, ServerHandshakePaddingMetrics) {
 TEST_F(QuicEndToEndTest, ServerHandshakePaddingMetricsZeroPadding) {
   NetLogWithSource net_log;
   SetQuicRestartFlag(tls_server_padding_support, true);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kAddTLSServerHandshakePadding,
       {{"AddTLSServerHandshakePaddingBytes", "0"}});
 
@@ -427,8 +425,7 @@ TEST_F(QuicEndToEndTest, ServerHandshakePaddingMetricsZeroPadding) {
 TEST_F(QuicEndToEndTest, ServerHandshakePaddingMetricsNoServerSupport) {
   NetLogWithSource net_log;
   SetQuicRestartFlag(tls_server_padding_support, false);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kAddTLSServerHandshakePadding,
       {{"AddTLSServerHandshakePaddingBytes", "0"}});
 
@@ -460,8 +457,8 @@ TEST_F(QuicEndToEndTest,
        ServerHandshakePaddingMetricsServerSupportFeatureDisabled) {
   NetLogWithSource net_log;
   SetQuicRestartFlag(tls_server_padding_support, false);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kAddTLSServerHandshakePadding);
+  AddScopedFeatureList().InitAndDisableFeature(
+      features::kAddTLSServerHandshakePadding);
 
   AddToCache(request_.url.PathForRequest(), 200, "OK", kResponseBody);
 

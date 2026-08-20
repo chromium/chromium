@@ -588,7 +588,7 @@ IPEndPoint HostResolverManagerTest::CreateExpected(
 }
 
 TEST_F(HostResolverManagerTest, AsynchronousLookup) {
-  base::test::ScopedFeatureList feature_list(features::kUseHostResolverCache);
+  AddScopedFeatureList().InitAndEnableFeature(features::kUseHostResolverCache);
 
   proc_->AddRuleForAllFamilies("just.testing", "192.168.1.42");
   proc_->SignalMultiple(1u);
@@ -665,7 +665,7 @@ TEST_F(HostResolverManagerTest, AsynchronousLookupWithScheme) {
 }
 
 TEST_F(HostResolverManagerTest, AsynchronousIpv6Lookup) {
-  base::test::ScopedFeatureList feature_list(features::kUseHostResolverCache);
+  AddScopedFeatureList().InitAndEnableFeature(features::kUseHostResolverCache);
 
   proc_->AddRuleForAllFamilies("foo.test", "2001:db8:1::");
   proc_->SignalMultiple(1u);
@@ -699,7 +699,7 @@ TEST_F(HostResolverManagerTest, AsynchronousIpv6Lookup) {
 }
 
 TEST_F(HostResolverManagerTest, AsynchronousAllFamilyLookup) {
-  base::test::ScopedFeatureList feature_list(features::kUseHostResolverCache);
+  AddScopedFeatureList().InitAndEnableFeature(features::kUseHostResolverCache);
 
   proc_->AddRuleForAllFamilies("foo.test", "192.168.1.43,2001:db8:2::");
   proc_->SignalMultiple(1u);
@@ -1745,11 +1745,11 @@ void HostResolverManagerTest::FlushCacheOnIPAddressChangeTest(bool is_async) {
 // Test that IP address changes flush the cache but initial DNS config reads
 // do not.
 TEST_F(HostResolverManagerTest, FlushCacheOnIPAddressChangeAsync) {
-  base::test::ScopedFeatureList feature_list(features::kUseHostResolverCache);
+  AddScopedFeatureList().InitAndEnableFeature(features::kUseHostResolverCache);
   FlushCacheOnIPAddressChangeTest(true);
 }
 TEST_F(HostResolverManagerTest, FlushCacheOnIPAddressChangeSync) {
-  base::test::ScopedFeatureList feature_list(features::kUseHostResolverCache);
+  AddScopedFeatureList().InitAndEnableFeature(features::kUseHostResolverCache);
   FlushCacheOnIPAddressChangeTest(false);
 }
 
@@ -3032,7 +3032,7 @@ TEST_F(HostResolverManagerDnsTest,
 }
 
 TEST_F(HostResolverManagerTest, IncludeCanonicalName) {
-  base::test::ScopedFeatureList feature_list(features::kUseHostResolverCache);
+  AddScopedFeatureList().InitAndEnableFeature(features::kUseHostResolverCache);
 
   proc_->AddRuleForAllFamilies("just.testing", "192.168.1.42",
                                HOST_RESOLVER_CANONNAME, "canon.name");
@@ -4261,7 +4261,6 @@ TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyWriteToHostCache) {
       {false, false}, {true, true}, {true, false}};
 
   for (const auto& mode : kPartitioningModes) {
-    base::test::ScopedFeatureList feature_list;
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
@@ -4281,7 +4280,8 @@ TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyWriteToHostCache) {
           features::kSplitHostCacheByNetworkAnonymizationKey);
     }
 
-    feature_list.InitWithFeatures(enabled_features, disabled_features);
+    AddScopedFeatureList().InitWithFeatures(enabled_features,
+                                            disabled_features);
     bool split_cache_by_network_anonymization_key = mode.split_host_cache;
     proc_->AddRuleForAllFamilies("just.testing", kFirstDnsResult);
     proc_->SignalMultiple(1u);
@@ -4420,7 +4420,6 @@ TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyReadFromHostCache) {
       {false, false}, {true, true}, {true, false}};
 
   for (const auto& mode : kPartitioningModes) {
-    base::test::ScopedFeatureList feature_list;
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
@@ -4440,7 +4439,8 @@ TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyReadFromHostCache) {
           features::kSplitHostCacheByNetworkAnonymizationKey);
     }
 
-    feature_list.InitWithFeatures(enabled_features, disabled_features);
+    AddScopedFeatureList().InitWithFeatures(enabled_features,
+                                            disabled_features);
     bool split_cache_by_network_anonymization_key = mode.split_host_cache;
 
     // A request that uses kNetworkAnonymizationKey1 will return cache entry 1
@@ -4511,7 +4511,6 @@ TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyTwoRequestsAtOnce) {
       {false, false}, {true, true}, {true, false}};
 
   for (const auto& mode : kPartitioningModes) {
-    base::test::ScopedFeatureList feature_list;
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
@@ -4531,7 +4530,8 @@ TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyTwoRequestsAtOnce) {
           features::kSplitHostCacheByNetworkAnonymizationKey);
     }
 
-    feature_list.InitWithFeatures(enabled_features, disabled_features);
+    AddScopedFeatureList().InitWithFeatures(enabled_features,
+                                            disabled_features);
     bool split_cache_by_network_anonymization_key = mode.split_host_cache;
     proc_->AddRuleForAllFamilies("just.testing", kDnsResult);
 
@@ -6328,8 +6328,7 @@ TEST_F(HostResolverManagerDnsTest, Ipv6Unreachable_Localhost) {
 TEST_F(HostResolverManagerDnsTest, Ipv6UnreachableOnlyDisablesAAAAQuery) {
   const std::string kName = "https.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -8240,8 +8239,7 @@ TEST_F(HostResolverManagerDnsTest, NoCheckIpv6OnWifi) {
 }
 
 TEST_F(HostResolverManagerDnsTest, NotFoundTtl) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
+  AddScopedFeatureList().InitWithFeatures(
       /*enabled_features=*/{features::
                                 kPartitionConnectionsByNetworkIsolationKey,
                             features::kUseHostResolverCache},
@@ -8307,8 +8305,7 @@ TEST_F(HostResolverManagerDnsTest, NotFoundTtl) {
 }
 
 TEST_F(HostResolverManagerDnsTest, NotFoundTtlWithHostCache) {
-  base::test::ScopedFeatureList feature_list;
-  DisableHostResolverCache(feature_list);
+  DisableHostResolverCache(AddScopedFeatureList());
 
   CreateResolver();
   set_allow_fallback_to_systemtask(false);
@@ -9372,8 +9369,7 @@ TEST_F(HostResolverManagerDnsTest, DohMappingWithExclusion) {
   DnsClient* client_ptr = client.get();
   SetDnsClient(std::move(client));
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
+  AddScopedFeatureList().InitWithFeatures(
       /*enabled_features=*/{}, /*disabled_features=*/{
           GetDohProviderEntryForTesting("CleanBrowsingSecure").feature.get(),
           GetDohProviderEntryForTesting("Cloudflare").feature.get()});
@@ -10923,7 +10919,7 @@ TEST_F(HostResolverManagerDnsTest,
 TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features(features::kUseDnsHttpsSvcb);
+  AddScopedFeatureList().InitAndEnableFeature(features::kUseDnsHttpsSvcb);
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -10969,8 +10965,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithNonstandardPort) {
   const char kName[] = "name.test";
   const char kExpectedHttpsQueryName[] = "_108._https.name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -11027,8 +11022,7 @@ TEST_F(HostResolverManagerDnsTest,
   const char kName[] = "name.test";
   const char kExpectedHttpsQueryName[] = "_108._https.name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -11080,8 +11074,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithAlpnAndEch) {
   const char kName[] = "name.test";
   const uint8_t kEch[] = "ECH is neato!";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -11137,8 +11130,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithAlpnAndEch) {
 TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithNonMatchingPort) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -11185,8 +11177,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithNonMatchingPort) {
 TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithMatchingPort) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -11240,8 +11231,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithMatchingPort) {
 TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithoutAddresses) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -11306,8 +11296,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithoutAddresses) {
 TEST_F(HostResolverManagerDnsTest, HttpsQueriedInAddressQueryButNoResults) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -11355,8 +11344,7 @@ TEST_F(HostResolverManagerDnsTest,
        MalformedHttpsInResponseInAddressRequestIsIgnored) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
        // Disable timeouts.
@@ -11403,8 +11391,7 @@ TEST_F(HostResolverManagerDnsTest,
   const uint8_t malformed_test_rdata[] = {'m', 'a', 'l', 'f', 'o',
                                           'r', 'm', 'e', 'd', ' ',
                                           'r', 'd', 'a', 't', 'a'};
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
        // Disable timeouts.
@@ -11451,8 +11438,7 @@ TEST_F(HostResolverManagerDnsTest,
        FailedHttpsInAddressRequestIsFatalWhenFeatureEnabled) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
        // Disable timeouts.
@@ -11498,8 +11484,7 @@ TEST_F(HostResolverManagerDnsTest,
        FailedHttpsInAddressRequestIgnoredWhenFeatureDisabled) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbEnforceSecureResponse", "false"},
        // Disable timeouts.
@@ -11545,8 +11530,7 @@ TEST_F(
     FailedHttpsInAddressRequestAfterAddressFailureIsFatalWhenFeatureEnabled) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
        // Disable timeouts.
@@ -11600,8 +11584,7 @@ TEST_F(
     FailedHttpsInAddressRequestAfterAddressFailureIgnoredWhenFeatureDisabled) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbEnforceSecureResponse", "false"},
        // Disable timeouts.
@@ -11666,8 +11649,7 @@ TEST_F(
 TEST_F(HostResolverManagerDnsTest, TimeoutHttpsInAddressRequestIsFatal) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
        // Disable timeouts.
@@ -11712,8 +11694,7 @@ TEST_F(HostResolverManagerDnsTest, TimeoutHttpsInAddressRequestIsFatal) {
 TEST_F(HostResolverManagerDnsTest, ServfailHttpsInAddressRequestIsFatal) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
        // Disable timeouts.
@@ -11768,8 +11749,7 @@ TEST_F(HostResolverManagerDnsTest, ServfailHttpsInAddressRequestIsFatal) {
 TEST_F(HostResolverManagerDnsTest, UnparsableHttpsInAddressRequestIsFatal) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
        // Disable timeouts.
@@ -11815,8 +11795,7 @@ TEST_F(HostResolverManagerDnsTest, UnparsableHttpsInAddressRequestIsFatal) {
 TEST_F(HostResolverManagerDnsTest, RefusedHttpsInAddressRequestIsIgnored) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
        // Disable timeouts.
@@ -11865,8 +11844,7 @@ TEST_F(HostResolverManagerDnsTest, RefusedHttpsInAddressRequestIsIgnored) {
 TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryForWssScheme) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -11919,8 +11897,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryForWssScheme) {
 TEST_F(HostResolverManagerDnsTest, NoHttpsInAddressQueryWithoutScheme) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -11964,8 +11941,7 @@ TEST_F(HostResolverManagerDnsTest, NoHttpsInAddressQueryWithoutScheme) {
 TEST_F(HostResolverManagerDnsTest, NoHttpsInAddressQueryForNonHttpScheme) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -12010,8 +11986,7 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInAddressQueryForHttpSchemeWhenUpgradeEnabled) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -12057,8 +12032,7 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInAddressQueryForHttpSchemeWhenUpgradeEnabledWithAliasRecord) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -12105,8 +12079,7 @@ TEST_F(
   const char kName[] = "name.test";
   const uint16_t kMadeUpParam = 65300;  // From the private-use block.
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -12158,8 +12131,7 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInAddressQueryForHttpSchemeWhenUpgradeEnabledWithoutAddresses) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -12204,8 +12176,7 @@ TEST_F(HostResolverManagerDnsTest,
 TEST_F(HostResolverManagerDnsTest, HttpsInSecureModeAddressQuery) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -12250,8 +12221,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInSecureModeAddressQuery) {
 TEST_F(HostResolverManagerDnsTest, HttpsInSecureModeAddressQueryForHttpScheme) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -12296,8 +12266,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInSecureModeAddressQueryForHttpScheme) {
 TEST_F(HostResolverManagerDnsTest, HttpsInInsecureAddressQuery) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -12348,8 +12317,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInInsecureAddressQuery) {
 TEST_F(HostResolverManagerDnsTest, HttpsInInsecureAddressQueryForHttpScheme) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -12391,8 +12359,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInInsecureAddressQueryForHttpScheme) {
 TEST_F(HostResolverManagerDnsTest, FailedHttpsInInsecureAddressRequestIgnored) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -12433,8 +12400,7 @@ TEST_F(HostResolverManagerDnsTest,
        TimeoutHttpsInInsecureAddressRequestIgnored) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -12475,8 +12441,7 @@ TEST_F(HostResolverManagerDnsTest,
        ServfailHttpsInInsecureAddressRequestIgnored) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -12522,8 +12487,7 @@ TEST_F(HostResolverManagerDnsTest,
        UnparsableHttpsInInsecureAddressRequestIgnored) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -12567,8 +12531,7 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInAddressQueryWaitsWithoutAdditionalTimeout) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -12623,8 +12586,7 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInSecureAddressQueryWithOnlyMinTimeout) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
@@ -12682,8 +12644,7 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInSecureAddressQueryWithOnlyMaxTimeout) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
@@ -12741,8 +12702,7 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInSecureAddressQueryWithRelativeTimeout) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
@@ -12808,8 +12768,7 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInSecureAddressQueryWithMaxTimeoutFirst) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
@@ -12877,8 +12836,7 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInAddressQueryWithRelativeTimeoutFirst) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
@@ -12944,8 +12902,7 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInAddressQueryWithRelativeTimeoutShorterThanMinTimeout) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
@@ -13011,8 +12968,7 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInInsecureAddressQueryWithOnlyMinTimeout) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Set an Insecure absolute timeout of 10 minutes via the "min" param.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -13067,8 +13023,7 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInInsecureAddressQueryWithOnlyMaxTimeout) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Set an Insecure absolute timeout of 10 minutes via the "max" param.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "10m"},
@@ -13123,8 +13078,7 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInInsecureAddressQueryWithRelativeTimeout) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Set an Insecure relative timeout of 10%.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -13188,8 +13142,7 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInAddressQueryWaitsWithoutTimeoutIfFatal) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Set timeouts but also enforce secure responses.
        {"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
@@ -13256,8 +13209,7 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInAddressQueryAlwaysRespectsTimeoutsForInsecure) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {// Set timeouts but also enforce secure responses.
        {"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
@@ -13604,7 +13556,7 @@ class MockAddressSorter : public AddressSorter {
 };
 
 TEST_F(HostResolverManagerDnsTest, ResultsAreSorted) {
-  base::test::ScopedFeatureList feature_list(features::kUseHostResolverCache);
+  AddScopedFeatureList().InitAndEnableFeature(features::kUseHostResolverCache);
 
   // Expect sorter to be separately called with A and AAAA results. For the
   // AAAA, sort to reversed order.
@@ -13651,8 +13603,7 @@ TEST_F(HostResolverManagerDnsTest, ResultsAreSorted) {
 }
 
 TEST_F(HostResolverManagerDnsTest, ResultsAreSortedWithHostCache) {
-  base::test::ScopedFeatureList feature_list;
-  DisableHostResolverCache(feature_list);
+  DisableHostResolverCache(AddScopedFeatureList());
 
   // When using HostCache, expect sorter to be called once for all address
   // results together (AAAA before A).
@@ -13698,7 +13649,7 @@ TEST_F(HostResolverManagerDnsTest, ResultsAreSortedWithHostCache) {
 }
 
 TEST_F(HostResolverManagerDnsTest, Ipv4OnlyResultsAreSorted) {
-  base::test::ScopedFeatureList feature_list(features::kUseHostResolverCache);
+  AddScopedFeatureList().InitAndEnableFeature(features::kUseHostResolverCache);
 
   // Sort to reversed order.
   auto sorter = std::make_unique<testing::StrictMock<MockAddressSorter>>();
@@ -13736,8 +13687,7 @@ TEST_F(HostResolverManagerDnsTest, Ipv4OnlyResultsAreSorted) {
 }
 
 TEST_F(HostResolverManagerDnsTest, Ipv4OnlyResultsNotSortedWithHostCache) {
-  base::test::ScopedFeatureList feature_list;
-  DisableHostResolverCache(feature_list);
+  DisableHostResolverCache(AddScopedFeatureList());
 
   // When using HostCache, expect no sort calls for IPv4-only results.
   auto sorter = std::make_unique<testing::StrictMock<MockAddressSorter>>();
@@ -13772,7 +13722,7 @@ TEST_F(HostResolverManagerDnsTest, Ipv4OnlyResultsNotSortedWithHostCache) {
 }
 
 TEST_F(HostResolverManagerDnsTest, EmptyResultsNotSorted) {
-  base::test::ScopedFeatureList feature_list(features::kUseHostResolverCache);
+  AddScopedFeatureList().InitAndEnableFeature(features::kUseHostResolverCache);
 
   // Expect no calls to sorter for empty results.
   auto sorter = std::make_unique<testing::StrictMock<MockAddressSorter>>();
@@ -13798,8 +13748,7 @@ TEST_F(HostResolverManagerDnsTest, EmptyResultsNotSorted) {
 }
 
 TEST_F(HostResolverManagerDnsTest, EmptyResultsNotSortedWithHostCache) {
-  base::test::ScopedFeatureList feature_list;
-  DisableHostResolverCache(feature_list);
+  DisableHostResolverCache(AddScopedFeatureList());
 
   // Expect no calls to sorter for empty results.
   auto sorter = std::make_unique<testing::StrictMock<MockAddressSorter>>();
@@ -13826,7 +13775,7 @@ TEST_F(HostResolverManagerDnsTest, EmptyResultsNotSortedWithHostCache) {
 
 // Test for when AddressSorter removes all results.
 TEST_F(HostResolverManagerDnsTest, ResultsSortedAsUnreachable) {
-  base::test::ScopedFeatureList feature_list(features::kUseHostResolverCache);
+  AddScopedFeatureList().InitAndEnableFeature(features::kUseHostResolverCache);
 
   // Set up sorter to return result with no addresses.
   auto sorter = std::make_unique<testing::StrictMock<MockAddressSorter>>();
@@ -13875,8 +13824,7 @@ TEST_F(HostResolverManagerDnsTest, ResultsSortedAsUnreachable) {
 
 // Test for when AddressSorter removes all results.
 TEST_F(HostResolverManagerDnsTest, ResultsSortedAsUnreachableWithHostCache) {
-  base::test::ScopedFeatureList feature_list;
-  DisableHostResolverCache(feature_list);
+  DisableHostResolverCache(AddScopedFeatureList());
 
   // Set up sorter to return result with no addresses.
   auto sorter = std::make_unique<testing::StrictMock<MockAddressSorter>>();
@@ -13924,8 +13872,7 @@ TEST_F(HostResolverManagerDnsTest, ResultsSortedAsUnreachableWithHostCache) {
 }
 
 TEST_F(HostResolverManagerDnsTest, SortFailure) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
+  AddScopedFeatureList().InitWithFeatures(
       /*enabled_features=*/{features::
                                 kPartitionConnectionsByNetworkIsolationKey,
                             features::kUseHostResolverCache},
@@ -13991,8 +13938,7 @@ TEST_F(HostResolverManagerDnsTest, SortFailure) {
 // Test for if a transaction sort fails after another transaction has already
 // succeeded.
 TEST_F(HostResolverManagerDnsTest, PartialSortFailure) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
+  AddScopedFeatureList().InitWithFeatures(
       /*enabled_features=*/{features::
                                 kPartitionConnectionsByNetworkIsolationKey,
                             features::kUseHostResolverCache},
@@ -14078,8 +14024,7 @@ TEST_F(HostResolverManagerDnsTest, PartialSortFailure) {
 }
 
 TEST_F(HostResolverManagerDnsTest, SortFailureWithHostCache) {
-  base::test::ScopedFeatureList feature_list;
-  DisableHostResolverCache(feature_list);
+  DisableHostResolverCache(AddScopedFeatureList());
 
   // Fail the sort.
   auto sorter = std::make_unique<testing::StrictMock<MockAddressSorter>>();
@@ -14126,8 +14071,7 @@ TEST_F(HostResolverManagerDnsTest, SortFailureWithHostCache) {
 }
 
 TEST_F(HostResolverManagerDnsTest, HostResolverCacheContainsTransactions) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
+  AddScopedFeatureList().InitWithFeatures(
       /*enabled_features=*/{features::kUseHostResolverCache,
                             features::
                                 kPartitionConnectionsByNetworkIsolationKey},
@@ -14163,8 +14107,7 @@ TEST_F(HostResolverManagerDnsTest, HostResolverCacheContainsTransactions) {
 }
 
 TEST_F(HostResolverManagerDnsTest, HostResolverCacheContainsAliasChains) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
+  AddScopedFeatureList().InitWithFeatures(
       /*enabled_features=*/{features::kUseHostResolverCache,
                             features::
                                 kPartitionConnectionsByNetworkIsolationKey},
@@ -14225,8 +14168,7 @@ TEST_F(HostResolverManagerDnsTest, HostResolverCacheContainsAliasChains) {
 
 TEST_F(HostResolverManagerDnsTest,
        HostResolverCacheContainsAliasChainsWithErrors) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
+  AddScopedFeatureList().InitWithFeatures(
       /*enabled_features=*/{features::kUseHostResolverCache,
                             features::
                                 kPartitionConnectionsByNetworkIsolationKey},
@@ -14295,8 +14237,7 @@ TEST_F(HostResolverManagerDnsTest,
 
 TEST_F(HostResolverManagerDnsTest,
        HostResolverCacheContainsAliasChainsWithNoTtlErrors) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
+  AddScopedFeatureList().InitWithFeatures(
       /*enabled_features=*/{features::kUseHostResolverCache,
                             features::
                                 kPartitionConnectionsByNetworkIsolationKey},
@@ -14354,8 +14295,7 @@ TEST_F(HostResolverManagerDnsTest,
 }
 
 TEST_F(HostResolverManagerDnsTest, NetworkErrorsNotSavedInHostCache) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
+  AddScopedFeatureList().InitWithFeatures(
       /*enabled_features=*/{features::
                                 kPartitionConnectionsByNetworkIsolationKey},
       /*disabled_features=*/{features::kUseHostResolverCache});
@@ -14400,8 +14340,7 @@ TEST_F(HostResolverManagerDnsTest, NetworkErrorsNotSavedInHostCache) {
 // Test for if a DNS transaction fails with network error after another
 // transaction has already succeeded.
 TEST_F(HostResolverManagerDnsTest, PartialNetworkErrorsNotSavedInHostCache) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
+  AddScopedFeatureList().InitWithFeatures(
       /*enabled_features=*/{features::
                                 kPartitionConnectionsByNetworkIsolationKey},
       /*disabled_features=*/{features::kUseHostResolverCache});
@@ -14447,8 +14386,7 @@ TEST_F(HostResolverManagerDnsTest, PartialNetworkErrorsNotSavedInHostCache) {
 }
 
 TEST_F(HostResolverManagerDnsTest, NetworkErrorsNotSavedInHostResolverCache) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
+  AddScopedFeatureList().InitWithFeatures(
       /*enabled_features=*/{features::
                                 kPartitionConnectionsByNetworkIsolationKey,
                             features::kUseHostResolverCache},
@@ -14492,8 +14430,7 @@ TEST_F(HostResolverManagerDnsTest, NetworkErrorsNotSavedInHostResolverCache) {
 // transaction has already succeeded.
 TEST_F(HostResolverManagerDnsTest,
        PartialNetworkErrorsNotSavedInHostResolverCache) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
+  AddScopedFeatureList().InitWithFeatures(
       /*enabled_features=*/{features::
                                 kPartitionConnectionsByNetworkIsolationKey,
                             features::kUseHostResolverCache},
@@ -14558,8 +14495,7 @@ TEST_F(HostResolverManagerDnsTest,
 }
 
 TEST_F(HostResolverManagerDnsTest, MalformedResponsesNotSavedInHostCache) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
+  AddScopedFeatureList().InitWithFeatures(
       /*enabled_features=*/{features::
                                 kPartitionConnectionsByNetworkIsolationKey},
       /*disabled_features=*/{features::kUseHostResolverCache});
@@ -14602,8 +14538,7 @@ TEST_F(HostResolverManagerDnsTest, MalformedResponsesNotSavedInHostCache) {
 // transaction has already succeeded.
 TEST_F(HostResolverManagerDnsTest,
        PartialMalformedResponsesNotSavedInHostCache) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
+  AddScopedFeatureList().InitWithFeatures(
       /*enabled_features=*/{features::
                                 kPartitionConnectionsByNetworkIsolationKey},
       /*disabled_features=*/{features::kUseHostResolverCache});
@@ -14649,8 +14584,7 @@ TEST_F(HostResolverManagerDnsTest,
 
 TEST_F(HostResolverManagerDnsTest,
        MalformedResponsesNotSavedInHostResolverCache) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
+  AddScopedFeatureList().InitWithFeatures(
       /*enabled_features=*/{features::
                                 kPartitionConnectionsByNetworkIsolationKey,
                             features::kUseHostResolverCache},
@@ -14691,8 +14625,7 @@ TEST_F(HostResolverManagerDnsTest,
 // transaction has already succeeded.
 TEST_F(HostResolverManagerDnsTest,
        PartialMalformedResponsesNotSavedInHostResolverCache) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
+  AddScopedFeatureList().InitWithFeatures(
       /*enabled_features=*/{features::
                                 kPartitionConnectionsByNetworkIsolationKey,
                             features::kUseHostResolverCache},
@@ -14756,8 +14689,7 @@ TEST_F(HostResolverManagerDnsTest,
 }
 
 TEST_F(HostResolverManagerDnsTest, HttpToHttpsUpgradeSavedInHostCache) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
+  AddScopedFeatureList().InitWithFeatures(
       /*enabled_features=*/{features::
                                 kPartitionConnectionsByNetworkIsolationKey},
       /*disabled_features=*/{features::kUseHostResolverCache});
@@ -14817,8 +14749,7 @@ TEST_F(HostResolverManagerDnsTest, HttpToHttpsUpgradeSavedInHostCache) {
 // is received after successful address responses.
 TEST_F(HostResolverManagerDnsTest,
        HttpToHttpsUpgradeAfterAddressesSavedInHostResolverCache) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
+  AddScopedFeatureList().InitWithFeatures(
       /*enabled_features=*/{features::
                                 kPartitionConnectionsByNetworkIsolationKey,
                             features::kUseHostResolverCache},
@@ -14918,7 +14849,7 @@ class HostResolverManagerBootstrapTest : public HostResolverManagerDnsTest {
   void SetUp() override {
     // The request host scheme and port are only preserved if the SVCB feature
     // is enabled.
-    features.InitAndEnableFeatureWithParameters(
+    AddScopedFeatureList().InitAndEnableFeatureWithParameters(
         features::kUseDnsHttpsSvcb,
         {// Disable timeouts.
          {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
@@ -14985,8 +14916,6 @@ class HostResolverManagerBootstrapTest : public HostResolverManagerDnsTest {
     resolve_context_->host_cache()->Set(MakeCacheKey(secure), std::move(entry),
                                         GetMockTickClock()->NowTicks(), kTtl);
   }
-
-  base::test::ScopedFeatureList features;
 };
 
 std::vector<IPAddress> IPAddresses(const std::vector<IPEndPoint>& endpoints) {

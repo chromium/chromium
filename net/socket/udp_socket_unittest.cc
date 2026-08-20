@@ -392,7 +392,6 @@ TEST_F(UDPSocketTest, Connect) {
 
 TEST_F(UDPSocketTest, ConnectRestrictedPort) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list;
   // Setup the server to listen.
   UDPServerSocket server(NetLog::Get(), NetLogSource());
   server.AllowAddressReuse();
@@ -400,7 +399,7 @@ TEST_F(UDPSocketTest, ConnectRestrictedPort) {
   // Get bound port.
   IPEndPoint server_address;
   ASSERT_THAT(server.GetLocalAddress(&server_address), IsOk());
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kRestrictAbusePortsOnLocalhost,
       {{"localhost_restrict_ports",
         base::NumberToString(server_address.port())}});
@@ -433,13 +432,12 @@ TEST_F(UDPSocketTest, ConnectRestrictedPort) {
 
 TEST_F(UDPSocketTest, ConnectUsingNetworkRestrictedPort) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list;
   UDPServerSocket server(NetLog::Get(), NetLogSource());
   server.AllowAddressReuse();
   ASSERT_THAT(server.Listen(IPEndPoint(IPAddress::IPv4Localhost(), 0)), IsOk());
   IPEndPoint server_address;
   ASSERT_THAT(server.GetLocalAddress(&server_address), IsOk());
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kRestrictAbusePortsOnLocalhost,
       {{"localhost_restrict_ports",
         base::NumberToString(server_address.port())}});
@@ -455,13 +453,12 @@ TEST_F(UDPSocketTest, ConnectUsingNetworkRestrictedPort) {
 
 TEST_F(UDPSocketTest, ConnectUsingDefaultNetworkRestrictedPort) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list;
   UDPServerSocket server(NetLog::Get(), NetLogSource());
   server.AllowAddressReuse();
   ASSERT_THAT(server.Listen(IPEndPoint(IPAddress::IPv4Localhost(), 0)), IsOk());
   IPEndPoint server_address;
   ASSERT_THAT(server.GetLocalAddress(&server_address), IsOk());
-  feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kRestrictAbusePortsOnLocalhost,
       {{"localhost_restrict_ports",
         base::NumberToString(server_address.port())}});
@@ -2919,7 +2916,7 @@ class UDPSocketGroTest : public UDPSocketTest {
 
   void SetUp() override {
     UDPSocketTest::SetUp();
-    feature_list_.InitAndEnableFeature(features::kEnableUdpGro);
+    AddScopedFeatureList().InitAndEnableFeature(features::kEnableUdpGro);
   }
 
   // Configures GRO sockets and verifies that the kernel loopback interface
@@ -3016,7 +3013,6 @@ class UDPSocketGroTest : public UDPSocketTest {
   base::HistogramTester histogram_tester_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::MetricsSubSampler::ScopedAlwaysSampleForTesting scoped_always_sample_;
 };
 

@@ -629,11 +629,9 @@ class NetworkChangeNotifierWinDeferredInitTest
     : public NetworkChangeNotifierWinTest {
  public:
   NetworkChangeNotifierWinDeferredInitTest() {
-    feature_list_.InitAndEnableFeature(features::kDeferConnectionTypeAtStartup);
+    AddScopedFeatureList().InitAndEnableFeature(
+        features::kDeferConnectionTypeAtStartup);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(NetworkChangeNotifierWinDeferredInitTest, BasicStartSucceeds) {

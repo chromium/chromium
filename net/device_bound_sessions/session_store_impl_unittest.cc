@@ -291,9 +291,6 @@ class SessionStoreImplTest : public net::TestWithTaskEnvironment {
         .emplace<crypto::ScopedMockUnexportableKeyProvider>();
   }
 
- protected:
-  base::test::ScopedFeatureList feature_list_;
-
  private:
   base::ScopedTempDir temp_dir_;
   std::variant<crypto::ScopedFakeUnexportableKeyProvider,
@@ -519,7 +516,7 @@ TEST_F(SessionStoreImplTest, LoadSavedSessions) {
 }
 
 TEST_F(SessionStoreImplTest, DropLowerSchemaVersionSessions) {
-  feature_list_.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kDeviceBoundSessions,
       {{features::kDeviceBoundSessionsSchemaVersion.name, "1"}});
   CreateStoreAndLoadSessions();
@@ -532,8 +529,7 @@ TEST_F(SessionStoreImplTest, DropLowerSchemaVersionSessions) {
   SessionStore::SessionsMap saved_sessions =
       CreateAndSaveSessions(cfgs, unexportable_key_service(), store());
 
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kDeviceBoundSessions,
       {{features::kDeviceBoundSessionsSchemaVersion.name, "2"}});
   MimicRestart();
@@ -543,7 +539,7 @@ TEST_F(SessionStoreImplTest, DropLowerSchemaVersionSessions) {
 }
 
 TEST_F(SessionStoreImplTest, DropHigherSchemaVersionSessions) {
-  feature_list_.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kDeviceBoundSessions,
       {{features::kDeviceBoundSessionsSchemaVersion.name, "2"}});
   CreateStoreAndLoadSessions();
@@ -556,8 +552,7 @@ TEST_F(SessionStoreImplTest, DropHigherSchemaVersionSessions) {
   SessionStore::SessionsMap saved_sessions =
       CreateAndSaveSessions(cfgs, unexportable_key_service(), store());
 
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kDeviceBoundSessions,
       {{features::kDeviceBoundSessionsSchemaVersion.name, "1"}});
   MimicRestart();
@@ -696,7 +691,7 @@ TEST_F(SessionStoreImplTest, PruneLoadedEntryWithInvalidRefreshInitiator) {
 
 TEST_F(SessionStoreImplTest, GarbageCollectsStaleKeys) {
   base::HistogramTester histograms;
-  feature_list_.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       unexportable_keys::kUnexportableKeyDeletion);
   crypto::MockUnexportableKeyProvider& mock_key_provider =
       SwitchToMockKeyProvider().mock();
@@ -783,7 +778,7 @@ TEST_F(SessionStoreImplTest, GarbageCollectsStaleKeys) {
 }
 
 TEST_F(SessionStoreImplTest, GarbageCollectionDoesNotTriggerIfFeatureDisabled) {
-  feature_list_.InitAndDisableFeature(
+  AddScopedFeatureList().InitAndDisableFeature(
       unexportable_keys::kUnexportableKeyDeletion);
   crypto::MockUnexportableKeyProvider& mock_key_provider =
       SwitchToMockKeyProvider().mock();
@@ -1316,7 +1311,7 @@ TEST_F(SessionStoreImplTest, SaveSessionWithUnexpectedAttestationKeyError) {
 
 TEST_F(SessionStoreImplTest, GarbageCollectsStaleKeysWithAttestation) {
   base::HistogramTester histograms;
-  feature_list_.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       unexportable_keys::kUnexportableKeyDeletion);
   crypto::MockUnexportableKeyProvider& mock_key_provider =
       SwitchToMockKeyProvider().mock();

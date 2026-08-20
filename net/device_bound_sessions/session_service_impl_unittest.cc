@@ -235,36 +235,27 @@ class SessionServiceImplTest : public ::testing::Test,
 class SessionServiceImplNoRefreshQuotaTest : public SessionServiceImplTest {
  public:
   SessionServiceImplNoRefreshQuotaTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+    AddScopedFeatureList().InitAndEnableFeatureWithParameters(
         net::features::kDeviceBoundSessions, {{"RefreshQuota", "false"}});
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class SessionServiceImplTestWithFederatedSessions
     : public SessionServiceImplTest {
  public:
   SessionServiceImplTestWithFederatedSessions() {
-    scoped_feature_list_.InitAndEnableFeature(
+    AddScopedFeatureList().InitAndEnableFeature(
         net::features::kDeviceBoundSessionsFederatedRegistration);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class SessionServiceImplTestWithoutFederatedSessions
     : public SessionServiceImplTest {
  public:
   SessionServiceImplTestWithoutFederatedSessions() {
-    scoped_feature_list_.InitAndDisableFeature(
+    AddScopedFeatureList().InitAndDisableFeature(
         net::features::kDeviceBoundSessionsFederatedRegistration);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SessionServiceImplTest, RegisterSuccess) {
@@ -2644,7 +2635,7 @@ class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
                  /*restricted_sites=*/std::vector<SchemefulSite>(),
                  /*has_cookie_access_cb=*/base::NullCallback(),
                  /*client_cert_handler=*/base::DoNothing()) {
-    scoped_feature_list_.InitAndEnableFeature(
+    AddScopedFeatureList().InitAndEnableFeature(
         net::features::kDeviceBoundSessionsFederatedRegistration);
   }
 
@@ -2726,7 +2717,6 @@ class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
   std::unique_ptr<URLRequestContext> context_;
   std::unique_ptr<StrictMock<SessionStoreMock>> store_;
   SessionServiceImpl service_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SessionServiceImplWithStoreTest, UsesSessionStore) {
@@ -3422,8 +3412,7 @@ TEST_F(SessionServiceImplWithStoreTest, RefreshNoConfigChangeSavesToStore) {
 
 TEST_F(SessionServiceImplWithStoreTest,
        RefreshNoConfigChangeDisabledByKillSwitch) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
+  AddScopedFeatureList().InitAndDisableFeature(
       features::kDeviceBoundSessionsPersistExpiryOnRefresh);
 
   EXPECT_CALL(store(), LoadSessions).Times(1);

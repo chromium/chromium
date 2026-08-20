@@ -347,7 +347,8 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
     } else {
       disabled_features.emplace_back(features::kHappyEyeballsV3);
     }
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    AddScopedFeatureList().InitWithFeatures(enabled_features,
+                                            disabled_features);
     FLAGS_quic_enable_http3_grease_randomness = false;
     CreateSessionDeps();
   }
@@ -520,8 +521,8 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
     } else {
       disabled_features.emplace_back(features::kAsyncQuicSession);
     }
-    feature_list_.Reset();
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    AddScopedFeatureList().InitWithFeatures(enabled_features,
+                                            disabled_features);
   }
 
   void TestAltJobSucceedsAfterMainJobFailed(
@@ -609,8 +610,6 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
  private:
   const bool happy_eyeballs_v3_enabled_;
   bool create_job_controller_ = true;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class HttpStreamFactoryJobControllerTest
@@ -4378,8 +4377,8 @@ TEST_F(HttpStreamFactoryJobControllerTest, InvalidPortForQuic) {
 TEST_F(HttpStreamFactoryJobControllerTest, HostResolutionHang) {
   // Explicitly disable the kAdditionalDelayMainJob feature, since this would
   // add a delay to the main job and cause the test to fail.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(net::features::kAdditionalDelayMainJob);
+  AddScopedFeatureList().InitAndDisableFeature(
+      net::features::kAdditionalDelayMainJob);
 
   auto hanging_resolver = std::make_unique<MockHostResolver>();
   hanging_resolver->set_ondemand_mode(true);
@@ -4712,12 +4711,11 @@ TEST_F(HttpStreamFactoryJobControllerTest,
 // support respects NetworkIsolationKeys.
 TEST_F(HttpStreamFactoryJobControllerTest,
        PreconnectMultipleStreamsToH2ServerWithNetworkIsolationKey) {
-  base::test::ScopedFeatureList feature_list;
   // It's not strictly necessary to enable
   // `kPartitionConnectionsByNetworkIsolationKey`, but the second phase of the
   // test would only make 4 connections, reusing the first connection, without
   // it.
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Need to re-create HttpServerProperties after enabling the field trial,
   // since it caches the field trial value on construction.
@@ -5178,8 +5176,7 @@ TEST_F(JobControllerLimitMultipleH2Requests, MultipleRequests) {
 // NetworkIsolationKeys.
 TEST_F(JobControllerLimitMultipleH2Requests,
        MultipleRequestsNetworkIsolationKey) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Need to re-create HttpServerProperties after enabling the field trial,
   // since it caches the field trial value on construction.
@@ -5648,8 +5645,8 @@ class HttpStreamFactoryJobControllerPreconnectTest
 
   void SetUp() override {
     if (!GetParam()) {
-      scoped_feature_list_.InitFromCommandLine(std::string(),
-                                               "LimitEarlyPreconnects");
+      AddScopedFeatureList().InitFromCommandLine(std::string(),
+                                                 "LimitEarlyPreconnects");
     }
   }
 
@@ -5683,7 +5680,6 @@ class HttpStreamFactoryJobControllerPreconnectTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   HttpRequestInfo request_info_;
 };
 
@@ -7737,11 +7733,13 @@ class HttpStreamFactoryJobControllerWsOverH3Test
   }
 
   void EnableWebsocketsOverHttp3() {
-    feature_list_.InitAndEnableFeature(features::kEnableWebsocketsOverHttp3);
+    AddScopedFeatureList().InitAndEnableFeature(
+        features::kEnableWebsocketsOverHttp3);
   }
 
   void DisableWebsocketsOverHttp3() {
-    feature_list_.InitAndDisableFeature(features::kEnableWebsocketsOverHttp3);
+    AddScopedFeatureList().InitAndDisableFeature(
+        features::kEnableWebsocketsOverHttp3);
   }
 
   void CreateWebSocketJobController(const HttpRequestInfo& request_info) {
@@ -7871,7 +7869,6 @@ class HttpStreamFactoryJobControllerWsOverH3Test
     mock_quic_session_ = raw_session;
   }
 
-  base::test::ScopedFeatureList feature_list_;
   quic::test::MockRandom random_{0};
   quic::MockClock clock_;
   QuicChromiumConnectionHelper helper_{&clock_, &random_};

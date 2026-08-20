@@ -124,11 +124,11 @@ class TCPSocketTest
  protected:
   TCPSocketTest() {
 #if BUILDFLAG(IS_WIN)
-    scoped_feature_list_.InitWithFeatureState(
+    AddScopedFeatureList().InitWithFeatureState(
         features::kTcpSocketIoCompletionPortWin,
         IsTcpSocketIoCompletionPortWinEnabled());
 #elif BUILDFLAG(IS_MAC)
-    scoped_feature_list_.InitWithFeatureState(
+    AddScopedFeatureList().InitWithFeatureState(
         features::kTcpPortRandomizationMac, IsTcpPortRandomizationMacEnabled());
 #else
     CHECK(!std::get<0>(GetParam()));
@@ -345,7 +345,6 @@ class TCPSocketTest
     *received_data = received_data_buffer.first(total_received);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TCPSocket> socket_;
   IPEndPoint local_address_;
 };

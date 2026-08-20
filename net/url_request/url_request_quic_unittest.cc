@@ -90,9 +90,9 @@ class URLRequestQuicTest : public TestWithTaskEnvironment,
       : force_quic_(force_quic),
         context_builder_(CreateTestURLRequestContextBuilder()) {
     if (happy_eyeballs_v3_enabled()) {
-      feature_list_.InitAndEnableFeature(features::kHappyEyeballsV3);
+      AddScopedFeatureList().InitAndEnableFeature(features::kHappyEyeballsV3);
     } else {
-      feature_list_.InitAndDisableFeature(features::kHappyEyeballsV3);
+      AddScopedFeatureList().InitAndDisableFeature(features::kHappyEyeballsV3);
     }
 
     QuicEnableVersion(version());
@@ -210,7 +210,6 @@ class URLRequestQuicTest : public TestWithTaskEnvironment,
   }
 
   const bool force_quic_;
-  base::test::ScopedFeatureList feature_list_;
 
   std::unique_ptr<QuicSimpleServer> server_;
   quic::QuicMemoryCacheBackend memory_cache_backend_;

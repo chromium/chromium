@@ -346,7 +346,8 @@ class QuicNetworkTransactionTest
     } else {
       disabled_features.emplace_back(features::kHappyEyeballsV3);
     }
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    AddScopedFeatureList().InitWithFeatures(enabled_features,
+                                            disabled_features);
 
     FLAGS_quic_enable_http3_grease_randomness = false;
     request_.method = "GET";
@@ -1068,7 +1069,6 @@ class QuicNetworkTransactionTest
     EXPECT_EQ(alt_svc_negotiated_alpn, supported_alpn);
   }
 
-  base::test::ScopedFeatureList feature_list_;
   const quic::ParsedQuicVersion version_;
   const std::string alt_svc_header_ =
       GenerateQuicAltSvcHeader({version_}) + "\r\n";
@@ -2517,8 +2517,7 @@ TEST_P(QuicNetworkTransactionTest,
     // These versions currently do not support Alt-Svc.
     return;
   }
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
@@ -3390,8 +3389,7 @@ TEST_P(QuicNetworkTransactionTest,
   const auto kNetworkAnonymizationKey2 =
       NetworkAnonymizationKey::CreateSameSite(kSite2);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
@@ -4515,7 +4513,6 @@ TEST_P(QuicNetworkTransactionTest,
   const auto kNetworkAnonymizationKey2 =
       NetworkAnonymizationKey::CreateSameSite(kSite2);
 
-  base::test::ScopedFeatureList feature_list;
   std::vector<base::test::FeatureRef> enable_features;
   std::vector<base::test::FeatureRef> disable_features;
   enable_features.emplace_back(
@@ -4527,7 +4524,7 @@ TEST_P(QuicNetworkTransactionTest,
   if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
     disable_features.emplace_back(features::kAsyncQuicSession);
   }
-  feature_list.InitWithFeatures(enable_features, disable_features);
+  AddScopedFeatureList().InitWithFeatures(enable_features, disable_features);
 
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
@@ -5372,8 +5369,7 @@ TEST_P(QuicNetworkTransactionTest,
   const auto kNetworkAnonymizationKey2 =
       NetworkAnonymizationKey::CreateSameSite(kSite2);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
@@ -5687,8 +5683,7 @@ TEST_P(QuicNetworkTransactionTest, FailedZeroRttBrokenAlternateProtocol) {
 
 TEST_P(QuicNetworkTransactionTest,
        FailedZeroRttBrokenAlternateProtocolWithNetworkIsolationKey) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
@@ -6328,7 +6323,8 @@ class QuicNetworkTransactionWithDestinationTest
     } else {
       disabled_features.emplace_back(features::kHappyEyeballsV3);
     }
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    AddScopedFeatureList().InitWithFeatures(enabled_features,
+                                            disabled_features);
 
     FLAGS_quic_enable_http3_grease_randomness = false;
   }
@@ -6513,7 +6509,6 @@ class QuicNetworkTransactionWithDestinationTest
         version_.transport_version, n);
   }
 
-  base::test::ScopedFeatureList feature_list_;
   quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   const quic::ParsedQuicVersion version_;
   quic::ParsedQuicVersionVector supported_versions_;
@@ -8529,12 +8524,11 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
   for (bool partition_connections : {false, true}) {
     SCOPED_TRACE(partition_connections);
 
-    base::test::ScopedFeatureList feature_list;
     if (partition_connections) {
-      feature_list.InitAndEnableFeature(
+      AddScopedFeatureList().InitAndEnableFeature(
           features::kPartitionConnectionsByNetworkIsolationKey);
     } else {
-      feature_list.InitAndDisableFeature(
+      AddScopedFeatureList().InitAndDisableFeature(
           features::kPartitionConnectionsByNetworkIsolationKey);
     }
 
@@ -8795,8 +8789,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
 // QUIC sessions if their NetworkIsolationKeys don't match, and
 // kPartitionConnectionsByNetworkIsolationKey is enabled.
 TEST_P(QuicNetworkTransactionTest, NetworkIsolationTunnel) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
 
   session_params_.enable_quic = true;

@@ -650,7 +650,7 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
       : TestWithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         params_(ClientSocketPool::SocketParams::CreateForHttpForTesting()) {
-    scoped_feature_list_.InitWithFeatures(
+    AddScopedFeatureList().InitWithFeatures(
         {features::kPermitTcpSocketPoolConnectBackupJobs},
         {features::kTcpSocketPoolLimitRandomization});
   }
@@ -762,8 +762,6 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
 
   // Must outlive `connect_job_factory_`
   std::unique_ptr<TransportClientSocketPool> pool_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   raw_ptr<TestConnectJobFactory> connect_job_factory_;
   ClientSocketPoolTest test_base_;
@@ -882,8 +880,7 @@ TEST_F(ClientSocketPoolBaseTest, SocketWithUnreadDataReturnedToPool) {
 
 // Make sure different groups do not share sockets.
 TEST_F(ClientSocketPoolBaseTest, GroupSeparation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
 
   CreatePool(1000 /* max_sockets */, 2 /* max_sockets_per_group */);
@@ -5865,8 +5862,7 @@ TEST_P(ClientSocketPoolBaseRefreshTest, RefreshGroupCreatesNewConnectJobs) {
 }
 
 TEST_P(ClientSocketPoolBaseRefreshTest, RefreshGroupClosesIdleConnectJobs) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
 
   CreatePoolForRefresh(kDefaultMaxSockets, kDefaultMaxSocketsPerGroup);

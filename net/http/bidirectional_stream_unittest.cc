@@ -408,7 +408,7 @@ class BidirectionalStreamTest : public TestWithTaskEnvironment {
     // bidirectional streams.
     // TODO(crbug.com/346835898): Support bidirectional streams in
     // HappyEyeballsV3.
-    feature_list_.InitAndDisableFeature(features::kHappyEyeballsV3);
+    AddScopedFeatureList().InitAndDisableFeature(features::kHappyEyeballsV3);
     ssl_data_.next_proto = NextProto::kProtoHTTP2;
     ssl_data_.ssl_info.cert =
         ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
@@ -459,7 +459,6 @@ class BidirectionalStreamTest : public TestWithTaskEnvironment {
  private:
   SSLSocketDataProvider ssl_data_;
   base::WeakPtr<SpdySession> session_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(BidirectionalStreamTest, CreateInsecureStream) {

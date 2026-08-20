@@ -3383,8 +3383,7 @@ TEST_F(SSLClientSocketTest, SessionResumptionAlpn) {
 // feature is disabled.
 TEST_P(SSLClientSocketVersionTest,
        SessionResumptionNetworkIsolationKeyDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
+  AddScopedFeatureList().InitAndDisableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
 
   ASSERT_TRUE(
@@ -3439,8 +3438,7 @@ TEST_P(SSLClientSocketVersionTest,
 // feature is enabled.
 TEST_P(SSLClientSocketVersionTest,
        SessionResumptionNetworkIsolationKeyEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
 
   const SchemefulSite kSiteA(GURL("https://a.test"));
@@ -4766,8 +4764,7 @@ std::vector<SHA256HashValue> MakeHashValueVector(uint8_t tag) {
 // Test that |ssl_info.pkp_bypassed| is set when a local trust anchor causes
 // pinning to be bypassed.
 TEST_P(SSLClientSocketVersionTest, PKPBypassedSet) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       net::features::kStaticKeyPinningEnforcement);
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
@@ -4803,8 +4800,7 @@ TEST_P(SSLClientSocketVersionTest, PKPBypassedSet) {
 }
 
 TEST_P(SSLClientSocketVersionTest, PKPEnforced) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       net::features::kStaticKeyPinningEnforcement);
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
@@ -4944,8 +4940,7 @@ TEST_P(SSLClientSocketVersionTest, IgnoreCertificateErrorsBypassesRequiredCT) {
 // When both PKP and CT are required for a host, and both fail, the more
 // serious error is that the pin validation failed.
 TEST_P(SSLClientSocketVersionTest, PKPMoreImportantThanCT) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       net::features::kStaticKeyPinningEnforcement);
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
@@ -6892,18 +6887,17 @@ class SSLClientSocketAlpsTest
  public:
   SSLClientSocketAlpsTest() {
     if (client_use_new_alps()) {
-      feature_list_.InitAndEnableFeature(features::kUseNewAlpsCodepointHttp2);
+      AddScopedFeatureList().InitAndEnableFeature(
+          features::kUseNewAlpsCodepointHttp2);
     } else {
-      feature_list_.InitAndDisableFeature(features::kUseNewAlpsCodepointHttp2);
+      AddScopedFeatureList().InitAndDisableFeature(
+          features::kUseNewAlpsCodepointHttp2);
     }
   }
 
   bool client_alps_enabled() const { return std::get<0>(GetParam()); }
   bool server_alps_enabled() const { return std::get<1>(GetParam()); }
   bool client_use_new_alps() const { return std::get<2>(GetParam()); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

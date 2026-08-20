@@ -77,7 +77,7 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
                             SiteForCookies::FromOrigin(kOrigin_));
 
   ReportingServiceTest() {
-    feature_list_.InitAndEnableFeature(
+    AddScopedFeatureList().InitAndEnableFeature(
         features::kPartitionConnectionsByNetworkIsolationKey);
     Init();
   }
@@ -116,8 +116,6 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
   ReportingService* service() { return service_.get(); }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-
   base::SimpleTestClock clock_;
   base::SimpleTestTickClock tick_clock_;
 
@@ -192,8 +190,7 @@ TEST_P(ReportingServiceTest, DontQueueReportInvalidUrl) {
 }
 
 TEST_P(ReportingServiceTest, QueueReportNetworkIsolationKeyDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
+  AddScopedFeatureList().InitAndDisableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Re-create the store, so it reads the new feature value.
@@ -257,8 +254,7 @@ TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeader) {
 
 TEST_P(ReportingServiceTest,
        ProcessReportingEndpointsHeaderNetworkIsolationKeyDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
+  AddScopedFeatureList().InitAndDisableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Re-create the store, so it reads the new feature value.
@@ -472,8 +468,7 @@ TEST_P(ReportingServiceTest, ProcessReportToHeader_TooDeep) {
 }
 
 TEST_P(ReportingServiceTest, ProcessReportToHeaderNetworkIsolationKeyDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
+  AddScopedFeatureList().InitAndDisableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Re-create the store, so it reads the new feature value.

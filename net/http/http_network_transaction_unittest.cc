@@ -698,7 +698,8 @@ class HttpNetworkTransactionTest
     }
     disabled_features.emplace_back(features::kTcpSocketPoolLimitRandomization);
 
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    AddScopedFeatureList().InitWithFeatures(enabled_features,
+                                            disabled_features);
   }
 
   bool HappyEyeballsV2Enabled() const {
@@ -719,9 +720,6 @@ class HttpNetworkTransactionTest
       ProxyChain::ForIpProtection({{proxy_server_1_, proxy_server_2_}})};
   const ProxyChain example_proxy_server_chain_{ProxyServer{
       ProxyServer::SCHEME_HTTPS, HostPortPair("www.example.org", 443)}};
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -4874,8 +4872,7 @@ TEST_P(HttpNetworkTransactionTest,
   // This test would need to use a single socket without this option enabled.
   // Best to use this option when it would affect a test, as it will eventually
   // become the default behavior.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Proxy matches request URL.
@@ -5138,8 +5135,7 @@ TEST_P(HttpNetworkTransactionTest,
   // This test would need to use a single socket without this option enabled.
   // Best to use this option when it would affect a test, as it will eventually
   // become the default behavior.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Proxy matches request URL.
@@ -8396,8 +8392,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyConnectHttps) {
 // to complete.
 TEST_P(HttpNetworkTransactionTest,
        HttpsNestedProxySpdyConnectHttpsNoBackupJob) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPermitTcpSocketPoolConnectBackupJobs);
   HttpRequestInfo request;
   request.method = "GET";
@@ -8542,8 +8537,7 @@ TEST_P(HttpNetworkTransactionTest,
 // fix for crbug.com/448445046.
 TEST_P(HttpNetworkTransactionTest,
        HttpsNestedProxySpdyConnectHttpsNoBackupJobUsingExistingSocket) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPermitTcpSocketPoolConnectBackupJobs);
   HttpRequestInfo request;
   request.method = "GET";
@@ -17013,8 +17007,7 @@ TEST_P(HttpNetworkTransactionTest, HonorAlternativeServiceHeader) {
 
 TEST_P(HttpNetworkTransactionTest,
        HonorAlternativeServiceHeaderWithNetworkAnonymizationKey) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
@@ -24296,7 +24289,7 @@ class HttpNetworkTransactionReportingTest
   HttpNetworkTransactionReportingTest() {
     std::vector<base::test::FeatureRef> required_features = {
         features::kPartitionConnectionsByNetworkIsolationKey};
-    feature_list_.InitWithFeatures(required_features, {});
+    AddScopedFeatureList().InitWithFeatures(required_features, {});
   }
 
   void SetUp() override {
@@ -24374,7 +24367,6 @@ class HttpNetworkTransactionReportingTest
   std::string url_ = "https://www.example.org/";
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   raw_ptr<TestReportingContext> test_reporting_context_ = nullptr;
 };
 
@@ -26884,12 +26876,11 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolation) {
   for (bool partition_connections : {false, true}) {
     SCOPED_TRACE(partition_connections);
 
-    base::test::ScopedFeatureList feature_list;
     if (partition_connections) {
-      feature_list.InitAndEnableFeature(
+      AddScopedFeatureList().InitAndEnableFeature(
           features::kPartitionConnectionsByNetworkIsolationKey);
     } else {
-      feature_list.InitAndDisableFeature(
+      AddScopedFeatureList().InitAndDisableFeature(
           features::kPartitionConnectionsByNetworkIsolationKey);
     }
 
@@ -27066,12 +27057,11 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolationH2) {
     for (bool partition_connections : {false, true}) {
       SCOPED_TRACE(partition_connections);
 
-      base::test::ScopedFeatureList feature_list;
       if (partition_connections) {
-        feature_list.InitAndEnableFeature(
+        AddScopedFeatureList().InitAndEnableFeature(
             features::kPartitionConnectionsByNetworkIsolationKey);
       } else {
-        feature_list.InitAndDisableFeature(
+        AddScopedFeatureList().InitAndDisableFeature(
             features::kPartitionConnectionsByNetworkIsolationKey);
       }
 
@@ -27262,8 +27252,7 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolationH2) {
 // issue a request and make sure the correct socket is used. Loops three times,
 // expecting to use the first preconnect, second preconnect, and neither.
 TEST_P(HttpNetworkTransactionTest, NetworkIsolationPreconnect) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
 
   enum class TestCase {
@@ -27403,8 +27392,7 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolationPreconnect) {
 // Test that the NetworkAnonymizationKey is passed down to SSLConfig so the
 // session cache is isolated.
 TEST_P(HttpNetworkTransactionTest, NetworkIsolationSSL) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
 
   const SchemefulSite kSite1(GURL("http://origin1/"));
@@ -27527,8 +27515,7 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolationSSL) {
 // Test that the NetworkAnonymizationKey is passed down to SSLConfig so the
 // session cache is isolated, for both origins and proxies.
 TEST_P(HttpNetworkTransactionTest, NetworkIsolationSSLProxy) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
 
   session_deps_.proxy_resolution_service =
@@ -28392,8 +28379,7 @@ class IpProtectionProxyDelegate : public TestProxyDelegate {
 };
 
 TEST_P(HttpNetworkTransactionTest, EarlyHintsWithAltSvcHeader) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
+  AddScopedFeatureList().InitWithFeatures(
       // enabled features
       {features::kEnableEarlyHintsOnHttp11},  // Enable Early Hints on HTTP/1.1
       // disabled features
@@ -28495,8 +28481,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyAdditionalCapacity) {
       HttpNetworkSession::SocketPoolType::kNormal, 256);
   ClientSocketPoolManager::set_socket_soft_cap_per_pool_for_test(
       HttpNetworkSession::SocketPoolType::kWebSocket, 256);
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
+  AddScopedFeatureList().InitAndEnableFeatureWithParameters(
       features::kTcpSocketPoolLimitRandomization,
       {
           {
