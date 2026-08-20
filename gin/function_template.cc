@@ -4,60 +4,17 @@
 
 #include "gin/function_template.h"
 
-#include "base/observer_list.h"
 #include "base/strings/strcat.h"
-#include "gin/public/gin_embedders.h"
 
 namespace gin::internal {
 
-CallbackHolderBase::DisposeObserver::DisposeObserver(
-    gin::PerIsolateData* per_isolate_data,
-    CallbackHolderBase* holder)
-    : per_isolate_data_(*per_isolate_data), holder_(*holder) {
-  per_isolate_data_->AddDisposeObserver(this);
-}
-CallbackHolderBase::DisposeObserver::~DisposeObserver() {
-  per_isolate_data_->RemoveDisposeObserver(this);
-}
-void CallbackHolderBase::DisposeObserver::OnBeforeDispose(
-    v8::Isolate* isolate) {
-  holder_->v8_ref_.Reset();
-}
-void CallbackHolderBase::DisposeObserver::OnDisposed() {
-  // The holder contains the observer, so the observer is destroyed here also.
-  delete &holder_.get();
-}
+CallbackHolderBase::CallbackHolderBase(uintptr_t type_identifier)
+    : type_identifier_(type_identifier) {}
 
-CallbackHolderBase::CallbackHolderBase(v8::Isolate* isolate,
-                                       uintptr_t type_identifier)
-    : type_identifier_(type_identifier),
-      v8_ref_(
-          isolate,
-          v8::External::New(isolate, this, kGinInternalCallbackHolderBaseTag)),
-      dispose_observer_(PerIsolateData::From(isolate), this) {
-  v8_ref_.SetWeak(this, &CallbackHolderBase::FirstWeakCallback,
-                  v8::WeakCallbackType::kParameter);
-}
+CallbackHolderBase::~CallbackHolderBase() = default;
 
-CallbackHolderBase::~CallbackHolderBase() {
-  DCHECK(v8_ref_.IsEmpty());
-}
-
-v8::Local<v8::External> CallbackHolderBase::GetHandle(v8::Isolate* isolate) {
-  return v8::Local<v8::External>::New(isolate, v8_ref_);
-}
-
-// static
-void CallbackHolderBase::FirstWeakCallback(
-    const v8::WeakCallbackInfo<CallbackHolderBase>& data) {
-  data.GetParameter()->v8_ref_.Reset();
-  data.SetSecondPassCallback(SecondWeakCallback);
-}
-
-// static
-void CallbackHolderBase::SecondWeakCallback(
-    const v8::WeakCallbackInfo<CallbackHolderBase>& data) {
-  delete data.GetParameter();
+const WrapperInfo* CallbackHolderBase::wrapper_info() const {
+  return &kWrapperInfo;
 }
 
 void ThrowConversionError(Arguments* args,
