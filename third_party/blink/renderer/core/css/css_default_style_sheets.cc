@@ -30,6 +30,8 @@
 
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 
+#include "base/command_line.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
@@ -121,9 +123,15 @@ CSSDefaultStyleSheets::CSSDefaultStyleSheets()
 
   default_style_sheet_ = ParseUASheet(default_rules);
 
-  // Quirks-mode rules.
-  String quirks_rules = UncompressResourceAsASCIIString(IDR_UASTYLE_QUIRKS_CSS);
-  quirks_style_sheet_ = ParseUASheet(quirks_rules);
+  // Top Chrome WebUIs use don't need quirks CSS. Skip parsing it entirely to
+  // optimize renderer initialization time.
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          blink::switches::kTopChromeWebUI)) {
+    // Quirks-mode rules.
+    String quirks_rules =
+        UncompressResourceAsASCIIString(IDR_UASTYLE_QUIRKS_CSS);
+    quirks_style_sheet_ = ParseUASheet(quirks_rules);
+  }
 
   InitializeDefaultStyles();
 }
@@ -271,8 +279,10 @@ void CSSDefaultStyleSheets::InitializeDefaultStyles() {
 
   default_html_style_->AddRulesFromSheet(DefaultStyleSheet(), ScreenEval(),
                                          /*mixins=*/{});
-  default_html_quirks_style_->AddRulesFromSheet(QuirksStyleSheet(),
-                                                ScreenEval(), /*mixins=*/{});
+  if (QuirksStyleSheet()) {
+    default_html_quirks_style_->AddRulesFromSheet(QuirksStyleSheet(),
+                                                  ScreenEval(), /*mixins=*/{});
+  }
 
   default_html_style_->CompactRulesIfNeeded();
   default_html_quirks_style_->CompactRulesIfNeeded();

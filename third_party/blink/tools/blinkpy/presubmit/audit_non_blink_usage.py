@@ -1370,6 +1370,7 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/core/css/css_default_style_sheets.cc',
             'third_party/blink/renderer/core/timezone/timezone_controller.cc',
             'third_party/blink/renderer/core/frame/local_frame_mojo_handler.cc',
         ],

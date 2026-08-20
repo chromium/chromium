@@ -3,3 +3,9 @@ include_rules = [
     "+ui/base/mojom/window_show_state.mojom-blink.h",
     "+ui/base/mojom/window_show_state.mojom-blink-forward.h",
 ]
+
+specific_include_rules = {
+  "css_default_style_sheets\\.cc": [
+    "+base/command_line.h",
+  ],
+}
