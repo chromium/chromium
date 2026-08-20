@@ -354,6 +354,11 @@ declare global {
         setUserAgentOverride(userAgent: string): void;
         getZoom(callback: (zoomFactor: number) => void): void;
         setZoom(zoomFactor: number, callback?: () => void): void;
+        loadDataWithBaseUrl(
+            dataUrl: string, baseUrl: string, virtualUrl?: string): void;
+        captureVisibleRegion(
+            options: extensionTypes.ImageDetails|undefined|null,
+            callback: (dataUrl: string) => void): void;
       }
 
       export function setAudioMuted(mute: boolean): void;

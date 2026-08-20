@@ -8,11 +8,16 @@
 
 var GuestViewContainerElement =
     require('guestViewContainerElement').GuestViewContainerElement;
+var WebViewConstants = require('webViewConstants').WebViewConstants;
 var WebViewInternal = getInternalApi('webViewInternal');
 
 class WebViewElement extends GuestViewContainerElement {}
 
 WebViewElement.prototype.addContentScripts = function(rules) {
+  if (location.protocol === 'chrome-untrusted:') {
+    throw new Error(
+        WebViewConstants.ERROR_MSG_UNSUPPORTED_API_IN_CHROME_UNTRUSTED);
+  }
   var internal = privates(this).internal;
   return WebViewInternal.addContentScripts(
       internal.viewInstanceId, rules, () => {});
@@ -25,12 +30,20 @@ WebViewElement.prototype.removeContentScripts = function(names) {
 };
 
 WebViewElement.prototype.insertCSS = function(var_args) {
+  if (location.protocol === 'chrome-untrusted:') {
+    throw new Error(
+        WebViewConstants.ERROR_MSG_UNSUPPORTED_API_IN_CHROME_UNTRUSTED);
+  }
   var internal = privates(this).internal;
   return internal.executeCode(
       WebViewInternal.insertCSS, $Array.slice(arguments));
 };
 
 WebViewElement.prototype.executeScript = function(var_args) {
+  if (location.protocol === 'chrome-untrusted:') {
+    throw new Error(
+        WebViewConstants.ERROR_MSG_UNSUPPORTED_API_IN_CHROME_UNTRUSTED);
+  }
   var internal = privates(this).internal;
   return internal.executeCode(
       WebViewInternal.executeScript, $Array.slice(arguments));

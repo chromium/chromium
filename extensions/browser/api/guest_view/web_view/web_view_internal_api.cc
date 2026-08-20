@@ -27,6 +27,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/stop_find_action.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/web_view/controlled_frame_embedder_url_fetcher.h"
@@ -336,6 +337,9 @@ ExtensionFunction::ResponseAction
 WebViewInternalCaptureVisibleRegionFunction::Run() {
   using api::extension_types::ImageDetails;
 
+  EXTENSION_FUNCTION_VALIDATE(
+      !source_url().SchemeIs(content::kChromeUIUntrustedScheme));
+
   std::optional<web_view_internal::CaptureVisibleRegion::Params> params =
       web_view_internal::CaptureVisibleRegion::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -610,7 +614,19 @@ bool WebViewInternalExecuteCodeFunction::LoadFile(const std::string& file,
 WebViewInternalExecuteScriptFunction::WebViewInternalExecuteScriptFunction() {
 }
 
+ExtensionFunction::ResponseAction WebViewInternalExecuteScriptFunction::Run() {
+  EXTENSION_FUNCTION_VALIDATE(
+      !source_url().SchemeIs(content::kChromeUIUntrustedScheme));
+  return WebViewInternalExecuteCodeFunction::Run();
+}
+
 WebViewInternalInsertCSSFunction::WebViewInternalInsertCSSFunction() {
+}
+
+ExtensionFunction::ResponseAction WebViewInternalInsertCSSFunction::Run() {
+  EXTENSION_FUNCTION_VALIDATE(
+      !source_url().SchemeIs(content::kChromeUIUntrustedScheme));
+  return WebViewInternalExecuteCodeFunction::Run();
 }
 
 bool WebViewInternalInsertCSSFunction::ShouldInsertCSS() const {
@@ -627,6 +643,9 @@ WebViewInternalAddContentScriptsFunction::
 
 ExecuteCodeFunction::ResponseAction
 WebViewInternalAddContentScriptsFunction::Run() {
+  EXTENSION_FUNCTION_VALIDATE(
+      !source_url().SchemeIs(content::kChromeUIUntrustedScheme));
+
   std::optional<web_view_internal::AddContentScripts::Params> params =
       web_view_internal::AddContentScripts::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -914,6 +933,9 @@ WebViewInternalLoadDataWithBaseUrlFunction::
 
 ExtensionFunction::ResponseAction
 WebViewInternalLoadDataWithBaseUrlFunction::Run() {
+  EXTENSION_FUNCTION_VALIDATE(
+      !source_url().SchemeIs(content::kChromeUIUntrustedScheme));
+
   std::optional<web_view_internal::LoadDataWithBaseUrl::Params> params =
       web_view_internal::LoadDataWithBaseUrl::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
