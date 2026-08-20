@@ -221,8 +221,7 @@ export function webFormControlElementToFormField(
     field.max_length = 0;
   }
 
-  if (!inferenceUtil.isAutofillableInputElement(element) &&
-      !inferenceUtil.isTextAreaElement(element)) {
+  if (inferenceUtil.isSelectElement(element)) {
     fillUtil.getOptionStringsFromElement(element as HTMLSelectElement, field);
   }
 
