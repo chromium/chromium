@@ -5,12 +5,15 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {LanguageToastElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {NotificationType} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AudioBrowserProxyImpl, NotificationType} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
+import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
+
 suite('LanguageToast', () => {
   let toast: LanguageToastElement;
+  let audioBrowserProxy: TestAudioBrowserProxy;
 
   function getTitle(): string {
     return toast.$.toast.querySelector<HTMLElement>('#toastTitle')!.textContent;
@@ -19,6 +22,9 @@ suite('LanguageToast', () => {
   setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    audioBrowserProxy = new TestAudioBrowserProxy();
+    AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
+
     toast = document.createElement('language-toast');
     document.body.appendChild(toast);
     toast.numAvailableVoices = 0;
@@ -27,6 +33,7 @@ suite('LanguageToast', () => {
 
   // <if expr="is_chromeos">
   test('shows downloaded message on ChromeOS', async () => {
+    audioBrowserProxy.localeToDisplayName['pt-br'] = 'Português (Brasil)';
     const lang = 'pt-br';
     toast.notify(NotificationType.DOWNLOADING, lang);
     toast.notify(NotificationType.DOWNLOADED, lang);

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
+
 export type VoicePackStatus = VoicePackServerResponseSuccess|
     VoicePackServerResponseError|VoicePackServerResponseParsingError;
 
@@ -262,8 +264,9 @@ export function convertLangToAnAvailableLangIfPresent(
   }
 
   // If all else fails, try the browser language.
-  const defaultLanguage =
-      chrome.readingMode.defaultLanguageForSpeech.toLowerCase();
+  const defaultLanguage = AudioBrowserProxyImpl.getInstance()
+                              .getDefaultLanguageForSpeech()
+                              .toLowerCase();
   if (availableLangs.includes(defaultLanguage)) {
     return defaultLanguage;
   }

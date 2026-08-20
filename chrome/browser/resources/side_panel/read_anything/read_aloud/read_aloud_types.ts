@@ -4,6 +4,7 @@
 
 import {NodeStore} from '../content/node_store.js';
 
+import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
 import {ReadAloudNodeStore} from './read_aloud_node_store.js';
 
 // This file contains type definitions for the data structures
@@ -41,7 +42,8 @@ export abstract class ReadAloudNode {
       axNodeId: number, nodeStore = NodeStore.getInstance()): ReadAloudNode
       |undefined {
     const domNode: Node|undefined = nodeStore.getDomNode(axNodeId);
-    if (!domNode && chrome.readingMode.isPhraseHighlightingEnabled) {
+    if (!domNode &&
+        AudioBrowserProxyImpl.getInstance().isPhraseHighlightingEnabled()) {
       // If there's no DOM node yet, it might not have gotten added to the
       // node store yet, so create an AxReadAloudNode instead.
       // TODO: crbug.com/440400392- This shouldn't be necessary but is a
@@ -57,7 +59,7 @@ export abstract class ReadAloudNode {
 
   static create(node: Node, nodeStore = NodeStore.getInstance()): ReadAloudNode
       |undefined {
-    if (!chrome.readingMode.isPhraseHighlightingEnabled) {
+    if (!AudioBrowserProxyImpl.getInstance().isPhraseHighlightingEnabled()) {
       return new DomReadAloudNodeImpl(node);
     }
 

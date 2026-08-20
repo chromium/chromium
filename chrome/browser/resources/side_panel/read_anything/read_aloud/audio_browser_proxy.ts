@@ -16,6 +16,8 @@ export interface AudioBrowserProxy {
   getSentenceHighlighting(): number;
   getNoHighlighting(): number;
   isPhraseHighlightingEnabled(): boolean;
+  getDisplayNameForLocale(locale: string, displayLocale: string): string;
+  getDefaultLanguageForSpeech(): string;
   onSpeechRateChange(rate: number): void;
   onHighlightGranularityChanged(granularity: number): void;
 }
@@ -47,6 +49,14 @@ export class AudioBrowserProxyImpl implements AudioBrowserProxy {
 
   isPhraseHighlightingEnabled(): boolean {
     return chrome.readingMode.isPhraseHighlightingEnabled;
+  }
+
+  getDisplayNameForLocale(locale: string, displayLocale: string): string {
+    return chrome.readingMode.getDisplayNameForLocale(locale, displayLocale);
+  }
+
+  getDefaultLanguageForSpeech(): string {
+    return chrome.readingMode.defaultLanguageForSpeech;
   }
 
   onSpeechRateChange(rate: number): void {
