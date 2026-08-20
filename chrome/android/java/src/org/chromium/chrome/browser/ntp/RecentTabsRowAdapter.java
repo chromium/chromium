@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.ntp;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.R.plurals.recent_tabs_group_closure_without_title_with_color_accessibility;
+import static org.chromium.chrome.R.string.recent_tabs_group_closure_with_title_with_color_accessibility;
 
 import android.app.Activity;
 import android.content.res.Resources;
@@ -527,6 +529,10 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
      * page.
      */
     private class RecentlyClosedTabsGroup extends Group {
+        private static final int GROUP_CLOSURE_NO_TITLE_RES =
+                recent_tabs_group_closure_without_title_with_color_accessibility;
+        private static final int GROUP_CLOSURE_WITH_TITLE_RES =
+                recent_tabs_group_closure_with_title_with_color_accessibility;
         private @Nullable RecentlyClosedEntry mLongPressedRow;
 
         @Override
@@ -580,18 +586,10 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             if (TextUtils.isEmpty(groupTitle)) {
                 contentDescription =
                         res.getQuantityString(
-                                R.plurals
-                                        .recent_tabs_group_closure_without_title_with_color_accessibility,
-                                tabCount,
-                                tabCount,
-                                colorDesc);
+                                GROUP_CLOSURE_NO_TITLE_RES, tabCount, tabCount, colorDesc);
             } else {
                 contentDescription =
-                        res.getString(
-                                R.string
-                                        .recent_tabs_group_closure_with_title_with_color_accessibility,
-                                groupTitle,
-                                colorDesc);
+                        res.getString(GROUP_CLOSURE_WITH_TITLE_RES, groupTitle, colorDesc);
             }
             viewHolder.textView.setContentDescription(contentDescription);
         }

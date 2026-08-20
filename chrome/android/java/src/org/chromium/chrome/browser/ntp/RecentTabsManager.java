@@ -220,6 +220,8 @@ public class RecentTabsManager
 
         SessionsInvalidationManager.get(mProfile).onRecentTabsPageClosed();
 
+        mRecentlyClosedEntriesManager.setEntriesUpdatedCallback(null);
+
         mForeignSessionHelper.destroy();
         mForeignSessionHelper = null;
     }

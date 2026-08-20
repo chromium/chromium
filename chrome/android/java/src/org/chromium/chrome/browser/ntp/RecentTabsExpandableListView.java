@@ -51,7 +51,7 @@ public class RecentTabsExpandableListView extends ExpandableListView {
             horizontalPadding += excessWidth / 2;
         }
 
-        setPadding(horizontalPadding, 0, horizontalPadding, 0);
+        setPadding(horizontalPadding, getPaddingTop(), horizontalPadding, getPaddingBottom());
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
