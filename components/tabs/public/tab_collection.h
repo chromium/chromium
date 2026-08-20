@@ -125,11 +125,22 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
 
   using iterator = TabIterator;
   using const_iterator = TabIterator;
+  using reverse_iterator = std::reverse_iterator<TabIterator>;
+  using const_reverse_iterator = std::reverse_iterator<TabIterator>;
 
   const_iterator begin() const {
     return TabIterator(GetPassKey(), this, false);
   }
+
   const_iterator end() const { return TabIterator(GetPassKey(), this, true); }
+
+  const_reverse_iterator rbegin() const {
+    return std::make_reverse_iterator(end());
+  }
+
+  const_reverse_iterator rend() const {
+    return std::make_reverse_iterator(begin());
+  }
 
   // Type describes the various kinds of tab collections:
   // - TABSTRIP:  The main container for tabs in a browser window.

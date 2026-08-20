@@ -1941,7 +1941,9 @@ void TabStripModel::SelectPreviousTab(TabStripUserGestureDetails detail) {
 }
 
 void TabStripModel::SelectLastTab(TabStripUserGestureDetails detail) {
-  ActivateTabAt(count() - 1, detail);
+  if (!empty()) {
+    ActivateTab(*rbegin(), detail);
+  }
 }
 
 void TabStripModel::MoveTabNext() {
@@ -2542,9 +2544,19 @@ void TabStripModel::NotifySplitTabAttached(
 TabStripModel::TabIterator TabStripModel::begin() const {
   return contents_data_->begin();
 }
+
 TabStripModel::TabIterator TabStripModel::end() const {
   return contents_data_->end();
 }
+
+TabStripModel::reverse_iterator TabStripModel::rbegin() const {
+  return contents_data_->rbegin();
+}
+
+TabStripModel::reverse_iterator TabStripModel::rend() const {
+  return contents_data_->rend();
+}
+
 TabStripModel::TabIterator TabStripModel::at(tabs::TabInterface* tab) const {
   CHECK(tab);
   CHECK_NE(GetIndexOfTab(tab), kNoTab);
@@ -3413,21 +3425,28 @@ int TabStripModel::GetIndexOfNextWebContentsOpenedBy(
   CHECK(ContainsIndex(block_tab_range.start()));
   CHECK(ContainsIndex(block_tab_range.end() - 1));
 
-  absl::flat_hash_set<tabs::TabInterface*> block_tabs;
-  for (size_t i = block_tab_range.start(); i < block_tab_range.end(); i++) {
-    block_tabs.insert(GetTabModelAtIndex(i));
-  }
+  const auto start_it = at(GetTabAtIndex(block_tab_range.start()));
+  const auto end_it = std::next(start_it, block_tab_range.length());
+  const absl::flat_hash_set<tabs::TabInterface*> block_tabs(start_it, end_it);
 
-  for (size_t i = block_tab_range.end(); i < static_cast<size_t>(count());
-       i++) {
-    if (block_tabs.contains(GetTabModelAtIndex(i)->opener())) {
-      return i;
+  if (block_tab_range.end() < static_cast<size_t>(count())) {
+    int current_index = block_tab_range.end();
+    for (auto it = at(GetTabAtIndex(current_index)); it != end();
+         ++it, ++current_index) {
+      if (block_tabs.contains(static_cast<tabs::TabModel*>(*it)->opener())) {
+        return current_index;
+      }
     }
   }
 
-  for (int i = block_tab_range.start() - 1; i >= 0; i--) {
-    if (block_tabs.contains(GetTabModelAtIndex(i)->opener())) {
-      return i;
+  if (block_tab_range.start() > 0) {
+    int current_index = block_tab_range.start() - 1;
+    auto reverse_start_it = at(GetTabAtIndex(current_index));
+    for (auto it = std::make_reverse_iterator(++reverse_start_it); it != rend();
+         ++it, --current_index) {
+      if (block_tabs.contains(static_cast<tabs::TabModel*>(*it)->opener())) {
+        return current_index;
+      }
     }
   }
 
@@ -3440,9 +3459,10 @@ int TabStripModel::GetIndexOfNextWebContentsOpenedByOpenerOf(
   CHECK(ContainsIndex(block_tab_range.end() - 1));
 
   absl::flat_hash_set<tabs::TabInterface*> block_openers;
-
-  for (size_t i = block_tab_range.start(); i < block_tab_range.end(); ++i) {
-    tabs::TabModel* tab = GetTabModelAtIndex(i);
+  const auto start_it = at(GetTabAtIndex(block_tab_range.start()));
+  const auto end_it = std::next(start_it, block_tab_range.length());
+  for (auto it = start_it; it != end_it; ++it) {
+    tabs::TabModel* tab = static_cast<tabs::TabModel*>(*it);
     if (tab->opener()) {
       block_openers.insert(tab->opener());
     }
@@ -3452,16 +3472,24 @@ int TabStripModel::GetIndexOfNextWebContentsOpenedByOpenerOf(
     return kNoTab;
   }
 
-  for (size_t i = block_tab_range.end(); i < static_cast<size_t>(count());
-       i++) {
-    if (block_openers.contains(GetTabModelAtIndex(i)->opener())) {
-      return i;
+  if (block_tab_range.end() < static_cast<size_t>(count())) {
+    int current_index = block_tab_range.end();
+    for (auto it = at(GetTabAtIndex(current_index)); it != end();
+         ++it, ++current_index) {
+      if (block_openers.contains(static_cast<tabs::TabModel*>(*it)->opener())) {
+        return current_index;
+      }
     }
   }
 
-  for (int i = block_tab_range.start() - 1; i >= 0; i--) {
-    if (block_openers.contains(GetTabModelAtIndex(i)->opener())) {
-      return i;
+  if (block_tab_range.start() > 0) {
+    int current_index = block_tab_range.start() - 1;
+    auto reverse_start_it = at(GetTabAtIndex(current_index));
+    for (auto it = std::make_reverse_iterator(++reverse_start_it); it != rend();
+         ++it, --current_index) {
+      if (block_openers.contains(static_cast<tabs::TabModel*>(*it)->opener())) {
+        return current_index;
+      }
     }
   }
 
@@ -3471,19 +3499,30 @@ int TabStripModel::GetIndexOfNextWebContentsOpenedByOpenerOf(
 std::optional<int> TabStripModel::GetNextExpandedActiveTab(
     const gfx::Range& block_tab_range) const {
   // Check tabs from the end of the block.
-  for (int i = block_tab_range.end(); i < count(); ++i) {
-    std::optional<tab_groups::TabGroupId> current_group = GetTabGroupForTab(i);
-    if (!current_group.has_value() ||
-        (!IsGroupCollapsed(current_group.value()))) {
-      return i;
+  if (block_tab_range.end() < static_cast<size_t>(count())) {
+    int current_index = block_tab_range.end();
+    for (auto it = at(GetTabAtIndex(current_index)); it != end();
+         ++it, ++current_index) {
+      tabs::TabInterface* tab = *it;
+      std::optional<tab_groups::TabGroupId> current_group = tab->GetGroup();
+      if (!current_group.has_value() ||
+          (!IsGroupCollapsed(current_group.value()))) {
+        return current_index;
+      }
     }
   }
   // Then check tabs before start_index, iterating backwards.
-  for (int i = block_tab_range.start() - 1; i >= 0; --i) {
-    std::optional<tab_groups::TabGroupId> current_group = GetTabGroupForTab(i);
-    if (!current_group.has_value() ||
-        (!IsGroupCollapsed(current_group.value()))) {
-      return i;
+  if (block_tab_range.start() > 0) {
+    int current_index = block_tab_range.start() - 1;
+    auto start_it = at(GetTabAtIndex(current_index));
+    for (auto it = std::make_reverse_iterator(++start_it); it != rend();
+         ++it, --current_index) {
+      tabs::TabInterface* tab = *it;
+      std::optional<tab_groups::TabGroupId> current_group = tab->GetGroup();
+      if (!current_group.has_value() ||
+          (!IsGroupCollapsed(current_group.value()))) {
+        return current_index;
+      }
     }
   }
 

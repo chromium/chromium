@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <iterator>
 #include <map>
 #include <memory>
 #include <optional>
@@ -195,6 +196,10 @@ class ScopedTabStripModalUI {
 class TabStripModel {
  public:
   using TabIterator = tabs::TabCollection::TabIterator;
+  using iterator = TabIterator;
+  using const_iterator = TabIterator;
+  using reverse_iterator = std::reverse_iterator<TabIterator>;
+  using const_reverse_iterator = std::reverse_iterator<TabIterator>;
 
   // TODO(crbug.com/540829277): Remove this, and use std::optional<size_t> (or
   // at least std::optional<int>) in its place.
@@ -740,6 +745,8 @@ class TabStripModel {
   // Returns iterators for traversing through all the tabs in the tabstrip.
   TabIterator begin() const;
   TabIterator end() const;
+  reverse_iterator rbegin() const;
+  reverse_iterator rend() const;
   TabIterator at(tabs::TabInterface* tab) const;
 
   // Gets the root of the tab strip model. Used to traverse the tab topology.

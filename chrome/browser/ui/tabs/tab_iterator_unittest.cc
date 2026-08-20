@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/adapters.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/tabs/tab_group_desktop.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -256,4 +257,26 @@ TEST_F(TabCollectionIteratorTest,
   EXPECT_EQ(*mid_it, middle_tab);
   --mid_it;
   EXPECT_EQ(*mid_it, collection()->GetTabAtIndexRecursive(4));
+}
+
+TEST_F(TabCollectionIteratorTest, ReverseIteratorAndBaseReversed) {
+  for (int i = 0; i < 5; i++) {
+    collection()->AddTab(
+        std::make_unique<tabs::TabModel>(MakeWebContents(), GetTabStripModel()),
+        collection()->ChildCount());
+  }
+
+  // Verify rbegin() and rend().
+  int expected_index = 4;
+  for (auto it = collection()->rbegin(); it != collection()->rend(); ++it) {
+    EXPECT_EQ(*it, collection()->GetTabAtIndexRecursive(expected_index--));
+  }
+  EXPECT_EQ(expected_index, -1);
+
+  // Verify base::Reversed support.
+  expected_index = 4;
+  for (tabs::TabInterface* tab : base::Reversed(*collection())) {
+    EXPECT_EQ(tab, collection()->GetTabAtIndexRecursive(expected_index--));
+  }
+  EXPECT_EQ(expected_index, -1);
 }
