@@ -150,7 +150,7 @@ public class MenuButtonCoordinatorTest {
                         mClearOmniboxFocus,
                         mRequestRenderRunnable,
                         true,
-                        () -> false,
+                        SupplierUtils.alwaysFalse(),
                         mThemeColorProvider,
                         mIncognitoStateProvider,
                         SupplierUtils.ofNull(),

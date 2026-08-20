@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -237,7 +238,7 @@ public class BackPressManagerTest {
     @SmallTest
     public void testRecordSwipeEdge() {
         BackPressManager manager = new BackPressManager();
-        manager.setIsGestureNavEnabledSupplier(() -> true);
+        manager.setIsGestureNavEnabledSupplier(SupplierUtils.alwaysTrue());
 
         EmptyBackPressHandler h1 = ThreadUtils.runOnUiThreadBlocking(EmptyBackPressHandler::new);
         EmptyBackPressHandler h2 = ThreadUtils.runOnUiThreadBlocking(EmptyBackPressHandler::new);
@@ -302,7 +303,7 @@ public class BackPressManagerTest {
     @SmallTest
     public void testRecordSwipeEdgeOfTabHistoryNavigation() {
         BackPressManager manager = new BackPressManager();
-        manager.setIsGestureNavEnabledSupplier(() -> true);
+        manager.setIsGestureNavEnabledSupplier(SupplierUtils.alwaysTrue());
 
         EmptyBackPressHandler h1 = ThreadUtils.runOnUiThreadBlocking(EmptyBackPressHandler::new);
 

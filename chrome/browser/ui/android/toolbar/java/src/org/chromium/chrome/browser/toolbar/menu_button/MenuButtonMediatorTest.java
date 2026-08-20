@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.cc.input.BrowserControlsState;
@@ -173,9 +174,9 @@ public class MenuButtonMediatorTest {
                 new MenuButtonMediator(
                         mPropertyModel,
                         false,
-                        () -> false,
+                        SupplierUtils.alwaysFalse(),
                         mRequestRenderRunnable,
-                        () -> false,
+                        SupplierUtils.alwaysFalse(),
                         mControlsVisibilityDelegate,
                         mClearOmniboxFocus,
                         mAppMenuSupplier,
@@ -324,9 +325,9 @@ public class MenuButtonMediatorTest {
                 new MenuButtonMediator(
                         mPropertyModel,
                         true,
-                        () -> false,
+                        SupplierUtils.alwaysFalse(),
                         mRequestRenderRunnable,
-                        () -> false,
+                        SupplierUtils.alwaysFalse(),
                         mControlsVisibilityDelegate,
                         mClearOmniboxFocus,
                         mAppMenuSupplier,

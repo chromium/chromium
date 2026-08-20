@@ -37,6 +37,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -248,7 +249,8 @@ public class SearchActivity extends AsyncInitializationActivity
     private UmaActivityObserver mUmaActivityObserver;
 
     public SearchActivity() {
-        mStartupMetricsTracker = new StartupMetricsTracker(mTabModelSelectorSupplier, () -> false);
+        mStartupMetricsTracker =
+                new StartupMetricsTracker(mTabModelSelectorSupplier, SupplierUtils.alwaysFalse());
         mSearchUiCoordinator = new SearchUiCoordinator(this, mSearchBoxDataProvider);
     }
 

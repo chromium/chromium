@@ -65,6 +65,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowProcess;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -158,9 +159,9 @@ public class CustomTabsConnectionUnitTest {
         initSession();
         when(mPrivacyPreferencesManager.isUsageAndCrashReportingPermitted()).thenReturn(true);
         // Test the supplier takes precedence.
-        mConnection.setEngagementSignalsAvailableSupplier(mSession, () -> true);
+        mConnection.setEngagementSignalsAvailableSupplier(mSession, SupplierUtils.alwaysTrue());
         assertTrue(mConnection.isEngagementSignalsApiAvailable(mSession, Bundle.EMPTY));
-        mConnection.setEngagementSignalsAvailableSupplier(mSession, () -> false);
+        mConnection.setEngagementSignalsAvailableSupplier(mSession, SupplierUtils.alwaysFalse());
         assertFalse(mConnection.isEngagementSignalsApiAvailable(mSession, Bundle.EMPTY));
     }
 
