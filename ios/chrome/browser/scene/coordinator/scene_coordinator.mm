@@ -1308,6 +1308,25 @@ inline LayoutStateScenePassKey PassKey() {
                         completion:nil];
 }
 
+- (void)showSuggestionsFromGeminiHelpImprove {
+  if (_settingsNavigationController) {
+    [_settingsNavigationController showSuggestionsFromGeminiHelpImprove];
+    return;
+  }
+
+  _settingsNavigationController = [SettingsNavigationController
+      geminiHelpImproveControllerForBrowser:_regularBrowser.get()
+                                   delegate:self];
+
+  UIViewController* presenter = self.activeViewController;
+  while (presenter.presentedViewController) {
+    presenter = presenter.presentedViewController;
+  }
+  [presenter presentViewController:_settingsNavigationController
+                          animated:YES
+                        completion:nil];
+}
+
 // TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
 - (void)showGoogleServicesSettingsFromViewController:
     (UIViewController*)baseViewController {

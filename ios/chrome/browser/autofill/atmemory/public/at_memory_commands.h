@@ -18,10 +18,8 @@
 // Commands the coordinator to open the Autofill & Passwords settings page.
 - (void)openAutofillSettings;
 
-// TODO(crbug.com/532090671): Remove this optional mark.
-@optional
-// Commands the coordinator to open a URL.
-- (void)openURL:(CrURL*)URL;
+// Opens the details page to manage enhanced autofill settings.
+- (void)openManageEnhancedAutofillDetails;
 
 @end
 

@@ -7,10 +7,13 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
+#import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_inline_notice_view.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_item.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_mutator.h"
+#import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -226,6 +229,29 @@ TEST_F(AtMemorySearchViewControllerTest,
       inlineNoticeViewDidTapSettings:nil];
 
   EXPECT_OCMOCK_VERIFY(mock_mutator);
+}
+
+// Tests that tapping the footer link calls openManageEnhancedAutofillDetails.
+TEST_F(AtMemorySearchViewControllerTest, TestTapsFooterLink) {
+  id atMemoryHandler = OCMProtocolMock(@protocol(AtMemoryCommands));
+  view_controller_.atMemoryHandler = atMemoryHandler;
+
+  OCMExpect([atMemoryHandler openManageEnhancedAutofillDetails]);
+
+  CrURL* mock_url =
+      [[CrURL alloc] initWithGURL:GURL("settings://ai_disclosure")];
+  // Cast to id to bypass the static type check for the delegate method.
+  [(id<TableViewLinkHeaderFooterItemDelegate>)view_controller_ view:nil
+                                                      didTapLinkURL:mock_url];
+
+  OCMReject([atMemoryHandler openManageEnhancedAutofillDetails]);
+
+  mock_url = [[CrURL alloc] initWithGURL:GURL("settings://incorrect_url")];
+  // Cast to id to bypass the static type check for the delegate method.
+  [(id<TableViewLinkHeaderFooterItemDelegate>)view_controller_ view:nil
+                                                      didTapLinkURL:mock_url];
+
+  EXPECT_OCMOCK_VERIFY(atMemoryHandler);
 }
 
 // Parameters for AtMemorySearchViewControllerErrorTest.

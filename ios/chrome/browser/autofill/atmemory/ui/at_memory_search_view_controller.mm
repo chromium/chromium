@@ -219,8 +219,9 @@ enum class ItemIdentifier {
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
-  CHECK(URL.gurl == GURL(kAIDisclosureURL));
-  // TODO(crbug.com/546671261): Open Enhanced Autofill details page.
+  if (URL.gurl == GURL(kAIDisclosureURL)) {
+    [self.atMemoryHandler openManageEnhancedAutofillDetails];
+  }
 }
 
 #pragma mark - Actions

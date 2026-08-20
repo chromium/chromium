@@ -97,6 +97,14 @@ extern NSString* const kSettingsDoneButtonId;
     BWGControllerForBrowser:(Browser*)browser
                    delegate:(id<SettingsNavigationControllerDelegate>)delegate;
 
+// Creates a new SettingsNavigationController that displays the Suggestions from
+// Gemini Help Improve settings.
++ (instancetype)
+    geminiHelpImproveControllerForBrowser:(Browser*)browser
+                                 delegate:
+                                     (id<SettingsNavigationControllerDelegate>)
+                                         delegate;
+
 // Creates a new GoogleServicesSettingsCollectionViewController and the chrome
 // around it. `browser` is the browser where settings are being displayed and
 // should not be nil. `delegate` may be nil.

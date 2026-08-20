@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/travel_info_coordinator.h"
 #import "ios/chrome/browser/settings/autofill/payments/coordinator/autofill_credit_card_coordinator.h"
 #import "ios/chrome/browser/settings/autofill/payments/coordinator/autofill_credit_card_coordinator_delegate.h"
+#import "ios/chrome/browser/settings/autofill/suggestions_from_gemini/ui/suggestions_from_gemini_help_improve_table_view_controller.h"
 #import "ios/chrome/browser/settings/google_services/coordinator/google_services_settings_coordinator.h"
 #import "ios/chrome/browser/settings/google_services/ui/google_services_settings_view_controller.h"
 #import "ios/chrome/browser/settings/manage_accounts/coordinator/manage_accounts_coordinator.h"
@@ -284,6 +285,20 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                              browser:browser
                             delegate:delegate];
   [navigationController showGeminiSettingsPage];
+  return navigationController;
+}
+
++ (instancetype)
+    geminiHelpImproveControllerForBrowser:(Browser*)browser
+                                 delegate:
+                                     (id<SettingsNavigationControllerDelegate>)
+                                         delegate {
+  SettingsNavigationController* navigationController =
+      [[SettingsNavigationController alloc]
+          initWithRootViewController:nil
+                             browser:browser
+                            delegate:delegate];
+  [navigationController showSuggestionsFromGeminiHelpImprove];
   return navigationController;
 }
 
@@ -1409,6 +1424,12 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 - (void)showGeminiSettings {
   [self showGeminiSettingsPage];
+}
+
+- (void)showSuggestionsFromGeminiHelpImprove {
+  SuggestionsFromGeminiHelpImproveTableViewController* viewController =
+      [[SuggestionsFromGeminiHelpImproveTableViewController alloc] init];
+  [self pushViewController:viewController animated:NO];
 }
 
 // TODO(crbug.com/41352590) : Do not pass `baseViewController` through

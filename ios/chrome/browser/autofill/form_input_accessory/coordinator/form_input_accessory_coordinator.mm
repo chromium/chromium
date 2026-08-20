@@ -777,6 +777,12 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
   }
 }
 
+- (void)openManageEnhancedAutofillDetails {
+  id<SettingsCommands> settingsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SettingsCommands);
+  [settingsHandler showSuggestionsFromGeminiHelpImprove];
+}
+
 #pragma mark - SecurityAlertCommands
 
 - (void)presentSecurityWarningAlertWithText:(NSString*)body {

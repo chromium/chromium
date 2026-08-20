@@ -68,6 +68,7 @@ source_set("unit_tests") {
     "//components/strings",
     "//ios/chrome/browser/autofill/atmemory/public",
     "//ios/chrome/browser/autofill/atmemory/utils",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/table_view/content_configuration",
