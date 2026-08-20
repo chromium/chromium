@@ -22,6 +22,10 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace ash {
 
 class MarketingBackendConnector
@@ -55,7 +59,10 @@ class MarketingBackendConnector
   friend class ScopedRequestCallbackSetter;
   friend class base::RefCountedThreadSafe<MarketingBackendConnector>;
 
-  explicit MarketingBackendConnector(Profile* user_profile);
+  // `profile` and its `identity_manager` must not be nullptr, and must outlive
+  // this.
+  MarketingBackendConnector(Profile* profile,
+                            signin::IdentityManager* identity_manager);
   virtual ~MarketingBackendConnector();
 
   // Sends a request to the server to subscribe the user to all campaigns.
@@ -80,12 +87,14 @@ class MarketingBackendConnector
   // the language.
   std::string GetRequestContent();
 
+  const raw_ptr<Profile> profile_ = nullptr;
+  const raw_ref<signin::IdentityManager> identity_manager_;
+
   // Internal
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::string access_token_;
-  raw_ptr<Profile> profile_ = nullptr;
 
   static base::RepeatingCallback<void(std::string)>*
       request_finished_for_tests_;

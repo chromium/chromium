@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -17,7 +18,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -96,15 +98,19 @@ void MarketingBackendConnector::UpdateEmailPreferences(
     return;
   }
 
+  auto* identity_manager = ash::IdentityManagerProvider::Get().Find(
+      CHECK_DEREF(ash::AnnotatedAccountId::Get(profile)));
   scoped_refptr<MarketingBackendConnector> ref =
-      new MarketingBackendConnector(profile);
+      new MarketingBackendConnector(profile, identity_manager);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&MarketingBackendConnector::PerformRequest, ref,
                                 country_code));
 }
 
-MarketingBackendConnector::MarketingBackendConnector(Profile* profile)
-    : profile_(profile) {}
+MarketingBackendConnector::MarketingBackendConnector(
+    Profile* profile,
+    signin::IdentityManager* identity_manager)
+    : profile_(profile), identity_manager_(CHECK_DEREF(identity_manager)) {}
 
 void MarketingBackendConnector::PerformRequest(
     const std::string& country_code) {
@@ -113,15 +119,9 @@ void MarketingBackendConnector::PerformRequest(
 }
 
 void MarketingBackendConnector::StartTokenFetch() {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
-  if (!identity_manager) {
-    RecordUMAHistogram(BackendConnectorEvent::kErrorOther, country_code_);
-    return;
-  }
-
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-      signin::OAuthConsumerId::kMarketingBackendConnector, identity_manager,
+      signin::OAuthConsumerId::kMarketingBackendConnector,
+      &identity_manager_.get(),
       base::BindOnce(&MarketingBackendConnector::OnAccessTokenRequestCompleted,
                      this),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
