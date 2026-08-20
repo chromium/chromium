@@ -1424,7 +1424,7 @@ import java.util.function.Supplier;
             String label = toolConfig.getMenuLabel();
             int iconId =
                     toolConfig.hasIcon() && toolConfig.getIcon().hasIconId()
-                            ? toolConfig.getIcon().getIconId().getNumber()
+                            ? toolConfig.getIcon().getIconIdValue()
                             : IconResourceIds.PLACE_WHITE_VALUE;
             boolean selected =
                     mInput != null
@@ -1463,7 +1463,7 @@ import java.util.function.Supplier;
                 boolean selected = isAimRequest && inputState.activeModel == modelMode;
                 int iconId =
                         modelConfig.hasIcon() && modelConfig.getIcon().hasIconId()
-                                ? modelConfig.getIcon().getIconId().getNumber()
+                                ? modelConfig.getIcon().getIconIdValue()
                                 : IconResourceIds.PLACE_WHITE_VALUE;
                 modelButtonDataList.add(
                         new PopupButtonData(
