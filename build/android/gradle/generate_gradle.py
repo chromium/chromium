@@ -347,9 +347,6 @@ class _ProjectContextGenerator:
         self.use_gradle_process_resources = use_gradle_process_resources
         self.jinja_processor = jinja_processor
         self.split_projects = split_projects
-        self.processed_java_dirs = set()
-        self.processed_prebuilts = set()
-        self.processed_res_dirs = set()
 
     def _GenJniLibs(self, root_entry):
         libraries = []
@@ -432,7 +429,6 @@ class _ProjectContextGenerator:
                 extracted = _ExtractBundledSrcJar(s)
                 if extracted:
                     java_dirs.append(extracted)
-        self.processed_java_dirs.update(java_dirs)
         java_dirs.sort()
         variables['java_dirs'] = self._Relativize(root_entry, java_dirs)
         variables['java_excludes'] = excludes
@@ -440,7 +436,6 @@ class _ProjectContextGenerator:
             root_entry, set(self._GenJniLibs(root_entry))
         )
         prebuilts = set(p for e in entries for p in e.PrebuiltJars())
-        self.processed_prebuilts.update(prebuilts)
         variables['prebuilts'] = self._Relativize(root_entry, prebuilts)
         res_sources_files = _RebasePath(
             set(p for e in entries for p in e.ResSources())
@@ -451,9 +446,6 @@ class _ProjectContextGenerator:
         res_dirs = resource_utils.DeduceResourceDirsFromFileList(
             res_sources, validate=False
         )
-        # Do not add generated resources for the all module since it creates many
-        # duplicates, and currently resources are only used for editing.
-        self.processed_res_dirs.update(res_dirs)
         variables['res_dirs'] = self._Relativize(root_entry, res_dirs)
         if self.split_projects:
             deps = root_entry.RecursiveLibraryDeps()
@@ -809,7 +801,12 @@ def _GetNative(relative_func, target_names):
 
 
 def _GenerateModuleAll(
-    gradle_output_dir, generator, build_vars, jinja_processor, native_targets
+    gradle_output_dir,
+    generator,
+    build_vars,
+    jinja_processor,
+    native_targets,
+    entries,
 ):
     """Returns the data for a pseudo build.gradle of all dirs.
 
@@ -818,9 +815,39 @@ def _GenerateModuleAll(
     target_type = 'android_apk'
     variables['target_name'] = _MODULE_ALL
     variables['template_type'] = target_type
-    java_dirs = sorted(generator.processed_java_dirs)
-    prebuilts = sorted(generator.processed_prebuilts)
-    res_dirs = sorted(generator.processed_res_dirs)
+
+    all_unique_entries = set(entries)
+    for e in entries:
+        all_unique_entries.update(e.RecursiveLibraryDeps())
+        for t in e.android_test_entries:
+            all_unique_entries.add(t)
+            all_unique_entries.update(t.RecursiveLibraryDeps())
+
+    all_java_files = set()
+    for e in all_unique_entries:
+        all_java_files.update(e.JavaFiles())
+
+    computed_dirs = _ComputeJavaSourceDirs(_RebasePath(all_java_files))
+    java_dirs = set(computed_dirs.keys())
+    for e in all_unique_entries:
+        for s in e.BundledSrcjars():
+            extracted = _ExtractBundledSrcJar(s)
+            if extracted:
+                java_dirs.add(extracted)
+
+    prebuilts = set(p for e in all_unique_entries for p in e.PrebuiltJars())
+
+    all_res_sources = set(
+        p for e in all_unique_entries for p in _RebasePath(e.ResSources())
+    )
+    res_sources = []
+    for r in all_res_sources:
+        res_sources.extend(build_utils.ReadSourcesList(r))
+    res_dirs = set(
+        resource_utils.DeduceResourceDirsFromFileList(
+            res_sources, validate=False
+        )
+    )
 
     def Relativize(paths):
         return _RebasePath(paths, os.path.join(gradle_output_dir, _MODULE_ALL))
@@ -830,9 +857,9 @@ def _GenerateModuleAll(
     # source files for editing and navigation.
     variables['main'] = {
         'android_manifest': Relativize(_DEFAULT_ANDROID_MANIFEST_PATH),
-        'java_dirs': Relativize(java_dirs),
-        'prebuilts': Relativize(prebuilts),
-        'res_dirs': Relativize(res_dirs),
+        'java_dirs': Relativize(sorted(java_dirs)),
+        'prebuilts': Relativize(sorted(prebuilts)),
+        'res_dirs': Relativize(sorted(res_dirs)),
     }
     if native_targets:
         variables['native'] = _GetNative(
@@ -1116,6 +1143,7 @@ def main():
             build_vars,
             jinja_processor,
             args.native_targets,
+            entries,
         )
     else:
         for entry in entries:
