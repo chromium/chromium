@@ -403,6 +403,15 @@ class ChromeDownloadManagerDelegate
       bool accept);
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Called after attempting to obtain a temporary directory for deobfuscating
+  // virtual files.
+  void OnCreateDeobfuscationTempFile(uint32_t download_id,
+                                     const base::FilePath& virtual_path,
+                                     download::LocalPathCallback callback,
+                                     base::FilePath temp_file_path);
+#endif
+
   raw_ptr<Profile, DanglingUntriaged> profile_;
 
 #if BUILDFLAG(IS_ANDROID)

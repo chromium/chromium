@@ -1316,6 +1316,53 @@ TEST_F(DownloadItemTest, CallbackAfterRename) {
   mock_delegate()->VerifyAndClearExpectations();
 }
 
+TEST_F(DownloadItemTest, RenameToDifferentTargetPath) {
+  DownloadItemImpl* item = CreateDownloadItem();
+  download::DownloadTargetCallback callback;
+  MockDownloadFile* download_file = CallDownloadItemStart(item, &callback);
+  base::FilePath final_path(
+      base::FilePath(kDummyTargetPath).AppendASCII("foo.bar"));
+  base::FilePath intermediate_path(final_path.InsertBeforeExtensionASCII("x"));
+  base::FilePath new_intermediate_path(
+      final_path.InsertBeforeExtensionASCII("y"));
+  auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
+  SetRenameExpectation(download_file, task_runner, new_intermediate_path,
+                       DOWNLOAD_INTERRUPT_REASON_NONE);
+
+  download::DownloadTargetInfo target_info;
+  target_info.target_path = final_path;
+  target_info.intermediate_path = intermediate_path;
+  std::move(callback).Run(std::move(target_info));
+  task_environment_.RunUntilIdle();
+  ::testing::Mock::VerifyAndClearExpectations(download_file);
+  mock_delegate()->VerifyAndClearExpectations();
+
+  EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(item, _))
+      .WillOnce(Return(true));
+  base::FilePath moved_final_path(
+      base::FilePath(kDummyTargetPath).AppendASCII("moved_foo.bar"));
+  EXPECT_CALL(*download_file, RenameAndAnnotate(final_path, _, _, _, _, _, _))
+      .WillOnce(WithArg<6>([&task_runner, &moved_final_path](
+                               DownloadFile::RenameCompletionCallback cb) {
+        task_runner->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(cb), DOWNLOAD_INTERRUPT_REASON_NONE,
+                           moved_final_path));
+      }));
+
+  EXPECT_CALL(*download_file, FullPath())
+      .WillOnce(ReturnRefOfCopy(base::FilePath()));
+  EXPECT_CALL(*download_file, Detach());
+  item->DestinationObserverAsWeakPtr()->DestinationCompleted(
+      0, std::unique_ptr<crypto::SecureHash>());
+  task_environment_.RunUntilIdle();
+  ::testing::Mock::VerifyAndClearExpectations(download_file);
+  mock_delegate()->VerifyAndClearExpectations();
+
+  EXPECT_EQ(moved_final_path, item->GetTargetFilePath());
+  EXPECT_EQ(moved_final_path, item->GetFullPath());
+}
+
 // Test that the delegate is invoked after the download file is renamed and the
 // download item is in an interrupted state.
 TEST_F(DownloadItemTest, CallbackAfterInterruptedRename) {

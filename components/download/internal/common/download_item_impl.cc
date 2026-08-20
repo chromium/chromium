@@ -1096,6 +1096,9 @@ DownloadFile* DownloadItemImpl::GetDownloadFile() {
 }
 
 DownloadItemRenameHandler* DownloadItemImpl::GetRenameHandler() {
+  if (!rename_handler_ && delegate_) {
+    rename_handler_ = delegate_->GetRenameHandlerForDownload(this);
+  }
   return rename_handler_.get();
 }
 
@@ -1775,8 +1778,6 @@ void DownloadItemImpl::Start(
               base::BindRepeating(&DownloadItemImpl::OnDownloadFileInitialized,
                                   weak_ptr_factory_.GetWeakPtr()),
               GetReceivedSlices());
-
-  rename_handler_ = delegate_->GetRenameHandlerForDownload(this);
 }
 
 void DownloadItemImpl::OnDownloadFileInitialized(DownloadInterruptReason result,
@@ -2052,10 +2053,10 @@ void DownloadItemImpl::OnRenameAndAnnotateDone(
   DownloadFile::RenameCompletionCallback rename_callback =
       base::BindOnce(&DownloadItemImpl::OnDownloadRenamedToFinalName,
                      weak_ptr_factory_.GetWeakPtr());
-  if (rename_handler_) {
+  if (auto* rename_handler = GetRenameHandler()) {
     renaming_ = true;
 
-    rename_handler_->Start(
+    rename_handler->Start(
         base::BindRepeating(&DownloadItemImpl::UpdateRenameProgress,
                             weak_ptr_factory_.GetWeakPtr()),
         std::move(rename_callback));
@@ -2091,11 +2092,10 @@ void DownloadItemImpl::OnDownloadRenamedToFinalName(
     return;
   }
 
-  DCHECK_EQ(GetTargetFilePath(), full_path);
-
   if (full_path != GetFullPath()) {
     // full_path is now the current and target file path.
     DCHECK(!full_path.empty());
+    destination_info_.target_path = full_path;
     SetFullPath(full_path);
   }
 
