@@ -233,44 +233,10 @@ class ApiTests extends ApiTestFixtureBase {
   }
 }
 
-class DaisyChainApiTests extends ApiTestFixtureBase {
-  async clickLinkInGlicUi() {
-    const link = document.createElement('a');
-    link.setAttribute('href', location.href);
-    link.setAttribute('target', '_blank');
-    document.body.appendChild(link);
-    link.click();
-  }
-
-  // Helper to handle the daisy chain actions.
-  async handleDaisyChainStep(action: string) {
-    await this.client.waitForInitialize();
-    await this.client.waitForFirstOpen();
-
-    if (action === 'createTab') {
-      await this.clickLinkInGlicUi();
-    } else if (action === 'inputSubmitted') {
-      assertDefined(this.host.getMetrics);
-      const metrics = this.host.getMetrics();
-      assertDefined(metrics);
-      assertDefined(metrics.onUserInputSubmitted);
-      metrics.onUserInputSubmitted(WebClientMode.TEXT);
-    } else {
-      assertTrue(false, `Unexpected daisy chain action: ${action}`);
-    }
-  }
-
-  async testNewTabMetrics() {
-    await this.handleDaisyChainStep(this.testParams);
-  }
-}
-
-
 // All test fixtures. We look up tests by name, and the fixture name is ignored.
 // Therefore all tests must have unique names.
 const TEST_FIXTURES = [
   ApiTests,
-  DaisyChainApiTests,
 ];
 
 testMain(TEST_FIXTURES);

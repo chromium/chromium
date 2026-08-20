@@ -180,7 +180,6 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicGetHostCapabilityApiTest",
       "GlicApiTestWithWebContentsWarming",
       "GlicApiTestHibernateAllOnMemoryPressure",
-      "GlicApiTestWithDaisyChain",
       "GlicApiTestGeminiEnterpriseSettingsOverride",
       "GlicApiTestGeminiEnterpriseSettingsDisabled",
       "GlicApiTestGeminiEnterpriseSettingsPolicy",
@@ -469,24 +468,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testAllTestsAreRegistered) {
   AssertAllTestsRegistered(GetTestSuiteNames());
 }
 
-
-class GlicApiTestWithDaisyChain : public GlicApiTest {
- public:
-  GlicApiTestWithDaisyChain() {
-    daisy_chain_features_.InitAndEnableFeature(
-        features::kGlicDaisyChainNewTabs);
-  }
-
-  void SetUpOnMainThread() override {
-    GlicApiTest::SetUpOnMainThread();
-    browser()->GetProfile()->GetPrefs()->SetBoolean(
-        prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled, true);
-  }
-
- private:
-  base::test::ScopedFeatureList daisy_chain_features_;
-};
-
 // TODO(crbug.com/454083080): Fix this, it hangs.
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testCaptureScreenshot) {
   ExecuteJsTest();
@@ -513,34 +494,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testMetrics) {
   histogram_tester->ExpectTotalCount("Glic.FirstReaction.Text.Modelled.Time",
                                      1);
   histogram_tester->ExpectTotalCount("Glic.TabContext.UploadTime", 1);
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain, testNewTabMetrics) {
-  // 1. Open Glic in first tab.
-  RunTestSequence(InstrumentTab(kFirstTab),
-                  NavigateWebContents(kFirstTab, page_url()),
-                  OpenGlic(GlicInstrumentMode::kHostAndContents));
-
-  // 2. Open a new tab (Ctrl+T equivalent).
-  ASSERT_TRUE(
-      AddTabAtIndex(1, GURL("chrome://newtab/"), ui::PAGE_TRANSITION_TYPED));
-  auto* tab_strip = browser()->tab_strip_model();
-  ASSERT_TRUE(base::test::RunUntil([&]() { return tab_strip->count() == 2; }));
-  tab_strip->ActivateTabAt(1);
-
-  // 3. Verify Glic is open in the new tab.
-  TrackGlicInstanceWithTabIndex(1);
-  WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents);
-
-  // 4. Trigger "inputSubmitted".
-  ExecuteJsTest({.params = base::Value("inputSubmitted")});
-
-  // 5. Verify Metric.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return histogram_tester->GetBucketCount(
-               "Glic.Instance.AutoOpenedPanel.FirstAction.NewTab",
-               DaisyChainFirstAction::kInputSubmitted) == 1;
-  }));
 }
 
 // TODO(crbug.com/410881522): Re-enable this test
@@ -693,11 +646,6 @@ INSTANTIATE_TEST_SUITE_P(
     &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTest,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
-
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestWithDaisyChain,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 

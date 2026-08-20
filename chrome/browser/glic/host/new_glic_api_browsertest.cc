@@ -2766,6 +2766,31 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithNewTabDaisyChain,
       },
       1));
 }
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithNewTabDaisyChain, testNewTabMetrics) {
+  // 1. Open Glic in first tab.
+  ASSERT_OK(OpenGlicForActiveTab());
+  base::HistogramTester histogram_tester;
+
+  // 2. Open a new tab (Ctrl+T equivalent).
+  tabs::TabInterface* tab1 = CreateAndActivateTab(GURL("chrome://newtab/"));
+  ASSERT_TRUE(tab1);
+
+  // 3. Verify Glic is open in the new tab.
+  ASSERT_OK_AND_ASSIGN(auto* tab1_instance, WaitForGlicOpen(tab1));
+
+  // 4. Trigger "inputSubmitted".
+  ExecuteJsTest(
+      {.params = base::Value("inputSubmitted"), .instance = tab1_instance});
+
+  // 5. Verify Metric.
+  ASSERT_OK(RunUntilEqual(
+      [&]() {
+        return histogram_tester.GetBucketCount(
+            "Glic.Instance.AutoOpenedPanel.FirstAction.NewTab",
+            DaisyChainFirstAction::kInputSubmitted);
+      },
+      1));
+}
 
 #if !BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/520959831): Fix flaky test.

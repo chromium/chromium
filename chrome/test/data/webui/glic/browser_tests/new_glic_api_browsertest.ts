@@ -2699,8 +2699,11 @@ class DaisyChainApiTests extends ApiTestFixtureBase {
       assertTrue(false, `Unexpected daisy chain action: ${action}`);
     }
   }
-
   async testDaisyChainRecursiveAndInput() {
+    await this.handleDaisyChainStep(this.testParams);
+  }
+
+  async testNewTabMetrics() {
     await this.handleDaisyChainStep(this.testParams);
   }
 }
