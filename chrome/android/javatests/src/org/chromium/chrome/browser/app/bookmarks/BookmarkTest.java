@@ -2391,6 +2391,7 @@ public class BookmarkTest {
     @MediumTest
     @Restriction({DeviceFormFactor.ONLY_TABLET})
     @EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
+    @DisabledTest(message = "https://crbug.com/549299242")
     public void testDesktopLayout_InitRedirectsFromRoot() throws Exception {
         DeviceInfo.setIsDesktopForTesting(true);
         try {
@@ -2424,6 +2425,7 @@ public class BookmarkTest {
     @MediumTest
     @Restriction({DeviceFormFactor.ONLY_TABLET})
     @EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
+    @DisabledTest(message = "https://crbug.com/549299242")
     public void testDesktopLayout_NoBackButtonForTopLevelFolders() throws Exception {
         DeviceInfo.setIsDesktopForTesting(true);
         try {
