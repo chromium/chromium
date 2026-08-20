@@ -17,6 +17,10 @@
 
 class PrefService;
 
+namespace syncer {
+class DeviceInfoSyncService;
+}  // namespace syncer
+
 namespace personal_context {
 
 // Default HPKE parameters for Personal Context:
@@ -31,7 +35,9 @@ inline constexpr crypto::hpke::HpkeParams kPersonalContextHpkeParams{
 // encryption and decryption.
 class PersonalContextKeyManager {
  public:
-  explicit PersonalContextKeyManager(PrefService* prefs);
+  PersonalContextKeyManager(
+      PrefService* prefs,
+      syncer::DeviceInfoSyncService* device_info_sync_service);
   PersonalContextKeyManager(const PersonalContextKeyManager&) = delete;
   PersonalContextKeyManager& operator=(const PersonalContextKeyManager&) = delete;
   ~PersonalContextKeyManager();
@@ -66,6 +72,7 @@ class PersonalContextKeyManager {
 
  private:
   const raw_ptr<PrefService> prefs_;
+  const raw_ptr<syncer::DeviceInfoSyncService> device_info_sync_service_;
   std::optional<crypto::keypair::PrivateKey> private_key_;
 };
 

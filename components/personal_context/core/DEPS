@@ -7,6 +7,7 @@ include_rules = [
   "+components/signin/public/base",
   "+components/signin/public/identity_manager",
   "+components/subscription_eligibility",
+  "+components/sync_device_info",
   "+components/sync_preferences",
   "+components/variations",
   "+components/variations/net",

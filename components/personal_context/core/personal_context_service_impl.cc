@@ -192,12 +192,14 @@ std::optional<proto::Entity> DecryptedEntityToChromeEntity(
 PersonalContextServiceImpl::PersonalContextServiceImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
-    PrefService* pref_service)
+    PrefService* pref_service,
+    syncer::DeviceInfoSyncService* device_info_sync_service)
     : personal_context_manager_(std::make_unique<PersonalContextManager>(
           std::move(url_loader_factory),
           identity_manager)),
       key_manager_(pref_service ? std::make_unique<PersonalContextKeyManager>(
-                                      pref_service)
+                                      pref_service,
+                                      device_info_sync_service)
                                 : nullptr) {}
 
 PersonalContextServiceImpl::~PersonalContextServiceImpl() = default;

@@ -20,6 +20,10 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
+namespace syncer {
+class DeviceInfoSyncService;
+}  // namespace syncer
+
 namespace personal_context {
 
 class PersonalContextKeyManager;
@@ -30,7 +34,8 @@ class PersonalContextServiceImpl : public PersonalContextService {
   PersonalContextServiceImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      syncer::DeviceInfoSyncService* device_info_sync_service);
 
   PersonalContextServiceImpl(const PersonalContextServiceImpl&) = delete;
   PersonalContextServiceImpl& operator=(const PersonalContextServiceImpl&) = delete;

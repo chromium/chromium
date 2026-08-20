@@ -17,6 +17,7 @@ source_set("personal_context") {
     "//chrome/browser/account_settings",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
+    "//chrome/browser/sync:factories",
     "//components/application_locale_storage",
     "//components/personal_context/core",
     "//components/personal_context/core:features",

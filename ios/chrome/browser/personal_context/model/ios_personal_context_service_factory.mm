@@ -9,6 +9,7 @@
 #import "components/personal_context/core/personal_context_service_impl.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 using personal_context::PersonalContextService;
@@ -30,8 +31,9 @@ IOSPersonalContextServiceFactory::GetInstance() {
 
 IOSPersonalContextServiceFactory::IOSPersonalContextServiceFactory()
     : ProfileKeyedServiceFactoryIOS("PersonalContextService",
-                                    ProfileSelection::kNoInstanceInIncognito) {
+                                     ProfileSelection::kNoInstanceInIncognito) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
 }
 
 IOSPersonalContextServiceFactory::~IOSPersonalContextServiceFactory() = default;
@@ -46,5 +48,6 @@ IOSPersonalContextServiceFactory::BuildServiceInstanceFor(
 
   return std::make_unique<PersonalContextServiceImpl>(
       profile->GetSharedURLLoaderFactory(),
-      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs());
+      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
+      DeviceInfoSyncServiceFactory::GetForProfile(profile));
 }

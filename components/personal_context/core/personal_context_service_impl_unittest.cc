@@ -20,6 +20,7 @@
 #include "components/personal_context/proto/features/common_data.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "net/http/http_status_code.h"
@@ -54,7 +55,7 @@ class PersonalContextServiceImplTest : public testing::Test {
             &test_url_loader_factory_);
     personal_context_service_ = std::make_unique<PersonalContextServiceImpl>(
         url_loader_factory_, identity_test_env_.identity_manager(),
-        &pref_service_);
+        &pref_service_, /*device_info_sync_service=*/nullptr);
   }
 
   void SetAutomaticIssueOfAccessTokens() {
@@ -139,7 +140,8 @@ TEST_F(PersonalContextServiceImplTest, FetchPiiEntitiesDelegatesToManager) {
 }
 
 TEST_F(PersonalContextServiceImplTest, DecryptEntitySuccess_Passport) {
-  PersonalContextKeyManager key_manager(&pref_service_);
+  PersonalContextKeyManager key_manager(&pref_service_,
+                                        /*device_info_sync_service=*/nullptr);
 
   proto::DecryptedEntity decrypted_entity;
   decrypted_entity.mutable_passport()->set_full_name("Jane Doe");
@@ -205,7 +207,8 @@ TEST_F(PersonalContextServiceImplTest, DecryptEntitySuccess_Passport) {
 }
 
 TEST_F(PersonalContextServiceImplTest, DecryptEntitySuccess_DriversLicense) {
-  PersonalContextKeyManager key_manager(&pref_service_);
+  PersonalContextKeyManager key_manager(&pref_service_,
+                                        /*device_info_sync_service=*/nullptr);
 
   proto::DecryptedEntity decrypted_entity;
   decrypted_entity.mutable_drivers_license()->set_full_name("John Smith");
@@ -272,7 +275,8 @@ TEST_F(PersonalContextServiceImplTest, DecryptEntitySuccess_DriversLicense) {
 }
 
 TEST_F(PersonalContextServiceImplTest, DecryptEntity_IgnoresUnspecifiedAndEmptyFields) {
-  PersonalContextKeyManager key_manager(&pref_service_);
+  PersonalContextKeyManager key_manager(&pref_service_,
+                                        /*device_info_sync_service=*/nullptr);
 
   proto::DecryptedEntity decrypted_entity;
   decrypted_entity.mutable_passport()->set_full_name("UNSPECIFIED");
@@ -313,7 +317,8 @@ TEST_F(PersonalContextServiceImplTest, DecryptEntity_IgnoresUnspecifiedAndEmptyF
 }
 
 TEST_F(PersonalContextServiceImplTest, DecryptEntity_DeduplicatesReferences) {
-  PersonalContextKeyManager key_manager(&pref_service_);
+  PersonalContextKeyManager key_manager(&pref_service_,
+                                        /*device_info_sync_service=*/nullptr);
 
   proto::DecryptedEntity decrypted_entity;
   decrypted_entity.mutable_passport()->set_full_name("Jane Doe");
@@ -343,7 +348,8 @@ TEST_F(PersonalContextServiceImplTest, DecryptEntity_DeduplicatesReferences) {
 }
 
 TEST_F(PersonalContextServiceImplTest, DecryptEntity_EmptyDecryptedEntityReturnsNullopt) {
-  PersonalContextKeyManager key_manager(&pref_service_);
+  PersonalContextKeyManager key_manager(&pref_service_,
+                                        /*device_info_sync_service=*/nullptr);
 
   proto::DecryptedEntity decrypted_entity;
   // Neither passport nor drivers_license set.
@@ -373,7 +379,7 @@ TEST_F(PersonalContextServiceImplTest, DecryptEntity_EmptyDecryptedEntityReturns
 TEST_F(PersonalContextServiceImplTest, DecryptEntityNullKeyManager) {
   PersonalContextServiceImpl service_without_prefs(
       url_loader_factory_, identity_test_env_.identity_manager(),
-      /*pref_service=*/nullptr);
+      /*pref_service=*/nullptr, /*device_info_sync_service=*/nullptr);
 
   base::HistogramTester histogram_tester;
   proto::Entity entity;
@@ -426,7 +432,8 @@ TEST_F(PersonalContextServiceImplTest,
 
 TEST_F(PersonalContextServiceImplTest,
        DecryptEntityInvalidProtoPayloadReturnsNullopt) {
-  PersonalContextKeyManager key_manager(&pref_service_);
+  PersonalContextKeyManager key_manager(&pref_service_,
+                                        /*device_info_sync_service=*/nullptr);
 
   const std::string invalid_proto_bytes = "\xFF\xFF\xFF\xFF\xFF";
   std::optional<std::vector<uint8_t>> ciphertext = key_manager.Seal(
@@ -447,6 +454,25 @@ TEST_F(PersonalContextServiceImplTest,
       PersonalContextDecryptionStatus::kProtoParseFailed,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount("PersonalContext.DecryptEntity.Latency", 1);
+}
+
+TEST_F(PersonalContextServiceImplTest,
+       DecryptEntityGeneratesKeyAndCallsRefreshLocalDeviceInfo) {
+  syncer::FakeDeviceInfoSyncService fake_sync_service;
+  PersonalContextServiceImpl service(
+      url_loader_factory_, identity_test_env_.identity_manager(),
+      &pref_service_, &fake_sync_service);
+  EXPECT_EQ(fake_sync_service.RefreshLocalDeviceInfoCount(), 0);
+
+  proto::Entity entity;
+  entity.set_encrypted_entity("some_ciphertext");
+  service.DecryptEntity(entity);
+  EXPECT_EQ(fake_sync_service.RefreshLocalDeviceInfoCount(), 1);
+
+  // Decrypting again with the key already stored in prefs should not trigger
+  // an additional refresh.
+  service.DecryptEntity(entity);
+  EXPECT_EQ(fake_sync_service.RefreshLocalDeviceInfoCount(), 1);
 }
 
 }  // namespace

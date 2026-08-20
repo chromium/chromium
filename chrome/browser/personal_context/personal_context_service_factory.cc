@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/core/personal_context_service_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -32,6 +33,7 @@ PersonalContextServiceFactory::PersonalContextServiceFactory()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
 }
 
 PersonalContextServiceFactory::~PersonalContextServiceFactory() =
@@ -48,5 +50,6 @@ PersonalContextServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<personal_context::PersonalContextServiceImpl>(
       profile->GetURLLoaderFactory(),
-      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs());
+      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
+      DeviceInfoSyncServiceFactory::GetForProfile(profile));
 }

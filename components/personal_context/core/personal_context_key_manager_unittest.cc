@@ -12,6 +12,7 @@
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/tink_key.pb.h"
+#include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace personal_context {
@@ -21,7 +22,8 @@ class PersonalContextKeyManagerTest : public testing::Test {
  public:
   void SetUp() override {
     prefs::RegisterProfilePrefs(pref_service_.registry());
-    key_manager_ = std::make_unique<PersonalContextKeyManager>(&pref_service_);
+    key_manager_ = std::make_unique<PersonalContextKeyManager>(
+        &pref_service_, /*device_info_sync_service=*/nullptr);
   }
 
  protected:
@@ -61,6 +63,19 @@ TEST_F(PersonalContextKeyManagerTest, EncryptsAndDecrypts) {
       key_manager_->Open(*ciphertext);
   ASSERT_TRUE(decrypted.has_value());
   EXPECT_EQ(std::string(decrypted->begin(), decrypted->end()), plaintext);
+}
+
+TEST_F(PersonalContextKeyManagerTest, GeneratesKeyCallsRefreshLocalDeviceInfo) {
+  syncer::FakeDeviceInfoSyncService fake_sync_service;
+  PersonalContextKeyManager key_manager(&pref_service_, &fake_sync_service);
+  EXPECT_EQ(fake_sync_service.RefreshLocalDeviceInfoCount(), 0);
+
+  key_manager.GetOrCreatePrivateKey();
+  EXPECT_EQ(fake_sync_service.RefreshLocalDeviceInfoCount(), 1);
+
+  // Loading an already generated key should not trigger an additional refresh.
+  key_manager.GetOrCreatePrivateKey();
+  EXPECT_EQ(fake_sync_service.RefreshLocalDeviceInfoCount(), 1);
 }
 
 }  // namespace

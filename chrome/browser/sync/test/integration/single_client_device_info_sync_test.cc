@@ -25,6 +25,8 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/core/personal_context_key_manager.h"
+#include "components/personal_context/core/personal_context_prefs.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/tink_key.pb.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -483,6 +485,41 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTestWithPersonalContext,
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTestWithPersonalContext,
+                       KeyGenerationTriggersImmediateDeviceInfoCommit) {
+  ASSERT_TRUE(SetupSync());
+
+  const syncer::DeviceInfo* local_device =
+      GetDeviceInfoTracker()->GetDeviceInfo(GetLocalCacheGuid());
+  ASSERT_TRUE(local_device);
+
+  // Clear existing private key from prefs to simulate first-time generation.
+  GetProfile(0)->GetPrefs()->ClearPref(
+      personal_context::prefs::kPersonalContextPrivateKey);
+
+  // Trigger key generation via PersonalContextKeyManager with DeviceInfoSyncService.
+  personal_context::PersonalContextKeyManager key_manager(
+      GetProfile(0)->GetPrefs(),
+      DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(0)));
+  key_manager.GetOrCreatePrivateKey();
+  std::vector<uint8_t> expected_public_key =
+      personal_context::PersonalContextKeyManager::
+          GetOrCreateLocalPublicKeyBytes(GetProfile(0)->GetPrefs());
+
+  sync_pb::PersonalContextSpecificFields expected_personal_context_fields;
+  expected_personal_context_fields.set_serialized_tink_keyset(
+      expected_public_key.data(), expected_public_key.size());
+
+  // Verify that RefreshLocalDeviceInfo() was called and immediately triggered
+  // a commit to the server with the new public key.
+  EXPECT_TRUE(
+      ServerDeviceInfoMatchChecker(ElementsAre(AllOf(
+          HasCacheGuid(GetLocalCacheGuid()),
+          HasPersonalContextFields(
+              EqualsProto(expected_personal_context_fields)))))
+          .Wait());
+}
+
+IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTestWithPersonalContext,
                        DownloadRemoteDeviceWithPersonalContextInfo) {
   const std::vector<uint8_t> kRemoteKeyset = {1, 2, 3, 4, 5};
   sync_pb::DeviceInfoSpecifics specifics = CreateSpecifics(/*suffix=*/1);
@@ -505,6 +542,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTestWithPersonalContext,
   EXPECT_EQ(remote_device->personal_context_info()->serialized_tink_keyset,
             kRemoteKeyset);
 }
+
 
 INSTANTIATE_TEST_SUITE_P(,
                          SingleClientDeviceInfoSyncTestWithPersonalContext,

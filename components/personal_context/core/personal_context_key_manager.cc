@@ -15,6 +15,7 @@
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/tink_key.pb.h"
+#include "components/sync_device_info/device_info_sync_service.h"
 
 namespace personal_context {
 
@@ -29,38 +30,49 @@ crypto::keypair::PrivateKey GenerateAndStorePrivateKey(PrefService* prefs) {
   // OSCrypt / OSCrypt Async before saving to prefs.
   prefs->SetString(prefs::kPersonalContextPrivateKey,
                    base::Base64Encode(priv_bytes));
-  // TODO(b/544747336): Call DeviceInfoSyncService::RefreshLocalDeviceInfo()
-  // when a new key is generated so that the public key is immediately committed
-  // without delay.
   return key;
 }
 
-crypto::keypair::PrivateKey LoadOrGeneratePrivateKey(PrefService* prefs) {
+crypto::keypair::PrivateKey LoadOrGeneratePrivateKey(
+    PrefService* prefs,
+    bool* key_generated = nullptr) {
   CHECK(prefs);
   std::string base64_key =
       prefs->GetString(prefs::kPersonalContextPrivateKey);
   if (base64_key.empty()) {
+    if (key_generated) {
+      *key_generated = true;
+    }
     return GenerateAndStorePrivateKey(prefs);
   }
 
   std::optional<std::vector<uint8_t>> decoded = base::Base64Decode(base64_key);
   if (!decoded || decoded->size() != 64) {
+    if (key_generated) {
+      *key_generated = true;
+    }
     return GenerateAndStorePrivateKey(prefs);
   }
 
+  if (key_generated) {
+    *key_generated = false;
+  }
   return crypto::keypair::PrivateKey::FromMlkem768PrivateKey(
       base::as_byte_span(*decoded).first<64>());
 }
 
 }  // namespace
 
-PersonalContextKeyManager::PersonalContextKeyManager(PrefService* prefs)
-    : prefs_(prefs) {
+PersonalContextKeyManager::PersonalContextKeyManager(
+    PrefService* prefs,
+    syncer::DeviceInfoSyncService* device_info_sync_service)
+    : prefs_(prefs), device_info_sync_service_(device_info_sync_service) {
   CHECK(prefs_);
 }
 
 PersonalContextKeyManager::~PersonalContextKeyManager() = default;
 
+// static
 std::vector<uint8_t>
 PersonalContextKeyManager::GetOrCreateLocalPublicKeyBytes(PrefService* prefs) {
   CHECK(prefs);
@@ -87,7 +99,11 @@ PersonalContextKeyManager::GetOrCreateLocalPublicKeyBytes(PrefService* prefs) {
 crypto::keypair::PrivateKey PersonalContextKeyManager::GetOrCreatePrivateKey() {
   // TODO(b/544747336): Clean up or rotate keys on profile signout.
   if (!private_key_) {
-    private_key_ = LoadOrGeneratePrivateKey(prefs_);
+    bool key_generated = false;
+    private_key_ = LoadOrGeneratePrivateKey(prefs_, &key_generated);
+    if (key_generated && device_info_sync_service_) {
+      device_info_sync_service_->RefreshLocalDeviceInfo();
+    }
   }
   return *private_key_;
 }
