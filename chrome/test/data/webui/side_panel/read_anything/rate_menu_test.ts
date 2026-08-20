@@ -4,18 +4,19 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {DEFAULT_SETTINGS, ReadAloudSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AudioBrowserProxyImpl, DEFAULT_SETTINGS, ReadAloudSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {RateMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertNotEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {assertCheckMarksForDropdown, assertTestSettingsAreNotDefaultSettings, mockMetrics, TEST_RANDOM_VALUE_SETTINGS} from './common.js';
-import {FakeReadingMode} from './fake_reading_mode.js';
+import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('RateMenuElement', () => {
   let rateMenu: RateMenuElement;
   let metrics: TestMetricsBrowserProxy;
+  let audioBrowserProxy: TestAudioBrowserProxy;
 
   suiteSetup(() => {
     assertTestSettingsAreNotDefaultSettings();
@@ -24,8 +25,8 @@ suite('RateMenuElement', () => {
   setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const readingMode = new FakeReadingMode();
-    chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
+    audioBrowserProxy = new TestAudioBrowserProxy();
+    AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
     metrics = mockMetrics();
 
     rateMenu = document.createElement('rate-menu');
@@ -36,23 +37,26 @@ suite('RateMenuElement', () => {
     assertCheckMarksForDropdown(rateMenu);
   });
 
-
-
   test('rate change is propagated', async () => {
     const rate1 = 1;
     rateMenu.$.menu.dispatchEvent(
         new CustomEvent(ToolbarEvent.RATE, {detail: {data: rate1}}));
-    assertEquals(rate1, chrome.readingMode.speechRate);
+    assertEquals(
+        rate1, await audioBrowserProxy.whenCalled('onSpeechRateChange'));
 
+    audioBrowserProxy.resetResolver('onSpeechRateChange');
     const rate2 = 0.5;
     rateMenu.$.menu.dispatchEvent(
         new CustomEvent(ToolbarEvent.RATE, {detail: {data: rate2}}));
-    assertEquals(rate2, chrome.readingMode.speechRate);
+    assertEquals(
+        rate2, await audioBrowserProxy.whenCalled('onSpeechRateChange'));
 
+    audioBrowserProxy.resetResolver('onSpeechRateChange');
     const rate3 = 4;
     rateMenu.$.menu.dispatchEvent(
         new CustomEvent(ToolbarEvent.RATE, {detail: {data: rate3}}));
-    assertEquals(rate3, chrome.readingMode.speechRate);
+    assertEquals(
+        rate3, await audioBrowserProxy.whenCalled('onSpeechRateChange'));
 
     assertEquals(
         ReadAloudSettingsChange.VOICE_SPEED_CHANGE,

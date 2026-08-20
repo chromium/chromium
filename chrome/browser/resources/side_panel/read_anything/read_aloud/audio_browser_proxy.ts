@@ -10,11 +10,16 @@
 // (window.speechSynthesis) for speech playback and voice management.
 export interface AudioBrowserProxy {
   getSpeechRate(): number;
+  onSpeechRateChange(rate: number): void;
 }
 
 export class AudioBrowserProxyImpl implements AudioBrowserProxy {
   getSpeechRate(): number {
     return chrome.readingMode.speechRate;
+  }
+
+  onSpeechRateChange(rate: number): void {
+    chrome.readingMode.onSpeechRateChange(rate);
   }
 
   static getInstance(): AudioBrowserProxy {

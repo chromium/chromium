@@ -12,11 +12,16 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'getSpeechRate',
+      'onSpeechRateChange',
     ]);
   }
 
   getSpeechRate(): number {
     this.methodCalled('getSpeechRate');
     return this.speechRate;
+  }
+
+  onSpeechRateChange(rate: number): void {
+    this.methodCalled('onSpeechRateChange', rate);
   }
 }

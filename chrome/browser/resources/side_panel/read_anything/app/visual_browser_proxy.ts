@@ -8,7 +8,10 @@
 export interface VisualBrowserProxy {
   getInSidePanelPresentationState(): number;
   getInImmersiveOverlayPresentationState(): number;
+  getFontName(): string;
+  getSupportedFonts(): string[];
 
+  onFontChange(font: string): void;
   togglePresentation(): void;
 }
 
@@ -19,6 +22,18 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
 
   getInImmersiveOverlayPresentationState(): number {
     return chrome.readingMode.inImmersiveOverlayPresentationState;
+  }
+
+  getFontName(): string {
+    return chrome.readingMode.fontName;
+  }
+
+  getSupportedFonts(): string[] {
+    return chrome.readingMode.supportedFonts;
+  }
+
+  onFontChange(font: string): void {
+    chrome.readingMode.onFontChange(font);
   }
 
   togglePresentation(): void {

@@ -9,11 +9,16 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
     VisualBrowserProxy {
   inSidePanelPresentationState: number = 1;
   inImmersiveOverlayPresentationState: number = 2;
+  fontName: string = 'Poppins';
+  supportedFonts: string[] = [];
 
   constructor() {
     super([
       'getInSidePanelPresentationState',
       'getInImmersiveOverlayPresentationState',
+      'getFontName',
+      'getSupportedFonts',
+      'onFontChange',
       'togglePresentation',
     ]);
   }
@@ -26,6 +31,20 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   getInImmersiveOverlayPresentationState(): number {
     this.methodCalled('getInImmersiveOverlayPresentationState');
     return this.inImmersiveOverlayPresentationState;
+  }
+
+  getFontName(): string {
+    this.methodCalled('getFontName');
+    return this.fontName;
+  }
+
+  getSupportedFonts(): string[] {
+    this.methodCalled('getSupportedFonts');
+    return this.supportedFonts;
+  }
+
+  onFontChange(font: string): void {
+    this.methodCalled('onFontChange', font);
   }
 
   togglePresentation(): void {
