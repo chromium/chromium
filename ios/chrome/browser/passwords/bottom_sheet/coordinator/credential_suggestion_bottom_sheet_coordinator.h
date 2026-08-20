@@ -57,11 +57,6 @@ struct FormActivityParams;
 - (BOOL)hasPendingRequest:
     (const webauthn::IOSPasskeyClient::RequestInfo&)requestInfo;
 
-// Handler for Browser Coordinator Commands.
-// TODO(crbug.com/543354673): Remove this.
-@property(nonatomic, weak) id<BrowserCoordinatorCommands>
-    browserCoordinatorCommandsHandler;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_BOTTOM_SHEET_COORDINATOR_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_COORDINATOR_H_
