@@ -1521,48 +1521,52 @@ void AutofillAgent::ResetTokenBucket() {
 bool AutofillAgent::ShouldThrottleAskForValuesToFill(
     FieldRendererId field,
     AutofillSuggestionTriggerSource trigger_source) {
-  switch (trigger_source) {
-    case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
-    case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
-    case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
-    case AutofillSuggestionTriggerSource::kAtMemoryTriggerString:
-    case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
-    case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
-    case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
-    case AutofillSuggestionTriggerSource::kGlic:
-    case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
-      // These sources are used for explicit user actions or by the browser
-      // process. To maximize their reliability, we do not throttle them.
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillThrottleAskForValuesToFillByTriggerSource)) {
-        return false;
-      }
-      break;
-    case AutofillSuggestionTriggerSource::kContentEditableClicked:
-    case AutofillSuggestionTriggerSource::kFormControlElementClicked:
-    case AutofillSuggestionTriggerSource::kiOS:
-    case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
-    case AutofillSuggestionTriggerSource::kPasswordManager:
-    case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
-    case AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick:
-    case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
-    case AutofillSuggestionTriggerSource::kTextFieldValueChanged:
-    case AutofillSuggestionTriggerSource::kUnspecified:
-      break;
-  }
+  auto may_throttle = [](AutofillSuggestionTriggerSource trigger_source) {
+    using enum AutofillSuggestionTriggerSource;
+    switch (trigger_source) {
+      case kAtMemoryContextMenu:
+      case kAtMemoryInactivityNudge:
+      case kAtMemoryKeyboardShortcut:
+      case kAtMemoryTriggerString:
+      case kComposeDelayedProactiveNudge:
+      case kComposeDialogLostFocus:
+      case kManualFallbackPasswords:
+      case kGlic:
+      case kProactivePasswordRecovery:
+        // These sources are used for explicit user actions or by the browser
+        // process. To maximize their reliability, we do not throttle them.
+        if (base::FeatureList::IsEnabled(
+                features::kAutofillThrottleAskForValuesToFillByTriggerSource)) {
+          return false;
+        }
+        return true;
+      case kContentEditableClicked:
+      case kFormControlElementClicked:
+      case kiOS:
+      case kOpenTextDataListChooser:
+      case kPasswordManager:
+      case kPasswordManagerProcessedFocusedField:
+      case kTextareaFocusedWithoutClick:
+      case kTextFieldDidReceiveKeyDown:
+      case kTextFieldValueChanged:
+      case kUnspecified:
+        return true;
+    }
+    NOTREACHED();
+  };
 
   // 1. Apply 100ms *per field* throttle to AskForValuesToFill.
-  // At least on Android, multiple AskForValuesToFill() events may be fired in
-  // short succession. Since getting the event handling right in AutofillAgent
-  // is difficult we ignore duplicate AskForValuesToFill() as a workaround.
-  // See crbug.com/40284788 for details.
+  // Multiple AskForValuesToFill() events may be fired in short succession.
+  // Since getting the event handling right in AutofillAgent is difficult we
+  // ignore duplicate AskForValuesToFill() as a workaround. See
+  // crbug.com/40284788 for details.
   static constexpr base::TimeDelta kThrottle = base::Milliseconds(100);
   base::TimeTicks now = base::TimeTicks::Now();
   if (field == last_ask_for_values_to_fill_.field &&
-      now - last_ask_for_values_to_fill_.time < kThrottle) {
+      now - last_ask_for_values_to_fill_.time < kThrottle &&
+      may_throttle(trigger_source)) {
     return true;
   }
-  last_ask_for_values_to_fill_ = {now, field};
 
   // 2. Apply a *per frame* throttle to AskForValuesToFill.
   // This exists because malicious web pages can attempt to steal saved
@@ -1570,13 +1574,13 @@ bool AutofillAgent::ShouldThrottleAskForValuesToFill(
   // input prefixes and monitoring :autofill state changes.
   if (base::FeatureList::IsEnabled(
           features::kAutofillThrottleBruteForceProbing)) {
-    base::TimeDelta replenish_rate =
+    const base::TimeDelta replenish_rate =
         features::kAutofillThrottleBruteForceProbingReplenishRate.Get();
     const int max_tokens =
         features::kAutofillThrottleBruteForceProbingMaxTokens.Get();
 
     if (replenish_rate.is_positive()) {
-      int64_t earned_tokens =
+      const int64_t earned_tokens =
           (now - ask_for_values_to_fill_throttle_.last_replenish_time)
               .IntDiv(replenish_rate);
       if (earned_tokens > 0) {
@@ -1594,12 +1598,17 @@ bool AutofillAgent::ShouldThrottleAskForValuesToFill(
       }
     }
 
-    if (ask_for_values_to_fill_throttle_.tokens <= 0) {
+    if (ask_for_values_to_fill_throttle_.tokens <= 0 &&
+        may_throttle(trigger_source)) {
       return true;  // Throttled due to burst budget exhaustion.
     }
-    ask_for_values_to_fill_throttle_.tokens--;
   }
 
+  last_ask_for_values_to_fill_ = {now, field};
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillThrottleBruteForceProbing)) {
+    --ask_for_values_to_fill_throttle_.tokens;
+  }
   return false;
 }
 

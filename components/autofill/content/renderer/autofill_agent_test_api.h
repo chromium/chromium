@@ -57,6 +57,12 @@ class AutofillAgentTestApi {
 
   void DidChangeScrollOffset() { agent_->DidChangeScrollOffset(); }
 
+  bool ShouldThrottleAskForValuesToFill(
+      FieldRendererId field,
+      AutofillSuggestionTriggerSource trigger_source) {
+    return agent_->ShouldThrottleAskForValuesToFill(field, trigger_source);
+  }
+
   void set_focus_requires_scroll(bool focus_requires_scroll) {
     const_cast<AutofillAgent::Config&>(agent_->config_).focus_requires_scroll =
         AutofillAgent::FocusRequiresScroll(focus_requires_scroll);

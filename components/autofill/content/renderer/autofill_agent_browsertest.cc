@@ -1910,6 +1910,25 @@ TEST_F(AutofillAgentTest, RequestRefillTimesOut) {
   std::move(run_loop).Run();
 }
 
+// Test that calling `ShouldThrottleAskForValuesToFill()` twice returns `true`
+// in the second case if the first `trigger_source` is not throttleable but the
+// second is.
+TEST_F(AutofillAgentTest,
+       ThrottleAskForValuesToFill_UnthrottlableThenThrottlable) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillThrottleAskForValuesToFillByTriggerSource};
+  EXPECT_FALSE(
+      test_api(autofill_agent())
+          .ShouldThrottleAskForValuesToFill(
+              FieldRendererId(1),
+              AutofillSuggestionTriggerSource::kManualFallbackPasswords));
+  EXPECT_TRUE(
+      test_api(autofill_agent())
+          .ShouldThrottleAskForValuesToFill(
+              FieldRendererId(1),
+              AutofillSuggestionTriggerSource::kFormControlElementClicked));
+}
+
 class AutofillAgentTest_AtMemory : public AutofillAgentTest {
  public:
   AutofillAgentTest_AtMemory() {
@@ -2081,12 +2100,6 @@ TEST_F(AutofillAgentTest_AtMemory, AtMemoryShortcutTrigger) {
       AskForValuesToFill(
           _, _, _,
           Eq(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut), _));
-  EXPECT_CALL(
-      autofill_driver(),
-      AskForValuesToFill(
-          _, _, _,
-          Ne(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut), _))
-      .Times(AnyNumber());
 
   blink::WebKeyboardEvent event(
       blink::WebInputEvent::Type::kRawKeyDown,
@@ -2111,12 +2124,6 @@ TEST_F(AutofillAgentTest_AtMemory, AtMemoryShortcutTriggerTextArea) {
       AskForValuesToFill(
           _, _, _,
           Eq(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut), _));
-  EXPECT_CALL(
-      autofill_driver(),
-      AskForValuesToFill(
-          _, _, _,
-          Ne(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut), _))
-      .Times(AnyNumber());
 
   blink::WebKeyboardEvent event(
       blink::WebInputEvent::Type::kRawKeyDown,
@@ -2143,12 +2150,6 @@ TEST_F(AutofillAgentTest_AtMemory,
       AskForValuesToFill(
           _, _, _,
           Eq(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut), _));
-  EXPECT_CALL(
-      autofill_driver(),
-      AskForValuesToFill(
-          _, _, _,
-          Ne(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut), _))
-      .Times(AnyNumber());
 
   blink::WebKeyboardEvent event(
       blink::WebInputEvent::Type::kRawKeyDown,
@@ -2176,12 +2177,6 @@ TEST_F(AutofillAgentTest_AtMemory, AtMemoryShortcutTriggerRepeatBlocked) {
           _, _, _,
           Eq(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut), _))
       .Times(0);
-  EXPECT_CALL(
-      autofill_driver(),
-      AskForValuesToFill(
-          _, _, _,
-          Ne(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut), _))
-      .Times(AnyNumber());
 
   blink::WebKeyboardEvent event(blink::WebInputEvent::Type::kRawKeyDown,
                                 blink::WebInputEvent::kControlKey |
@@ -2198,13 +2193,9 @@ TEST_F(AutofillAgentTest_AtMemory, AtMemorySearchTrigger_NumberInput) {
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
-          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
-          _))
-      .Times(AnyNumber());
-  EXPECT_CALL(
-      autofill_driver(),
-      AskForValuesToFill(
           _, _, _, AutofillSuggestionTriggerSource::kAtMemoryTriggerString, _));
+  // No other AskForValuesToFill() events are expected. In particular,
+  // TextFieldValueChanged() doesn't fire any because of throttling.
 
   LoadHTML(R"(<input type="number" id="f">)");
   WaitForFormsSeen();
@@ -2654,16 +2645,10 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable, TriggerSequence) {
             Eq(AutofillSuggestionTriggerSource::kAtMemoryTriggerString), _))
         .Times(0);
     EXPECT_CALL(check_point, Call(3));
-  }
 
-  // Ignore standard Autofill calls for this test.
-  EXPECT_CALL(
-      autofill_driver(),
-      AskForValuesToFill(
-          _, _, _,
-          testing::Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
-          _))
-      .Times(AnyNumber());
+    // No other AskForValuesToFill() events are expected. In particular,
+    // TextFieldValueChanged() doesn't fire any because of throttling.
+  }
 
   SimulateSlowTyping("@");
   check_point.Call(1);
@@ -2887,18 +2872,13 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable,
 // Tests that a non-standard trigger string works in <div contenteditable>
 // fields.
 TEST_F(AutofillAgentTest_AtMemoryContentEditable, NonStandardTriggerString) {
-  // Ignore standard Autofill noise during setup.
-  EXPECT_CALL(
-      autofill_driver(),
-      AskForValuesToFill(
-          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryTriggerString),
-          _))
-      .Times(AnyNumber());
   // Expect the specific @memory trigger.
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
           _, _, _, AutofillSuggestionTriggerSource::kAtMemoryTriggerString, _));
+  // No other AskForValuesToFill() events are expected. In particular,
+  // TextFieldValueChanged() doesn't fire any because of throttling.
 
   SetTrigger(u"Foo");
   LoadHTML(R"(<div contenteditable id="f">)");
@@ -2920,12 +2900,6 @@ TEST_F(AutofillAgentTest_AtMemoryContentEditable, AtMemoryShortcutTrigger) {
       AskForValuesToFill(
           _, _, _,
           Eq(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut), _));
-  EXPECT_CALL(
-      autofill_driver(),
-      AskForValuesToFill(
-          _, _, _,
-          Ne(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut), _))
-      .Times(AnyNumber());
 
   blink::WebKeyboardEvent event(
       blink::WebInputEvent::Type::kRawKeyDown,
