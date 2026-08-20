@@ -302,14 +302,6 @@ bool ShowPredictions(const WebDocument& document,
   return true;
 }
 
-// TODO(crbug.com/402071086): Remove when AutofillIgnoreCheckableElements is
-// removed.
-bool IsCheckableElement(const WebFormControlElement& element) {
-  using enum blink::mojom::FormControlType;
-  return element && (element.FormControlTypeForAutofill() == kInputCheckbox ||
-                     element.FormControlTypeForAutofill() == kInputRadio);
-}
-
 gfx::Rect GetCaretBounds(content::RenderFrame& frame) {
   if (auto* frame_widget = frame.GetWebFrame()->LocalRoot()->FrameWidget()) {
     gfx::Rect anchor;
@@ -2071,8 +2063,7 @@ void AutofillAgent::DidChangeFormRelatedElementDynamically(
     const bool is_autofillable_element =
         element.DynamicTo<WebFormElement>() ||
         (maybe_control_element &&
-         form_util::IsAutofillableElement(maybe_control_element) &&
-         !IsCheckableElement(maybe_control_element));
+         form_util::IsAutofillableElement(maybe_control_element));
     switch (form_related_change) {
       case blink::WebFormRelatedChangeType::kAdd:
       case blink::WebFormRelatedChangeType::kRemove:

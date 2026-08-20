@@ -443,10 +443,8 @@ std::optional<FormControlType> StringToFormControlTypeDiscouraged(
     FormControlType type = static_cast<FormControlType>(i);
     if (mojom::IsKnownEnumValue(type) &&
         type_string == FormControlTypeToString(type) &&
-        ((type != FormControlType::kInputCheckbox &&
-          type != FormControlType::kInputRadio) ||
-         !base::FeatureList::IsEnabled(
-             features::kAutofillIgnoreCheckableElements))) {
+        (type != FormControlType::kInputCheckbox &&
+         type != FormControlType::kInputRadio)) {
       return type;
     }
   }
