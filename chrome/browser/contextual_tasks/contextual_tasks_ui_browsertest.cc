@@ -382,6 +382,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
       ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
   controller_->TransferNavigationToEmbeddedPage(params);
   run_loop.Run();
+  browser()->tab_strip_model()->GetActiveWebContents()->Stop();
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest, HandleLensButtonClick) {
