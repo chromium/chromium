@@ -22,6 +22,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TriState;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -128,7 +129,8 @@ public class ChromeOriginVerifier extends OriginVerifier {
                         && origin.equals(Origin.create(disableDalUrl))) {
                     Log.i(TAG, "Verification skipped for %s due to command line flag.", origin);
                     PostTask.runOrPostTask(
-                            TaskTraits.UI_DEFAULT, new VerifiedCallback(origin, true, null));
+                            TaskTraits.UI_DEFAULT,
+                            new VerifiedCallback(origin, true, TriState.NOT_SET));
                     return;
                 }
             }

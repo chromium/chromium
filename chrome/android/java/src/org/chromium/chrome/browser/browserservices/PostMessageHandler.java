@@ -16,6 +16,7 @@ import androidx.browser.customtabs.PostMessageBackend;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TerminationStatus;
+import org.chromium.base.TriState;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -225,7 +226,7 @@ public class PostMessageHandler implements OriginVerificationListener {
 
     @Override
     public void onOriginVerified(
-            String packageName, Origin origin, boolean result, @Nullable Boolean online) {
+            String packageName, Origin origin, boolean result, @TriState int online) {
         if (!result) return;
         initializeWithPostMessageUri(
                 OriginVerifier.getPostMessageUriFromVerifiedOrigin(packageName, origin),

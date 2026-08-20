@@ -38,6 +38,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.TriState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -106,7 +107,7 @@ public class AuthTabVerifierTest {
         ArgumentCaptor<OriginVerificationListener> verifyCallback =
                 ArgumentCaptor.forClass(OriginVerificationListener.class);
         verify(mOriginVerifier).start(verifyCallback.capture(), eq(Origin.create(url)));
-        verifyCallback.getValue().onOriginVerified(null, null, success, true);
+        verifyCallback.getValue().onOriginVerified(null, null, success, TriState.TRUE);
         assertTrue(mDelegate.hasValidatedHttps());
     }
 

@@ -121,6 +121,7 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:tristate_java",
     "//chrome/browser/android/browserservices/verification:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",

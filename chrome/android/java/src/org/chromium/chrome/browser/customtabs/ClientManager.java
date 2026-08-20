@@ -27,6 +27,7 @@ import androidx.browser.customtabs.PostMessageServiceConnection;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.SysUtils;
+import org.chromium.base.TriState;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -621,9 +622,10 @@ class ClientManager {
                     BrowserCallbackWrapper callback = getCallbackForSession(session);
                     if (callback != null) {
                         Bundle extras = null;
-                        if (verified && online != null) {
+                        if (verified && online != TriState.NOT_SET) {
                             extras = new Bundle();
-                            extras.putBoolean(CustomTabsCallback.ONLINE_EXTRAS_KEY, online);
+                            extras.putBoolean(
+                                    CustomTabsCallback.ONLINE_EXTRAS_KEY, online == TriState.TRUE);
                         }
                         callback.onRelationshipValidationResult(
                                 relation, origin.uri(), verified, extras);

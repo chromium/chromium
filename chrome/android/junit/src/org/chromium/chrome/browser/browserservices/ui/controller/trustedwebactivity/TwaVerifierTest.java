@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Promise;
+import org.chromium.base.TriState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
@@ -132,7 +133,7 @@ public class TwaVerifierTest {
                 ArgumentCaptor.forClass(OriginVerificationListener.class);
         verify(mOriginVerifier).start(callback.capture(), eq(Origin.create(url)));
 
-        callback.getValue().onOriginVerified(null, null, true, true);
+        callback.getValue().onOriginVerified(null, null, true, TriState.TRUE);
 
         assertTrue(promise.getResult());
 

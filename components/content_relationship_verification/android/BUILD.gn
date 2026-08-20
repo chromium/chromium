@@ -16,6 +16,7 @@ android_library("java") {
   ]
   deps = [
     "//base:base_java",
+    "//base:tristate_java",
     "//build/android:build_java",
     "//components/content_relationship_verification:java",
     "//components/embedder_support/android:util_java",

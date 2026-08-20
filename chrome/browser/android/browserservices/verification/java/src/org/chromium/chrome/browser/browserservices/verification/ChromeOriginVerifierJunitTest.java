@@ -26,6 +26,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TriState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -69,7 +70,7 @@ public class ChromeOriginVerifierJunitTest {
 
         @Override
         public void onOriginVerified(
-                String packageName, Origin origin, boolean verified, Boolean online) {
+                String packageName, Origin origin, boolean verified, @TriState int online) {
             mVerified = verified;
             mLatch.countDown();
         }
@@ -95,17 +96,17 @@ public class ChromeOriginVerifierJunitTest {
         OriginVerifierJni.setInstanceForTesting(mMockOriginVerifierJni);
         Mockito.doAnswer(
                         args -> {
-                            String[] fingerprints = args.getArgument(3);
+                            String[] fingerprints = args.getArgument(2);
                             if (fingerprints == null) {
                                 mChromeVerifier.onOriginVerificationResult(
-                                        args.getArgument(4), RelationshipCheckResult.FAILURE);
+                                        args.getArgument(3), RelationshipCheckResult.FAILURE);
                                 return false;
                             }
                             // Ensure parsing of signature works.
                             assertThat(fingerprints.length).isEqualTo(1);
                             assertThat(fingerprints[0]).isNotNull();
                             mChromeVerifier.onOriginVerificationResult(
-                                    args.getArgument(4), RelationshipCheckResult.SUCCESS);
+                                    args.getArgument(3), RelationshipCheckResult.SUCCESS);
                             return true;
                         })
                 .when(mMockOriginVerifierJni)
