@@ -21,3 +21,6 @@ tast.apps.LaunchHelpAppOnManagedDevice.logged_in_stable_fieldtrial_testing_confi
 # b/537159924
 tast.wmp.DesksTemplatesBasic
 tast.wmp.DesksTemplatesLaunch
+
+# b/312966807
+tast.inputs.InputMethodShelfInputs
