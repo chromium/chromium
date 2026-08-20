@@ -23,6 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -44,6 +45,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_item.h"
 #include "components/history/core/browser/download_constants.h"
 #include "components/history/core/browser/download_row.h"
@@ -118,9 +120,14 @@ class DownloadPersistedObserver : public DownloadHistory::Observer {
       : profile_(profile),
         filter_(filter),
         persisted_(false) {
-    DownloadCoreServiceFactory::GetForBrowserContext(profile_)
-        ->GetDownloadHistory()
-        ->AddObserver(this);
+    DownloadCoreService* service =
+        DownloadCoreServiceFactory::GetForBrowserContext(profile_);
+    if (service) {
+      service->InitializeHistory();
+      if (service->GetDownloadHistory()) {
+        service->GetDownloadHistory()->AddObserver(this);
+      }
+    }
   }
 
   DownloadPersistedObserver(const DownloadPersistedObserver&) = delete;
@@ -1010,6 +1017,32 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, DISABLED_SaveURLQuarantine) {
 }
 #endif
 
+class SavePageDeferredDownloadHistoryBrowserTest : public SavePageBrowserTest {
+ public:
+  SavePageDeferredDownloadHistoryBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        download::features::kDeferredDownloadHistoryLoading);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SavePageDeferredDownloadHistoryBrowserTest,
+                       SaveHTMLOnly) {
+  GURL url = NavigateToMockURL("a");
+
+  base::FilePath full_file_name, dir;
+  SaveCurrentTab(url, content::SAVE_PAGE_TYPE_AS_ONLY_HTML, "a", 1, &dir,
+                 &full_file_name);
+  ASSERT_FALSE(HasFailure());
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_TRUE(base::PathExists(full_file_name));
+  EXPECT_FALSE(base::PathExists(dir));
+  EXPECT_TRUE(base::ContentsEqual(GetTestDirFile("a.htm"), full_file_name));
+}
+
 // Test suite that allows testing --site-per-process against cross-site frames.
 // See http://dev.chromium.org/developers/design-documents/site-isolation.
 class SavePageSitePerProcessBrowserTest : public SavePageBrowserTest {
@@ -1194,6 +1227,48 @@ IN_PROC_BROWSER_TEST_F(SavePageSitePerProcessBrowserTest,
   base::ScopedAllowBlockingForTesting allow_blocking;
   EXPECT_TRUE(base::DirectoryExists(dir));
   EXPECT_TRUE(base::PathExists(full_file_name));
+}
+
+class SavePageSitePerProcessDeferredDownloadHistoryBrowserTest
+    : public SavePageSitePerProcessBrowserTest {
+ public:
+  SavePageSitePerProcessDeferredDownloadHistoryBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        download::features::kDeferredDownloadHistoryLoading);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SavePageSitePerProcessDeferredDownloadHistoryBrowserTest,
+                       SaveAsCompleteHtml) {
+  GURL url(
+      embedded_test_server()->GetURL("a.com", "/save_page/frames-xsite.htm"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  base::FilePath full_file_name, dir;
+  SaveCurrentTab(url, content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML,
+                 "frames-xsite-complete-html", 5, &dir, &full_file_name);
+  ASSERT_FALSE(HasFailure());
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_TRUE(base::DirectoryExists(dir));
+  base::FilePath expected_files[] = {
+      full_file_name,
+      dir.AppendASCII("a.html"),
+      dir.AppendASCII("b.html"),
+      dir.AppendASCII("1.css"),
+      dir.AppendASCII("1.png"),
+  };
+  for (auto file_path : expected_files) {
+    EXPECT_TRUE(base::PathExists(file_path))
+        << "Does " << file_path.value() << " exist?";
+    std::optional<int64_t> actual_file_size = base::GetFileSize(file_path);
+    ASSERT_TRUE(actual_file_size.has_value());
+    EXPECT_NE(0, actual_file_size.value())
+        << "Is " << file_path.value() << " non-empty?";
+  }
 }
 
 // Test suite that verifies that the frame tree "looks" the same before

@@ -527,9 +527,14 @@ bool IsDownloadDetailedUiVisible(BrowserWindow* window) {
 class HistoryObserver : public DownloadHistory::Observer {
  public:
   explicit HistoryObserver(Profile* profile) : profile_(profile) {
-    DownloadCoreServiceFactory::GetForBrowserContext(profile_)
-        ->GetDownloadHistory()
-        ->AddObserver(this);
+    DownloadCoreService* service =
+        DownloadCoreServiceFactory::GetForBrowserContext(profile_);
+    if (service) {
+      service->InitializeHistory();
+      if (service->GetDownloadHistory()) {
+        service->GetDownloadHistory()->AddObserver(this);
+      }
+    }
   }
 
   HistoryObserver(const HistoryObserver&) = delete;
@@ -789,6 +794,31 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadMimeType) {
   DownloadAndWait(browser(), url);
 
   // Check state.
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  base::FilePath file(FILE_PATH_LITERAL("download-test1.lib"));
+  CheckDownload(browser(), file, file);
+}
+
+class DownloadTestDeferredDownloadHistory : public DownloadTest {
+ public:
+  DownloadTestDeferredDownloadHistory() {
+    feature_list_.InitAndEnableFeature(
+        download::features::kDeferredDownloadHistoryLoading);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DownloadTestDeferredDownloadHistory, DownloadMimeType) {
+  embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url =
+      embedded_test_server()->GetURL("/" + std::string(kDownloadTest1Path));
+
+  HistoryObserver observer(browser()->GetProfile());
+  DownloadAndWait(browser(), url);
+
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   base::FilePath file(FILE_PATH_LITERAL("download-test1.lib"));
   CheckDownload(browser(), file, file);
