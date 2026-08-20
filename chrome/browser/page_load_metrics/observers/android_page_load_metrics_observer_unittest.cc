@@ -202,7 +202,7 @@ TEST_F(AndroidPageLoadMetricsObserverTest, LoadTimingInfo) {
   page_load_metrics::ExtraRequestCompleteInfo info(
       url::SchemeHostPort(GURL("https://ignored.com")), net::IPEndPoint(),
       frame_tree_node_id, /*was_cached=*/false,
-      /*raw_body_bytes=*/base::KiBU(10),
+      /*raw_body_bytes=*/base::KiB(10),
       /*original_network_content_length=*/base::ByteSize(0),
       network::mojom::RequestDestination::kDocument, /*net_error=*/0,
       std::move(load_timing_info));

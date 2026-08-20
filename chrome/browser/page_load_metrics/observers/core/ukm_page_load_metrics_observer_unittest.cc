@@ -1571,14 +1571,14 @@ TEST_F(UkmPageLoadMetricsObserverTest, PageSizeMetrics) {
   // Cached resource.
   resources.push_back(CreateResource(/*was_cached=*/true,
                                      /*delta_bytes=*/base::ByteSize(0),
-                                     /*encoded_body_length=*/base::KiBU(20),
-                                     /*decoded_body_length=*/base::KiBU(30),
+                                     /*encoded_body_length=*/base::KiB(20),
+                                     /*decoded_body_length=*/base::KiB(30),
                                      /*is_complete=*/true));
   // Uncached resource.
   resources.push_back(CreateResource(
-      /*was_cached=*/false, /*delta_bytes=*/base::KiBU(40),
-      /*encoded_body_length=*/base::KiBU(40),
-      /*decoded_body_length=*/base::KiBU(50),
+      /*was_cached=*/false, /*delta_bytes=*/base::KiB(40),
+      /*encoded_body_length=*/base::KiB(40),
+      /*decoded_body_length=*/base::KiB(50),
       /*is_complete=*/true));
   tester()->SimulateResourceDataUseUpdate(resources);
 
@@ -1623,22 +1623,22 @@ TEST_F(UkmPageLoadMetricsObserverTest, JSSizeMetrics) {
   // 30 kilobytes after decoding.
   resources.push_back(CreateResource(/*was_cached=*/true,
                                      /*delta_bytes=*/base::ByteSize(0),
-                                     /*encoded_body_length=*/base::KiBU(20),
-                                     /*decoded_body_length=*/base::KiBU(30),
+                                     /*encoded_body_length=*/base::KiB(20),
+                                     /*decoded_body_length=*/base::KiB(30),
                                      /*is_complete=*/true));
 
   // 50 kilobytes after decoding.
   resources.push_back(CreateResource(
-      /*was_cached=*/false, /*delta_bytes=*/base::KiBU(40),
-      /*encoded_body_length=*/base::KiBU(40),
-      /*decoded_body_length=*/base::KiBU(50),
+      /*was_cached=*/false, /*delta_bytes=*/base::KiB(40),
+      /*encoded_body_length=*/base::KiB(40),
+      /*decoded_body_length=*/base::KiB(50),
       /*is_complete=*/true));
 
   // 120 kilobytes after decoding, not JS.
   resources.push_back(CreateResource(
-      /*was_cached=*/false, /*delta_bytes=*/base::KiBU(40),
-      /*encoded_body_length=*/base::KiBU(100),
-      /*decoded_body_length=*/base::KiBU(120), /*is_complete=*/true));
+      /*was_cached=*/false, /*delta_bytes=*/base::KiB(40),
+      /*encoded_body_length=*/base::KiB(100),
+      /*decoded_body_length=*/base::KiB(120), /*is_complete=*/true));
 
   resources[0]->mime_type = "application/javascript";
   resources[1]->mime_type = "application/javascript";
@@ -1652,7 +1652,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, JSSizeMetrics) {
   // Metrics look at decoded body length.
   // 30 + 50 = 80 kilobytes.
   int64_t bucketed_network_js_bytes =
-      ukm::GetExponentialBucketMinForBytes(base::KiBU(80).InBytes());
+      ukm::GetExponentialBucketMinForBytes(base::KiB(80).InBytes());
 
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
       tester()->test_ukm_recorder().GetMergedEntriesByName(
@@ -1675,21 +1675,21 @@ TEST_F(UkmPageLoadMetricsObserverTest, JSMaxSizeMetrics) {
   // 30 kilobytes after decoding.
   resources.push_back(CreateResource(/*was_cached=*/true,
                                      /*delta_bytes=*/base::ByteSize(0),
-                                     /*encoded_body_length=*/base::KiBU(20),
-                                     /*decoded_body_length=*/base::KiBU(30),
+                                     /*encoded_body_length=*/base::KiB(20),
+                                     /*decoded_body_length=*/base::KiB(30),
                                      /*is_complete=*/true));
 
   // 500 kilobytes after decoding.
   resources.push_back(CreateResource(
-      /*was_cached=*/false, /*delta_bytes=*/base::KiBU(400),
-      /*encoded_body_length=*/base::KiBU(400),
-      /*decoded_body_length=*/base::KiBU(500), /*is_complete=*/true));
+      /*was_cached=*/false, /*delta_bytes=*/base::KiB(400),
+      /*encoded_body_length=*/base::KiB(400),
+      /*decoded_body_length=*/base::KiB(500), /*is_complete=*/true));
 
   // 120 kilobytes after decoding, not JS.
   resources.push_back(CreateResource(
-      /*was_cached=*/false, /*delta_bytes=*/base::KiBU(40),
-      /*encoded_body_length=*/base::KiBU(100),
-      /*decoded_body_length=*/base::KiBU(120), /*is_complete=*/true));
+      /*was_cached=*/false, /*delta_bytes=*/base::KiB(40),
+      /*encoded_body_length=*/base::KiB(100),
+      /*decoded_body_length=*/base::KiB(120), /*is_complete=*/true));
 
   resources[0]->mime_type = "application/javascript";
   resources[1]->mime_type = "application/javascript";
@@ -1724,19 +1724,19 @@ TEST_F(UkmPageLoadMetricsObserverTest, ImageMediaSizeMetrics) {
 
   std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
   resources.push_back(CreateResource(
-      /*was_cached=*/false, /*delta_bytes=*/base::KiBU(10),
-      /*encoded_body_length=*/base::KiBU(10),
-      /*decoded_body_length=*/base::KiBU(10),
+      /*was_cached=*/false, /*delta_bytes=*/base::KiB(10),
+      /*encoded_body_length=*/base::KiB(10),
+      /*decoded_body_length=*/base::KiB(10),
       /*is_complete=*/true));
   resources.push_back(CreateResource(
-      /*was_cached=*/false, /*delta_bytes=*/base::KiBU(20),
-      /*encoded_body_length=*/base::KiBU(20),
-      /*decoded_body_length=*/base::KiBU(20),
+      /*was_cached=*/false, /*delta_bytes=*/base::KiB(20),
+      /*encoded_body_length=*/base::KiB(20),
+      /*decoded_body_length=*/base::KiB(20),
       /*is_complete=*/true));
   resources.push_back(CreateResource(
-      /*was_cached=*/false, /*delta_bytes=*/base::KiBU(50),
-      /*encoded_body_length=*/base::KiBU(50),
-      /*decoded_body_length=*/base::KiBU(50),
+      /*was_cached=*/false, /*delta_bytes=*/base::KiB(50),
+      /*encoded_body_length=*/base::KiB(50),
+      /*decoded_body_length=*/base::KiB(50),
       /*is_complete=*/true));
 
   resources[0]->mime_type = "image/png";
