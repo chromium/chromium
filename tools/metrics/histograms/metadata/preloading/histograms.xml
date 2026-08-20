@@ -189,6 +189,18 @@ chromium-metrics-reviews@google.com.
   <variant name=".Match1" summary="For the second prefetch matching."/>
 </variants>
 
+<variants name="UsedInstantLoad">
+  <variant name="NoInstantLoad" summary="No instant load technology was used."/>
+  <variant name="Prefetch" summary="Prefetch was used."/>
+  <variant name="Prefetch.WithoutPrePrefetch"
+      summary="Prefetch that was not constructed from a PrePrefetch was used.
+               Only recorded when `kPrefetchOffTheMainThread` is enabled."/>
+  <variant name="Prefetch.WithPrePrefetch"
+      summary="Prefetch that was constructed from a PrePrefetch was used.
+               Only recorded when `kPrefetchOffTheMainThread` is enabled."/>
+  <variant name="Prerender" summary="Prerender was used."/>
+</variants>
+
 <variants name="WithPreloadSuffix">
   <variant name="WithoutPreload"
       summary="Recorded for a navigation without preloads."/>
@@ -440,6 +452,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PreloadServingMetrics.PageLoad.Clients.PaintTiming.NavigationToFirstContentfulPaint.WithoutFiltering.All.All.{UsedInstantLoad}"
+    units="ms" expires_after="2027-02-07">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    FirstContentfulPaint without foreground filtering.
+
+    Recorded when {UsedInstantLoad}.
+  </summary>
+  <token key="UsedInstantLoad" variants="UsedInstantLoad"/>
+</histogram>
+
+<histogram
     name="PreloadServingMetrics.PageLoad.Clients.PaintTiming.NavigationToFirstContentfulPaint.{WithPreloadSuffix}"
     units="ms" expires_after="2027-01-31">
   <owner>kenoss@chromium.org</owner>
@@ -448,6 +473,10 @@ chromium-metrics-reviews@google.com.
     FirstContentfulPaint.
 
     Recorded when {WithPreloadSuffix}.
+
+    Note: This is going to be obsolete. Use
+    PreloadServingMetrics.PageLoad.Clients.PaintTiming.NavigationToFirstContentfulPaint.WithoutFiltering.All.All.{{UsedInstantLoad}}
+    instead.
   </summary>
   <token key="WithPreloadSuffix" variants="WithPreloadSuffix"/>
 </histogram>

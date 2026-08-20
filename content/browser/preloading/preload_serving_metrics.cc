@@ -483,31 +483,50 @@ void PreloadServingMetrics::RecordFirstContentfulPaint(
       meaningful_prefetch_match_metrics->IsActualMatch();
 
   const char* suffix;
+  const char* used_instant_load_suffix;
   if (is_prerender_used) {
     suffix = ".WithPrerender";
+    used_instant_load_suffix = "Prerender";
   } else if (is_prefetch_actual_match) {
     suffix = ".WithPrefetch";
+    used_instant_load_suffix = "Prefetch";
   } else {
     suffix = ".WithoutPreload";
+    used_instant_load_suffix = "NoInstantLoad";
   }
+
   PAGE_LOAD_HISTOGRAM(
       base::StrCat({"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
                     "NavigationToFirstContentfulPaint",
                     suffix}),
       corrected_first_contentful_paint);
+  PAGE_LOAD_HISTOGRAM(
+      base::StrCat({"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+                    "NavigationToFirstContentfulPaint."
+                    "WithoutFiltering.All.All.",
+                    used_instant_load_suffix}),
+      corrected_first_contentful_paint);
 
-  if (is_prefetch_actual_match &&
-      base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread)) {
-    CHECK(meaningful_prefetch_match_metrics->prefetch_container_metrics);
-    PAGE_LOAD_HISTOGRAM(
-        base::StrCat(
-            {"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-             "NavigationToFirstContentfulPaint.WithPrefetch",
-             meaningful_prefetch_match_metrics->prefetch_container_metrics
-                     ->is_constructed_from_pre_prefetch
-                 ? ".WithPrePrefetch"
-                 : ".WithoutPrePrefetch"}),
-        corrected_first_contentful_paint);
+  if (is_prefetch_actual_match) {
+    if (base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread)) {
+      CHECK(meaningful_prefetch_match_metrics->prefetch_container_metrics);
+      const char* pre_prefetch_suffix =
+          meaningful_prefetch_match_metrics->prefetch_container_metrics
+                  ->is_constructed_from_pre_prefetch
+              ? ".WithPrePrefetch"
+              : ".WithoutPrePrefetch";
+      PAGE_LOAD_HISTOGRAM(
+          base::StrCat({"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+                        "NavigationToFirstContentfulPaint.WithPrefetch",
+                        pre_prefetch_suffix}),
+          corrected_first_contentful_paint);
+      PAGE_LOAD_HISTOGRAM(
+          base::StrCat({"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+                        "NavigationToFirstContentfulPaint."
+                        "WithoutFiltering.All.All.Prefetch",
+                        pre_prefetch_suffix}),
+          corrected_first_contentful_paint);
+    }
   }
 }
 

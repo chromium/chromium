@@ -235,6 +235,10 @@ TEST(PreloadServingMetricsTest, NavigationWithoutPreload) {
   ExpectFCP(histogram_tester, "WithPrefetch", {});
   ExpectFCP(histogram_tester, "WithPrerender", {});
 
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad", {334});
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {});
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prerender", {});
+
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
                                       0 /* kNoInstantLoad */, 1);
   histogram_tester.ExpectTotalCount("PreloadServingMetrics.Other.SRP", 0);
@@ -509,6 +513,14 @@ TEST(PreloadServingMetricsTest, NavigationWithPrefetch) {
   ExpectFCP(histogram_tester, "WithPrefetch.WithoutPrePrefetch", {334});
   ExpectFCP(histogram_tester, "WithPrerender", {});
 
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad", {});
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {334});
+  ExpectFCP(histogram_tester,
+            "WithoutFiltering.All.All.Prefetch.WithPrePrefetch", {});
+  ExpectFCP(histogram_tester,
+            "WithoutFiltering.All.All.Prefetch.WithoutPrePrefetch", {334});
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prerender", {});
+
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
                                       1 /* kPrefetch */, 1);
   histogram_tester.ExpectTotalCount("PreloadServingMetrics.Other.SRP", 0);
@@ -625,6 +637,14 @@ TEST(PreloadServingMetricsTest, NavigationWithPrefetchWithPrePrefetch) {
   ExpectFCP(histogram_tester, "WithPrefetch.WithPrePrefetch", {334});
   ExpectFCP(histogram_tester, "WithPrefetch.WithoutPrePrefetch", {});
   ExpectFCP(histogram_tester, "WithPrerender", {});
+
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad", {});
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {334});
+  ExpectFCP(histogram_tester,
+            "WithoutFiltering.All.All.Prefetch.WithPrePrefetch", {334});
+  ExpectFCP(histogram_tester,
+            "WithoutFiltering.All.All.Prefetch.WithoutPrePrefetch", {});
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prerender", {});
 
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
                                       1 /* kPrefetch */, 1);
@@ -880,6 +900,10 @@ TEST(PreloadServingMetricsTest,
   ExpectFCP(histogram_tester, "WithoutPreload", {});
   ExpectFCP(histogram_tester, "WithPrefetch", {});
   ExpectFCP(histogram_tester, "WithPrerender", {334});
+
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad", {});
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {});
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prerender", {334});
 
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
                                       2 /* kPrerender */, 1);
@@ -1199,6 +1223,10 @@ TEST(PreloadServingMetricsTest,
   ExpectFCP(histogram_tester, "WithPrefetch", {});
   ExpectFCP(histogram_tester, "WithPrerender", {});
 
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad", {2157});
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {});
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prerender", {});
+
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
                                       0 /* kNoInstantLoad */, 1);
   histogram_tester.ExpectTotalCount("PreloadServingMetrics.Other.SRP", 0);
@@ -1506,6 +1534,11 @@ TEST(
   ExpectFCP(histogram_tester, "WithoutPreload", {10334});
   ExpectFCP(histogram_tester, "WithPrefetch", {});
   ExpectFCP(histogram_tester, "WithPrerender", {});
+
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad",
+            {10334});
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {});
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prerender", {});
 
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
                                       0 /* kNoInstantLoad */, 1);
