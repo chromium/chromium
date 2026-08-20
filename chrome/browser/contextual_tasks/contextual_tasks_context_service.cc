@@ -30,6 +30,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_model_handler.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_multi_turn_model_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_scoring_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_signal_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
@@ -341,10 +342,19 @@ ContextualTasksContextService::ContextualTasksContextService(
       embedder_metadata_provider_);
   scoped_page_embeddings_service_observation_.Observe(page_embeddings_service_);
 
-  model_handler_ = std::make_unique<ContextualTasksContextModelHandler>(
-      optimization_guide_keyed_service_,
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_BLOCKING}));
+  if (base::FeatureList::IsEnabled(
+          kContextualTasksContextMultiTurnTabRelevance)) {
+    multi_turn_model_handler_ =
+        std::make_unique<ContextualTasksContextMultiTurnModelHandler>(
+            optimization_guide_keyed_service_,
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::TaskPriority::USER_BLOCKING}));
+  } else {
+    model_handler_ = std::make_unique<ContextualTasksContextModelHandler>(
+        optimization_guide_keyed_service_,
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::USER_BLOCKING}));
+  }
 }
 
 ContextualTasksContextService::~ContextualTasksContextService() = default;
@@ -466,16 +476,111 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
       std::make_unique<PendingRequest>(std::move(job), std::move(callback));
 }
 
-// TODO: crbug.com/503189770 - Integrate the multi-turn ML model. For now, just
-// use the query from the current turn with the existing single-turn model.
 void ContextualTasksContextService::GetRelevantTabsForConversationThread(
     const TabSelectionOptions& options,
     const ConversationThread& conversation_thread,
     const std::vector<GURL>& explicit_urls,
     base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
         callback) {
-  GetRelevantTabsForQuery(options, conversation_thread.query, explicit_urls,
-                          std::move(callback));
+  if (!base::FeatureList::IsEnabled(
+          kContextualTasksContextMultiTurnTabRelevance)) {
+    GetRelevantTabsForQuery(options, conversation_thread.query, explicit_urls,
+                            std::move(callback));
+    return;
+  }
+
+  base::TimeTicks now = tick_clock_->NowTicks();
+
+  AUTO_CONTEXT_LOG(
+      base::StringPrintf("Processing conversation thread query %s in mode %d",
+                         conversation_thread.query.c_str(),
+                         static_cast<int>(options.tab_selection_mode)));
+
+  if (conversation_thread.query.empty()) {
+    AUTO_CONTEXT_LOG("Query is empty");
+    RecordContextDeterminationStatus(ContextDeterminationStatus::kQueryEmpty);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       std::vector<base::WeakPtr<content::WebContents>>()));
+    return;
+  }
+
+  if (auto query_word_count = GetWordCount(conversation_thread.query);
+      query_word_count < kMinQueryWords.Get()) {
+    AUTO_CONTEXT_LOG("Query has too few words.");
+    RecordContextDeterminationStatus(
+        ContextDeterminationStatus::kQueryTooFewWords);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       std::vector<base::WeakPtr<content::WebContents>>()));
+    return;
+  }
+
+  if (!embedder_model_version_) {
+    AUTO_CONTEXT_LOG("Embedder not available");
+    RecordContextDeterminationStatus(
+        ContextDeterminationStatus::kEmbedderNotAvailable);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       std::vector<base::WeakPtr<content::WebContents>>()));
+    return;
+  }
+
+  AUTO_CONTEXT_LOG("Submitted conversation thread to embedder");
+  int64_t request_id = next_request_id_++;
+
+  if (options.tab_selection_timeout &&
+      options.tab_selection_timeout->is_positive()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ContextualTasksContextService::OnRequestTimedOut,
+                       weak_ptr_factory_.GetWeakPtr(), request_id),
+        *options.tab_selection_timeout);
+  }
+
+  std::optional<base::WeakPtr<content::WebContents>> active_tab_at_query_time;
+  if (content::WebContents* web_contents = GetActiveTabWebContents()) {
+    active_tab_at_query_time = web_contents->GetWeakPtr();
+  }
+
+  // Create a truncated copy of the conversation thread
+  ConversationThread truncated_thread = conversation_thread;
+
+  // Truncate previous turns (keep only the last kMaxConversationTurns)
+  size_t max_turns = static_cast<size_t>(kMaxConversationTurns.Get());
+  if (conversation_thread.previous_turns.size() > max_turns) {
+    truncated_thread.previous_turns.assign(
+        conversation_thread.previous_turns.end() - max_turns,
+        conversation_thread.previous_turns.end());
+  }
+
+  // Truncate shared tab titles (keep only the last kMaxTitlesPerThread)
+  size_t max_titles = static_cast<size_t>(kMaxTitlesPerThread.Get());
+  if (conversation_thread.shared_tab_titles.size() > max_titles) {
+    truncated_thread.shared_tab_titles.assign(
+        conversation_thread.shared_tab_titles.end() - max_titles,
+        conversation_thread.shared_tab_titles.end());
+  }
+
+  std::vector<std::string> passages;
+  passages.push_back(GetFormattedQueryString(truncated_thread.query));
+  for (const auto& turn : truncated_thread.previous_turns) {
+    passages.push_back(GetFormattedQueryString(turn.query));
+  }
+
+  passage_embeddings::Embedder::Job job =
+      embedder_->ComputePassagesEmbeddings(
+          passage_embeddings::PassagePriority::kUrgent, std::move(passages),
+          base::BindOnce(&ContextualTasksContextService::
+                             OnConversationThreadEmbeddingReady,
+                         weak_ptr_factory_.GetWeakPtr(), truncated_thread,
+                         options, now, active_tab_at_query_time, explicit_urls,
+                         request_id));
+  pending_requests_[request_id] =
+      std::make_unique<PendingRequest>(std::move(job), std::move(callback));
 }
 
 void ContextualTasksContextService::OnTypedQuery(
@@ -893,6 +998,8 @@ TabSignals ContextualTasksContextService::ComputeTabSignals(
   const passage_embeddings::Embedding* candidate_tab_title_embedding =
       GetTitleEmbedding(candidate_tab_embeddings);
   if (candidate_tab_title_embedding) {
+    tab_signals.candidate_title_embedding =
+        candidate_tab_title_embedding->GetData();
     tab_signals.query_candidate_tab_title_similarity =
         query_state.query_embedding.ScoreWith(*candidate_tab_title_embedding);
     if (query_state.context_tab_title_embedding) {
@@ -904,6 +1011,14 @@ TabSignals ContextualTasksContextService::ComputeTabSignals(
   tab_signals.query_candidate_tab_passage_similarities =
       GetQueryTabPassageSimilarities(query_state.query_embedding,
                                      candidate_tab_embeddings);
+
+  for (const auto& passage_embedding : candidate_tab_embeddings) {
+    if (passage_embedding.passage.second ==
+        page_content_annotations::EmbeddingPassageType::kPageContent) {
+      tab_signals.candidate_passages_embeddings.push_back(
+          passage_embedding.embedding.GetData());
+    }
+  }
 
   tab_signals.duration_since_last_active =
       GetDurationSinceLastActive(web_contents);
@@ -1106,6 +1221,222 @@ bool ContextualTasksContextService::ShouldAddTabToSelection(
   }
 
   return is_eligible_for_server_upload && !is_sensitive;
+}
+
+void ContextualTasksContextService::OnConversationThreadEmbeddingReady(
+    const ConversationThread& conversation_thread,
+    const TabSelectionOptions& options,
+    base::TimeTicks start_time,
+    std::optional<base::WeakPtr<content::WebContents>>
+        context_tab_at_query_time,
+    const std::vector<GURL>& explicit_urls,
+    int64_t request_id,
+    std::vector<std::string> passages,
+    std::vector<passage_embeddings::Embedding> embeddings,
+    uint64_t job_id,
+    passage_embeddings::ComputeEmbeddingsStatus status) {
+  base::UmaHistogramTimes(
+      "ContextualTasks.Context.ConversationThreadEmbeddingLatency",
+      tick_clock_->NowTicks() - start_time);
+
+  auto request_it = pending_requests_.find(request_id);
+  if (request_it == pending_requests_.end()) {
+    // We had timed out already and the callback was already invoked.
+    return;
+  }
+
+  // Conversation thread embedding was not successfully generated.
+  if (status != passage_embeddings::ComputeEmbeddingsStatus::kSuccess) {
+    AUTO_CONTEXT_LOG(
+        base::StringPrintf("Conversation thread embedding for %s failed",
+                           conversation_thread.query.c_str()));
+    RecordContextDeterminationStatus(
+        ContextDeterminationStatus::kQueryEmbeddingFailed);
+    base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
+        callback = std::move(request_it->second->callback);
+    pending_requests_.erase(request_it);
+    std::move(callback).Run({});
+    return;
+  }
+
+  size_t expected_size = 1 + conversation_thread.previous_turns.size();
+  if (embeddings.size() != expected_size) {
+    AUTO_CONTEXT_LOG(base::StringPrintf(
+        "Conversation thread embedding for %s had unexpected output size",
+        conversation_thread.query.c_str()));
+    RecordContextDeterminationStatus(
+        ContextDeterminationStatus::kQueryEmbeddingOutputMalformed);
+    base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
+        callback = std::move(request_it->second->callback);
+    pending_requests_.erase(request_it);
+    std::move(callback).Run({});
+    return;
+  }
+
+  AUTO_CONTEXT_LOG(
+      base::StringPrintf("Processing conversation thread embedding for %s",
+                         conversation_thread.query.c_str()));
+
+  std::vector<base::WeakPtr<content::WebContents>> all_eligible_tabs =
+      GetAllEligibleTabs(options.browser_window_interface);
+  if (all_eligible_tabs.empty()) {
+    AUTO_CONTEXT_LOG("No eligible tabs");
+    RecordContextDeterminationStatus(
+        ContextDeterminationStatus::kNoEligibleTabs);
+    base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
+        callback = std::move(request_it->second->callback);
+    pending_requests_.erase(request_it);
+    std::move(callback).Run({});
+    return;
+  }
+
+  auto log_entry = std::make_unique<optimization_guide::ModelQualityLogEntry>(
+      optimization_guide_keyed_service_->GetModelQualityLogsUploaderService()
+          ->GetWeakPtr());
+
+  auto* quality_log = log_entry->log_ai_data_request()
+                          ->mutable_contextual_tasks_context()
+                          ->mutable_quality();
+  quality_log->set_embedding_model_version(
+      embedder_model_version_.value_or(-1));
+  quality_log->set_tab_selection_model_version(-1);
+  if (multi_turn_model_handler_) {
+    std::optional<optimization_guide::ModelInfo> model_info =
+        multi_turn_model_handler_->GetModelInfo();
+    if (model_info.has_value()) {
+      quality_log->set_tab_selection_model_version(model_info->version);
+    }
+  }
+
+  SelectRelevantTabsForConversationThread(
+      conversation_thread, options, embeddings, context_tab_at_query_time,
+      all_eligible_tabs, explicit_urls,
+      base::BindOnce(&ContextualTasksContextService::OnRelevantTabsSelected,
+                     weak_ptr_factory_.GetWeakPtr(), conversation_thread.query,
+                     options, start_time, explicit_urls, request_id,
+                     std::move(log_entry)),
+      quality_log);
+}
+
+void ContextualTasksContextService::SelectRelevantTabsForConversationThread(
+    const ConversationThread& conversation_thread,
+    const TabSelectionOptions& options,
+    const std::vector<passage_embeddings::Embedding>& embeddings,
+    std::optional<base::WeakPtr<content::WebContents>>
+        context_tab_at_query_time,
+    const std::vector<base::WeakPtr<content::WebContents>>& all_eligible_tabs,
+    const std::vector<GURL>& explicit_urls,
+    base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
+        on_tab_selection_complete,
+    optimization_guide::proto::ContextualTasksContextQuality* quality_log) {
+  PopulateTabSelectionModeInLog(options.tab_selection_mode, quality_log);
+
+  CHECK(!embeddings.empty());
+  QueryState query_state = CreateQueryState(
+      conversation_thread.query, embeddings[0], context_tab_at_query_time,
+      all_eligible_tabs);
+
+  // Populate multi-turn embeddings manually.
+  query_state.conversation_thread_queries_embeddings.assign(
+      embeddings.begin() + 1,
+      embeddings.begin() + 1 + conversation_thread.previous_turns.size());
+  // TODO(crbug.com/544801393): Replace it after implementing an efficient
+  // caching strategy for storing embeddings of each turn and reusing them for
+  // a conversation.
+  size_t dim = embeddings[0].GetData().size();
+  std::vector<float> dummy_data(dim, 0.0f);
+  dummy_data[0] = 1.0f;
+  passage_embeddings::Embedding dummy_embedding(dummy_data);
+  query_state.conversation_thread_titles_embeddings.resize(
+      conversation_thread.shared_tab_titles.size(), dummy_embedding);
+
+  PopulateQueryContext(query_state, quality_log);
+
+  QueryStateSignals query_signals;
+  query_signals.query_word_count = query_state.query_word_count;
+  query_signals.query_active_tab_title_similarity =
+      query_state.context_tab_title_similarity.value_or(0.0f);
+
+  query_signals.query_embedding = query_state.query_embedding.GetData();
+  query_signals.conversation_thread_queries_embeddings.reserve(
+      query_state.conversation_thread_queries_embeddings.size());
+  for (const auto& emb : query_state.conversation_thread_queries_embeddings) {
+    query_signals.conversation_thread_queries_embeddings.push_back(
+        emb.GetData());
+  }
+  query_signals.conversation_thread_titles_embeddings.reserve(
+      query_state.conversation_thread_titles_embeddings.size());
+  for (const auto& emb : query_state.conversation_thread_titles_embeddings) {
+    query_signals.conversation_thread_titles_embeddings.push_back(
+        emb.GetData());
+  }
+  if (query_state.context_tab_title_embedding) {
+    query_signals.context_tab_title_embedding =
+        query_state.context_tab_title_embedding->GetData();
+  }
+  for (const auto& emb : query_state.context_tab_passage_embeddings) {
+    if (emb.passage.second ==
+        page_content_annotations::EmbeddingPassageType::kPageContent) {
+      query_signals.context_tab_passages_embeddings.push_back(
+          emb.embedding.GetData());
+    }
+  }
+
+  AUTO_CONTEXT_LOG(base::StringPrintf(
+      "Number of eligible open tabs for conversation thread query %s: %d",
+      conversation_thread.query.c_str(),
+      static_cast<int>(all_eligible_tabs.size())));
+
+  auto scoring_state =
+      base::MakeRefCounted<ScoringState>(all_eligible_tabs.size());
+
+  for (size_t i = 0; i < all_eligible_tabs.size(); ++i) {
+    const auto& web_contents = all_eligible_tabs[i];
+    if (!web_contents) {
+      continue;
+    }
+    scoring_state->signals[i] =
+        ComputeTabSignals(web_contents.get(), query_state);
+  }
+
+  if (options.tab_selection_mode ==
+          mojom::TabSelectionMode::kStaticSignalsMlModel &&
+      multi_turn_model_handler_) {
+    multi_turn_model_handler_
+        ->BatchExecuteModelWithSignalsForConversationThread(
+            query_signals, scoring_state->signals,
+            base::BindOnce(
+                [](base::OnceClosure done_callback,
+                   scoped_refptr<ScoringState> scoring_state,
+                   const std::vector<std::optional<MultiTurnModelOutput>>&
+                       model_outputs) {
+                  for (size_t i = 0; i < model_outputs.size(); ++i) {
+                    scoring_state->scores[i] =
+                        model_outputs[i] ? model_outputs[i]->score : 0.0;
+                  }
+                  std::move(done_callback).Run();
+                },
+                base::BindOnce(&ContextualTasksContextService::OnAllTabsScored,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               conversation_thread.query, options,
+                               all_eligible_tabs, explicit_urls,
+                               std::move(on_tab_selection_complete),
+                               scoring_state, quality_log),
+                scoring_state));
+    return;
+  }
+
+  for (size_t i = 0; i < all_eligible_tabs.size(); ++i) {
+    if (!all_eligible_tabs[i]) {
+      continue;
+    }
+    scoring_state->scores[i] =
+        GetTabScoreSync(options, scoring_state->signals[i]);
+  }
+
+  OnAllTabsScored(conversation_thread.query, options, all_eligible_tabs,
+                  explicit_urls, std::move(on_tab_selection_complete),
+                  scoring_state, quality_log);
 }
 
 ContextualTasksContextService::PendingRequest::PendingRequest(

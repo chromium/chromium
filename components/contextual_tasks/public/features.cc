@@ -59,6 +59,10 @@ BASE_FEATURE(kContextualTasksContext, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kContextualTasksSearchQuery, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables multi-turn tab relevance model for contextual tasks.
+BASE_FEATURE(kContextualTasksContextMultiTurnTabRelevance,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables whether the option to enable smart tab sharing by default is enabled.
 BASE_FEATURE(kContextualTasksContextSmartTabSharingDefaultOnAvailability,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -288,6 +292,11 @@ const base::FeatureParam<double> kTabSelectionScoreThreshold{
 const base::FeatureParam<double> kContentVisibilityThreshold{
     &kContextualTasksContext,
     "ContextualTasksContextContentVisibilityThreshold", 0.7};
+
+const base::FeatureParam<int> kMaxConversationTurns{
+    &kContextualTasksContext, "max_conversation_turns", 5};
+const base::FeatureParam<int> kMaxTitlesPerThread{
+    &kContextualTasksContext, "max_titles_per_thread", 25};
 
 const base::FeatureParam<bool> kEnablePreviousTabFallback(
     &kContextualTasksContext,
