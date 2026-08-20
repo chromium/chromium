@@ -7,13 +7,17 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
+#import "components/webauthn/ios/ios_passkey_client_commands.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/webauthn/ui/passkey_incognito_interstitial_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
@@ -23,6 +27,11 @@ class PasskeyIncognitoInterstitialCoordinatorTest : public PlatformTest {
   PasskeyIncognitoInterstitialCoordinatorTest() {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
+    mock_passkey_client_commands_handler_ =
+        OCMProtocolMock(@protocol(IOSPasskeyClientCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_passkey_client_commands_handler_
+                     forProtocol:@protocol(IOSPasskeyClientCommands)];
 
     base_view_controller_ = [[UIViewController alloc] init];
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];
@@ -31,6 +40,7 @@ class PasskeyIncognitoInterstitialCoordinatorTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
+  id mock_passkey_client_commands_handler_;
   UIViewController* base_view_controller_;
   ScopedKeyWindow scoped_key_window_;
   PasskeyIncognitoInterstitialCoordinator* coordinator_;
@@ -39,6 +49,9 @@ class PasskeyIncognitoInterstitialCoordinatorTest : public PlatformTest {
 // Tests that tapping the 'Continue' button runs the callback with `true`.
 TEST_F(PasskeyIncognitoInterstitialCoordinatorTest, PrimaryActionReturnsTrue) {
   base::test::TestFuture<bool> test_future;
+
+  OCMExpect([mock_passkey_client_commands_handler_
+      dismissPasskeyIncognitoInterstitial]);
 
   coordinator_ = [[PasskeyIncognitoInterstitialCoordinator alloc]
       initWithBaseViewController:base_view_controller_
@@ -55,12 +68,16 @@ TEST_F(PasskeyIncognitoInterstitialCoordinatorTest, PrimaryActionReturnsTrue) {
   [coordinator_ stop];
 
   EXPECT_TRUE(test_future.Get());
+  EXPECT_OCMOCK_VERIFY(mock_passkey_client_commands_handler_);
 }
 
 // Tests that tapping the 'Cancel' button runs the callback with `false`.
 TEST_F(PasskeyIncognitoInterstitialCoordinatorTest,
        SecondaryActionReturnsFalse) {
   base::test::TestFuture<bool> test_future;
+
+  OCMExpect([mock_passkey_client_commands_handler_
+      dismissPasskeyIncognitoInterstitial]);
 
   coordinator_ = [[PasskeyIncognitoInterstitialCoordinator alloc]
       initWithBaseViewController:base_view_controller_
@@ -77,6 +94,7 @@ TEST_F(PasskeyIncognitoInterstitialCoordinatorTest,
   [coordinator_ stop];
 
   EXPECT_FALSE(test_future.Get());
+  EXPECT_OCMOCK_VERIFY(mock_passkey_client_commands_handler_);
 }
 
 // Tests that forcefully stopping the coordinator runs the callback with
@@ -100,6 +118,9 @@ TEST_F(PasskeyIncognitoInterstitialCoordinatorTest,
 TEST_F(PasskeyIncognitoInterstitialCoordinatorTest, SwipeDownReturnsFalse) {
   base::test::TestFuture<bool> test_future;
 
+  OCMExpect([mock_passkey_client_commands_handler_
+      dismissPasskeyIncognitoInterstitial]);
+
   coordinator_ = [[PasskeyIncognitoInterstitialCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
@@ -113,6 +134,7 @@ TEST_F(PasskeyIncognitoInterstitialCoordinatorTest, SwipeDownReturnsFalse) {
   [delegate passkeyIncognitoInterstitialViewDidDisappear];
 
   EXPECT_FALSE(test_future.Get());
+  EXPECT_OCMOCK_VERIFY(mock_passkey_client_commands_handler_);
 }
 
 // Tests that the callback is strictly executed only once.

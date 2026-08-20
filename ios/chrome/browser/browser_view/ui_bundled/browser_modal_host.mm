@@ -1335,11 +1335,6 @@ const char kChromeAppStoreUrl[] =
                              browser:_browser
                             callback:std::move(callback)];
 
-  // TODO(crbug.com/544594469): don't pass the handler. Get it from the
-  // coordinator.
-  _passkeyIncognitoCoordinator.passkeyClientHandler =
-      HandlerForProtocol(self.dispatcher, IOSPasskeyClientCommands);
-
   [_passkeyIncognitoCoordinator start];
 }
 

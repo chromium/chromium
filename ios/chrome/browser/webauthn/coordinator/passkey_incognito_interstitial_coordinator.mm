@@ -8,6 +8,9 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
+#import "components/webauthn/ios/ios_passkey_client_commands.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/webauthn/ui/passkey_incognito_interstitial_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
@@ -91,12 +94,12 @@ enum class IncognitoInterstitialAction { kDismissed, kContinue, kCancel };
 
 - (void)confirmationAlertPrimaryAction {
   _userAction = IncognitoInterstitialAction::kContinue;
-  [self.passkeyClientHandler dismissPasskeyIncognitoInterstitial];
+  [self dismissInterstitial];
 }
 
 - (void)confirmationAlertSecondaryAction {
   _userAction = IncognitoInterstitialAction::kCancel;
-  [self.passkeyClientHandler dismissPasskeyIncognitoInterstitial];
+  [self dismissInterstitial];
 }
 
 #pragma mark - PasskeyIncognitoInterstitialViewControllerDelegate
@@ -105,7 +108,16 @@ enum class IncognitoInterstitialAction { kDismissed, kContinue, kCancel };
   if (_callback) {
     std::move(_callback).Run(false);
   }
-  [self.passkeyClientHandler dismissPasskeyIncognitoInterstitial];
+  [self dismissInterstitial];
+}
+
+#pragma mark - Private
+
+// Dismisses the passkey incognito interstitial.
+- (void)dismissInterstitial {
+  id<IOSPasskeyClientCommands> passkeyClientHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), IOSPasskeyClientCommands);
+  [passkeyClientHandler dismissPasskeyIncognitoInterstitial];
 }
 
 @end
