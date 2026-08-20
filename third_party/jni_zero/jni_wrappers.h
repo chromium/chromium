@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "third_party/jni_zero/java_refs.h"
+#include "third_party/jni_zero/jni_methods.h"
 #include "third_party/jni_zero/logging.h"
 
 // Wrapper used to receive int when calling Java from native.
@@ -428,6 +429,7 @@ static ScopedJavaLocalRef<JArray<T>> NewArray(JNIEnv* env,
                                               jclass cls) {
   JArray<T> ret = static_cast<JArray<T>>(
       env->NewObjectArray(static_cast<jsize>(length), cls, nullptr));
+  CheckException(env);
   return jni_zero::AdoptRef(env, ret);
 }
 
@@ -438,6 +440,7 @@ NewArray(JNIEnv* env, std::span<const ScopedJavaLocalRef<T>> buf, jclass cls) {
   int32_t length = static_cast<int32_t>(buf.size());
   JArray<T> ret =
       static_cast<JArray<T>>(env->NewObjectArray(length, cls, nullptr));
+  CheckException(env);
   for (int32_t i = 0; i < length; i++) {
     env->SetObjectArrayElement(ret, i, buf[i].obj());
   }
@@ -452,6 +455,7 @@ static ScopedJavaLocalRef<JArray<T>> NewArray(JNIEnv* env,
   int32_t length = static_cast<int32_t>(buf.size());
   JArray<T> ret =
       static_cast<JArray<T>>(env->NewObjectArray(length, cls, nullptr));
+  CheckException(env);
   for (int32_t i = 0; i < length; i++) {
     env->SetObjectArrayElement(ret, i, ToJniType(env, buf[i]).obj());
   }
@@ -465,6 +469,7 @@ static ScopedJavaLocalRef<JArray<T>> NewArray(JNIEnv* env,
   int32_t length = static_cast<int32_t>(buf.size());
   JArray<T> ret = static_cast<JArray<T>>(
       internal::_JniFuncMappings<T>::NewArray(env, length));
+  CheckException(env);
   internal::_JniFuncMappings<T>::SetArrayRegion(env, ret, 0, length,
                                                 buf.data());
   return jni_zero::AdoptRef(env, ret);
