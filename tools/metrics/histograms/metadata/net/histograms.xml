@@ -1796,6 +1796,101 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Net.Android.NetworkChangeNotifier.RegisterDefaultNetworkCallbackResult"
+    enum="NetworkCallbackRegisterResult" expires_after="2027-08-18">
+  <owner>lukedeng@google.com</owner>
+  <owner>dmurph@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    The outcome of attempting to register the Android default network callback
+    in NetworkChangeNotifierAutoDetect.
+
+    Recorded on Android 28+ (Pie+) on every registration attempt: - On
+    application startup or when returning to the foreground (visible activity
+    created/resumed). - When an activity regains window focus and triggers a
+    self-healing retry because previous callback registration had failed.
+
+    If an initial registration throws a SecurityException (e.g. transient UID
+    permission delay on waking from Doze mode), a single immediate retry is
+    attempted. This histogram records the final result (initial success with or
+    without immediate retry, focus self-heal success with or without immediate
+    retry, or failure categorized by exception type).
+  </summary>
+</histogram>
+
+<histogram
+    name="Net.Android.NetworkChangeNotifier.RegisterNetworkCallbackResult"
+    enum="NetworkCallbackRegisterResult" expires_after="2027-08-18">
+  <owner>lukedeng@google.com</owner>
+  <owner>dmurph@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    The outcome of attempting to register the Android network request callback
+    in NetworkChangeNotifierAutoDetect.
+
+    Recorded on Android 21+ (Lollipop+) on every registration attempt: - On
+    application startup or when returning to the foreground (visible activity
+    created/resumed). - When an activity regains window focus and triggers a
+    self-healing retry because previous callback registration had failed.
+
+    If an initial registration throws a SecurityException (e.g. transient UID
+    permission delay on waking from Doze mode), a single immediate retry is
+    attempted. This histogram records the final result (initial success with or
+    without immediate retry, focus self-heal success with or without immediate
+    retry, or failure categorized by exception type).
+  </summary>
+</histogram>
+
+<histogram name="Net.Android.NetworkChangeNotifier.RegistrationException"
+    enum="NetworkCallbackRegistrationException" expires_after="2027-08-18">
+  <owner>lukedeng@google.com</owner>
+  <owner>dmurph@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Categorization of exceptions caught during Android ConnectivityManager
+    callback registration in NetworkChangeNotifierAutoDetect.
+
+    Recorded once on each failed registration attempt when all retries have been
+    exhausted. Categorizes the final exception into SecurityException,
+    TooManyRequestsException, IllegalArgumentException, IllegalStateException,
+    or other RuntimeException.
+  </summary>
+</histogram>
+
+<histogram
+    name="Net.Android.NetworkChangeNotifier.SelfHealDefaultNetworkResult"
+    enum="NetworkCallbackSelfHealResult" expires_after="2027-08-18">
+  <owner>lukedeng@google.com</owner>
+  <owner>dmurph@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    The result of attempting to self-heal default network callback registration
+    in NetworkChangeNotifierAutoDetect.
+
+    Recorded when an Android activity regains window focus (onWindowFocusChanged
+    with hasFocus=true) and the default network callback was previously in a
+    failed state (e.g. due to Doze mode restrictions). Records whether the
+    recovery attempt succeeded (RECOVERED) or failed (FAILED).
+  </summary>
+</histogram>
+
+<histogram name="Net.Android.NetworkChangeNotifier.SelfHealNetworkResult"
+    enum="NetworkCallbackSelfHealResult" expires_after="2027-08-18">
+  <owner>lukedeng@google.com</owner>
+  <owner>dmurph@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    The result of attempting to self-heal network request callback registration
+    in NetworkChangeNotifierAutoDetect.
+
+    Recorded when an Android activity regains window focus (onWindowFocusChanged
+    with hasFocus=true) and the network request callback was previously in a
+    failed state (e.g. due to Doze mode restrictions). Records whether the
+    recovery attempt succeeded (RECOVERED) or failed (FAILED).
+  </summary>
+</histogram>
+
 <histogram name="Net.BlobFetch.ResponseNetErrorCode" enum="NetErrorCodes"
     expires_after="2026-06-28">
   <owner>leimy@chromium.org</owner>

@@ -4,6 +4,8 @@
 
 package org.chromium.net;
 
+import android.app.Activity;
+
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.build.annotations.NullMarked;
@@ -12,13 +14,15 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class RegistrationPolicyApplicationStatus
         extends NetworkChangeNotifierAutoDetect.RegistrationPolicy
-        implements ApplicationStatus.ApplicationStateListener {
+        implements ApplicationStatus.ApplicationStateListener,
+                ApplicationStatus.WindowFocusChangedListener {
     private boolean mDestroyed;
 
     @Override
     protected void init(NetworkChangeNotifierAutoDetect notifier) {
         super.init(notifier);
         ApplicationStatus.registerApplicationStateListener(this);
+        ApplicationStatus.registerWindowFocusChangedListener(this);
         onApplicationStateChange(ApplicationState.UNKNOWN);
     }
 
@@ -26,6 +30,7 @@ public class RegistrationPolicyApplicationStatus
     protected void destroy() {
         if (mDestroyed) return;
         ApplicationStatus.unregisterApplicationStateListener(this);
+        ApplicationStatus.unregisterWindowFocusChangedListener(this);
         mDestroyed = true;
     }
 
@@ -39,6 +44,17 @@ public class RegistrationPolicyApplicationStatus
             register();
         } else {
             unregister();
+        }
+    }
+
+    // ApplicationStatus.WindowFocusChangedListener
+    @Override
+    public void onWindowFocusChanged(Activity activity, boolean hasFocus) {
+        // When waking from overnight Doze mode, callback registration can fail
+        // with transient SecurityExceptions while the app was backgrounded.
+        // Self-heal when the user interacts with the app by gaining window focus.
+        if (hasFocus && isRegistrationFailed()) {
+            register();
         }
     }
 }

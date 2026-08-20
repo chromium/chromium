@@ -61,8 +61,14 @@ public class NetworkChangeNotifierNoNativeTest {
     @MediumTest
     public void testDefaultState() {
         NetworkChangeNotifier ncn = NetworkChangeNotifier.init();
+        Assert.assertFalse(ncn.registerDefaultNetworkCallbackFailed());
         Assert.assertFalse(ncn.registerNetworkCallbackFailed());
         NetworkChangeNotifier.registerToReceiveNotificationsAlways();
+        Assert.assertFalse(ncn.registerDefaultNetworkCallbackFailed());
+        Assert.assertFalse(ncn.registerNetworkCallbackFailed());
+        // Disabling auto-detect / unregistering must not report failure.
+        NetworkChangeNotifier.setAutoDetectConnectivityState(false);
+        Assert.assertFalse(ncn.registerDefaultNetworkCallbackFailed());
         Assert.assertFalse(ncn.registerNetworkCallbackFailed());
     }
 
@@ -84,6 +90,7 @@ public class NetworkChangeNotifierNoNativeTest {
         }
 
         NetworkChangeNotifier.registerToReceiveNotificationsAlways();
+        Assert.assertTrue(ncn.registerDefaultNetworkCallbackFailed());
         Assert.assertTrue(ncn.registerNetworkCallbackFailed());
     }
 }
