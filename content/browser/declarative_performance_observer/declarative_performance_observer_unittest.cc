@@ -76,9 +76,22 @@ class TestNetworkContext : public network::TestNetworkContext {
     }
   }
 
+  void SendReportsForSource(
+      const base::UnguessableToken& reporting_source) override {
+    send_reports_for_source_calls_.push_back(reporting_source);
+  }
+
+  const std::vector<base::UnguessableToken>& send_reports_for_source_calls()
+      const {
+    return send_reports_for_source_calls_;
+  }
+
   const std::vector<Report>& reports() const { return reports_; }
 
-  void ClearReports() { reports_.clear(); }
+  void ClearReports() {
+    reports_.clear();
+    send_reports_for_source_calls_.clear();
+  }
 
   void SetQuitClosure(base::OnceClosure quit_closure) {
     quit_closure_ = std::move(quit_closure);
@@ -86,6 +99,7 @@ class TestNetworkContext : public network::TestNetworkContext {
 
  private:
   std::vector<Report> reports_;
+  std::vector<base::UnguessableToken> send_reports_for_source_calls_;
   base::OnceClosure quit_closure_;
 };
 
@@ -376,6 +390,9 @@ TEST_F(DeclarativePerformanceObserverTest, RecordsBFCacheLifecycle) {
 
   // Buffer should be flushed on entering BFCache
   ASSERT_EQ(network_context_.reports().size(), 1u);
+  ASSERT_EQ(network_context_.send_reports_for_source_calls().size(), 1u);
+  EXPECT_EQ(network_context_.send_reports_for_source_calls()[0],
+            main_rfh()->GetReportingSource());
   const auto& report1 = network_context_.reports()[0];
 
   const base::ListValue* entries1 = report1.body.FindList("entries");
@@ -417,6 +434,9 @@ TEST_F(DeclarativePerformanceObserverTest, RecordsBFCacheLifecycle) {
   DeclarativePerformanceObserver::DeleteForCurrentDocument(main_rfh());
 
   ASSERT_EQ(network_context_.reports().size(), 1u);
+  // SendReportsForSource should NOT be called on normal document
+  // unload/destruction.
+  EXPECT_EQ(network_context_.send_reports_for_source_calls().size(), 0u);
   const auto& report2 = network_context_.reports()[0];
 
   const base::ListValue* entries2 = report2.body.FindList("entries");

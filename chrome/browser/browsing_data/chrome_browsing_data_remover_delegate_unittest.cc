@@ -926,6 +926,11 @@ class MockReportingService : public net::ReportingService {
     NOTREACHED();
   }
 
+  void SendReportsForSource(
+      const base::UnguessableToken& reporting_source) override {
+    NOTREACHED();
+  }
+
   void QueueReport(
       const GURL& url,
       const std::optional<base::UnguessableToken>& reporting_source,

@@ -116,6 +116,11 @@ class NET_EXPORT ReportingService {
   virtual void SendReportsAndRemoveSource(
       const base::UnguessableToken& reporting_source) = 0;
 
+  // Attempts to send any queued reports for `reporting_source` immediately,
+  // without removing the associated endpoint configuration.
+  virtual void SendReportsForSource(
+      const base::UnguessableToken& reporting_source) = 0;
+
   // Removes browsing data from the Reporting system. See
   // ReportingBrowsingDataRemover for more details.
   virtual void RemoveBrowsingData(

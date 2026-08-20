@@ -233,6 +233,19 @@ void DeclarativePerformanceObserver::OnFrameDeleted() {
 
 void DeclarativePerformanceObserver::OnEnterBFCache() {
   EndSessionAndFlush();
+  // When a document enters the BackForwardCache, its execution is suspended
+  // while its document-associated data and Reporting API endpoint configuration
+  // remain intact for potential restoration. Because the document is not
+  // destroyed, SendReportsAndRemoveSource is not invoked. To prevent reports
+  // from waiting on the Network Service's default delivery timer (and risking
+  // data loss if the browser is closed), immediately dispatch any queued
+  // reports for this source via SendReportsForSource while preserving the
+  // endpoint configuration in memory.
+  StoragePartition* storage_partition = GetStoragePartition();
+  if (storage_partition) {
+    storage_partition->GetNetworkContext()->SendReportsForSource(
+        reporting_source_);
+  }
 }
 
 void DeclarativePerformanceObserver::SetStoragePartitionForTesting(  // IN-TEST

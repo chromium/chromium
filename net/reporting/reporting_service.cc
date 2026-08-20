@@ -85,6 +85,14 @@ class ReportingServiceImpl : public ReportingService {
                        base::Unretained(this), reporting_source));
   }
 
+  void SendReportsForSource(
+      const base::UnguessableToken& reporting_source) override {
+    CHECK(!reporting_source.is_empty());
+    DoOrBacklogTask(
+        base::BindOnce(&ReportingServiceImpl::DoSendReportsForSource,
+                       base::Unretained(this), reporting_source));
+  }
+
   void QueueReport(
       const GURL& url,
       const std::optional<base::UnguessableToken>& reporting_source,
@@ -208,6 +216,10 @@ class ReportingServiceImpl : public ReportingService {
       const base::UnguessableToken& reporting_source) {
     context_->delivery_agent()->SendReportsForSource(reporting_source);
     context_->cache()->SetExpiredSource(reporting_source);
+  }
+
+  void DoSendReportsForSource(const base::UnguessableToken& reporting_source) {
+    context_->delivery_agent()->SendReportsForSource(reporting_source);
   }
 
   void DoOrBacklogTask(base::OnceClosure task) {

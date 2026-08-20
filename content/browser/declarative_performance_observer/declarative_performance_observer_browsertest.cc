@@ -59,6 +59,16 @@ class DeclarativePerformanceObserverBrowserTest : public ContentBrowserTest {
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
+  void SetReportQuitClosure(base::OnceClosure closure) {
+    base::AutoLock lock(report_lock_);
+    report_quit_closure_ = std::move(closure);
+  }
+
+  std::vector<std::string> GetReceivedReports() {
+    base::AutoLock lock(report_lock_);
+    return received_reports_;
+  }
+
   StoragePartition* storage_partition() {
     return shell()
         ->web_contents()
@@ -77,6 +87,37 @@ class DeclarativePerformanceObserverBrowserTest : public ContentBrowserTest {
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
+    if (request.relative_url == "/dpo-page") {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("text/html");
+      response->set_content("<html><body>DPO Page</body></html>");
+      response->AddCustomHeader(
+          "Reporting-Endpoints",
+          "dpo_sink=\"" + https_server_->GetURL("/report").spec() + "\"");
+      response->AddCustomHeader(
+          "Performance-Observer",
+          "report-to=\"dpo_sink\", entry-types=(\"navigation\" "
+          "\"visibility-state\")");
+      return response;
+    }
+    if (request.relative_url == "/report") {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+      response->AddCustomHeader("Access-Control-Allow-Headers", "*");
+      response->AddCustomHeader("Access-Control-Allow-Methods",
+                                "POST, OPTIONS");
+
+      if (request.method == net::test_server::METHOD_POST) {
+        base::AutoLock lock(report_lock_);
+        received_reports_.push_back(request.content);
+        if (report_quit_closure_) {
+          std::move(report_quit_closure_).Run();
+        }
+      }
+      return response;
+    }
     if (request.relative_url.rfind("/clear-site-data", 0) == 0) {
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_code(net::HTTP_OK);
@@ -96,6 +137,9 @@ class DeclarativePerformanceObserverBrowserTest : public ContentBrowserTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
+  base::Lock report_lock_;
+  std::vector<std::string> received_reports_ GUARDED_BY(report_lock_);
+  base::OnceClosure report_quit_closure_ GUARDED_BY(report_lock_);
 };
 
 IN_PROC_BROWSER_TEST_F(DeclarativePerformanceObserverBrowserTest,
@@ -193,6 +237,28 @@ IN_PROC_BROWSER_TEST_F(DeclarativePerformanceObserverBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   EXPECT_TRUE(store->HasEarlyFailurePolicy(origin));
+}
+
+IN_PROC_BROWSER_TEST_F(DeclarativePerformanceObserverBrowserTest,
+                       SendsReportImmediatelyOnBFCacheEntry) {
+  GURL dpo_url = https_server()->GetURL("origin1.com", "/dpo-page");
+  GURL page2_url = https_server()->GetURL("origin1.com", "/clear-site-data");
+
+  EXPECT_TRUE(NavigateToURL(shell(), dpo_url));
+
+  base::RunLoop report_loop;
+  SetReportQuitClosure(report_loop.QuitClosure());
+
+  // Navigate to page 2 (putting dpo-page into BFCache).
+  EXPECT_TRUE(NavigateToURL(shell(), page2_url));
+
+  // The report should be dispatched immediately via SendReportsForSource
+  // without waiting for 1 minute.
+  report_loop.Run();
+
+  std::vector<std::string> reports = GetReceivedReports();
+  ASSERT_EQ(reports.size(), 1u);
+  EXPECT_TRUE(reports[0].contains("session-end"));
 }
 
 }  // namespace content

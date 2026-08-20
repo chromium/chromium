@@ -145,6 +145,8 @@ class TestNetworkContext : public mojom::NetworkContext {
       const base::flat_map<std::string, std::string>& endpoints) override {}
   void SendReportsAndRemoveSource(
       const base::UnguessableToken& reporting_source) override {}
+  void SendReportsForSource(
+      const base::UnguessableToken& reporting_source) override {}
   void QueueReport(
       const std::string& type,
       const std::string& group,
