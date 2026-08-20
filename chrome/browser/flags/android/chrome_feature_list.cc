@@ -534,7 +534,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kYourSavedInfoSettingsPageAndroid,
     &language::kCctAutoTranslate,
     &language::kDetailedLanguageSettings,
-    &language::kDisableGmsCoreUlp,
+    &language::kGmsCoreUlp,
     &lens::features::kLensOverlayAndroid,
     &lens::features::kLensSendRawFileMediaTypes,
     &media::kAutoDocPiPPermissionPromptAndroid,

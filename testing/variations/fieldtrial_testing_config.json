@@ -12556,6 +12556,21 @@
             ]
         }
     ],
+    "GmsCoreUlp": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "GmsCoreUlp"
+                    ]
+                }
+            ]
+        }
+    ],
     "GpuPersistentCache": [
         {
             "platforms": [
