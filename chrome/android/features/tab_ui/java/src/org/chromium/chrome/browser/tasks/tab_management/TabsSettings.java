@@ -118,8 +118,14 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
     private void configureTabArchiveSettings() {
         Preference tabArchiveSettingsPref = findPreference(PREF_TAB_ARCHIVE_SETTINGS);
 
+        if (TabArchiveSettings.isArchiveForceDisabled()) {
+            tabArchiveSettingsPref.setVisible(false);
+            return;
+        }
+
         TabArchiveSettings archiveSettings =
                 new TabArchiveSettings(ChromeSharedPreferences.getInstance());
+
         if (archiveSettings.getArchiveEnabled()) {
             int tabArchiveTimeDeltaDays = archiveSettings.getArchiveTimeDeltaDays();
             tabArchiveSettingsPref.setSummary(

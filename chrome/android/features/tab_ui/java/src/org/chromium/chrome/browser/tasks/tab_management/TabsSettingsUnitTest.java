@@ -25,6 +25,7 @@ import androidx.lifecycle.Lifecycle.State;
 import androidx.preference.Preference;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,6 +35,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -93,6 +95,11 @@ public class TabsSettingsUnitTest {
                 AuxiliarySearchHooks.class, mAuxiliarySearchHooksMock);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
+    }
+
+    @After
+    public void tearDown() {
+        DeviceInfo.resetIsDesktopForTesting();
     }
 
     private void onActivity(Activity activity) {
@@ -177,6 +184,39 @@ public class TabsSettingsUnitTest {
 
         assertEquals("Move to inactive section", archiveSettinsEntryPoint.getTitle());
         assertEquals("After 14 days inactive", archiveSettinsEntryPoint.getSummary());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_ON_DESKTOP + ":force_disable/true")
+    public void testArchiveSettings_ForceDisabledOnDesktop() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        TabArchiveSettings archiveSettings =
+                new TabArchiveSettings(ChromeSharedPreferences.getInstance());
+        archiveSettings.setArchiveEnabled(true);
+
+        TabsSettings tabsSettings = launchFragment();
+        Preference archiveSettingsPref =
+                tabsSettings.findPreference(TabsSettings.PREF_TAB_ARCHIVE_SETTINGS);
+        assertFalse(archiveSettingsPref.isVisible());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_ON_DESKTOP
+                    + ":disable_by_default/true")
+    public void testArchiveSettings_DisableByDefaultOnDesktop() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        TabArchiveSettings archiveSettings =
+                new TabArchiveSettings(ChromeSharedPreferences.getInstance());
+        archiveSettings.resetSettingsForTesting();
+
+        TabsSettings tabsSettings = launchFragment();
+        Preference archiveSettingsPref =
+                tabsSettings.findPreference(TabsSettings.PREF_TAB_ARCHIVE_SETTINGS);
+        assertTrue(archiveSettingsPref.isVisible());
+        assertEquals("Move to inactive section", archiveSettingsPref.getTitle());
+        assertEquals("Never", archiveSettingsPref.getSummary());
     }
 
     @Test
