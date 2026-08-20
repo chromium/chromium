@@ -16,7 +16,6 @@ import("//content/public/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
-import("//mojo/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
 import("//printing/buildflags/buildflags.gni")
@@ -2385,24 +2384,6 @@ test("content_browsertests") {
   if (enable_vrp_flags) {
     sources += [ "../browser/vrp_flags/vrp_flags_browsertest.cc" ]
     deps += [ "//components/vrp_flags" ]
-  }
-
-  if ((is_win || is_chromeos || is_linux) && !is_tsan &&
-      mojo_support_legacy_core) {
-    # NOTE: We don't bother to build these tests when TSan is enabled, because
-    # they can't properly launch a child content_shell in that environment.
-    sources += [ "../browser/launch_as_mojo_client_browsertest.cc" ]
-    deps += [
-      "//components/variations",
-      "//components/variations/field_trial_config",
-      "//content/shell:shell_controller_mojom",
-      "//mojo/public/cpp/platform",
-      "//mojo/public/mojom/base",
-    ]
-    data_deps += [ "//content/shell:content_shell" ]
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
-    }
   }
 
   if (!is_chrome_branded) {

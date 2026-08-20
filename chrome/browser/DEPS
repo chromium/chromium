@@ -634,7 +634,6 @@ specific_include_rules = {
   ],
   r"about_flags\.cc" : [
     "+components/stylus_handwriting/win/features.h",
-    "+mojo/core/embedder/features.h",
     "+sandbox/policy/features.h",
   ],
   r"dbus_memory_pressure_evaluator_linux(_unittest)?\.(cc|h)" : [

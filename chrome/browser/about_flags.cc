@@ -246,7 +246,6 @@
 #include "media/media_buildflags.h"
 #include "media/midi/midi_features.h"
 #include "media/webrtc/webrtc_features.h"
-#include "mojo/core/embedder/features.h"
 #include "net/base/features.h"
 #include "net/base/switches.h"
 #include "net/net_buildflags.h"

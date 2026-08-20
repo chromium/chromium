@@ -25,10 +25,7 @@ group("mojo") {
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [
-    "MOJO_USE_APPLE_CHANNEL=$mojo_use_apple_channel",
-    "MOJO_SUPPORT_LEGACY_CORE=$mojo_support_legacy_core",
-  ]
+  flags = [ "MOJO_USE_APPLE_CHANNEL=$mojo_use_apple_channel" ]
 }
 
 group("tests") {
