@@ -39,7 +39,7 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
@@ -61,8 +61,8 @@ public class SafeBrowsingSettingsFragmentTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public SettingsActivityTestRule<SafeBrowsingSettingsFragment> mTestRule =
-            new SettingsActivityTestRule<>(SafeBrowsingSettingsFragment.class);
+    public SettingsTestRule<SafeBrowsingSettingsFragment> mTestRule =
+            new SettingsTestRule<>(SafeBrowsingSettingsFragment.class);
 
     @Mock private SettingsNavigation mSettingsNavigation;
 

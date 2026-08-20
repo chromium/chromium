@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -45,8 +45,8 @@ public class StandardProtectionSettingsFragmentTest {
     private static final String FROM_NATIVE = "from native";
 
     @Rule
-    public SettingsActivityTestRule<StandardProtectionSettingsFragment> mTestRule =
-            new SettingsActivityTestRule<>(StandardProtectionSettingsFragment.class);
+    public SettingsTestRule<StandardProtectionSettingsFragment> mTestRule =
+            new SettingsTestRule<>(StandardProtectionSettingsFragment.class);
 
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
