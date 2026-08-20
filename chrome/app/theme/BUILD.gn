@@ -17,8 +17,6 @@ grit("theme_resources") {
     "default_100_percent/common/favicon_plugins.png",
     "default_100_percent/common/incognito_white_circle.png",
     "default_100_percent/common/prerender_succeed_icon.png",
-    "default_100_percent/common/profile_avatar_placeholder.png",
-    "default_100_percent/common/profile_avatar_placeholder_large.png",
     "default_100_percent/common/restore_button_mask.png",
     "default_100_percent/common/translate_bubble_icon.png",
     "default_100_percent/notused.png",
@@ -30,18 +28,42 @@ grit("theme_resources") {
     "default_200_percent/common/favicon_bookmarks.png",
     "default_200_percent/common/favicon_plugins.png",
     "default_200_percent/common/incognito_white_circle.png",
-    "default_200_percent/common/profile_avatar_placeholder.png",
-    "default_200_percent/common/profile_avatar_placeholder_large.png",
     "default_200_percent/common/translate_bubble_icon.png",
     "default_200_percent/screen_capture_notification_grip.png",
   ]
   outputs = [
     "grit/theme_resources.h",
-    "grit/theme_resources_map.cc",
-    "grit/theme_resources_map.h",
     "theme_resources_100_percent.pak",
     "theme_resources_200_percent.pak",
     "theme_resources_300_percent.pak",
+  ]
+
+  deps = [
+    ":chrome_unscaled_resources",
+    ":webui_theme_resources",
+    "//ui/resources",
+  ]
+
+  output_dir = "$root_gen_dir/chrome"
+}
+
+grit("webui_theme_resources") {
+  source = "webui_theme_resources.grd"
+  defines = chrome_grit_defines
+  inputs = [
+    "default_100_percent/common/profile_avatar_placeholder.png",
+    "default_100_percent/common/profile_avatar_placeholder_large.png",
+    "default_100_percent/notused.png",
+    "default_200_percent/common/profile_avatar_placeholder.png",
+    "default_200_percent/common/profile_avatar_placeholder_large.png",
+  ]
+  outputs = [
+    "grit/webui_theme_resources.h",
+    "grit/webui_theme_resources_map.cc",
+    "grit/webui_theme_resources_map.h",
+    "webui_theme_resources_100_percent.pak",
+    "webui_theme_resources_200_percent.pak",
+    "webui_theme_resources_300_percent.pak",
   ]
 
   deps = [

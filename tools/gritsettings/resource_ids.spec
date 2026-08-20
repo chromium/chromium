@@ -88,6 +88,9 @@
   "chrome/app/theme/theme_resources.grd": {
     "structures": [2160],
   },
+  "chrome/app/theme/webui_theme_resources.grd": {
+    "structures": [2180],
+  },
   # END chrome/app section.
 
   # START chrome/browser section.

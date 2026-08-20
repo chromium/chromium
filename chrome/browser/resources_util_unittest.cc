@@ -9,6 +9,7 @@
 #include <array>
 
 #include "build/build_config.h"
+#include "chrome/grit/webui_theme_resources.h"
 #include "components/grit/components_scaled_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/resources/grit/ui_resources.h"
@@ -23,7 +24,11 @@ TEST(ResourcesUtil, SpotCheckIds) {
     int id;
   };
   const auto kCases = std::to_array<Cases>({
-      // IDRs from chrome/app/theme/theme_resources.grd should be valid.
+#if !BUILDFLAG(IS_ANDROID)
+      // IDRs from chrome/app/theme/webui_theme_resources.grd should be valid.
+      {"IDR_PROFILE_AVATAR_0", IDR_PROFILE_AVATAR_0},
+#endif
+      // IDRs from components_scaled_resources should be valid.
       {"IDR_ERROR_NETWORK_GENERIC", IDR_ERROR_NETWORK_GENERIC},
       // IDRs from ui/resources/ui_resources.grd should be valid.
       {"IDR_DEFAULT_FAVICON", IDR_DEFAULT_FAVICON},

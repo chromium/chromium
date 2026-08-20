@@ -460,6 +460,7 @@ source_set("renderer_preferences_util") {
 
 source_set("resources_util") {
   public = [ "resources_util.h" ]
+  public_deps = [ "//chrome/app/theme:webui_theme_resources" ]
 }
 
 source_set("universal_web_contents_observers") {

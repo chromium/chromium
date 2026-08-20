@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit latest_public_release="0" current_release="1">
+  <outputs>
+    <output filename="grit/webui_theme_resources.h" type="rc_header" context="default_100_percent">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="grit/webui_theme_resources_map.cc" type="resource_map_source" context="default_100_percent" />
+    <output filename="grit/webui_theme_resources_map.h" type="resource_map_header" context="default_100_percent" />
+    <output filename="webui_theme_resources_100_percent.pak" type="data_package" context="default_100_percent" />
+    <output filename="webui_theme_resources_200_percent.pak" type="data_package" context="default_200_percent" />
+    <output filename="webui_theme_resources_300_percent.pak" type="data_package" context="default_300_percent" />
+  </outputs>
+  <release seq="1">
+    <structures fallback_to_low_resolution="true">
+      <!-- KEEP THESE IN ALPHABETICAL ORDER!  DO NOT ADD TO RANDOM PLACES JUST
+           BECAUSE YOUR RESOURCES ARE FUNCTIONALLY RELATED OR FALL UNDER THE
+           SAME CONDITIONALS. -->
+      <if expr="toolkit_views and not is_macosx">
+        <structure type="chrome_scaled_image" name="IDR_ACCESSIBILITY_CAPTIONS_PREVIEW_BACKGROUND" file="common/captions-preview-bg.png" />
+      </if>
+      <if expr="is_chromeos">
+        <structure type="chrome_scaled_image" name="IDR_BLUETOOTH_PAIRING_TICK" file="cros/bluetooth_pairing_tick.png" />
+        <structure type="chrome_scaled_image" name="IDR_ENABLE_DEBUGGING_SUCCESS" file="cros/enable_debugging_success.png" />
+      </if>
+      <if expr="_google_chrome">
+        <structure type="chrome_scaled_image" name="IDR_GOOGLE_G_GRADIENT_16_ALT" file="google_chrome/google_g_gradient_16_alt.png" />
+        <structure type="chrome_scaled_image" name="IDR_GOOGLE_G_GRADIENT_20" file="google_chrome/google_g_gradient_20.png" />
+      </if>
+      <if expr="is_chromeos">
+        <structure type="chrome_scaled_image" name="IDR_LOGO_AVATAR_CIRCLE_BLUE_COLOR" file="cros/logo_avatar_circle_blue_color.png" />
+        <structure type="chrome_scaled_image" name="IDR_LOGO_GOOGLE_COLOR_90" file="cros/logo_google_color_90.png" />
+      </if>
+      <if expr="not is_android">
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_0" file="common/profile_avatar_generic.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_1" file="common/profile_avatar_generic_aqua.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_2" file="common/profile_avatar_generic_blue.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_3" file="common/profile_avatar_generic_green.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_4" file="common/profile_avatar_generic_orange.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_5" file="common/profile_avatar_generic_purple.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_6" file="common/profile_avatar_generic_red.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_7" file="common/profile_avatar_generic_yellow.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_8" file="common/profile_avatar_secret_agent.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_9" file="common/profile_avatar_superhero.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_10" file="common/profile_avatar_volley_ball.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_11" file="common/profile_avatar_businessman.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_12" file="common/profile_avatar_ninja.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_13" file="common/profile_avatar_alien.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_14" file="common/profile_avatar_awesome.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_15" file="common/profile_avatar_flower.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_16" file="common/profile_avatar_pizza.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_17" file="common/profile_avatar_soccer.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_18" file="common/profile_avatar_burger.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_19" file="common/profile_avatar_cat.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_20" file="common/profile_avatar_cupcake.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_21" file="common/profile_avatar_dog.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_22" file="common/profile_avatar_horse.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_23" file="common/profile_avatar_margarita.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_24" file="common/profile_avatar_note.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_25" file="common/profile_avatar_sun_cloud.png" />
+      </if>
+      <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_26" file="common/profile_avatar_placeholder.png" />
+      <if expr="not is_android and not is_chromeos">
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_27" file="common/modern_avatars/origami/avatar_cat.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_28" file="common/modern_avatars/origami/avatar_corgi.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_29" file="common/modern_avatars/origami/avatar_dragon.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_30" file="common/modern_avatars/origami/avatar_elephant.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_31" file="common/modern_avatars/origami/avatar_fox.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_32" file="common/modern_avatars/origami/avatar_monkey.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_33" file="common/modern_avatars/origami/avatar_panda.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_34" file="common/modern_avatars/origami/avatar_penguin.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_35" file="common/modern_avatars/origami/avatar_pinkbutterfly.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_36" file="common/modern_avatars/origami/avatar_rabbit.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_37" file="common/modern_avatars/origami/avatar_unicorn.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_38" file="common/modern_avatars/illustration/avatar_basketball.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_39" file="common/modern_avatars/illustration/avatar_bike.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_40" file="common/modern_avatars/illustration/avatar_bird.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_41" file="common/modern_avatars/illustration/avatar_cheese.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_42" file="common/modern_avatars/illustration/avatar_football.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_43" file="common/modern_avatars/illustration/avatar_ramen.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_44" file="common/modern_avatars/illustration/avatar_sunglasses.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_45" file="common/modern_avatars/illustration/avatar_sushi.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_46" file="common/modern_avatars/illustration/avatar_tamagotchi.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_47" file="common/modern_avatars/illustration/avatar_vinyl.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_48" file="common/modern_avatars/abstract/avatar_avocado.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_49" file="common/modern_avatars/abstract/avatar_cappuccino.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_50" file="common/modern_avatars/abstract/avatar_icecream.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_51" file="common/modern_avatars/abstract/avatar_icewater.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_52" file="common/modern_avatars/abstract/avatar_melon.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_53" file="common/modern_avatars/abstract/avatar_onigiri.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_54" file="common/modern_avatars/abstract/avatar_pizza.png" />
+        <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_55" file="common/modern_avatars/abstract/avatar_sandwich.png" />
+      </if>
+      <structure type="chrome_scaled_image" name="IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE" file="common/profile_avatar_placeholder_large.png" />
+      <structure type="chrome_scaled_image" name="IDR_SETTINGS_FAVICON" file="common/favicon_settings.png" />
+      <if expr="is_chromeos">
+        <structure type="chrome_scaled_image" name="IDR_TAB_RECORDING_INDICATOR" file="cros/tab_recording_indicator.png" />
+      </if>
+      <structure type="chrome_scaled_image" name="IDR_THEME_FRAME_INCOGNITO" file="notused.png" />
+      <structure type="chrome_scaled_image" name="IDR_THEME_NTP_ATTRIBUTION" file="notused.png" />
+      <structure type="chrome_scaled_image" name="IDR_THEME_NTP_BACKGROUND" file="notused.png" />
+      <if expr="is_macosx">
+        <then>
+          <structure type="chrome_scaled_image" name="IDR_THEME_TOOLBAR" file="mac/theme_default_active.png" />
+        </then>
+        <else>
+          <structure type="chrome_scaled_image" name="IDR_THEME_TOOLBAR" file="notused.png" />
+        </else>
+      </if>
+    </structures>
+  </release>
+</grit>

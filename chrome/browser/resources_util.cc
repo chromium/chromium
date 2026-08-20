@@ -13,7 +13,7 @@
 #include "base/no_destructor.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/grit/theme_resources_map.h"
+#include "chrome/grit/webui_theme_resources_map.h"
 #include "components/grit/components_scaled_resources_map.h"
 #include "ui/resources/grit/ui_resources_map.h"
 
@@ -35,7 +35,8 @@ class ThemeMap {
 
   ThemeMap() {
     size_t storage_size = std::size(kComponentsScaledResources) +
-                          std::size(kThemeResources) + std::size(kUiResources);
+                          std::size(kWebuiThemeResources) +
+                          std::size(kUiResources);
 #if BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS)
     storage_size += std::size(kSearchEnginesScaledResources);
 #endif
@@ -50,7 +51,7 @@ class ThemeMap {
     for (const auto& resource : kComponentsScaledResources) {
       storage.emplace_back(resource.path, resource.id);
     }
-    for (const auto& resource : kThemeResources) {
+    for (const auto& resource : kWebuiThemeResources) {
       storage.emplace_back(resource.path, resource.id);
     }
     for (const auto& resource : kUiResources) {
