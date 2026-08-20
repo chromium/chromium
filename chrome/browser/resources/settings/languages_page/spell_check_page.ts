@@ -76,12 +76,12 @@ export class SettingsSpellCheckPageElement extends
           return [];
         },
       },
-      // </if>
 
       hideSpellCheckLanguages_: {
         type: Boolean,
-        value: false,
+        computed: 'computeHideSpellCheckLanguages_(spellCheckLanguages_.*)',
       },
+      // </if>
 
       enableSpellcheckingPref_: Object,
       useSpellingServicePref_: Object,
@@ -112,8 +112,8 @@ export class SettingsSpellCheckPageElement extends
   // <if expr="not is_macosx">
   declare private spellCheckLanguages_:
       Array<LanguageState|SpellCheckLanguageState>;
-  // </if>
   declare private hideSpellCheckLanguages_: boolean;
+  // </if>
   private languageHelper_: LanguageHelper;
   private languageSettingsMetricsProxy_: LanguageSettingsMetricsProxy =
       LanguageSettingsMetricsProxyImpl.getInstance();
@@ -191,6 +191,19 @@ export class SettingsSpellCheckPageElement extends
     return supportedSpellcheckLanguages;
   }
 
+  /**
+   * Hide list of spell check languages if there is only 1 language and we don't
+   * need to display any errors or management indicators for that language.
+   */
+  private computeHideSpellCheckLanguages_(): boolean {
+    if (this.spellCheckLanguages_ && this.spellCheckLanguages_.length === 1) {
+      const singleLanguage = this.spellCheckLanguages_[0];
+      return !singleLanguage.isManaged &&
+          singleLanguage.downloadDictionaryFailureCount === 0;
+    }
+    return false;
+  }
+
   private updateSpellcheckLanguages_() {
     if (this.languages === undefined) {
       return;
@@ -218,19 +231,6 @@ export class SettingsSpellCheckPageElement extends
       // off spell check to indicate no spell check will happen.
       PrefService.getInstance().setPrefValue<boolean>(
           'browser.enable_spellchecking', false);
-    }
-
-    if (this.spellCheckLanguages_.length === 1) {
-      const singleLanguage = this.spellCheckLanguages_[0];
-
-      // Hide list of spell check languages if there is only 1 language
-      // and we don't need to display any errors for that language
-
-      // TODO(crbug.com/40147587): Make hideSpellCheckLanugages_ a computed property
-      this.hideSpellCheckLanguages_ = !singleLanguage.isManaged &&
-          singleLanguage.downloadDictionaryFailureCount === 0;
-    } else {
-      this.hideSpellCheckLanguages_ = false;
     }
   }
 
