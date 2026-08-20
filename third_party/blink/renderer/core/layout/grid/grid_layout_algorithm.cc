@@ -201,8 +201,7 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
   // suppression. Hence, in such cases the total block size should be aligned
   // with the intrinsic block size after suppression, as this represents the
   // actual size of the subgrid once gap adjustments have been applied.
-  if (RuntimeEnabledFeatures::CSSGridGapSuppressionEnabled() &&
-      node.HasCachedPlacementData() &&
+  if (node.HasCachedPlacementData() &&
       !node.CachedPlacementData().HasStandaloneAxis(
           GridTrackSizingDirection::kForRows)) {
     container_builder_.SetFragmentsTotalBlockSize(intrinsic_block_size);
@@ -1759,8 +1758,7 @@ void GridLayoutAlgorithm::PlaceGridItems(
   // decorations).
   if ((RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
        Style().HasGapRule()) ||
-      (RuntimeEnabledFeatures::CSSGridGapSuppressionEnabled() &&
-       out_unfragmented_gap_geometry)) {
+      out_unfragmented_gap_geometry) {
     gap_accumulator = GapAccumulator();
     gap_accumulator->BuildGapGeometry(*layout_data);
 
@@ -1868,8 +1866,7 @@ void GridLayoutAlgorithm::PlaceGridItems(
       // If `out_unfragmented_gap_geometry` is present we just want to record
       // the initial position of all gaps for the purposes of fragmentation.
       // Don't add these to the builder.
-      if (RuntimeEnabledFeatures::CSSGridGapSuppressionEnabled() &&
-          out_unfragmented_gap_geometry) {
+      if (out_unfragmented_gap_geometry) {
         *out_unfragmented_gap_geometry = gap_geometry;
       } else {
         container_builder_.SetGapGeometry(gap_geometry);
@@ -2526,9 +2523,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
                  max_item_block_end - cloned_block_start_decoration);
   }
 
-  if (RuntimeEnabledFeatures::CSSGridGapSuppressionEnabled()) {
-    PlaceGaps();
-  }
+  PlaceGaps();
 
   if (has_subsequent_children)
     container_builder_.SetHasSubsequentChildren();
