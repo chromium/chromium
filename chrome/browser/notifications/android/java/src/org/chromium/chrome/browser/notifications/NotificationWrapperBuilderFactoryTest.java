@@ -60,7 +60,7 @@ public class NotificationWrapperBuilderFactoryTest {
 
     @MediumTest
     @Test
-    public void buildCompatNotificationAndNotifyDoesNotCrash() {
+    public void buildNotificationAndNotifyDoesNotCrash() {
         NotificationWrapperBuilder notificationBuilder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
                         ChromeChannelDefinitions.ChannelId.BROWSER);

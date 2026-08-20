@@ -29,7 +29,8 @@ public class NotificationWrapperBuilderFactory {
      *     will be created if it did not already exist. Must be a known channel within {@link
      *     ChannelsInitializer#ensureInitialized(String)}.
      */
-    public static NotificationWrapperBuilder createNotificationWrapperBuilder(String channelId) {
+    public static NotificationWrapperBuilder createNotificationWrapperBuilder(
+            @Nullable String channelId) {
         return createNotificationWrapperBuilder(channelId, /* metadata= */ null);
     }
 
@@ -39,7 +40,7 @@ public class NotificationWrapperBuilderFactory {
      * @param metadata Metadata contains notification id, tag, etc.
      */
     public static NotificationWrapperBuilder createNotificationWrapperBuilder(
-            String channelId, @Nullable NotificationMetadata metadata) {
+            @Nullable String channelId, @Nullable NotificationMetadata metadata) {
         Context context = ContextUtils.getApplicationContext();
 
         ChannelsInitializer channelsInitializer =
