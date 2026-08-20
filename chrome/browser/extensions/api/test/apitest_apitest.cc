@@ -134,6 +134,51 @@ IN_PROC_BROWSER_TEST_F(TestAPITest, AsyncExceptions) {
   EXPECT_EQ(kExpectedFailureMessage, result_catcher.message());
 }
 
+// Verifies that calling `chrome.test.fail()` with non-string arguments (such as
+// `Error`, `DOMException`, arbitrary `Object`, `Number`, or no argument at all)
+// properly records and notifies test failure without triggering schema
+// validation errors in the `chrome.test` API bindings.
+IN_PROC_BROWSER_TEST_F(TestAPITest, FailWithNonStringArguments) {
+  struct {
+    std::string title;
+    std::string code;
+  } test_cases[] = {
+      {"Error instance", "chrome.test.fail(new Error('fail message'));"},
+      {"DOMException instance",
+       "chrome.test.fail(new DOMException('abort reason', 'AbortError'));"},
+      {"Plain object", "chrome.test.fail({error: 'bad value'});"},
+      {"Number", "chrome.test.fail(404);"},
+      {"No arguments", "chrome.test.fail();"},
+      {"Null argument", "chrome.test.fail(null);"},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(
+        base::StringPrintf("Test case: '%s'", test_case.title.c_str()));
+
+    // Set up `ResultCatcher` to observe test completion.
+    ResultCatcher result_catcher;
+
+    // Construct the test extension script invoking `chrome.test.fail()` with
+    // the target parameter type.
+    std::string script = base::StringPrintf(
+        R"(chrome.test.runTests([
+            function failTest() {
+              %s
+            },
+          ]);)",
+        test_case.code.c_str());
+
+    // Load and execute the extension background script.
+    ASSERT_TRUE(LoadExtensionWithScript(script.c_str()));
+
+    // Verify that the test properly reports failure to `ResultCatcher` rather
+    // than crashing or throwing an uncaught binding validation exception.
+    EXPECT_FALSE(result_catcher.GetNextResult());
+    EXPECT_EQ(kExpectedFailureMessage, result_catcher.message());
+  }
+}
+
 // Exercises chrome.test.assertNe() in cases where the check should succeed
 // (that is, when the passed values are different).
 IN_PROC_BROWSER_TEST_F(TestAPITest, AssertNe_Success) {

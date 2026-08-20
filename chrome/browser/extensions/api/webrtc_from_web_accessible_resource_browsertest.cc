@@ -57,16 +57,8 @@ class WebRtcFromWebAccessibleResourceTest : public ExtensionApiTest {
 
 // Verify that a chrome-extension:// web accessible URL can successfully access
 // getUserMedia(), even if it is embedded in an insecure context.
-// TODO(crbug.com/538977465): Flaky on Win ASAN.
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_GetUserMediaInWebAccessibleResourceSuccess \
-  DISABLED_GetUserMediaInWebAccessibleResourceSuccess
-#else
-#define MAYBE_GetUserMediaInWebAccessibleResourceSuccess \
-  GetUserMediaInWebAccessibleResourceSuccess
-#endif
 IN_PROC_BROWSER_TEST_F(WebRtcFromWebAccessibleResourceTest,
-                       MAYBE_GetUserMediaInWebAccessibleResourceSuccess) {
+                       GetUserMediaInWebAccessibleResourceSuccess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   LoadTestExtension();

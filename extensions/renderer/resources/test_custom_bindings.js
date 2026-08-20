@@ -323,7 +323,7 @@ apiBridge.registerCustomHook(function(api) {
     let stack = {};
     Error.captureStackTrace(stack, failRelativePoint || failInternal);
 
-    const assertionDescription = message || 'Assertion FAIL';
+    const assertionDescription = String(message || 'Assertion FAIL');
     const fullMessage = `${assertionDescription} \n ${stack.stack}`;
 
     console.log(`[FAIL] ${testName(currentTest)}: ${fullMessage}`);
