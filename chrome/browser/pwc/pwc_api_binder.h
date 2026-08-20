@@ -41,6 +41,17 @@ class PrivilegedWebContents;
 PrivilegedWebContents* EnforceCapabilityGate(
     content::RenderFrameHost* render_frame_host);
 
+// Pure predicate form of the capability gate: returns true iff
+// `render_frame_host` would pass EnforceCapabilityGate() in full -- the
+// primary main frame of a PrivilegedWebContents, committed over HTTPS to a
+// capability origin, running in an origin-keyed process. Unlike the gate it
+// has NO side effects (no bad_message, no receiver handling), so it is safe
+// for embedder hooks that merely need to know whether a frame is the
+// qualifying privileged frame -- e.g. deciding whether MojoJS bindings may
+// be enabled for a document. Binders must use EnforceCapabilityGate()
+// instead, so that a compromised-renderer request is terminated.
+bool IsCapabilityQualifiedFrame(content::RenderFrameHost* render_frame_host);
+
 // Browser-side host for the privileged capability bridge
 // (pwc::mojom::PrivilegedBridge). Owned by its PrivilegedWebContents and lives
 // for the WebContents' lifetime.

@@ -293,5 +293,58 @@ IN_PROC_BROWSER_TEST_F(PwcApiBinderBrowserTest,
   ExpectBindSilentlyDropped(old_frame.get());
 }
 
+// IsCapabilityQualifiedFrame() mirrors the gate as a pure predicate: true
+// only for the fully qualifying main frame, false for a subframe, an
+// ordinary tab, and a navigation-only origin -- and, having no side effects,
+// it never terminates a renderer.
+IN_PROC_BROWSER_TEST_F(PwcApiBinderBrowserTest, QualifiedFramePredicate) {
+  const GURL capability = https_server_.GetURL("a.test", "/cap.html");
+  const GURL nav_only = https_server_.GetURL("b.test", "/sorry.html");
+  const GURL subframe_url = https_server_.GetURL("c.test", "/sub.html");
+  std::unique_ptr<PrivilegedWebContents> privileged =
+      MakePrivileged(capability, nav_only);
+  content::WebContents* web_contents = privileged->web_contents();
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents, capability));
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  if (content::SiteIsolationPolicy::
+          IsProcessIsolationForOriginAgentClusterEnabled()) {
+    EXPECT_TRUE(IsCapabilityQualifiedFrame(main_frame));
+  }
+
+  // A subframe of the PWC -- even on the capability origin -- does not
+  // qualify, and the predicate does not kill its renderer.
+  ASSERT_TRUE(content::ExecJs(web_contents, content::JsReplace(R"(
+    new Promise((resolve) => {
+      const f = document.createElement('iframe');
+      f.src = $1;
+      f.onload = () => resolve(true);
+      document.body.appendChild(f);
+    })
+  )",
+                                                               subframe_url)));
+  content::RenderFrameHost* subframe =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(subframe);
+  EXPECT_FALSE(IsCapabilityQualifiedFrame(subframe));
+  EXPECT_TRUE(subframe->GetProcess()->IsInitializedAndNotDead());
+
+  // An ordinary tab at the capability URL does not qualify.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), capability));
+  content::RenderFrameHost* tab_frame = browser()
+                                            ->tab_strip_model()
+                                            ->GetActiveWebContents()
+                                            ->GetPrimaryMainFrame();
+  EXPECT_FALSE(IsCapabilityQualifiedFrame(tab_frame));
+  EXPECT_TRUE(tab_frame->GetProcess()->IsInitializedAndNotDead());
+
+  // The PWC main frame on a navigation-only origin does not qualify.
+  ASSERT_TRUE(content::NavigateToURL(web_contents, nav_only));
+  content::RenderFrameHost* nav_only_frame =
+      web_contents->GetPrimaryMainFrame();
+  EXPECT_FALSE(IsCapabilityQualifiedFrame(nav_only_frame));
+  EXPECT_TRUE(nav_only_frame->GetProcess()->IsInitializedAndNotDead());
+}
+
 }  // namespace
 }  // namespace pwc
