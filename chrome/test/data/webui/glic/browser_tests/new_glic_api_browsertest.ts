@@ -2666,6 +2666,11 @@ class ApiTests extends ApiTestFixtureBase {
           openData.recentlyActiveConversations[2]?.conversationTitle);
     }
   }
+
+  async testPanelWillOpenHasPromptSuggestion() {
+    const invokeOptions = await observeSequence(this.client.invokeData).next();
+    assertEquals('Prompt Suggestion', invokeOptions.prompts?.[0]);
+  }
 }
 
 class FaviconTest extends ApiTests {

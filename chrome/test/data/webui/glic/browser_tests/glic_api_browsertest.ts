@@ -231,11 +231,6 @@ class ApiTests extends ApiTestFixtureBase {
       // capturing the screenshot, but it still succeeds randomly.
     }
   }
-
-  async testPanelWillOpenHasPromptSuggestion() {
-    const invokeOptions = await observeSequence(this.client.invokeData).next();
-    assertEquals('Prompt Suggestion', invokeOptions.prompts?.[0]);
-  }
 }
 
 class DaisyChainApiTests extends ApiTestFixtureBase {

@@ -5112,6 +5112,18 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
   ExecuteJsTest({.params = base::Value("verify"), .instance = tab4_instance});
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPanelWillOpenHasPromptSuggestion) {
+  // Simulate click on contextual cue with prompt suggestion.
+  glic::GlicInvokeOptions options(
+      glic::Target(*GetTabListInterface()->GetActiveTab()),
+      glic::mojom::InvocationSource::kNudge);
+  options.prompts.push_back("Prompt Suggestion");
+  glic::GlicKeyedServiceFactory::GetGlicKeyedService(GetProfile())
+      ->Invoke(std::move(options));
+
+  ExecuteJsTest();
+}
+
 auto DefaultTestParamSet() {
   return testing::Values(TestParams{});
 }
