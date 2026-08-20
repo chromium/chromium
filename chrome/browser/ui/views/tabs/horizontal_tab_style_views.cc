@@ -60,7 +60,7 @@ SkPath HorizontalTabStyleViews::GetPath(TabStyle::PathType path_type,
                                         float scale,
                                         const TabPathFlags& flags) const {
   if (delegate_->IsPinned() && !delegate_->IsActive() &&
-      tabs::IsNewHorizontalPinnedTabStylingEnabled()) {
+      base::FeatureList::IsEnabled(tabs::kTabStripUnification)) {
     return GetPinnedPath(path_type, scale, flags).value_or(SkPath());
   }
 
@@ -634,7 +634,8 @@ int HorizontalTabStyleViews::GetStrokeThickness() const {
     return delegate_->GetStrokeThickness();
   }
 
-  if (delegate_->IsPinned() && tabs::IsNewHorizontalPinnedTabStylingEnabled()) {
+  if (delegate_->IsPinned() &&
+      base::FeatureList::IsEnabled(tabs::kTabStripUnification)) {
     return 1;
   }
 
@@ -644,7 +645,8 @@ int HorizontalTabStyleViews::GetStrokeThickness() const {
 bool HorizontalTabStyleViews::ShouldPaintTabBackgroundColor(
     TabStyle::TabSelectionState selection_state,
     bool has_custom_background) const {
-  if (delegate_->IsPinned() && tabs::IsNewHorizontalPinnedTabStylingEnabled() &&
+  if (delegate_->IsPinned() &&
+      base::FeatureList::IsEnabled(tabs::kTabStripUnification) &&
       !delegate_->IsGlassFrame()) {
     return true;
   }
@@ -890,7 +892,7 @@ std::optional<SkPath> HorizontalTabStyleViews::GetPinnedPath(
     TabStyle::PathType path_type,
     float scale,
     const TabPathFlags& flags) const {
-  CHECK(tabs::IsNewHorizontalPinnedTabStylingEnabled());
+  CHECK(base::FeatureList::IsEnabled(tabs::kTabStripUnification));
   CHECK(delegate()->IsPinned());
 
   const int stroke_thickness = GetStrokeThickness();
