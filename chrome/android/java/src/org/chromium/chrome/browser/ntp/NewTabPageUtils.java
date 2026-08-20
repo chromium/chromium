@@ -31,6 +31,27 @@ public class NewTabPageUtils {
         int NUM_ENTRIES = 4;
     }
 
+    /** Layout type options for NTP Aurora V2. */
+    @IntDef({LayoutType.DEFAULT, LayoutType.BESIDE_MVT, LayoutType.INSIDE_MVT, LayoutType.REMOVE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface LayoutType {
+        int DEFAULT = 0;
+        int BESIDE_MVT = 1;
+        int INSIDE_MVT = 2;
+        int REMOVE = 3;
+        int NUM_ENTRIES = 4;
+    }
+
+    /** Action chips options for NTP Aurora V2. */
+    @IntDef({ActionChips.DEFAULT, ActionChips.INCOGNITO, ActionChips.CANVAS})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ActionChips {
+        int DEFAULT = 0;
+        int INCOGNITO = 1;
+        int CANVAS = 2;
+        int NUM_ENTRIES = 3;
+    }
+
     /**
      * Updates the margins for the most visited tiles layout.
      *

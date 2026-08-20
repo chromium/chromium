@@ -641,6 +641,7 @@ public abstract class ChromeFeatureList {
     public static final String NOTIFICATION_TRAMPOLINE_NO_NEW_TASK =
             "NotificationTrampolineNoNewTask";
     public static final String NTP_AURORA = "NtpAurora";
+    public static final String NTP_AURORA_V2 = "NtpAuroraV2";
     public static final String NTP_CUSTOMIZE_WEBUI_ANDROID = "NtpCustomizeWebUiAndroid";
     public static final String NTP_MVC_REFACTOR = "NtpMvcRefactor";
     public static final String NTP_VISION = "NtpVision";
@@ -1270,6 +1271,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(NOTIFICATION_TRAMPOLINE_NO_NEW_TASK, true);
     public static final CachedFlag sNtpAurora =
             newCachedFlag(NTP_AURORA, /* defaultValue= */ false, /* defaultValueInTests= */ true);
+    public static final CachedFlag sNtpAuroraV2 =
+            newCachedFlag(NTP_AURORA_V2, /* defaultValue= */ false);
     public static final CachedFlag sNtpMvcRefactor =
             newCachedFlag(NTP_MVC_REFACTOR, /* defaultValue= */ false);
     public static final CachedFlag sNtpVision =
@@ -1584,6 +1587,7 @@ public abstract class ChromeFeatureList {
                     sNotificationTrampoline,
                     sNotificationTrampolineNoNewTask,
                     sNtpAurora,
+                    sNtpAuroraV2,
                     sNtpMvcRefactor,
                     sNtpVision,
                     sOnStartupWindowPolicy,
@@ -2149,6 +2153,10 @@ public abstract class ChromeFeatureList {
             newIntCachedFeatureParam(NTP_AURORA, "padding_style", 0);
     public static final BooleanCachedFeatureParam sNtpAuroraChangeButtonColor =
             newBooleanCachedFeatureParam(NTP_AURORA, "change_button_color", false);
+    public static final IntCachedFeatureParam sNtpAuroraV2ActionChips =
+            newIntCachedFeatureParam(NTP_AURORA_V2, "action_chips", 0);
+    public static final IntCachedFeatureParam sNtpAuroraV2LayoutType =
+            newIntCachedFeatureParam(NTP_AURORA_V2, "layout_type", 0);
     public static final IntCachedFeatureParam sOmahaMinSdkVersionMinSdkVersion =
             newIntCachedFeatureParam(OMAHA_MIN_SDK_VERSION_ANDROID, "min_sdk_version", -1);
 
@@ -2316,6 +2324,8 @@ public abstract class ChromeFeatureList {
                     sNotificationTrampolineTimeoutPriorNativeInitMs,
                     sNtpAuroraChangeButtonColor,
                     sNtpAuroraPaddingStyle,
+                    sNtpAuroraV2ActionChips,
+                    sNtpAuroraV2LayoutType,
                     sOmahaMinSdkVersionMinSdkVersion,
                     sPCctMinimumHeightRatio,
                     sPriceChangeModuleSkipShoppingPersistedTabDataDelayedInit,

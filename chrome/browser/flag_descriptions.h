@@ -5710,6 +5710,10 @@ inline constexpr char kNtpAuroraName[] = "New Tab Page Aurora";
 inline constexpr char kNtpAuroraDescription[] =
     "Enable the new Aurora design of the new tab page.";
 
+inline constexpr char kNtpAuroraV2Name[] = "New Tab Page Aurora";
+inline constexpr char kNtpAuroraV2Description[] =
+    "Enables Phase 2 of the Aurora design for the new tab page";
+
 inline constexpr char kNtpVisionName[] = "New tab page vision";
 inline constexpr char kNtpVisionDescription[] =
     "Enable the new vision of the new tab page";

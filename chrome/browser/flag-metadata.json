@@ -7259,6 +7259,11 @@
     "expiry_milestone": 165
   },
   {
+    "name": "ntp-aurora-v2",
+    "owners": ["yanlinghu@google.com", "hanxi@chromium.org", "clank-start@google.com"],
+    "expiry_milestone": 161
+  },
+  {
     "name": "ntp-background-color-slider",
     "owners": [
       "pabouchard@google.com",

@@ -424,6 +424,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kNotificationTrampoline,
     &kNotificationTrampolineNoNewTask,
     &kNtpAurora,
+    &kNtpAuroraV2,
     &kNtpMvcRefactor,
     &kNtpVision,
     &kOmahaMinSdkVersionAndroid,
@@ -836,6 +837,7 @@ BASE_FEATURE(kNotificationPermissionVariant, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kNotificationTrampoline, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kNotificationTrampolineNoNewTask, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kNtpAurora, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpAuroraV2, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kNtpMvcRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kNtpVision, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOmahaMinSdkVersionAndroid, base::FEATURE_DISABLED_BY_DEFAULT);

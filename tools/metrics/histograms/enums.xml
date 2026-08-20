@@ -18247,6 +18247,7 @@ from previous Chrome versions.
   <int value="1122825280" label="FontationsFontBackend:enabled"/>
   <int value="1123140537" label="tab-link-drag-drop:disabled"/>
   <int value="1123390332" label="TiledDisplaySupport:enabled"/>
+  <int value="1123565720" label="NtpAuroraV2:disabled"/>
   <int value="1124100808"
       label="FilterWebsitesForSupervisedUsersOnDesktopAndIOS:enabled"/>
   <int value="1126061778" label="CaptureThumbnailOnLoadFinished:enabled"/>
@@ -21425,6 +21426,7 @@ from previous Chrome versions.
       label="OmniboxDefaultTypedNavigationsToHttps:enabled"/>
   <int value="2104737697" label="ContextMenuEmptySpace:enabled"/>
   <int value="2104788328" label="use-winrt-midi-api"/>
+  <int value="2105450418" label="NtpAuroraV2:enabled"/>
   <int value="2105594942" label="OmniboxIgnoreIntermediateResults:disabled"/>
   <int value="2106254561" label="lacros-data-backward-migration-policy"/>
   <int value="2106798283" label="SafetyTip:disabled"/>
