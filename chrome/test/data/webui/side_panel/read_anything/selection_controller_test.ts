@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy, NodeStore, SelectionController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AudioBrowserProxyImpl, BrowserProxy, NodeStore, SelectionController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
+import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 suite('SelectionController', () => {
   let selectionController: SelectionController;
   let nodeStore: NodeStore;
+  let audioProxy: TestAudioBrowserProxy;
 
   const parentIds = [100, 200, 300, 400];
   const textNodeIds = [3, 5, 7, 9];
@@ -44,6 +46,8 @@ suite('SelectionController', () => {
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
+    audioProxy = new TestAudioBrowserProxy();
+    AudioBrowserProxyImpl.setInstance(audioProxy);
     nodeStore = new NodeStore();
     NodeStore.setInstance(nodeStore);
     selectionController = new SelectionController();

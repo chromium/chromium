@@ -60,6 +60,7 @@ build_webui("build") {
     "menus/simple_action_menu.ts",
     "menus/text_menu.html.ts",
     "menus/text_menu.ts",
+    "read_aloud/audio_browser_proxy.ts",
     "read_aloud/highlighter.ts",
     "read_aloud/language_menu.html.ts",
     "read_aloud/language_menu.ts",

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Browser proxy for the Web Speech API (window.speechSynthesis) used for speech
+// synthesis playback, pause, resume, cancellation, and voice enumeration.
 export interface SpeechBrowserProxy {
   cancel(): void;
   getVoices(): SpeechSynthesisVoice[];

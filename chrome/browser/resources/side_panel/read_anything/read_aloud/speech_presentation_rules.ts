@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
 
 // Characters that should be ignored for word highlighting when not accompanied
 // by other characters.
@@ -14,14 +15,14 @@ const IGNORED_HIGHLIGHT_CHARACTERS_REGEX: RegExp = /^[.,!?'"(){}\[\]]+$/;
 const OPENING_PUNCTUATION_CHARACTERS_REGEX: RegExp = /[({<[]+$/;
 
 export function getCurrentSpeechRate(): number {
-  let rate = chrome.readingMode.speechRate;
+  let rate = AudioBrowserProxyImpl.getInstance().getSpeechRate();
   // <if expr="not is_chromeos">
   // ChromeOS supports speech rates of 3.0 and 4.0, which is unsupported
   // on reading mode on Windows, Mac, and Linux. If a user has set their
   // preferences to be a voice speed of higher than 2x on ChromeOS and then
   // uses reading mode on a non-ChromeOS platform, cap the speech rate
   // at 2x.
-  rate = Math.min(chrome.readingMode.speechRate, 2.0);
+  rate = Math.min(rate, 2.0);
   // </if>
 
   return parseFloat(rate.toFixed(1));

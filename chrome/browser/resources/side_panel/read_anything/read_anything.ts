@@ -44,6 +44,8 @@ export type {SettingsMenuElement} from './menus/settings_menu.js';
 export {KEYBOARD_NAV_CLASS, MENU_SHOW_DELAY_MS, SUBMENU_SHOW_DELAY_MS} from './menus/settings_menu.js';
 export type {SimpleActionMenuElement} from './menus/simple_action_menu.js';
 export type {TextMenuElement} from './menus/text_menu.js';
+export type {AudioBrowserProxy} from './read_aloud/audio_browser_proxy.js';
+export {AudioBrowserProxyImpl} from './read_aloud/audio_browser_proxy.js';
 export {ReadAloudHighlighter} from './read_aloud/highlighter.js';
 export type {LanguageMenuElement} from './read_aloud/language_menu.js';
 export type {LanguageToastElement} from './read_aloud/language_toast.js';
