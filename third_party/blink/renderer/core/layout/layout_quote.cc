@@ -105,12 +105,12 @@ void LayoutQuote::UpdateText() {
   LayoutTextFragment* fragment = FindFragmentChild();
   if (fragment) {
     fragment->SetStyle(IsA<LayoutTextCombine>(fragment->Parent())
-                           ? fragment->Parent()->Style()
-                           : Style());
+                           ? &fragment->Parent()->StyleRef()
+                           : &StyleRef());
     fragment->SetContentString(text_.Impl());
   } else {
     fragment = LayoutTextFragment::CreateAnonymous(GetDocument(), text_.Impl());
-    fragment->SetStyle(Style());
+    fragment->SetStyle(&StyleRef());
     AddChild(fragment);
   }
 }
