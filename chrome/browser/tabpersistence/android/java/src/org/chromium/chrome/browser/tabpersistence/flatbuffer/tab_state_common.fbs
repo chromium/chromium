@@ -54,6 +54,7 @@ enum TabLaunchTypeAtCreation:int {
     FROM_LINK_CREATING_NEW_WINDOW = 32,
     FROM_TIPS_NOTIFICATIONS = 33,
     FROM_TAB_LIST_INTERFACE_BACKGROUND = 34,
+    FROM_SESSION_STARTUP_WITH_URLS_PREF = 35,
     // Add new values here and don't change existing values
     // as they are persisted across restarts. Changing existing
     // values will lead to backwards compatibility issues crbug.com/40815944.

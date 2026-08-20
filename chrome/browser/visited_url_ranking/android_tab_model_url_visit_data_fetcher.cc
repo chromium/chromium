@@ -66,6 +66,7 @@ TabMetadata::TabOrigin GetTabOriginFromLaunchType(int type) {
     case TabModel::TabLaunchType::FROM_SPECULATIVE_BACKGROUND_CREATION:
     case TabModel::TabLaunchType::FROM_BROWSER_ACTIONS:
     case TabModel::TabLaunchType::FROM_STARTUP:
+    case TabModel::TabLaunchType::FROM_SESSION_STARTUP_WITH_URLS_PREF:
     case TabModel::TabLaunchType::FROM_START_SURFACE:
     case TabModel::TabLaunchType::FROM_RESTORE_TABS_UI:
     case TabModel::TabLaunchType::UNSET:

@@ -127,6 +127,8 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
                 return "NewIncognitoTab";
             case TabLaunchType.FROM_STARTUP:
                 return "Startup";
+            case TabLaunchType.FROM_SESSION_STARTUP_WITH_URLS_PREF:
+                return "SessionStartupWithUrlsPref";
             case TabLaunchType.FROM_START_SURFACE:
                 return "StartSurface";
             case TabLaunchType.FROM_TAB_GROUP_UI:
@@ -323,7 +325,9 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
                     openInTabGroup
                             ? TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
                             : TabLaunchType.FROM_LONGPRESS_BACKGROUND;
-            for (int i = 0; i < additionalUrls.size(); i++) {
+            // Iterate backwards because background tabs are inserted immediately after the active
+            // tab, so inserting from last to first preserves the exact list order.
+            for (int i = additionalUrls.size() - 1; i >= 0; i--) {
                 LoadUrlParams copy = LoadUrlParams.copy(firstTabParams);
                 copy.setUrl(additionalUrls.get(i));
                 createNewTab(copy, additionalUrlLaunchType, groupParent);
@@ -822,6 +826,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
             case TabLaunchType.FROM_RESTORE_TABS_UI:
             case TabLaunchType.FROM_TAB_GROUP_UI:
             case TabLaunchType.FROM_STARTUP:
+            case TabLaunchType.FROM_SESSION_STARTUP_WITH_URLS_PREF:
             case TabLaunchType.FROM_LAUNCHER_SHORTCUT:
             case TabLaunchType.FROM_LAUNCH_NEW_INCOGNITO_TAB:
             case TabLaunchType.FROM_APP_WIDGET:

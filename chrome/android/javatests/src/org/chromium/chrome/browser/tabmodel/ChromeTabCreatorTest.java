@@ -202,17 +202,34 @@ public class ChromeTabCreatorTest {
                             mActivityTestRule.getActivity().getCurrentTabModel().getCount();
                     String url1 = mTestServer.getURL(TEST_PATH);
                     String url2 = mTestServer.getURL("/chrome/test/data/android/google.html");
+                    String url3 = mTestServer.getURL("/chrome/test/data/android/about.html");
                     tabCreator.createNewTabs(
                             new LoadUrlParams(url1),
-                            java.util.List.of(url2),
+                            java.util.List.of(url2, url3),
                             TabLaunchType.FROM_CHROME_UI,
                             /* parent= */ null,
                             /* openInTabGroup= */ false,
                             /* intent= */ null);
                     assertEquals(
-                            "Tab model should have 2 new tabs",
-                            initialCount + 2,
+                            "Tab model should have 3 new tabs",
+                            initialCount + 3,
                             mActivityTestRule.getActivity().getCurrentTabModel().getCount());
+                    assertEquals(
+                            url2,
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabModel()
+                                    .getTabAt(initialCount + 1)
+                                    .getUrl()
+                                    .getSpec());
+                    assertEquals(
+                            url3,
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabModel()
+                                    .getTabAt(initialCount + 2)
+                                    .getUrl()
+                                    .getSpec());
                 });
     }
 

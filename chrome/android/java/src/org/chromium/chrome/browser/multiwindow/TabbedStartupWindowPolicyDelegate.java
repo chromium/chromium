@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,6 +48,14 @@ public class TabbedStartupWindowPolicyDelegate {
      * Tracks whether the startup window policy has been claimed for the current browser process.
      */
     private boolean mStartupPolicyClaimed;
+
+    /**
+     * Tracks whether the startup preference URLs have been evaluated in the current browser
+     * process.
+     */
+    // TODO (crbug.com/548199511): Potentially remove this state and leverage single state to claim
+    // and apply startup policies.
+    private boolean mHasEvaluatedStartupUrls;
 
     private TabbedStartupWindowPolicyDelegate() {}
 
@@ -109,6 +118,34 @@ public class TabbedStartupWindowPolicyDelegate {
     }
 
     /**
+     * Resolves the list of startup URLs to launch based on the session startup preference, if
+     * applicable for this browser process. This evaluation occurs at most once per browser process.
+     *
+     * @param incognito Whether the startup is in incognito mode.
+     * @return The list of valid startup URLs to open, or an empty list if none apply.
+     */
+    public List<String> resolveStartupUrls(boolean incognito) {
+        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()
+                || !MultiWindowUtils.isRestoreOnStartupPrefSyncEnabled()
+                || mHasEvaluatedStartupUrls) {
+            return Collections.emptyList();
+        }
+
+        mHasEvaluatedStartupUrls = true;
+
+        if (incognito) {
+            return Collections.emptyList();
+        }
+
+        int startupPref = ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue();
+        if (startupPref != SessionStartupPref.URLS) {
+            return Collections.emptyList();
+        }
+
+        return ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls();
+    }
+
+    /**
      * Claims and evaluates whether default instance ID allocation should force allocating a
      * brand-new instance ID instead of adopting an existing persisted instance.
      *
@@ -118,7 +155,8 @@ public class TabbedStartupWindowPolicyDelegate {
      *   <li>The previous session was closed by the application (clean shutdown with single window)
      *       and the on-startup user preference is unset or configured to restore the last session
      *       (LAST).
-     *   <li>The on-startup user preference is configured to open the New Tab page (NEW_TAB).
+     *   <li>The on-startup user preference is configured to open the New Tab page (NEW_TAB) or
+     *       specific startup URLs (URLS).
      * </ul>
      *
      * @param isIncognito Whether the launch intent is incognito.
@@ -156,7 +194,9 @@ public class TabbedStartupWindowPolicyDelegate {
             return true;
         }
 
-        return isPrefSyncEnabled && startupPref == SessionStartupPref.NEW_TAB;
+        return isPrefSyncEnabled
+                && (startupPref == SessionStartupPref.NEW_TAB
+                        || startupPref == SessionStartupPref.URLS);
     }
 
     /* package */ void applyPolicy(ChromeTabbedActivity activity) {
@@ -181,6 +221,7 @@ public class TabbedStartupWindowPolicyDelegate {
 
     /* package */ void resetPolicy() {
         mStartupPolicyClaimed = false;
+        mHasEvaluatedStartupUrls = false;
     }
 
     private void maybeRestoreWindowsAfterLaunch(ChromeTabbedActivity activity) {
@@ -254,6 +295,7 @@ public class TabbedStartupWindowPolicyDelegate {
         }
         mPrefService = null;
         mStartupPolicyClaimed = false;
+        mHasEvaluatedStartupUrls = false;
     }
 
     /* package */ static void setInstanceForTesting(

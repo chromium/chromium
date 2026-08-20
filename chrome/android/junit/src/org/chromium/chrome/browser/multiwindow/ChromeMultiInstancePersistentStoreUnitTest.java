@@ -509,22 +509,16 @@ public class ChromeMultiInstancePersistentStoreUnitTest {
 
     @Test
     public void testRestoreOnStartupUrls() {
-        // Verify default value is null when unset.
-        assertNull(ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls());
+        // Verify default value is empty list when unset.
+        assertTrue(ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls().isEmpty());
 
         // Verify writing and reading non-empty list.
         List<String> urls = List.of("https://www.google.com", "https://www.example.com");
         ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(urls);
         assertEquals(urls, ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls());
 
-        // Verify writing an empty list clears the field and returns null.
+        // Verify writing an empty list clears the field and returns empty list.
         ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(List.of());
-        assertNull(ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls());
-
-        // Verify writing null clears the field and returns null.
-        ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(urls);
-        assertEquals(urls, ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls());
-        ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(null);
-        assertNull(ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls());
+        assertTrue(ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls().isEmpty());
     }
 }

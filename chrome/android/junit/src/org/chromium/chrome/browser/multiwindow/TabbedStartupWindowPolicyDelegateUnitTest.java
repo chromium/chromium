@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.multiwindow;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -44,6 +43,7 @@ import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /** Unit tests for {@link TabbedStartupWindowPolicyDelegate}. */
@@ -410,7 +410,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
     }
 
     @Test
-    public void testPreferenceChange_emptyUrls_storesNull() {
+    public void testPreferenceChange_emptyUrls_storesEmptyList() {
         // Setup mock native preferences with empty URLs list.
         when(mPrefService.getInteger(Pref.RESTORE_ON_STARTUP))
                 .thenReturn(SessionStartupPref.NEW_TAB);
@@ -420,7 +420,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         mDelegate.initializeWithNative(mPrefService);
 
         // Verify.
-        assertNull(ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls());
+        assertTrue(ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls().isEmpty());
     }
 
     @Test
@@ -437,7 +437,7 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         assertEquals(
                 TabbedStartupWindowPolicyDelegate.PREF_UNSET,
                 ChromeMultiInstancePersistentStore.readRestoreOnStartupPrefValue());
-        assertNull(ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls());
+        assertTrue(ChromeMultiInstancePersistentStore.readRestoreOnStartupUrls().isEmpty());
 
         // Verify that we never register preference observer.
         verify(mMockPrefChangeRegistrarNatives, never()).init(any(), any());
@@ -535,14 +535,14 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
 
     @Test
     public void
-            testClaimForceNewInstancePolicy_lastWindowClosedByApp_startupPrefIsUrls_returnsFalse() {
+            testClaimForceNewInstancePolicy_lastWindowClosedByApp_startupPrefIsUrls_returnsTrue() {
         // Setup.
         ChromeMultiInstancePersistentStore.writeLastSessionExitType(
                 LastSessionExitType.LAST_WINDOW_CLOSED_BY_APP);
         ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.URLS);
 
         // Act & Verify.
-        assertFalse(mDelegate.claimForceNewInstancePolicy(false));
+        assertTrue(mDelegate.claimForceNewInstancePolicy(false));
         assertEquals(
                 LastSessionExitType.LAST_WINDOW_CLOSED_BY_APP,
                 ChromeMultiInstancePersistentStore.readLastSessionExitType());
@@ -562,6 +562,78 @@ public class TabbedStartupWindowPolicyDelegateUnitTest {
         assertEquals(
                 LastSessionExitType.LAST_WINDOW_CLOSED_BY_APP,
                 ChromeMultiInstancePersistentStore.readLastSessionExitType());
+        assertTrue(mDelegate.resolveStartupUrls(false).isEmpty());
+    }
+
+    @Test
+    public void testResolveStartupUrls_urls_resolvesOnceAndReturnsConfiguredUrls() {
+        // Setup.
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.URLS);
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(
+                List.of("https://www.google.com", "https://www.chromium.org"));
+
+        // Act & Verify.
+        assertEquals(
+                List.of("https://www.google.com", "https://www.chromium.org"),
+                mDelegate.resolveStartupUrls(false));
+
+        // Subsequent invocations in the same browser process should return empty list.
+        assertTrue(mDelegate.resolveStartupUrls(false).isEmpty());
+    }
+
+    @Test
+    public void testResolveStartupUrls_urlsEmpty_returnsEmptyList() {
+        // Setup.
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.URLS);
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(Collections.emptyList());
+
+        // Act & Verify.
+        assertTrue(mDelegate.resolveStartupUrls(false).isEmpty());
+    }
+
+    @Test
+    public void testResolveStartupUrls_newTab_returnsEmptyList() {
+        // Setup.
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
+                SessionStartupPref.NEW_TAB);
+
+        // Act & Verify.
+        assertTrue(mDelegate.resolveStartupUrls(false).isEmpty());
+    }
+
+    @Test
+    public void testResolveStartupUrls_otherPolicy_returnsEmptyList() {
+        // Setup.
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.LAST);
+
+        // Act & Verify.
+        assertTrue(mDelegate.resolveStartupUrls(false).isEmpty());
+    }
+
+    @Test
+    public void testResolveStartupUrls_isIncognito_returnsEmptyList() {
+        // Setup.
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.URLS);
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(
+                List.of("https://www.google.com"));
+
+        // Act & Verify.
+        assertTrue(mDelegate.resolveStartupUrls(true).isEmpty());
+        // Subsequent calls for regular windows in the same process should also return an empty
+        // list.
+        assertTrue(mDelegate.resolveStartupUrls(false).isEmpty());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.SYNC_RESTORE_ON_STARTUP_PREF)
+    public void testResolveStartupUrls_featureDisabled_returnsEmptyList() {
+        // Setup.
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.URLS);
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupUrls(
+                List.of("https://www.google.com"));
+
+        // Act & Verify.
+        assertTrue(mDelegate.resolveStartupUrls(false).isEmpty());
     }
 
     @Test

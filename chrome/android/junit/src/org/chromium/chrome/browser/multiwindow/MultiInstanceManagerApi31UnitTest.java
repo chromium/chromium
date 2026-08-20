@@ -494,7 +494,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.SYNC_RESTORE_ON_STARTUP_PREF)
-    public void testAllocInstanceId_restoreOnStartup_newTabAllocatesNewWindow() {
+    public void testAllocInstanceId_restoreOnStartup_newTabAllocatesNewId() {
         DeviceInfo.setIsDesktopForTesting(true);
 
         // Allocate instance 0 and 1.
@@ -518,7 +518,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.SYNC_RESTORE_ON_STARTUP_PREF)
-    public void testAllocInstanceId_restoreOnStartup_newTabAllocatesNewId() {
+    public void testAllocInstanceId_restoreOnStartup_UrlsAllocatesNewId() {
         DeviceInfo.setIsDesktopForTesting(true);
 
         // Allocate instance 0 and 1.
@@ -531,9 +531,8 @@ public class MultiInstanceManagerApi31UnitTest {
         // Reset the delegate to simulate launching in a new browser process.
         TabbedStartupWindowPolicyDelegate.setInstanceForTesting(null);
 
-        // Set the cached startup policy to NEW_TAB.
-        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(
-                SessionStartupPref.NEW_TAB);
+        // Set the cached startup policy to URLS.
+        ChromeMultiInstancePersistentStore.writeRestoreOnStartupPrefValue(SessionStartupPref.URLS);
 
         // Allocating a new window should refrain from using instance 1 (since we want a new window)
         // and allocate brand-new instance 2.

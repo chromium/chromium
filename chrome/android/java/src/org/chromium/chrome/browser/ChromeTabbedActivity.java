@@ -2704,33 +2704,43 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         mPendingInitialTabCreation = false;
         boolean incognito = mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD;
 
-        String url = null;
-        GURL homepageGurl = HomepageManager.getInstance().getHomepageGurlForZeroTabs(incognito);
-
-        ProfileProvider profileProvider = getProfileProviderSupplier().get();
-        Profile profile =
-                incognito
-                        ? profileProvider.getOffTheRecordProfile()
-                        : profileProvider.getOriginalProfile();
-        UrlConstantResolver urlConstantResolver = UrlConstantResolverFactory.getForProfile(profile);
-        if (homepageGurl.isEmpty()) {
-            url = urlConstantResolver.getNtpUrl();
+        List<String> startupUrls =
+                TabbedStartupWindowPolicyDelegate.getInstance().resolveStartupUrls(incognito);
+        if (!startupUrls.isEmpty()) {
+            LoadUrlParams loadUrlParams = new LoadUrlParams(startupUrls.get(0));
+            getTabCreator(incognito)
+                    .createNewTabs(
+                            loadUrlParams,
+                            startupUrls.subList(1, startupUrls.size()),
+                            TabLaunchType.FROM_SESSION_STARTUP_WITH_URLS_PREF,
+                            /* parent= */ null,
+                            /* openInTabGroup= */ false,
+                            /* intent= */ null);
         } else {
+            String url = null;
+            GURL homepageGurl = HomepageManager.getInstance().getHomepageGurlForZeroTabs(incognito);
+
+            ProfileProvider profileProvider = getProfileProviderSupplier().get();
+            Profile profile =
+                    incognito
+                            ? profileProvider.getOffTheRecordProfile()
+                            : profileProvider.getOriginalProfile();
+            UrlConstantResolver urlConstantResolver =
+                    UrlConstantResolverFactory.getForProfile(profile);
             // Migrate legacy NTP URLs (chrome://newtab) to the newer format
-            // (chrome-native://newtab)
-            if (UrlUtilities.isNtpUrl(homepageGurl)) {
+            // (chrome-native://newtab).
+            if (homepageGurl.isEmpty() || UrlUtilities.isNtpUrl(homepageGurl)) {
                 url = urlConstantResolver.getNtpUrl();
             } else {
                 url = homepageGurl.getSpec();
             }
+            getTabCreator(incognito).launchUrl(url, TabLaunchType.FROM_STARTUP);
+            PartnerBrowserCustomizations.getInstance()
+                    .onCreateInitialTab(
+                            url,
+                            getLifecycleDispatcher(),
+                            HomepageManager::getHomepageCharacterizationHelper);
         }
-
-        getTabCreator(incognito).launchUrl(url, TabLaunchType.FROM_STARTUP);
-        PartnerBrowserCustomizations.getInstance()
-                .onCreateInitialTab(
-                        url,
-                        getLifecycleDispatcher(),
-                        HomepageManager::getHomepageCharacterizationHelper);
 
         // If we didn't call setInitialOverviewState() in onStartWithNative() because
         // mPendingInitialTabCreation was true then do so now.

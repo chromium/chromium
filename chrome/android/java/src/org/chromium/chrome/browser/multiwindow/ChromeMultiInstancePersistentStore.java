@@ -452,17 +452,15 @@ class ChromeMultiInstancePersistentStore extends MultiInstancePersistentStore {
         saveProto();
     }
 
-    static @Nullable List<String> readRestoreOnStartupUrls() {
+    static List<String> readRestoreOnStartupUrls() {
         assert sData != null;
-        return sData.getRestoreOnStartupUrlsCount() == 0
-                ? null
-                : sData.getRestoreOnStartupUrlsList();
+        return sData.getRestoreOnStartupUrlsList();
     }
 
-    static void writeRestoreOnStartupUrls(@Nullable List<String> urls) {
+    static void writeRestoreOnStartupUrls(List<String> urls) {
         assert sData != null;
         var builder = sData.toBuilder().clearRestoreOnStartupUrls();
-        if (urls != null) {
+        if (!urls.isEmpty()) {
             builder.addAllRestoreOnStartupUrls(urls);
         }
         sData = builder.build();

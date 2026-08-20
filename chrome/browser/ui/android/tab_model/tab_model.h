@@ -96,8 +96,7 @@ class TabModel : public TabListInterface {
     // - Tabs opened via a keyboard shortcut.
     FROM_CHROME_UI,
     // Opened during the restoration process on startup or when merging two
-    //  instances of
-    // Chrome in Android N+ multi-instance mode.
+    // instances of Chrome in Android N+ multi-instance mode.
     FROM_RESTORE,
     // Opened from the long press context menu. Will be brought to the
     // foreground.
@@ -189,6 +188,9 @@ class TabModel : public TabListInterface {
     FROM_TIPS_NOTIFICATIONS,
     // Open tab using the TabListInterface API in the background.
     FROM_TAB_LIST_INTERFACE_BACKGROUND,
+    // Opened to load the first URL specified in the session startup URLs user
+    // preference.
+    FROM_SESSION_STARTUP_WITH_URLS_PREF,
     // Must be last.
     SIZE
   };
