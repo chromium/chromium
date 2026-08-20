@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_SERVICE_METRICS_GLIC_INVOKE_METRICS_H_
 #define CHROME_BROWSER_GLIC_SERVICE_METRICS_GLIC_INVOKE_METRICS_H_
 
+#include "base/time/time.h"
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 
@@ -19,11 +20,21 @@ enum class GlicInvokeResult {
   kMaxValue = kErrorMaxValue
 };
 
-void RecordInvokeSource(mojom::InvocationSource source);
+class GlicInvokeMetrics {
+ public:
+  explicit GlicInvokeMetrics(mojom::InvocationSource source);
+  ~GlicInvokeMetrics() = default;
 
-void RecordInvokeSuccess(mojom::InvocationSource source);
+  GlicInvokeMetrics(const GlicInvokeMetrics&) = delete;
+  GlicInvokeMetrics& operator=(const GlicInvokeMetrics&) = delete;
 
-void RecordInvokeError(mojom::InvocationSource source, GlicInvokeError result);
+  void RecordSuccess() const;
+  void RecordError(GlicInvokeError result) const;
+
+ private:
+  mojom::InvocationSource source_;
+  base::TimeTicks invoke_start_time_;
+};
 
 }  // namespace glic
 
