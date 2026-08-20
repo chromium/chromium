@@ -1080,8 +1080,8 @@ TEST_F(
   empty_message.SerializeToArray(empty_serialized.data(), empty_size);
 
   EXPECT_CALL(*mock_contextual_tasks_service_,
-              SetUrlResourcesFromServer(task_id, testing::IsEmpty()))
-      .Times(1);
+              SetUrlResourcesFromServer(task_id, _))
+      .Times(0);
 
   page_handler_->OnWebviewMessage(empty_serialized);
 
