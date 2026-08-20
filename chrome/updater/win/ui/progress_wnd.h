@@ -182,7 +182,21 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   base::win::ScopedGDIObject<HBITMAP> light_bg_bmp_;
   base::win::ScopedGDIObject<HBITMAP> dark_bg_bmp_;
 
+  // Cached original app logo bitmap received via WM_SET_APP_LOGO.
   base::win::ScopedGDIObject<HBITMAP> app_logo_bmp_;
+
+  // Scaled app logo bitmap dynamically sized for the window's current DPI.
+  base::win::ScopedGDIObject<HBITMAP> scaled_app_logo_bmp_;
+
+  // The design-time bottom Y-coordinate of `IDC_APP_BITMAP` normalized to
+  // standard 96-DPI space. The bottom edge is locked to preserve the design
+  // margin above the dialog buttons, allowing taller square logos (e.g. 48x48)
+  // to expand upward into the empty area below the progress bar.
+  int initial_app_logo_base_bottom_y_ = -1;
+
+  // Returns the bounding rectangle of `control` in parent client coordinates,
+  // normalized for right-to-left (RTL) mirrored layouts.
+  RECT GetControlClientRect(HWND control) const;
 
   HBITMAP GetBackgroundBitmap();
 
@@ -198,6 +212,8 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   FlatButton btn2_;
   FlatButton close_btn_;
   FlatButton get_help_btn_;
+
+  FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, SetAppLogoDynamicSizing);
 
   CR_MSG_MAP_CLASS_DECLARATIONS(ProgressWnd)
 };

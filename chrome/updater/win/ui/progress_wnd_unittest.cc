@@ -13,6 +13,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
+#include "base/win/scoped_hdc.h"
 #include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/test/unit_test_util.h"
 #include "chrome/updater/test/unit_test_util_win.h"
@@ -436,6 +437,56 @@ TEST_F(ProgressWndTest, FlatButtonSubclass) {
   EXPECT_EQ(progress_wnd->get_help_btn_.hwnd(),
             ::GetDlgItem(progress_wnd->hwnd(), IDC_GET_HELP));
   EXPECT_TRUE(progress_wnd->get_help_btn_.IsWindow());
+
+  progress_wnd->DestroyWindow();
+}
+
+// Verifies that the app logo control dynamically resizes to match both
+// theme-specific square logos (48x48) and legacy rectangular logos (92x24),
+// scaling correctly under the window's effective DPI while keeping the bottom
+// edge aligned with the layout baseline.
+TEST_F(ProgressWndTest, SetAppLogoDynamicSizing) {
+  MessageLoop ui_message_loop;
+  std::unique_ptr<ProgressWnd> progress_wnd =
+      MakeProgressWindow(&ui_message_loop);
+
+  const HWND app_bitmap_ctl =
+      ::GetDlgItem(progress_wnd->hwnd(), IDC_APP_BITMAP);
+  base::win::ScopedGetDC dc(nullptr);
+
+  // Test with a 48x48 square logo.
+  base::win::ScopedGDIObject<HBITMAP> square_bitmap(
+      ::CreateCompatibleBitmap(dc, 48, 48));
+  EXPECT_TRUE(square_bitmap.is_valid());
+
+  ::SendMessage(progress_wnd->hwnd(), WM_SET_APP_LOGO,
+                reinterpret_cast<WPARAM>(square_bitmap.release()), 0);
+
+  RECT ctl_rect = progress_wnd->GetControlClientRect(app_bitmap_ctl);
+  const int initial_bottom = ctl_rect.bottom;
+  const int dpi = ::GetDpiForWindow(progress_wnd->hwnd());
+  const int effective_dpi = dpi ? dpi : USER_DEFAULT_SCREEN_DPI;
+  EXPECT_EQ(ctl_rect.right - ctl_rect.left,
+            ::MulDiv(48, effective_dpi, USER_DEFAULT_SCREEN_DPI));
+  EXPECT_EQ(ctl_rect.bottom - ctl_rect.top,
+            ::MulDiv(48, effective_dpi, USER_DEFAULT_SCREEN_DPI));
+
+  // Test with a 92x24 rectangular logo.
+  base::win::ScopedGDIObject<HBITMAP> rect_bitmap(
+      ::CreateCompatibleBitmap(dc, 92, 24));
+  EXPECT_TRUE(rect_bitmap.is_valid());
+
+  ::SendMessage(progress_wnd->hwnd(), WM_SET_APP_LOGO,
+                reinterpret_cast<WPARAM>(rect_bitmap.release()), 0);
+
+  // Verify that the rectangular logo matches expected scaled dimensions and
+  // the bottom coordinate remains locked to the original baseline.
+  ctl_rect = progress_wnd->GetControlClientRect(app_bitmap_ctl);
+  EXPECT_EQ(ctl_rect.right - ctl_rect.left,
+            ::MulDiv(92, effective_dpi, USER_DEFAULT_SCREEN_DPI));
+  EXPECT_EQ(ctl_rect.bottom - ctl_rect.top,
+            ::MulDiv(24, effective_dpi, USER_DEFAULT_SCREEN_DPI));
+  EXPECT_EQ(ctl_rect.bottom, initial_bottom);
 
   progress_wnd->DestroyWindow();
 }

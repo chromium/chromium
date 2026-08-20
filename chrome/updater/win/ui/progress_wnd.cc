@@ -134,21 +134,49 @@ void ProgressWnd::SetEventSink(ProgressWndEvents* events) {
 }
 
 LRESULT ProgressWnd::OnSetAppLogo(UINT, WPARAM wparam, LPARAM) {
+  // Extract the `HBITMAP` handle passed in `WPARAM`.
   SetAppLogo(reinterpret_cast<HBITMAP>(wparam));
   return 0;
 }
 
+RECT ProgressWnd::GetControlClientRect(HWND control) const {
+  RECT rect = {};
+  ::GetWindowRect(control, &rect);
+  // Convert screen coordinates to parent client coordinates using an explicit
+  // `POINT` array to avoid strict aliasing violations and support RTL layouts.
+  POINT pts[] = {{rect.left, rect.top}, {rect.right, rect.bottom}};
+  ::MapWindowPoints(HWND_DESKTOP, hwnd(), pts, 2);
+  rect = {pts[0].x, pts[0].y, pts[1].x, pts[1].y};
+  if (rect.left > rect.right) {
+    std::swap(rect.left, rect.right);
+  }
+  return rect;
+}
+
 void ProgressWnd::SetAppLogo(HBITMAP bitmap) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsWindow()) {
-    return;
-  }
-
   if (app_logo_bmp_.get() != bitmap) {
     app_logo_bmp_.reset(bitmap);
   }
 
+  if (!IsWindow()) {
+    return;
+  }
+
+  const HWND app_bitmap_ctl = ::GetDlgItem(hwnd(), IDC_APP_BITMAP);
+  if (!app_bitmap_ctl) {
+    return;
+  }
+
+  auto clear_logo = [this, app_bitmap_ctl]() {
+    const RECT ctl_rect = GetControlClientRect(app_bitmap_ctl);
+    ::SendMessage(app_bitmap_ctl, STM_SETIMAGE, IMAGE_BITMAP, 0);
+    scaled_app_logo_bmp_.reset();
+    ::InvalidateRect(hwnd(), &ctl_rect, TRUE);
+  };
+
   if (!app_logo_bmp_.is_valid()) {
+    clear_logo();
     return;
   }
 
@@ -156,33 +184,85 @@ void ProgressWnd::SetAppLogo(HBITMAP bitmap) {
   BITMAP bm = {};
   if (::GetObject(app_logo_bmp_.get(), sizeof(bm), &bm) == 0) {
     VLOG(1) << __func__ << " ::GetObject failed";
+    clear_logo();
     return;
   }
 
+  // Scale the bitmap dimensions based on the window's effective DPI.
   const int dpi = ::GetDpiForWindow(hwnd());
-  const int width_pixels = ::MulDiv(bm.bmWidth, dpi, USER_DEFAULT_SCREEN_DPI);
-  const int height_pixels = ::MulDiv(bm.bmHeight, dpi, USER_DEFAULT_SCREEN_DPI);
+  const int effective_dpi = dpi ? dpi : USER_DEFAULT_SCREEN_DPI;
+  const int width_pixels =
+      ::MulDiv(bm.bmWidth, effective_dpi, USER_DEFAULT_SCREEN_DPI);
+  const int height_pixels =
+      ::MulDiv(bm.bmHeight, effective_dpi, USER_DEFAULT_SCREEN_DPI);
 
   if (width_pixels <= 0 || height_pixels <= 0) {
     VLOG(1) << __func__ << " Invalid logo dimensions: " << width_pixels << "x"
             << height_pixels;
+    clear_logo();
     return;
   }
 
   HBITMAP scaled_bitmap = reinterpret_cast<HBITMAP>(::CopyImage(
       app_logo_bmp_.get(), IMAGE_BITMAP, width_pixels, height_pixels, 0));
-
-  if (scaled_bitmap) {
-    base::win::ScopedGDIObject<HBITMAP> old_bitmap(reinterpret_cast<HBITMAP>(
-        ::SendDlgItemMessage(hwnd(), IDC_APP_BITMAP, STM_SETIMAGE, IMAGE_BITMAP,
-                             reinterpret_cast<LPARAM>(scaled_bitmap))));
+  if (!scaled_bitmap) {
+    VLOG(1) << __func__ << " ::CopyImage failed to scale logo";
+    clear_logo();
+    return;
   }
+
+  RECT client_rect = {};
+  ::GetClientRect(hwnd(), &client_rect);
+  const int dialog_width = client_rect.right - client_rect.left;
+
+  const RECT ctl_rect = GetControlClientRect(app_bitmap_ctl);
+
+  // Lock the bottom edge of the control to the original design-time bottom
+  // baseline. Taller square logos (e.g. 48x48) expand upward into the open
+  // area below the progress bar without overlapping the dialog buttons below.
+  if (initial_app_logo_base_bottom_y_ < 0) {
+    initial_app_logo_base_bottom_y_ =
+        ::MulDiv(ctl_rect.bottom, USER_DEFAULT_SCREEN_DPI, effective_dpi);
+  }
+  const int bottom_y = ::MulDiv(initial_app_logo_base_bottom_y_, effective_dpi,
+                                USER_DEFAULT_SCREEN_DPI);
+  const int x = (dialog_width - width_pixels) / 2;
+  const int y = bottom_y - height_pixels;
+
+  // Calculate the bounding box covering both the old and new control rects to
+  // ensure complete repainting without leaving visual artifacts.
+  const RECT old_rect = ctl_rect;
+  const RECT new_rect = {x, y, x + width_pixels, bottom_y};
+  RECT update_rect = {};
+  ::UnionRect(&update_rect, &old_rect, &new_rect);
+
+  ::SetWindowPos(app_bitmap_ctl, nullptr, x, y, width_pixels, height_pixels,
+                 SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS);
+  ::InvalidateRect(hwnd(), &update_rect, TRUE);
+
+  // Pass the scaled `HBITMAP` handle as `LPARAM` to `STM_SETIMAGE`.
+  ::SendMessage(app_bitmap_ctl, STM_SETIMAGE, IMAGE_BITMAP,
+                reinterpret_cast<LPARAM>(scaled_bitmap));
+  scaled_app_logo_bmp_.reset(scaled_bitmap);
 }
 
 LRESULT ProgressWnd::OnInitDialog(UINT, WPARAM, LPARAM) {
   HideWindowChildren(hwnd());
 
   InitializeDialog();
+
+  const HWND app_bitmap_ctl = ::GetDlgItem(hwnd(), IDC_APP_BITMAP);
+  if (app_bitmap_ctl) {
+    const RECT ctl_rect = GetControlClientRect(app_bitmap_ctl);
+    const int dpi = ::GetDpiForWindow(hwnd());
+    const int effective_dpi = dpi ? dpi : USER_DEFAULT_SCREEN_DPI;
+    // Record the design-time baseline bottom coordinate in 96-DPI space if not
+    // already captured.
+    if (initial_app_logo_base_bottom_y_ < 0) {
+      initial_app_logo_base_bottom_y_ =
+          ::MulDiv(ctl_rect.bottom, USER_DEFAULT_SCREEN_DPI, effective_dpi);
+    }
+  }
 
   SetMarqueeMode(true);
 
