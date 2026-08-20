@@ -7,7 +7,7 @@ import 'chrome://settings/settings.js';
 
 import type {SearchEngine, SettingsSearchEngineListDialogElement} from 'chrome://settings/settings.js';
 import {loadTimeData, SearchEnginesBrowserProxyImpl, ChoiceMadeLocation} from 'chrome://settings/settings.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
@@ -99,4 +99,39 @@ suite('SearchEngineListDialog', function() {
     // The change in the other tab is reflected in the dialog.
     assertEquals('0', radioGroupElement.selected);
   });
+
+  test(
+      'Search engine list dialog shows policy icon for recommended engines',
+      async function() {
+        const activeSiteShortcuts = generateActiveSiteShortcuts();
+        assertEquals(3, activeSiteShortcuts.length);
+        activeSiteShortcuts[1]!.isRecommendedFromPolicy = true;
+
+        dialog.searchEngines = activeSiteShortcuts;
+        await microtasksFinished();
+
+        const radioButtons =
+            dialog.shadowRoot.querySelectorAll('cr-radio-button');
+        assertEquals(3, radioButtons.length);
+
+        // Engine 0 is not recommended from policy, so no policy indicator is
+        // shown.
+        assertFalse(!!radioButtons[0]!.querySelector('cr-policy-indicator'));
+
+        // Engine 1 is recommended from policy, so a policy indicator is shown.
+        const policyIndicator =
+            radioButtons[1]!.querySelector('cr-policy-indicator');
+        assertTrue(!!policyIndicator);
+        assertEquals('recommended', policyIndicator.indicatorType);
+        assertEquals('left', policyIndicator.tooltipPosition);
+
+        document.documentElement.dir = 'rtl';
+        dialog.requestUpdate();
+        await microtasksFinished();
+        assertEquals('right', policyIndicator.tooltipPosition);
+        document.documentElement.dir = 'ltr';
+
+        // Engine 2 is not recommended from policy.
+        assertFalse(!!radioButtons[2]!.querySelector('cr-policy-indicator'));
+      });
 });

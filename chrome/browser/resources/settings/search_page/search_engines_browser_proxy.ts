@@ -27,6 +27,7 @@ export interface SearchEngine {
   iconPath: string;
   id: number;
   isManaged: boolean;
+  isRecommendedFromPolicy: boolean;
   isOmniboxExtension: boolean;
   isPrepopulated: boolean;
   isStarterPack: boolean;
@@ -46,6 +47,12 @@ export interface SearchEnginesInfo {
 }
 
 export interface CategorizedTemplateUrls {
+  /**
+   * Active site shortcut search engines (normal search engines including
+   * prepopulated regional engines, user-added custom engines, managed policy
+   * engines, and recommended policy engines) that are enabled for site search
+   * or are the active default search engine.
+   */
   activeSiteShortcuts: SearchEngine[];
   inactiveSiteShortcuts: SearchEngine[];
   activeFeatureShortcuts: SearchEngine[];

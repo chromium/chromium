@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import './cr_policy_strings.js';
 
 import type {CrPolicyIndicatorElement} from 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
+import type {CrTooltipIconElement} from 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import {CrPolicyIndicatorType} from 'chrome://resources/cr_elements/policy/cr_policy_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -151,5 +152,17 @@ suite('CrPolicyIndicator', function() {
     assertFalse(icon.hidden);
     assertEquals('cr20:family-link', icon.iconClass);
     assertEquals('Restricted for child', icon.tooltipText);
+  });
+
+  test('tooltip position is passed to tooltip icon', async () => {
+    const icon = indicator.shadowRoot.querySelector<CrTooltipIconElement>(
+        'cr-tooltip-icon');
+    assertTrue(!!icon);
+    assertEquals('top', indicator.tooltipPosition);
+    assertEquals('top', icon.tooltipPosition);
+
+    indicator.tooltipPosition = 'left';
+    await microtasksFinished();
+    assertEquals('left', icon.tooltipPosition);
   });
 });

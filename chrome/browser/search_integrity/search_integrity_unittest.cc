@@ -68,7 +68,7 @@ class SearchIntegrityTest : public testing::Test {
       data.policy_origin =
           TemplateURLData::PolicyOrigin::kDefaultSearchProvider;
     }
-    data.enforced_by_policy = enforced_by_policy;
+    data.enforced_by_policy = created_by_policy || enforced_by_policy;
     data.prepopulate_id = prepopulate_id;
     data.starter_pack_id = starter_pack_id;
     return test_util_->model()->Add(std::make_unique<TemplateURL>(data));

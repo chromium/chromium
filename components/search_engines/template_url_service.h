@@ -445,9 +445,10 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // feature shortcuts).
   //
   // The ordering of `active_site_shortcuts` is specifically handled to ensure
-  // that prepopulated engines appear first, maintaining the natural order
-  // defined by the prepopulate_data_resolver. User-added (custom) engines
-  // are appended to the end of this list and sorted alphabetically.
+  // that prepopulated regional engines appear first in the order defined by the
+  // prepopulate_data_resolver. Enterprise policy search engines (both mandatory
+  // and recommended) and user-added (custom) engines are appended to the end of
+  // this list and sorted alphabetically.
   //
   // `disabled_starter_pack_ids` contains all `starter_pack_id`s that should not
   // be included in either of the lists.
@@ -498,6 +499,16 @@ class TemplateURLService final : public WebDataServiceConsumer,
 
   // Returns true if the default search provider is controlled by an extension.
   bool IsExtensionControlledDefaultSearch() const;
+
+  // Returns true if the default search provider can be modified by the user
+  // (i.e. it is not controlled by mandatory policy or extension).
+  bool CanDefaultSearchProviderBeModifiedByUser() const {
+    return default_search_provider_source_ == DefaultSearchManager::FROM_USER ||
+           default_search_provider_source_ ==
+               DefaultSearchManager::FROM_POLICY_RECOMMENDED ||
+           default_search_provider_source_ ==
+               DefaultSearchManager::FROM_FALLBACK;
+  }
 
   DefaultSearchManager::Source default_search_provider_source() const {
     return default_search_provider_source_;
@@ -870,6 +881,13 @@ class TemplateURLService final : public WebDataServiceConsumer,
       OwnedTemplateURLVector* template_urls,
       const TemplateURLData* default_from_prefs,
       bool is_mandatory);
+
+  // Synchronizes recommended policy search engines with template_urls_.
+  // Removes non-enforced policy engines that no longer match the current
+  // recommended policy preference, and adds the current recommended policy
+  // engine if missing (so it remains available in search engine lists when not
+  // active).
+  void UpdateRecommendedDefaultSearchProvider();
 
   // Resets the sync GUID of the specified TemplateURL and persists the change
   // to the database. This does not notify observers.

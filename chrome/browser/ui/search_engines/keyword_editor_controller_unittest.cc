@@ -149,11 +149,12 @@ TEST_F(KeywordEditorControllerTest, Add) {
 
 // Tests modifying a TemplateURL.
 TEST_F(KeywordEditorControllerTest, Modify) {
-  controller()->AddTemplateURL(kA, kB, "http://c");
+  const TemplateURLID turl_id =
+      controller()->AddTemplateURL(kA, kB, "http://c");
   ClearChangeCount();
 
   // Modify the entry.
-  TemplateURL* turl = util()->model()->GetTemplateURLs()[0];
+  TemplateURL* turl = controller()->GetTemplateURL(turl_id);
   controller()->ModifyTemplateURL(turl, kA1, kB1, "http://c1");
 
   // Make sure it was updated appropriately.

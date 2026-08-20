@@ -24,6 +24,11 @@ export function getHtml(this: SettingsSearchEngineListDialogElement) {
             <settings-search-engine-icon .engine="${item}">
             </settings-search-engine-icon>
             ${item.name}
+            ${item.isRecommendedFromPolicy ? html`
+              <cr-policy-indicator indicator-type="recommended"
+                  tooltip-position="${this.getPolicyIndicatorTooltipPosition_()}">
+              </cr-policy-indicator>
+            ` : ''}
           </div>
         </cr-radio-button>
       `)}

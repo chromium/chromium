@@ -611,22 +611,32 @@ suite('EnterpriseSiteSearchEntryTests', function() {
         /*shouldBeVisible=*/ true);
   });
 
-  // Verifies that the policy indicator is shown for all managed engines.
+  // Verifies that the policy indicator is shown for managed and recommended
+  // engines.
   test('PolicyIndicatorShown', async function() {
-    const assertSiteSearchPolicyIndicatorShown =
-        async (entry: SettingsSearchEngineEntryElement) => {
+    const assertSiteSearchPolicyIndicator = async (
+        entry: SettingsSearchEngineEntryElement, expectedType?: string) => {
       await microtasksFinished();
       const policyIndicator =
           entry.shadowRoot.querySelector('cr-policy-indicator');
-      assertTrue(isVisible(policyIndicator));
+      if (expectedType) {
+        assertTrue(isVisible(policyIndicator));
+        assertEquals(expectedType, policyIndicator!.indicatorType);
+      } else {
+        assertFalse(!!policyIndicator);
+      }
     };
 
     entry.engine = createSampleManagedSearchEngine();
-    await assertSiteSearchPolicyIndicatorShown(entry);
+    await assertSiteSearchPolicyIndicator(entry, 'userPolicy');
     entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ true);
-    await assertSiteSearchPolicyIndicatorShown(entry);
+    await assertSiteSearchPolicyIndicator(entry, 'userPolicy');
     entry.engine = createSampleOverridableSearchEngine(/*isFeatured=*/ false);
-    await assertSiteSearchPolicyIndicatorShown(entry);
+    await assertSiteSearchPolicyIndicator(entry, 'userPolicy');
+    entry.engine = createSampleSearchEngine({isRecommendedFromPolicy: true});
+    await assertSiteSearchPolicyIndicator(entry, 'recommended');
+    entry.engine = createSampleSearchEngine();
+    await assertSiteSearchPolicyIndicator(entry);
   });
 });
 

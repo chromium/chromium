@@ -99,16 +99,19 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
         'defaultSearchProviderDataPref_');
 
     if (this.searchSettingsUpdateEnabled_) {
-      // Only regional search engines and the default engine should be visible
-      // in the search engine list dialog. No need to sort these since the
-      // `activeSiteShortcuts` are already in the expected order (sorted
-      // regional search engines first, then default engine if it is not in the
-      // list).
+      // Only prepopulated regional search engines, the current default search
+      // engine, and enterprise policy search engines (both mandatory and
+      // recommended) should be visible in the search engine list dialog.
+      // Standard custom user-added search engines are excluded. No need to
+      // sort these since `activeSiteShortcuts` is already in the expected order
+      // (sorted regional search engines first, then policy engines and the
+      // default engine if not already in the list).
       const updateSearchEngines =
           (categorizedTemplateUrls: CategorizedTemplateUrls) => {
             this.searchEngines_ =
                 categorizedTemplateUrls.activeSiteShortcuts.filter(
-                    engine => engine.isPrepopulated || engine.default);
+                    engine => engine.isPrepopulated || engine.default ||
+                        engine.isManaged || engine.isRecommendedFromPolicy);
           };
       this.browserProxy_.getCategorizedTemplateUrls().then(updateSearchEngines);
       this.addWebUiListener('search-engines-changed', updateSearchEngines);

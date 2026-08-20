@@ -84,6 +84,8 @@ class TemplateURLServiceUnitTestBase : public testing::Test {
     return *template_url_service_.get();
   }
 
+  void ResetTemplateURLService() { template_url_service_ = CreateService(); }
+
  protected:
   virtual std::unique_ptr<TemplateURLService> CreateService();
 
@@ -126,6 +128,8 @@ class LoadedTemplateURLServiceUnitTestBase
   // elements, but in some cases there may be more.
   TemplateURLService::TemplateURLVector GetTemplateURLsMatchingKeyword(
       std::u16string keyword);
+
+  void ResetAndLoadTemplateURLService();
 
  private:
   scoped_refptr<WebDatabaseService> database_;

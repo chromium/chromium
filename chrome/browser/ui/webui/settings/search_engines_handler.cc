@@ -354,6 +354,9 @@ base::DictValue SearchEnginesHandler::CreateDictionaryForEngine(
   dict.Set("shouldConfirmRemoval",
            list_controller_.ShouldConfirmRemoval(template_url));
   dict.Set("isManaged", list_controller_.IsManaged(template_url));
+  dict.Set("isRecommendedFromPolicy",
+           template_url->CreatedByDefaultSearchProviderPolicy() &&
+               !template_url->enforced_by_policy());
   TemplateURL::Type type = template_url->type();
   dict.Set("isOmniboxExtension", type == TemplateURL::OMNIBOX_API_EXTENSION);
   dict.Set("isPrepopulated", template_url->prepopulate_id() > 0);

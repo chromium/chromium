@@ -70,6 +70,7 @@ export class SettingsSearchEngineEntryElement extends
     iconPath: '',
     id: -1,
     isManaged: false,
+    isRecommendedFromPolicy: false,
     isOmniboxExtension: false,
     isPrepopulated: false,
     isStarterPack: false,

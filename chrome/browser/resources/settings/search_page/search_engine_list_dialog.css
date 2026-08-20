@@ -26,8 +26,14 @@
 .search-engine {
   align-items: center;
   display: flex;
+  flex: 1;
   flex-direction: row;
   gap: 16px;
+}
+
+.search-engine cr-policy-indicator {
+  margin-inline-start: auto;
+  margin-inline-end: 8px;
 }
 
 #setAsDefaultButton {

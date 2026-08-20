@@ -14,11 +14,13 @@ import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import './search_engine_icon.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {isRTL} from 'chrome://resources/js/util.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -53,7 +55,10 @@ export class SettingsSearchEngineListDialogElement extends
   static override get properties() {
     return {
       /**
-       * List of search engines available.
+       * List of search engines available for the user to select as their
+       * default search provider in the choice dialog (includes prepopulated
+       * regional, default, managed policy, and recommended policy search
+       * engines; excludes custom user-added engines).
        */
       searchEngines: {type: Array},
 
@@ -146,6 +151,10 @@ export class SettingsSearchEngineListDialogElement extends
 
   protected onSaveGuestChoiceCheckedChanged_(e: CustomEvent<{value: boolean}>) {
     this.saveGuestChoice_ = e.detail.value;
+  }
+
+  protected getPolicyIndicatorTooltipPosition_(): string {
+    return isRTL() ? 'right' : 'left';
   }
 }
 

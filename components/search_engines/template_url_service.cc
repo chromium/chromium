@@ -1277,11 +1277,7 @@ void TemplateURLService::UpdateProviderFavicons(
 }
 
 bool TemplateURLService::CanMakeDefault(const TemplateURL* url) const {
-  return (default_search_provider_source_ == DefaultSearchManager::FROM_USER ||
-          default_search_provider_source_ ==
-              DefaultSearchManager::FROM_POLICY_RECOMMENDED ||
-          default_search_provider_source_ ==
-              DefaultSearchManager::FROM_FALLBACK) &&
+  return CanDefaultSearchProviderBeModifiedByUser() &&
          (url != GetDefaultSearchProvider()) &&
          url->url_ref().SupportsReplacement(search_terms_data()) &&
          (url->type() == TemplateURL::NORMAL) &&
@@ -1305,9 +1301,7 @@ void TemplateURLService::SetUserSelectedDefaultSearchProvider(
 
   if (load_failed_) {
     // Skip the DefaultSearchManager, which will persist to user preferences.
-    if ((default_search_provider_source_ == DefaultSearchManager::FROM_USER) ||
-        (default_search_provider_source_ ==
-         DefaultSearchManager::FROM_FALLBACK)) {
+    if (CanDefaultSearchProviderBeModifiedByUser()) {
       ApplyDefaultSearchChange(url ? &url->data() : nullptr,
                                DefaultSearchManager::FROM_USER);
       selection_added = true;
@@ -2888,7 +2882,7 @@ bool TemplateURLService::Update(TemplateURL* existing_turl,
 
     if (!applying_default_search_engine_change_ &&
         GetDefaultSearchProvider() == existing_turl &&
-        default_search_provider_source_ == DefaultSearchManager::FROM_USER) {
+        CanDefaultSearchProviderBeModifiedByUser()) {
       default_search_manager_.SetUserSelectedDefaultSearchEngine(
           existing_turl->data());
     }
@@ -3094,6 +3088,10 @@ bool TemplateURLService::ApplyDefaultSearchChangeNoMetrics(
   // |default_search_provider_source_| must be set before calling Update(),
   // since that function needs to know the source of the update in question.
   default_search_provider_source_ = source;
+
+  if (source != DefaultSearchManager::FROM_POLICY) {
+    UpdateRecommendedDefaultSearchProvider();
+  }
 
   if (!data) {
     default_search_provider_ = nullptr;
@@ -3384,6 +3382,53 @@ void TemplateURLService::UpdateDefaultProvidersCreatedByPolicy(
     if (Add(std::move(new_dse_ptr))) {
       default_search_provider_ = new_dse;
     }
+  }
+}
+
+// Synchronizes recommended policy search engines with template_urls_.
+// Removes non-enforced policy engines that no longer match the current
+// recommended policy preference, and adds the current recommended policy engine
+// if missing (so it remains available in search engine lists when not active).
+void TemplateURLService::UpdateRecommendedDefaultSearchProvider() {
+  std::unique_ptr<TemplateURLData> rec_data_ptr =
+      default_search_manager_.GetRecommendedDefaultSearchEngine();
+  bool has_rec_engine = false;
+
+  for (auto it = template_urls_.begin(); it != template_urls_.end();) {
+    TemplateURL* turl = it->get();
+    if (turl->CreatedByDefaultSearchProviderPolicy() &&
+        !turl->enforced_by_policy()) {
+      if (rec_data_ptr && TemplateURL::MatchesData(turl, rec_data_ptr.get(),
+                                                   search_terms_data())) {
+        has_rec_engine = true;
+        ++it;
+      } else {
+        if (default_search_provider_ == turl) {
+          default_search_provider_ = nullptr;
+        }
+        TemplateURLID id = turl->id();
+        RemoveFromMaps(turl);
+        it = template_urls_.erase(it);
+        if (web_data_service_) {
+          web_data_service_->RemoveKeyword(id);
+        }
+      }
+    } else {
+      ++it;
+    }
+  }
+
+  if (rec_data_ptr && !has_rec_engine) {
+    TemplateURLData rec_data(*rec_data_ptr);
+    if (rec_data.sync_guid.empty()) {
+      rec_data.GenerateSyncGUID();
+    }
+    rec_data.policy_origin =
+        TemplateURLData::PolicyOrigin::kDefaultSearchProvider;
+    rec_data.enforced_by_policy = false;
+    rec_data.safe_for_autoreplace = false;
+    rec_data.is_active = TemplateURLData::ActiveStatus::kTrue;
+    Add(std::make_unique<TemplateURL>(rec_data));
   }
 }
 

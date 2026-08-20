@@ -40,12 +40,14 @@ export class CrPolicyIndicatorElement extends CrLitElement {
        * chrome.settingsPrivate.PrefObject.controlledByName.
        */
       indicatorSourceName: {type: String},
+      tooltipPosition: {type: String},
     };
   }
 
   accessor iconAriaLabel: string = '';
   accessor indicatorType: CrPolicyIndicatorType = CrPolicyIndicatorType.NONE;
   accessor indicatorSourceName: string = '';
+  accessor tooltipPosition: string = 'top';
 
   /**
    * @return True if the indicator should be shown.

@@ -6,7 +6,7 @@
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CategorizedTemplateUrls, SearchEnginesInfo, SettingsSearchPageElement} from 'chrome://settings/settings.js';
 import {SearchEnginesBrowserProxyImpl, SearchEnginesInteractions, Router, routes, resetRouterForTesting, loadTimeData, PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -40,15 +40,30 @@ function generateSearchEngineInfo(): SearchEnginesInfo {
   };
 }
 
-function generateCategorizedTemplateUrls(): CategorizedTemplateUrls {
-  const searchEngines0 = createSampleSearchEngine(
-      {canBeDefault: true, isPrepopulated: true, default: true, id: 0});
-  const searchEngines1 = createSampleSearchEngine(
-      {canBeDefault: true, id: 1, isPrepopulated: true});
-  const searchEngines2 = createSampleSearchEngine({canBeDefault: true, id: 2});
+const sampleEngines = {
+  defaultPrepopulated: createSampleSearchEngine(
+      {canBeDefault: true, isPrepopulated: true, default: true, id: 0}),
+  prepopulated: createSampleSearchEngine(
+      {canBeDefault: true, id: 1, isPrepopulated: true}),
+  // A standard user-added custom site search shortcut (e.g., github.com or
+  // wikipedia.org keyword). This is excluded from the default search engine
+  // choice dialog so custom keywords do not clutter the default engine options.
+  custom: createSampleSearchEngine({canBeDefault: true, id: 2}),
+  managed:
+      createSampleSearchEngine({canBeDefault: true, id: 3, isManaged: true}),
+  recommended: createSampleSearchEngine(
+      {canBeDefault: true, id: 4, isRecommendedFromPolicy: true}),
+};
 
+function generateCategorizedTemplateUrls(): CategorizedTemplateUrls {
   return {
-    activeSiteShortcuts: [searchEngines0, searchEngines1, searchEngines2],
+    activeSiteShortcuts: [
+      sampleEngines.defaultPrepopulated,
+      sampleEngines.prepopulated,
+      sampleEngines.custom,
+      sampleEngines.managed,
+      sampleEngines.recommended,
+    ],
     inactiveSiteShortcuts: [],
     activeFeatureShortcuts: [],
     inactiveFeatureShortcuts: [],
@@ -305,15 +320,31 @@ suite('SearchPageWithSearchSettingsUpdateEnabledTests', function() {
             page.shadowRoot.querySelector('settings-search-engine-list-dialog');
         assertTrue(!!searchEngineListDialog);
 
-        // The dialog received the expected engines.
-        const categorizedTemplateUrls = generateCategorizedTemplateUrls();
-        assertEquals(2, searchEngineListDialog.searchEngines.length);
-        assertEquals(
-            categorizedTemplateUrls.activeSiteShortcuts[0]!.id,
-            searchEngineListDialog.searchEngines[0]!.id);
-        assertEquals(
-            categorizedTemplateUrls.activeSiteShortcuts[1]!.id,
-            searchEngineListDialog.searchEngines[1]!.id);
+        const activeSiteShortcuts =
+            generateCategorizedTemplateUrls().activeSiteShortcuts;
+        assertDeepEquals(
+            [
+              sampleEngines.defaultPrepopulated,
+              sampleEngines.prepopulated,
+              sampleEngines.custom,
+              sampleEngines.managed,
+              sampleEngines.recommended,
+            ],
+            activeSiteShortcuts);
+
+        // Verify that the dialog received only the eligible default search
+        // engine archetypes in the expected rank order, without duplicates,
+        // and that custom user-added site search shortcuts
+        // (sampleEngines.custom) are excluded so custom keywords do not clutter
+        // the default search provider selection pop-up.
+        assertDeepEquals(
+            [
+              sampleEngines.defaultPrepopulated,
+              sampleEngines.prepopulated,
+              sampleEngines.managed,
+              sampleEngines.recommended,
+            ],
+            searchEngineListDialog.searchEngines);
       });
 
   test('ControlledByExtension', async function() {

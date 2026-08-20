@@ -241,6 +241,32 @@ DefaultSearchManager::GetDefaultSearchEngineIgnoringExtensions() const {
   return nullptr;
 }
 
+std::unique_ptr<TemplateURLData>
+DefaultSearchManager::GetRecommendedDefaultSearchEngine() const {
+  if (!pref_service_) {
+    return nullptr;
+  }
+  const PrefService::Preference* pref =
+      pref_service_->FindPreference(kDefaultSearchProviderDataPrefName);
+  if (!pref) {
+    return nullptr;
+  }
+  const base::Value* recommended_val = pref->GetRecommendedValue();
+  if (!recommended_val || !recommended_val->is_dict()) {
+    return nullptr;
+  }
+  const base::DictValue& dict = recommended_val->GetDict();
+  if (dict.FindBool(kDisabledByPolicy).value_or(false)) {
+    return nullptr;
+  }
+  auto data = TemplateURLDataFromDictionary(dict);
+  if (data) {
+    data->safe_for_autoreplace = false;
+    data->policy_origin = TemplateURLData::PolicyOrigin::kDefaultSearchProvider;
+  }
+  return data;
+}
+
 DefaultSearchManager::Source
 DefaultSearchManager::GetDefaultSearchEngineSource() const {
   Source source;

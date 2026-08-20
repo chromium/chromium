@@ -496,4 +496,49 @@ TEST_F(SearchEnginesHandlerTest, TrafficHijackingHeuristic_Match) {
       0);
 }
 
+TEST_F(SearchEnginesHandlerTest, IsRecommendedFromPolicy) {
+  ConfigureTestWithRegularProfile();
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile());
+
+  TemplateURLData rec_data;
+  rec_data.SetShortName(u"Recommended Search");
+  rec_data.SetKeyword(u"rec_keyword");
+  rec_data.SetURL("https://www.recommended.com/search?q={searchTerms}");
+  rec_data.policy_origin =
+      TemplateURLData::PolicyOrigin::kDefaultSearchProvider;
+  rec_data.enforced_by_policy = false;
+
+  template_url_service->Add(std::make_unique<TemplateURL>(rec_data));
+
+  base::ListValue args;
+  args.Append("callback_id");
+  web_ui()->HandleReceivedMessage("getCategorizedTemplateUrls", args);
+
+  const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIResponse", call_data.function_name());
+  EXPECT_EQ("callback_id", call_data.arg1()->GetString());
+  EXPECT_TRUE(call_data.arg2()->GetBool());
+
+  ASSERT_TRUE(call_data.arg3()->is_dict());
+  const base::DictValue& response = call_data.arg3()->GetDict();
+
+  const base::ListValue* active_shortcuts =
+      response.FindList("activeSiteShortcuts");
+  ASSERT_TRUE(active_shortcuts);
+
+  bool found_rec = false;
+  for (const auto& entry : *active_shortcuts) {
+    ASSERT_TRUE(entry.is_dict());
+    const base::DictValue& dict = entry.GetDict();
+    if (dict.FindString("keyword") &&
+        *dict.FindString("keyword") == "rec_keyword") {
+      found_rec = true;
+      EXPECT_TRUE(dict.FindBool("isRecommendedFromPolicy").value_or(false));
+      EXPECT_FALSE(dict.FindBool("isManaged").value_or(true));
+    }
+  }
+  EXPECT_TRUE(found_rec);
+}
+
 }  // namespace settings

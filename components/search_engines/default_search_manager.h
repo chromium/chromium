@@ -161,6 +161,9 @@ class DefaultSearchManager
   std::unique_ptr<TemplateURLData> GetDefaultSearchEngineIgnoringExtensions()
       const;
 
+  // Returns a pointer to the recommended search engine from policy, if any.
+  std::unique_ptr<TemplateURLData> GetRecommendedDefaultSearchEngine() const;
+
   // Gets the source of the current Default Search Engine value.
   Source GetDefaultSearchEngineSource() const;
 

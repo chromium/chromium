@@ -22,6 +22,7 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
@@ -162,6 +163,118 @@ TEST_F(TemplateURLServiceUnitTest, UpdateUserSelectedDefaultSearchEnginePref) {
   const std::string* pref_url = dict.FindString(DefaultSearchManager::kURL);
   ASSERT_TRUE(pref_url);
   EXPECT_EQ("https://custom2.com/search2?q={searchTerms}", *pref_url);
+}
+
+TEST_F(TemplateURLServiceUnitTest, UpdateRecommendedDefaultSearchEnginePref) {
+  template_url_service().Load();
+  TemplateURLServiceLoadWaiter().WaitForLoadComplete(template_url_service());
+
+  // Set recommended policy DSE with valid data.
+  TemplateURLData data;
+  data.SetShortName(u"recommended");
+  data.SetKeyword(u"recommended");
+  data.SetURL("https://recommended.com/search?q={searchTerms}");
+  data.sync_guid = "recommended-guid";
+
+  base::DictValue entry = TemplateURLDataToDictionary(data);
+  static_cast<sync_preferences::TestingPrefServiceSyncable*>(&pref_service())
+      ->SetRecommendedPref(
+          DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+          std::move(entry));
+
+  const TemplateURL* recommended_dse =
+      template_url_service().GetDefaultSearchProvider();
+  ASSERT_TRUE(recommended_dse);
+  EXPECT_EQ("https://recommended.com/search?q={searchTerms}",
+            recommended_dse->url());
+  EXPECT_EQ(DefaultSearchManager::FROM_POLICY_RECOMMENDED,
+            template_url_service().default_search_provider_source());
+
+  TemplateURL* turl =
+      template_url_service().GetTemplateURLForKeyword(u"recommended");
+  ASSERT_TRUE(turl);
+  EXPECT_EQ(turl, recommended_dse);
+
+  // Update the search engine URL (simulating user modification).
+  template_url_service().ResetTemplateURL(
+      turl, u"custom", u"custom", "https://custom.com/search?q={searchTerms}");
+
+  // Verify the updated URL in the TemplateURLService.
+  EXPECT_EQ("https://custom.com/search?q={searchTerms}",
+            template_url_service().GetDefaultSearchProvider()->url());
+  EXPECT_EQ(DefaultSearchManager::FROM_USER,
+            template_url_service().default_search_provider_source());
+
+  // Verify the updated URL in the preferences (user preference should be set,
+  // overriding the recommended policy).
+  const auto& dict = pref_service().GetDict(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName);
+  const std::string* pref_url = dict.FindString(DefaultSearchManager::kURL);
+  ASSERT_TRUE(pref_url);
+  EXPECT_EQ("https://custom.com/search?q={searchTerms}", *pref_url);
+
+  // Clear user selection. The recommended policy DSP should be restored.
+  template_url_service().SetUserSelectedDefaultSearchProvider(
+      nullptr, search_engines::ChoiceMadeLocation::kOther);
+
+  const TemplateURL* restored_dse =
+      template_url_service().GetDefaultSearchProvider();
+  ASSERT_TRUE(restored_dse);
+  EXPECT_EQ("https://recommended.com/search?q={searchTerms}",
+            restored_dse->url());
+  EXPECT_EQ(DefaultSearchManager::FROM_POLICY_RECOMMENDED,
+            template_url_service().default_search_provider_source());
+}
+
+TEST_F(TemplateURLServiceUnitTest, SwitchDefaultFromRecommendedPolicyEngine) {
+  template_url_service().Load();
+  TemplateURLServiceLoadWaiter().WaitForLoadComplete(template_url_service());
+
+  // Set recommended policy DSE.
+  TemplateURLData rec_data;
+  rec_data.SetShortName(u"recommended");
+  rec_data.SetKeyword(u"recommended");
+  rec_data.SetURL("https://recommended.com/search?q={searchTerms}");
+  rec_data.sync_guid = "recommended-guid";
+
+  base::DictValue entry = TemplateURLDataToDictionary(rec_data);
+  static_cast<sync_preferences::TestingPrefServiceSyncable*>(&pref_service())
+      ->SetRecommendedPref(
+          DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+          std::move(entry));
+
+  const TemplateURL* recommended_dse =
+      template_url_service().GetDefaultSearchProvider();
+  ASSERT_TRUE(recommended_dse);
+  EXPECT_EQ(DefaultSearchManager::FROM_POLICY_RECOMMENDED,
+            template_url_service().default_search_provider_source());
+
+  // User adds a completely different search engine and sets it as default.
+  TemplateURLData new_data;
+  new_data.SetShortName(u"new_default");
+  new_data.SetKeyword(u"new_default");
+  new_data.SetURL("https://newdefault.com/search?q={searchTerms}");
+  new_data.sync_guid = "new-default-guid";
+
+  TemplateURL* new_turl =
+      template_url_service().Add(std::make_unique<TemplateURL>(new_data));
+  ASSERT_TRUE(new_turl);
+
+  template_url_service().SetUserSelectedDefaultSearchProvider(
+      new_turl, search_engines::ChoiceMadeLocation::kOther);
+
+  // Check that new_turl is now the active default search engine.
+  EXPECT_EQ(new_turl, template_url_service().GetDefaultSearchProvider());
+  EXPECT_EQ(DefaultSearchManager::FROM_USER,
+            template_url_service().default_search_provider_source());
+
+  // Verify that the recommended policy search engine is still retained in the
+  // search engines list.
+  const TemplateURL* recommended_turl_in_list =
+      template_url_service().GetTemplateURLForKeyword(u"recommended");
+  EXPECT_TRUE(recommended_turl_in_list);
+  EXPECT_NE(recommended_turl_in_list,
+            template_url_service().GetDefaultSearchProvider());
 }
 
 class TemplateURLServiceUpdateLastVisitedTest
@@ -777,6 +890,142 @@ TEST_F(TemplateURLServiceUnitTest,
   const TemplateURL* matched_turl =
       template_url_service().GetDefaultSearchProviderIgnoringExtensions();
   EXPECT_EQ(turl, matched_turl);
+}
+
+TEST_F(LoadedTemplateURLServiceUnitTestBase,
+       DefaultSearchSetByRecommendedPolicyAndUserOverride) {
+  // 1. Set a recommended default search provider policy.
+  TemplateURLData rec_policy_data;
+  rec_policy_data.SetShortName(u"Recommended Engine");
+  rec_policy_data.SetKeyword(u"rec");
+  rec_policy_data.SetURL("https://www.recommended.com/search?q={searchTerms}");
+  rec_policy_data.safe_for_autoreplace = false;
+
+  // Populate the recommended pref store.
+  base::DictValue entry = TemplateURLDataToDictionary(rec_policy_data);
+  entry.Set(DefaultSearchManager::kDisabledByPolicy, false);
+  static_cast<sync_preferences::TestingPrefServiceSyncable&>(pref_service())
+      .SetRecommendedPref(
+          DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+          std::move(entry));
+
+  // Trigger default search update from policy.
+  template_url_service().ApplyDefaultSearchChangeForTesting(
+      &rec_policy_data, DefaultSearchManager::FROM_POLICY_RECOMMENDED);
+
+  EXPECT_EQ(DefaultSearchManager::FROM_POLICY_RECOMMENDED,
+            template_url_service()
+                .GetDefaultSearchManager()
+                ->GetDefaultSearchEngineSource());
+  const TemplateURL* default_provider =
+      template_url_service().GetDefaultSearchProvider();
+  ASSERT_TRUE(default_provider);
+  EXPECT_EQ(u"Recommended Engine", default_provider->short_name());
+
+  // 2. User selects a different search engine as default.
+  TemplateURLData user_data;
+  user_data.SetShortName(u"User Engine");
+  user_data.SetKeyword(u"user");
+  user_data.SetURL("https://www.user.com/search?q={searchTerms}");
+  TemplateURL* user_turl =
+      template_url_service().Add(std::make_unique<TemplateURL>(user_data));
+  ASSERT_TRUE(user_turl);
+
+  template_url_service().SetUserSelectedDefaultSearchProvider(user_turl);
+
+  auto rec_engine_from_mgr = template_url_service()
+                                 .GetDefaultSearchManager()
+                                 ->GetRecommendedDefaultSearchEngine();
+  ASSERT_TRUE(rec_engine_from_mgr);
+  EXPECT_EQ(u"Recommended Engine", rec_engine_from_mgr->short_name());
+
+  // Active default search provider is now the user engine.
+  EXPECT_EQ(DefaultSearchManager::FROM_USER,
+            template_url_service()
+                .GetDefaultSearchManager()
+                ->GetDefaultSearchEngineSource());
+  EXPECT_EQ(user_turl->short_name(),
+            template_url_service().GetDefaultSearchProvider()->short_name());
+
+  // 3. Verify that the recommended policy engine is STILL in template_urls_ and
+  // returns true for ShowInDefaultList.
+  TemplateURLService::TemplateURLVector turls =
+      template_url_service().GetTemplateURLs();
+  const TemplateURL* rec_turl_in_list = nullptr;
+  for (const TemplateURL* turl : turls) {
+    if (turl->short_name() == u"Recommended Engine") {
+      rec_turl_in_list = turl;
+      break;
+    }
+  }
+  ASSERT_TRUE(rec_turl_in_list);
+  EXPECT_TRUE(template_url_service().ShowInDefaultList(rec_turl_in_list));
+
+  // 4. Simulate browser restart by re-creating TemplateURLService while
+  // keeping prefs and database persisted.
+  ResetAndLoadTemplateURLService();
+
+  // Active default search provider is still the user engine post-restart.
+  EXPECT_EQ(DefaultSearchManager::FROM_USER,
+            template_url_service()
+                .GetDefaultSearchManager()
+                ->GetDefaultSearchEngineSource());
+  const TemplateURL* post_restart_dse =
+      template_url_service().GetDefaultSearchProvider();
+  ASSERT_TRUE(post_restart_dse);
+  EXPECT_EQ(u"User Engine", post_restart_dse->short_name());
+
+  // Recommended policy engine is STILL preserved in template_urls_
+  // post-restart.
+  TemplateURLService::TemplateURLVector post_restart_turls =
+      template_url_service().GetTemplateURLs();
+  const TemplateURL* post_restart_rec_turl = nullptr;
+  for (const TemplateURL* turl : post_restart_turls) {
+    if (turl->short_name() == u"Recommended Engine") {
+      post_restart_rec_turl = turl;
+      break;
+    }
+  }
+  ASSERT_TRUE(post_restart_rec_turl);
+  EXPECT_TRUE(template_url_service().ShowInDefaultList(post_restart_rec_turl));
+
+  // 5. Admin updates the recommended policy to a new engine (Engine B)
+  // while user override is still active.
+  TemplateURLData rec_policy_b;
+  rec_policy_b.SetShortName(u"Recommended Engine B");
+  rec_policy_b.SetKeyword(u"rec_b");
+  rec_policy_b.SetURL("https://www.recommended-b.com/search?q={searchTerms}");
+  rec_policy_b.safe_for_autoreplace = false;
+
+  base::DictValue entry_b = TemplateURLDataToDictionary(rec_policy_b);
+  entry_b.Set(DefaultSearchManager::kDisabledByPolicy, false);
+  static_cast<sync_preferences::TestingPrefServiceSyncable&>(pref_service())
+      .SetRecommendedPref(
+          DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+          std::move(entry_b));
+
+  template_url_service().ApplyDefaultSearchChangeForTesting(
+      post_restart_dse ? &post_restart_dse->data() : nullptr,
+      DefaultSearchManager::FROM_USER);
+
+  // Verify Engine A was removed and Engine B was added.
+  EXPECT_FALSE(template_url_service().GetTemplateURLForKeyword(u"rec"));
+  const TemplateURL* rec_b_turl =
+      template_url_service().GetTemplateURLForKeyword(u"rec_b");
+  ASSERT_TRUE(rec_b_turl);
+  EXPECT_TRUE(template_url_service().ShowInDefaultList(rec_b_turl));
+
+  // 6. Admin clears recommended policy.
+  static_cast<sync_preferences::TestingPrefServiceSyncable&>(pref_service())
+      .RemoveRecommendedPref(
+          DefaultSearchManager::kDefaultSearchProviderDataPrefName);
+
+  template_url_service().ApplyDefaultSearchChangeForTesting(
+      post_restart_dse ? &post_restart_dse->data() : nullptr,
+      DefaultSearchManager::FROM_USER);
+
+  // Engine B should be removed from template_urls_.
+  EXPECT_FALSE(template_url_service().GetTemplateURLForKeyword(u"rec_b"));
 }
 
 #if BUILDFLAG(IS_ANDROID)

@@ -129,21 +129,20 @@ LoadedTemplateURLServiceUnitTestBase::~LoadedTemplateURLServiceUnitTestBase() =
 
 std::unique_ptr<TemplateURLService>
 LoadedTemplateURLServiceUnitTestBase::CreateService() {
-  CHECK(!database_);
-  CHECK(!keyword_data_service_);
+  if (!database_) {
+    auto task_runner = task_environment.GetMainThreadTaskRunner();
 
-  auto task_runner = task_environment.GetMainThreadTaskRunner();
+    database_ = base::MakeRefCounted<WebDatabaseService>(
+        base::FilePath(WebDatabase::kInMemoryPath),
+        /*ui_task_runner=*/task_runner,
+        /*db_task_runner=*/task_runner);
+    database_->AddTable(std::make_unique<KeywordTable>());
+    database_->LoadDatabase(os_crypt_.get());
 
-  database_ = base::MakeRefCounted<WebDatabaseService>(
-      base::FilePath(WebDatabase::kInMemoryPath),
-      /*ui_task_runner=*/task_runner,
-      /*db_task_runner=*/task_runner);
-  database_->AddTable(std::make_unique<KeywordTable>());
-  database_->LoadDatabase(os_crypt_.get());
-
-  keyword_data_service_ =
-      base::MakeRefCounted<KeywordWebDataService>(database_, task_runner);
-  keyword_data_service_->Init(base::DoNothing());
+    keyword_data_service_ =
+        base::MakeRefCounted<KeywordWebDataService>(database_, task_runner);
+    keyword_data_service_->Init(base::DoNothing());
+  }
 
   auto template_url_service = std::make_unique<TemplateURLService>(
       pref_service(), search_engine_choice_service(),
@@ -193,11 +192,18 @@ LoadedTemplateURLServiceUnitTestBase::GetKeywordTemplateURLs() {
 TemplateURLService::TemplateURLVector
 LoadedTemplateURLServiceUnitTestBase::GetTemplateURLsMatchingKeyword(
     std::u16string keyword) {
-  TemplateURLService::TemplateURLVector matching_turls;
-  for (const auto& turl : template_url_service().GetTemplateURLs()) {
+  TemplateURLService::TemplateURLVector matches;
+  for (TemplateURL* turl : GetKeywordTemplateURLs()) {
     if (turl->keyword() == keyword) {
-      matching_turls.push_back(turl);
+      matches.push_back(turl);
     }
   }
-  return matching_turls;
+  return matches;
+}
+
+void LoadedTemplateURLServiceUnitTestBase::ResetAndLoadTemplateURLService() {
+  template_url_service().Shutdown();
+  ResetTemplateURLService();
+  template_url_service().Load();
+  TemplateURLServiceLoadWaiter().WaitForLoadComplete(template_url_service());
 }
