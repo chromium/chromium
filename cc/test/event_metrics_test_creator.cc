@@ -13,6 +13,7 @@
 #include "cc/metrics/event_metrics.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "ui/events/types/event_type.h"
+#include "ui/events/types/scroll_input_type.h"
 
 namespace cc {
 
@@ -86,6 +87,21 @@ EventMetricsTestCreator::ScrollEventBuilderBase<Derived>::SetDispatchArgs(
 }
 
 template <typename Derived>
+Derived&
+EventMetricsTestCreator::ScrollEventBuilderBase<Derived>::SetScrollInputType(
+    ui::ScrollInputType input_type) {
+  input_type_ = input_type;
+  return static_cast<Derived&>(*this);
+}
+
+template <typename Derived>
+Derived& EventMetricsTestCreator::ScrollEventBuilderBase<
+    Derived>::SetScrollJankV4ResultId(uint64_t scroll_jank_v4_result_id) {
+  scroll_jank_v4_result_id_ = scroll_jank_v4_result_id;
+  return static_cast<Derived&>(*this);
+}
+
+template <typename Derived>
 Derived& EventMetricsTestCreator::ScrollEventBuilderBase<Derived>::
     SetScrollBeginGeneratedTimestamp(
         base::TimeTicks scroll_begin_generated_timestamp) {
@@ -151,6 +167,13 @@ EventMetricsTestCreator::ScrollUpdateEventBuilderBase<Derived>::SetTraceId(
   return static_cast<Derived&>(*this);
 }
 
+template <typename Derived>
+Derived& EventMetricsTestCreator::ScrollUpdateEventBuilderBase<
+    Derived>::AddAppliedScrollObservation(ElementId element_id) {
+  applied_scroll_observation_element_ids_.push_back(element_id);
+  return static_cast<Derived&>(*this);
+}
+
 EventMetricsTestCreator::EventBuilder::EventBuilder(
     base::SimpleTestTickClock& clock,
     ui::EventType type)
@@ -205,7 +228,7 @@ EventMetricsTestCreator::ScrollEventBuilder::Build() {
   clock_->SetNowTicks(arrived_in_renderer_compositor_timestamp_.value_or(
       timestamp_ + base::Microseconds(2)));
   auto event = ScrollEventMetrics::CreateForTesting(
-      type_, ui::ScrollInputType::kTouchscreen, is_inertial_, timestamp_,
+      type_, input_type_, is_inertial_, timestamp_,
       /* arrived_in_browser_main_timestamp= */ timestamp_ +
           base::Microseconds(1),
       &*clock_, /* scroll_begin_generated_timestamp= */
@@ -219,6 +242,9 @@ EventMetricsTestCreator::ScrollEventBuilder::Build() {
   }
   if (dispatch_args_.has_value()) {
     event->set_dispatch_args(*dispatch_args_);
+  }
+  if (scroll_jank_v4_result_id_.has_value()) {
+    event->set_scroll_jank_v4_result_id(*scroll_jank_v4_result_id_);
   }
   return event;
 }
@@ -261,8 +287,8 @@ EventMetricsTestCreator::ScrollUpdateEventBuilder::Build() {
   clock_->SetNowTicks(arrived_in_renderer_compositor_timestamp_.value_or(
       timestamp_ + base::Microseconds(2)));
   auto event = ScrollUpdateEventMetrics::CreateForTesting(
-      ui::EventType::kGestureScrollUpdate, ui::ScrollInputType::kTouchscreen,
-      is_inertial_, scroll_update_type_, delta_, timestamp_,
+      ui::EventType::kGestureScrollUpdate, input_type_, is_inertial_,
+      scroll_update_type_, delta_, timestamp_,
       /* arrived_in_browser_main_timestamp= */ timestamp_ +
           base::Microseconds(1),
       &*clock_, trace_id_, /* scroll_begin_generated_timestamp= */
@@ -285,6 +311,12 @@ EventMetricsTestCreator::ScrollUpdateEventBuilder::Build() {
   }
   if (dispatch_args_.has_value()) {
     event->set_dispatch_args(*dispatch_args_);
+  }
+  if (scroll_jank_v4_result_id_.has_value()) {
+    event->set_scroll_jank_v4_result_id(*scroll_jank_v4_result_id_);
+  }
+  for (ElementId element_id : applied_scroll_observation_element_ids_) {
+    event->AddAppliedScrollObservation(element_id);
   }
   return event;
 }

@@ -5,12 +5,15 @@
 #include "cc/test/event_metrics_test_creator.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/time/time.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/paint/element_id.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/types/event_type.h"
+#include "ui/events/types/scroll_input_type.h"
 
 namespace cc {
 
@@ -19,6 +22,22 @@ namespace {
 base::TimeTicks MillisecondsTicks(int ms) {
   return base::TimeTicks() + base::Milliseconds(ms);
 }
+
+constexpr ElementId kScroller(101);
+constexpr ElementId kOtherScroller(202);
+
+// Every `ui::ScrollInputType` and the `ScrollEventMetrics::ScrollType` the
+// builder is expected to map it to.
+constexpr std::pair<ui::ScrollInputType, ScrollEventMetrics::ScrollType>
+    kScrollInputTypes[] = {
+        {ui::ScrollInputType::kTouchscreen,
+         ScrollEventMetrics::ScrollType::kTouchscreen},
+        {ui::ScrollInputType::kWheel, ScrollEventMetrics::ScrollType::kWheel},
+        {ui::ScrollInputType::kAutoscroll,
+         ScrollEventMetrics::ScrollType::kAutoscroll},
+        {ui::ScrollInputType::kScrollbar,
+         ScrollEventMetrics::ScrollType::kScrollbar},
+};
 
 }  // namespace
 
@@ -151,6 +170,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(EventMetricsTestCreatorScrollEventTest, NoParams) {
   std::unique_ptr<ScrollEventMetrics> event = CreateEventBuilder().Build();
   EXPECT_EQ(event->type(), GetParam().expected_type);
+  EXPECT_EQ(event->scroll_type(), ScrollEventMetrics::ScrollType::kTouchscreen);
 }
 
 TEST_P(EventMetricsTestCreatorScrollEventTest, SetTimestamp) {
@@ -197,6 +217,23 @@ TEST_P(EventMetricsTestCreatorScrollEventTest, SetDispatchArgs) {
   EXPECT_EQ(event->dispatch_args(), args);
 }
 
+TEST_P(EventMetricsTestCreatorScrollEventTest, SetScrollInputType) {
+  for (const auto& [input_type, expected_scroll_type] : kScrollInputTypes) {
+    std::unique_ptr<ScrollEventMetrics> event =
+        CreateEventBuilder().SetScrollInputType(input_type).Build();
+    EXPECT_EQ(event->type(), GetParam().expected_type);
+    EXPECT_EQ(event->scroll_type(), expected_scroll_type)
+        << "input type " << static_cast<int>(input_type);
+  }
+}
+
+TEST_P(EventMetricsTestCreatorScrollEventTest, SetScrollJankV4ResultId) {
+  std::unique_ptr<ScrollEventMetrics> event =
+      CreateEventBuilder().SetScrollJankV4ResultId(42).Build();
+  EXPECT_EQ(event->type(), GetParam().expected_type);
+  EXPECT_EQ(event->scroll_jank_v4_result_id(), 42u);
+}
+
 TEST_P(EventMetricsTestCreatorScrollEventTest,
        SetScrollBeginGeneratedTimestamp) {
   std::unique_ptr<ScrollEventMetrics> event =
@@ -241,6 +278,8 @@ TEST_P(EventMetricsTestCreatorScrollEventTest, AllParams) {
           .SetArrivedInRendererCompositorTimestamp(MillisecondsTicks(101))
           .SetCausedFrameUpdate(false)
           .SetDispatchArgs(args)
+          .SetScrollInputType(ui::ScrollInputType::kWheel)
+          .SetScrollJankV4ResultId(11)
           .SetScrollBeginGeneratedTimestamp(MillisecondsTicks(14))
           .SetScrollBeginArrivalTimestamp(MillisecondsTicks(15))
           .Build();
@@ -253,6 +292,8 @@ TEST_P(EventMetricsTestCreatorScrollEventTest, AllParams) {
             MillisecondsTicks(101));
   EXPECT_FALSE(event->caused_frame_update());
   EXPECT_EQ(event->dispatch_args(), args);
+  EXPECT_EQ(event->scroll_type(), ScrollEventMetrics::ScrollType::kWheel);
+  EXPECT_EQ(event->scroll_jank_v4_result_id(), 11u);
   if (GetParam().expected_type ==
       EventMetrics::EventType::kGestureScrollBegin) {
     EXPECT_EQ(event->scroll_begin_generated_timestamp(), MillisecondsTicks(99));
@@ -301,6 +342,8 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, NoParams) {
   std::unique_ptr<ScrollUpdateEventMetrics> event =
       CreateEventBuilder().Build();
   EXPECT_EQ(event->type(), GetParam().expected_type);
+  EXPECT_EQ(event->scroll_type(), ScrollEventMetrics::ScrollType::kTouchscreen);
+  EXPECT_TRUE(event->applied_scroll_observations().empty());
 }
 
 TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, SetTimestamp) {
@@ -390,6 +433,42 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, SetDispatchArgs) {
   EXPECT_EQ(event->dispatch_args(), args);
 }
 
+TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, SetScrollInputType) {
+  for (const auto& [input_type, expected_scroll_type] : kScrollInputTypes) {
+    std::unique_ptr<ScrollUpdateEventMetrics> event =
+        CreateEventBuilder().SetScrollInputType(input_type).Build();
+    EXPECT_EQ(event->type(), GetParam().expected_type);
+    EXPECT_EQ(event->scroll_type(), expected_scroll_type)
+        << "input type " << static_cast<int>(input_type);
+  }
+}
+
+TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, SetScrollJankV4ResultId) {
+  std::unique_ptr<ScrollUpdateEventMetrics> event =
+      CreateEventBuilder().SetScrollJankV4ResultId(43).Build();
+  EXPECT_EQ(event->type(), GetParam().expected_type);
+  EXPECT_EQ(event->scroll_jank_v4_result_id(), 43u);
+}
+
+TEST_P(EventMetricsTestCreatorScrollUpdateEventTest,
+       AddAppliedScrollObservation) {
+  std::unique_ptr<ScrollUpdateEventMetrics> event =
+      CreateEventBuilder()
+          .SetTimestamp(MillisecondsTicks(12))
+          .AddAppliedScrollObservation(kScroller)
+          .AddAppliedScrollObservation(kOtherScroller)
+          .Build();
+  EXPECT_EQ(event->type(), GetParam().expected_type);
+  ASSERT_EQ(event->applied_scroll_observations().size(), 2u);
+  EXPECT_EQ(event->applied_scroll_observations()[0].element_id, kScroller);
+  EXPECT_EQ(event->applied_scroll_observations()[1].element_id, kOtherScroller);
+  // Each observation is stamped with the event's generation timestamp.
+  EXPECT_EQ(event->applied_scroll_observations()[0].update_input_timestamp,
+            MillisecondsTicks(12));
+  EXPECT_EQ(event->applied_scroll_observations()[1].update_input_timestamp,
+            MillisecondsTicks(12));
+}
+
 TEST_P(EventMetricsTestCreatorScrollUpdateEventTest,
        SetScrollBeginGeneratedTimestamp) {
   std::unique_ptr<ScrollUpdateEventMetrics> event =
@@ -427,6 +506,9 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, AllParams) {
           .SetIsSynthetic(true)
           .SetTraceId(EventMetrics::TraceId(456))
           .SetDispatchArgs(args)
+          .SetScrollInputType(ui::ScrollInputType::kScrollbar)
+          .SetScrollJankV4ResultId(12)
+          .AddAppliedScrollObservation(kScroller)
           .SetScrollBeginGeneratedTimestamp(MillisecondsTicks(80))
           .SetScrollBeginArrivalTimestamp(MillisecondsTicks(81))
           .Build();
@@ -444,6 +526,10 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, AllParams) {
   EXPECT_TRUE(event->is_synthetic());
   EXPECT_EQ(event->trace_id()->value(), 456);
   EXPECT_EQ(event->dispatch_args(), args);
+  EXPECT_EQ(event->scroll_type(), ScrollEventMetrics::ScrollType::kScrollbar);
+  EXPECT_EQ(event->scroll_jank_v4_result_id(), 12u);
+  ASSERT_EQ(event->applied_scroll_observations().size(), 1u);
+  EXPECT_EQ(event->applied_scroll_observations()[0].element_id, kScroller);
   EXPECT_EQ(event->scroll_begin_generated_timestamp(), MillisecondsTicks(80));
   EXPECT_EQ(event->scroll_begin_arrival_timestamp(), MillisecondsTicks(81));
 }

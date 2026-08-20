@@ -8,13 +8,16 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/memory/raw_ref.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/paint/element_id.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "ui/events/types/event_type.h"
+#include "ui/events/types/scroll_input_type.h"
 
 namespace cc {
 
@@ -89,6 +92,8 @@ class EventMetricsTestCreator {
    public:
     Derived& SetDispatchArgs(
         ScrollEventMetrics::DispatchBeginFrameArgs dispatch_args);
+    Derived& SetScrollInputType(ui::ScrollInputType input_type);
+    Derived& SetScrollJankV4ResultId(uint64_t scroll_jank_v4_result_id);
     Derived& SetScrollBeginGeneratedTimestamp(
         base::TimeTicks scroll_begin_generated_timestamp);
     Derived& SetScrollBeginArrivalTimestamp(
@@ -101,6 +106,8 @@ class EventMetricsTestCreator {
 
     bool is_inertial_;
     std::optional<ScrollEventMetrics::DispatchBeginFrameArgs> dispatch_args_;
+    ui::ScrollInputType input_type_ = ui::ScrollInputType::kTouchscreen;
+    std::optional<uint64_t> scroll_jank_v4_result_id_;
     std::optional<base::TimeTicks> scroll_begin_generated_timestamp_;
     std::optional<base::TimeTicks> scroll_begin_arrival_timestamp_;
   };
@@ -113,6 +120,9 @@ class EventMetricsTestCreator {
     Derived& SetDidScroll(bool did_scroll);
     Derived& SetIsSynthetic(bool is_synthetic);
     Derived& SetTraceId(EventMetrics::TraceId trace_id);
+    // Records that `element_id`'s scroller moved for this update. May be called
+    // several times; the observations are added in call order.
+    Derived& AddAppliedScrollObservation(ElementId element_id);
 
    protected:
     ScrollUpdateEventBuilderBase(
@@ -126,6 +136,7 @@ class EventMetricsTestCreator {
     std::optional<bool> did_scroll_;
     std::optional<bool> is_synthetic_;
     std::optional<EventMetrics::TraceId> trace_id_;
+    std::vector<ElementId> applied_scroll_observation_element_ids_;
   };
 
   // ---------------------------------------------------------------------------
