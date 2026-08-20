@@ -1093,7 +1093,7 @@ void NdkVideoEncodeAccelerator::FeedInput() {
       return;
   }
 
-  const auto frame_cs = frame->ColorSpace();
+  const auto frame_cs = VideoFrameConverter::GetDestinationColorSpace(*frame);
   if (!encoder_color_space_ || *encoder_color_space_ != frame_cs) {
     if (!have_encoded_frames_) {
       encoder_color_space_ = frame_cs;
@@ -1307,6 +1307,11 @@ scoped_refptr<VideoFrame> NdkVideoEncodeAccelerator::MapSharedImage(
                          desc.format});
       return nullptr;
     }
+  }
+
+  if (src_frame) {
+    src_frame->set_color_space(frame.ColorSpace());
+    src_frame->set_hdr_metadata(frame.hdr_metadata());
   }
 
   src_frame->AddDestructionObserver(base::BindOnce(
