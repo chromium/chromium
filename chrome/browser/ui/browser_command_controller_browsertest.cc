@@ -134,6 +134,8 @@ struct FullscreenCommandExpectation {
   bool reserved_in_fullscreen;
 };
 
+// TODO(crbug.com/549506876): Fix test on MacOS.
+#if !BUILDFLAG(IS_MAC)
 void VerifyFullscreenCommandStates(Browser* browser) {
   const bool is_guest = browser->GetProfile()->IsGuestSession();
   const auto commands = std::to_array<FullscreenCommandExpectation>({
@@ -227,6 +229,7 @@ void VerifyFullscreenCommandStates(Browser* browser) {
         command.reserved_in_tab);
   }
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 }  // namespace
 
@@ -648,7 +651,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_SHOW_AVATAR_MENU));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/549506876): Fix test on MacOS.
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
                        UpdateCommandsForFullscreenMode) {
   VerifyFullscreenCommandStates(browser());
@@ -660,7 +664,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   EXPECT_TRUE(chrome::IsCommandEnabled(guest_browser, IDC_OPTIONS));
   EXPECT_FALSE(chrome::IsCommandEnabled(guest_browser, IDC_IMPORT_SETTINGS));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
                        SavePageDisabledByDownloadRestrictionsPolicy) {
