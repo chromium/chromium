@@ -185,3 +185,23 @@ TEST_F(DesktopMediaPickerControllerTest, NoPicker) {
   DesktopMediaPickerController controller(&factory_);
   controller.Show(picker_params_, source_types_, done_.Get());
 }
+
+// Test that the on_show_picker callback is invoked when the picker is shown.
+TEST_F(DesktopMediaPickerControllerTest, ShowPicker_NotifiesShownCallback) {
+  auto filter = GetDefaultFilter();
+  picker_params_.includable_web_contents_filter = filter;
+  EXPECT_CALL(factory_, CreatePicker(nullptr));
+  EXPECT_CALL(factory_, CreateMediaList(source_types_, nullptr, filter));
+  EXPECT_CALL(done_, Run("", media_id_));
+  EXPECT_CALL(*picker_, Show)
+      .WillOnce(WithArg<2>([&](DesktopMediaPicker::DoneCallback cb) {
+        std::move(cb).Run(media_id_);
+      }));
+
+  base::MockCallback<base::OnceClosure> on_show_picker;
+  EXPECT_CALL(on_show_picker, Run());
+
+  DesktopMediaPickerController controller(&factory_);
+  controller.Show(picker_params_, source_types_, done_.Get(),
+                  on_show_picker.Get());
+}

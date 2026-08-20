@@ -28,7 +28,8 @@ class ComposeboxEverywhereHandler : public ComposeboxHandler {
       Profile* profile,
       content::WebContents* web_contents,
       GetSessionHandleCallback get_session_callback,
-      ClearSessionHandleCallback clear_session_callback);
+      ClearSessionHandleCallback clear_session_callback,
+      ScreenshareDelegate* screenshare_delegate = nullptr);
 
   ComposeboxEverywhereHandler(const ComposeboxEverywhereHandler&) = delete;
   ComposeboxEverywhereHandler& operator=(const ComposeboxEverywhereHandler&) =

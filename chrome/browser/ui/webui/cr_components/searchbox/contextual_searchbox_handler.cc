@@ -569,13 +569,15 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
     Profile* profile,
     content::WebContents* web_contents,
     std::unique_ptr<OmniboxClient> client,
-    GetSessionHandleCallback get_session_callback)
+    GetSessionHandleCallback get_session_callback,
+    ScreenshareDelegate* screenshare_delegate)
     : SearchboxHandler(std::move(pending_searchbox_handler),
                        std::move(pending_page),
                        profile,
                        web_contents,
                        std::move(client)),
-      get_session_callback_(std::move(get_session_callback)) {
+      get_session_callback_(std::move(get_session_callback)),
+      screenshare_delegate_(screenshare_delegate) {
   InitializeInputStateModel();
   tab_favicon_helper_ = std::make_unique<ContextualSearchboxTabFaviconHelper>();
 
@@ -2548,7 +2550,9 @@ void ContextualSearchboxHandler::FallbackToChromeDefaultPicker(
   screenshare_picker_controller_->Show(
       picker_params, sources,
       base::BindOnce(&ContextualSearchboxHandler::OnChromeDefaultPickerResults,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      base::BindOnce(&ContextualSearchboxHandler::NotifyScreensharePickerOpened,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ContextualSearchboxHandler::OnChromeDefaultPickerResults(
@@ -2557,6 +2561,7 @@ void ContextualSearchboxHandler::OnChromeDefaultPickerResults(
     content::DesktopMediaID source) {
   screenshare_picker_controller_.reset();
   if (source.is_null()) {
+    NotifyScreensharePickerClosed();
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -2585,6 +2590,7 @@ void ContextualSearchboxHandler::OnScreenshotCaptured(
     const SkBitmap& bitmap) {
   is_capturing_ = false;
   active_screenshot_request_.reset();
+  NotifyScreensharePickerClosed();
   if (bitmap.empty()) {
     std::move(callback).Run(std::nullopt);
     return;
@@ -2640,5 +2646,17 @@ void ContextualSearchboxHandler::OnScreenshotProcessed(
           },
           std::move(callback), weak_ptr_factory_.GetWeakPtr(),
           std::move(file_info_mojom)));
+}
+
+void ContextualSearchboxHandler::NotifyScreensharePickerOpened() {
+  if (screenshare_delegate_) {
+    screenshare_delegate_->OnScreensharePickerOpened();
+  }
+}
+
+void ContextualSearchboxHandler::NotifyScreensharePickerClosed() {
+  if (screenshare_delegate_) {
+    screenshare_delegate_->OnScreensharePickerClosed();
+  }
 }
 #endif

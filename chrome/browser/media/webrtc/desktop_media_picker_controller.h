@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
@@ -75,7 +76,8 @@ class DesktopMediaPickerController : private content::WebContentsObserver {
   // dialog will be cleaned up, but |done_callback| will not be invoked.
   void Show(const Params& params,
             const std::vector<DesktopMediaList::Type>& sources,
-            DoneCallback done_callback);
+            DoneCallback done_callback,
+            base::OnceClosure on_show_picker = base::OnceClosure());
 
   // content::WebContentsObserver overrides.
   void WebContentsDestroyed() override;
@@ -93,6 +95,7 @@ class DesktopMediaPickerController : private content::WebContentsObserver {
 
   Params params_;
   DoneCallback done_callback_;
+  base::OnceClosure on_show_picker_;
   std::vector<std::unique_ptr<DesktopMediaList>> source_lists_;
   std::unique_ptr<DesktopMediaPicker> picker_;
   raw_ptr<DesktopMediaPickerFactory> picker_factory_;

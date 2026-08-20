@@ -444,6 +444,7 @@ void OmniboxEverywhereUIManager::CleanUpWidget() {
   is_file_chooser_open_ = false;
   is_drive_picker_open_ = false;
   is_context_menu_open_ = false;
+  is_screenshare_picker_open_ = false;
   is_dragging_ = false;
   pending_auto_resize_size_.reset();
   draggable_region_.reset();
@@ -465,11 +466,15 @@ bool OmniboxEverywhereUIManager::IsActive() const {
   return widget_ && widget_->IsActive();
 }
 
+bool OmniboxEverywhereUIManager::HasModalDialogOpen() const {
+  return is_file_chooser_open_ || is_drive_picker_open_ ||
+         is_screenshare_picker_open_;
+}
+
 void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
     views::Widget* widget,
     bool active) {
-  if (!active && !is_file_chooser_open_ && !is_drive_picker_open_ &&
-      !is_context_menu_open_) {
+  if (!active && !is_context_menu_open_ && !HasModalDialogOpen()) {
     if (IsEphemeral()) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&OmniboxEverywhereUIManager::Close,
@@ -490,8 +495,7 @@ void OmniboxEverywhereUIManager::OnContextMenuClosed() {
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, std::move(context_menu_model_));
   }
-  if (widget_ && !widget_->IsActive() && !is_file_chooser_open_ &&
-      !is_drive_picker_open_) {
+  if (widget_ && !widget_->IsActive() && !HasModalDialogOpen()) {
     if (IsEphemeral()) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&OmniboxEverywhereUIManager::Close,
@@ -573,6 +577,17 @@ void OmniboxEverywhereUIManager::OnDrivePickerOpened() {
 
 void OmniboxEverywhereUIManager::OnDrivePickerClosed() {
   is_drive_picker_open_ = false;
+}
+
+void OmniboxEverywhereUIManager::OnScreensharePickerOpened() {
+  is_screenshare_picker_open_ = true;
+}
+
+void OmniboxEverywhereUIManager::OnScreensharePickerClosed() {
+  is_screenshare_picker_open_ = false;
+  if (widget_) {
+    ActivateAndFocus();
+  }
 }
 
 void OmniboxEverywhereUIManager::OnBrowserActivated(

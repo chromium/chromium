@@ -87,7 +87,8 @@ OmniboxEverywhereHandler::OmniboxEverywhereHandler(
     MetricsReporter* metrics_reporter,
     content::WebUI* web_ui,
     OmniboxEverywhereService* service,
-    GetSessionHandleCallback get_session_callback)
+    GetSessionHandleCallback get_session_callback,
+    ScreenshareDelegate* screenshare_delegate)
     : ContextualSearchboxHandler(
           std::move(pending_page_handler),
           std::move(pending_page),
@@ -96,7 +97,8 @@ OmniboxEverywhereHandler::OmniboxEverywhereHandler(
           std::make_unique<OmniboxEverywhereClient>(Profile::FromWebUI(web_ui),
                                                     web_ui->GetWebContents(),
                                                     service),
-          std::move(get_session_callback)),
+          std::move(get_session_callback),
+          screenshare_delegate),
       service_(service) {
   static_cast<ContextualOmniboxClient*>(client())->SetSuggestInputsCallback(
       base::BindRepeating(&OmniboxEverywhereHandler::GetSuggestInputs,

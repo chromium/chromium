@@ -125,6 +125,9 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void OnDrivePickerOpened();
   void OnDrivePickerClosed();
 
+  void OnScreensharePickerOpened();
+  void OnScreensharePickerClosed();
+
   // BrowserCollectionObserver:
   void OnBrowserCreated(BrowserWindowInterface* browser) override {}
   void OnBrowserClosed(BrowserWindowInterface* browser) override;
@@ -135,6 +138,13 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   const Profile* profile() const { return profile_; }
   views::Widget* widget() { return widget_.get(); }
   const views::Widget* widget() const { return widget_.get(); }
+  content::WebContents* web_contents() const;
+  OmniboxEverywhereWidgetDelegate* widget_delegate();
+  const OmniboxEverywhereWidgetDelegate* widget_delegate() const;
+
+  bool IsPointInDraggableRegion(const gfx::Point& point) const;
+
+  // For testing:
   WebUIContentsWrapper* contents_wrapper_for_testing() {
     return contents_wrapper_.get();
   }
@@ -146,6 +156,9 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   }
   bool is_drive_picker_open_for_testing() const {
     return is_drive_picker_open_;
+  }
+  bool is_screenshare_picker_open_for_testing() const {
+    return is_screenshare_picker_open_;
   }
   bool is_context_menu_open_for_testing() const {
     return is_context_menu_open_;
@@ -163,13 +176,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
     menu_runner_factory_ = std::move(factory);
   }
 
-  OmniboxEverywhereWidgetDelegate* widget_delegate();
-  const OmniboxEverywhereWidgetDelegate* widget_delegate() const;
-
-  bool IsPointInDraggableRegion(const gfx::Point& point) const;
-
  private:
-  content::WebContents* web_contents() const;
   void EnsureContentsWrapperInitialized(Profile* profile);
   void CreateAndInitWidget(gfx::NativeWindow context);
   void ActivateAndFocus();
@@ -182,6 +189,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void CleanUpWidget();
   void OnWidgetClosed(views::Widget::ClosedReason reason);
   void OnContextMenuClosed();
+  bool HasModalDialogOpen() const;
 
 #if defined(USE_AURA)
   std::unique_ptr<OmniboxEverywhereEventHandlerAura> event_handler_;
@@ -199,6 +207,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   bool is_file_chooser_open_ = false;
   bool is_drive_picker_open_ = false;
   bool is_context_menu_open_ = false;
+  bool is_screenshare_picker_open_ = false;
   bool is_dragging_ = false;
   std::optional<gfx::Size> pending_auto_resize_size_;
   std::optional<SkRegion> draggable_region_;
