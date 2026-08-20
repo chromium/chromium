@@ -31,6 +31,7 @@
 #include "chrome/browser/safe_browsing/generated_safe_browsing_pref.h"
 #include "chrome/browser/safe_browsing/generated_security_settings_bundle_pref.h"
 #include "chrome/browser/ssl/generated_https_first_mode_pref.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
@@ -576,6 +577,12 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::omnibox::kKeywordSpaceTriggeringEnabled] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[omnibox_everywhere::prefs::kOmniboxEverywhereEnabled] =
+      settings_api::PrefType::kBoolean;
+  (*s_allowlist)[omnibox_everywhere::prefs::kOmniboxEverywhereHotkey] =
+      settings_api::PrefType::kString;
+  (*s_allowlist)[omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts] =
+      settings_api::PrefType::kNumber;
 
   // Site Settings prefs.
   (*s_allowlist)[::content_settings::kGeneratedNotificationPref] =

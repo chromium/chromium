@@ -47,6 +47,7 @@
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/managed_ui.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/side_panel/side_panel_prefs.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -3193,8 +3194,24 @@ void AddSearchStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_CONTROLLED_BY_EXTENSION_WITH_DISABLE_AND_MANAGE_OPTION},
       {"controlledByExtensionWithoutDisableOption",
        IDS_SETTINGS_CONTROLLED_BY_EXTENSION_WITH_MANAGE_OPTION},
+      {"omniboxEverywhereTitle", IDS_SETTINGS_OMNIBOX_EVERYWHERE_TITLE},
+      {"omniboxEverywhereToggleTitle", IDS_SETTINGS_OMNIBOX_EVERYWHERE_TOGGLE},
+      {"omniboxEverywhereToggleSublabel",
+       IDS_SETTINGS_OMNIBOX_EVERYWHERE_TOGGLE_SUBLABEL},
+      {"omniboxEverywhereShortcutTitle",
+       IDS_SETTINGS_OMNIBOX_EVERYWHERE_SHORTCUT_TITLE},
+      {"omniboxEverywhereShortcutSublabel",
+       IDS_SETTINGS_OMNIBOX_EVERYWHERE_SHORTCUT_SUBLABEL},
+      {"omniboxEverywhereShowShortcutsTitle",
+       IDS_SETTINGS_OMNIBOX_EVERYWHERE_SHOW_SHORTCUTS_TITLE},
+      {"omniboxEverywhereShowShortcutsSublabel",
+       IDS_SETTINGS_OMNIBOX_EVERYWHERE_SHOW_SHORTCUTS_SUBLABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+  html_source->AddBoolean("omniboxEverywhereSettingsEnabled",
+                          omnibox::IsOmniboxEverywhereEnabled(profile));
+  html_source->AddString("omniboxEverywhereLearnMoreURL",
+                         chrome::kOmniboxLearnMoreURL);
   html_source->AddString("searchExplanationLearnMoreURL",
                          chrome::kOmniboxLearnMoreURL);
 

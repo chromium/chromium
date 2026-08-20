@@ -184,7 +184,9 @@ void OmniboxEverywhereBackgroundModeManager::UpdateStatusIconContextMenu() {
 
   auto menu = std::make_unique<StatusIconMenuModel>(this);
 
-  ui::Accelerator hotkey = GetHotkey();
+  PrefService* local_state =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
+  ui::Accelerator hotkey = prefs::GetOmniboxEverywhereHotkey(local_state);
   menu->AddItem(IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE,
                 l10n_util::GetStringUTF16(
                     IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE));

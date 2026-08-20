@@ -157,7 +157,13 @@ void OmniboxEverywhereController::UpdateHotkeyRegistration() {
   const bool is_enabled =
       hotkey_pref_member_.prefs() && hotkey_pref_member_.GetValue();
   if (is_enabled) {
-    listener_->RegisterAccelerator(GetHotkey(), this);
+    PrefService* local_state =
+        g_browser_process ? g_browser_process->local_state() : nullptr;
+    const ui::Accelerator hotkey =
+        prefs::GetOmniboxEverywhereHotkey(local_state);
+    if (!hotkey.IsEmpty()) {
+      listener_->RegisterAccelerator(hotkey, this);
+    }
   }
 }
 

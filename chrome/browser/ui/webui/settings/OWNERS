@@ -22,3 +22,4 @@ per-file glic_*=file://chrome/browser/resources/settings/glic_page/OWNERS
 per-file performance_*=file://chrome/browser/ui/performance_controls/OWNERS
 per-file captions_handler*=evliu@google.com
 per-file certificate_manager_handler*=hchao@chromium.org,mattm@chromium.org
+per-file omnibox_everywhere_*=file://chrome/browser/ui/omnibox/omnibox_everywhere/OWNERS

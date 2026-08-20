@@ -130,7 +130,7 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest, ContextMenuStructure) {
   ui::Accelerator accelerator;
   EXPECT_TRUE(menu->GetAcceleratorForCommandId(
       IDC_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_TOGGLE, &accelerator));
-  EXPECT_EQ(accelerator, GetHotkey());
+  EXPECT_EQ(accelerator, prefs::GetDefaultOmniboxEverywhereHotkey());
 }
 
 TEST_F(OmniboxEverywhereBackgroundModeManagerTest, ExecuteToggleCommand) {
