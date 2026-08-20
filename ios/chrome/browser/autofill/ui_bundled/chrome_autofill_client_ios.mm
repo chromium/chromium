@@ -27,7 +27,6 @@
 #import "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #import "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/form_import/form_data_importer.h"
-#import "components/autofill/core/browser/form_predictions_tracker.h"
 #import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/logging/log_router.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
@@ -35,7 +34,6 @@
 #import "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
-#import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/autofill_client_ios.h"
@@ -84,7 +82,6 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
-#import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/metrics/model/google_groups_manager_factory.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -138,9 +135,7 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
               ServiceAccessType::EXPLICIT_ACCESS))),
       infobar_manager_(infobar_manager),
       log_router_(AutofillLogRouterFactory::GetForProfile(profile_)),
-      ablation_study_(GetApplicationContext()->GetLocalState()),
-      form_predictions_tracker_(
-          std::make_unique<FormPredictionsTracker>(this)) {
+      ablation_study_(GetApplicationContext()->GetLocalState()) {
   if (base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
     autofill_ai_manager_ = std::make_unique<AutofillAiManager>(
         this, StrikeDatabaseFactory::GetForProfile(profile));
@@ -172,17 +167,6 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
               ? GetEntityDataManager()
               : nullptr) {
     edm->SetReauthAvailability(SupportsDeviceReauth());
-  }
-
-  if (web_state) {
-    if (ActorTabHelper* actor_tab_helper =
-            ActorTabHelper::FromWebState(web_state)) {
-      actor_actuation_state_subscription_ =
-          actor_tab_helper->AddActuationStateChangedCallback(
-              base::BindRepeating(
-                  &ChromeAutofillClientIOS::OnActorTaskStateChange,
-                  weak_ptr_factory_.GetWeakPtr()));
-    }
   }
 }
 
@@ -386,10 +370,6 @@ ChromeAutofillClientIOS::GetProfileMetricsService() {
 
 FormDataImporter* ChromeAutofillClientIOS::GetFormDataImporter() {
   return form_data_importer_.get();
-}
-
-FormPredictionsTracker* ChromeAutofillClientIOS::GetFormPredictionsTracker() {
-  return form_predictions_tracker_.get();
 }
 
 const GoogleGroupsManager* ChromeAutofillClientIOS::GetGoogleGroupsManager()
@@ -629,17 +609,6 @@ bool ChromeAutofillClientIOS::IsLastQueriedField(FieldGlobalId field_id) {
   return [bridge_ isLastQueriedField:field_id];
 }
 
-bool ChromeAutofillClientIOS::IsTabInActorMode() const {
-  if (!web_state()) {
-    return false;
-  }
-  if (base::FeatureList::IsEnabled(features::debug::kAutofillForceActorMode)) {
-    return true;
-  }
-  ActorTabHelper* actor_tab_helper = ActorTabHelper::FromWebState(web_state());
-  return actor_tab_helper && actor_tab_helper->IsActuating();
-}
-
 bool ChromeAutofillClientIOS::ShouldFormatForLargeKeyboardAccessory() const {
   return YES;
 }
@@ -868,11 +837,6 @@ void ChromeAutofillClientIOS::ShowAutofillAiSaveUpdateUI() {
 
   SaveEntityParams params = delegate->ExtractParams();
   [commands_handler_ showSaveEntityDialog:std::move(params)];
-}
-
-void ChromeAutofillClientIOS::OnActorTaskStateChange(bool is_actuating) {
-  // TODO(crbug.com/539473551): reparse known forms here so Autofill uses Actor
-  // specific heuristics.
 }
 
 }  // namespace autofill

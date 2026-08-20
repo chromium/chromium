@@ -92,13 +92,7 @@ BASE_FEATURE(kAutofillDisableSuggestionStrikeDatabase,
 
 // When enabled `ChromeAutofillClient` will always behave as if there is an
 // active `ActorTask`.
-BASE_FEATURE(kAutofillForceActorMode,
-// Use the iOS build flag to prevent a cross-platform default.
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_IOS)
+BASE_FEATURE(kAutofillForceActorMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables logging the content of chrome://autofill-internals to the terminal.
 BASE_FEATURE(kAutofillLogToTerminal, base::FEATURE_DISABLED_BY_DEFAULT);

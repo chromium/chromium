@@ -43,14 +43,6 @@ typedef NS_ENUM(NSInteger, ActorAppInterfaceErrorCode) {
 // Sets the actuating state on the ActorTabHelper of the WebState at `index`.
 + (void)setActuating:(BOOL)actuating forWebStateAtIndex:(int)index;
 
-// Simulates in-flight Autofill server predictions for the active `WebState`'s
-// `AutofillManager` to hold `FormPredictionsTracker` in a waiting state.
-+ (void)simulateInFlightAutofillPredictions;
-
-// Resolves in-flight Autofill server predictions for the active `WebState`'s
-// `AutofillManager` to unblock `FormPredictionsTracker`.
-+ (void)resolveInFlightAutofillPredictions;
-
 // Returns the current window ID.
 + (int32_t)currentWindowID;
 @end

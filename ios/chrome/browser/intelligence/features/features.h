@@ -249,12 +249,6 @@ base::TimeDelta GetActorPageStabilityWindowDuration();
 // Based on the Desktop equivalent at
 // https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/chrome_features.cc;l=422;drc=9c4f58fb857251ee67e9d98abcfcacef0500e51d.
 base::TimeDelta GetActorPageStabilityLcpDelay();
-// The amount of time to wait for Autofill to finish parsing and predicting form
-// fields on the page.
-//
-// Based on the Desktop equivalent at
-// https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/chrome_features.cc;l=428;drc=9c4f58fb857251ee67e9d98abcfcacef0500e51d.
-base::TimeDelta GetActorPageStabilityAutofillPredictionsTimeout();
 
 // Returns true if the specified tool is disabled via the "DisabledTools"
 // feature parameter of the `kActorTools` feature.

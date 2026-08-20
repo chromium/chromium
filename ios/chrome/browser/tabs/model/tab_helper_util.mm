@@ -294,14 +294,6 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
                                                !attacher.IsForPrerender());
   attacher.CreateWhen<PagePlaceholderTabHelper>(!attacher.IsForLensOverlay() &&
                                                 !attacher.IsForPrerender());
-  // Must be attached before `AutofillTabHelper` so `ChromeAutofillClientIOS`
-  // can observe `ActorTabHelper` upon construction.
-  const bool is_actor_tab_helper_enabled =
-      IsActorEnabled() && !attacher.IsForPrerender();
-  attacher.CreateWhen<ActorTabHelper>(is_actor_tab_helper_enabled);
-  attacher.CreateWhen<IOSChromeActorLoginDelegateClient>(
-      is_actor_tab_helper_enabled);
-
   attacher.CreateWhen<PasswordTabHelper>(attacher.IsNotInTabHelperFilter());
   attacher.CreateWhen<AutofillBottomSheetTabHelper>(
       attacher.IsNotInTabHelperFilter());
@@ -392,6 +384,12 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   attacher.CreateWhen<GeminiTabHelper>(!attacher.IsOffTheRecord() &&
                                        !attacher.IsForPrerender() &&
                                        IsPageActionMenuEnabled());
+
+  const bool is_actor_tab_helper_enabled =
+      IsActorEnabled() && !attacher.IsForPrerender();
+  attacher.CreateWhen<ActorTabHelper>(is_actor_tab_helper_enabled);
+  attacher.CreateWhen<IOSChromeActorLoginDelegateClient>(
+      is_actor_tab_helper_enabled);
 
   attacher.Create<WebViewProxyTabHelper>();
 
