@@ -236,16 +236,11 @@ external/wpt/html/the-xhtml-syntax/parsing-xhtml-documents/support/xhtml-mathml-
 
 # CSS2 tests that rely on undefined behaviors (height of line-height: normal).
 external/wpt/css/CSS2/linebox/inline-formatting-context-002.xht [ Skip ]
-[ Linux ] external/wpt/css/CSS2/linebox/inline-formatting-context-003.xht [ Skip ]
-[ Win ] external/wpt/css/CSS2/linebox/inline-formatting-context-003.xht [ Skip ]
-[ Linux ] external/wpt/css/CSS2/linebox/inline-formatting-context-004.xht [ Skip ]
-[ Win ] external/wpt/css/CSS2/linebox/inline-formatting-context-004.xht [ Skip ]
-[ Linux ] external/wpt/css/CSS2/linebox/inline-formatting-context-005.xht [ Skip ]
-[ Win ] external/wpt/css/CSS2/linebox/inline-formatting-context-005.xht [ Skip ]
-[ Linux ] external/wpt/css/CSS2/linebox/inline-formatting-context-006.xht [ Skip ]
-[ Win ] external/wpt/css/CSS2/linebox/inline-formatting-context-006.xht [ Skip ]
-[ Linux ] external/wpt/css/CSS2/linebox/inline-formatting-context-007.xht [ Skip ]
-[ Win ] external/wpt/css/CSS2/linebox/inline-formatting-context-007.xht [ Skip ]
+external/wpt/css/CSS2/linebox/inline-formatting-context-003.xht [ Skip ]
+external/wpt/css/CSS2/linebox/inline-formatting-context-004.xht [ Skip ]
+external/wpt/css/CSS2/linebox/inline-formatting-context-005.xht [ Skip ]
+external/wpt/css/CSS2/linebox/inline-formatting-context-006.xht [ Skip ]
+external/wpt/css/CSS2/linebox/inline-formatting-context-007.xht [ Skip ]
 
 # CSS2 tests that require files in different directories.
 external/wpt/css/CSS2/normal-flow/blocks-017.xht [ Skip ]
