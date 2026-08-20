@@ -1373,6 +1373,10 @@ bool ProfileManager::AddKeepAlive(Profile* profile,
     // #1 is fine. #2 is always a bug, and #3 is usually a bug. You can mitigate
     // #3 by using ScopedKeepAlive::TryAcquire() and checking if the result is
     // null.
+    //
+    // TODO(crbug.com/368360956): CHECK() that #2 never happens, by tracking
+    // whether RegisterOwned/UnownedProfile() has been called. Then
+    // update/simplify the comment in ScopedProfileKeepAlive::TryAcquire().
     VLOG(1) << "AddKeepAlive(" << profile->GetDebugName() << ", " << origin
             << ") too early or too late in Profile's lifecycle. "
             << "The keepalive was not added. This may cause a crash during "

@@ -28,7 +28,15 @@ enum class ProfileKeepAliveOrigin;
 class ScopedProfileKeepAlive {
  public:
   // Same as the constructor, but returns nullptr if the keepalive count could
-  // not be incremented.
+  // not be incremented. This can happen if:
+  //
+  // 1. You call TryAcquire() too early during Profile init.
+  // 2. The profile is scheduled for deletion (in <1s).
+  //
+  // #1 is always a bug, and causes lifecycle issues.
+  //
+  // For #2, you can check the return value of TryAcquire() and abort
+  // long-running jobs, etc. that rely on the profile.
   //
   // TODO(crbug.com/368360956): Migrate existing call-sites to this, and remove
   // the public constructor.
@@ -36,6 +44,7 @@ class ScopedProfileKeepAlive {
       Profile* profile,
       ProfileKeepAliveOrigin origin);
 
+  // Do not use this is new code. prefer TryAcquire() above.
   ScopedProfileKeepAlive(Profile* profile, ProfileKeepAliveOrigin origin);
   ~ScopedProfileKeepAlive();
 
