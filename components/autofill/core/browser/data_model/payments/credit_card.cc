@@ -624,7 +624,7 @@ void CreditCard::GetMatchingTypes(std::u16string_view text,
   FormGroup::GetMatchingTypes(text, app_locale, matching_types);
 
   std::u16string card_number = GetInfo(CREDIT_CARD_NUMBER, app_locale);
-  if (!card_number.empty()) {
+  if (!card_number.empty() && IsValidCreditCardNumber(text)) {
     // We only have the last four digits for masked cards, so match against
     // that if |this| is a masked card.
     bool numbers_match = record_type_ == RecordType::kMaskedServerCard

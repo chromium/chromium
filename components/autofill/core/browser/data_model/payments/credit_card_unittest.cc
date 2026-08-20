@@ -1888,9 +1888,20 @@ TEST_P(CreditCardMatchingTypesTest, Cases) {
 }
 
 const CreditCardMatchingTypesCase kCreditCardMatchingTypesTestCases[] = {
-    // If comparing against a masked card, last four digits are checked.
-    {"1881", "01", "2020", MASKED_SERVER_CARD, {CREDIT_CARD_NUMBER}},
+    // If comparing against a masked card, last four digits are checked, but
+    // the value must be a valid credit card number to avoid mis-votes (e.g. on
+    // 4-digit values or phone numbers).
+    {"1881", "01", "2020", MASKED_SERVER_CARD, FieldTypeSet()},
+    {"(555) 555-1881", "01", "2020", MASKED_SERVER_CARD, FieldTypeSet()},
+    {"+1 555-555-1881", "01", "2020", MASKED_SERVER_CARD, FieldTypeSet()},
+    {"5555551881", "01", "2020", MASKED_SERVER_CARD, FieldTypeSet()},
+    {"4012888888881882", "01", "2020", MASKED_SERVER_CARD, FieldTypeSet()},
     {"4012888888881881",
+     "01",
+     "2020",
+     MASKED_SERVER_CARD,
+     {CREDIT_CARD_NUMBER}},
+    {"4012 8888 8888 1881",
      "01",
      "2020",
      MASKED_SERVER_CARD,

@@ -697,6 +697,39 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   EXPECT_THAT(possible_types[0].types, UnorderedElementsAre(EMAIL_ADDRESS));
 }
 
+// Tests that a phone number whose suffix matches a masked credit card's last
+// four digits does not vote for CREDIT_CARD_NUMBER.
+TEST_F(DeterminePossibleFieldTypesForUploadTest,
+       CrowdsourceMaskedCreditCard_PhoneNumberDoesNotVoteCreditCard) {
+  constexpr std::string_view kPhoneNumber = "+1 (555) 555-1881";
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(test::GetFormData(
+          {.fields = {{.role = PHONE_HOME_WHOLE_NUMBER,
+                       .value = base::UTF8ToUTF16(kPhoneNumber)}}}));
+
+  CreditCard masked_card(CreditCard::RecordType::kMaskedServerCard,
+                         "server_id");
+  test::SetCreditCardInfo(&masked_card, "John Doe", "1881", "04", "2099", "1");
+
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+  test::SetProfileInfo(
+      &profile,
+      test::SetProfileInfoOptionsBuilder().with_phone(kPhoneNumber).Build());
+
+  std::vector<PossibleTypes> possible_types =
+      DeterminePossibleFieldTypesForUpload(
+          {profile}, {masked_card}, std::vector<EntityInstance>(),
+          std::vector<LoyaltyCard>(),
+          /*fields_that_match_state=*/{},
+          /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
+          "en-US", form_structure->fields());
+
+  ASSERT_EQ(form_structure->field_count(), possible_types.size());
+  EXPECT_THAT(possible_types[0].types,
+              UnorderedElementsAre(PHONE_HOME_WHOLE_NUMBER));
+}
+
 // Tests if the OTP field is detected.
 TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceOtpField) {
   constexpr char kOtp[] = "123456";
