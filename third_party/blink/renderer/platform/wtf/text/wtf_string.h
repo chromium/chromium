@@ -139,6 +139,8 @@ class WTF_EXPORT String {
   // PRECONDITIONS: `format` must be compatible with subsequent args.
   // Ideally, this would be UNSAFE_BUFFER_USAGE but there are too many
   // callers at present to investigate.
+  //
+  // DEPRECATED: Use blink::StrCat() or blink::Format() instead.
   [[nodiscard]] PRINTF_FORMAT(1, 2) static String
       Format(const char* format, ...);
 

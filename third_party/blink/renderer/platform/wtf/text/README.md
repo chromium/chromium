@@ -167,6 +167,13 @@ The `StrCat()` function is the most efficient way to concatenate strings.
 We can use it if the number of input strings is known at compile time
 because `StrCat()`'s argument is a `std::initializer_list`.
 
+
+However, if you want to serialize and concatenate numbers, `StringBuilder` or
+`Format()` is more efficient. Doing this with `StrCat()` requires constructing
+new `String` instances (e.g., with `String::Number()`) and destructing them
+after concatenation.
+
+
 ### `operator+`
 
 The `+` operator on Blink string types is the simplest way to combine
@@ -202,6 +209,15 @@ length of the `String` (in code units) before appending characters. If
 you give `StringBuilder` an accurate estimate of the length of the
 string, `StringBuilder` can pre-allocate the appropriate amount of
 memory and avoid having to reallocate its buffer and copy your string.
+
+
+### `Format()`
+
+`Format()` and `FormatTo()` are wrappers around `StringBuilder`. Because they
+parse format strings, their execution efficiency is slightly worse than
+`StringBuilder`. However, they offer advantages in binary size reduction and
+source code simplicity because you can specify options like width and
+precision, and embed multiple values in a single function call.
 
 
 ### `StringBuffer`
