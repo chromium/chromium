@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 
 namespace content {
@@ -43,8 +44,11 @@ class ChromeDevToolsSessionBase : public protocol::FrontendChannel {
       std::unique_ptr<protocol::Serializable> message) override;
   void FlushProtocolNotifications() override;
 
+  void OnDevToolsPolicyChanged();
+
   protocol::UberDispatcher dispatcher_;
   raw_ptr<content::DevToolsAgentHostClientChannel> client_channel_;
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_CHROME_DEVTOOLS_SESSION_BASE_H_

@@ -102,6 +102,7 @@
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -2926,6 +2927,39 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, PolicyDisallowedCloseConnection) {
   // Policy change must close the connection
   DisallowDevTools(browser_window_interface());
   EXPECT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
+}
+
+// Tests that when a DevToolsAgentHost has an attached client without a
+// DevToolsWindow (e.g., remote debugging or automation sessions), changing
+// the developer tools policy to disallowed forcefully detaches the session.
+IN_PROC_BROWSER_TEST_F(DevToolsTest, PolicyDisallowedDetachesAttachedClient) {
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), GURL("about:blank")));
+  content::WebContents* web_contents = GetWebContentsAt(0);
+  auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
+
+  class TestClient : public content::DevToolsAgentHostClient {
+   public:
+    void DispatchProtocolMessage(content::DevToolsAgentHost* host,
+                                 base::span<const uint8_t> message) override {}
+    void AgentHostClosed(content::DevToolsAgentHost* host) override {
+      closed_ = true;
+    }
+    bool closed() const { return closed_; }
+
+   private:
+    bool closed_ = false;
+  };
+
+  TestClient client;
+  EXPECT_TRUE(agent_host->AttachClient(&client));
+  EXPECT_TRUE(agent_host->IsAttached());
+
+  // Policy change must forcefully detach all active sessions from the agent
+  // host even without a DevToolsWindow frontend.
+  DisallowDevTools(browser_window_interface());
+
+  EXPECT_FALSE(agent_host->IsAttached());
+  EXPECT_TRUE(client.closed());
 }
 
 using ManifestLocation = extensions::mojom::ManifestLocation;

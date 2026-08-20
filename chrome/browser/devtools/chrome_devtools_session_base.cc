@@ -10,8 +10,15 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
+#include "chrome/browser/devtools/devtools_availability_checker.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/browser/devtools_agent_host_client_channel.h"
 #include "third_party/inspector_protocol/crdtp/dispatch.h"
@@ -27,9 +34,28 @@ base::HistogramBase::Sample32 GetCommandUmaId(std::string_view command_name) {
 
 ChromeDevToolsSessionBase::ChromeDevToolsSessionBase(
     content::DevToolsAgentHostClientChannel* channel)
-    : dispatcher_(this), client_channel_(channel) {}
+    : dispatcher_(this), client_channel_(channel) {
+  if (Profile* profile = Profile::FromBrowserContext(
+          client_channel_->GetAgentHost()->GetBrowserContext())) {
+    pref_change_registrar_.Init(profile->GetPrefs());
+    pref_change_registrar_.Add(
+        prefs::kDevToolsAvailability,
+        base::BindRepeating(&ChromeDevToolsSessionBase::OnDevToolsPolicyChanged,
+                            base::Unretained(this)));
+  }
+}
 
 ChromeDevToolsSessionBase::~ChromeDevToolsSessionBase() = default;
+
+void ChromeDevToolsSessionBase::OnDevToolsPolicyChanged() {
+  scoped_refptr<content::DevToolsAgentHost> agent_host =
+      client_channel_->GetAgentHost();
+  Profile* profile =
+      Profile::FromBrowserContext(agent_host->GetBrowserContext());
+  if (profile && !IsInspectionAllowed(profile, agent_host.get())) {
+    agent_host->ForceDetachAllSessions();
+  }
+}
 
 void ChromeDevToolsSessionBase::HandleCommand(
     base::span<const uint8_t> message,
