@@ -18,10 +18,10 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "chrome/browser/ui/page_action/page_action_triggers.h"
@@ -566,7 +566,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingEntryPointControllerOmniboxBrowserTest,
                        CheckIfShouldSuggestReadingMode_LongerPdfIsCandidate) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL(
@@ -590,7 +590,7 @@ IN_PROC_BROWSER_TEST_P(
     CheckIfShouldSuggestReadingMode_ShorterPdfIsNotCandidate) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
@@ -612,7 +612,7 @@ IN_PROC_BROWSER_TEST_P(
     CheckIfShouldSuggestReadingMode_LongerPdfWithLotsOfSymbolsIsNotCandidate) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL(
@@ -782,10 +782,10 @@ IN_PROC_BROWSER_TEST_P(
 
   ASSERT_TRUE(callback);
 
-  TabRemovedWaiter waiter(browser()->tab_strip_model());
+  TabRemovedWaiter waiter(browser()->GetTabStripModel());
 
-  browser()->tab_strip_model()->CloseWebContentsAt(
-      browser()->tab_strip_model()->active_index(),
+  browser()->GetTabStripModel()->CloseWebContentsAt(
+      browser()->GetTabStripModel()->active_index(),
       TabCloseTypes::CLOSE_USER_GESTURE);
 
   waiter.Wait();

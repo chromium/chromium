@@ -224,6 +224,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/safe_browsing:test_support",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support_ui",
       "//components/content_settings/core/browser",
       "//components/content_settings/core/common",

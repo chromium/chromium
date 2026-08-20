@@ -10,9 +10,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
@@ -122,7 +122,7 @@ class ReadAnythingOmniboxControllerTest
           InteractiveFeaturePromoTest::AsInstrumentedWebContents(el)
               ->web_contents();
       tabs::TabInterface* tab_interface =
-          browser()->tab_strip_model()->GetTabForWebContents(contents);
+          browser()->GetTabStripModel()->GetTabForWebContents(contents);
       CHECK(tab_interface);
       if (IsImmersiveEnabled()) {
         auto* read_anything_controller =

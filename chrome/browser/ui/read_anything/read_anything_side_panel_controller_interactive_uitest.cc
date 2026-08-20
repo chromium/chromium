@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
+
 #include <atomic>
 #include <optional>
 
@@ -10,13 +12,12 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
-#include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
@@ -232,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(
       CheckResult(
           [this]() {
             return ReadAnythingController::From(
-                       browser()->tab_strip_model()->GetActiveTab())
+                       browser()->GetTabStripModel()->GetActiveTab())
                 ->GetPresentationState();
           },
           ReadAnythingController::PresentationState::kInImmersiveOverlay),
@@ -240,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(
       // Change presentation to Side Panel
       Do([this]() {
         auto* controller = ReadAnythingController::From(
-            browser()->tab_strip_model()->GetActiveTab());
+            browser()->GetTabStripModel()->GetActiveTab());
         controller->ShowSidePanelUI(
             SidePanelOpenTrigger::kReadAnythingTogglePresentationButton);
       }),
@@ -250,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(
       CheckResult(
           [this]() {
             return ReadAnythingController::From(
-                       browser()->tab_strip_model()->GetActiveTab())
+                       browser()->GetTabStripModel()->GetActiveTab())
                 ->GetPresentationState();
           },
           ReadAnythingController::PresentationState::kInSidePanel),
@@ -263,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(
       CheckResult(
           [this]() {
             return ReadAnythingController::From(
-                       browser()->tab_strip_model()->GetActiveTab())
+                       browser()->GetTabStripModel()->GetActiveTab())
                 ->GetPresentationState();
           },
           ReadAnythingController::PresentationState::kInactive));

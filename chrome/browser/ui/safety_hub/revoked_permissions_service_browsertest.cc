@@ -21,7 +21,7 @@
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/mock_safe_browsing_database_manager.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"

@@ -15,7 +15,6 @@
 #include "chrome/browser/dom_distiller/tab_utils.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
@@ -398,10 +397,8 @@ bool ReadAnythingEntryPointController::CheckIfShouldSuggestReadingModeNaive(
 
   // Disable the omnibox on app windows, as these windows don't usually have
   // omnibox support.
-  Browser* browser = bwi->GetBrowserForMigrationOnly();
-  if (browser &&
-      (browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
-       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP)) {
+  if (bwi->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
+      bwi->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP) {
     LogDecision(ReadAnythingOmniboxChipDecision::kHideAppWindow);
     return false;
   }
