@@ -11,6 +11,8 @@ import android.os.SystemClock;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -102,7 +104,7 @@ public class BottomBarMediator
     private @Nullable GlicKeyedService mGlicKeyedService;
     private @Nullable Profile mOriginalProfile;
     private @Nullable Tab mCurrentTab;
-    private @Nullable Boolean mIsVisible;
+    private @TriState int mIsVisible;
     private @Nullable IphIntent mNewTabIphIntent;
     private @Nullable TemplateUrlService mTemplateUrlService;
     private @Nullable TemplateUrlServiceObserver mTemplateUrlServiceObserver;
@@ -207,7 +209,7 @@ public class BottomBarMediator
         updateVisibility();
     }
 
-    private void onOmniboxFocusChanged(Boolean focused) {
+    private void onOmniboxFocusChanged(boolean focused) {
         updateVisibility();
     }
 
@@ -237,10 +239,10 @@ public class BottomBarMediator
                 BottomBarConfigUtils.shouldDisableOnNtp() && currentTabIsRegularNtp;
         boolean isVisible = !shouldDisableOnNtp && !isOmniboxFocused && !mShouldHideForHub;
 
-        if (mIsVisible != null && mIsVisible == isVisible) return;
+        if (mIsVisible == TriStateUtils.from(isVisible)) return;
 
-        boolean didBecomeVisible = isVisible && (mIsVisible == null || !mIsVisible);
-        mIsVisible = isVisible;
+        boolean didBecomeVisible = isVisible && mIsVisible != TriState.TRUE;
+        mIsVisible = TriStateUtils.from(isVisible);
 
         mModel.set(BottomBarProperties.IS_VISIBLE, isVisible);
         mVisibilityDelegate.onVisibilityChanged(isVisible);
@@ -274,9 +276,8 @@ public class BottomBarMediator
 
     private void maybeShowIphs() {
         if (!mStartupPromoFlowFinished) return;
-        boolean isBottomBarVisible = Boolean.TRUE.equals(mIsVisible);
-        boolean isExtraVisible =
-                Boolean.TRUE.equals(mModel.get(BottomBarProperties.IS_EXTRA_BUTTON_VISIBLE));
+        boolean isBottomBarVisible = mIsVisible == TriState.TRUE;
+        boolean isExtraVisible = mModel.get(BottomBarProperties.IS_EXTRA_BUTTON_VISIBLE);
         if (isBottomBarVisible && isExtraVisible) {
             Profile profile = mProfileSupplier.get();
             Tracker tracker =
@@ -487,8 +488,8 @@ public class BottomBarMediator
 
     private void updateNewTabButtonBackground() {
         boolean isCentered = mButtonManager.hasCenteredButton();
-        Boolean current = mModel.get(BottomBarProperties.IS_NEW_TAB_BACKGROUND_VISIBLE);
-        if (current == null || current != isCentered) {
+        boolean current = mModel.get(BottomBarProperties.IS_NEW_TAB_BACKGROUND_VISIBLE);
+        if (current != isCentered) {
             mModel.set(BottomBarProperties.IS_NEW_TAB_BACKGROUND_VISIBLE, isCentered);
         }
     }
