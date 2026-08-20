@@ -9,7 +9,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,6 +27,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -84,9 +87,17 @@ public class VerticalTabHoverCardControllerUnitTest {
         doAnswer(
                         invocation -> {
                             ViewStub.OnInflateListener listener = invocation.getArgument(0);
-                            if (listener != null) {
-                                listener.onInflate(mTabHoverCardViewStub, mTabHoverCardView);
-                            }
+                            doAnswer(
+                                            inflateInvocation -> {
+                                                if (listener != null) {
+                                                    listener.onInflate(
+                                                            mTabHoverCardViewStub,
+                                                            mTabHoverCardView);
+                                                }
+                                                return mTabHoverCardView;
+                                            })
+                                    .when(mTabHoverCardViewStub)
+                                    .inflate();
                             return null;
                         })
                 .when(mTabHoverCardViewStub)
@@ -118,10 +129,13 @@ public class VerticalTabHoverCardControllerUnitTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mTabHoverCardViewStub).inflate();
-        verify(mTabHoverCardView).show(eq(mTab1), anyFloat(), anyFloat());
+
+        InOrder inOrder = inOrder(mTabHoverCardView);
+        inOrder.verify(mTabHoverCardView).hide();
+        inOrder.verify(mTabHoverCardView).show(eq(mTab1), anyFloat(), anyFloat());
 
         listener.onTabHoverCardStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ false);
-        verify(mTabHoverCardView).hide();
+        inOrder.verify(mTabHoverCardView).hide();
     }
 
     @Test
@@ -200,7 +214,7 @@ public class VerticalTabHoverCardControllerUnitTest {
 
     @Test
     @SmallTest
-    public void testScrubbing_EnterBeforeExit_DoesNotHideTab2() {
+    public void testScrubbing_EnterBeforeExit_HidesBeforeShowingTab2() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
         when(mTabHoverCardView.isShown()).thenReturn(true);
 
@@ -209,16 +223,22 @@ public class VerticalTabHoverCardControllerUnitTest {
         // Tab 1 is currently hovered and showing.
         listener.onTabHoverCardStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mTabHoverCardView).show(eq(mTab1), anyFloat(), anyFloat());
+
+        InOrder inOrder = inOrder(mTabHoverCardView);
+        inOrder.verify(mTabHoverCardView).show(eq(mTab1), anyFloat(), anyFloat());
 
         // Scrubbing: Tab 2 enters BEFORE Tab 1 exits (due to ViewGroup dispatch order).
         listener.onTabHoverCardStateChanged(TAB_ID_2, mTabView2, /* isHovered= */ true);
-        verify(mTabHoverCardView).show(eq(mTab2), anyFloat(), anyFloat());
+        inOrder.verify(mTabHoverCardView).hide();
+        inOrder.verify(mTabHoverCardView).show(eq(mTab2), anyFloat(), anyFloat());
+
+        // Clear previous invocations to accurately verify the exit behavior.
+        clearInvocations(mTabHoverCardView);
 
         // Tab 1 exits subsequently.
         listener.onTabHoverCardStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ false);
 
-        // Tab 2 should still be showing and hide() should NOT be called.
+        // Tab 2 should still be showing and hide() should NOT be called again.
         verify(mTabHoverCardView, never()).hide();
     }
 

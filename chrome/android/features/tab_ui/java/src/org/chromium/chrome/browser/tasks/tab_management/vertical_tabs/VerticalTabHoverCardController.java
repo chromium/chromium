@@ -107,6 +107,7 @@ public class VerticalTabHoverCardController {
                     (ViewStub _, View view) -> {
                         mTabHoverCardView = (TabHoverCardView) view;
                         mTabHoverCardView.initialize(mTabModelSelector, tabContentManagerSupplier);
+                        mTabHoverCardView.hide();
                     });
         }
     }
@@ -204,6 +205,10 @@ public class VerticalTabHoverCardController {
 
         Tab tab = mTabModelSelector.getTabById(tabId);
         if (tab == null) return;
+
+        if (mTabHoverCardView.isShown()) {
+            mTabHoverCardView.hide();
+        }
 
         float[] position =
                 getHoverCardPosition(
