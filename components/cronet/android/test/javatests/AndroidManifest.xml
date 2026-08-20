@@ -11,7 +11,7 @@ found in the LICENSE file.
             android:versionName="1.0"
             tools:ignore="ScopedStorage">
 
-    <uses-sdk android:minSdkVersion="23"/>
+    <uses-sdk android:minSdkVersion="24"/>
 
     <!-- tools:ignore="ScopedStorage" stops the linter from yelling at us for
          bypassing Scoped Storage. -->

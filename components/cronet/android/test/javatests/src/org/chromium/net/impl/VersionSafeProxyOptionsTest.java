@@ -12,8 +12,6 @@ import static org.mockito.Mockito.times;
 
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
-import android.os.Build;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
@@ -26,7 +24,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.IgnoreFor;
-import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.Proxy;
 import org.chromium.net.ProxyOptions;
 import org.chromium.net.VersionSafeProxyOptions;
@@ -96,7 +93,6 @@ public class VersionSafeProxyOptionsTest {
     @SmallTest
     // Mockito#verify implementations makes use of java.util.stream.Stream, which is available
     // starting from Nougat/API level 24
-    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testHttpProxy_correctlyCreatesProxyOptionsProto() {
         ProxyOptions proxyOptions =
                 ProxyOptions.fromProxyList(
@@ -123,7 +119,6 @@ public class VersionSafeProxyOptionsTest {
     @SmallTest
     // Mockito#verify implementations makes use of java.util.stream.Stream, which is available
     // starting from Nougat/API level 24
-    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testHttpProxy_correctlyCreatesProxyCallback() {
         ProxyOptions proxyOptions =
                 ProxyOptions.fromProxyList(
@@ -147,7 +142,6 @@ public class VersionSafeProxyOptionsTest {
     @SmallTest
     // Mockito#verify implementations makes use of java.util.stream.Stream, which is available
     // starting from Nougat/API level 24
-    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testHttpsProxy_correctlyCreatesProxyOptionsProto() {
         ProxyOptions proxyOptions =
                 ProxyOptions.fromProxyList(
@@ -174,7 +168,6 @@ public class VersionSafeProxyOptionsTest {
     @SmallTest
     // Mockito#verify implementations makes use of java.util.stream.Stream, which is available
     // starting from Nougat/API level 24
-    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testHttpsProxy_correctlyCreatesProxyCallback() {
         ProxyOptions proxyOptions =
                 ProxyOptions.fromProxyList(
@@ -198,7 +191,6 @@ public class VersionSafeProxyOptionsTest {
     @SmallTest
     // Mockito#verify implementations makes use of java.util.stream.Stream, which is available
     // starting from Nougat/API level 24
-    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testListWithMultipleProxies() {
         Proxy.HttpConnectCallback httpsProxyCallback =
                 Mockito.mock(Proxy.HttpConnectCallback.class);

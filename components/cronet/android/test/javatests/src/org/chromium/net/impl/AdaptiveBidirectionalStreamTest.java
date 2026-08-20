@@ -6,7 +6,6 @@ package org.chromium.net.impl;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assume.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -14,7 +13,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
 import android.net.Network;
-import android.os.Build;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
@@ -40,13 +38,10 @@ import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.BoolFlag;
 import org.chromium.net.CronetTestRule.Flags;
 import org.chromium.net.CronetTestRule.IgnoreFor;
-import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.StringFlag;
-import org.chromium.net.CronetTestUtil;
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.Http2TestServer;
 import org.chromium.net.NetworkException;
-import org.chromium.net.QuicTestServer;
 import org.chromium.net.TestBidirectionalStreamCallback;
 
 import java.net.SocketAddress;
@@ -102,8 +97,6 @@ public class AdaptiveBidirectionalStreamTest {
 
     @Before
     public void setUp() throws Exception {
-        // We need java.util.stream.Stream to be available for these tests.
-        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         mTestLogger = mLoggerTestRule.mTestLogger;
         mDroppingPacketHandler = new SocketDroppingPacketHandler();
         mPostTlsDroppingPacketHandler = new SocketDroppingPacketHandler();
@@ -112,11 +105,6 @@ public class AdaptiveBidirectionalStreamTest {
                 (ExperimentalCronetEngine.Builder)
                         new NativeCronetProvider(mTestRule.getTestFramework().getContext())
                                 .createBuilder();
-        // TODO(crbug.com/40284777): Fallback to MockCertVerifier when custom CAs are not supported.
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-            CronetTestUtil.setMockCertVerifierForTesting(
-                    builder, QuicTestServer.createMockCertVerifier());
-        }
         mCronetEngine = (ExperimentalCronetEngine) builder.build();
         assertThat(
                         Http2TestServer.startHttp2TestServer(
@@ -151,9 +139,7 @@ public class AdaptiveBidirectionalStreamTest {
 
     @After
     public void tearDown() throws Exception {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            assertThat(Http2TestServer.shutdownHttp2TestServer()).isTrue();
-        }
+        assertThat(Http2TestServer.shutdownHttp2TestServer()).isTrue();
     }
 
     @Test
@@ -175,11 +161,8 @@ public class AdaptiveBidirectionalStreamTest {
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
             reason = "Logging is not supported for these implementations.")
-    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void postViaBidirectionalStreamWithFallbackSet_successOnPrimaryNetwork()
             throws Exception {
-        // We need java.util.stream.Stream to be available for these tests.
-        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
 
         String url = Http2TestServer.getEchoStreamUrl();
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
@@ -221,10 +204,7 @@ public class AdaptiveBidirectionalStreamTest {
             })
     @Test
     @SmallTest
-    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void tlsConnectionFailsAllNetworks_throwsConnectionTimeoutError() throws Exception {
-        // We need java.util.stream.Stream to be available for these tests.
-        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
 
         // All packets being dropped for all networks. We can't save this.
         mDroppingPacketHandler.mDropAllRemoteAddresses = true;
@@ -261,10 +241,7 @@ public class AdaptiveBidirectionalStreamTest {
                         name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME,
                         value = "/echostream,/echostream2")
             })
-    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void adaptiveNetworkPaths() throws Exception {
-        // We need java.util.stream.Stream to be available for these tests.
-        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         assertThat(getUriIfAdaptive("https://localhost/echostream")).isNotNull();
         assertThat(getUriIfAdaptive("https://localhost2/echostream2")).isNotNull();
         assertThat(getUriIfAdaptive("https://localhost2:8080/echostream2")).isNotNull();
@@ -290,10 +267,7 @@ public class AdaptiveBidirectionalStreamTest {
                         name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME,
                         value = "")
             })
-    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void adaptiveNetworkPaths_empty() throws Exception {
-        // We need java.util.stream.Stream to be available for these tests.
-        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
         assertThat(getUriIfAdaptive("https://localhost/echostream")).isNull();
         assertThat(getUriIfAdaptive("")).isNull();
         assertThat(getUriIfAdaptive("https://localhost/otherstream")).isNull();
@@ -319,11 +293,8 @@ public class AdaptiveBidirectionalStreamTest {
             reason = "Logging is not supported for these implementations.")
     @Test
     @SmallTest
-    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void postViaBidirectionalStreamWithFallbackSet_successOnFallbackNetwork()
             throws Exception {
-        // We need java.util.stream.Stream to be available for these tests.
-        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
 
         // Drop packet for first socket we find.
         mDroppingPacketHandler.mDropFirstRemoteAddress = true;
@@ -370,11 +341,8 @@ public class AdaptiveBidirectionalStreamTest {
             })
     @Test
     @SmallTest
-    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void postViaBidirectionalStreamWithMemorizedFallback_successOnPrimaryNetwork()
             throws Exception {
-        // We need java.util.stream.Stream to be available for these tests.
-        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
 
         String url = Http2TestServer.getEchoStreamUrl();
 
@@ -423,10 +391,7 @@ public class AdaptiveBidirectionalStreamTest {
             })
     @Test
     @SmallTest
-    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void getFallbackNetworkHandle_networkNotAvailable_returnsNull() throws Exception {
-        // We need java.util.stream.Stream to be available for these tests.
-        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
 
         String url = "https://example.com/path";
         long networkHandle = 12345L;
@@ -469,11 +434,8 @@ public class AdaptiveBidirectionalStreamTest {
             reason = "Logging is not supported for these implementations.")
     @Test
     @SmallTest
-    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void postViaBidirectionalStreamWithFastIdempotentRequest_successOnFallbackNetwork()
             throws Exception {
-        // We need java.util.stream.Stream to be available for these tests.
-        assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
 
         // Drop packet for first socket AFTER TLS.
         mPostTlsDroppingPacketHandler.mDropFirstRemoteAddress = true;

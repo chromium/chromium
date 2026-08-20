@@ -103,15 +103,6 @@ public class BidirectionalStreamTest {
     public void setUp() throws Exception {
         mTestLogger = mLoggerTestRule.mTestLogger;
         mDropConnectionPackets = false;
-        // TODO(crbug.com/40284777): Fallback to MockCertVerifier when custom CAs are not supported.
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-            mTestRule
-                    .getTestFramework()
-                    .applyEngineBuilderPatch(
-                            (builder) ->
-                                    CronetTestUtil.setMockCertVerifierForTesting(
-                                            builder, QuicTestServer.createMockCertVerifier()));
-        }
         mCronetEngine = mTestRule.getTestFramework().startEngine();
         assertThat(Http2TestServer.startHttp2TestServer(new Http2TestServer.ServerStartOptions(mTestRule.getTestFramework().getContext())
                         .setPreTlsPacketHandler(new DroppingPacketHandler())))
@@ -419,7 +410,6 @@ public class BidirectionalStreamTest {
     @Test
     @SmallTest
     @Flags(boolFlags = {@BoolFlag(name = JavaCronetProvider.FORCE_HTTPENGINE_FLAG, value = false)})
-    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testSimpleGetWithFallbackForcingHttpEngineDisabled() throws Exception {
         String url = Http2TestServer.getEchoMethodUrl();
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
@@ -1253,11 +1243,6 @@ public class BidirectionalStreamTest {
         ExperimentalCronetEngine.Builder engineBuilder =
                 new ExperimentalCronetEngine.Builder(mTestRule.getTestFramework().getContext());
         engineBuilder.setUserAgent(userAgentValue);
-        // TODO(crbug.com/40284777): Fallback to MockCertVerifier when custom CAs are not supported.
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-            CronetTestUtil.setMockCertVerifierForTesting(
-                    engineBuilder, QuicTestServer.createMockCertVerifier());
-        }
         ExperimentalCronetEngine engine = engineBuilder.build();
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
         BidirectionalStream.Builder builder =
@@ -1667,11 +1652,6 @@ public class BidirectionalStreamTest {
                 (ExperimentalCronetEngine.Builder)
                         new NativeCronetProvider(mTestRule.getTestFramework().getContext())
                                 .createBuilder();
-        // TODO(crbug.com/40284777): Fallback to MockCertVerifier when custom CAs are not supported.
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-            CronetTestUtil.setMockCertVerifierForTesting(
-                    builder, QuicTestServer.createMockCertVerifier());
-        }
         mCronetEngine = builder.build();
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
         callback.setFailure(failureType, failureStep);
@@ -2088,8 +2068,6 @@ public class BidirectionalStreamTest {
     }
 
     @Test
-    // TODO(crbug.com/41494733): Enable on Android M once fixed.
-    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testBindToDefaultNetworkSucceeds() {
         ConnectivityManagerWrapper wrapper =
                 new ConnectivityManagerWrapper(mTestRule.getTestFramework().getContext());

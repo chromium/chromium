@@ -28,7 +28,6 @@ import org.chromium.net.CronetException;
 import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.IgnoreFor;
-import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.CronetTestUtil;
 import org.chromium.net.MockUrlRequestJobFactory;
@@ -764,15 +763,11 @@ public class CronetHttpURLConnectionTest {
         URL url = new URL(mNativeTestServer.getFileURL("/redirect.html"));
         mUrlConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mUrlConnection.setInstanceFollowRedirects(false);
-        // Redirect following control broken in Android Marshmallow:
-        // https://code.google.com/p/android/issues/detail?id=194495
-        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.M) {
-            assertThat(mUrlConnection.getResponseCode()).isEqualTo(302);
-            assertThat(mUrlConnection.getResponseMessage()).isEqualTo("Found");
-            assertThat(mUrlConnection.getHeaderField("Location")).isEqualTo("/success.txt");
-            assertThat(mUrlConnection.getURL().toString())
-                    .isEqualTo(mNativeTestServer.getFileURL("/redirect.html"));
-        }
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(302);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("Found");
+        assertThat(mUrlConnection.getHeaderField("Location")).isEqualTo("/success.txt");
+        assertThat(mUrlConnection.getURL().toString())
+                .isEqualTo(mNativeTestServer.getFileURL("/redirect.html"));
     }
 
     @Test
@@ -781,15 +776,11 @@ public class CronetHttpURLConnectionTest {
         HttpURLConnection.setFollowRedirects(false);
         URL url = new URL(mNativeTestServer.getFileURL("/redirect.html"));
         mUrlConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
-        // Redirect following control broken in Android Marshmallow:
-        // https://code.google.com/p/android/issues/detail?id=194495
-        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.M) {
-            assertThat(mUrlConnection.getResponseCode()).isEqualTo(302);
-            assertThat(mUrlConnection.getResponseMessage()).isEqualTo("Found");
-            assertThat(mUrlConnection.getHeaderField("Location")).isEqualTo("/success.txt");
-            assertThat(mUrlConnection.getURL().toString())
-                    .isEqualTo(mNativeTestServer.getFileURL("/redirect.html"));
-        }
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(302);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("Found");
+        assertThat(mUrlConnection.getHeaderField("Location")).isEqualTo("/success.txt");
+        assertThat(mUrlConnection.getURL().toString())
+                .isEqualTo(mNativeTestServer.getFileURL("/redirect.html"));
     }
 
     @Test
@@ -1043,7 +1034,6 @@ public class CronetHttpURLConnectionTest {
     @Test
     @SmallTest
     @RequiresMinApi(9) // Tagging support added in API level 9: crrev.com/c/chromium/src/+/930086
-    @RequiresMinAndroidApi(Build.VERSION_CODES.M) // crbug/1301957
     public void testTagging() throws Exception {
         if (!CronetTestUtil.nativeCanGetTaggedBytes()) {
             Log.i(TAG, "Skipping test - GetTaggedBytes unsupported.");

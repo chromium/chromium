@@ -5,7 +5,6 @@
 package org.chromium.net;
 
 import android.content.Context;
-import android.os.Build;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -50,26 +49,11 @@ public final class Http2TestServer {
 
     private static ReportingCollector sReportingCollector;
 
-    private static final String SERVER_CA_PEM;
-    public static final String SERVER_CERT_PEM;
-    private static final String SERVER_KEY_PKCS8_PEM;
+    private static final String SERVER_CA_PEM = "cronet-quic-root.pem";
+    public static final String SERVER_CERT_PEM = "cronet-quic-chain.pem";
+    private static final String SERVER_KEY_PKCS8_PEM = "cronet-quic-leaf-cert.key.pkcs8.pem";
     // Used to start http2 test server.
     private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(1);
-
-    static {
-        // TODO(crbug.com/40284777): Fallback to MockCertVerifier when custom CAs are not supported.
-        // Currently, MockCertVerifier uses different certificates, so make the server also use
-        // those.
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-            SERVER_CA_PEM = "quic-root.pem";
-            SERVER_CERT_PEM = "quic-chain.pem";
-            SERVER_KEY_PKCS8_PEM = "quic-leaf-cert.key.pkcs8.pem";
-        } else {
-            SERVER_CA_PEM = "cronet-quic-root.pem";
-            SERVER_CERT_PEM = "cronet-quic-chain.pem";
-            SERVER_KEY_PKCS8_PEM = "cronet-quic-leaf-cert.key.pkcs8.pem";
-        }
-    }
 
     /** Options for starting the HTTP/2 test server. */
     public static class ServerStartOptions {

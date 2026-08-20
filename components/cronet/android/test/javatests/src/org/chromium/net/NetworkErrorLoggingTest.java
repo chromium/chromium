@@ -8,8 +8,6 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
-import android.os.Build;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
@@ -34,16 +32,6 @@ public class NetworkErrorLoggingTest {
 
     @Before
     public void setUp() throws Exception {
-        // TODO(crbug.com/40284777): Fallback to MockCertVerifier when custom CAs are not supported.
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-            mTestRule
-                    .getTestFramework()
-                    .applyEngineBuilderPatch(
-                            (builder) -> {
-                                CronetTestUtil.setMockCertVerifierForTesting(
-                                        builder, QuicTestServer.createMockCertVerifier());
-                            });
-        }
         assertThat(Http2TestServer.startHttp2TestServer(mTestRule.getTestFramework().getContext()))
                 .isTrue();
     }

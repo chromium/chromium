@@ -6,11 +6,7 @@ package org.chromium.net.smoke;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assume.assumeTrue;
-
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
-
-import android.os.Build;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -55,12 +51,6 @@ public class HttpTest {
                 new ExperimentalCronetEngine.Builder(ApplicationProvider.getApplicationContext());
         // MockCertVerifier can't be used in this context because we're not bundling
         // libcronet_test.so as we wish to only test the prod shared library.
-        assumeTrue(
-                "Custom CAs are not supported for Android M and MockCertVerifier can't be used "
-                        + "in this content",
-                Build.VERSION.SDK_INT > Build.VERSION_CODES.M);
-        // TODO(crbug.com/40284777): Fallback to MockCertVerifier when custom CAs are not
-        // supported.
         CronetEngine engine = builder.build();
         SmokeTestRequestCallback callback = new SmokeTestRequestCallback();
         UrlRequest.Builder requestBuilder =

@@ -63,7 +63,6 @@
 #include "third_party/boringssl/src/include/openssl/rsa.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
-#include "third_party/zlib/zlib.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h"
@@ -387,14 +386,6 @@ JNI_CronetLibraryLoader_GetTraceNetLogCaptureModeForTesting(JNIEnv* env) {
 
 static ScopedJavaLocalRef<jstring> JNI_CronetLibraryLoader_GetCronetVersion(
     JNIEnv* env) {
-#if defined(ARCH_CPU_ARM64)
-  // Attempt to avoid crashes on some ARM64 Marshmallow devices by
-  // prompting zlib ARM feature detection early on. https://crbug.com/853725
-  if (base::android::android_info::sdk_int() ==
-      base::android::android_info::SDK_VERSION_MARSHMALLOW) {
-    crc32(0, Z_NULL, 0);
-  }
-#endif
   return base::android::ConvertUTF8ToJavaString(env, CRONET_VERSION);
 }
 
