@@ -13,7 +13,7 @@ def class_accessors(sb,
                     is_muxing=False,
                     use_weak_called_by_natives=False):
   for java_class in java_classes:
-    escaped_name = java_class.to_cpp()
+    escaped_name = java_class.class_without_prefix.to_cpp()
     # #ifdef needed when multiple .h files include shared common classes.
     sb(f"""\
 #ifndef {escaped_name}_clazz_defined
@@ -53,7 +53,7 @@ def class_accessor_expression(java_class):
   if java_class == java_types.STRING_CLASS:
     return 'jni_zero::g_string_class'
 
-  return f'{java_class.to_cpp()}_clazz(env)'
+  return f'{java_class.class_without_prefix.to_cpp()}_clazz(env)'
 
 
 def header_preamble(script_name,

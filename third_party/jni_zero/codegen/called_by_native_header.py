@@ -219,7 +219,7 @@ def registration_metadata(sb, sorted_classes, called_by_natives):
   with sb.namespace('jni_zero::internal'):
     with sb.section('Class Index Definitions.'):
       for idx, java_class in enumerate(sorted_classes):
-        index_var = f'kClassIdx_{java_class.to_cpp()}'
+        index_var = f'kClassIdx_{java_class.class_without_prefix.to_cpp()}'
         sb(f'extern const uint16_t {index_var} = {idx};\n')
 
     with sb.section('CalledByNative Table and Indices.'):
