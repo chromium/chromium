@@ -22,7 +22,10 @@ namespace syncer {
 
 namespace {
 
-class DeviceNameUtilTest : public testing::Test {
+using testing::ElementsAre;
+using testing::Test;
+
+class DeviceNameUtilTest : public Test {
  public:
   DeviceNameUtilTest() = default;
 
@@ -430,7 +433,7 @@ TEST_F(DeviceNameUtilTest,
   EXPECT_EQ("Dell Computer", results[1].display_name);
 }
 
-class DeviceNameUtilSimplifyNamingTest : public testing::Test {
+class DeviceNameUtilSimplifyNamingTest : public Test {
  public:
   DeviceNameUtilSimplifyNamingTest() {
     scoped_feature_list_.InitAndEnableFeature(kSyncSimplifyDeviceNaming);
@@ -471,7 +474,7 @@ constexpr char kAppleManufacturer[] = "Apple Inc.";
 constexpr char kIPhone13MarketingName[] = "iPhone 13";
 constexpr char kIPhone13Model[] = "iPhone14,5";
 
-class DeviceNameUtilUseServerDeterminedDeviceNameTest : public testing::Test {
+class DeviceNameUtilUseServerDeterminedDeviceNameTest : public Test {
  protected:
   base::test::ScopedFeatureList scoped_feature_list_{
       kSyncUseServerDeterminedDeviceName};
@@ -599,24 +602,22 @@ TEST_F(DeviceNameUtilTest,
   EXPECT_EQ("Samsung Phone SM-S908U", candidates.fallback_full_name);
 }
 
-using testing::ElementsAre;
-using testing::Test;
-
-class GetDeviceNamesTest : public Test {
+class GetDeviceDisplayNamesTest : public Test {
  public:
-  GetDeviceNamesTest() {
+  GetDeviceDisplayNamesTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{syncer::kSyncSimplifyDeviceNaming,
                               syncer::kSyncDisambiguateDeviceNamesWithChannel},
         /*disabled_features=*/{});
   }
-  ~GetDeviceNamesTest() override = default;
+  ~GetDeviceDisplayNamesTest() override = default;
 
   std::string GetDisambiguatedDisplayName(
       const DeviceInfo* target,
       const std::vector<const DeviceInfo*>& devices,
       const DeviceInfo* local_device = nullptr) {
-    std::vector<std::string> names = GetDeviceNames(devices, local_device);
+    std::vector<std::string> names =
+        GetDeviceDisplayNames(devices, local_device);
     for (size_t i = 0; i < devices.size(); ++i) {
       if (devices[i] == target) {
         return names[i];
@@ -631,7 +632,7 @@ class GetDeviceNamesTest : public Test {
 
 // Tests that unique devices return their base display names without any release
 // channel labels, even if they are on a non-stable release channel.
-TEST_F(GetDeviceNamesTest, UniqueDevices_ReturnsBaseName) {
+TEST_F(GetDeviceDisplayNamesTest, UniqueDevices_ReturnsBaseName) {
   std::unique_ptr<DeviceInfo> phone =
       TestDeviceInfoBuilder(DeviceInfo::OsType::kAndroid)
           .WithGuid("guid1")
@@ -657,7 +658,7 @@ TEST_F(GetDeviceNamesTest, UniqueDevices_ReturnsBaseName) {
 
 // Tests that devices sharing a base display name on different channels receive
 // channel disambiguation labels.
-TEST_F(GetDeviceNamesTest,
+TEST_F(GetDeviceDisplayNamesTest,
        DuplicateBaseNameDifferentChannels_ReturnsChannelLabel) {
   std::unique_ptr<DeviceInfo> stable_device =
       TestDeviceInfoBuilder(DeviceInfo::OsType::kAndroid)
@@ -689,7 +690,7 @@ TEST_F(GetDeviceNamesTest,
 // Tests that remote devices colliding with the active local device's display
 // name return the base name when on the Stable channel, but receive a release
 // channel label if on a non-stable channel.
-TEST_F(GetDeviceNamesTest,
+TEST_F(GetDeviceDisplayNamesTest,
        RemoteCollidesWithLocalStableDevice_ReturnsBaseNameOrLabel) {
   std::unique_ptr<DeviceInfo> local_device =
       TestDeviceInfoBuilder(DeviceInfo::OsType::kAndroid)
@@ -729,7 +730,8 @@ TEST_F(GetDeviceNamesTest,
 // Tests that a mix of non-stable channel duplicates and stable-channel
 // duplicates correctly disambiguates non-stable channels while returning the
 // base name for stable-channel duplicates.
-TEST_F(GetDeviceNamesTest, MultipleChannelsAndProfiles_DisambiguatesCorrectly) {
+TEST_F(GetDeviceDisplayNamesTest,
+       MultipleChannelsAndProfiles_DisambiguatesCorrectly) {
   std::unique_ptr<DeviceInfo> stable_profile1 =
       TestDeviceInfoBuilder(DeviceInfo::OsType::kAndroid)
           .WithGuid("guid1")
@@ -770,7 +772,7 @@ TEST_F(GetDeviceNamesTest, MultipleChannelsAndProfiles_DisambiguatesCorrectly) {
 
 // Tests that devices with an empty or unrecognized user agent return clean
 // display names without empty label parentheses.
-TEST_F(GetDeviceNamesTest, EmptyUserAgent_ReturnsBaseName) {
+TEST_F(GetDeviceDisplayNamesTest, EmptyUserAgent_ReturnsBaseName) {
   std::unique_ptr<DeviceInfo> device =
       TestDeviceInfoBuilder(DeviceInfo::OsType::kAndroid)
           .WithGuid("guid1")
@@ -786,7 +788,8 @@ TEST_F(GetDeviceNamesTest, EmptyUserAgent_ReturnsBaseName) {
 
 // Tests that colliding devices on a non-stable release channel receive
 // the release channel label.
-TEST_F(GetDeviceNamesTest, CollidingNonStableProfiles_ReturnsChannelLabel) {
+TEST_F(GetDeviceDisplayNamesTest,
+       CollidingNonStableProfiles_ReturnsChannelLabel) {
   std::unique_ptr<DeviceInfo> canary1 =
       TestDeviceInfoBuilder(DeviceInfo::OsType::kAndroid)
           .WithGuid("guid1")
@@ -812,7 +815,7 @@ TEST_F(GetDeviceNamesTest, CollidingNonStableProfiles_ReturnsChannelLabel) {
 }
 
 // Tests that nullptr entries in the device list do not crash or corrupt counts.
-TEST_F(GetDeviceNamesTest, NullDevicePointersInList_SafelyIgnored) {
+TEST_F(GetDeviceDisplayNamesTest, NullDevicePointersInList_SafelyIgnored) {
   std::unique_ptr<DeviceInfo> phone =
       TestDeviceInfoBuilder(DeviceInfo::OsType::kAndroid)
           .WithGuid("guid1")
@@ -826,9 +829,9 @@ TEST_F(GetDeviceNamesTest, NullDevicePointersInList_SafelyIgnored) {
             GetDisambiguatedDisplayName(phone.get(), {phone.get(), nullptr}));
 }
 
-// Tests that GetDeviceNames resolves duplicate names across different
-// release channels and preserves order.
-TEST_F(GetDeviceNamesTest, DuplicateDevices_ReturnsDisambiguatedNames) {
+// Tests that `GetDeviceDisplayNames()` resolves duplicate names across
+// different release channels and preserves order.
+TEST_F(GetDeviceDisplayNamesTest, DuplicateDevices_ReturnsDisambiguatedNames) {
   std::unique_ptr<DeviceInfo> stable1 =
       TestDeviceInfoBuilder(DeviceInfo::OsType::kAndroid)
           .WithGuid("guid1")
@@ -855,8 +858,8 @@ TEST_F(GetDeviceNamesTest, DuplicateDevices_ReturnsDisambiguatedNames) {
           .Build();
 
   std::vector<std::string> result =
-      GetDeviceNames({stable1.get(), stable2.get(), canary.get()},
-                     /*local_device=*/nullptr);
+      GetDeviceDisplayNames({stable1.get(), stable2.get(), canary.get()},
+                            /*local_device=*/nullptr);
 
   EXPECT_THAT(result, ElementsAre("Google Phone", "Google Phone",
                                   "Google Phone (Canary)"));

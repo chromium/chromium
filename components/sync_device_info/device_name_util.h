@@ -56,7 +56,7 @@ std::string GetDeviceDisplayName(const DeviceInfo* device);
 // When `kSyncDisambiguateDeviceNamesWithChannel` is enabled, this resolves
 // duplicate display names across `devices` and against `local_device` (if
 // provided) by appending release channel labels.
-std::vector<std::string> GetDeviceNames(
+std::vector<std::string> GetDeviceDisplayNames(
     const std::vector<const DeviceInfo*>& devices,
     const DeviceInfo* local_device = nullptr);
 

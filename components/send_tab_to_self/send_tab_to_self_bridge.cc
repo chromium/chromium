@@ -742,7 +742,7 @@ SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
     // send_tab_to_self (e.g. into sync_device_info or sharing) so multiple
     // clients can share a unified struct.
     std::vector<std::string> device_names =
-        syncer::GetDeviceNames(raw_devices, GetLocalDeviceInfo());
+        syncer::GetDeviceDisplayNames(raw_devices, GetLocalDeviceInfo());
     std::vector<TargetDeviceInfo> target_devices;
     target_devices.reserve(devices.size());
     for (size_t i = 0; i < devices.size(); ++i) {

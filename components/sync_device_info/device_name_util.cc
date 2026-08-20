@@ -166,9 +166,9 @@ std::string FormatNameWithDisambiguation(std::string_view base_name,
       base::UTF8ToUTF16(base_name), base::UTF8ToUTF16(label));
 }
 
-// Helper class for `GetDeviceNames()` that tracks display name frequencies
-// across target devices and an active local device to determine whether
-// release channel labels are required.
+// Helper class for `GetDeviceDisplayNames()` that tracks display name
+// frequencies across target devices and an active local device to determine
+// whether release channel labels are required.
 class DeviceNameDisambiguator {
  public:
   DeviceNameDisambiguator(const std::vector<const DeviceInfo*>& devices,
@@ -293,10 +293,10 @@ std::string GetDeviceDisplayName(const DeviceInfo* device) {
   return GetDisplayNameCandidates(device).preferred_name_if_unique;
 }
 
-std::vector<std::string> GetDeviceNames(
+std::vector<std::string> GetDeviceDisplayNames(
     const std::vector<const DeviceInfo*>& devices,
     const DeviceInfo* local_device) {
-  TRACE_EVENT0("sync", "syncer::GetDeviceNames");
+  TRACE_EVENT0("sync", "syncer::GetDeviceDisplayNames");
   if (!base::FeatureList::IsEnabled(kSyncSimplifyDeviceNaming)) {
     std::optional<std::string> local_device_name =
         local_device
