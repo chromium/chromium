@@ -15,6 +15,9 @@
 #import "base/task/sequenced_task_runner.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/actor/core/journal_details_builder.h"
+#import "components/autofill/core/browser/form_predictions_tracker.h"
+#import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/page_stability_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/page_stability_monitor.h"
@@ -167,6 +170,9 @@ void ObservationDelayController::MoveToState(State state) {
     case State::kDelayForLcp:
       DelayForLcp();
       break;
+    case State::kWaitForAutofillPredictions:
+      WaitForAutofillPredictions();
+      break;
     case State::kPageNavigated:
       result_ = Result::kPageNavigated;
       MoveToState(State::kDone);
@@ -230,7 +236,7 @@ void ObservationDelayController::DelayForLcp() {
     return;
   }
   if (!web_frame_ || !ShouldDelayForLcp()) {
-    PostMoveToStateClosure(State::kDone).Run();
+    PostMoveToStateClosure(State::kWaitForAutofillPredictions).Run();
     return;
   }
   PageStabilityJavaScriptFeature::GetInstance()->WaitForLcp(
@@ -238,13 +244,44 @@ void ObservationDelayController::DelayForLcp() {
       base::BindOnce(
           [](base::WeakPtr<ObservationDelayController> controller,
              ToolExecutionResult result) {
-            // Proceed to kDone even if LCP checking fails or times out, as LCP
-            // checking is best-effort.
-            if (controller) {
-              controller->MoveToState(State::kDone);
+            // Proceed even if LCP checking fails or times out, as LCP checking
+            // is best-effort.
+            if (controller && controller->state_ == State::kDelayForLcp) {
+              controller->MoveToState(State::kWaitForAutofillPredictions);
             }
           },
           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ObservationDelayController::WaitForAutofillPredictions() {
+  if (state_ != State::kWaitForAutofillPredictions) {
+    return;
+  }
+  autofill::AutofillClientIOS* client =
+      web_state_ ? autofill::AutofillClientIOS::FromWebState(web_state_.get())
+                 : nullptr;
+  autofill::FormPredictionsTracker* tracker =
+      (client && base::FeatureList::IsEnabled(
+                     autofill::features::kAutofillDelayApcForPredictions))
+          ? client->GetFormPredictionsTracker()
+          : nullptr;
+  if (!tracker) {
+    PostMoveToStateClosure(State::kDone).Run();
+    return;
+  }
+  tracker->Wait(
+      base::BindOnce(&ObservationDelayController::OnAutofillPredictionsFinished,
+                     weak_ptr_factory_.GetWeakPtr()),
+      GetActorPageStabilityAutofillPredictionsTimeout());
+}
+
+void ObservationDelayController::OnAutofillPredictionsFinished() {
+  // Ignore callback if the controller already timed out, navigated away, or
+  // completed (e.g. WebState destroyed).
+  if (state_ != State::kWaitForAutofillPredictions) {
+    return;
+  }
+  MoveToState(State::kDone);
 }
 
 void ObservationDelayController::CheckStateTransition(State old_state,
@@ -258,30 +295,38 @@ void ObservationDelayController::CheckStateTransition(State old_state,
               {State::kWaitForPageStability,
                /* async transitions */
                State::kDidTimeout,
+               State::kDone, // if WebStateDestroyed
                State::kPageNavigated}},
           {State::kWaitForPageStability,
               {State::kWaitForLoadCompletion,
-               State::kDone,
                /* async transitions */
                State::kDidTimeout,
+               State::kDone, // if WebStateDestroyed
                State::kPageNavigated}},
           {State::kWaitForLoadCompletion,
               {State::kDelayForLcp,
                /* async transitions */
                State::kDidTimeout,
+               State::kDone,  // if WebStateDestroyed
                State::kPageNavigated}},
           {State::kDelayForLcp,
-              {State::kDone,
+              {State::kWaitForAutofillPredictions,
                /* async transitions */
                State::kDidTimeout,
+               State::kDone, // if WebStateDestroyed
                State::kPageNavigated}},
+          {State::kWaitForAutofillPredictions,
+               {State::kDone,
+                /* async transitions */
+                State::kDidTimeout,
+                State::kPageNavigated}},
           {State::kPageNavigated,
-              {State::kDone,
                /* async transitions */
+               {State::kDone, // can happen if WebStateDestroyed
                State::kDidTimeout}},
           {State::kDidTimeout,
-              {State::kDone,
                /* async transitions */
+               {State::kDone, // can happen if WebStateDestroyed
                State::kPageNavigated}}
           // clang-format on
       }));
@@ -305,6 +350,8 @@ std::string_view ObservationDelayController::StateToString(State state) {
       return "WaitForLoadCompletion";
     case State::kDelayForLcp:
       return "DelayForLcp";
+    case State::kWaitForAutofillPredictions:
+      return "WaitForAutofillPredictions";
     case State::kPageNavigated:
       return "PageNavigated";
     case State::kDidTimeout:

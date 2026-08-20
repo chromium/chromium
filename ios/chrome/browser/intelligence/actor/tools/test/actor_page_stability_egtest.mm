@@ -5,6 +5,7 @@
 #import <string>
 
 #import "base/strings/stringprintf.h"
+#import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "base/values.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -20,6 +21,11 @@
 @end
 
 @implementation ActorPageStabilityTestCase
+
+- (void)tearDownHelper {
+  [ActorAppInterface resolveInFlightAutofillPredictions];
+  [super tearDownHelper];
+}
 
 #pragma mark - Helpers
 
@@ -294,6 +300,79 @@
   GREYAssertTrue(
       status.is_string() && status.GetString().empty(),
       @"LCP element should not be present when `executeAction` times out.");
+}
+
+// Tests that `ObservationDelayController` waits for Autofill predictions
+// on a page containing form fields before completing tool execution.
+- (void)testPageStability_waitsForAutofillPredictions {
+  std::string formHTML = R"(
+    <html>
+    <body>
+      <h2>Sign In</h2>
+      <form id='login_form' onsubmit='return false;'>
+        <label for='username'>Username:</label>
+        <input type='text' id='username' name='username' autocomplete='username'><br>
+        <label for='password'>Password:</label>
+        <input type='password' id='password' name='password' autocomplete='current-password'><br>
+        <input type='button' id='submit' value='Sign In'>
+      </form>
+    </body>
+    </html>
+  )";
+
+  [ChromeEarlGrey loadURL:[self URLForHTML:formHTML]];
+  [ChromeEarlGrey waitForWebStateContainingText:"Sign In"];
+
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::ClickAction* clickAction = action.mutable_click();
+  clickAction->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  clickAction->set_click_type(optimization_guide::proto::ClickAction::LEFT);
+  clickAction->set_click_count(optimization_guide::proto::ClickAction::SINGLE);
+  [self setCoordinatesOnTarget:clickAction->mutable_target()
+                  withSelector:"#submit"];
+
+  std::string serializedAction;
+  action.SerializeToString(&serializedAction);
+  NSData* actionData = [NSData dataWithBytes:serializedAction.data()
+                                      length:serializedAction.length()];
+
+  // Simulate an in-flight server prediction to force FormPredictionsTracker
+  // into a waiting state.
+  [ActorAppInterface simulateInFlightAutofillPredictions];
+
+  __block BOOL actionCompleted = NO;
+  __block NSError* actionError = nil;
+
+  // Trigger actuated action execution asynchronously.
+  [ActorAppInterface executeActionWithProto:actionData
+                                 completion:^(NSError* error) {
+                                   actionError = error;
+                                   actionCompleted = YES;
+                                 }];
+
+  // Verify that action execution does NOT finish immediately because Autofill
+  // server predictions are still pending in ObservationDelayController.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(300));
+  GREYAssertFalse(
+      actionCompleted,
+      @"Action execution should be blocked waiting for Autofill predictions.");
+
+  // Resolve the in-flight server predictions to unblock FormPredictionsTracker.
+  [ActorAppInterface resolveInFlightAutofillPredictions];
+
+  // Verify that action execution now completes promptly upon prediction
+  // resolution.
+  BOOL success =
+      [[GREYCondition conditionWithName:@"Wait for action execution completion"
+                                  block:^BOOL {
+                                    return actionCompleted;
+                                  }]
+          waitWithTimeout:base::test::ios::kWaitForActionTimeout.InSecondsF()];
+
+  GREYAssertTrue(success,
+                 @"Action execution timed out after resolving predictions.");
+  GREYAssertNil(actionError, @"Action execution failed with error: %@",
+                actionError);
 }
 
 @end

@@ -50,6 +50,7 @@ class ObservationDelayController : public web::WebStateObserver {
     kWaitForPageStability,
     kWaitForLoadCompletion,
     kDelayForLcp,
+    kWaitForAutofillPredictions,
     kPageNavigated,
     kDidTimeout,
     kDone
@@ -116,6 +117,13 @@ class ObservationDelayController : public web::WebStateObserver {
 
   // Returns whether the controller should delay for LCP after page stability.
   bool ShouldDelayForLcp() const;
+
+  // Waits for Autofill to finish parsing and predicting form fields on the
+  // page.
+  void WaitForAutofillPredictions();
+
+  // Callback triggered when Autofill predictions arrive or the timeout expires.
+  void OnAutofillPredictionsFinished();
 
   // CHECKs that the transition from `old_state` to `new_state` is valid.
   void CheckStateTransition(State old_state, State new_state);

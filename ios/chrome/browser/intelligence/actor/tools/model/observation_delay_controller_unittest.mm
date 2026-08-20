@@ -53,6 +53,10 @@ class ObservationDelayControllerTest : public PlatformTest {
     controller_->WebStateDestroyed(web_state);
   }
 
+  void TriggerOnAutofillPredictionsFinished() {
+    controller_->OnAutofillPredictionsFinished();
+  }
+
   void WaitForState(ObservationDelayController::State target_state) {
     base::RunLoop run_loop;
     controller_->SetStateChangeCallbackForTesting(base::BindRepeating(
@@ -85,13 +89,15 @@ TEST_F(ObservationDelayControllerTest, DefaultTimeout) {
   EXPECT_EQ(future.Get(), ObservationDelayController::Result::kOk);
   // Note: kTimeout is not here since that transition comes after kDone, and we
   // don't support transitioning out of that state.
-  EXPECT_THAT(controller_->StateHistoryForTesting(),
-              testing::ElementsAre(
-                  ObservationDelayController::State::kInitial,
-                  ObservationDelayController::State::kWaitForPageStability,
-                  ObservationDelayController::State::kWaitForLoadCompletion,
-                  ObservationDelayController::State::kDelayForLcp,
-                  ObservationDelayController::State::kDone));
+  EXPECT_THAT(
+      controller_->StateHistoryForTesting(),
+      testing::ElementsAre(
+          ObservationDelayController::State::kInitial,
+          ObservationDelayController::State::kWaitForPageStability,
+          ObservationDelayController::State::kWaitForLoadCompletion,
+          ObservationDelayController::State::kDelayForLcp,
+          ObservationDelayController::State::kWaitForAutofillPredictions,
+          ObservationDelayController::State::kDone));
 }
 
 TEST_F(ObservationDelayControllerTest, ConfiguredTimeout) {
@@ -110,13 +116,15 @@ TEST_F(ObservationDelayControllerTest, ConfiguredTimeout) {
   EXPECT_EQ(future.Get(), ObservationDelayController::Result::kOk);
   // Note: kTimeout is not here since that transition comes after kDone, and we
   // don't support transitioning out of that state.
-  EXPECT_THAT(controller_->StateHistoryForTesting(),
-              testing::ElementsAre(
-                  ObservationDelayController::State::kInitial,
-                  ObservationDelayController::State::kWaitForPageStability,
-                  ObservationDelayController::State::kWaitForLoadCompletion,
-                  ObservationDelayController::State::kDelayForLcp,
-                  ObservationDelayController::State::kDone));
+  EXPECT_THAT(
+      controller_->StateHistoryForTesting(),
+      testing::ElementsAre(
+          ObservationDelayController::State::kInitial,
+          ObservationDelayController::State::kWaitForPageStability,
+          ObservationDelayController::State::kWaitForLoadCompletion,
+          ObservationDelayController::State::kDelayForLcp,
+          ObservationDelayController::State::kWaitForAutofillPredictions,
+          ObservationDelayController::State::kDone));
 }
 
 TEST_F(ObservationDelayControllerTest, WaitForLoadCompletion_DidStopLoading) {
@@ -129,13 +137,15 @@ TEST_F(ObservationDelayControllerTest, WaitForLoadCompletion_DidStopLoading) {
   TriggerDidStopLoading(fake_web_state.get());
 
   EXPECT_EQ(future.Get(), ObservationDelayController::Result::kOk);
-  EXPECT_THAT(controller_->StateHistoryForTesting(),
-              testing::ElementsAre(
-                  ObservationDelayController::State::kInitial,
-                  ObservationDelayController::State::kWaitForPageStability,
-                  ObservationDelayController::State::kWaitForLoadCompletion,
-                  ObservationDelayController::State::kDelayForLcp,
-                  ObservationDelayController::State::kDone));
+  EXPECT_THAT(
+      controller_->StateHistoryForTesting(),
+      testing::ElementsAre(
+          ObservationDelayController::State::kInitial,
+          ObservationDelayController::State::kWaitForPageStability,
+          ObservationDelayController::State::kWaitForLoadCompletion,
+          ObservationDelayController::State::kDelayForLcp,
+          ObservationDelayController::State::kWaitForAutofillPredictions,
+          ObservationDelayController::State::kDone));
 }
 
 TEST_F(ObservationDelayControllerTest, DidStartNavigation_CrossDocument) {
@@ -202,6 +212,28 @@ TEST_F(ObservationDelayControllerTest, WebStateDestroyed) {
                   ObservationDelayController::State::kWaitForPageStability,
                   ObservationDelayController::State::kWaitForLoadCompletion,
                   ObservationDelayController::State::kDelayForLcp,
+                  ObservationDelayController::State::kDone));
+}
+
+// Test that WebState destruction during `State::kWaitForLoadCompletion`
+// transitions directly to `State::kDone`.
+TEST_F(ObservationDelayControllerTest,
+       WebStateDestroyed_DuringWaitForLoadCompletion) {
+  base::test::TestFuture<ObservationDelayController::Result> future;
+  web::FakeWebState fake_web_state;
+  fake_web_state.SetLoading(true);
+  controller_->Wait(/*web_state=*/fake_web_state.GetWeakPtr(),
+                    /*web_frame=*/nullptr, future.GetCallback());
+  WaitForState(ObservationDelayController::State::kWaitForLoadCompletion);
+
+  TriggerWebStateDestroyed(&fake_web_state);
+
+  EXPECT_EQ(future.Get(), ObservationDelayController::Result::kOk);
+  EXPECT_THAT(controller_->StateHistoryForTesting(),
+              testing::ElementsAre(
+                  ObservationDelayController::State::kInitial,
+                  ObservationDelayController::State::kWaitForPageStability,
+                  ObservationDelayController::State::kWaitForLoadCompletion,
                   ObservationDelayController::State::kDone));
 }
 
@@ -325,6 +357,32 @@ TEST_F(ObservationDelayControllerTest, ShouldDelayForLcp_Iframe) {
                   ObservationDelayController::State::kDelayForLcp,
                   ObservationDelayController::State::kDidTimeout,
                   ObservationDelayController::State::kDone));
+}
+
+// Test that `OnAutofillPredictionsFinished` transitions the controller from
+// `State::kWaitForAutofillPredictions` to `State::kDone`.
+TEST_F(ObservationDelayControllerTest, OnAutofillPredictionsFinished_Success) {
+  base::test::TestFuture<ObservationDelayController::Result> future;
+  web::FakeWebState fake_web_state;
+
+  controller_->Wait(/*web_state=*/fake_web_state.GetWeakPtr(),
+                    /*web_frame=*/nullptr, future.GetCallback());
+  WaitForState(ObservationDelayController::State::kWaitForAutofillPredictions);
+
+  EXPECT_FALSE(future.IsReady());
+  TriggerOnAutofillPredictionsFinished();
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get(), ObservationDelayController::Result::kOk);
+  EXPECT_THAT(
+      controller_->StateHistoryForTesting(),
+      testing::ElementsAre(
+          ObservationDelayController::State::kInitial,
+          ObservationDelayController::State::kWaitForPageStability,
+          ObservationDelayController::State::kWaitForLoadCompletion,
+          ObservationDelayController::State::kDelayForLcp,
+          ObservationDelayController::State::kWaitForAutofillPredictions,
+          ObservationDelayController::State::kDone));
 }
 
 }  // namespace actor
