@@ -1162,11 +1162,6 @@ export class OmniboxPopupSearchboxElement extends
       return;
     }
 
-    if (e.key === 'Tab' && this.$.input === this.shadowRoot?.activeElement &&
-        this.acceptInlineAutocomplete(e)) {
-      return;
-    }
-
     if (e.key === 'Enter' && this.selectedMatchIndex === -1) {
       // On an open page where no suggestion match is highlighted, submit the
       // verbatim input text (or reload the permanent URL).
@@ -1182,6 +1177,17 @@ export class OmniboxPopupSearchboxElement extends
             shiftKey: e.shiftKey,
           },
           /*viaKeyboard=*/ true);
+      return;
+    }
+
+    if (e.key === 'Tab' && this.$.input === this.shadowRoot?.activeElement) {
+      if (!e.shiftKey &&
+          this.keywordModeManager.acceptTab(
+              this.selectedMatch, this.selectedMatchIndex)) {
+        e.preventDefault();
+        return;
+      }
+      this.acceptInlineAutocomplete(e);
       return;
     }
 

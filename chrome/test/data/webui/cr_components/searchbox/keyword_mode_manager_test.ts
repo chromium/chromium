@@ -178,6 +178,48 @@ suite('KeywordModeManagerTest', () => {
     assertEquals(1, keywordEnteredCount);
   });
 
+  test('acceptTab', () => {
+    const matchWithoutKeyword = createSearchMatchForTesting({
+      allowedToBeDefaultMatch: true,
+      keywordModel: undefined,
+    });
+    const matchWithKeyword = createSearchMatchForTesting({
+      allowedToBeDefaultMatch: true,
+      keywordModel: createMatchKeywordModelForTesting({
+        type: KeywordType.kChip,
+        keyword: 'youtube.com',
+        chipHint: 'Search YouTube',
+      }),
+    });
+    const matchWithKeywordNotAllowedDefault = createSearchMatchForTesting({
+      allowedToBeDefaultMatch: false,
+      keywordModel: createMatchKeywordModelForTesting({
+        type: KeywordType.kChip,
+        keyword: 'youtube.com',
+        chipHint: 'Search YouTube',
+      }),
+    });
+
+    // Null match -> false.
+    assertFalse(manager.acceptTab(null, /*matchIndex=*/ 0));
+
+    // Match without keyword -> false.
+    assertFalse(manager.acceptTab(matchWithoutKeyword, /*matchIndex=*/ 0));
+
+    // Non-default matchIndex with keyword -> false.
+    assertFalse(manager.acceptTab(matchWithKeyword, /*matchIndex=*/ 1));
+
+    // Match not allowed to be default -> false.
+    assertFalse(manager.acceptTab(
+        matchWithKeywordNotAllowedDefault, /*matchIndex=*/ 0));
+
+    // Default match with keyword -> enters keyword mode and notifies delegate.
+    assertTrue(manager.acceptTab(matchWithKeyword, /*matchIndex=*/ 0));
+    assertTrue(manager.isInKeywordMode);
+    assertEquals('youtube.com', manager.activeKeyword);
+    assertEquals(1, keywordEnteredCount);
+  });
+
   test('formatMatchFillIntoEdit', () => {
     const match = createSearchMatchForTesting({
       fillIntoEdit: 'google.com chromium news',

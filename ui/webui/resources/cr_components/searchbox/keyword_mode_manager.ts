@@ -110,6 +110,25 @@ export class KeywordModeManager {
   }
 
   /**
+   * Evaluates whether pressing Tab on the selected match triggers keyword mode.
+   * Only default matches (matchIndex === 0 and allowedToBeDefaultMatch) can
+   * accept keyword mode via Tab. If triggered, enters keyword mode, notifies
+   * the delegate, and returns true.
+   */
+  acceptTab(match: AutocompleteMatch|null, matchIndex: number): boolean {
+    if (!match?.keywordModel) {
+      return false;
+    }
+    const isDefaultMatch = matchIndex === 0 && match.allowedToBeDefaultMatch;
+    if (!isDefaultMatch) {
+      return false;
+    }
+    this.enter(match.keywordModel.keyword, match.keywordModel.chipHint);
+    this.delegate_.onKeywordEntered();
+    return true;
+  }
+
+  /**
    * Evaluates whether the updated input text and cursor position trigger
    * keyword mode (e.g. space after instant keyword, or leading '?').
    * If triggered, enters keyword mode and returns true.
@@ -212,9 +231,8 @@ export class KeywordModeManager {
    * changes.
    */
   onSelectedMatchChanged(selectedMatch: AutocompleteMatch|null): void {
-    // If there are no results, the input should not be kicked out of keyword
-    // mode.
-    if (!selectedMatch && this.isInKeywordMode) {
+    // If the input is in keyword mode, preserve keyword mode.
+    if (this.isInKeywordMode) {
       return;
     }
     if (!selectedMatch?.keywordModel) {
