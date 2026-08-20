@@ -93,6 +93,8 @@ BASE_DECLARE_FEATURE(kGlicSkipCookieSyncOnOpen);
 BASE_DECLARE_FEATURE(kGlicCookieSyncOnTokenChange);
 extern const base::FeatureParam<base::TimeDelta>
     kGlicCookieSyncOnTokenChangeDelay;
+extern const base::FeatureParam<bool>
+    kGlicCookieSyncOnTokenChangeOnlyWhenFreCompleted;
 BASE_DECLARE_FEATURE(kGlicCookieSyncOnError);
 extern const base::FeatureParam<base::TimeDelta>
     kGlicCookieSyncOnErrorMinInterval;

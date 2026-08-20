@@ -89,6 +89,13 @@ class AuthControllerTest : public testing::Test {
         "user@gmail.com", signin::ConsentLevel::kSignin);
   }
 
+  void SetFreCompleted(bool completed = true) {
+    profile_->GetPrefs()->SetInteger(
+        prefs::kGlicCompletedFre,
+        std::to_underlying(completed ? prefs::FreStatus::kCompleted
+                                     : prefs::FreStatus::kNotStarted));
+  }
+
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfile> profile_;
@@ -166,6 +173,7 @@ TEST_F(AuthControllerTest,
 
 TEST_F(AuthControllerTest, CookieSyncOnTokenChange_PrimaryAccountChanged) {
   feature_list_.InitAndEnableFeature(features::kGlicCookieSyncOnTokenChange);
+  SetFreCompleted();
   base::HistogramTester histogram_tester;
 
   EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 0);
@@ -190,6 +198,7 @@ TEST_F(AuthControllerTest,
        CookieSyncOnTokenChange_PrimaryAccountChanged_WithDelay) {
   feature_list_.InitAndEnableFeatureWithParameters(
       features::kGlicCookieSyncOnTokenChange, {{"delay", "2s"}});
+  SetFreCompleted();
   base::HistogramTester histogram_tester;
 
   EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 0);
@@ -217,6 +226,7 @@ TEST_F(AuthControllerTest,
 
 TEST_F(AuthControllerTest, CookieSyncOnTokenChange_SkipsSyncIfAlreadyDone) {
   feature_list_.InitAndEnableFeature(features::kGlicCookieSyncOnTokenChange);
+  SetFreCompleted();
 
   CoreAccountInfo account_info =
       identity_test_env_->identity_manager()->GetPrimaryAccountInfo(
@@ -236,6 +246,7 @@ TEST_F(AuthControllerTest, CookieSyncOnTokenChange_SkipsSyncIfAlreadyDone) {
 TEST_F(AuthControllerTest,
        CookieSyncOnTokenChange_TokenErrorTriggersSyncEventually) {
   feature_list_.InitAndEnableFeature(features::kGlicCookieSyncOnTokenChange);
+  SetFreCompleted();
 
   CoreAccountInfo account_info =
       identity_test_env_->identity_manager()->GetPrimaryAccountInfo(
@@ -267,6 +278,7 @@ TEST_F(AuthControllerTest,
 TEST_F(AuthControllerTest,
        CookieSyncOnTokenChange_SetRefreshTokenForAccountTriggerSync) {
   feature_list_.InitAndEnableFeature(features::kGlicCookieSyncOnTokenChange);
+  SetFreCompleted();
   base::HistogramTester histogram_tester;
 
   CoreAccountInfo account_info =
@@ -286,6 +298,7 @@ TEST_F(AuthControllerTest,
        CookieSyncOnTokenChange_SetRefreshTokenForAccountTriggerSync_WithDelay) {
   feature_list_.InitAndEnableFeatureWithParameters(
       features::kGlicCookieSyncOnTokenChange, {{"delay", "2s"}});
+  SetFreCompleted();
   base::HistogramTester histogram_tester;
 
   CoreAccountInfo account_info =
@@ -311,6 +324,7 @@ TEST_F(AuthControllerTest,
        CookieSyncOnTokenChange_SetRefreshTokenForAccountDebounce) {
   feature_list_.InitAndEnableFeatureWithParameters(
       features::kGlicCookieSyncOnTokenChange, {{"delay", "2s"}});
+  SetFreCompleted();
 
   CoreAccountInfo account_info =
       identity_test_env_->identity_manager()->GetPrimaryAccountInfo(
@@ -343,6 +357,7 @@ TEST_F(AuthControllerTest,
        CookieSyncOnTokenChange_CheckAuthBeforeLoadCancelsTimer) {
   feature_list_.InitAndEnableFeatureWithParameters(
       features::kGlicCookieSyncOnTokenChange, {{"delay", "2s"}});
+  SetFreCompleted();
 
   CoreAccountInfo account_info =
       identity_test_env_->identity_manager()->GetPrimaryAccountInfo(
@@ -389,6 +404,53 @@ TEST_F(AuthControllerTest,
   // Both syncs should have completed.
   synchronizer_->WaitForSyncToComplete();
   synchronizer_->WaitForSyncToComplete();
+}
+
+TEST_F(
+    AuthControllerTest,
+    CookieSyncOnTokenChange_OnlyWhenFreCompleted_DefaultTrue_SkipsSyncWhenFreNotCompleted) {
+  feature_list_.InitAndEnableFeature(features::kGlicCookieSyncOnTokenChange);
+
+  // FRE is not completed by default (kNotStarted).
+  CoreAccountInfo account_info =
+      identity_test_env_->identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
+
+  identity_test_env_->SetRefreshTokenForAccount(account_info.account_id);
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  // No sync should be triggered because FRE was not completed.
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 0);
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Changing primary account should also not trigger sync.
+  signin::ClearPrimaryAccount(identity_test_env_->identity_manager());
+  AccountInfo account_info2 =
+      identity_test_env_->MakeAccountAvailable("user2@gmail.com");
+  identity_test_env_->SetPrimaryAccount(account_info2.email,
+                                        signin::ConsentLevel::kSignin);
+  task_environment_.FastForwardBy(base::Seconds(10));
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 0);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+}
+
+TEST_F(
+    AuthControllerTest,
+    CookieSyncOnTokenChange_OnlyWhenFreCompleted_False_TriggersSyncEvenWhenFreNotCompleted) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      features::kGlicCookieSyncOnTokenChange,
+      {{"only_when_fre_completed", "false"}});
+
+  // FRE is not completed (kNotStarted).
+  CoreAccountInfo account_info =
+      identity_test_env_->identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
+
+  identity_test_env_->SetRefreshTokenForAccount(account_info.account_id);
+  task_environment_.FastForwardBy(base::Seconds(10));
+  synchronizer_->WaitForSyncToComplete();
+
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 1);
 }
 
 TEST_F(AuthControllerTest, CookieSyncOnError_Disabled) {
@@ -517,6 +579,7 @@ TEST_F(AuthControllerTest, CookieSyncOnOpenEvenIfNoSyncNeeded_Enabled) {
       /*enabled_features=*/{features::kGlicCookieSyncOnTokenChange,
                             features::kGlicCookieSyncOnOpenEvenIfNoSyncNeeded},
       /*disabled_features=*/{});
+  SetFreCompleted();
 
   // Prepare a successful sync beforehand to mark needs_sync as false.
   CoreAccountInfo account_info =
@@ -565,6 +628,7 @@ TEST_F(AuthControllerTest, OnRefreshTokenUpdated_Startup_NoSyncIfPrefFalse) {
 
 TEST_F(AuthControllerTest, OnRefreshTokenUpdated_Startup_SyncIfPrefTrue) {
   feature_list_.InitAndEnableFeature(features::kGlicCookieSyncOnTokenChange);
+  SetFreCompleted();
 
   // Ensure pref is true.
   profile_->GetPrefs()->SetBoolean(prefs::kGlicPartitionNeedsCookieSync, true);
