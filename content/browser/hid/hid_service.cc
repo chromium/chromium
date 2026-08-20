@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -28,6 +29,7 @@
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/hid/hid_report_utils.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 
@@ -156,6 +158,12 @@ void HidService::Create(
     return;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(blink::features::kWebHID)) {
+    return;
+  }
+#endif
+
   // Avoid creating the HidService if there is no HID delegate to provide the
   // implementation.
   if (!GetContentClient()->browser()->GetHidDelegate())
@@ -197,6 +205,12 @@ void HidService::Create(
     mojo::ReportBadMessage("WebHID is blocked in an opaque origin.");
     return;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(blink::features::kWebHID)) {
+    return;
+  }
+#endif
 
   // Avoid creating the HidService if there is no HID delegate to provide
   // the implementation.

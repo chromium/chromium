@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -34,6 +35,7 @@
 #include "services/device/public/mojom/hid.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -184,6 +186,10 @@ class MockHidConnectionTracker : public HidConnectionTracker {
 
 class ChromeHidTestHelper {
  public:
+  ChromeHidTestHelper() {
+    feature_list_.InitAndEnableFeature(blink::features::kWebHID);
+  }
+
   void SimulateDeviceServiceCrash() {
     hid_manager_->SimulateConnectionError();
     hid_manager_.reset();
@@ -906,6 +912,7 @@ class ChromeHidTestHelper {
   scoped_refptr<const extensions::Extension> extension_;
 #endif
   MockHidManagerClient hid_manager_client_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class ChromeHidDelegateRenderFrameTestBase

@@ -10322,6 +10322,11 @@
     "expiry_milestone": 180
   },
   {
+    "name": "web-hid-on-android",
+    "owners": [ "robpitkin@google.com", "deviceapi-team@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "web-identity-digital-credentials",
     "owners": ["mamir@chromium.org", "goto@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 160

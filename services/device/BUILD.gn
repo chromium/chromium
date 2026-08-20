@@ -296,8 +296,8 @@ source_set("tests") {
         "hid/input_service_linux_unittest.cc",
       ]
     }
-    if (!is_fuchsia && !is_ios && !is_android) {
-      # Fuchsia, iOS, and Android do not currently implement HidService.
+    if (!is_fuchsia && !is_ios) {
+      # Fuchsia and iOS do not currently implement HidService.
       sources += [ "hid/hid_service_unittest.cc" ]
     }
     if (!is_ios && !is_android) {
@@ -307,6 +307,9 @@ source_set("tests") {
         "//net:test_support",
         "//services/device/usb",
       ]
+    }
+    if (is_android) {
+      sources += [ "hid/hid_service_android_unittest.cc" ]
     }
   }
 
@@ -503,6 +506,7 @@ if (is_android) {
       "//services/device/battery/android:battery_monitor_java",
       "//services/device/generic_sensor:java",
       "//services/device/geolocation:geolocation_java",
+      "//services/device/hid:java",
       "//services/device/nfc/android:java",
       "//services/device/public/java:nfc_java",
       "//services/device/public/mojom:mojom_java",

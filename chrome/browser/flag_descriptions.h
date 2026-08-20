@@ -2549,6 +2549,10 @@ inline constexpr char kEnableWebHidInWebViewName[] = "Web HID in WebView";
 inline constexpr char kEnableWebHidInWebViewDescription[] =
     "Enable WebViews to access Web HID upon embedder's permission.";
 
+inline constexpr char kWebHidOnAndroidName[] = "WebHID on Android";
+inline constexpr char kWebHidOnAndroidDescription[] =
+    "Enables WebHID API support on Android.";
+
 inline constexpr char kExperimentalOmniboxLabsName[] =
     "Enable extension permission omnibox.directInput";
 inline constexpr char kExperimentalOmniboxLabsDescription[] =

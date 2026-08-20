@@ -29,6 +29,7 @@ import android.window.TrustedPresentationThresholds;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
+import org.chromium.base.hid.HidManager;
 import org.chromium.base.serial.SerialManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -447,6 +448,11 @@ public interface AconfigFlaggedApiDelegate {
 
     /** Gets an Android SerialManager wrapped in an intermediary object. */
     default @Nullable SerialManager getSerialManager() {
+        return null;
+    }
+
+    /** Gets an Android HidManager wrapped in an intermediary object. */
+    default @Nullable HidManager getHidManager() {
         return null;
     }
 

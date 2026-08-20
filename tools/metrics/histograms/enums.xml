@@ -13736,6 +13736,7 @@ from previous Chrome versions.
   <int value="-295715134" label="AndroidAppIntegrationWithFavicon:enabled"/>
   <int value="-295453948" label="cast-streaming-force-disable-hardware-av1"/>
   <int value="-295237704" label="EnableRemovingAllThirdPartyCookies:enabled"/>
+  <int value="-295048720" label="WebHID:enabled"/>
   <int value="-293546827" label="HideIncognitoMediaMetadata:enabled"/>
   <int value="-293203972"
       label="WebAuthenticationLargeBlobICloudKeychain:enabled"/>
@@ -15577,6 +15578,7 @@ from previous Chrome versions.
       label="ReadAnythingReadAloudTSTextSegmentation:enabled"/>
   <int value="289408715" label="MacImeLiveConversionFix:enabled"/>
   <int value="289465857" label="ClipboardHistorySimpleRender:disabled"/>
+  <int value="289555960" label="WebHID:disabled"/>
   <int value="290029236"
       label="GeminiAntiscamProtectionForMetricsCollection:disabled"/>
   <int value="290559997" label="LinkCapturingUiUpdate:disabled"/>
