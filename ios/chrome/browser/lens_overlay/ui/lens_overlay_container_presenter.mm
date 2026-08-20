@@ -123,6 +123,20 @@ const CGFloat kSelectionViewOpacityAnimationDuration = 0.4f;
 
 - (void)dismissContainerAnimated:(BOOL)animated
                       completion:(void (^)())completion {
+  _scopedForceOrientation.reset();
+  _containerViewController.delegate = nil;
+
+  // If the container is not attached, directly call the completion.
+  BOOL alreadyDismissed = !_containerViewController.view.superview;
+  if (alreadyDismissed) {
+    if (completion) {
+      completion();
+    };
+    return;
+  }
+
+  [self.delegate lensOverlayContainerPresenterWillDismissPresentation:self];
+
   __weak __typeof(self) weakSelf = self;
   auto updatedCompletion = ^{
     [weakSelf.delegate
@@ -131,14 +145,6 @@ const CGFloat kSelectionViewOpacityAnimationDuration = 0.4f;
       completion();
     }
   };
-  _scopedForceOrientation.reset();
-  _containerViewController.delegate = nil;
-  [self.delegate lensOverlayContainerPresenterWillDismissPresentation:self];
-  // If the container is not attached, directly call completion.
-  if (!_containerViewController.view.superview) {
-    updatedCompletion();
-    return;
-  }
 
   __weak UIViewController* weakContainer = _containerViewController;
   auto executeCleanup = ^{
