@@ -233,6 +233,7 @@ source_set("unit_tests") {
     "observers/document_write_page_load_metrics_observer_unittest.cc",
     "observers/from_gws_page_load_metrics_observer_unittest.cc",
     "observers/gws_page_load_metrics_observer_unittest.cc",
+    "observers/gws_prewarm_page_load_metrics_observer_unittest.cc",
     "observers/lcp_critical_path_predictor_page_load_metrics_observer_unittest.cc",
     "observers/loading_predictor_page_load_metrics_observer_unittest.cc",
     "observers/multi_tab_loading_page_load_metrics_observer_unittest.cc",

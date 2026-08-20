@@ -2858,6 +2858,17 @@ chromium-metrics-reviews@google.com.
   <token key="PrerenderStatus" variants="PrerenderStatus"/>
 </histogram>
 
+<histogram name="PageLoad.Clients.GoogleSearch.Prewarm.WasResponseCached"
+    enum="Boolean" expires_after="2027-02-07">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether the Google Search prewarm page load was served from the HTTP
+    cache or network. Recorded once upon navigation commit of the prerendered
+    prewarm page.
+  </summary>
+</histogram>
+
 <histogram
     name="PageLoad.Clients.GoogleSearch.SessionSource{ConnectionProtocolType}"
     enum="NetworkSessionSource" expires_after="2027-02-07">

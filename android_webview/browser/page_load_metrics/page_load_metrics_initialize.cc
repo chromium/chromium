@@ -17,6 +17,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_base.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
+#include "components/page_load_metrics/google/browser/gws_prewarm_page_load_metrics_observer.h"
 
 namespace content {
 class BrowserContext;
@@ -62,6 +63,7 @@ void PageLoadMetricsEmbedder::RegisterObservers(
   tracker->AddObserver(std::make_unique<AbandonedPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<GWSAbandonedPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<AwGWSPageLoadMetricsObserver>());
+  tracker->AddObserver(std::make_unique<GWSPrewarmPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<AwLoadUrlMetricsObserver>());
   tracker->AddObserver(std::make_unique<ServiceLevelPageLoadMetricsObserver>());
   if (base::FeatureList::IsEnabled(
