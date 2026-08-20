@@ -102,13 +102,13 @@ config("compiler") {
       if (host_cpu == "x86" || host_cpu == "x64") {
         cflags += [ "-m32" ]
       } else {
-        cflags += [ "--target=i386-windows" ]
+        cflags += [ "--target=i386-pc-windows" ]
       }
     } else if (current_cpu == "x64") {
       if (host_cpu == "x86" || host_cpu == "x64") {
         cflags += [ "-m64" ]
       } else {
-        cflags += [ "--target=x86_64-windows" ]
+        cflags += [ "--target=x86_64-pc-windows" ]
       }
     } else if (current_cpu == "arm64") {
       cflags += [ "--target=aarch64-pc-windows" ]
