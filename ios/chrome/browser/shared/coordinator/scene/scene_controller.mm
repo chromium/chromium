@@ -1735,17 +1735,13 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   }
 }
 
-- (void)connectWithProfileState:(ProfileState*)profileState
-                 sceneSessionID:(std::string_view)sceneSessionID {
+- (void)setProfileState:(ProfileState*)profileState {
   DCHECK(!_sceneState.profileState);
-  DCHECK(!sceneSessionID.empty());
+  DCHECK(!_sceneState.sceneSessionID.empty());
   DCHECK(profileState);
 
-  // Set the properties to SceneState.
-  _sceneState.profileState = profileState;
-  _sceneState.sceneSessionID = sceneSessionID;
-
   // Connect the ProfileState with the SceneState.
+  _sceneState.profileState = profileState;
   [profileState sceneStateConnected:_sceneState];
 
   // Add agents. They may depend on the ProfileState, so they need to be

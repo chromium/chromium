@@ -349,14 +349,15 @@ TEST_F(SceneControllerTest, TestOpenQRScannerForShortcutItem) {
 // Tests that DataProtectionSceneAgent is added to the scene state.
 TEST_F(SceneControllerTest, TestDataProtectionSceneAgent) {
   SceneState* scene_state = [[SceneState alloc] init];
+  scene_state.sceneSessionID = "other-id";
+
   SceneController* scene_controller =
       [[SceneController alloc] initWithSceneState:scene_state];
 
   EXPECT_EQ(nil, [DataProtectionSceneAgent agentFromScene:scene_state]);
 
   ProfileState* profile_state = CreateProfileState(ProfileInitStage::kFinal);
-  [scene_controller connectWithProfileState:profile_state
-                             sceneSessionID:"other-id"];
+  [scene_controller setProfileState:profile_state];
 
   EXPECT_NE(nil, [DataProtectionSceneAgent agentFromScene:scene_state]);
 }
@@ -365,14 +366,15 @@ TEST_F(SceneControllerTest, TestDataProtectionSceneAgent) {
 // fully loaded.
 TEST_F(SceneControllerTest, CreateSceneStatePrefsOnProfileLoad) {
   SceneState* scene_state = [[SceneState alloc] init];
+  scene_state.sceneSessionID = "other-id";
+
   SceneController* scene_controller =
       [[SceneController alloc] initWithSceneState:scene_state];
   ASSERT_EQ(scene_state.prefs, nil);
 
   // The profile is not yet loaded, so the -prefs property should still be nil.
   ProfileState* profile_state = [[ProfileState alloc] initWithAppState:nil];
-  [scene_controller connectWithProfileState:profile_state
-                             sceneSessionID:"other-id"];
+  [scene_controller setProfileState:profile_state];
   EXPECT_EQ(scene_state.prefs, nil);
 
   // Pretend the profile is loaded, -prefs should be created.
@@ -389,13 +391,14 @@ TEST_F(SceneControllerTest, CreateSceneStatePrefsOnConnectionIfProfileLoaded) {
   profile_state.profile = profile_.get();
 
   SceneState* scene_state = [[SceneState alloc] init];
+  scene_state.sceneSessionID = "other-id";
+
   SceneController* scene_controller =
       [[SceneController alloc] initWithSceneState:scene_state];
   ASSERT_EQ(scene_state.prefs, nil);
 
   // The profile is already loaded, so the -prefs property should be created.
-  [scene_controller connectWithProfileState:profile_state
-                             sceneSessionID:"other-id"];
+  [scene_controller setProfileState:profile_state];
   EXPECT_NE(scene_state.prefs, nil);
 }
 
@@ -403,14 +406,15 @@ TEST_F(SceneControllerTest, CreateSceneStatePrefsOnConnectionIfProfileLoaded) {
 // ProfileState reaches kProfileLoaded stage.
 TEST_F(SceneControllerTest, SceneStatePrefsNotRecreatedAsProfileStageAdvance) {
   SceneState* scene_state = [[SceneState alloc] init];
+  scene_state.sceneSessionID = "other-id";
+
   SceneController* scene_controller =
       [[SceneController alloc] initWithSceneState:scene_state];
   ASSERT_EQ(scene_state.prefs, nil);
 
   // The profile is not yet loaded, so the -prefs property should still be nil.
   ProfileState* profile_state = [[ProfileState alloc] initWithAppState:nil];
-  [scene_controller connectWithProfileState:profile_state
-                             sceneSessionID:"other-id"];
+  [scene_controller setProfileState:profile_state];
   EXPECT_EQ(scene_state.prefs, nil);
 
   // Pretend the profile is loaded, -prefs should be created.

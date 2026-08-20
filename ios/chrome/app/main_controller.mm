@@ -1827,8 +1827,9 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
               profileManager:(ProfileManagerIOS*)manager
            attributesStorage:(ProfileAttributesStorageIOS*)storage
                   localState:(PrefService*)localState {
-  // Determine the identifier for the SceneState.
-  const std::string sceneStateID = SessionIdentifierForScene(sceneState.scene);
+  // Assign an identifier to the SceneState.
+  sceneState.sceneSessionID = SessionIdentifierForScene(sceneState.scene);
+  const std::string_view sceneStateID = sceneState.sceneSessionID;
 
   // Determine which profile to use. The logic is to take the first valid
   // profile (i.e. the value is set and the profile is known) amongst the
@@ -1883,8 +1884,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   DCHECK(iterator->second.state != nil);
 
   // Connects the SceneState to the ProfileState.
-  [sceneState.controller connectWithProfileState:iterator->second.state
-                                  sceneSessionID:sceneStateID];
+  [sceneState.controller setProfileState:iterator->second.state];
 }
 
 // Drops all unused profile controllers. This will cause the corresponding
