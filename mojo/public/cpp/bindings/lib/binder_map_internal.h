@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -128,17 +129,16 @@ class GenericCallbackBinderWithContext {
   using GenericBinderType = typename Traits::GenericBinderType;
   using SequenceBinderType = typename SequenceTraits::GenericBinderType;
 
+  static constexpr bool kHasNoContext = std::is_void_v<ContextType>;
+
   GenericCallbackBinderWithContext(
       SequenceBinderType callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner)
-      : callback_(std::move(callback)), task_runner_(std::move(task_runner)) {
-    // Cross-sequence bindings should always have a task runner.
-    CHECK(task_runner_, base::NotFatalUntil::M154)
-        << "Caller should either consume the context or provide a task runner.";
-  }
+      : callback_(CreateSequenceBinder(std::move(callback),
+                                       std::move(task_runner))) {}
 
   explicit GenericCallbackBinderWithContext(GenericBinderType callback)
-      : callback_(std::move(callback)), task_runner_(nullptr) {}
+      : callback_(std::move(callback)) {}
 
   GenericCallbackBinderWithContext(const GenericCallbackBinderWithContext&) =
       delete;
@@ -153,7 +153,7 @@ class GenericCallbackBinderWithContext {
 
   void BindInterface(ContextValueType context,
                      mojo::ScopedMessagePipeHandle receiver_pipe)
-    requires(!std::is_same_v<GenericBinderType, SequenceBinderType>)
+    requires(!kHasNoContext)
   {
     auto dispatch = absl::Overload(
         [&](const GenericBinderType& callback) {
@@ -161,35 +161,30 @@ class GenericCallbackBinderWithContext {
         },
         [&](const SequenceBinderType& callback) {
           // Drop `context` as we do not want to forward it cross-sequence.
-          if (task_runner_) {
-            task_runner_->PostTask(
-                FROM_HERE, base::BindOnce(callback, std::move(receiver_pipe)));
-          } else {
-            NOTREACHED(base::NotFatalUntil::M154);
-            callback.Run(std::move(receiver_pipe));
-          }
+          callback.Run(std::move(receiver_pipe));
         });
     std::visit(dispatch, callback_);
   }
 
   void BindInterface(mojo::ScopedMessagePipeHandle receiver_pipe)
-    requires(std::is_same_v<GenericBinderType, SequenceBinderType>)
+    requires(kHasNoContext)
   {
-    if (task_runner_) {
-      task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(callback_, std::move(receiver_pipe)));
-    } else {
-      callback_.Run(std::move(receiver_pipe));
-    }
+    callback_.Run(std::move(receiver_pipe));
   }
 
  private:
-  using CallbackVariant =
-      std::conditional_t<std::is_same_v<GenericBinderType, SequenceBinderType>,
-                         GenericBinderType,
-                         std::variant<GenericBinderType, SequenceBinderType>>;
-  const CallbackVariant callback_;
-  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  static SequenceBinderType CreateSequenceBinder(
+      SequenceBinderType callback,
+      scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    CHECK(task_runner)
+        << "Caller should either consume the context or provide a task runner.";
+    return base::BindPostTask(std::move(task_runner), std::move(callback));
+  }
+
+  using GenericOrSequence = std::variant<GenericBinderType, SequenceBinderType>;
+  using Callback =
+      std::conditional_t<kHasNoContext, GenericBinderType, GenericOrSequence>;
+  const Callback callback_;
 };
 
 }  // namespace internal
