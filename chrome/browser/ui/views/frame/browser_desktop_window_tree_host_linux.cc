@@ -23,9 +23,9 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/ozone/public/ozone_platform.h"
-#include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/extensions/x11_extension.h"
 #include "ui/platform_window/platform_window_init_properties.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/window/frame_view_utils_linux.h"
 
 namespace {
@@ -131,24 +131,20 @@ void BrowserDesktopWindowTreeHostLinux::TabDraggingKindChanged(
     return;
   }
 
-  auto* x11_extension = GetX11Extension();
-  if (x11_extension && x11_extension->IsWmTiling() &&
-      x11_extension->CanResetOverrideRedirect()) {
-    bool was_dragging_window =
-        browser_widget_->tab_drag_kind() == TabDragKind::kAllTabs;
-    bool is_dragging_window = tab_drag_kind == TabDragKind::kAllTabs;
-    if (is_dragging_window != was_dragging_window) {
-      x11_extension->SetOverrideRedirect(is_dragging_window);
-    }
+  bool was_dragging_window =
+      browser_widget_->tab_drag_kind() == TabDragKind::kAllTabs;
+  bool is_dragging_window = tab_drag_kind == TabDragKind::kAllTabs;
+  if (is_dragging_window != was_dragging_window) {
+    browser_widget_->SetBypassWindowManager(is_dragging_window);
   }
 
-  if (auto* wayland_extension =
-          ui::GetWaylandToplevelExtension(*platform_window())) {
-    if (tab_drag_kind != TabDragKind::kNone) {
-      if (auto event_source = GetCurrentTabDragEventSource()) {
-        wayland_extension->StartWindowDraggingSessionIfNeeded(
-            *event_source, /*allow_system_drag=*/true);
-      }
+  if (tab_drag_kind != TabDragKind::kNone) {
+    if (auto event_source = GetCurrentTabDragEventSource()) {
+      views::Widget::MoveLoopSource move_loop_source =
+          (*event_source == ui::mojom::DragEventSource::kTouch)
+              ? views::Widget::MoveLoopSource::kTouch
+              : views::Widget::MoveLoopSource::kMouse;
+      browser_widget_->PrepareForMoveLoop(move_loop_source);
     }
   }
 }
