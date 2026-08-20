@@ -25,7 +25,6 @@
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/extra_mojo_js_features.mojom.h"
 #include "content/public/common/isolated_world_ids.h"
-#include "ipc/ipc_listener.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -155,7 +154,7 @@ class Page;
 // higher-level dependencies. In short: code that uses RenderFrameHost must be
 // back-forward cache aware, and code that does not use RenderFrameHost should
 // not have to be back-forward cache aware.
-class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
+class CONTENT_EXPORT RenderFrameHost {
   // Do not remove this macro!
   // The macro is maintained by the memory safety team.
   ADVANCED_MEMORY_SAFETY_CHECKS();
@@ -215,7 +214,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // Logs UMA metrics related to isolatable sandboxed iframes.
   static void LogSandboxedIframesIsolationMetrics();
 
-  ~RenderFrameHost() override = default;
+  virtual ~RenderFrameHost() = default;
 
   // Returns the storage key for the last committed document in this
   // RenderFrameHost. It is used for partitioning storage by the various

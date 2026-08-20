@@ -255,12 +255,11 @@ ChannelProxy* AgentSchedulingGroupHost::GetChannel() {
   return channel_.get();
 }
 
-void AgentSchedulingGroupHost::AddRoute(int32_t routing_id,
-                                        Listener* listener) {
+void AgentSchedulingGroupHost::AddRoute(int32_t routing_id) {
   CHECK_EQ(state_, LifecycleState::kBound, base::NotFatalUntil::M153);
-  CHECK(!listener_map_.Lookup(routing_id), base::NotFatalUntil::M153);
-  listener_map_.AddWithID(listener, routing_id);
-  process_->AddRoute(routing_id, listener);
+  CHECK(!routes_.contains(routing_id), base::NotFatalUntil::M153);
+  routes_.insert(routing_id);
+  process_->AddRoute(routing_id);
 }
 
 void AgentSchedulingGroupHost::RemoveRoute(int32_t routing_id) {
@@ -268,7 +267,7 @@ void AgentSchedulingGroupHost::RemoveRoute(int32_t routing_id) {
   base::ScopedUmaHistogramTimer histogram_timer(
       "Navigation.AgentSchedulingGroupHost.RemoveRoute");
   CHECK_EQ(state_, LifecycleState::kBound, base::NotFatalUntil::M153);
-  listener_map_.Remove(routing_id);
+  routes_.erase(routing_id);
   process_->RemoveRoute(routing_id);
 }
 mojom::RouteProvider* AgentSchedulingGroupHost::GetRemoteRouteProvider() {
@@ -431,13 +430,6 @@ std::ostream& operator<<(std::ostream& os,
       os << "<invalid value: " << static_cast<int>(state) << ">";
   }
   return os;
-}
-
-Listener* AgentSchedulingGroupHost::GetListener(int32_t routing_id) {
-  CHECK_NE(routing_id, IPC::mojom::kRoutingIdControl,
-           base::NotFatalUntil::M153);
-
-  return listener_map_.Lookup(routing_id);
 }
 
 }  // namespace content

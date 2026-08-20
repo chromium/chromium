@@ -18,7 +18,6 @@
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
-#include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -82,8 +81,7 @@ class SiteInstanceGroup;
 // handler and is kept alive for the duration. Once the event handling is
 // complete, the RenderFrameHost is deleted.
 class CONTENT_EXPORT RenderFrameProxyHost
-    : public IPC::Listener,
-      public blink::mojom::RemoteFrameHost,
+    : public blink::mojom::RemoteFrameHost,
       public blink::mojom::RemoteMainFrameHost {
  public:
   // A test observer to monitor RenderFrameProxyHosts.
@@ -163,9 +161,6 @@ class CONTENT_EXPORT RenderFrameProxyHost
                        bool allow_paint_holding);
 
   RenderViewHostImpl* GetRenderViewHost();
-
-  // IPC::Listener
-  std::string ToDebugString() override;
 
   CrossProcessFrameConnector* cross_process_frame_connector() {
     return cross_process_frame_connector_.get();

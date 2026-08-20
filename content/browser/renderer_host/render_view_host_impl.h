@@ -93,7 +93,6 @@ class CONTENT_EXPORT RenderViewHostImpl
     : public RenderViewHost,
       public RenderWidgetHostOwnerDelegate,
       public RenderProcessHostObserver,
-      public IPC::Listener,
       public base::RefCounted<RenderViewHostImpl> {
  public:
   // Convenience function, just like RenderViewHost::FromID.
@@ -374,9 +373,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   friend class PageLifecycleStateManagerBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(RenderViewHostTest, BasicRenderFrameHost);
   FRIEND_TEST_ALL_PREFIXES(RenderViewHostTest, RoutingIdSane);
-
-  // IPC::Listener implementation.
-  std::string ToDebugString() override;
 
   void RenderViewReady();
 

@@ -337,7 +337,7 @@ RenderViewHostImpl::RenderViewHostImpl(
       GetRoutingIDViewMap().emplace(
           RenderViewHostID(GetProcess()->GetDeprecatedID(), routing_id_), this);
   CHECK(result.second) << "Inserting a duplicate item!";
-  GetAgentSchedulingGroup().AddRoute(routing_id_, this);
+  GetAgentSchedulingGroup().AddRoute(routing_id_);
 
   GetProcess()->AddObserver(this);
 
@@ -846,10 +846,6 @@ void RenderViewHostImpl::AnimateDoubleTapZoom(const gfx::Point& point,
 
 ///////////////////////////////////////////////////////////////////////////////
 // RenderViewHostImpl, IPC message handlers:
-
-std::string RenderViewHostImpl::ToDebugString() {
-  return "RVHI:" + delegate_->GetCreatorLocation().ToString();
-}
 
 void RenderViewHostImpl::OnTakeFocus(bool reverse) {
   RenderViewHostDelegateView* view = delegate_->GetDelegateView();

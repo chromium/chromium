@@ -51,6 +51,7 @@
 #include "content/public/browser/process_allocation_context.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/buildflags.h"
+#include "ipc/ipc_listener.h"
 #include "media/gpu/buildflags.h"
 #include "media/mojo/mojom/interface_factory.mojom-forward.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom-forward.h"
@@ -201,6 +202,7 @@ typedef base::Thread* (*RendererMainThreadFactoryFunction)(
 class CONTENT_EXPORT RenderProcessHostImpl
     : public RenderProcessHost,
       public ChildProcessLauncher::Client,
+      public IPC::Listener,
       public mojom::RendererHost,
       public blink::mojom::DomStorageProvider,
       public memory_instrumentation::mojom::CoordinatorConnector,
@@ -235,7 +237,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   bool Init() override;
   void EnableSendQueue() override;
   int GetNextRoutingID() override;
-  void AddRoute(int32_t routing_id, IPC::Listener* listener) override;
+  void AddRoute(int32_t routing_id) override;
   void RemoveRoute(int32_t routing_id) override;
   void AddObserver(RenderProcessHostObserver* observer) override;
   void RemoveObserver(RenderProcessHostObserver* observer) override;
@@ -1372,9 +1374,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // |pending_reuse_ref_count_| must no longer be modified.
   bool are_ref_counts_disabled_ = false;
 
-  // The registered IPC listener objects. When this list is empty, we should
-  // delete ourselves.
-  base::IDMap<IPC::Listener*> listeners_;
+  // The registered route IDs. When this set is empty, we should delete
+  // ourselves.
+  base::flat_set<int32_t> listeners_;
 
   // Mojo interfaces provided to the child process are registered here if they
   // need consistent delivery ordering with legacy IPC, and are process-wide in
