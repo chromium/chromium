@@ -119,4 +119,15 @@ extern const base::FeatureParam<std::string> kUnsupportedSearchPrefetchModes;
 bool ShouldSuppressPrefetchForUnsupportedMode(const AutocompleteMatch& match);
 bool ShouldSuppressPrefetchForUnsupportedMode(const GURL& url);
 
+// Returns true iff preloading should be suppressed for unsupported search modes
+// specified in `unsupported_modes_param`.
+//
+// Internal helper function shared by `SearchPrefetch` and `SearchPreload`.
+bool ShouldSuppressPreloadForUnsupportedModeInternal(
+    const AutocompleteMatch& match,
+    std::string_view unsupported_modes_param);
+bool ShouldSuppressPreloadForUnsupportedModeInternal(
+    const GURL& url,
+    std::string_view unsupported_modes_param);
+
 #endif  // CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_

@@ -215,33 +215,55 @@ const base::FeatureParam<std::string> kUnsupportedSearchPrefetchModes{
     &kSuppressPrefetchForUnsupportedSearchMode,
     "unsupported_search_prefetch_modes", "udm=50"};
 
-bool ShouldSuppressPrefetchForUnsupportedMode(const GURL& url) {
-  if (!base::FeatureList::IsEnabled(
-          kSuppressPrefetchForUnsupportedSearchMode)) {
-    return false;
-  }
-  std::vector<std::string> unsupported_modes =
-      base::SplitString(base::GetFieldTrialParamValueByFeature(
-                            kSuppressPrefetchForUnsupportedSearchMode,
-                            "unsupported_search_prefetch_modes"),
-                        ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+bool ShouldSuppressPreloadForUnsupportedModeInternal(
+    const GURL& url,
+    std::string_view unsupported_modes_param) {
+  std::vector<std::string_view> unsupported_modes =
+      base::SplitStringPiece(unsupported_modes_param, ",",
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (std::string_view unsupported_mode : unsupported_modes) {
     std::vector<std::string_view> key_values =
         base::SplitStringPiece(unsupported_mode, "=", base::TRIM_WHITESPACE,
                                base::SPLIT_WANT_NONEMPTY);
     CHECK(!key_values.empty());
+
     std::string_view key = key_values[0];
     std::string value;
     if (!net::GetValueForKeyInQuery(url, key, &value)) {
       continue;
     }
+
     base::span<std::string_view> unsupported_values =
         base::span(key_values).subspan(1u);
     if (std::ranges::contains(unsupported_values, value)) {
       return true;
     }
   }
+
   return false;
+}
+
+bool ShouldSuppressPreloadForUnsupportedModeInternal(
+    const AutocompleteMatch& match,
+    std::string_view unsupported_modes_param) {
+  // TODO(crbug.com/479054738): AIM suggestions should not be prefetched for
+  // now. Revisit this decision later.
+  if (match.IsSearchAimSuggestion()) {
+    return true;
+  }
+
+  return ShouldSuppressPreloadForUnsupportedModeInternal(
+      match.destination_url, unsupported_modes_param);
+}
+
+bool ShouldSuppressPrefetchForUnsupportedMode(const GURL& url) {
+  if (!base::FeatureList::IsEnabled(
+          kSuppressPrefetchForUnsupportedSearchMode)) {
+    return false;
+  }
+
+  return ShouldSuppressPreloadForUnsupportedModeInternal(
+      url, kUnsupportedSearchPrefetchModes.Get());
 }
 
 bool ShouldSuppressPrefetchForUnsupportedMode(const AutocompleteMatch& match) {
@@ -249,10 +271,7 @@ bool ShouldSuppressPrefetchForUnsupportedMode(const AutocompleteMatch& match) {
           kSuppressPrefetchForUnsupportedSearchMode)) {
     return false;
   }
-  // TODO(crbug.com/479054738): AIM suggestions should not be prefetched for
-  // now. Revisit this decision later.
-  if (match.IsSearchAimSuggestion()) {
-    return true;
-  }
-  return ShouldSuppressPrefetchForUnsupportedMode(match.destination_url);
+
+  return ShouldSuppressPreloadForUnsupportedModeInternal(
+      match, kUnsupportedSearchPrefetchModes.Get());
 }

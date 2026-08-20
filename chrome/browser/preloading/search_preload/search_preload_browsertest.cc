@@ -2385,4 +2385,79 @@ IN_PROC_BROWSER_TEST_F(
                        {SearchPreloadSignalResult::kPrerenderTriggered});
 }
 
+// Test suite for `kDsePreload2SuppressForUnsupportedSearchMode`.
+//
+// Tests that preloading is suppressed for unsupported search modes (e.g.
+// udm=50, AIM).
+class SearchPreloadBrowserTest_SuppressForUnsupportedSearchMode
+    : public SearchPreloadBrowserTestBase {
+ public:
+  SearchPreloadBrowserTest_SuppressForUnsupportedSearchMode() = default;
+
+  void InitFeatures(
+      base::test::ScopedFeatureList& scoped_feature_list) override {
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {{features::kDsePreload2, {}},
+         {features::kDsePreload2SuppressForUnsupportedSearchMode,
+          {{"unsupported_search_prefetch_modes", "udm=50,foo=bar"}}}},
+        {});
+  }
+};
+
+// Tests that preloading is not triggered for search URLs with unsupported query
+// parameters.
+IN_PROC_BROWSER_TEST_F(
+    SearchPreloadBrowserTest_SuppressForUnsupportedSearchMode,
+    UnsupportedModeFromURLNotPreloaded) {
+  SetUpTemplateURLService();
+
+  std::string search_terms = "search";
+  AutocompleteMatch match = CreateSearchSuggestionMatch(
+      search_terms, search_terms, PrefetchHint::kEnabled,
+      PrerenderHint::kDisabled);
+  match.destination_url = GetSearchUrl(search_terms, UrlType::kReal);
+  std::string new_query =
+      std::string(match.destination_url.query()) + "&udm=50";
+  GURL::Replacements replacements;
+  replacements.SetQueryStr(new_query);
+  match.destination_url = match.destination_url.ReplaceComponents(replacements);
+
+  AutocompleteResult result;
+  result.AppendMatches({match});
+
+  GetSearchPreloadService().OnAutocompleteResultChanged(&GetWebContents(),
+                                                        result);
+
+  EXPECT_EQ(request_collector().CountByPath(match.destination_url), 0);
+  histogram_tester().ExpectBucketCount(
+      "Omnibox.DsePreload.SignalResult.OnSuggest.Prefetch",
+      SearchPreloadSignalResult::kNotTriggeredUnsupportedSearchMode, 1);
+}
+
+// Tests that preloading is not triggered for AIM suggestions.
+IN_PROC_BROWSER_TEST_F(
+    SearchPreloadBrowserTest_SuppressForUnsupportedSearchMode,
+    AimSuggestionNotPreloaded) {
+  SetUpTemplateURLService();
+
+  std::string search_terms = "search";
+  AutocompleteMatch match = CreateSearchSuggestionMatch(
+      search_terms, search_terms, PrefetchHint::kEnabled,
+      PrerenderHint::kDisabled);
+  omnibox::SuggestTemplateInfo suggest_template;
+  (*suggest_template.mutable_default_search_parameters())["udm"] = "50";
+  match.suggest_template = suggest_template;
+
+  AutocompleteResult result;
+  result.AppendMatches({match});
+
+  GetSearchPreloadService().OnAutocompleteResultChanged(&GetWebContents(),
+                                                        result);
+
+  EXPECT_EQ(request_collector().CountByPath(match.destination_url), 0);
+  histogram_tester().ExpectBucketCount(
+      "Omnibox.DsePreload.SignalResult.OnSuggest.Prefetch",
+      SearchPreloadSignalResult::kNotTriggeredUnsupportedSearchMode, 1);
+}
+
 }  // namespace

@@ -44,7 +44,10 @@ source_set("feature") {
 
   deps = [
     "//base",
+    "//chrome/browser/preloading/prefetch/search_prefetch:field_trial_settings",
+    "//components/omnibox/browser",
     "//components/omnibox/browser:mojo_bindings",
+    "//net",
   ]
 }
 

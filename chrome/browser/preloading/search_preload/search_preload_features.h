@@ -8,6 +8,8 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
+struct AutocompleteMatch;
+
 namespace omnibox::mojom {
 enum class NavigationPredictor;
 }
@@ -87,6 +89,14 @@ bool IsDsePreload2OnPressIncognitoEnabled();
 // Returns true iff search preload can ignore battery and data saver modes for
 // on-press navigation preloads.
 bool IsDsePreload2IgnoreSaverModesOnPressEnabled();
+
+// Enables suppressing preloads for unsupported search modes (e.g. udm=50, AIM).
+BASE_DECLARE_FEATURE(kDsePreload2SuppressForUnsupportedSearchMode);
+extern const base::FeatureParam<std::string> kDsePreload2UnsupportedSearchModes;
+
+// Returns true iff preloads should be suppressed for unsupported search modes.
+bool ShouldDsePreload2SuppressForUnsupportedMode(
+    const AutocompleteMatch& match);
 
 }  // namespace features
 

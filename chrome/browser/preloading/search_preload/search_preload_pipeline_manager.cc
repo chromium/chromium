@@ -211,6 +211,15 @@ SearchPreloadPipelineManager::OnAutocompleteResultChangedProcessOne(
     return {std::nullopt, std::nullopt};
   }
 
+  if (features::ShouldDsePreload2SuppressForUnsupportedMode(match)) {
+    return {
+        SearchPreloadSignalResult::kNotTriggeredUnsupportedSearchMode,
+        should_prerender
+            ? std::make_optional(
+                  SearchPreloadSignalResult::kNotTriggeredUnsupportedSearchMode)
+            : std::nullopt};
+  }
+
   // Erase to count prefetches.
   EraseNotAlivePipelines();
   // Limit the number of prefetches.
@@ -370,6 +379,10 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
     if (!does_search_provider_opt_in) {
       return SearchPreloadSignalResult::
           kNotTriggeredOnPressNoSearchProviderOptIn;
+    }
+
+    if (features::ShouldDsePreload2SuppressForUnsupportedMode(match)) {
+      return SearchPreloadSignalResult::kNotTriggeredUnsupportedSearchMode;
     }
 
     // Do not trigger the preload if there is on-going prewarm.

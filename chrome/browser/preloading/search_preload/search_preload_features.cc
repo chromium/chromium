@@ -5,11 +5,17 @@
 #include "chrome/browser/preloading/search_preload/search_preload_features.h"
 
 #include "base/byte_size.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
+#include "net/base/url_util.h"
+#include "url/gurl.h"
 
 namespace features {
 
@@ -97,6 +103,25 @@ bool IsDsePreload2OnPressIncognitoEnabled() {
 bool IsDsePreload2IgnoreSaverModesOnPressEnabled() {
   return IsDsePreload2OnPressEnabled() &&
          kDsePreload2OnPressIgnoreSaverModes.Get();
+}
+
+BASE_FEATURE(kDsePreload2SuppressForUnsupportedSearchMode,
+             "kDsePreload2SuppressForUnsupportedSearchMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kDsePreload2UnsupportedSearchModes{
+    &kDsePreload2SuppressForUnsupportedSearchMode,
+    "unsupported_search_prefetch_modes", "udm=50"};
+
+bool ShouldDsePreload2SuppressForUnsupportedMode(
+    const AutocompleteMatch& match) {
+  if (!base::FeatureList::IsEnabled(
+          kDsePreload2SuppressForUnsupportedSearchMode)) {
+    return false;
+  }
+
+  return ShouldSuppressPreloadForUnsupportedModeInternal(
+      match, kDsePreload2UnsupportedSearchModes.Get());
 }
 
 }  // namespace features
