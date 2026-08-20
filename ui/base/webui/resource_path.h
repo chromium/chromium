@@ -7,11 +7,16 @@
 
 #include <optional>
 
+#include "build/buildflag.h"
+#include "ui/base/buildflags.h"
+
 namespace webui {
 struct ResourcePath {
   const char* const path;
   int id;
+#if BUILDFLAG(LOAD_WEBUI_FROM_DISK)
   std::optional<const char* const> filepath;
+#endif
 };
 }  // namespace webui
 
