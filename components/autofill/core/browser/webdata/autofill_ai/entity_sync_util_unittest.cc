@@ -214,6 +214,8 @@ sync_pb::AutofillValuableSpecifics TestOrderSpecifics(
   *order->mutable_order_date() = StringToProtoDate(options.date);
   order->set_merchant_name(base::UTF16ToUTF8(options.merchant_name));
   order->set_merchant_domain(base::UTF16ToUTF8(options.merchant_domain));
+  // Product names are not derived from options.product_names because
+  // EntityInstance represents the product names as a single string.
   order->add_product_names("Product 1");
   order->add_product_names("Product 2");
   return specifics;
@@ -231,6 +233,9 @@ sync_pb::AutofillValuableSpecifics TestShipmentSpecifics(
   *shipment->mutable_shipping_date() = StringToProtoDate(options.shipped_date);
   shipment->set_carrier_name(base::UTF16ToUTF8(options.carrier_name));
   shipment->set_carrier_domain(base::UTF16ToUTF8(options.carrier_domain));
+  shipment->set_merchant_name(base::UTF16ToUTF8(options.merchant_name));
+  shipment->add_product_names("Product 1");
+  shipment->add_product_names("Product 2");
   return specifics;
 }
 
@@ -1148,6 +1153,10 @@ TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_Shipment) {
   EXPECT_EQ(
       GetStringValue(*shipment, AttributeTypeName::kShipmentCarrierDomain),
       base::UTF16ToUTF8(options.carrier_domain));
+  EXPECT_EQ(GetStringValue(*shipment, AttributeTypeName::kShipmentMerchantName),
+            base::UTF16ToUTF8(options.merchant_name));
+  EXPECT_EQ(GetStringValue(*shipment, AttributeTypeName::kShipmentProductNames),
+            "Product 1, Product 2");
 }
 
 }  // namespace

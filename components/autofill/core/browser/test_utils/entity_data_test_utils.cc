@@ -446,6 +446,18 @@ EntityInstance GetShipmentEntityInstance(ShipmentOptions options) {
         AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
         VerificationStatus::kNoStatus);
   }
+  if (options.merchant_name) {
+    attributes.emplace_back(AttributeType(kShipmentMerchantName));
+    attributes.back().SetInfo(
+        UNKNOWN_TYPE, options.merchant_name, std::string(options.app_locale),
+        /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
+  }
+  if (options.product_names) {
+    attributes.emplace_back(AttributeType(kShipmentProductNames));
+    attributes.back().SetInfo(
+        UNKNOWN_TYPE, options.product_names, std::string(options.app_locale),
+        /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
+  }
   return GetEntityInstance(std::move(attributes), ToEntityOptions(options));
 }
 

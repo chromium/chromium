@@ -226,6 +226,8 @@ struct ShipmentOptionsT {
   const char16_t* carrier_name = u"Carrier";
   const char16_t* carrier_domain = u"carrier.com";
   const char16_t* shipped_date = u"2025-12-01";
+  const char16_t* merchant_name = u"Merchant";
+  const char16_t* product_names = u"Product 1, Product 2";
   std::string_view guid = "00000000-0000-4000-8000-700000000000";
   std::string_view nickname = "Shipment";
   std::string_view app_locale = "en-US";
