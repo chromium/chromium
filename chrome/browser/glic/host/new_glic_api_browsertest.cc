@@ -56,6 +56,8 @@
 #include "chrome/browser/glic/test_support/glic_histogram_tester.h"
 #include "chrome/browser/glic/test_support/new_glic_api_test.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/permissions/system/mock_platform_handle.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -84,6 +86,7 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_content_test_utils.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -95,6 +98,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/skills/features.h"
+#include "components/skills/proto/skill.pb.h"
 #include "components/skills/public/skills_prefs.h"
 #include "components/skills/public/skills_service.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
@@ -4656,6 +4660,49 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkillsDisabled, testGetSkillDisabled) {
 
 // TODO(b/546606964): enable these tests on android.
 #if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkillsDisabled,
+                       testSkillsEnabledToggledAtRuntime) {
+  ExecuteJsTest();
+  GetProfile()->GetPrefs()->SetBoolean(skills::prefs::kChromeSkillsEnabled,
+                                       true);
+  ContinueJsTest();
+  GetProfile()->GetPrefs()->SetBoolean(skills::prefs::kChromeSkillsEnabled,
+                                       false);
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkillsDisabled,
+                       testContextualSkillsRetainedWhenStartingPrefDisabled) {
+  const GURL url = GetTestUrl("page.html");
+  skills::proto::SkillsList skills_list;
+  skills::proto::Skill* skill = skills_list.add_skills();
+  skill->set_id("contextual_skill_id_1");
+  skill->set_name("contextual_skill_1");
+  skill->set_icon("contextual_skill_icon_1");
+  skill->set_description("contextual_skill_description_1");
+  skill->set_prompt("contextual_skill_prompt_1");
+
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url("type.googleapis.com/skills.proto.SkillsList");
+  skills_list.SerializeToString(any_metadata.mutable_value());
+  optimization_guide::OptimizationMetadata metadata;
+  metadata.set_any_metadata(any_metadata);
+
+  auto* optimization_guide_decider =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(GetProfile());
+  optimization_guide_decider->AddHintForTesting(
+      url, optimization_guide::proto::OptimizationType::SKILLS, metadata);
+
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(content::NavigateToURL(tab->GetContents(), url));
+
+  ExecuteJsTest();
+
+  GetProfile()->GetPrefs()->SetBoolean(skills::prefs::kChromeSkillsEnabled,
+                                       true);
+  ContinueJsTest();
+}
+
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills, testSkillsEnabledState) {
   glic::GlicHistogramTester histogram_tester;
   SkillsService()->AddSkill(/*source_skill_id=*/"source_id_1",

@@ -3408,6 +3408,41 @@ class SkillsApiTests extends ApiTests {
 
 // TODO(b/546606964): enable these tests on android.
 class SkillsDesktopOnlyApiTests extends SkillsApiTests {
+  async testSkillsEnabledToggledAtRuntime() {
+    assertDefined(this.host.skills);
+    const skillsSequence = observeSequence(this.host.skills());
+    // 1. Initially disabled.
+    assertUndefined(await skillsSequence.next());
+
+    // 2. Enable skills pref at runtime.
+    await this.advanceToNextStep();
+    const enabledSkills = await skillsSequence.next();
+    assertDefined(enabledSkills);
+
+    // 3. Disable skills pref at runtime.
+    await this.advanceToNextStep();
+    assertUndefined(await skillsSequence.next());
+  }
+
+  async testContextualSkillsRetainedWhenStartingPrefDisabled() {
+    assertDefined(this.host.skills);
+    const skillsSequence = observeSequence(this.host.skills());
+    // Initially disabled.
+    assertUndefined(await skillsSequence.next());
+
+    // Step 1: Enable skills pref at runtime and verify cached contextual skills
+    // are received.
+    await this.advanceToNextStep();
+    const enabledSkills = await skillsSequence.next();
+    assertDefined(enabledSkills);
+    assertDefined(enabledSkills.getSkillPreviews);
+
+    const previewsSeq = observeSequence(enabledSkills.getSkillPreviews());
+    const previews = await previewsSeq.waitFor(s => s.length === 1);
+    assertEquals('contextual_skill_id_1', previews[0]?.id);
+    assertEquals('contextual_skill_1', previews[0]?.name);
+  }
+
   async testSkillsEnabledState() {
     assertDefined(this.host.skills);
     const skillsSequence = observeSequence(this.host.skills());

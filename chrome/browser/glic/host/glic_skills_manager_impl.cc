@@ -546,6 +546,13 @@ void GlicSkillsClientSession::NotifyContextualSkillsChanged(
 
 void GlicSkillsClientSession::OnSkillsEnabledChanged(bool enabled) {
   if (client_) {
+    if (enabled) {
+      UpdateSkillPreviews(std::nullopt);
+      client_->NotifySkillPreviewsChanged(GetSkillPreviewsList());
+    } else {
+      client_->NotifySkillPreviewsChanged({});
+      client_->NotifyContextualSkillPreviewsChanged({});
+    }
     client_->NotifySkillsEnabledChanged(enabled);
   }
 }

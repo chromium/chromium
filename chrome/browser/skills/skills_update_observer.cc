@@ -67,9 +67,7 @@ SkillsUpdateObserver* SkillsUpdateObserver::From(tabs::TabInterface* tab) {
 
 void SkillsUpdateObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  Profile* profile =
-      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
-  if (!skills::SkillsServiceFactory::IsSkillsEnabledForProfile(profile)) {
+  if (!base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
     return;
   }
 
@@ -93,11 +91,6 @@ void SkillsUpdateObserver::OnOptimizationGuideDecision(
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
   contextual_skills_.reset();
-  Profile* profile =
-      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
-  if (!skills::SkillsServiceFactory::IsSkillsEnabledForProfile(profile)) {
-    return;
-  }
   if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
     return;
   }

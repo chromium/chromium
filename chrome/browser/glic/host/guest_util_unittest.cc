@@ -5,12 +5,16 @@
 #include "chrome/browser/glic/host/guest_util.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/scoped_browser_locale.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/prefs/pref_service.h"
+#include "components/skills/features.h"
+#include "components/skills/public/skills_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -74,6 +78,49 @@ TEST(GuestUtilTest, GetLocalizedGuestURLForDifferentLocales) {
 
 TEST_F(GuestUtilMultiInstanceTest, GetGlicGuestURLs) {
   EXPECT_EQ(GURL("https://www.example.com/glic?hl=en"), GetGuestURL());
+}
+
+TEST_F(GuestUtilMultiInstanceTest,
+       PopulateGlobalClientInitialState_SkillsDisabledWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kSkillsEnabled);
+
+  TestingProfile* profile = CreateTestingProfile();
+  profile->GetPrefs()->SetBoolean(skills::prefs::kChromeSkillsEnabled, true);
+
+  auto state = mojom::WebClientInitialState::New();
+  PopulateGlobalClientInitialState(state.get(), profile);
+
+  EXPECT_FALSE(state->enable_skills);
+}
+
+TEST_F(
+    GuestUtilMultiInstanceTest,
+    PopulateGlobalClientInitialState_SkillsEnabledWhenFeatureAndPrefEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSkillsEnabled);
+
+  TestingProfile* profile = CreateTestingProfile();
+  profile->GetPrefs()->SetBoolean(skills::prefs::kChromeSkillsEnabled, true);
+
+  auto state = mojom::WebClientInitialState::New();
+  PopulateGlobalClientInitialState(state.get(), profile);
+
+  EXPECT_TRUE(state->enable_skills);
+}
+
+TEST_F(GuestUtilMultiInstanceTest,
+       PopulateGlobalClientInitialState_SkillsDisabledWhenPrefDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSkillsEnabled);
+
+  TestingProfile* profile = CreateTestingProfile();
+  profile->GetPrefs()->SetBoolean(skills::prefs::kChromeSkillsEnabled, false);
+
+  auto state = mojom::WebClientInitialState::New();
+  PopulateGlobalClientInitialState(state.get(), profile);
+
+  EXPECT_FALSE(state->enable_skills);
 }
 
 }  // namespace
