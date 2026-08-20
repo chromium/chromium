@@ -1352,6 +1352,54 @@ INSTANTIATE_TEST_SUITE_P(
                       "Execution context was destroyed.",
                       "Inspected target navigated or closed"));
 
+// The top frame is briefly absent from the frame tracker while its execution
+// context is swapped mid-navigation; it must not be treated as destroyed.
+TEST(NavigationPending, TopFrameStaysPendingWhenContextCleared) {
+  std::unique_ptr<StubSyncWebSocket> socket_uptr =
+      std::make_unique<StubSyncWebSocket>();
+  StubSyncWebSocket* socket = socket_uptr.get();
+  std::unique_ptr<DevToolsClientImpl> client_uptr =
+      std::make_unique<DevToolsClientImpl>("root", "");
+  DevToolsClientImpl* client_ptr = client_uptr.get();
+  BrowserInfo browser_info;
+  WebViewImpl view(client_ptr->GetId(), true, nullptr, nullptr, &browser_info,
+                   std::move(client_uptr), std::nullopt,
+                   PageLoadStrategy::kNormal, true);
+  EXPECT_TRUE(socket->Connect(kDefaultUrl));
+  EXPECT_TRUE(StatusOk(client_ptr->SetSocket(std::move(socket_uptr))));
+
+  // "root" (the top frame) is intentionally left unregistered.
+  Timeout timeout{base::Milliseconds(100)};
+  socket->SetResponseLimit(3);
+  socket->AddCommandHandler(
+      "Runtime.evaluate",
+      base::BindRepeating(&ReturnError, -32000,
+                          std::string("Execution context was destroyed.")));
+  // Empty frame id resolves to the top frame, so the call keeps waiting.
+  Status status = view.WaitForPendingNavigations("", timeout, false);
+  EXPECT_EQ(kTimeout, status.code());
+}
+
+TEST(NavigationPending, UnknownSubframeDoesNotStayPending) {
+  std::unique_ptr<StubSyncWebSocket> socket_uptr =
+      std::make_unique<StubSyncWebSocket>();
+  StubSyncWebSocket* socket = socket_uptr.get();
+  std::unique_ptr<DevToolsClientImpl> client_uptr =
+      std::make_unique<DevToolsClientImpl>("root", "");
+  DevToolsClientImpl* client_ptr = client_uptr.get();
+  BrowserInfo browser_info;
+  WebViewImpl view(client_ptr->GetId(), true, nullptr, nullptr, &browser_info,
+                   std::move(client_uptr), std::nullopt,
+                   PageLoadStrategy::kNormal, true);
+  EXPECT_TRUE(socket->Connect(kDefaultUrl));
+  EXPECT_TRUE(StatusOk(client_ptr->SetSocket(std::move(socket_uptr))));
+
+  // An unregistered subframe has been destroyed, so the wait completes.
+  Status status = view.WaitForPendingNavigations(
+      "child", Timeout(base::Milliseconds(100)), false);
+  EXPECT_EQ(kOk, status.code());
+}
+
 namespace {
 
 #if defined(MEMORY_SANITIZER)

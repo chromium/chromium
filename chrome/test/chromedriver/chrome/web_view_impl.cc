@@ -2176,8 +2176,11 @@ void WebViewImpl::SetFrame(const std::string& new_frame_id) {
 Status WebViewImpl::IsNotPendingNavigation(const std::string& frame_id,
                                            const Timeout* timeout,
                                            bool* is_not_pending) {
-  if (!frame_id.empty() && !frame_tracker_->IsKnownFrame(frame_id)) {
-    // Frame has already been destroyed.
+  // An unknown subframe may have been destroyed. The top-level frame can be
+  // temporarily absent from the tracker while its execution context is
+  // replaced, so defer to NavigationTracker for it.
+  if (!frame_id.empty() && frame_id != id_ &&
+      !frame_tracker_->IsKnownFrame(frame_id)) {
     *is_not_pending = true;
     return Status(kOk);
   }
