@@ -239,12 +239,10 @@ class ContentVerifier : public base::RefCountedThreadSafe<
   void OnExtensionDataReady(const ExtensionId& extension_id);
 
   // Called (typically by a verification job) to indicate that verification
-  // failed while reading some file in `extension_id`. `failed_file_types` and
-  // `manifest_version` indicate additional data about which file was detected
-  // as corrupted.
+  // failed while reading some file in `extension_id`. `failed_file_types`
+  // indicates additional data about which file was detected as corrupted.
   void VerifyFailed(const ExtensionId& extension_id,
                     const std::vector<VerifiedFileType>& failed_file_types,
-                    int manifest_version,
                     ContentVerifyJob::FailureReason reason);
 
   // Returns the HashHelper instance, making sure we create it at most once.

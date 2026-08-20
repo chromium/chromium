@@ -319,10 +319,12 @@ void ContentVerifyJob::BytesRead(base::span<const char> data,
 
 void ContentVerifyJob::DoneReading() {
   base::AutoLock auto_lock(lock_);
-  if (failed_)
+  if (failed_) {
     return;
-  if (g_ignore_verification_for_tests)
+  }
+  if (g_ignore_verification_for_tests) {
     return;
+  }
   DCHECK(!done_reading_);
   done_reading_ = true;
   if (hashes_.has_value() ||
@@ -382,10 +384,12 @@ void ContentVerifyJob::OnHashMismatch() {
 
 void ContentVerifyJob::BytesReadImpl(base::span<const char> data,
                                      MojoResult read_result) {
-  if (failed_)
+  if (failed_) {
     return;
-  if (g_ignore_verification_for_tests)
+  }
+  if (g_ignore_verification_for_tests) {
     return;
+  }
   if (read_error_ != MOJO_RESULT_OK) {
     // If we have already seen an error, we should not continue verifying.
     return;
@@ -499,20 +503,6 @@ void ContentVerifyJob::ReportJobFinished(FailureReason reason) {
   base::UmaHistogramEnumeration(
       "Extensions.ContentVerification.VerifyJobResult", reason,
       FAILURE_REASON_MAX);
-
-  // TODO(devlin): Remove the version-specific variants in M150, once we have
-  // sufficient data from the version-agnostic variant above.
-  auto record_job_finished = [this, &reason](const char* mv2_histogram,
-                                             const char* mv3_histogram) {
-    if (mv2_histogram && manifest_version_ == 2) {
-      base::UmaHistogramEnumeration(mv2_histogram, reason, FAILURE_REASON_MAX);
-    } else if (manifest_version_ == 3) {
-      base::UmaHistogramEnumeration(mv3_histogram, reason, FAILURE_REASON_MAX);
-    }
-  };
-
-  record_job_finished("Extensions.ContentVerification.VerifyJobResultMV2",
-                      "Extensions.ContentVerification.VerifyJobResultMV3");
 
   scoped_refptr<TestObserver> test_observer = GetTestObserver();
   if (test_observer) {
