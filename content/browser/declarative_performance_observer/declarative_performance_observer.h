@@ -82,6 +82,7 @@ class CONTENT_EXPORT DeclarativePerformanceObserver
       mojo::PendingReceiver<blink::mojom::DeclarativePerformanceObserverHost>
           receiver);
 
+  StoragePartition* GetStoragePartition() const;
   void AddEntryToBuffer(base::DictValue entry);
   void FlushMetrics();
   void AppendSessionEndEntry();

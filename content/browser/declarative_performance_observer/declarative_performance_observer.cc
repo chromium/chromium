@@ -240,6 +240,12 @@ void DeclarativePerformanceObserver::SetStoragePartitionForTesting(  // IN-TEST
   storage_partition_for_testing_ = storage_partition;
 }
 
+StoragePartition* DeclarativePerformanceObserver::GetStoragePartition() const {
+  return storage_partition_for_testing_
+             ? storage_partition_for_testing_.get()
+             : render_frame_host().GetStoragePartition();
+}
+
 void DeclarativePerformanceObserver::FlushMetrics() {
   if (buffered_entries_.empty()) {
     return;
@@ -250,10 +256,7 @@ void DeclarativePerformanceObserver::FlushMetrics() {
   buffered_entries_.clear();
   current_buffer_bytes_ = 0;
 
-  StoragePartition* storage_partition =
-      storage_partition_for_testing_
-          ? storage_partition_for_testing_.get()
-          : render_frame_host().GetStoragePartition();
+  StoragePartition* storage_partition = GetStoragePartition();
 
   if (storage_partition) {
     storage_partition->GetNetworkContext()->QueueReport(
@@ -488,10 +491,7 @@ void DeclarativePerformanceObserver::RecordEarlyNavigationFailure(
 
 void DeclarativePerformanceObserver::OnEarlyFailureReportsTaken(
     base::ListValue reports) {
-  StoragePartition* storage_partition =
-      storage_partition_for_testing_
-          ? storage_partition_for_testing_.get()
-          : render_frame_host().GetStoragePartition();
+  StoragePartition* storage_partition = GetStoragePartition();
   if (!storage_partition) {
     return;
   }
