@@ -52,8 +52,10 @@ def _CheckNotFatalUntilAdoption(input_api, output_api):
     # find and resolve issues before crashing CHECKS are added.
     def PathFilter(affected_file):
       path = affected_file.UnixLocalPath()
-      return (path.startswith('components/password_manager/') or
-              path.startswith('components/autofill/'))
+      return (path.startswith('components/autofill/core/') or
+              path.startswith('components/autofill/ios/') or
+              path.startswith('components/password_manager/core/') or
+              path.startswith('components/password_manager/ios/'))
 
     results.extend(presubmit_support.CheckNotFatalUntilAdoption(
         input_api, output_api, path_filter=PathFilter))
