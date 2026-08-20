@@ -1081,8 +1081,79 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateAsk_UnverifiedIdentity) {
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
-// Tests that tapping the assistant button in the ask state dispatches the
-// Gemini entry flow command when ChromeNextIa is enabled.
+// Tests that when account capability is pending (kUnknown) online, the button
+// defaults to kAsk.
+TEST_F(AppBarMediatorTest,
+       TestAssistantButtonStateAsk_AccountCapabilitiesPending) {
+  SetLocationEligible(true);
+  SignInWithTriboolCapability(signin::Tribool::kUnknown);
+
+  OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
+                                   highlighted:NO
+                                       enabled:NO
+                                        avatar:nil
+                                      signedIn:YES]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that when workspace policy check is pending, the button defaults to
+// kAsk.
+TEST_F(AppBarMediatorTest, TestAssistantButtonStateAsk_WorkspacePolicyPending) {
+  SetLocationEligible(true);
+  SignInWithTriboolCapability(signin::Tribool::kTrue);
+
+  auto fake_gemini = std::make_unique<FakeGeminiService>();
+  fake_gemini->SetWorkspacePolicyCheckPending(true);
+
+  [mediator_ disconnect];
+  gemini_service_ptr_ = std::move(fake_gemini);
+  mediator_ = CreateMediatorWithCustomGeminiService(gemini_service_ptr_.get());
+
+  OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
+                                   highlighted:NO
+                                       enabled:NO
+                                        avatar:nil
+                                      signedIn:YES]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that when workspace policy check completes and returns disabled,
+// the button transitions from kAsk to fallback (kAccount).
+TEST_F(AppBarMediatorTest,
+       TestAssistantButtonState_TransitionsToFallbackWhenWorkspaceDisabled) {
+  SetLocationEligible(true);
+  SignInWithTriboolCapability(signin::Tribool::kTrue);
+
+  auto fake_gemini = std::make_unique<FakeGeminiService>();
+  fake_gemini->SetWorkspacePolicyCheckPending(true);
+  FakeGeminiService* fake_gemini_raw = fake_gemini.get();
+
+  [mediator_ disconnect];
+  gemini_service_ptr_ = std::move(fake_gemini);
+  mediator_ = CreateMediatorWithCustomGeminiService(gemini_service_ptr_.get());
+  mediator_.consumer = consumer_;
+
+  // Initial update configures button for pending state (kAsk).
+  [mediator_ updateAssistantButton];
+
+  // When policy resolves as disabled, expect transition to kAccount.
+  OCMExpect([consumer_
+      setAssistantButtonState:AppBarAssistantButtonState::kAccount
+                  highlighted:NO
+                      enabled:YES
+                       avatar:[OCMArg any]
+                     signedIn:YES]);
+
+  gemini::IneligibilityReasons reasons;
+  reasons.workspace = true;
+  fake_gemini_raw->SetIneligibilityReasons(reasons);
+  fake_gemini_raw->SetWorkspacePolicyCheckPending(false);
+
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
 // Tests that the assistant button state is updated when the network connection
 // changes.
 TEST_F(AppBarMediatorTest, TestAssistantButtonUpdatedOnNetworkChange) {
@@ -1090,13 +1161,19 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonUpdatedOnNetworkChange) {
       net::test::MockNetworkChangeNotifier::Create();
   mock_network->SetConnectionType(net::NetworkChangeNotifier::CONNECTION_NONE);
 
+  SetLocationEligible(true);
+  SignInWithTriboolCapability(signin::Tribool::kTrue);
+
+  auto fake_gemini = std::make_unique<FakeGeminiService>();
+  gemini::IneligibilityReasons reasons;
+  reasons.workspace = true;
+  fake_gemini->SetIneligibilityReasons(reasons);
+
   // Re-instantiate the mediator so that it registers with the mock network.
   [mediator_ disconnect];
+  gemini_service_ptr_ = std::move(fake_gemini);
   mediator_ = CreateMediatorWithCustomGeminiService(gemini_service_ptr_.get());
   mediator_.consumer = consumer_;
-
-  SetLocationEligible(true);
-  SignInWithTriboolCapability(signin::Tribool::kUnknown);
 
   // Initial update configures button for offline fallback (kAsk).
   [mediator_ updateAssistantButton];
@@ -1105,7 +1182,7 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonUpdatedOnNetworkChange) {
   base::RepeatingClosure quit_closure = run_loop.QuitClosure();
 
   // Expect the consumer to be notified when the network reconnects.
-  // Because the Gemini capability is kUnknown, it transitions from optimistic
+  // Because the workspace check is disabled, it transitions from optimistic
   // offline fallback (kAsk) to kAccount when online.
   OCMExpect([consumer_
                 setAssistantButtonState:AppBarAssistantButtonState::kAccount
