@@ -328,6 +328,19 @@ base::expected<double, std::string> CalculateConv2dOutputSize(
         ErrorWithLabel(label, "The effective filter size is too large."));
   }
 
+  // The effective (dilated) filter window must fit within the padded input;
+  // otherwise the window can never be fully placed and the operation has no
+  // valid output. Reject it here so that unbounded filter/dilation values can
+  // not flow unchecked into backends. Computed in 64-bit to avoid overflow.
+  const uint64_t padded_size =
+      uint64_t{input_size} + beginning_padding + ending_padding;
+  if (checked_effective_filter_size.ValueOrDie() > padded_size) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        "The effective filter size should not be larger than the padded input "
+        "size."));
+  }
+
   // Calculate the output size in double precision floating point number that
   // ensures all dimension values of type uint32_t can be exactly represented.
   // https://en.wikipedia.org/wiki/Double-precision_floating-point_format#Precision_limitations_on_integer_values
@@ -679,6 +692,24 @@ ValidateAndCalculateConv2dOutputSizes(uint32_t input_height,
         ErrorWithLabel(label, "All dilations should be greater than 0."));
   }
 
+  // A stride or dilation larger than the padded input spatial size can place
+  // the window at most once, so any such value is equivalent to a much smaller
+  // one and serves no legitimate purpose. Reject them here so that unbounded
+  // uint32 values can not flow unchecked into backends. Padding is included so
+  // that valid padded windows are not rejected.
+  const uint64_t padded_height =
+      uint64_t{input_height} + padding.beginning.height + padding.ending.height;
+  const uint64_t padded_width =
+      uint64_t{input_width} + padding.beginning.width + padding.ending.width;
+  if (strides.height > padded_height || strides.width > padded_width) {
+    return base::unexpected(ErrorWithLabel(
+        label, "Strides should not be larger than the padded input size."));
+  }
+  if (dilations.height > padded_height || dilations.width > padded_width) {
+    return base::unexpected(ErrorWithLabel(
+        label, "Dilations should not be larger than the padded input size."));
+  }
+
   const auto float_output_height = CalculateConv2dOutputSize(
       input_height, filter_height, padding.beginning.height,
       padding.ending.height, strides.height, dilations.height, label);
@@ -959,6 +990,23 @@ ValidateConvTranspose2dAndInferOutput(
             attributes.output_padding, label));
     output_height = output_sizes.height;
     output_width = output_sizes.width;
+  }
+
+  // A stride or dilation larger than the resolved output size can only arise
+  // when input==1 or filter==1, where its value is a pure no-op. Reject such
+  // values so that unbounded uint32 strides/dilations cannot flow unchecked
+  // into backends. This is checked against the resolved output size rather than
+  // the minimum calculated size, so that a valid graph whose outputSizes lies
+  // in [calculated, calculated + stride - 1] is not wrongly rejected.
+  if (attributes.strides.height > output_height ||
+      attributes.strides.width > output_width) {
+    return base::unexpected(ErrorWithLabel(
+        label, "Strides should not be larger than the output size."));
+  }
+  if (attributes.dilations.height > output_height ||
+      attributes.dilations.width > output_width) {
+    return base::unexpected(ErrorWithLabel(
+        label, "Dilations should not be larger than the output size."));
   }
 
   Conv2dInputOutputInfo output_info{.batches = input_info.batches,
