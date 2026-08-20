@@ -117,7 +117,6 @@ void FormFieldDataAndroidBridgeImpl::UpdateFieldFromJava(FormFieldData& field) {
   field.set_is_autofilled_according_to_renderer(
       Java_FormFieldData_isAutofilled(env, obj));
   if (IsCheckable(field.check_status())) {
-    SetCheckStatus(&field, true, Java_FormFieldData_isChecked(env, obj));
     return;
   }
   if (ScopedJavaLocalRef<jstring> jvalue =

@@ -412,8 +412,6 @@ bool ExtractFormFieldData(const base::DictValue& field,
   field_data->set_parsed_autocomplete(
       ParseAutocompleteAttribute(field_data->autocomplete_attribute()));
 
-  SetCheckStatus(field_data, false, false);
-
   field_data->set_is_focusable(
       field.FindBool("is_focusable").value_or(field_data->is_focusable()));
   field_data->set_is_visible(field_data->is_focusable());

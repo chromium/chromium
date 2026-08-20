@@ -2038,7 +2038,6 @@ void WebFormControlElementToFormField(
   field->set_is_readonly(element.IsReadOnly());
 
   if (auto input_element = element.DynamicTo<WebInputElement>()) {
-    SetCheckStatus(field, false, input_element.IsChecked());
     // TODO(crbug.com/316143236): Remove this metric once debugging is complete.
     base::UmaHistogramEnumeration(
         "Autofill.DataList.Events",

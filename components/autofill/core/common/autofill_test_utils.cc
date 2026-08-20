@@ -154,6 +154,7 @@ FormFieldData WithoutUnserializedData(FormFieldData field) {
   field.set_host_form_signature({});
   field.set_origin(
       url::Origin::CreateFromNormalizedTuple("http", "placeholder", 80));
+  field.set_check_status(FormFieldData::CheckStatus::kNotCheckable);
   return field;
 }
 
