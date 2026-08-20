@@ -1147,27 +1147,27 @@ void ContextualTasksUI::ClearContextualSessionHandle() {}
 
 std::unique_ptr<contextual_search::InputStateModel>
 ContextualTasksUI::TakeInputStateModel() {
-  if (!task_id_.has_value()) {
-    return nullptr;
-  }
-
   content::WebContents* web_contents = web_ui()->GetWebContents();
   auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
       web_contents);
 
-  return helper->TakeInputStateModelForTask(task_id_.value());
+  if (task_id_.has_value()) {
+    return helper->TakeInputStateModelForTask(task_id_.value());
+  }
+
+  return helper->TakeInputStateModel();
 }
 
 std::vector<int32_t> ContextualTasksUI::GetRestoredTabIds() {
-  if (!task_id_.has_value()) {
-    return {};
-  }
-
   content::WebContents* web_contents = web_ui()->GetWebContents();
   auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
       web_contents);
 
-  return helper->GetSelectedTabIdsForTask(task_id_.value());
+  if (task_id_.has_value()) {
+    return helper->GetSelectedTabIdsForTask(task_id_.value());
+  }
+
+  return helper->GetSelectedTabIds();
 }
 
 void ContextualTasksUI::SetComposeboxHandler(

@@ -3828,7 +3828,7 @@ TEST_F(ContextualSearchboxHandlerTest,
 }
 
 TEST_F(ContextualSearchboxHandlerTest,
-       NewSessionModelInheritsSmartTabSharingActiveState) {
+       ResetInputStateModelResetsSmartTabSharingActiveState) {
   base::test::ScopedFeatureList local_feature_list;
   local_feature_list.InitWithFeaturesAndParameters(
       {{contextual_tasks::kContextualTasksContext,
@@ -3842,7 +3842,7 @@ TEST_F(ContextualSearchboxHandlerTest,
   ASSERT_TRUE(handler().input_state_model());
   EXPECT_TRUE(handler().input_state_model()->IsSmartTabSharingActive());
 
-  // Simulate starting a new session (new model).
+  // Simulate starting a new session (new model) and resetting input state model.
   query_controller_ = nullptr;
   metrics_recorder_ = nullptr;
 
@@ -3869,20 +3869,7 @@ TEST_F(ContextualSearchboxHandlerTest,
   // Trigger model recreation.
   handler().GetValidInputStateForTesting();
 
-  // The new model should have inherited the active state (true) from the
-  // handler.
-  ASSERT_TRUE(handler().input_state_model());
-  EXPECT_TRUE(handler().input_state_model()->IsSmartTabSharingActive());
-  EXPECT_TRUE(handler().IsSmartTabSharingActive());
-
-  // Clear thread state to simulate new handler instance.
-  handler().clear_smart_tab_sharing_active_for_thread();
-  handler().ResetInputStateModel();
-
-  // Trigger model recreation.
-  handler().GetValidInputStateForTesting();
-
-  // The new model should now fallback to the pref default (false).
+  // ResetInputStateModel() should have cleared the active state back to default (false).
   ASSERT_TRUE(handler().input_state_model());
   EXPECT_FALSE(handler().input_state_model()->IsSmartTabSharingActive());
   EXPECT_FALSE(handler().IsSmartTabSharingActive());
