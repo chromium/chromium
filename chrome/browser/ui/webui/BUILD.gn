@@ -621,6 +621,7 @@ source_set("chrome_web_ui_controller_factory") {
       "//chrome/browser/ui/webui/bookmarks",
       "//chrome/browser/ui/webui/downloads",
       "//chrome/browser/ui/webui/history",
+      "//chrome/browser/ui/webui/iwa_dev",
       "//chrome/browser/ui/webui/password_manager:password_manager_ui",
       "//chrome/browser/ui/webui/settings",
       "//chrome/browser/web_applications",

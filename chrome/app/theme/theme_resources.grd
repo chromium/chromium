@@ -100,13 +100,15 @@
       <if expr="not is_android">
         <structure type="chrome_scaled_image" name="IDR_HELP_MENU" file="common/help_16.png" />
       </if>
-
       <if expr="not is_android">
         <structure type="chrome_scaled_image" name="IDR_INCOGNITO_DATA_NOT_SAVED_HEADER_DARK" file="common/incognito_data_not_saved_header_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_INCOGNITO_DATA_NOT_SAVED_HEADER_LIGHT" file="common/incognito_data_not_saved_header_light.png" />
       </if>
       <structure type="chrome_scaled_image" name="IDR_INCOGNITO_WHITE_CIRCLE" file="common/incognito_white_circle.png" />
       <structure type="chrome_scaled_image" name="IDR_MANAGEMENT_FAVICON" file="common/favicon_management.png" />
+      <if expr="not is_android">
+        <structure type="chrome_scaled_image" name="IDR_IWA_DEV_ICON" file="common/iwa_dev_icon.png" />
+      </if>
       <if expr="not is_android or enable_extensions_core">
         <structure type="chrome_scaled_image" name="IDR_IWA_INSTALL_SUCCESS" file="common/iwa_install_success.png" />
         <structure type="chrome_scaled_image" name="IDR_MAXIMIZE_BUTTON_MASK" file="common/maximize_button_mask.png" />

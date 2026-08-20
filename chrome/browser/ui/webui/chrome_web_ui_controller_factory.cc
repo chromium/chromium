@@ -74,6 +74,7 @@
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
+#include "chrome/browser/ui/webui/iwa_dev/iwa_dev_ui.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
@@ -433,6 +434,10 @@ ChromeWebUIControllerFactory::GetFaviconResourceBytes(
     return webapps::AppHomeUI::GetFaviconResourceBytes(scale_factor);
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+  if (page_url.host() == chrome::kChromeUIIwaDevHost) {
+    return IwaDevUI::GetFaviconResourceBytes(scale_factor);
+  }
 
   if (page_url.host() == chrome::kChromeUINewTabPageHost ||
       page_url.host() == chrome::kChromeUINewTabHost) {

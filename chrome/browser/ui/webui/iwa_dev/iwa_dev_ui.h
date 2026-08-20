@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_IWA_DEV_IWA_DEV_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_IWA_DEV_IWA_DEV_UI_H_
 
+#include "base/memory/ref_counted_memory.h"
 #include "chrome/browser/ui/webui/iwa_dev/iwa_dev.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class IwaDevPageHandler;
@@ -29,6 +31,9 @@ class IwaDevUIConfig : public content::DefaultWebUIConfig<IwaDevUI> {
 class IwaDevUI : public ui::MojoWebUIController,
                  public iwa_dev::mojom::PageHandlerFactory {
  public:
+  static scoped_refptr<base::RefCountedMemory> GetFaviconResourceBytes(
+      ui::ResourceScaleFactor scale_factor);
+
   explicit IwaDevUI(content::WebUI* web_ui);
 
   IwaDevUI(const IwaDevUI&) = delete;

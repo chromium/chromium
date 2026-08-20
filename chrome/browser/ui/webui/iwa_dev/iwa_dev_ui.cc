@@ -11,10 +11,12 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/iwa_dev_resources.h"
 #include "chrome/grit/iwa_dev_resources_map.h"
+#include "chrome/grit/theme_resources.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/webui/webui_util.h"
 
 bool IwaDevUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
@@ -57,3 +59,10 @@ IwaDevPageHandler* IwaDevUI::GetHandlerForTesting() {
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(IwaDevUI)
+
+// static
+scoped_refptr<base::RefCountedMemory> IwaDevUI::GetFaviconResourceBytes(
+    ui::ResourceScaleFactor scale_factor) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
+      IDR_IWA_DEV_ICON, scale_factor);
+}
