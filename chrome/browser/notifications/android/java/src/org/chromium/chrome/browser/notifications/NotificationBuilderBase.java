@@ -157,7 +157,6 @@ public abstract class NotificationBuilderBase {
     protected boolean mSilent;
     protected long mTimestamp;
     protected boolean mRenotify;
-    protected int mPriority;
     private @Nullable Bitmap mLargeIcon;
     private boolean mSuppressShowingLargeIcon;
     protected long mTimeoutAfterMs;
@@ -425,15 +424,6 @@ public abstract class NotificationBuilderBase {
     /** Sets whether this notification should be silent. */
     public NotificationBuilderBase setSilent(boolean silent) {
         mSilent = silent;
-        return this;
-    }
-
-    /**
-     * Sets the priority of the notification (if set to private, overrides |setDefaults| and
-     * |setVibrate|)
-     */
-    public NotificationBuilderBase setPriority(int priority) {
-        mPriority = priority;
         return this;
     }
 
