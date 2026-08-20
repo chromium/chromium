@@ -2228,8 +2228,9 @@ bool ContextualTasksUiService::HandleNavigationImpl(
   // Navigations to the AI URL in the topmost frame should always be
   // intercepted.
   if (is_nav_to_ai) {
-    if (!aim_eligibility_service_ ||
-        !aim_eligibility_service_->IsCobrowseEligible()) {
+    if ((!aim_eligibility_service_ ||
+         !aim_eligibility_service_->IsCobrowseEligible()) &&
+        !IsActiveTabInContext(source_contents)) {
       OMNIBOX_LOG("nav_trace")
           << "ContextualTasks navigation trace: HandleNavigationImpl "
              "returning false, nav to AI but not cobrowse eligible";
