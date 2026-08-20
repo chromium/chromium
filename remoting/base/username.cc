@@ -100,6 +100,12 @@ base::cstring_view GetPeerConnectionProcessUsername() {
   return "_crd_peer_connection";
 }
 
+base::cstring_view GetCrashpadProcessUsername() {
+  // Should be in sync with CRD_CRASHPAD_USER in
+  // //remoting/host/installer/linux/debian/postinst
+  return "_crd_crashpad";
+}
+
 #endif  // BUILDFLAG(IS_LINUX)
 
 }  // namespace remoting

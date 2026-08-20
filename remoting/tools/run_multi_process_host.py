@@ -119,7 +119,9 @@ def ensure_permissions(abs_out_dir, user_home, force=False):
     remoting_core_path = os.path.join(abs_out_dir, "libremoting_core.so")
 
     def check_permissions():
-        for user in ["_crd_network", "_crd_peer_connection"]:
+        for user in [
+                "_crd_network", "_crd_peer_connection", "_crd_crashpad"
+        ]:
             try:
                 subprocess.run([
                     "sudo", "-u", user, "test", "-x", remoting_host_path
@@ -137,20 +139,18 @@ def ensure_permissions(abs_out_dir, user_home, force=False):
 
     print("Checking permissions...")
     if not force and check_permissions():
-        print(
-            "_crd_network and _crd_peer_connection have the right permissions.")
+        print("System users have the right permissions.")
         return
 
     if force:
         print("Forcing permission update...")
     else:
-        print(
-            "_crd_network or _crd_peer_connection does not have execute "
-            "permissions. Setting ACLs...")
+        print("System users do not have execute permissions. Setting ACLs...")
 
     run_command([
         "setfacl", "-R", "-m", "u:_crd_network:rx", "-m",
-        "u:_crd_peer_connection:rx", "-m", "g:Debian-gdm:rx", abs_out_dir
+        "u:_crd_peer_connection:rx", "-m", "u:_crd_crashpad:rx", "-m",
+        "g:Debian-gdm:rx", abs_out_dir
     ])
 
     # Accounts also need to be granted read and executable permissions to
@@ -165,7 +165,8 @@ def ensure_permissions(abs_out_dir, user_home, force=False):
         print(f"Setting ACLs on {parent_dir}...")
         run_command([
             "setfacl", "-m", "u:_crd_network:rx", "-m",
-            "u:_crd_peer_connection:rx", "-m", "g:Debian-gdm:rx", parent_dir
+            "u:_crd_peer_connection:rx", "-m", "u:_crd_crashpad:rx", "-m",
+            "g:Debian-gdm:rx", parent_dir
         ])
 
         if parent_dir == user_home_abs:
@@ -234,6 +235,7 @@ def root_main(out_dir,
     print("Adding CRD system users...")
     run_command(["adduser", "--system", "_crd_network"])
     run_command(["adduser", "--system", "_crd_peer_connection"])
+    run_command(["adduser", "--system", "_crd_crashpad"])
 
     remoting_host_path = os.path.join(abs_out_dir, "remoting_me2me_host")
     remoting_core_path = os.path.join(abs_out_dir, "libremoting_core.so")
