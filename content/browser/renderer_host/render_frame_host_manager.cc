@@ -5593,8 +5593,11 @@ void RenderFrameHostManager::CommitPending(
   // valid surface id, because it already has that surface embedded through
   // `RenderFrameHostImpl::WillLeaveBackForwardCache` and the timeout that
   // would be set here will clear that frame (incorrectly).
-  if (is_main_frame && allow_paint_holding && old_view &&
-      old_view != new_view) {
+  // We also don't do this for prerendering frame trees because the page is not
+  // visible and should not start paint-holding or clear graphical output on
+  // activation.
+  if (!frame_tree_node_->frame_tree().is_prerendering() && is_main_frame &&
+      allow_paint_holding && old_view && old_view != new_view) {
     // If allowed, we should take the fallback in any of the following cases:
     //  - We're not coming from BFCache
     //  - We don't have a valid surface id to display.
