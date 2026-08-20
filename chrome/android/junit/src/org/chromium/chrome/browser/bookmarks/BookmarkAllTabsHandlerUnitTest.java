@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
@@ -84,7 +85,8 @@ public class BookmarkAllTabsHandlerUnitTest {
     @Test
     public void testHandleMenuOrKeyboardAction_NullSelector() {
         BookmarkAllTabsHandler handler =
-                new BookmarkAllTabsHandler(() -> null, () -> mSnackbarManager, mWindowAndroid);
+                new BookmarkAllTabsHandler(
+                        SupplierUtils.ofNull(), () -> mSnackbarManager, mWindowAndroid);
         // Should not crash, just return true as the event was consumed.
         assertTrue(handler.handleMenuOrKeyboardAction(R.id.bookmark_all_tabs, false));
     }

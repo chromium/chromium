@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
@@ -113,7 +114,7 @@ public class SendTabToSelfBottomSheetRenderTest {
                             "Title",
                             devices,
                             mProfile,
-                            () -> null,
+                            SupplierUtils.ofNull(),
                             model,
                             ShareEntryPoint.SHARE_SHEET);
                     PropertyModelChangeProcessor.create(
@@ -183,7 +184,7 @@ public class SendTabToSelfBottomSheetRenderTest {
                                             mBottomSheetController,
                                             devices,
                                             mProfile,
-                                            () -> null,
+                                            SupplierUtils.ofNull(),
                                             ShareEntryPoint.SHARE_SHEET);
                             activity.setContentView(sheetContent.getContentView());
                             return sheetContent.getContentView();
@@ -227,7 +228,7 @@ public class SendTabToSelfBottomSheetRenderTest {
                                     mBottomSheetController,
                                     devices,
                                     mProfile,
-                                    () -> null,
+                                    SupplierUtils.ofNull(),
                                     ShareEntryPoint.SHARE_SHEET);
                     activity.setContentView(sheetContent.getContentView());
                 });

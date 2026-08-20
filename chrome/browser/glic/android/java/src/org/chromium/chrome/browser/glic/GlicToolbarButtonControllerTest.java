@@ -33,6 +33,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -605,7 +606,7 @@ public class GlicToolbarButtonControllerTest {
                         () -> mTab,
                         mToggleGlicCallback,
                         () -> mTracker,
-                        () -> null,
+                        SupplierUtils.ofNull(),
                         mBrowserControlsVisibilityManager,
                         () -> mTabModelSelector,
                         recomputeCallback);

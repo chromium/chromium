@@ -54,6 +54,7 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -318,7 +319,7 @@ public class ToolbarPhoneTest {
                                     () -> false,
                                     mThemeColorProvider,
                                     mIncognitoStateProvider,
-                                    () -> null,
+                                    SupplierUtils.ofNull(),
                                     CallbackUtils.emptyRunnable(),
                                     R.id.menu_button_wrapper,
                                     null,

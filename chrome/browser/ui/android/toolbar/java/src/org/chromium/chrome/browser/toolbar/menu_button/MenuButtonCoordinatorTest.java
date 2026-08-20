@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -152,7 +153,7 @@ public class MenuButtonCoordinatorTest {
                         () -> false,
                         mThemeColorProvider,
                         mIncognitoStateProvider,
-                        () -> null,
+                        SupplierUtils.ofNull(),
                         () -> {},
                         R.id.menu_button_wrapper,
                         visibilityDelegate,

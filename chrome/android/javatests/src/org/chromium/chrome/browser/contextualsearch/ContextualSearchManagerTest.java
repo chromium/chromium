@@ -38,6 +38,7 @@ import org.mockito.Mock;
 
 import org.chromium.base.RequiredCallback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -137,7 +138,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     public void tearDown() throws Exception {
         super.tearDown();
         if (mActionTester != null) mActionTester.tearDown();
-        mPanel.setEdgeToEdgeControllerSupplierForTesting(() -> null);
+        mPanel.setEdgeToEdgeControllerSupplierForTesting(SupplierUtils.ofNull());
     }
 
     // ============================================================================================

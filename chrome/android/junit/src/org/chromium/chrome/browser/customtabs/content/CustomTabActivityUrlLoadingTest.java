@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ExternalIntentUrlChecker;
 import org.chromium.chrome.browser.ExternalIntentUrlCheckerJni;
@@ -68,7 +69,7 @@ public class CustomTabActivityUrlLoadingTest {
 
     @Before
     public void setUp() {
-        Origin.setOpaqueOriginFactoryForTesting(() -> null);
+        Origin.setOpaqueOriginFactoryForTesting(SupplierUtils.ofNull());
         UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
         doReturn(mock(PrefService.class)).when(mMockUserPrefsJni).get(any());
 

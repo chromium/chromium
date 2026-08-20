@@ -32,6 +32,7 @@ import org.mockito.Mockito;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -1009,7 +1010,7 @@ public class CustomTabsConnectionTest {
         BrowserServicesIntentDataProvider browserServicesIntentDataProvider =
                 Mockito.mock(BrowserServicesIntentDataProvider.class);
         mCustomTabsConnection.maybeAddAdditionalContentExtrasToOutboundIntent(
-                () -> null, browserServicesIntentDataProvider, outboundIntent, 1);
+                SupplierUtils.ofNull(), browserServicesIntentDataProvider, outboundIntent, 1);
 
         Assert.assertNull(outboundIntent.getExtras());
     }

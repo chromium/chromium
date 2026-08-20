@@ -56,6 +56,7 @@ import org.chromium.base.LocaleUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -600,7 +601,7 @@ public class FeedSurfaceCoordinatorTest {
                         mShareDelegateSupplier,
                         mScrollableContainerDelegate,
                         mPrivacyPreferencesManager,
-                        () -> null,
+                        SupplierUtils.ofNull(),
                         SURFACE_CREATION_TIME_NS,
                         swipeRefreshLayout,
                         /* overScrollDisabled= */ false,
