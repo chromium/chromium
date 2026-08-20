@@ -27,6 +27,22 @@ This directory is actively being refactored as of 2025-06. See
 Many interfaces in this directory are deprecated and being changed or removed;
 check the comment at the top of the header file before using them.
 
+## Recommended Primitives & Constructions
+
+If you are designing a new protocol in Chromium using cryptography, these are
+our recommended primitives and constructions to use. They balance performance
+with security, are "post-quantum", and have reasonably well-understood margins
+of safety.
+
+* If you need to encrypt to a public key, use HPKE with ML-KEM-768,
+  HKDF-SHA256, and AES-128-GCM via crypto/hpke.
+* If you need to encrypt to a symmetric key, use AES-128-GCM via crypto/aead.
+* If you need to sign with a private key, use ML-DSA-44 via crypto/sign.
+* If you need to sign with a symmetric key, use HMAC-SHA256 via crypto/hmac.
+* If you need to hash, use SHA256 via crypto/hash.
+* If you need to do key exchange, use ML-KEM-768, which does not yet have a
+  //crypto API. TODO(https://crbug.com/549892109): add one.
+
 ## Advice For Clients
 
 * Ciphertext, keys, certificates, and other cryptographic material are generally
