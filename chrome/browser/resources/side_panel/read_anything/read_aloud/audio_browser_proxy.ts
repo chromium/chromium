@@ -10,7 +10,14 @@
 // (window.speechSynthesis) for speech playback and voice management.
 export interface AudioBrowserProxy {
   getSpeechRate(): number;
+  getAutoHighlighting(): number;
+  getWordHighlighting(): number;
+  getPhraseHighlighting(): number;
+  getSentenceHighlighting(): number;
+  getNoHighlighting(): number;
+  isPhraseHighlightingEnabled(): boolean;
   onSpeechRateChange(rate: number): void;
+  onHighlightGranularityChanged(granularity: number): void;
 }
 
 export class AudioBrowserProxyImpl implements AudioBrowserProxy {
@@ -18,8 +25,36 @@ export class AudioBrowserProxyImpl implements AudioBrowserProxy {
     return chrome.readingMode.speechRate;
   }
 
+  getAutoHighlighting(): number {
+    return chrome.readingMode.autoHighlighting;
+  }
+
+  getWordHighlighting(): number {
+    return chrome.readingMode.wordHighlighting;
+  }
+
+  getPhraseHighlighting(): number {
+    return chrome.readingMode.phraseHighlighting;
+  }
+
+  getSentenceHighlighting(): number {
+    return chrome.readingMode.sentenceHighlighting;
+  }
+
+  getNoHighlighting(): number {
+    return chrome.readingMode.noHighlighting;
+  }
+
+  isPhraseHighlightingEnabled(): boolean {
+    return chrome.readingMode.isPhraseHighlightingEnabled;
+  }
+
   onSpeechRateChange(rate: number): void {
     chrome.readingMode.onSpeechRateChange(rate);
+  }
+
+  onHighlightGranularityChanged(granularity: number): void {
+    chrome.readingMode.onHighlightGranularityChanged(granularity);
   }
 
   static getInstance(): AudioBrowserProxy {
