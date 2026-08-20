@@ -3251,6 +3251,7 @@ test("base_perftests") {
     "big_endian_perftest.cc",
     "hash/hash_perftest.cc",
     "json/json_perftest.cc",
+    "memory/shared_memory_region_perftest.cc",
     "message_loop/message_pump_perftest.cc",
     "observer_list_perftest.cc",
     "rand_util_perftest.cc",

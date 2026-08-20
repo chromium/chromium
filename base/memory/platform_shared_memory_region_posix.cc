@@ -6,13 +6,20 @@
 
 #include <fcntl.h>
 #include <sys/mman.h>
+#include <sys/syscall.h>
+#include <unistd.h>
 
+#include <atomic>
 #include <optional>
 
 #include "base/check_op.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/posix/eintr_wrapper.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
@@ -55,6 +62,91 @@ std::optional<FDAccessModeError> CheckFDAccessMode(int fd, int expected_mode) {
 
   return std::nullopt;
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+// Added in Linux 6.3; not in all sysroot headers yet.
+#ifndef MFD_NOEXEC_SEAL
+#define MFD_NOEXEC_SEAL 0x0008U
+#endif
+
+// Creates the region as an anonymous memfd instead of an unlinked file in
+// /dev/shm. This needs two to three system calls instead of seven, no path
+// lookup and no dentry, and no up-front fallocate(): memfd pages live on the
+// kernel-internal shmem mount, which has no size limit that could turn a later
+// page fault into SIGBUS the way a full /dev/shm does, so there is nothing to
+// reserve against (allocation failure under memory pressure is an OOM
+// condition, exactly as for anonymous memory). It also stops depending on
+// /dev/shm being mounted, accessible and large enough - container runtimes
+// commonly provide a 64 MiB /dev/shm, which is what --disable-dev-shm-usage
+// exists to work around.
+//
+// Returns an invalid pair when memfd_create() is unavailable (kernels before
+// 3.17, or a seccomp policy that rejects it) so that the caller falls back to
+// the file-based implementation.
+ScopedFDPair CreateAnonymousRegion(PlatformSharedMemoryRegion::Mode mode,
+                                   size_t size) {
+  // MFD_NOEXEC_SEAL creates the file non-executable and seals that state.
+  // Kernels older than 6.3 reject the flag with EINVAL; remember that.
+  // The raw system call is used (as in mojo/core/channel_linux.cc) so that
+  // this does not add a glibc 2.27 requirement.
+  static constexpr char kName[] = "shared-memory-region";
+  static std::atomic<bool> try_noexec_seal{true};
+  ScopedFD fd;
+  if (try_noexec_seal.load(std::memory_order_relaxed)) {
+    fd.reset(static_cast<int>(
+        syscall(__NR_memfd_create, kName,
+                MFD_CLOEXEC | MFD_ALLOW_SEALING | MFD_NOEXEC_SEAL)));
+    if (!fd.is_valid() && errno == EINVAL) {
+      try_noexec_seal.store(false, std::memory_order_relaxed);
+    }
+  }
+  if (!fd.is_valid()) {
+    fd.reset(static_cast<int>(
+        syscall(__NR_memfd_create, kName, MFD_CLOEXEC | MFD_ALLOW_SEALING)));
+  }
+  if (!fd.is_valid()) {
+    DPLOG_IF(ERROR, errno != ENOSYS) << "memfd_create";
+    return {};
+  }
+
+  if (HANDLE_EINTR(ftruncate(fd.get(), checked_cast<off_t>(size))) != 0) {
+    DPLOG(ERROR) << "ftruncate";
+    return {};
+  }
+
+  // The size of a region never changes after creation. Sealing it means that
+  // no holder of a descriptor for this region - including less trusted
+  // processes it is later shared with - can shrink the file and make other
+  // processes fault on access, or grow it. F_SEAL_SEAL keeps anyone from
+  // adding write seals later, which would make future mappings fail.
+  if (fcntl(fd.get(), F_ADD_SEALS, F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_SEAL) !=
+      0) {
+    DPLOG(ERROR) << "fcntl(F_ADD_SEALS)";
+    return {};
+  }
+
+  ScopedFD readonly_fd;
+  if (mode == PlatformSharedMemoryRegion::Mode::kWritable) {
+    // A writable region must be convertible to read-only later, which here
+    // means owning a second, O_RDONLY open file description for the same
+    // file (see ConvertToReadOnly() and
+    // CheckPlatformHandlePermissionsCorrespondToMode()). A memfd has no name,
+    // but procfs can reopen it. This is the only step that needs filesystem
+    // access; processes without it get their writable regions from a broker.
+    const std::string path =
+        StrCat({"/proc/self/fd/", NumberToString(fd.get())});
+    readonly_fd.reset(HANDLE_EINTR(open(path.c_str(), O_RDONLY | O_CLOEXEC)));
+    if (!readonly_fd.is_valid()) {
+      DPLOG(ERROR) << "open(" << path << ", O_RDONLY)";
+      return {};
+    }
+  }
+
+  return ScopedFDPair(std::move(fd), std::move(readonly_fd));
+}
+
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -186,6 +278,17 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 
   CHECK_NE(mode, Mode::kReadOnly) << "Creating a region in read-only mode will "
                                      "lead to this region being non-modifiable";
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  if (!executable) {
+    ScopedFDPair anonymous_region = CreateAnonymousRegion(mode, size);
+    if (anonymous_region.fd.is_valid()) {
+      return PlatformSharedMemoryRegion(std::move(anonymous_region), mode, size,
+                                        UnguessableToken::Create());
+    }
+    // memfd_create() is not available; fall back to a file in /dev/shm.
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   // This function theoretically can block on the disk, but realistically
   // the temporary files we create will just go into the buffer cache

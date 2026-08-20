@@ -21,9 +21,16 @@
 #include <mach/vm_map.h>
 #include <sys/mman.h>
 #elif BUILDFLAG(IS_POSIX)
+#include <fcntl.h>
 #include <sys/mman.h>
+#include <unistd.h>
 
 #include "base/debug/proc_maps_linux.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/posix/eintr_wrapper.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 
@@ -389,6 +396,90 @@ TEST_F(PlatformSharedMemoryRegionTest, ConvertToUnsafeInvalidatesSecondHandle) {
   EXPECT_LT(fds.readonly_fd, 0);
 }
 #endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+namespace {
+
+// Returns true if |fd| refers to a memfd. Regions are backed by memfd unless
+// the kernel does not support memfd_create(), in which case they fall back to
+// an unlinked file in /dev/shm and the memfd-specific expectations below do
+// not apply.
+bool IsMemfd(int fd) {
+  FilePath target;
+  if (!ReadSymbolicLink(FilePath(StringPrintf("/proc/self/fd/%d", fd)),
+                        &target)) {
+    return false;
+  }
+  return StartsWith(target.value(), "/memfd:");
+}
+
+}  // namespace
+
+// Tests that memfd-backed regions have their size sealed, so that no holder of
+// a descriptor can shrink or grow them, and that the set of seals is final.
+TEST_F(PlatformSharedMemoryRegionTest, MemfdRegionsAreSizeSealed) {
+  for (auto create : {&PlatformSharedMemoryRegion::CreateWritable,
+                      &PlatformSharedMemoryRegion::CreateUnsafe}) {
+    PlatformSharedMemoryRegion region = create(kRegionSize);
+    ASSERT_TRUE(region.IsValid());
+    const int fd = region.GetPlatformHandle().fd;
+    if (!IsMemfd(fd)) {
+      GTEST_SKIP() << "memfd_create() is not supported here";
+    }
+    const int seals = fcntl(fd, F_GET_SEALS);
+    ASSERT_NE(seals, -1);
+    EXPECT_EQ(seals & (F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_SEAL),
+              F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_SEAL);
+    EXPECT_EQ(seals & (F_SEAL_WRITE | F_SEAL_FUTURE_WRITE), 0);
+    EXPECT_EQ(-1, HANDLE_EINTR(ftruncate(fd, 0)));
+    EXPECT_EQ(EPERM, errno);
+    EXPECT_EQ(-1, HANDLE_EINTR(ftruncate(fd, kRegionSize * 2)));
+    EXPECT_EQ(EPERM, errno);
+    // The region is still fully usable.
+    WritableSharedMemoryMapping mapping = MapForTesting(&region);
+    ASSERT_TRUE(mapping.IsValid());
+    std::ranges::fill(mapping.GetMemoryAsSpan<uint8_t>(), 0xab);
+  }
+}
+
+// Tests that the read-only descriptor of a memfd-backed writable region refers
+// to the same memory and cannot be used to map it writable.
+TEST_F(PlatformSharedMemoryRegionTest, MemfdReadOnlyDescriptor) {
+  PlatformSharedMemoryRegion region =
+      PlatformSharedMemoryRegion::CreateWritable(kRegionSize);
+  ASSERT_TRUE(region.IsValid());
+  if (!IsMemfd(region.GetPlatformHandle().fd)) {
+    GTEST_SKIP() << "memfd_create() is not supported here";
+  }
+  WritableSharedMemoryMapping rw_mapping = MapForTesting(&region);
+  ASSERT_TRUE(rw_mapping.IsValid());
+  std::ranges::fill(rw_mapping.GetMemoryAsSpan<uint8_t>(), 0x5a);
+
+  const int readonly_fd = region.GetPlatformHandle().readonly_fd;
+  ASSERT_GE(readonly_fd, 0);
+  EXPECT_TRUE(IsMemfd(readonly_fd));
+  EXPECT_EQ(O_RDONLY, fcntl(readonly_fd, F_GETFL) & O_ACCMODE);
+  void* rw = mmap(nullptr, kRegionSize, PROT_READ | PROT_WRITE, MAP_SHARED,
+                  readonly_fd, 0);
+  EXPECT_EQ(MAP_FAILED, rw);
+  void* ro = mmap(nullptr, kRegionSize, PROT_READ, MAP_SHARED, readonly_fd, 0);
+  ASSERT_NE(MAP_FAILED, ro);
+  EXPECT_EQ(-1, mprotect(ro, kRegionSize, PROT_READ | PROT_WRITE));
+  munmap(ro, kRegionSize);
+
+  // After conversion the region is accepted as read-only and still maps the
+  // same memory.
+  ASSERT_TRUE(region.ConvertToReadOnly());
+  auto read_only_region = PlatformSharedMemoryRegion::TakeOrFail(
+      region.PassPlatformHandle(), PlatformSharedMemoryRegion::Mode::kReadOnly,
+      kRegionSize, UnguessableToken::Create());
+  ASSERT_THAT(read_only_region, HasValue());
+  WritableSharedMemoryMapping ro_mapping =
+      MapForTesting(&read_only_region.value());
+  ASSERT_TRUE(ro_mapping.IsValid());
+  EXPECT_EQ(0x5a, ro_mapping.GetMemoryAsSpan<const uint8_t>()[kRegionSize - 1]);
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 void CheckReadOnlyMapProtection(void* addr) {
 #if BUILDFLAG(IS_APPLE)
