@@ -6,6 +6,9 @@
 # files are used to update their .filelist counterparts.
 
 data/**
+# push(ignore-relative)
+../../third_party/aria-practices/src/content/patterns/**
+# pop(ignore-relative)
 -data/**/OWNERS
 -data/**/DIR_METADATA
 -data/**/README.md
