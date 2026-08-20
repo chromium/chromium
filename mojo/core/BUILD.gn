@@ -144,10 +144,6 @@ source_set("impl_for_embedder") {
     ]
   }
 
-  if (is_android || is_chromeos) {
-    defines += [ "MOJO_CORE_LEGACY_PROTOCOL" ]
-  }
-
   if (!is_debug && !optimize_for_size) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]

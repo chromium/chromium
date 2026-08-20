@@ -396,13 +396,8 @@ Channel::MessagePtr Channel::Message::CreateMessage(size_t payload_size,
 Channel::MessagePtr Channel::Message::CreateMessage(size_t capacity,
                                                     size_t payload_size,
                                                     size_t max_handles) {
-#if defined(MOJO_CORE_LEGACY_PROTOCOL)
-  return CreateMessage(capacity, payload_size, max_handles,
-                       Message::MessageType::NORMAL_LEGACY);
-#else
   return CreateMessage(capacity, payload_size, max_handles,
                        Message::MessageType::NORMAL);
-#endif
 }
 
 // static
