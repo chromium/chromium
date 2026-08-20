@@ -29,13 +29,19 @@ namespace manta {
 class SnapperProvider;
 }  // namespace manta
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 class Profile;
 
 class LobsterService : public KeyedService, public LobsterEventSink {
  public:
+  // `profile` and `identity_manager` must be non-null and must outlive this.
   LobsterService(
       std::unique_ptr<manta::SnapperProvider> image_provider,
       Profile* profile,
+      signin::IdentityManager* identity_manager,
       specialized_features::FeatureAccessChecker::VariationsServiceCallback
           variations_service_callback);
   ~LobsterService() override;

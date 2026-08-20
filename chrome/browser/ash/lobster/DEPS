@@ -15,7 +15,6 @@ include_rules = [
   "+chrome/browser/feedback",
   "+chrome/browser/manta",
   "+chrome/browser/profiles",
-  "+chrome/browser/signin/identity_manager_factory.h",
   "+chrome/browser/ui/webui/ash/lobster",
   "+chrome/browser/ui/webui/ash/mako",
   "+chrome/common",
@@ -32,5 +31,12 @@ specific_include_rules = {
   # Exceptionally allow using g_browser_process for the profile keyed service.
   "lobster_service_provider\\.cc": [
     "+chrome/browser/browser_process.h",
+    "+chrome/browser/signin/identity_manager_factory.h",
+  ],
+  "lobster_feedback_unittest\\.cc": [
+    "+chrome/browser/signin/identity_manager_factory.h",
+  ],
+  "lobster_service_unittest\\.cc": [
+    "+chrome/browser/signin/identity_manager_factory.h",
   ],
 }

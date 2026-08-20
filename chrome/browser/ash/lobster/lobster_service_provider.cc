@@ -12,6 +12,7 @@
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/manta/manta_service.h"
 #include "components/manta/snapper_provider.h"
 #include "components/variations/service/variations_service.h"
@@ -38,6 +39,7 @@ LobsterServiceProvider::LobsterServiceProvider()
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
   DependsOn(manta::MantaServiceFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 LobsterServiceProvider::~LobsterServiceProvider() = default;
@@ -57,6 +59,7 @@ std::unique_ptr<KeyedService> LobsterServiceProvider::BuildInstanceFor(
           ->CreateSnapperProvider();
   return std::make_unique<LobsterService>(
       std::move(snapper_provider), profile,
+      IdentityManagerFactory::GetForProfile(profile),
       std::move(variations_service_callback));
 }
 

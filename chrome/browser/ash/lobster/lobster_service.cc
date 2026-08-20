@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/lobster/lobster_system_state_provider_impl.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
@@ -44,6 +43,7 @@ constexpr base::TimeDelta kAnnouncementDelay = base::Milliseconds(200);
 LobsterService::LobsterService(
     std::unique_ptr<manta::SnapperProvider> snapper_provider,
     Profile* profile,
+    signin::IdentityManager* identity_manager,
     specialized_features::FeatureAccessChecker::VariationsServiceCallback
         variations_service_callback)
     : profile_(profile),
@@ -59,7 +59,7 @@ LobsterService::LobsterService(
       resizer_(std::make_unique<LobsterCandidateResizer>(image_fetcher_.get())),
       system_state_provider_(std::make_unique<LobsterSystemStateProviderImpl>(
           profile->GetPrefs(),
-          IdentityManagerFactory::GetForProfile(profile),
+          identity_manager,
           std::move(variations_service_callback),
           /*is_in_demo_mode=*/ash::demo_mode::IsDeviceInDemoMode())),
       announcer_(

@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/lobster/mock/mock_snapper_provider.h"
 #include "chrome/browser/ash/lobster/mock_lobster_system_state_provider.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -42,6 +43,7 @@ class LobsterServiceTest : public ChromeAshTestBase {
     ash::AnnotatedAccountId::Set(testing_profile_.get(), user->GetAccountId());
     lobster_service_ = std::make_unique<LobsterService>(
         std::make_unique<MockSnapperProvider>(), testing_profile_.get(),
+        IdentityManagerFactory::GetForProfile(testing_profile_.get()),
         base::BindRepeating([]() {
           return TestingBrowserProcess::GetGlobal()->variations_service();
         }));
