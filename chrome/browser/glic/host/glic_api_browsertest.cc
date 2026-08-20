@@ -496,27 +496,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testMetrics) {
   histogram_tester->ExpectTotalCount("Glic.TabContext.UploadTime", 1);
 }
 
-// TODO(crbug.com/410881522): Re-enable this test
-
-// TODO(crbug.com/454001121): Re-enable after fixing.
-IN_PROC_BROWSER_TEST_P(GlicApiTest,
-                       DISABLED_testTabDataUpdateOnUrlChangeForPinnedTab) {
-  NavigateTabAndOpenGlicFloating();
-  const int tab_id =
-      GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
-  RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
-
-  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
-                     "tabId", base::NumberToString(tab_id)))});
-
-  // Navigate to another page in the first tab.
-  GURL new_url = embedded_test_server()->GetURL(
-      "/glic/browser_tests/test.html?changed=true");
-  RunTestSequence(NavigateWebContents(kFirstTab, new_url));
-
-  ContinueJsTest();
-}
-
 // TODO(crbug.com/454001121): Re-enable after fixing.
 IN_PROC_BROWSER_TEST_P(GlicApiTest,
                        DISABLED_testTabDataUpdateOnFaviconChangeForPinnedTab) {

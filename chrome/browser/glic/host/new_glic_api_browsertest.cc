@@ -5209,6 +5209,26 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPanelWillOpenHasPromptSuggestion) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       testTabDataUpdateOnUrlChangeForPinnedTab) {
+  tabs::TabInterface* tab0 = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab0);
+  std::string tab0_id = GlicTabId(tab0->GetHandle());
+
+  CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_OK_AND_ASSIGN(auto* tab1_instance, OpenGlicForActiveTab());
+
+  ExecuteJsTest({.params = base::Value(base::DictValue().Set("tabId", tab0_id)),
+                 .instance = tab1_instance});
+
+  // Navigate to another page in the first tab.
+  GURL new_url = embedded_test_server()->GetURL(
+      "/glic/browser_tests/test.html?changed=true");
+  NavigateTab(*tab0, new_url);
+
+  ContinueJsTest({.instance = tab1_instance});
+}
+
 auto DefaultTestParamSet() {
   return testing::Values(TestParams{});
 }

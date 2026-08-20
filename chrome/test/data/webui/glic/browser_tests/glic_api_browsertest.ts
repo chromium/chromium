@@ -92,28 +92,6 @@ class ApiTests extends ApiTestFixtureBase {
     return tabId;
   }
 
-  async testTabDataUpdateOnUrlChangeForPinnedTab() {
-    assertDefined(this.host.getPinnedTabs);
-    assertDefined(this.host.pinTabs);
-
-    const tabId = this.testParams.tabId;
-    assertNotEquals(tabId, this.getActiveTabId());
-
-    await this.host.pinTabs([tabId]);
-    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
-    await pinnedTabsUpdates.waitFor(
-        (tabs) => tabs.some(t => t.tabId === tabId));
-
-    // Navigate to a different URL.
-    await this.advanceToNextStep();
-
-    // Make sure that the pinned tab is not focused.
-    assertNotEquals(tabId, this.getActiveTabId());
-    await pinnedTabsUpdates.waitFor(
-        (tabs) =>
-            tabs.some(t => t.tabId === tabId && t.url.includes('changed')));
-  }
-
   async testTabDataUpdateOnFaviconChangeForPinnedTab() {
     assertDefined(this.host.getPinnedTabs);
     assertDefined(this.host.pinTabs);

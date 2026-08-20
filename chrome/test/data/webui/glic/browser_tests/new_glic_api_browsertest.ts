@@ -2671,6 +2671,28 @@ class ApiTests extends ApiTestFixtureBase {
     const invokeOptions = await observeSequence(this.client.invokeData).next();
     assertEquals('Prompt Suggestion', invokeOptions.prompts?.[0]);
   }
+
+  async testTabDataUpdateOnUrlChangeForPinnedTab() {
+    assertDefined(this.host.getPinnedTabs);
+    assertDefined(this.host.pinTabs);
+
+    const tabId = (this.testParams as {tabId: string}).tabId;
+    assertNotEquals(tabId, this.getActiveTabId());
+
+    await this.host.pinTabs([tabId]);
+    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
+    await pinnedTabsUpdates.waitFor(
+        (tabs) => tabs.some(t => t.tabId === tabId));
+
+    // Navigate to a different URL.
+    await this.advanceToNextStep();
+
+    // Make sure that the pinned tab is not focused.
+    assertNotEquals(tabId, this.getActiveTabId());
+    await pinnedTabsUpdates.waitFor(
+        (tabs) =>
+            tabs.some(t => t.tabId === tabId && t.url.includes('changed')));
+  }
 }
 
 class DaisyChainApiTests extends ApiTestFixtureBase {
