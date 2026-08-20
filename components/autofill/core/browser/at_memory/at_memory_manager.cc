@@ -554,21 +554,20 @@ IsAsync AtMemoryManager::FillSearchResult(
 
   switch (payload.memory_data_type) {
     case MemoryDataType::kIban: {
-      IsAsync is_async(false);
       std::visit(
           absl::Overload{[&](const Iban::Guid& guid) {
-                           is_async = FillIban(guid, form_id, field_id,
-                                               suggestion, std::move(metrics));
+                           FillIban(guid, form_id, field_id, suggestion,
+                                    std::move(metrics));
                          },
                          [&](const Iban::InstrumentId& instrument_id) {
-                           is_async = FillIban(instrument_id, form_id, field_id,
-                                               suggestion, std::move(metrics));
+                           FillIban(instrument_id, form_id, field_id,
+                                    suggestion, std::move(metrics));
                          },
                          [](std::monostate) { NOTREACHED(); },
                          [](const std::string&) { NOTREACHED(); },
                          [](const EntityInstance::EntityId&) { NOTREACHED(); }},
           payload.identifier);
-      return is_async;
+      return IsAsync(false);
     }
     case MemoryDataType::kCreditCardNumber:
     case MemoryDataType::kCreditCardSecurityCode: {
@@ -1067,7 +1066,8 @@ void AtMemoryManager::OnSearchResultsReceived(const std::u16string& query,
   // suggestion based on the status.
   ShowNoResultsStateSuggestions(query, result);
 }
-IsAsync AtMemoryManager::FillIban(
+
+void AtMemoryManager::FillIban(
     const std::variant<Iban::Guid, Iban::InstrumentId>& identifier,
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
@@ -1083,14 +1083,14 @@ IsAsync AtMemoryManager::FillIban(
   IbanAccessManager* iban_access_manager =
       client_->GetPaymentsAutofillClient()->GetIbanAccessManager();
   if (!iban_access_manager) {
-    return IsAsync(false);
+    return;
   }
 
   if (metrics) {
     metrics->OnFetchPiiStarted(AtMemoryMetricsRecorder::FetchPiiSource::kIban);
   }
 
-  return iban_access_manager->FetchValue(
+  iban_access_manager->FetchValue(
       iban_payload,
       base::BindOnce(
           [](base::WeakPtr<AtMemoryManager> manager,
@@ -1103,9 +1103,6 @@ IsAsync AtMemoryManager::FillIban(
             if (!manager) {
               return;
             }
-            manager->client_->HideSuggestions(
-                SuggestionHidingReason::kAcceptSuggestion,
-                FillingProduct::kAtMemory);
             if (!unmasked_value.has_value()) {
               return;
             }

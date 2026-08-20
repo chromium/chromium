@@ -1194,9 +1194,7 @@ TEST_F(AtMemoryManagerTest, FillCreditCard_Success) {
   ASSERT_TRUE(updated_card);
   EXPECT_EQ(updated_card->usage_history().use_count(), initial_use_count + 1);
 }
-// Tests that fetching an unmasked IBAN asynchronously returns `IsAsync(true)`,
-// hides suggestions when the fetch completes, fills the field, and records
-// metrics.
+// Tests that fetching an unmasked IBAN fills the field, and records metrics.
 TEST_F(AtMemoryManagerTest, FillIban_Success) {
   base::HistogramTester histogram_tester;
   Iban iban = test::GetLocalIban();
@@ -1232,9 +1230,6 @@ TEST_F(AtMemoryManagerTest, FillIban_Success) {
           return IsAsync(true);
         });
 
-    EXPECT_CALL(autofill_client(),
-                HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
-                                std::optional(FillingProduct::kAtMemory)));
     EXPECT_CALL(
         autofill_manager(),
         FillOrPreviewField(mojom::ActionPersistence::kFill,
@@ -1245,7 +1240,7 @@ TEST_F(AtMemoryManagerTest, FillIban_Success) {
   EXPECT_EQ(manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
                                                 form_id, field_id,
                                                 final_suggestions[0]),
-            IsAsync(true));
+            IsAsync(false));
 
   std::move(fetch_callback).Run(iban.value());
 

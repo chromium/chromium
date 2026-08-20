@@ -216,14 +216,12 @@ class AtMemoryManager {
   void ShowNoResultsStateSuggestions(const std::u16string& query,
                                      const MemorySearchResults& result);
 
-  // Fills the unmasked IBAN value after fetching it. Returns `IsAsync(true)` if
-  // the operation involves reauthentication or server communication.
-  IsAsync FillIban(
-      const std::variant<Iban::Guid, Iban::InstrumentId>& identifier,
-      const FormGlobalId& form_id,
-      const FieldGlobalId& field_id,
-      const Suggestion& suggestion,
-      std::unique_ptr<AtMemoryMetricsRecorder> metrics);
+  // Fills the unmasked IBAN value after fetching it.
+  void FillIban(const std::variant<Iban::Guid, Iban::InstrumentId>& identifier,
+                const FormGlobalId& form_id,
+                const FieldGlobalId& field_id,
+                const Suggestion& suggestion,
+                std::unique_ptr<AtMemoryMetricsRecorder> metrics);
 
   // Fills the unmasked credit card value after fetching it.
   void FillCreditCard(const std::string& credit_card_guid,
