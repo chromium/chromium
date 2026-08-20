@@ -508,7 +508,8 @@ void XMLDocumentParserRs::StartElementNs(
                         : CreateElementFlags::ByParser(document_);
   if (RuntimeEnabledFeatures::DOMParserXmlScriptAlreadyStartedEnabled() &&
       document_->IsDOMParserDocument() &&
-      (q_name == html_names::kScriptTag || q_name == svg_names::kScriptTag)) {
+      (q_name.Matches(html_names::kScriptTag) ||
+       q_name.Matches(svg_names::kScriptTag))) {
     flags.SetAlreadyStarted(true);
   }
 
