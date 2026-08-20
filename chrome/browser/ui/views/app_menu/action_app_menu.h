@@ -14,6 +14,7 @@
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
+class ActionAppMenuManager;
 class BrowserWindowInterface;
 
 namespace actions {
@@ -26,8 +27,6 @@ class MenuButtonController;
 class MenuItemView;
 class MenuRunner;
 }  // namespace views
-
-class RecentTabsDynamicMenu;
 
 // Coordinator class for the Block Style ChroMenu.
 class ActionAppMenu : public views::MenuDelegate {
@@ -54,8 +53,6 @@ class ActionAppMenu : public views::MenuDelegate {
   void PopulateMenu(views::MenuItemView* view_parent,
                     actions::BaseAction* action_item);
 
-  void CreateMenuHierarchy(actions::ActionItem* root);
-
   // The browser window interface associated with this menu.
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
 
@@ -74,8 +71,8 @@ class ActionAppMenu : public views::MenuDelegate {
   // The root menu item view. Owned by `menu_runner_`.
   raw_ptr<views::MenuItemView> root_ = nullptr;
 
-  // The helper class to populate recent tabs menu
-  std::unique_ptr<RecentTabsDynamicMenu> recent_tabs_menu_;
+  // Manages the ActionItem hierarchy and dynamic submenus.
+  std::unique_ptr<ActionAppMenuManager> menu_manager_;
 
   int next_id_ = COMMAND_ID_FIRST_UNBOUNDED;
 };

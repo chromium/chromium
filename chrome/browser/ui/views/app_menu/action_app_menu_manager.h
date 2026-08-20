@@ -1,0 +1,66 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_MANAGER_H_
+#define CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_MANAGER_H_
+
+#include <memory>
+#include <optional>
+#include <string>
+
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
+#include "ui/actions/actions.h"
+#include "ui/base/class_property.h"
+#include "ui/color/color_id.h"
+
+class RecentTabsDynamicMenu;
+
+// Manages the ActionItem hierarchy for the Action App Menu, including
+// constructing the menu tree and managing dynamic submenus.
+class ActionAppMenuManager {
+ public:
+  enum class DisplayType {
+    kRow,
+    kBlock,
+    kFooter,
+    kCustom,
+  };
+
+  static const ui::ClassProperty<DisplayType>* const kDisplayTypeKey;
+  static const ui::ClassProperty<ui::ColorId>* const kContainerColorKey;
+
+  static std::unique_ptr<actions::IndirectActionItem> CreateIndirectActionItem(
+      actions::ActionId action_id,
+      DisplayType display_type,
+      std::optional<ui::ColorId> container_color);
+
+  static actions::ActionItem* GetAppMenuRoot(
+      BrowserWindowInterface* browser_window_interface);
+
+  explicit ActionAppMenuManager(
+      BrowserWindowInterface* browser_window_interface);
+  ActionAppMenuManager(const ActionAppMenuManager&) = delete;
+  ActionAppMenuManager& operator=(const ActionAppMenuManager&) = delete;
+  ~ActionAppMenuManager();
+
+  // Populates the menu action hierarchy under the app menu root.
+  void CreateMenuHierarchy();
+
+  actions::ActionItem* GetAppMenuRoot() const;
+
+ private:
+  std::unique_ptr<AppMenuSectionActionItem> CreateSectionActionItem(
+      std::u16string text,
+      DisplayType display_type,
+      std::optional<ui::ColorId> container_color);
+
+  raw_ptr<BrowserWindowInterface> browser_window_interface_;
+  std::unique_ptr<RecentTabsDynamicMenu> recent_tabs_menu_;
+};
+
+DECLARE_UI_CLASS_PROPERTY_TYPE(ActionAppMenuManager::DisplayType)
+
+#endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_MANAGER_H_

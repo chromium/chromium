@@ -24,7 +24,7 @@
 #include "chrome/browser/ui/tabs/recent_tabs_builder.h"
 #include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/app_menu/app_menu_action_helper.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
@@ -156,8 +156,9 @@ void RecentTabsDynamicMenu::CreateRecentTabsAction(
           std::make_unique<AppMenuSectionActionItem>(current_item.title());
     } else {
       if (current_item.action_id().has_value()) {
-        action_item = app_menu::CreateAppMenuIndirectActionItem(
-            current_item.action_id().value(), app_menu::DisplayType::kRow,
+        action_item = ActionAppMenuManager::CreateIndirectActionItem(
+            current_item.action_id().value(),
+            ActionAppMenuManager::DisplayType::kRow,
             kColorAppMenuYourChromeBackground);
 
         action_item.get()->GetActionItem()->SetText(current_item.title());

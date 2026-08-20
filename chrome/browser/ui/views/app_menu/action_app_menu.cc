@@ -8,10 +8,9 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/views/app_menu/app_menu_action_helper.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/toolbar/recent_tabs_dynamic_menu.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/actions/actions.h"
@@ -32,66 +31,14 @@ ActionAppMenu::ActionAppMenu(BrowserWindowInterface* browser_window_interface,
                              base::RepeatingClosure on_menu_closed_callback)
     : browser_window_interface_(browser_window_interface),
       on_menu_closed_callback_(std::move(on_menu_closed_callback)),
-      recent_tabs_menu_(
-          std::make_unique<RecentTabsDynamicMenu>(browser_window_interface)) {
-  CreateMenuHierarchy(app_menu::GetAppMenuRoot(browser_window_interface_));
+      menu_manager_(
+          std::make_unique<ActionAppMenuManager>(browser_window_interface)) {
+  menu_manager_->CreateMenuHierarchy();
 }
 
 ActionAppMenu::~ActionAppMenu() {
   command_to_action_map_.clear();
-  app_menu::GetAppMenuRoot(browser_window_interface_)->ResetActionList();
-}
-
-void ActionAppMenu::CreateMenuHierarchy(actions::ActionItem* root) {
-  std::optional<ui::ColorId> your_chrome_background =
-      kColorAppMenuYourChromeBackground;
-  std::optional<ui::ColorId> tools_actions_background =
-      kColorAppMenuToolsAndActionsBackground;
-
-  // Chrome Heading (Your Chrome)
-
-  std::unique_ptr<actions::BaseAction> your_chrome_heading =
-      app_menu::CreateAppMenuSectionActionItem(
-          l10n_util::GetStringUTF16(IDS_APP_MENU_YOUR_CHROME_HEADER),
-          app_menu::DisplayType::kRow, your_chrome_background);
-
-  auto* chrome_ptr = root->AddChild(std::move(your_chrome_heading));
-
-  // Your Chrome Children Setup
-  chrome_ptr->AddChild(app_menu::CreateAppMenuIndirectActionItem(
-      kActionShowPasswordManager, app_menu::DisplayType::kRow,
-      your_chrome_background));
-
-  auto recent_tabs_menu = app_menu::CreateAppMenuIndirectActionItem(
-      kActionRecentTabsSubmenu, app_menu::DisplayType::kRow,
-      your_chrome_background);
-
-  recent_tabs_menu->SetPopulateChildrenCallback(
-      base::BindRepeating(&RecentTabsDynamicMenu::BuildRecentTabsActions,
-                          recent_tabs_menu_->GetWeakPtr()));
-
-  recent_tabs_menu->PopulateChildItems();
-
-  chrome_ptr->AddChild(std::move(recent_tabs_menu));
-
-  chrome_ptr->AddChild(app_menu::CreateAppMenuIndirectActionItem(
-      kActionManageExtensions, app_menu::DisplayType::kRow,
-      your_chrome_background));
-
-  // Tools and Actions Heading
-  std::unique_ptr<actions::BaseAction> tools_actions_heading =
-      app_menu::CreateAppMenuSectionActionItem(
-          l10n_util::GetStringUTF16(IDS_APP_MENU_TOOLS_AND_ACTIONS_HEADER),
-          app_menu::DisplayType::kRow, tools_actions_background);
-
-  auto* tools_actions_ptr = root->AddChild(std::move(tools_actions_heading));
-
-  // Tools and Actions Setup
-  tools_actions_ptr->AddChild(app_menu::CreateAppMenuIndirectActionItem(
-      kActionPrint, app_menu::DisplayType::kRow, tools_actions_background));
-
-  tools_actions_ptr->AddChild(app_menu::CreateAppMenuIndirectActionItem(
-      kActionFind, app_menu::DisplayType::kRow, tools_actions_background));
+  menu_manager_->GetAppMenuRoot()->ResetActionList();
 }
 
 void ActionAppMenu::RunMenu(views::MenuButtonController* host) {
@@ -101,7 +48,7 @@ void ActionAppMenu::RunMenu(views::MenuButtonController* host) {
   root_ = root.get();
 
   const auto* provider = ChromeLayoutProvider::Get();
-  PopulateMenu(root_, app_menu::GetAppMenuRoot(browser_window_interface_));
+  PopulateMenu(root_, menu_manager_->GetAppMenuRoot());
 
   root_->set_children_use_full_width(true);
   views::SubmenuView* submenu = root_->CreateSubmenu();
@@ -145,7 +92,7 @@ void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
   if (on_menu_closed_callback_) {
     on_menu_closed_callback_.Run();
   }
-  app_menu::GetAppMenuRoot(browser_window_interface_)->ResetActionList();
+  menu_manager_->GetAppMenuRoot()->ResetActionList();
 }
 
 const gfx::FontList* ActionAppMenu::GetLabelFontList(int id) const {
@@ -243,7 +190,7 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
 
       // Get the styling from the ActionItem and apply it to its menu item.
       const ui::ColorId container_color =
-          child_ptr->GetProperty(app_menu::kAppMenuContainerColorKey);
+          child_ptr->GetProperty(ActionAppMenuManager::kContainerColorKey);
       if (container_color != ui::kColorMenuBackground) {
         menu_item->SetContainerStyle(container_color, top_radius, bottom_radius,
                                      top_padding, bottom_padding);
