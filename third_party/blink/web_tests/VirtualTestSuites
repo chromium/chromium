@@ -4691,7 +4691,7 @@
     "owners": ["aran.donohue@gmail.com"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
-      "wpt_internal/webtransport/headers.https.any.js"
+      "external/wpt/webtransport/headers.https.any.js"
     ],
     "exclusive_tests": "ALL",
     "args": ["--enable-blink-features=WebTransportHeaders"],
