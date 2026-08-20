@@ -4382,7 +4382,6 @@ if (!is_android) {
     sources = [
       "browser_encoding_browsertest.cc",
       "chained_back_navigation_tracker_browsertest.cc",
-      "chrome_back_forward_cache_browsertest.cc",
       "chrome_content_browser_client_browsertest.cc",
       "chrome_data_use_measurement_browsertest.cc",
       "chrome_do_not_track_browsertest.cc",
@@ -4427,7 +4426,6 @@ if (!is_android) {
       "//chrome/browser/enterprise/connectors/test:test_support",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/login_detection",
-      "//chrome/browser/pdf:pdf_extension_test_utils",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/prefs:util",
       "//chrome/browser/search_engines",

@@ -1949,6 +1949,7 @@ if (!is_android) {
       "//chrome/browser/autocomplete:browser_tests",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:browser_tests",
+      "//chrome/browser/back_forward_cache:browser_tests",
       "//chrome/browser/background",
       "//chrome/browser/background:browser_tests",
       "//chrome/browser/background:test_support",

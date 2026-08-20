@@ -83,10 +83,6 @@ per-file chrome_content_browser_client_receiver_bindings.*=file://ipc/SECURITY_O
 per-file chrome_content_browser_client_binder_policies.*=set noparent
 per-file chrome_content_browser_client_binder_policies.*=file://ipc/SECURITY_OWNERS
 
-# BackForwardCache
-per-file chrome_back_forward_cache_browsertest.cc=file://content/browser/back_forward_cache/OWNERS
-per-file chrome_back_forward_cache_browsertest.cc=file://content/OWNERS
-
 # Web Platform security metrics tests:
 per-file chrome_web_platform_security_metrics_browsertest.cc=file://content/OWNERS
 

@@ -4,6 +4,7 @@
 
 #include <array>
 #include <string_view>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
@@ -198,8 +199,9 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest, BasicIframe) {
 
   content::RenderFrameHost* rfh_b = nullptr;
   rfh_a->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
-    if (rfh != rfh_a.get())
+    if (rfh != rfh_a.get()) {
       rfh_b = rfh;
+    }
   });
   EXPECT_TRUE(rfh_b);
   content::RenderFrameHostWrapper rfh_b_wrapper(rfh_b);
@@ -699,7 +701,7 @@ class ChromeBackForwardCacheBrowserWithEmbedTestBase
       blink::scheduler::WebSchedulerTrackedFeature feature,
       base::Location location) {
     content::FetchHistogramsFromChildProcesses();
-    base::HistogramBase::Sample32 sample = base::HistogramBase::Sample32(feature);
+    base::HistogramBase::Sample32 sample(std::to_underlying(feature));
     base::Bucket expected_blocklisted(sample, 1);
 
     EXPECT_THAT(histogram_tester_->GetAllSamples(
@@ -939,8 +941,9 @@ IN_PROC_BROWSER_TEST_P(
 #define MAYBE_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded \
   DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded
 #endif
-IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
-                       MAYBE_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded) {
+IN_PROC_BROWSER_TEST_P(
+    ChromeBackForwardCacheBrowserWithEmbedPdfTest,
+    MAYBE_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded) {
   const auto tag = html_tag();
 
   // Navigate to A.
