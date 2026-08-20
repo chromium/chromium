@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -461,5 +462,17 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
                 break;
             }
         }
+    }
+
+    @Override
+    @ModelType
+    int getGroupCardType() {
+        return ModelType.TAB_GROUP;
+    }
+
+    @Override
+    boolean isGroupCollapsed(Token tabGroupId) {
+        TabModel tabModel = mMediator.getCurrentTabModelChecked();
+        return tabModel.getTabGroupCollapsed(tabGroupId);
     }
 }

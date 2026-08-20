@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
@@ -752,6 +753,24 @@ public class NestedLayoutDelegateUnitTest {
         assertEquals(0, mDelegate.getUiIndexForTab(TAB1_ID));
         assertEquals(1, mDelegate.getUiIndexForTab(TAB2_ID));
         assertEquals(TabModel.INVALID_TAB_INDEX, mDelegate.getUiIndexForTab(3));
+    }
+
+    @Test
+    public void testGetGroupCardTypeAndIsGroupCollapsed() {
+        assertEquals(TAB_GROUP, mDelegate.getGroupCardType());
+
+        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
+        assertTrue(mDelegate.isGroupCollapsed(TAB_GROUP_ID));
+
+        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
+        assertFalse(mDelegate.isGroupCollapsed(TAB_GROUP_ID));
+    }
+
+    @Test
+    public void testOnTabSelectionToggled_NoOp() {
+        PropertyModel model = new PropertyModel(TabProperties.ALL_KEYS_TAB_GRID);
+        mDelegate.onTabSelectionToggled(model, TAB1_ID, /* wasSelected= */ false);
+        verifyNoInteractions(mMediator);
     }
 
     private PropertyModel addTabToModelList(int tabId, @Nullable Token tabGroupId) {

@@ -701,6 +701,34 @@ public class GroupedLayoutDelegateUnitTest {
         assertEquals(0, mDelegate.getUiIndexForTab(TAB2_ID));
     }
 
+    @Test
+    public void testGetGroupCardTypeAndIsGroupCollapsed() {
+        assertEquals(TAB, mDelegate.getGroupCardType());
+        assertTrue(mDelegate.isGroupCollapsed(TAB_GROUP_ID));
+    }
+
+    @Test
+    public void testOnTabSelectionToggled_TabInGroup() {
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mTabModel.isTabInTabGroup(mTab1)).thenReturn(true);
+        PropertyModel model = createAndAddPropertyModel(TAB1_ID);
+
+        mDelegate.onTabSelectionToggled(model, TAB1_ID, /* wasSelected= */ false);
+
+        verify(mMediator).updateThumbnailFetcher(model, TAB1_ID);
+    }
+
+    @Test
+    public void testOnTabSelectionToggled_TabNotInGroup() {
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mTabModel.isTabInTabGroup(mTab1)).thenReturn(false);
+        PropertyModel model = createAndAddPropertyModel(TAB1_ID);
+
+        mDelegate.onTabSelectionToggled(model, TAB1_ID, /* wasSelected= */ false);
+
+        verify(mMediator, never()).updateThumbnailFetcher(any(), anyInt());
+    }
+
     private PropertyModel createAndAddPropertyModel(int tabId) {
         PropertyModel model =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)

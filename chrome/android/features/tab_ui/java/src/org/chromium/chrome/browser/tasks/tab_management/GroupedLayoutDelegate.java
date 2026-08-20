@@ -410,4 +410,14 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
             mMediator.updateFaviconForTab(model, groupTab, null, null);
         }
     }
+
+    @Override
+    void onTabSelectionToggled(PropertyModel model, int tabId, boolean wasSelected) {
+        // Reset thumbnail to ensure the color of the blank tab slots is correct.
+        TabModel tabModel = mMediator.getCurrentTabModelChecked();
+        Tab tab = tabModel.getTabById(tabId);
+        if (tab != null && tabModel.isTabInTabGroup(tab)) {
+            mMediator.updateThumbnailFetcher(model, tabId);
+        }
+    }
 }

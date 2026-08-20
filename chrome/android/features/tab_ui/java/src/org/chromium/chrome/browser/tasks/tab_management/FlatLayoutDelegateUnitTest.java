@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridDialogHandler;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -403,6 +404,19 @@ public class FlatLayoutDelegateUnitTest {
         assertEquals(0, mDelegate.getUiIndexForTab(TAB1_ID));
         assertEquals(1, mDelegate.getUiIndexForTab(TAB2_ID));
         assertEquals(TabModel.INVALID_TAB_INDEX, mDelegate.getUiIndexForTab(3));
+    }
+
+    @Test
+    public void testGetGroupCardTypeAndIsGroupCollapsed() {
+        assertEquals(ModelType.TAB, mDelegate.getGroupCardType());
+        assertTrue(mDelegate.isGroupCollapsed(TAB_GROUP_ID));
+    }
+
+    @Test
+    public void testOnTabSelectionToggled_NoOp() {
+        PropertyModel model = new PropertyModel(TabProperties.ALL_KEYS_TAB_GRID);
+        mDelegate.onTabSelectionToggled(model, TAB1_ID, /* wasSelected= */ false);
+        verifyNoInteractions(mMediator);
     }
 
     private void addTabsToModelList(int... tabIds) {

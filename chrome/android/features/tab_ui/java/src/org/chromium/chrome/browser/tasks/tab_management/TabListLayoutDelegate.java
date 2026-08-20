@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -263,6 +264,34 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
      * @param model The {@link PropertyModel} of the child tab card.
      */
     void setupGroupPropertiesForChildTab(Tab tab, PropertyModel model) {}
+
+    /**
+     * Returns the {@link ModelType} for tab group cards in this layout. Flat layouts do not have
+     * tab groups and use {@link ModelType#TAB}.
+     */
+    @ModelType
+    int getGroupCardType() {
+        return ModelType.TAB;
+    }
+
+    /**
+     * Returns whether the tab group is collapsed in this layout. Flat layouts do not have tab
+     * groups and default to true.
+     *
+     * @param tabGroupId The {@link Token} identifying the tab group.
+     */
+    boolean isGroupCollapsed(Token tabGroupId) {
+        return true;
+    }
+
+    /**
+     * Called when a tab or group card's selection state is toggled in multi-select mode.
+     *
+     * @param model The {@link PropertyModel} of the toggled card.
+     * @param tabId The ID of the tab associated with the card.
+     * @param wasSelected Whether the card was selected prior to the toggle.
+     */
+    void onTabSelectionToggled(PropertyModel model, int tabId, boolean wasSelected) {}
 
     /**
      * Adjusts the proposed insertion UI index if the tab is being moved from an earlier position.

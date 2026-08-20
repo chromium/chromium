@@ -519,14 +519,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
                     model.set(TabProperties.IS_SELECTED, !wasSelected);
 
-                    if (mLayoutType != TabListLayoutType.FLAT) {
-                        // Reset thumbnail to ensure the color of the blank tab slots is correct.
-                        TabModel tabModel = getCurrentTabModelChecked();
-                        Tab tab = tabModel.getTabById(tabId);
-                        if (tab != null && tabModel.isTabInTabGroup(tab)) {
-                            updateThumbnailFetcher(model, tabId);
-                        }
-                    }
+                    mTabListLayoutDelegate.onTabSelectionToggled(model, tabId, wasSelected);
                 }
 
                 @Override
@@ -2161,16 +2154,13 @@ public class TabListMediator implements TabListNotificationHandler {
         @TabGroupColorId int colorId = tabModel.getTabGroupColorWithFallback(tabGroupId);
         int currentTabId = TabModelUtils.getCurrentTabId(tabModel);
 
-        boolean isCollapsed =
-                mLayoutType != TabListLayoutType.NESTED
-                        || tabModel.getTabGroupCollapsed(tabGroupId);
+        boolean isCollapsed = mTabListLayoutDelegate.isGroupCollapsed(tabGroupId);
         // If the group is collapsed, the group representation card displays the selection.
         // If expanded, the group card is a header and should remain unhighlighted (child rows show
         // selection).
         boolean isSelected = isCollapsed && isSelectedTab(tab, currentTabId);
 
-        int cardType =
-                mLayoutType == TabListLayoutType.NESTED ? ModelType.TAB_GROUP : ModelType.TAB;
+        int cardType = mTabListLayoutDelegate.getGroupCardType();
         PropertyModel groupInfo = addTabInfoToModel(tab, index, isSelected, cardType);
 
         // Group Header Specific properties
