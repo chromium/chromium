@@ -1625,9 +1625,8 @@ public class TabListMediator implements TabListNotificationHandler {
         if (isUpdatingId) {
             model.set(TabProperties.TAB_ID, tab.getId());
         } else {
-            // Group Header's TAB_ID is not required to match the active child's ID when nesting is
-            // supported.
-            assert mLayoutType == TabListLayoutType.NESTED
+            // Group Header's TAB_ID is not required to match the active child's ID.
+            assert TabProperties.isTabGroupHeader(model)
                     || TabProperties.getTabId(model) == tab.getId();
         }
 
