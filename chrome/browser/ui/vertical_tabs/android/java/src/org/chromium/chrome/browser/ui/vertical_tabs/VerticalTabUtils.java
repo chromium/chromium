@@ -47,7 +47,7 @@ public class VerticalTabUtils {
      * Minimum width in dp required for the expanded vertical tabs rail before snapping to collapsed
      * state.
      */
-    public static final int MIN_EXPANDED_WIDTH_DP = 90;
+    public static final int MIN_EXPANDED_WIDTH_DP = 92;
 
     /** The ratio of window width that the vertical tabs rail can consume when expanded. */
     public static final float EXPANDED_WINDOW_WIDTH_RATIO = 0.33f;

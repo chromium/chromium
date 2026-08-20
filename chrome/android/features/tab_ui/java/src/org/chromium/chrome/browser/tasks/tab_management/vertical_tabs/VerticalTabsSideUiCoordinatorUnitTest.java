@@ -532,7 +532,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS + ":auto_resize/true"})
-    public void testAutoResizingWindow_ScalesWidthWithWindow() {
+    public void testAutoResize_ScalesWidthWithWindow() {
         setWindowWidthPx(mMediumWindowWidth);
         int minWebContentsWidthPx =
                 ViewUtils.dpToPx(mActivity, SideUiCoordinator.MIN_WEB_CONTENTS_WIDTH_DP);
@@ -553,12 +553,34 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS + ":auto_resize/true"})
-    public void testWindowWidthBelowMinWebContents_HidesVT() {
+    public void testAutoResize_BelowMinWebContents_HidesVerticalTabs() {
         @Px int hiddenWindowWidth = ViewUtils.dpToPx(mActivity, 400);
         setWindowWidthPx(hiddenWindowWidth);
         assertShowableWidth(0, hiddenWindowWidth);
         verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.COLLAPSED);
         verify(mMockTabListCoordinator).setCollapseButtonEnabled(false);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS + ":auto_resize/true"})
+    public void testAutoResize_NarrowWindowThreshold_CollapsesRail() {
+        // Threshold: max(412 + 92, round(92 / 0.2)) = 504dp.
+        // 503dp (< 504dp) -> Narrow: Rail collapses and collapse button is disabled.
+        @Px int narrowWidthPx = ViewUtils.dpToPx(mActivity, 503);
+        setWindowWidthPx(narrowWidthPx);
+        assertShowableWidth(mCollapsedRailWidth, narrowWidthPx);
+        verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.COLLAPSED);
+        verify(mMockTabListCoordinator).setCollapseButtonEnabled(false);
+
+        // 504dp (>= 504dp) -> Not narrow: Rail expands with auto-resize width (92dp) and button is
+        // enabled.
+        @Px int wideWidthPx = ViewUtils.dpToPx(mActivity, 504);
+        setWindowWidthPx(wideWidthPx);
+        @Px int expectedExpandedWidthPx = ViewUtils.dpToPx(mActivity, 92);
+        assertShowableWidth(expectedExpandedWidthPx, wideWidthPx);
+        verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.EXPANDED);
+        verify(mMockTabListCoordinator).setCollapseButtonEnabled(true);
     }
 
     @Test

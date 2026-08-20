@@ -2051,6 +2051,59 @@ public class TabVerticalViewBinderUnitTest {
 
     @Test
     @SmallTest
+    public void testBindPinnedTab_InitialBinding_AutoResizeEnabled() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, VerticalTabUtils.AUTO_RESIZE_PARAM, true);
+        ViewGroup pinnedView = inflatePinnedTabView();
+        int defaultXmlWidth =
+                pinnedView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width);
+        int expectedHeight =
+                pinnedView
+                        .getResources()
+                        .getDimensionPixelSize(
+                                VerticalTabUtils.isTablet(pinnedView.getContext())
+                                        ? R.dimen.vertical_tab_pinned_item_height_tablet
+                                        : R.dimen.vertical_tab_pinned_item_height);
+        pinnedView.setLayoutParams(
+                new ViewGroup.MarginLayoutParams(defaultXmlWidth, expectedHeight));
+
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, null);
+
+        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, pinnedView.getLayoutParams().width);
+        assertEquals(expectedHeight, pinnedView.getLayoutParams().height);
+    }
+
+    @Test
+    @SmallTest
+    public void testBindPinnedTab_InitialBinding_AutoResizeDisabled() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, VerticalTabUtils.AUTO_RESIZE_PARAM, false);
+        ViewGroup pinnedView = inflatePinnedTabView();
+        int expectedWidth =
+                pinnedView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width);
+        int expectedHeight =
+                pinnedView
+                        .getResources()
+                        .getDimensionPixelSize(
+                                VerticalTabUtils.isTablet(pinnedView.getContext())
+                                        ? R.dimen.vertical_tab_pinned_item_height_tablet
+                                        : R.dimen.vertical_tab_pinned_item_height);
+        pinnedView.setLayoutParams(new ViewGroup.MarginLayoutParams(expectedWidth, expectedHeight));
+
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, null);
+
+        assertEquals(expectedWidth, pinnedView.getLayoutParams().width);
+        assertEquals(expectedHeight, pinnedView.getLayoutParams().height);
+    }
+
+    @Test
+    @SmallTest
     public void testBindTabGroupHeader_RailCollapsed() {
         ViewGroup headerView = inflateGroupHeaderView();
         headerView.setLayoutParams(

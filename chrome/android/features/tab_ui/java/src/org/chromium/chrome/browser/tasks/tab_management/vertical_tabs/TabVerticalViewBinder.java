@@ -149,7 +149,7 @@ class TabVerticalViewBinder {
                         ? ViewGroup.LayoutParams.MATCH_PARENT
                         : resources.getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_width);
         ViewGroup.LayoutParams params = view.getLayoutParams();
-        if (params != null && params.height != pinnedHeight) {
+        if (params != null && (params.height != pinnedHeight || params.width != expandedWidth)) {
             updateTabItemSize(model, view, expandedWidth, pinnedHeight);
         }
 

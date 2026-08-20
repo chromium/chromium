@@ -101,6 +101,7 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragAndDropDelegateImpl;
+import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -118,8 +119,10 @@ import java.util.function.Supplier;
 @NullMarked
 public class VerticalTabListCoordinator {
     static final int DEFAULT_GRID_SPAN_COUNT = 4;
-    static final int EXPANDED_MIN_GRID_SPAN_COUNT = 2;
+    static final int MAX_SINGLE_ROW_SPAN_COUNT = 5;
     static final int COLLAPSED_GRID_SPAN_COUNT = 1;
+    // Epsilon (5% of a column span) absorbs sub-pixel rounding errors at boundary thresholds.
+    private static final float SPAN_CALCULATION_EPSILON = 0.05f;
     private static @Nullable Supplier<TabSwitcherDragHandler>
             sTabSwitcherDragHandlerSupplierForTesting;
     private final VerticalTabRailLayout mContainerView;
@@ -132,6 +135,7 @@ public class VerticalTabListCoordinator {
     private final TabListRecyclerView mPinnedTabsRecyclerView;
     private final SimpleRecyclerViewAdapter mPinnedTabsAdapter;
     private final GridLayoutManager mPinnedLayoutManager;
+    private final ListObservable.ListObserver<Void> mPinnedTabsListObserver;
     private final TabModelSelector mTabModelSelector;
     private final WindowAndroid mWindowAndroid;
     private final ActivityResultTracker mActivityResultTracker;
@@ -636,6 +640,27 @@ public class VerticalTabListCoordinator {
         setupItemTouchHelper(
                 activity, pinnedTabsRecyclerView, pinnedTabsModelList, tabModelSelector);
 
+        mPinnedTabsListObserver =
+                new ListObservable.ListObserver<>() {
+                    @Override
+                    public void onItemRangeInserted(ListObservable source, int index, int count) {
+                        updatePinnedLayoutSpanCount();
+                    }
+
+                    @Override
+                    public void onItemRangeRemoved(ListObservable source, int index, int count) {
+                        updatePinnedLayoutSpanCount();
+                    }
+
+                    @Override
+                    public void onItemRangeChanged(
+                            ListObservable source, int index, int count, @Nullable Void payload) {}
+
+                    @Override
+                    public void onItemMoved(ListObservable source, int curIndex, int newIndex) {}
+                };
+        pinnedTabsModelList.addObserver(mPinnedTabsListObserver);
+
         mPinnedTabsMediator =
                 new StaticPinnedTabsMediator(
                         tabModelSelector.getCurrentModel(),
@@ -771,6 +796,7 @@ public class VerticalTabListCoordinator {
     }
 
     public void destroy() {
+        mPinnedTabsModelList.removeObserver(mPinnedTabsListObserver);
         mPinnedTabsMediator.destroy();
         mPinnedTabsRecyclerView.setAdapter(null);
         mPinnedTabsModelList.clear();
@@ -967,6 +993,7 @@ public class VerticalTabListCoordinator {
         } else {
             mPinnedTabsRecyclerView.setVisibility(View.VISIBLE);
         }
+        updatePinnedLayoutSpanCount();
     }
 
     private void setupItemTouchHelper(
@@ -1310,7 +1337,10 @@ public class VerticalTabListCoordinator {
         }
     }
 
-    /** Returns the grid column span count for the Left Rail based on measured width. */
+    /**
+     * Returns the grid column span count for the Left Rail based on measured width and pinned tab
+     * count.
+     */
     private int getSpanCount() {
         if (mContainerModel != null) {
             @RailCollapseState
@@ -1336,11 +1366,23 @@ public class VerticalTabListCoordinator {
         int minHorizontalGap = res.getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
         if (minItemWidth <= 0) return DEFAULT_GRID_SPAN_COUNT;
 
-        int calculatedSpans =
-                Math.max(
-                        EXPANDED_MIN_GRID_SPAN_COUNT,
-                        (availableWidth + minHorizontalGap) / (minItemWidth + minHorizontalGap));
-        return Math.min(DEFAULT_GRID_SPAN_COUNT, calculatedSpans);
+        float spansFittingWidth =
+                (float) (availableWidth + minHorizontalGap) / (minItemWidth + minHorizontalGap)
+                        + SPAN_CALCULATION_EPSILON;
+        int maxFitSpans =
+                Math.clamp((int) Math.floor(spansFittingWidth), 1, MAX_SINGLE_ROW_SPAN_COUNT);
+
+        int pinnedTabCount = mPinnedTabsModelList != null ? mPinnedTabsModelList.size() : 0;
+        if (pinnedTabCount <= 0) {
+            return maxFitSpans;
+        }
+
+        // Uses integer ceiling division (A + B - 1) / B instead of A / B (which truncates and
+        // would yield 0 rows when pinnedTabCount < maxFitSpans) to calculate the full number of
+        // rows needed, balancing tabs evenly across rows.
+        int rows = (pinnedTabCount + maxFitSpans - 1) / maxFitSpans;
+        int columns = (pinnedTabCount + rows - 1) / rows;
+        return Math.clamp(columns, 1, maxFitSpans);
     }
 
     private void updatePinnedLayoutSpanCount() {
@@ -1349,6 +1391,10 @@ public class VerticalTabListCoordinator {
         mPinnedTabsRecyclerView.invalidateItemDecorations();
     }
 
+    /**
+     * Distributes inter-item horizontal gaps evenly across grid columns without outer margins,
+     * ensuring identical visual item widths since RecyclerView does not support layout_weight.
+     */
     private void calculatePinnedTabItemOffsets(Rect outRect, View view, RecyclerView parent) {
         if (!VerticalTabUtils.isAutoResizeEnabled()) {
             outRect.set(0, 0, 0, 0);
@@ -1789,6 +1835,10 @@ public class VerticalTabListCoordinator {
 
     GridLayoutManager getPinnedLayoutManagerForTesting() {
         return mPinnedLayoutManager;
+    }
+
+    TabListModel getPinnedTabsModelListForTesting() {
+        return mPinnedTabsModelList;
     }
 
     /** Sets the tab switcher drag handler supplier override for testing. */

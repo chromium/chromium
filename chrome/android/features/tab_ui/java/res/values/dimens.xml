@@ -254,7 +254,6 @@ found in the LICENSE file.
     <dimen name="vertical_tabs_header_padding_vertical">8dp</dimen>
     <dimen name="vertical_tabs_header_button_size">32dp</dimen>
     <dimen name="vertical_tabs_header_button_padding">4dp</dimen>
-    <dimen name="vertical_tabs_header_button_gap">2dp</dimen>
 
     <!-- Dimens for Vertical Tabs tab group hover cards. -->
     <dimen name="tab_group_hover_card_corner_radius">16dp</dimen>

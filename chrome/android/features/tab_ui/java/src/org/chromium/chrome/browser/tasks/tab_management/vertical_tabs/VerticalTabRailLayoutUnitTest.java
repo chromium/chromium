@@ -151,27 +151,22 @@ public class VerticalTabRailLayoutUnitTest {
     @Test
     @SmallTest
     public void testSetCollapseState_ExpandedAndCollapsed() {
-        int minSingleRowRailWidthPx = mRailLayout.getMinSingleButtonRowWidthPxForTesting();
-
         LinearLayout header = mRailLayout.getHeaderContainer();
         View spacer = mRailLayout.findViewById(R.id.header_spacer);
 
-        // 1. Expanded Wide (single row)
+        // 1. Expanded State (single row)
         mRailLayout.setCollapseState(RailCollapseState.EXPANDED);
-        measureAndLayout(mRailLayout, minSingleRowRailWidthPx, 500);
         assertEquals(LinearLayout.HORIZONTAL, header.getOrientation());
         assertEquals(View.VISIBLE, spacer.getVisibility());
 
-        // 2. Explicit Collapsed State (single column)
+        // 2. Collapsed State (single column)
         mRailLayout.setCollapseState(RailCollapseState.COLLAPSED);
         assertEquals(LinearLayout.VERTICAL, header.getOrientation());
         assertEquals(View.GONE, spacer.getVisibility());
 
         View newTabButton = mRailLayout.findViewById(R.id.new_tab_button);
         assertEquals(
-                minSingleRowRailWidthPx > 0
-                        ? mRailLayout.findViewById(R.id.collapse_button).getLayoutParams().width
-                        : 0,
+                mRailLayout.findViewById(R.id.collapse_button).getLayoutParams().width,
                 newTabButton.getLayoutParams().width);
         assertEquals(
                 mRailLayout.findViewById(R.id.collapse_button).getLayoutParams().height,
@@ -185,9 +180,7 @@ public class VerticalTabRailLayoutUnitTest {
 
     @Test
     @SmallTest
-    public void testOnMeasure_SkipsUpdateWhenHeaderModeUnchanged() {
-        int minSingleRowRailWidthPx = mRailLayout.getMinSingleButtonRowWidthPxForTesting();
-        int narrowRailWidthPx = minSingleRowRailWidthPx - 1;
+    public void testSetCollapseState_SkipsUpdateWhenStateUnchanged() {
         int buttonSize =
                 mActivity
                         .getResources()
@@ -198,9 +191,8 @@ public class VerticalTabRailLayoutUnitTest {
 
         View searchButton = mRailLayout.findViewById(R.id.tab_search_button);
 
-        // 1. Initial size in single row mode.
+        // 1. Initial expanded state.
         mRailLayout.setCollapseState(RailCollapseState.EXPANDED);
-        measureAndLayout(mRailLayout, minSingleRowRailWidthPx + 100, 500);
         assertEquals(buttonSize, searchButton.getLayoutParams().width);
 
         // 2. Mutate a layout param to a custom value to verify it is not overwritten.
@@ -208,40 +200,30 @@ public class VerticalTabRailLayoutUnitTest {
         params.width = 999;
         searchButton.setLayoutParams(params);
 
-        // 3. Size change with a different wide width (still single row).
-        measureAndLayout(mRailLayout, minSingleRowRailWidthPx + 50, 500);
-        // Action is skipped because mode hasn't changed; width remains custom value 999.
+        // 3. Set same state (EXPANDED).
+        mRailLayout.setCollapseState(RailCollapseState.EXPANDED);
+        // Action is skipped because collapse state hasn't changed; width remains custom value 999.
         assertEquals(999, searchButton.getLayoutParams().width);
 
-        // 4. Size change with narrow width (transitions to a vertical layout).
-        measureAndLayout(mRailLayout, narrowRailWidthPx, 500);
+        // 4. Change collapse state to COLLAPSED.
+        mRailLayout.setCollapseState(RailCollapseState.COLLAPSED);
         // Action is performed; width is reset.
         assertEquals(buttonSize, searchButton.getLayoutParams().width);
     }
 
     @Test
     @SmallTest
-    public void testColdStart_UnmeasuredToNarrowLayout_TransitionsToVertical() {
-        int minSingleRowRailWidthPx = mRailLayout.getMinSingleButtonRowWidthPxForTesting();
-        int narrowRailWidthPx = minSingleRowRailWidthPx - 1;
-
+    public void testColdStart_DefaultExpanded_TransitionsToCollapsedOnStateChange() {
         LinearLayout header = mRailLayout.getHeaderContainer();
 
-        // Initial cold start inflate has width 0 (unmeasured), defaults to single row.
+        // Initial cold start inflate defaults to expanded single row.
         assertEquals(LinearLayout.HORIZONTAL, header.getOrientation());
 
-        // Measure with narrow width must configure vertical layout before layout.
-        int widthSpec =
-                View.MeasureSpec.makeMeasureSpec(narrowRailWidthPx, View.MeasureSpec.EXACTLY);
-        int heightSpec = View.MeasureSpec.makeMeasureSpec(500, View.MeasureSpec.EXACTLY);
-        mRailLayout.measure(widthSpec, heightSpec);
+        // Set collapsed state transitions to vertical column.
+        mRailLayout.setCollapseState(RailCollapseState.COLLAPSED);
         assertEquals(LinearLayout.VERTICAL, header.getOrientation());
 
-        // Layout pass at narrow width preserves vertical layout.
-        measureAndLayout(mRailLayout, narrowRailWidthPx, 500);
-        assertEquals(LinearLayout.VERTICAL, header.getOrientation());
-
-        // Subsequent PropertyModel bind must not overwrite the vertical layout params.
+        // Subsequent PropertyModel bind preserves the vertical layout params.
         VerticalTabListViewBinder.bind(mModel, mRailLayout, VerticalTabListProperties.IS_INCOGNITO);
         assertEquals(LinearLayout.VERTICAL, header.getOrientation());
     }
