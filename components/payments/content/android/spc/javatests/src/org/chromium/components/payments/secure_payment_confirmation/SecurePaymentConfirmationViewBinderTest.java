@@ -15,6 +15,7 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -259,9 +260,15 @@ public class SecurePaymentConfirmationViewBinderTest {
         assertSame(icon, ((ImageView) itemView.findViewById(R.id.icon)).getDrawable());
         assertEquals(iconLabel, itemView.findViewById(R.id.icon).getContentDescription());
         assertEquals(primaryText, ((TextView) itemView.findViewById(R.id.primary_text)).getText());
+        assertEquals(
+                TextUtils.TruncateAt.END,
+                ((TextView) itemView.findViewById(R.id.primary_text)).getEllipsize());
         assertEquals(View.VISIBLE, itemView.findViewById(R.id.secondary_text).getVisibility());
         assertEquals(
                 secondaryText, ((TextView) itemView.findViewById(R.id.secondary_text)).getText());
+        assertEquals(
+                TextUtils.TruncateAt.END,
+                ((TextView) itemView.findViewById(R.id.secondary_text)).getEllipsize());
     }
 
     @Test
