@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -132,6 +133,9 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
                             }
                         },
                         /* swapCallback= */ null);
+        if (TabSwitcherUtils.isGridTabSwitcherDisabled()) {
+            setHasSpaceToShow(false);
+        }
     }
 
     /**
@@ -228,11 +232,23 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
 
     @Override
     public void setHasSpaceToShow(boolean hasSpaceToShow) {
+        if (TabSwitcherUtils.isGridTabSwitcherDisabled()) {
+            hasSpaceToShow = false;
+        }
         mHasSpaceToShow = hasSpaceToShow;
         // TODO(crbug.com/455658153): Ensure setVisibility() can handle multiple sources for setting
         //  visibility. Currently this only accounts for visibility being set due to the width of
         //  the ToolbarTablet.
         mToggleTabStackButton.setVisibility(hasSpaceToShow ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public int updateVisibility(int availableWidth) {
+        if (TabSwitcherUtils.isGridTabSwitcherDisabled()) {
+            setHasSpaceToShow(false);
+            return 0;
+        }
+        return super.updateVisibility(availableWidth);
     }
 
     @Override

@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -15,11 +17,13 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.graphics.Canvas;
+import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,6 +33,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+
+import org.chromium.base.DeviceInfo;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -434,5 +440,44 @@ public class ToggleTabStackButtonCoordinatorTest {
 
         IphCommand iphCommand = verifyIphShown();
         assertTrue(iphCommand.contentString.contains(groupTitle));
+    }
+
+    @After
+    public void tearDown() {
+        DeviceInfo.resetIsDesktopForTesting();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
+    public void testSetHasSpaceToShow_disabledOnDesktop() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        reset(mToggleTabStackButton);
+        mCoordinator.setHasSpaceToShow(true);
+        assertFalse(mCoordinator.hasSpaceToShow());
+        verify(mToggleTabStackButton).setVisibility(View.GONE);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER,
+        ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR
+    })
+    public void testUpdateVisibility_disabledOnDesktop() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        reset(mToggleTabStackButton);
+        int width = mCoordinator.updateVisibility(500);
+        assertEquals(0, width);
+        assertFalse(mCoordinator.hasSpaceToShow());
+        verify(mToggleTabStackButton).setVisibility(View.GONE);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
+    public void testConstructor_disabledOnDesktop_setsVisibilityGone() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        ToggleTabStackButton button = mock(ToggleTabStackButton.class);
+        ToggleTabStackButtonCoordinator coordinator = newToggleTabStackButtonCoordinator(button);
+        assertFalse(coordinator.hasSpaceToShow());
+        verify(button).setVisibility(View.GONE);
     }
 }

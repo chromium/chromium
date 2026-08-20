@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.tabmodel.OverridableTabCount;
@@ -326,7 +327,9 @@ public class TabSwitcherActionProvider implements Destroyable {
                                 || mLayoutStateProvider.isLayoutStartingToHide(
                                         LayoutType.BROWSING));
 
-        if (!mIsTabStateInitialized || mTabCount < 1) {
+        if (TabSwitcherUtils.isGridTabSwitcherDisabled()
+                || !mIsTabStateInitialized
+                || mTabCount < 1) {
             buttonState = ButtonState.UNCLICKABLE;
         } else if (buttonState == ButtonState.UNCLICKABLE) {
             buttonState = ButtonState.DEFAULT;
