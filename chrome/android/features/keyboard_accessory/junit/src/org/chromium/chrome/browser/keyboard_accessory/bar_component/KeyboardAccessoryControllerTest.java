@@ -438,7 +438,7 @@ public class KeyboardAccessoryControllerTest {
     }
 
     @Test
-    public void testSuggestionAcceptanceUpdatesViewState() {
+    public void testSuggestionAcceptanceUpdatesSuggestions() {
         when(mMockIsLargeFormFactorSupplier.get()).thenReturn(false);
 
         AutofillSuggestion suggestion1 =
@@ -461,18 +461,18 @@ public class KeyboardAccessoryControllerTest {
 
         mCoordinator.setSuggestions(List.of(suggestion1, suggestion2), mMockAutofillDelegate);
 
-        List<ActionBarItem> barItems = flattenItemGroups();
-        assertThat(barItems.get(0).getViewState(), is(ActionBarItem.ViewState.ENABLED));
-        assertThat(barItems.get(1).getViewState(), is(ActionBarItem.ViewState.ENABLED));
+        assertTrue(getAutofillItemAt(0).isEnabled());
+        assertTrue(getAutofillItemAt(1).isEnabled());
 
         // Simulate a click on the first suggestion.
-        barItems.get(0).getAction().getCallback().onResult(barItems.get(0).getAction());
+        getAutofillItemAt(0).getAction().getCallback().onResult(getAutofillItemAt(0).getAction());
 
         verify(mMockAutofillDelegate).suggestionAccepted(0, true);
 
-        barItems = flattenItemGroups();
-        assertThat(barItems.get(0).getViewState(), is(ActionBarItem.ViewState.LOADING));
-        assertThat(barItems.get(1).getViewState(), is(ActionBarItem.ViewState.DEACTIVATED));
+        assertFalse(getAutofillItemAt(0).isEnabled());
+        assertTrue(getAutofillItemAt(0).isLoading());
+        assertFalse(getAutofillItemAt(1).isEnabled());
+        assertFalse(getAutofillItemAt(1).isLoading());
     }
 
     @Test
@@ -613,7 +613,7 @@ public class KeyboardAccessoryControllerTest {
     }
 
     @Test
-    public void testSuggestionAcceptanceWithoutLoadingKeepsViewStateEnabled() {
+    public void testSuggestionAcceptanceWithoutLoadingKeepsSuggestionsEnabled() {
         when(mMockIsLargeFormFactorSupplier.get()).thenReturn(false);
 
         AutofillSuggestion suggestion1 =
@@ -637,22 +637,22 @@ public class KeyboardAccessoryControllerTest {
         mCoordinator.setSuggestions(List.of(suggestion1, suggestion2), mMockAutofillDelegate);
 
         List<ActionBarItem> barItems = flattenItemGroups();
-        assertThat(barItems.get(0).getViewState(), is(ActionBarItem.ViewState.ENABLED));
-        assertThat(barItems.get(1).getViewState(), is(ActionBarItem.ViewState.ENABLED));
+        assertTrue(barItems.get(0).isEnabled());
+        assertTrue(barItems.get(1).isEnabled());
 
         // Simulate a click on the first suggestion, which does not require loading.
         barItems.get(0).getAction().getCallback().onResult(barItems.get(0).getAction());
 
         verify(mMockAutofillDelegate).suggestionAccepted(0, false);
 
-        // The ViewState should remain ENABLED because showLoadingUIOnSuggestion is not called.
+        // The suggestions should remain enalbled because no loading UI is shown.
         barItems = flattenItemGroups();
-        assertThat(barItems.get(0).getViewState(), is(ActionBarItem.ViewState.ENABLED));
-        assertThat(barItems.get(1).getViewState(), is(ActionBarItem.ViewState.ENABLED));
+        assertTrue(barItems.get(0).isEnabled());
+        assertTrue(barItems.get(1).isEnabled());
     }
 
     @Test
-    public void testSuggestionAcceptanceUpdatesSheetOpenerViewState() {
+    public void testSuggestionAcceptanceDisablesSheetOpener() {
         when(mMockIsLargeFormFactorSupplier.get()).thenReturn(false);
 
         AutofillSuggestion suggestion1 =
@@ -667,29 +667,29 @@ public class KeyboardAccessoryControllerTest {
         mCoordinator.setSuggestions(List.of(suggestion1), mMockAutofillDelegate);
 
         SheetOpenerBarItem sheetOpener = (SheetOpenerBarItem) mModel.get(SHEET_OPENER_ITEM);
-        assertThat(sheetOpener.getViewState(), is(ActionBarItem.ViewState.ENABLED));
+        assertTrue(sheetOpener.isEnabled());
 
         List<ActionBarItem> barItems = flattenItemGroups();
         // Simulate a click on the first suggestion.
         barItems.get(0).getAction().getCallback().onResult(barItems.get(0).getAction());
 
-        assertThat(sheetOpener.getViewState(), is(ActionBarItem.ViewState.DEACTIVATED));
+        assertFalse(sheetOpener.isEnabled());
     }
 
     @Test
-    public void testDismissResetsViewState() {
+    public void testDismissEnablesFixedBarItems() {
         mCoordinator.show();
 
         SheetOpenerBarItem sheetOpener = (SheetOpenerBarItem) mModel.get(SHEET_OPENER_ITEM);
         DismissBarItem dismissItem = (DismissBarItem) mModel.get(DISMISS_ITEM);
 
-        sheetOpener.setViewState(ActionBarItem.ViewState.DEACTIVATED);
-        dismissItem.setViewState(ActionBarItem.ViewState.DEACTIVATED);
+        sheetOpener.setEnabled(false);
+        dismissItem.setEnabled(false);
 
         mCoordinator.dismiss();
 
-        assertThat(sheetOpener.getViewState(), is(ActionBarItem.ViewState.ENABLED));
-        assertThat(dismissItem.getViewState(), is(ActionBarItem.ViewState.ENABLED));
+        assertTrue(sheetOpener.isEnabled());
+        assertTrue(dismissItem.isEnabled());
     }
 
     @Test

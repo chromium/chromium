@@ -200,17 +200,9 @@ class KeyboardAccessoryProperties {
      * hold an {@link Action}s that defines a callback and a recording type.
      */
     static class ActionBarItem extends BarItem {
-        @IntDef({ViewState.ENABLED, ViewState.LOADING, ViewState.DEACTIVATED})
-        @Retention(RetentionPolicy.SOURCE)
-        @interface ViewState {
-            int ENABLED = 0;
-            int LOADING = 1;
-            int DEACTIVATED = 2;
-        }
-
         private final @Nullable Action mAction;
         private final @StringRes int mCaptionId;
-        private @ViewState int mViewState = ViewState.ENABLED;
+        private boolean mIsEnabled = true;
 
         /**
          * Creates a new item. An action item must have a type and can have an action.
@@ -225,20 +217,12 @@ class KeyboardAccessoryProperties {
             mCaptionId = captionId;
         }
 
-        @Override
-        void updateStateOnItemAcceptance(@Nullable AutofillSuggestion acceptedSuggestion) {
-            setViewState(ViewState.DEACTIVATED);
+        boolean isEnabled() {
+            return mIsEnabled;
         }
 
-        /** Sets the transient interactive state of the view. */
-        void setViewState(@ViewState int viewState) {
-            mViewState = viewState;
-        }
-
-        /** Returns the transient interactive state of the view. */
-        @ViewState
-        int getViewState() {
-            return mViewState;
+        void setEnabled(boolean isEnabled) {
+            mIsEnabled = isEnabled;
         }
 
         @Override
@@ -296,6 +280,7 @@ class KeyboardAccessoryProperties {
     static class AutofillBarItem extends ActionBarItem {
         private final AutofillSuggestion mSuggestion;
         private @Nullable String mFeature;
+        private boolean mIsLoading;
 
         /**
          * Creates a new autofill item with a suggestion for the view's representation and an action
@@ -311,10 +296,16 @@ class KeyboardAccessoryProperties {
         }
 
         @Override
-        void updateStateOnItemAcceptance(@Nullable AutofillSuggestion acceptedSuggestion) {
-            boolean isAccepted =
-                    acceptedSuggestion != null && mSuggestion.equals(acceptedSuggestion);
-            setViewState(isAccepted ? ViewState.LOADING : ViewState.DEACTIVATED);
+        boolean isEnabled() {
+            return mSuggestion.isSelectable() && super.isEnabled();
+        }
+
+        boolean isLoading() {
+            return mSuggestion.isLoading() || mIsLoading;
+        }
+
+        void setLoading(boolean isLoading) {
+            mIsLoading = isLoading;
         }
 
         AutofillSuggestion getSuggestion() {

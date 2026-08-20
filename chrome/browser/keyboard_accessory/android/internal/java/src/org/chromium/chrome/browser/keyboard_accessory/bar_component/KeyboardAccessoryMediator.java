@@ -252,14 +252,10 @@ class KeyboardAccessoryMediator
         return scrollableItems;
     }
 
-    private List<BarItem> ungroupBarItems(Iterable<BarItem> scrollableItems) {
-        List<BarItem> barItems = new ArrayList<>();
+    private List<ActionBarItem> ungroupBarItems(Iterable<BarItem> scrollableItems) {
+        List<ActionBarItem> barItems = new ArrayList<>();
         for (BarItem barItem : scrollableItems) {
-            if (barItem instanceof GroupBarItem) {
-                barItems.addAll(barItem.getActionBarItems());
-            } else {
-                barItems.add(barItem);
-            }
+            barItems.addAll(barItem.getActionBarItems());
         }
         return barItems;
     }
@@ -423,18 +419,27 @@ class KeyboardAccessoryMediator
         return DialogDismissType.DISMISS_IMMEDIATELY;
     }
 
-    private void updateListState(
-            ListModel<BarItem> list, @Nullable AutofillSuggestion acceptedSuggestion) {
-        for (int i = 0; i < list.size(); i++) {
-            BarItem barItem = list.get(i);
-            barItem.updateStateOnItemAcceptance(acceptedSuggestion);
-            list.update(i, barItem);
+    private void updateActionBarItemsState(
+            ListModel<BarItem> barItems, AutofillSuggestion acceptedSuggestion) {
+        // Ungroup the elements, make all elements disabled and show loading UI for the accepted
+        // item.
+        List<ActionBarItem> listOfBarItems = ungroupBarItems(barItems);
+        for (ActionBarItem actionBarItem : listOfBarItems) {
+            actionBarItem.setEnabled(false);
+            if (actionBarItem instanceof AutofillBarItem autofillBarItem) {
+                autofillBarItem.setLoading(
+                        autofillBarItem.getSuggestion().equals(acceptedSuggestion));
+            }
+        }
+        // Update the UI once the data model is updated.
+        for (int i = 0; i < barItems.size(); i++) {
+            barItems.update(i, barItems.get(i));
         }
     }
 
     private void showLoadingUIOnSuggestion(AutofillSuggestion acceptedSuggestion) {
-        updateListState(mModel.get(BAR_ITEMS), acceptedSuggestion);
-        updateListState(mModel.get(BAR_ITEMS_FIXED), null);
+        updateActionBarItemsState(mModel.get(BAR_ITEMS), acceptedSuggestion);
+        updateActionBarItemsState(mModel.get(BAR_ITEMS_FIXED), acceptedSuggestion);
     }
 
     private @BarItem.Type int toBarItemType(@AccessoryAction int accessoryAction) {
@@ -467,10 +472,10 @@ class KeyboardAccessoryMediator
         mTabSwitcher.closeActiveTab();
         mModel.set(VISIBLE, false);
         if (mModel.get(SHEET_OPENER_ITEM) != null) {
-            mModel.get(SHEET_OPENER_ITEM).setViewState(ActionBarItem.ViewState.ENABLED);
+            mModel.get(SHEET_OPENER_ITEM).setEnabled(true);
         }
         if (mModel.get(DISMISS_ITEM) != null) {
-            mModel.get(DISMISS_ITEM).setViewState(ActionBarItem.ViewState.ENABLED);
+            mModel.get(DISMISS_ITEM).setEnabled(true);
         }
         if (!(mHasFilteredTouchEvent == null || mHasFilteredTouchEvent)) {
             // Log the metric if the accessory received touch events, but none of them were
@@ -561,7 +566,7 @@ class KeyboardAccessoryMediator
         if (style.isDocked()) {
             mModel.get(BAR_ITEMS).set(createGroupBarItem(mModel.get(BAR_ITEMS)));
         } else {
-            mModel.get(BAR_ITEMS).set(ungroupBarItems(mModel.get(BAR_ITEMS)));
+            mModel.get(BAR_ITEMS).set(new ArrayList<>(ungroupBarItems(mModel.get(BAR_ITEMS))));
         }
     }
 

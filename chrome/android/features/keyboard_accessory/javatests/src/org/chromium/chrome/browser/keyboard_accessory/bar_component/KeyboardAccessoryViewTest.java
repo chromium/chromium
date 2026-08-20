@@ -857,7 +857,7 @@ public class KeyboardAccessoryViewTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AutofillBarItem updatedItem = createAutofillBarItem("Item 3 Updated", null);
-                    updatedItem.setViewState(ActionBarItem.ViewState.LOADING);
+                    updatedItem.setLoading(true);
                     mModel.get(BAR_ITEMS).update(2, updatedItem);
                 });
 

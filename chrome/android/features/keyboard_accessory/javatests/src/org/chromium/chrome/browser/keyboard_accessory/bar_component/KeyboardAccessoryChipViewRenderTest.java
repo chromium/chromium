@@ -188,8 +188,7 @@ public class KeyboardAccessoryChipViewRenderTest {
                                     .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                                     .build();
                     mContentView.addView(
-                            createChipViewFromSuggestion(
-                                    suggestion, ActionBarItem.ViewState.DEACTIVATED));
+                            createChipViewFromSuggestion(suggestion, /* enabled= */ false));
                 });
         mRenderTestRule.render(mContentView, "keyboard_accessory_deactivated_suggestion");
     }
@@ -288,8 +287,7 @@ public class KeyboardAccessoryChipViewRenderTest {
 
     // KeyboardAccessoryViewBinder.create() returns a raw BarItemViewHolder.
     @SuppressWarnings("unchecked")
-    private ChipView createChipViewFromSuggestion(
-            AutofillSuggestion suggestion, @ActionBarItem.ViewState int viewState) {
+    private ChipView createChipViewFromSuggestion(AutofillSuggestion suggestion, boolean enabled) {
         Action action = new Action(AUTOFILL_SUGGESTION, _ -> {});
         BarItemViewHolder<AutofillBarItem, ChipView> viewHolder =
                 KeyboardAccessoryViewBinder.create(
@@ -299,7 +297,7 @@ public class KeyboardAccessoryChipViewRenderTest {
                         AutofillBarItem.getBarItemType(suggestion, mMockProfile));
         ChipView chipView = (ChipView) viewHolder.itemView;
         AutofillBarItem item = new AutofillBarItem(suggestion, action, mMockProfile);
-        item.setViewState(viewState);
+        item.setEnabled(enabled);
         viewHolder.bind(item, chipView);
         chipView.setLayoutParams(
                 new ViewGroup.LayoutParams(
@@ -372,7 +370,7 @@ public class KeyboardAccessoryChipViewRenderTest {
     private List<View> createKeyboardAccessoryItemsToRender() {
         List<View> items = new ArrayList<>();
         for (AutofillSuggestion suggestion : createSuggestionsToRender()) {
-            items.add(createChipViewFromSuggestion(suggestion, ActionBarItem.ViewState.ENABLED));
+            items.add(createChipViewFromSuggestion(suggestion, /* enabled= */ true));
         }
         items.add(createCredmanEntry());
         items.add(createGeneratePassword());
