@@ -41,17 +41,6 @@ class ApiTests extends ApiTestFixtureBase {
   // TODO(crbug.com/422544382): add test for getContextForActorFromTab for the
   // case where tab is in background.
 
-  // TODO(harringtond): This is disabled because it hangs. Fix it.
-  async testCaptureScreenshot() {
-    assertDefined(this.host.captureScreenshot);
-    const screenshot = await this.host.captureScreenshot?.();
-    assertDefined(screenshot);
-    assertTrue(screenshot.widthPixels > 0);
-    assertTrue(screenshot.heightPixels > 0);
-    assertTrue(screenshot.data.byteLength > 0);
-    assertEquals(screenshot.mimeType, 'image/jpeg');
-  }
-
   // Helper function to pin the active tab. Asserts the tab is pinned, and
   // returns the tab ID.
   async pinActiveTab(): Promise<string> {

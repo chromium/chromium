@@ -468,11 +468,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testAllTestsAreRegistered) {
   AssertAllTestsRegistered(GetTestSuiteNames());
 }
 
-// TODO(crbug.com/454083080): Fix this, it hangs.
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testCaptureScreenshot) {
-  ExecuteJsTest();
-}
-
 // TODO(crbug.com/441588906): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
                        DISABLED_testFetchInactiveTabScreenshot) {
