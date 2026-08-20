@@ -6,7 +6,7 @@
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -39,7 +39,7 @@ class PopupOpenerTabHelperBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* GetActiveWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   // Opens and waits for a pop-up to finish navigation before closing the
@@ -54,9 +54,9 @@ class PopupOpenerTabHelperBrowserTest : public InProcessBrowserTest {
 
     // Close the popup.
     content::WebContents* popup = GetActiveWebContents();
-    int active_index = browser()->tab_strip_model()->active_index();
+    int active_index = browser()->GetTabStripModel()->active_index();
     content::WebContentsDestroyedWatcher destroyed_watcher(popup);
-    browser()->tab_strip_model()->CloseWebContentsAt(
+    browser()->GetTabStripModel()->CloseWebContentsAt(
         active_index, TabCloseTypes::CLOSE_USER_GESTURE);
     destroyed_watcher.Wait();
   }

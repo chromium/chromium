@@ -27,8 +27,8 @@
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/save_address_bubble_controller.h"
 #include "chrome/browser/ui/autofill/update_address_bubble_controller.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promos_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/theme_resources.h"
@@ -311,7 +311,7 @@ void AddressBubblesController::SetUpBubble(
 }
 
 void AddressBubblesController::MaybeShowIOSDektopAddressPromo() {
-  Browser* browser =
+  BrowserWindowInterface* browser =
       BrowserWindow::FindBrowserWindowWithWebContents(web_contents())
           ->AsBrowserView()
           ->browser();

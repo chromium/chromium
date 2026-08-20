@@ -14,9 +14,9 @@
 #include "chrome/browser/sync/prefs/cross_device_pref_tracker/cross_device_pref_tracker_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
@@ -179,7 +179,7 @@ void OnIOSPromoClassificationResult(
 void VerifyIOSPromoEligibilityCriteriaAsync(
     const PromoType& promo_type,
     BubbleType bubble_type,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     std::optional<base::OnceClosure> promo_will_be_shown_callback =
         std::nullopt,
     std::optional<base::OnceClosure> promo_not_shown_callback = std::nullopt) {
@@ -222,13 +222,13 @@ void VerifyIOSPromoEligibilityCriteriaAsync(
 namespace ios_promos_utils {
 
 void VerifyIOSPromoEligibility(PromoType promo_type,
-                               Browser* browser,
+                               BrowserWindowInterface* browser,
                                BubbleType bubble_type) {
   VerifyIOSPromoEligibilityCriteriaAsync(promo_type, bubble_type, browser);
 }
 
 void MaybeOverrideCardConfirmationBubbleWithIOSPaymentPromo(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     base::OnceClosure promo_will_be_shown_callback,
     base::OnceClosure promo_not_shown_callback) {
   VerifyIOSPromoEligibilityCriteriaAsync(
