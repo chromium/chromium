@@ -5140,6 +5140,18 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCESSIBILITY_TABSTRIP_GROUP_MULTIPLE_TABS" desc="Content description for tab group with multiple tabs.">
         <ph name="WEBSITE_TITLE">%1$s<ex>Crater Lake National Park (U.S. National Park Service)</ex></ph> and <ph name="TAB_COUNT">%2$d<ex>12</ex></ph> other tabs
       </message>
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_GROUP_EXPANDED" desc="Content description for labeling tab group as expanded tab group.">
+        Expanded
+      </message>
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_GROUP_COLLAPSED" desc="Content description for labeling tab group as collapsed tab group.">
+        Collapsed
+      </message>
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_GROUP_WITH_STATE" desc="Content description for tab group with its collapsed or expanded state.">
+        <ph name="GROUP_DESCRIPTION">%1$s<ex>Work tab group - Google and 5 other tabs</ex></ph> - <ph name="COLLAPSED_STATE">%2$s<ex>Collapsed</ex></ph>
+      </message>
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_GROUP_WITH_TABS" desc="Content description structure for appending tab descriptions to a tab group description.">
+        <ph name="GROUP_DESCRIPTION">%1$s<ex>Work tab group</ex></ph> - <ph name="TABS_DESCRIPTION">%2$s<ex>Google and 2 other tabs</ex></ph>
+      </message>
       <message name="IDS_ACCESSIBILITY_TABSTRIP_GROUP" desc="Content description for tab group.">
         <ph name="GROUP_TITLE">%1$s<ex>Wiki tabs</ex></ph> tab group
       </message>

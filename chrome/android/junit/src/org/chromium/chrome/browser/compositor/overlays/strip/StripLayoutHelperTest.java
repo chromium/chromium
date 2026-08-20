@@ -564,7 +564,7 @@ public class StripLayoutHelperTest {
         groupTabs(0, 1, TAB_GROUP_ID_1);
 
         // Verify.
-        String expectedDescription = "1 tab tab group - Tab 1";
+        String expectedDescription = "1 tab tab group - Tab 1 - Expanded";
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertTrue("First should be a group title.", views[0] instanceof StripLayoutGroupTitle);
         assertEquals(
@@ -581,7 +581,7 @@ public class StripLayoutHelperTest {
         groupTabs(0, 3, TAB_GROUP_ID_1);
 
         // Verify.
-        String expectedDescription = "3 tabs tab group - Tab 1 and 2 other tabs";
+        String expectedDescription = "3 tabs tab group - Tab 1 and 2 other tabs - Expanded";
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertTrue("First should be a group title.", views[0] instanceof StripLayoutGroupTitle);
         assertEquals(
@@ -599,7 +599,7 @@ public class StripLayoutHelperTest {
         groupTabs(0, 3, TAB_GROUP_ID_1);
 
         // Verify.
-        String expectedDescription = "Group name tab group - Tab 1 and 2 other tabs";
+        String expectedDescription = "Group name tab group - Tab 1 and 2 other tabs - Expanded";
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertTrue("First should be a group title.", views[0] instanceof StripLayoutGroupTitle);
         assertEquals(
@@ -624,7 +624,7 @@ public class StripLayoutHelperTest {
                         TAB_GROUP_ID_1);
 
         // Verify.
-        String expectedDescription = "Shared 1 tab tab group - Tab 1";
+        String expectedDescription = "Shared 1 tab tab group - Tab 1 - Expanded";
         assertEquals(
                 "A11y description for group title was wrong.",
                 expectedDescription,
@@ -647,7 +647,7 @@ public class StripLayoutHelperTest {
                         TAB_GROUP_ID_1);
 
         // Verify.
-        String expectedDescription = "Shared 3 tabs tab group - Tab 1 and 2 other tabs";
+        String expectedDescription = "Shared 3 tabs tab group - Tab 1 and 2 other tabs - Expanded";
         assertEquals(
                 "A11y description for group title was wrong.",
                 expectedDescription,
@@ -671,7 +671,8 @@ public class StripLayoutHelperTest {
                         TAB_GROUP_ID_1);
 
         // Verify.
-        String expectedDescription = "Shared Group name tab group - Tab 1 and 2 other tabs";
+        String expectedDescription =
+                "Shared Group name tab group - Tab 1 and 2 other tabs - Expanded";
         assertEquals(
                 "A11y description for group title was wrong.",
                 expectedDescription,
@@ -700,7 +701,8 @@ public class StripLayoutHelperTest {
 
         // Verify.
         String expectedDescription =
-                "Shared Group name tab group with new activity - Tab 1 and 2 other tabs";
+                "Shared Group name tab group with new activity - Tab 1 and 2 other tabs -"
+                        + " Collapsed";
         assertEquals(
                 "A11y description for group title was wrong.",
                 expectedDescription,

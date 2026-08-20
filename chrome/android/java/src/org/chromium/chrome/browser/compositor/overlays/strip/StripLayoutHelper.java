@@ -3869,10 +3869,8 @@ public class StripLayoutHelper
 
     private String buildGroupAccessibilityDescription(StripLayoutGroupTitle groupTitle) {
         Resources res = mContext.getResources();
-        StringBuilder builder = new StringBuilder();
 
-        // 1. Determine and append the correct a11y string for the group depending on its shared
-        // state.
+        // 1. Determine the correct base a11y string for the group depending on its shared state.
         @StringRes int resId = R.string.accessibility_tabstrip_group;
         if (groupTitle.isGroupShared()) {
             resId =
@@ -3881,30 +3879,41 @@ public class StripLayoutHelper
                             : R.string.accessibility_tabstrip_shared_group;
         }
         String groupDescription = res.getString(resId, groupTitle.getTitle());
-        builder.append(groupDescription);
 
-        // 2. Retrieve the grouped tabs and append the tab titles.
+        // 2. Retrieve the grouped tabs and get the tabs description.
         List<Tab> relatedTabs =
                 mModel == null ? List.of() : mModel.getTabsInGroup(groupTitle.getTabGroupId());
         int relatedTabsCount = relatedTabs.size();
+        String groupDetails;
         if (relatedTabsCount > 0) {
-            final String contentDescriptionSeparator = " - ";
-            builder.append(contentDescriptionSeparator);
-
             String firstTitle = relatedTabs.get(0).getTitle();
-            String tabsDescription;
-            if (relatedTabsCount == 1) {
-                // <title>
-                tabsDescription = firstTitle;
-            } else {
-                // <title> and <num> other tabs
-                int descriptionRes = R.string.accessibility_tabstrip_group_multiple_tabs;
-                tabsDescription = res.getString(descriptionRes, firstTitle, relatedTabsCount - 1);
-            }
-            builder.append(tabsDescription);
+            String tabsDescription =
+                    relatedTabsCount == 1
+                            ? firstTitle
+                            : res.getString(
+                                    R.string.accessibility_tabstrip_group_multiple_tabs,
+                                    firstTitle,
+                                    relatedTabsCount - 1);
+            groupDetails =
+                    res.getString(
+                            R.string.accessibility_tabstrip_group_with_tabs,
+                            groupDescription,
+                            tabsDescription);
+        } else {
+            groupDetails = groupDescription;
         }
 
-        return builder.toString();
+        // 3. Get the collapsed/expanded state.
+        @StringRes
+        int collapsedStateId =
+                groupTitle.isCollapsed()
+                        ? R.string.accessibility_tabstrip_group_collapsed
+                        : R.string.accessibility_tabstrip_group_expanded;
+        String collapsedState = res.getString(collapsedStateId);
+
+        // 4. Return the final formatted string containing base details and the state.
+        return res.getString(
+                R.string.accessibility_tabstrip_group_with_state, groupDetails, collapsedState);
     }
 
     private void updateGroupAccessibilityDescription(@Nullable StripLayoutGroupTitle groupTitle) {
@@ -3967,6 +3976,7 @@ public class StripLayoutHelper
 
         finishAnimations();
         groupTitle.setCollapsed(isCollapsed);
+        updateGroupAccessibilityDescription(groupTitle);
         List<StripLayoutTab> groupedTabs =
                 StripLayoutUtils.getGroupedTabs(mModel, mStripTabs, groupTitle.getTabGroupId());
         for (StripLayoutTab tab : groupedTabs) {
