@@ -818,11 +818,35 @@ android_resource_sizes_test("resource_sizes_cronet_sample_apk") {
   data_deps = [ ":cronet_sample_apk" ]
 }
 
+template("proguard_flags_golden_test") {
+  action(target_name) {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, [ "deps" ])
+    script = "//components/cronet/tools/check_combined_proguard_file.py"
+    sources = [
+      invoker.generated_file,
+      invoker.golden_file,
+    ]
+    outputs = [ "$target_gen_dir/$target_name.stamp" ]
+    args = [
+      "--input_generated_file",
+      rebase_path(sources[0], root_build_dir),
+      "--input_golden_file",
+      rebase_path(sources[1], root_build_dir),
+      "--target_name",
+      "$target_name",
+      "--stamp",
+      rebase_path(outputs[0], root_build_dir),
+    ]
+  }
+}
+
 # This will combine all the proguard configs found through the
 # dependencies of those targets.
 template("collect_proguard_configs") {
   _build_config_target = "${target_name}__build_config"
   _build_config = "$target_gen_dir/${target_name}.build_config.json"
+  _target_name = target_name
 
   write_build_config(_build_config_target) {
     type = "dist_jar"
@@ -833,7 +857,7 @@ template("collect_proguard_configs") {
     forward_variables_from(invoker, [ "direct_deps_only" ])
   }
 
-  action(target_name) {
+  action(_target_name + "_generate") {
     script = "//components/cronet/tools/generate_proguard_file.py"
 
     outputs = [ invoker.output ]
@@ -856,10 +880,27 @@ template("collect_proguard_configs") {
     }
     args += [ rebase_path(_build_config, root_build_dir) ]
   }
+
+  if (defined(invoker.golden_file)) {
+    proguard_flags_golden_test(target_name + "_golden_test") {
+      deps = [ ":${_target_name}_generate" ]
+      generated_file = invoker.output
+      golden_file = invoker.golden_file
+    }
+  }
+
+  group(_target_name) {
+    public_deps = [ ":${_target_name}_generate" ]
+    if (defined(invoker.golden_file) && !use_jacoco_coverage) {
+      deps = [ ":${_target_name}_golden_test" ]
+    }
+  }
 }
 
 collect_proguard_configs("httpengine_combine_proguard_flags") {
   output = "$target_gen_dir/httpengine_combined_proguard.cfg"
+  golden_file =
+      "//components/cronet/android/httpengine_combined_proguard_golden.cfg"
   rename_rules = [
     "org.chromium=android.net.http.internal.org.chromium",
     "com.google.protobuf=android.net.http.internal.com.google.protobuf",
@@ -907,6 +948,8 @@ _package_proguard_dir = "$target_gen_dir/package_proguard"
 
 collect_proguard_configs("package_shared_proguard_flags") {
   output = "$_package_proguard_dir/cronet_shared_proguard.cfg"
+  golden_file =
+      "//components/cronet/android/cronet_combined_shared_proguard_golden.cfg"
   deps = cronet_shared_api_dependencies_java_deps_to_package +
          cronet_shared_java_deps_to_package +
          [
@@ -923,6 +966,7 @@ collect_proguard_configs("package_shared_proguard_flags") {
 
 collect_proguard_configs("package_impl_common_proguard_flags") {
   output = "$_package_proguard_dir/cronet_impl_common_proguard.cfg"
+  golden_file = "//components/cronet/android/cronet_combined_impl_common_proguard_golden.cfg"
   deps =
       cronet_impl_common_java_deps_to_package + [ ":cronet_impl_common_java" ]
   direct_deps_only = true
@@ -931,6 +975,7 @@ collect_proguard_configs("package_impl_common_proguard_flags") {
 
 collect_proguard_configs("package_impl_native_proguard_flags") {
   output = "$_package_proguard_dir/cronet_impl_native_proguard.cfg"
+  golden_file = "//components/cronet/android/cronet_combined_impl_native_proguard_golden.cfg"
   deps = cronet_impl_native_java_deps_to_package + [
            ":cronet_final_jni_java",
            ":cronet_impl_native_java",
@@ -941,6 +986,7 @@ collect_proguard_configs("package_impl_native_proguard_flags") {
 
 collect_proguard_configs("package_impl_platform_proguard_flags") {
   output = "$_package_proguard_dir/cronet_impl_platform_proguard.cfg"
+  golden_file = "//components/cronet/android/cronet_combined_impl_platform_proguard_golden.cfg"
   deps = [ ":cronet_impl_platform_java" ]
   direct_deps_only = true
   rename_rules = _cronet_proguard_rename_rules
@@ -948,6 +994,7 @@ collect_proguard_configs("package_impl_platform_proguard_flags") {
 
 collect_proguard_configs("package_impl_fake_proguard_flags") {
   output = "$_package_proguard_dir/cronet_impl_fake_proguard.cfg"
+  golden_file = "//components/cronet/android/cronet_combined_impl_fake_proguard_golden.cfg"
   deps = [ ":cronet_impl_fake_java" ]
   direct_deps_only = true
   rename_rules = _cronet_proguard_rename_rules
@@ -955,49 +1002,10 @@ collect_proguard_configs("package_impl_fake_proguard_flags") {
 
 collect_proguard_configs("package_httpengine_native_provider_proguard_flags") {
   output = "$_package_proguard_dir/httpengine_native_provider_proguard.cfg"
+  golden_file = "//components/cronet/android/cronet_combined_httpengine_native_provider_proguard_golden.cfg"
   deps = [ ":httpengine_native_provider_java" ]
   direct_deps_only = true
   rename_rules = _cronet_proguard_rename_rules
-}
-
-action("httpengine_combined_proguard_flags_golden_test") {
-  script = "//components/cronet/tools/check_combined_proguard_file.py"
-  deps = [ ":httpengine_combine_proguard_flags" ]
-  sources = [
-    "$target_gen_dir/httpengine_combined_proguard.cfg",
-    "//components/cronet/android/httpengine_combined_proguard_golden.cfg",
-  ]
-  outputs = [ "$target_gen_dir/$target_name.stamp" ]
-  args = [
-    "--input_generated_file",
-    rebase_path(sources[0], root_build_dir),
-    "--input_golden_file",
-    rebase_path(sources[1], root_build_dir),
-    "--target_name",
-    "$target_name",
-    "--stamp",
-    rebase_path(outputs[0], root_build_dir),
-  ]
-}
-
-action("cronet_combined_proguard_flags_golden_test") {
-  script = "//components/cronet/tools/check_combined_proguard_file.py"
-  deps = [ ":package_impl_native_proguard_flags" ]
-  sources = [
-    "$_package_proguard_dir/cronet_impl_native_proguard.cfg",
-    "//components/cronet/android/cronet_combined_impl_native_proguard_golden.cfg",
-  ]
-  outputs = [ "$target_gen_dir/$target_name.stamp" ]
-  args = [
-    "--input_generated_file",
-    rebase_path(sources[0], root_build_dir),
-    "--input_golden_file",
-    rebase_path(sources[1], root_build_dir),
-    "--target_name",
-    "$target_name",
-    "--stamp",
-    rebase_path(outputs[0], root_build_dir),
-  ]
 }
 
 _package_dir = "$root_out_dir/cronet"
@@ -2525,12 +2533,6 @@ group("cronet_package_android") {
   ]
   if (!using_sanitizer && !use_jacoco_coverage) {
     deps += [ ":dependencies_checks" ]
-  }
-  if (!use_jacoco_coverage) {
-    deps += [
-      ":cronet_combined_proguard_flags_golden_test",
-      ":httpengine_combined_proguard_flags_golden_test",
-    ]
   }
 }
 
