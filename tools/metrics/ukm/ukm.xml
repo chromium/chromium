@@ -27957,6 +27957,38 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="WebSpeech.Usage">
+  <owner>evliu@chromium.org</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <summary>
+    Recorded when a page navigation invokes either SpeechRecognition or
+    SpeechSynthesis. Used to measure website adoption distribution and speech
+    recognition backend selection.
+  </summary>
+  <metric name="RequestedSpeechQuality" enum="WebSpeechRecognitionQuality">
+    <summary>
+      The explicit speech recognition quality level requested by the site
+      (Command=0, Dictation=1, Conversation=2).
+    </summary>
+  </metric>
+  <metric name="SpeechRecognitionBackend" enum="WebSpeechRecognitionBackend">
+    <summary>
+      The speech recognition backend selected/used for the session (Cloud=0,
+      SODA=1, SmallExpertModel=2, GeminiNano=3).
+    </summary>
+  </metric>
+  <metric name="SpeechRecognitionUsed" enum="BooleanHit">
+    <summary>
+      Logged as 1 if SpeechRecognition was initiated during the navigation.
+    </summary>
+  </metric>
+  <metric name="SpeechSynthesisUsed" enum="BooleanHit">
+    <summary>
+      Logged as 1 if SpeechSynthesis speak() was invoked during the navigation.
+    </summary>
+  </metric>
+</event>
+
 <event name="WindowProxyUsage">
   <owner>arichiv@google.com</owner>
   <owner>katabolism-finch@google.com</owner>

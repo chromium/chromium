@@ -33,6 +33,8 @@
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -40,6 +42,34 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace content {
+
+namespace {
+
+enum class SpeechRecognitionBackend {
+  kCloud = 0,
+  kSoda = 1,
+  kSmallExpertModel = 2,
+  kGeminiNano = 3,
+};
+
+int GetSpeechRecognitionBackend(
+    bool use_on_device,
+    media::mojom::SpeechRecognitionQuality quality) {
+  if (!use_on_device) {
+    return static_cast<int>(SpeechRecognitionBackend::kCloud);
+  }
+  if (base::FeatureList::IsEnabled(media::kOnDeviceWebSpeechSmallExpertModel) &&
+      quality == media::mojom::SpeechRecognitionQuality::kDictation) {
+    return static_cast<int>(SpeechRecognitionBackend::kSmallExpertModel);
+  }
+  if (base::FeatureList::IsEnabled(media::kOnDeviceWebSpeechGeminiNano) &&
+      quality == media::mojom::SpeechRecognitionQuality::kConversation) {
+    return static_cast<int>(SpeechRecognitionBackend::kGeminiNano);
+  }
+  return static_cast<int>(SpeechRecognitionBackend::kSoda);
+}
+
+}  // namespace
 
 // static
 std::string SpeechRecognitionDispatcherHost::GetAcceptedLanguages(
@@ -217,6 +247,19 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
 #else
   bool on_device_available = false;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  bool use_on_device = false;
+#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
+  use_on_device = can_render_frame_use_on_device && params->on_device &&
+                  (on_device_available || !params->allow_cloud_fallback);
+#endif
+  int backend = GetSpeechRecognitionBackend(use_on_device, params->quality);
+
+  ukm::builders::WebSpeech_Usage(rfh->GetPageUkmSourceId())
+      .SetSpeechRecognitionUsed(1)
+      .SetRequestedSpeechQuality(static_cast<int64_t>(params->quality))
+      .SetSpeechRecognitionBackend(backend)
+      .Record(ukm::UkmRecorder::Get());
 
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,

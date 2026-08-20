@@ -28324,6 +28324,19 @@ This is true even if the type has been removed from the mojom file.
   <int value="1015" label="TLS handshake"/>
 </enum>
 
+<enum name="WebSpeechRecognitionBackend">
+  <int value="0" label="Cloud"/>
+  <int value="1" label="SODA"/>
+  <int value="2" label="SmallExpertModel"/>
+  <int value="3" label="GeminiNano"/>
+</enum>
+
+<enum name="WebSpeechRecognitionQuality">
+  <int value="0" label="Command"/>
+  <int value="1" label="Dictation"/>
+  <int value="2" label="Conversation"/>
+</enum>
+
 <enum name="WebUsbChooserClosed">
   <int value="0" label="User cancelled"/>
   <int value="1" label="User cancelled, no devices available"/>

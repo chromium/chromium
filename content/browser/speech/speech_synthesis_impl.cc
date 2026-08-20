@@ -9,6 +9,8 @@
 #include "content/browser/speech/tts_utterance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace content {
 namespace {
@@ -156,6 +158,13 @@ void SpeechSynthesisImpl::Speak(
     mojo::PendingRemote<blink::mojom::SpeechSynthesisClient> client) {
   if (web_contents_->IsAudioMuted())
     return;
+
+  RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(frame_id_);
+  if (rfh) {
+    ukm::builders::WebSpeech_Usage(rfh->GetPageUkmSourceId())
+        .SetSpeechSynthesisUsed(1)
+        .Record(ukm::UkmRecorder::Get());
+  }
 
   std::unique_ptr<TtsUtterance> tts_utterance =
       std::make_unique<TtsUtteranceImpl>(browser_context_, web_contents_);
