@@ -11,6 +11,12 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   inImmersiveOverlayPresentationState: number = 2;
   fontName: string = 'Poppins';
   supportedFonts: string[] = [];
+  standardLineSpacing: number = 0;
+  looseLineSpacing: number = 1;
+  veryLooseLineSpacing: number = 2;
+  standardLetterSpacing: number = 0;
+  wideLetterSpacing: number = 1;
+  veryWideLetterSpacing: number = 2;
 
   constructor() {
     super([
@@ -18,7 +24,15 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
       'getInImmersiveOverlayPresentationState',
       'getFontName',
       'getSupportedFonts',
+      'getStandardLineSpacing',
+      'getLooseLineSpacing',
+      'getVeryLooseLineSpacing',
+      'getStandardLetterSpacing',
+      'getWideLetterSpacing',
+      'getVeryWideLetterSpacing',
       'onFontChange',
+      'onLineSpacingChange',
+      'onLetterSpacingChange',
       'togglePresentation',
     ]);
   }
@@ -43,8 +57,46 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
     return this.supportedFonts;
   }
 
+  getStandardLineSpacing(): number {
+    this.methodCalled('getStandardLineSpacing');
+    return this.standardLineSpacing;
+  }
+
+  getLooseLineSpacing(): number {
+    this.methodCalled('getLooseLineSpacing');
+    return this.looseLineSpacing;
+  }
+
+  getVeryLooseLineSpacing(): number {
+    this.methodCalled('getVeryLooseLineSpacing');
+    return this.veryLooseLineSpacing;
+  }
+
+  getStandardLetterSpacing(): number {
+    this.methodCalled('getStandardLetterSpacing');
+    return this.standardLetterSpacing;
+  }
+
+  getWideLetterSpacing(): number {
+    this.methodCalled('getWideLetterSpacing');
+    return this.wideLetterSpacing;
+  }
+
+  getVeryWideLetterSpacing(): number {
+    this.methodCalled('getVeryWideLetterSpacing');
+    return this.veryWideLetterSpacing;
+  }
+
   onFontChange(font: string): void {
     this.methodCalled('onFontChange', font);
+  }
+
+  onLineSpacingChange(value: number): void {
+    this.methodCalled('onLineSpacingChange', value);
+  }
+
+  onLetterSpacingChange(value: number): void {
+    this.methodCalled('onLetterSpacingChange', value);
   }
 
   togglePresentation(): void {
