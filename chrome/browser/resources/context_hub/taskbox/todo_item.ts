@@ -95,23 +95,40 @@ export class TodoItemElement extends CrLitElement {
     return this.liked === false ? 'cr:thumb-down-filled' : 'cr:thumb-down';
   }
 
-  protected onThumbsUpClick_(e: Event) {
-    this.onThumbClick_(e, true);
+  protected async onThumbsUpClick_(e: Event) {
+    await this.onThumbClick_(e, true);
   }
 
-  protected onThumbsDownClick_(e: Event) {
-    this.onThumbClick_(e, false);
+  protected async onThumbsDownClick_(e: Event) {
+    await this.onThumbClick_(e, false);
   }
 
-  protected onThumbClick_(e: Event, like: boolean) {
+  protected async onThumbClick_(e: Event, like: boolean) {
     e.stopPropagation();
     // If the thumb is already clicked, unselect it.
     if (this.liked === like) {
       this.liked = null;
+      try {
+        await browserProxyFactory.getInstance().handler.deleteTodoFeedback(
+            this.id);
+      } catch (e) {
+        console.error('Failed to delete todo feedback:', e);
+      }
+      this.fire('feedback-changed', {todoId: this.id, liked: null});
       return;
     }
 
     this.liked = like;
+    try {
+      await browserProxyFactory.getInstance().handler.setTodoFeedback({
+        todoId: this.id,
+        liked: like,
+      });
+    } catch (e) {
+      console.error('Failed to set todo feedback:', e);
+    }
+    this.fire('feedback-changed', {todoId: this.id, liked: like});
+
     // Prefill the form with the todo item details.
     const params = new URLSearchParams({
       'usp': 'pp_url',

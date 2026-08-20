@@ -9,7 +9,7 @@ import {TodoItemVariant} from './todo_item.js';
 
 export function getHtml(this: AiTaskboxElement) {
   return this.showingReadingList_ ? html`
-    <main id="reading-list-view">
+    <main id="reading-list-view" @feedback-changed="${this.onFeedbackChanged_}">
       <section class="header-section">
         <div class="header-title-container">
           <cr-icon-button
@@ -38,6 +38,7 @@ export function getHtml(this: AiTaskboxElement) {
                   todo.data.thirdParty!.lastActiveTimestamp}"
                         .groupType="${todo.data.thirdParty!.groupType}"
                         .variant="${TodoItemVariant.TAB}"
+                        .liked="${this.feedbacks_.get(todo.id) ?? null}"
                         .disable_state_mgmt="${this.isGeneratingTabTodos_}">
                     </todo-item>
                   `) :
@@ -45,7 +46,7 @@ export function getHtml(this: AiTaskboxElement) {
       </div>
     </main>
   ` : html`
-    <main id="dashboard-view">
+    <main id="dashboard-view" @feedback-changed="${this.onFeedbackChanged_}">
         <section class="header-section">
             <!-- TODO(crbug.com/519576944): Replace with the dynamic greeting title. -->
             <h1>AI Taskbox</h1>
@@ -92,6 +93,7 @@ export function getHtml(this: AiTaskboxElement) {
                           .sourceReferences="${
                   todo.data.firstParty?.sourceReferences || []}"
                           .score="${todo.score}"
+                          .liked="${this.feedbacks_.get(todo.id) ?? null}"
                           .disable_state_mgmt="${this.isGeneratingGmailTodos_}">
                       </todo-item>
                     `) :
@@ -138,6 +140,7 @@ export function getHtml(this: AiTaskboxElement) {
                                   .sourceReferences="${
                           todo.data.firstParty?.sourceReferences || []}"
                                   .score="${todo.score}"
+                                  .liked="${this.feedbacks_.get(todo.id) ?? null}"
                                   .disable_state_mgmt="${this.isGeneratingGmailTodos_}">
                               </todo-item>
                             `) : ''}
@@ -170,9 +173,10 @@ export function getHtml(this: AiTaskboxElement) {
                           .status="${todo.status}"
                           .tabId="${todo.data.thirdParty!.tabId}"
                           .lastActiveTimestamp="${
-                 todo.data.thirdParty!.lastActiveTimestamp}"
+                  todo.data.thirdParty!.lastActiveTimestamp}"
                           .groupType="${todo.data.thirdParty!.groupType}"
                           .variant="${TodoItemVariant.TAB}"
+                          .liked="${this.feedbacks_.get(todo.id) ?? null}"
                           .disable_state_mgmt="${this.isGeneratingTabTodos_}">
                       </todo-item>
                     `) :
@@ -219,6 +223,7 @@ export function getHtml(this: AiTaskboxElement) {
                                   .groupType="${todo.data.thirdParty!.groupType}"
                                   .status="${todo.status}"
                                   .variant="${TodoItemVariant.TAB}"
+                                  .liked="${this.feedbacks_.get(todo.id) ?? null}"
                                   .disable_state_mgmt="${this.isGeneratingTabTodos_}">
                               </todo-item>
                             `) : ''}

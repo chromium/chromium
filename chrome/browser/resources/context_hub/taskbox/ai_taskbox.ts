@@ -75,6 +75,7 @@ export class AiTaskboxElement extends CrLitElement {
       isCompletedTabExpanded_: {type: Boolean},
       // Reading list properties.
       readingListTodos: {type: Array},
+      feedbacks_: {type: Object},
     };
   }
 
@@ -83,6 +84,7 @@ export class AiTaskboxElement extends CrLitElement {
   accessor tabTodos: AutoTodoItem[]|null = null;
   accessor completedTabTodos: AutoTodoItem[]|null = null;
   accessor readingListTodos: AutoTodoItem[]|null = null;
+  protected accessor feedbacks_: Map<string, boolean> = new Map();
   protected accessor autoTodosEnabled_: boolean =
       loadTimeData.getBoolean('kAutoTodos');
   protected accessor showingReadingList_: boolean = false;
@@ -163,8 +165,17 @@ export class AiTaskboxElement extends CrLitElement {
 
   private async fetchAutoTodos_() {
     try {
-      const {firstPartyTodos, thirdPartyTodos} =
-          await browserProxyFactory.getInstance().handler.getAutoTodos();
+      const [{firstPartyTodos, thirdPartyTodos}, {feedbacks}] =
+          await Promise.all([
+            browserProxyFactory.getInstance().handler.getAutoTodos(),
+            browserProxyFactory.getInstance().handler.getTodoFeedbacks(),
+          ]);
+      const feedbackMap = new Map<string, boolean>();
+      for (const feedback of feedbacks) {
+        feedbackMap.set(feedback.todoId, feedback.liked);
+      }
+      this.feedbacks_ = feedbackMap;
+
       this.todos =
           firstPartyTodos.filter(todo => todo.status === AutoTodoStatus.kActive)
               .sort(compareFirstPartyTodos) ??
@@ -200,6 +211,18 @@ export class AiTaskboxElement extends CrLitElement {
     } catch (e) {
       console.error('Failed to fetch auto todos:', e);
     }
+  }
+
+  protected onFeedbackChanged_(
+      e: CustomEvent<{todoId: string, liked: boolean|null}>) {
+    const {todoId, liked} = e.detail;
+    const newFeedbackMap = new Map(this.feedbacks_);
+    if (liked === null) {
+      newFeedbackMap.delete(todoId);
+    } else {
+      newFeedbackMap.set(todoId, liked);
+    }
+    this.feedbacks_ = newFeedbackMap;
   }
 
   override disconnectedCallback() {
