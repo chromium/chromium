@@ -424,6 +424,11 @@ void InjectDataIntoAction(optimization_guide::proto::Action& action,
   _actorService->PauseTask(taskID, /*from_actor=*/true);
 }
 
+- (void)interruptTaskWithID:(actor::ActorTaskId)taskID
+                     reason:(actor::ActorTaskInterruptReason)reason {
+  _actorService->InterruptTask(taskID, reason);
+}
+
 - (void)stopTaskWithID:(actor::ActorTaskId)taskID
                 reason:(actor::ActorTaskStoppedReason)reason {
   _actorService->StopTask(taskID, reason);

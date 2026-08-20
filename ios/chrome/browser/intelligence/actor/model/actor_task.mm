@@ -277,7 +277,13 @@ ActorToolFactory& ActorTask::GetToolFactory() const {
   return *tool_factory_;
 }
 
+void ActorTask::Interrupt(bool retain_user_control,
+                          ActorTaskInterruptReason interrupt_reason) {
+  // TODO(crbug.com/548051839): Implement and test.
+}
+
 void ActorTask::InterruptFromTool() {
+  // TODO(crbug.com/548051839): Implement using Interrupt.
   if (GetState() != ActorTaskState::kReflecting &&
       GetState() != ActorTaskState::kActing) {
     return;

@@ -60,6 +60,20 @@ enum class ActorTaskStoppedReason {
   kUserStartedNewChat = 6
 };
 
+// Reasons why an ActorTask is interrupted to wait for user input.
+enum class ActorTaskInterruptReason {
+  // Unknown or unrecognized reason.
+  kUnknownReason = 0,
+  // Waiting for user confirmation.
+  kWaitingUserConfirmation = 1,
+  // Waiting for user clarification.
+  kWaitingUserClarification = 2,
+  // Waiting for user takeover.
+  kWaitingUserTakeover = 3,
+  // User provided irrelevant input.
+  kWaitingIrrelevantUserInput = 4,
+};
+
 // Represents the result of an action execution.
 // TODO(crbug.com/505085267): Add latency and stabilization information.
 struct ActionResult {

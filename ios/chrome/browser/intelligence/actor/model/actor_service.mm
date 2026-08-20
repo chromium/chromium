@@ -272,6 +272,11 @@ void ActorService::PauseTask(ActorTaskId task_id, bool from_actor) {
   // TODO(crbug.com/496163986): Implement and test.
 }
 
+void ActorService::InterruptTask(ActorTaskId task_id,
+                                 ActorTaskInterruptReason reason) {
+  // TODO(crbug.com/548051839): Implement and test.
+}
+
 void ActorService::StopTask(ActorTaskId task_id,
                             ActorTaskStoppedReason reason) {
   // TODO(crbug.com/496163986): Implement and test.

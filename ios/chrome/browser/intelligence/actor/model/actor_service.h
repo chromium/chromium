@@ -70,8 +70,13 @@ class ActorService : public KeyedService {
                              web::WebState* web_state,
                              TabObservationCallback callback);
 
-  // Pauses a task.
+  // Pauses a task, cancelling in-progress actions and returning control of the
+  // WebState to the user.
   void PauseTask(ActorTaskId task_id, bool from_actor);
+
+  // Interrupts a task to wait for user input, suspending ongoing actions
+  // without cancelling them.
+  void InterruptTask(ActorTaskId task_id, ActorTaskInterruptReason reason);
 
   // Stops a task.
   void StopTask(ActorTaskId task_id, ActorTaskStoppedReason reason);

@@ -85,12 +85,19 @@ class ActorTask : public web::WebStateObserver,
   // Stops the task and cancels any pending actions.
   virtual void Stop(ActorTaskStoppedReason stop_reason);
 
-  // Pauses execution (either initiated by the actor or the user). Subsequent
-  // `Act()` calls are invalid while paused.
+  // Pauses execution (either initiated by the actor or the user), cancelling
+  // in-progress actions. Subsequent `Act()` calls are invalid while paused.
   void Pause(bool from_actor);
 
   // Resumes task execution from a paused state.
   void Resume();
+
+  // Interrupts task execution to wait for user input, suspending ongoing
+  // actions without cancelling them. If `retain_user_control` is true, user
+  // interaction with the controlled WebState is permitted; if false, WebState
+  // interaction remains blocked.
+  void Interrupt(bool retain_user_control,
+                 ActorTaskInterruptReason interrupt_reason);
 
   // Returns whether this task's underlying engine is actively controlling
   // or observing the given WebState.
