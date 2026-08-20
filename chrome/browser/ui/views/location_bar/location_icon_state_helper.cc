@@ -41,14 +41,11 @@ std::u16string GetSecurityChipText(const LocationBarModel* model,
     return l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME);
   }
 
-  if (model->GetURL().SchemeIs(url::kFileScheme)) {
-    return l10n_util::GetStringUTF16(IDS_OMNIBOX_FILE);
-  }
-
-  if (model->GetURL().SchemeIs(dom_distiller::kDomDistillerScheme)) {
-    return l10n_util::GetStringUTF16(IDS_OMNIBOX_READER_MODE);
-  }
-
+  // Checked before the scheme labels below: an extension rendering the tab
+  // owns its identity even when the URL scheme has a label of its own (e.g. a
+  // file:// PDF rendered by a MIME handler). The icon override applies the
+  // same precedence, and the two must agree.
+  //
   // On ChromeOS, this can be called using web_contents from
   // SimpleWebViewDialog::GetWebContents() which always returns null.
   // TODO(crbug.com/40501128) Remove the null check and make
@@ -61,6 +58,14 @@ std::u16string GetSecurityChipText(const LocationBarModel* model,
     if (!extension_name.empty()) {
       return extension_name;
     }
+  }
+
+  if (model->GetURL().SchemeIs(url::kFileScheme)) {
+    return l10n_util::GetStringUTF16(IDS_OMNIBOX_FILE);
+  }
+
+  if (model->GetURL().SchemeIs(dom_distiller::kDomDistillerScheme)) {
+    return l10n_util::GetStringUTF16(IDS_OMNIBOX_READER_MODE);
   }
 
   return model->GetSecureDisplayText();
