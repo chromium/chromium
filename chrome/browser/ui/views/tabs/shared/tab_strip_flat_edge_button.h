@@ -37,10 +37,12 @@ class TabStripFlatEdgeButton : public views::LabelButton,
   bool GetHitTestMask(SkPath* mask) const override;
 
   void SetFlatEdge(FlatEdge flat_edge);
+  void SetCornerRadius(float corner_radius);
   void SetIconSize(int icon_size);
   void UpdateIcon(const ui::ImageModel& icon_image);
   void SetInsets(const gfx::Insets& insets);
   void SetIconOpacity(float opacity);
+  void SetPaintTransparentForGlass(bool paint_transparent);
 
   void SetExpansionFactor(float factor);
   float GetExpansionFactor() const { return expansion_factor_; }
@@ -60,6 +62,12 @@ class TabStripFlatEdgeButton : public views::LabelButton,
   void NotifyWillInvokeAction();
 
   FlatEdge flat_edge_for_testing() const { return flat_edge_; }
+  gfx::RoundedCornersF GetButtonCornerRadiiForTesting() const {
+    return GetButtonCornerRadii();
+  }
+  bool paint_transparent_for_glass_for_testing() const {
+    return paint_transparent_for_glass_;
+  }
 
  private:
   // views::View:
@@ -76,6 +84,7 @@ class TabStripFlatEdgeButton : public views::LabelButton,
   // shown.
   void UpdateLabel(bool should_show);
   void UpdateLabelColor();
+  void UpdateHighlightPathAndInkDrop();
 
   // Whether the label should be shown, if there is space.
   bool should_show_label_ = false;
@@ -86,6 +95,8 @@ class TabStripFlatEdgeButton : public views::LabelButton,
       views::LayoutOrientation::kHorizontal;
   float flat_edge_factor_ = 1.0f;
   FlatEdge flat_edge_ = FlatEdge::kNone;
+  std::optional<float> corner_radius_;
+  bool paint_transparent_for_glass_ = false;
   base::CallbackListSubscription paint_as_active_subscription_;
 
   base::RepeatingClosureList will_invoke_action_callback_list_;

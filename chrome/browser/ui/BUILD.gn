@@ -2782,6 +2782,8 @@ static_library("ui") {
       "views/tabs/hovercard/tab_hover_card_controller.h",
       "views/tabs/new_tab_button.cc",
       "views/tabs/new_tab_button.h",
+      "views/tabs/new_tab_button_menu_model.cc",
+      "views/tabs/new_tab_button_menu_model.h",
       "views/tabs/tab.cc",
       "views/tabs/tab.h",
       "views/tabs/tab_container.cc",

@@ -7,9 +7,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/views/tabs/new_tab_button_menu_model.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
-#include "ui/menus/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -18,8 +18,6 @@
 namespace views {
 class MenuRunner;
 }
-
-class NewTabButtonMenuModel;
 
 //  A subclass of TabStripControlButton that provides a specialized
 // context menu to the new tab button for adding new tabs in
@@ -50,30 +48,6 @@ class NewTabButton : public TabStripControlButton,
  private:
   std::unique_ptr<NewTabButtonMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
-  raw_ptr<BrowserWindowInterface> browser_;
-};
-
-class NewTabButtonMenuModel : public ui::SimpleMenuModel,
-                              public ui::SimpleMenuModel::Delegate {
- public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNewTab);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNewTabInGroup);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNewSplitView);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCreateNewTabGroup);
-  explicit NewTabButtonMenuModel(BrowserWindowInterface* browser);
-  NewTabButtonMenuModel(const NewTabButtonMenuModel&) = delete;
-  NewTabButtonMenuModel& operator=(const NewTabButtonMenuModel&) = delete;
-  ~NewTabButtonMenuModel() override;
-
-  // ui::SimpleMenuModel::Delegate:
-  void ExecuteCommand(int command_id, int event_flags) override;
-  bool GetAcceleratorForCommandId(int command_id,
-                                  ui::Accelerator* accelerator) const override;
-
- private:
-  void AddNewTabInGroupItem();
-  void AddNewSplitTabItem();
-
   raw_ptr<BrowserWindowInterface> browser_;
 };
 
