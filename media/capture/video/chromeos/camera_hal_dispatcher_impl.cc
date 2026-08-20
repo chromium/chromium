@@ -4,6 +4,8 @@
 
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
@@ -638,26 +640,27 @@ void CameraHalDispatcherImpl::EstablishMojoChannel(
     CameraClientObserver* client_observer) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
   const auto& type = client_observer->GetType();
+  const base::UnguessableToken auth_token = client_observer->GetAuthToken();
   CAMERA_LOG(EVENT) << "Establishing server channel for " << type;
   camera_service_->GetCameraModule(
       type,
-      base::BindOnce(
-          &CameraHalDispatcherImpl::OnGetCameraModule,
-          // TODO(b/322727099): client_observer may be a dangling pointer since
-          // lifetime of CameraClientObserver is shorter than
-          // CameraHalDispatcher. Check the lifetime issue during refactoring.
-          base::Unretained(this),
-          base::UnsafeDanglingUntriaged(client_observer)));
+      base::BindOnce(&CameraHalDispatcherImpl::OnGetCameraModule,
+                     base::Unretained(this), auth_token));
 }
 
 void CameraHalDispatcherImpl::OnGetCameraModule(
-    CameraClientObserver* client_observer,
+    base::UnguessableToken auth_token,
     mojo::PendingRemote<cros::mojom::CameraModule> camera_module) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
-  if (client_observers_.find(client_observer) == client_observers_.end()) {
+  auto it = std::ranges::find_if(
+      client_observers_,
+      [&auth_token](CameraClientObserver* client_observer) {
+        return client_observer->GetAuthToken() == auth_token;
+      });
+  if (it == client_observers_.end()) {
     return;
   }
-  client_observer->OnChannelCreated(std::move(camera_module));
+  (*it)->OnChannelCreated(std::move(camera_module));
 }
 
 void CameraHalDispatcherImpl::OnPeerConnected(
