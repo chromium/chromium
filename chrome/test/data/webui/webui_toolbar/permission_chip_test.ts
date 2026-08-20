@@ -44,6 +44,7 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
   showContentSettingsBubble() {
     return new Promise<never>(() => {});
   }
+  onContentSettingImageAnimationEnded() {}
   onPageActionClick() {
     return new Promise<never>(() => {});
   }

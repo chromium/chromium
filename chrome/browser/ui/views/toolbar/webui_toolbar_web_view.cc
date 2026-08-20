@@ -683,6 +683,14 @@ void WebUIToolbarWebView::OnContentSettingImagePointerDown(
   }
 }
 
+void WebUIToolbarWebView::OnContentSettingImageAnimationEnded(
+    ::toolbar_ui_api::mojom::ContentSettingImageType type) {
+  if (location_bar_) {
+    location_bar_->content_setting_image_control()
+        .OnContentSettingImageAnimationEnded(type);
+  }
+}
+
 void WebUIToolbarWebView::OnPageActionClick(
     ::toolbar_ui_api::mojom::PageActionId action_id,
     ::toolbar_ui_api::mojom::PageActionTrigger trigger,

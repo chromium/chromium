@@ -366,6 +366,10 @@ struct ContentSettingImageState {
   // Explanatory text that animates in if non empty.
   mojo_base.mojom.String16 explanatory_string;
 
+  // If true, when `explanatory_string` is displayed, it should appear via an
+  // animation.
+  bool should_run_animation;
+
   // NOTE: The visual icon to display is determined by `type`
   // and `is_blocked`.
 };

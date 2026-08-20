@@ -32,6 +32,7 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
   showContentSettingsBubble() {
     return new Promise<never>(() => {});
   }
+  onContentSettingImageAnimationEnded() {}
   invokePinnedToolbarAction() {}
   onHomeButtonDropUrl() {}
   onHomeButtonDropFile() {}

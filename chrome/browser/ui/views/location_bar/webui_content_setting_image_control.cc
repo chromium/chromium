@@ -55,6 +55,7 @@ toolbar_ui_api::mojom::ContentSettingImageStatePtr GetImageStateForModel(
     state->accessibility_string =
         l10n_util::GetStringUTF16(model->AccessibilityAnnouncementStringId());
   }
+  state->should_run_animation = model->ShouldRunAnimation(web_contents);
 
   return state;
 }
@@ -125,7 +126,6 @@ WebUIContentSettingImageControl::ProcessContentSettingState(
           // it's animating in addition to standard accessibility announcements.
           webui_delegate_->AnnounceAlert(l10n_util::GetStringUTF16(string_id));
         }
-        model->SetAnimationHasRun(web_contents);
       }
 
       state.push_back(std::move(image_state));
@@ -133,6 +133,19 @@ WebUIContentSettingImageControl::ProcessContentSettingState(
   }
 
   return state;
+}
+
+void WebUIContentSettingImageControl::OnContentSettingImageAnimationEnded(
+    ImageType type) {
+  content::WebContents* web_contents =
+      setting_view_delegate_->GetContentSettingWebContents();
+  if (!web_contents) {
+    return;
+  }
+
+  if (ContentSettingImageModel* model = GetModel(type)) {
+    model->SetAnimationHasRun(web_contents);
+  }
 }
 
 ContentSettingImageModel* WebUIContentSettingImageControl::GetModel(

@@ -61,7 +61,7 @@
   white-space: nowrap;
 }
 
-:host:has(#label:not(:empty)) #label {
+:host([should-run-animation]):has(#label:not(:empty)) #label {
   /* TODO(crbug.com/501447940): The highlight isn't centered on the icon during
      animation due to this rule. It also causes a jarring shift at the end of
      the animation. */
@@ -89,9 +89,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :host:has(#label:not(:empty)) #label {
-    animation: pop-in-out 3s;
-    max-width: var(--explanatory-text-width);
+  :host([should-run-animation]):has(#label:not(:empty)) #label {
+    animation: pop-in-out 3s steps(1, end) !important;
   }
 
   @keyframes pop-in-out {
@@ -99,7 +98,7 @@
       max-width: var(--explanatory-text-width);
     }
     to {
-      max-width: var(--explanatory-text-width);
+      max-width: 0;
     }
   }
 }

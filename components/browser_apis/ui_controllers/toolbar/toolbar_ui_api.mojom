@@ -78,6 +78,9 @@ interface ToolbarUIService {
                             bool is_pointer_interaction)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
+  // Called when the content setting icon animation finishes.
+  OnContentSettingImageAnimationEnded(ContentSettingImageType type);
+
   // Called after an interaction with the icon, with `trigger` specifying
   // the input modality.
   OnPageActionClick(PageActionId action_id, PageActionTrigger trigger)

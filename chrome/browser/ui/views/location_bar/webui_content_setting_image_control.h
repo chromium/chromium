@@ -74,6 +74,10 @@ class WebUIContentSettingImageControl {
     bubble_reopen_suppressor_.SetSuppressionThresholdForTesting(threshold);
   }
 
+  // Called when the WebUI animation for `type` has finished.
+  void OnContentSettingImageAnimationEnded(
+      toolbar_ui_api::mojom::ContentSettingImageType type);
+
  private:
   // Like ShowContentSettingsBubble(), but returns the result instead of passing
   // it to a callback.

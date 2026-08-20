@@ -4,7 +4,7 @@
 
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {BrowserProxyImpl, ContentSettingImageType} from 'chrome://webui-toolbar.top-chrome/app.js';
@@ -12,11 +12,18 @@ import type {ContentSettingIconElement} from 'chrome://webui-toolbar.top-chrome/
 
 class TestToolbarUiHandler extends TestBrowserProxy {
   constructor() {
-    super(['showContentSettingsBubble']);
+    super([
+      'showContentSettingsBubble',
+      'onContentSettingImageAnimationEnded',
+    ]);
   }
 
   showContentSettingsBubble(type: ContentSettingImageType) {
     this.methodCalled('showContentSettingsBubble', type);
+  }
+
+  onContentSettingImageAnimationEnded(type: ContentSettingImageType) {
+    this.methodCalled('onContentSettingImageAnimationEnded', type);
   }
 }
 
@@ -37,6 +44,7 @@ suite('ContentSettingIcon', function() {
       tooltip: 'Tooltip',
       accessibilityString: 'Accessible Name',
       isBubbleVisible: false,
+      shouldRunAnimation: false,
       explanatoryString: '',
     };
     document.body.appendChild(icon);
@@ -50,23 +58,34 @@ suite('ContentSettingIcon', function() {
   });
 
   test('Animation', async () => {
-    assertEquals(0, icon.$.label.getAnimations().length);
+    assertFalse(icon.hasAttribute('should-run-animation'));
     icon.state = {
       ...icon.state,
+      shouldRunAnimation: true,
       explanatoryString: 'Blocked',
     };
     await microtasksFinished();
+    assertTrue(icon.hasAttribute('should-run-animation'));
     assertEquals(1, icon.$.label.getAnimations().length);
     assertEquals('Blocked', icon.$.label.textContent.trim());
+
+    // Trigger animationend
+    icon.$.label.dispatchEvent(new Event('animationend'));
+    await microtasksFinished();
+    const type =
+        await handler.whenCalled('onContentSettingImageAnimationEnded');
+    assertEquals(ContentSettingImageType.kCookies, type);
   });
 
   test('SpuriousUpdateDuringAnimation', async () => {
-    assertEquals(0, icon.$.label.getAnimations().length);
+    assertFalse(icon.hasAttribute('should-run-animation'));
     icon.state = {
       ...icon.state,
+      shouldRunAnimation: true,
       explanatoryString: 'Blocked',
     };
     await microtasksFinished();
+    assertTrue(icon.hasAttribute('should-run-animation'));
     assertEquals(1, icon.$.label.getAnimations().length);
 
     // Perform a spurious state update with a new object reference.
@@ -75,16 +94,19 @@ suite('ContentSettingIcon', function() {
     };
     await microtasksFinished();
     // Spurious update should NOT cancel the in-progress CSS animation.
+    assertTrue(icon.hasAttribute('should-run-animation'));
     assertEquals(1, icon.$.label.getAnimations().length);
   });
 
   test('NoAnimationWithoutExplanatoryString', async () => {
-    assertEquals(0, icon.$.label.getAnimations().length);
+    assertFalse(icon.hasAttribute('should-run-animation'));
     icon.state = {
       ...icon.state,
+      shouldRunAnimation: true,
       explanatoryString: '',
     };
     await microtasksFinished();
+    assertTrue(icon.hasAttribute('should-run-animation'));
     assertEquals(0, icon.$.label.getAnimations().length);
   });
 
@@ -98,6 +120,7 @@ suite('ContentSettingIcon', function() {
       tooltip: 'Cookies',
       accessibilityString: 'Cookies',
       isBubbleVisible: false,
+      shouldRunAnimation: false,
       explanatoryString: '',
     };
     const popupsState = {
@@ -106,6 +129,7 @@ suite('ContentSettingIcon', function() {
       tooltip: 'Popups',
       accessibilityString: 'Popups',
       isBubbleVisible: false,
+      shouldRunAnimation: true,
       explanatoryString: 'Popups blocked',
     };
 
@@ -115,7 +139,9 @@ suite('ContentSettingIcon', function() {
 
     let icons = container.shadowRoot.querySelectorAll('content-setting-icon');
     assertEquals(2, icons.length);
+    assertTrue(icons[0]!.hasAttribute('should-run-animation'));
     assertEquals(1, icons[0]!.$.label.getAnimations().length);
+    assertFalse(icons[1]!.hasAttribute('should-run-animation'));
     assertEquals(0, icons[1]!.$.label.getAnimations().length);
 
     // Immediately remove the popups icon.
@@ -125,6 +151,7 @@ suite('ContentSettingIcon', function() {
     icons = container.shadowRoot.querySelectorAll('content-setting-icon');
     assertEquals(1, icons.length);
     assertEquals(ContentSettingImageType.kCookies, icons[0]!.state.type);
+    assertFalse(icons[0]!.hasAttribute('should-run-animation'));
     assertEquals(0, icons[0]!.$.label.getAnimations().length);
   });
 

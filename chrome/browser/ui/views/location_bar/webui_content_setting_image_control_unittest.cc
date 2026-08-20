@@ -320,6 +320,7 @@ TEST_F(WebUIContentSettingImageControlTest, AnimationAnnouncement) {
   auto state = control_->ProcessContentSettingState(web_contents());
   ASSERT_EQ(1u, state.size());
   EXPECT_EQ(expected_announcement, state[0]->explanatory_string);
+  EXPECT_TRUE(state[0]->should_run_animation);
 }
 
 TEST_F(WebUIContentSettingImageControlTest,
@@ -345,11 +346,16 @@ TEST_F(WebUIContentSettingImageControlTest,
 
   auto state1 = control_->ProcessContentSettingState(web_contents());
   ASSERT_EQ(1u, state1.size());
+  EXPECT_TRUE(state1[0]->should_run_animation);
+
+  // WebUI finishes animation and calls OnContentSettingImageAnimationEnded.
+  control_->OnContentSettingImageAnimationEnded(ImageType::kPopups);
 
   // Second update: animation has already run, so AnnounceAlert should not be
   // called again.
   auto state2 = control_->ProcessContentSettingState(web_contents());
   ASSERT_EQ(1u, state2.size());
+  EXPECT_FALSE(state2[0]->should_run_animation);
 }
 
 TEST_F(WebUIContentSettingImageControlTest, MouseClickSuppression) {

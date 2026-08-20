@@ -200,6 +200,8 @@ class WebUIToolbarWebView
           callback) override;
   void OnContentSettingImagePointerDown(
       ::toolbar_ui_api::mojom::ContentSettingImageType type) override;
+  void OnContentSettingImageAnimationEnded(
+      ::toolbar_ui_api::mojom::ContentSettingImageType type) override;
   void OnPageActionClick(
       ::toolbar_ui_api::mojom::PageActionId action_id,
       ::toolbar_ui_api::mojom::PageActionTrigger trigger,

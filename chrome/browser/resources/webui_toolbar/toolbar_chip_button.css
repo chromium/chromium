@@ -291,7 +291,7 @@
   #button::before,
   #button::after,
   ::slotted(*) {
-    animation: none !important;
+    animation: none;
     transition: none !important;
   }
 }

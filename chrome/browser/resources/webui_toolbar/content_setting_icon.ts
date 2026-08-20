@@ -6,6 +6,7 @@ import './toolbar_chip_button.js';
 
 import {assertNotReachedCase} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ContentSettingImageState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {ContentSettingImageType} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -38,6 +39,11 @@ export class ContentSettingIconElement extends CrLitElement {
   static override get properties() {
     return {
       state: {type: Object},
+      shouldRunAnimation: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'should-run-animation',
+      },
     };
   }
 
@@ -47,13 +53,29 @@ export class ContentSettingIconElement extends CrLitElement {
     tooltip: '',
     accessibilityString: '',
     isBubbleVisible: false,
+    shouldRunAnimation: false,
     explanatoryString: '',
   };
+
+  protected accessor shouldRunAnimation: boolean = false;
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   override focus() {
     this.$.chip.focus();
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('state') &&
+        this.shouldRunAnimation !== this.state.shouldRunAnimation) {
+      this.shouldRunAnimation = this.state.shouldRunAnimation;
+    }
+  }
+
+  protected onLabelAnimationend_() {
+    this.browserProxy_.toolbarUIHandler.onContentSettingImageAnimationEnded(
+        this.state.type);
   }
 
   protected getIconUrl_(): string {
