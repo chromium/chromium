@@ -10,7 +10,6 @@ import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_asser
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {assertTestSettingsAreNotDefaultSettings, getItemsInMenu, mockMetrics} from './common.js';
-import {FakeReadingMode} from './fake_reading_mode.js';
 
 suite('GroupedActionMenuElement', () => {
   let menu: GroupedActionMenuElement;
@@ -22,8 +21,6 @@ suite('GroupedActionMenuElement', () => {
   setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const readingMode = new FakeReadingMode();
-    chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     mockMetrics();
 
     menu = document.createElement('grouped-action-menu');

@@ -6,7 +6,6 @@ import {BrowserProxy, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideS
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechSynthesisVoice} from './common.js';
-import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 suite('VoiceLanguageModel', () => {
@@ -16,8 +15,6 @@ suite('VoiceLanguageModel', () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
-    const readingMode = new FakeReadingMode();
-    chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     voiceLanguageModel = new VoiceLanguageModel();
   });
 
