@@ -153,6 +153,7 @@ source_set("impl") {
       "//chrome/browser/predictors",
       "//chrome/browser/preloading/search_preload",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/resources/omnibox_popup:resources_grit",
       "//chrome/browser/safe_browsing",
       "//chrome/browser/ssl",

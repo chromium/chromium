@@ -28,6 +28,7 @@
 #include "ui/views/widget/widget_observer.h"
 
 class Profile;
+class ScopedKeepAlive;
 
 namespace views {
 class MenuRunner;
@@ -193,6 +194,14 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void OnMostVisitedPrefChanged();
   static gfx::Rect CalculateWidgetBounds(int height);
 
+  // Try and acquire process and profile keep alives. If unsuccessful, releases
+  // keep alives (if any) and returns false.
+  bool TryAcquireKeepAlives();
+  // Try and acquire process and profile keep alives. Returns true if
+  // successful, false otherwise.
+  bool AcquireKeepAlives();
+  void ReleaseKeepAlives();
+
   std::unique_ptr<WebUIContentsWrapper> CreateContentsWrapper(Profile* profile);
 
   void CleanUpWidget();
@@ -213,6 +222,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   std::unique_ptr<WebUIContentsWrapper> contents_wrapper_;
   std::unique_ptr<OmniboxEverywhereWidgetDelegate> widget_delegate_;
   std::unique_ptr<views::Widget> widget_;
+  std::unique_ptr<ScopedKeepAlive> keep_alive_;
 
   bool is_file_chooser_open_ = false;
   bool is_drive_picker_open_ = false;

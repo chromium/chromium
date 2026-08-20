@@ -11,6 +11,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -41,7 +43,23 @@ OmniboxEverywhereService::ui_manager() const {
   return controller() ? controller()->ui_manager() : nullptr;
 }
 
+bool OmniboxEverywhereService::AcquireProfileKeepAlive() {
+  CHECK(profile_ && !profile_->IsOffTheRecord());
+
+  if (profile_keep_alive_) {
+    return true;
+  }
+  profile_keep_alive_ = ScopedProfileKeepAlive::TryAcquire(
+      profile_, ProfileKeepAliveOrigin::kOmniboxEverywhere);
+  return profile_keep_alive_ != nullptr;
+}
+
+void OmniboxEverywhereService::ReleaseProfileKeepAlive() {
+  profile_keep_alive_.reset();
+}
+
 void OmniboxEverywhereService::Shutdown() {
+  ReleaseProfileKeepAlive();
   if (controller()) {
     controller()->ShutdownForProfile(profile_);
   }
@@ -90,12 +108,9 @@ void OmniboxEverywhereService::OnScreensharePickerClosed() {
 void OmniboxEverywhereService::OpenUrl(const GURL& url,
                                        WindowOpenDisposition disposition,
                                        ui::PageTransition transition) {
-  HidePopup();
-
   auto* browser_collection = ProfileBrowserCollection::GetForProfile(profile_);
   CHECK(browser_collection);
-  BrowserWindowInterface* bwi  =
-      browser_collection->GetLastActiveBrowser();
+  BrowserWindowInterface* bwi = browser_collection->GetLastActiveBrowser();
   bool is_new_window = false;
   if (!bwi) {
     bwi = chrome::OpenEmptyWindow(profile_);
@@ -112,4 +127,6 @@ void OmniboxEverywhereService::OpenUrl(const GURL& url,
     params.window_action = NavigateParams::WindowAction::kShowWindow;
     Navigate(&params);
   }
+
+  HidePopup();
 }

@@ -26,6 +26,9 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/ntp_tiles/pref_names.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
@@ -295,11 +298,57 @@ void OmniboxEverywhereUIManager::EnsureContentsWrapperInitialized(
   browser_collection_observation_.Observe(profile_collection);
 }
 
+bool OmniboxEverywhereUIManager::AcquireKeepAlives() {
+  KeepAliveRegistry* const keep_alive_registry =
+      KeepAliveRegistry::GetInstance();
+  if (!keep_alive_registry || keep_alive_registry->IsShuttingDown()) {
+    return false;
+  }
+  if (!keep_alive_) {
+    keep_alive_ = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::OMNIBOX_EVERYWHERE_UI,
+        KeepAliveRestartOption::DISABLED);
+  }
+
+  auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile_);
+  CHECK(service);
+
+  if (!service->AcquireProfileKeepAlive()) {
+    return false;
+  }
+
+  return true;
+}
+
+bool OmniboxEverywhereUIManager::TryAcquireKeepAlives() {
+  if (AcquireKeepAlives()) {
+    return true;
+  }
+
+  ReleaseKeepAlives();
+  return false;
+}
+
+void OmniboxEverywhereUIManager::ReleaseKeepAlives() {
+  if (profile_) {
+    if (auto* service =
+            OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
+      service->ReleaseProfileKeepAlive();
+    }
+  }
+  keep_alive_.reset();
+}
+
 void OmniboxEverywhereUIManager::CreateAndInitWidget(
     gfx::NativeWindow context) {
   if (widget_) {
     return;
   }
+
+  if (!TryAcquireKeepAlives()) {
+    return;
+  }
+
   widget_ = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
@@ -361,6 +410,11 @@ void OmniboxEverywhereUIManager::ActivateAndFocus() {
   if (!widget_) {
     return;
   }
+
+  if (!TryAcquireKeepAlives()) {
+    return;
+  }
+
   widget_->SetZOrderLevel(ui::ZOrderLevel::kFloatingUIElement);
   widget_->Show();
   widget_->Activate();
@@ -409,6 +463,7 @@ void OmniboxEverywhereUIManager::Close() {
     }
     widget_->Hide();
   }
+  ReleaseKeepAlives();
 }
 
 void OmniboxEverywhereUIManager::CleanUpWidget() {
@@ -455,6 +510,7 @@ void OmniboxEverywhereUIManager::CleanUpWidget() {
   draggable_region_.reset();
   browser_collection_observation_.Reset();
   last_shown_time_.reset();
+  ReleaseKeepAlives();
 }
 
 void OmniboxEverywhereUIManager::Shutdown() {

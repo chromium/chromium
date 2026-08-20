@@ -18,10 +18,13 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -649,6 +652,46 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
   // preventing CHECK failures in BrowserProcessImpl::StartTearDown.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&chrome::CloseAllBrowsersAndQuit));
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_OpenUrlCreatesBrowserBeforeClosingPopupWhenNoBrowsers \
+  DISABLED_OpenUrlCreatesBrowserBeforeClosingPopupWhenNoBrowsers
+#else
+#define MAYBE_OpenUrlCreatesBrowserBeforeClosingPopupWhenNoBrowsers \
+  OpenUrlCreatesBrowserBeforeClosingPopupWhenNoBrowsers
+#endif
+IN_PROC_BROWSER_TEST_F(
+    OmniboxEverywhereBrowserTest,
+    MAYBE_OpenUrlCreatesBrowserBeforeClosingPopupWhenNoBrowsers) {
+  Profile* profile = browser()->GetProfile();
+  set_exit_when_last_browser_closes(false);
+
+  GlobalFeatures* features = g_browser_process->GetFeatures();
+  ASSERT_TRUE(features);
+  auto* controller = features->omnibox_everywhere_controller();
+  ASSERT_TRUE(controller);
+
+  // Show the Omnibox Everywhere widget.
+  controller->OnInvoke(InvocationSource::kGlobalHotkey, profile);
+  EXPECT_TRUE(controller->IsVisible());
+
+  // Close the existing browser window so 0 browser windows exist.
+  CloseBrowserSynchronously(browser());
+  EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
+  EXPECT_TRUE(controller->IsVisible());
+
+  // Trigger OpenUrl from the Omnibox Everywhere service.
+  auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile);
+  ASSERT_TRUE(service);
+  service->OpenUrl(GURL("chrome://version/"),
+                   WindowOpenDisposition::CURRENT_TAB,
+                   ui::PAGE_TRANSITION_TYPED);
+
+  // Verify that a new browser window was created and the popup widget was
+  // closed.
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+  EXPECT_FALSE(controller->IsVisible());
 }
 
 }  // namespace omnibox_everywhere

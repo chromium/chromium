@@ -13,6 +13,7 @@
 #include "url/gurl.h"
 
 class Profile;
+class ScopedProfileKeepAlive;
 
 namespace omnibox_everywhere {
 class OmniboxEverywhereController;
@@ -37,6 +38,15 @@ class OmniboxEverywhereService : public KeyedService {
                        WindowOpenDisposition disposition,
                        ui::PageTransition transition);
 
+  // Acquires a ScopedProfileKeepAlive for this profile while the popup widget
+  // is active or being shown. Returns true if profile keep alive was acquired
+  // successfully, false otherwise.
+  bool AcquireProfileKeepAlive();
+
+  // Releases the ScopedProfileKeepAlive when the popup widget is hidden or
+  // closed.
+  void ReleaseProfileKeepAlive();
+
   // KeyedService:
   void Shutdown() override;
 
@@ -45,6 +55,8 @@ class OmniboxEverywhereService : public KeyedService {
   omnibox_everywhere::OmniboxEverywhereUIManager* ui_manager() const;
 
   raw_ptr<Profile> profile_;
+
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
   base::WeakPtrFactory<OmniboxEverywhereService> weak_factory_{this};
 };

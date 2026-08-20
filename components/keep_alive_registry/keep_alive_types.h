@@ -90,6 +90,7 @@ enum class KeepAliveOrigin {
 
   // c/b/ui/omnibox/omnibox_everywhere
   OMNIBOX_EVERYWHERE,
+  OMNIBOX_EVERYWHERE_UI,
 
   // c/b/loader
   FETCH_KEEPALIVE_REQUEST,

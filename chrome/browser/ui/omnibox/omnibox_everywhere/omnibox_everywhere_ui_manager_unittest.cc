@@ -22,6 +22,8 @@
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/ntp_tiles/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/context_menu_params.h"
@@ -1105,4 +1107,39 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringScreensharePicker) {
   ui_manager->OnScreensharePickerClosed();
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
   EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       AcquiresAndReleasesKeepAliveOnWidgetLifecycle) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+
+  EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::OMNIBOX_EVERYWHERE_UI));
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  EXPECT_TRUE(ui_manager->widget()->IsVisible());
+  EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::OMNIBOX_EVERYWHERE_UI));
+
+  // Closing the widget releases the keep-alive.
+  ui_manager->Close();
+  EXPECT_TRUE(base::test::RunUntil([]() {
+    return !KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+        KeepAliveOrigin::OMNIBOX_EVERYWHERE_UI);
+  }));
+
+  // Showing again re-acquires the keep-alive.
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::OMNIBOX_EVERYWHERE_UI));
+
+  // Shutdown cleans up the widget and releases keep-alive.
+  ui_manager->Shutdown();
+  EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::OMNIBOX_EVERYWHERE_UI));
 }
