@@ -28,8 +28,6 @@ class SystemTrayClient;
 // This class provides user notifications in the following cases:
 // 1. ShowNetworkConnectError() gets called after any user initiated connect
 //    failure. This will handle displaying an error notification.
-//    TODO(stevenjb): convert this class to use the new MessageCenter
-//    notification system.
 // 2. It observes NetworkState changes to generate notifications when a
 //    Cellular network is out of credits.
 // 3. Generates a notification when VPN is disconnected not as a result of
@@ -110,9 +108,6 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
 
   // Removes any existing connect notifications.
   void RemoveConnectNotification();
-
-  // Removes any existing carrier unlock notifications.
-  void RemoveCarrierUnlockNotification();
 
   // Returns true if the default network changed.
   bool UpdateDefaultNetwork(const NetworkState* network);
