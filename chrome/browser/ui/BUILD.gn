@@ -2408,7 +2408,6 @@ static_library("ui") {
       "views/certificate_viewer_win.cc",
       "views/frame/browser_caption_button_container_win.cc",
       "views/frame/browser_caption_button_container_win.h",
-      "views/frame/browser_desktop_window_tree_host.h",
       "views/frame/browser_desktop_window_tree_host_win.cc",
       "views/frame/browser_desktop_window_tree_host_win.h",
       "views/frame/browser_frame_view_win.cc",
@@ -2416,8 +2415,6 @@ static_library("ui") {
       "views/frame/browser_native_widget_factory_aura.cc",
       "views/frame/browser_window_property_manager_win.cc",
       "views/frame/browser_window_property_manager_win.h",
-      "views/frame/system_menu_insertion_delegate_win.cc",
-      "views/frame/system_menu_insertion_delegate_win.h",
       "views/frame/windows_caption_button.cc",
       "views/frame/windows_caption_button.h",
       "views/frame/windows_taskbar_icon_updater.cc",
@@ -2457,7 +2454,6 @@ static_library("ui") {
 
   if (is_linux) {
     sources += [
-      "views/frame/browser_desktop_window_tree_host.h",
       "views/frame/browser_desktop_window_tree_host_linux.cc",
       "views/frame/browser_desktop_window_tree_host_linux.h",
       "views/frame/browser_native_widget_aura_linux.cc",
@@ -2644,7 +2640,6 @@ static_library("ui") {
       "views/extensions/security_dialog_tracker.cc",
       "views/find_bar_host.cc",
       "views/find_bar_host.h",
-      "views/find_bar_owner.h",
       "views/find_bar_view.cc",
       "views/find_bar_view.h",
       "views/frame/app_menu_button.cc",
@@ -2653,7 +2648,6 @@ static_library("ui") {
       "views/frame/base_tab_strip_region_view.h",
       "views/frame/browser_frame_view.cc",
       "views/frame/browser_frame_view.h",
-      "views/frame/browser_native_widget.h",
       "views/frame/browser_native_widget_factory.cc",
       "views/frame/browser_native_widget_factory.h",
       "views/frame/browser_root_view.cc",
@@ -2945,6 +2939,7 @@ static_library("ui") {
       "//chrome/browser/ui/views:confirm_bubble",
       "//chrome/browser/ui/views:device_chooser_content_view",
       "//chrome/browser/ui/views:elevation_icon_setter",
+      "//chrome/browser/ui/views:find_bar_owner",
       "//chrome/browser/ui/views:flying_indicator",
       "//chrome/browser/ui/views:layout_provider_impl",
       "//chrome/browser/ui/views:login_view",
@@ -2998,6 +2993,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/extensions:security_dialog_tracker",
       "//chrome/browser/ui/views/extensions:windows_utils_views",
       "//chrome/browser/ui/views/frame:app_menu_button_observer",
+      "//chrome/browser/ui/views/frame:browser_desktop_window_tree_host",
+      "//chrome/browser/ui/views/frame:browser_native_widget",
       "//chrome/browser/ui/views/frame:browser_view_layout_params",
       "//chrome/browser/ui/views/frame:caption_button_placeholder_container",
       "//chrome/browser/ui/views/frame:contents_container_outline",
@@ -3430,6 +3427,9 @@ static_library("ui") {
 
     if (is_win) {
       sources += [ "views/chrome_views_delegate_win.cc" ]
+      deps += [
+        "//chrome/browser/ui/views/frame:system_menu_insertion_delegate_win",
+      ]
     }
 
     if (use_aura && is_linux) {
@@ -3592,8 +3592,8 @@ static_library("ui") {
     ]
 
     if (is_mac) {
-      sources += [ "views/javascript_app_modal_event_blocker_mac.h" ]
-    } else {
+      deps +=
+          [ "//chrome/browser/ui/views:javascript_app_modal_event_blocker_mac" ]
     }
 
     if (use_aura) {

@@ -597,3 +597,15 @@ if (is_linux) {
     ]
   }
 }
+
+source_set("find_bar_owner") {
+  public = [ "find_bar_owner.h" ]
+  public_deps = [ "//ui/gfx/geometry" ]
+}
+
+if (is_mac) {
+  source_set("javascript_app_modal_event_blocker_mac") {
+    public = [ "javascript_app_modal_event_blocker_mac.h" ]
+    public_deps = [ "//ui/gfx" ]
+  }
+}

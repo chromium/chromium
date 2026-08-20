@@ -255,6 +255,22 @@ source_set("web_contents_close_handler_delegate") {
   public = [ "web_contents_close_handler_delegate.h" ]
 }
 
+source_set("browser_native_widget") {
+  public = [ "browser_native_widget.h" ]
+  public_deps = [
+    "//build:buildflag_header_h",
+    "//content/public/browser",
+    "//ui/base:types",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+source_set("browser_desktop_window_tree_host") {
+  public = [ "browser_desktop_window_tree_host.h" ]
+}
+
 if (is_win) {
   source_set("minimize_button_metrics_win") {
     public = [ "minimize_button_metrics_win.h" ]
@@ -264,5 +280,11 @@ if (is_win) {
       "//ui/display",
       "//ui/gfx/geometry",
     ]
+  }
+
+  source_set("system_menu_insertion_delegate_win") {
+    public = [ "system_menu_insertion_delegate_win.h" ]
+    sources = [ "system_menu_insertion_delegate_win.cc" ]
+    public_deps = [ "//ui/views" ]
   }
 }
