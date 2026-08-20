@@ -125,8 +125,15 @@ class SystemMenuModelBuilderTabStripUnificationTest
 
 // Check if the toggle tab scroll buttons pinning option exists and has the
 // right label based on relevant prefs.
+// TODO(crbug.com/549762016): Flaky on Mac builds.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ToggleTabScrollButtonsPinning \
+  DISABLED_ToggleTabScrollButtonsPinning
+#else
+#define MAYBE_ToggleTabScrollButtonsPinning ToggleTabScrollButtonsPinning
+#endif
 IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderTabStripUnificationTest,
-                       ToggleTabScrollButtonsPinning) {
+                       MAYBE_ToggleTabScrollButtonsPinning) {
   PrefService* profile_prefs = browser()->GetProfile()->GetPrefs();
   ui::MenuModel* menu = BrowserView::GetBrowserViewForBrowser(browser())
                             ->browser_widget()
