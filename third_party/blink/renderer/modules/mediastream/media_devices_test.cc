@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_device_info.h"
 #include "third_party/blink/renderer/modules/mediastream/media_permission_testing_platform.h"
 #include "third_party/blink/renderer/modules/mediastream/restriction_target.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -1606,6 +1607,153 @@ TEST_P(ProduceSubCaptureTargetTest, DuplicateId) {
   ASSERT_FALSE(second_result.empty());
 
   EXPECT_EQ(first_result, second_result);
+}
+
+TEST_P(ProduceSubCaptureTargetTest,
+       DuplicateCallBeforePromiseResolutionSameWorld) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
+  ASSERT_TRUE(media_devices);
+
+  dispatcher_host().SetNextId(type_,
+                              String("983bf2ff-7410-416c-808a-78421cbd8fdc"));
+
+  SetBodyContent(R"HTML(
+    <div id='test-div'></div>
+  )HTML");
+
+  Document& document = GetDocument();
+  Element* const div = document.getElementById(AtomicString("test-div"));
+
+  v8::Local<v8::Promise> first_v8_promise;
+  v8::Local<v8::Promise> second_v8_promise;
+  std::optional<ScriptPromiseTester> first_tester;
+  std::optional<ScriptPromiseTester> second_tester;
+
+  if (type_ == SubCaptureTarget::Type::kCropTarget) {
+    auto p1 = media_devices->ProduceCropTarget(scope.GetScriptState(), div,
+                                               scope.GetExceptionState());
+    first_v8_promise = p1.V8Promise();
+    first_tester.emplace(scope.GetScriptState(), p1);
+
+    auto p2 = media_devices->ProduceCropTarget(scope.GetScriptState(), div,
+                                               scope.GetExceptionState());
+    second_v8_promise = p2.V8Promise();
+    second_tester.emplace(scope.GetScriptState(), p2);
+  } else {
+    auto p1 = media_devices->ProduceRestrictionTarget(
+        scope.GetScriptState(), div, scope.GetExceptionState());
+    first_v8_promise = p1.V8Promise();
+    first_tester.emplace(scope.GetScriptState(), p1);
+
+    auto p2 = media_devices->ProduceRestrictionTarget(
+        scope.GetScriptState(), div, scope.GetExceptionState());
+    second_v8_promise = p2.V8Promise();
+    second_tester.emplace(scope.GetScriptState(), p2);
+  }
+
+  // The two promises must be distinct objects.
+  EXPECT_FALSE(first_v8_promise.IsEmpty());
+  EXPECT_FALSE(second_v8_promise.IsEmpty());
+  EXPECT_NE(first_v8_promise, second_v8_promise);
+
+  first_tester->WaitUntilSettled();
+  second_tester->WaitUntilSettled();
+
+  EXPECT_TRUE(first_tester->IsFulfilled());
+  EXPECT_TRUE(second_tester->IsFulfilled());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+  const String first_result =
+      ToSubCaptureTarget(first_tester->Value())->GetId();
+  const String second_result =
+      ToSubCaptureTarget(second_tester->Value())->GetId();
+
+  EXPECT_EQ(first_result, "983bf2ff-7410-416c-808a-78421cbd8fdc");
+  EXPECT_EQ(first_result, second_result);
+}
+
+TEST_P(ProduceSubCaptureTargetTest,
+       DuplicateCallBeforePromiseResolutionDifferentWorlds) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
+  ASSERT_TRUE(media_devices);
+
+  dispatcher_host().SetNextId(type_,
+                              String("983bf2ff-7410-416c-808a-78421cbd8fdc"));
+
+  SetBodyContent(R"HTML(
+    <div id='test-div'></div>
+  )HTML");
+
+  Document& document = GetDocument();
+  Element* const div = document.getElementById(AtomicString("test-div"));
+
+  constexpr int32_t kIsolatedWorldId = 1;
+  DOMWrapperWorld* isolated_world = DOMWrapperWorld::EnsureIsolatedWorld(
+      scope.GetIsolate(), kIsolatedWorldId);
+  scope.GetFrame().GetWindowProxy(*isolated_world);  // Force initialization.
+  ScriptState* isolated_script_state =
+      ToScriptState(&scope.GetFrame(), *isolated_world);
+  ASSERT_TRUE(isolated_script_state);
+
+  // First call from the isolated world.
+  std::optional<ScriptPromiseTester> isolated_tester;
+  {
+    ScriptState::Scope isolated_scope(isolated_script_state);
+    DummyExceptionStateForTesting exception_state;
+    if (type_ == SubCaptureTarget::Type::kCropTarget) {
+      auto p = media_devices->ProduceCropTarget(isolated_script_state, div,
+                                                exception_state);
+      EXPECT_FALSE(p.IsEmpty());
+      EXPECT_EQ(p.V8Promise()->GetCreationContextChecked(),
+                isolated_script_state->GetContext());
+      isolated_tester.emplace(isolated_script_state, p);
+    } else {
+      auto p = media_devices->ProduceRestrictionTarget(isolated_script_state,
+                                                       div, exception_state);
+      EXPECT_FALSE(p.IsEmpty());
+      EXPECT_EQ(p.V8Promise()->GetCreationContextChecked(),
+                isolated_script_state->GetContext());
+      isolated_tester.emplace(isolated_script_state, p);
+    }
+    EXPECT_FALSE(exception_state.HadException());
+  }
+  ASSERT_TRUE(isolated_tester);
+
+  // Second call from the main world before the first promise is resolved.
+  std::optional<ScriptPromiseTester> main_tester;
+  if (type_ == SubCaptureTarget::Type::kCropTarget) {
+    auto p = media_devices->ProduceCropTarget(scope.GetScriptState(), div,
+                                              scope.GetExceptionState());
+    EXPECT_FALSE(p.IsEmpty());
+    EXPECT_EQ(p.V8Promise()->GetCreationContextChecked(), scope.GetContext());
+    main_tester.emplace(scope.GetScriptState(), p);
+  } else {
+    auto p = media_devices->ProduceRestrictionTarget(
+        scope.GetScriptState(), div, scope.GetExceptionState());
+    EXPECT_FALSE(p.IsEmpty());
+    EXPECT_EQ(p.V8Promise()->GetCreationContextChecked(), scope.GetContext());
+    main_tester.emplace(scope.GetScriptState(), p);
+  }
+  ASSERT_TRUE(main_tester);
+
+  isolated_tester->WaitUntilSettled();
+  main_tester->WaitUntilSettled();
+
+  EXPECT_TRUE(isolated_tester->IsFulfilled());
+  EXPECT_TRUE(main_tester->IsFulfilled());
+  String isolated_result;
+  {
+    ScriptState::Scope isolated_scope(isolated_script_state);
+    isolated_result = ToSubCaptureTarget(isolated_tester->Value())->GetId();
+  }
+  const String main_result = ToSubCaptureTarget(main_tester->Value())->GetId();
+
+  EXPECT_EQ(isolated_result, "983bf2ff-7410-416c-808a-78421cbd8fdc");
+  EXPECT_EQ(isolated_result, main_result);
+
+  isolated_world->Dispose();
 }
 
 TEST_P(ProduceSubCaptureTargetTest, CorrectTokenClassInstantiated) {

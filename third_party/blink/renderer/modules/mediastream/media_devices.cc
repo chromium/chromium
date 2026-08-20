@@ -1066,6 +1066,10 @@ ScriptPromise<CropTarget> MediaDevices::ProduceCropTarget(
     return promise;
   }
 
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<CropTarget>>(
+      script_state, exception_state.GetContext());
+  const ScriptPromise<CropTarget> promise = resolver->Promise();
+
   const auto it = crop_target_resolvers_.find(element);
   if (it != crop_target_resolvers_.end()) {
     // The Element does not yet have the SubCaptureTarget attached,
@@ -1075,15 +1079,14 @@ ScriptPromise<CropTarget> MediaDevices::ProduceCropTarget(
     RecordUma(
         SubCaptureTarget::Type::kCropTarget,
         ProduceTargetFunctionResult::kDuplicateCallBeforePromiseResolution);
-    return it->value->Promise();
+    it->value.push_back(resolver);
+    return promise;
   }
 
   // Mints a new ID on the browser process.
   // Resolves after it has been produced and is ready to be used.
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<CropTarget>>(
-      script_state, exception_state.GetContext());
-  crop_target_resolvers_.insert(element, resolver);
-  const ScriptPromise<CropTarget> promise = resolver->Promise();
+  crop_target_resolvers_.insert(
+      element, HeapVector<Member<ScriptPromiseResolver<CropTarget>>>{resolver});
 
   LocalDOMWindow* const window = To<LocalDOMWindow>(GetExecutionContext());
   CHECK(window);  // Guaranteed by MayProduceSubCaptureTarget() earlier.
@@ -1125,6 +1128,11 @@ ScriptPromise<RestrictionTarget> MediaDevices::ProduceRestrictionTarget(
     return promise;
   }
 
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<RestrictionTarget>>(
+          script_state, exception_state.GetContext());
+  const ScriptPromise<RestrictionTarget> promise = resolver->Promise();
+
   const auto it = restriction_target_resolvers_.find(element);
   if (it != restriction_target_resolvers_.end()) {
     // The Element does not yet have the SubCaptureTarget attached,
@@ -1134,16 +1142,15 @@ ScriptPromise<RestrictionTarget> MediaDevices::ProduceRestrictionTarget(
     RecordUma(
         SubCaptureTarget::Type::kRestrictionTarget,
         ProduceTargetFunctionResult::kDuplicateCallBeforePromiseResolution);
-    return it->value->Promise();
+    it->value.push_back(resolver);
+    return promise;
   }
 
   // Mints a new ID on the browser process.
   // Resolves after it has been produced and is ready to be used.
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<RestrictionTarget>>(
-          script_state, exception_state.GetContext());
-  restriction_target_resolvers_.insert(element, resolver);
-  const ScriptPromise<RestrictionTarget> promise = resolver->Promise();
+  restriction_target_resolvers_.insert(
+      element,
+      HeapVector<Member<ScriptPromiseResolver<RestrictionTarget>>>{resolver});
 
   LocalDOMWindow* const window = To<LocalDOMWindow>(GetExecutionContext());
   CHECK(window);  // Guaranteed by MayProduceSubCaptureTarget() earlier.
@@ -1622,19 +1629,24 @@ void MediaDevices::ResolveRestrictionTargetPromise(Element* element,
 
   const auto it = restriction_target_resolvers_.find(element);
   CHECK_NE(it, restriction_target_resolvers_.end());
-  ScriptPromiseResolver<RestrictionTarget>* const resolver = it->value;
+  HeapVector<Member<ScriptPromiseResolver<RestrictionTarget>>> resolvers =
+      std::move(it->value);
   restriction_target_resolvers_.erase(it);
 
   const base::Token token = SubCaptureTargetIdToToken(id);
   if (token.is_zero()) {
-    resolver->Reject();
+    for (auto& resolver : resolvers) {
+      resolver->Reject();
+    }
     RecordUma(SubCaptureTarget::Type::kRestrictionTarget,
               ProduceTargetPromiseResult::kPromiseRejected);
     return;
   }
 
   element->SetRestrictionTargetId(std::make_unique<RestrictionTargetId>(token));
-  resolver->Resolve(MakeGarbageCollected<RestrictionTarget>(id));
+  for (auto& resolver : resolvers) {
+    resolver->Resolve(MakeGarbageCollected<RestrictionTarget>(id));
+  }
   RecordUma(SubCaptureTarget::Type::kRestrictionTarget,
             ProduceTargetPromiseResult::kPromiseResolved);
 }
@@ -1699,19 +1711,24 @@ void MediaDevices::ResolveCropTargetPromise(Element* element,
 
   const auto it = crop_target_resolvers_.find(element);
   CHECK_NE(it, crop_target_resolvers_.end());
-  ScriptPromiseResolver<CropTarget>* const resolver = it->value;
+  HeapVector<Member<ScriptPromiseResolver<CropTarget>>> resolvers =
+      std::move(it->value);
   crop_target_resolvers_.erase(it);
 
   const base::Token token = SubCaptureTargetIdToToken(id);
   if (token.is_zero()) {
-    resolver->Reject();
+    for (auto& resolver : resolvers) {
+      resolver->Reject();
+    }
     RecordUma(SubCaptureTarget::Type::kCropTarget,
               ProduceTargetPromiseResult::kPromiseRejected);
     return;
   }
 
   element->SetRegionCaptureCropId(std::make_unique<RegionCaptureCropId>(token));
-  resolver->Resolve(MakeGarbageCollected<CropTarget>(id));
+  for (auto& resolver : resolvers) {
+    resolver->Resolve(MakeGarbageCollected<CropTarget>(id));
+  }
   RecordUma(SubCaptureTarget::Type::kCropTarget,
             ProduceTargetPromiseResult::kPromiseResolved);
 }

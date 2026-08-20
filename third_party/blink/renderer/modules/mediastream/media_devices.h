@@ -261,12 +261,13 @@ class MODULES_EXPORT MediaDevices final
 
   using ElementToRestrictionTargetResolverMap =
       HeapHashMap<Member<Element>,
-                  Member<ScriptPromiseResolver<RestrictionTarget>>>;
+                  HeapVector<Member<ScriptPromiseResolver<RestrictionTarget>>>>;
 
   ElementToRestrictionTargetResolverMap restriction_target_resolvers_;
 
   using ElementToCropTargetResolverMap =
-      HeapHashMap<Member<Element>, Member<ScriptPromiseResolver<CropTarget>>>;
+      HeapHashMap<Member<Element>,
+                  HeapVector<Member<ScriptPromiseResolver<CropTarget>>>>;
 
   // 1. When CropTarget.fromElement() is first called for an Element,
   //    it has no CropTarget associated with it, and similarly for
@@ -277,13 +278,14 @@ class MODULES_EXPORT MediaDevices final
   //    implementation of the CropTarget/RestrictionTarget object to which
   //    the Promise will be resolved.
   // 2. Subsequent calls to X.fromElement() which occur before the browser
-  //    process has had time to respond, yield a copy of the original Promise
-  //    associated with this Element. (Distinctly for either X=CropTarget
-  //    and X=RestrictionTarget.)
+  //    process has had time to respond, create their own Resolver/Promise
+  //    associated with their caller's ScriptState and are queued in this
+  //    container. (Distinctly for either X=CropTarget and
+  //    X=RestrictionTarget.)
   // 3. When the browser process responds with a base::Token, we store it
   //    on the Element itself, resolve all Promises returned for this Element,
-  //    and eject the resolver from this container. (Note again that CropTarget
-  //    and RestrictionTarget are handled separately here.)
+  //    and eject the resolver list from this container. (Note again that
+  //    CropTarget and RestrictionTarget are handled separately here.)
   // 4. Later calls to X.fromElement() for this given Element discover that
   //    a token has already been assigned. They immediately return a resolved
   //    Promise with the relevant token.
