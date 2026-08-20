@@ -1658,6 +1658,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"enableProfilesSublabel", IDS_AUTOFILL_ENABLE_PROFILES_TOGGLE_SUBLABEL},
       {"enableGmailOtpFillingTitle",
        IDS_AUTOFILL_GMAIL_OTP_FILLING_TOGGLE_TITLE},
+      {"gmailOtpRequiredTitle", IDS_AUTOFILL_GMAIL_OTP_REQUIRED_TITLE},
       {"emailVerificationLabel",
        IDS_AUTOFILL_SETTINGS_EMAIL_VERIFICATION_LABEL},
       {"emailVerificationSectionTitle",
@@ -2080,6 +2081,18 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
   html_source->AddString("gmailOtpFillingLearnMoreUrl",
                          chrome::kGmailOtpFillingLearnMoreURL);
+
+  html_source->AddString(
+      "gmailOtpRequiredStep1",
+      l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_GMAIL_OTP_REQUIRED_STEP_1, chrome::kGmailSettingsURL,
+          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
+  html_source->AddString(
+      "gmailOtpRequiredStep2",
+      l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_GMAIL_OTP_REQUIRED_STEP_2,
+          chrome::kGmailSmartFeaturesURL,
+          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
 
   auto* autofill_client =
       autofill::ContentAutofillClient::FromWebContents(web_contents);

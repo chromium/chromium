@@ -444,6 +444,14 @@ inline constexpr char16_t kCardBenefitsLearnMoreURL[] =
 inline constexpr char16_t kGmailOtpFillingLearnMoreURL[] =
     u"https://support.google.com/chrome?p=one_time_password";
 
+// URL for Gmail general settings.
+inline constexpr char16_t kGmailSettingsURL[] =
+    u"https://mail.google.com/mail/u/0/#settings/general";
+
+// URL for Gmail smart features settings.
+inline constexpr char16_t kGmailSmartFeaturesURL[] =
+    u"https://mail.google.com/mail/u/0/?ogwsfsd=true#settings";
+
 // "Learn more" URL for the performance intervention notification setting.
 inline constexpr char16_t kPerformanceInterventionLearnMoreUrl[] =
     u"https://support.google.com/chrome?p=performance_personalization";
