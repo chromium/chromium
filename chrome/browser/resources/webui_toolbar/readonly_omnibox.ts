@@ -308,6 +308,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   // any time, ensuring that release of the final finger does not trigger
   // single-tap select-all.
   private wasMultiTouch_: boolean = false;
+  private isHandlingFocusRequest_: boolean = false;
 
   private inputDelegate_: OmniboxInputDelegate = new MojoOmniboxInputDelegate();
 
@@ -481,75 +482,81 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   // This includes some key shortcuts (Ctrl-L, Ctrl-K) and the browser
   // auto-focusing the location bar for some pages (the NTP and about:blank).
   private onFocusRequest(target: FocusRequestTarget): void {
-    let isUserInitiated = false;
-    let activateDefaultSearch = false;
-    switch (target) {
-      case FocusRequestTarget.kLocationBar:
-        // Default values of flags are fine.
-        break;
+    this.isHandlingFocusRequest_ = true;
+    try {
+      let isUserInitiated = false;
+      let activateDefaultSearch = false;
+      switch (target) {
+        case FocusRequestTarget.kLocationBar:
+          // Default values of flags are fine.
+          break;
 
-      case FocusRequestTarget.kLocationBarUserInitiated:
-        isUserInitiated = true;
-        break;
+        case FocusRequestTarget.kLocationBarUserInitiated:
+          isUserInitiated = true;
+          break;
 
-      case FocusRequestTarget.kSearch:
-        isUserInitiated = true;
-        activateDefaultSearch = true;
-        break;
+        case FocusRequestTarget.kSearch:
+          isUserInitiated = true;
+          activateDefaultSearch = true;
+          break;
 
-      default:
-        // Not relevant here.
-        return;
-    }
-
-    const wasAlreadyFocused = this.hasFocus();
-    let unelision = false;
-    if (activateDefaultSearch && !this.omniboxViewState.userInputInProgress) {
-      // If activateDefaultSearch is on, and text has not been entered,
-      // the search will activate with empty box. Do that on this side
-      // as well to avoid flicker.
-      this.$.textInput.setInputText('');
-      this.updateStateFromTextInput();
-    } else if (isUserInitiated) {
-      unelision = this.unelide();
-    }
-    this.$.textInput.focus();
-    this.switchView_(/*hasFocus=*/ true);
-
-    // The following comments are from OmniboxViewViews::SetFocus:
-    // If the user initiated the focus, then we always select-all, even if the
-    // omnibox is already focused. This can happen if the user pressed Ctrl+L
-    // while already typing in the omnibox.
-    //
-    // For renderer initiated focuses (like NTP or about:blank page load
-    // finish):
-    //  - If the omnibox was not already focused, select-all. This handles the
-    //    about:blank homepage case, where the location bar has initial focus.
-    //    It annoys users if the URL is not pre-selected.
-    //    https://crbug.com/40402896.
-    //  - If the omnibox is already focused, DO NOT select-all. This can happen
-    //    if the user starts typing before the NTP finishes loading. If the NTP
-    //    finishes loading and then does a renderer-initiated focus, performing
-    //    a select-all here would surprisingly overwrite the user's first few
-    //    typed characters. https://crbug.com/40610912.
-    if (isUserInitiated || !wasAlreadyFocused) {
-      if (activateDefaultSearch) {
-        this.selectAllForward();
-      } else {
-        this.selectAllBackwards();
+        default:
+          // Not relevant here.
+          return;
       }
-    }
-    // It's important this is done after updating the selection since that
-    // prevents inline completion, which isn't desired for these shortcuts.
-    this.sendInputToBrowser(unelision);
 
-    this.inputDelegate_.handleFocusChange(this, {
-      hasFocus: true,
-      selection: this.getMojoSelection(),
-      requestClearKeyword: wasAlreadyFocused,
-      startZeroSuggest: isUserInitiated,
-      activateDefaultSearch: activateDefaultSearch,
-    });
+      const wasAlreadyFocused = this.hasFocus();
+      let unelision = false;
+      if (activateDefaultSearch && !this.omniboxViewState.userInputInProgress) {
+        // If activateDefaultSearch is on, and text has not been entered,
+        // the search will activate with empty box. Do that on this side
+        // as well to avoid flicker.
+        this.$.textInput.setInputText('');
+        this.updateStateFromTextInput();
+      } else if (isUserInitiated) {
+        unelision = this.unelide();
+      }
+      this.$.textInput.focus();
+      this.switchView_(/*hasFocus=*/ true);
+
+      // The following comments are from OmniboxViewViews::SetFocus:
+      // If the user initiated the focus, then we always select-all, even if the
+      // omnibox is already focused. This can happen if the user pressed Ctrl+L
+      // while already typing in the omnibox.
+      //
+      // For renderer initiated focuses (like NTP or about:blank page load
+      // finish):
+      //  - If the omnibox was not already focused, select-all. This handles the
+      //    about:blank homepage case, where the location bar has initial focus.
+      //    It annoys users if the URL is not pre-selected.
+      //    https://crbug.com/40402896.
+      //  - If the omnibox is already focused, DO NOT select-all. This can
+      //  happen
+      //    if the user starts typing before the NTP finishes loading. If the
+      //    NTP finishes loading and then does a renderer-initiated focus,
+      //    performing a select-all here would surprisingly overwrite the user's
+      //    first few typed characters. https://crbug.com/40610912.
+      if (isUserInitiated || !wasAlreadyFocused) {
+        if (activateDefaultSearch) {
+          this.selectAllForward();
+        } else {
+          this.selectAllBackwards();
+        }
+      }
+      // It's important this is done after updating the selection since that
+      // prevents inline completion, which isn't desired for these shortcuts.
+      this.sendInputToBrowser(unelision);
+
+      this.inputDelegate_.handleFocusChange(this, {
+        hasFocus: true,
+        selection: this.getMojoSelection(),
+        requestClearKeyword: wasAlreadyFocused && !activateDefaultSearch,
+        startZeroSuggest: isUserInitiated,
+        activateDefaultSearch: activateDefaultSearch,
+      });
+    } finally {
+      this.isHandlingFocusRequest_ = false;
+    }
   }
 
   private onInputBlur(): void {
@@ -584,6 +591,10 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   private onInputFocus(): void {
     this.lastFocusAcquisition_ = performance.now();
     this.switchView_(/*hasFocus=*/ true);
+
+    if (this.isHandlingFocusRequest_) {
+      return;
+    }
 
     this.inputDelegate_.handleFocusChange(this, {
       hasFocus: true,

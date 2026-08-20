@@ -95,7 +95,15 @@ void WebUIReadOnlyOmnibox::OnTabChanged(content::WebContents* web_contents) {
   controller()->edit_model()->RestoreState(state ? &state->model_state
                                                  : nullptr);
   if (state) {
-    selection_ = state->selection;
+    if (state->model_state.user_input_in_progress &&
+        state->model_state.user_text.empty() &&
+        state->model_state.keyword.empty()) {
+      // See comment in OmniboxEditModel::GetStateForTabSwitch() for details on
+      // this.
+      SelectAll(true);
+    } else {
+      selection_ = state->selection;
+    }
   }
 
   RequestUpdateWebUI();
