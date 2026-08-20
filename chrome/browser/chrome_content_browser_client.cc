@@ -59,6 +59,7 @@
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/back_forward_cache/back_forward_cache_util.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/battery/battery_saver.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate.h"
@@ -9385,12 +9386,8 @@ ChromeContentBrowserClient::MaybeOverrideLocalURLCrossOriginEmbedderPolicy(
 bool ChromeContentBrowserClient::ShouldPrioritizeForBackForwardCache(
     content::BrowserContext* browser_context,
     const GURL& url) {
-  if (!browser_context) {
-    return false;
-  }
-  return TemplateURLServiceFactory::GetForProfile(
-             Profile::FromBrowserContext(browser_context))
-      ->IsSearchResultsPageFromDefaultSearchProvider(url);
+  return chrome_back_forward_cache::ShouldPrioritizeForBackForwardCache(
+      browser_context, url);
 }
 
 std::vector<std::unique_ptr<content::KeepAliveRequestTracker>>

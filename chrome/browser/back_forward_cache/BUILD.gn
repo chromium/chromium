@@ -4,45 +4,62 @@
 
 import("//pdf/features.gni")
 
-source_set("browser_tests") {
-  testonly = true
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "chrome_back_forward_cache_browsertest.cc" ]
+source_set("back_forward_cache") {
+  sources = [
+    "back_forward_cache_util.cc",
+    "back_forward_cache_util.h",
+  ]
   deps = [
     "//base",
-    "//base/test:test_support",
-    "//build:chromeos_buildflags",
-    "//chrome/browser",
-    "//chrome/browser:browser_process",
-    "//chrome/browser/content_settings",
-    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
-    "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/tabs:tab_strip",
-    "//chrome/common:constants",
-    "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
-    "//components/content_settings/core/browser",
-    "//components/content_settings/core/common",
-    "//components/metrics:content",
-    "//components/page_load_metrics/browser",
-    "//components/permissions",
+    "//chrome/browser/search_engines",
+    "//components/search_engines",
     "//content/public/browser",
-    "//content/public/common",
-    "//content/test:test_support",
-    "//net:test_support",
-    "//pdf:buildflags",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//third_party/blink/public/common",
-    "//ui/base",
+    "//url",
   ]
+}
 
-  if (enable_pdf) {
-    deps += [
-      "//chrome/browser/pdf:pdf_extension_test_utils",
-      "//pdf:features",
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "chrome_back_forward_cache_browsertest.cc" ]
+    deps = [
+      "//base",
+      "//base/test:test_support",
+      "//build:chromeos_buildflags",
+      "//chrome/browser",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/content_settings",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/content_settings/core/browser",
+      "//components/content_settings/core/common",
+      "//components/metrics:content",
+      "//components/page_load_metrics/browser",
+      "//components/permissions",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//pdf:buildflags",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/blink/public/common",
+      "//ui/base",
     ]
+
+    if (enable_pdf) {
+      deps += [
+        "//chrome/browser/pdf:pdf_extension_test_utils",
+        "//pdf:features",
+      ]
+    }
   }
 }
