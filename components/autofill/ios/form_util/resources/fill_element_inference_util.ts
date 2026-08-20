@@ -311,23 +311,6 @@ export function isTextAreaElement(element: any): boolean {
 }
 
 /**
- * Returns true if `element` is a checkbox or a radio button element.
- *
- * It is based on the logic in IsCheckableElement() in
- * chromium/src/components/autofill/content/renderer/form_autofill_util.h.
- *
- * @param {FormControlElement} element An element to examine.
- * @return Whether element is a checkbox or a radio button.
- */
-// TODO(crbug.com/40285548): Replace all `any` types with a specific type.
-export function isCheckableElement(element: any): boolean {
-  if (!element) {
-    return false;
-  }
-  return element.type === 'checkbox' || element.type === 'radio';
-}
-
-/**
  * Returns true if `element` is a date input element.
  *
  * @param {Element} element An element to examine.
@@ -351,9 +334,7 @@ export function isDateField(element: Element): boolean {
 export function isAutofillableInputElement(element: Element): boolean {
   return isTextField(element) ||
       (isDateField(element) &&
-       isFeatureEnabled('isAutofillSupportDateInputEnabled')) ||
-      (isCheckableElement(element) &&
-       !isFeatureEnabled('isAutofillIgnoreCheckableElementsEnabled'));
+       isFeatureEnabled('isAutofillSupportDateInputEnabled'));
 }
 
 /**

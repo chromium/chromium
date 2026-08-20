@@ -412,9 +412,7 @@ bool ExtractFormFieldData(const base::DictValue& field,
   field_data->set_parsed_autocomplete(
       ParseAutocompleteAttribute(field_data->autocomplete_attribute()));
 
-  // TODO(crbug.com/40391162): Extract |is_checked|.
-  bool is_checkable = field.FindBool("is_checkable").value_or(false);
-  SetCheckStatus(field_data, is_checkable, false);
+  SetCheckStatus(field_data, false, false);
 
   field_data->set_is_focusable(
       field.FindBool("is_focusable").value_or(field_data->is_focusable()));

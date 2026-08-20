@@ -32,11 +32,6 @@ GetReplacements() {
                 autofill::features::kAutofillDisallowMoreHyphenLikeLabels)
         ? @"true"
         : @"false",
-    @"gCrWebPlaceholderAutofillIgnoreCheckableElements" :
-            base::FeatureList::IsEnabled(
-                autofill::features::kAutofillIgnoreCheckableElements)
-        ? @"true"
-        : @"false",
     @"gCrWebPlaceholderAutofillSupportDateInput" :
             base::FeatureList::IsEnabled(::kAutofillSupportDateInput)
         ? @"true"

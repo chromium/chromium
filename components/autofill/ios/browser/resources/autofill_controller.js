@@ -87,40 +87,8 @@ const autofillFormFeaturesApi =
  * @return {boolean} Whether the form is sufficiently interesting.
  */
 function isFormInteresting_(form) {
-  if (form.child_frames && form.child_frames.length > 0) {
-    return true;
-  }
-
-  // If the form has at least one field with an autocomplete attribute, or one
-  // non-checkable field, it is a candidate for autofill.
-  for (let i = 0; i < form.fields.length; ++i) {
-    if (form.fields[i]['autocomplete_attribute'] != null &&
-        form.fields[i]['autocomplete_attribute'].length > 0) {
-      return true;
-    }
-
-    if (!form.fields[i].is_checkable) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-/**
- * Returns the number of editable elements in `elements`.
- *
- * @param {Array<FormControlElement>} elements The elements to scan.
- * @return {number} The number of editable elements.
- */
-function countEditableElements_(elements) {
-  let numEditableElements = 0;
-  for (const element of elements) {
-    if (!inferenceUtil.isCheckableElement(element)) {
-      ++numEditableElements;
-    }
-  }
-  return numEditableElements;
+  return form.fields.length > 0 ||
+      (form.child_frames && form.child_frames.length > 0);
 }
 
 /**
@@ -157,8 +125,7 @@ function extractUnownedFields(restrictUnownedFieldsToFormlessCheckout) {
   const fieldsets = [];
   const unownedControlElements =
       fillUtil.getUnownedAutofillableFormFieldElements(fieldsets);
-  const numEditableUnownedElements =
-      countEditableElements_(unownedControlElements);
+  const numEditableUnownedElements = unownedControlElements.length;
   const iframeElements =
       autofillFormFeaturesApi.getFunction('isAutofillAcrossIframesEnabled')() ?
       getUnownedIframes() :
@@ -267,11 +234,6 @@ function fillForm(data) {
     const element = getElementByUniqueID(Number(fieldId));
 
     if (!inferenceUtil.isAutofillableElement(element)) {
-      continue;
-    }
-
-    // TODO(crbug.com/40573146): Investigate autofilling checkable elements.
-    if (inferenceUtil.isCheckableElement(element)) {
       continue;
     }
 
@@ -407,7 +369,7 @@ function extractNewForms(restrictUnownedFieldsToFormlessCheckout) {
     /** @type {HTMLFormElement} */
     const formElement = webForms[formIndex];
     const controlElements = extractAutofillableElementsInForm(formElement);
-    const numEditableElements = countEditableElements_(controlElements);
+    const numEditableElements = controlElements.length;
     const hasChildFrames = autofillFormFeaturesApi.getFunction(
                                'isAutofillAcrossIframesEnabled')() ?
         formElement.getElementsByTagName('iframe').length > 0 :
@@ -522,8 +484,6 @@ function fillFormField(data, field) {
 
   } else if (inferenceUtil.isSelectElement(field)) {
     filled = fillUtil.setInputElementValue(data['value'], field);
-  } else if (inferenceUtil.isCheckableElement(field)) {
-    filled = fillUtil.setInputElementValue(data['is_checked'], field);
   }
   return filled;
 }

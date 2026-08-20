@@ -572,13 +572,6 @@ export function inferLabelFromDefinitionList(element: FormControlElement):
 export function inferLabelForElement(element: FormControlElement):
     inferenceUtil.InferredLabel|null {
   let r: inferenceUtil.InferredLabel|null = null;
-  if (inferenceUtil.isCheckableElement(element)) {
-    r = inferLabelFromNext(element);
-    if (r) {
-      return r;
-    }
-  }
-
   r = inferLabelFromPrevious(element);
   if (r) {
     return r;

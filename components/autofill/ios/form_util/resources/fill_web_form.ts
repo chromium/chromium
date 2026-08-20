@@ -221,11 +221,8 @@ export function webFormControlElementToFormField(
     field.max_length = 0;
   }
 
-  if (inferenceUtil.isAutofillableInputElement(element)) {
-    field.is_checkable = inferenceUtil.isCheckableElement(element);
-  } else if (inferenceUtil.isTextAreaElement(element)) {
-    // Nothing more to do in this case.
-  } else {
+  if (!inferenceUtil.isAutofillableInputElement(element) &&
+      !inferenceUtil.isTextAreaElement(element)) {
     fillUtil.getOptionStringsFromElement(element as HTMLSelectElement, field);
   }
 

@@ -14,7 +14,6 @@ import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.j
 declare const gCrWebPlaceholderAutofillAcrossIframesEnabled: boolean;
 declare const gCrWebPlaceholderAutofillAcrossIframesThrottling: boolean;
 declare const gCrWebPlaceholderAutofillDisallowMoreHyphenLikeLabels: boolean;
-declare const gCrWebPlaceholderAutofillIgnoreCheckableElements: boolean;
 declare const gCrWebPlaceholderAutofillSupportDateInput: boolean;
 declare const gCrWebPlaceholderAutofillCorrectUserEditedBitInParsedField:
     boolean;
@@ -52,15 +51,6 @@ function isAutofillDisallowMoreHyphenLikeLabelsEnabled(): boolean {
   return gCrWebPlaceholderAutofillDisallowMoreHyphenLikeLabels;
 }
 // LINT.ThenChange(//components/autofill/core/common/autofill_features.cc:autofill_disallow_more_hyphen_like_labels)
-
-// LINT.IfChange(autofill_ignore_checkable_elements)
-/**
- * If true, checkboxes and radio buttons aren't extracted anymore.
- */
-function isAutofillIgnoreCheckableElementsEnabled(): boolean {
-  return gCrWebPlaceholderAutofillIgnoreCheckableElements;
-}
-// LINT.ThenChange(//components/autofill/core/common/autofill_features.cc:autofill_ignore_checkable_elements)
 
 // LINT.IfChange(autofill_support_date_input)
 /**
@@ -149,9 +139,6 @@ autofillFormFeatures.addFunction(
 autofillFormFeatures.addFunction(
     'isAutofillDisallowMoreHyphenLikeLabelsEnabled',
     isAutofillDisallowMoreHyphenLikeLabelsEnabled);
-autofillFormFeatures.addFunction(
-    'isAutofillIgnoreCheckableElementsEnabled',
-    isAutofillIgnoreCheckableElementsEnabled);
 autofillFormFeatures.addFunction(
     'isAutofillSupportDateInputEnabled', isAutofillSupportDateInputEnabled);
 autofillFormFeatures.addFunction(

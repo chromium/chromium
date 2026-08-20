@@ -59,7 +59,6 @@ NSString* GetAutofillTestPlaceholders(const AutofillPlaceholderConfig& config) {
       @"var gCrWebPlaceholderAutofillAcrossIframesEnabled = %s;"
        "var gCrWebPlaceholderAutofillAcrossIframesThrottling = %s;"
        "var gCrWebPlaceholderAutofillDisallowMoreHyphenLikeLabels = %s;"
-       "var gCrWebPlaceholderAutofillIgnoreCheckableElements = %s;"
        "var gCrWebPlaceholderAutofillSupportDateInput = %s;"
        "var gCrWebPlaceholderAutofillCorrectUserEditedBitInParsedField = %s;"
        "var gCrWebPlaceholderAutofillAllowDefaultPreventedSubmission = %s;"
@@ -70,7 +69,6 @@ NSString* GetAutofillTestPlaceholders(const AutofillPlaceholderConfig& config) {
       config.autofill_across_iframes_enabled ? "true" : "false",
       config.autofill_across_iframes_throttling ? "true" : "false",
       config.autofill_disallow_more_hyphen_like_labels ? "true" : "false",
-      config.autofill_ignore_checkable_elements ? "true" : "false",
       config.autofill_support_date_input ? "true" : "false",
       config.autofill_correct_user_edited_bit_in_parsed_field ? "true" : "false",
       config.autofill_allow_default_prevented_submission ? "true" : "false",

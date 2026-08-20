@@ -54,7 +54,6 @@ fillApi.addFunction(
     'isAutofillableElement', inferenceUtil.isAutofillableElement);
 fillApi.addFunction(
     'isAutofillableInputElement', inferenceUtil.isAutofillableInputElement);
-fillApi.addFunction('isCheckableElement', inferenceUtil.isCheckableElement);
 fillApi.addFunction('isSelectElement', inferenceUtil.isSelectElement);
 fillApi.addFunction('registerAllChildFrames', registerAllChildFrames);
 fillApi.addFunction(
