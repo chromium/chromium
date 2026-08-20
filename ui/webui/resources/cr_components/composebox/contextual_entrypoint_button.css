@@ -45,11 +45,11 @@
 }
 
 .glow-container {
-  display: inline-block;
-  height: var(--button-height);
-  margin-left: 2px;
-  position: relative;
-  width: var(--button-height);
+  display: var(--cr-composebox-glow-display, inline-block);
+  height: var(--cr-composebox-glow-height, var(--button-height));
+  margin-left: var(--cr-composebox-glow-margin-left, 2px);
+  position: var(--cr-composebox-glow-position, relative);
+  width: var(--cr-composebox-glow-width, var(--button-height));
 }
 
 cr-button#entrypoint {
@@ -231,6 +231,7 @@ cr-button#entrypoint:focus {
 
 /* Energy Effect Icon Shimmer Animations */
 :host([glif-animation-state='started'][energy-effect-animation-enabled]) #entrypointIcon,
+:host([glif-animation-state='started'][energy-effect-animation-enabled]) cr-icon-button#entrypoint,
 :host([glif-animation-state='started'][energy-effect-animation-enabled]) cr-icon-button#entrypoint::part(icon) {
   --iron-icon-fill-color: currentColor;
   animation:

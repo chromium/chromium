@@ -46,6 +46,9 @@ export function getHtml(this: NtpComposeboxElement) {
       .fileNum="${this.files.size}"
       .sharedTabs="${this.getSharedTabs()}"
       .tabSuggestionsState="${this.tabSuggestionsState}"
+      .glifAnimationState="${this.glifAnimationState}"
+      .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
+      .disableFallbackGlifAnimation="${true}"
       ?upload-button-disabled="${this.uploadButtonDisabled}"
       ?show-context-menu-description="${this.showContextMenuDescription}">
   </cr-composebox-contextual-entrypoint-and-menu>
