@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/scoped_refptr.h"
@@ -1605,8 +1606,7 @@ void SelectLastTab(BrowserWindowInterface* browser,
   TabStripModel* model = browser->GetTabStripModel();
   std::optional<tab_groups::TabGroupId> focused_group =
       model->GetFocusedGroup();
-  for (int i = model->count() - 1; i >= 0; i--) {
-    tabs::TabInterface* tab = model->GetTabAtIndex(i);
+  for (tabs::TabInterface* tab : base::Reversed(*model)) {
     if (!IsTabSelectable(model, tab, focused_group)) {
       continue;
     }
