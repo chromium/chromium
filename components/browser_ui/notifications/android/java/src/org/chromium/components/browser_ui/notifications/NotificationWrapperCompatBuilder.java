@@ -168,19 +168,6 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
     }
 
     @Override
-    public NotificationWrapperBuilder addAction(Notification.Action action) {
-        Log.w(TAG, "Ignoring standard action in compat builder.");
-        return this;
-    }
-
-    @Override
-    public NotificationWrapperBuilder addAction(
-            Notification.Action action, int flags, int actionType, int requestCode) {
-        Log.w(TAG, "Ignoring standard action in compat builder.");
-        return this;
-    }
-
-    @Override
     public NotificationWrapperBuilder addAction(NotificationCompat.Action action) {
         mBuilder.addAction(action);
         return this;

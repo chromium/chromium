@@ -37,10 +37,6 @@ class CheckNotificationConstructors(unittest.TestCase):
     mock_input.files = [
         MockFile(
             'chrome/android/java/src/org/chromium/chrome/browser/notifications/'
-            'ChromeNotificationWrapperBuilder.java',
-            ['new Notification.Builder()']),
-        MockFile(
-            'chrome/android/java/src/org/chromium/chrome/browser/notifications/'
             'ChromeNotificationWrapperCompatBuilder.java',
             ['new NotificationCompat.Builder()']),
         MockFile('path/One.java', ['Notification.Builder']),

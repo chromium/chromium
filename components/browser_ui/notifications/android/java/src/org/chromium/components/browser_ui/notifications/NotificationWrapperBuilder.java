@@ -61,16 +61,11 @@ public interface NotificationWrapperBuilder {
     @Deprecated
     NotificationWrapperBuilder addAction(int icon, CharSequence title, PendingIntent intent);
 
-    /** @param actionType is for UMA. In Chrome, this is {@link NotificationUmaTracker.ActionType}. */
+    /**
+     * @param actionType is for UMA. In Chrome, this is {@link NotificationUmaTracker.ActionType}.
+     */
     NotificationWrapperBuilder addAction(
             int icon, CharSequence title, PendingIntentProvider intent, int actionType);
-
-    @Deprecated
-    NotificationWrapperBuilder addAction(Notification.Action action);
-
-    /** @param actionType is for UMA. In Chrome, this is {@link NotificationUmaTracker.ActionType}. */
-    NotificationWrapperBuilder addAction(
-            Notification.Action action, int flags, int actionType, int requestCode);
 
     @Deprecated
     NotificationWrapperBuilder addAction(NotificationCompat.Action action);
