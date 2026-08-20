@@ -20,6 +20,8 @@
 // - external/xnnpack+/src/bf16-rminmax/gen/bf16-rmax-scalar-u2-acc2.c
 // - external/xnnpack+/src/bf16-rminmax/gen/bf16-rmin-scalar-u2-acc2.c
 // - external/xnnpack+/src/bf16-rminmax/gen/bf16-rminmax-scalar-u2-acc2.c
+// - external/xnnpack+/src/bf16-vunary/gen/bf16-vunary-avx512skx.c
+// - external/xnnpack+/src/bf16-vunary/gen/bf16-vunary-scalar.c
 // - external/xnnpack+/src/configs/hardware-config.c
 // - external/xnnpack+/src/enums/allocation-type.c
 // - external/xnnpack+/src/enums/datatype-strings.c
@@ -1102,10 +1104,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-  178,  81, 115, 199,  97, 204, 218, 183,
-  214, 155,  80,  72, 123,  42,  94, 195,
-  233,   0,  24, 105, 222, 184, 143,   0,
-    4,  48,  42, 222, 238, 140, 215,   2
+    4,  27,  79,   2,   5, 174,  68, 167,
+    9, 215, 185, 114, 236, 186, 181,  16,
+   43, 218,  89, 159,  93,  32,  61, 162,
+   81,  61, 237, 234,  29, 162,  59, 143
 };
 
 size_t xnn_experimental_get_build_identifier_size() {
