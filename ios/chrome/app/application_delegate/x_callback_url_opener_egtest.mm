@@ -167,10 +167,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   GURL gurl(url_string);
   [ChromeEarlGrey sceneOpenURL:gurl];
 
+  [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
+
   [ChromeEarlGrey waitForWebStateContainingText:"Search Result"];
   [ChromeEarlGrey waitForWebStateContainingText:"some text"];
-
-  [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
 }
 
 - (void)testIncognitoTextSearchWithProfileSwitch {
@@ -198,12 +198,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   GURL gurl(url_string);
   [ChromeEarlGrey sceneOpenURL:gurl];
 
+  [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
+
   [ChromeEarlGrey waitForWebStateContainingText:"Search Result"];
   [ChromeEarlGrey waitForWebStateContainingText:"some text"];
   GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
                  @"Failed to switch to incognito mode");
-
-  [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
 }
 
 @end
