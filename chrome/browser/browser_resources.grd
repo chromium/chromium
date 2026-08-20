@@ -102,7 +102,6 @@
         <include name="IDR_SEARCH_ENGINE_HISTORICAL_SEARCH_URLS_JSON" file="../../third_party/search_engines_data/resources_internal/definitions/historical_search_urls.json" type="BINDATA" />
       </if>
 
-      <include name="IDR_SEARCH_ENGINE_PREPOPULATED_ENGINES_JSON" file="../../third_party/search_engines_data/resources/definitions/prepopulated_engines.json" type="BINDATA" />
       <include name="IDR_AD_NETWORK_HASHES" file="resources\ad_networks.dat" type="BINDATA" />
       <if expr="is_chromeos">
         <include name="IDR_CHROME_APP_MANIFEST" file="resources\chrome_app\manifest.json" type="BINDATA" />
