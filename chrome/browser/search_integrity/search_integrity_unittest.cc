@@ -37,6 +37,7 @@ class SearchIntegrityTest : public testing::Test {
   }
 
   void TearDown() override {
+    SearchEngineAllowlist::GetInstance()->ResetForTesting();
     search_integrity_.reset();
     test_util_.reset();
   }
@@ -477,6 +478,73 @@ TEST_F(SearchIntegrityTest, Histograms_CustomPopulatedDefault) {
 
   histogram_tester.ExpectUniqueSample("Search.Integrity.CustomPopulatedDefault",
                                       true, 1);
+}
+
+TEST(SearchEngineAllowlistTest, LoadHistoricalUrls) {
+  SearchEngineAllowlist* allowlist = SearchEngineAllowlist::GetInstance();
+  allowlist->ResetForTesting();
+
+  constexpr char kTestJson[] = R"({
+    "elements": {
+      "google": {
+        "search_url": "https://www.google.com/search?q={searchTerms}",
+        "alternate_urls": [
+          "https://www.google.com/#q={searchTerms}",
+          "https://www.google.com/search#q={searchTerms}"
+        ]
+      },
+      "fake_engine": {
+        "search_url": "https://example.com/search?q=%s",
+        "alternate_urls": [
+          "http://example.com/search?q=%s"
+        ]
+      },
+      "historical_fake_engine": {
+        "alternate_urls": [
+          "http://search.fakehistorical.com/q=%s"
+        ]
+      }
+    }
+  })";
+
+  absl::flat_hash_set<std::string> urls =
+      SearchEngineAllowlist::BuildAllowlist(kTestJson);
+  allowlist->Initialize(std::move(urls));
+
+  // Verify Google search URL and alternate URLs
+  EXPECT_TRUE(allowlist->IsAllowed("https://www.google.com/search?q=%s"));
+  EXPECT_TRUE(
+      allowlist->IsAllowed("https://www.google.com/search?q={searchTerms}"));
+  EXPECT_TRUE(allowlist->IsAllowed("https://www.google.com/#q=%s"));
+  EXPECT_TRUE(allowlist->IsAllowed("https://www.google.com/search#q=%s"));
+
+  // Verify fake engine
+  EXPECT_TRUE(allowlist->IsAllowed("https://example.com/search?q=%s"));
+  EXPECT_TRUE(allowlist->IsAllowed("http://example.com/search?q=%s"));
+
+  // Verify historical fake engine alternate URL
+  EXPECT_TRUE(allowlist->IsAllowed("http://search.fakehistorical.com/q=%s"));
+
+  // Verify disallowed URLs
+  EXPECT_FALSE(allowlist->IsAllowed("https://disallowed.com/search?q=%s"));
+  EXPECT_FALSE(
+      allowlist->IsAllowed("http://search.fakehistorical.com/other?q=%s"));
+  EXPECT_FALSE(allowlist->IsAllowed("https://www.google.com/other?q=%s"));
+
+  allowlist->ResetForTesting();
+  EXPECT_FALSE(allowlist->IsAllowed("https://www.google.com/search?q=%s"));
+}
+
+TEST(SearchEngineAllowlistTest, EmptyAndMalformedJson) {
+  SearchEngineAllowlist* allowlist = SearchEngineAllowlist::GetInstance();
+  allowlist->ResetForTesting();
+
+  auto empty_urls = SearchEngineAllowlist::BuildAllowlist("");
+  EXPECT_TRUE(empty_urls.empty());
+
+  auto malformed_urls =
+      SearchEngineAllowlist::BuildAllowlist("{ malformed json }");
+  EXPECT_TRUE(malformed_urls.empty());
 }
 
 }  // namespace search_integrity
