@@ -111,7 +111,10 @@ import Foundation
                 privateKey: passkey.key,
                 creationDate: nil,
                 // TODO(crbug.com/458337350): Handle hmac_secret.
-                hmacSecret: nil))
+                hmacSecret: nil,
+                // TODO(crbug.com/458337350): Handle large_blob.
+                largeBlob: nil,
+                largeBlobUncompressedSize: nil))
           case .address:
             stats.addressCount += 1
           case .apiKey:

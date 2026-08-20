@@ -49,6 +49,8 @@ import UIKit
     let privateKey: Data
     let creationDate: Date
     let hmacSecret: Data?
+    let largeBlob: Data?
+    let largeBlobUncompressedSize: NSNumber?
 
     init?(_ key: CredentialExchangePasskey) {
       self.credentialId = key.credentialId
@@ -59,6 +61,8 @@ import UIKit
       self.privateKey = key.privateKey
       self.creationDate = key.creationDate ?? Date()
       self.hmacSecret = key.hmacSecret
+      self.largeBlob = key.largeBlob
+      self.largeBlobUncompressedSize = key.largeBlobUncompressedSize
     }
   }
 
@@ -117,16 +121,8 @@ import UIKit
         key: passkey.privateKey
       )
       if #available(iOS 26.4, *) {
-        if let hmacSecret = passkey.hmacSecret, !hmacSecret.isEmpty {
-          let hmacCredentials = ASImportableFIDO2HMACCredential(
-            algorithm: .sha256,
-            credentialWithUV: hmacSecret,
-            credentialWithoutUV: hmacSecret
-          )
-          passkeyCredential.fido2Extensions = ASImportableFIDO2Extensions(
-            hmacCredentials: hmacCredentials
-          )
-        }
+        passkeyCredential.fido2Extensions =
+          CredentialExportManager.buildFIDO2Extensions(from: passkey)
       }
 
       let item = ASImportableItem(
@@ -159,6 +155,40 @@ import UIKit
       timestamp: Date()
     )
     return exportedData
+  }
+
+  @available(iOS 26.4, *)
+  private static func buildFIDO2Extensions(from passkey: ExportablePasskey)
+    -> ASImportableFIDO2Extensions?
+  {
+    var hmacCredentials: ASImportableFIDO2HMACCredential?
+    if let hmacSecret = passkey.hmacSecret, !hmacSecret.isEmpty {
+      hmacCredentials = ASImportableFIDO2HMACCredential(
+        algorithm: .sha256,
+        credentialWithUV: hmacSecret,
+        credentialWithoutUV: hmacSecret
+      )
+    }
+
+    var largeBlob: ASImportableFIDO2LargeBlob?
+    if let data = passkey.largeBlob,
+      let uncompressedSize = passkey.largeBlobUncompressedSize?.intValue,
+      !data.isEmpty
+    {
+      largeBlob = ASImportableFIDO2LargeBlob(
+        uncompressedSize: uncompressedSize,
+        data: data
+      )
+    }
+
+    guard hmacCredentials != nil || largeBlob != nil else {
+      return nil
+    }
+
+    return ASImportableFIDO2Extensions(
+      hmacCredentials: hmacCredentials,
+      largeBlob: largeBlob
+    )
   }
 
   /// Begins the credential exchange process by requesting the export options, which triggers the

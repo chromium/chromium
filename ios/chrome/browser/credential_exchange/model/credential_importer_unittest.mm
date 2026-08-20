@@ -65,15 +65,17 @@ CredentialExchangePasskey* CreateTestPasskey() {
   std::vector<uint8_t> pkcs8_key =
       crypto::keypair::PrivateKey::GenerateEcP256().ToPrivateKeyInfo();
   return [[CredentialExchangePasskey alloc]
-      initWithCredentialId:ToNSData("1234567890123456")
-                      rpId:@"example.com"
-                  userName:@"userName"
-           userDisplayName:@"userDisplayName"
-                    userId:ToNSData("user_id")
-                privateKey:[NSData dataWithBytes:pkcs8_key.data()
-                                          length:pkcs8_key.size()]
-              creationDate:nil
-                hmacSecret:nil];
+           initWithCredentialId:ToNSData("1234567890123456")
+                           rpId:@"example.com"
+                       userName:@"userName"
+                userDisplayName:@"userDisplayName"
+                         userId:ToNSData("user_id")
+                     privateKey:[NSData dataWithBytes:pkcs8_key.data()
+                                               length:pkcs8_key.size()]
+                   creationDate:nil
+                     hmacSecret:nil
+                      largeBlob:nil
+      largeBlobUncompressedSize:nil];
 }
 
 scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
@@ -390,14 +392,16 @@ TEST_F(CredentialImporterTest, RecordsCredentialsReceivedMetrics) {
 
 TEST_F(CredentialImporterTest, TestImportPasskeyWithInvalidPrivateKey) {
   CredentialExchangePasskey* passkey = [[CredentialExchangePasskey alloc]
-      initWithCredentialId:ToNSData("1234567890123456")
-                      rpId:@"example.com"
-                  userName:@"userName"
-           userDisplayName:@"userDisplayName"
-                    userId:ToNSData("user_id")
-                privateKey:ToNSData("invalid_private_key")
-              creationDate:nil
-                hmacSecret:nil];
+           initWithCredentialId:ToNSData("1234567890123456")
+                           rpId:@"example.com"
+                       userName:@"userName"
+                userDisplayName:@"userDisplayName"
+                         userId:ToNSData("user_id")
+                     privateKey:ToNSData("invalid_private_key")
+                   creationDate:nil
+                     hmacSecret:nil
+                      largeBlob:nil
+      largeBlobUncompressedSize:nil];
 
   [importer_ onCredentialsTranslatedWithPasswords:@[]
                                          passkeys:@[ passkey ]
@@ -427,15 +431,17 @@ TEST_F(CredentialImporterTest, TestImportPasskeyWithUnsupportedAlgorithm) {
   std::vector<uint8_t> rsa_key =
       crypto::keypair::PrivateKey::GenerateRsa2048().ToPrivateKeyInfo();
   CredentialExchangePasskey* passkey = [[CredentialExchangePasskey alloc]
-      initWithCredentialId:ToNSData("1234567890123456")
-                      rpId:@"example.com"
-                  userName:@"userName"
-           userDisplayName:@"userDisplayName"
-                    userId:ToNSData("user_id")
-                privateKey:[NSData dataWithBytes:rsa_key.data()
-                                          length:rsa_key.size()]
-              creationDate:nil
-                hmacSecret:nil];
+           initWithCredentialId:ToNSData("1234567890123456")
+                           rpId:@"example.com"
+                       userName:@"userName"
+                userDisplayName:@"userDisplayName"
+                         userId:ToNSData("user_id")
+                     privateKey:[NSData dataWithBytes:rsa_key.data()
+                                               length:rsa_key.size()]
+                   creationDate:nil
+                     hmacSecret:nil
+                      largeBlob:nil
+      largeBlobUncompressedSize:nil];
 
   [importer_ onCredentialsTranslatedWithPasswords:@[]
                                          passkeys:@[ passkey ]

@@ -122,10 +122,19 @@
     NSData* privateKey = [NSData dataWithBytes:decrypted->private_key().data()
                                         length:decrypted->private_key().size()];
     NSData* hmacSecret = nil;
+    NSData* largeBlob = nil;
+    NSNumber* largeBlobUncompressedSize = nil;
     if (base::FeatureList::IsEnabled(kCredentialExchangeFidoExtensions)) {
       if (decrypted->has_hmac_secret() && !decrypted->hmac_secret().empty()) {
         hmacSecret = [NSData dataWithBytes:decrypted->hmac_secret().data()
                                     length:decrypted->hmac_secret().size()];
+      }
+      if (decrypted->has_large_blob() && !decrypted->large_blob().empty() &&
+          decrypted->has_large_blob_uncompressed_size()) {
+        largeBlob = [NSData dataWithBytes:decrypted->large_blob().data()
+                                   length:decrypted->large_blob().size()];
+        largeBlobUncompressedSize =
+            @(decrypted->large_blob_uncompressed_size());
       }
     }
 
@@ -145,14 +154,17 @@
                                : nil;
 
     CredentialExchangePasskey* exportedPasskey =
-        [[CredentialExchangePasskey alloc] initWithCredentialId:credentialId
-                                                           rpId:rpId
-                                                       userName:userName
-                                                userDisplayName:userDisplayName
-                                                         userId:userId
-                                                     privateKey:privateKey
-                                                   creationDate:creationDate
-                                                     hmacSecret:hmacSecret];
+        [[CredentialExchangePasskey alloc]
+                 initWithCredentialId:credentialId
+                                 rpId:rpId
+                             userName:userName
+                      userDisplayName:userDisplayName
+                               userId:userId
+                           privateKey:privateKey
+                         creationDate:creationDate
+                           hmacSecret:hmacSecret
+                            largeBlob:largeBlob
+            largeBlobUncompressedSize:largeBlobUncompressedSize];
     [exportedPasskeys addObject:exportedPasskey];
   }
   return exportedPasskeys;

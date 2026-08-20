@@ -48,6 +48,7 @@ password_manager::StoredCredential CreateStoredCredential() {
 
 struct PasskeyOptions {
   bool include_hmac_secret = false;
+  bool include_large_blob = false;
 };
 
 sync_pb::WebauthnCredentialSpecifics CreatePasskeySpecifics(
@@ -66,6 +67,10 @@ sync_pb::WebauthnCredentialSpecifics CreatePasskeySpecifics(
   if (options.include_hmac_secret) {
     encrypted.set_hmac_secret("hmac_secret");
   }
+  if (options.include_large_blob) {
+    encrypted.set_large_blob("large_blob_data");
+    encrypted.set_large_blob_uncompressed_size(100);
+  }
   webauthn::passkey_model_utils::EncryptWebauthnCredentialSpecificsData(
       GetTrustedVaultKey(), encrypted, &passkey);
   return passkey;
@@ -82,14 +87,17 @@ CredentialExchangePassword* CreateCredentialExchangePassword() {
 
 CredentialExchangePasskey* CreateCredentialExchangePasskey() {
   return [[CredentialExchangePasskey alloc]
-      initWithCredentialId:ToNSData("1234567890123456")
-                      rpId:@"example.com"
-                  userName:@"userName"
-           userDisplayName:@"userDisplayName"
-                    userId:ToNSData("user_id")
-                privateKey:ToNSData("private_key")
-              creationDate:[NSDate dateWithTimeIntervalSince1970:123456789.0]
-                hmacSecret:nil];
+           initWithCredentialId:ToNSData("1234567890123456")
+                           rpId:@"example.com"
+                       userName:@"userName"
+                userDisplayName:@"userDisplayName"
+                         userId:ToNSData("user_id")
+                     privateKey:ToNSData("private_key")
+                   creationDate:[NSDate
+                                    dateWithTimeIntervalSince1970:123456789.0]
+                     hmacSecret:nil
+                      largeBlob:nil
+      largeBlobUncompressedSize:nil];
 }
 
 class CredentialExporterTest : public PlatformTest {
@@ -204,6 +212,37 @@ TEST_F(CredentialExporterTest, ExportsPasskeysWithHmacSecret) {
   }
 }
 
+TEST_F(CredentialExporterTest, ExportsPasskeysWithLargeBlob) {
+  if (!@available(iOS 26, *)) {
+    GTEST_SKIP() << "CredentialExportManager is only available on iOS 26+";
+  } else {
+    id mockExportManager = OCMClassMock([CredentialExportManager class]);
+    OCMStub([mockExportManager alloc]).andReturn(mockExportManager);
+    CredentialExporter* exporter =
+        [[CredentialExporter alloc] initWithWindow:window_
+                                          delegate:mock_delegate_];
+
+    CredentialExchangePasskey* expectedPasskey =
+        CreateCredentialExchangePasskey();
+    expectedPasskey.largeBlob = ToNSData("large_blob_data");
+    expectedPasskey.largeBlobUncompressedSize = @(100);
+
+    [[mockExportManager expect] startExportWithPasswords:@[]
+                                                passkeys:@[ expectedPasskey ]
+                                                  window:window_
+                                               userEmail:kUserEmail
+                                            exporterName:[OCMArg any]];
+
+    [exporter startExportWithPasswords:{}
+                              passkeys:{CreatePasskeySpecifics(
+                                           {.include_large_blob = true})}
+                      trustedVaultKeys:{GetTrustedVaultKey()}
+                             userEmail:kUserEmail];
+
+    [mockExportManager verify];
+  }
+}
+
 class CredentialExporterFidoExtensionsDisabledTest
     : public CredentialExporterTest {
  protected:
@@ -223,8 +262,9 @@ TEST_F(CredentialExporterFidoExtensionsDisabledTest,
         [[CredentialExporter alloc] initWithWindow:window_
                                           delegate:mock_delegate_];
 
-    // The input passkey has an `hmac_secret` but because exchanging extensions
-    // is disabled, the exported passkey will not have an `hmac_secret`.
+    // The input passkey has an `hmac_secret` and a `large_blob`, but because
+    // exchanging extensions is disabled, the exported passkey will not have
+    // either extension.
     [[mockExportManager expect]
         startExportWithPasswords:@[]
                         passkeys:@[ CreateCredentialExchangePasskey() ]
@@ -234,7 +274,8 @@ TEST_F(CredentialExporterFidoExtensionsDisabledTest,
 
     [exporter startExportWithPasswords:{}
                               passkeys:{CreatePasskeySpecifics(
-                                           {.include_hmac_secret = true})}
+                                           {.include_hmac_secret = true,
+                                            .include_large_blob = true})}
                       trustedVaultKeys:{GetTrustedVaultKey()}
                              userEmail:kUserEmail];
 
