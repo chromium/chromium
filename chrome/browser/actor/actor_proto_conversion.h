@@ -57,6 +57,11 @@ using BuildToolRequestResult = base::expected<
 BuildToolRequestResult BuildToolRequest(
     const optimization_guide::proto::Actions& actions);
 
+// Returns true if all actions in `actions` are script tool actions, or if
+// `actions` is empty.
+bool ValidateActionsAreScriptTools(
+    const optimization_guide::proto::Actions& actions);
+
 // Builds the ActionsResult proto from the output of a call to the
 // ActorKeyedService::PerformActions API and fetches new observations for
 // tabs relevant to the actions.

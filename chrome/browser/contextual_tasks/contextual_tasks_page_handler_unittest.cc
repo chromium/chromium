@@ -9,11 +9,13 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/actor/actor_actions_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
@@ -30,10 +32,13 @@
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/actor/core/actor_features.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/contextual_search/mock_contextual_search_context_controller.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
@@ -45,6 +50,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/omnibox/common/composebox_features.h"
+#include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -137,13 +143,17 @@ class ContextualTasksPageHandlerTest : public ChromeRenderViewHostTestHarness {
     feature_list_.InitWithFeatures(
         {kContextualTasksContextLibrary,
          kEnableContextualTasksPinButtonInToolbar,
-         feature_engagement::kIPHSidePanelContextualTasksPinnableFeature},
+         feature_engagement::kIPHSidePanelContextualTasksPinnableFeature,
+         features::kGlicActor, features::kGlicActorUi,
+         actor::kGlicActorEnableScriptTools, kContextualTasksScriptTools},
         {kContextualTasksHideMenuOnAiPage});
     InitializeActionIdStringMapping();
 #else
     feature_list_.InitWithFeatures(
         {kContextualTasksContextLibrary,
-         kEnableContextualTasksPinButtonInToolbar},
+         kEnableContextualTasksPinButtonInToolbar, features::kGlicActor,
+         features::kGlicActorUi, actor::kGlicActorEnableScriptTools,
+         kContextualTasksScriptTools},
         {});
 #endif
     profile_manager_ = std::make_unique<TestingProfileManager>(
@@ -1319,6 +1329,155 @@ TEST_F(ContextualTasksPageHandlerTest,
 
 TEST_F(ContextualTasksPageHandlerTest, OnContextMenuOpened) {
   page_handler_->OnContextMenuOpened();
+}
+
+TEST_F(ContextualTasksPageHandlerTest, OnWebviewMessage_ExecuteActions) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  contextual_tasks_ui_->SetTaskId(task_id);
+  SessionID shared_tab_id = SessionID::FromSerializedValue(1);
+  EXPECT_CALL(*mock_contextual_tasks_service_,
+              GetTabsAssociatedWithTask(task_id))
+      .WillRepeatedly(Return(std::vector<SessionID>{shared_tab_id}));
+
+  optimization_guide::proto::Actions actions;
+  auto* script_action = actions.add_actions();
+  auto* script_tool = script_action->mutable_script_tool();
+  script_tool->set_tool_name("test_tool");
+  script_tool->set_input_arguments("{}");
+  script_tool->set_tab_id(1);
+  script_tool->mutable_document_identifier()->set_serialized_token(
+      base::UnguessableToken::Create().ToString());
+  actions.set_skip_async_observation_collection(true);
+
+  lens::AimToClientMessage message;
+  auto* execute_actions = message.mutable_execute_actions();
+  *execute_actions->mutable_actions() = actions;
+
+  size_t size = message.ByteSizeLong();
+  std::vector<uint8_t> bytes(size);
+  message.SerializeToArray(bytes.data(), size);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(page_, PostAimMessage(_))
+      .WillOnce([&](const std::vector<uint8_t>& serialized_reply) {
+        lens::ClientToAimMessage reply;
+        EXPECT_TRUE(reply.ParseFromArray(serialized_reply.data(),
+                                         serialized_reply.size()));
+        EXPECT_TRUE(reply.has_actions_result());
+        run_loop.Quit();
+      });
+
+  page_handler_->OnWebviewMessage(bytes);
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksPageHandlerTest,
+       OnWebviewMessage_ExecuteActions_NoValidSharedTabIdRejected) {
+  contextual_tasks_ui_->SetTaskId(std::nullopt);
+
+  optimization_guide::proto::Actions actions;
+  auto* script_action = actions.add_actions();
+  auto* script_tool = script_action->mutable_script_tool();
+  script_tool->set_tool_name("test_tool");
+  script_tool->set_input_arguments("{}");
+  script_tool->set_tab_id(1);
+  script_tool->mutable_document_identifier()->set_serialized_token(
+      base::UnguessableToken::Create().ToString());
+  actions.set_skip_async_observation_collection(true);
+
+  lens::AimToClientMessage message;
+  auto* execute_actions = message.mutable_execute_actions();
+  *execute_actions->mutable_actions() = actions;
+
+  size_t size = message.ByteSizeLong();
+  std::vector<uint8_t> bytes(size);
+  message.SerializeToArray(bytes.data(), size);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(page_, PostAimMessage(_))
+      .WillOnce([&](const std::vector<uint8_t>& serialized_reply) {
+        lens::ClientToAimMessage reply;
+        EXPECT_TRUE(reply.ParseFromArray(serialized_reply.data(),
+                                         serialized_reply.size()));
+        EXPECT_TRUE(reply.has_actions_result());
+        const optimization_guide::proto::ActionsResult& result =
+            reply.actions_result().actions_result();
+        EXPECT_EQ(
+            result.action_result(),
+            static_cast<int32_t>(actor::mojom::ActionResultCode::kTabWentAway));
+        run_loop.Quit();
+      });
+
+  page_handler_->OnWebviewMessage(bytes);
+  run_loop.Run();
+
+  EXPECT_TRUE(page_handler_->actions_runner_for_testing() == nullptr);
+}
+
+TEST_F(ContextualTasksPageHandlerTest,
+       OnWebviewMessage_ExecuteActions_NonScriptToolRejected) {
+  lens::AimToClientMessage message;
+  auto* execute_actions = message.mutable_execute_actions();
+  optimization_guide::proto::Actions actions;
+  // Non-ScriptTool action (e.g. wait).
+  auto* action = actions.add_actions();
+  auto* wait = action->mutable_wait();
+  wait->set_wait_time_ms(10);
+  actions.set_skip_async_observation_collection(true);
+  *execute_actions->mutable_actions() = actions;
+
+  size_t size = message.ByteSizeLong();
+  std::vector<uint8_t> bytes(size);
+  message.SerializeToArray(bytes.data(), size);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(page_, PostAimMessage(_))
+      .WillOnce([&](const std::vector<uint8_t>& serialized_reply) {
+        lens::ClientToAimMessage reply;
+        EXPECT_TRUE(reply.ParseFromArray(serialized_reply.data(),
+                                         serialized_reply.size()));
+        EXPECT_TRUE(reply.has_actions_result());
+        const optimization_guide::proto::ActionsResult& result =
+            reply.actions_result().actions_result();
+        EXPECT_EQ(result.action_result(),
+                  static_cast<int32_t>(
+                      actor::mojom::ActionResultCode::kArgumentsInvalid));
+        run_loop.Quit();
+      });
+
+  page_handler_->OnWebviewMessage(bytes);
+  run_loop.Run();
+
+  EXPECT_TRUE(page_handler_->actions_runner_for_testing() == nullptr);
+}
+
+TEST_F(ContextualTasksPageHandlerTest,
+       OnWebviewMessage_ExecuteActions_FeatureDisabled) {
+  // Disable the feature flag.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kContextualTasksScriptTools);
+
+  lens::AimToClientMessage message;
+  auto* execute_actions = message.mutable_execute_actions();
+  optimization_guide::proto::Actions actions;
+  // Add a simple wait action to execute.
+  auto* action = actions.add_actions();
+  auto* wait = action->mutable_wait();
+  wait->set_wait_time_ms(10);
+  actions.set_skip_async_observation_collection(true);
+  *execute_actions->mutable_actions() = actions;
+
+  size_t size = message.ByteSizeLong();
+  std::vector<uint8_t> bytes(size);
+  message.SerializeToArray(bytes.data(), size);
+
+  // Since the feature is disabled, OnReceivedExecuteActions should return early
+  // and NOT send any reply back to the webview, nor create a task.
+  EXPECT_CALL(page_, PostAimMessage(_)).Times(0);
+
+  page_handler_->OnWebviewMessage(bytes);
+
+  EXPECT_TRUE(page_handler_->actions_runner_for_testing() == nullptr);
 }
 
 TEST_F(ContextualTasksPageHandlerTest,

@@ -933,6 +933,17 @@ BuildToolRequest(const optimization_guide::proto::Actions& actions) {
   return requests;
 }
 
+bool ValidateActionsAreScriptTools(
+    const optimization_guide::proto::Actions& actions) {
+  for (const auto& action : actions.actions()) {
+    if (action.action_case() !=
+        optimization_guide::proto::Action::kScriptTool) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void FillInTabObservation(
     const page_content_annotations::FetchPageContextResult& fetch_result,
     apc::TabObservation& tab_observation) {

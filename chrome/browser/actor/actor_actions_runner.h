@@ -47,7 +47,7 @@ struct ActionResultWithLatencyInfo;
 // void MyClient::RunActions(optimization_guide::proto::Actions actions,
 //                           int32_t tab_id) {
 //   actor::TaskSourceInfo source_info(
-//       actor::TaskSourceInfo::Client::kExperimentalActor,
+//       actor::TaskSourceInfo::Client::kContextualTasks,
 //       "my-session-id");
 //
 //   actions_runner_ = std::make_unique<actor::ActorActionsRunner>(

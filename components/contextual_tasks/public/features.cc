@@ -70,6 +70,10 @@ BASE_FEATURE(kContextualTasksContextSmartTabSharingDefaultOnAvailability,
 // Enables integration with the server side context library.
 BASE_FEATURE(kContextualTasksContextLibrary, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the script tools execution pipeline, including tab ID injection and
+// transient task overlays.
+BASE_FEATURE(kContextualTasksScriptTools, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables quality logging for relevant context determination for contextual
 // tasks.
 BASE_FEATURE(kContextualTasksContextLogging, base::FEATURE_DISABLED_BY_DEFAULT);
