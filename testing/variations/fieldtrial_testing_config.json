@@ -11946,24 +11946,6 @@
             ]
         }
     ],
-    "GlicCaptureRegion": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GlicCaptureRegion"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicChromeStatusIcon": [
         {
             "platforms": [
