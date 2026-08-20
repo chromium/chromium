@@ -6371,7 +6371,6 @@ test("unit_tests") {
     sources += [
       "../browser/browser_commands_unittest.cc",
       "../browser/ui/accelerator_table_unittest.cc",
-      "../browser/ui/browser_command_controller_unittest.cc",
       "../browser/ui/browser_manager_service_factory_unittest.cc",
       "../browser/ui/browser_unittest.cc",
       "../browser/ui/browser_window_state_unittest.cc",
