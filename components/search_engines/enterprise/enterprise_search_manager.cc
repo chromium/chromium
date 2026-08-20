@@ -132,9 +132,7 @@ EnterpriseSearchManager::LoadSearchEnginesFromPrefs(
   const base::ListValue& engine_list = pref->GetValue()->GetList();
   // For site search engines, load the
   // `kSiteSearchSettingsOverriddenKeywordsPrefName` pref dictionary.
-  if (base::FeatureList::IsEnabled(
-          omnibox::kEnableSiteSearchAllowUserOverridePolicy) &&
-      pref->name() == kSiteSearchSettingsPrefName) {
+  if (pref->name() == kSiteSearchSettingsPrefName) {
     LoadOverriddenKeywordsPref(engine_list);
   }
 
@@ -144,9 +142,7 @@ EnterpriseSearchManager::LoadSearchEnginesFromPrefs(
     const std::string* keyword =
         engine_dict.FindString(DefaultSearchManager::kKeyword);
     CHECK(keyword);
-    if (base::FeatureList::IsEnabled(
-            omnibox::kEnableSiteSearchAllowUserOverridePolicy) &&
-        pref_service_
+    if (pref_service_
             ->GetList(EnterpriseSearchManager::
                           kSiteSearchSettingsOverriddenKeywordsPrefName)
             .contains(*keyword)) {

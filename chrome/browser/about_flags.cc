@@ -11647,15 +11647,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ui::kAndroidUseCorrectWindowBounds)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_CHROMEOS)
-    {"enable-site-search-allow-user-override-policy",
-     flag_descriptions::kEnableSiteSearchAllowUserOverridePolicyName,
-     flag_descriptions::kEnableSiteSearchAllowUserOverridePolicyDescription,
-     static_cast<unsigned short>(kOsCrOS | kOsLinux | kOsMac | kOsWin),
-     FEATURE_VALUE_TYPE(omnibox::kEnableSiteSearchAllowUserOverridePolicy)},
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_CHROMEOS)
     // TODO(crbug.com/40680264): Remove this flag after regression investigation
     // is finished.
     {

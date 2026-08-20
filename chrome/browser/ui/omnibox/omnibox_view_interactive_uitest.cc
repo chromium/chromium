@@ -1654,10 +1654,7 @@ class SiteSearchPolicyOmniboxViewTest
     : public OmniboxViewTest,
       public ::testing::WithParamInterface<std::optional<bool>> {
  public:
-  SiteSearchPolicyOmniboxViewTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        omnibox::kEnableSiteSearchAllowUserOverridePolicy);
-  }
+  SiteSearchPolicyOmniboxViewTest() = default;
   ~SiteSearchPolicyOmniboxViewTest() override = default;
 
   base::Value CreateSiteSearchPolicyValue(bool featured) {
@@ -1678,9 +1675,6 @@ class SiteSearchPolicyOmniboxViewTest
   }
 
   std::optional<bool> is_allow_user_override() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verifies that keyword search works when `SiteSearchSettings` policy is set.

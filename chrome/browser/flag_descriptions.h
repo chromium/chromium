@@ -2430,12 +2430,6 @@ inline constexpr char kSoftNavigationHeuristicsDescription[] =
     "https://developer.chrome.com/docs/web-platform/"
     "soft-navigations-experiment.";
 
-inline constexpr char kEnableSiteSearchAllowUserOverridePolicyName[] =
-    "Enable allow_user_override field for SiteSearchSettings policy";
-inline constexpr char kEnableSiteSearchAllowUserOverridePolicyDescription[] =
-    "Enable the field that allows organizations to set a Site Search engine "
-    "that can be overridden by the user.";
-
 inline constexpr char kEnableLensStandaloneName[] =
     "Enable Lens features in Chrome.";
 inline constexpr char kEnableLensStandaloneDescription[] =

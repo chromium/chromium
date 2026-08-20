@@ -420,54 +420,7 @@ TEST(SiteSearchPolicyHandlerTest, ValidSiteSearchEntries) {
 }
 
 TEST(SiteSearchPolicyHandlerTest,
-     ValidSiteSearchEntriesWithAllowUserOverride_FeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      omnibox::kEnableSiteSearchAllowUserOverridePolicy);
-
-  SiteSearchPolicyHandler handler(
-      policy::Schema::Wrap(policy::GetChromeSchemaData()));
-
-  policy::PolicyMap policies;
-  PolicyErrorMap errors;
-  PrefValueMap prefs;
-
-  base::ListValue policy_value;
-  policy_value.Append(GenerateSiteSearchPolicyEntry(
-      kValidTestProvidersWithAllowUserOverride[0]));
-  policy_value.Append(GenerateSiteSearchPolicyEntry(
-      kValidTestProvidersWithAllowUserOverride[1]));
-  policy_value.Append(GenerateSiteSearchPolicyEntry(
-      kValidTestProvidersWithAllowUserOverride[2]));
-
-  policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
-               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-               base::Value(std::move(policy_value)), nullptr);
-
-  ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
-  ASSERT_FALSE(errors.HasError(key::kSiteSearchSettings));
-
-  handler.ApplyPolicySettings(policies, &prefs);
-  base::Value* providers = nullptr;
-  ASSERT_TRUE(prefs.GetValue(
-      EnterpriseSearchManager::kSiteSearchSettingsPrefName, &providers));
-  ASSERT_NE(providers, nullptr);
-  ASSERT_TRUE(providers->is_list());
-  EXPECT_THAT(providers->GetList(),
-              ElementsAre(IsNonFeaturedSiteSearchEntry(
-                              kValidTestProvidersWithAllowUserOverride[0]),
-                          IsNonFeaturedSiteSearchEntry(
-                              kValidTestProvidersWithAllowUserOverride[1]),
-                          IsNonFeaturedSiteSearchEntry(
-                              kValidTestProvidersWithAllowUserOverride[2])));
-}
-
-TEST(SiteSearchPolicyHandlerTest,
-     ValidSiteSearchEntriesWithAllowUserOverride_FeatureEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      omnibox::kEnableSiteSearchAllowUserOverridePolicy);
-
+     ValidSiteSearchEntriesWithAllowUserOverride) {
   SiteSearchPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 

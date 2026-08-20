@@ -7,12 +7,10 @@
 #include <algorithm>
 
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -29,18 +27,6 @@
 namespace policy {
 
 namespace {
-
-bool IsAllowUserOverrideFieldEnabled() {
-  // Check that FeatureList is available as a protection against early startup
-  // crashes. Some policy providers are initialized very early even before
-  // base::FeatureList is available, but when policies are finally applied, the
-  // feature stack is fully initialized. The instance check ensures that the
-  // final decision is delayed until all features are initialized, without any
-  // other downstream effect.
-  return base::FeatureList::GetInstance() &&
-         base::FeatureList::IsEnabled(
-             omnibox::kEnableSiteSearchAllowUserOverridePolicy);
-}
 
 // Converts a site search policy entry `policy_dict` into a dictionary to be
 // saved to prefs, with fields corresponding to `TemplateURLData`.
@@ -72,8 +58,7 @@ base::Value SiteSearchDictFromPolicyValue(const base::DictValue& policy_dict,
   const bool allow_user_override =
       policy_dict.FindBool(SiteSearchPolicyHandler::kAllowUserOverride)
           .value_or(false);
-  dict.Set(DefaultSearchManager::kEnforcedByPolicy,
-           !IsAllowUserOverrideFieldEnabled() || !allow_user_override);
+  dict.Set(DefaultSearchManager::kEnforcedByPolicy, !allow_user_override);
 
   dict.Set(DefaultSearchManager::kIsActive,
            static_cast<int>(TemplateURLData::ActiveStatus::kTrue));

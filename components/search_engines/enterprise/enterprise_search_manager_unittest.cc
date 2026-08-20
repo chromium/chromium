@@ -106,12 +106,7 @@ TEST_F(EnterpriseSearchManagerTest, EmptyList) {
       EnterpriseSearchManager::kSiteSearchSettingsPrefName, base::ListValue());
 }
 
-TEST_F(EnterpriseSearchManagerTest,
-       SiteSearchOnly_AllowUserOverrideFeatureOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      omnibox::kEnableSiteSearchAllowUserOverridePolicy);
-
+TEST_F(EnterpriseSearchManagerTest, SiteSearchOnly) {
   base::ListValue pref_value;
   pref_value.Append(GenerateSiteSearchPrefEntry("work"));
   pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
@@ -141,46 +136,7 @@ TEST_F(EnterpriseSearchManagerTest,
   EXPECT_THAT(final_overridden_keywords, IsEmpty());
 }
 
-TEST_F(EnterpriseSearchManagerTest, SiteSearchOnly_AllowUserOverrideFeatureOn) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      omnibox::kEnableSiteSearchAllowUserOverridePolicy);
-
-  base::ListValue pref_value;
-  pref_value.Append(GenerateSiteSearchPrefEntry("work"));
-  pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
-  pref_value.Append(
-      GenerateSiteSearchPrefEntry("mail", /*enforced_by_policy=*/false));
-  pref_value.Append(
-      GenerateSiteSearchPrefEntry("calendar", /*enforced_by_policy=*/false));
-
-  base::MockRepeatingCallback<void(
-      EnterpriseSearchManager::OwnedTemplateURLDataVector&&)>
-      callback;
-  EXPECT_CALL(callback,
-              Run(ElementsAre(
-                  Pointee(Property(&TemplateURLData::keyword, u"work")),
-                  Pointee(Property(&TemplateURLData::keyword, u"docs")),
-                  Pointee(Property(&TemplateURLData::keyword, u"mail")),
-                  Pointee(Property(&TemplateURLData::keyword, u"calendar")))))
-      .Times(1);
-
-  EnterpriseSearchManager manager(pref_service(), callback.Get());
-  pref_service()->SetManagedPref(
-      EnterpriseSearchManager::kSiteSearchSettingsPrefName,
-      std::move(pref_value));
-
-  const base::ListValue& final_overridden_keywords = pref_service()->GetList(
-      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
-  EXPECT_THAT(final_overridden_keywords, IsEmpty());
-}
-
-TEST_F(EnterpriseSearchManagerTest,
-       SiteSearch_SetOverriddenKeyword_AllowUserOverrideFeatureOn) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      omnibox::kEnableSiteSearchAllowUserOverridePolicy);
-
+TEST_F(EnterpriseSearchManagerTest, SiteSearch_SetOverriddenKeyword) {
   base::ListValue pref_value;
   pref_value.Append(GenerateSiteSearchPrefEntry("work"));
   pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
@@ -214,13 +170,8 @@ TEST_F(EnterpriseSearchManagerTest,
   EXPECT_TRUE(overridden_keywords_pref.contains("mail"));
 }
 
-TEST_F(
-    EnterpriseSearchManagerTest,
-    SiteSearch_ResetOverriddenKeywordWhenEnforced_AllowUserOverrideFeatureOn) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      omnibox::kEnableSiteSearchAllowUserOverridePolicy);
-
+TEST_F(EnterpriseSearchManagerTest,
+       SiteSearch_ResetOverriddenKeywordWhenEnforced) {
   base::ListValue initial_pref_value;
   initial_pref_value.Append(GenerateSiteSearchPrefEntry("work"));
   initial_pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
@@ -270,12 +221,7 @@ TEST_F(
   EXPECT_THAT(overridden_keywords_pref, IsEmpty());
 }
 
-TEST_F(EnterpriseSearchManagerTest,
-       SiteSearch_RemoveKeywordWhenNotInPolicy_AllowUserOverrideFeatureOn) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      omnibox::kEnableSiteSearchAllowUserOverridePolicy);
-
+TEST_F(EnterpriseSearchManagerTest, SiteSearch_RemoveKeywordWhenNotInPolicy) {
   base::ListValue initial_pref_value;
   initial_pref_value.Append(GenerateSiteSearchPrefEntry("work"));
   initial_pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
@@ -320,8 +266,7 @@ TEST_F(EnterpriseSearchManagerTest,
   EXPECT_THAT(overridden_keywords_pref, IsEmpty());
 }
 
-TEST_F(EnterpriseSearchManagerTest,
-       SearchAggregatorsOnly_AllowUserOverrideFeatureOff) {
+TEST_F(EnterpriseSearchManagerTest, SearchAggregatorsOnly) {
   base::ListValue pref_value;
   pref_value.Append(
       GenerateSearchAggregatorPrefEntry("aggregator", /*featured=*/true));
@@ -347,36 +292,6 @@ TEST_F(EnterpriseSearchManagerTest,
   EXPECT_THAT(final_overridden_keywords, IsEmpty());
 }
 
-TEST_F(EnterpriseSearchManagerTest,
-       SearchAggregatorsOnly_AllowUserOverrideFeatureOn) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      omnibox::kEnableSiteSearchAllowUserOverridePolicy);
-
-  base::ListValue pref_value;
-  pref_value.Append(
-      GenerateSearchAggregatorPrefEntry("aggregator", /*featured=*/true));
-  pref_value.Append(
-      GenerateSearchAggregatorPrefEntry("aggregator", /*featured=*/false));
-
-  base::MockRepeatingCallback<void(
-      EnterpriseSearchManager::OwnedTemplateURLDataVector&&)>
-      callback;
-  EXPECT_CALL(callback,
-              Run(ElementsAre(
-                  Pointee(Property(&TemplateURLData::keyword, u"@aggregator")),
-                  Pointee(Property(&TemplateURLData::keyword, u"aggregator")))))
-      .Times(1);
-
-  EnterpriseSearchManager manager(pref_service(), callback.Get());
-  pref_service()->SetManagedPref(
-      EnterpriseSearchManager::kEnterpriseSearchAggregatorSettingsPrefName,
-      std::move(pref_value));
-
-  const base::ListValue& final_overridden_keywords = pref_service()->GetList(
-      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
-  EXPECT_THAT(final_overridden_keywords, IsEmpty());
-}
 
 TEST_F(EnterpriseSearchManagerTest,
        SearchAggregatorsOnlyWithRequireShortcutTrue) {
