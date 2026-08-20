@@ -23,6 +23,9 @@ pub mod message_pipe_watcher;
 pub mod receiver;
 pub mod remote;
 
+pub use cxx_associated_endpoint::CxxPendingAssociatedEndpoint;
+pub use multiplex_router::cpp_interop as cxx_associated_endpoint;
+
 pub mod for_testing {
     pub use crate::pending_associated_endpoint_parsing::DummyRegistrarForTesting;
 }

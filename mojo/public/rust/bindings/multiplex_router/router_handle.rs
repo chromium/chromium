@@ -7,11 +7,12 @@
 //! an ID (for the remote/receiver pair) with a way of sending messages through
 //! the router, and registering new pairs with it.
 //!
-//! Under the hood, there are two kinds of handles we might have:
+//! Under the hood, there are three kinds of handles we might have:
 //! - A `MultiplexRouterHandle` which owns its underlying message pipe endpoint
 //! - An _Associated_ `MultiplexRouterHandle` which uses another router's pipe
+//! - An Associated `CppRouterHandle`, which is as above but pipe lives in C++.
 //!
-//! This type abstracts over both of them, so that individual remotes and
+//! This type abstracts over all three of them, so that individual remotes and
 //! receivers don't need to care about which type of connection they have.
 
 use std::sync::{Arc, OnceLock};
@@ -19,10 +20,11 @@ use std::sync::{Arc, OnceLock};
 use crate::message::MojomMessage;
 use crate::pending_associated_endpoint_parsing::Registrar;
 
+use super::cpp_interop::CppRouterHandle;
 use super::endpoint_registry::{EndpointInfo, InterfaceId};
 use super::multiplex_router_handle::MultiplexRouterHandle;
 
-/// A connection to a router (ultimately a `MultiplexRouter`)
+/// A connection to a router (ultimately either a Rust or C++ `MultiplexRouter`)
 /// which can be used to send/receive messages, and register new endpoints. See
 /// the module-level documentation for more details.
 pub(crate) enum RouterHandle {
@@ -39,7 +41,7 @@ pub(crate) enum RouterHandle {
 #[derive(PartialEq, Eq)]
 pub(crate) enum AssociatedRouterHandle {
     Rust(MultiplexRouterHandle),
-    // We'll add a Cpp variant in the future.
+    Cpp(CppRouterHandle),
 }
 
 impl RouterHandle {
@@ -89,12 +91,14 @@ impl AssociatedRouterHandle {
     pub(crate) fn send_message(&self, msg: MojomMessage) {
         match self {
             Self::Rust(handle) => handle.send_message(msg),
+            Self::Cpp(cpp_handle) => cpp_handle.send_message(msg),
         }
     }
 
     pub(crate) fn interface_id(&self) -> InterfaceId {
         match self {
             Self::Rust(handle) => handle.interface_id(),
+            Self::Cpp(cpp_handle) => cpp_handle.interface_id(),
         }
     }
 
@@ -104,6 +108,7 @@ impl AssociatedRouterHandle {
     pub(crate) fn bind(&mut self, endpoint_info: EndpointInfo) {
         match self {
             Self::Rust(handle) => handle.bind(endpoint_info),
+            Self::Cpp(cpp_handle) => cpp_handle.bind(endpoint_info),
         }
     }
 }
@@ -112,6 +117,7 @@ impl std::fmt::Debug for AssociatedRouterHandle {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Rust(_) => write!(f, "AssociatedRouterHandle::Rust"),
+            Self::Cpp(_) => write!(f, "AssociatedRouterHandle::Cpp"),
         }
     }
 }
@@ -126,6 +132,9 @@ impl Registrar for AssociatedRouterHandle {
             Self::Rust(handle) => handle
                 .register_new_endpoint(interface_id, endpoint_info)
                 .map(AssociatedRouterHandle::Rust),
+            Self::Cpp(cpp_handle) => cpp_handle
+                .register_new_endpoint(interface_id, endpoint_info)
+                .map(AssociatedRouterHandle::Cpp),
         }
     }
 }

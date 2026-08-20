@@ -20,10 +20,13 @@ use std::marker::PhantomData;
 // instead of fully thread-safe
 use std::sync::{Arc, Mutex, OnceLock};
 
+use crate::cxx_associated_endpoint::CxxPendingAssociatedEndpoint;
 use crate::interface::DynMojomInterface;
 use crate::marker_types::{IsRemote, Receiver, Remote};
+use crate::multiplex_router::cpp_interop::CppRouterHandle;
 use crate::multiplex_router::{AssociatedRouterHandle, EndpointInfo, InterfaceId, RouterHandle};
 use crate::pending_associated_endpoint_parsing::Registrar;
+use cxx::UniquePtr;
 
 /// The core state of a pending associated endpoint.
 ///
@@ -148,6 +151,39 @@ where
             PendingAssociatedRemote::new_shared(Arc::clone(&shared_state)),
             PendingAssociatedReceiver::new_shared(shared_state),
         );
+    }
+
+    /// Create a new pair of C++-managed associated endpoints where one half is
+    /// managed by Rust and the other half is passed to C++.
+    ///
+    /// Unlike `new_pair`, which creates two unassociated Rust endpoints,
+    /// `new_pair_cpp` creates a pair of entangled C++ endpoints.
+    ///
+    /// The left one is wrapped in a Rust type and can be treated like any other
+    /// `PendingAssociatedEndpoint`, except that it cannot be serialized.
+    ///
+    /// The right one is meant to be serialized in a Mojo message that's sent
+    /// via a C++-managed pipe.
+    pub fn new_pair_cpp() -> (Self, UniquePtr<CxxPendingAssociatedEndpoint>) {
+        let mut rust_adapter = UniquePtr::null();
+        let mut cpp_adapter = UniquePtr::null();
+        crate::cxx_associated_endpoint::ffi::CreatePairPendingAssociation(
+            &mut rust_adapter,
+            &mut cpp_adapter,
+        );
+
+        let rust_endpoint = Self::from_cpp(rust_adapter);
+        (rust_endpoint, cpp_adapter)
+    }
+
+    /// Create a new pending endpoint backed by a C++ pipe endpoint.
+    ///
+    /// Panics if `cpp_endpoint` is null.
+    /// The endpoint returned from this function cannot be serialized.
+    pub fn from_cpp(cpp_endpoint: UniquePtr<CxxPendingAssociatedEndpoint>) -> Self {
+        let cpp_handle =
+            CppRouterHandle::new(cpp_endpoint).expect("Null CxxPendingAssociatedEndpoint");
+        Self::new_singleton(AssociatedRouterHandle::Cpp(cpp_handle))
     }
 
     /// Checks if the endpoint has been associated with a specific pipe yet,

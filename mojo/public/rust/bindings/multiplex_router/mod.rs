@@ -32,6 +32,7 @@
 
 mod arc_or_weak;
 mod control_messages;
+pub mod cpp_interop;
 mod endpoint_registry;
 #[allow(clippy::module_inception)]
 mod multiplex_router;

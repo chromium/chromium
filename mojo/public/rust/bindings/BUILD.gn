@@ -11,6 +11,9 @@ rust_static_library("bindings") {
     "message_pipe_watcher.rs",
     "multiplex_router/arc_or_weak.rs",
     "multiplex_router/control_messages.rs",
+    "multiplex_router/cpp_interop/cpp_router_handle.rs",
+    "multiplex_router/cpp_interop/cxx.rs",
+    "multiplex_router/cpp_interop/mod.rs",
     "multiplex_router/endpoint_registry.rs",
     "multiplex_router/mod.rs",
     "multiplex_router/multiplex_router.rs",
@@ -24,14 +27,39 @@ rust_static_library("bindings") {
     "remote.rs",
   ]
 
+  cxx_bindings = [ "multiplex_router/cpp_interop/cxx.rs" ]
+  allow_unsafe = true
+  visibility = [ "*" ]
+
   deps = [
+    ":cpp_router_handle_cc",
     ":helper_functions_cxx",
     "../mojom_value_parser",
     "../system",
+    "//base",
     "//base:sequenced_task_runner",
     "//third_party/rust/anyhow/v1:lib",
     "//third_party/rust/bitflags/v2:lib",
   ]
+  allow_circular_includes_from = [ ":cpp_router_handle_cc" ]
+}
+
+source_set("cpp_router_handle_cc") {
+  sources = [
+    "multiplex_router/cpp_interop/associated_endpoint_rust_adapter.cc",
+    "multiplex_router/cpp_interop/associated_endpoint_rust_adapter.h",
+    "multiplex_router/cpp_interop/interface_endpoint_client_adapter.cc",
+    "multiplex_router/cpp_interop/interface_endpoint_client_adapter.h",
+    "multiplex_router/cpp_interop/mojo_responder_wrapper.cc",
+    "multiplex_router/cpp_interop/mojo_responder_wrapper.h",
+  ]
+  deps = [
+    ":bindings_cxx_generated_gen",
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/rust/system:scoped_handle_interop_cc",
+  ]
+  visibility = [ "*" ]
 }
 
 source_set("cxx_shim") {
