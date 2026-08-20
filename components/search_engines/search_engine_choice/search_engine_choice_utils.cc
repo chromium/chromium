@@ -341,7 +341,7 @@ void SetChoiceCompletionMetadata(PrefService& prefs,
                                  ChoiceCompletionMetadata metadata) {
   // Verify that any invalidation has already been cleared. Otherwise the
   // completion will be ignored.
-  CHECK(!IsSearchEngineChoiceInvalid(prefs), base::NotFatalUntil::M140);
+  CHECK(!IsSearchEngineChoiceInvalid(prefs));
 
   prefs.SetInt64(prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
                  metadata.timestamp.ToDeltaSinceWindowsEpoch().InSeconds());

@@ -88,14 +88,7 @@ bool SearchEngineChoiceDialogService::BrowserRegistry::RegisterBrowser(
     Browser& browser,
     base::OnceClosure close_dialog_callback) {
   CHECK(close_dialog_callback);
-  if (IsRegistered(browser)) {
-    // TODO(crbug.com/347223092): Investigating whether re-registrations
-    // are a cause of multi-prompts.
-    SCOPED_CRASH_KEY_BOOL("ChoiceService", "browser_has_open_dialog",
-                          HasOpenDialog(browser));
-    NOTREACHED(base::NotFatalUntil::M141);
-    return false;
-  }
+  CHECK(!IsRegistered(browser));
 
   if (registered_browsers_.empty()) {
     // We only need to record that the choice screen was shown once.

@@ -736,8 +736,7 @@ void SearchEngineChoiceService::RecordProfileLoadEligibility(
                                              *profile_metrics_service_);
   }
 
-  CHECK(!recorded_profile_load_choice_screen_eligibility_.has_value(),
-        base::NotFatalUntil::M149);
+  CHECK(!recorded_profile_load_choice_screen_eligibility_.has_value());
   recorded_profile_load_choice_screen_eligibility_ = condition;
 }
 
@@ -812,8 +811,7 @@ std::unique_ptr<search_engines::ChoiceScreenData>
 SearchEngineChoiceService::GetChoiceScreenData(
     const SearchTermsData& search_terms_data,
     const TemplateURL* default_search_provider) {
-  CHECK(regional_capabilities_service_->IsInSearchEngineChoiceScreenRegion(),
-        base::NotFatalUntil::M149);
+  CHECK(regional_capabilities_service_->IsInSearchEngineChoiceScreenRegion());
   // We call `GetPrepopulatedEngines` instead of
   // `GetSearchProvidersUsingLoadedEngines` because the latter will return the
   // list of search engines that might have been modified by the user (by
