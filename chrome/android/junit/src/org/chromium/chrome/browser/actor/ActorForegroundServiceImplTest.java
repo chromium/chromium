@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.actor;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -45,6 +46,7 @@ public class ActorForegroundServiceImplTest {
     @Mock private ChromeBrowserInitializer mChromeBrowserInitializer;
     @Mock private ActorForegroundServiceControllerImpl mMockController;
     @Mock private ActorBackgroundActuationManager mMockBackgroundManager;
+    @Mock private ActorKeyedService mMockActorService;
     @Mock private Profile mMockProfile;
 
     private ActorForegroundServiceImpl mServiceImpl;
@@ -56,6 +58,7 @@ public class ActorForegroundServiceImplTest {
         when(mMockController.getBackgroundActuationManager()).thenReturn(mMockBackgroundManager);
         ActorForegroundServiceController.setInstanceForTesting(mMockController);
         ProfileManager.setLastUsedProfileForTesting(mMockProfile);
+        ActorKeyedServiceFactory.setForTesting(mMockActorService);
         IntentUtils.setForceIsTrustedIntentForTesting(false);
 
         mServiceImpl = new ActorForegroundServiceImpl();
@@ -227,5 +230,6 @@ public class ActorForegroundServiceImplTest {
 
         verify(mMockBackgroundManager, never())
                 .startBackgroundActuation(mMockProfile, "test-message-id");
+        verify(mMockActorService).notifyBackgroundSetupFailed(eq("test-message-id"));
     }
 }

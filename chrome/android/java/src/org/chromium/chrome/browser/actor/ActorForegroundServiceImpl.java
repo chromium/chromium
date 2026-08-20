@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.actor;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
@@ -24,11 +25,19 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorForegroundServiceUmaHelper.ForegroundLifecycle;
 import org.chromium.chrome.browser.actor.ActorForegroundServiceUmaHelper.StopReason;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
+import org.chromium.content_public.browser.LoadUrlParams;
 
 /** Implementation of ActorForegroundService. */
 @NullMarked
@@ -158,23 +167,39 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
                 Log.w(TAG, "START_ACTOR_FOREGROUND_SERVICE intent was not trusted.");
                 return Service.START_NOT_STICKY;
             }
-            if (ActorForegroundServiceController.get().isTabbedActivityVisible()) {
-                Log.d(TAG, "Tabbed activity is visible, not starting background actuation.");
-                return Service.START_NOT_STICKY;
-            }
 
             String glicTriggerMessageId = intent.getStringExtra(EXTRA_GLIC_TRIGGER_MESSAGE_ID);
-            Log.d(TAG, "Received start Intent for glicTriggerMessageId=" + glicTriggerMessageId);
+            Log.d(TAG, "Received start Intent for glicTriggerMessageId=%s", glicTriggerMessageId);
 
             if (glicTriggerMessageId != null && !glicTriggerMessageId.isEmpty()) {
-                Log.d(
-                        TAG,
-                        "Triggering background actuation flow for glicTriggerMessageId="
-                                + glicTriggerMessageId);
                 Profile profile = ProfileManager.getLastUsedRegularProfile();
-                ActorBackgroundActuationManager backgroundManager = getBackgroundActuationManager();
-                assert backgroundManager != null;
-                backgroundManager.startBackgroundActuation(profile, glicTriggerMessageId);
+                ActorKeyedService actorService = ActorKeyedServiceFactory.getForProfile(profile);
+
+                if (ActorForegroundServiceController.get().isTabbedActivityVisible()) {
+                    // TODO(b/547386277) :This flow is similar to desktop, see if we use merge this.
+                    Log.d(
+                            TAG,
+                            "Tabbed activity is visible, explicitly appending a background tab for"
+                                    + " actuation.");
+                    if (actorService != null) {
+                        Tab appendedTab = generateForegroundTabForTask();
+                        if (appendedTab != null) {
+                            actorService.setPreparedBackgroundTab(
+                                    appendedTab, glicTriggerMessageId);
+                        } else {
+                            actorService.notifyBackgroundSetupFailed(glicTriggerMessageId);
+                        }
+                    }
+                } else {
+                    Log.d(
+                            TAG,
+                            "Triggering background actuation flow for glicTriggerMessageId=%s",
+                            glicTriggerMessageId);
+                    ActorBackgroundActuationManager backgroundManager =
+                            getBackgroundActuationManager();
+                    assert backgroundManager != null;
+                    backgroundManager.startBackgroundActuation(profile, glicTriggerMessageId);
+                }
             } else {
                 Log.w(TAG, "Start intent was ignored as there was no glic trigger message id.");
             }
@@ -256,5 +281,23 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
     @VisibleForTesting
     void stopForegroundInternal(int flags) {
         ForegroundServiceUtils.getInstance().stopForeground(getService(), flags);
+    }
+
+    private static @Nullable Tab generateForegroundTabForTask() {
+        int windowId = MultiWindowUtils.getInstanceIdForViewIntent();
+        Activity activity = MultiWindowUtils.getActivityById(windowId);
+        if (activity instanceof AsyncInitializationActivity) {
+            TabModelSelector selector =
+                    TabModelSelectorSupplier.getValueOrNullFrom(
+                            ((AsyncInitializationActivity) activity).getWindowAndroid());
+            if (selector != null) {
+                TabCreator tabCreator = selector.getModel(false).getTabCreator();
+                return tabCreator.createNewTab(
+                        new LoadUrlParams("about:blank"),
+                        TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND,
+                        null);
+            }
+        }
+        return null;
     }
 }
