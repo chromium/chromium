@@ -2804,6 +2804,8 @@ class ApiTests extends ApiTestFixtureBase {
       // this call does not crash.
     }
   }
+
+  async testHibernateAllOnMemoryPressure() {}
 }
 
 class DaisyChainApiTests extends ApiTestFixtureBase {

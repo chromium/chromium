@@ -15,8 +15,8 @@
 // chrome/test/data/webui/glic/browser_tests/glic_api_interactive_uitest.ts.
 
 // Note: Prefer to use a browsertest, like
-// chrome/browser/glic/host/glic_api_browsertest.cc, unless there's a reason an
-// interactive UI test is helpful. Browsertests can be run more quickly.
+// chrome/browser/glic/host/new_glic_api_browsertest.cc, unless there's a reason
+// an interactive UI test is helpful. Browsertests can be run more quickly.
 
 namespace glic {
 namespace {

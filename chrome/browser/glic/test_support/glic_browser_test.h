@@ -477,6 +477,12 @@ class GlicBrowserTestMixin : public T {
     instance->CloseAllEmbedders();
   }
 
+  [[nodiscard]] TestResult<> CloseAllEmbeddersAndWait(
+      GlicInstanceImpl* instance = nullptr) {
+    CloseAllEmbeddersAndPreventDeletion(instance);
+    return WaitForGlicClose(instance);
+  }
+
   // Opens the Glic UI on the active tab and detaches it.
   [[nodiscard]] TestResult<GlicInstanceImpl*> OpenGlicForActiveTabAndDetach() {
     ASSIGN_OR_RETURN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
@@ -555,6 +561,16 @@ class GlicBrowserTestMixin : public T {
       return base::unexpected("Failed to close Glic UI");
     }
     return base::ok();
+  }
+
+  // Waits for the Glic instance to reach the expected hibernation state.
+  [[nodiscard]] TestResult<> WaitForGlicHibernated(
+      GlicInstanceImpl* instance,
+      bool expected_hibernated = true) {
+    return RunUntilEqual<bool>(
+        [instance]() { return instance->IsHibernated(); }, expected_hibernated,
+        base::StrCat({"Instance hibernation state != ",
+                      expected_hibernated ? "true" : "false"}));
   }
 
   // Closes Glic for a given tab and waits for it to close.

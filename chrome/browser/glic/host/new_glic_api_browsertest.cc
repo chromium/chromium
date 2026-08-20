@@ -146,11 +146,6 @@
 #define SLOW_BINARY
 #endif
 
-// MIGRATION IN PROGRESS:
-// This test will eventually absorb glic_api_browsertest.cc, as it allows
-// execution on Android. Migration will take some time, as some tests need
-// rewritten to avoid RunTestSequence which is not supported on Android.
-
 #if BUILDFLAG(IS_ANDROID)
 // Used to disable tests for android which have not yet been vetted for android.
 // These should be temporary, either the test should be enabled on android or
@@ -5335,6 +5330,60 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
 #endif
 
   ContinueJsTest();
+}
+
+// TODO(b/498955581): Clean up glic hibernation experiments, and test in the
+// coordinator test.
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testHibernateAllOnMemoryPressure) {
+  ASSERT_TRUE(coordinator()
+                  .GetWebContentsWarmingPoolForTesting()
+                  .MaybeStartInitialWarming());
+
+  // Open 3 instances, with instance 2 being the active one.
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab1);
+  ASSERT_OK_AND_ASSIGN(auto* instance1, OpenGlicForActiveTab());
+
+  CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_OK_AND_ASSIGN(auto* instance2, OpenGlicForActiveTab());
+
+  CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_OK_AND_ASSIGN(auto* instance3, OpenGlicForActiveTab());
+
+  // Close instance 3 to make it non-showing and non-actuating.
+  ASSERT_OK(CloseAllEmbeddersAndWait(instance3));
+  ASSERT_FALSE(instance3->IsHibernated());
+
+  // Switch back to tab 1, so instance 1 is now active and instance 2 is not
+  // showing.
+  ActivateTab(tab1);
+  ASSERT_OK(WaitForGlicOpen(tab1));
+
+  // There is a warmed contents initially. It should be non-showing and
+  // non-actuating.
+  ASSERT_TRUE(coordinator()
+                  .GetWebContentsWarmingPoolForTesting()
+                  .MaybeStartInitialWarming());
+  ASSERT_TRUE(coordinator()
+                  .GetWebContentsWarmingPoolForTesting()
+                  .HasWarmedContainerForTesting());
+
+  // Simulate memory pressure.
+  base::MemoryPressureListener::NotifyMemoryPressure(
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+
+  // Wait for the non-showing instances to hibernate.
+  ASSERT_OK(WaitForGlicHibernated(instance2));
+  ASSERT_OK(WaitForGlicHibernated(instance3));
+
+  // Verify the warmed contents is reset.
+  ASSERT_FALSE(coordinator()
+                   .GetWebContentsWarmingPoolForTesting()
+                   .HasWarmedContainerForTesting());
+
+  // Active instance should not be hibernated.
+  ASSERT_TRUE(instance1->IsShowing());
+  ASSERT_FALSE(instance1->IsHibernated());
 }
 
 auto DefaultTestParamSet() {
