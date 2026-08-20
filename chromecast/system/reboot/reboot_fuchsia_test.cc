@@ -43,16 +43,16 @@ using ::testing::Eq;
 using ::testing::Ne;
 
 using fuchsia::feedback::RebootReason;
-using fuchsia::hardware::power::statecontrol::RebootOptions;
-using StateControlRebootReason =
-    fuchsia::hardware::power::statecontrol::RebootReason2;
+using fuchsia::hardware::power::statecontrol::ShutdownOptions;
+using StateControlShutdownReason =
+    fuchsia::hardware::power::statecontrol::ShutdownReason;
 
 struct RebootReasonParam {
   RebootReason reason;
   RebootShlib::RebootSource source;
   bool graceful;
-  StateControlRebootReason state_control_reason =
-      StateControlRebootReason::USER_REQUEST;
+  StateControlShutdownReason state_control_reason =
+      StateControlShutdownReason::USER_REQUEST;
 };
 
 const RebootReasonParam kRebootReasonParams[] = {
@@ -71,11 +71,11 @@ const RebootReasonParam kRebootReasonParams[] = {
 
     // Graceful reboot reasons.
     {RebootReason::USER_REQUEST, RebootShlib::RebootSource::API, true,
-     StateControlRebootReason::USER_REQUEST},
+     StateControlShutdownReason::USER_REQUEST},
     {RebootReason::SYSTEM_UPDATE, RebootShlib::RebootSource::OTA, true,
-     StateControlRebootReason::SYSTEM_UPDATE},
+     StateControlShutdownReason::SYSTEM_UPDATE},
     {RebootReason::HIGH_TEMPERATURE, RebootShlib::RebootSource::OVERHEAT, true,
-     StateControlRebootReason::HIGH_TEMPERATURE},
+     StateControlShutdownReason::HIGH_TEMPERATURE},
     {RebootReason::SESSION_FAILURE, RebootShlib::RebootSource::SW_OTHER, true},
 };
 
@@ -99,15 +99,19 @@ class FakeAdmin
   explicit FakeAdmin(sys::OutgoingDirectory* outgoing_directory)
       : binding_(outgoing_directory, this) {}
 
-  void GetLastRebootReason(StateControlRebootReason* reason) {
+  void GetLastRebootReason(StateControlShutdownReason* reason) {
     *reason = last_reboot_reason_;
   }
 
  private:
-  void PerformReboot(RebootOptions options,
-                     PerformRebootCallback callback) final {
-    if (options.has_reasons() && !options.reasons().empty()) {
-      last_reboot_reason_ = options.reasons()[0];
+  void Shutdown(fuchsia::hardware::power::statecontrol::ShutdownOptions options,
+                ShutdownCallback callback) final {
+    if (options.has_action() &&
+        options.action() ==
+            fuchsia::hardware::power::statecontrol::ShutdownAction::REBOOT) {
+      if (options.has_reasons() && !options.reasons().empty()) {
+        last_reboot_reason_ = options.reasons()[0];
+      }
     }
 
     callback(fpromise::ok());
@@ -119,7 +123,7 @@ class FakeAdmin
 
   base::ScopedServiceBinding<fuchsia::hardware::power::statecontrol::Admin>
       binding_;
-  StateControlRebootReason last_reboot_reason_;
+  StateControlShutdownReason last_reboot_reason_;
 };
 
 class FakeLastRebootInfoProvider
@@ -211,8 +215,8 @@ class RebootFuchsiaTest : public ::testing::Test {
     full_path_ = InitializeFlagFileDirForTesting(dir_.GetPath());
   }
 
-  StateControlRebootReason GetLastRebootReason() {
-    StateControlRebootReason reason;
+  StateControlShutdownReason GetLastRebootReason() {
+    StateControlShutdownReason reason;
     admin_.AsyncCall(&FakeAdmin::GetLastRebootReason).WithArgs(&reason);
     thread_.FlushForTesting();
     return reason;
@@ -284,7 +288,7 @@ fuchsia::feedback::LastReboot GenerateLastReboot(bool graceful,
 
 // RetrySystemUpdate must be handled separately because it does not work with
 // the RebootFuchsiaParamTest family of tests. Those tests expect
-// RebootSource::OTA to map to exactly one StateControlRebootReason, which is
+// RebootSource::OTA to map to exactly one StateControlShutdownReason, which is
 // now not the case.
 TEST_F(RebootFuchsiaTest, RebootReasonRetrySystemUpdateTranslatesFromFuchsia) {
   SetLastReboot(GenerateLastReboot(true, RebootReason::RETRY_SYSTEM_UPDATE));

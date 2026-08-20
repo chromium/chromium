@@ -24,11 +24,11 @@
 using fuchsia::feedback::LastReboot;
 using fuchsia::feedback::LastRebootInfoProviderSyncPtr;
 using fuchsia::feedback::RebootReason;
-using fuchsia::hardware::power::statecontrol::Admin_PerformReboot_Result;
+using fuchsia::hardware::power::statecontrol::Admin_Shutdown_Result;
 using fuchsia::hardware::power::statecontrol::AdminPtr;
 using fuchsia::recovery::FactoryResetPtr;
-using StateControlRebootReason =
-    fuchsia::hardware::power::statecontrol::RebootReason2;
+using StateControlShutdownReason =
+    fuchsia::hardware::power::statecontrol::ShutdownReason;
 
 namespace chromecast {
 
@@ -115,32 +115,34 @@ bool RebootShlib::RebootNow(RebootSource reboot_source) {
     return true;
   }
 
-  StateControlRebootReason reason;
+  StateControlShutdownReason reason;
   switch (reboot_source) {
     case RebootSource::API:
-      reason = StateControlRebootReason::USER_REQUEST;
+      reason = StateControlShutdownReason::USER_REQUEST;
       break;
     case RebootSource::OTA:
       // We expect OTAs to be initiated by the platform via the
       // fuchsia.hardware.power.statecontrol/Admin FIDL service. In case
       // non-platform code wants to initiate OTAs too, we also support it here.
-      reason = StateControlRebootReason::SYSTEM_UPDATE;
+      reason = StateControlShutdownReason::SYSTEM_UPDATE;
       break;
     case RebootSource::OVERHEAT:
-      reason = StateControlRebootReason::HIGH_TEMPERATURE;
+      reason = StateControlShutdownReason::HIGH_TEMPERATURE;
       break;
     default:
-      reason = StateControlRebootReason::USER_REQUEST;
+      reason = StateControlShutdownReason::USER_REQUEST;
       break;
   }
 
   // Intentionally using async Ptr to avoid deadlock
   // Otherwise caller is blocked, and if caller needs to be notified
   // as well, it will go into a deadlock state.
-  fuchsia::hardware::power::statecontrol::RebootOptions reboot_options;
-  reboot_options.set_reasons({reason});
-  GetAdminPtr()->PerformReboot(
-      std::move(reboot_options), [](Admin_PerformReboot_Result out_result) {
+  fuchsia::hardware::power::statecontrol::ShutdownOptions shutdown_options;
+  shutdown_options.set_action(
+      fuchsia::hardware::power::statecontrol::ShutdownAction::REBOOT);
+  shutdown_options.set_reasons({reason});
+  GetAdminPtr()->Shutdown(
+      std::move(shutdown_options), [](Admin_Shutdown_Result out_result) {
         if (out_result.is_err()) {
           LOG(ERROR) << "Failed to reboot after requested: "
                      << zx_status_get_string(out_result.err());
