@@ -31,6 +31,7 @@
 #include "components/skills/public/skills_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/label_button.h"
@@ -424,6 +425,33 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
   // Verify that nothing was invoked because skills are disabled.
   EXPECT_TRUE(tab_controller()->GetLastInvokedSkillIdForTesting().empty());
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
+}
+
+IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
+                       PrefChange_ClosesDialogAndReloadsPage) {
+  // 1. Open chrome://skills page in the active tab.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUISkillsURL)));
+  content::WebContents* web_contents =
+      browser()->GetActiveTabInterface()->GetContents();
+  ASSERT_TRUE(web_contents);
+
+  // 2. Open a skills dialog on the active tab.
+  skills::Skill initial_skill(/*id=*/"", /*name=*/"", /*icon=*/"",
+                              /*prompt=*/"Test Prompt");
+  tab_controller()->ShowDialog(std::move(initial_skill),
+                               SkillsDialogEntryPoint::kWebClientPrefilled,
+                               mojom::SkillsDialogType::kAdd, nullptr);
+  EXPECT_TRUE(tab_controller()->IsShowing());
+
+  // 3. Flip the skills enabled pref to false and verify dialog closes and page
+  // reloads.
+  content::TestNavigationObserver reload_observer(web_contents);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
+      skills::prefs::kChromeSkillsEnabled, false);
+  reload_observer.Wait();
+  EXPECT_FALSE(tab_controller()->IsShowing());
+  EXPECT_TRUE(reload_observer.last_navigation_succeeded());
 }
 
 }  // namespace skills

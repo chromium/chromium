@@ -85,6 +85,8 @@ class MockSkillsUiTabController : public SkillsUiTabControllerInterface {
                skills::mojom::SkillsDialogType dialog_type,
                std::unique_ptr<glic::Target> target),
               (override));
+  MOCK_METHOD(void, CloseDialog, (), (override));
+  MOCK_METHOD(bool, IsShowing, (), (const, override));
   MOCK_METHOD(void,
               InvokeSkill,
               (std::string_view skill_id,

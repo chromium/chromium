@@ -53,6 +53,7 @@ source_set("public") {
     deps += [
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
+      "//components/prefs",
     ]
   }
 }
@@ -95,11 +96,13 @@ source_set("ui") {
   if (!is_android) {
     deps += [
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui/skills",
       "//components/constrained_window",
+      "//components/prefs",
       "//components/web_modal",
     ]
   }

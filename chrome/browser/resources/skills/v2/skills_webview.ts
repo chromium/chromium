@@ -89,6 +89,12 @@ export class SkillsWebview implements SkillsPageV2Interface {
     }
     this.webview = getRequiredElement<chrome.webviewTag.WebView>('webview');
 
+    if (loadTimeData.valueExists('isSkillsEnabled') &&
+        !loadTimeData.getBoolean('isSkillsEnabled')) {
+      this.showError(ErrorType.SKILLS_DISABLED);
+      return;
+    }
+
     this.handler.setPage(this.pageReceiver_.$.bindNewPipeAndPassRemote());
 
     // Wait for cookie sync to complete before setting src

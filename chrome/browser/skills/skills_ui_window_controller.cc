@@ -10,11 +10,17 @@
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/skills/public/skills_metrics.h"
+#include "components/skills/public/skills_prefs.h"
 #include "components/skills/public/skills_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 
 namespace skills {
 
@@ -24,7 +30,17 @@ SkillsUiWindowController::SkillsUiWindowController(
     BrowserWindowInterface* browser_window_interface)
     : browser_window_interface_(browser_window_interface),
       scoped_data_holder_(browser_window_interface->GetUnownedUserDataHost(),
-                          *this) {}
+                          *this) {
+  Profile* profile = browser_window_interface_->GetProfile();
+  if (profile) {
+    pref_registrar_.Init(profile->GetPrefs());
+    pref_registrar_.Add(
+        skills::prefs::kChromeSkillsEnabled,
+        base::BindRepeating(
+            &SkillsUiWindowController::CloseDialogsAndReloadSkillsPages,
+            weak_factory_.GetWeakPtr()));
+  }
+}
 
 SkillsUiWindowController::~SkillsUiWindowController() {
   if (!pending_deletions_.empty()) {
@@ -42,6 +58,34 @@ SkillsUiWindowController::~SkillsUiWindowController() {
 SkillsUiWindowController* SkillsUiWindowController::From(
     BrowserWindowInterface* browser_window_interface) {
   return Get(browser_window_interface->GetUnownedUserDataHost());
+}
+
+void SkillsUiWindowController::CloseDialogsAndReloadSkillsPages() {
+  TabStripModel* tab_strip_model =
+      browser_window_interface_->GetTabStripModel();
+  if (!tab_strip_model) {
+    return;
+  }
+
+  for (int i = 0; i < tab_strip_model->count(); ++i) {
+    tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(i);
+    if (!tab) {
+      continue;
+    }
+
+    if (auto* tab_controller = SkillsUiTabControllerInterface::From(tab)) {
+      if (tab_controller->IsShowing()) {
+        tab_controller->CloseDialog();
+      }
+    }
+
+    content::WebContents* web_contents = tab->GetContents();
+    if (web_contents &&
+        web_contents->GetVisibleURL().host() == chrome::kChromeUISkillsHost) {
+      web_contents->GetController().Reload(content::ReloadType::NORMAL,
+                                           /*check_for_repost=*/false);
+    }
+  }
 }
 
 void SkillsUiWindowController::OnSkillSaved(std::string_view skill_id,
