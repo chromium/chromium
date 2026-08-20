@@ -78,12 +78,12 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
         is_opted_in_to_parental_supervision);
     signin::UpdateAccountInfoForAccount(
         IdentityManagerFactory::GetForProfile(profile), account);
-
-    if (is_subject_to_parental_controls) {
-      // This activates the settings service in its default state
-      // (WebFilterType::kTryToBlockMatureSites).
-      supervised_user::EnableParentalControls(*profile->GetPrefs());
-    }
+    account = AccountInfo::Builder(account)
+                  .SetIsChildAccount(
+                      signin::TriboolFromBool(is_subject_to_parental_controls))
+                  .Build();
+    signin::UpdateAccountInfoForAccount(
+        IdentityManagerFactory::GetForProfile(profile), account);
   }
 
   // Signs the user into `email` as the primary Chrome account and sets the
