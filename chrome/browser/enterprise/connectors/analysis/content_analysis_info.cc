@@ -180,8 +180,9 @@ DownloadContentAreaUserProvider::DownloadContentAreaUserProvider(
         safe_browsing::GetOrIdentifyReferrerChainForEnterprise(download_item);
   }
   frame_url_chain_ = enterprise_connectors::CollectFrameUrls(
-      web_contents_.get(),
-      enterprise_connectors::DeepScanAccessPoint::DOWNLOAD);
+      web_contents_.get(), enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
+      std::make_optional(
+          content::DownloadItemUtils::GetRenderFrameHostId(&download_item)));
 }
 
 DownloadContentAreaUserProvider::~DownloadContentAreaUserProvider() = default;

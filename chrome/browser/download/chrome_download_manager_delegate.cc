@@ -541,7 +541,9 @@ void MaybeReportDangerousDownloadBlocked(
         download->GetTotalBytes(), referrer_chain,
         enterprise_connectors::CollectFrameUrls(
             content::DownloadItemUtils::GetWebContents(download),
-            enterprise_connectors::DeepScanAccessPoint::DOWNLOAD),
+            enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
+            std::make_optional(
+                content::DownloadItemUtils::GetRenderFrameHostId(download))),
         enterprise_connectors::EventResult::BLOCKED);
   }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)

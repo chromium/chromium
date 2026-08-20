@@ -83,7 +83,9 @@ void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
       /*scan_id=*/"", download->GetTotalBytes(), referrer_chain,
       enterprise_connectors::CollectFrameUrls(
           content::DownloadItemUtils::GetWebContents(download),
-          enterprise_connectors::DeepScanAccessPoint::DOWNLOAD),
+          enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
+          std::make_optional(
+              content::DownloadItemUtils::GetRenderFrameHostId(download))),
       enterprise_connectors::EventResult::WARNED);
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
@@ -111,7 +113,9 @@ void ReportDangerousDownloadWarningBypassed(
   google::protobuf::RepeatedPtrField<std::string> frame_url_chain =
       enterprise_connectors::CollectFrameUrls(
           content::DownloadItemUtils::GetWebContents(download),
-          enterprise_connectors::DeepScanAccessPoint::DOWNLOAD);
+          enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
+          std::make_optional(
+              content::DownloadItemUtils::GetRenderFrameHostId(download)));
 
   enterprise_connectors::ScanResult* stored_result =
       static_cast<enterprise_connectors::ScanResult*>(

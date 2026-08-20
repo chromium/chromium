@@ -634,9 +634,11 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
     referrer_chain = GetOrIdentifyReferrerChainForEnterprise(*item);
   }
 
-  google::protobuf::RepeatedPtrField<std::string> frame_urls =
-      CollectFrameUrls(content::DownloadItemUtils::GetWebContents(item),
-                       enterprise_connectors::DeepScanAccessPoint::DOWNLOAD);
+  google::protobuf::RepeatedPtrField<std::string> frame_urls = CollectFrameUrls(
+      content::DownloadItemUtils::GetWebContents(item),
+      enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
+      std::make_optional(
+          content::DownloadItemUtils::GetRenderFrameHostId(item)));
 
   // A download with a verdict of "sensitive data warning" can be opened and
   // |item->IsDangerous()| will return |true| for it but the reported event
