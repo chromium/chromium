@@ -687,12 +687,6 @@ inline constexpr char kEnableBulkDataEntryConnectorIOSDescription[] =
     "When enabled, the enterprise pasted content DLP feature is available on "
     "iOS.";
 
-inline constexpr char kEnableClientCertificateProvisioningOnIOSName[] =
-    "Enable client certificate provisioning on iOS";
-inline constexpr char kEnableClientCertificateProvisioningOnIOSDescription[] =
-    "When enabled, client certificate provisioning from the cloud is allowed "
-    "for enterprise users on iOS.";
-
 inline constexpr char kEnableCompromisedPasswordsMutingName[] =
     "Enable the muting of compromised passwords in the Password Manager";
 inline constexpr char kEnableCompromisedPasswordsMutingDescription[] =

@@ -14,7 +14,6 @@
 #import "components/enterprise/browser/reporting/saas_usage/saas_usage_reporting_delegate_factory.h"
 #import "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #import "components/enterprise/client_certificates/core/certificate_store.h"
-#import "components/enterprise/client_certificates/core/features.h"
 #import "components/enterprise/client_certificates/core/prefs_certificate_store.h"
 #import "components/enterprise/client_certificates/ios/certificate_provisioning_service_ios.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
@@ -158,10 +157,6 @@ ChromeBrowserCloudManagementControllerIOS::CreateClientDataDelegate() {
 std::unique_ptr<client_certificates::CertificateProvisioningService>
 ChromeBrowserCloudManagementControllerIOS::
     CreateCertificateProvisioningService() {
-  if (!client_certificates::features::
-          IsClientCertificateProvisioningOnIOSEnabled()) {
-    return nullptr;
-  }
 
   if (!certificate_store_) {
     certificate_store_ =

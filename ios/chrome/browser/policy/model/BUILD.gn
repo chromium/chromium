@@ -266,7 +266,6 @@ source_set("unit_tests") {
   sources = [
     "browser_dm_token_storage_ios_unittest.mm",
     "browser_signin_policy_handler_unittest.mm",
-    "chrome_browser_cloud_management_controller_ios_unittest.mm",
     "client_data_delegate_ios_unittest.cc",
     "cloud/user_policy_signin_service_unittest.mm",
     "new_tab_page_location_policy_handler_unittest.cc",
