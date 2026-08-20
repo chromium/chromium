@@ -43,9 +43,7 @@ import org.chromium.android_webview.WebViewChromiumRunQueue;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwResource;
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.WebViewCachedFlags;
-import org.chromium.android_webview.metrics.TrackExitReasons;
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ApkInfo;
 import org.chromium.base.ContextUtils;
@@ -210,7 +208,7 @@ public class WebViewChromiumAwInit {
         ArrayDeque<Runnable> preBrowserProcessStartTasks = new ArrayDeque<>();
         ArrayDeque<Runnable> postBrowserProcessStartTasks = new ArrayDeque<>();
 
-        preBrowserProcessStartTasks.addLast(this::preBrowserProcessStartTask);
+        preBrowserProcessStartTasks.addLast(mStartupController::preBrowserProcessStartTask);
 
         addBrowserProcessStartTasksToQueue(
                 preBrowserProcessStartTasks, postBrowserProcessStartTasks);
@@ -244,44 +242,6 @@ public class WebViewChromiumAwInit {
                 preBrowserProcessStartTasks,
                 postBrowserProcessStartTasks,
                 mChromiumFirstStartupRequestMode.get());
-    }
-
-    private void preBrowserProcessStartTask() {
-        if (WebViewCachedFlags.get()
-                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT)) {
-            PostTask.postTask(
-                    TaskTraits.USER_VISIBLE,
-                    () -> {
-                        PlatformServiceBridge.getInstance();
-                    });
-        }
-        // Disable java-side PostTask scheduling. The native-side task runners
-        // are also disabled in the native code. The unscheduled prenative tasks
-        // are migrated to the native task runner. The native task runner is
-        // enabled when we are done with startup.
-        PostTask.disablePreNativeUiTasks(true);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            TrackExitReasons.startTrackingStartup();
-        }
-
-        if (WebViewCachedFlags.get()
-                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT)) {
-            mStartupController.waitForNonUiThreadCapableStartupTasks();
-        } else {
-            mStartupController.runNonUiThreadCapableStartupTasks();
-        }
-        mStartupDelegate.waitForJavaResourcesSetup();
-        // NOTE: Finished writing Java resources. From this point on, it's safe
-        // to use them.
-
-        AwBrowserProcess.configureChildProcessLauncher(
-                mStartupDelegate.shouldForceNativeSandboxedServices());
-
-        // finishVariationsInit() must precede native initialization so
-        // the seed is available when AwFeatureListCreator::SetUpFieldTrials()
-        // runs.
-        AwBrowserProcess.finishVariationsInit();
     }
 
     private void postBrowserProcessStartTask() {
