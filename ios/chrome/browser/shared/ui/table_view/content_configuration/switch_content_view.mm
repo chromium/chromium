@@ -7,6 +7,8 @@
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/switch_content_configuration.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @implementation SwitchContentView {
   // The configuration of the view.
@@ -72,6 +74,14 @@
                                                      _switchView);
   return CGPointMake(CGRectGetMidX(frameInScreenCoordinates),
                      CGRectGetMidY(frameInScreenCoordinates));
+}
+
+- (NSString*)accessibilityValue {
+  if (_switchView.on) {
+    return l10n_util::GetNSString(IDS_IOS_SETTING_ON);
+  } else {
+    return l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+  }
 }
 
 #pragma mark - Private

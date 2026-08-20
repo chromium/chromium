@@ -78,8 +78,11 @@ source_set("unit_tests") {
   deps = [
     ":table_view",
     ":test_support",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/test:test_support",
     "//testing/gtest",
+    "//ui/base",
   ]
 }
 

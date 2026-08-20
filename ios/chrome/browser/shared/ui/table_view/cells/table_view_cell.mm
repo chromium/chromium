@@ -51,6 +51,9 @@
 }
 
 - (NSString*)accessibilityValue {
+  if (self.contentView.accessibilityValue) {
+    return self.contentView.accessibilityValue;
+  }
   NSObject* contentConfiguration = self.contentConfiguration;
   if (contentConfiguration.accessibilityValue) {
     return contentConfiguration.accessibilityValue;
