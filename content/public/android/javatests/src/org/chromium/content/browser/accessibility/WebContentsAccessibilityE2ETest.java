@@ -771,6 +771,7 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE) // API Level 34
+    @DisabledTest(message = "https://crbug.com/549382408")
     public void fireGeneratedEvent_ariaInvalidTrue_firesContentInvalid() throws Throwable {
         // Create an HTML document where there is an input element and an element containing the
         // text for the input's aria-errormessage.
@@ -809,6 +810,7 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE) // API Level 34
+    @DisabledTest(message = "https://crbug.com/549382408")
     public void fireGeneratedEvent_ariaInvalidChangesToFalse_firesContentInvalid()
             throws Throwable {
         // Create an HTML document where there is an input element and an element containing
