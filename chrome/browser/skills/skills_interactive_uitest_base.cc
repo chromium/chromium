@@ -64,7 +64,8 @@ SkillsInteractiveUiTestBase::SkillsInteractiveUiTestBase() {
                             features::kSkillsEnabled,
                             features::kGlicMultitabUnderlines,
                             features::kSkillsServiceApi},
-      /*disabled_features=*/{features::kGlicWarming});
+      /*disabled_features=*/{features::kGlicWarming,
+                             features::kSkillsWebViewV2Enabled});
   // TODO(b:504651450): Consider adding support for the new FRE.
 }
 

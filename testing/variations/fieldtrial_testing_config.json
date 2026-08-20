@@ -22637,6 +22637,24 @@
             ]
         }
     ],
+    "SkillsV2": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SkillsWebViewV2Enabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "SkipDefaultBrowserPromoInFirstRun": [
         {
             "platforms": [

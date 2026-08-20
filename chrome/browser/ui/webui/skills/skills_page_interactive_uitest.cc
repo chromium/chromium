@@ -69,8 +69,9 @@ class SkillsPageInteractiveUITest : public InteractiveBrowserTest {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSkillsEnabled, features::kSkillsServiceApi},
-        /*disabled_features=*/{});
+        /*enabled_features=*/{features::kSkillsEnabled,
+                              features::kSkillsServiceApi},
+        /*disabled_features=*/{features::kSkillsWebViewV2Enabled});
     InteractiveBrowserTest::SetUp();
   }
 
@@ -313,7 +314,8 @@ class SkillsPageScreenshotInteractiveUITest
     } else {
       enabled_features = {features::kSkillsEnabled};
     }
-    scoped_feature_list_.InitWithFeatures(enabled_features, {});
+    scoped_feature_list_.InitWithFeatures(enabled_features,
+                                          {features::kSkillsWebViewV2Enabled});
     InteractiveBrowserTest::SetUp();
   }
 };

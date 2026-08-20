@@ -75,9 +75,11 @@ class TestSkillsUiTabController : public SkillsUiTabController {
 class SkillsUiTabControllerTest : public ChromeViewsTestBase {
  public:
   explicit SkillsUiTabControllerTest(
-      const std::vector<base::test::FeatureRef>& enabled_features = {
-          features::kSkillsEnabled}) {
-    feature_list_.InitWithFeatures(enabled_features, {});
+      const std::vector<base::test::FeatureRef>& enabled_features =
+          {features::kSkillsEnabled},
+      const std::vector<base::test::FeatureRef>& disabled_features = {
+          features::kSkillsWebViewV2Enabled}) {
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   void SetUp() override {
@@ -299,7 +301,8 @@ class SkillsUiTabControllerV2Test : public SkillsUiTabControllerTest {
  public:
   SkillsUiTabControllerV2Test()
       : SkillsUiTabControllerTest(
-            {features::kSkillsEnabled, features::kSkillsWebViewV2Enabled}) {}
+            {features::kSkillsEnabled, features::kSkillsWebViewV2Enabled},
+            {}) {}
 };
 
 TEST_F(SkillsUiTabControllerV2Test,

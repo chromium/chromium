@@ -43,7 +43,8 @@ namespace skills {
 class SkillsUiWindowControllerBrowserTest : public InProcessBrowserTest {
  public:
   SkillsUiWindowControllerBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kSkillsEnabled);
+    feature_list_.InitWithFeatures({features::kSkillsEnabled},
+                                   {features::kSkillsWebViewV2Enabled});
   }
 
   void SetUpOnMainThread() override {

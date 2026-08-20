@@ -39,7 +39,8 @@ base::expected<int, std::string> GetIntValue(const base::DictValue& dict,
 
 SkillsFunctionalBrowserTestBase::SkillsFunctionalBrowserTestBase() {
   scoped_feature_list_.InitWithFeatures(
-      {features::kSkillsEnabled, features::kGlic, features::kGlicRollout}, {});
+      {features::kSkillsEnabled, features::kGlic, features::kGlicRollout},
+      {features::kSkillsWebViewV2Enabled});
 }
 
 SkillsFunctionalBrowserTestBase::~SkillsFunctionalBrowserTestBase() = default;

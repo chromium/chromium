@@ -39,7 +39,8 @@ namespace skills {
 class SkillsUiTabControllerBrowserTest : public InProcessBrowserTest {
  public:
   SkillsUiTabControllerBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kSkillsEnabled);
+    feature_list_.InitWithFeatures({features::kSkillsEnabled},
+                                   {features::kSkillsWebViewV2Enabled});
   }
 
   SkillsUiTabController* skills_ui_tab_controller() {

@@ -14,7 +14,11 @@ namespace {
 
 class SkillsBrowserTest : public WebUIMochaBrowserTest {
  protected:
-  SkillsBrowserTest() { set_test_loader_host(chrome::kChromeUISkillsHost); }
+  SkillsBrowserTest() {
+    set_test_loader_host(chrome::kChromeUISkillsHost);
+    scoped_feature_list_.InitWithFeatures({features::kSkillsEnabled},
+                                          {features::kSkillsWebViewV2Enabled});
+  }
 
   void SetUpOnMainThread() override {
     WebUIMochaBrowserTest::SetUpOnMainThread();
@@ -27,7 +31,7 @@ class SkillsBrowserTest : public WebUIMochaBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kSkillsEnabled};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class SkillsV2BrowserTest : public WebUIMochaBrowserTest {
