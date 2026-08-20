@@ -298,17 +298,17 @@ class BASE_EXPORT InsecureRandomGenerator {
 // Fast class to randomly sub-sample metrics that are logged in high frequency
 // code.
 //
+// Do not use `MetricsSubSampler` directly unless necessary. Prefer to use
+// `ShouldRecordSubsampledMetric()` instead since `MetricsSubSampler` is not
+// thread-safe, may need to be reseeded after fork to avoid metric bias, and can
+// introduce unexpected performance overhead (see https://crbug.com/500105151).
+//
 // WARNING: This uses InsecureRandomGenerator so all the caveats there apply.
 // In particular if a MetricsSubSampler object exists when fork()/clone() is
 // called, calls to ShouldSample() on both sides of the fork will return the
 // same values, possibly introducing metric bias.
 class BASE_EXPORT MetricsSubSampler {
  public:
-  MetricsSubSampler();
-  bool ShouldSample(double probability) const;
-
-  void Reseed();
-
   // Make any call to ShouldSample for any instance of MetricsSubSampler
   // return true for testing. Cannot be used in conjunction with
   // ScopedNeverSampleForTesting.
@@ -328,6 +328,20 @@ class BASE_EXPORT MetricsSubSampler {
   };
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(RandUtilTest, MetricsSubSampler);
+  FRIEND_TEST_ALL_PREFIXES(RandUtilTest, MetricsSubSamplerTestingSupport);
+  friend class LockMetricsRecorder;
+  friend BASE_EXPORT bool ShouldRecordSubsampledMetric(double probability);
+  friend BASE_EXPORT void ReseedSharedMetricsSubsampler();
+
+  MetricsSubSampler();
+  ~MetricsSubSampler() = default;
+
+  bool ShouldSample(double probability) const;
+  void Reseed();
+
+  static MetricsSubSampler& GetSharedMetricsSubsampler();
+
   InsecureRandomGenerator generator_;
 };
 
