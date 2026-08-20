@@ -37,6 +37,7 @@ class NewTabButton : public TabStripFlatEdgeButton,
 
   void SetOnContextMenuWillShowCallback(base::RepeatingClosure callback);
   void SetOnContextMenuClosedCallback(base::RepeatingClosure callback);
+  void SetMiddleClickCallbackForTesting(base::RepeatingClosure callback);
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(
@@ -44,8 +45,9 @@ class NewTabButton : public TabStripFlatEdgeButton,
       const gfx::Point& point,
       ui::mojom::MenuSourceType source_type) override;
 
-  // views::View:
-  void OnMouseEvent(ui::MouseEvent* event) override;
+ protected:
+  // views::Button:
+  void NotifyClick(const ui::Event& event) override;
 
  private:
   void OnContextMenuClosed();
@@ -56,6 +58,7 @@ class NewTabButton : public TabStripFlatEdgeButton,
 
   base::RepeatingClosure on_context_menu_will_show_callback_;
   base::RepeatingClosure on_context_menu_closed_callback_;
+  base::RepeatingClosure middle_click_callback_for_testing_;
 
   raw_ptr<BrowserWindowInterface> browser_;
 };

@@ -79,14 +79,19 @@ source_set("interactive_ui_tests") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "tab_strip_flat_edge_button_unittest.cc" ]
+  sources = [
+    "new_tab_button_unittest.cc",
+    "tab_strip_flat_edge_button_unittest.cc",
+  ]
   deps = [
     ":impl",
     ":shared",
     "//base",
+    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chrome/test/views",
     "//testing/gtest",
+    "//ui/events:test_support",
     "//ui/gfx/geometry",
     "//ui/views",
   ]

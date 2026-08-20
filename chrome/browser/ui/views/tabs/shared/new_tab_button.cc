@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/shared/new_tab_button.h"
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -17,6 +18,8 @@
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/views/actions/action_view_controller.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/view_class_properties.h"
 
@@ -41,6 +44,13 @@ NewTabButton::NewTabButton(BrowserWindowInterface* browser,
   }
 
   set_context_menu_controller(this);
+
+#if BUILDFLAG(IS_LINUX)
+  // On Linux, middle-clicking the New Tab Button triggers
+  // paste and navigate, either to URLs or to search queries.
+  SetTriggerableEventFlags(GetTriggerableEventFlags() |
+                           ui::EF_MIDDLE_MOUSE_BUTTON);
+#endif
 
   // Paint to a layer so that the ink drop is rendered correctly.
   SetPaintToLayer();
@@ -100,15 +110,29 @@ void NewTabButton::OnContextMenuClosed() {
   }
 }
 
-void NewTabButton::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->IsOnlyMiddleMouseButton()) {
-    if (event->type() == ui::EventType::kMousePressed) {
-      chrome::NewTabFromClipboardURL(browser_);
+void NewTabButton::SetMiddleClickCallbackForTesting(
+    base::RepeatingClosure callback) {
+  middle_click_callback_for_testing_ = std::move(callback);
+}
+
+void NewTabButton::NotifyClick(const ui::Event& event) {
+#if BUILDFLAG(IS_LINUX)
+  if (event.IsMouseEvent()) {
+    const ui::MouseEvent& mouse = static_cast<const ui::MouseEvent&>(event);
+    if (mouse.IsOnlyMiddleMouseButton()) {
+      views::InkDrop::Get(this)->AnimateToState(
+          views::InkDropState::ACTION_TRIGGERED,
+          ui::LocatedEvent::FromIfValid(&event));
+      if (middle_click_callback_for_testing_) {
+        middle_click_callback_for_testing_.Run();
+      } else {
+        chrome::NewTabFromClipboardURL(browser_);
+      }
+      return;
     }
-    event->SetHandled();
-    return;
   }
-  TabStripFlatEdgeButton::OnMouseEvent(event);
+#endif
+  TabStripFlatEdgeButton::NotifyClick(event);
 }
 
 BEGIN_METADATA(NewTabButton)
