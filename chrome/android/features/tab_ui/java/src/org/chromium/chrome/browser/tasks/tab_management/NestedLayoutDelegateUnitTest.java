@@ -773,6 +773,11 @@ public class NestedLayoutDelegateUnitTest {
         verifyNoInteractions(mMediator);
     }
 
+    @Test
+    public void testAreTabsInSameGroup_ReturnsFalse() {
+        assertFalse(mDelegate.areTabsInSameGroup(TAB1_ID, mTab2));
+    }
+
     private PropertyModel addTabToModelList(int tabId, @Nullable Token tabGroupId) {
         PropertyModel model =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)

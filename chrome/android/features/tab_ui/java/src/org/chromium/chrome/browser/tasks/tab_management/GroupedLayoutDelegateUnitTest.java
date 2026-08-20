@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -727,6 +728,25 @@ public class GroupedLayoutDelegateUnitTest {
         mDelegate.onTabSelectionToggled(model, TAB1_ID, /* wasSelected= */ false);
 
         verify(mMediator, never()).updateThumbnailFetcher(any(), anyInt());
+    }
+
+    @Test
+    public void testAreTabsInSameGroup() {
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        assertTrue(mDelegate.areTabsInSameGroup(TAB1_ID, mTab2));
+
+        Token otherGroupId = new Token(3L, 4L);
+        when(mTab2.getTabGroupId()).thenReturn(otherGroupId);
+        assertFalse(mDelegate.areTabsInSameGroup(TAB1_ID, mTab2));
+
+        when(mTab1.getTabGroupId()).thenReturn(null);
+        when(mTab2.getTabGroupId()).thenReturn(null);
+        assertFalse(mDelegate.areTabsInSameGroup(TAB1_ID, mTab2));
+
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(null);
+        assertFalse(mDelegate.areTabsInSameGroup(TAB1_ID, mTab2));
     }
 
     private PropertyModel createAndAddPropertyModel(int tabId) {

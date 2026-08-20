@@ -1401,12 +1401,9 @@ public class TabListMediator implements TabListNotificationHandler {
                 int modelTabId = TabProperties.getTabId(model);
 
                 if (modelTabId != tab.getId()) {
-                    Tab previousTab = getCurrentTabModelChecked().getTabById(modelTabId);
                     // If the tab is in the same tab group, we can just update the model's TAB_ID
                     // rather than resetting the list.
-                    if (mLayoutType != TabListLayoutType.FLAT
-                            && previousTab != null
-                            && Objects.equals(previousTab.getTabGroupId(), tab.getTabGroupId())) {
+                    if (mTabListLayoutDelegate.areTabsInSameGroup(modelTabId, tab)) {
                         continue;
                     }
                     return false;
@@ -2066,14 +2063,6 @@ public class TabListMediator implements TabListNotificationHandler {
         ActorUiTabController controller = ActorUiTabController.from(tab);
         updateActorUiState(tabInfo, controller == null ? null : controller.getUiTabState());
 
-        // Tab group representation cards default to a collapsed state. In standard GTS, this
-        // property is conceptually permanently collapsed, while in Vertical Tabs, it acts as the
-        // dynamic accordion state toggle for inline child tab row display.
-        boolean isTabGroup = isTabInTabGroup(tab) && mLayoutType != TabListLayoutType.FLAT;
-        if (isTabGroup) {
-            tabInfo.set(TabProperties.IS_COLLAPSED, true);
-        }
-
         if (mRailCollapseStateSupplier != null) {
             tabInfo.set(TabProperties.RAIL_COLLAPSE_STATE, mRailCollapseStateSupplier.get());
         }
@@ -2413,23 +2402,18 @@ public class TabListMediator implements TabListNotificationHandler {
     }
 
     void updateActionButtonDescriptionString(Tab tab, PropertyModel model) {
-        TextResolver descriptionTextResolver;
-        if (mLayoutType != TabListLayoutType.FLAT) {
-            boolean isTabGroup = TabProperties.isTabGroupHeader(model);
+        if (TabProperties.isTabGroupHeader(model)) {
             int numOfRelatedTabs = getRelatedTabsForId(tab.getId()).size();
-            if (isTabGroup) {
-                String title = getLatestTitleForTabOrGroup(tab, model, /* useDefault= */ false);
+            String title = getLatestTitleForTabOrGroup(tab, model, /* useDefault= */ false);
 
-                descriptionTextResolver =
-                        getActionButtonDescriptionTextResolver(numOfRelatedTabs, title, tab);
-                model.set(
-                        TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER,
-                        descriptionTextResolver);
-                return;
-            }
+            TextResolver descriptionTextResolver =
+                    getActionButtonDescriptionTextResolver(numOfRelatedTabs, title, tab);
+            model.set(
+                    TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER, descriptionTextResolver);
+            return;
         }
 
-        descriptionTextResolver =
+        TextResolver descriptionTextResolver =
                 (Context context) ->
                         context.getString(
                                 R.string.accessibility_tabstrip_btn_close_tab,

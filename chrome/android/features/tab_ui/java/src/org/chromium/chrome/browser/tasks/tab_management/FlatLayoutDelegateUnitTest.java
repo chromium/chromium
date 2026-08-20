@@ -419,6 +419,11 @@ public class FlatLayoutDelegateUnitTest {
         verifyNoInteractions(mMediator);
     }
 
+    @Test
+    public void testAreTabsInSameGroup_ReturnsFalse() {
+        assertFalse(mDelegate.areTabsInSameGroup(TAB1_ID, mTab2));
+    }
+
     private void addTabsToModelList(int... tabIds) {
         for (int tabId : tabIds) {
             PropertyModel model = new PropertyModel(TabProperties.ALL_KEYS_TAB_GRID);

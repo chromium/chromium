@@ -27,6 +27,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * {@link TabListMediator.TabListLayoutType#GROUPED} implementation of {@link
@@ -419,5 +420,13 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         if (tab != null && tabModel.isTabInTabGroup(tab)) {
             mMediator.updateThumbnailFetcher(model, tabId);
         }
+    }
+
+    @Override
+    boolean areTabsInSameGroup(int previousTabId, Tab newTab) {
+        Tab previousTab = mMediator.getCurrentTabModelChecked().getTabById(previousTabId);
+        return previousTab != null
+                && previousTab.getTabGroupId() != null
+                && Objects.equals(previousTab.getTabGroupId(), newTab.getTabGroupId());
     }
 }

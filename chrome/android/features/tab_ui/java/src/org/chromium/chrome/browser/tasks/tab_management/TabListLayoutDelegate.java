@@ -294,6 +294,20 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
     void onTabSelectionToggled(PropertyModel model, int tabId, boolean wasSelected) {}
 
     /**
+     * Returns whether an existing card representing {@code previousTabId} and {@code newTab} are in
+     * the same tab group represented by this card, allowing the card's tab ID to be updated in
+     * place rather than resetting the list. Flat and nested layouts do not share cards across group
+     * tabs and default to false.
+     *
+     * @param previousTabId The ID of the tab currently represented by the model.
+     * @param newTab The incoming {@link Tab} to be displayed at this position.
+     * @return Whether the two tabs belong to the same group card in this layout.
+     */
+    boolean areTabsInSameGroup(int previousTabId, Tab newTab) {
+        return false;
+    }
+
+    /**
      * Adjusts the proposed insertion UI index if the tab is being moved from an earlier position.
      *
      * <p>If a tab is already present in the UI list (meaning it is being moved rather than newly
