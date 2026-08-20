@@ -1065,10 +1065,6 @@ bool Layer::HasExternalContent() const {
   return false;
 }
 
-bool Layer::HasTransferableResource() const {
-  return false;
-}
-
 bool Layer::SchedulePaint(const gfx::Rect& invalid_rect) {
   if (!ShouldSchedulePaint()) {
     return false;

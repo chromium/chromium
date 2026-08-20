@@ -454,12 +454,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   // an external texture.
   virtual bool HasExternalContent() const;
 
-  // Returns true if the layer has a transferable resource. A transferable
-  // resource is an externally provided GPU resource (e.g., a texture or
-  // hardware buffer) that the layer can display without needing to paint
-  // content itself.
-  virtual bool HasTransferableResource() const;
-
   // Returns true if the layer should schedule a paint when requested. By
   // default, this is true for layers with painted content or external
   // transferable resources, but false for layers that do not draw or draw

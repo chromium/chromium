@@ -40,9 +40,10 @@ class COMPOSITOR_EXPORT LayerWithExternalTexture
                                gfx::Size texture_size_in_dip);
   void SetTextureSize(gfx::Size texture_size_in_dip);
 
+  bool HasTransferableResource() const;
+
   // Layer:
   bool HasExternalContent() const override;
-  bool HasTransferableResource() const override;
   void RecomputeDrawsContentAndUVRect() override;
   bool ShouldSchedulePaint() const override;
 

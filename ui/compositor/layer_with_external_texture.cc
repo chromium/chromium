@@ -72,6 +72,10 @@ void LayerWithExternalTexture::SetTextureSize(gfx::Size texture_size_in_dip) {
   texture_layer_->SetNeedsDisplay();
 }
 
+bool LayerWithExternalTexture::HasTransferableResource() const {
+  return !transfer_resource_.is_empty();
+}
+
 std::unique_ptr<Layer> LayerWithExternalTexture::CreateMirror(
     const LayerMirrorSettings& settings) {
   auto mirror = Layer::CreateMirror(settings);
@@ -92,10 +96,6 @@ std::unique_ptr<Layer> LayerWithExternalTexture::CreateMirror(
 
 bool LayerWithExternalTexture::HasExternalContent() const {
   return texture_layer_.get();
-}
-
-bool LayerWithExternalTexture::HasTransferableResource() const {
-  return !transfer_resource_.is_empty();
 }
 
 void LayerWithExternalTexture::RecomputeDrawsContentAndUVRect() {
