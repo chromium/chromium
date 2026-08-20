@@ -41,7 +41,7 @@ import zlib
 # should not be changed manually.
 # They are also read by build/config/compiler/BUILD.gn.
 CLANG_REVISION = 'llvmorg-24-init-3796-g20e97c4b'
-CLANG_SUB_REVISION = 2
+CLANG_SUB_REVISION = 3
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
 RELEASE_VERSION = '24'
@@ -358,10 +358,9 @@ def UpdatePackage(
     # When doing win/cross builds on other hosts, get the Windows runtime
     # libraries, and llvm-symbolizer.exe (needed in asan builds).
     DownloadAndUnpackClangWinRuntime(dir)
-  if package_name == 'clang' and 'android' in target_os and host_os != 'linux':
-    # Non-Linux hosts building for Android need the Android compiler-rt
-    # runtimes; they ship in the Linux clang package, so cross builds pull
-    # them via the standalone clang-android-runtime-library package.
+  if package_name == 'clang' and 'android' in target_os:
+    # Every host building for Android needs the Android compiler-rt runtimes,
+    # which ship only in the standalone clang-android-runtime-library package.
     DownloadAndUnpackClangAndroidRuntime(dir)
 
   WriteStampFile(expected_stamp, stamp_file, preserve_gcs_signature)

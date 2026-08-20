@@ -491,10 +491,9 @@ def main():
       ]
     )
     # The Android compiler-rt runtimes are cross-compiled target libraries
-    # (host-independent). Ship them as a standalone package so non-Linux hosts
-    # building for Android can overlay them onto their host clang without
-    # pulling the entire Linux clang package. They are also kept in the Linux
-    # package above (via want.update) for native Linux Android builds.
+    # (host-independent). Ship them only as a standalone package that every
+    # host building for Android (Linux included) overlays onto its host clang,
+    # rather than bundling them into each host's clang package.
     runtime_package_name = 'clang-android-runtime-library'
     runtime_packages = set(
       [
@@ -536,7 +535,6 @@ def main():
         # pylint: enable=line-too-long
       ]
     )
-    want.update(runtime_packages)
   elif sys.platform == 'win32':
     runtime_package_name = 'clang-win-runtime-library'
 
@@ -727,10 +725,13 @@ def main():
     shutil.rmtree(runtime_dir, ignore_errors=True)
     for f in sorted(replace_version(runtime_packages, RELEASE_VERSION)):
       os.makedirs(os.path.dirname(os.path.join(runtime_dir, f)), exist_ok=True)
-      shutil.copy(
-        os.path.join(pdir, f),
-        os.path.join(runtime_dir, f),
-      )
+      # Prefer the staged package dir, but fall back to the build output for
+      # runtimes that are not bundled into the host package (e.g. the Android
+      # target runtimes, which ship only in this standalone package).
+      src = os.path.join(pdir, f)
+      if not os.path.exists(src):
+        src = os.path.join(LLVM_RELEASE_DIR, f)
+      shutil.copy(src, os.path.join(runtime_dir, f))
     PackageInArchive(runtime_dir, runtime_dir)
     MaybeUpload(args.upload, args.bucket, f'{runtime_dir}.tar.xz', gcs_platform)
 
