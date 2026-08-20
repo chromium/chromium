@@ -12,6 +12,8 @@
 #import <vector>
 
 #import "base/base64.h"
+#import "base/debug/crash_logging.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
@@ -178,8 +180,9 @@ void MojoFacade::HandleMojoMessage(
   WebUIMojoActions action_outcome = WebUIMojoActions::kSuccess;
 
   if (*name == "Mojo.bindInterface") {
-    // HandleMojoBindInterface does not return a value.
-    HandleMojoBindInterface(*args);
+    if (!HandleMojoBindInterface(*args)) {
+      action_outcome = WebUIMojoActions::kFailure;
+    }
   } else if (*name == "MojoHandle.close") {
     // HandleMojoHandleClose does not return a value.
     HandleMojoHandleClose(*args);
@@ -227,17 +230,28 @@ void MojoFacade::HandleMojoMessage(
   std::move(completion).Run(message_id, json_result);
 }
 
-void MojoFacade::HandleMojoBindInterface(const base::DictValue& args) {
+bool MojoFacade::HandleMojoBindInterface(const base::DictValue& args) {
   const std::string* interface_name = args.FindString("interfaceName");
-  CHECK(interface_name);
-
   std::optional<int> pipe_id = FindIntOrDoubleAsInt(args, "requestHandle");
-  CHECK(pipe_id.has_value());
 
-  mojo::ScopedMessagePipeHandle pipe = TakePipeFromId(*pipe_id);
-  CHECK(pipe.is_valid());
+  mojo::ScopedMessagePipeHandle pipe;
+  if (pipe_id.has_value()) {
+    pipe = TakePipeFromId(*pipe_id);
+  }
+
+  if (!interface_name || !pipe_id.has_value() || !pipe.is_valid()) {
+    SCOPED_CRASH_KEY_STRING32("MojoFacade", "interface",
+                              interface_name ? *interface_name : "missing");
+    SCOPED_CRASH_KEY_NUMBER("MojoFacade", "requestHandle",
+                            pipe_id.value_or(-1));
+    SCOPED_CRASH_KEY_BOOL("MojoFacade", "pipe_valid", pipe.is_valid());
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+
   web_state_->GetInterfaceBinderForMainFrame()->BindInterface(
       mojo::GenericPendingReceiver(*interface_name, std::move(pipe)));
+  return true;
 }
 
 void MojoFacade::HandleMojoHandleClose(const base::DictValue& args) {

@@ -64,12 +64,13 @@ class MojoFacade : public web::WebStateObserver,
                                    const base::Value* value,
                                    NSError* error);
 
-  // Connects to specified Mojo interface. `args` is a dictionary with the
+  // Connects to specified Mojo interface. Returns true on success, false if
+  // arguments or handle are invalid. `args` is a dictionary with the
   // following keys:
   //   - "interfaceName" (a string representing an interface name);
   //   - "requestHandle" (a number representing MojoHandle of the interface
   //     request).
-  void HandleMojoBindInterface(const base::DictValue& args);
+  bool HandleMojoBindInterface(const base::DictValue& args);
 
   // Closes the given handle. `args` is a dictionary which must contain "handle"
   // key, which is a number representing a MojoHandle.
