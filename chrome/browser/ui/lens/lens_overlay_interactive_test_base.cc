@@ -11,9 +11,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/test_lens_search_controller.h"
@@ -253,7 +253,7 @@ LensOverlayInteractiveTestBase::FinishScreenshotUpload(int tab_id) {
   // update file upload status to success for testing.
   return Steps(Do([this, tab_id]() {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetWebContentsAt(tab_id);
+        browser()->GetTabStripModel()->GetWebContentsAt(tab_id);
     auto* controller = LensSearchController::FromTabWebContents(web_contents);
     auto* router = controller->query_router();
     auto file_token = router->overlay_tab_context_file_token();

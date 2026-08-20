@@ -5,6 +5,8 @@
 // This class runs CUJ tests for lens overlay. These tests simulate input events
 // and cannot be run in parallel.
 
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
+
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -24,10 +26,9 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_interactive_test_base.h"
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
@@ -1139,7 +1140,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerEduActionChipTest,
   // We need to wait for paint in order to take a screenshot of the page.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return browser()
-        ->tab_strip_model()
+        ->GetTabStripModel()
         ->GetActiveTab()
         ->GetContents()
         ->CompletedFirstVisuallyNonEmptyPaint();
@@ -1201,7 +1202,7 @@ class LensOverlayControllerCsbTest : public LensOverlayControllerCUJTest {
         EnsurePresent(kActiveTab, kPathToBody),
         WaitForWebContentsPainted(kActiveTab), Do([=, this]() {
           content::WebContents* web_contents =
-              browser()->tab_strip_model()->GetActiveWebContents();
+              browser()->GetTabStripModel()->GetActiveWebContents();
           auto* controller =
               LensSearchController::FromTabWebContents(web_contents);
           controller->OpenLensOverlay(

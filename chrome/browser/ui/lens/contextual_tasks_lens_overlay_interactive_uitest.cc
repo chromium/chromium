@@ -19,9 +19,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_interactive_test_base.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
@@ -127,7 +127,7 @@ class ContextualTasksLensOverlayControllerInteractiveUiTest
         Do([this, tab_index]() {
           // Verify Lens Overlay is closed.
           content::WebContents* web_contents =
-              browser()->tab_strip_model()->GetWebContentsAt(tab_index);
+              browser()->GetTabStripModel()->GetWebContentsAt(tab_index);
           auto* lens_controller =
               LensSearchController::FromTabWebContents(web_contents);
           EXPECT_TRUE(lens_controller->IsClosing() || lens_controller->IsOff());
@@ -193,12 +193,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
       EnsureNotPresent(kContextualTasksSidePanelWebViewElementId), Do([&]() {
         // Associate the task from tab0 to this new tab.
         SessionID tab_id0 = sessions::SessionTabHelper::IdForTab(
-            browser()->tab_strip_model()->GetWebContentsAt(0));
+            browser()->GetTabStripModel()->GetWebContentsAt(0));
         auto task = contextual_tasks_service->GetContextualTaskForTab(tab_id0);
         contextual_tasks_service->AssociateTabWithTask(
             task->GetTaskId(),
             sessions::SessionTabHelper::IdForTab(
-                browser()->tab_strip_model()->GetWebContentsAt(1)));
+                browser()->GetTabStripModel()->GetWebContentsAt(1)));
 
         // Show contextual tasks side panel.
         controller->Show();
@@ -244,14 +244,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
       WaitForHide(kContextualTasksSidePanelWebViewElementId), Do([&]() {
         // Verify Lens Overlay is not closing on the first tab.
         content::WebContents* web_contents =
-            browser()->tab_strip_model()->GetWebContentsAt(0);
+            browser()->GetTabStripModel()->GetWebContentsAt(0);
         auto* lens_controller =
             LensSearchController::FromTabWebContents(web_contents);
         EXPECT_FALSE(lens_controller->IsClosing() || lens_controller->IsOff());
 
         // Verify Lens Overlay is closed on the second tab.
         content::WebContents* web_contents1 =
-            browser()->tab_strip_model()->GetWebContentsAt(1);
+            browser()->GetTabStripModel()->GetWebContentsAt(1);
         auto* lens_controller1 =
             LensSearchController::FromTabWebContents(web_contents1);
         EXPECT_TRUE(lens_controller1->IsClosing() || lens_controller1->IsOff());

@@ -49,7 +49,6 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -57,6 +56,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
@@ -817,7 +817,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
 
   LensOverlayController* GetLensOverlayController() {
     return browser()
-        ->tab_strip_model()
+        ->GetTabStripModel()
         ->GetActiveTab()
         ->GetTabFeatures()
         ->lens_overlay_controller();
@@ -1005,7 +1005,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   // Helper to get a test context menu on the active tab.
   std::unique_ptr<TestRenderViewContextMenu> GetContextMenu() {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     return TestRenderViewContextMenu::Create(web_contents,
                                              web_contents->GetURL());
   }
@@ -1221,7 +1221,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Force the live page renderer to terminate.
   content::WebContents* tab_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::RenderProcessHost* process =
       tab_contents->GetPrimaryMainFrame()->GetProcess();
   content::ScopedAllowRendererCrashes allow_renderer_crashes(process);
@@ -1550,7 +1550,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       [&]() { return controller->state() == State::kOverlay; }));
 
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(contents);
 
   permissions::PermissionRequestObserver observer(contents);
@@ -2277,7 +2277,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // The tab ID should have been correctly set for use by the searchbox.
   content::WebContents* tab_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab_web_contents);
   EXPECT_EQ(controller->GetTabIdForTesting(), tab_id);
 
@@ -2296,7 +2296,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Grab the index of the currently active tab so we can return to it later.
   int active_controller_tab_index =
-      browser()->tab_strip_model()->active_index();
+      browser()->GetTabStripModel()->active_index();
 
   // Showing UI should change the state to screenshot and eventually to overlay.
   OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
@@ -2334,7 +2334,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(GetWebView()->GetEnabled());
 
   // Returning back to the previous tab should show the overlay UI again.
-  browser()->tab_strip_model()->ActivateTabAt(active_controller_tab_index);
+  browser()->GetTabStripModel()->ActivateTabAt(active_controller_tab_index);
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return IsLensResultsSidePanelShowing(); }));
   EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
@@ -2362,7 +2362,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Grab the index of the currently active tab so we can return to it later.
   int active_controller_tab_index =
-      browser()->tab_strip_model()->active_index();
+      browser()->GetTabStripModel()->active_index();
 
   // Issue a text search request to open the side panel without the overlay.
   search_controller->IssueTextSearchRequest(
@@ -2394,7 +2394,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(GetWebView()->GetEnabled());
 
   // Returning back to the previous tab should restore the side panel.
-  browser()->tab_strip_model()->ActivateTabAt(active_controller_tab_index);
+  browser()->GetTabStripModel()->ActivateTabAt(active_controller_tab_index);
 
   // Overlay should still be off.
   ASSERT_EQ(controller->state(), State::kOff);
@@ -2596,7 +2596,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(IsLensResultsSidePanelShowing());
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
-  int tabs = browser()->tab_strip_model()->count();
+  int tabs = browser()->GetTabStripModel()->count();
 
   // Verify the fake controller exists and reset any loading that was done
   // before as part of setup.
@@ -2626,7 +2626,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   observer.Wait();
 
   // It should not open a new tab as this is a same-origin navigation.
-  EXPECT_EQ(tabs, browser()->tab_strip_model()->count());
+  EXPECT_EQ(tabs, browser()->GetTabStripModel()->count());
 
   VerifySearchQueryParameters(observer.last_navigation_url());
   VerifyTextQueriesAreEqual(observer.last_navigation_url(), nav_url);
@@ -2679,7 +2679,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(IsLensResultsSidePanelShowing());
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
-  int tabs = browser()->tab_strip_model()->count();
+  int tabs = browser()->GetTabStripModel()->count();
 
   // Verify the fake controller exists and reset any loading that was done
   // before as part of setup.
@@ -2710,7 +2710,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(new_tab->GetLastCommittedURL(), nav_url);
   // It should open a new tab as this is a an unsupported search URL for the
   // side panel.
-  EXPECT_EQ(tabs + 1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(tabs + 1, browser()->GetTabStripModel()->count());
 
   // Verify the loading state was not set.
   EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_true_, 0);
@@ -2877,7 +2877,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       [&]() { return controller->state() == State::kOverlay; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
   EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
-  int tabs = browser()->tab_strip_model()->count();
+  int tabs = browser()->GetTabStripModel()->count();
 
   controller->IssueSearchBoxRequestForTesting(
       kTestTime, "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
@@ -2920,7 +2920,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // this point.
   companion::TextHighlighterManager* manager =
       companion::TextHighlighterManager::GetForPage(browser()
-                                                        ->tab_strip_model()
+                                                        ->GetTabStripModel()
                                                         ->GetActiveTab()
                                                         ->GetContents()
                                                         ->GetPrimaryPage());
@@ -2935,7 +2935,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(base::test::RunUntil([&]() {
     manager =
         companion::TextHighlighterManager::GetForPage(browser()
-                                                          ->tab_strip_model()
+                                                          ->GetTabStripModel()
                                                           ->GetActiveTab()
                                                           ->GetContents()
                                                           ->GetPrimaryPage());
@@ -2943,7 +2943,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   }));
 
   // It should not open a new tab as this only renders text highlights.
-  EXPECT_EQ(tabs, browser()->tab_strip_model()->count());
+  EXPECT_EQ(tabs, browser()->GetTabStripModel()->count());
   EXPECT_TRUE(manager);
   EXPECT_FALSE(manager->get_text_highlighters_for_testing().empty());
   for (const auto& highlighter : manager->get_text_highlighters_for_testing()) {
@@ -3037,7 +3037,7 @@ IN_PROC_BROWSER_TEST_F(
   // this point.
   companion::TextHighlighterManager* manager =
       companion::TextHighlighterManager::GetForPage(browser()
-                                                        ->tab_strip_model()
+                                                        ->GetTabStripModel()
                                                         ->GetActiveTab()
                                                         ->GetContents()
                                                         ->GetPrimaryPage());
@@ -3135,7 +3135,7 @@ IN_PROC_BROWSER_TEST_F(
   // this point.
   companion::TextHighlighterManager* manager =
       companion::TextHighlighterManager::GetForPage(browser()
-                                                        ->tab_strip_model()
+                                                        ->GetTabStripModel()
                                                         ->GetActiveTab()
                                                         ->GetContents()
                                                         ->GetPrimaryPage());
@@ -3189,7 +3189,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(IsLensResultsSidePanelShowing());
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
-  int tabs = browser()->tab_strip_model()->count();
+  int tabs = browser()->GetTabStripModel()->count();
 
   // The results frame should be the only child frame of the side panel web
   // contents.
@@ -3218,7 +3218,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   observer.WaitForNavigationFinished();
 
   // It should not open a new tab as this is a same-origin navigation.
-  EXPECT_EQ(tabs, browser()->tab_strip_model()->count());
+  EXPECT_EQ(tabs, browser()->GetTabStripModel()->count());
 
   VerifySearchQueryParameters(observer.last_navigation_url());
   VerifyTextQueriesAreEqual(observer.last_navigation_url(), nav_url);
@@ -3334,7 +3334,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(IsLensResultsSidePanelShowing());
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
-  int tabs = browser()->tab_strip_model()->count();
+  int tabs = browser()->GetTabStripModel()->count();
 
   // The results frame should be the only child frame of the side panel web
   // contents.
@@ -3361,7 +3361,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // It should not open a new tab as the initatior origin should not be
   // considered "trusted".
-  EXPECT_EQ(tabs, browser()->tab_strip_model()->count());
+  EXPECT_EQ(tabs, browser()->GetTabStripModel()->count());
   // Verify the loading state was never set.
   EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_true_, 0);
   EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_false_, 0);
@@ -4525,7 +4525,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       [&]() { return controller->state() == State::kOverlay; }));
 
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(contents);
 
   // Call replaceState, pushState, and back on the underlying page.
@@ -4892,7 +4892,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerEntrypointsBrowserTest,
 
   // Grab the index of the currently active tab so we can return to it later.
   int active_controller_tab_index =
-      browser()->tab_strip_model()->active_index();
+      browser()->GetTabStripModel()->active_index();
 
   // Switch to a new tab.
   WaitForPaint(kDocumentWithNamedElement,
@@ -4906,7 +4906,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerEntrypointsBrowserTest,
   VerifyEntrypoints(/*expected_visible=*/true);
 
   // Switch back to the original tab.
-  browser()->tab_strip_model()->ActivateTabAt(active_controller_tab_index);
+  browser()->GetTabStripModel()->ActivateTabAt(active_controller_tab_index);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
@@ -5043,7 +5043,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Get the underlying tab before we open a new tab.
   content::WebContents* underlying_tab_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Open the Overlay
   OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
@@ -5079,7 +5079,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Get the underlying tab before we open a new tab.
   content::WebContents* underlying_tab_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Open the Overlay
   OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
@@ -5311,14 +5311,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Call OnScrollToMessage.
   std::vector<std::string> text_fragments = {"text1", "text2"};
   uint32_t page_number = 3;
-  int tabs = browser()->tab_strip_model()->count();
+  int tabs = browser()->GetTabStripModel()->count();
   GetLensOverlaySidePanelCoordinator()->SetLatestPageUrlWithResponse(
       GURL("file:///test.pdf"));
   GetLensOverlaySidePanelCoordinator()->OnScrollToMessage(text_fragments,
                                                           page_number);
 
   // Expect a new tab to be opened.
-  EXPECT_EQ(tabs + 1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(tabs + 1, browser()->GetTabStripModel()->count());
   EXPECT_EQ(0u, observer.dispatched_events().size());
 }
 
@@ -5393,7 +5393,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserFullscreenDisabled,
                                                     .exclusive_access_manager()
                                                     ->fullscreen_controller();
   content::WebContents* tab_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   fullscreen_controller->EnterFullscreenModeForTab(
       tab_web_contents->GetPrimaryMainFrame());
 
@@ -5422,7 +5422,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserFullscreenDisabled,
                                                     .exclusive_access_manager()
                                                     ->fullscreen_controller();
   content::WebContents* tab_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   fullscreen_controller->EnterFullscreenModeForTab(
       tab_web_contents->GetPrimaryMainFrame());
 
@@ -5503,7 +5503,7 @@ class LensOverlayControllerBrowserPDFTest
 
   LensOverlayController* GetLensOverlayController() {
     return browser()
-        ->tab_strip_model()
+        ->GetTabStripModel()
         ->GetActiveTab()
         ->GetTabFeatures()
         ->lens_overlay_controller();
@@ -5534,7 +5534,7 @@ class LensOverlayControllerBrowserPDFTest
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        OverlayWebUILoadsInTab) {
   content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Navigate to the lens overlay WebUI and wait for load to finish.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -5549,7 +5549,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        SidePanelWebUILoadsInTab) {
   content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Navigate to the lens overlay WebUI and wait for load to finish.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -5580,7 +5580,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
       }));
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::SimulateMouseClick(tab, 0, blink::WebMouseEvent::Button::kRight);
 
   // Verify the overlay eventually opens.
@@ -5662,7 +5662,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
   // Call OnScrollToMessage.
   std::vector<std::string> text_fragments = {"text1", "text2"};
   uint32_t page_number = 3;
-  int tabs = browser()->tab_strip_model()->count();
+  int tabs = browser()->GetTabStripModel()->count();
   GetLensOverlaySidePanelCoordinator()->SetLatestPageUrlWithResponse(
       expected_file_url);
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
@@ -5675,7 +5675,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
   EXPECT_EQ(new_tab->GetLastCommittedURL(), expected_file_url);
 
   // Expect one new tab to have opened.
-  EXPECT_EQ(tabs + 1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(tabs + 1, browser()->GetTabStripModel()->count());
 }
 
 // This test is wrapped in this BUILDFLAG block because the fallback region
@@ -5703,7 +5703,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
       }));
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::SimulateMouseClick(tab, 0, blink::WebMouseEvent::Button::kRight);
 
   // Verify the region search flow eventually opens.
@@ -6319,7 +6319,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
-  int tab_count = browser()->tab_strip_model()->count();
+  int tab_count = browser()->GetTabStripModel()->count();
 
   controller->IssueSearchBoxRequestForTesting(
       kTestTime, "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
@@ -6364,7 +6364,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   observer.WaitForEventWithName(
       extensions::api::pdf_viewer_private::OnShouldUpdateViewport::kEventName);
   EXPECT_EQ(1u, observer.dispatched_events().size());
-  EXPECT_EQ(tab_count, browser()->tab_strip_model()->count());
+  EXPECT_EQ(tab_count, browser()->GetTabStripModel()->count());
 }
 
 class LensOverlayControllerBrowserPDFUpdatedContentFieldsTest
@@ -7707,8 +7707,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // There should be two tabs. Close the first tab.
   // Regression testing for crbug.com/373767988. Ensure no crash when
   // closing a tab that wasn't screenshotable.
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
-  browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(/*index=*/0);
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 2);
+  browser()->GetTabStripModel()->DetachAndDeleteWebContentsAt(/*index=*/0);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -9144,7 +9144,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
   EXPECT_FALSE(AreAnyRoundedCornersShowing());
 
   // Switch to the first tab.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   WaitForPaint();
 
@@ -9169,7 +9169,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
   EXPECT_FALSE(AreAnyRoundedCornersShowing());
 
   // Switch back to the second tab.
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
 
   // Wait for backgrounded state to be restored.
   ASSERT_TRUE(base::test::RunUntil(
@@ -9516,7 +9516,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
 
   // Grab the index of the currently active tab so we can return to it later.
   int active_controller_tab_index =
-      browser()->tab_strip_model()->active_index();
+      browser()->GetTabStripModel()->active_index();
 
   // Opening a new tab should background the overlay UI.
   WaitForPaint(kDocumentWithNamedElement,
@@ -9533,7 +9533,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
   }));
 
   // Returning back to the previous tab should show the overlay UI again.
-  browser()->tab_strip_model()->ActivateTabAt(active_controller_tab_index);
+  browser()->GetTabStripModel()->ActivateTabAt(active_controller_tab_index);
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return IsLensResultsSidePanelShowing(); }));
 
@@ -9811,7 +9811,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
 
   // Grab the index of the currently active tab so we can return to it later.
   int active_controller_tab_index =
-      browser()->tab_strip_model()->active_index();
+      browser()->GetTabStripModel()->active_index();
 
   // Opening a new tab should background the overlay UI.
   WaitForPaint(kDocumentWithNamedElement,
@@ -9824,7 +9824,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
 
   // Returning back to the previous tab should show the side panel, but not the
   // overlay.
-  browser()->tab_strip_model()->ActivateTabAt(active_controller_tab_index);
+  browser()->GetTabStripModel()->ActivateTabAt(active_controller_tab_index);
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return IsLensResultsSidePanelShowing(); }));
   EXPECT_EQ(controller->state(), State::kHidden);
@@ -9869,7 +9869,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
 
   // Grab the index of the currently active tab so we can return to it later.
   int active_controller_tab_index =
-      browser()->tab_strip_model()->active_index();
+      browser()->GetTabStripModel()->active_index();
 
   // Opening a new tab should background the overlay UI.
   WaitForPaint(kDocumentWithNamedElement,
@@ -9883,7 +9883,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
 
   // Returning back to the previous tab should not show the overlay or side
   // panel UI.
-  browser()->tab_strip_model()->ActivateTabAt(active_controller_tab_index);
+  browser()->GetTabStripModel()->ActivateTabAt(active_controller_tab_index);
   EXPECT_FALSE(IsLensResultsSidePanelShowing());
   // Overlay controller state should be kOff.
   EXPECT_EQ(controller->state(), State::kOff);
@@ -10048,7 +10048,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Keep track of the active tab index.
   int active_controller_tab_index =
-      browser()->tab_strip_model()->active_index();
+      browser()->GetTabStripModel()->active_index();
 
   // 2. Background the tab by opening a new tab.
   WaitForPaint(kDocumentWithNamedElement,
@@ -10065,7 +10065,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(clipboard_text, u"active text 1");
 
   // 4. Reactivate the tab.
-  browser()->tab_strip_model()->ActivateTabAt(active_controller_tab_index);
+  browser()->GetTabStripModel()->ActivateTabAt(active_controller_tab_index);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
@@ -10100,7 +10100,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr));
 
   // 8. Reactivate the tab.
-  browser()->tab_strip_model()->ActivateTabAt(active_controller_tab_index);
+  browser()->GetTabStripModel()->ActivateTabAt(active_controller_tab_index);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
@@ -10133,7 +10133,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Keep track of the active tab index.
   int active_controller_tab_index =
-      browser()->tab_strip_model()->active_index();
+      browser()->GetTabStripModel()->active_index();
 
   // Background the tab by opening a new tab.
   WaitForPaint(kDocumentWithNamedElement,
@@ -10169,7 +10169,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(file_dialog_opened);
 
   // Reactivate the tab.
-  browser()->tab_strip_model()->ActivateTabAt(active_controller_tab_index);
+  browser()->GetTabStripModel()->ActivateTabAt(active_controller_tab_index);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 

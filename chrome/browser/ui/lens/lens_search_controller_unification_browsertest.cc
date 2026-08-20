@@ -15,7 +15,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate_desktop.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(LensSearchControllerUnificationSignOutDisabledTest,
 
 IN_PROC_BROWSER_TEST_F(LensSearchControllerUnificationBrowserTest,
                        IsWebUIEnabledInIncognito_WithUnificationEnabled) {
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   Profile* incognito_profile = incognito_browser->GetProfile();
   EXPECT_TRUE(incognito_profile->IsOffTheRecord());
 
@@ -403,7 +403,7 @@ class LensSearchControllerUnificationDisabledTest
 
 IN_PROC_BROWSER_TEST_F(LensSearchControllerUnificationDisabledTest,
                        IsWebUIEnabledInIncognito_WithUnificationDisabled) {
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   Profile* incognito_profile = incognito_browser->GetProfile();
   EXPECT_TRUE(incognito_profile->IsOffTheRecord());
 
