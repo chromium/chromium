@@ -232,7 +232,6 @@
 ; Reads from /System.
 (allow file-read-data
   (path "/System/Library/CoreServices/SystemVersion.plist")
-  (path "/System/Library/CoreServices/SystemVersionCompat.plist") ; https://crbug.com/1108832
   (path "/System/Library/CoreServices/checkfixlist")
 )
 
