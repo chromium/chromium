@@ -23,8 +23,8 @@ public class AddToHomescreenProperties {
             new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<Pair<Bitmap, Boolean>> ICON =
             new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableIntPropertyKey TYPE =
-            new PropertyModel.WritableIntPropertyKey();
+    public static final PropertyModel.WritableIntDefPropertyKey<AppType> TYPE =
+            new PropertyModel.WritableIntDefPropertyKey<>(AppType.NATIVE);
     public static final PropertyModel.WritableBooleanPropertyKey CAN_SUBMIT =
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<OnClickListener> CLICK_LISTENER =

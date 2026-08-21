@@ -13,7 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
@@ -78,7 +78,8 @@ public class PwaRestoreProperties {
     }
 
     // PropertyKey indicating the view state of the bottom sheet:
-    static final WritableIntPropertyKey VIEW_STATE = new WritableIntPropertyKey();
+    static final WritableIntDefPropertyKey<ViewState> VIEW_STATE =
+            new WritableIntDefPropertyKey<>(ViewState.PREVIEW);
 
     // App list:
     static final WritableObjectPropertyKey<List<AppInfo>> APPS =
