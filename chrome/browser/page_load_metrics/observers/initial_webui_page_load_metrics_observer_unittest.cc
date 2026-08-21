@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/common/chrome_features.h"
@@ -346,6 +347,44 @@ TEST_F(InitialWebUIPageLoadMetricsObserverTest,
   auto entries =
       test_ukm_recorder_.GetEntriesByName("InitialWebUINavigationTiming");
   EXPECT_THAT(entries, IsEmpty());
+}
+
+TEST_F(InitialWebUIPageLoadMetricsObserverTest, RecordsDroppedPaintHistograms) {
+  base::HistogramTester histograms;
+
+  NavigateAndCommit(GURL(kTestWebUIUrl));
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
+  timing.monotonic_paint_timing =
+      page_load_metrics::mojom::MonotonicPaintTiming::New();
+  base::TimeTicks nav_start =
+      tester()->GetDelegateForCommittedLoad().GetNavigationStart();
+  timing.monotonic_paint_timing->first_paint = nav_start + base::Seconds(2);
+  timing.monotonic_paint_timing->first_contentful_paint =
+      nav_start + base::Seconds(2);
+  PopulateRequiredTimingFields(&timing);
+
+  tester()->SimulateTimingUpdate(timing);
+
+  histograms.ExpectUniqueSample(
+      "InitialWebUI.ReloadButton.DroppedFirstPaintFromNavigationStart", 2000,
+      1);
+  histograms.ExpectUniqueSample(
+      "InitialWebUI.ReloadButton.DroppedFirstContentfulPaint"
+      "FromNavigationStart",
+      2000, 1);
+
+  // Normal metrics should not be recorded since the manager was not present.
+  histograms.ExpectTotalCount(
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.ReloadButton."
+      "FirstPaint.FromConstructor2",
+      0);
+  histograms.ExpectTotalCount(
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.ReloadButton."
+      "FirstContentfulPaint.FromConstructor2",
+      0);
 }
 
 }  // namespace
