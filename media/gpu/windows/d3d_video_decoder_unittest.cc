@@ -237,6 +237,7 @@ class D3DVideoDecoderTest : public ::testing::Test {
     EXPECT_TRUE(d3d_decoder_raw_->SubmitBitstreamBufferForTesting(bitstream));
   }
 
+  std::optional<base::test::ScopedFeatureList> scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
 
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
@@ -259,7 +260,6 @@ class D3DVideoDecoderTest : public ::testing::Test {
 
   DXGI_ADAPTER_DESC mock_adapter_desc_;
 
-  std::optional<base::test::ScopedFeatureList> scoped_feature_list_;
   base::win::ScopedCOMInitializer com_initializer_;
 };
 

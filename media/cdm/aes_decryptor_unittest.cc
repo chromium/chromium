@@ -579,6 +579,10 @@ class AesDecryptorTest : public testing::TestWithParam<TestType> {
     }
   }
 
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif
+
   // Must be the first member to be initialized first and destroyed last.
   base::test::SingleThreadTaskEnvironment task_environment_;
 
@@ -588,8 +592,6 @@ class AesDecryptorTest : public testing::TestWithParam<TestType> {
   std::string session_id_;
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   // Helper class to load/unload External Clear Key Library, if necessary.
   std::unique_ptr<ExternalClearKeyTestHelper> helper_;
 #endif

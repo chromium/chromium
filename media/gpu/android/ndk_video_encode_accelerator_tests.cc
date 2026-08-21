@@ -554,9 +554,9 @@ class NdkVideoEncoderAcceleratorTest
   VideoCodecProfile profile_;
   VideoPixelFormat pixel_format_;
 
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS};
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<base::RunLoop> loop_ = std::make_unique<base::RunLoop>();
   std::unique_ptr<VideoEncodeAccelerator> accelerator_;
   size_t output_buffer_size_ = 0;
