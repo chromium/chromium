@@ -14,9 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/utf_string_conversions.h"
-#include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
@@ -27,20 +24,14 @@
 #include "chrome/browser/ui/views/webauthn/ambient/ambient_signin_bubble_view.h"
 #include "chrome/browser/ui/webauthn/webauthn_ui_helpers.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/tabs/public/tab_interface.h"
-#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
-#include "device/fido/public/features.h"
-#include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/style/typography.h"
-#include "ui/views/widget/widget.h"
 
-using blink::mojom::CredentialTypeFlags;
 using content::RenderFrameHost;
 using content::WebContents;
 
@@ -103,30 +94,10 @@ void AmbientSigninController::ShowPageAction() {
       kActionWebAuthnAmbientSignin,
       ui::ImageModel::FromVectorIcon(*mechanism.icon, ui::kColorIcon));
 
-  if (device::kWebAuthnAmbientSigninDisplayParam.Get() ==
-      device::WebAuthnAmbientSigninDisplay::kAnchoredMessage) {
-    // TODO(https://crbug.com/358119268): This would need a new string if this
-    // text is going to remain as is. There is a trailing space without a
-    // username being added. Right now it is this way so "Sign in as"
-    // appears before the button in the anchor, and the username is inside the
-    // button.
-    controller->SetAnchoredMessageText(
-        kActionWebAuthnAmbientSignin,
-        l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SIGN_IN_AS_PROMPT,
-                                   std::u16string()));
-    controller->OverrideText(kActionWebAuthnAmbientSignin, mechanism.name);
-    controller->SetAnchoredMessageIcon(
-        kActionWebAuthnAmbientSignin,
-        ui::ImageModel::FromVectorIcon(*mechanism.icon, ui::kColorIcon));
-    controller->ShowAnchoredMessage(kActionWebAuthnAmbientSignin,
-                                    page_actions::AnchoredMessageConfig());
-  } else {
-    controller->OverrideText(
-        kActionWebAuthnAmbientSignin,
-        l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SIGN_IN_AS_PROMPT,
-                                   mechanism.name));
-    controller->ShowSuggestionChip(kActionWebAuthnAmbientSignin);
-  }
+  controller->OverrideText(kActionWebAuthnAmbientSignin,
+                           l10n_util::GetStringFUTF16(
+                               IDS_WEBAUTHN_SIGN_IN_AS_PROMPT, mechanism.name));
+  controller->ShowSuggestionChip(kActionWebAuthnAmbientSignin);
   controller->Show(kActionWebAuthnAmbientSignin);
 }
 
@@ -202,12 +173,7 @@ void AmbientSigninController::Close() {
   }
   if (auto* controller = GetPageActionController()) {
     controller->Hide(kActionWebAuthnAmbientSignin);
-    if (device::kWebAuthnAmbientSigninDisplayParam.Get() ==
-        device::WebAuthnAmbientSigninDisplay::kAnchoredMessage) {
-      controller->HideAnchoredMessage(kActionWebAuthnAmbientSignin);
-    } else {
-      controller->HideSuggestionChip(kActionWebAuthnAmbientSignin);
-    }
+    controller->HideSuggestionChip(kActionWebAuthnAmbientSignin);
   }
 }
 

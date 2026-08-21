@@ -1466,44 +1466,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIPasswordDeduplication) {
   EXPECT_EQ(result, "\"webauthn: OK\"");
 }
 
-class WebAuthnAmbientUIAnchoredMessageTest : public WebAuthnAmbientUITest {
- public:
-  WebAuthnAmbientUIAnchoredMessageTest() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        device::kWebAuthnAmbientSignin, {{"display", "anchored_message"}});
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUIAnchoredMessageTest,
-                       AmbientUIAnchoredMessage) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::DOMMessageQueue message_queue(web_contents);
-  content::ExecuteScriptAsync(web_contents, kAmbientUIGetRequest);
-  observer_->WaitForUI();
-
-  // Verify that the anchored message is shown.
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  auto* controller = browser_view->browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->GetTabFeatures()
-                         ->page_action_controller();
-  EXPECT_EQ(controller->GetActiveAnchoredMessage(),
-            kActionWebAuthnAmbientSignin);
-
-  ambient_signin::AmbientSigninController* ambient_controller =
-      ambient_signin::AmbientSigninController::GetForCurrentDocument(
-          web_contents->GetPrimaryMainFrame());
-  ASSERT_TRUE(ambient_controller);
-  ambient_controller->TriggerPageActionSignIn();
-
-  std::string result;
-  ASSERT_TRUE(message_queue.WaitForMessage(&result));
-  EXPECT_EQ(result, "\"webauthn: OK\"");
-}
-
 class WebAuthnImmediateGetTest : public WebAuthnBrowserTest {
  protected:
   static constexpr std::string_view kRequestWithPasswordTemplate = R"(

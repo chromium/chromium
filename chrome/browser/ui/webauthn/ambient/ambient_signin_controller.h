@@ -4,7 +4,6 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_AMBIENT_AMBIENT_SIGNIN_CONTROLLER_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_AMBIENT_AMBIENT_SIGNIN_CONTROLLER_H_
 
-#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -14,8 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "content/public/browser/document_user_data.h"
-
-struct AuthenticatorRequestDialogModel;
 
 namespace base {
 class CallbackListSubscription;

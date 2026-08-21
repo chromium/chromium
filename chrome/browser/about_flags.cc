@@ -4833,11 +4833,6 @@ const FeatureEntry::Choice kChildProcessSecurityPolicyRustChoices[] = {
      "ChildProcessSecurityPolicyRustProcessState"},
 };
 
-const FeatureEntry::FeatureParam kWebAuthnAmbientSignin_AnchoredMessage[] = {
-    {"display", "anchored_message"}};
-
-const FeatureEntry::FeatureVariation kWebAuthnAmbientSigninVariations[] = {
-    {"Anchored Message", kWebAuthnAmbientSignin_AnchoredMessage, nullptr}};
 
 const FeatureEntry::FeatureParam kCanvasAccessibilityBasic[] = {
     {"CanvasAccessibilityMode", "Basic"}};
@@ -12855,9 +12850,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"web-authentication-ambient-signin",
      flag_descriptions::kWebAuthnAmbientSigninName,
      flag_descriptions::kWebAuthnAmbientSigninDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(device::kWebAuthnAmbientSignin,
-                                    kWebAuthnAmbientSigninVariations,
-                                    "WebAuthenticationAmbientSignin")},
+     FEATURE_VALUE_TYPE(device::kWebAuthnAmbientSignin)},
 
     {"devtools-protocol-monitor",
      flag_descriptions::kDevToolsProtocolMonitorName,
