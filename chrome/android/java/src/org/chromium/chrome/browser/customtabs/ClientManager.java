@@ -715,7 +715,7 @@ class ClientManager {
      * @return The package name associated with the client owning the given session.
      */
     public @Nullable String getClientPackageNameForSession(@Nullable SessionHolder<?> session) {
-        return callOnSession(session, null, params -> params.getPackageName());
+        return callOnSession(session, null, SessionParams::getPackageName);
     }
 
     /**
@@ -748,7 +748,7 @@ class ClientManager {
      */
     public @Nullable BrowserCallbackWrapper getCallbackForSession(
             @Nullable SessionHolder<?> session) {
-        return callOnSession(session, null, params -> params.getCallback());
+        return callOnSession(session, null, SessionParams::getCallback);
     }
 
     /**
@@ -999,9 +999,7 @@ class ClientManager {
             @Nullable SessionHolder<?> session, boolean isInForeground) {
         callOnSession(
                 session,
-                params -> {
-                    params.mCustomTabIsInForeground = isInForeground;
-                });
+                (SessionParams params) -> params.mCustomTabIsInForeground = isInForeground);
     }
 
     public void setEngagementSignalsCallbackForSession(

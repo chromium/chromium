@@ -384,18 +384,15 @@ public class CustomTabsConnection {
 
     private boolean newSessionInternal(SessionHolder<?> session) {
         ClientManager.DisconnectCallback onDisconnect =
-                new ClientManager.DisconnectCallback() {
-                    @Override
-                    public void run(SessionHolder<?> session) {
-                        cancelSpeculation(session);
-                        if (mDisconnectCallback != null) {
-                            mDisconnectCallback.onResult(session);
-                        }
-
-                        // TODO(pshmakov): invert this dependency by moving event dispatching to a
-                        // separate class.
-                        CustomTabsClientFileProcessor.getInstance().onSessionDisconnected(session);
+                (SessionHolder<?> session1) -> {
+                    cancelSpeculation(session1);
+                    if (mDisconnectCallback != null) {
+                        mDisconnectCallback.onResult(session1);
                     }
+
+                    // TODO(pshmakov): invert this dependency by moving event dispatching to a
+                    // separate class.
+                    CustomTabsClientFileProcessor.getInstance().onSessionDisconnected(session1);
                 };
 
         PostMessageServiceConnection serviceConnection = null;
@@ -565,11 +562,9 @@ public class CustomTabsConnection {
         // Don't do anything for unknown schemes. Not having a scheme is allowed, as we allow
         // "www.example.com".
         String scheme = uri.normalizeScheme().getScheme();
-        boolean allowedScheme =
-                scheme == null
-                        || scheme.equals(UrlConstants.HTTP_SCHEME)
-                        || scheme.equals(UrlConstants.HTTPS_SCHEME);
-        return allowedScheme;
+        return scheme == null
+                || scheme.equals(UrlConstants.HTTP_SCHEME)
+                || scheme.equals(UrlConstants.HTTPS_SCHEME);
     }
 
     /**
@@ -692,14 +687,9 @@ public class CustomTabsConnection {
         // Run after the first chained warmup task completes and native is initialized.
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
-                () -> {
-                    doMayLaunchUrlOnUiThread(
-                            lowConfidence,
-                            session,
-                            urlString,
-                            extras,
-                            otherLikelyBundles);
-                });
+                () ->
+                        doMayLaunchUrlOnUiThread(
+                                lowConfidence, session, urlString, extras, otherLikelyBundles));
         return true;
     }
 
@@ -743,13 +733,12 @@ public class CustomTabsConnection {
                         if (urlString == null) continue;
                         PostTask.postTask(
                                 TaskTraits.UI_DEFAULT,
-                                () -> {
-                                    WarmupManager.getInstance()
-                                            .startPrefetchFromCct(
-                                                    urlString,
-                                                    usePrefetchProxy,
-                                                    verifiedSourceOrigin);
-                                });
+                                () ->
+                                        WarmupManager.getInstance()
+                                                .startPrefetchFromCct(
+                                                        urlString,
+                                                        usePrefetchProxy,
+                                                        verifiedSourceOrigin));
                     }
                 };
 
@@ -1125,7 +1114,7 @@ public class CustomTabsConnection {
         // processing from now on.
         if (mWarmupTasks != null) mWarmupTasks.cancel();
 
-        try (TraceEvent event = TraceEvent.scoped("CustomTabsConnection.PreconnectResources")) {
+        try (TraceEvent _ = TraceEvent.scoped("CustomTabsConnection.PreconnectResources")) {
             maybePreconnectToRedirectEndpoint(session, url, intent);
             ChromeBrowserInitializer.getInstance()
                     .runNowOrAfterFullBrowserStarted(() -> handleParallelRequest(session, intent));

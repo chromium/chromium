@@ -17,7 +17,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
@@ -172,28 +171,24 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
             button.setOnClickListener(listener);
         }
         button.setOnLongClickListener(
-                new OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View view) {
-                        final int screenWidth = view.getResources().getDisplayMetrics().widthPixels;
-                        final int screenHeight =
-                                view.getResources().getDisplayMetrics().heightPixels;
-                        final int[] screenPos = new int[2];
-                        view.getLocationOnScreen(screenPos);
-                        final int width = view.getWidth();
+                (View view) -> {
+                    final int screenWidth = view.getResources().getDisplayMetrics().widthPixels;
+                    final int screenHeight = view.getResources().getDisplayMetrics().heightPixels;
+                    final int[] screenPos = new int[2];
+                    view.getLocationOnScreen(screenPos);
+                    final int width = view.getWidth();
 
-                        Toast toast =
-                                Toast.makeText(
-                                        view.getContext(),
-                                        view.getContentDescription(),
-                                        Toast.LENGTH_SHORT);
-                        toast.setGravity(
-                                Gravity.BOTTOM | Gravity.END,
-                                screenWidth - screenPos[0] - width / 2,
-                                screenHeight - screenPos[1]);
-                        toast.show();
-                        return true;
-                    }
+                    Toast toast =
+                            Toast.makeText(
+                                    view.getContext(),
+                                    view.getContentDescription(),
+                                    Toast.LENGTH_SHORT);
+                    toast.setGravity(
+                            Gravity.BOTTOM | Gravity.END,
+                            screenWidth - screenPos[0] - width / 2,
+                            screenHeight - screenPos[1]);
+                    toast.show();
+                    return true;
                 });
         return button;
     }
@@ -349,7 +344,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
                 TintedDrawable.constructTintedDrawable(context, R.drawable.ic_share_white_24dp);
         boolean useLightTint = ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor);
         drawable.setTint(ThemeUtils.getThemedToolbarIconTint(context, useLightTint));
-        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+        Bitmap bitmap = drawable.getBitmap();
 
         return new CustomButtonParamsImpl(
                 id,
@@ -372,7 +367,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
                         context, R.drawable.ic_open_in_new_white_24dp);
         boolean useLightTint = ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor);
         drawable.setTint(ThemeUtils.getThemedToolbarIconTint(context, useLightTint));
-        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+        Bitmap bitmap = drawable.getBitmap();
 
         return new CustomButtonParamsImpl(
                 id,

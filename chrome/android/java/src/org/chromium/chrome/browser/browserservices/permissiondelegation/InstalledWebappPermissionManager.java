@@ -309,8 +309,7 @@ public class InstalledWebappPermissionManager {
 
     private static @Nullable CustomTabActivity getLastTrackedFocusedTwaCustomTabActivity() {
         final Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-        if (!(activity instanceof CustomTabActivity)) return null;
-        CustomTabActivity customTabActivity = (CustomTabActivity) activity;
+        if (!(activity instanceof CustomTabActivity customTabActivity)) return null;
         if (customTabActivity.isInTwaMode()) return customTabActivity;
         return null;
     }

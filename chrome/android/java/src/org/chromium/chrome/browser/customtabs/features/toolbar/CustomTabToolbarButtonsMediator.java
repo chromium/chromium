@@ -291,7 +291,7 @@ class CustomTabToolbarButtonsMediator
     @SuppressWarnings("NullAway")
     private Supplier<@Nullable Profile> getProfileSupplier() {
         Tab tab = mTabProvider.get();
-        if (tab != null) return () -> tab.getProfile();
+        if (tab != null) return tab::getProfile;
 
         // Passing OneshotSupplier effectively delays UserEducationHelper#requestShowIph()
         // till Profile becomes reachable via the current Tab.

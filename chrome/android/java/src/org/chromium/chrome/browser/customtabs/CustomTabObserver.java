@@ -502,12 +502,12 @@ public class CustomTabObserver extends EmptyTabObserver {
                     webContents,
                     mContentBitmapWidth,
                     mContentBitmapHeight,
-                    (@Nullable Uri snapshotPath) -> {
-                        mCustomTabsConnection.sendNavigationInfo(
-                                mSession, urlString, title, snapshotPath);
-                    });
+                    (@Nullable Uri snapshotPath) ->
+                            mCustomTabsConnection.sendNavigationInfo(
+                                    mSession, urlString, title, snapshotPath));
         } else {
-            mCustomTabsConnection.sendNavigationInfo(mSession, urlString, title, /* snapshotPath= */ null);
+            mCustomTabsConnection.sendNavigationInfo(
+                    mSession, urlString, title, /* snapshotPath= */ null);
         }
     }
 

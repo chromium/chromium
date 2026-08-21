@@ -162,9 +162,7 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
                         }
 
                         private boolean hasSecurityWarningOrError(Tab tab) {
-                            boolean isContentDangerous =
-                                    SecurityStateModel.isContentDangerous(tab.getWebContents());
-                            return isContentDangerous;
+                            return SecurityStateModel.isContentDangerous(tab.getWebContents());
                         }
                     };
             mTabObserverRegistrar.registerActivityTabObserver(mIconTabObserver);

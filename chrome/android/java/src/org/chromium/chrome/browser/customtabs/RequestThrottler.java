@@ -207,11 +207,10 @@ class RequestThrottler {
         if (alreadyDone) return;
         PostTask.postTask(
                 TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                () -> {
-                    ContextUtils.getApplicationContext()
-                            .getSharedPreferences(PREFERENCES_NAME, 0)
-                            .edit();
-                });
+                () ->
+                        ContextUtils.getApplicationContext()
+                                .getSharedPreferences(PREFERENCES_NAME, 0)
+                                .edit());
     }
 
     /** Removes all the UIDs that haven't been seen since at least {@link FORGET_AFTER_MS}. */

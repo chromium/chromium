@@ -8,8 +8,6 @@ import org.chromium.build.annotations.NullMarked;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /** File utilities for Custom Tabs. */
@@ -33,18 +31,14 @@ public class CustomTabFileUtils {
      * @return The list of files that are applicable for deletion.
      */
     public static List<File> getFilesForDeletion(long currentTimeMillis, List<File> allFiles) {
-        Collections.sort(
-                allFiles,
-                new Comparator<>() {
-                    @Override
-                    public int compare(File lhs, File rhs) {
-                        long lhsModifiedTime = lhs.lastModified();
-                        long rhsModifiedTime = rhs.lastModified();
+        allFiles.sort(
+                (lhs, rhs) -> {
+                    long lhsModifiedTime = lhs.lastModified();
+                    long rhsModifiedTime = rhs.lastModified();
 
-                        // Sort such that older files (those with an lower timestamp number) are at
-                        // the end of the sorted listed.
-                        return Long.compare(rhsModifiedTime, lhsModifiedTime);
-                    }
+                    // Sort such that older files (those with an lower timestamp number) are at
+                    // the end of the sorted listed.
+                    return Long.compare(rhsModifiedTime, lhsModifiedTime);
                 });
 
         List<File> filesApplicableForDeletion = new ArrayList<>();

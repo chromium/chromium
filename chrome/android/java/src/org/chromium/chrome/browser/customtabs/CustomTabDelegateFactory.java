@@ -667,8 +667,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 tabModelSelector,
                 () -> assumeNonNull(mEphemeralTabCoordinatorSupplier).get(),
                 CallbackUtils.emptyRunnable(),
-                () -> mSnackbarManager.get(),
-                () -> mBottomSheetController.get());
+                mSnackbarManager,
+                mBottomSheetController);
     }
 
     @Override

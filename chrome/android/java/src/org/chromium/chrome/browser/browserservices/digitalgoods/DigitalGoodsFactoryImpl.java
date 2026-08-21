@@ -50,10 +50,9 @@ public class DigitalGoodsFactoryImpl implements DigitalGoodsFactory {
         // origin.
         WebContents wc = WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
         Activity activity = ActivityUtils.getActivityFromWebContents(wc);
-        if (!(activity instanceof CustomTabActivity)) {
+        if (!(activity instanceof CustomTabActivity cta)) {
             return CreateDigitalGoodsResponseCode.UNSUPPORTED_CONTEXT;
         }
-        CustomTabActivity cta = (CustomTabActivity) activity;
         if (!cta.isInTwaMode()) {
             return CreateDigitalGoodsResponseCode.UNSUPPORTED_CONTEXT;
         }

@@ -830,9 +830,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                         getContext(), isIncognitoBranded(), background);
         if (mBrandedColorScheme == brandedColorScheme) return;
         mBrandedColorScheme = brandedColorScheme;
-        final ColorStateList tint =
-                ThemeUtils.getThemedToolbarIconTint(getContext(), mBrandedColorScheme);
-        mTint = tint;
+        mTint = ThemeUtils.getThemedToolbarIconTint(getContext(), mBrandedColorScheme);
         mLocationBar.updateColors();
         setToolbarHairlineColor(background);
         notifyToolbarColorChanged(background);

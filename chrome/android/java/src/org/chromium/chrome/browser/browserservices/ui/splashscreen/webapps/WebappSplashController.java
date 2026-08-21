@@ -107,13 +107,9 @@ public class WebappSplashController implements SplashDelegate {
         }
 
         storage.getSplashScreenImage(
-                new WebappDataStorage.FetchCallback<>() {
-                    @Override
-                    public void onDataRetrieved(@Nullable Bitmap splashImage) {
+                (@Nullable Bitmap splashImage) ->
                         initializeWebApkInfoSplashLayout(
-                                splashScreen, backgroundColor, splashImage, false);
-                    }
-                });
+                                splashScreen, backgroundColor, splashImage, false));
         return splashScreen;
     }
 
