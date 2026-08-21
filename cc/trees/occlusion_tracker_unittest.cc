@@ -316,6 +316,7 @@ class OcclusionTrackerTest : public testing::Test {
     }
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   bool opaque_layers_;
   FakeLayerTreeHostDelegate client_;
   TestTaskGraphRunner task_graph_runner_;
@@ -324,7 +325,6 @@ class OcclusionTrackerTest : public testing::Test {
   std::unique_ptr<FakeLayerTreeHost> host_;
   std::unique_ptr<EffectTreeLayerListIterator> layer_iterator_;
   int next_layer_impl_id_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #define RUN_TEST_IMPL_THREAD_OPAQUE_LAYERS(ClassName)          \

@@ -13768,7 +13768,6 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
   viz::BeginFrameArgs begin_frame_args_;
 
   std::unique_ptr<ScrollState> to_be_continued_scroll_begin_;
-  base::test::ScopedFeatureList scoped_feature_list;
 };
 
 INSTANTIATE_COMMIT_TO_TREE_TEST_P(UnifiedScrollingTest);
@@ -15113,7 +15112,6 @@ class ConcurrentImplOnlyScrollAnimationsTest : public LayerTreeHostImplTest {
   gfx::PointF target_offset2_ = gfx::PointF(0., 4.);
   raw_ptr<LayerImpl> scroller1_;
   raw_ptr<LayerImpl> scroller2_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_COMMIT_TO_TREE_TEST_P(ConcurrentImplOnlyScrollAnimationsTest);
@@ -15314,7 +15312,6 @@ class ConcurrentSnapAnimationsTest : public LayerTreeHostImplTest {
   raw_ptr<ScrollNode> scroll_node2_ = nullptr;
   ElementId container1_id_;
   ElementId container2_id_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_COMMIT_TO_TREE_TEST_P(ConcurrentSnapAnimationsTest);

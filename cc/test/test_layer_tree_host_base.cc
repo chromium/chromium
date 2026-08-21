@@ -32,6 +32,9 @@ void TestLayerTreeHostBase::SetUp() {
 
 void TestLayerTreeHostBase::TearDown() {
   ClearLayersAndHost();
+  // Join TaskGraphRunner worker threads whilst the class hierarchy is intact to
+  // ensure it does not race against ScopedFeatureList destruction.
+  task_graph_runner_.reset();
 }
 
 void TestLayerTreeHostBase::ClearLayersAndHost() {

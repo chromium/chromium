@@ -20,12 +20,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gl/gl_implementation.h"
 
-namespace base {
-namespace test {
-class ScopedFeatureList;
-}
-}  // namespace base
-
 namespace viz {
 class CopyOutputRequest;
 class CopyOutputResult;
@@ -138,9 +132,6 @@ class LayerTreePixelTest : public LayerTreeTest {
   gfx::Size enlarge_texture_amount_;
   int max_texture_size_ = 0;
   scoped_refptr<viz::TestInProcessContextProvider> context_provider_sw_;
-
-  // Used to create SkiaOutputSurfaceImpl.
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
 }  // namespace cc
