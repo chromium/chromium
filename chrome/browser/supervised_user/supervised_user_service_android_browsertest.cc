@@ -6,14 +6,9 @@
 #include <string>
 #include <utility>
 
-#include "base/check_deref.h"
-#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/with_feature_override.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browsertest_base.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -21,10 +16,6 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/supervised_user/core/browser/android/android_parental_controls.h"
-#include "components/supervised_user/core/common/features.h"
-#include "components/supervised_user/core/common/pref_names.h"
-#include "components/supervised_user/core/common/supervised_user_constants.h"
-#include "components/supervised_user/test_support/features.h"
 #include "components/url_matcher/url_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -240,25 +231,9 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
             GetDeviceParentalControls().IsEnabled());
   ASSERT_FALSE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
 
-  // So far there is no trace of any supervision systems conflict.
-  EXPECT_EQ(0, histogram_tester().GetBucketCount(
-                   "SupervisedUsers.FamilyLinkSupervisionConflict", 1));
-
   EnableParentalControls(*GetProfile()->GetPrefs());
 
-  // Family Link supervision is enabled. If device controls were also initially
-  // enabled, both systems coexist and a conflict is recorded (possibly
-  // multiple times, because changes to both SupervisedUserSettingsService and
-  // AndroidParentalControls trigger pref calculations).
-  if (is_initially_supervised_locally) {
-    EXPECT_GT(histogram_tester().GetBucketCount(
-                  "SupervisedUsers.FamilyLinkSupervisionConflict", 1),
-              0);
-  } else {
-    EXPECT_EQ(histogram_tester().GetBucketCount(
-                  "SupervisedUsers.FamilyLinkSupervisionConflict", 1),
-              0);
-  }
+  // Family Link supervision is enabled and coexists with device controls.
   EXPECT_EQ(is_initially_supervised_locally,
             GetDeviceParentalControls().IsEnabled());
   EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
@@ -351,16 +326,12 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(GetDeviceParentalControls().IsEnabled());
   EXPECT_TRUE(GetDeviceParentalControls().IsBrowserContentFiltersEnabled());
   EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
-  histogram_tester().ExpectBucketCount(
-      "SupervisedUsers.FamilyLinkSupervisionConflict", 1, 1);
 
   // Try turning the knob on the local supervision (search filtering).
   GetDeviceParentalControls().SetSearchContentFiltersEnabledForTesting(true);
   EXPECT_TRUE(GetDeviceParentalControls().IsEnabled());
   EXPECT_TRUE(GetDeviceParentalControls().IsSearchContentFiltersEnabled());
   EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
-  histogram_tester().ExpectBucketCount(
-      "SupervisedUsers.FamilyLinkSupervisionConflict", 1, 2);
 }
 
 // Tests the aspect where the Family Link supervision is disabled and the
