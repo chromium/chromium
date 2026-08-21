@@ -17,17 +17,18 @@ namespace {
 // Status of received STTS notifications.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// Keep in sync with SendTabToSelfNotificationStatus in enums.xml.
+// LINT.IfChange(SendTabToSelfNotificationStatus)
 enum class NotificationStatus {
   kShown = 0,
   kDismissed = 1,
   kOpened = 2,
   kTimedOut = 3,
   // kSent = 4,
-  kDismissReasonUnknown = 5,
+  // kDismissReasonUnknown = 5,
   kThrottled = 6,
   kMaxValue = kThrottled,
 };
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml:SendTabToSelfNotificationStatus)
 
 SendTabToSelfFormFactorCombination GetFormFactorCombination(
     syncer::DeviceInfo::FormFactor sender_form_factor,
@@ -167,11 +168,6 @@ void RecordNotificationOpened() {
 void RecordNotificationTimedOut() {
   base::UmaHistogramEnumeration("Sharing.SendTabToSelf.NotificationStatus",
                                 NotificationStatus::kTimedOut);
-}
-
-void RecordNotificationDismissReasonUnknown() {
-  base::UmaHistogramEnumeration("Sharing.SendTabToSelf.NotificationStatus",
-                                NotificationStatus::kDismissReasonUnknown);
 }
 
 void RecordNotificationThrottled() {

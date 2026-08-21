@@ -65,9 +65,6 @@ void RecordNotificationOpened();
 // Records when a received STTS notification is shown and times out.
 void RecordNotificationTimedOut();
 
-// Records when a received STTS notification is dismissed for an unknown reason.
-void RecordNotificationDismissReasonUnknown();
-
 // Records when a received STTS notification is throttled from being sent.
 void RecordNotificationThrottled();
 
