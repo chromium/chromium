@@ -16,7 +16,8 @@ use crate::unsafe_code_detector;
 use crate::util::{
     create_dirs_if_needed, get_guppy_package_graph, init_handlebars,
     init_handlebars_with_template_paths, remove_checksums_from_lock, render_handlebars,
-    render_handlebars_named_template, run_command, without_cargo_config_toml,
+    render_handlebars_named_template, run_command, run_command_and_suppress_output,
+    without_cargo_config_toml,
 };
 use crate::VendorCommandArgs;
 
@@ -549,7 +550,7 @@ fn apply_patches(
         c.args(args.clone());
 
         println!("Applying patch {}", path.to_string_lossy());
-        if let Err(e) = run_command(c, "patch", Some(&contents)) {
+        if let Err(e) = run_command_and_suppress_output(c, "patch", Some(&contents)) {
             let e = e.context(format!("Failed to apply patch {}", path.display()));
 
             // Check if the patch is obsolete (already applied upstream).
@@ -559,8 +560,14 @@ fn apply_patches(
             check_reverse_args.push("--reverse".to_string());
             check_reverse_cmd.args(check_reverse_args);
 
-            if run_command(check_reverse_cmd, "patch reverse check", Some(&contents)).is_ok() {
-                log::warn!(
+            let is_obsolete = run_command_and_suppress_output(
+                check_reverse_cmd,
+                "patch reverse check",
+                Some(&contents),
+            )
+            .is_ok();
+            if is_obsolete {
+                println!(
                     "Patch {} is obsolete (already applied upstream). Deleting it.",
                     path.display()
                 );

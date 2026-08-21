@@ -41,6 +41,16 @@ pub fn run_command(mut cmd: process::Command, cmd_msg: &str, stdin: Option<&[u8]
     }
 }
 
+pub fn run_command_and_suppress_output(
+    mut cmd: process::Command,
+    cmd_msg: &str,
+    stdin: Option<&[u8]>,
+) -> Result<()> {
+    cmd.stdout(process::Stdio::null());
+    cmd.stderr(process::Stdio::null());
+    run_command(cmd, cmd_msg, stdin)
+}
+
 pub fn check_exit_ok(output: &process::Output, cmd_msg: &str) -> Result<()> {
     if output.status.success() {
         Ok(())
@@ -319,5 +329,18 @@ mod tests {
 
         assert_eq!("true", render(serde_json::json!({ "dict": { "foo": 456 }})));
         assert_eq!("false", render(serde_json::json!({ "dict": { "bar": 456 }})));
+    }
+
+    #[test]
+    fn test_run_command_and_suppress_output() {
+        let exe = std::env::current_exe().unwrap();
+
+        let mut cmd = std::process::Command::new(&exe);
+        cmd.arg("--help");
+        assert!(run_command_and_suppress_output(cmd, "test current exe help", None).is_ok());
+
+        let mut fail_cmd = std::process::Command::new(&exe);
+        fail_cmd.arg("--nonexistent-flag-12345");
+        assert!(run_command_and_suppress_output(fail_cmd, "test current exe fail", None).is_err());
     }
 }
