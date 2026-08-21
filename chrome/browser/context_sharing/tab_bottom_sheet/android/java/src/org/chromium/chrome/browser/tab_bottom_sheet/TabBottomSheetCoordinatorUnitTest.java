@@ -99,9 +99,6 @@ public class TabBottomSheetCoordinatorUnitTest {
     private static final int LARGE_FLING_DP = 60;
     private static final int SMALL_SCROLL_DP = 40;
     private static final int SMALL_FLING_DP = 5;
-    private static final float HALF_HEIGHT_FRACTION = 0.5f;
-    private static final float HALF_OFFSET_HEIGHT = 500f;
-    private static final float FULL_HEIGHT_FRACTION = 1.0f;
     private static final float EPSILON = 0.001f;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

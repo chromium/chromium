@@ -43,8 +43,6 @@ public class SafetyHubLocalPasswordsModuleMediatorTest {
     private static final @DrawableRes int MANAGED_ICON = R.drawable.ic_domain;
     private static final @DrawableRes int WARNING_ICON = R.drawable.ic_error;
 
-    private static final String TEST_EMAIL_ADDRESS = "test@email.com";
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private Activity mActivity;
