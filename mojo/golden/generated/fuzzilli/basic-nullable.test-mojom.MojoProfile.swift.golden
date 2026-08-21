@@ -227,8 +227,7 @@ extension ObjectGroup {
     fileprivate static let goldenToken = ObjectGroup(
         name: "golden.Token",
         instanceType: .jsGoldenToken,
-        properties: [
-        ],
+        properties: [:],
         methods: [:]
     )
     fileprivate static let goldenPrimaryGetArrayValueResponse = ObjectGroup(
@@ -339,8 +338,8 @@ private let MojoString_IntegerMapGenerator = CodeGenerator(
     b.createMap(
         withKeys: keys,
         withValues: values,
-        keyGroupName: ObjectGroup.stringElement.group.name,
-        valueGroupName: ObjectGroup.integerElement.group.name
+        keyGroupName: ObjectGroup.stringElement.name,
+        valueGroupName: ObjectGroup.integerElement.name
     )
 }
 

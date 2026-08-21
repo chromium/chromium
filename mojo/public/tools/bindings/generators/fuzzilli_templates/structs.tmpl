@@ -32,11 +32,15 @@ extension ObjectGroup {
     fileprivate static let {{struct|format_unique_name|to_camel(True)}} = ObjectGroup(
         name: "{{struct|fully_qualified_name}}",
         instanceType: .{{struct|format_il_type}},
+        {%- if struct.fields %}
         properties: [
             {%- for field in struct.fields %}
             "{{field.name}}": .{{field.kind|format_il_type}},
             {%- endfor %}
         ],
+        {%- else %}
+        properties: [:],
+        {%- endif %}
         methods: [:]
     )
 {%- endfor %}

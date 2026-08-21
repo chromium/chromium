@@ -124,8 +124,7 @@ extension ObjectGroup {
     fileprivate static let goldenEntry = ObjectGroup(
         name: "golden.Entry",
         instanceType: .jsGoldenEntry,
-        properties: [
-        ],
+        properties: [:],
         methods: [:]
     )
     fileprivate static let goldenPrimaryGetResponse = ObjectGroup(

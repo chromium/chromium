@@ -44,10 +44,10 @@ private let Mojo{{m|format_unique_name}}Generator = CodeGenerator(
         withValues: values,
         keyGroupName: ObjectGroup.
             {{- m.key_kind|format_unique_name(primitive_with_suffix=True)|to_camel(True) -}}
-            .group.name,
+            .name,
         valueGroupName: ObjectGroup.
             {{- m.value_kind|format_unique_name(primitive_with_suffix=True)|to_camel(True) -}}
-            .group.name
+            .name
     )
 }
 {%- endfor %}

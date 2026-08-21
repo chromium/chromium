@@ -102,8 +102,7 @@ extension ObjectGroup {
     fileprivate static let goldenEntry = ObjectGroup(
         name: "golden.Entry",
         instanceType: .jsGoldenEntry,
-        properties: [
-        ],
+        properties: [:],
         methods: [:]
     )
     fileprivate static let goldenPrimaryPassMapResponse = ObjectGroup(
@@ -169,8 +168,8 @@ private let MojoString_GoldenEntryMapGenerator = CodeGenerator(
     b.createMap(
         withKeys: keys,
         withValues: values,
-        keyGroupName: ObjectGroup.stringElement.group.name,
-        valueGroupName: ObjectGroup.goldenEntry.group.name
+        keyGroupName: ObjectGroup.stringElement.name,
+        valueGroupName: ObjectGroup.goldenEntry.name
     )
 }
 private let MojoInteger_String_GoldenEntryMapMapGenerator = CodeGenerator(
@@ -186,8 +185,8 @@ private let MojoInteger_String_GoldenEntryMapMapGenerator = CodeGenerator(
     b.createMap(
         withKeys: keys,
         withValues: values,
-        keyGroupName: ObjectGroup.integerElement.group.name,
-        valueGroupName: ObjectGroup.stringGoldenEntryMap.group.name
+        keyGroupName: ObjectGroup.integerElement.name,
+        valueGroupName: ObjectGroup.stringGoldenEntryMap.name
     )
 }
 private let MojoFloat_BooleanMapGenerator = CodeGenerator(
@@ -203,8 +202,8 @@ private let MojoFloat_BooleanMapGenerator = CodeGenerator(
     b.createMap(
         withKeys: keys,
         withValues: values,
-        keyGroupName: ObjectGroup.floatElement.group.name,
-        valueGroupName: ObjectGroup.booleanElement.group.name
+        keyGroupName: ObjectGroup.floatElement.name,
+        valueGroupName: ObjectGroup.booleanElement.name
     )
 }
 
