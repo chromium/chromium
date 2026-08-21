@@ -283,7 +283,7 @@ TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnLocalSave_Accepted) {
   SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database());
   // Add an existing strike.
   save_and_fill_strike_database.AddStrike();
-  EXPECT_EQ(1, save_and_fill_strike_database.GetStrikes());
+  EXPECT_EQ(save_and_fill_strike_database.GetStrikes(), 1);
 
   EXPECT_CALL(payments_autofill_client(),
               ShowCreditCardLocalSaveAndFillDialog(
@@ -309,18 +309,18 @@ TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnLocalSave_Accepted) {
   const CreditCard* saved_card =
       payments_data_manager().GetLocalCreditCards()[0];
 
-  EXPECT_EQ(u"4444333322221111", saved_card->GetRawInfo(CREDIT_CARD_NUMBER));
-  EXPECT_EQ(u"John Doe", saved_card->GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(u"06", saved_card->GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(u"2035", saved_card->GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(saved_card->GetRawInfo(CREDIT_CARD_NUMBER), u"4444333322221111");
+  EXPECT_EQ(saved_card->GetRawInfo(CREDIT_CARD_NAME_FULL), u"John Doe");
+  EXPECT_EQ(saved_card->GetRawInfo(CREDIT_CARD_EXP_MONTH), u"06");
+  EXPECT_EQ(saved_card->GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR), u"2035");
 
-  EXPECT_EQ(u"4444333322221111", card_to_fill.GetRawInfo(CREDIT_CARD_NUMBER));
-  EXPECT_EQ(u"John Doe", card_to_fill.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(u"06", card_to_fill.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(u"2035", card_to_fill.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(card_to_fill.GetRawInfo(CREDIT_CARD_NUMBER), u"4444333322221111");
+  EXPECT_EQ(card_to_fill.GetRawInfo(CREDIT_CARD_NAME_FULL), u"John Doe");
+  EXPECT_EQ(card_to_fill.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"06");
+  EXPECT_EQ(card_to_fill.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR), u"2035");
 
   // Make sure that all strikes are cleared upon user acceptance.
-  EXPECT_EQ(0, save_and_fill_strike_database.GetStrikes());
+  EXPECT_EQ(save_and_fill_strike_database.GetStrikes(), 0);
 }
 
 TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnLocalSave_Declined) {
@@ -577,7 +577,7 @@ TEST_F(SaveAndFillManagerImplTest,
       CardSaveAndFillDialogUserDecision::kDeclined,
       UserProvidedCardSaveAndFillDetails());
 
-  EXPECT_EQ(1, save_and_fill_strike_database.GetStrikes());
+  EXPECT_EQ(save_and_fill_strike_database.GetStrikes(), 1);
 }
 
 TEST_F(SaveAndFillManagerImplTest,
@@ -593,7 +593,7 @@ TEST_F(SaveAndFillManagerImplTest,
 
   save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
       base::DoNothing());
-  EXPECT_EQ(1, save_and_fill_strike_database.GetStrikes());
+  EXPECT_EQ(save_and_fill_strike_database.GetStrikes(), 1);
 }
 
 TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnUploadSave_Accepted) {
@@ -603,7 +603,7 @@ TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnUploadSave_Accepted) {
   SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database());
   // Add an existing strike.
   save_and_fill_strike_database.AddStrike();
-  EXPECT_EQ(1, save_and_fill_strike_database.GetStrikes());
+  EXPECT_EQ(save_and_fill_strike_database.GetStrikes(), 1);
 
   save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
   SetUpGetDetailsForCreateCardResponse(
@@ -636,19 +636,19 @@ TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnUploadSave_Accepted) {
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       /*instrument_id=*/"1122334455");
 
-  EXPECT_EQ(u"1111222233334444", card_to_fill.GetRawInfo(CREDIT_CARD_NUMBER));
-  EXPECT_EQ(u"Jane Smith", card_to_fill.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(u"06", card_to_fill.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(u"2035", card_to_fill.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
-  EXPECT_EQ(u"456", card_to_fill.cvc());
+  EXPECT_EQ(card_to_fill.GetRawInfo(CREDIT_CARD_NUMBER), u"1111222233334444");
+  EXPECT_EQ(card_to_fill.GetRawInfo(CREDIT_CARD_NAME_FULL), u"Jane Smith");
+  EXPECT_EQ(card_to_fill.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"06");
+  EXPECT_EQ(card_to_fill.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR), u"2035");
+  EXPECT_EQ(card_to_fill.cvc(), u"456");
 #if BUILDFLAG(IS_IOS)
-  EXPECT_EQ(u"My Card", card_to_fill.nickname());
+  EXPECT_EQ(card_to_fill.nickname(), u"My Card");
 #else
   EXPECT_EQ(card_to_fill.nickname(), std::u16string());
 #endif
 
   // Make sure that all strikes are cleared upon user acceptance.
-  EXPECT_EQ(0, save_and_fill_strike_database.GetStrikes());
+  EXPECT_EQ(save_and_fill_strike_database.GetStrikes(), 0);
 }
 
 TEST_F(SaveAndFillManagerImplTest, CardUploadFeedback_UploadSucceeded) {
@@ -726,11 +726,11 @@ TEST_F(SaveAndFillManagerImplTest,
   save_and_fill_manager().OnSuggestionOffered();
   save_and_fill_manager().MaybeAddStrikeForSaveAndFill();
 
-  EXPECT_EQ(1, save_and_fill_strike_database.GetStrikes());
+  EXPECT_EQ(save_and_fill_strike_database.GetStrikes(), 1);
 
   // Verifies that calling it again won't log another strike.
   save_and_fill_manager().MaybeAddStrikeForSaveAndFill();
-  EXPECT_EQ(1, save_and_fill_strike_database.GetStrikes());
+  EXPECT_EQ(save_and_fill_strike_database.GetStrikes(), 1);
 }
 
 // Verify that no strike is added if the suggestion was offered and accepted by
@@ -744,7 +744,7 @@ TEST_F(SaveAndFillManagerImplTest,
       base::DoNothing());
   save_and_fill_manager().MaybeAddStrikeForSaveAndFill();
 
-  EXPECT_EQ(0, save_and_fill_strike_database.GetStrikes());
+  EXPECT_EQ(save_and_fill_strike_database.GetStrikes(), 0);
 }
 
 // Verify that no strike is added if the suggestion is offered but the form is
@@ -757,7 +757,7 @@ TEST_F(SaveAndFillManagerImplTest,
   // To simulate the tab being closed, we destroy the save and fill manager.
   ResetSaveAndFillManager();
 
-  EXPECT_EQ(0, save_and_fill_strike_database.GetStrikes());
+  EXPECT_EQ(save_and_fill_strike_database.GetStrikes(), 0);
 }
 
 TEST_F(SaveAndFillManagerImplTest, RequestLatencyMetrics) {
