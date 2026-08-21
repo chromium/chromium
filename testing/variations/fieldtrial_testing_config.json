@@ -20696,25 +20696,6 @@
             ]
         }
     ],
-    "ReadAnythingWithReadability": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_WithReadability",
-                    "enable_features": [
-                        "ReadAnythingReadabilitySelectText",
-                        "ReadAnythingWithReadability"
-                    ]
-                }
-            ]
-        }
-    ],
     "RebindServiceBatchApi": [
         {
             "platforms": [
