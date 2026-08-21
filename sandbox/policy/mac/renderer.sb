@@ -5,13 +5,13 @@
 ; --- The contents of common.sb implicitly included here. ---
 
 ; Put the denials first.
-; crbug.com/799149: These operations are allowed by default.
+; crbug.com/40556801: These operations are allowed by default.
 (if (param-true? disable-sandbox-denial-logging)
   (deny iokit-get-properties process-info* nvram* (with no-log))
   (deny iokit-get-properties process-info* nvram*)
 )
 
-(if (not (param-true? enable-distributed-notifications))
+(if (param-true? disable-sandbox-denial-logging)
   (deny distributed-notification-post (with no-log))
   (deny distributed-notification-post)
 )
@@ -82,12 +82,6 @@
   (global-name "com.apple.cvmsServ")  ; https://crbug.com/850021
   (global-name "com.apple.lsd.mapdb")
   (global-name "com.apple.system.notification_center")  ; https://crbug.com/792217
-)
-
-(if (param-true? enable-distributed-notifications)
-  (allow mach-lookup
-    (global-name "com.apple.distributed_notifications@Uv3")
-  )
 )
 
 ; IOKit properties.

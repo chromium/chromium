@@ -75,9 +75,6 @@ void SetParametersForTest(SandboxSerializer* serializer,
 
   CHECK(serializer->SetParameter(sandbox::policy::kParamExecutablePath,
                                  executable_path.value()));
-
-  CHECK(serializer->SetBooleanParameter(
-      sandbox::policy::kParamEnableDistributedNotifications, false));
 }
 
 }  // namespace

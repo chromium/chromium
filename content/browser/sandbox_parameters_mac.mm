@@ -37,11 +37,6 @@ namespace content {
 
 namespace {
 
-// If disabled, the macOS sandbox for child processes will deny access to
-// distributed notifications (https://crbug.com/513454805).
-BASE_FEATURE(kMacSandboxDistributedNotifications,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, the macOS sandbox for the Network process will allow read and
 // write file access to the user's cache and temp directory
 // (https://crbug.com/527885521).
@@ -122,10 +117,6 @@ void SetupCommonSandboxParameters(
                                         enable_logging));
   CHECK(serializer->SetBooleanParameter(
       sandbox::policy::kParamDisableSandboxDenialLogging, !enable_logging));
-
-  CHECK(serializer->SetBooleanParameter(
-      sandbox::policy::kParamEnableDistributedNotifications,
-      base::FeatureList::IsEnabled(kMacSandboxDistributedNotifications)));
 
   std::string bundle_path =
       sandbox::policy::GetCanonicalPath(base::apple::MainBundlePath()).value();
