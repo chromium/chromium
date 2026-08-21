@@ -2049,5 +2049,41 @@ suite('ComposeboxMixinTest', () => {
             [ModelMode.kUnspecified, /*isSetByServer=*/ false],
             searchboxHandler.getArgs('setActiveModelMode')[0]);
       });
+
+  test(
+      'hasTabs returns true when tab files are present and tabFaviconChipsToCoinsEnabled is true',
+      () => {
+        element.tabFaviconChipsToCoinsEnabled = true;
+        const tabFile = ComposeboxFile.createFromTab(
+            'tab-uuid', 1, 'Example Tab', 'https://example.com');
+        element.files = new Map([[tabFile.uuid, tabFile]]);
+        assertTrue(element.hasTabs());
+      });
+
+  test(
+      'hasTabs returns false when tab files are present but tabFaviconChipsToCoinsEnabled is false',
+      () => {
+        element.tabFaviconChipsToCoinsEnabled = false;
+        const tabFile = ComposeboxFile.createFromTab(
+            'tab-uuid', 1, 'Example Tab', 'https://example.com');
+        element.files = new Map([[tabFile.uuid, tabFile]]);
+        assertFalse(element.hasTabs());
+      });
+
+  test(
+      'hasTabs returns true when smartTabSharingActive is true regardless of files',
+      () => {
+        element.files = new Map();
+        element.smartTabSharingActive = true;
+        assertTrue(element.hasTabs());
+      });
+
+  test(
+      'hasTabs returns false when no tab files and smartTabSharingActive is false',
+      () => {
+        element.files = new Map();
+        element.smartTabSharingActive = false;
+        assertFalse(element.hasTabs());
+      });
   // </if>
 });

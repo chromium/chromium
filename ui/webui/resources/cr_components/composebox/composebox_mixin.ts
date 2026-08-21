@@ -2649,8 +2649,9 @@ export const ComposeboxEmbedderMixin =
         }
 
         hasTabs(): boolean {
-          return this.tabFaviconChipsToCoinsEnabled &&
-              Array.from(this.files.values()).some(f => !!f.url);
+          return (this.tabFaviconChipsToCoinsEnabled &&
+                  Array.from(this.files.values()).some(f => !!f.url)) ||
+              this.smartTabSharingActive;
         }
 
         shouldShowDivider(): boolean {
