@@ -10,11 +10,9 @@
 #include <array>
 
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "media/base/limits.h"
-#include "media/base/media_switches.h"
 
 namespace media {
 
@@ -217,16 +215,9 @@ int ComputeChannelCount(ChannelLayout channel_layout, int channels) {
 
 }  // namespace
 
-int GetConcurrentMaxChannels() {
-  if (base::FeatureList::IsEnabled(kEnableHighChannelLayouts)) {
-    return 12;
-  }
-  return 8;
-}
-
 int ChannelLayoutToChannelCount(ChannelLayout layout) {
   DCHECK_LT(static_cast<size_t>(layout), std::size(kLayoutToChannels));
-  DCHECK_LE(kLayoutToChannels[layout], GetConcurrentMaxChannels());
+  DCHECK_LE(kLayoutToChannels[layout], kMaxConcurrentChannels);
   return kLayoutToChannels[layout];
 }
 
@@ -234,8 +225,7 @@ int ChannelLayoutToChannelCount(ChannelLayout layout) {
 ChannelLayout GuessChannelLayout(int channels) {
   // Use discrete layout for higher channel counts to facilitate
   // audio passthrough, thus avoiding channel mixing.
-  if (channels > GetConcurrentMaxChannels() &&
-      channels <= limits::kMaxChannels) {
+  if (channels > kMaxConcurrentChannels && channels <= limits::kMaxChannels) {
     return CHANNEL_LAYOUT_DISCRETE;
   }
 

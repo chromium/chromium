@@ -11,11 +11,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/channel_layout.h"
-#include "media/base/media_switches.h"
 #include "media/base/mock_media_log.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -174,9 +172,6 @@ TEST_F(IamfAudioDecoderTest, LayoutConversion) {
 
   // ConvertIamfLayout high-channel layout mapping check.
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(kEnableHighChannelLayouts);
-
     auto config_d = ConvertIamfLayout(
         iamf_tools::api::OutputLayout::kItu2051_SoundSystemD_4_5_0);
     EXPECT_EQ(CHANNEL_LAYOUT_5_1_4, config_d.channel_layout());
@@ -195,26 +190,9 @@ TEST_F(IamfAudioDecoderTest, LayoutConversion) {
               ConvertMediaLayoutToIamfLayout(
                   ChannelLayoutConfig(CHANNEL_LAYOUT_7_1_4, 12)));
   }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(kEnableHighChannelLayouts);
-
-    auto config_d = ConvertIamfLayout(
-        iamf_tools::api::OutputLayout::kItu2051_SoundSystemD_4_5_0);
-    EXPECT_EQ(CHANNEL_LAYOUT_DISCRETE, config_d.channel_layout());
-    EXPECT_EQ(10, config_d.channels());
-
-    auto config_j = ConvertIamfLayout(
-        iamf_tools::api::OutputLayout::kItu2051_SoundSystemJ_4_7_0);
-    EXPECT_EQ(CHANNEL_LAYOUT_DISCRETE, config_j.channel_layout());
-    EXPECT_EQ(12, config_j.channels());
-  }
 }
 
 TEST_F(IamfAudioDecoderTest, InitializeWithTargetLayout) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kEnableHighChannelLayouts);
-
   auto decoder =
       InitializeDecoder(ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_7_1_4>(),
                         ChannelLayoutConfig::Stereo());
@@ -224,9 +202,6 @@ TEST_F(IamfAudioDecoderTest, InitializeWithTargetLayout) {
 }
 
 TEST_F(IamfAudioDecoderTest, InitializeWithoutTargetLayout) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kEnableHighChannelLayouts);
-
   auto decoder = InitializeDecoder(
       ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_7_1_4>());
 
@@ -235,9 +210,6 @@ TEST_F(IamfAudioDecoderTest, InitializeWithoutTargetLayout) {
 }
 
 TEST_F(IamfAudioDecoderTest, InitializeWithDiscreteTargetLayout) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kEnableHighChannelLayouts);
-
   auto decoder =
       InitializeDecoder(ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_7_1_4>(),
                         ChannelLayoutConfig(CHANNEL_LAYOUT_DISCRETE, 12));
@@ -247,28 +219,12 @@ TEST_F(IamfAudioDecoderTest, InitializeWithDiscreteTargetLayout) {
 }
 
 TEST_F(IamfAudioDecoderTest, InitializeWithUnsupportedTargetLayoutFallback) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kEnableHighChannelLayouts);
-
   auto decoder = InitializeDecoder(
       ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_7_1_4>(),
       ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_SURROUND>());
 
   EXPECT_EQ(CHANNEL_LAYOUT_STEREO,
             GetOutputLayoutConfig(decoder.get()).channel_layout());
-}
-
-TEST_F(IamfAudioDecoderTest, InitializeWithTargetLayoutHighChannelsDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kEnableHighChannelLayouts);
-
-  auto decoder =
-      InitializeDecoder(ChannelLayoutConfig(CHANNEL_LAYOUT_DISCRETE, 12),
-                        ChannelLayoutConfig(CHANNEL_LAYOUT_DISCRETE, 10));
-
-  EXPECT_EQ(CHANNEL_LAYOUT_DISCRETE,
-            GetOutputLayoutConfig(decoder.get()).channel_layout());
-  EXPECT_EQ(10, GetOutputLayoutConfig(decoder.get()).channels());
 }
 
 TEST_F(IamfAudioDecoderTest, DecodeAfterFinishedReturnsOk) {

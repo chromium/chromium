@@ -84,8 +84,6 @@ namespace {
 // The number of packets to read and then decode from each file.
 constexpr size_t kDecodeRuns = 3;
 
-// Corresponds to the 7.1.4 layout.
-constexpr int kIamfDiscreteChannelCount = 12;
 
 struct DecodedBufferExpectations {
   int64_t timestamp;
@@ -267,19 +265,10 @@ class AudioDecoderTest
 
     ChannelLayout expected_layout = params_.target_channel_layout;
     if (expected_layout == CHANNEL_LAYOUT_NONE) {
-      expected_layout = (params_.channel_layout == CHANNEL_LAYOUT_DISCRETE)
-                            ? CHANNEL_LAYOUT_7_1_4
-                            : params_.channel_layout;
+      expected_layout = params_.channel_layout;
     }
 
-    if (expected_layout == CHANNEL_LAYOUT_7_1_4 &&
-        !base::FeatureList::IsEnabled(kEnableHighChannelLayouts)) {
-      expected_layout = CHANNEL_LAYOUT_DISCRETE;
-    }
-
-    int expected_channels = (expected_layout == CHANNEL_LAYOUT_DISCRETE)
-                                ? kIamfDiscreteChannelCount
-                                : ChannelLayoutToChannelCount(expected_layout);
+    int expected_channels = ChannelLayoutToChannelCount(expected_layout);
 
     EXPECT_EQ(expected_layout, buffer->channel_layout());
     EXPECT_EQ(expected_channels, buffer->channel_count());
@@ -356,9 +345,7 @@ class AudioDecoderTest
 
     if (IsIamfTest()) {
       ASSERT_FALSE(params_.extra_data.empty());
-      int channels = (params_.channel_layout == CHANNEL_LAYOUT_DISCRETE)
-                         ? kIamfDiscreteChannelCount
-                         : ChannelLayoutToChannelCount(params_.channel_layout);
+      int channels = ChannelLayoutToChannelCount(params_.channel_layout);
       std::vector<uint8_t> extra_data(params_.extra_data.begin(),
                                       params_.extra_data.end());
       config.Initialize(AudioCodec::kIAMF, kSampleFormatS32,
@@ -366,16 +353,8 @@ class AudioDecoderTest
                         params_.samples_per_second, extra_data,
                         EncryptionScheme::kUnencrypted, base::TimeDelta(), 0);
       if (params_.target_channel_layout != CHANNEL_LAYOUT_NONE) {
-        ChannelLayoutConfig target_config;
-        if (params_.target_channel_layout == CHANNEL_LAYOUT_7_1_4 &&
-            !base::FeatureList::IsEnabled(kEnableHighChannelLayouts)) {
-          target_config = ChannelLayoutConfig(CHANNEL_LAYOUT_DISCRETE,
-                                              kIamfDiscreteChannelCount);
-        } else {
-          target_config =
-              ChannelLayoutConfig::FromLayout(params_.target_channel_layout);
-        }
-        config.set_target_output_channel_layout(target_config);
+        config.set_target_output_channel_layout(
+            ChannelLayoutConfig::FromLayout(params_.target_channel_layout));
       }
     }
 
@@ -879,11 +858,11 @@ static const uint8_t kIamfStereoExtraData[] = {
 // Only IAMF Audio Streams can be decoded by this decoder.
 constexpr TestParams kIamfTestParams[] = {
     {AudioCodec::kIAMF, "iamf_alternating_sine_waves_714.mp4",
-     kIamfExpectations, 0, 48000, CHANNEL_LAYOUT_DISCRETE,
+     kIamfExpectations, 0, 48000, CHANNEL_LAYOUT_7_1_4,
      AudioCodecProfile::kUnknown, std::nullopt, kIamf714ExtraData,
      CHANNEL_LAYOUT_NONE},
     {AudioCodec::kIAMF, "iamf_alternating_sine_waves_714.mp4",
-     kIamfExpectations, 0, 48000, CHANNEL_LAYOUT_DISCRETE,
+     kIamfExpectations, 0, 48000, CHANNEL_LAYOUT_7_1_4,
      AudioCodecProfile::kUnknown, std::nullopt, kIamf714ExtraData,
      CHANNEL_LAYOUT_STEREO},
     {AudioCodec::kIAMF, "iamf_alternating_sine_waves_stereo.mp4",

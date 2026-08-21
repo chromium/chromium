@@ -9,9 +9,7 @@
 #include <array>
 
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "media/base/channel_mixer.h"
-#include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -27,18 +25,11 @@ TEST(ChannelMixingMatrixTest, ConstructAllPossibleLayouts) {
       // BITSTREAM can't be tested here based on the current approach.
       // CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC is deprecated.
       // Stereo down mix should never be the output layout.
-      // TODO(crbug.com/474106765): 5.1.4 and 7.1.4 are not supported yet. Once
-      // `kMaxConcurrentChannels` is upgraded to 12, then we can include these
-      // test cases.
       if (input_layout == CHANNEL_LAYOUT_BITSTREAM ||
           input_layout == CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC ||
-          input_layout == CHANNEL_LAYOUT_5_1_4 ||
-          input_layout == CHANNEL_LAYOUT_7_1_4 ||
           output_layout == CHANNEL_LAYOUT_BITSTREAM ||
           output_layout == CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC ||
-          output_layout == CHANNEL_LAYOUT_STEREO_DOWNMIX ||
-          output_layout == CHANNEL_LAYOUT_5_1_4 ||
-          output_layout == CHANNEL_LAYOUT_7_1_4) {
+          output_layout == CHANNEL_LAYOUT_STEREO_DOWNMIX) {
         continue;
       }
 
@@ -266,8 +257,6 @@ TEST(ChannelMixingMatrixTest, 5Point1To1Point1) {
 }
 
 TEST(ChannelMixingMatrixTest, 5Point1Point4To5Point1) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableHighChannelLayouts);
 
   std::vector<std::vector<float>> matrix;
   ChannelMixingMatrix matrix_builder(
@@ -319,8 +308,6 @@ TEST(ChannelMixingMatrixTest, 5Point1Point4To5Point1) {
 }
 
 TEST(ChannelMixingMatrixTest, 7Point1Point4To7Point1) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnableHighChannelLayouts);
 
   std::vector<std::vector<float>> matrix;
   ChannelMixingMatrix matrix_builder(

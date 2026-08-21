@@ -343,7 +343,7 @@ bool AudioToolboxAudioDecoder::CreateDecoder(const AudioDecoderConfig& config) {
 
   auto channel_layout = CHANNEL_LAYOUT_UNSUPPORTED;
   if (static_cast<int>(input_format.mChannelsPerFrame) >
-      GetConcurrentMaxChannels()) {
+      kMaxConcurrentChannels) {
     channel_layout = CHANNEL_LAYOUT_DISCRETE;
   } else {
     // Get the decoder's output channel layout.
@@ -382,7 +382,7 @@ bool AudioToolboxAudioDecoder::CreateDecoder(const AudioDecoderConfig& config) {
     // `input_format` throw an error during AudioConverter creation, but enforce
     // this invariant here to be sure we don't create the wrong output bus.
     //
-    // Even if the channel count was less than GetConcurrentMaxChannels(), the
+    // Even if the channel count was less than `kMaxConcurrentChannels`, the
     // layout may be set to discrete by GuessChannelLayout() above.
     if (channel_layout != CHANNEL_LAYOUT_DISCRETE) {
       CHECK_EQ(ChannelLayoutToChannelCount(channel_layout),
