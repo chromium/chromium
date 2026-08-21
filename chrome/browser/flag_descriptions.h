@@ -1462,6 +1462,10 @@ inline constexpr char kBottomSheetOnDesktopWindowingDescription[] =
     "Enables modifications that improve the bottom sheet experience when in "
     "desktop mode.";
 
+inline constexpr char kBottomSheetTypesName[] = "Bottom Sheet Types";
+inline constexpr char kBottomSheetTypesDescription[] =
+    "Enables the type-based priority system for bottom sheets.";
+
 inline constexpr char kDialogsOnLargeFormFactorsName[] =
     "Dialogs on Large Form Factors";
 inline constexpr char kDialogsOnLargeFormFactorsDescription[] =

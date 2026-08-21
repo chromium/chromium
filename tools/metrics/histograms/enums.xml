@@ -13508,6 +13508,7 @@ from previous Chrome versions.
   <int value="-359886807" label="AppPreloadService:disabled"/>
   <int value="-359452972" label="ProjectorV2:enabled"/>
   <int value="-359331504" label="InputDeviceSettingsSplit:enabled"/>
+  <int value="-358241258" label="BottomSheetTypes:disabled"/>
   <int value="-357464687" label="SharingPreferVapid:enabled"/>
   <int value="-357272449" label="AutoRevokeSuspiciousNotification:disabled"/>
   <int value="-357250869"
@@ -18047,6 +18048,7 @@ from previous Chrome versions.
   <int value="1063909131" label="CrOSDspBasedAgcAllowed:disabled"/>
   <int value="1064288458" label="OfflineRecentPages:enabled"/>
   <int value="1064317648" label="UseMojoVideoDecoderForPepper:disabled"/>
+  <int value="1064904452" label="BottomSheetTypes:enabled"/>
   <int value="1065347448" label="CrOSLateBootAudioAPNoiseCancellation:enabled"/>
   <int value="1065451331" label="NtpRealboxPedals:disabled"/>
   <int value="1065481614" label="SystemEmojiPickerGIFSupport:disabled"/>

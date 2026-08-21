@@ -10229,6 +10229,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBottomSheetOnDesktopWindowingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kBottomSheetOnDesktopWindowing)},
 
+    {"bottom-sheet-types", flag_descriptions::kBottomSheetTypesName,
+     flag_descriptions::kBottomSheetTypesDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kBottomSheetTypes)},
+
     {"dialogs-on-large-form-factors",
      flag_descriptions::kDialogsOnLargeFormFactorsName,
      flag_descriptions::kDialogsOnLargeFormFactorsDescription, kOsAndroid,

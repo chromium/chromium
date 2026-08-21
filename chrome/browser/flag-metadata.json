@@ -1422,6 +1422,11 @@
     "expiry_milestone": 170
   },
   {
+    "name": "bottom-sheet-types",
+    "owners": [ "hitarthkothari@chromium.org", "clank-app-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "boundary-event-dispatch-tracks-node-removal",
     "owners": [ "mustaq@chromium.org", "blink-interactions-team@google.com" ],
     "expiry_milestone": 150
