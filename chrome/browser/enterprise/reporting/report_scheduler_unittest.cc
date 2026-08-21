@@ -638,6 +638,44 @@ TEST_F(ReportSchedulerTest, ReportingIsDisabledWhileNewReportIsPosted) {
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
+TEST_F(ReportSchedulerTest,
+       ReportingIsDisabledWhileReportGenerationInProgress) {
+  EXPECT_CALL_SetupRegistration();
+  ReportGenerator::ReportCallback generator_callback;
+  EXPECT_CALL(*generator_, OnGenerate(ReportType::kBrowser, _))
+      .WillOnce([&generator_callback](
+                    ReportType, ReportGenerator::ReportCallback& callback) {
+        generator_callback = std::move(callback);
+      });
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _, _)).Times(0);
+
+  CreateScheduler();
+  EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+
+  // Run pending task to trigger report generation.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_TRUE(generator_callback);
+
+  // Disable reporting while report generation is in progress.
+  ToggleCloudReport(false);
+
+  // Next report is not scheduled.
+  EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
+
+  // Report generation finishes after reporting is disabled.
+  ReportRequestQueue requests;
+  requests.push(std::make_unique<ReportRequest>(ReportType::kBrowser));
+  std::move(generator_callback).Run(std::move(requests));
+
+  // No report upload should be performed and no crash should occur.
+  EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
+  ExpectLastUploadTimestampUpdated(false);
+
+  ::testing::Mock::VerifyAndClearExpectations(client_);
+  ::testing::Mock::VerifyAndClearExpectations(generator_);
+  ::testing::Mock::VerifyAndClearExpectations(uploader_);
+}
+
 TEST_F(ReportSchedulerTest, ManualReport) {
   SetLastUploadInHour(base::Hours(1));
   EXPECT_CALL_SetupRegistration();
@@ -1074,6 +1112,43 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
   task_environment_.FastForwardBy(base::TimeDelta());
 
   histogram_tester_.ExpectUniqueSample(kSignalsReportingModeMetricName, 2, 1);
+}
+
+TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
+       ProfileReportingDisabledWhileReportGenerationInProgress) {
+  ReportGenerator::ReportCallback generator_callback;
+  EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
+      .WillOnce(
+          [&generator_callback](ReportGenerator::ReportCallback& callback) {
+            generator_callback = std::move(callback);
+          });
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _, _)).Times(0);
+
+  TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
+  SetCloudProfileReportingPolicy(profile, true);
+  SetUserSecuritySignalsPolicy(profile, /*enabled=*/false);
+  CreateSchedulerForProfileReporting(profile);
+  EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+
+  // Fast forward to trigger the startup report generation.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_TRUE(generator_callback);
+
+  // Disable profile reporting while generation is in progress.
+  SetCloudProfileReportingPolicy(profile, false);
+  EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
+
+  // Report generation finishes after reporting is disabled.
+  ReportRequestQueue requests;
+  requests.push(std::make_unique<ReportRequest>(ReportType::kProfileReport));
+  std::move(generator_callback).Run(std::move(requests));
+
+  // No upload should be performed and no crash should occur.
+  EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
+
+  ::testing::Mock::VerifyAndClearExpectations(client_);
+  ::testing::Mock::VerifyAndClearExpectations(profile_request_generator_);
+  ::testing::Mock::VerifyAndClearExpectations(uploader_);
 }
 
 // Edge case where:

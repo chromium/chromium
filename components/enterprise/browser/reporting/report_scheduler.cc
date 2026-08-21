@@ -281,6 +281,10 @@ void ReportScheduler::Stop() {
   }
   active_report_generation_config_ =
       ReportGenerationConfig(ReportTrigger::kTriggerNone);
+  pending_triggers_ = 0;
+  if (on_manual_report_uploaded_) {
+    std::move(on_manual_report_uploaded_).Run();
+  }
 }
 
 void ReportScheduler::RestartReportTimer() {
@@ -517,8 +521,11 @@ void ReportScheduler::OnReportWillRetry(const ReportGenerationConfig& config) {
 
 void ReportScheduler::OnReportGenerated(
     base::expected<ReportRequestQueue, ReportGenerationError> result) {
-  DCHECK_NE(active_report_generation_config_.report_trigger,
-            ReportTrigger::kTriggerNone);
+  // If we were stopped while generating the report, abort.
+  if (active_report_generation_config_.report_trigger ==
+      ReportTrigger::kTriggerNone) {
+    return;
+  }
 
   if (!result.has_value()) {
     RecordReportGenerationErrorMetric(result.error());
@@ -573,8 +580,11 @@ void ReportScheduler::OnReportGenerated(
 }
 
 void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
-  DCHECK_NE(active_report_generation_config_.report_trigger,
-            ReportTrigger::kTriggerNone);
+  // If we were stopped while uploading the report, abort.
+  if (active_report_generation_config_.report_trigger ==
+      ReportTrigger::kTriggerNone) {
+    return;
+  }
   VLOG(1) << "The enterprise report upload result " << status << ".";
   if (report_uploader_) {
     report_uploader_->RemoveListener(this);
