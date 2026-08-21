@@ -218,30 +218,10 @@ certificates.
      net/data/ssl/scripts/generate-redundant-test-chains.sh.
 
 ===== From net/data/ssl/scripts/generate-client-certificates.sh
-- client_1.pem
-- client_1.key
-- client_1.pk8
-- client_1_ca.pem
-- client_2.pem
-- client_2.key
-- client_2.pk8
-- client_2_ca.pem
-- client_3.pem
-- client_3.key
-- client_3.pk8
-- client_3_ca.pem
-- client_4.pem
-- client_4.key
-- client_4.pk8
-- client_4_ca.pem
-- client_5.pem
-- client_5.key
-- client_5.pk8
-- client_5_ca.pem
-- client_6.pem
-- client_6.key
-- client_6.pk8
-- client_6_ca.pem
+- client_*.pem
+- client_*.key
+- client_*.pk8
+- client_*_ca.pem
 - client_1_u16_password.p12
 - client_root_ca.pem
      This is a set of files used to unit test SSL client certificate
@@ -258,14 +238,14 @@ certificates.
        to test wifi EAP-TLS authentication so it uses a different set
        of X509v3 extensions.  Specifically it includes two Subject
        Alternative Name fields recognized by Chrome OS.
-     - client_4.pem is similar to client_2.pem but is a P-256 ECDSA key rather
-       than RSA.
-     - client_5.pem is similar to client_2.pem but is a P-384 ECDSA key rather
-       than RSA.
-     - client_6.pem is similar to client_2.pem but is a P-521 ECDSA key rather
-       than RSA.
-     - client_7.pem is similar to client_2.pem but is a RSA-1024 key rather
-       than RSA-2048.
+     - client_p256.pem is similar to client_2.pem but is a P-256 ECDSA key.
+     - client_p384.pem is similar to client_2.pem but is a P-384 ECDSA key.
+     - client_p521.pem is similar to client_2.pem but is a P-521 ECDSA key.
+     - client_rsa1024.pem is similar to client_2.pem but is a RSA-1024 key.
+     - client_ed25519.pem is similar to client_2.pem but is an Ed25519 key.
+     - client_mldsa44.pem is similar to client_2.pem but is an ML-DSA-44 key.
+     - client_mldsa65.pem is similar to client_2.pem but is an ML-DSA-65 key.
+     - client_mldsa87.pem is similar to client_2.pem but is an ML-DSA-87 key.
      - client_root_ca.pem is the CA certificate which signed client_*_ca.pem.
      - client_1_u16_password.p12 contains the client_1.key and client_1.pem key
        and certificate, but is encoded as a PKCS#12 file and has a password with

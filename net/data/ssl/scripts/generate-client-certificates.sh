@@ -8,16 +8,22 @@
 # authentication. Outputs for automated tests are stored in
 # net/data/ssl/certificates, but may be re-generated for manual testing.
 #
-# This script generates several chains of test client certificates:
+# This script generates several chains of test RSA client certificates:
 #
 #   1. A (end-entity) -> B -> C (self-signed root)
 #   2. D (end-entity) -> E -> C (self-signed root)
 #   3. F (end-entity) -> E -> C (self-signed root)
-#   4. G (end-entity, P-256) -> E -> C (self-signed root)
-#   5. H (end-entity, P-384) -> E -> C (self-signed root)
-#   6. I (end-entity, P-521) -> E -> C (self-signed root)
-#   7. J (end-entity, RSA-1024) -> E -> C (self-signed root)
-#   8. K (end-entity, ED25519) -> E -> C (self-signed root)
+#
+# It additionally generates several chains that exercise different key types.
+#
+#   - G (end-entity, P-256) -> E -> C (self-signed root)
+#   - H (end-entity, P-384) -> E -> C (self-signed root)
+#   - I (end-entity, P-521) -> E -> C (self-signed root)
+#   - J (end-entity, RSA-1024) -> E -> C (self-signed root)
+#   - K (end-entity, Ed25519) -> E -> C (self-signed root)
+#   - L (end-entity, ML-DSA-44) -> E -> C (self-signed root)
+#   - M (end-entity, ML-DSA-65) -> E -> C (self-signed root)
+#   - N (end-entity, ML-DSA-87) -> E -> C (self-signed root)
 #
 # In which the certificates all have distinct keypairs. The client
 # certificates share the same root, but are issued by different
@@ -53,6 +59,15 @@ try openssl ecparam -name secp384r1 -genkey -noout -out out/H.key
 try openssl ecparam -name secp521r1 -genkey -noout -out out/I.key
 try openssl genrsa -out out/J.key 1024
 try openssl genpkey -algorithm ed25519 -outform pem -out out/K.key
+# OpenSSL defaults to the less common (and technically unsound) "both" format
+# for ML-DSA. Override the bad defaults, needed to interoperate with other
+# libraries like BoringSSL.
+try openssl genpkey -provparam ml-dsa.output_formats=seed-only \
+  -algorithm ML-DSA-44 -outform pem -out out/L.key
+try openssl genpkey -provparam ml-dsa.output_formats=seed-only \
+  -algorithm ML-DSA-65 -outform pem -out out/M.key
+try openssl genpkey -provparam ml-dsa.output_formats=seed-only \
+  -algorithm ML-DSA-87 -outform pem -out out/N.key
 
 echo Generate the C CSR
 COMMON_NAME="C Root CA" \
@@ -116,7 +131,7 @@ COMMON_NAME="C CA" \
     -config client-certs.cnf
 
 echo Generate the leaf certs
-for id in A D F G H I J K
+for id in A D F G H I J K L M N
 do
   COMMON_NAME="Client Cert $id" \
   ID=$id \
@@ -127,6 +142,7 @@ do
     -config client-certs.cnf
   # Store the private key also in PKCS#8 format.
   try openssl pkcs8 \
+    -provparam ml-dsa.output_formats=seed-only \
     -topk8 -nocrypt \
     -in out/$id.key \
     -outform DER \
@@ -166,71 +182,28 @@ COMMON_NAME="E CA" \
     -out out/F.pem \
     -config client-certs.cnf
 
-echo E signs G
-COMMON_NAME="E CA" \
-  CA_DIR=out \
-  ID=E \
-  try openssl ca \
-    -batch \
-    -extensions user_cert \
-    -in out/G.csr \
-    -out out/G.pem \
-    -config client-certs.cnf
-
-echo E signs H
-COMMON_NAME="E CA" \
-  CA_DIR=out \
-  ID=E \
-  try openssl ca \
-    -batch \
-    -extensions user_cert \
-    -in out/H.csr \
-    -out out/H.pem \
-    -config client-certs.cnf
-
-echo E signs I
-COMMON_NAME="E CA" \
-  CA_DIR=out \
-  ID=E \
-  try openssl ca \
-    -batch \
-    -extensions user_cert \
-    -in out/I.csr \
-    -out out/I.pem \
-    -config client-certs.cnf
-
-echo E signs J
-COMMON_NAME="E CA" \
-  CA_DIR=out \
-  ID=E \
-  try openssl ca \
-    -batch \
-    -extensions user_cert \
-    -in out/J.csr \
-    -out out/J.pem \
-    -config client-certs.cnf
-
-echo E signs K
-COMMON_NAME="E CA" \
-  CA_DIR=out \
-  ID=E \
-  try openssl ca \
-    -batch \
-    -extensions user_cert \
-    -in out/K.csr \
-    -out out/K.pem \
-    -config client-certs.cnf
+for id in G H I J K L M N
+do
+  echo E signs $id
+  COMMON_NAME="E CA" \
+    CA_DIR=out \
+    ID=E \
+    try openssl ca \
+      -batch \
+      -extensions user_cert \
+      -in out/$id.csr \
+      -out out/$id.pem \
+      -config client-certs.cnf
+done
 
 echo Package the client certs and private keys into PKCS12 files
 # This is done for easily importing all of the certs needed for clients.
 try /bin/sh -c "cat out/A.pem out/A.key out/B.pem out/C.pem > out/A-chain.pem"
-try /bin/sh -c "cat out/D.pem out/D.key out/E.pem out/C.pem > out/D-chain.pem"
-try /bin/sh -c "cat out/F.pem out/F.key out/E.pem out/C.pem > out/F-chain.pem"
-try /bin/sh -c "cat out/G.pem out/G.key out/E.pem out/C.pem > out/G-chain.pem"
-try /bin/sh -c "cat out/H.pem out/H.key out/E.pem out/C.pem > out/H-chain.pem"
-try /bin/sh -c "cat out/I.pem out/I.key out/E.pem out/C.pem > out/I-chain.pem"
-try /bin/sh -c "cat out/J.pem out/J.key out/E.pem out/C.pem > out/J-chain.pem"
-try /bin/sh -c "cat out/K.pem out/K.key out/E.pem out/C.pem > out/K-chain.pem"
+for id in D F G H I J K L M N
+do
+  try /bin/sh -c \
+    "cat out/$id.pem out/$id.key out/E.pem out/C.pem > out/$id-chain.pem"
+done
 
 try openssl pkcs12 \
   -in out/A-chain.pem \
@@ -252,31 +225,52 @@ try openssl pkcs12 \
 
 try openssl pkcs12 \
   -in out/G-chain.pem \
-  -out out/client_4.p12 \
+  -out out/client_p256.p12 \
   -export \
   -passout pass:chrome
 
 try openssl pkcs12 \
   -in out/H-chain.pem \
-  -out out/client_5.p12 \
+  -out out/client_p384.p12 \
   -export \
   -passout pass:chrome
 
 try openssl pkcs12 \
   -in out/I-chain.pem \
-  -out out/client_6.p12 \
+  -out out/client_p521.p12 \
   -export \
   -passout pass:chrome
 
 try openssl pkcs12 \
   -in out/J-chain.pem \
-  -out out/client_7.p12 \
+  -out out/client_rsa1024.p12 \
   -export \
   -passout pass:chrome
 
 try openssl pkcs12 \
   -in out/K-chain.pem \
-  -out out/client_8.p12 \
+  -out out/client_ed25519.p12 \
+  -export \
+  -passout pass:chrome
+
+try openssl pkcs12 \
+  -provparam ml-dsa.output_formats=seed-only \
+  -in out/L-chain.pem \
+  -out out/client_mldsa44.p12 \
+  -export \
+  -passout pass:chrome
+
+try openssl pkcs12 \
+  -provparam ml-dsa.output_formats=seed-only \
+  -in out/M-chain.pem \
+  -out out/client_mldsa65.p12 \
+  -export \
+  -passout pass:chrome
+
+try openssl pkcs12 \
+  -provparam ml-dsa.output_formats=seed-only \
+  -in out/N-chain.pem \
+  -out out/client_mldsa87.p12 \
   -export \
   -passout pass:chrome
 
@@ -303,39 +297,49 @@ try cp out/F.key ../certificates/client_3.key
 try cp out/F.pk8 ../certificates/client_3.pk8
 try cp out/E.pem ../certificates/client_3_ca.pem
 
-try cp out/G.pem ../certificates/client_4.pem
-try cp out/G.key ../certificates/client_4.key
-try cp out/G.pk8 ../certificates/client_4.pk8
-try cp out/E.pem ../certificates/client_4_ca.pem
+try cp out/G.pem ../certificates/client_p256.pem
+try cp out/G.key ../certificates/client_p256.key
+try cp out/G.pk8 ../certificates/client_p256.pk8
+try cp out/E.pem ../certificates/client_p256_ca.pem
 
-try cp out/H.pem ../certificates/client_5.pem
-try cp out/H.key ../certificates/client_5.key
-try cp out/H.pk8 ../certificates/client_5.pk8
-try cp out/E.pem ../certificates/client_5_ca.pem
+try cp out/H.pem ../certificates/client_p384.pem
+try cp out/H.key ../certificates/client_p384.key
+try cp out/H.pk8 ../certificates/client_p384.pk8
+try cp out/E.pem ../certificates/client_p384_ca.pem
 
-try cp out/I.pem ../certificates/client_6.pem
-try cp out/I.key ../certificates/client_6.key
-try cp out/I.pk8 ../certificates/client_6.pk8
-try cp out/E.pem ../certificates/client_6_ca.pem
+try cp out/I.pem ../certificates/client_p521.pem
+try cp out/I.key ../certificates/client_p521.key
+try cp out/I.pk8 ../certificates/client_p521.pk8
+try cp out/E.pem ../certificates/client_p521_ca.pem
 
-try cp out/J.pem ../certificates/client_7.pem
-try cp out/J.key ../certificates/client_7.key
-try cp out/J.pk8 ../certificates/client_7.pk8
-try cp out/E.pem ../certificates/client_7_ca.pem
+try cp out/J.pem ../certificates/client_rsa1024.pem
+try cp out/J.key ../certificates/client_rsa1024.key
+try cp out/J.pk8 ../certificates/client_rsa1024.pk8
+try cp out/E.pem ../certificates/client_rsa1024_ca.pem
 
-try cp out/K.pem ../certificates/client_8.pem
-try cp out/J.key ../certificates/client_8.key
-try cp out/K.pk8 ../certificates/client_8.pk8
-try cp out/E.pem ../certificates/client_8_ca.pem
+try cp out/K.pem ../certificates/client_ed25519.pem
+try cp out/K.key ../certificates/client_ed25519.key
+try cp out/K.pk8 ../certificates/client_ed25519.pk8
+try cp out/E.pem ../certificates/client_ed25519_ca.pem
 
-try cp out/client_1.p12 ../certificates/client_1.p12
-try cp out/client_2.p12 ../certificates/client_2.p12
-try cp out/client_3.p12 ../certificates/client_3.p12
-try cp out/client_4.p12 ../certificates/client_4.p12
-try cp out/client_5.p12 ../certificates/client_5.p12
-try cp out/client_6.p12 ../certificates/client_6.p12
-try cp out/client_7.p12 ../certificates/client_7.p12
-try cp out/client_8.p12 ../certificates/client_8.p12
-try cp out/client_1_u16_password.p12 ../certificates/client_1_u16_password.p12
+try cp out/L.pem ../certificates/client_mldsa44.pem
+try cp out/L.key ../certificates/client_mldsa44.key
+try cp out/L.pk8 ../certificates/client_mldsa44.pk8
+try cp out/E.pem ../certificates/client_mldsa44_ca.pem
+
+try cp out/M.pem ../certificates/client_mldsa65.pem
+try cp out/M.key ../certificates/client_mldsa65.key
+try cp out/M.pk8 ../certificates/client_mldsa65.pk8
+try cp out/E.pem ../certificates/client_mldsa65_ca.pem
+
+try cp out/N.pem ../certificates/client_mldsa87.pem
+try cp out/N.key ../certificates/client_mldsa87.key
+try cp out/N.pk8 ../certificates/client_mldsa87.pk8
+try cp out/E.pem ../certificates/client_mldsa87_ca.pem
+
+for name in 1 1_u16_password 2 3 p256 p384 p521 rsa1024 ed25519 mldsa44 mldsa65 mldsa87;
+do
+  try cp out/client_$name.p12 ../certificates/client_$name.p12
+done
 
 try cp out/C.pem ../certificates/client_root_ca.pem

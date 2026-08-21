@@ -74,7 +74,7 @@ namespace {
 constexpr char kFileName1[] = "client_1";
 constexpr char kFileName2[] = "client_2";
 constexpr char kFileName3[] = "client_3";
-constexpr char kFileName4[] = "client_4";
+constexpr char kFileName4[] = "client_p256";
 
 constexpr char kFakeExtensionId[] = "fakeextensionid";
 

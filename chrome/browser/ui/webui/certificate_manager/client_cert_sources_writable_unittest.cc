@@ -451,9 +451,9 @@ TEST_P(ClientCertSourceWritableUnitTest, PolicyAllAllowsDeletion) {
   std::string client_1_hash_hex = ImportToUserSlotForTesting(
       net::GetTestCertsDirectory().AppendASCII("client_1.p12"), "chrome");
   ASSERT_FALSE(client_1_hash_hex.empty());
-  std::string client_4_hash_hex = ImportToSystemSlotForTesting(
-      net::GetTestCertsDirectory().AppendASCII("client_4.p12"), "chrome");
-  ASSERT_FALSE(client_4_hash_hex.empty());
+  std::string client_p256_hash_hex = ImportToSystemSlotForTesting(
+      net::GetTestCertsDirectory().AppendASCII("client_p256.p12"), "chrome");
+  ASSERT_FALSE(client_p256_hash_hex.empty());
 
   profile()->GetPrefs()->SetInteger(
       prefs::kClientCertificateManagementAllowed,
@@ -462,8 +462,8 @@ TEST_P(ClientCertSourceWritableUnitTest, PolicyAllAllowsDeletion) {
   EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_1_hash_hex));
   EXPECT_TRUE(GetCertificateInfosIsCertDeletable(client_1_hash_hex));
 
-  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_4_hash_hex));
-  EXPECT_TRUE(GetCertificateInfosIsCertDeletable(client_4_hash_hex));
+  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_p256_hash_hex));
+  EXPECT_TRUE(GetCertificateInfosIsCertDeletable(client_p256_hash_hex));
 
   {
     fake_page_->set_mocked_confirmation_result(true);
@@ -483,7 +483,7 @@ TEST_P(ClientCertSourceWritableUnitTest, PolicyAllAllowsDeletion) {
     fake_page_->set_mocked_confirmation_result(true);
     base::test::TestFuture<certificate_manager::mojom::ActionResultPtr>
         delete_waiter;
-    cert_source_->DeleteCertificate("", client_4_hash_hex,
+    cert_source_->DeleteCertificate("", client_p256_hash_hex,
                                     delete_waiter.GetCallback());
 
     certificate_manager::mojom::ActionResultPtr delete_result =
@@ -491,7 +491,7 @@ TEST_P(ClientCertSourceWritableUnitTest, PolicyAllAllowsDeletion) {
     ASSERT_TRUE(delete_result);
     ASSERT_TRUE(delete_result->is_success());
   }
-  EXPECT_FALSE(GetCertificateInfosContainsCertWithHash(client_4_hash_hex));
+  EXPECT_FALSE(GetCertificateInfosContainsCertWithHash(client_p256_hash_hex));
 }
 
 TEST_P(ClientCertSourceWritableUnitTest,
@@ -499,9 +499,9 @@ TEST_P(ClientCertSourceWritableUnitTest,
   std::string client_1_hash_hex = ImportToUserSlotForTesting(
       net::GetTestCertsDirectory().AppendASCII("client_1.p12"), "chrome");
   ASSERT_FALSE(client_1_hash_hex.empty());
-  std::string client_4_hash_hex = ImportToSystemSlotForTesting(
-      net::GetTestCertsDirectory().AppendASCII("client_4.p12"), "chrome");
-  ASSERT_FALSE(client_4_hash_hex.empty());
+  std::string client_p256_hash_hex = ImportToSystemSlotForTesting(
+      net::GetTestCertsDirectory().AppendASCII("client_p256.p12"), "chrome");
+  ASSERT_FALSE(client_p256_hash_hex.empty());
 
   profile()->GetPrefs()->SetInteger(
       prefs::kClientCertificateManagementAllowed,
@@ -512,8 +512,8 @@ TEST_P(ClientCertSourceWritableUnitTest,
   EXPECT_TRUE(GetCertificateInfosIsCertDeletable(client_1_hash_hex));
 
   // A client certificate in the system slot should not be deletable.
-  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_4_hash_hex));
-  EXPECT_FALSE(GetCertificateInfosIsCertDeletable(client_4_hash_hex));
+  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_p256_hash_hex));
+  EXPECT_FALSE(GetCertificateInfosIsCertDeletable(client_p256_hash_hex));
 
   {
     fake_page_->set_mocked_confirmation_result(true);
@@ -533,7 +533,7 @@ TEST_P(ClientCertSourceWritableUnitTest,
     fake_page_->set_mocked_confirmation_result(true);
     base::test::TestFuture<certificate_manager::mojom::ActionResultPtr>
         delete_waiter;
-    cert_source_->DeleteCertificate("", client_4_hash_hex,
+    cert_source_->DeleteCertificate("", client_p256_hash_hex,
                                     delete_waiter.GetCallback());
 
     certificate_manager::mojom::ActionResultPtr delete_result =
@@ -544,16 +544,16 @@ TEST_P(ClientCertSourceWritableUnitTest,
               l10n_util::GetStringUTF8(
                   IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_ERROR));
   }
-  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_4_hash_hex));
+  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_p256_hash_hex));
 }
 
 TEST_P(ClientCertSourceWritableUnitTest, PolicyNoneDoesNotAllowDeletion) {
   std::string client_1_hash_hex = ImportToUserSlotForTesting(
       net::GetTestCertsDirectory().AppendASCII("client_1.p12"), "chrome");
   ASSERT_FALSE(client_1_hash_hex.empty());
-  std::string client_4_hash_hex = ImportToSystemSlotForTesting(
-      net::GetTestCertsDirectory().AppendASCII("client_4.p12"), "chrome");
-  ASSERT_FALSE(client_4_hash_hex.empty());
+  std::string client_p256_hash_hex = ImportToSystemSlotForTesting(
+      net::GetTestCertsDirectory().AppendASCII("client_p256.p12"), "chrome");
+  ASSERT_FALSE(client_p256_hash_hex.empty());
 
   profile()->GetPrefs()->SetInteger(
       prefs::kClientCertificateManagementAllowed,
@@ -562,8 +562,8 @@ TEST_P(ClientCertSourceWritableUnitTest, PolicyNoneDoesNotAllowDeletion) {
   EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_1_hash_hex));
   EXPECT_FALSE(GetCertificateInfosIsCertDeletable(client_1_hash_hex));
 
-  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_4_hash_hex));
-  EXPECT_FALSE(GetCertificateInfosIsCertDeletable(client_4_hash_hex));
+  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_p256_hash_hex));
+  EXPECT_FALSE(GetCertificateInfosIsCertDeletable(client_p256_hash_hex));
 
   {
     fake_page_->set_mocked_confirmation_result(true);
@@ -586,7 +586,7 @@ TEST_P(ClientCertSourceWritableUnitTest, PolicyNoneDoesNotAllowDeletion) {
     fake_page_->set_mocked_confirmation_result(true);
     base::test::TestFuture<certificate_manager::mojom::ActionResultPtr>
         delete_waiter;
-    cert_source_->DeleteCertificate("", client_4_hash_hex,
+    cert_source_->DeleteCertificate("", client_p256_hash_hex,
                                     delete_waiter.GetCallback());
 
     certificate_manager::mojom::ActionResultPtr delete_result =
@@ -597,7 +597,7 @@ TEST_P(ClientCertSourceWritableUnitTest, PolicyNoneDoesNotAllowDeletion) {
               l10n_util::GetStringUTF8(
                   IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_ERROR));
   }
-  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_4_hash_hex));
+  EXPECT_TRUE(GetCertificateInfosContainsCertWithHash(client_p256_hash_hex));
 }
 
 TEST_P(ClientCertSourceWritableUnitTest, ImportPkcs12NotAllowedByPolicy) {

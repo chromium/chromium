@@ -65,9 +65,9 @@ struct TestKey {
 
 const TestKey kTestKeys[] = {
     {"RSA", "client_1.pem", "client_1.pk8", EVP_PKEY_RSA, "RSA"},
-    {"ECDSA_P256", "client_4.pem", "client_4.pk8", EVP_PKEY_EC, "EC"},
-    {"ECDSA_P384", "client_5.pem", "client_5.pk8", EVP_PKEY_EC, "EC"},
-    {"ECDSA_P521", "client_6.pem", "client_6.pk8", EVP_PKEY_EC, "EC"},
+    {"ECDSA_P256", "client_p256.pem", "client_p256.pk8", EVP_PKEY_EC, "EC"},
+    {"ECDSA_P384", "client_p384.pem", "client_p384.pk8", EVP_PKEY_EC, "EC"},
+    {"ECDSA_P521", "client_p521.pem", "client_p521.pk8", EVP_PKEY_EC, "EC"},
 };
 
 std::string TestKeyToString(const testing::TestParamInfo<TestKey>& params) {

@@ -68,15 +68,15 @@ TEST(SSLPlatformKeyUtil, GetClientCertInfo) {
   EXPECT_EQ(EVP_PKEY_RSA, type);
   EXPECT_EQ(2048u / 8u, max_length);
 
-  ASSERT_TRUE(GetClientCertInfoFromFile("client_4.pem", &type, &max_length));
+  ASSERT_TRUE(GetClientCertInfoFromFile("client_p256.pem", &type, &max_length));
   EXPECT_EQ(EVP_PKEY_EC, type);
   EXPECT_EQ(ECDSA_SIG_max_len(BitsToBytes(256)), max_length);
 
-  ASSERT_TRUE(GetClientCertInfoFromFile("client_5.pem", &type, &max_length));
+  ASSERT_TRUE(GetClientCertInfoFromFile("client_p384.pem", &type, &max_length));
   EXPECT_EQ(EVP_PKEY_EC, type);
   EXPECT_EQ(ECDSA_SIG_max_len(BitsToBytes(384)), max_length);
 
-  ASSERT_TRUE(GetClientCertInfoFromFile("client_6.pem", &type, &max_length));
+  ASSERT_TRUE(GetClientCertInfoFromFile("client_p521.pem", &type, &max_length));
   EXPECT_EQ(EVP_PKEY_EC, type);
   EXPECT_EQ(ECDSA_SIG_max_len(BitsToBytes(521)), max_length);
 }
@@ -90,18 +90,18 @@ TEST(SSLPlatformKeyUtil, GetPublicKeyInfo) {
   EXPECT_EQ(EVP_PKEY_RSA, type);
   EXPECT_EQ(2048u / 8u, max_length);
 
-  ASSERT_TRUE(
-      GetPublicKeyInfoFromCertificateFile("client_4.pem", &type, &max_length));
+  ASSERT_TRUE(GetPublicKeyInfoFromCertificateFile("client_p256.pem", &type,
+                                                  &max_length));
   EXPECT_EQ(EVP_PKEY_EC, type);
   EXPECT_EQ(ECDSA_SIG_max_len(BitsToBytes(256)), max_length);
 
-  ASSERT_TRUE(
-      GetPublicKeyInfoFromCertificateFile("client_5.pem", &type, &max_length));
+  ASSERT_TRUE(GetPublicKeyInfoFromCertificateFile("client_p384.pem", &type,
+                                                  &max_length));
   EXPECT_EQ(EVP_PKEY_EC, type);
   EXPECT_EQ(ECDSA_SIG_max_len(BitsToBytes(384)), max_length);
 
-  ASSERT_TRUE(
-      GetPublicKeyInfoFromCertificateFile("client_6.pem", &type, &max_length));
+  ASSERT_TRUE(GetPublicKeyInfoFromCertificateFile("client_p521.pem", &type,
+                                                  &max_length));
   EXPECT_EQ(EVP_PKEY_EC, type);
   EXPECT_EQ(ECDSA_SIG_max_len(BitsToBytes(521)), max_length);
 }
