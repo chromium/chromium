@@ -107,6 +107,7 @@ Suggestion CreateUndoSuggestion() {
 
 bool IsManagementFooterOption(const Suggestion& suggestion) {
   switch (suggestion.type) {
+    case SuggestionType::kAtMemoryOpenGemini:
     case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kManageAddress:
     case SuggestionType::kManageAutofillAi:
@@ -117,7 +118,6 @@ bool IsManagementFooterOption(const Suggestion& suggestion) {
     case SuggestionType::kManageIban:
     case SuggestionType::kManageLoyaltyCard:
     case SuggestionType::kManageEnhancedAutofill:
-    case SuggestionType::kOpenGemini:
     case SuggestionType::kWebauthnPasskeyQrCode:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
       return true;

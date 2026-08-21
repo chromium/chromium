@@ -310,7 +310,7 @@ bool IsPasswordSuggestion(FormSuggestion* suggestion) {
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kBnplFootnote:
     case SuggestionType::kAutocompleteAtMemoryButton:
-    case SuggestionType::kOpenGemini:
+    case SuggestionType::kAtMemoryOpenGemini:
     case SuggestionType::kAtMemoryNoConnection:
     case SuggestionType::kAtMemoryFetching:
     case SuggestionType::kAtMemoryGenericError:

@@ -816,6 +816,7 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kAtMemoryFetching:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kAtMemoryNoConnection:
+    case SuggestionType::kAtMemoryOpenGemini:
     case SuggestionType::kAtMemorySearchAffordance:
     case SuggestionType::kAtMemorySearchResult:
     case SuggestionType::kAtMemorySourceAttribution: {
@@ -866,7 +867,6 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kMaximizeCreditCardBenefitsEntry:
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kOneTimePasswordEntry:
-    case SuggestionType::kOpenGemini:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPendingStateSignin:
     case SuggestionType::kPersonalContextNotice:

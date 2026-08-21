@@ -364,7 +364,7 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
 
     private @DrawableRes int getResIdForSuggestionType(int suggestionType) {
         switch (suggestionType) {
-            case SuggestionType.OPEN_GEMINI:
+            case SuggestionType.AT_MEMORY_OPEN_GEMINI:
                 return R.drawable.open_in_new;
             case SuggestionType.AT_MEMORY_NO_CONNECTION:
                 return R.drawable.ic_north_west_24dp;

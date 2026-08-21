@@ -2004,7 +2004,7 @@ TEST_F(AtMemoryManagerTest,
   manager().OnSearchSubmitted(u"query");
 
   EXPECT_THAT(final_suggestions,
-              SuggestionVectorIdsAre(SuggestionType::kOpenGemini));
+              SuggestionVectorIdsAre(SuggestionType::kAtMemoryOpenGemini));
 
   // Verify that we still logged that some sort of suggestion was shown to the
   // user despite it not being an AtMemory suggestion.

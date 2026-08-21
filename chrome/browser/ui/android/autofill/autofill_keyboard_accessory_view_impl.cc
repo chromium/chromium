@@ -67,7 +67,7 @@ bool IsSuggestionTypeEligibleForKeyboardAccessory(SuggestionType type) {
     case SuggestionType::kBnplFootnote:
     case SuggestionType::kPersonalContextNotice:
     case SuggestionType::kAutocompleteAtMemoryButton:
-    case SuggestionType::kOpenGemini:
+    case SuggestionType::kAtMemoryOpenGemini:
     case SuggestionType::kAtMemorySearchResult:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kAtMemoryNoConnection:

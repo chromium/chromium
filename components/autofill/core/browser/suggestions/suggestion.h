@@ -561,7 +561,7 @@ struct Suggestion {
         return std::holds_alternative<PaymentsPayload>(payload);
       case SuggestionType::kAtMemorySearchResult:
         return std::holds_alternative<AtMemoryPayload>(payload);
-      case SuggestionType::kOpenGemini:
+      case SuggestionType::kAtMemoryOpenGemini:
         return std::holds_alternative<OpenGeminiPayload>(payload);
       case SuggestionType::kDevtoolsTestAddressEntry:
       default:

@@ -135,10 +135,10 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kBnplFootnote";
     case SuggestionType::kAutocompleteAtMemoryButton:
       return "kAutocompleteAtMemoryButton";
-    case SuggestionType::kOpenGemini:
-      return "kOpenGemini";
     case SuggestionType::kAtMemoryNoConnection:
       return "kAtMemoryNoConnection";
+    case SuggestionType::kAtMemoryOpenGemini:
+      return "kAtMemoryOpenGemini";
     case SuggestionType::kAtMemorySearchAffordance:
       return "kAtMemorySearchAffordance";
     case SuggestionType::kPersonalContextNotice:

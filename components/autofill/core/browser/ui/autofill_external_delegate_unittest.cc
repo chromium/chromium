@@ -1368,7 +1368,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryRemoteQuery_UnsupportedQuery) {
                     IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_TITLE)),
                 HasLabel(l10n_util::GetStringUTF16(
                     IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_DESCRIPTION)),
-                testing::Field(&Suggestion::type, SuggestionType::kOpenGemini),
+                testing::Field(&Suggestion::type,
+                               SuggestionType::kAtMemoryOpenGemini),
                 testing::Field(&Suggestion::icon, Suggestion::Icon::kSpark))));
       });
 
@@ -1480,7 +1481,7 @@ TEST_P(AutofillExternalDelegateAtMemoryGenericErrorTest,
 TEST_F(AutofillExternalDelegateTest, AtMemoryAcceptOpenGeminiSuggestion) {
   IssueOnQuery();
 
-  Suggestion suggestion(SuggestionType::kOpenGemini);
+  Suggestion suggestion(SuggestionType::kAtMemoryOpenGemini);
   suggestion.payload = Suggestion::OpenGeminiPayload(u"test prompt");
 
   EXPECT_CALL(autofill_client(),

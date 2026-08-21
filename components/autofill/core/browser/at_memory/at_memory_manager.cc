@@ -842,7 +842,7 @@ Suggestion AtMemoryManager::CreateUnsupportedQuerySuggestion(
     const std::u16string& query) {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_TITLE),
-      SuggestionType::kOpenGemini);
+      SuggestionType::kAtMemoryOpenGemini);
   suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_DESCRIPTION))}};
   suggestion.acceptability =

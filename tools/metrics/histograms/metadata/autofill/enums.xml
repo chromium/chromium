@@ -6114,7 +6114,7 @@ Called by update_autofill_enums.py.-->
   <int value="79" label="BNPL footnote"/>
   <int value="80" label="AtMemory inactivity nudge"/>
   <int value="81" label="Autocomplete AtMemory button"/>
-  <int value="82" label="Open Gemini"/>
+  <int value="82" label="AtMemory Open Gemini"/>
   <int value="83" label="AtMemory no connection"/>
   <int value="84" label="AtMemory search trigger affordance"/>
   <int value="85" label="Personal context notice"/>

@@ -193,7 +193,7 @@ enum class SuggestionType {
   kAutocompleteAtMemoryButton = 81,
 
   // Suggestion to open Gemini in the sidebar.
-  kOpenGemini = 82,
+  kAtMemoryOpenGemini = 82,
 
   // Suggestion to display when AtMemory search fails to connect to the server.
   kAtMemoryNoConnection = 83,

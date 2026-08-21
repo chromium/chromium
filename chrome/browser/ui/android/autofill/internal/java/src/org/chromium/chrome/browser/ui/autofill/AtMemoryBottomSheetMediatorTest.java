@@ -239,7 +239,7 @@ public class AtMemoryBottomSheetMediatorTest {
                         .setIconId(R.drawable.ic_spark_24dp)
                         .setLabel("Ask Gemini")
                         .setSubLabel("Search with Gemini")
-                        .setSuggestionType(SuggestionType.OPEN_GEMINI)
+                        .setSuggestionType(SuggestionType.AT_MEMORY_OPEN_GEMINI)
                         .build();
         List<AutofillSuggestion> suggestions = List.of(suggestion);
         mMediator.show(suggestions);

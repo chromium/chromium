@@ -107,13 +107,13 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kAtMemoryGenericError:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kAtMemoryNoConnection:
+    case SuggestionType::kAtMemoryOpenGemini:
     case SuggestionType::kAtMemorySearchAffordance:
     case SuggestionType::kAutocompleteAtMemoryButton:
     case SuggestionType::kBnplFootnote:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kLoadingThrobber:
     case SuggestionType::kMixedFormMessage:
-    case SuggestionType::kOpenGemini:
     case SuggestionType::kPersonalContextNotice:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kSeparator:
