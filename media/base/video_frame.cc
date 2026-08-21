@@ -480,6 +480,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
   }
 
   frame->acquire_sync_token_ = sync_token;
+  frame->set_color_space(shared_image->color_space());
   frame->shared_image_ = shared_image->MakeUnowned();
   if (shared_image_release_cb) {
     frame->SetReleaseMailboxCB(std::move(shared_image_release_cb));
@@ -571,6 +572,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapMappableSharedImage(
   // Note that we cannot use |shared_image|->MakeUnowned() here since MappableSI
   // owns a MappableBuffer internally, which we cannot create an unowned
   // reference to.
+  frame->set_color_space(shared_image->color_space());
   frame->shared_image_ = std::move(shared_image);
   return frame;
 }

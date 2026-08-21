@@ -216,7 +216,7 @@ class NdkVideoEncoderAcceleratorTest
       scoped_refptr<VideoFrame> software_frame) {
     gfx::Size size = software_frame->visible_rect().size();
     auto mailbox = gpu::Mailbox::Generate();
-    auto color_space = gfx::ColorSpace::CreateSRGB();
+    auto color_space = software_frame->ColorSpace();
     GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
     SkAlphaType alpha_type = kPremul_SkAlphaType;
     auto sync_token = gpu::SyncToken();
