@@ -114,9 +114,9 @@ class AndroidParentalControlsUrlFilteringServiceAndroidBrowserTest
 
 IN_PROC_BROWSER_TEST_F(
     AndroidParentalControlsUrlFilteringServiceAndroidBrowserTest,
-    FamilyLinkDisablesAndroidParentalControls) {
-  ASSERT_TRUE(
-      AreAndroidParentalControlsEffectiveForTesting(*GetProfile()->GetPrefs()));
+    FamilyLinkAndAndroidParentalControlsCoexist) {
+  ASSERT_TRUE(GetDeviceParentalControls().IsEnabled());
+  ASSERT_FALSE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
   ASSERT_EQ(
       WebFilterType::kTryToBlockMatureSites,
       SupervisedUserUrlFilteringServiceFactory::GetForProfile(GetProfile())
@@ -124,8 +124,8 @@ IN_PROC_BROWSER_TEST_F(
 
   EnableParentalControls(*GetProfile()->GetPrefs());
 
-  EXPECT_FALSE(
-      AreAndroidParentalControlsEffectiveForTesting(*GetProfile()->GetPrefs()));
+  EXPECT_TRUE(GetDeviceParentalControls().IsEnabled());
+  EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
   EXPECT_EQ(
       WebFilterType::kTryToBlockMatureSites,
       SupervisedUserUrlFilteringServiceFactory::GetForProfile(GetProfile())

@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
-                       FamilyLinkOverridesDeviceSupervision) {
+                       FamilyLinkCoexistsWithDeviceSupervision) {
   bool is_initially_supervised_locally =
       GetTestCase().initial_browser_content_filters_value ||
       GetTestCase().initial_search_content_filters_value;
@@ -246,11 +246,10 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
 
   EnableParentalControls(*GetProfile()->GetPrefs());
 
-  // Finally, local supervision is overridden (browser sees it as disabled),
-  // Family Link supervision is always enabled, and if there was a conflict,
-  // it's recorded (possibly multiple times, because changes to both
-  // SupervisedUserSettingsService and AndroidParentalControls trigger pref
-  // calculations)
+  // Family Link supervision is enabled. If device controls were also initially
+  // enabled, both systems coexist and a conflict is recorded (possibly
+  // multiple times, because changes to both SupervisedUserSettingsService and
+  // AndroidParentalControls trigger pref calculations).
   if (is_initially_supervised_locally) {
     EXPECT_GT(histogram_tester().GetBucketCount(
                   "SupervisedUsers.FamilyLinkSupervisionConflict", 1),
@@ -260,8 +259,8 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
                   "SupervisedUsers.FamilyLinkSupervisionConflict", 1),
               0);
   }
-  EXPECT_FALSE(
-      AreAndroidParentalControlsEffectiveForTesting(*GetProfile()->GetPrefs()));
+  EXPECT_EQ(is_initially_supervised_locally,
+            GetDeviceParentalControls().IsEnabled());
   EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
 }
 
@@ -349,16 +348,16 @@ IN_PROC_BROWSER_TEST_F(
 
   // Try turning the knob on the local supervision (browser filtering).
   GetDeviceParentalControls().SetBrowserContentFiltersEnabledForTesting(true);
-  EXPECT_FALSE(
-      AreAndroidParentalControlsEffectiveForTesting(*GetProfile()->GetPrefs()));
+  EXPECT_TRUE(GetDeviceParentalControls().IsEnabled());
+  EXPECT_TRUE(GetDeviceParentalControls().IsBrowserContentFiltersEnabled());
   EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
   histogram_tester().ExpectBucketCount(
       "SupervisedUsers.FamilyLinkSupervisionConflict", 1, 1);
 
   // Try turning the knob on the local supervision (search filtering).
   GetDeviceParentalControls().SetSearchContentFiltersEnabledForTesting(true);
-  EXPECT_FALSE(
-      AreAndroidParentalControlsEffectiveForTesting(*GetProfile()->GetPrefs()));
+  EXPECT_TRUE(GetDeviceParentalControls().IsEnabled());
+  EXPECT_TRUE(GetDeviceParentalControls().IsSearchContentFiltersEnabled());
   EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
   histogram_tester().ExpectBucketCount(
       "SupervisedUsers.FamilyLinkSupervisionConflict", 1, 2);

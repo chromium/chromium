@@ -6,9 +6,6 @@
 
 #include <string>
 
-#include "components/policy/core/common/policy_pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_synthetic_field_trial_service_delegate.h"
 
 namespace supervised_user {
@@ -87,20 +84,4 @@ void AndroidParentalControls::RegisterDeviceLevelSyntheticFieldTrials(
           IsSearchContentFiltersEnabled()));
 }
 
-bool AreAndroidParentalControlsEffectiveForTesting(
-    const PrefService& pref_service) {
-  if (IsSubjectToParentalControls(pref_service)) {
-    return false;
-  }
-
-  // When any device parental controls are active, they disable incognito mode.
-  // This is done by setting the `kIncognitoModeAvailability` pref, which
-  // results in `IsManagedByCustodian()` returning true for that pref.
-  // We use this as a proxy to determine if device controls are "effective".
-  // This check is only reached if Family Link supervision is not active,
-  // as determined by the `IsSubjectToParentalControls` check above.
-  return pref_service
-      .FindPreference(policy::policy_prefs::kIncognitoModeAvailability)
-      ->IsManagedByCustodian();
-}
 }  // namespace supervised_user
