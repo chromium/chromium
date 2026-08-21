@@ -59,6 +59,8 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.sync.SyncService;
@@ -583,6 +585,166 @@ public class MultiColumnSettingsUnitTest {
                     assertEquals(
                             View.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
                             headerGroup.getImportantForAccessibility());
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV})
+    public void testOnCreateInitialDetailFragment_withInitialUrl() {
+        mBlankUiActivityTestRule.launchActivity(null);
+        BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TestMultiColumnSettings settings = new TestMultiColumnSettings();
+                    settings.setInitialUrl(
+                            "chrome://settings/siteDetails?site=https%3A%2F%2Fgoogle.com");
+
+                    activity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .add(android.R.id.content, settings)
+                            .commitNow();
+
+                    Fragment detailFragment = settings.onCreateInitialDetailFragment();
+                    assertNotNull(
+                            "Detail fragment should be instantiated for initial subpage URL",
+                            detailFragment);
+                    assertTrue(
+                            "Detail fragment should be SingleWebsiteSettings instance",
+                            detailFragment instanceof SingleWebsiteSettings);
+                    assertNotNull(detailFragment.getArguments());
+                    assertEquals(
+                            "https://google.com",
+                            detailFragment
+                                    .getArguments()
+                                    .getString(SingleWebsiteSettings.EXTRA_SITE_ADDRESS));
+                    assertNull(
+                            "Initial URL should be cleared after being consumed",
+                            settings.getInitialUrl());
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV})
+    public void testOnPreferenceStartFragment_delegatesToSettingsNavigation() {
+        mBlankUiActivityTestRule.launchActivity(null);
+        BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SettingsNavigation mockNavigation = Mockito.mock(SettingsNavigation.class);
+                    SettingsNavigationFactory.setInstanceForTesting(mockNavigation);
+
+                    MultiColumnSettings settings = new TestMultiColumnSettings();
+                    activity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .add(android.R.id.content, settings)
+                            .commitNow();
+
+                    Preference preference = new Preference(settings.requireContext());
+                    preference.setFragment(TestFragment.class.getName());
+                    Bundle extras = preference.getExtras();
+                    extras.putString("test_key", "test_value");
+
+                    PreferenceFragmentCompat caller = Mockito.mock(PreferenceFragmentCompat.class);
+                    boolean handled = settings.onPreferenceStartFragment(caller, preference);
+
+                    assertTrue("Preference start fragment should be handled", handled);
+                    Mockito.verify(mockNavigation)
+                            .startSettings(settings.getContext(), TestFragment.class, extras);
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV})
+    public void testOnPreferenceStartFragment_urlNavDisabled_fallsBackToParent() {
+        mBlankUiActivityTestRule.launchActivity(null);
+        BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SettingsNavigation mockNavigation = Mockito.mock(SettingsNavigation.class);
+                    SettingsNavigationFactory.setInstanceForTesting(mockNavigation);
+
+                    MultiColumnSettings settings = new TestMultiColumnSettings();
+                    activity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .add(android.R.id.content, settings)
+                            .commitNow();
+
+                    Preference preference = new Preference(settings.requireContext());
+                    preference.setFragment(TestFragment.class.getName());
+
+                    PreferenceFragmentCompat caller = Mockito.mock(PreferenceFragmentCompat.class);
+                    settings.onPreferenceStartFragment(caller, preference);
+
+                    Mockito.verifyNoInteractions(mockNavigation);
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV})
+    public void testOnPreferenceStartFragment_nullFragment_fallsBackToParent() {
+        mBlankUiActivityTestRule.launchActivity(null);
+        BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SettingsNavigation mockNavigation = Mockito.mock(SettingsNavigation.class);
+                    SettingsNavigationFactory.setInstanceForTesting(mockNavigation);
+
+                    MultiColumnSettings settings = new TestMultiColumnSettings();
+                    activity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .add(android.R.id.content, settings)
+                            .commitNow();
+
+                    Preference preference = new Preference(settings.requireContext());
+                    preference.setFragment(null);
+
+                    PreferenceFragmentCompat caller = Mockito.mock(PreferenceFragmentCompat.class);
+                    boolean handled = settings.onPreferenceStartFragment(caller, preference);
+
+                    assertFalse("Null fragment should not be handled by URL navigation", handled);
+                    Mockito.verifyNoInteractions(mockNavigation);
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV})
+    public void testOnPreferenceStartFragment_invalidFragmentClass_fallsBackToParent() {
+        mBlankUiActivityTestRule.launchActivity(null);
+        BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SettingsNavigation mockNavigation = Mockito.mock(SettingsNavigation.class);
+                    SettingsNavigationFactory.setInstanceForTesting(mockNavigation);
+
+                    MultiColumnSettings settings = new TestMultiColumnSettings();
+                    activity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .add(android.R.id.content, settings)
+                            .commitNow();
+
+                    Preference preference = new Preference(settings.requireContext());
+                    preference.setFragment("invalid.fragment.class.Name");
+
+                    PreferenceFragmentCompat caller = Mockito.mock(PreferenceFragmentCompat.class);
+                    settings.onPreferenceStartFragment(caller, preference);
+
+                    Mockito.verifyNoInteractions(mockNavigation);
                 });
     }
 
