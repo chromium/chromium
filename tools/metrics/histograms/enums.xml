@@ -1422,6 +1422,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="3" label="System"/>
   <int value="4" label="Other Off The Record"/>
   <int value="5" label="Deprecated(10/23): Guest (Ephemeral)"/>
+  <int value="6" label="Enterprise Isolated"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/profile_metrics/browser_profile_type.h:BrowserProfileType) -->

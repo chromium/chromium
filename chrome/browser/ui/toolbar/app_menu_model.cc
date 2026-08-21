@@ -512,7 +512,11 @@ ProfileSubMenuModel::ProfileSubMenuModel(
       features::IsRoundedIconsEnabled() ? kAccountCircleIcon
                                         : kAccountCircleChromeRefreshOldIcon,
       ui::kColorMenuIcon, avatar_icon_size);
-  if (profile->IsIncognitoProfile()) {
+  // TODO(b/540249284): Temporarily Isolated mode is treated as Incognito. This
+  // should be revisited when deciding on the final integration of Isolated
+  // mode.
+  if (profile->IsIncognitoProfile() ||
+      profile->IsEnterpriseIsolatedModeProfile()) {
     avatar_image_model_ = ui::ImageModel::FromVectorIcon(
         features::IsRoundedIconsEnabled() ? kIncognitoCircleFilledIcon
                                           : kIncognitoOldIcon,
@@ -578,8 +582,11 @@ ProfileSubMenuModel::ProfileSubMenuModel(
 
   bool needs_separator = false;
   const bool is_guest_mode_enabled = profiles::IsGuestModeEnabled(*profile);
-
-  if (!profile->IsIncognitoProfile() && !profile->IsGuestSession()) {
+  // TODO(b/540249284): Temporarily Isolated mode is treated as Incognito. This
+  // should be revisited when deciding on the final integration of Isolated
+  // mode.
+  if (!profile->IsIncognitoProfile() && !profile->IsGuestSession() &&
+      !profile->IsEnterpriseIsolatedModeProfile()) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     AddTitle(l10n_util::GetStringUTF16(IDS_OTHER_CHROME_PROFILES_TITLE));
     auto profile_entries = GetAllOtherProfileEntriesForProfileSubMenu(profile);
@@ -819,9 +826,12 @@ void ProfileSubMenuModel::BuildGuestProfileRow(Profile* profile) {
   SetElementIdentifierAt(GetIndexOfCommandId(IDC_OPEN_GUEST_PROFILE).value(),
                          AppMenuModel::kProfileOpenGuestItem);
 }
-
+// TODO(b/540249284): Temporarily Isolated mode is treated as Incognito. This
+// should be revisited when deciding on the final integration of Isolated
+// mode.
 void ProfileSubMenuModel::BuildCustomizeProfileRow(Profile* profile) {
-  if (!profile->IsIncognitoProfile() && !profile->IsGuestSession()) {
+  if (!profile->IsIncognitoProfile() && !profile->IsGuestSession() &&
+      !profile->IsEnterpriseIsolatedModeProfile()) {
     AddItemWithStringIdAndVectorIcon(
         this, IDC_CUSTOMIZE_CHROME, IDS_CUSTOMIZE_CHROME,
         features::IsRoundedIconsEnabled()
@@ -843,7 +853,8 @@ void ProfileSubMenuModel::BuildCloseProfileRow(Profile* profile) {
 
 void ProfileSubMenuModel::BuildManageGoogleAccountRow(Profile* profile) {
   if (HasUnconstentedProfile(profile) && !IsSyncPaused(profile) &&
-      !profile->IsIncognitoProfile()) {
+      !profile->IsIncognitoProfile() &&
+      !profile->IsEnterpriseIsolatedModeProfile()) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     const gfx::VectorIcon& manage_account_icon =
         vector_icons::kGoogleGLogoMonochromeIcon;
@@ -2216,10 +2227,13 @@ void AppMenuModel::Build() {
       AddDefaultBrowserMenuItems()) {
     AddSeparator(ui::NORMAL_SEPARATOR);
   }
-
+  // TODO(b/540249284): Temporarily Isolated mode is treated as Incognito. This
+  // should be revisited when deciding on the final integration of Isolated
+  // mode.
   AddItemWithStringIdAndVectorIcon(
       this, IDC_NEW_TAB,
-      browser_->GetProfile()->IsIncognitoProfile() &&
+      (browser_->GetProfile()->IsIncognitoProfile() ||
+       browser_->GetProfile()->IsEnterpriseIsolatedModeProfile()) &&
               !browser_->GetProfile()->IsGuestSession()
           ? IDS_NEW_INCOGNITO_TAB
           : IDS_NEW_TAB,
@@ -2555,11 +2569,14 @@ bool AppMenuModel::AddGlobalErrorMenuItems() {
   }
   return menu_items_added;
 }
-
+// TODO(b/540249284): Temporarily Isolated mode is treated as Incognito. This
+// should be revisited when deciding on the final integration of Isolated
+// mode.
 bool AppMenuModel::AddDefaultBrowserMenuItems() {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   if (browser_->GetProfile()->IsIncognitoProfile() ||
-      browser_->GetProfile()->IsGuestSession()) {
+      browser_->GetProfile()->IsGuestSession() ||
+      browser_->GetProfile()->IsEnterpriseIsolatedModeProfile()) {
     return false;
   }
 

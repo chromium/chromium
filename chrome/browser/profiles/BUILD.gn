@@ -89,6 +89,7 @@ source_set("misc") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/dom_distiller",
     "//chrome/browser/download",
+    "//chrome/browser/enterprise/isolated_mode",
     "//chrome/browser/file_system_access",
     "//chrome/browser/first_run",
     "//chrome/browser/heavy_ad_intervention",

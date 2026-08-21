@@ -239,11 +239,14 @@ bool IsAmbientAuthAllowedForProfile(Profile* profile) {
   net::AmbientAuthAllowedProfileTypes type =
       static_cast<net::AmbientAuthAllowedProfileTypes>(local_state->GetInteger(
           prefs::kAmbientAuthenticationInPrivateModesEnabled));
-
+  // TODO(b/540249284): Temporarily Isolated mode is treated as Incognito. This
+  // should be revisited when deciding on the final integration of Isolated
+  // mode.
   if (profile->IsGuestSession()) {
     return type == net::AmbientAuthAllowedProfileTypes::kGuestAndRegular ||
            type == net::AmbientAuthAllowedProfileTypes::kAll;
-  } else if (profile->IsIncognitoProfile()) {
+  } else if (profile->IsIncognitoProfile() ||
+             profile->IsEnterpriseIsolatedModeProfile()) {
     return type == net::AmbientAuthAllowedProfileTypes::kIncognitoAndRegular ||
            type == net::AmbientAuthAllowedProfileTypes::kAll;
   }

@@ -32,6 +32,7 @@
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/enterprise/isolated_mode/settings.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
@@ -138,6 +139,10 @@ profile_metrics::BrowserProfileType ComputeOffTheRecordProfileType(
 
   switch (profile_metrics::GetBrowserProfileType(parent_profile)) {
     case profile_metrics::BrowserProfileType::kRegular:
+      if (enterprise_isolated_mode::IsolatedModeReplacesIncognito(
+              *parent_profile->GetPrefs())) {
+        return profile_metrics::BrowserProfileType::kEnterpriseIsolated;
+      }
       return profile_metrics::BrowserProfileType::kIncognito;
 
     case profile_metrics::BrowserProfileType::kGuest:
@@ -147,6 +152,7 @@ profile_metrics::BrowserProfileType ComputeOffTheRecordProfileType(
       return profile_metrics::BrowserProfileType::kSystem;
 
     case profile_metrics::BrowserProfileType::kIncognito:
+    case profile_metrics::BrowserProfileType::kEnterpriseIsolated:
     case profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile:
       NOTREACHED();
   }

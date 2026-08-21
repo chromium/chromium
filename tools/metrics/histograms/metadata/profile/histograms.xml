@@ -25,6 +25,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(BrowserProfileType) -->
 
 <variants name="BrowserProfileType">
+  <variant name="EnterpriseIsolated"/>
   <variant name="Guest"/>
   <variant name="Incognito"/>
   <variant name="OtherOffTheRecordProfile"/>

@@ -133,7 +133,11 @@ ProfileSelection ProfileSelections::GetProfileSelection(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Treat other off the record profiles as Incognito (primary otr) Profiles.
+  // TODO(b/540249284): Temporarily Isolated mode is treated as Incognito. This
+  // should be revisited when deciding on the final integration of Isolated
+  // mode.
   if (profile->IsRegularProfile() || profile->IsIncognitoProfile() ||
+      profile->IsEnterpriseIsolatedModeProfile() ||
       profile_metrics::GetBrowserProfileType(profile) ==
           profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile) {
     return regular_profile_selection_;

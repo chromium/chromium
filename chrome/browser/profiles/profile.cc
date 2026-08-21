@@ -433,6 +433,15 @@ bool Profile::IsIncognitoProfile() const {
          profile_metrics::BrowserProfileType::kIncognito;
 }
 
+bool Profile::IsEnterpriseIsolatedModeProfile() const {
+  return profile_metrics::GetBrowserProfileType(this) ==
+         profile_metrics::BrowserProfileType::kEnterpriseIsolated;
+}
+
+bool Profile::IsPrimaryOTRProfileWithRegularParent() const {
+  return IsIncognitoProfile() || IsEnterpriseIsolatedModeProfile();
+}
+
 bool Profile::IsGuestSession() const {
 #if BUILDFLAG(IS_CHROMEOS)
   if (!new_guest_profile_impl_) {

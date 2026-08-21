@@ -385,10 +385,10 @@ class Profile : public content::BrowserContext {
   // more recent (or equal to) the one specified.
   virtual bool WasCreatedByVersionOrLater(const std::string& version) = 0;
 
-  // IsRegularProfile(), IsSystemProfile(), IsIncognitoProfile(), and
-  // IsGuestSession() are mutually exclusive.
-  // Note: IsGuestSession() is not mutually exclusive with the rest of the
-  // methods mentioned above on ChromeOS. TODO(crbug.com/40233408).
+  // IsRegularProfile(), IsSystemProfile(), IsIncognitoProfile(),
+  // IsGuestSession() and IsEnterpriseIsolatedModeProfile() are mutually
+  // exclusive. Note: IsGuestSession() is not mutually exclusive with the rest
+  // of the methods mentioned above on ChromeOS. TODO(crbug.com/40233408).
   //
   // IsSystemProfile() returns true for both regular and off-the-record profile
   //   of the system profile.
@@ -402,8 +402,17 @@ class Profile : public content::BrowserContext {
   // off-the-record profile that is used for incognito mode.
   bool IsIncognitoProfile() const;
 
+  // Returns whether this profile is an Enterprise Isolated Mode session.
+  bool IsEnterpriseIsolatedModeProfile() const;
+
+  // Returns true if this is a primary OffTheRecord profile with a regular
+  // parent profile (i.e. an Incognito profile or an Enterprise Isolated Mode
+  // profile).
+  bool IsPrimaryOTRProfileWithRegularParent() const;
+
   // Returns true if this is a primary OffTheRecord profile, which covers the
-  // OffTheRecord profile used for incognito mode and guest sessions.
+  // OffTheRecord profile used for incognito mode, isolated mode and guest
+  // sessions.
   bool IsPrimaryOTRProfile() const;
 
   // Returns whether it is a Guest session. This covers both regular and
