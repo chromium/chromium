@@ -341,7 +341,7 @@ template <typename ItemsBuilder>
 void CollectInlinesInternal(ItemsBuilder* builder,
                             const InlineNodeData* previous_data) {
   LayoutBlockFlow* const block = builder->GetLayoutBlockFlow();
-  builder->EnterBlock(block->Style());
+  builder->EnterBlock(&block->StyleRef());
   LayoutObject* node = block->FirstChild();
 
   const LayoutObject* symbol =
@@ -2386,7 +2386,7 @@ void InlineNode::CheckConsistency() const {
   for (const Member<InlineItem>& item_ptr : items) {
     const InlineItem& item = *item_ptr;
     DCHECK(!item.GetLayoutObject() || !item.Style() ||
-           item.Style() == item.GetLayoutObject()->Style());
+           item.Style() == &item.GetLayoutObject()->StyleRef());
   }
 #endif
 }
