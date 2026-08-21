@@ -157,16 +157,20 @@ NavigationLocation* NavigationParser::ParseLocation(
       return nullptr;
     }
 
-    CSSParserTokenStream::BlockGuard guard(stream);
+    {
+      CSSParserTokenStream::BlockGuard guard(stream);
+      stream.ConsumeWhitespace();
+      if (stream.Peek().GetType() != kStringToken) {
+        return nullptr;
+      }
+      const CSSParserToken& token = stream.ConsumeIncludingWhitespace();
+      if (token.GetType() == kBadStringToken || !stream.UncheckedAtEnd()) {
+        return nullptr;
+      }
+      value = token.Value().ToAtomicString();
+    }
+    // Consume any whitespace after the function.
     stream.ConsumeWhitespace();
-    if (stream.Peek().GetType() != kStringToken) {
-      return nullptr;
-    }
-    const CSSParserToken& token = stream.ConsumeIncludingWhitespace();
-    if (token.GetType() == kBadStringToken || !stream.UncheckedAtEnd()) {
-      return nullptr;
-    }
-    value = token.Value().ToAtomicString();
   }
 
   return MakeGarbageCollected<NavigationLocation>(type, value);
