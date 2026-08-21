@@ -36,7 +36,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
@@ -64,8 +64,8 @@ public class ImageDescriptionsSettingsTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public SettingsActivityTestRule<ImageDescriptionsSettings> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(ImageDescriptionsSettings.class);
+    public SettingsTestRule<ImageDescriptionsSettings> mSettingsActivityTestRule =
+            new SettingsTestRule<>(ImageDescriptionsSettings.class);
 
     @Mock private ImageDescriptionsControllerDelegate mDelegate;
 
