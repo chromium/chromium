@@ -1,13 +1,14 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {AudioBrowserProxyImpl, BrowserProxy, ContentPositionSource, MAX_SPEECH_LENGTH, NodeStore, ReadAloudHighlighter, ReadAloudNode, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, VisualBrowserProxyImpl, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AudioBrowserProxyImpl, BrowserProxy, ContentBrowserProxyImpl, ContentPositionSource, MAX_SPEECH_LENGTH, NodeStore, ReadAloudHighlighter, ReadAloudNode, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, VisualBrowserProxyImpl, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {Segment, SpeechListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGE, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechErrorEvent, createSpeechSynthesisVoice, createWordBoundaryEvent, mockMetrics, setContent} from './common.js';
 import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
@@ -47,6 +48,7 @@ suite('SpeechController', () => {
     AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
     visualBrowserProxy = new TestVisualBrowserProxy();
     VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
+    ContentBrowserProxyImpl.setInstance(new TestContentBrowserProxy());
     speech = new TestSpeechBrowserProxy();
     speech.setVoices(
         [createSpeechSynthesisVoice({lang: 'en', name: 'Google Alpaca'})]);

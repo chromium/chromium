@@ -5,7 +5,7 @@ import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/c
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {isRTL} from '//resources/js/util.js';
 
-import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
+import {ContentBrowserProxyImpl} from '../content/content_browser_proxy.js';
 import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
 import {TextSegmenter} from '../read_aloud/text_segmenter.js';
 
@@ -83,6 +83,6 @@ export function getWordCount(text: string): number {
 
 // Returns true if the active distillation method is readability.
 export function isDistilledByReadability(): boolean {
-  return VisualBrowserProxyImpl.getInstance().getActiveDistillationMethod() ===
-      VisualBrowserProxyImpl.getInstance().getDistillationTypeReadability();
+  return ContentBrowserProxyImpl.getInstance().getActiveDistillationMethod() ===
+      ContentBrowserProxyImpl.getInstance().getDistillationTypeReadability();
 }

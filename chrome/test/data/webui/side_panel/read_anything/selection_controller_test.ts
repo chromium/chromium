@@ -622,8 +622,8 @@ suite('SelectionController', () => {
 
     suite('with readability enabled', () => {
       setup(() => {
-        visualBrowserProxy.activeDistillationMethod =
-            visualBrowserProxy.distillationTypeReadability;
+        contentBrowserProxy.activeDistillationMethod =
+            contentBrowserProxy.distillationTypeReadability;
       });
 
       test('does nothing when node content is missing', () => {

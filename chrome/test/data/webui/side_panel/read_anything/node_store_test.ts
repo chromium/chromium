@@ -4,12 +4,13 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy, ESTIMATED_WORDS_PER_MS, getWordCount, MIN_MS_TO_READ, NodeStore, ReadAloudNode, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, ContentBrowserProxyImpl, ESTIMATED_WORDS_PER_MS, getWordCount, MIN_MS_TO_READ, NodeStore, ReadAloudNode, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
 import {mockMetrics, setWindowSize} from './common.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
@@ -17,6 +18,7 @@ suite('NodeStore', () => {
   let nodeStore: NodeStore;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
   let visualBrowserProxy: TestVisualBrowserProxy;
+  let contentBrowserProxy: TestContentBrowserProxy;
   let now: number;
 
   function getWordsSeen(): number {
@@ -59,6 +61,8 @@ suite('NodeStore', () => {
     metricsBrowserProxy = mockMetrics();
     visualBrowserProxy = new TestVisualBrowserProxy();
     VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
+    contentBrowserProxy = new TestContentBrowserProxy();
+    ContentBrowserProxyImpl.setInstance(contentBrowserProxy);
     now = 0;
     Date.now = () => now;
     nodeStore = new NodeStore();
@@ -166,8 +170,8 @@ suite('NodeStore', () => {
   });
 
   test('areNodesAllHidden', () => {
-    visualBrowserProxy.activeDistillationMethod = 0;
-    visualBrowserProxy.distillationTypeReadability = 1;
+    contentBrowserProxy.activeDistillationMethod = 0;
+    contentBrowserProxy.distillationTypeReadability = 1;
     const id1 = 216;
     const id2 = 218;
     const id3 = 219;
@@ -181,8 +185,8 @@ suite('NodeStore', () => {
   });
 
   test('areNodesAllHidden with Readability', () => {
-    visualBrowserProxy.activeDistillationMethod = 1;
-    visualBrowserProxy.distillationTypeReadability = 1;
+    contentBrowserProxy.activeDistillationMethod = 1;
+    contentBrowserProxy.distillationTypeReadability = 1;
 
     const element = document.createElement('p');
     element.innerText = 'Some text';

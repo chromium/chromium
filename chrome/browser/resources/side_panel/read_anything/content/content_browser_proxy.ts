@@ -12,10 +12,23 @@ export interface ContentBrowserProxy {
   getTextContent(nodeId: number): string;
   getPrefixText(nodeId: number): string;
 
+  getActiveDistillationMethod(): number;
+  getDistillationTypeReadability(): number;
+  getDistillationTypeScreen2x(): number;
+
   hasValidSelection(): boolean;
+  isReadabilityEnabled(): boolean;
   isReadabilitySelectTextEnabled(): boolean;
+  isGoogleDocs(): boolean;
+  isLeafNode(nodeId: number): boolean;
+  isOverline(nodeId: number): boolean;
+  shouldBold(nodeId: number): boolean;
 
   attemptLogEarlySelection(fromSidePanel: boolean): void;
+  onNoTextContent(): void;
+  updateSelection(): void;
+  onLinkClicked(nodeId: number): void;
+  onRenderedTextBlocksAvailable(blocks: string[]): void;
   onConnected(): void;
   onCollapseSelection(): void;
   onSelectionChange(
@@ -45,8 +58,28 @@ export class ContentBrowserProxyImpl implements ContentBrowserProxy {
     return chrome.readingMode.hasValidSelection;
   }
 
+  isReadabilityEnabled(): boolean {
+    return chrome.readingMode.isReadabilityEnabled;
+  }
+
   isReadabilitySelectTextEnabled(): boolean {
     return chrome.readingMode.isReadabilitySelectTextEnabled;
+  }
+
+  isGoogleDocs(): boolean {
+    return chrome.readingMode.isGoogleDocs;
+  }
+
+  isLeafNode(nodeId: number): boolean {
+    return chrome.readingMode.isLeafNode(nodeId);
+  }
+
+  isOverline(nodeId: number): boolean {
+    return chrome.readingMode.isOverline(nodeId);
+  }
+
+  shouldBold(nodeId: number): boolean {
+    return chrome.readingMode.shouldBold(nodeId);
   }
 
   onConnected(): void {
@@ -78,6 +111,34 @@ export class ContentBrowserProxyImpl implements ContentBrowserProxy {
 
   getPrefixText(nodeId: number): string {
     return chrome.readingMode.getPrefixText(nodeId);
+  }
+
+  onNoTextContent(): void {
+    chrome.readingMode.onNoTextContent();
+  }
+
+  updateSelection(): void {
+    chrome.readingMode.updateSelection();
+  }
+
+  onLinkClicked(nodeId: number): void {
+    chrome.readingMode.onLinkClicked(nodeId);
+  }
+
+  onRenderedTextBlocksAvailable(blocks: string[]): void {
+    chrome.readingMode.onRenderedTextBlocksAvailable(blocks);
+  }
+
+  getActiveDistillationMethod(): number {
+    return chrome.readingMode.activeDistillationMethod;
+  }
+
+  getDistillationTypeReadability(): number {
+    return chrome.readingMode.distillationTypeReadability;
+  }
+
+  getDistillationTypeScreen2x(): number {
+    return chrome.readingMode.distillationTypeScreen2x;
   }
 
   static getInstance(): ContentBrowserProxy {

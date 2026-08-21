@@ -48,6 +48,9 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   maxLineWidth: number = 60;
   letterSpacing: number = 0;
   colorTheme: number = 0;
+  imagesEnabled: boolean = true;
+  linksEnabled: boolean = true;
+  fetchedImages: number[] = [];
 
   constructor() {
     super([
@@ -76,8 +79,6 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
       'getLowContrastLightTheme',
       'getLowContrastDarkTheme',
       'getColorTheme',
-      'getActiveDistillationMethod',
-      'getDistillationTypeReadability',
       'requestImageData',
       'isLineFocusEnabled',
       'getLineFocusOff',
@@ -96,6 +97,8 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
       'onLineFocusChanged',
       'togglePresentation',
       'isImmersiveEnabled',
+      'isImagesEnabled',
+      'isLinksEnabled',
       'getActivePresentationState',
       'isPdf',
       'getMaxLineWidth',
@@ -234,18 +237,9 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
     return letterSpacing;
   }
 
-  getActiveDistillationMethod(): number {
-    this.methodCalled('getActiveDistillationMethod');
-    return this.activeDistillationMethod;
-  }
-
-  getDistillationTypeReadability(): number {
-    this.methodCalled('getDistillationTypeReadability');
-    return this.distillationTypeReadability;
-  }
-
   requestImageData(nodeId: number): void {
     this.methodCalled('requestImageData', nodeId);
+    this.fetchedImages.push(nodeId);
   }
 
   isLineFocusEnabled(): boolean {
@@ -325,6 +319,16 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   isImmersiveEnabled(): boolean {
     this.methodCalled('isImmersiveEnabled');
     return this.immersiveEnabled;
+  }
+
+  isImagesEnabled(): boolean {
+    this.methodCalled('isImagesEnabled');
+    return this.imagesEnabled;
+  }
+
+  isLinksEnabled(): boolean {
+    this.methodCalled('isLinksEnabled');
+    return this.linksEnabled;
   }
 
   getActivePresentationState(): number {

@@ -10,6 +10,8 @@ export interface VisualBrowserProxy {
   getInImmersiveOverlayPresentationState(): number;
   getActivePresentationState(): number;
   isImmersiveEnabled(): boolean;
+  isImagesEnabled(): boolean;
+  isLinksEnabled(): boolean;
   isPdf(): boolean;
 
   getMaxLineWidth(): number;
@@ -40,9 +42,6 @@ export interface VisualBrowserProxy {
   getLowContrastLightTheme(): number;
   getLowContrastDarkTheme(): number;
   getColorTheme(): number;
-
-  getActiveDistillationMethod(): number;
-  getDistillationTypeReadability(): number;
 
   maybeHasKeyPointsSection(): boolean;
   getKeyPointsRegex(): string;
@@ -83,6 +82,14 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
 
   isImmersiveEnabled(): boolean {
     return chrome.readingMode.isImmersiveEnabled;
+  }
+
+  isImagesEnabled(): boolean {
+    return chrome.readingMode.imagesEnabled;
+  }
+
+  isLinksEnabled(): boolean {
+    return chrome.readingMode.linksEnabled;
   }
 
   isPdf(): boolean {
@@ -183,14 +190,6 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
 
   getColorTheme(): number {
     return chrome.readingMode.colorTheme;
-  }
-
-  getActiveDistillationMethod(): number {
-    return chrome.readingMode.activeDistillationMethod;
-  }
-
-  getDistillationTypeReadability(): number {
-    return chrome.readingMode.distillationTypeReadability;
   }
 
   maybeHasKeyPointsSection(): boolean {

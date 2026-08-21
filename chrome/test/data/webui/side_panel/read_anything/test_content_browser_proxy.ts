@@ -12,9 +12,17 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   endNodeId: number = -1;
   endOffset: number = -1;
   hasValidSelectionVal: boolean = true;
+  readabilityEnabled: boolean = true;
   isReadabilitySelectTextEnabledFlag: boolean = false;
   textContentMap: {[key: number]: string} = {};
   prefixText: string = '';
+  googleDocs: boolean = false;
+  leafNodeSet: Set<number> = new Set();
+  isOverlineVal: boolean = false;
+  shouldBoldVal: boolean = false;
+  activeDistillationMethod: number = 0;
+  distillationTypeReadability: number = 1;
+  distillationTypeScreen2x: number = 0;
 
   constructor() {
     super([
@@ -23,7 +31,11 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
       'getEndNodeId',
       'getEndOffset',
       'hasValidSelection',
+      'isReadabilityEnabled',
       'isReadabilitySelectTextEnabled',
+      'getActiveDistillationMethod',
+      'getDistillationTypeReadability',
+      'getDistillationTypeScreen2x',
       'onConnected',
       'onCollapseSelection',
       'attemptLogEarlySelection',
@@ -31,6 +43,14 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
       'onScroll',
       'getTextContent',
       'getPrefixText',
+      'isGoogleDocs',
+      'isLeafNode',
+      'isOverline',
+      'shouldBold',
+      'onNoTextContent',
+      'updateSelection',
+      'onLinkClicked',
+      'onRenderedTextBlocksAvailable',
     ]);
   }
 
@@ -57,6 +77,11 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   hasValidSelection(): boolean {
     this.methodCalled('hasValidSelection');
     return this.hasValidSelectionVal;
+  }
+
+  isReadabilityEnabled(): boolean {
+    this.methodCalled('isReadabilityEnabled');
+    return this.readabilityEnabled;
   }
 
   isReadabilitySelectTextEnabled(): boolean {
@@ -96,5 +121,56 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   getPrefixText(nodeId: number): string {
     this.methodCalled('getPrefixText', nodeId);
     return this.prefixText;
+  }
+
+  isGoogleDocs(): boolean {
+    this.methodCalled('isGoogleDocs');
+    return this.googleDocs;
+  }
+
+  isLeafNode(nodeId: number): boolean {
+    this.methodCalled('isLeafNode', nodeId);
+    return this.leafNodeSet.has(nodeId);
+  }
+
+  isOverline(nodeId: number): boolean {
+    this.methodCalled('isOverline', nodeId);
+    return this.isOverlineVal;
+  }
+
+  shouldBold(nodeId: number): boolean {
+    this.methodCalled('shouldBold', nodeId);
+    return this.shouldBoldVal;
+  }
+
+  onNoTextContent(): void {
+    this.methodCalled('onNoTextContent');
+  }
+
+  updateSelection(): void {
+    this.methodCalled('updateSelection');
+  }
+
+  onLinkClicked(nodeId: number): void {
+    this.methodCalled('onLinkClicked', nodeId);
+  }
+
+  onRenderedTextBlocksAvailable(blocks: string[]): void {
+    this.methodCalled('onRenderedTextBlocksAvailable', blocks);
+  }
+
+  getActiveDistillationMethod(): number {
+    this.methodCalled('getActiveDistillationMethod');
+    return this.activeDistillationMethod;
+  }
+
+  getDistillationTypeReadability(): number {
+    this.methodCalled('getDistillationTypeReadability');
+    return this.distillationTypeReadability;
+  }
+
+  getDistillationTypeScreen2x(): number {
+    this.methodCalled('getDistillationTypeScreen2x');
+    return this.distillationTypeScreen2x;
   }
 }

@@ -7,7 +7,7 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {ContentController, ContentType, HIGHLIGHTED_LINK_CLASS, LOG_EMPTY_DELAY_MS, MIN_MS_TO_READ, NodeStore, previousReadHighlightClass, ReadAloudNode, SpeechBrowserProxyImpl, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AudioBrowserProxyImpl, ContentBrowserProxyImpl, ContentController, ContentType, HIGHLIGHTED_LINK_CLASS, LOG_EMPTY_DELAY_MS, MIN_MS_TO_READ, NodeStore, previousReadHighlightClass, ReadAloudNode, SpeechBrowserProxyImpl, SpeechController, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ContentListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
@@ -15,8 +15,11 @@ import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {mockMetrics, stubAnimationFrame} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
+import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
+import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
+import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('ContentController', () => {
   let contentController: ContentController;
@@ -28,12 +31,20 @@ suite('ContentController', () => {
   let receivedContentStateChange: boolean;
   let receivedNewPageDrawn: boolean;
   let receivedContentChange: boolean;
+  let contentBrowserProxy: TestContentBrowserProxy;
+  let visualBrowserProxy: TestVisualBrowserProxy;
 
   setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
+
+    contentBrowserProxy = new TestContentBrowserProxy();
+    ContentBrowserProxyImpl.setInstance(contentBrowserProxy);
+    visualBrowserProxy = new TestVisualBrowserProxy();
+    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
+    AudioBrowserProxyImpl.setInstance(new TestAudioBrowserProxy());
 
     metrics = mockMetrics();
     nodeStore = new NodeStore();
@@ -134,11 +145,11 @@ suite('ContentController', () => {
   });
 
   test('setEmpty depends on google docs', () => {
-    chrome.readingMode.isGoogleDocs = true;
+    contentBrowserProxy.googleDocs = true;
     contentController.setEmpty();
     const docsHeading = contentController.getState().heading;
 
-    chrome.readingMode.isGoogleDocs = false;
+    contentBrowserProxy.googleDocs = false;
     contentController.setEmpty();
     const regularHeading = contentController.getState().heading;
 
@@ -289,8 +300,8 @@ suite('ContentController', () => {
     });
 
     test('sets empty if only whitespace content with readability', () => {
-      chrome.readingMode.activeDistillationMethod =
-          chrome.readingMode.distillationTypeReadability;
+      contentBrowserProxy.activeDistillationMethod =
+          contentBrowserProxy.distillationTypeReadability;
       readingMode.htmlContent = '   ';
       contentController.setState(ContentType.LOADING);
 
@@ -302,8 +313,8 @@ suite('ContentController', () => {
     });
 
     test('sets empty if whitespace content with tags in readability', () => {
-      chrome.readingMode.activeDistillationMethod =
-          chrome.readingMode.distillationTypeReadability;
+      contentBrowserProxy.activeDistillationMethod =
+          contentBrowserProxy.distillationTypeReadability;
       readingMode.htmlContent = '<div>   </div>';
       contentController.setState(ContentType.LOADING);
 
@@ -317,8 +328,8 @@ suite('ContentController', () => {
     test(
         'Readability replaces single newlines but keeps consecutive newlines',
         async () => {
-          chrome.readingMode.activeDistillationMethod =
-              chrome.readingMode.distillationTypeReadability;
+          contentBrowserProxy.activeDistillationMethod =
+              contentBrowserProxy.distillationTypeReadability;
           contentController.configureTrustedTypes();
           readingMode.htmlContent =
               'I see my present\npartner\n\nin the imperfect tense';
@@ -337,8 +348,8 @@ suite('ContentController', () => {
     test(
         'Readability does not replace single newlines inside pre tags',
         async () => {
-          chrome.readingMode.activeDistillationMethod =
-              chrome.readingMode.distillationTypeReadability;
+          contentBrowserProxy.activeDistillationMethod =
+              contentBrowserProxy.distillationTypeReadability;
           contentController.configureTrustedTypes();
           readingMode.htmlContent =
               '<pre>I see my present\npartner\n\nin the imperfect tense</pre>';
@@ -400,7 +411,7 @@ suite('ContentController', () => {
         return [];
       };
 
-      readingMode.imagesEnabled = true;
+      visualBrowserProxy.imagesEnabled = true;
       contentController.updateContent();
 
       // So that nodeStore.addImageToFetch(imgId2) is called in updateContent
@@ -410,10 +421,10 @@ suite('ContentController', () => {
         }
         return [];
       };
-      readingMode.imagesEnabled = false;
+      visualBrowserProxy.imagesEnabled = false;
       contentController.updateContent();
 
-      assertArrayEquals([imgId1, imgId2], readingMode.fetchedImages);
+      assertArrayEquals([imgId1, imgId2], visualBrowserProxy.fetchedImages);
     });
 
     test('notifies listeners of new page drawn', () => {
@@ -466,7 +477,7 @@ suite('ContentController', () => {
       const text = 'Hear that sound ringin in your mind';
       readingMode.getHtmlTag = () => '';
       readingMode.getTextContent = () => text;
-      readingMode.shouldBold = () => true;
+      contentBrowserProxy.shouldBoldVal = true;
 
       const root = contentController.updateContent();
 
@@ -479,7 +490,7 @@ suite('ContentController', () => {
       const text = 'Better sit down for the show';
       readingMode.getHtmlTag = () => '';
       readingMode.getTextContent = () => text;
-      readingMode.isOverline = () => true;
+      contentBrowserProxy.isOverlineVal = true;
 
       const root = contentController.updateContent();
 
@@ -515,16 +526,12 @@ suite('ContentController', () => {
     test('builds a link as an <a> tag when links are shown', () => {
       const childId = 65;
       const url = 'https://www.google.com/';
-      chrome.readingMode.linksEnabled = true;
+      visualBrowserProxy.linksEnabled = true;
       readingMode.getHtmlTag = (id) => {
         return id === childId ? '' : 'a';
       };
       readingMode.getUrl = () => url;
       readingMode.getTextContent = () => url;
-      let clicked = false;
-      readingMode.onLinkClicked = () => {
-        clicked = true;
-      };
       readingMode.getChildren = (id) => {
         return id === childId ? [] : [childId];
       };
@@ -534,13 +541,13 @@ suite('ContentController', () => {
       assertTrue(root instanceof HTMLAnchorElement, 'instance');
       assertEquals(url, root.href);
       root.click();
-      assertTrue(clicked, 'clicked');
+      assertEquals(1, contentBrowserProxy.getCallCount('onLinkClicked'));
     });
 
     test('builds a link as a <span> tag when links are hidden', () => {
       const childId = 71;
       const url = 'https://www.relsilicon.com/';
-      chrome.readingMode.linksEnabled = false;
+      visualBrowserProxy.linksEnabled = false;
       readingMode.getHtmlTag = (id) => {
         return id === childId ? '' : 'a';
       };
@@ -592,8 +599,8 @@ suite('ContentController', () => {
 
     test('link visibility toggled toggles links with Readability', async () => {
       const url = 'https://www.relsilicon.com/';
-      chrome.readingMode.activeDistillationMethod =
-          chrome.readingMode.distillationTypeReadability;
+      contentBrowserProxy.activeDistillationMethod =
+          contentBrowserProxy.distillationTypeReadability;
       contentController.configureTrustedTypes();
       const text = 'a link';
       readingMode.htmlContent = `<a href="${url}">${text}</a>`;
@@ -609,7 +616,7 @@ suite('ContentController', () => {
       shadowRoot.append(...contentDiv.childNodes);
 
       // Hide the links.
-      chrome.readingMode.linksEnabled = false;
+      visualBrowserProxy.linksEnabled = false;
       contentController.updateLinks(shadowRoot);
       let link = shadowRoot.querySelector('a');
       assertFalse(!!link);
@@ -619,7 +626,7 @@ suite('ContentController', () => {
       assertEquals(text, span.textContent);
 
       // Show the links.
-      chrome.readingMode.linksEnabled = true;
+      visualBrowserProxy.linksEnabled = true;
       contentController.updateLinks(shadowRoot);
       span = shadowRoot.querySelector<HTMLElement>('span[data-link]');
       assertFalse(!!span);
@@ -632,7 +639,7 @@ suite('ContentController', () => {
     test('builds an image as a <canvas> tag', () => {
       const rootId = readingMode.rootId;
       const altText = 'how it\'s done done done';
-      chrome.readingMode.imagesEnabled = true;
+      visualBrowserProxy.imagesEnabled = true;
       readingMode.getHtmlTag = () => 'img';
       readingMode.getAltText = () => altText;
 
@@ -641,13 +648,13 @@ suite('ContentController', () => {
       assertTrue(root instanceof HTMLCanvasElement);
       assertEquals(altText, root.getAttribute('alt'));
       assertEquals('', root.style.display);
-      assertArrayEquals([rootId], readingMode.fetchedImages);
+      assertArrayEquals([rootId], visualBrowserProxy.fetchedImages);
     });
 
     test('builds a video as a <canvas> tag', () => {
       const rootId = readingMode.rootId;
       const altText = 'Huntrx';
-      chrome.readingMode.imagesEnabled = true;
+      visualBrowserProxy.imagesEnabled = true;
       readingMode.getHtmlTag = () => 'video';
       readingMode.getAltText = () => altText;
 
@@ -656,7 +663,7 @@ suite('ContentController', () => {
       assertTrue(root instanceof HTMLCanvasElement);
       assertEquals(altText, root.getAttribute('alt'));
       assertEquals('', root.style.display);
-      assertArrayEquals([rootId], readingMode.fetchedImages);
+      assertArrayEquals([rootId], visualBrowserProxy.fetchedImages);
     });
 
     test('builds a button as a <div> tag', () => {
@@ -694,9 +701,9 @@ suite('ContentController', () => {
 
     test(
         'builds a button as a <div> tag when Readability enabled', async () => {
-          chrome.readingMode.isReadabilityEnabled = true;
-          chrome.readingMode.activeDistillationMethod =
-              chrome.readingMode.distillationTypeReadability;
+          contentBrowserProxy.readabilityEnabled = true;
+          contentBrowserProxy.activeDistillationMethod =
+              contentBrowserProxy.distillationTypeReadability;
           const buttonText = 'Buttons should be seen and not clicked';
           contentController.configureTrustedTypes();
           readingMode.htmlContent = `<button>${buttonText}</button>`;
@@ -714,9 +721,9 @@ suite('ContentController', () => {
     test(
         'builds a mark tag as a <div> tag when Readability enabled',
         async () => {
-          chrome.readingMode.isReadabilityEnabled = true;
-          chrome.readingMode.activeDistillationMethod =
-              chrome.readingMode.distillationTypeReadability;
+          contentBrowserProxy.readabilityEnabled = true;
+          contentBrowserProxy.activeDistillationMethod =
+              contentBrowserProxy.distillationTypeReadability;
           const markText = 'When everything is important, nothing is';
           contentController.configureTrustedTypes();
           readingMode.htmlContent = `<mark>${markText}</mark>`;
@@ -785,12 +792,12 @@ suite('ContentController', () => {
         async () => {
           const url = 'https://www.google.com/';
           const text = 'best link ever';
-          chrome.readingMode.isReadabilityEnabled = true;
-          chrome.readingMode.activeDistillationMethod =
-              chrome.readingMode.distillationTypeReadability;
+          contentBrowserProxy.readabilityEnabled = true;
+          contentBrowserProxy.activeDistillationMethod =
+              contentBrowserProxy.distillationTypeReadability;
           contentController.configureTrustedTypes();
           readingMode.htmlContent = `<a href="${url}">${text}</a>`;
-          chrome.readingMode.linksEnabled = false;
+          visualBrowserProxy.linksEnabled = false;
 
           const root = contentController.updateContent();
           await microtasksFinished();
@@ -816,12 +823,12 @@ suite('ContentController', () => {
         async () => {
           const url = 'https://www.google.com/';
           const text = 'best link ever';
-          chrome.readingMode.isReadabilityEnabled = true;
-          chrome.readingMode.activeDistillationMethod =
-              chrome.readingMode.distillationTypeReadability;
+          contentBrowserProxy.readabilityEnabled = true;
+          contentBrowserProxy.activeDistillationMethod =
+              contentBrowserProxy.distillationTypeReadability;
           contentController.configureTrustedTypes();
           readingMode.htmlContent = `<a href="${url}">${text}</a>`;
-          chrome.readingMode.linksEnabled = true;
+          visualBrowserProxy.linksEnabled = true;
 
           const root = contentController.updateContent();
           await microtasksFinished();
@@ -858,14 +865,14 @@ suite('ContentController', () => {
     });
 
     test('does nothing if no content', () => {
-      chrome.readingMode.linksEnabled = false;
+      visualBrowserProxy.linksEnabled = false;
       contentController.setState(ContentType.NO_CONTENT);
       contentController.updateLinks(shadowRoot);
       assertFalse(!!shadowRoot.firstChild);
     });
 
     test('replaces <a> with <span> when hiding links', () => {
-      chrome.readingMode.linksEnabled = false;
+      visualBrowserProxy.linksEnabled = false;
       shadowRoot.appendChild(link);
       nodeStore.setDomNode(link, linkId);
 
@@ -883,7 +890,7 @@ suite('ContentController', () => {
       span.dataset['link'] = linkUrl;
       shadowRoot.appendChild(span);
       nodeStore.setDomNode(span, linkId);
-      chrome.readingMode.linksEnabled = true;
+      visualBrowserProxy.linksEnabled = true;
 
       contentController.setState(ContentType.HAS_CONTENT);
       contentController.updateLinks(shadowRoot);
@@ -900,7 +907,7 @@ suite('ContentController', () => {
       link.appendChild(innerSpan);
       shadowRoot.appendChild(link);
       nodeStore.setDomNode(link, linkId);
-      chrome.readingMode.linksEnabled = false;
+      visualBrowserProxy.linksEnabled = false;
 
       contentController.setState(ContentType.HAS_CONTENT);
       contentController.updateLinks(shadowRoot);
@@ -919,7 +926,7 @@ suite('ContentController', () => {
       outerSpan.appendChild(innerSpan);
       shadowRoot.appendChild(outerSpan);
       nodeStore.setDomNode(outerSpan, linkId);
-      chrome.readingMode.linksEnabled = true;
+      visualBrowserProxy.linksEnabled = true;
 
       contentController.setState(ContentType.HAS_CONTENT);
       contentController.updateLinks(shadowRoot);
@@ -938,7 +945,7 @@ suite('ContentController', () => {
           link.appendChild(innerSpan);
           shadowRoot.appendChild(link);
           nodeStore.setDomNode(link, linkId);
-          chrome.readingMode.linksEnabled = false;
+          visualBrowserProxy.linksEnabled = false;
 
           contentController.setState(ContentType.HAS_CONTENT);
           contentController.updateLinks(shadowRoot);
@@ -960,7 +967,7 @@ suite('ContentController', () => {
           outerSpan.appendChild(innerSpan);
           shadowRoot.appendChild(outerSpan);
           nodeStore.setDomNode(outerSpan, linkId);
-          chrome.readingMode.linksEnabled = true;
+          visualBrowserProxy.linksEnabled = true;
 
           contentController.setState(ContentType.HAS_CONTENT);
           contentController.updateLinks(shadowRoot);
@@ -981,7 +988,7 @@ suite('ContentController', () => {
           link.appendChild(innerSpan);
           shadowRoot.appendChild(link);
           nodeStore.setDomNode(link, linkId);
-          chrome.readingMode.linksEnabled = false;
+          visualBrowserProxy.linksEnabled = false;
 
           contentController.onSelectionChange(shadowRoot);
           contentController.setState(ContentType.HAS_CONTENT);
@@ -1002,7 +1009,7 @@ suite('ContentController', () => {
 
       contentController.loadImages();
 
-      assertArrayEquals([imageId], readingMode.fetchedImages);
+      assertArrayEquals([imageId], visualBrowserProxy.fetchedImages);
     });
   });
 
@@ -1090,7 +1097,7 @@ suite('ContentController', () => {
     });
 
     test('hides images and associated text nodes when disabled', async () => {
-      chrome.readingMode.imagesEnabled = false;
+      visualBrowserProxy.imagesEnabled = false;
       contentController.setState(ContentType.HAS_CONTENT);
 
       contentController.updateImages(shadowRoot);
@@ -1104,7 +1111,7 @@ suite('ContentController', () => {
     });
 
     test('shows images and clears hidden nodes when enabled', async () => {
-      chrome.readingMode.imagesEnabled = true;
+      visualBrowserProxy.imagesEnabled = true;
       nodeStore.hideImageNode(textId);
       canvas.style.display = 'none';
       figure.style.display = 'none';
@@ -1121,9 +1128,9 @@ suite('ContentController', () => {
     });
 
     test('notifies of content change with readability', async () => {
-      chrome.readingMode.imagesEnabled = false;
-      chrome.readingMode.activeDistillationMethod =
-          chrome.readingMode.distillationTypeReadability;
+      visualBrowserProxy.imagesEnabled = false;
+      contentBrowserProxy.activeDistillationMethod =
+          contentBrowserProxy.distillationTypeReadability;
       contentController.setState(ContentType.HAS_CONTENT);
       receivedContentChange = false;
 
@@ -1145,7 +1152,7 @@ suite('ContentController', () => {
       figure.appendChild(captionElement);
       containerElement.appendChild(figure);
 
-      chrome.readingMode.imagesEnabled = true;
+      visualBrowserProxy.imagesEnabled = true;
       contentController.setState(ContentType.HAS_CONTENT);
 
       let savedReadAloudState = false;
@@ -1176,16 +1183,10 @@ suite('ContentController', () => {
   });
 
   suite('onRenderedTextBlocksAvailable', () => {
-    let sentBlocks: string[][];
-
     setup(() => {
-      sentBlocks = [];
-      readingMode.onRenderedTextBlocksAvailable = (blocks) => {
-        sentBlocks.push(blocks);
-      };
-      chrome.readingMode.activeDistillationMethod =
-          chrome.readingMode.distillationTypeReadability;
-      chrome.readingMode.isReadabilitySelectTextEnabled = true;
+      contentBrowserProxy.activeDistillationMethod =
+          contentBrowserProxy.distillationTypeReadability;
+      contentBrowserProxy.isReadabilitySelectTextEnabledFlag = true;
     });
 
     test('extracts text blocks from container', () => {
@@ -1200,23 +1201,27 @@ suite('ContentController', () => {
 
       contentController.onRenderedTextBlocksAvailable(container);
 
-      assertEquals(1, sentBlocks.length);
-      assertEquals(2, sentBlocks[0]!.length);
-      assertEquals(text1, sentBlocks[0]![0]);
-      assertEquals(text2, sentBlocks[0]![1]);
+      assertEquals(
+          1, contentBrowserProxy.getCallCount('onRenderedTextBlocksAvailable'));
+      const sentBlocks = contentBrowserProxy.getArgs(
+                             'onRenderedTextBlocksAvailable')[0] as string[];
+      assertEquals(2, sentBlocks.length);
+      assertEquals(text1, sentBlocks[0]);
+      assertEquals(text2, sentBlocks[1]);
     });
 
     test('does nothing for screen2x', () => {
-      chrome.readingMode.activeDistillationMethod =
-          chrome.readingMode.distillationTypeScreen2x;
-      chrome.readingMode.isReadabilitySelectTextEnabled = false;
+      contentBrowserProxy.activeDistillationMethod =
+          contentBrowserProxy.distillationTypeScreen2x;
+      contentBrowserProxy.isReadabilitySelectTextEnabledFlag = false;
       const container = document.createElement('div');
       container.appendChild(document.createTextNode('Hello'));
       document.body.appendChild(container);
 
       contentController.onRenderedTextBlocksAvailable(container);
 
-      assertEquals(0, sentBlocks.length);
+      assertEquals(
+          0, contentBrowserProxy.getCallCount('onRenderedTextBlocksAvailable'));
     });
 
     test('overwrites stored nodes on subsequent calls', () => {
@@ -1227,15 +1232,21 @@ suite('ContentController', () => {
 
       // First call
       contentController.onRenderedTextBlocksAvailable(container1);
+      assertEquals(
+          1, contentBrowserProxy.getCallCount('onRenderedTextBlocksAvailable'));
+      let sentBlocks = contentBrowserProxy.getArgs(
+                           'onRenderedTextBlocksAvailable')[0] as string[];
       assertEquals(1, sentBlocks.length);
-      assertEquals('First call', sentBlocks[0]![0]);
+      assertEquals('First call', sentBlocks[0]);
 
       // Second call - should replace the internal array
       contentController.onRenderedTextBlocksAvailable(container2);
-      assertEquals(2, sentBlocks.length);
-      assertEquals('Second call', sentBlocks[1]![0]);
-
-      assertEquals(1, sentBlocks[1]!.length);
+      assertEquals(
+          2, contentBrowserProxy.getCallCount('onRenderedTextBlocksAvailable'));
+      sentBlocks = contentBrowserProxy.getArgs(
+                       'onRenderedTextBlocksAvailable')[1] as string[];
+      assertEquals(1, sentBlocks.length);
+      assertEquals('Second call', sentBlocks[0]);
     });
   });
 
@@ -1251,9 +1262,9 @@ suite('ContentController', () => {
       anchor.href = url;
       container.appendChild(anchor);
 
-      chrome.readingMode.isReadabilityEnabled = true;
-      chrome.readingMode.activeDistillationMethod =
-          chrome.readingMode.distillationTypeReadability;
+      contentBrowserProxy.readabilityEnabled = true;
+      contentBrowserProxy.activeDistillationMethod =
+          contentBrowserProxy.distillationTypeReadability;
       chrome.readingMode.axTreeAnchors = {};
       contentController.setState(ContentType.HAS_CONTENT);
     });
@@ -1389,8 +1400,8 @@ suite('ContentController', () => {
         });
 
     test('does nothing if not in Readability mode', () => {
-      chrome.readingMode.activeDistillationMethod =
-          chrome.readingMode.distillationTypeScreen2x;
+      contentBrowserProxy.activeDistillationMethod =
+          contentBrowserProxy.distillationTypeScreen2x;
       chrome.readingMode.axTreeAnchors = {[url]: [{axId: axId}]};
       contentController.updateAnchorsForReadability(container);
 
@@ -1398,7 +1409,7 @@ suite('ContentController', () => {
     });
 
     test('does nothing if Readability is not enabled', () => {
-      chrome.readingMode.isReadabilityEnabled = false;
+      contentBrowserProxy.readabilityEnabled = false;
       chrome.readingMode.axTreeAnchors = {[url]: [{axId: axId}]};
       contentController.updateAnchorsForReadability(container);
 
@@ -1435,17 +1446,17 @@ suite('ContentController', () => {
       readingMode.getHtmlTag = (id) => id === 1 ? 'img' : '';
       readingMode.getChildren = (id) => id === 1 ? [] : [];
       readingMode.getTextContent = () => '';
-      readingMode.hasValidSelection = false;
+      contentBrowserProxy.hasValidSelectionVal = false;
     });
 
     test('Images enabled, images available, no text -> empty state', () => {
-      readingMode.imagesEnabled = true;
+      visualBrowserProxy.imagesEnabled = true;
       contentController.updateContent();
       assertTrue(contentController.isEmpty());
     });
 
     test('Images disabled with images and no text -> empty state', () => {
-      readingMode.imagesEnabled = false;
+      visualBrowserProxy.imagesEnabled = false;
       contentController.updateContent();
       assertTrue(contentController.isEmpty());
     });
@@ -1453,8 +1464,8 @@ suite('ContentController', () => {
     test(
         'Images enabled, with images and no text, with selection -> has content',
         () => {
-          readingMode.imagesEnabled = true;
-          readingMode.hasValidSelection = true;
+          visualBrowserProxy.imagesEnabled = true;
+          contentBrowserProxy.hasValidSelectionVal = true;
           const root = contentController.updateContent();
           assertFalse(contentController.isEmpty());
           assertTrue(contentController.hasContent());
@@ -1464,8 +1475,8 @@ suite('ContentController', () => {
     test(
         'Images disabled, with images and no text, with selection -> empty state',
         () => {
-          readingMode.imagesEnabled = false;
-          readingMode.hasValidSelection = true;
+          visualBrowserProxy.imagesEnabled = false;
+          contentBrowserProxy.hasValidSelectionVal = true;
           contentController.updateContent();
           assertTrue(contentController.isEmpty());
         });
@@ -1477,9 +1488,9 @@ suite('ContentController', () => {
     const axId2 = 102;
 
     setup(() => {
-      chrome.readingMode.activeDistillationMethod =
-          chrome.readingMode.distillationTypeReadability;
-      chrome.readingMode.isReadabilitySelectTextEnabled = true;
+      contentBrowserProxy.activeDistillationMethod =
+          contentBrowserProxy.distillationTypeReadability;
+      contentBrowserProxy.isReadabilitySelectTextEnabledFlag = true;
 
       container = document.createElement('div');
       document.body.appendChild(container);
@@ -1565,22 +1576,17 @@ suite('ContentController', () => {
     });
 
     test('triggers selection update after mapping', () => {
-      let updateSelectionCalled = false;
-      readingMode.updateSelection = () => {
-        updateSelectionCalled = true;
-      };
-
       container.textContent = 'text';
       contentController.onRenderedTextBlocksAvailable(container);
       readingMode.getAxMapping = () => [{axNodeId: axId1, start: 0, end: 4}];
 
       contentController.onRenderedTextMappingReady();
 
-      assertTrue(updateSelectionCalled);
+      assertEquals(1, contentBrowserProxy.getCallCount('updateSelection'));
     });
 
     test('does nothing if feature is disabled', () => {
-      chrome.readingMode.isReadabilitySelectTextEnabled = false;
+      contentBrowserProxy.isReadabilitySelectTextEnabledFlag = false;
       container.textContent = 'text';
       contentController.onRenderedTextBlocksAvailable(container);
 
