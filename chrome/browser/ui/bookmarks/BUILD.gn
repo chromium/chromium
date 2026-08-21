@@ -97,9 +97,11 @@ source_set("impl") {
     "//chrome/browser/ui/webui/new_tab_page_third_party",
     "//chrome/browser/ui/webui/ntp",
     "//chrome/browser/undo",
+    "//chrome/common:channel_info",
     "//components/bookmarks/common",
     "//components/bookmarks/managed",
     "//components/browser_apis/bookmarks:impl",
+    "//components/enterprise/isolated_mode",
     "//components/feature_engagement/public",
     "//components/saved_tab_groups/public:features",
     "//components/search",
@@ -107,6 +109,7 @@ source_set("impl") {
     "//components/undo",
     "//components/user_education/common",
     "//components/user_prefs",
+    "//components/version_info",
   ]
 
   if (is_mac) {
@@ -194,6 +197,7 @@ source_set("unit_tests") {
     "//components/bookmarks/managed",
     "//components/bookmarks/test",
     "//components/dom_distiller/core",
+    "//components/enterprise/isolated_mode",
     "//components/saved_tab_groups/public:features",
     "//components/saved_tab_groups/test_support",
     "//components/sync_preferences:test_support",

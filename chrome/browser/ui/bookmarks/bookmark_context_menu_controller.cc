@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_client.h"
@@ -44,6 +45,7 @@
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
+#include "components/enterprise/isolated_mode/settings.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -66,6 +68,8 @@ constexpr UserMetricsAction kBookmarkBarNewWindow(
     "BookmarkBar_ContextMenu_OpenAllInNewWindow");
 constexpr UserMetricsAction kBookmarkBarIncognito(
     "BookmarkBar_ContextMenu_OpenAllIncognito");
+constexpr UserMetricsAction kBookmarkBarIsolated(
+    "BookmarkBar_ContextMenu_OpenAllIsolated");
 constexpr UserMetricsAction kBookmarkBarOpenAllInNewTabGroup(
     "BookmarkBar_ContextMenu_OpenAllInNewTabGroup");
 constexpr UserMetricsAction kBookmarkBarOpenSplitView(
@@ -76,6 +80,8 @@ constexpr UserMetricsAction kAppMenuBookmarksNewWindow(
     "WrenchMenu_Bookmarks_ContextMenu_OpenAllInNewWindow");
 constexpr UserMetricsAction kAppMenuBookmarksIncognito(
     "WrenchMenu_Bookmarks_ContextMenu_OpenAllIncognito");
+constexpr UserMetricsAction kAppMenuBookmarksIsolated(
+    "WrenchMenu_Bookmarks_ContextMenu_OpenAllIsolated");
 constexpr UserMetricsAction kAppMenuBookmarksOpenAllInNewTabGroup(
     "WrenchMenu_Bookmarks_ContextMenu_OpenAllInNewTabGroup");
 constexpr UserMetricsAction kAppMenuBookmarksOpenSplitView(
@@ -86,6 +92,8 @@ constexpr UserMetricsAction kSidePanelBookmarksNewWindow(
     "SidePanel_Bookmarks_ContextMenu_OpenAllInNewWindow");
 constexpr UserMetricsAction kSidePanelBookmarksIncognito(
     "SidePanel_Bookmarks_ContextMenu_OpenAllIncognito");
+constexpr UserMetricsAction kSidePanelBookmarksIsolated(
+    "SidePanel_Bookmarks_ContextMenu_OpenAllIsolated");
 constexpr UserMetricsAction kSidePanelBookmarksOpenAllInNewTabGroup(
     "SidePanel_Bookmarks_ContextMenu_OpenAllInNewTabGroup");
 constexpr UserMetricsAction kSidePanelBookmarksOpenSplitView(
@@ -101,6 +109,8 @@ const UserMetricsAction* GetActionForLocationAndDisposition(
           return &kBookmarkBarOpenAll;
         case IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO:
           return &kBookmarkBarIncognito;
+        case IDC_BOOKMARK_BAR_OPEN_ALL_ISOLATED:
+          return &kBookmarkBarIsolated;
         case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP:
           return &kBookmarkBarOpenAllInNewTabGroup;
         case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW:
@@ -114,6 +124,8 @@ const UserMetricsAction* GetActionForLocationAndDisposition(
           return &kAppMenuBookmarksOpenAll;
         case IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO:
           return &kAppMenuBookmarksIncognito;
+        case IDC_BOOKMARK_BAR_OPEN_ALL_ISOLATED:
+          return &kAppMenuBookmarksIsolated;
         case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP:
           return &kAppMenuBookmarksOpenAllInNewTabGroup;
         case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW:
@@ -127,6 +139,8 @@ const UserMetricsAction* GetActionForLocationAndDisposition(
           return &kSidePanelBookmarksOpenAll;
         case IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO:
           return &kSidePanelBookmarksIncognito;
+        case IDC_BOOKMARK_BAR_OPEN_ALL_ISOLATED:
+          return &kSidePanelBookmarksIsolated;
         case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP:
           return &kSidePanelBookmarksOpenAllInNewTabGroup;
         case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW:
@@ -230,6 +244,10 @@ size_t BookmarkContextMenuController::GetIndexForNewNodes() const {
 }
 
 void BookmarkContextMenuController::BuildMenu() {
+  bool isolated_mode_enabled =
+      enterprise_isolated_mode::IsolatedModeReplacesIncognito(
+          *profile_->GetPrefs(), chrome::GetChannel());
+
   if (selection_.size() == 1 && selection_[0]->is_url()) {
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL, IDS_BOOKMARK_BAR_OPEN_IN_NEW_TAB);
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW,
@@ -238,6 +256,11 @@ void BookmarkContextMenuController::BuildMenu() {
             IDS_BOOKMARK_BAR_OPEN_IN_SPLIT_VIEW);
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO,
             IDS_BOOKMARK_BAR_OPEN_INCOGNITO);
+
+    if (isolated_mode_enabled) {
+      AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_ISOLATED,
+              IDS_BOOKMARK_BAR_OPEN_ISOLATED);
+    }
   } else {
     int count = bookmarks::OpenCount(selection_);
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL,
@@ -256,11 +279,21 @@ void BookmarkContextMenuController::BuildMenu() {
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO,
               l10n_util::GetPluralStringFUTF16(
                   IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_INCOGNITO, incognito_count));
+      if (isolated_mode_enabled) {
+        AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_ISOLATED,
+                l10n_util::GetPluralStringFUTF16(
+                    IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_ISOLATED, incognito_count));
+      }
     } else {
       int incognito_count = bookmarks::OpenCount(selection_, profile_);
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO,
               l10n_util::GetPluralStringFUTF16(
                   IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_INCOGNITO, incognito_count));
+      if (isolated_mode_enabled) {
+        AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_ISOLATED,
+                l10n_util::GetPluralStringFUTF16(
+                    IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_ISOLATED, incognito_count));
+      }
 
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP,
               l10n_util::GetPluralStringFUTF16(
@@ -349,6 +382,7 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
   switch (id) {
     case IDC_BOOKMARK_BAR_OPEN_ALL:
     case IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO:
+    case IDC_BOOKMARK_BAR_OPEN_ALL_ISOLATED:
     case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP:
     case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW:
     case IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW: {
@@ -673,13 +707,24 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
   policy::IncognitoModeAvailability incognito_avail =
       IncognitoModePrefs::GetAvailability(prefs);
 
+  bool isolated_mode_enabled =
+      enterprise_isolated_mode::IsolatedModeReplacesIncognito(
+          *prefs, chrome::GetChannel());
+
   switch (command_id) {
     case IDC_BOOKMARK_BAR_OPEN_INCOGNITO:
       return !profile_->IsOffTheRecord() &&
-             incognito_avail != policy::IncognitoModeAvailability::kDisabled;
+             incognito_avail != policy::IncognitoModeAvailability::kDisabled &&
+             !isolated_mode_enabled;
 
     case IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO:
-      return bookmarks::IsOpenInIncognitoAllowed(selection_, profile_);
+      return bookmarks::IsOpenInIncognitoAllowed(selection_, profile_) &&
+             !isolated_mode_enabled;
+
+    case IDC_BOOKMARK_BAR_OPEN_ALL_ISOLATED:
+      return bookmarks::IsOpenInIncognitoAllowed(selection_, profile_) &&
+             isolated_mode_enabled;
+
     case IDC_BOOKMARK_BAR_OPEN_ALL:
     case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP:
       return bookmarks::HasBookmarkURLs(selection_);

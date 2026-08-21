@@ -333,6 +333,7 @@
   E(kActionBookmarkBarOpenAllNewWindow, IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW) \
   E(kActionBookmarkBarOpenAllIncognito, IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO) \
   E(kActionBookmarkBarOpenIncognito, IDC_BOOKMARK_BAR_OPEN_INCOGNITO) \
+  E(kActionBookmarkBarOpenAllIsolated, IDC_BOOKMARK_BAR_OPEN_ALL_ISOLATED) \
   E(kActionBookmarkBarOpenAllNewTabGroup, \
     IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP) \
   E(kActionBookmarkBarRenameFolder, IDC_BOOKMARK_BAR_RENAME_FOLDER) \
