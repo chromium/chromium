@@ -247,25 +247,8 @@ class ExtensionActionPopup implements Destroyable {
         }
 
         @Override
-        public boolean handleKeyboardEvent(WebContents webContents, KeyEvent event) {
-            if (mActivity == null) return false;
-
-            if (mActivity instanceof KeyboardShortcutsDelegate) {
-                KeyboardShortcutsDelegate delegate = (KeyboardShortcutsDelegate) mActivity;
-                if (delegate.handleKeyboardEvent(event)) {
-                    return true;
-                }
-            }
-
-            // If the delegate didn't consume the event (e.g., if the Universal Keyboard
-            // Handling feature flag is disabled), we need to prevent the dispatchKeyEvent
-            // infinite loop. We prevent space and backspace events from being dispatched
-            // to the Activity.
-            if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                return mActivity.onKeyDown(event.getKeyCode(), event);
-            }
-
-            return false;
+        public boolean handleKeyboardEvent(@Nullable KeyEvent event) {
+            return ExtensionActionPopup.handleKeyboardEvent(mActivity, event);
         }
 
         @Override
@@ -278,5 +261,26 @@ class ExtensionActionPopup implements Destroyable {
         public void onClose() {
             mPopupWindow.dismiss();
         }
+    }
+
+    static boolean handleKeyboardEvent(@Nullable Activity activity, @Nullable KeyEvent event) {
+        if (activity == null || event == null) return false;
+
+        if (activity instanceof KeyboardShortcutsDelegate) {
+            KeyboardShortcutsDelegate delegate = (KeyboardShortcutsDelegate) activity;
+            if (delegate.handleKeyboardEvent(event)) {
+                return true;
+            }
+        }
+
+        // If the delegate didn't consume the event (e.g., if the Universal Keyboard
+        // Handling feature flag is disabled), we need to prevent the dispatchKeyEvent
+        // infinite loop. We prevent space and backspace events from being dispatched
+        // to the Activity.
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            return activity.onKeyDown(event.getKeyCode(), event);
+        }
+
+        return false;
     }
 }

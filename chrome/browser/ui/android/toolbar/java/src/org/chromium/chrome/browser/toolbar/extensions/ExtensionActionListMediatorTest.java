@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.extensions;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -619,6 +620,12 @@ public class ExtensionActionListMediatorTest {
 
         // The pending popup contents must be destroyed during teardown.
         verify(mPopupContentsMock).destroy();
+    }
+
+    @Test
+    public void testPopup_HandleKeyboardEvent_NullEvent() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        assertFalse(ExtensionActionPopup.handleKeyboardEvent(activity, null));
     }
 
     @Test

@@ -106,9 +106,11 @@ void ExtensionActionPopupContents::RenderFrameCreated(
 bool ExtensionActionPopupContents::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
+  if (event.os_event.is_null()) {
+    return false;
+  }
   return Java_ExtensionActionPopupContents_handleKeyboardEvent(
-      AttachCurrentThread(), java_object_, source->GetJavaWebContents(),
-      event.os_event);
+      AttachCurrentThread(), java_object_, event.os_event);
 }
 
 void ExtensionActionPopupContents::OnLoaded() {
