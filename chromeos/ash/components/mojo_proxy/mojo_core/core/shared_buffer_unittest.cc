@@ -13,7 +13,6 @@
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/buildflags.h"
-#include "chromeos/ash/components/mojo_proxy/mojo_core/core/embedder/embedder.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/test/mojo_test_base.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/c/system/types.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -245,13 +244,6 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReceiveAndEditBufferParent,
 #define MAYBE_PassHandleBetweenCousins PassHandleBetweenCousins
 #endif
 TEST_F(SharedBufferTest, MAYBE_PassHandleBetweenCousins) {
-  if (IsMojoIpczEnabled()) {
-    // TODO(crbug.com/40058840): This test relies on Mojo invitations
-    // between non-broker nodes, which is not currently supported by MojoIpcz.
-    GTEST_SKIP() << "Invitations between non-brokers are not yet supported "
-                 << "by MojoIpcz.";
-  }
-
   const std::string message = "hello";
 
   // Spawn two children who will each spawn their own child. Make sure the

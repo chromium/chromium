@@ -18,20 +18,7 @@
 namespace arc {
 namespace {
 
-TEST(ArcMojoInvitationTest, MojoProxyIsLaunchedWhenIpczIsEnabled) {
-  base::CommandLine command_line =
-      base::GetMultiProcessTestChildBaseCommandLine();
-  base::LaunchOptions launch_options;
-  launch_options.environment["MOJO_IPCZ"] = "1";
-  base::Process process = base::SpawnMultiProcessTestChild(
-      "InvitationSenderMain", command_line, launch_options);
-
-  int rv = -1;
-  process.WaitForExitWithTimeout(TestTimeouts::action_timeout(), &rv);
-  EXPECT_EQ(0, rv);
-}
-
-TEST(ArcMojoInvitationTest, MojoProxyIsNotLaunchedWhenIpczIsDisabled) {
+TEST(ArcMojoInvitationTest, MojoProxyIsLaunched) {
   base::CommandLine command_line =
       base::GetMultiProcessTestChildBaseCommandLine();
   base::LaunchOptions launch_options;
@@ -58,17 +45,12 @@ MULTIPROCESS_TEST_MAIN(InvitationSenderMain) {
     MojoInitData mojo_init_data;
     invitation_manager.SendInvitation(channel, mojo_init_data.token());
 
+    // Verify that (fake) proxy process was launched successfully.
     base::Process proxy_process = std::move(invitation_manager.proxy_process());
-    if (mojo::core::IsMojoIpczEnabled()) {
-      // Verify that (fake) proxy process was launched successfully.
-      CHECK(proxy_process.IsValid());
-      int rv = -1;
-      proxy_process.WaitForExit(&rv);
-      CHECK_EQ(0, rv);
-    } else {
-      // Verify that (fake) proxy process was not launched.
-      CHECK(!proxy_process.IsValid());
-    }
+    CHECK(proxy_process.IsValid());
+    int rv = -1;
+    proxy_process.WaitForExit(&rv);
+    CHECK_EQ(0, rv);
   }
 
   ipc_support.reset();

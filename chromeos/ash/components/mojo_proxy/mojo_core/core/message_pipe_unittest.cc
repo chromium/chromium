@@ -17,7 +17,6 @@
 #include "base/memory/ref_counted.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
-#include "chromeos/ash/components/mojo_proxy/mojo_core/core/embedder/embedder.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/test/mojo_test_base.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/c/system/core.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/c/system/types.h"
@@ -490,14 +489,6 @@ TEST_F(FuseMessagePipeTest, NoFuseSelf) {
 }
 
 TEST_F(FuseMessagePipeTest, FuseInvalidArguments) {
-  if (IsMojoIpczEnabled()) {
-    // The MergePortals() API which supports MojoFuseMessagePipes() with
-    // MojoIpcz enabled is simpler and has fewer side effects on failure. Making
-    // this test pass would require additional complexity with no real value to
-    // production code.
-    GTEST_SKIP() << "Not relevant to MojoIpcz";
-  }
-
   MojoHandle a, b, c, d;
   CreateMessagePipe(&a, &b);
   CreateMessagePipe(&c, &d);

@@ -32,7 +32,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/buildflags.h"
-#include "chromeos/ash/components/mojo_proxy/mojo_core/core/embedder/embedder.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/test/mojo_test_base.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/test/test_switches.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/platform/named_platform_channel.h"
@@ -772,13 +771,6 @@ DEFINE_TEST_CLIENT(SendIsolatedInvitationClient) {
 }
 
 TEST_F(MAYBE_InvitationTest, SendMultipleIsolatedInvitations) {
-  if (mojo_legacy::core::IsMojoIpczEnabled()) {
-    // This feature is not particularly useful in a world where isolated
-    // connections are only supported between broker nodes.
-    GTEST_SKIP() << "MojoIpcz does not support multiple isolated invitations "
-                 << "between the same two nodes.";
-  }
-
   // We send a secondary transport to the client process so we can send a second
   // isolated invitation.
   base::CommandLine command_line =
@@ -852,13 +844,6 @@ DEFINE_TEST_CLIENT(SendMultipleIsolatedInvitationsClient) {
 }
 
 TEST_F(MAYBE_InvitationTest, SendIsolatedInvitationWithDuplicateName) {
-  if (mojo_legacy::core::IsMojoIpczEnabled()) {
-    // This feature is not particularly useful in a world where isolated
-    // connections are only supported between broker nodes.
-    GTEST_SKIP() << "MojoIpcz does not support multiple isolated invitations "
-                 << "between the same two nodes.";
-  }
-
   PlatformChannel channel1;
   PlatformChannel channel2;
   MojoHandle pipe0, pipe1;
@@ -884,11 +869,6 @@ TEST_F(MAYBE_InvitationTest, SendIsolatedInvitationWithDuplicateName) {
 // self-connections where MergePortEvent bypasses the channel and arrives before
 // OnAcceptPeer updates the expected peer name.
 TEST_F(MAYBE_InvitationTest, DISABLED_SendIsolatedInvitationToSelf) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "MojoIpcz does not support nodes sending isolated "
-                 << "invitations to themselves.";
-  }
-
   PlatformChannel channel;
   MojoHandle pipe0, pipe1;
   SendInvitationToClient(channel.TakeLocalEndpoint().TakePlatformHandle(),

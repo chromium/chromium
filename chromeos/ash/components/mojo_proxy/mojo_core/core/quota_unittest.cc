@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "chromeos/ash/components/mojo_proxy/mojo_core/core/embedder/embedder.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/test/mojo_test_base.h"
 
 namespace mojo_legacy {
@@ -23,10 +22,6 @@ void QuotaExceededEventHandler(const MojoTrapEvent* event) {
 }
 
 TEST_F(QuotaTest, InvalidArguments) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "Mojo quota APIs are not supported by MojoIpcz.";
-  }
-
   EXPECT_EQ(
       MOJO_LEGACY_RESULT_INVALID_ARGUMENT,
       MojoSetQuota(MOJO_LEGACY_HANDLE_INVALID,
@@ -80,10 +75,6 @@ TEST_F(QuotaTest, InvalidArguments) {
 }
 
 TEST_F(QuotaTest, BasicReceiveQueueLength) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "Mojo quota APIs are not supported by MojoIpcz.";
-  }
-
   MojoHandle a, b;
   CreateMessagePipe(&a, &b);
 
@@ -120,10 +111,6 @@ TEST_F(QuotaTest, BasicReceiveQueueLength) {
 }
 
 TEST_F(QuotaTest, BasicReceiveQueueMemorySize) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "Mojo quota APIs are not supported by MojoIpcz.";
-  }
-
   MojoHandle a, b;
   CreateMessagePipe(&a, &b);
 
@@ -161,10 +148,6 @@ TEST_F(QuotaTest, BasicReceiveQueueMemorySize) {
 }
 
 TEST_F(QuotaTest, ReceiveQueueLengthLimitExceeded) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "Mojo quota APIs are not supported by MojoIpcz.";
-  }
-
   MojoHandle a, b;
   CreateMessagePipe(&a, &b);
 
@@ -228,10 +211,6 @@ TEST_F(QuotaTest, ReceiveQueueLengthLimitExceeded) {
 }
 
 TEST_F(QuotaTest, ReceiveQueueMemorySizeLimitExceeded) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "Mojo quota APIs are not supported by MojoIpcz.";
-  }
-
   MojoHandle a, b;
   CreateMessagePipe(&a, &b);
 
@@ -295,10 +274,6 @@ TEST_F(QuotaTest, ReceiveQueueMemorySizeLimitExceeded) {
 }
 
 TEST_F(QuotaTest, BasicUnreadMessageCount) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "Mojo quota APIs are not supported by MojoIpcz.";
-  }
-
   MojoHandle a, b;
   CreateMessagePipe(&a, &b);
 
@@ -335,10 +310,6 @@ TEST_F(QuotaTest, BasicUnreadMessageCount) {
 }
 
 TEST_F(QuotaTest, UnreadMessageCountLimitExceeded) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "Mojo quota APIs are not supported by MojoIpcz.";
-  }
-
   MojoHandle a, b;
   CreateMessagePipe(&a, &b);
 
@@ -409,10 +380,6 @@ TEST_F(QuotaTest, UnreadMessageCountLimitExceeded) {
 }
 
 TEST_F(QuotaTest, TrapQuotaExceeded) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "Mojo quota APIs are not supported by MojoIpcz.";
-  }
-
   // Simple sanity check to verify that QUOTA_EXCEEDED signals can be trapped
   // like any other signals.
 

@@ -10,7 +10,6 @@
 #include "chromeos/ash/experiences/arc/keymint/cert_store_bridge_keymint.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "mojo/core/configuration.h"
-#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 
 namespace arc {
@@ -167,13 +166,9 @@ void ArcKeyMintBridge::BootstrapMojoConnection(
 
   mojo::OutgoingInvitation invitation;
   mojo::PlatformChannel channel;
-  mojo::ScopedMessagePipeHandle server_pipe;
-  if (mojo::core::IsMojoIpczEnabled()) {
-    constexpr uint64_t kKeyMintPipeAttachment = 0;
-    server_pipe = invitation.AttachMessagePipe(kKeyMintPipeAttachment);
-  } else {
-    server_pipe = invitation.AttachMessagePipe("arc-keymint-pipe");
-  }
+  constexpr uint64_t kKeyMintPipeAttachment = 0;
+  mojo::ScopedMessagePipeHandle server_pipe =
+      invitation.AttachMessagePipe(kKeyMintPipeAttachment);
   if (!server_pipe.is_valid()) {
     LOG(ERROR) << "ArcKeyMintBridge could not bind to invitation";
     std::move(callback).Run(false);

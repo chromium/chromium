@@ -21,7 +21,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "chromeos/ash/components/mojo_proxy/mojo_core/core/embedder/embedder.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/test/mojo_test_base.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/c/system/functions.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/c/system/message_pipe.h"
@@ -1115,12 +1114,6 @@ TEST_F(DataPipeTest, AllOrNone) {
 // internal circular buffer. (Note that the two-phase write and read need not do
 // this.)
 TEST_F(DataPipeTest, WrapAround) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "This test covers implementation details that are only "
-                 << "relevant with MojoIpcz disabled; namely that a data pipe "
-                 << "is backed by a circular ring buffer.";
-  }
-
   std::array<unsigned char, 1000> test_data;
   for (size_t i = 0; i < std::size(test_data); i++) {
     test_data[i] = static_cast<unsigned char>(i);
@@ -1872,12 +1865,6 @@ bool ReadAllData(MojoHandle consumer,
 }
 
 TEST_F(DataPipeTest, CreateOversized) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "Data pipes do not allocate dedicated capacity when "
-                 << "MojoIpcz is enabled, so capacity limits are not enforced "
-                 << "and therefore cannot be tested.";
-  }
-
   const MojoCreateDataPipeOptions options = {
       kSizeOfOptions,                          // |struct_size|.
       MOJO_LEGACY_CREATE_DATA_PIPE_FLAG_NONE,  // |flags|.
@@ -2342,12 +2329,6 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CreateOversizedChild, DataPipeTest, h) {
 }
 
 TEST_F(DataPipeTest, CreateOversizedInChild) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "Data pipes do not allocate dedicated capacity when "
-                 << "MojoIpcz is enabled, so capacity limits are not enforced "
-                 << "and therefore cannot be tested.";
-  }
-
   RunTestClient("CreateOversizedChild", [&](MojoHandle child) {
     // Wait for the child to finish the test.
     std::string expected_message = ReadMessage(child);

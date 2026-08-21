@@ -27,11 +27,6 @@ void Init(const Configuration& configuration);
 // Like above but uses a default Configuration.
 COMPONENT_EXPORT(MOJO_LEGACY_CORE_EMBEDDER) void Init();
 
-// Always returns false: this frozen clone is legacy Mojo Core only and never
-// runs ipcz. Retained because the cloned, implementation-agnostic Mojo tests
-// still consult it to select their legacy code paths.
-COMPONENT_EXPORT(MOJO_LEGACY_CORE_EMBEDDER) bool IsMojoIpczEnabled();
-
 // Explicitly shuts down Mojo stopping any IO thread work and destroying any
 // global state initialized by Init().
 COMPONENT_EXPORT(MOJO_LEGACY_CORE_EMBEDDER) void ShutDown();

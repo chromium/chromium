@@ -25,7 +25,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "chromeos/ash/components/mojo_proxy/mojo_core/core/embedder/embedder.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/handle_signals_state.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/test/mojo_test_base.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/test/test_utils.h"
@@ -1397,13 +1396,10 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(SpotaneouslyDyingProcess,
   VerifyEcho(parent, "!");
   WriteMessageWithHandles(parent, "receiver", &receiver, 1);
 
-  if (!IsMojoIpczEnabled()) {
-    // Wait for the pipe to actually appear as remote. Before this happens, it's
-    // possible for message transmission to be deferred to the IO thread, and
-    // sudden termination might preempt that work. Note that this is unnecessary
-    // (and PEER_REMOTE signals are unsupported anyway) with MojoIpcz.
-    WaitForSignals(sender, MOJO_LEGACY_HANDLE_SIGNAL_PEER_REMOTE);
-  }
+  // Wait for the pipe to actually appear as remote. Before this happens, it's
+  // possible for message transmission to be deferred to the IO thread, and
+  // sudden termination might preempt that work.
+  WaitForSignals(sender, MOJO_LEGACY_HANDLE_SIGNAL_PEER_REMOTE);
 
   WriteMessage(sender, "ok");
   MojoClose(sender);

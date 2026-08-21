@@ -22,7 +22,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/mojo_proxy/mojo_core/core/embedder/embedder.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/test/mojo_test_base.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/c/system/data_pipe.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/c/system/types.h"
@@ -1149,13 +1148,6 @@ TEST_F(TrapTest, ExplicitRemoveOtherTriggerWithinEventHandler) {
 }
 
 TEST_F(TrapTest, NestedCancellation) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "This test expects trap handlers to be reentrant in some "
-                 << "edge cases, which is an unsafe artifact of pre-ipcz Mojo "
-                 << "that is unsupported by MojoIpcz. This case should not be "
-                 << "relevant to any current production usage.";
-  }
-
   MojoHandle a, b;
   CreateMessagePipe(&a, &b);
 
@@ -1465,12 +1457,6 @@ TEST_F(TrapTest, OtherThreadRemovesTriggerDuringEventHandler) {
 }
 
 TEST_F(TrapTest, TriggersRemoveEachOtherWithinEventHandlers) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "This test deadlocks with MojoIpcz, because it expects "
-                 << "trap handlers to be re-entrant in some edge cases. Not "
-                 << "relevant to any current production usage.";
-  }
-
   MojoHandle a, b;
   CreateMessagePipe(&a, &b);
 
@@ -1682,11 +1668,6 @@ TEST_F(TrapTest, ArmFailureCirculation) {
 }
 
 TEST_F(TrapTest, TriggerOnUnsatisfiedSignals) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "Monitoring for unsatisfied signals is not supported by "
-                 << "MojoIpcz.";
-  }
-
   MojoHandle a, b;
   CreateMessagePipe(&a, &b);
 
@@ -1962,12 +1943,6 @@ void DoRandomThing(base::span<MojoHandle> traps,
 TEST_F(TrapTest, ConcurrencyStressTest) {
   // Regression test for https://crbug.com/740044. Exercises racy usage of the
   // trap API to weed out potential crashes.
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "This test relies on implementation assumptions which are "
-                 << "invalid when MojoIpcz is enabled; namely that it's safe "
-                 << "to attempt operations on invalid handles.";
-  }
-
   constexpr size_t kNumTraps = 50;
   constexpr size_t kNumWatchedHandles = 50;
   static_assert(kNumWatchedHandles % 2 == 0, "Invalid number of test handles.");

@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace arc {
@@ -45,13 +44,9 @@ bool CertStoreBridge::IsProxyBound() const {
 void CertStoreBridge::BindToInvitation(mojo::OutgoingInvitation* invitation) {
   VLOG(2) << "CertStoreBridge::BootstrapMojoConnection";
 
-  mojo::ScopedMessagePipeHandle pipe;
-  if (mojo::core::IsMojoIpczEnabled()) {
-    constexpr uint64_t kCertStorePipeAttachment = 1;
-    pipe = invitation->AttachMessagePipe(kCertStorePipeAttachment);
-  } else {
-    pipe = invitation->AttachMessagePipe("arc-cert-store-pipe");
-  }
+  constexpr uint64_t kCertStorePipeAttachment = 1;
+  mojo::ScopedMessagePipeHandle pipe =
+      invitation->AttachMessagePipe(kCertStorePipeAttachment);
 
   if (!pipe.is_valid()) {
     LOG(ERROR) << "CertStoreBridge could not bind to invitation";

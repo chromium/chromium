@@ -15,7 +15,6 @@
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "mojo/core/configuration.h"
-#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -131,13 +130,9 @@ void ArcKeymasterBridge::BootstrapMojoConnection(
 
   mojo::OutgoingInvitation invitation;
   mojo::PlatformChannel channel;
-  mojo::ScopedMessagePipeHandle server_pipe;
-  if (mojo::core::IsMojoIpczEnabled()) {
-    constexpr uint64_t kKeymasterPipeAttachment = 0;
-    server_pipe = invitation.AttachMessagePipe(kKeymasterPipeAttachment);
-  } else {
-    server_pipe = invitation.AttachMessagePipe("arc-keymaster-pipe");
-  }
+  constexpr uint64_t kKeymasterPipeAttachment = 0;
+  mojo::ScopedMessagePipeHandle server_pipe =
+      invitation.AttachMessagePipe(kKeymasterPipeAttachment);
   if (!server_pipe.is_valid()) {
     LOG(ERROR) << "ArcKeymasterBridge could not bind to invitation";
     std::move(callback).Run(false);

@@ -4,7 +4,6 @@
 
 #include "base/logging.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/core.h"
-#include "chromeos/ash/components/mojo_proxy/mojo_core/core/embedder/embedder.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/test/mojo_test_base.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/c/system/types.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,10 +15,6 @@ namespace {
 using NodeControllerTest = test::MojoTestBase;
 
 TEST_F(NodeControllerTest, AcceptInvitationFailure) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "Not relevant when MojoIpcz is enabled.";
-  }
-
   // Spawn a child process that will send an invalid AcceptInvitation
   // NodeChannel message. This is a regression test for
   // https://crbug.com/1162198.
