@@ -121,11 +121,6 @@ PrivateKey PrivateKey::GenerateRsa2048() {
 }
 
 // static
-PrivateKey PrivateKey::GenerateRsa4096() {
-  return PrivateKey(GenerateRsa(4096));
-}
-
-// static
 PrivateKey PrivateKey::GenerateEcP256() {
   return PrivateKey(GeneratePkey(EVP_pkey_ec_p256()));
 }

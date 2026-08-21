@@ -33,12 +33,11 @@ class CRYPTO_EXPORT PrivateKey {
   PrivateKey& operator=(PrivateKey&& other);
   PrivateKey& operator=(const PrivateKey& other);
 
-  // These functions generate fresh, random RSA private keys of the named sizes
+  // This function generates a fresh, random RSA private key of the named size
   // with e = 65537.
-  // If you believe you need an RSA key of a size other than these, or with a
+  // If you believe you need an RSA key of a size other than this, or with a
   // different exponent, please contact a member of //CRYPTO_OWNERS.
   static PrivateKey GenerateRsa2048();
-  static PrivateKey GenerateRsa4096();
 
   // Generates a fresh, random elliptic curve key on the specified curve.
   static PrivateKey GenerateEcP256();

@@ -42,7 +42,6 @@ TEST(Keypair, GenerateAndRoundtripPrivateKey) {
   };
 
   expect_roundtrip(PrivateKey::GenerateRsa2048());
-  expect_roundtrip(PrivateKey::GenerateRsa4096());
   expect_roundtrip(PrivateKey::GenerateEcP256());
   expect_roundtrip(PrivateKey::GenerateEcP384());
   expect_roundtrip(PrivateKey::GenerateEcP521());
