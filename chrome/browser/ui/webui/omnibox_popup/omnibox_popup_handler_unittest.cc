@@ -515,4 +515,17 @@ TEST_F(OmniboxPopupHandlerTest, OnCopyZeroSuggestUpdatesEditModel) {
   handler_.reset();
 }
 
+TEST_F(OmniboxPopupHandlerTest, SetEditHistoryState) {
+  EXPECT_FALSE(handler_->can_undo());
+  EXPECT_FALSE(handler_->can_redo());
+
+  handler_->SetEditHistoryState(/*can_undo=*/true, /*can_redo=*/false);
+  EXPECT_TRUE(handler_->can_undo());
+  EXPECT_FALSE(handler_->can_redo());
+
+  handler_->SetEditHistoryState(/*can_undo=*/true, /*can_redo=*/true);
+  EXPECT_TRUE(handler_->can_undo());
+  EXPECT_TRUE(handler_->can_redo());
+}
+
 }  // namespace

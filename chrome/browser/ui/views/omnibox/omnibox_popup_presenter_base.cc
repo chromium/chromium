@@ -339,7 +339,12 @@ views::View* OmniboxPopupPresenterBase::GetOuterView() {
   return GetResultsFrame();
 }
 
-OmniboxPopupWebUIBaseContent* OmniboxPopupPresenterBase::GetWebUIContent()
+OmniboxPopupWebUIBaseContent* OmniboxPopupPresenterBase::GetWebUIContent() {
+  return const_cast<OmniboxPopupWebUIBaseContent*>(
+      std::as_const(*this).GetWebUIContent());
+}
+
+const OmniboxPopupWebUIBaseContent* OmniboxPopupPresenterBase::GetWebUIContent()
     const {
   return omnibox_popup_webui_content_;
 }

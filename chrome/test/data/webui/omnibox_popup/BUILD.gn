@@ -18,6 +18,7 @@ build_webui_tests("build") {
     "omnibox_popup_contextual_entrypoint_test.ts",
     "omnibox_popup_searchbox_test.ts",
     "test_searchbox_browser_proxy.ts",
+    "textfield_model_test.ts",
   ]
 
   # Tests should only import from the URL below, so they behave the same whether

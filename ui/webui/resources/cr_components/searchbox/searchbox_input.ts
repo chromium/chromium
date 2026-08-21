@@ -36,6 +36,7 @@ export interface InputUpdate {
   text?: string;
   inline?: string;
   moveCursorToEnd?: boolean;
+  isDeletingInput?: boolean;
 }
 
 const SearchboxInputElementBase = I18nMixinLit(CrLitElement);
@@ -250,8 +251,9 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   }
 
   protected onInputKeydown_(e: KeyboardEvent) {
-    // Ignore this event if the input does not have any inline autocompletion.
-    if (!this.lastInput_.inline) {
+    // Ignore this event during IME composition or if the input does not have
+    // inline autocompletion.
+    if (e.isComposing || !this.lastInput_.inline) {
       return;
     }
 
@@ -362,8 +364,9 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
           preserveSelection ? oldSelectionEnd : newInputValue.length;
     }
 
-    this.isDeletingInput_ = lastInputValue.length > newInputValue.length &&
-        lastInputValue.startsWith(newInputValue);
+    this.isDeletingInput_ = update.isDeletingInput ??
+        (lastInputValue.length > newInputValue.length &&
+         lastInputValue.startsWith(newInputValue));
     this.lastInput_ = newInput;
   }
 

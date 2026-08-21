@@ -114,7 +114,8 @@ class OmniboxPopupPresenterBase
 
   // Returns the currently "active" Popup content, whichever one is visible or
   // going to be visible within the popup.
-  OmniboxPopupWebUIBaseContent* GetWebUIContent() const;
+  OmniboxPopupWebUIBaseContent* GetWebUIContent();
+  const OmniboxPopupWebUIBaseContent* GetWebUIContent() const;
 
   // Returns the timeout if showing should be deferred until the WebUI has
   // painted a new frame, or std::nullopt if it should not be deferred.

@@ -90,6 +90,9 @@ interface PageHandler {
   // Opens the AIM (AI Mode) popup. `via_keyboard` is true if triggered via
   // keyboard.
   OpenAimPopup(bool via_keyboard);
+
+  // Updates the client-side edit history undo/redo availability state.
+  SetEditHistoryState(bool can_undo, bool can_redo);
 };
 
 // The WebUI page for the Omnibox Popup.

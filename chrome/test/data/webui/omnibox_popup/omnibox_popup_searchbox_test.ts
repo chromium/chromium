@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {isMac} from '//resources/js/platform.js';
 import {OmniboxEscapeAction, omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, sanitizeTextForPaste, SearchboxBrowserProxy, stripJavascriptSchemas} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import type {OmniboxInputState, OmniboxPopupContextualEntrypointButtonElement, OmniboxPopupPageRemote, OmniboxPopupSearchboxElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
@@ -585,6 +586,49 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertEquals(' world', input.value);
     assertEquals(0, input.selectionStart);
     assertEquals(0, input.selectionEnd);
+  });
+
+  test('WordDeletionUndoRedo', async () => {
+    searchbox.$.input.focus();
+    const inputEl = searchbox.$.input.inputElement;
+
+    // Baseline text: "hello world" with caret at index 11.
+    inputEl.value = 'hello world';
+    inputEl.setSelectionRange(11, 11);
+    searchbox.$.input.dispatchEvent(
+        new CustomEvent('searchbox-input-text-updated', {
+          detail: {value: 'hello world', isComposing: false},
+          bubbles: true,
+          composed: true,
+        }));
+    await microtasksFinished();
+
+    // User performs word deletion (Alt/Ctrl + Backspace): text becomes "hello
+    // ", cursor moves to 6.
+    inputEl.value = 'hello ';
+    inputEl.selectionStart = 6;
+    inputEl.selectionEnd = 6;
+    searchbox.$.input.dispatchEvent(
+        new CustomEvent('searchbox-input-text-updated', {
+          detail: {value: 'hello ', isComposing: false},
+          bubbles: true,
+          composed: true,
+        }));
+    await microtasksFinished();
+    assertEquals('hello ', inputEl.value);
+
+    // Trigger Undo. The deleted word "world" should be restored AND selected
+    // (6..11).
+    inputEl.dispatchEvent(new InputEvent('beforeinput', {
+      inputType: 'historyUndo',
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    }));
+    await microtasksFinished();
+    assertEquals('hello world', inputEl.value);
+    assertEquals(6, inputEl.selectionStart);
+    assertEquals(11, inputEl.selectionEnd);
   });
 
   test('StripSchemasUnsafeForPaste', () => {
@@ -1331,6 +1375,201 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals('https://example.com', queryText);
    assertTrue(preventInline);
    assertFalse(isOnFocus);
+ });
+
+ test('UndoRedoInsertions', async () => {
+   const inputEl = searchbox.getInputElement().inputElement;
+   inputEl.focus();
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: '',
+     isFocused: true,
+   }));
+   await microtasksFinished();
+
+   // Type 't', 'e', 's', 't' sequentially as individual character input events.
+   let currentText = '';
+   for (const char of 'test') {
+     currentText += char;
+     inputEl.value = currentText;
+     const cursorPos = currentText.length;
+     inputEl.setSelectionRange(cursorPos, cursorPos);
+     inputEl.dispatchEvent(
+         new InputEvent('input', {bubbles: true, composed: true}));
+     await microtasksFinished();
+   }
+
+   assertEquals('test', inputEl.value);
+
+   // Trigger Undo shortcut (Ctrl+Z / Cmd+Z)
+   inputEl.dispatchEvent(new KeyboardEvent('keydown', {
+     key: 'z',
+     ctrlKey: !isMac,
+     metaKey: isMac,
+     bubbles: true,
+     composed: true,
+   }));
+   await microtasksFinished();
+
+   // A single Undo should revert all merged typed characters back to ""
+   assertEquals('', inputEl.value);
+
+   // Trigger Redo shortcut (Ctrl+Shift+Z / Cmd+Shift+Z)
+   inputEl.dispatchEvent(new KeyboardEvent('keydown', {
+     key: 'z',
+     shiftKey: true,
+     ctrlKey: !isMac,
+     metaKey: isMac,
+     bubbles: true,
+     composed: true,
+   }));
+   await microtasksFinished();
+
+   // A single Redo should restore "test"
+   assertEquals('test', inputEl.value);
+ });
+
+ test('UndoRedoBeforeInput', async () => {
+   const inputEl = searchbox.getInputElement().inputElement;
+   inputEl.focus();
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: '',
+     isFocused: true,
+   }));
+   await microtasksFinished();
+
+   // Type 'hello'
+   inputEl.value = 'hello';
+   inputEl.setSelectionRange(5, 5);
+   inputEl.dispatchEvent(
+       new InputEvent('input', {bubbles: true, composed: true}));
+   await microtasksFinished();
+   assertEquals('hello', inputEl.value);
+
+   // Dispatch beforeinput with inputType 'historyUndo' (simulates Context Menu
+   // / Edit Menu Undo)
+   inputEl.dispatchEvent(new InputEvent('beforeinput', {
+     inputType: 'historyUndo',
+     bubbles: true,
+     composed: true,
+     cancelable: true,
+   }));
+   await microtasksFinished();
+   assertEquals('', inputEl.value);
+
+   // Dispatch beforeinput with inputType 'historyRedo' (simulates Context Menu
+   // / Edit Menu Redo)
+   inputEl.dispatchEvent(new InputEvent('beforeinput', {
+     inputType: 'historyRedo',
+     bubbles: true,
+     composed: true,
+     cancelable: true,
+   }));
+   await microtasksFinished();
+   assertEquals('hello', inputEl.value);
+ });
+
+ test('BlockInsertionNonMergeable', async () => {
+   const inputEl = searchbox.getInputElement().inputElement;
+   inputEl.focus();
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: '',
+     isFocused: true,
+   }));
+   await microtasksFinished();
+
+   // Insert a multi-character block 'hello' (length > 1 -> non-mergeable).
+   inputEl.value = 'hello';
+   inputEl.setSelectionRange(5, 5);
+   inputEl.dispatchEvent(
+       new InputEvent('input', {bubbles: true, composed: true}));
+   await microtasksFinished();
+   assertEquals('hello', inputEl.value);
+
+   // Type a single character '!' (length 1 -> mergeable).
+   inputEl.value = 'hello!';
+   inputEl.setSelectionRange(6, 6);
+   searchbox.$.input.dispatchEvent(
+       new CustomEvent('searchbox-input-text-updated', {
+         detail: {value: 'hello!', isComposing: false},
+         bubbles: true,
+         composed: true,
+       }));
+   await microtasksFinished();
+   assertEquals('hello!', inputEl.value);
+
+   // First Undo reverts '!' back to 'hello' (because 'hello' was
+   // non-mergeable).
+   inputEl.dispatchEvent(new InputEvent('beforeinput', {
+     inputType: 'historyUndo',
+     bubbles: true,
+     composed: true,
+     cancelable: true,
+   }));
+   await microtasksFinished();
+   assertEquals('hello', inputEl.value);
+
+   // Second Undo reverts 'hello' back to ''.
+   inputEl.dispatchEvent(new InputEvent('beforeinput', {
+     inputType: 'historyUndo',
+     bubbles: true,
+     composed: true,
+     cancelable: true,
+   }));
+   await microtasksFinished();
+   assertEquals('', inputEl.value);
+ });
+
+ test('SelectionReplacementUndoRedo', async () => {
+   searchbox.$.input.focus();
+   const inputEl = searchbox.$.input.inputElement;
+
+   // Step 1: User types 'world'.
+   inputEl.value = 'world';
+   inputEl.setSelectionRange(5, 5);
+   searchbox.$.input.dispatchEvent(
+       new CustomEvent('searchbox-input-text-updated', {
+         detail: {value: 'world', isComposing: false},
+         bubbles: true,
+         composed: true,
+       }));
+   await microtasksFinished();
+
+   // Step 2: User selects all text 'world' (0..5).
+   inputEl.setSelectionRange(0, 5);
+   document.dispatchEvent(new Event('selectionchange'));
+   await microtasksFinished();
+
+   // Step 3: User replaces selected 'world' with 'universe'.
+   inputEl.value = 'universe';
+   inputEl.setSelectionRange(8, 8);
+   searchbox.$.input.dispatchEvent(
+       new CustomEvent('searchbox-input-text-updated', {
+         detail: {value: 'universe', isComposing: false},
+         bubbles: true,
+         composed: true,
+       }));
+   await microtasksFinished();
+   assertEquals('universe', inputEl.value);
+
+   inputEl.dispatchEvent(new InputEvent('beforeinput', {
+     inputType: 'historyUndo',
+     bubbles: true,
+     composed: true,
+     cancelable: true,
+   }));
+   await microtasksFinished();
+   assertEquals('world', inputEl.value);
+   assertEquals(0, inputEl.selectionStart);
+   assertEquals(5, inputEl.selectionEnd);
+
+   inputEl.dispatchEvent(new InputEvent('beforeinput', {
+     inputType: 'historyRedo',
+     bubbles: true,
+     composed: true,
+     cancelable: true,
+   }));
+   await microtasksFinished();
+   assertEquals('universe', inputEl.value);
  });
 
  suite('ContextEntrypoint', () => {

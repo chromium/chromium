@@ -67,6 +67,12 @@ class OmniboxFullPopupWebUIContent
 
   void ShowContextMenuComplete(const content::ContextMenuParams& params);
 
+  OmniboxPopupHandler* GetPopupHandler() {
+    return const_cast<OmniboxPopupHandler*>(
+        std::as_const(*this).GetPopupHandler());
+  }
+  const OmniboxPopupHandler* GetPopupHandler() const;
+
   content::ContextMenuParams params_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<views::MenuRunner> menu_runner_;

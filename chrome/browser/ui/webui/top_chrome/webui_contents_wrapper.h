@@ -268,7 +268,11 @@ class WebUIContentsWrapperT : public WebUIContentsWrapper {
 
   // May return null.
   T* GetWebUIController() {
-    content::WebUI* const webui = web_contents()->GetWebUI();
+    return const_cast<T*>(std::as_const(*this).GetWebUIController());
+  }
+  const T* GetWebUIController() const {
+    content::WebUI* const webui =
+        const_cast<WebUIContentsWrapperT*>(this)->web_contents()->GetWebUI();
     return webui && webui->GetController()
                ? webui->GetController()->template GetAs<T>()
                : nullptr;
