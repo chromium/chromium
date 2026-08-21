@@ -12,6 +12,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -99,8 +100,6 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWindowOcclusionInteractiveUiTest,
   // Open the first window.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("a.com", "/title1.html")));
-  content::WebContents* web_contents1 =
-      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Open the second window.
   BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
@@ -112,6 +111,18 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWindowOcclusionInteractiveUiTest,
   gfx::Rect browser_position_2(600, 0, 500, 500);
   browser()->GetWindow()->SetBounds(browser_position_1);
   browser2->GetWindow()->SetBounds(browser_position_2);
+
+  content::WebContents* web_contents1 =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::WebContents* web_contents2 =
+      browser2->GetTabStripModel()->GetActiveWebContents();
+
+  // Ensure both windows have rendered a frame before checking occlusion. On
+  // macOS with `kAlphaInsteadOfCATransaction`, windows remain at alpha 0.0
+  // until their first compositor frame arrives, which prevents them from being
+  // counted as occluders.
+  content::WaitForCopyableViewInWebContents(web_contents1);
+  content::WaitForCopyableViewInWebContents(web_contents2);
 
   OcclusionStateWaiter occlusion_state_waiter;
   auto occlusion_helper = AutoPictureInPictureWindowOcclusionHelperBase::Create(
