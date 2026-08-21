@@ -9,11 +9,13 @@ import android.util.ArrayMap;
 import android.view.ViewGroup;
 import android.widget.FrameLayout.LayoutParams;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.Map;
 
@@ -37,6 +39,25 @@ public class TabSharingToolbarUiCoordinator implements TabSharingUIManager.Obser
     // session's bridge. (The OS currently allows only one active session; see crbug.com/487666920.)
     private final Map<TabSharingUIBridge, TabSharingToolbarCoordinator> mCoordinators =
             new ArrayMap<>();
+
+    // Safety timeout after which a toolbar retained for an in-progress source switch is torn down
+    // if the replacement session never arrives (e.g. the switch was aborted).
+    private static final long SOURCE_SWITCH_TIMEOUT_MS = 1500;
+
+    // Toolbars kept alive across a source switch, keyed by capturer, awaiting the new session's
+    // toolbar so they can be swapped in place instead of removed and re-added (which would bounce
+    // the top controls height).
+    private final Map<WebContents, PendingSwap> mPendingSwaps = new ArrayMap<>();
+
+    private static class PendingSwap {
+        public final TabSharingToolbarCoordinator coordinator;
+        public final Runnable timeout;
+
+        PendingSwap(TabSharingToolbarCoordinator coordinator, Runnable timeout) {
+            this.coordinator = coordinator;
+            this.timeout = timeout;
+        }
+    }
 
     /**
      * Initializes the UI coordinator, which attaches the toolbar container to the provided {@code
@@ -81,6 +102,13 @@ public class TabSharingToolbarUiCoordinator implements TabSharingUIManager.Obser
         }
         mCoordinators.clear();
 
+        // Tear down any toolbars retained for in-progress source switches.
+        for (PendingSwap pending : mPendingSwaps.values()) {
+            ThreadUtils.getUiThreadHandler().removeCallbacks(pending.timeout);
+            pending.coordinator.destroy();
+        }
+        mPendingSwaps.clear();
+
         mTopControlsStacker.removeControl(mContainer);
         mContainer.destroy();
         mParentView.removeView(mContainer);
@@ -103,15 +131,57 @@ public class TabSharingToolbarUiCoordinator implements TabSharingUIManager.Obser
         TabSharingToolbarCoordinator coordinator =
                 new TabSharingToolbarCoordinator(mContext, bridge, mTabProvider);
         mCoordinators.put(bridge, coordinator);
-        mContainer.addToolbar(coordinator.getView());
+
+        // If this session is the continuation of a source switch, swap the retained old toolbar for
+        // the new one in place so the reported height is unchanged (no web-contents jump).
+        PendingSwap pending = mPendingSwaps.remove(bridge.getCapturer());
+        if (pending != null) {
+            ThreadUtils.getUiThreadHandler().removeCallbacks(pending.timeout);
+            mContainer.swapToolbar(pending.coordinator.getView(), coordinator.getView());
+            pending.coordinator.destroy();
+        } else {
+            mContainer.addToolbar(coordinator.getView());
+        }
     }
 
     @Override
     public void onSharingSessionStopped(TabSharingUIBridge bridge) {
         TabSharingToolbarCoordinator coordinator = mCoordinators.remove(bridge);
-        if (coordinator != null) {
-            mContainer.removeToolbar(coordinator.getView());
-            coordinator.destroy();
+        if (coordinator == null) return;
+
+        // During a source switch the old session is immediately followed by a new one for the same
+        // capturer. Retain the toolbar and swap it when the new session starts (see
+        // onSharingSessionStarted) so the container's height never collapses to zero and the web
+        // contents don't jump. A safety timeout releases it if the switch is aborted and no new
+        // session arrives.
+        WebContents capturer = bridge.getCapturer();
+        if (MediaCaptureDevicesDispatcherAndroid.isSourceSwitchingInProgress(capturer)) {
+            // Defensive: drop any stale pending swap for this capturer before retaining a new one.
+            releasePendingSwap(capturer);
+            Runnable timeout =
+                    () -> {
+                        releasePendingSwap(capturer);
+                        MediaCaptureDevicesDispatcherAndroid.setSourceSwitchingInProgress(
+                                capturer, false);
+                    };
+            mPendingSwaps.put(capturer, new PendingSwap(coordinator, timeout));
+            ThreadUtils.getUiThreadHandler().postDelayed(timeout, SOURCE_SWITCH_TIMEOUT_MS);
+            return;
         }
+
+        mContainer.removeToolbar(coordinator.getView());
+        coordinator.destroy();
+    }
+
+    /**
+     * Tears down a toolbar retained for an in-progress source switch that never completed (e.g. the
+     * switch was aborted), collapsing the reserved height.
+     */
+    private void releasePendingSwap(WebContents capturer) {
+        PendingSwap pending = mPendingSwaps.remove(capturer);
+        if (pending == null) return;
+        ThreadUtils.getUiThreadHandler().removeCallbacks(pending.timeout);
+        mContainer.removeToolbar(pending.coordinator.getView());
+        pending.coordinator.destroy();
     }
 }

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.media;
 
+import android.util.ArrayMap;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -14,6 +16,9 @@ import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
+
+import java.util.Map;
 
 /**
  * Java access point for MediaCaptureDevicesDispatcher, allowing for querying and manipulation of
@@ -33,9 +38,63 @@ public class MediaCaptureDevicesDispatcherAndroid {
     }
 
     private static final ObserverList<Observer> sObservers = new ObserverList<>();
+    private static final Map<WebContents, WebContentsObserver> sSourceSwitchingWebContents =
+            new ArrayMap<>();
 
     /**
-     * Adds an observer to be notified of changes in media capture state.
+     * Sets whether a tab sharing source switch is actively in progress for the capturer tab. When a
+     * tab sharing session switches source to a different tab, native WebRTC stream handoff (via
+     * MediaStreamManager::ChangeMediaStreamSourceFromBrowser) stops the old desktop capture device
+     * before starting a new capture device for the new tab. Suppressing this transient stop
+     * callback prevents Android MediaProjection FGS tokens or toolbar UI from being torn down.
+     *
+     * @param capturer The capturer {@link WebContents}.
+     * @param isSwitching Whether source switching is in progress.
+     */
+    public static void setSourceSwitchingInProgress(
+            @Nullable WebContents capturer, boolean isSwitching) {
+        if (capturer == null) return;
+        if (isSwitching) {
+            if (sSourceSwitchingWebContents.containsKey(capturer)) return;
+            WebContentsObserver observer =
+                    new WebContentsObserver(capturer) {
+                        @Override
+                        public void webContentsDestroyed() {
+                            setSourceSwitchingInProgress(capturer, false);
+                        }
+                    };
+            sSourceSwitchingWebContents.put(capturer, observer);
+        } else {
+            WebContentsObserver observer = sSourceSwitchingWebContents.remove(capturer);
+            if (observer != null) {
+                observer.observe(null);
+            }
+            // If switching ended without a stream resuming (e.g. timeout or abort), ensure
+            // observers sync with the stopped state.
+            if (!isCapturingTab(capturer)) {
+                for (Observer obs : sObservers) {
+                    obs.onIsCapturingTabChanged(capturer, false);
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns whether a tab sharing source switch is currently in progress for {@code capturer}.
+     * Lets UI distinguish the transient stop/start emitted while WebRTC renegotiates the source
+     * from a genuine session teardown, so the toolbar can be swapped in place rather than torn down
+     * and re-created.
+     *
+     * @param capturer The capturer {@link WebContents}.
+     * @return True if switching is in progress.
+     */
+    public static boolean isSourceSwitchingInProgress(@Nullable WebContents capturer) {
+        if (capturer == null) return false;
+        return sSourceSwitchingWebContents.containsKey(capturer);
+    }
+
+    /**
+     * Adds an observer to receive notifications when tab capture starts or stops.
      *
      * @param observer The observer to add.
      */
@@ -52,9 +111,19 @@ public class MediaCaptureDevicesDispatcherAndroid {
         sObservers.removeObserver(observer);
     }
 
+    @VisibleForTesting
     @CalledByNative
-    private static void onIsCapturingTabChanged(
+    static void onIsCapturingTabChanged(
             @JniType("content::WebContents*") WebContents webContents, boolean isCapturing) {
+        if (webContents != null && sSourceSwitchingWebContents.containsKey(webContents)) {
+            if (!isCapturing) {
+                // Suppress the transient stop signal emitted when native stream handoff
+                // stops the old desktop capture device prior to starting the new one.
+                return;
+            }
+            // When capturing resumes on the new stream, the atomic handoff is complete.
+            setSourceSwitchingInProgress(webContents, false);
+        }
         for (Observer observer : sObservers) {
             observer.onIsCapturingTabChanged(webContents, isCapturing);
         }
@@ -82,16 +151,19 @@ public class MediaCaptureDevicesDispatcherAndroid {
 
     public static void notifyStopped(@Nullable WebContents webContents) {
         if (webContents == null) return;
+        setSourceSwitchingInProgress(webContents, false);
         MediaCaptureDevicesDispatcherAndroidJni.get().notifyStopped(webContents);
     }
 
     public static void notifyDisplayMediaStopped(@Nullable WebContents webContents) {
         if (webContents == null) return;
+        setSourceSwitchingInProgress(webContents, false);
         MediaCaptureDevicesDispatcherAndroidJni.get().notifyDisplayMediaStopped(webContents);
     }
 
     public static void notifyTabCapturingStopped(@Nullable WebContents webContents) {
         if (webContents == null) return;
+        setSourceSwitchingInProgress(webContents, false);
         TabSharingUIManager.getInstance().stopSharingByCapturerTab(webContents);
     }
 

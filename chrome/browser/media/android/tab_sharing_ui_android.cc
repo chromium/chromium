@@ -14,6 +14,9 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
@@ -43,25 +46,49 @@ TabSharingUIAndroid::~TabSharingUIAndroid() {
 }
 
 void TabSharingUIAndroid::StopSharing() {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (stop_callback_) {
     std::move(stop_callback_).Run();
   }
 }
 
 void TabSharingUIAndroid::ChangeSource(content::WebContents* new_source) {
-  // TODO(crbug.com/480747775): implement this by saving the source_callback
-  // provided OnStarted() and run it here.
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!new_source) {
+    return;
+  }
+  content::RenderFrameHost* main_frame = new_source->GetPrimaryMainFrame();
+  if (!main_frame || !main_frame->GetProcess()) {
+    return;
+  }
+  auto new_media_id =
+      content::DesktopMediaID(content::DesktopMediaID::TYPE_WEB_CONTENTS,
+                              content::DesktopMediaID::kNullId,
+                              content::WebContentsMediaCaptureId(
+                                  main_frame->GetProcess()->GetDeprecatedID(),
+                                  main_frame->GetRoutingID()));
+  // Force the renderer to produce a compositor frame so the video capturer
+  // can grab it immediately. Otherwise, if the tab is static, no frames
+  // will be emitted and the video stream will freeze.
+  content::RenderWidgetHostView* rwhv = new_source->GetRenderWidgetHostView();
+  if (rwhv && rwhv->GetRenderWidgetHost()) {
+    rwhv->GetRenderWidgetHost()->InsertVisualStateCallback(base::DoNothing());
+  }
+  if (source_callback_) {
+    source_callback_.Run(new_media_id, false);
+  }
 }
 
 gfx::NativeViewId TabSharingUIAndroid::OnStarted(
     base::OnceClosure stop_callback,
     content::MediaStreamUI::SourceCallback source_callback,
     const std::vector<content::DesktopMediaID>& media_ids) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(media_id_.type == content::DesktopMediaID::TYPE_WEB_CONTENTS);
 
   DCHECK(!stop_callback_);
   stop_callback_ = std::move(stop_callback);
+  source_callback_ = std::move(source_callback);
 
   content::WebContents* const web_contents =
       content::WebContents::FromRenderFrameHost(

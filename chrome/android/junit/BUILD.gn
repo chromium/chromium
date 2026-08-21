@@ -927,6 +927,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/media/AutoPictureInPictureTabHelperUnitTest.java",
       "src/org/chromium/chrome/browser/media/DocumentPictureInPictureActivityUnitTest.java",
       "src/org/chromium/chrome/browser/media/FullscreenVideoPictureInPictureControllerUnitTest.java",
+      "src/org/chromium/chrome/browser/media/MediaCaptureDevicesDispatcherAndroidTest.java",
       "src/org/chromium/chrome/browser/media/MediaCapturePickerInvokerTest.java",
       "src/org/chromium/chrome/browser/media/MediaCapturePickerManagerTest.java",
       "src/org/chromium/chrome/browser/media/MediaCaptureUtilsTest.java",

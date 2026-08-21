@@ -9,8 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import org.chromium.chrome.R;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.TopControlLayer;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.ScrollBehavior;
@@ -101,6 +101,29 @@ public class TabSharingToolbarContainer extends LinearLayout implements TopContr
      */
     public void removeToolbar(View toolbar) {
         removeView(toolbar);
+        updateVisibility();
+    }
+
+    /**
+     * Atomically swaps one toolbar view for another without changing the number of visible
+     * toolbars, so the reported browser controls height is unaffected. Used during a tab sharing
+     * source switch, where the old session's toolbar is replaced by the new session's toolbar.
+     * Swapping in place avoids the height collapsing to zero and back (a separate {@link
+     * #removeToolbar} followed by {@link #addToolbar}) which would make the web contents jump.
+     *
+     * @param oldToolbar The view to remove.
+     * @param newToolbar The view to add in its place.
+     */
+    public void swapToolbar(View oldToolbar, View newToolbar) {
+        int index = indexOfChild(oldToolbar);
+        if (index != -1) {
+            removeViewAt(index);
+            addView(newToolbar, index);
+        } else {
+            addView(newToolbar);
+        }
+        // Reconcile height/visibility once, after both mutations, so the transient zero-child state
+        // is never reported to the top controls stacker.
         updateVisibility();
     }
 

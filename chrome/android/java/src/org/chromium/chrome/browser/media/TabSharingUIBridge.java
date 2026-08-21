@@ -77,6 +77,7 @@ public class TabSharingUIBridge {
 
     /** Stops the sharing session associated with this bridge. */
     public void stopSharing() {
+        MediaCaptureDevicesDispatcherAndroid.setSourceSwitchingInProgress(mCapturer, false);
         if (mNativeTabSharingUIAndroid == 0) return;
         TabSharingUIBridgeJni.get().stopSharing(mNativeTabSharingUIAndroid);
     }
@@ -87,6 +88,7 @@ public class TabSharingUIBridge {
      * @param newSource The new {@link WebContents} source to be shared.
      */
     public void changeSource(WebContents newSource) {
+        MediaCaptureDevicesDispatcherAndroid.setSourceSwitchingInProgress(mCapturer, true);
         if (mNativeTabSharingUIAndroid == 0) return;
         TabSharingUIBridgeJni.get().changeSource(mNativeTabSharingUIAndroid, newSource);
     }

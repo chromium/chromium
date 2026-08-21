@@ -37,6 +37,7 @@ public class TabSharingUIBridgeTest {
     private WebContents mCapturee;
 
     @Mock private TabSharingUIManager.Observer mManagerObserver;
+    @Mock private MediaCaptureDevicesDispatcherAndroid.Natives mMediaCaptureJniMock;
 
     private static final long NATIVE_PTR = 12345L;
     private TabSharingUIBridge mBridge;
@@ -44,6 +45,7 @@ public class TabSharingUIBridgeTest {
     @Before
     public void setUp() {
         TabSharingUIBridgeJni.setInstanceForTesting(mNativeMock);
+        MediaCaptureDevicesDispatcherAndroidJni.setInstanceForTesting(mMediaCaptureJniMock);
         TabSharingUIManager.getInstance().addObserver(mManagerObserver);
         mBridge = TabSharingUIBridge.create(NATIVE_PTR, mCapturer, mCapturee);
     }

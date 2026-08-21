@@ -42,6 +42,7 @@ class TabSharingUIAndroid : public MediaStreamUI {
  private:
   base::WeakPtr<content::WebContents> capturer_web_contents_;
   base::OnceClosure stop_callback_;
+  content::MediaStreamUI::SourceCallback source_callback_;
   const content::DesktopMediaID media_id_;
   std::unique_ptr<content::MediaStreamUI> tab_capture_indicator_ui_;
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;

@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.media;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 import android.app.Activity;
 import android.view.ViewGroup;
@@ -23,6 +25,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -33,6 +36,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.url.GURL;
 
 /** Unit tests for {@link TabSharingToolbarUiCoordinator}. */
@@ -44,10 +48,11 @@ public class TabSharingToolbarUiCoordinatorTest {
     @Mock private Tab mTab;
     @Mock private Profile mWindowProfile;
     @Mock private TabSharingUIBridge mBridge;
-    @Mock private WebContents mCapturer;
+    private WebContents mCapturer;
     @Mock private WebContents mCapturee;
     @Mock private Profile mSessionProfile;
     @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
+    @Mock private MediaCaptureDevicesDispatcherAndroid.Natives mMediaCaptureJniMock;
 
     private final ActivityTabProvider mTabProvider = new ActivityTabProvider();
     private FrameLayout mParentView;
@@ -55,6 +60,11 @@ public class TabSharingToolbarUiCoordinatorTest {
 
     @Before
     public void setUp() {
+        MediaCaptureDevicesDispatcherAndroidJni.setInstanceForTesting(mMediaCaptureJniMock);
+        mCapturer =
+                mock(
+                        WebContents.class,
+                        withSettings().extraInterfaces(WebContentsObserver.Observable.class));
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mParentView = new FrameLayout(activity);
@@ -78,6 +88,7 @@ public class TabSharingToolbarUiCoordinatorTest {
     @After
     public void tearDown() {
         mCoordinator.destroy();
+        MediaCaptureDevicesDispatcherAndroid.setSourceSwitchingInProgress(mCapturer, false);
         Profile.setProfileFromWebContentsForTesting(null);
         UrlFormatterJni.setInstanceForTesting(null);
     }
@@ -180,5 +191,59 @@ public class TabSharingToolbarUiCoordinatorTest {
         mCoordinator.onSharingSessionStarted(mBridge);
         mCoordinator.onSharingSessionStarted(bridge2);
         mCoordinator.destroy();
+    }
+
+    @Test
+    public void testSourceSwitch_RetainsToolbarAndSwapsInPlace() {
+        when(mWindowProfile.isOffTheRecord()).thenReturn(false);
+        when(mSessionProfile.isOffTheRecord()).thenReturn(false);
+
+        mCoordinator.onSharingSessionStarted(mBridge);
+        TabSharingToolbarContainer container =
+                (TabSharingToolbarContainer) mParentView.getChildAt(0);
+        assertEquals(1, container.getChildCount());
+        android.view.View originalView = container.getChildAt(0);
+
+        // Mark a source switch in progress for this capturer.
+        MediaCaptureDevicesDispatcherAndroid.setSourceSwitchingInProgress(mCapturer, true);
+
+        // The old session stops as part of the switch: the toolbar must be retained (not removed)
+        // so the reported height does not collapse to zero.
+        mCoordinator.onSharingSessionStopped(mBridge);
+        assertEquals(1, container.getChildCount());
+        assertEquals(originalView, container.getChildAt(0));
+
+        // The new session starts: the toolbar is swapped in place, still a single child.
+        TabSharingUIBridge newBridge = Mockito.mock(TabSharingUIBridge.class);
+        when(newBridge.getCapturer()).thenReturn(mCapturer);
+        when(newBridge.getCapturee()).thenReturn(mCapturee);
+        mCoordinator.onSharingSessionStarted(newBridge);
+        assertEquals(1, container.getChildCount());
+        org.junit.Assert.assertNotSame(originalView, container.getChildAt(0));
+
+        // Ending the (non-switching) session now removes the toolbar normally.
+        MediaCaptureDevicesDispatcherAndroid.setSourceSwitchingInProgress(mCapturer, false);
+        mCoordinator.onSharingSessionStopped(newBridge);
+        assertEquals(0, container.getChildCount());
+    }
+
+    @Test
+    public void testSourceSwitchAborted_ReleasesRetainedToolbarAfterTimeout() {
+        when(mWindowProfile.isOffTheRecord()).thenReturn(false);
+        when(mSessionProfile.isOffTheRecord()).thenReturn(false);
+
+        mCoordinator.onSharingSessionStarted(mBridge);
+        TabSharingToolbarContainer container =
+                (TabSharingToolbarContainer) mParentView.getChildAt(0);
+        assertEquals(1, container.getChildCount());
+
+        MediaCaptureDevicesDispatcherAndroid.setSourceSwitchingInProgress(mCapturer, true);
+        mCoordinator.onSharingSessionStopped(mBridge);
+        // Toolbar retained while the (never-arriving) replacement is awaited.
+        assertEquals(1, container.getChildCount());
+
+        // The switch is aborted; the safety timeout should tear down the retained toolbar.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(0, container.getChildCount());
     }
 }
