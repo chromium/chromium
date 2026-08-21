@@ -56,7 +56,7 @@ namespace enterprise_data_protection {
 
 namespace {
 
-constexpr const char* kSkippedUrls[] = {
+constexpr const char* kInternalUrls[] = {
     "chrome://version",
     "chrome-extension://abcdefghijklmnop",
     "chrome-native://newtab",
@@ -581,7 +581,7 @@ TEST_F(DataProtectionNavigationObserverTest, InvalidResponse_NoReport) {
 }
 
 TEST_F(DataProtectionNavigationObserverTest,
-       SkipSpecialURLs_CreateForNavigationIfNeeded) {
+       InternalURLs_CreateForNavigationIfNeeded) {
   auto WillCreatePendingNav = [](const GURL& url) {
     return !std::ranges::contains(url::GetEmptyDocumentSchemes(),
                                   url.GetScheme());
@@ -589,7 +589,7 @@ TEST_F(DataProtectionNavigationObserverTest,
 
   SetContents(CreateTestWebContents());
 
-  for (const auto* url : kSkippedUrls) {
+  for (const auto* url : kInternalUrls) {
     GURL gurl(url);
     auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
         gurl, web_contents());
@@ -608,22 +608,38 @@ TEST_F(DataProtectionNavigationObserverTest,
             WillCreatePendingNav(gurl) ? simulator->GetNavigationHandle()
                                        : &mock_nav_handle,
             future.GetCallback());
-    ASSERT_EQ(navigation_observer, nullptr);
-    ASSERT_EQ(future.Get(), UrlSettings());
+    ASSERT_NE(navigation_observer, nullptr);
   }
 }
 
 TEST_F(DataProtectionNavigationObserverTest,
-       SkipSpecialURLs_ApplyDataProtectionSettings) {
+       InternalURLs_ApplyDataProtectionSettings) {
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  validator.ExpectNoReport();
+  data_controls::SetDataControls(profile()->GetPrefs(), {R"(
+        {
+          "name":"block",
+          "rule_id":"1234",
+          "sources":{"urls":["*"]},
+          "restrictions":[{"class": "SCREENSHOT", "level": "BLOCK"} ]
+        }
+      )"});
+
   SetContents(CreateTestWebContents());
 
-  for (const auto* url : kSkippedUrls) {
+  for (const auto* url : kInternalUrls) {
     NavigateAndCommit(GURL(url));
     base::test::TestFuture<const UrlSettings&> future;
     DataProtectionNavigationObserver::ApplyDataProtectionSettings(
         Profile::FromBrowserContext(browser_context()), web_contents(),
         future.GetCallback());
-    ASSERT_EQ(future.Get(), UrlSettings());
+    EXPECT_FALSE(future.Get().allow_screenshots);
+
+    // Value should be cached.
+    auto* user_data = DataProtectionPageUserData::GetForPage(
+        GetPageFromWebContents(web_contents()));
+    ASSERT_TRUE(user_data);
+    EXPECT_EQ(user_data->settings(), future.Get());
   }
 }
 

@@ -135,12 +135,6 @@ void OnDoLookupComplete(
   RunPendingNavigationCallback(web_contents.get(), std::move(callback));
 }
 
-bool SkipUrl(const GURL& url) {
-  return !url.is_valid() || url.SchemeIs(content::kChromeUIScheme) ||
-         url.SchemeIs(extensions::kExtensionScheme) ||
-         url.SchemeIs(chrome::kChromeNativeScheme);
-}
-
 bool IsEnterpriseLookupEnabled(Profile* profile) {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // Some tests return a non-null pointer for the enterprise lookup service,
@@ -232,12 +226,7 @@ DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
           << navigation_handle->GetURL();
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  // The Data protection settings need to be cleared if:
-  // 1. This is a skipped URL. This is needed to handle for example navigating
-  // from a watermarked page to the NTP.
-  // 2. Data protection is disabled. This is needed to prevent stale data
-  // protection settings if the enabled state is changed mid session.
-  if (SkipUrl(navigation_handle->GetURL())) {
+  if (!navigation_handle->GetURL().is_valid()) {
     std::move(callback).Run(UrlSettings::None());
     return nullptr;
   }
@@ -277,10 +266,7 @@ void DataProtectionNavigationObserver::ApplyDataProtectionSettings(
     return;
   }
 
-  // If this is a skipped URL, force the view to clear any data protections if
-  // present.  This is needed to handle for example navigating from a
-  // protected page to the NTP.
-  if (SkipUrl(web_contents->GetLastCommittedURL())) {
+  if (!web_contents->GetLastCommittedURL().is_valid()) {
     std::move(callback).Run(UrlSettings::None());
     return;
   }

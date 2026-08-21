@@ -42,10 +42,11 @@ int64_t GetNavigationId(web::NavigationContext* context) {
 }
 
 // Returns true if data protection checks should be skipped for the given URL.
+// See `safe_browsing::ChromeEnterpriseRealTimeUrlLookupService` (and
+// `ShouldOverrideKnownSafeUrlDecision`) for lookup skip behavior on other
+// platforms.
 bool SkipUrl(const GURL& url) {
-  return !url.is_valid() || UrlHasChromeScheme(url) || IsUrlNtp(url) ||
-         url.SchemeIs(content_settings::kChromeUIUntrustedScheme) ||
-         net::IsLocalhost(url);
+  return !url.is_valid() || IsUrlNtp(url) || net::IsLocalhost(url);
 }
 
 // Returns the next state when a new real-time lookup is initiated.

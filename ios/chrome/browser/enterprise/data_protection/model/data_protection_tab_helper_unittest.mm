@@ -538,7 +538,17 @@ TEST_F(DataProtectionTabHelperTest, NoDmTokenSkipsRealTimeLookup) {
 TEST_F(DataProtectionTabHelperTest, NTPUrlSkipped) {
   SetScreenshotBlockRule("*");
 
-  VerifyInitialProtection(GURL(kChromeUINewTabURL), /*expected_enabled=*/false);
+  for (const char* url : {kChromeUINewTabURL, kChromeUIAboutNewTabURL}) {
+    VerifyInitialProtection(GURL(url), /*expected_enabled=*/false);
+    EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 0u);
+  }
+}
+
+// Tests that internal URLs are not skipped.
+TEST_F(DataProtectionTabHelperTest, InternalUrlBlocked) {
+  SetScreenshotBlockRule("*");
+
+  VerifyInitialProtection(GURL(kChromeUIVersionURL), /*expected_enabled=*/true);
   EXPECT_EQ(fake_rt_lookup_service_->start_lookup_count(), 0u);
 }
 
