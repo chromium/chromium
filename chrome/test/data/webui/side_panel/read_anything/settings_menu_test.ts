@@ -4,10 +4,10 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {KEYBOARD_NAV_CLASS, MENU_SHOW_DELAY_MS, ReadAnythingSettingsChange, SUBMENU_SHOW_DELAY_MS} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {KEYBOARD_NAV_CLASS, LINE_FOCUS_FEATURE_NAME, MENU_SHOW_DELAY_MS, ReadAnythingSettingsChange, SUBMENU_SHOW_DELAY_MS, userEducationProxyFactory} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {SettingsMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {SettingsOption, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
@@ -15,11 +15,12 @@ import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/
 import {mockMetrics} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-
+import {TestUserEducationBrowserProxy} from './test_user_education_browser_proxy.js';
 
 suite('SettingsMenuElement', () => {
   let settingsMenu: SettingsMenuElement;
   let metrics: TestMetricsBrowserProxy;
+  let userEducationProxy: TestUserEducationBrowserProxy;
 
   function queryLinksToggle(): HTMLButtonElement|null {
     const actionMenu = settingsMenu.$.lazyMenu.get();
@@ -34,6 +35,8 @@ suite('SettingsMenuElement', () => {
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     chrome.readingMode.isLineFocusEnabled = true;
     metrics = mockMetrics();
+    userEducationProxy = new TestUserEducationBrowserProxy();
+    userEducationProxyFactory.setInstance(userEducationProxy);
 
     settingsMenu = document.createElement('settings-menu');
     settingsMenu.id = 'settingsMenu';
@@ -613,6 +616,21 @@ suite('SettingsMenuElement', () => {
         assertFalse(!!badge);
       });
 
-  // TODO(https://crbug.com/361169212): Add in test for querying and showing
-  // "New" badge using a mock UserEducationMixedTrustHandler.
+  test('requests line focus new badge on open', async () => {
+    settingsMenu.close();
+    await microtasksFinished();
+    userEducationProxy.setNewBadgeResponse(LINE_FOCUS_FEATURE_NAME, true);
+    // Since setup creates a menu, clear out the number of requests.
+    userEducationProxy.reset();
+    const anchor = document.createElement('div');
+    document.body.appendChild(anchor);
+    assertEquals(0, userEducationProxy.getCallCount('maybeShowNewBadgeFor'));
+    settingsMenu.open(anchor);
+    await microtasksFinished();
+    assertEquals(1, userEducationProxy.getCallCount('maybeShowNewBadgeFor'));
+    assertDeepEquals(
+        [LINE_FOCUS_FEATURE_NAME],
+        userEducationProxy.getArgs('maybeShowNewBadgeFor'));
+    assertTrue(settingsMenu.showLineFocusNewBadge);
+  });
 });
