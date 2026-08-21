@@ -6,6 +6,7 @@ include_rules = [
   "+components/update_client",
   "+components/crx_file",
   "+content/public/browser",
+  "+content/public/common/content_features.h",
   "+mojo/public/cpp",
   "+net/base",
   "+net/http",
