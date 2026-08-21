@@ -3271,34 +3271,6 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
           *this);
     }
   }
-
-  // Elements with non-auto touch-action will send a SetTouchAction message
-  // on touchstart in EventHandler::handleTouchEvent, and so effectively have
-  // a touchstart handler that must be reported.
-  //
-  // Since a CSS property cannot be applied directly to a text node, a
-  // handler will have already been added for its parent so ignore it.
-  //
-  // Elements may inherit touch action from parent frame, so we need to report
-  // touchstart handler if the root layout object has non-auto effective touch
-  // action.
-  const bool is_old_touch_action_auto =
-      old_style ? (old_style->EffectiveTouchAction() == TouchAction::kAuto)
-                : true;
-  const bool is_new_touch_action_auto =
-      new_style.EffectiveTouchAction() == TouchAction::kAuto;
-  if (GetNode() && is_old_touch_action_auto != is_new_touch_action_auto) {
-    EventHandlerRegistry& registry =
-        GetDocument().GetFrame()->GetEventHandlerRegistry();
-    if (is_new_touch_action_auto) {
-      registry.DidRemoveEventHandler(*GetNode(),
-                                     EventHandlerRegistry::kTouchAction);
-    } else {
-      registry.DidAddEventHandler(*GetNode(),
-                                  EventHandlerRegistry::kTouchAction);
-    }
-    MarkEffectiveAllowedTouchActionChanged();
-  }
 }
 
 static inline bool AreCursorsEqual(const ComputedStyle& a,
@@ -3498,6 +3470,32 @@ void LayoutObject::StyleDidChange(
   const bool old_style_focusability = old_style && old_style->IsFocusable();
   if (!style_focusability && old_style_focusability) {
     node_->FocusabilityLost();
+  }
+
+  // Elements with non-auto touch-action will send a SetTouchAction message on
+  // touchstart in EventHandler::handleTouchEvent, and so effectively have a
+  // touchstart handler that must be reported.
+  //
+  // Since a CSS property cannot be applied directly to a text node, a handler
+  // will have already been added for its parent so ignore it.
+  //
+  // Elements may inherit touch action from parent frame, so we need to report
+  // touchstart handler if the root layout object has non-auto touch action.
+  const bool is_old_touch_action_auto =
+      !old_style || old_style->EffectiveTouchAction() == TouchAction::kAuto;
+  const bool is_new_touch_action_auto =
+      new_style.EffectiveTouchAction() == TouchAction::kAuto;
+  if (GetNode() && is_old_touch_action_auto != is_new_touch_action_auto) {
+    EventHandlerRegistry& registry =
+        GetDocument().GetFrame()->GetEventHandlerRegistry();
+    if (is_new_touch_action_auto) {
+      registry.DidRemoveEventHandler(*GetNode(),
+                                     EventHandlerRegistry::kTouchAction);
+    } else {
+      registry.DidAddEventHandler(*GetNode(),
+                                  EventHandlerRegistry::kTouchAction);
+    }
+    MarkEffectiveAllowedTouchActionChanged();
   }
 }
 
