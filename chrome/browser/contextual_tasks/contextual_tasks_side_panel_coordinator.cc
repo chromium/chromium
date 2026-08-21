@@ -157,8 +157,10 @@ std::unique_ptr<content::WebContents> CreateWebContents(
   // WebContents. This is important since loading begins before the WebContents
   // is attached to a side panel and therefore the navigation handler won't
   // trigger.
-  url = contextual_tasks::ContextualTasksUiService::
-      AddRequiredSidePanelUrlChanges(url, web_contents.get());
+  if (contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
+    url = contextual_tasks::ContextualTasksUiService::
+        AddRequiredSidePanelUrlChanges(url, web_contents.get());
+  }
   web_contents->GetController().LoadURL(url, content::Referrer(),
                                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                         std::string());

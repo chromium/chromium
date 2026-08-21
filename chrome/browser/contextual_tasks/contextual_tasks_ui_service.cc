@@ -1448,7 +1448,7 @@ bool ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
 GURL ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
     const GURL& url,
     content::WebContents* source_contents) {
-  if (!source_contents) {
+  if (!source_contents || !url.SchemeIsHTTPOrHTTPS()) {
     return url;
   }
 
