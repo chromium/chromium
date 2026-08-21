@@ -36,7 +36,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_view.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_mutator.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller_delegate.h"
-#import "ios/chrome/browser/composebox/ui/composebox_strings.h"
+#import "ios/chrome/browser/composebox/ui/composebox_ui_config.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_util.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
@@ -740,12 +740,12 @@ UIImage* SendButtonImage(BOOL highlighted,
 
 - (void)setUIInputState:(ComposeboxUIInputState*)state {
   BOOL activeToolChanged = (_state.activeTool != state.activeTool);
-  BOOL stringsChanged = (_state.strings != state.strings);
+  BOOL uiConfigChanged = (_state.uiConfig != state.uiConfig);
 
   _state = state;
 
   // Trigger updates conditionally
-  if (activeToolChanged || stringsChanged) {
+  if (activeToolChanged || uiConfigChanged) {
     [self updatePlaceholderText];
   }
 
@@ -760,7 +760,7 @@ UIImage* SendButtonImage(BOOL highlighted,
     }
   }
 
-  if (stringsChanged) {
+  if (uiConfigChanged) {
     [self updateCreateImageTitle];
   }
 
@@ -1178,7 +1178,7 @@ UIImage* SendButtonImage(BOOL highlighted,
 /// Updates the placeholder text based on the current operating mode of the
 /// composebox.
 - (void)updatePlaceholderText {
-  [_editView setCustomPlaceholderText:[_state.strings
+  [_editView setCustomPlaceholderText:[_state.uiConfig
                                           hintTextForTool:_state.activeTool]];
 }
 
@@ -1242,7 +1242,7 @@ UIImage* SendButtonImage(BOOL highlighted,
   UIImage* icon = SymbolWithPointSize(SymbolMagnifyingglassSpark,
                                       kAIMButtonSymbolPointSize);
 
-  NSString* title = [_state.strings chipLabelForTool:ComposeboxMode::kAIM];
+  NSString* title = [_state.uiConfig chipLabelForTool:ComposeboxMode::kAIM];
   button.configuration = [self modeIndicatorButtonConfigWithTitle:title
                                                             image:icon];
 
@@ -1628,7 +1628,7 @@ UIImage* SendButtonImage(BOOL highlighted,
       kComposeboxSelectTabsActionAccessibilityIdentifier;
 
   UIAction* aimAction = [self
-      actionWithTitle:[_state.strings menuLabelForTool:ComposeboxMode::kAIM]
+      actionWithTitle:[_state.uiConfig menuLabelForTool:ComposeboxMode::kAIM]
                 image:SymbolWithPointSize(SymbolMagnifyingglassSpark,
                                           kSymbolActionPointSize)
                hidden:[_state isToolHidden:ComposeboxMode::kAIM]
@@ -1641,7 +1641,7 @@ UIImage* SendButtonImage(BOOL highlighted,
       kComposeboxAIMActionAccessibilityIdentifier;
 
   UIAction* createImageAction = [self
-      actionWithTitle:[_state.strings
+      actionWithTitle:[_state.uiConfig
                           menuLabelForTool:ComposeboxMode::kImageGeneration]
                 image:GetBananaIcon(kSymbolActionPointSize)
                hidden:[_state isToolHidden:ComposeboxMode::kImageGeneration]
@@ -1654,7 +1654,7 @@ UIImage* SendButtonImage(BOOL highlighted,
       kComposeboxImageGenerationActionAccessibilityIdentifier;
 
   UIAction* canvasAction = [self
-      actionWithTitle:[_state.strings menuLabelForTool:ComposeboxMode::kCanvas]
+      actionWithTitle:[_state.uiConfig menuLabelForTool:ComposeboxMode::kCanvas]
                 image:SymbolWithPointSize(SymbolDocumentBadgeSpark,
                                           kSymbolActionPointSize)
                hidden:[_state isToolHidden:ComposeboxMode::kCanvas]
@@ -1665,7 +1665,7 @@ UIImage* SendButtonImage(BOOL highlighted,
               }];
 
   UIAction* deepSearchAction =
-      [self actionWithTitle:[_state.strings
+      [self actionWithTitle:[_state.uiConfig
                                 menuLabelForTool:ComposeboxMode::kDeepSearch]
                       image:SymbolWithPointSize(SymbolDeepSearch,
                                                 kSymbolActionPointSize)
@@ -1709,7 +1709,7 @@ UIImage* SendButtonImage(BOOL highlighted,
                                          options:UIMenuOptionsDisplayInline
                                         children:attachmentMenuElements];
 
-  NSString* toolsSectionTitle = [_state.strings toolsSectionHeader];
+  NSString* toolsSectionTitle = [_state.uiConfig toolsSectionHeader];
   UIMenu* modeMenu = [UIMenu
       menuWithTitle:toolsSectionTitle
               image:nil
@@ -1727,7 +1727,7 @@ UIImage* SendButtonImage(BOOL highlighted,
         ![_state isModelHidden:ComposeboxModelOption::kAuto];
     // Note: When possible, this is meant to be replaced by 'Auto'.
     UIAction* regularModelOption = [self
-        actionWithTitle:[_state.strings
+        actionWithTitle:[_state.uiConfig
                             menuLabelForModel:ComposeboxModelOption::kRegular]
                   image:SymbolWithPointSize(SymbolAcute, kSymbolActionPointSize)
                  hidden:regularHidden
@@ -1739,7 +1739,7 @@ UIImage* SendButtonImage(BOOL highlighted,
                 }];
 
     UIAction* autoModelOption = [self
-        actionWithTitle:[_state.strings
+        actionWithTitle:[_state.uiConfig
                             menuLabelForModel:ComposeboxModelOption::kAuto]
                   image:SymbolWithPointSize(SymbolSyncEnabled,
                                             kSymbolActionPointSize)
@@ -1752,7 +1752,7 @@ UIImage* SendButtonImage(BOOL highlighted,
                 }];
 
     UIAction* thinkingModelOption = [self
-        actionWithTitle:[_state.strings
+        actionWithTitle:[_state.uiConfig
                             menuLabelForModel:ComposeboxModelOption::kThinking]
                   image:SymbolWithPointSize(SymbolClock, kSymbolActionPointSize)
                  hidden:[_state isModelHidden:ComposeboxModelOption::kThinking]
@@ -1766,7 +1766,7 @@ UIImage* SendButtonImage(BOOL highlighted,
 
     UIAction* thinkingModelNoGenUIOption = [self
         actionWithTitle:
-            [_state.strings
+            [_state.uiConfig
                 menuLabelForModel:ComposeboxModelOption::kThinkingNoGenUI]
                   image:SymbolWithPointSize(SymbolClock, kSymbolActionPointSize)
                  hidden:[_state isModelHidden:ComposeboxModelOption::
@@ -1781,7 +1781,7 @@ UIImage* SendButtonImage(BOOL highlighted,
                 }];
 
     UIAction* flashModelOption = [self
-        actionWithTitle:[_state.strings
+        actionWithTitle:[_state.uiConfig
                             menuLabelForModel:ComposeboxModelOption::kFlash]
                   image:SymbolWithPointSize(SymbolBolt, kSymbolActionPointSize)
                  hidden:[_state isModelHidden:ComposeboxModelOption::kFlash]
@@ -1792,7 +1792,7 @@ UIImage* SendButtonImage(BOOL highlighted,
                                 ComposeboxModelOption::kFlash];
                 }];
 
-    NSString* modelPickerTitle = [_state.strings modelSectionHeader];
+    NSString* modelPickerTitle = [_state.uiConfig modelSectionHeader];
     UIMenu* modelPickerMenu =
         [UIMenu menuWithTitle:modelPickerTitle
                         image:nil
@@ -2125,7 +2125,7 @@ UIImage* SendButtonImage(BOOL highlighted,
   button.layer.borderWidth = 0;
 
   NSString* title =
-      [_state.strings chipLabelForTool:ComposeboxMode::kImageGeneration];
+      [_state.uiConfig chipLabelForTool:ComposeboxMode::kImageGeneration];
   UIButtonConfiguration* config = [self
       modeIndicatorButtonConfigWithTitle:title
                                    image:GetBananaIcon(kSymbolActionPointSize)];
@@ -2146,7 +2146,7 @@ UIImage* SendButtonImage(BOOL highlighted,
   UIButtonConfiguration* config = _imageGenerationButton.configuration;
 
   NSString* createImageTitle =
-      [_state.strings chipLabelForTool:ComposeboxMode::kImageGeneration];
+      [_state.uiConfig chipLabelForTool:ComposeboxMode::kImageGeneration];
   UIFont* font = [UIFont systemFontOfSize:kAIMButtonFontSize
                                    weight:UIFontWeightMedium];
   NSDictionary* attributes = @{NSFontAttributeName : font};
@@ -2171,7 +2171,7 @@ UIImage* SendButtonImage(BOOL highlighted,
       forControlEvents:UIControlEventTouchUpInside];
   button.layer.borderWidth = 0;
 
-  NSString* title = [_state.strings chipLabelForTool:ComposeboxMode::kCanvas];
+  NSString* title = [_state.uiConfig chipLabelForTool:ComposeboxMode::kCanvas];
   UIButtonConfiguration* config =
       [self modeIndicatorButtonConfigWithTitle:title
                                          image:SymbolWithPointSize(
@@ -2211,7 +2211,7 @@ UIImage* SendButtonImage(BOOL highlighted,
   button.layer.borderWidth = 0;
 
   NSString* title =
-      [_state.strings chipLabelForTool:ComposeboxMode::kDeepSearch];
+      [_state.uiConfig chipLabelForTool:ComposeboxMode::kDeepSearch];
   UIButtonConfiguration* config =
       [self modeIndicatorButtonConfigWithTitle:title
                                          image:SymbolWithPointSize(

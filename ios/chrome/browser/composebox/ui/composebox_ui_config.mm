@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/composebox/ui/composebox_strings.h"
+#import "ios/chrome/browser/composebox/ui/composebox_ui_config.h"
 
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@implementation ComposeboxStringBundle
+@implementation ComposeboxItemUIConfig
 
 - (instancetype)initWithMenuLabel:(NSString*)menuLabel
                         chipLabel:(NSString*)chipLabel
@@ -24,11 +24,11 @@
 
 @end
 
-@implementation ComposeboxStrings {
-  // Maps tools to their server-provided strings.
-  std::unordered_map<ComposeboxMode, ComposeboxStringBundle*> _controlMapping;
-  // Maps models to their server-provided strings.
-  std::unordered_map<ComposeboxModelOption, ComposeboxStringBundle*>
+@implementation ComposeboxUIConfig {
+  // Maps tools to their server-provided UI configs.
+  std::unordered_map<ComposeboxMode, ComposeboxItemUIConfig*> _controlMapping;
+  // Maps models to their server-provided UI configs.
+  std::unordered_map<ComposeboxModelOption, ComposeboxItemUIConfig*>
       _modelMapping;
   // The server-provided header for the models section.
   NSString* _modelSectionHeader;
@@ -36,20 +36,20 @@
   NSString* _toolsSectionHeader;
 }
 
-+ (instancetype)localFallbackStrings {
-  return [[ComposeboxStrings alloc] initWithToolMapping:{}
-                                           modelMapping:{}
-                                     modelSectionHeader:nil
-                                     toolsSectionHeader:nil];
++ (instancetype)localFallbackUIConfig {
+  return [[ComposeboxUIConfig alloc] initWithToolMapping:{}
+                                            modelMapping:{}
+                                      modelSectionHeader:nil
+                                      toolsSectionHeader:nil];
 }
 
 - (instancetype)
     initWithToolMapping:
-        (std::unordered_map<ComposeboxMode, ComposeboxStringBundle*>)
+        (std::unordered_map<ComposeboxMode, ComposeboxItemUIConfig*>)
             controlMapping
            modelMapping:
                (std::unordered_map<ComposeboxModelOption,
-                                   ComposeboxStringBundle*>)modelMapping
+                                   ComposeboxItemUIConfig*>)modelMapping
      modelSectionHeader:(NSString*)modelSectionHeader
      toolsSectionHeader:(NSString*)toolsSectionHeader {
   self = [super init];
@@ -64,41 +64,41 @@
 }
 
 - (NSString*)menuLabelForTool:(ComposeboxMode)tool {
-  ComposeboxStringBundle* bundle = [self stringsForTool:tool];
-  if (bundle.menuLabel.length > 0) {
-    return bundle.menuLabel;
+  ComposeboxItemUIConfig* config = [self uiConfigForTool:tool];
+  if (config.menuLabel.length > 0) {
+    return config.menuLabel;
   }
   return [self localFallbackForTool:tool isHint:NO];
 }
 
 - (NSString*)chipLabelForTool:(ComposeboxMode)tool {
-  ComposeboxStringBundle* bundle = [self stringsForTool:tool];
-  if (bundle.chipLabel.length > 0) {
-    return bundle.chipLabel;
+  ComposeboxItemUIConfig* config = [self uiConfigForTool:tool];
+  if (config.chipLabel.length > 0) {
+    return config.chipLabel;
   }
   return [self localFallbackForTool:tool isHint:NO];
 }
 
 - (NSString*)hintTextForTool:(ComposeboxMode)tool {
-  ComposeboxStringBundle* bundle = [self stringsForTool:tool];
-  if (bundle.hintText.length > 0) {
-    return bundle.hintText;
+  ComposeboxItemUIConfig* config = [self uiConfigForTool:tool];
+  if (config.hintText.length > 0) {
+    return config.hintText;
   }
   return [self localFallbackForTool:tool isHint:YES];
 }
 
 - (NSString*)menuLabelForModel:(ComposeboxModelOption)model {
-  ComposeboxStringBundle* bundle = [self stringsForModel:model];
-  if (bundle.menuLabel.length > 0) {
-    return bundle.menuLabel;
+  ComposeboxItemUIConfig* config = [self uiConfigForModel:model];
+  if (config.menuLabel.length > 0) {
+    return config.menuLabel;
   }
   return [self localFallbackForModel:model isHint:NO];
 }
 
 - (NSString*)hintTextForModel:(ComposeboxModelOption)model {
-  ComposeboxStringBundle* bundle = [self stringsForModel:model];
-  if (bundle.hintText.length > 0) {
-    return bundle.hintText;
+  ComposeboxItemUIConfig* config = [self uiConfigForModel:model];
+  if (config.hintText.length > 0) {
+    return config.hintText;
   }
   return [self localFallbackForModel:model isHint:YES];
 }
@@ -137,10 +137,10 @@
 
 #pragma mark - Private
 
-// Returns the server strings for the given tool, if available.
-- (ComposeboxStringBundle*)stringsForTool:(ComposeboxMode)tool {
+// Returns the server UI config for the given tool, if available.
+- (ComposeboxItemUIConfig*)uiConfigForTool:(ComposeboxMode)tool {
   if (tool == ComposeboxMode::kRegularSearch) {
-    // Don't use server strings for regular search.
+    // Don't use server configs for regular search.
     return nil;
   }
   auto it = _controlMapping.find(tool);
@@ -150,8 +150,8 @@
   return nil;
 }
 
-// Returns the server strings for the given model, if available.
-- (ComposeboxStringBundle*)stringsForModel:(ComposeboxModelOption)modelOption {
+// Returns the server UI config for the given model, if available.
+- (ComposeboxItemUIConfig*)uiConfigForModel:(ComposeboxModelOption)modelOption {
   auto it = _modelMapping.find(modelOption);
   if (it != _modelMapping.end()) {
     return it->second;

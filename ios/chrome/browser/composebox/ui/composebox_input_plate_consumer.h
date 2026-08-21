@@ -13,7 +13,6 @@
 
 enum class ComposeboxInputPlateControls : unsigned int;
 enum class ComposeboxModelOption;
-@class ComposeboxServerStrings;
 @class ComposeboxUIInputState;
 
 // Consumer for the composebox composebox.

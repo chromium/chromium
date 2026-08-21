@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_STRINGS_H_
-#define IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_STRINGS_H_
+#ifndef IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_UI_CONFIG_H_
+#define IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_UI_CONFIG_H_
 
 #import <Foundation/Foundation.h>
 
@@ -13,8 +13,8 @@
 #import "ios/chrome/browser/composebox/public/composebox_attachment_option.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 
-// Bundles a group of strings of the same type.
-@interface ComposeboxStringBundle : NSObject
+// Bundles UI configuration for a composebox item.
+@interface ComposeboxItemUIConfig : NSObject
 
 // The label for the menu entry.
 @property(nonatomic, readonly, copy) NSString* menuLabel;
@@ -30,9 +30,9 @@
 
 @end
 
-// The composebox strings, handling both server-provided strings and local
-// fallbacks. All returned strings are already localized.
-@interface ComposeboxStrings : NSObject
+// The composebox UI configuration, handling both server-provided UI configs
+// and local fallbacks. All returned strings are already localized.
+@interface ComposeboxUIConfig : NSObject
 
 // The title of the tools section.
 @property(nonatomic, readonly, copy) NSString* toolsSectionHeader;
@@ -40,17 +40,17 @@
 // The title of the model section.
 @property(nonatomic, readonly, copy) NSString* modelSectionHeader;
 
-// Creates a new instance with local fallback strings.
-+ (instancetype)localFallbackStrings;
+// Creates a new instance with local fallback UI config.
++ (instancetype)localFallbackUIConfig;
 
 // Creates a new instance based on the given mappings.
 - (instancetype)
     initWithToolMapping:
-        (std::unordered_map<ComposeboxMode, ComposeboxStringBundle*>)
+        (std::unordered_map<ComposeboxMode, ComposeboxItemUIConfig*>)
             controlMapping
            modelMapping:
                (std::unordered_map<ComposeboxModelOption,
-                                   ComposeboxStringBundle*>)modelMapping
+                                   ComposeboxItemUIConfig*>)modelMapping
      modelSectionHeader:(NSString*)modelSectionHeader
      toolsSectionHeader:(NSString*)toolsSectionHeader;
 
@@ -74,4 +74,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_STRINGS_H_
+#endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_UI_CONFIG_H_

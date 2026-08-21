@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
-#import "ios/chrome/browser/composebox/ui/composebox_strings.h"
+#import "ios/chrome/browser/composebox/ui/composebox_ui_config.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_util.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
@@ -285,7 +285,7 @@ UIImage* IconForModel(ComposeboxModelOption option) {
     [sections addObject:sharedTabsSection];
   }
 
-  ComposeboxStrings* strings = _inputState.strings;
+  ComposeboxUIConfig* uiConfig = _inputState.uiConfig;
 
   // Tools Section
   NSMutableArray<ComposeboxMenuItem*>* toolsItems =
@@ -298,7 +298,7 @@ UIImage* IconForModel(ComposeboxModelOption option) {
     if (![_inputState isToolHidden:mode]) {
       [toolsItems
           addObject:[[ComposeboxMenuItem alloc]
-                        initWithTitle:[strings menuLabelForTool:mode]
+                        initWithTitle:[uiConfig menuLabelForTool:mode]
                                 image:IconForTool(mode)
                                  type:MenuItemTypeForTool(mode)
                              disabled:[_inputState isToolDisabled:mode]]];
@@ -307,7 +307,7 @@ UIImage* IconForModel(ComposeboxModelOption option) {
 
   if (toolsItems.count > 0) {
     ComposeboxMenuSection* toolsSection = [[ComposeboxMenuSection alloc]
-        initWithTitle:strings.toolsSectionHeader
+        initWithTitle:uiConfig.toolsSectionHeader
                 items:toolsItems
            identifier:ComposeboxMenuSectionIdentifier::kTools];
     [sections addObject:toolsSection];
@@ -325,7 +325,7 @@ UIImage* IconForModel(ComposeboxModelOption option) {
     if (![_inputState isModelHidden:option]) {
       [modelsItems
           addObject:[[ComposeboxMenuItem alloc]
-                        initWithTitle:[strings menuLabelForModel:option]
+                        initWithTitle:[uiConfig menuLabelForModel:option]
                                 image:IconForModel(option)
                                  type:MenuItemTypeForModel(option)
                              disabled:[_inputState isModelDisabled:option]]];
@@ -334,7 +334,7 @@ UIImage* IconForModel(ComposeboxModelOption option) {
 
   if (modelsItems.count > 0) {
     ComposeboxMenuSection* modelsSection = [[ComposeboxMenuSection alloc]
-        initWithTitle:strings.modelSectionHeader
+        initWithTitle:uiConfig.modelSectionHeader
                 items:modelsItems
            identifier:ComposeboxMenuSectionIdentifier::kModels];
     [sections addObject:modelsSection];
