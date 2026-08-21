@@ -13,8 +13,8 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_element
 
 import type {BrowserProxy} from './browser_proxy.js';
 import {WebClientState as WebClientStateMojo, ZoomAction} from './glic.mojom-webui.js';
-import {DetailedWebClientState, GlicApiCommunicator, GlicApiHost, WebClientState} from './glic_api_impl/host/glic_api_host.js';
 import type {ApiHostEmbedder} from './glic_api_impl/host/glic_api_host.js';
+import {DetailedWebClientState, GlicApiCommunicator, GlicApiHost, WebClientState} from './glic_api_impl/host/glic_api_host.js';
 import {ObservableValue} from './observable.js';
 import type {ObservableValueReadOnly} from './observable.js';
 import {GlicRequestHeaderInjector} from './shared/glic_request_headers.js';
@@ -184,7 +184,7 @@ export class WebviewController {
       private readonly container: HTMLElement,
       private browserProxy: BrowserProxy,
       private delegate: WebviewDelegate,
-      private hostEmbedder: ApiHostEmbedder,
+      private embedder: ApiHostEmbedder,
       private persistentState: WebviewPersistentState,
   ) {
     this.webview = document.createElement('webview');
@@ -275,7 +275,6 @@ export class WebviewController {
         });
       }
       this.browserProxy.pageHandler.onZoomLevelChange(e.newZoomFactor);
-      this.host?.onZoomLevelChanged(e.newZoomFactor);
     });
     this.eventTracker.add(
         this.webview, 'loadstart', this.onLoadStart.bind(this));
@@ -499,8 +498,8 @@ export class WebviewController {
         urlMatchesApiAllowedOrigin(urlObj)) {
       this.communicator =
           new GlicApiCommunicator(urlObj.origin, this.webview.contentWindow);
-      this.host = new GlicApiHost(
-          this.browserProxy, this.communicator, this.hostEmbedder);
+      this.host =
+          new GlicApiHost(this.browserProxy, this.communicator, this.embedder);
     }
 
     this.browserProxy.pageHandler.webviewCommitted(url);

@@ -581,12 +581,7 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
     // Apply the persisted zoom level to the guest WebContents.
     if (Profile* profile =
             Profile::FromBrowserContext(top->GetBrowserContext())) {
-      // LINT.IfChange(GlicZoomFactors)
-      int zoom_percent = std::clamp(
-          profile->GetPrefs()->GetInteger(prefs::kGlicZoomLevel), 100, 200);
-      double zoom_factor = zoom_percent / 100.0;
-      // LINT.ThenChange(//chrome/browser/resources/glic/webview.ts:GlicZoomFactors,
-      // //chrome/browser/glic/host/glic_page_handler.cc:GlicZoomFactors)
+      double zoom_factor = GetZoomFactor(profile->GetPrefs());
       double zoom_level = blink::ZoomFactorToZoomLevel(zoom_factor);
       content::HostZoomMap::SetZoomLevel(guest_contents, zoom_level);
     }
@@ -670,6 +665,8 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
       pref_service->GetBoolean(prefs::kGlicTabContextEnabled);
   state->os_location_permission_enabled =
       system_permission_settings::IsAllowed(ContentSettingsType::GEOLOCATION);
+
+  state->zoom_factor = GetZoomFactor(pref_service);
 
 #if !BUILDFLAG(IS_ANDROID)
   state->hotkey = GetHotkeyString();
@@ -793,6 +790,15 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
       base::FeatureList::IsEnabled(features::kGlicActorAutofillOneTimePassword);
   state->file_upload_policy_state =
       glic::prefs::GetFileUploadAllowedCapability(profile->GetPrefs());
+}
+
+double GetZoomFactor(PrefService* pref_service) {
+  // LINT.IfChange(GlicZoomFactors)
+  int zoom_percent =
+      std::clamp(pref_service->GetInteger(prefs::kGlicZoomLevel), 100, 200);
+  return zoom_percent / 100.0;
+  // LINT.ThenChange(//chrome/browser/resources/glic/webview.ts:GlicZoomFactors,
+  // //chrome/browser/glic/host/glic_page_handler.cc:GlicZoomFactors)
 }
 
 #if !BUILDFLAG(IS_ANDROID)

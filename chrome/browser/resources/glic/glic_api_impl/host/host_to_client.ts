@@ -44,10 +44,6 @@ export class WebClientImpl implements WebClientInterface {
       this.host.panelOpenStateChanged(PanelOpenState.OPEN);
     }
 
-    // The web client is ready to show, ensure the webview is
-    // displayed.
-    const canUserResize = result.openPanelInfo?.canUserResize ?? true;
-    this.embedder.enableDragResize(canUserResize);
     this.embedder.webClientReady();
 
     const openPanelInfoMojo: OpenPanelInfoMojo = {
@@ -157,6 +153,10 @@ export class WebClientImpl implements WebClientInterface {
     this.sender.requestNoResponse('notifyFileUploadStateChanged', {
       state: fileUploadPolicyStateToClient(state),
     });
+  }
+
+  notifyZoomLevelChanged(zoomFactor: number): void {
+    this.host.onZoomLevelChanged(zoomFactor);
   }
 
   notifyFocusedTabChanged(focusedTabData: (FocusedTabDataMojo)): void {

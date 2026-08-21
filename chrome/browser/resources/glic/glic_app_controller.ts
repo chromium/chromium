@@ -11,7 +11,6 @@ import type {ZoomAction} from './glic.mojom-webui.js';
 import {HelpCenterTopic, PanelStateKind, PrepareForClientResult, ProfileReadyState, WebUiState} from './glic.mojom-webui.js';
 import type {ApiHostEmbedder} from './glic_api_impl/host/glic_api_host.js';
 import {WebClientState} from './glic_api_impl/host/glic_api_host.js';
-import {isFullWebView} from './shared/web_view_type.js';
 import type {PageType, WebviewDelegate} from './webview.js';
 import {WebviewController, WebviewPersistentState} from './webview.js';
 
@@ -727,14 +726,6 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
 
   // ApiHostEmbedder implementation.
 
-  // Called when the web client requests to enable manual drag resize.
-  enableDragResize(enabled: boolean) {
-    this.guestResizeEnabled = enabled;
-    if (this.state === WebUiState.kReady) {
-      this.browserProxy.pageHandler.enableDragResize(this.guestResizeEnabled);
-    }
-  }
-
   // Called when the notifyPanelWillOpen promise resolves to open the panel
   // when triggered from the browser.
   webClientReady(): void {
@@ -748,18 +739,6 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
       this.cancelTimeout();
       this.setState(WebUiState.kHoldLoading);
     }
-  }
-
-  getZoom(): Promise<number> {
-    return new Promise((resolve) => {
-      if (!this.webview || !isFullWebView(this.webview.webview)) {
-        resolve(1.0);
-        return;
-      }
-      this.webview.webview.getZoom((currentZoom: number) => {
-        resolve(currentZoom);
-      });
-    });
   }
 
   onboardingCompleted(): void {

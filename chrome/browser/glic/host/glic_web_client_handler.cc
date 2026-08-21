@@ -487,6 +487,10 @@ class GlicWebClientHandler
         glic::prefs::kGlicFileUploadAllowed,
         base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
                             base::Unretained(this)));
+    pref_change_registrar_.Add(
+        prefs::kGlicZoomLevel,
+        base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
+                            base::Unretained(this)));
     web_actuation_pref_subscription_ =
         glic_service_->enabling().RegisterOnUserEnabledActuationOnWebChanged(
             base::BindRepeating(
@@ -1001,6 +1005,10 @@ class GlicWebClientHandler
 
   void SetMinimumPanelSize(const gfx::Size& size) override {
     host().SetMinimumWidgetSize(size);
+  }
+
+  void EnableDragResize(bool enabled) override {
+    host().EnableDragResize(enabled);
   }
 
   void SetMicrophonePermissionState(
@@ -1671,6 +1679,8 @@ class GlicWebClientHandler
     } else if (pref_name == glic::prefs::kGlicFileUploadAllowed) {
       web_client_->NotifyFileUploadStateChanged(
           glic::prefs::GetFileUploadAllowedCapability(profile_->GetPrefs()));
+    } else if (pref_name == prefs::kGlicZoomLevel) {
+      web_client_->NotifyZoomLevelChanged(GetZoomFactor(pref_service_));
     } else {
       DCHECK(false) << "Unknown Glic permission pref changed: " << pref_name;
     }

@@ -588,6 +588,8 @@ struct WebClientInitialState {
   bool location_permission_enabled;
   bool tab_context_permission_enabled;
   bool os_location_permission_enabled;
+  double zoom_factor;
+
   string hotkey;
   mojo_base.mojom.Version chrome_version;
   Platform platform;
@@ -1502,6 +1504,9 @@ interface WebClientHandler {
   // Opens the password manager settings page.
   OpenPasswordManagerSettingsPage();
 
+  // Set whether the panel can be manually resized.
+  EnableDragResize(bool enabled);
+
   // Closes the Glic panel.
   ClosePanel();
 
@@ -2395,6 +2400,9 @@ interface WebClient {
 
   // True if the browser has at least one open window.
   NotifyBrowserIsOpenChanged(bool browser_is_open);
+
+  // Informs the client that the zoom level has changed.
+  NotifyZoomLevelChanged(double zoom_factor);
 
   // The window holding the glic panel has become active or inactive (in the
   // sense of visibility and focus). Some activity, such as responsiveness

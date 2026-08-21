@@ -70,21 +70,14 @@ export enum DetailedWebClientState {
 
 // Implemented by the embedder of GlicApiHost.
 export interface ApiHostEmbedder {
-  // Called when the guest requests to enable manual drag resize.
-  enableDragResize(enabled: boolean): void;
-
   // Called when the notifyPanelWillOpen promise resolves to open the panel
   // when triggered from the browser.
   webClientReady(): void;
   webClientWarmed(): void;
 
-  // Returns the current zoom level of the webview.
-  getZoom(): Promise<number>;
-
   // Called when the user completes the onboarding flow.
   onboardingCompleted?(): void;
 }
-
 
 // Sets up communication with the client.
 // This is separate from GlicApiHost to allow us to detect the client page
@@ -225,6 +218,7 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
 
   zeroStateSuggestionsHandler?: ZeroStateSuggestionsHandlerRemote;
   private isSubscribedToZoomLevel = false;
+  private zoomFactor?: number;
   private experimentalTriggeringUpdatesHandler =
       new Map<number, ExperimentalTriggeringUpdatesHandlerRemote>();
   private nextExperimentalTriggeringUpdateHandlerId = 0;
@@ -232,7 +226,7 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
   constructor(
       private browserProxy: BrowserProxy,
       public readonly communicator: GlicApiCommunicator,
-      private embedder: ApiHostEmbedder) {
+      embedder: ApiHostEmbedder) {
     this.sender = communicator.pmRemote;
     this.handler = new WebClientHandlerRemote();
     this.handler.onConnectionError.addListener(() => {
@@ -291,6 +285,7 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
     zeroStateSuggestionsRemote?: PendingRemote<ZeroStateSuggestionsHost>,
   } {
     this.panelIsActive = initialState.panelIsActive;
+    this.zoomFactor = initialState.zoomFactor;
 
     let actorRemote: PendingRemote<ActorHost>|undefined;
     let actorReceiver: PendingReceiver<ActorClient>|undefined;
@@ -373,13 +368,11 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
         receiver, annotationHostMessageHandler, AnnotationHostDef);
   }
 
-  async subscribeToZoomLevel() {
+  subscribeToZoomLevel() {
     this.isSubscribedToZoomLevel = true;
-    try {
-      const zoomFactor = await this.embedder.getZoom();
-      this.sender.requestNoResponse('notifyZoomLevelChanged', {zoomFactor});
-    } catch (e) {
-      console.warn('Failed to get initial zoom level', e);
+    if (this.zoomFactor !== undefined) {
+      this.sender.requestNoResponse(
+          'notifyZoomLevelChanged', {zoomFactor: this.zoomFactor});
     }
   }
 
@@ -388,6 +381,7 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
   }
 
   onZoomLevelChanged(zoomFactor: number) {
+    this.zoomFactor = zoomFactor;
     if (this.isSubscribedToZoomLevel) {
       this.sender.requestNoResponse('notifyZoomLevelChanged', {zoomFactor});
     }

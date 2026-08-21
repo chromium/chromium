@@ -372,7 +372,7 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
   }
 
   enableDragResize(request: {enabled: boolean}) {
-    return this.embedder.enableDragResize(request.enabled);
+    return this.handler.enableDragResize(request.enabled);
   }
 
   subscribeToCaptureRegion(request: {
