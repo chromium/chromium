@@ -51,8 +51,6 @@ public class WebApkValidatorTest {
     private static final String URL_WITHOUT_WEBAPK = "https://www.other.com";
     private static final String TEST_DATA_DIR = "webapks/";
     private static final String TEST_STARTURL = "https://non-empty.com/starturl";
-    private static final String MAPSLITE_PACKAGE_NAME = "com.google.android.apps.mapslite";
-    private static final String MAPSLITE_EXAMPLE_STARTURL = "https://www.google.com/maps";
     private static final String MANIFEST_URL = "https://www.foo.com/manifest.json";
     private static final int SHELL_VERSION = 100;
 
@@ -322,69 +320,6 @@ public class WebApkValidatorTest {
     }
 
     /**
-     * Tests {@link WebApkValidator.isValidWebApk} returns true if the package name is maps lite and
-     * the start url matches the correct prefix.
-     */
-    @Test
-    public void testIsValidWebApkForMapsLite() {
-        mPackageManager.addPackage(
-                newPackageInfoWithBrowserSignature(
-                        MAPSLITE_PACKAGE_NAME,
-                        new Signature(SIGNATURE_1),
-                        MAPSLITE_EXAMPLE_STARTURL,
-                        null));
-        mPackageManager.addPackage(
-                newPackageInfoWithBrowserSignature(
-                        MAPSLITE_PACKAGE_NAME + ".other",
-                        new Signature(SIGNATURE_1),
-                        MAPSLITE_EXAMPLE_STARTURL,
-                        null));
-
-        assertTrue(
-                WebApkValidator.isValidWebApk(
-                        RuntimeEnvironment.application, MAPSLITE_PACKAGE_NAME));
-        assertFalse(
-                WebApkValidator.isValidWebApk(
-                        RuntimeEnvironment.application, MAPSLITE_PACKAGE_NAME + ".other"));
-        assertFalse(
-                WebApkValidator.isValidWebApk(
-                        RuntimeEnvironment.application, MAPSLITE_PACKAGE_NAME + ".notfound"));
-    }
-
-    /** Tests {@link WebApkValidator.canWebApkHandleUrl} returns false and shows a toast. */
-    @Test
-    public void testMapsLiteWebApkShowsWarning() {
-        // Invalid MapsLite WebAPK is not verified and does not show toast.
-        addWebApkResolveInfoWithPackageName(
-                MAPSLITE_EXAMPLE_STARTURL, MAPSLITE_PACKAGE_NAME + ".other", SIGNATURE_1);
-        assertFalse(
-                WebApkValidator.canWebApkHandleUrl(
-                        RuntimeEnvironment.application,
-                        MAPSLITE_PACKAGE_NAME + ".other",
-                        MAPSLITE_EXAMPLE_STARTURL,
-                        0));
-        assertNull(ShadowToast.getLatestToast());
-
-        // Valid MapsLite WebAPK returns false as "not handled" and shows a toast.
-        addWebApkResolveInfoWithPackageName(
-                MAPSLITE_EXAMPLE_STARTURL, MAPSLITE_PACKAGE_NAME, SIGNATURE_1);
-        assertFalse(
-                WebApkValidator.canWebApkHandleUrl(
-                        RuntimeEnvironment.application,
-                        MAPSLITE_PACKAGE_NAME,
-                        MAPSLITE_EXAMPLE_STARTURL,
-                        0));
-        assertNotNull(ShadowToast.getLatestToast());
-        // assertTextFromLatestToast(R.string.copied);
-        TextView textView = (TextView) ShadowToast.getLatestToast().getView();
-        String actualText = textView == null ? "" : textView.getText().toString();
-        assertEquals(
-                ContextUtils.getApplicationContext()
-                        .getString(R.string.webapk_mapsgo_deprecation_warning, ""),
-                actualText);
-    }
-
-    /**
      * Tests {@link WebApkValidator.canWebApkHandleUrl} returns false and shows a toast when the
      * shell version is out-of-date (older than the min_version).
      */
@@ -417,19 +352,6 @@ public class WebApkValidatorTest {
                 ContextUtils.getApplicationContext()
                         .getString(R.string.webapk_deprecation_warning, ""),
                 actualText);
-    }
-
-    /**
-     * Tests {@link WebApkValidator.isValidWebApk} returns false when the startUrl is not correct.
-     */
-    @Test
-    public void testIsNotValidWebApkForMapsLiteBadStartUrl() {
-        mPackageManager.addPackage(
-                newPackageInfoWithBrowserSignature(
-                        MAPSLITE_PACKAGE_NAME, new Signature(SIGNATURE_1), TEST_STARTURL, null));
-        assertFalse(
-                WebApkValidator.isValidWebApk(
-                        RuntimeEnvironment.application, MAPSLITE_PACKAGE_NAME));
     }
 
     /**
@@ -562,28 +484,9 @@ public class WebApkValidatorTest {
                         RuntimeEnvironment.application, INVALID_WEBAPK_PACKAGE_NAME));
     }
 
-    /** Tests {@link WebApkValidator.isValidV1WebApk} returns false if the package name is maps lite. */
-    @Test
-    public void testIsValidV1WebApkFalseForMapsLite() {
-        mPackageManager.addPackage(
-                newPackageInfoWithBrowserSignature(
-                        MAPSLITE_PACKAGE_NAME,
-                        new Signature(SIGNATURE_1),
-                        MAPSLITE_EXAMPLE_STARTURL,
-                        null));
-        mPackageManager.addPackage(
-                newPackageInfoWithBrowserSignature(
-                        MAPSLITE_PACKAGE_NAME + ".other",
-                        new Signature(SIGNATURE_1),
-                        MAPSLITE_EXAMPLE_STARTURL,
-                        null));
-
-        assertFalse(
-                WebApkValidator.isValidV1WebApk(
-                        RuntimeEnvironment.application, MAPSLITE_PACKAGE_NAME));
-    }
-
-    /** Tests {@link WebApkValidator#queryBoundWebApkForManifestUrl()} for a valid installed entry. */
+    /**
+     * Tests {@link WebApkValidator#queryBoundWebApkForManifestUrl()} for a valid installed entry.
+     */
     @Test
     public void testQueryBoundWebApkForManifestUrl() {
         mPackageManager.addPackage(
