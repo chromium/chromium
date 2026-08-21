@@ -10,7 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/tracing/trace_event_analyzer.h"
 #include "base/trace_event/trace_config.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -123,7 +123,7 @@ std::unique_ptr<TraceAnalyzer> MetricIntegrationTest::StopTracingAndAnalyze() {
 }
 
 WebContents* MetricIntegrationTest::web_contents() const {
-  return browser()->tab_strip_model()->GetActiveWebContents();
+  return browser()->GetTabStripModel()->GetActiveWebContents();
 }
 
 void MetricIntegrationTest::SetUpCommandLine(CommandLine* command_line) {

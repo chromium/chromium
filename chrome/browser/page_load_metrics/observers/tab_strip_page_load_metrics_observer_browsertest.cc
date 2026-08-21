@@ -5,7 +5,7 @@
 #include "chrome/browser/page_load_metrics/observers/tab_strip_page_load_metrics_observer.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(TabStripPageLoadMetricsObserverTest,
       browser(), url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  browser()->tab_strip_model()->ActivateTabAt(
+  browser()->GetTabStripModel()->ActivateTabAt(
       2, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 

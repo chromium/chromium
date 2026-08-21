@@ -9,7 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -54,7 +54,7 @@ class WebUIPageLoadMetricsObserverBrowserTest
   std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter>
   CreatePageLoadMetricsTestWaiter() {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     return std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
         web_contents);
   }

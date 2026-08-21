@@ -14,7 +14,7 @@
 #include "chrome/browser/page_load_metrics/observers/gws_abandoned_page_load_metrics_observer_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -223,7 +223,7 @@ class FromGwsAbandonedPageLoadMetricsObserverBrowserTest
 
     // Navigate to SRP so that we kick off the `FromGws` PLMOs.
     EXPECT_TRUE(content::NavigateToURL(
-        browser()->tab_strip_model()->GetActiveWebContents(), url_srp()));
+        browser()->GetTabStripModel()->GetActiveWebContents(), url_srp()));
 
     // Purge the previous ukms so that we have a clean record.
     ukm_recorder.Purge();
@@ -266,7 +266,7 @@ class FromGwsAbandonedPageLoadMetricsObserverBrowserTest
     // WebContents we navigate for metrics flushing purposes, so we navigate
     // the active one.
     EXPECT_TRUE(content::NavigateToURL(
-        browser()->tab_strip_model()->GetActiveWebContents(), url_non_srp()));
+        browser()->GetTabStripModel()->GetActiveWebContents(), url_non_srp()));
 
     auto ukm_entries =
         ukm_recorder.GetEntriesByName("Navigation.FromGoogleSearch.Abandoned");
@@ -545,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(FromGwsAbandonedPageLoadMetricsObserverBrowserTest,
 
   // Navigate to SRP so that we kick off the `FromGws` PLMOs.
   EXPECT_TRUE(content::NavigateToURL(
-      browser()->tab_strip_model()->GetActiveWebContents(), url_srp()));
+      browser()->GetTabStripModel()->GetActiveWebContents(), url_srp()));
 
   // Purge the previous ukms so that we have a clean record.
   ukm_recorder.Purge();
@@ -581,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(FromGwsAbandonedPageLoadMetricsObserverBrowserTest,
       ukm_recorder, NavigationMilestone::kNavigationStart, url_non_srp_2());
 
   EXPECT_TRUE(content::NavigateToURL(
-      browser()->tab_strip_model()->GetActiveWebContents(), url_non_srp()));
+      browser()->GetTabStripModel()->GetActiveWebContents(), url_non_srp()));
 
   // We expect to record the timing information on terminal abandonment as well.
   EXPECT_EQ(
@@ -612,7 +612,7 @@ IN_PROC_BROWSER_TEST_F(FromGwsAbandonedPageLoadMetricsObserverBrowserTest,
 
   // Navigate to SRP so that we kick off the `FromGws` PLMOs.
   EXPECT_TRUE(content::NavigateToURL(
-      browser()->tab_strip_model()->GetActiveWebContents(), url_srp()));
+      browser()->GetTabStripModel()->GetActiveWebContents(), url_srp()));
 
   // Purge the previous ukms so that we have a clean record.
   ukm_recorder.Purge();
@@ -671,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(FromGwsAbandonedPageLoadMetricsObserverBrowserTest,
                        content::JsReplace("window.open($1)", url_non_srp())));
     popup_observer.Wait();
     content::WebContents* popup_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
 
     TestNavigationAbandonment(
         AbandonReason::kFrameRemoved, milestone,

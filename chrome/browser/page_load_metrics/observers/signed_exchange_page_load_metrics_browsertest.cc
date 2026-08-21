@@ -4,7 +4,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
@@ -62,7 +62,7 @@ class SignedExchangePageLoadMetricsBrowserTest
   std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter>
   CreatePageLoadMetricsTestWaiter() {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     return std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
         web_contents);
   }

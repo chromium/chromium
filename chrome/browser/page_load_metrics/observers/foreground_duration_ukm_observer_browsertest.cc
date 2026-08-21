@@ -4,8 +4,8 @@
 
 #include "chrome/browser/page_load_metrics/observers/foreground_duration_ukm_observer.h"
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -53,7 +53,7 @@ class ForegroundDurationUKMObserverBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
  protected:
@@ -80,7 +80,7 @@ class ForegroundDurationUKMObserverBrowserTest : public InProcessBrowserTest {
   }
 
   void CloseAllTabs() {
-    TabStripModel* tab_strip_model = browser()->tab_strip_model();
+    TabStripModel* tab_strip_model = browser()->GetTabStripModel();
     content::WebContentsDestroyedWatcher destroyed_watcher(
         tab_strip_model->GetActiveWebContents());
     tab_strip_model->CloseAllTabs();
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest, TabSwitching) {
       browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   EXPECT_EQ(2, tab_strip_model->count());
   EXPECT_EQ(url1, tab_strip_model->GetWebContentsAt(0)->GetLastCommittedURL());
   EXPECT_EQ(url2, tab_strip_model->GetWebContentsAt(1)->GetLastCommittedURL());

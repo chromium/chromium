@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/test/browser_test.h"

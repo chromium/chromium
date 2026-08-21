@@ -8,7 +8,7 @@
 
 #include "base/test/bind.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
@@ -179,7 +179,7 @@ class AbandonedPageLoadMetricsObserverBrowserTest
 
   std::unique_ptr<PageLoadMetricsTestWaiter> CreatePageLoadMetricsTestWaiter() {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     return std::make_unique<PageLoadMetricsTestWaiter>(web_contents);
   }
 

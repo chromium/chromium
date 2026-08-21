@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/https_engagement_metrics_provider.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -60,7 +60,7 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
     base::TimeTicks start = base::TimeTicks::Now();
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), target_url));
 
-    TabStripModel* tab_strip_model = browser()->tab_strip_model();
+    TabStripModel* tab_strip_model = browser()->GetTabStripModel();
     content::WebContentsDestroyedWatcher destroyed_watcher(
         tab_strip_model->GetActiveWebContents());
     tab_strip_model->CloseAllTabs();
@@ -73,7 +73,7 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), second_url));
 
-    TabStripModel* tab_strip_model = browser()->tab_strip_model();
+    TabStripModel* tab_strip_model = browser()->GetTabStripModel();
     EXPECT_EQ(1, tab_strip_model->count());
     content::WebContentsDestroyedWatcher destroyed_watcher(
         tab_strip_model->GetActiveWebContents());
@@ -94,7 +94,7 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
     base::TimeDelta upper_bound_delta = base::TimeTicks::Now() - start;
 
     // Make sure the correct tab is in the foreground.
-    TabStripModel* tab_strip_model = browser()->tab_strip_model();
+    TabStripModel* tab_strip_model = browser()->GetTabStripModel();
     EXPECT_EQ(2, tab_strip_model->count());
     EXPECT_EQ(url, tab_strip_model->GetWebContentsAt(0)->GetLastCommittedURL());
     EXPECT_NE(url,
@@ -120,7 +120,7 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
     // Make sure the correct tab is in the foreground.
-    TabStripModel* tab_strip_model = browser()->tab_strip_model();
+    TabStripModel* tab_strip_model = browser()->GetTabStripModel();
     EXPECT_EQ(2, tab_strip_model->count());
     EXPECT_EQ(url, tab_strip_model->GetWebContentsAt(1)->GetLastCommittedURL());
     EXPECT_NE(url,
@@ -145,7 +145,7 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
     // Make sure the correct tab is in the foreground.
-    TabStripModel* tab_strip_model = browser()->tab_strip_model();
+    TabStripModel* tab_strip_model = browser()->GetTabStripModel();
     EXPECT_EQ(2, tab_strip_model->count());
     EXPECT_EQ(url, tab_strip_model->GetWebContentsAt(1)->GetLastCommittedURL());
     EXPECT_NE(url,
@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(HttpsEngagementPageLoadMetricsBrowserTest,
 IN_PROC_BROWSER_TEST_F(HttpsEngagementPageLoadMetricsBrowserTest,
                        UncommittedLoadWithError) {
   StartHttpsServer(true);
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_test_server_->GetURL("/simple.html")));
   content::WebContentsDestroyedWatcher destroyed_watcher(

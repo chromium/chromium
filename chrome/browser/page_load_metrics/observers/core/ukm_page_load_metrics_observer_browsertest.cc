@@ -10,7 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(UkmPageLoadMetricsObserverBrowserTest,
   NavigateTo(redirect_server.GetURL("redirect.com",
                                     "/subresource_loading/redirect_me"));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   EXPECT_EQ(web_contents->GetLastCommittedURL(),
             GetOriginURL("/subresource_loading/index.html"));
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(UkmPageLoadMetricsObserverBrowserTest,
       prerender_navigation_handle_callback =
           base::BindRepeating(&AttachBookmarkBarNavigationHandleUserData);
 
-  browser()->tab_strip_model()->GetActiveWebContents()->OpenURL(
+  browser()->GetTabStripModel()->GetActiveWebContents()->OpenURL(
       content::OpenURLParams(
           embedded_test_server()->GetURL("origin.com",
                                          "/subresource_loading/index.html"),
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(UkmPageLoadMetricsObserverBrowserTest,
       prerender_navigation_handle_callback =
           base::BindRepeating(&AttachNewTabPageNavigationHandleUserData);
 
-  browser()->tab_strip_model()->GetActiveWebContents()->OpenURL(
+  browser()->GetTabStripModel()->GetActiveWebContents()->OpenURL(
       content::OpenURLParams(
           embedded_test_server()->GetURL("origin.com",
                                          "/subresource_loading/index.html"),

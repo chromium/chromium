@@ -8,7 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_run_loop_timeout.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -124,7 +124,7 @@ class PageAnchorsMetricsObserverBrowserTest
   }
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
  private:
