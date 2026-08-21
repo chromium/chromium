@@ -391,72 +391,52 @@ bool D3DH265Accelerator::PicParamsFromRefLists(
     const H265Picture::Vector& ref_pic_set_st_curr_after,
     const H265Picture::Vector& ref_pic_set_st_curr_before) {
   constexpr int kDxvaInvalidRefPicIndex = 0xFF;
-  constexpr unsigned kStLtRpsSize = 8;
 
   bool ref_check_ok = true;
   std::visit(
       [&](auto& pic_param) {
-        std::fill_n(pic_param.params.RefPicSetStCurrBefore, kStLtRpsSize,
-                    kDxvaInvalidRefPicIndex);
-        std::fill_n(pic_param.params.RefPicSetStCurrAfter, kStLtRpsSize,
-                    kDxvaInvalidRefPicIndex);
-        std::fill_n(pic_param.params.RefPicSetLtCurr, kStLtRpsSize,
-                    kDxvaInvalidRefPicIndex);
-        std::copy(ref_frame_pocs_,
-                  UNSAFE_TODO(ref_frame_pocs_ + kMaxRefPicListSize - 1),
-                  pic_param.params.PicOrderCntValList);
+        // Fills one of the fixed-size reference picture set arrays in
+        // DXVA_PicParams_HEVC. The bound comes from the destination array
+        // itself instead of a local constant, so this cannot write past the
+        // end if the array in the Windows SDK is ever a different size than
+        // this code assumes.
+        auto fill_ref_pic_set = [&](auto& dest_array,
+                                    const H265Picture::Vector& ref_pic_set,
+                                    const char* rps_name) {
+          auto dest = base::span(dest_array);
+          std::ranges::fill(dest, kDxvaInvalidRefPicIndex);
 
-        size_t idx = 0;
-        for (auto& it : ref_pic_set_st_curr_before) {
-          if (!it) {
-            continue;
+          size_t idx = 0;
+          for (const auto& pic : ref_pic_set) {
+            if (!pic) {
+              continue;
+            }
+            if (idx >= dest.size()) {
+              DLOG(ERROR) << "Invalid " << rps_name << " size.";
+              ref_check_ok = false;
+              return;
+            }
+            int poc_index =
+                poc_index_into_ref_pic_list_[pic->pic_order_cnt_val_];
+            if (poc_index < 0) {
+              DLOG(ERROR) << "Invalid index of POC for " << rps_name << ".";
+              ref_check_ok = false;
+              poc_index = kDxvaInvalidRefPicIndex;
+            }
+            dest[idx++] = poc_index;
           }
-          auto poc = it->pic_order_cnt_val_;
-          auto poc_index = poc_index_into_ref_pic_list_[poc];
-          if (poc_index < 0) {
-            DLOG(ERROR) << "Invalid index of POC for RefPicSetStCurrBefore.";
-            ref_check_ok = false;
-          }
-          if (idx > kStLtRpsSize - 1) {
-            DLOG(ERROR) << "Invalid RefPicSetStCurrBefore size.";
-            ref_check_ok = false;
-          }
-          pic_param.params.RefPicSetStCurrBefore[idx++] = poc_index;
-        }
-        idx = 0;
-        for (auto& it : ref_pic_set_st_curr_after) {
-          if (!it) {
-            continue;
-          }
-          auto poc = it->pic_order_cnt_val_;
-          auto poc_index = poc_index_into_ref_pic_list_[poc];
-          if (poc_index < 0) {
-            DLOG(ERROR) << "Invalid index of POC for RefPicSetStCurrAfter.";
-            ref_check_ok = false;
-          }
-          if (idx > kStLtRpsSize - 1) {
-            DLOG(ERROR) << "Invalid RefPicSetStCurrAfter size.";
-            ref_check_ok = false;
-          }
-          pic_param.params.RefPicSetStCurrAfter[idx++] = poc_index;
-        }
-        idx = 0;
-        for (auto& it : ref_pic_set_lt_curr) {
-          if (!it) {
-            continue;
-          }
-          auto poc = it->pic_order_cnt_val_;
-          auto poc_index = poc_index_into_ref_pic_list_[poc];
-          if (poc_index < 0) {
-            DLOG(ERROR) << "Invalid index of POC for RefPicSetLtCurr.";
-            ref_check_ok = false;
-          }
-          if (idx > kStLtRpsSize - 1) {
-            DLOG(ERROR) << "Invalid RefPicSetLtCurr size.";
-            ref_check_ok = false;
-          }
-          pic_param.params.RefPicSetLtCurr[idx++] = poc_index;
-        }
+        };
+
+        fill_ref_pic_set(pic_param.params.RefPicSetStCurrBefore,
+                         ref_pic_set_st_curr_before, "RefPicSetStCurrBefore");
+        fill_ref_pic_set(pic_param.params.RefPicSetStCurrAfter,
+                         ref_pic_set_st_curr_after, "RefPicSetStCurrAfter");
+        fill_ref_pic_set(pic_param.params.RefPicSetLtCurr, ref_pic_set_lt_curr,
+                         "RefPicSetLtCurr");
+
+        base::span(pic_param.params.PicOrderCntValList)
+            .copy_prefix_from(
+                base::span(ref_frame_pocs_).first(kMaxRefPicListSize - 1));
       },
       *pic_params);
 
