@@ -79,7 +79,6 @@ public final class EditUrlSuggestionProcessorUnitTest {
     private static final String MATCH_TITLE = "Match Title";
     private static final int ACTION_SHARE = 0;
     private static final int ACTION_COPY = 1;
-    private static final int ACTION_EDIT = 2;
     private static final GURL SEARCH_URL_1 = JUnitTestGURLs.SEARCH_URL;
     private static final GURL SEARCH_URL_2 = JUnitTestGURLs.SEARCH_2_URL;
     private static final GURL INVALID_ESCAPED_PATH_URL =

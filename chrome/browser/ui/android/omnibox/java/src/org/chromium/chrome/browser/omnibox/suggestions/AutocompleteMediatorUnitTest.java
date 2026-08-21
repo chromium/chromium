@@ -141,7 +141,6 @@ import java.util.function.Consumer;
 @Config(manifest = Config.NONE, shadows = ShadowLooper.class)
 public class AutocompleteMediatorUnitTest {
     private static final int SUGGESTION_MIN_HEIGHT = 20;
-    private static final int HEADER_MIN_HEIGHT = 15;
     private static final long TEST_EVENT_TIME = 123L;
     private static final GURL PAGE_URL = new GURL("https://www.site.com/page.html");
     private static final String PAGE_TITLE = "Page Title";

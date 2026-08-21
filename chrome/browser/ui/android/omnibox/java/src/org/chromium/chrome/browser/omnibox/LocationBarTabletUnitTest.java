@@ -69,7 +69,6 @@ public class LocationBarTabletUnitTest {
     private static final float DIP_SCALE = 2.0f;
     private static final int POPUP_INSET_DP = 8;
     private static final int MIN_TABLET_WIDTH_DP = 504;
-    private static final int CENTERING_THRESHOLD_DP = 16;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private WindowAndroid mWindowAndroid;

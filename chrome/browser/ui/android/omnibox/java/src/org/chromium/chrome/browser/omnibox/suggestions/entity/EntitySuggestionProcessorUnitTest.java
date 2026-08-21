@@ -75,7 +75,6 @@ import java.util.function.Supplier;
 @CommandLineFlags.Add(BaseSwitches.DISABLE_LOW_END_DEVICE_MODE)
 public class EntitySuggestionProcessorUnitTest {
     private static final GURL WEB_URL = JUnitTestGURLs.URL_1;
-    private static final GURL WEB_URL_2 = JUnitTestGURLs.URL_2;
     private static final GURL SEARCH_URL = JUnitTestGURLs.SEARCH_URL;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

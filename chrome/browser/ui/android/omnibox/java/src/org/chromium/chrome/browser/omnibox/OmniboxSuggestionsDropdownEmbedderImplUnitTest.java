@@ -63,8 +63,6 @@ public class OmniboxSuggestionsDropdownEmbedderImplUnitTest {
     private static final int ANCHOR_TOP = 31;
     private static final int TABLET_OVERLAP = 2;
 
-    private static final int INTERMEDIATE_VIEW_TOP = 75;
-
     private static final int ALIGNMENT_WIDTH = 400;
     // Sentinel value for mistaken use of alignment view top instead of left. If you see a 43, it's
     // probably because you used position[1] instead of position[0].

@@ -44,7 +44,6 @@ public class SuggestionLayoutUnitTest {
 
     private final Context mContext = ContextUtils.getApplicationContext();
     private final View mDecorationView = new View(mContext);
-    private final View mActionButtonView = new View(mContext);
     private final View mContentView = new View(mContext);
     private SuggestionLayout mLayout = new SuggestionLayout(mContext);
     private OmniboxResourceProvider mResourceProvider;
