@@ -31,6 +31,8 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -68,7 +70,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
 
     // Whether the currently showing dialog is a fullscreen dialog. This is cleared when the dialog
     // is dismissed.
-    private @Nullable Boolean mIsFullscreenDialog;
+    private @TriState int mIsFullscreenDialog;
     private int mFixedMargin;
 
     private class ViewBinder extends ModalDialogViewBinder {
@@ -248,7 +250,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
             mDialog = null;
             mDialogView = null;
             mModel = null;
-            mIsFullscreenDialog = null;
+            mIsFullscreenDialog = TriState.NOT_SET;
         }
 
         if (mEdgeToEdgeStateSupplier != null) {
@@ -402,19 +404,22 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         assert model != null : "Model should not be null.";
         // Check cached value on whether the dialog is fullscreen or not to keep a consistent value
         // even if its dimensions are changed by the user.
-        if (mIsFullscreenDialog != null) return mIsFullscreenDialog;
+        if (mIsFullscreenDialog != TriState.NOT_SET) {
+            return mIsFullscreenDialog == TriState.TRUE;
+        }
 
         int dialogStyle = model.get(ModalDialogProperties.DIALOG_STYLES);
 
         int screenSize =
                 context.getResources().getConfiguration().screenLayout
                         & Configuration.SCREENLAYOUT_SIZE_MASK;
-        mIsFullscreenDialog =
+        boolean isFullscreen =
                 (dialogStyle == DialogStyles.DIALOG_WHEN_LARGE
                                 && screenSize < Configuration.SCREENLAYOUT_SIZE_LARGE)
                         || dialogStyle == DialogStyles.FULLSCREEN_DIALOG
                         || dialogStyle == DialogStyles.FULLSCREEN_DARK_DIALOG;
-        return mIsFullscreenDialog;
+        mIsFullscreenDialog = TriStateUtils.from(isFullscreen);
+        return isFullscreen;
     }
 
     @VisibleForTesting

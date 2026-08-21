@@ -33,6 +33,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.TriState;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -156,7 +157,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
         when(mTabModel.isIncognito()).thenReturn(false);
         when(mIncognitoTabModel.isIncognito()).thenReturn(true);
-        PageZoomUtils.setShouldShowMenuItemForTesting(false);
+        PageZoomUtils.setShouldShowMenuItemForTesting(TriState.FALSE);
 
         UpdateMenuItemHelper.setInstanceForTesting(mUpdateMenuItemHelper);
         mMenuUiState = new MenuUiState();
@@ -460,7 +461,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         // Setup: Bottom sheet controller is available and sheet is open
         BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetControllerMock);
         when(mBottomSheetControllerMock.isSheetOpen()).thenReturn(true);
-        PageZoomUtils.setShouldShowMenuItemForTesting(true);
+        PageZoomUtils.setShouldShowMenuItemForTesting(TriState.TRUE);
 
         // Stub dependent tab setup
         when(mTab.getWindowAndroid()).thenReturn(mock(WindowAndroid.class));
@@ -477,7 +478,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         // Setup: Bottom sheet controller is available and sheet is closed
         BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetControllerMock);
         when(mBottomSheetControllerMock.isSheetOpen()).thenReturn(false);
-        PageZoomUtils.setShouldShowMenuItemForTesting(true);
+        PageZoomUtils.setShouldShowMenuItemForTesting(TriState.TRUE);
 
         // Stub dependent tab setup
         when(mTab.getWindowAndroid()).thenReturn(mock(WindowAndroid.class));

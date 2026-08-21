@@ -16,6 +16,8 @@ import android.view.View.OnTouchListener;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Checkable;
 
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
@@ -46,7 +48,7 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
 
     private @Nullable SelectionDelegate<E> mSelectionDelegate;
     private @Nullable E mItem;
-    private @Nullable Boolean mIsChecked;
+    private @TriState int mIsChecked;
 
     // Controls whether selection should happen during onLongClick.
     private boolean mSelectOnLongClick = true;
@@ -224,7 +226,7 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
 
     @Override
     public boolean isChecked() {
-        return mIsChecked != null && mIsChecked;
+        return mIsChecked == TriState.TRUE;
     }
 
     @Override
@@ -238,15 +240,17 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
      * Sets whether the item is checked. Note that if the views to be updated run animations, you
      * should override {@link #updateView(boolean)} to get the correct animation state instead of
      * overriding this method to update the views.
+     *
      * @param checked Whether the item is checked.
      */
     @Override
     public void setChecked(boolean checked) {
-        if (mIsChecked != null && checked == mIsChecked) return;
+        @TriState int newChecked = TriStateUtils.from(checked);
+        if (mIsChecked != TriState.NOT_SET && newChecked == mIsChecked) return;
 
         // We shouldn't run the animation when mIsChecked is first initialized to the correct state.
-        final boolean animate = mIsChecked != null;
-        mIsChecked = checked;
+        final boolean animate = mIsChecked != TriState.NOT_SET;
+        mIsChecked = newChecked;
         updateView(animate);
     }
 
@@ -264,7 +268,7 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
     /** Resets the checked state to be uninitialized. */
     private void resetCheckedState() {
         setChecked(false);
-        mIsChecked = null;
+        mIsChecked = TriState.NOT_SET;
     }
 
     private void handleSelection() {

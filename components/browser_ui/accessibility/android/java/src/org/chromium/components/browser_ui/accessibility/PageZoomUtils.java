@@ -11,6 +11,7 @@ import static org.chromium.content_public.browser.HostZoomMap.getSystemFontScale
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TriState;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -66,7 +67,7 @@ public class PageZoomUtils {
     // default zoom value, (e.g. 0.03 = range of +/- 3%).
     private static final double DEFAULT_ZOOM_LEVEL_SNAP_RANGE = 0.03;
 
-    private static @Nullable Boolean sShouldShowMenuItemForTesting;
+    private static @TriState int sShouldShowMenuItemForTesting;
 
     /**
      * Bars have values 0 to 100 by default. For simplicity, we will keep these values and convert
@@ -251,7 +252,9 @@ public class PageZoomUtils {
      * @return boolean
      */
     public static boolean shouldShowZoomMenuItem(@Nullable BrowserContextHandle context) {
-        if (sShouldShowMenuItemForTesting != null) return sShouldShowMenuItemForTesting;
+        if (sShouldShowMenuItemForTesting != TriState.NOT_SET) {
+            return sShouldShowMenuItemForTesting == TriState.TRUE;
+        }
         // Always respect the user's choice if the user has set this in Accessibility Settings.
         if (hasUserSetShouldAlwaysShowZoomMenuItemOption()) {
             if (shouldAlwaysShowZoomMenuItem()) {
@@ -415,9 +418,9 @@ public class PageZoomUtils {
      *
      * @param isEnabled Should show the menu item or not.
      */
-    public static void setShouldShowMenuItemForTesting(@Nullable Boolean isEnabled) {
+    public static void setShouldShowMenuItemForTesting(@TriState int isEnabled) {
         sShouldShowMenuItemForTesting = isEnabled;
-        ResettersForTesting.register(() -> sShouldShowMenuItemForTesting = null);
+        ResettersForTesting.register(() -> sShouldShowMenuItemForTesting = TriState.NOT_SET);
     }
 
     public static long getReadableZoomLevel(double zoomFactor) {
