@@ -199,7 +199,10 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr,
   // onCountFamilies or onGetFamilyName.
   mutable std::vector<std::string> family_names_ GUARDED_BY(family_names_lock_);
 
-#if BUILDFLAG(ENABLE_FREETYPE)
+  // FreeType font manager used on non-Windows platforms (e.g. Linux/ChromeOS)
+  // when the FreeType backend is selected. Windows exclusively uses DirectWrite
+  // typefaces (via DWriteFontTypeface).
+#if !BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_FREETYPE)
   sk_sp<SkFontMgr> custom_fnt_mgr_;
 #endif
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;

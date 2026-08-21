@@ -284,22 +284,8 @@ BASE_FEATURE(kFocusRenderWidgetHostViewAndroidOnMouseDown,
 #endif
 // This feature controls whether the renderer should use FontDataManager to
 // fetch fonts from the Browser's FontDataService. It is currently scoped to
-// Windows and Linux (via separate features and experiments). See
+// Linux and ChromeOS. See
 // crbug.com/335680565.
-#if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kFontDataServiceAllWebContents, base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<FontDataServiceTypefaceType>::Option
-    font_data_service_typeface[] = {
-        {FontDataServiceTypefaceType::kDwrite, "DWrite"},
-        {FontDataServiceTypefaceType::kFreetype, "Freetype"},
-        {FontDataServiceTypefaceType::kFontations, "Fontations"}};
-BASE_FEATURE_ENUM_PARAM(FontDataServiceTypefaceType,
-                        kFontDataServiceTypefaceType,
-                        &kFontDataServiceAllWebContents,
-                        "typeface",
-                        FontDataServiceTypefaceType::kDwrite,
-                        &font_data_service_typeface);
-#endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const base::FeatureParam<FontDataServiceTypefaceType>::Option
     font_data_service_typeface[] = {
@@ -334,7 +320,7 @@ BASE_FEATURE(kFontDataServiceForCSSLocalFonts,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 bool IsFontDataServiceEnabled() {
 #if BUILDFLAG(IS_WIN)
-  return base::FeatureList::IsEnabled(features::kFontDataServiceAllWebContents);
+  return true;
 #elif BUILDFLAG(IS_LINUX)
   return base::FeatureList::IsEnabled(features::kFontDataServiceLinux);
 #elif BUILDFLAG(IS_CHROMEOS)

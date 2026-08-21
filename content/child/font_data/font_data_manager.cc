@@ -27,10 +27,12 @@
 #include "third_party/blink/public/web/win/web_font_rendering.h"
 #include "third_party/skia/src/ports/SkTypeface_win_dw.h"  // nogncheck
 #endif
+#if !BUILDFLAG(IS_WIN)
 #if BUILDFLAG(ENABLE_FREETYPE)
 #include "third_party/skia/include/ports/SkFontMgr_empty.h"
 #endif
 #include "third_party/skia/include/ports/SkTypeface_fontations.h"
+#endif
 
 namespace font_data_service {
 
@@ -76,7 +78,7 @@ UNSAFE_BUFFER_USAGE std::vector<std::string> bcp47ArrayToVector(
 
 FontDataManager::FontDataManager()
     : typeface_cache_(kTypefaceCacheSize),
-#if BUILDFLAG(ENABLE_FREETYPE)
+#if !BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_FREETYPE)
       custom_fnt_mgr_(SkFontMgr_New_Custom_Empty()),
 #endif
       main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
@@ -265,17 +267,11 @@ sk_sp<SkTypeface> FontDataManager::onMakeFromStreamArgs(
     const SkFontArguments& args) const {
   TRACE_EVENT1("fonts", "FontDataManager::onMakeFromStreamArgs", "size",
                stream->getLength());
+#if BUILDFLAG(IS_WIN)
+  return DWriteFontTypeface::MakeFromStream(std::move(stream), args);
+#else
   // Experiment will test the performance of different SkTypefaces.
   // 'custom_fnt_mgr_' is a wrapper to create an SkFreeType typeface.
-
-  // DWRITE is only an option on Windows. Other platforms must use Freetype or
-  // Fontations.
-#if BUILDFLAG(IS_WIN)
-  if (features::kFontDataServiceTypefaceType.Get() ==
-      features::FontDataServiceTypefaceType::kDwrite) {
-    return DWriteFontTypeface::MakeFromStream(std::move(stream), args);
-  }
-#endif
   // Chromium currently always sets ENABLE_FREETYPE, but nonetheless allow
   // falling back to fontations if the param is set to freetype but freetype
   // isn't enabled.
@@ -287,6 +283,7 @@ sk_sp<SkTypeface> FontDataManager::onMakeFromStreamArgs(
 #endif
 
   return SkTypeface_Make_Fontations(std::move(stream), args);
+#endif
 }
 
 sk_sp<SkTypeface> FontDataManager::onMakeFromFile(const char path[],

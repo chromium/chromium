@@ -11472,42 +11472,6 @@
             ]
         }
     ],
-    "FontDataServiceAllWebContents": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "DWrite_Enabled",
-                    "params": {
-                        "typeface": "DWrite"
-                    },
-                    "enable_features": [
-                        "FontDataServiceAllWebContents"
-                    ]
-                },
-                {
-                    "name": "Freetype_Enabled",
-                    "params": {
-                        "typeface": "Freetype"
-                    },
-                    "enable_features": [
-                        "FontDataServiceAllWebContents"
-                    ]
-                },
-                {
-                    "name": "Fontations_Enabled",
-                    "params": {
-                        "typeface": "Fontations"
-                    },
-                    "enable_features": [
-                        "FontDataServiceAllWebContents"
-                    ]
-                }
-            ]
-        }
-    ],
     "FontDataServiceChromeOS": [
         {
             "platforms": [

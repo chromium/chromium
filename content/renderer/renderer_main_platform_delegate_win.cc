@@ -15,7 +15,6 @@
 #include "base/win/windows_version.h"
 #include "content/child/dwrite_font_proxy/dwrite_font_proxy_init_impl_win.h"
 #include "content/child/font_warmup_win.h"
-#include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_thread.h"
@@ -58,13 +57,10 @@ void RendererMainPlatformDelegate::PlatformInitialize() {
     std::unique_ptr<icu::TimeZone> zone(icu::TimeZone::createDefault());
   }
 
-  // Do not initialize DWriteFactory if the feature flag is enabled
-  // since this will conflict with the experimental font manager.
   // Fallback to only DWrite if running in single process mode, since there can
   // only be a single font manager and the browser process always has a DWrite
   // one.
-  if (!base::FeatureList::IsEnabled(features::kFontDataServiceAllWebContents) ||
-      command_line.HasSwitch(switches::kSingleProcess)) {
+  if (command_line.HasSwitch(switches::kSingleProcess)) {
     InitializeDWriteFontProxy();
   }
 }
