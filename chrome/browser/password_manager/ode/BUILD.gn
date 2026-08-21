@@ -3,18 +3,36 @@
 # found in the LICENSE file.
 
 source_set("ode") {
-  public = [ "on_device_encryption_state_tracker.h" ]
+  public = [
+    "on_device_encryption_state_tracker.h",
+    "password_trusted_vault_on_device_encryption_state_tracker.h",
+  ]
 
-  sources = [ "on_device_encryption_state_tracker.cc" ]
+  sources = [
+    "on_device_encryption_state_tracker.cc",
+    "password_trusted_vault_on_device_encryption_state_tracker.cc",
+  ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//components/sync/service",
+  ]
+
+  deps = [ "//components/sync/base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "on_device_encryption_state_tracker_unittest.cc" ]
+  sources = [
+    "mock_on_device_encryption_state_tracker_observer.cc",
+    "mock_on_device_encryption_state_tracker_observer.h",
+    "on_device_encryption_state_tracker_unittest.cc",
+    "password_trusted_vault_on_device_encryption_state_tracker_unittest.cc",
+  ]
   deps = [
     ":ode",
+    "//base/test:test_support",
+    "//components/sync:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -12,6 +12,7 @@
 namespace password_manager {
 
 // Represents the on-device encryption state on a device.
+// TODO(crbug.com/540854648): Refine the set of possible states.
 enum class OnDeviceEncryptionState {
   // Represents situations when we don't have yet sufficient information for
   // figuring-out the actual on-device encryption state.

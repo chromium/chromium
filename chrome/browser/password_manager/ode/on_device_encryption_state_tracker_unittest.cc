@@ -4,12 +4,15 @@
 
 #include "chrome/browser/password_manager/ode/on_device_encryption_state_tracker.h"
 
+#include "chrome/browser/password_manager/ode/mock_on_device_encryption_state_tracker_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
 
 namespace {
+
+using MockObserver = MockOnDeviceEncryptionStateTrackerObserver;
 
 class TestOnDeviceEncryptionStateTracker
     : public OnDeviceEncryptionStateTracker {
@@ -18,23 +21,6 @@ class TestOnDeviceEncryptionStateTracker
   ~TestOnDeviceEncryptionStateTracker() override = default;
 
   using OnDeviceEncryptionStateTracker::SetState;
-};
-
-class MockObserver : public OnDeviceEncryptionStateTracker::Observer {
- public:
-  MockObserver() = default;
-  ~MockObserver() override = default;
-
-  MOCK_METHOD(void,
-              OnDeviceEncryptionStateChanged,
-              (OnDeviceEncryptionStateTracker * tracker,
-               OnDeviceEncryptionState previous_state,
-               OnDeviceEncryptionState new_state),
-              (override));
-  MOCK_METHOD(void,
-              OnDeviceEncryptionStateTrackerShuttingDown,
-              (OnDeviceEncryptionStateTracker * tracker),
-              (override));
 };
 
 TEST(OnDeviceEncryptionStateTrackerTest, InitialStateIsNotAvailable) {
