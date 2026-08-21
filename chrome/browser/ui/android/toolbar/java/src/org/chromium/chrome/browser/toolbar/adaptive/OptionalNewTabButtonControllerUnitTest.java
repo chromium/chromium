@@ -35,6 +35,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -104,6 +105,7 @@ public final class OptionalNewTabButtonControllerUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/550515015")
     public void testIphCommandHelper() {
         assertNull(
                 mOptionalNewTabButtonController

@@ -28,6 +28,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -76,6 +77,7 @@ public final class OpenInBrowserButtonControllerUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/550515015")
     public void testIphCommandHelper() {
         assertNull(
                 mOpenInBrowserButtonController
