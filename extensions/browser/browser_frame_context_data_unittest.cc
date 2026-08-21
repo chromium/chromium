@@ -5,11 +5,16 @@
 #include "extensions/browser/browser_frame_context_data.h"
 
 #include <memory>
+
 #include "base/memory/scoped_refptr.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extensions_test.h"
+#include "net/base/net_errors.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
 
@@ -131,6 +136,60 @@ TEST_F(BrowserFrameContextDataTest, UrlAndOriginGetters) {
         GetRenderFrameHost(web_contents.get()));
     EXPECT_EQ(data->GetUrl(), GURL(url::kAboutBlankURL));
     EXPECT_EQ(data->GetOrigin().GetURL(), GURL());
+  }
+}
+
+// Verifies that `BrowserFrameContextData::GetUrl()`:
+// - Returns the committed `GURL` for valid committed documents.
+// - Returns an empty `GURL` for error documents.
+// - Returns `about:blank` for uncommitted initial frames.
+// - Safely inspects frames in
+//   `content::RenderFrameHost::LifecycleState::kPendingCommit` without
+//   triggering frame lifecycle check failure assertions.
+TEST_F(BrowserFrameContextDataTest,
+       GetUrl_ErrorDocumentsAndPendingNavigations) {
+  // Verify that an error document returns an empty `GURL` instead of the
+  // failed destination target URL.
+  {
+    auto site_instance = content::SiteInstance::Create(browser_context());
+    auto web_contents = content::WebContentsTester::CreateTestWebContents(
+        browser_context(), site_instance);
+    const GURL kFailedUrl("https://example.com/error.html");
+    content::NavigationSimulator::NavigateAndFailFromBrowser(
+        web_contents.get(), kFailedUrl, net::ERR_FAILED);
+
+    auto* rfh = GetRenderFrameHost(web_contents.get());
+    ASSERT_TRUE(rfh->IsErrorDocument());
+
+    BrowserFrameContextData data(rfh);
+    EXPECT_TRUE(data.GetUrl().is_empty());
+  }
+
+  // Simulate an uncommitted cross-site navigation reaching `ReadyToCommit` to
+  // verify that `BrowserFrameContextData::GetUrl()` safely handles a frame in
+  // `content::RenderFrameHost::LifecycleState::kPendingCommit` without
+  // triggering assertion crashes.
+  {
+    auto site_instance = content::SiteInstance::Create(browser_context());
+    auto web_contents = content::WebContentsTester::CreateTestWebContents(
+        browser_context(), site_instance);
+    const GURL kInitialUrl("https://example.com/initial.html");
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents.get(), kInitialUrl);
+
+    const GURL kCrossSiteUrl("https://other-site.com/pending.html");
+    auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+        kCrossSiteUrl, web_contents.get());
+    navigation->ReadyToCommit();
+
+    content::RenderFrameHost* pending_rfh =
+        navigation->GetNavigationHandle()->GetRenderFrameHost();
+    ASSERT_TRUE(pending_rfh);
+    EXPECT_TRUE(pending_rfh->IsInLifecycleState(
+        content::RenderFrameHost::LifecycleState::kPendingCommit));
+
+    BrowserFrameContextData data(pending_rfh);
+    EXPECT_EQ(data.GetUrl(), GURL(url::kAboutBlankURL));
   }
 }
 
