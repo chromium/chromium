@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.supervised_user.SupervisedUserServiceBridge;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.task_manager.TaskManager;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -84,6 +85,7 @@ import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -219,7 +221,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem(),
                         mRoundedIconGenerator,
                         mDefaultFaviconHelper,
-                        this::getFaviconHelper);
+                        this::getFaviconHelper,
+                        this::getTabGroupSyncService);
 
         mHistoryItemBuilder =
                 new HistoryItemBuilder(
@@ -1817,6 +1820,14 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         if (!isSubmenusEnabled(mContext)) {
             super.observeAndMaybeAddReadAloud(modelList, currentTab);
         }
+    }
+
+    private @Nullable TabGroupSyncService getTabGroupSyncService() {
+        Profile profile = getProfileFromTabModel();
+        if (profile == null || !profile.isNativeInitialized()) {
+            return null;
+        }
+        return TabGroupSyncServiceFactory.getForProfile(profile);
     }
 
     private Profile getProfileFromTabModel() {

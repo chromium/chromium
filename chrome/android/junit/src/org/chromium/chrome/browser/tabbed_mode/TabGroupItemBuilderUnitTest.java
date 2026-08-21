@@ -35,6 +35,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -115,7 +116,8 @@ public class TabGroupItemBuilderUnitTest {
                         /* shouldShowIconBeforeItem= */ true,
                         mRoundedIconGenerator,
                         mDefaultFaviconHelper,
-                        () -> mFaviconHelper);
+                        () -> mFaviconHelper,
+                        SupplierUtils.ofNull());
     }
 
     private Tab setUpMockTabGroup(TabModel tabModel, boolean isIncognito, boolean hasGroupId) {

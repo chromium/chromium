@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -33,6 +35,7 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
@@ -43,6 +46,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -164,5 +168,26 @@ public class TabGroupMenuActionHandlerUnitTest {
         mHandler.handleAddToGroupAction(mTab);
 
         verify(mTabModel).createSingleTabGroup(mTab);
+    }
+
+    @Test
+    public void testHandleAddToExistingGroupAction() {
+        UserActionTester actionTester = new UserActionTester();
+        Token groupId = Token.createRandom();
+        Tab destTab = mock(Tab.class);
+        when(destTab.getId()).thenReturn(123);
+        when(mTabModel.getTabById(123)).thenReturn(destTab);
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(destTab));
+        when(mTabModel.tabGroupExists(groupId)).thenReturn(true);
+        when(mTabModel.getGroupLastShownTabId(groupId)).thenReturn(123);
+
+        assertTrue(mHandler.handleAddToExistingGroupAction(mTab, groupId));
+
+        verify(mTabModel)
+                .mergeListOfTabsToGroup(
+                        eq(List.of(mTab)),
+                        eq(destTab),
+                        eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
+        assertTrue(actionTester.getActions().contains("MobileMenuAddToExistingGroup"));
     }
 }

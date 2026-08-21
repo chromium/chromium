@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuTabGroupItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTabItemProperties;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -56,6 +57,9 @@ import java.util.function.Supplier;
     private final FaviconHelper.DefaultFaviconHelper mDefaultFaviconHelper;
     private final Supplier<FaviconHelper> mFaviconHelperSupplier;
 
+    @SuppressWarnings("UnusedVariable")
+    private final Supplier<@Nullable TabGroupSyncService> mTabGroupSyncServiceSupplier;
+
     /**
      * Constructs a new {@link TabGroupItemBuilder}.
      *
@@ -76,7 +80,8 @@ import java.util.function.Supplier;
             boolean shouldShowIconBeforeItem,
             RoundedIconGenerator roundedIconGenerator,
             FaviconHelper.DefaultFaviconHelper defaultFaviconHelper,
-            Supplier<FaviconHelper> faviconHelperSupplier) {
+            Supplier<FaviconHelper> faviconHelperSupplier,
+            Supplier<@Nullable TabGroupSyncService> tabGroupSyncServiceSupplier) {
         mContext = context;
         mAppMenuItemTheme = appMenuItemTheme;
         mTabModelSelector = tabModelSelector;
@@ -85,6 +90,7 @@ import java.util.function.Supplier;
         mRoundedIconGenerator = roundedIconGenerator;
         mDefaultFaviconHelper = defaultFaviconHelper;
         mFaviconHelperSupplier = faviconHelperSupplier;
+        mTabGroupSyncServiceSupplier = tabGroupSyncServiceSupplier;
     }
 
     /**

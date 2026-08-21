@@ -4403,17 +4403,15 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 return false;
             }
 
+            Profile profile = mTabModelProfileSupplier.get();
             TabModel tabModel = mTabModelSelector.getCurrentModel();
-            List<Tab> groupTabs = tabModel.getTabsInGroup(groupId);
-            if (groupTabs.isEmpty()) {
-                return false;
-            }
-
-            Tab destTab = groupTabs.get(0);
-            TabGroupUtils.mergeTabsToDest(
-                    List.of(currentTab), destTab.getId(), tabModel, /* tabMovedCallback= */ null);
-            RecordUserAction.record("MobileMenuAddToExistingGroup");
-            return true;
+            return new TabGroupMenuActionHandler(
+                            this,
+                            tabModel,
+                            assertNonNull(mRootUiCoordinator.getBottomSheetController()),
+                            getModalDialogManager(),
+                            profile)
+                    .handleAddToExistingGroupAction(currentTab, groupId);
         } else if (id == R.id.create_new_tab_group_menu_id) {
             RecordUserAction.record("MobileMenuCreateTabGroup");
             return handleCreateNewTabGroupAction(currentTab);
