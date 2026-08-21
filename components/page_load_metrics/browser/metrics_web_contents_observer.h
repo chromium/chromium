@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "components/page_load_metrics/browser/page_load_metrics_observer_interface.h"
+#include "components/page_load_metrics/common/page_end_reason.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/auction_result.h"
@@ -43,7 +43,10 @@ class MetricsLifecycleObserver;
 class PageLoadMetricsEmbedderInterface;
 class PageLoadMetricsMemoryTracker;
 class PageLoadMetricsObserverDelegate;
+class PageLoadMetricsObserverInterface;
 class PageLoadTracker;
+enum class StorageType;
+struct UserInitiatedInfo;
 
 // MetricsWebContentsObserver tracks page loads and loading metrics
 // related data based on IPC messages received from a
