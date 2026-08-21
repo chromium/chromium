@@ -113,6 +113,7 @@ import android.text.InputType;
 import android.text.ParcelableSpan;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
@@ -357,6 +358,112 @@ public class WebContentsAccessibilityTest {
                 viewId, action.getId(), args, criteria, errorMsg);
     }
 
+    /**
+     * Helper method to perform ACTION_SET_SELECTION and wait for selection to be updated.
+     *
+     * @param viewId int virtualViewId of the node.
+     * @param start int start index of the selection.
+     * @param end int end index of the selection.
+     * @return boolean true if action was performed and selection was updated successfully.
+     */
+    private boolean setSelection(int viewId, int start, int end) throws Throwable {
+        Bundle bundle = new Bundle();
+        bundle.putInt(ACTION_ARGUMENT_SELECTION_START_INT, start);
+        bundle.putInt(ACTION_ARGUMENT_SELECTION_END_INT, end);
+        return performActionOnUiThread(
+                viewId,
+                ACTION_SET_SELECTION,
+                bundle,
+                () -> {
+                    AccessibilityNodeInfoCompat nodeInfo = createAccessibilityNodeInfo(viewId);
+                    return nodeInfo != null
+                            && nodeInfo.getTextSelectionStart() == start
+                            && nodeInfo.getTextSelectionEnd() == end;
+                });
+    }
+
+    /**
+     * Helper method to perform ACTION_SET_TEXT and wait for text to be updated.
+     *
+     * @param viewId int virtualViewId of the node.
+     * @param text CharSequence text to set.
+     * @return boolean true if action was performed and text was updated successfully.
+     */
+    private boolean setText(int viewId, CharSequence text) throws Throwable {
+        Bundle bundle = new Bundle();
+        bundle.putCharSequence(ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text);
+        return performActionOnUiThread(
+                viewId,
+                ACTION_SET_TEXT,
+                bundle,
+                () -> {
+                    AccessibilityNodeInfoCompat nodeInfo = createAccessibilityNodeInfo(viewId);
+                    return nodeInfo != null && TextUtils.equals(text, nodeInfo.getText());
+                });
+    }
+
+    /**
+     * Helper method to perform ACTION_SET_PROGRESS, wait for progress to be updated, and assert
+     * success.
+     *
+     * @param viewId int virtualViewId of the node.
+     * @param value float progress value to set.
+     */
+    private void setProgress(int viewId, float value) throws Throwable {
+        setProgress(viewId, value, /* expectedValue= */ value);
+    }
+
+    /**
+     * Helper method to perform ACTION_SET_PROGRESS, wait for progress to be updated, and assert
+     * success.
+     *
+     * @param viewId int virtualViewId of the node.
+     * @param value float progress value to set.
+     * @param expectedValue float expected value after possible clamping.
+     */
+    private void setProgress(int viewId, float value, float expectedValue) throws Throwable {
+        Bundle bundle = new Bundle();
+        bundle.putFloat(ACTION_ARGUMENT_PROGRESS_VALUE, value);
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        viewId,
+                        ACTION_SET_PROGRESS,
+                        bundle,
+                        () -> {
+                            AccessibilityNodeInfoCompat nodeInfo =
+                                    createAccessibilityNodeInfo(viewId);
+                            return nodeInfo != null
+                                    && nodeInfo.getRangeInfo() != null
+                                    && Math.abs(
+                                                    nodeInfo.getRangeInfo().getCurrent()
+                                                            - expectedValue)
+                                            < 0.01;
+                        }));
+    }
+
+    /**
+     * Helper method to perform a scroll action on a range node and wait for the event.
+     *
+     * @param viewId int virtualViewId of the node.
+     * @param scrollAction AccessibilityActionCompat scroll action to perform.
+     */
+    private void scrollRangeAndWaitForEvent(
+            int viewId, AccessibilityNodeInfoCompat.AccessibilityActionCompat scrollAction)
+            throws ExecutionException {
+        performActionOnUiThread(viewId, scrollAction, new Bundle());
+        CriteriaHelper.pollUiThread(() -> mTestData.hasReceivedEvent(), INPUT_RANGE_EVENT_ERROR);
+        mTestData.setReceivedEvent(false);
+    }
+
+    private ClipboardManager getClipboardManager() {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        (ClipboardManager)
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getSystemService(CLIPBOARD_SERVICE));
+    }
+
     private void executeJS(String method) {
         mActivityTestRule.executeJS(method);
     }
@@ -455,6 +562,65 @@ public class WebContentsAccessibilityTest {
                     return mTestData.hasReceivedTraversalEvent();
                 },
                 TEXT_TRAVERSAL_ERROR);
+    }
+
+    /**
+     * Helper method for performing a movement-at-granularity action and asserting the resulting
+     * traversal and selection bounds.
+     *
+     * @param viewId int virtualViewId of the target node.
+     * @param moveAtGranularityAction AccessibilityActionCompat movement action to perform.
+     * @param granularity int movement granularity (e.g. MOVEMENT_GRANULARITY_CHARACTER).
+     * @param extendSelection boolean whether to extend selection or move cursor.
+     * @param expectedTraverseFrom int expected start index of the traversed character/word range.
+     * @param expectedTraverseTo int expected end index of the traversed character/word range.
+     * @param expectedSelectionFrom int expected start index of the resulting selection (pass -1 if
+     *     selection events are not expected or asserted).
+     * @param expectedSelectionTo int expected end index of the resulting selection (pass -1 if
+     *     selection events are not expected or asserted).
+     * @throws ExecutionException Error during UI-thread action dispatch.
+     */
+    private void moveAtGranularityAndAssertBounds(
+            int viewId,
+            AccessibilityNodeInfoCompat.AccessibilityActionCompat moveAtGranularityAction,
+            int granularity,
+            boolean extendSelection,
+            int expectedTraverseFrom,
+            int expectedTraverseTo,
+            int expectedSelectionFrom,
+            int expectedSelectionTo)
+            throws ExecutionException {
+        Bundle args = new Bundle();
+        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, granularity);
+        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, extendSelection);
+        if (expectedSelectionFrom == -1 && expectedSelectionTo == -1) {
+            performTextActionOnUiThreadAndWaitForTraversalEvent(
+                    viewId, moveAtGranularityAction, args);
+        } else {
+            performTextActionOnUiThread(viewId, moveAtGranularityAction, args);
+            Assert.assertEquals(expectedSelectionFrom, mTestData.getSelectionFromIndex());
+            Assert.assertEquals(expectedSelectionTo, mTestData.getSelectionToIndex());
+        }
+        Assert.assertEquals(expectedTraverseFrom, mTestData.getTraverseFromIndex());
+        Assert.assertEquals(expectedTraverseTo, mTestData.getTraverseToIndex());
+    }
+
+    /**
+     * Helper method for performing paragraph navigation and waiting for accessibility focus event.
+     *
+     * @param viewId int virtualViewId of the target node.
+     * @param action AccessibilityActionCompat movement action to perform.
+     * @throws ExecutionException Error during UI-thread action dispatch.
+     */
+    private void navigateAtParagraphGranularityAndWaitForFocus(
+            int viewId, AccessibilityNodeInfoCompat.AccessibilityActionCompat action)
+            throws ExecutionException {
+        Bundle args = new Bundle();
+        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_PARAGRAPH);
+        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, false);
+        mTestData.setReceivedAccessibilityFocusEvent(false);
+        performActionOnUiThread(viewId, action, args);
+        CriteriaHelper.pollUiThread(() -> mTestData.hasReceivedAccessibilityFocusEvent());
     }
 
     /**
@@ -1618,31 +1784,30 @@ public class WebContentsAccessibilityTest {
 
         focusNodeAndWaitForSelection(editTextVirtualViewId);
 
-        // Set granularity to CHARACTER, with selection FALSE
-        Bundle args = new Bundle();
-        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
-        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, false);
-
         // Simulate swiping right (forward)
         for (int i = 0; i < 7; i++) {
-            performTextActionOnUiThread(
-                    editTextVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-
-            Assert.assertEquals(i, mTestData.getTraverseFromIndex());
-            Assert.assertEquals(i + 1, mTestData.getTraverseToIndex());
-            Assert.assertEquals(i + 1, mTestData.getSelectionFromIndex());
-            Assert.assertEquals(i + 1, mTestData.getSelectionToIndex());
+            moveAtGranularityAndAssertBounds(
+                    editTextVirtualViewId,
+                    ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                    MOVEMENT_GRANULARITY_CHARACTER,
+                    /* extendSelection= */ false,
+                    /* expectedTraverseFrom= */ i,
+                    /* expectedTraverseTo= */ i + 1,
+                    /* expectedSelectionFrom= */ i + 1,
+                    /* expectedSelectionTo= */ i + 1);
         }
 
         // Simulate swiping left (backward)
         for (int i = 7; i > 0; i--) {
-            performTextActionOnUiThread(
-                    editTextVirtualViewId, ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, args);
-
-            Assert.assertEquals(i - 1, mTestData.getTraverseFromIndex());
-            Assert.assertEquals(i, mTestData.getTraverseToIndex());
-            Assert.assertEquals(i - 1, mTestData.getSelectionFromIndex());
-            Assert.assertEquals(i - 1, mTestData.getSelectionToIndex());
+            moveAtGranularityAndAssertBounds(
+                    editTextVirtualViewId,
+                    ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY,
+                    MOVEMENT_GRANULARITY_CHARACTER,
+                    /* extendSelection= */ false,
+                    /* expectedTraverseFrom= */ i - 1,
+                    /* expectedTraverseTo= */ i,
+                    /* expectedSelectionFrom= */ i - 1,
+                    /* expectedSelectionTo= */ i - 1);
         }
     }
 
@@ -1664,63 +1829,69 @@ public class WebContentsAccessibilityTest {
 
         focusNodeAndWaitForSelection(editTextVirtualViewId);
 
-        // Set granularity to CHARACTER, with selection TRUE
-        Bundle args = new Bundle();
-        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
-        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, true);
-
         // Simulate swiping right (forward) (adds to selections).
         for (int i = 0; i < 7; i++) {
-            performTextActionOnUiThread(
-                    editTextVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-
-            Assert.assertEquals(i, mTestData.getTraverseFromIndex());
-            Assert.assertEquals(i + 1, mTestData.getTraverseToIndex());
-            Assert.assertEquals(0, mTestData.getSelectionFromIndex());
-            Assert.assertEquals(i + 1, mTestData.getSelectionToIndex());
+            moveAtGranularityAndAssertBounds(
+                    editTextVirtualViewId,
+                    ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                    MOVEMENT_GRANULARITY_CHARACTER,
+                    /* extendSelection= */ true,
+                    /* expectedTraverseFrom= */ i,
+                    /* expectedTraverseTo= */ i + 1,
+                    /* expectedSelectionFrom= */ 0,
+                    /* expectedSelectionTo= */ i + 1);
         }
 
         // Simulate swiping left (backward) (removes from selection).
         for (int i = 7; i > 0; i--) {
-            performTextActionOnUiThread(
-                    editTextVirtualViewId, ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, args);
-
-            Assert.assertEquals(i - 1, mTestData.getTraverseFromIndex());
-            Assert.assertEquals(i, mTestData.getTraverseToIndex());
-            Assert.assertEquals(0, mTestData.getSelectionFromIndex());
-            Assert.assertEquals(i - 1, mTestData.getSelectionToIndex());
+            moveAtGranularityAndAssertBounds(
+                    editTextVirtualViewId,
+                    ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY,
+                    MOVEMENT_GRANULARITY_CHARACTER,
+                    /* extendSelection= */ true,
+                    /* expectedTraverseFrom= */ i - 1,
+                    /* expectedTraverseTo= */ i,
+                    /* expectedSelectionFrom= */ 0,
+                    /* expectedSelectionTo= */ i - 1);
         }
 
         // Turn selection mode off and traverse to the end so we can select backward.
-        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, false);
-        for (int i = 7; i > 0; i--) {
-            performTextActionOnUiThread(
-                    editTextVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
+        for (int i = 0; i < 7; i++) {
+            moveAtGranularityAndAssertBounds(
+                    editTextVirtualViewId,
+                    ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                    MOVEMENT_GRANULARITY_CHARACTER,
+                    /* extendSelection= */ false,
+                    /* expectedTraverseFrom= */ i,
+                    /* expectedTraverseTo= */ i + 1,
+                    /* expectedSelectionFrom= */ i + 1,
+                    /* expectedSelectionTo= */ i + 1);
         }
-
-        // Turn selection mode on
-        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, true);
 
         // Simulate swiping left (backward) (adds to selection)
         for (int i = 7; i > 0; i--) {
-            performTextActionOnUiThread(
-                    editTextVirtualViewId, ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, args);
-
-            Assert.assertEquals(i - 1, mTestData.getTraverseFromIndex());
-            Assert.assertEquals(i, mTestData.getTraverseToIndex());
-            Assert.assertEquals(7, mTestData.getSelectionFromIndex());
-            Assert.assertEquals(i - 1, mTestData.getSelectionToIndex());
+            moveAtGranularityAndAssertBounds(
+                    editTextVirtualViewId,
+                    ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY,
+                    MOVEMENT_GRANULARITY_CHARACTER,
+                    /* extendSelection= */ true,
+                    /* expectedTraverseFrom= */ i - 1,
+                    /* expectedTraverseTo= */ i,
+                    /* expectedSelectionFrom= */ 7,
+                    /* expectedSelectionTo= */ i - 1);
         }
 
         // Simulate swiping right (forward) (removes from selections)
         for (int i = 0; i < 7; i++) {
-            performTextActionOnUiThread(
-                    editTextVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-
-            Assert.assertEquals(i, mTestData.getTraverseFromIndex());
-            Assert.assertEquals(i + 1, mTestData.getTraverseToIndex());
-            Assert.assertEquals(7, mTestData.getSelectionFromIndex());
-            Assert.assertEquals(i + 1, mTestData.getSelectionToIndex());
+            moveAtGranularityAndAssertBounds(
+                    editTextVirtualViewId,
+                    ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                    MOVEMENT_GRANULARITY_CHARACTER,
+                    /* extendSelection= */ true,
+                    /* expectedTraverseFrom= */ i,
+                    /* expectedTraverseTo= */ i + 1,
+                    /* expectedSelectionFrom= */ 7,
+                    /* expectedSelectionTo= */ i + 1);
         }
     }
 
@@ -1739,52 +1910,40 @@ public class WebContentsAccessibilityTest {
         mNodeInfo = createAccessibilityNodeInfo(vvid);
         Assert.assertNotEquals(mNodeInfo, null);
 
-        for (int forward = 0; forward < 2; forward++) {
+        for (boolean forward : new boolean[] {false, true}) {
             // Select text and wait for result.
-            {
-                Bundle bundle = new Bundle();
-                bundle.putInt(ACTION_ARGUMENT_SELECTION_START_INT, 2);
-                bundle.putInt(ACTION_ARGUMENT_SELECTION_END_INT, 5);
-                Assert.assertTrue(
-                        performActionOnUiThread(
-                                vvid,
-                                ACTION_SET_SELECTION,
-                                bundle,
-                                () -> {
-                                    return createAccessibilityNodeInfo(vvid).getTextSelectionStart()
-                                                    == 2
-                                            && createAccessibilityNodeInfo(vvid)
-                                                            .getTextSelectionEnd()
-                                                    == 5;
-                                }));
-            }
+            Assert.assertTrue(setSelection(vvid, /* start= */ 2, /* end= */ 5));
 
             focusNode(vvid);
 
-            Bundle args = new Bundle();
-            args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
-            args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, false);
-
-            if (forward == 1) {
-                Log.d(TAG, "Perforing action next at granularity.");
+            if (forward) {
+                Log.d(TAG, "Performing action next at granularity.");
                 // Simulate swiping right (forward)
-                performTextActionOnUiThread(vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-
-                // Expect traverse to be based on selection end position.
-                Assert.assertEquals(5, mTestData.getTraverseFromIndex());
-                Assert.assertEquals(6, mTestData.getTraverseToIndex());
+                moveAtGranularityAndAssertBounds(
+                        vvid,
+                        ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                        MOVEMENT_GRANULARITY_CHARACTER,
+                        /* extendSelection= */ false,
+                        /* expectedTraverseFrom= */ 5,
+                        /* expectedTraverseTo= */ 6,
+                        /* expectedSelectionFrom= */ 6,
+                        /* expectedSelectionTo= */ 6);
             } else {
-                Log.d(TAG, "Perforing action previous at granularity.");
+                Log.d(TAG, "Performing action previous at granularity.");
                 // Simulate swiping left (backward)
-                performTextActionOnUiThread(vvid, ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, args);
-
-                // Expect traverse to be based on selection end position.
-                Assert.assertEquals(4, mTestData.getTraverseFromIndex());
-                Assert.assertEquals(5, mTestData.getTraverseToIndex());
+                moveAtGranularityAndAssertBounds(
+                        vvid,
+                        ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY,
+                        MOVEMENT_GRANULARITY_CHARACTER,
+                        /* extendSelection= */ false,
+                        /* expectedTraverseFrom= */ 4,
+                        /* expectedTraverseTo= */ 5,
+                        /* expectedSelectionFrom= */ 4,
+                        /* expectedSelectionTo= */ 4);
             }
 
             // Focus on another node to reset the status for the next case.
-            if (forward == 0) {
+            if (!forward) {
                 int vvid2 = waitForNodeMatching(sViewIdResourceNameMatcher, "id2");
                 Assert.assertNotEquals(createAccessibilityNodeInfo(vvid2), null);
                 focusNode(vvid2);
@@ -1809,52 +1968,38 @@ public class WebContentsAccessibilityTest {
         mNodeInfo = createAccessibilityNodeInfo(vvid);
         Assert.assertNotEquals(mNodeInfo, null);
 
-        for (int forward = 0; forward < 2; forward++) {
+        for (boolean forward : new boolean[] {false, true}) {
             // Select text (indices 2 to 5) and wait for result.
-            {
-                Bundle bundle = new Bundle();
-                bundle.putInt(ACTION_ARGUMENT_SELECTION_START_INT, 2);
-                bundle.putInt(ACTION_ARGUMENT_SELECTION_END_INT, 5);
-                Assert.assertTrue(
-                        performActionOnUiThread(
-                                vvid,
-                                ACTION_SET_SELECTION,
-                                bundle,
-                                () -> {
-                                    return createAccessibilityNodeInfo(vvid).getTextSelectionStart()
-                                                    == 2
-                                            && createAccessibilityNodeInfo(vvid)
-                                                            .getTextSelectionEnd()
-                                                    == 5;
-                                }));
-            }
+            Assert.assertTrue(setSelection(vvid, /* start= */ 2, /* end= */ 5));
 
             focusNode(vvid);
 
-            Bundle args = new Bundle();
-            args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
-            args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, true);
-
-            if (forward == 1) {
+            if (forward) {
                 // Simulate swiping right (forward): extends selection from [2, 5] to [2, 6].
-                performTextActionOnUiThread(vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-
-                Assert.assertEquals(5, mTestData.getTraverseFromIndex());
-                Assert.assertEquals(6, mTestData.getTraverseToIndex());
-                Assert.assertEquals(2, mTestData.getSelectionFromIndex());
-                Assert.assertEquals(6, mTestData.getSelectionToIndex());
+                moveAtGranularityAndAssertBounds(
+                        vvid,
+                        ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                        MOVEMENT_GRANULARITY_CHARACTER,
+                        /* extendSelection= */ true,
+                        /* expectedTraverseFrom= */ 5,
+                        /* expectedTraverseTo= */ 6,
+                        /* expectedSelectionFrom= */ 2,
+                        /* expectedSelectionTo= */ 6);
             } else {
                 // Simulate swiping left (backward): shrinks selection from [2, 5] to [2, 4].
-                performTextActionOnUiThread(vvid, ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, args);
-
-                Assert.assertEquals(4, mTestData.getTraverseFromIndex());
-                Assert.assertEquals(5, mTestData.getTraverseToIndex());
-                Assert.assertEquals(2, mTestData.getSelectionFromIndex());
-                Assert.assertEquals(4, mTestData.getSelectionToIndex());
+                moveAtGranularityAndAssertBounds(
+                        vvid,
+                        ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY,
+                        MOVEMENT_GRANULARITY_CHARACTER,
+                        /* extendSelection= */ true,
+                        /* expectedTraverseFrom= */ 4,
+                        /* expectedTraverseTo= */ 5,
+                        /* expectedSelectionFrom= */ 2,
+                        /* expectedSelectionTo= */ 4);
             }
 
             // Focus on another node to reset the status for the next case.
-            if (forward == 0) {
+            if (!forward) {
                 int vvid2 = waitForNodeMatching(sViewIdResourceNameMatcher, "id2");
                 Assert.assertNotEquals(createAccessibilityNodeInfo(vvid2), null);
                 focusNode(vvid2);
@@ -1882,16 +2027,15 @@ public class WebContentsAccessibilityTest {
         focusNodeAndWaitForSelection(editTextVirtualViewId);
 
         // 1. Move forward by 1 character with extended selection (0 -> 1).
-        Bundle args = new Bundle();
-        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
-        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, true);
-
-        performTextActionOnUiThread(
-                editTextVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-        Assert.assertEquals(0, mTestData.getTraverseFromIndex());
-        Assert.assertEquals(1, mTestData.getTraverseToIndex());
-        Assert.assertEquals(0, mTestData.getSelectionFromIndex());
-        Assert.assertEquals(1, mTestData.getSelectionToIndex());
+        moveAtGranularityAndAssertBounds(
+                editTextVirtualViewId,
+                ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                MOVEMENT_GRANULARITY_CHARACTER,
+                /* extendSelection= */ true,
+                /* expectedTraverseFrom= */ 0,
+                /* expectedTraverseTo= */ 1,
+                /* expectedSelectionFrom= */ 0,
+                /* expectedSelectionTo= */ 1);
 
         // 2. Change selection independently (selection from 3 to 8).
         setAndAssertExtendedSelection(
@@ -1905,12 +2049,15 @@ public class WebContentsAccessibilityTest {
 
         // 3. Move forward with extended selection again. Verify that movement resumes from the
         // new selection endpoint (8 -> 9) and maintains the selection anchor at 3 (3 -> 9).
-        performTextActionOnUiThread(
-                editTextVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-        Assert.assertEquals(8, mTestData.getTraverseFromIndex());
-        Assert.assertEquals(9, mTestData.getTraverseToIndex());
-        Assert.assertEquals(3, mTestData.getSelectionFromIndex());
-        Assert.assertEquals(9, mTestData.getSelectionToIndex());
+        moveAtGranularityAndAssertBounds(
+                editTextVirtualViewId,
+                ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                MOVEMENT_GRANULARITY_CHARACTER,
+                /* extendSelection= */ true,
+                /* expectedTraverseFrom= */ 8,
+                /* expectedTraverseTo= */ 9,
+                /* expectedSelectionFrom= */ 3,
+                /* expectedSelectionTo= */ 9);
     }
 
     /**
@@ -1932,61 +2079,34 @@ public class WebContentsAccessibilityTest {
         focusNodeAndWaitForSelection(editTextVirtualViewId);
 
         // 1. Move cursor to beginning (0, 0).
-        Bundle setSelBundle = new Bundle();
-        setSelBundle.putInt(ACTION_ARGUMENT_SELECTION_START_INT, 0);
-        setSelBundle.putInt(ACTION_ARGUMENT_SELECTION_END_INT, 0);
-        Assert.assertTrue(
-                performActionOnUiThread(
-                        editTextVirtualViewId,
-                        ACTION_SET_SELECTION,
-                        setSelBundle,
-                        () -> {
-                            return createAccessibilityNodeInfo(editTextVirtualViewId)
-                                                    .getTextSelectionStart()
-                                            == 0
-                                    && createAccessibilityNodeInfo(editTextVirtualViewId)
-                                                    .getTextSelectionEnd()
-                                            == 0;
-                        }));
+        Assert.assertTrue(setSelection(editTextVirtualViewId, /* start= */ 0, /* end= */ 0));
 
         // 2. Select all (0, 13).
-        setSelBundle.putInt(ACTION_ARGUMENT_SELECTION_START_INT, 0);
-        setSelBundle.putInt(ACTION_ARGUMENT_SELECTION_END_INT, 13);
-        Assert.assertTrue(
-                performActionOnUiThread(
-                        editTextVirtualViewId,
-                        ACTION_SET_SELECTION,
-                        setSelBundle,
-                        () -> {
-                            return createAccessibilityNodeInfo(editTextVirtualViewId)
-                                                    .getTextSelectionStart()
-                                            == 0
-                                    && createAccessibilityNodeInfo(editTextVirtualViewId)
-                                                    .getTextSelectionEnd()
-                                            == 13;
-                        }));
+        Assert.assertTrue(setSelection(editTextVirtualViewId, /* start= */ 0, /* end= */ 13));
 
         // 3. Move backward by character with extended selection.
-        Bundle args = new Bundle();
-        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
-        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, true);
-
         // Deselect the last character 't' (13 -> 12), maintaining anchor at 0 (0 -> 12).
-        performTextActionOnUiThread(
-                editTextVirtualViewId, ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, args);
-        Assert.assertEquals(12, mTestData.getTraverseFromIndex());
-        Assert.assertEquals(13, mTestData.getTraverseToIndex());
-        Assert.assertEquals(0, mTestData.getSelectionFromIndex());
-        Assert.assertEquals(12, mTestData.getSelectionToIndex());
+        moveAtGranularityAndAssertBounds(
+                editTextVirtualViewId,
+                ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY,
+                MOVEMENT_GRANULARITY_CHARACTER,
+                /* extendSelection= */ true,
+                /* expectedTraverseFrom= */ 12,
+                /* expectedTraverseTo= */ 13,
+                /* expectedSelectionFrom= */ 0,
+                /* expectedSelectionTo= */ 12);
 
         // 4. Move forward by character with extended selection.
         // Re-select 't' (12 -> 13), maintaining anchor at 0 (0 -> 13).
-        performTextActionOnUiThread(
-                editTextVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-        Assert.assertEquals(12, mTestData.getTraverseFromIndex());
-        Assert.assertEquals(13, mTestData.getTraverseToIndex());
-        Assert.assertEquals(0, mTestData.getSelectionFromIndex());
-        Assert.assertEquals(13, mTestData.getSelectionToIndex());
+        moveAtGranularityAndAssertBounds(
+                editTextVirtualViewId,
+                ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                MOVEMENT_GRANULARITY_CHARACTER,
+                /* extendSelection= */ true,
+                /* expectedTraverseFrom= */ 12,
+                /* expectedTraverseTo= */ 13,
+                /* expectedSelectionFrom= */ 0,
+                /* expectedSelectionTo= */ 13);
     }
 
     /**
@@ -2008,41 +2128,31 @@ public class WebContentsAccessibilityTest {
         focusNodeAndWaitForSelection(editTextVirtualViewId);
 
         // 1. Move forward by 1 character with extended selection.
-        Bundle args = new Bundle();
-        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
-        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, true);
-
-        performTextActionOnUiThread(
-                editTextVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-        Assert.assertEquals(0, mTestData.getTraverseFromIndex());
-        Assert.assertEquals(1, mTestData.getTraverseToIndex());
-        Assert.assertEquals(0, mTestData.getSelectionFromIndex());
-        Assert.assertEquals(1, mTestData.getSelectionToIndex());
+        moveAtGranularityAndAssertBounds(
+                editTextVirtualViewId,
+                ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                MOVEMENT_GRANULARITY_CHARACTER,
+                /* extendSelection= */ true,
+                /* expectedTraverseFrom= */ 0,
+                /* expectedTraverseTo= */ 1,
+                /* expectedSelectionFrom= */ 0,
+                /* expectedSelectionTo= */ 1);
 
         // 2. Change the text content independently.
-        Bundle setTextBundle = new Bundle();
-        setTextBundle.putCharSequence(ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, "ABC");
-        Assert.assertTrue(
-                performActionOnUiThread(
-                        editTextVirtualViewId,
-                        ACTION_SET_TEXT,
-                        setTextBundle,
-                        () ->
-                                "ABC"
-                                        .equals(
-                                                createAccessibilityNodeInfo(editTextVirtualViewId)
-                                                        .getText()
-                                                        .toString())));
+        Assert.assertTrue(setText(editTextVirtualViewId, "ABC"));
 
         // ACTION_SET_TEXT places the cursor at the end of the text (index 3).
         // Verify that moving previous at character granularity starts from the updated cursor
         // position and extends selection backwards 3 -> 2.
-        performTextActionOnUiThread(
-                editTextVirtualViewId, ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, args);
-        Assert.assertEquals(2, mTestData.getTraverseFromIndex());
-        Assert.assertEquals(3, mTestData.getTraverseToIndex());
-        Assert.assertEquals(3, mTestData.getSelectionFromIndex());
-        Assert.assertEquals(2, mTestData.getSelectionToIndex());
+        moveAtGranularityAndAssertBounds(
+                editTextVirtualViewId,
+                ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY,
+                MOVEMENT_GRANULARITY_CHARACTER,
+                /* extendSelection= */ true,
+                /* expectedTraverseFrom= */ 2,
+                /* expectedTraverseTo= */ 3,
+                /* expectedSelectionFrom= */ 3,
+                /* expectedSelectionTo= */ 2);
     }
 
     /**
@@ -2064,15 +2174,16 @@ public class WebContentsAccessibilityTest {
 
         focusNode(p2Vvid);
 
-        Bundle args = new Bundle();
-        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
-        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, true);
-
         // 1. Move forward by 1 character on p2 with extended selection (0 -> 1).
-        performTextActionOnUiThreadAndWaitForTraversalEvent(
-                p2Vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-        Assert.assertEquals(0, mTestData.getTraverseFromIndex());
-        Assert.assertEquals(1, mTestData.getTraverseToIndex());
+        moveAtGranularityAndAssertBounds(
+                p2Vvid,
+                ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                MOVEMENT_GRANULARITY_CHARACTER,
+                /* extendSelection= */ true,
+                /* expectedTraverseFrom= */ 0,
+                /* expectedTraverseTo= */ 1,
+                /* expectedSelectionFrom= */ -1,
+                /* expectedSelectionTo= */ -1);
 
         // 2. Set selection from p1 (offset 2) to p2 (offset 6).
         setAndAssertExtendedSelection(
@@ -2080,10 +2191,15 @@ public class WebContentsAccessibilityTest {
 
         // 3. Move forward at character granularity again with extended selection. Verify that
         // movement resumes from the new selection endpoint on p2 (6 -> 7).
-        performTextActionOnUiThreadAndWaitForTraversalEvent(
-                p2Vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-        Assert.assertEquals(6, mTestData.getTraverseFromIndex());
-        Assert.assertEquals(7, mTestData.getTraverseToIndex());
+        moveAtGranularityAndAssertBounds(
+                p2Vvid,
+                ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                MOVEMENT_GRANULARITY_CHARACTER,
+                /* extendSelection= */ true,
+                /* expectedTraverseFrom= */ 6,
+                /* expectedTraverseTo= */ 7,
+                /* expectedSelectionFrom= */ -1,
+                /* expectedSelectionTo= */ -1);
     }
 
     /**
@@ -2111,15 +2227,15 @@ public class WebContentsAccessibilityTest {
         focusNodeAndWaitForSelection(input1Vvid);
 
         // 2. Movement with selection on editable to select one character (0 -> 1).
-        Bundle args = new Bundle();
-        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
-        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, true);
-
-        performTextActionOnUiThread(input1Vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-        Assert.assertEquals(0, mTestData.getTraverseFromIndex());
-        Assert.assertEquals(1, mTestData.getTraverseToIndex());
-        Assert.assertEquals(0, mTestData.getSelectionFromIndex());
-        Assert.assertEquals(1, mTestData.getSelectionToIndex());
+        moveAtGranularityAndAssertBounds(
+                input1Vvid,
+                ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                MOVEMENT_GRANULARITY_CHARACTER,
+                /* extendSelection= */ true,
+                /* expectedTraverseFrom= */ 0,
+                /* expectedTraverseTo= */ 1,
+                /* expectedSelectionFrom= */ 0,
+                /* expectedSelectionTo= */ 1);
 
         // 3. Set extended selection from beginning of p1 to end of editable using child offset.
         setAndAssertExtendedSelection(
@@ -2139,9 +2255,15 @@ public class WebContentsAccessibilityTest {
 
         // 4. Moving forward with extended selection on input1 advances from the local
         // selection cursor (1 -> 2).
-        performTextActionOnUiThread(input1Vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-        Assert.assertEquals(1, mTestData.getTraverseFromIndex());
-        Assert.assertEquals(2, mTestData.getTraverseToIndex());
+        moveAtGranularityAndAssertBounds(
+                input1Vvid,
+                ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                MOVEMENT_GRANULARITY_CHARACTER,
+                /* extendSelection= */ true,
+                /* expectedTraverseFrom= */ 1,
+                /* expectedTraverseTo= */ 2,
+                /* expectedSelectionFrom= */ 0,
+                /* expectedSelectionTo= */ 2);
     }
 
     /**
@@ -2162,34 +2284,52 @@ public class WebContentsAccessibilityTest {
 
         focusNode(p1Vvid);
 
-        Bundle args = new Bundle();
-        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
-        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, false);
-
         // Move 2 characters forward on p1 (0 -> 1 -> 2).
-        performTextActionOnUiThreadAndWaitForTraversalEvent(
-                p1Vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-        performTextActionOnUiThreadAndWaitForTraversalEvent(
-                p1Vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-        Assert.assertEquals(1, mTestData.getTraverseFromIndex());
-        Assert.assertEquals(2, mTestData.getTraverseToIndex());
+        moveAtGranularityAndAssertBounds(
+                p1Vvid,
+                ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                MOVEMENT_GRANULARITY_CHARACTER,
+                /* extendSelection= */ false,
+                /* expectedTraverseFrom= */ 0,
+                /* expectedTraverseTo= */ 1,
+                /* expectedSelectionFrom= */ -1,
+                /* expectedSelectionTo= */ -1);
+        moveAtGranularityAndAssertBounds(
+                p1Vvid,
+                ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                MOVEMENT_GRANULARITY_CHARACTER,
+                /* extendSelection= */ false,
+                /* expectedTraverseFrom= */ 1,
+                /* expectedTraverseTo= */ 2,
+                /* expectedSelectionFrom= */ -1,
+                /* expectedSelectionTo= */ -1);
 
         // Clear accessibility focus on p1.
         performActionOnUiThread(p1Vvid, ACTION_CLEAR_ACCESSIBILITY_FOCUS, null);
 
         // Restore focus back to p1 (restoring focus preserves previous granularity position 2).
         focusNode(p1Vvid);
-        performTextActionOnUiThreadAndWaitForTraversalEvent(
-                p1Vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-        Assert.assertEquals(2, mTestData.getTraverseFromIndex());
-        Assert.assertEquals(3, mTestData.getTraverseToIndex());
+        moveAtGranularityAndAssertBounds(
+                p1Vvid,
+                ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                MOVEMENT_GRANULARITY_CHARACTER,
+                /* extendSelection= */ false,
+                /* expectedTraverseFrom= */ 2,
+                /* expectedTraverseTo= */ 3,
+                /* expectedSelectionFrom= */ -1,
+                /* expectedSelectionTo= */ -1);
 
         // Move focus to p2 (new node: granularity index resets for p2).
         focusNode(p2Vvid);
-        performTextActionOnUiThreadAndWaitForTraversalEvent(
-                p2Vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-        Assert.assertEquals(0, mTestData.getTraverseFromIndex());
-        Assert.assertEquals(1, mTestData.getTraverseToIndex());
+        moveAtGranularityAndAssertBounds(
+                p2Vvid,
+                ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                MOVEMENT_GRANULARITY_CHARACTER,
+                /* extendSelection= */ false,
+                /* expectedTraverseFrom= */ 0,
+                /* expectedTraverseTo= */ 1,
+                /* expectedSelectionFrom= */ -1,
+                /* expectedSelectionTo= */ -1);
     }
 
     /**
@@ -2207,28 +2347,31 @@ public class WebContentsAccessibilityTest {
 
         focusNode(nodeVirtualViewId);
 
-        // Set granularity to CHARACTER.
-        Bundle args = new Bundle();
-        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
-
-        for (int selection = 0; selection < 2; selection++) {
-            // Movement with granularity on non-editable nodes does not update selection, hene
+        for (boolean extendSelection : new boolean[] {false, true}) {
+            // Movement with granularity on non-editable nodes does not update selection, hence
             // the argument should have no effect on the result.
-            args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, selection != 0);
             for (int i = 0; i < 5; i++) {
-                performTextActionOnUiThreadAndWaitForTraversalEvent(
-                        nodeVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-
-                Assert.assertEquals(i, mTestData.getTraverseFromIndex());
-                Assert.assertEquals(i + 1, mTestData.getTraverseToIndex());
+                moveAtGranularityAndAssertBounds(
+                        nodeVirtualViewId,
+                        ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                        MOVEMENT_GRANULARITY_CHARACTER,
+                        extendSelection,
+                        /* expectedTraverseFrom= */ i,
+                        /* expectedTraverseTo= */ i + 1,
+                        /* expectedSelectionFrom= */ -1,
+                        /* expectedSelectionTo= */ -1);
             }
 
             for (int i = 5; i > 0; i--) {
-                performTextActionOnUiThreadAndWaitForTraversalEvent(
-                        nodeVirtualViewId, ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, args);
-
-                Assert.assertEquals(i - 1, mTestData.getTraverseFromIndex());
-                Assert.assertEquals(i, mTestData.getTraverseToIndex());
+                moveAtGranularityAndAssertBounds(
+                        nodeVirtualViewId,
+                        ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY,
+                        MOVEMENT_GRANULARITY_CHARACTER,
+                        extendSelection,
+                        /* expectedTraverseFrom= */ i - 1,
+                        /* expectedTraverseTo= */ i,
+                        /* expectedSelectionFrom= */ -1,
+                        /* expectedSelectionTo= */ -1);
             }
         }
     }
@@ -2250,15 +2393,15 @@ public class WebContentsAccessibilityTest {
 
         focusNode(nodeVirtualViewId);
 
-        // Set granularity to CHARACTER.
-        Bundle args = new Bundle();
-        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
-        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, false);
-
-        performTextActionOnUiThreadAndWaitForTraversalEvent(
-                nodeVirtualViewId, ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, args);
-        Assert.assertEquals(4, mTestData.getTraverseFromIndex());
-        Assert.assertEquals(5, mTestData.getTraverseToIndex());
+        moveAtGranularityAndAssertBounds(
+                nodeVirtualViewId,
+                ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY,
+                MOVEMENT_GRANULARITY_CHARACTER,
+                /* extendSelection= */ false,
+                /* expectedTraverseFrom= */ 4,
+                /* expectedTraverseTo= */ 5,
+                /* expectedSelectionFrom= */ -1,
+                /* expectedSelectionTo= */ -1);
     }
 
     /**
@@ -2280,34 +2423,33 @@ public class WebContentsAccessibilityTest {
 
         focusNodeAndWaitForSelection(editTextVirtualViewId);
 
-        // Set granularity to WORD, with selection FALSE
-        Bundle args = new Bundle();
-        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_WORD);
-        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, false);
-
         int[] wordStarts = new int[] {0, 8, 13, 20, 23};
         int[] wordEnds = new int[] {7, 12, 19, 22, 30};
 
         // Simulate swiping right (forward) through all 5 words, check indices along the way
         for (int i = 0; i < 5; ++i) {
-            performTextActionOnUiThread(
-                    editTextVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-
-            Assert.assertEquals(wordStarts[i], mTestData.getTraverseFromIndex());
-            Assert.assertEquals(wordEnds[i], mTestData.getTraverseToIndex());
-            Assert.assertEquals(wordEnds[i], mTestData.getSelectionFromIndex());
-            Assert.assertEquals(wordEnds[i], mTestData.getSelectionToIndex());
+            moveAtGranularityAndAssertBounds(
+                    editTextVirtualViewId,
+                    ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                    MOVEMENT_GRANULARITY_WORD,
+                    /* extendSelection= */ false,
+                    /* expectedTraverseFrom= */ wordStarts[i],
+                    /* expectedTraverseTo= */ wordEnds[i],
+                    /* expectedSelectionFrom= */ wordEnds[i],
+                    /* expectedSelectionTo= */ wordEnds[i]);
         }
 
         // Simulate swiping left (backward) through all 5 words, check indices along the way
         for (int i = 4; i >= 0; --i) {
-            performTextActionOnUiThread(
-                    editTextVirtualViewId, ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, args);
-
-            Assert.assertEquals(wordStarts[i], mTestData.getTraverseFromIndex());
-            Assert.assertEquals(wordEnds[i], mTestData.getTraverseToIndex());
-            Assert.assertEquals(wordStarts[i], mTestData.getSelectionFromIndex());
-            Assert.assertEquals(wordStarts[i], mTestData.getSelectionToIndex());
+            moveAtGranularityAndAssertBounds(
+                    editTextVirtualViewId,
+                    ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY,
+                    MOVEMENT_GRANULARITY_WORD,
+                    /* extendSelection= */ false,
+                    /* expectedTraverseFrom= */ wordStarts[i],
+                    /* expectedTraverseTo= */ wordEnds[i],
+                    /* expectedSelectionFrom= */ wordStarts[i],
+                    /* expectedSelectionTo= */ wordStarts[i]);
         }
     }
 
@@ -2329,66 +2471,72 @@ public class WebContentsAccessibilityTest {
 
         focusNodeAndWaitForSelection(editTextVirtualViewId);
 
-        // Set granularity to WORD, with selection TRUE
-        Bundle args = new Bundle();
-        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_WORD);
-        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, true);
-
         int[] wordStarts = new int[] {0, 8, 13, 20, 23};
         int[] wordEnds = new int[] {7, 12, 19, 22, 30};
 
         // Simulate swiping right (forward, adds to selection) through all 5 words, check indices.
         for (int i = 0; i < 5; ++i) {
-            performTextActionOnUiThread(
-                    editTextVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-
-            Assert.assertEquals(wordStarts[i], mTestData.getTraverseFromIndex());
-            Assert.assertEquals(wordEnds[i], mTestData.getTraverseToIndex());
-            Assert.assertEquals(0, mTestData.getSelectionFromIndex());
-            Assert.assertEquals(wordEnds[i], mTestData.getSelectionToIndex());
+            moveAtGranularityAndAssertBounds(
+                    editTextVirtualViewId,
+                    ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                    MOVEMENT_GRANULARITY_WORD,
+                    /* extendSelection= */ true,
+                    /* expectedTraverseFrom= */ wordStarts[i],
+                    /* expectedTraverseTo= */ wordEnds[i],
+                    /* expectedSelectionFrom= */ 0,
+                    /* expectedSelectionTo= */ wordEnds[i]);
         }
 
         // Simulate swiping left (backward, removes selection) through all 5 words, check indices.
         for (int i = 4; i >= 0; --i) {
-            performTextActionOnUiThread(
-                    editTextVirtualViewId, ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, args);
-
-            Assert.assertEquals(wordStarts[i], mTestData.getTraverseFromIndex());
-            Assert.assertEquals(wordEnds[i], mTestData.getTraverseToIndex());
-            Assert.assertEquals(0, mTestData.getSelectionFromIndex());
-            Assert.assertEquals(wordStarts[i], mTestData.getSelectionToIndex());
+            moveAtGranularityAndAssertBounds(
+                    editTextVirtualViewId,
+                    ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY,
+                    MOVEMENT_GRANULARITY_WORD,
+                    /* extendSelection= */ true,
+                    /* expectedTraverseFrom= */ wordStarts[i],
+                    /* expectedTraverseTo= */ wordEnds[i],
+                    /* expectedSelectionFrom= */ 0,
+                    /* expectedSelectionTo= */ wordStarts[i]);
         }
 
         // Turn selection mode off and traverse to the end so we can select backwards.
-        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, false);
         for (int i = 0; i < 5; ++i) {
-            performTextActionOnUiThread(
-                    editTextVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
+            moveAtGranularityAndAssertBounds(
+                    editTextVirtualViewId,
+                    ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                    MOVEMENT_GRANULARITY_WORD,
+                    /* extendSelection= */ false,
+                    /* expectedTraverseFrom= */ wordStarts[i],
+                    /* expectedTraverseTo= */ wordEnds[i],
+                    /* expectedSelectionFrom= */ wordEnds[i],
+                    /* expectedSelectionTo= */ wordEnds[i]);
         }
-
-        // Turn selection mode on
-        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, true);
 
         // Simulate swiping left (backward) (adds to selection).
         for (int i = 4; i >= 0; --i) {
-            performTextActionOnUiThread(
-                    editTextVirtualViewId, ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, args);
-
-            Assert.assertEquals(wordStarts[i], mTestData.getTraverseFromIndex());
-            Assert.assertEquals(wordEnds[i], mTestData.getTraverseToIndex());
-            Assert.assertEquals(30, mTestData.getSelectionFromIndex());
-            Assert.assertEquals(wordStarts[i], mTestData.getSelectionToIndex());
+            moveAtGranularityAndAssertBounds(
+                    editTextVirtualViewId,
+                    ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY,
+                    MOVEMENT_GRANULARITY_WORD,
+                    /* extendSelection= */ true,
+                    /* expectedTraverseFrom= */ wordStarts[i],
+                    /* expectedTraverseTo= */ wordEnds[i],
+                    /* expectedSelectionFrom= */ 30,
+                    /* expectedSelectionTo= */ wordStarts[i]);
         }
 
         // Simulate swiping right (forward) (removes from selections).
         for (int i = 0; i < 5; ++i) {
-            performTextActionOnUiThread(
-                    editTextVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-
-            Assert.assertEquals(wordStarts[i], mTestData.getTraverseFromIndex());
-            Assert.assertEquals(wordEnds[i], mTestData.getTraverseToIndex());
-            Assert.assertEquals(30, mTestData.getSelectionFromIndex());
-            Assert.assertEquals(wordEnds[i], mTestData.getSelectionToIndex());
+            moveAtGranularityAndAssertBounds(
+                    editTextVirtualViewId,
+                    ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                    MOVEMENT_GRANULARITY_WORD,
+                    /* extendSelection= */ true,
+                    /* expectedTraverseFrom= */ wordStarts[i],
+                    /* expectedTraverseTo= */ wordEnds[i],
+                    /* expectedSelectionFrom= */ 30,
+                    /* expectedSelectionTo= */ wordEnds[i]);
         }
     }
 
@@ -2414,63 +2562,69 @@ public class WebContentsAccessibilityTest {
         // seem to flake when the page has not fully loaded before testing begins.
         mActivityTestRule.sendEndOfTestSignal();
 
-        // Set granularity to CHARACTER, with selection TRUE
-        Bundle args = new Bundle();
-        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
-        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, true);
-
         // Simulate swiping right (forward) (adds to selection)
         for (int i = 0; i < 7; i++) {
-            performTextActionOnUiThread(
-                    contentEditableVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-
-            Assert.assertEquals(i, mTestData.getTraverseFromIndex());
-            Assert.assertEquals(i + 1, mTestData.getTraverseToIndex());
-            Assert.assertEquals(0, mTestData.getSelectionFromIndex());
-            Assert.assertEquals(i + 1, mTestData.getSelectionToIndex());
+            moveAtGranularityAndAssertBounds(
+                    contentEditableVirtualViewId,
+                    ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                    MOVEMENT_GRANULARITY_CHARACTER,
+                    /* extendSelection= */ true,
+                    /* expectedTraverseFrom= */ i,
+                    /* expectedTraverseTo= */ i + 1,
+                    /* expectedSelectionFrom= */ 0,
+                    /* expectedSelectionTo= */ i + 1);
         }
 
         // Simulate swiping left (backward) (removes from selections)
         for (int i = 7; i > 0; i--) {
-            performTextActionOnUiThread(
-                    contentEditableVirtualViewId, ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, args);
-
-            Assert.assertEquals(i - 1, mTestData.getTraverseFromIndex());
-            Assert.assertEquals(i, mTestData.getTraverseToIndex());
-            Assert.assertEquals(0, mTestData.getSelectionFromIndex());
-            Assert.assertEquals(i - 1, mTestData.getSelectionToIndex());
+            moveAtGranularityAndAssertBounds(
+                    contentEditableVirtualViewId,
+                    ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY,
+                    MOVEMENT_GRANULARITY_CHARACTER,
+                    /* extendSelection= */ true,
+                    /* expectedTraverseFrom= */ i - 1,
+                    /* expectedTraverseTo= */ i,
+                    /* expectedSelectionFrom= */ 0,
+                    /* expectedSelectionTo= */ i - 1);
         }
 
         // Turn selection mode off and traverse to end so we can select backwards
-        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, false);
-        for (int i = 7; i > 0; i--) {
-            performTextActionOnUiThread(
-                    contentEditableVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
+        for (int i = 0; i < 7; i++) {
+            moveAtGranularityAndAssertBounds(
+                    contentEditableVirtualViewId,
+                    ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                    MOVEMENT_GRANULARITY_CHARACTER,
+                    /* extendSelection= */ false,
+                    /* expectedTraverseFrom= */ i,
+                    /* expectedTraverseTo= */ i + 1,
+                    /* expectedSelectionFrom= */ i + 1,
+                    /* expectedSelectionTo= */ i + 1);
         }
-
-        // Turn selection mode on
-        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, true);
 
         // Simulate swiping left (backward) (adds to selections)
         for (int i = 7; i > 0; i--) {
-            performTextActionOnUiThread(
-                    contentEditableVirtualViewId, ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, args);
-
-            Assert.assertEquals(i - 1, mTestData.getTraverseFromIndex());
-            Assert.assertEquals(i, mTestData.getTraverseToIndex());
-            Assert.assertEquals(7, mTestData.getSelectionFromIndex());
-            Assert.assertEquals(i - 1, mTestData.getSelectionToIndex());
+            moveAtGranularityAndAssertBounds(
+                    contentEditableVirtualViewId,
+                    ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY,
+                    MOVEMENT_GRANULARITY_CHARACTER,
+                    /* extendSelection= */ true,
+                    /* expectedTraverseFrom= */ i - 1,
+                    /* expectedTraverseTo= */ i,
+                    /* expectedSelectionFrom= */ 7,
+                    /* expectedSelectionTo= */ i - 1);
         }
 
         // Simulate swiping right (forward) (removes from selection)
         for (int i = 0; i < 7; i++) {
-            performTextActionOnUiThread(
-                    contentEditableVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-
-            Assert.assertEquals(i, mTestData.getTraverseFromIndex());
-            Assert.assertEquals(i + 1, mTestData.getTraverseToIndex());
-            Assert.assertEquals(7, mTestData.getSelectionFromIndex());
-            Assert.assertEquals(i + 1, mTestData.getSelectionToIndex());
+            moveAtGranularityAndAssertBounds(
+                    contentEditableVirtualViewId,
+                    ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                    MOVEMENT_GRANULARITY_CHARACTER,
+                    /* extendSelection= */ true,
+                    /* expectedTraverseFrom= */ i,
+                    /* expectedTraverseTo= */ i + 1,
+                    /* expectedSelectionFrom= */ 7,
+                    /* expectedSelectionTo= */ i + 1);
         }
     }
 
@@ -2490,11 +2644,6 @@ public class WebContentsAccessibilityTest {
                 <p>Paragraph 5</p>
                 """);
 
-        // Set granularity to PARAGRAPH
-        Bundle args = new Bundle();
-        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_PARAGRAPH);
-        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, false);
-
         int[] paragraphs = new int[5];
         for (int i = 0; i < 5; i++) {
             paragraphs[i] = waitForNodeMatching(sTextMatcher, "Paragraph " + (i + 1));
@@ -2502,15 +2651,8 @@ public class WebContentsAccessibilityTest {
 
         // Simulate swiping forward
         for (int i = 0; i < 4; i++) {
-            mTestData.setReceivedAccessibilityFocusEvent(false);
-            // Perform our text selection/traversal action.
-            performActionOnUiThread(paragraphs[i], ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-
-            // Poll until accessibility focus has changed
-            CriteriaHelper.pollUiThread(
-                    () -> {
-                        return mTestData.hasReceivedAccessibilityFocusEvent();
-                    });
+            navigateAtParagraphGranularityAndWaitForFocus(
+                    paragraphs[i], ACTION_NEXT_AT_MOVEMENT_GRANULARITY);
         }
 
         // Ensure the last paragraph has accessibility focus
@@ -2542,15 +2684,9 @@ public class WebContentsAccessibilityTest {
         int heading1Vvid = waitForNodeMatching(sTextMatcher, "Buttons");
         int heading2Vvid = waitForNodeMatching(sTextMatcher, "Editable text");
 
-        Bundle args = new Bundle();
-        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_PARAGRAPH);
-        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, false);
-
         // Perform paragraph navigation starting from "Buttons" heading.
-        mTestData.setReceivedAccessibilityFocusEvent(false);
-        performActionOnUiThread(heading1Vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-
-        CriteriaHelper.pollUiThread(() -> mTestData.hasReceivedAccessibilityFocusEvent());
+        navigateAtParagraphGranularityAndWaitForFocus(
+                heading1Vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY);
 
         // Accessibility focus should move to "Editable text" (or next paragraph), NOT an unlabelled
         // wrapper div.
@@ -2581,17 +2717,17 @@ public class WebContentsAccessibilityTest {
         // Perform focus action to trigger initializeMovementAtGranularityOnSetAccessibilityFocus.
         performActionOnUiThread(textVvId, ACTION_ACCESSIBILITY_FOCUS, null);
 
-        // Setup GRANULARITY args.
-        Bundle args = new Bundle();
-        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
-        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, false);
-
         // Swipe forward. Since selection was on the text node, start index should be initialized to
         // 3.
-        performTextActionOnUiThreadAndWaitForTraversalEvent(
-                textVvId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-        Assert.assertEquals(3, mTestData.getTraverseFromIndex());
-        Assert.assertEquals(4, mTestData.getTraverseToIndex());
+        moveAtGranularityAndAssertBounds(
+                textVvId,
+                ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                MOVEMENT_GRANULARITY_CHARACTER,
+                /* extendSelection= */ false,
+                /* expectedTraverseFrom= */ 3,
+                /* expectedTraverseTo= */ 4,
+                /* expectedSelectionFrom= */ -1,
+                /* expectedSelectionTo= */ -1);
 
         // Focus away to clean up.
         performActionOnUiThread(rootVvid, ACTION_ACCESSIBILITY_FOCUS, null);
@@ -2608,10 +2744,15 @@ public class WebContentsAccessibilityTest {
 
         // Swipe forward on the text node. Since the selection focus node was the image node,
         // it shouldn't initialize the granularity index (which remains -1).
-        performTextActionOnUiThreadAndWaitForTraversalEvent(
-                textVvId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
-        Assert.assertEquals(0, mTestData.getTraverseFromIndex());
-        Assert.assertEquals(1, mTestData.getTraverseToIndex());
+        moveAtGranularityAndAssertBounds(
+                textVvId,
+                ACTION_NEXT_AT_MOVEMENT_GRANULARITY,
+                MOVEMENT_GRANULARITY_CHARACTER,
+                /* extendSelection= */ false,
+                /* expectedTraverseFrom= */ 0,
+                /* expectedTraverseTo= */ 1,
+                /* expectedSelectionFrom= */ -1,
+                /* expectedSelectionTo= */ -1);
     }
 
     // ------------------ Tests of AccessibilityNodeInfo objects ------------------ //
@@ -2699,41 +2840,21 @@ public class WebContentsAccessibilityTest {
 
         // Perform a series of slider increments and check results.
         for (int i = 1; i <= 10; i++) {
-            // Increment our slider using action, and poll until we receive the scroll event.
-            performActionOnUiThread(inputNodeVirtualViewId, ACTION_SCROLL_FORWARD, new Bundle());
-            CriteriaHelper.pollUiThread(
-                    () -> mTestData.hasReceivedEvent(), INPUT_RANGE_EVENT_ERROR);
-
-            // Refresh our node info to get the latest RangeInfo child object.
+            scrollRangeAndWaitForEvent(inputNodeVirtualViewId, ACTION_SCROLL_FORWARD);
             mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
-
-            // Confirm slider values.
             Assert.assertEquals(
                     INPUT_RANGE_VALUE_MISMATCH, i, mNodeInfo.getRangeInfo().getCurrent(), 0.001);
-
-            // Reset polling value for next test
-            mTestData.setReceivedEvent(false);
         }
 
         // Perform a series of slider decrements and check results.
         for (int i = 1; i <= 10; i++) {
-            // Decrement our slider using action, and poll until we receive the scroll event.
-            performActionOnUiThread(inputNodeVirtualViewId, ACTION_SCROLL_BACKWARD, new Bundle());
-            CriteriaHelper.pollUiThread(
-                    () -> mTestData.hasReceivedEvent(), INPUT_RANGE_EVENT_ERROR);
-
-            // Refresh our node info to get the latest RangeInfo child object.
+            scrollRangeAndWaitForEvent(inputNodeVirtualViewId, ACTION_SCROLL_BACKWARD);
             mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
-
-            // Confirm slider values.
             Assert.assertEquals(
                     INPUT_RANGE_VALUE_MISMATCH,
                     10 - i,
                     mNodeInfo.getRangeInfo().getCurrent(),
                     0.001);
-
-            // Reset polling value for next test
-            mTestData.setReceivedEvent(false);
         }
     }
 
@@ -2753,44 +2874,24 @@ public class WebContentsAccessibilityTest {
 
         // Perform a series of slider increments and check results.
         for (int i = 1; i <= 10; i++) {
-            // Increment our slider using action, and poll until we receive the scroll event.
-            performActionOnUiThread(inputNodeVirtualViewId, ACTION_SCROLL_FORWARD, new Bundle());
-            CriteriaHelper.pollUiThread(
-                    () -> mTestData.hasReceivedEvent(), INPUT_RANGE_EVENT_ERROR);
-
-            // Refresh our node info to get the latest RangeInfo child object.
+            scrollRangeAndWaitForEvent(inputNodeVirtualViewId, ACTION_SCROLL_FORWARD);
             mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
-
-            // Confirm slider values.
             Assert.assertEquals(
                     INPUT_RANGE_VALUE_MISMATCH,
                     500 + (50 * i),
                     mNodeInfo.getRangeInfo().getCurrent(),
                     0.001);
-
-            // Reset polling value for next test
-            mTestData.setReceivedEvent(false);
         }
 
         // Perform a series of slider decrements and check results.
         for (int i = 1; i <= 20; i++) {
-            // Decrement our slider using action, and poll until we receive the scroll event.
-            performActionOnUiThread(inputNodeVirtualViewId, ACTION_SCROLL_BACKWARD, new Bundle());
-            CriteriaHelper.pollUiThread(
-                    () -> mTestData.hasReceivedEvent(), INPUT_RANGE_EVENT_ERROR);
-
-            // Refresh our node info to get the latest RangeInfo child object.
+            scrollRangeAndWaitForEvent(inputNodeVirtualViewId, ACTION_SCROLL_BACKWARD);
             mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
-
-            // Confirm slider values.
             Assert.assertEquals(
                     INPUT_RANGE_VALUE_MISMATCH,
                     1000 - (50 * i),
                     mNodeInfo.getRangeInfo().getCurrent(),
                     0.001);
-
-            // Reset polling value for next test
-            mTestData.setReceivedEvent(false);
         }
     }
 
@@ -3659,15 +3760,9 @@ public class WebContentsAccessibilityTest {
         Assert.assertFalse(performActionOnUiThread(vvid, ACTION_SET_TEXT, bundle));
 
         // Send a proper action and poll for update.
-        bundle.putCharSequence(ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, "new text");
-        Assert.assertTrue(
-                performActionOnUiThread(
-                        vvid,
-                        ACTION_SET_TEXT,
-                        bundle,
-                        () -> !createAccessibilityNodeInfo(vvid).getText().toString().isEmpty()));
+        Assert.assertTrue(setText(vvid, "new text"));
 
-        // Send of test signal and update node.
+        // Send end of test signal and update node.
         mActivityTestRule.sendEndOfTestSignal();
         mNodeInfo = createAccessibilityNodeInfo(vvid);
 
@@ -3694,20 +3789,9 @@ public class WebContentsAccessibilityTest {
         Assert.assertFalse(performActionOnUiThread(vvidButton, ACTION_SET_SELECTION, null));
 
         // Send a proper action and poll for update.
-        Bundle bundle = new Bundle();
-        bundle.putInt(ACTION_ARGUMENT_SELECTION_START_INT, 2);
-        bundle.putInt(ACTION_ARGUMENT_SELECTION_END_INT, 5);
-        Assert.assertTrue(
-                performActionOnUiThread(
-                        vvid,
-                        ACTION_SET_SELECTION,
-                        bundle,
-                        () -> {
-                            return createAccessibilityNodeInfo(vvid).getTextSelectionStart() > 0
-                                    && createAccessibilityNodeInfo(vvid).getTextSelectionEnd() > 0;
-                        }));
+        Assert.assertTrue(setSelection(vvid, /* start= */ 2, /* end= */ 5));
 
-        // Send of test signal and update node.
+        // Send end of test signal and update node.
         mActivityTestRule.sendEndOfTestSignal();
         mNodeInfo = createAccessibilityNodeInfo(vvid);
 
@@ -4062,6 +4146,10 @@ public class WebContentsAccessibilityTest {
         // Selection from the beginning of one editable to the end of another.
         // Since the editables are fully selected, this is supported, but selection positions are
         // specified using child offset.
+        // TODO(crbug.com/443078007): Returned selection contradicts the selection boundary rules
+        // since selection start is inside an editable and selection end is outside of it. This does
+        // not cause user visible issues, but if TB sends back the same selection to Chrome, it will
+        // be rejected. Fix the issue here and in next test cases.
         setAndAssertExtendedSelection(
                 rootVvid,
                 rootVvid,
@@ -4431,28 +4519,10 @@ public class WebContentsAccessibilityTest {
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
 
         // Select a given portion of the text.
-        Bundle bundle = new Bundle();
-        bundle.putInt(ACTION_ARGUMENT_SELECTION_START_INT, 2);
-        bundle.putInt(ACTION_ARGUMENT_SELECTION_END_INT, 7);
-        Assert.assertTrue(
-                performActionOnUiThread(
-                        vvid,
-                        ACTION_SET_SELECTION,
-                        bundle,
-                        () -> {
-                            return createAccessibilityNodeInfo(vvid).getTextSelectionStart() > 0
-                                    && createAccessibilityNodeInfo(vvid).getTextSelectionEnd() > 0;
-                        }));
+        Assert.assertTrue(setSelection(vvid, /* start= */ 2, /* end= */ 7));
 
         // Perform the "cut" action, and poll for clipboard to be non-null.
-        ClipboardManager clipboardManager =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return (ClipboardManager)
-                                    mActivityTestRule
-                                            .getActivity()
-                                            .getSystemService(CLIPBOARD_SERVICE);
-                        });
+        ClipboardManager clipboardManager = getClipboardManager();
         Assert.assertTrue(
                 performActionOnUiThread(
                         vvid, ACTION_CUT, null, () -> clipboardManager.getPrimaryClip() != null));
@@ -4492,28 +4562,10 @@ public class WebContentsAccessibilityTest {
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
 
         // Select a given portion of the text.
-        Bundle bundle = new Bundle();
-        bundle.putInt(ACTION_ARGUMENT_SELECTION_START_INT, 2);
-        bundle.putInt(ACTION_ARGUMENT_SELECTION_END_INT, 7);
-        Assert.assertTrue(
-                performActionOnUiThread(
-                        vvid,
-                        ACTION_SET_SELECTION,
-                        bundle,
-                        () -> {
-                            return createAccessibilityNodeInfo(vvid).getTextSelectionStart() > 0
-                                    && createAccessibilityNodeInfo(vvid).getTextSelectionEnd() > 0;
-                        }));
+        Assert.assertTrue(setSelection(vvid, /* start= */ 2, /* end= */ 7));
 
         // Perform the "copy" action, and poll for clipboard to be non-null.
-        ClipboardManager clipboardManager =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return (ClipboardManager)
-                                    mActivityTestRule
-                                            .getActivity()
-                                            .getSystemService(CLIPBOARD_SERVICE);
-                        });
+        ClipboardManager clipboardManager = getClipboardManager();
         Assert.assertTrue(
                 performActionOnUiThread(
                         vvid, ACTION_COPY, null, () -> clipboardManager.getPrimaryClip() != null));
@@ -4549,13 +4601,9 @@ public class WebContentsAccessibilityTest {
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
 
         // Add some ClipData to the ClipboardManager to paste.
+        ClipboardManager clipboardManager = getClipboardManager();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ClipboardManager clipboardManager =
-                            (ClipboardManager)
-                                    mActivityTestRule
-                                            .getActivity()
-                                            .getSystemService(CLIPBOARD_SERVICE);
                     clipboardManager.setPrimaryClip(
                             ClipData.newPlainText("test text", "test text"));
                 });
@@ -4576,9 +4624,6 @@ public class WebContentsAccessibilityTest {
         mNodeInfo = createAccessibilityNodeInfo(vvid);
 
         // Verify text has not been removed from the clipboard.
-        ClipboardManager clipboardManager =
-                (ClipboardManager)
-                        mActivityTestRule.getActivity().getSystemService(CLIPBOARD_SERVICE);
         Assert.assertNotNull(PERFORM_ACTION_ERROR, clipboardManager.getPrimaryClip());
         Assert.assertEquals(
                 PERFORM_ACTION_ERROR, 1, clipboardManager.getPrimaryClip().getItemCount());
@@ -4591,7 +4636,7 @@ public class WebContentsAccessibilityTest {
         Assert.assertEquals(PERFORM_ACTION_ERROR, "test text", mNodeInfo.getText().toString());
     }
 
-    /** Test that the performAction for ACTION_SET_SELECTION works properly with accessibility. */
+    /** Test that the performAction for ACTION_SET_PROGRESS works properly with accessibility. */
     @Test
     @SmallTest
     public void testPerformAction_setProgress() throws Throwable {
@@ -4609,17 +4654,7 @@ public class WebContentsAccessibilityTest {
         Assert.assertFalse(performActionOnUiThread(vvid, ACTION_SET_PROGRESS, bundle));
 
         // Send a proper action and poll for update.
-        bundle.putFloat(ACTION_ARGUMENT_PROGRESS_VALUE, 20);
-        Assert.assertTrue(
-                performActionOnUiThread(
-                        vvid,
-                        ACTION_SET_PROGRESS,
-                        bundle,
-                        () -> {
-                            var current =
-                                    createAccessibilityNodeInfo(vvid).getRangeInfo().getCurrent();
-                            return Math.abs(current - 20) < 0.01;
-                        }));
+        setProgress(vvid, /* value= */ 20);
 
         // Update node.
         mNodeInfo = createAccessibilityNodeInfo(vvid);
@@ -4630,17 +4665,7 @@ public class WebContentsAccessibilityTest {
         Assert.assertEquals(PERFORM_ACTION_ERROR, 50, mNodeInfo.getRangeInfo().getMax(), 0.01);
 
         // Send action that exceeds max value to test clamping.
-        bundle.putFloat(ACTION_ARGUMENT_PROGRESS_VALUE, 55);
-        Assert.assertTrue(
-                performActionOnUiThread(
-                        vvid,
-                        ACTION_SET_PROGRESS,
-                        bundle,
-                        () -> {
-                            var current =
-                                    createAccessibilityNodeInfo(vvid).getRangeInfo().getCurrent();
-                            return Math.abs(current - 50) < 0.01;
-                        }));
+        setProgress(vvid, /* value= */ 55, /* expectedValue= */ 50);
 
         // Update node.
         mNodeInfo = createAccessibilityNodeInfo(vvid);
@@ -4651,17 +4676,7 @@ public class WebContentsAccessibilityTest {
         Assert.assertEquals(PERFORM_ACTION_ERROR, 50, mNodeInfo.getRangeInfo().getMax(), 0.01);
 
         // Send action that is less than minimum value to test clamping.
-        bundle.putFloat(ACTION_ARGUMENT_PROGRESS_VALUE, -5);
-        Assert.assertTrue(
-                performActionOnUiThread(
-                        vvid,
-                        ACTION_SET_PROGRESS,
-                        bundle,
-                        () -> {
-                            var current =
-                                    createAccessibilityNodeInfo(vvid).getRangeInfo().getCurrent();
-                            return Math.abs(current - 0) < 0.01;
-                        }));
+        setProgress(vvid, /* value= */ -5, /* expectedValue= */ 0);
 
         // Update node.
         mNodeInfo = createAccessibilityNodeInfo(vvid);
@@ -4683,25 +4698,27 @@ public class WebContentsAccessibilityTest {
         // kCollapse to ArrowLeft for ARIA treeitems, we use an onkeydown listener to
         // mock the response.
         setupTestWithHTML(
-                "<ul role='tree'>"
-                        + "  <li role='none'>"
-                        + "    <a id='node' role='treeitem' aria-expanded='false'"
-                        + "       href='#placeholder' onkeydown='expandLogic(event)'>"
-                        + "      Expandable Link"
-                        + "    </a>"
-                        + "  </li>"
-                        + "</ul>"
-                        + "<script>"
-                        + "  function expandLogic(e) {"
-                        + "    if (e.key === 'ArrowRight') {"
-                        + "      e.preventDefault();"
-                        + "      e.target.setAttribute('aria-expanded', 'true');"
-                        + "    } else if (e.key === 'ArrowLeft') {"
-                        + "      e.preventDefault();"
-                        + "      e.target.setAttribute('aria-expanded', 'false');"
-                        + "    }"
-                        + "  }"
-                        + "</script>");
+                """
+                <ul role='tree'>
+                  <li role='none'>
+                    <a id='node' role='treeitem' aria-expanded='false'
+                       href='#placeholder' onkeydown='expandLogic(event)'>
+                      Expandable Link
+                    </a>
+                  </li>
+                </ul>
+                <script>
+                  function expandLogic(e) {
+                    if (e.key === 'ArrowRight') {
+                      e.preventDefault();
+                      e.target.setAttribute('aria-expanded', 'true');
+                    } else if (e.key === 'ArrowLeft') {
+                      e.preventDefault();
+                      e.target.setAttribute('aria-expanded', 'false');
+                    }
+                  }
+                </script>
+                """);
 
         // Find the treeitem node.
         int vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "node");
@@ -4715,6 +4732,7 @@ public class WebContentsAccessibilityTest {
         Assert.assertFalse(
                 "Node should NOT have ACTION_COLLAPSE",
                 mNodeInfo.getActionList().contains(ACTION_COLLAPSE));
+
         // 1. Send ACTION_EXPAND and poll for the state to update.
         Assert.assertTrue(
                 performActionOnUiThread(
@@ -4726,9 +4744,8 @@ public class WebContentsAccessibilityTest {
                                         .getActionList()
                                         .contains(ACTION_COLLAPSE)));
         mNodeInfo = createAccessibilityNodeInfo(vvid);
-        Assert.assertTrue(
-                PERFORM_ACTION_ERROR, mNodeInfo.getActionList().contains(ACTION_COLLAPSE));
         Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo.getActionList().contains(ACTION_EXPAND));
+
         // 2. Send ACTION_COLLAPSE and poll for the state to update.
         Assert.assertTrue(
                 performActionOnUiThread(
@@ -4739,14 +4756,14 @@ public class WebContentsAccessibilityTest {
                                 createAccessibilityNodeInfo(vvid)
                                         .getActionList()
                                         .contains(ACTION_EXPAND)));
-
         mNodeInfo = createAccessibilityNodeInfo(vvid);
-        Assert.assertTrue(PERFORM_ACTION_ERROR, mNodeInfo.getActionList().contains(ACTION_EXPAND));
         Assert.assertFalse(
                 PERFORM_ACTION_ERROR, mNodeInfo.getActionList().contains(ACTION_COLLAPSE));
     }
 
-    /** Test that the performAction for ACTION_SET_SELECTION works properly with accessibility. */
+    /**
+     * Test that the performAction for ACTION_NEXT_HTML_ELEMENT works properly with accessibility.
+     */
     @Test
     @SmallTest
     public void testPerformAction_nextHtmlElement() throws Throwable {
@@ -4779,9 +4796,9 @@ public class WebContentsAccessibilityTest {
                         vvid1,
                         ACTION_NEXT_HTML_ELEMENT,
                         bundle,
-                        () -> createAccessibilityNodeInfo(vvid2).isAccessibilityFocused()));
+                        () -> isNodeAccessibilityFocused(vvid2)));
 
-        // Send of test signal and update node.
+        // Send end of test signal and update node.
         mActivityTestRule.sendEndOfTestSignal();
         nodeInfo1 = createAccessibilityNodeInfo(vvid1);
         nodeInfo2 = createAccessibilityNodeInfo(vvid2);
@@ -4791,7 +4808,10 @@ public class WebContentsAccessibilityTest {
         Assert.assertTrue(PERFORM_ACTION_ERROR, nodeInfo2.isAccessibilityFocused());
     }
 
-    /** Test that the performAction for ACTION_SET_SELECTION works properly with accessibility. */
+    /**
+     * Test that the performAction for ACTION_PREVIOUS_HTML_ELEMENT works properly with
+     * accessibility.
+     */
     @Test
     @SmallTest
     public void testPerformAction_previousHtmlElement() throws Throwable {
@@ -4824,9 +4844,9 @@ public class WebContentsAccessibilityTest {
                         vvid2,
                         ACTION_PREVIOUS_HTML_ELEMENT,
                         bundle,
-                        () -> createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
+                        () -> isNodeAccessibilityFocused(vvid1)));
 
-        // Send of test signal and update node.
+        // Send end of test signal and update node.
         mActivityTestRule.sendEndOfTestSignal();
         nodeInfo1 = createAccessibilityNodeInfo(vvid1);
         nodeInfo2 = createAccessibilityNodeInfo(vvid2);
@@ -4859,7 +4879,7 @@ public class WebContentsAccessibilityTest {
                         vvid1,
                         ACTION_ACCESSIBILITY_FOCUS,
                         null,
-                        () -> createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
+                        () -> isNodeAccessibilityFocused(vvid1)));
 
         // Update nodes and verify results.
         nodeInfo1 = createAccessibilityNodeInfo(vvid1);
@@ -4892,7 +4912,7 @@ public class WebContentsAccessibilityTest {
                         vvid1,
                         ACTION_ACCESSIBILITY_FOCUS,
                         null,
-                        () -> createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
+                        () -> isNodeAccessibilityFocused(vvid1)));
 
         // Update nodes and verify results.
         nodeInfo1 = createAccessibilityNodeInfo(vvid1);
@@ -4906,7 +4926,7 @@ public class WebContentsAccessibilityTest {
                         vvid1,
                         ACTION_CLEAR_ACCESSIBILITY_FOCUS,
                         null,
-                        () -> !createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
+                        () -> !isNodeAccessibilityFocused(vvid1)));
 
         nodeInfo1 = createAccessibilityNodeInfo(vvid1);
         nodeInfo2 = createAccessibilityNodeInfo(vvid2);
@@ -4965,7 +4985,7 @@ public class WebContentsAccessibilityTest {
                         vvid1,
                         ACTION_ACCESSIBILITY_FOCUS,
                         null,
-                        () -> createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
+                        () -> isNodeAccessibilityFocused(vvid1)));
 
         // Use findFocus to get the accessibility focused node
         AccessibilityNodeInfoCompat accessibilityFocusedNode =
@@ -5112,7 +5132,7 @@ public class WebContentsAccessibilityTest {
             AccessibilityNodeInfoCompat.AccessibilityActionCompat action,
             String htmlElementString)
             throws Throwable {
-        mActivityTestRule.focusNode(fromVirtualViewId);
+        focusNode(fromVirtualViewId);
 
         Bundle bundle = new Bundle();
         bundle.putString(ACTION_ARGUMENT_HTML_ELEMENT_STRING, htmlElementString);
@@ -5135,7 +5155,7 @@ public class WebContentsAccessibilityTest {
             String htmlElementString,
             int expectedNewFocusedVirtualViewId)
             throws Throwable {
-        mActivityTestRule.focusNode(fromVirtualViewId);
+        focusNode(fromVirtualViewId);
 
         Bundle bundle = new Bundle();
         bundle.putString(ACTION_ARGUMENT_HTML_ELEMENT_STRING, htmlElementString);
@@ -5160,7 +5180,7 @@ public class WebContentsAccessibilityTest {
 
         String fromId = expectedIdSequence[0];
         int fromVirtualViewId = waitForNodeMatching(sViewIdResourceNameMatcher, fromId);
-        mActivityTestRule.focusNode(fromVirtualViewId);
+        focusNode(fromVirtualViewId);
 
         for (int i = 1; i < expectedIdSequence.length; ++i) {
             fromId = expectedIdSequence[i - 1];
