@@ -30,7 +30,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.Token;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -78,8 +77,6 @@ import java.util.Set;
 @MinAndroidSdkLevel(VERSION_CODES.S)
 public class MultiInstanceManagerApi31Test {
     private static final int TAB1_ID = 456;
-    private static final Token TAB_GROUP_ID1 = new Token(2L, 2L);
-    private static final String TAB_GROUP_TITLE = "Regrouped tabs";
     private static final ArrayList<Map.Entry<Integer, String>> TAB_IDS_TO_URLS =
             new ArrayList<>(List.of(Map.entry(TAB1_ID, "https://www.youtube.com/")));
 

@@ -82,7 +82,6 @@ import java.util.Set;
 public class KeyboardShortcutsTest {
 
     private static final int TAB_ID = 0;
-    private static final int TAB_ID_2 = 0;
     // Want this to be less than 8 so we can test that "go to tab" keyboard shortcut is not called.
     private static final int SMALL_NUMBER_OF_TABS = 7;
     // Want this to be greater than 10 so we can test "go to tab" keyboard shortcut.
