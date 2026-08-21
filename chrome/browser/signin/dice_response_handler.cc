@@ -217,7 +217,7 @@ void DiceResponseHandler::DiceTokenFetcher::StartBindingKeyGeneration(
       signin::ParseSignatureAlgorithmList(supported_algorithms),
       authorization_code_,
       base::BindOnce(&DiceTokenFetcher::OnRegistrationTokenGenerated,
-                     base::Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr()));
   if (!started) {
     token_binding_outcome_ = TokenBindingOutcome::kNotBoundNotSupported;
     StartTokenFetch();

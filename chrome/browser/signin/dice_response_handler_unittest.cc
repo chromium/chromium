@@ -1760,6 +1760,75 @@ TEST_F(DiceResponseHandlerTest, SigninRepeatedWithDuplicateAccountInHeader) {
       0u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
 }
 
+// Checks that cancelling an in-flight token fetcher while registration token
+// generation is pending does not cause a dangling pointer crash when the
+// asynchronous token generation finishes.
+// Regression test for https://crbug.com/548923019.
+TEST_F(DiceResponseHandlerTest,
+       SigninRepeatedWhileBindingKeyGenerationInFlight) {
+  EnableTokenBindingRegistration();
+  DiceResponseParams dice_params_1 = MakeDiceParams(DiceAction::SIGNIN);
+  const std::string code_1 =
+      dice_params_1.signin_info()->GetInitiator()->authorization_code;
+
+  // Start first request. Token fetch is blocked on registration token
+  // generation.
+  dice_response_handler_->ProcessDiceHeader(
+      std::move(dice_params_1),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+  EXPECT_EQ(
+      1u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
+  ASSERT_THAT(signin_client_.GetAndClearConsumer(), testing::IsNull());
+
+  // Start a second request for the same account while token generation for the
+  // first is still in flight.
+  DiceResponseParams dice_params_2;
+  DiceResponseParams::SigninInfo* signin_info_2 =
+      &dice_params_2.data.emplace<DiceResponseParams::SigninInfo>();
+  signin_info_2->AddAccount({GetDiceResponseParamsAccountInfo(kEmail),
+                             "authorization_code_2", false,
+                             kEligibleForTokenBinding, false});
+  const std::string code_2 = "authorization_code_2";
+
+  dice_response_handler_->ProcessDiceHeader(
+      std::move(dice_params_2),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+
+  // The first fetcher is cancelled and only the second one is pending.
+  EXPECT_EQ(
+      1u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
+  ASSERT_THAT(signin_client_.GetAndClearConsumer(), testing::IsNull());
+
+  // Simulate completion of registration token generation for the first
+  // request. The first fetcher was already destroyed, so the callback should be
+  // safely dropped by WeakPtr without crashing.
+  const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
+  SimulateRegistrationTokenHelperResult(
+      code_1, signin::BindingKeyRegistrationTokenResult(
+                  unexportable_keys::UnexportableSigningKeyId(), kWrappedKey,
+                  "test_registration_token_1"));
+
+  // Token fetch for the second request is still waiting for its own token
+  // generation.
+  ASSERT_THAT(signin_client_.GetAndClearConsumer(), testing::IsNull());
+
+  // Complete token generation for the second request.
+  SimulateRegistrationTokenHelperResult(
+      code_2, signin::BindingKeyRegistrationTokenResult(
+                  unexportable_keys::UnexportableSigningKeyId(), kWrappedKey,
+                  "test_registration_token_2"));
+  GaiaAuthConsumer* consumer_2 = signin_client_.GetAndClearConsumer();
+  ASSERT_THAT(consumer_2, testing::NotNull());
+
+  // Complete token fetch for the second request.
+  consumer_2->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+      "refresh_token_2", "access_token_2", /*expires_in_secs=*/10,
+      /*is_under_advanced_protection=*/true, /*is_bound_to_key=*/true));
+
+  EXPECT_EQ(
+      0u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
+}
+
 // Checks that when an initiator account fetch in initiator-first mode is
 // cancelled by a concurrent sign-in request for the initiator account, the
 // entire session (including any waiting secondary accounts) is cancelled and

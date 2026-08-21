@@ -16,6 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
@@ -205,6 +206,7 @@ class DiceResponseHandler : public KeyedService {
     // The following fields are empty if the binding key wasn't generated.
     std::string binding_registration_token_;
     std::vector<uint8_t> wrapped_binding_key_;
+    base::WeakPtrFactory<DiceTokenFetcher> weak_ptr_factory_{this};
   };
 
   // Manages a session of concurrent token fetches for a single Dice header.
