@@ -4983,14 +4983,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
-  // Force the renderer to crash.
+  // Force the renderer to exit.
   content::RenderProcessHost* process =
       controller->GetOverlayWebViewForTesting()
           ->GetWebContents()
           ->GetPrimaryMainFrame()
           ->GetProcess();
   content::ScopedAllowRendererCrashes allow_renderer_crashes(process);
-  process->ForceCrash();
+  content::RenderProcessHostWatcher crash_observer(
+      process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  process->Shutdown(content::RESULT_CODE_KILLED);
+  crash_observer.Wait();
 
   // Overlay should close
   ASSERT_TRUE(base::test::RunUntil(
@@ -5025,16 +5028,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       [&]() { return controller->state() == State::kOff; }));
 }
 
-// TODO(crbug.com/422501416): Re-enable this test on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_OverlayInBackgroundClosesIfRendererExits \
-  DISABLED_OverlayInBackgroundClosesIfRendererExits
-#else
-#define MAYBE_OverlayInBackgroundClosesIfRendererExits \
-  OverlayInBackgroundClosesIfRendererExits
-#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       MAYBE_OverlayInBackgroundClosesIfRendererExits) {
+                       OverlayInBackgroundClosesIfRendererExits) {
   WaitForPaint();
 
   // State should start in off.
@@ -5058,11 +5053,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kBackground; }));
 
-  // Force the old tab renderer to crash.
+  // Force the old tab renderer to exit.
   content::RenderProcessHost* process =
       underlying_tab_contents->GetPrimaryMainFrame()->GetProcess();
   content::ScopedAllowRendererCrashes allow_renderer_crashes(process);
-  process->ForceCrash();
+  content::RenderProcessHostWatcher crash_observer(
+      process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  process->Shutdown(content::RESULT_CODE_KILLED);
+  crash_observer.Wait();
 
   // Overlay should close
   ASSERT_TRUE(base::test::RunUntil(
