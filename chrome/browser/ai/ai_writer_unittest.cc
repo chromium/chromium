@@ -788,8 +788,7 @@ class AIWriterManifestTest : public AITestUtils::AITestManifestBase {
   AIWriterManifestTest() {
     scoped_feature_list_.InitWithFeatures(
         {blink::features::kAIWriterAPI,
-         optimization_guide::kOptimizationGuideManifestBroker,
-         on_device_model::features::kOnDeviceModelLitertLmBackend},
+         optimization_guide::kOptimizationGuideManifestBroker},
         {});
   }
 

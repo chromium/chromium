@@ -851,13 +851,8 @@ AILanguageModel::GetLanguageModelInstanceInfo() {
   }
 
   // TODO(crbug.com/462283904): Obtain canonical model input format parameters.
-  std::optional<int> audio_sample_rate_hz;
-  std::optional<int> audio_channel_count;
-  if (base::FeatureList::IsEnabled(
-          on_device_model::features::kOnDeviceModelLitertLmBackend)) {
-    audio_sample_rate_hz = 16000;
-    audio_channel_count = 1;
-  }
+  std::optional<int> audio_sample_rate_hz = 16000;
+  std::optional<int> audio_channel_count = 1;
   uint32_t max_tokens = GetMaxTokens(model_client_.get());
   uint32_t total_tokens =
       context_->non_evictable_tokens() + context_->evictable_tokens();

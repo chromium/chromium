@@ -801,8 +801,7 @@ class AIRewriterManifestTest : public AITestUtils::AITestManifestBase {
   AIRewriterManifestTest() {
     scoped_feature_list_.InitWithFeatures(
         {blink::features::kAIRewriterAPI,
-         optimization_guide::kOptimizationGuideManifestBroker,
-         on_device_model::features::kOnDeviceModelLitertLmBackend},
+         optimization_guide::kOptimizationGuideManifestBroker},
         {});
   }
 

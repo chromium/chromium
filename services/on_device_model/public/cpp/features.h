@@ -22,10 +22,6 @@ BASE_DECLARE_FEATURE(kOnDeviceModelForceCpuBackend);
 COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
 BASE_DECLARE_FEATURE(kOnDeviceModelCpuBackend);
 
-// Whether the on-device model should use the LiteRT-LM backend.
-COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
-BASE_DECLARE_FEATURE(kOnDeviceModelLitertLmBackend);
-
 // Whether the on-device model should use the conversation API for LiteRT-LM.
 // Enabling this feature implies usage of the LiteRT-LM backend framework.
 COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)

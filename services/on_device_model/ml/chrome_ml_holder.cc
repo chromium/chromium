@@ -80,13 +80,10 @@ std::unique_ptr<ChromeMLHolder> ChromeMLHolder::Create(
     return {};
   }
 
-  ChromeMLBackendMode mode = ChromeMLBackendMode::kLegacy;
+  ChromeMLBackendMode mode = ChromeMLBackendMode::kLiteRtLmSession;
   if (base::FeatureList::IsEnabled(
           on_device_model::features::kOnDeviceModelConversationBackend)) {
     mode = ChromeMLBackendMode::kLiteRtLmConversation;
-  } else if (base::FeatureList::IsEnabled(
-                 on_device_model::features::kOnDeviceModelLitertLmBackend)) {
-    mode = ChromeMLBackendMode::kLiteRtLmSession;
   }
 
   const ChromeMLAPI* api = get_api_v2(mode);

@@ -907,8 +907,7 @@ class AISummarizerManifestTest : public AITestUtils::AITestManifestBase {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kAISummarizationAPI, {}},
          {blink::features::kAISummarizationPerformancePreference, {}},
-         {optimization_guide::kOptimizationGuideManifestBroker, {}},
-         {on_device_model::features::kOnDeviceModelLitertLmBackend, {}}},
+         {optimization_guide::kOptimizationGuideManifestBroker, {}}},
         {});
   }
 

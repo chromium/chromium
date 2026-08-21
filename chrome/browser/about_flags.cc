@@ -10532,12 +10532,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          page_content_annotations::features::kOnDeviceCategoryClassifier)},
 
-    {"on-device-model-litert-lm-backend",
-     flag_descriptions::kOnDeviceModelLitertLmBackendName,
-     flag_descriptions::kOnDeviceModelLitertLmBackendDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         on_device_model::features::kOnDeviceModelLitertLmBackend)},
-
     {"on-device-model-speculative-decoding",
      flag_descriptions::kOnDeviceModelSpeculativeDecodingName,
      flag_descriptions::kOnDeviceModelSpeculativeDecodingDescription,

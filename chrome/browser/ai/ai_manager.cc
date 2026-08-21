@@ -569,7 +569,6 @@ enum class SpeedPreferenceIncompatibilityReason {
   kTypeNotSupported,
   kLengthNotSupported,
   kManifestBrokerDisabled,
-  kLiteRTBackendDisabled,
 };
 
 base::expected<void, SpeedPreferenceIncompatibilityReason>
@@ -579,11 +578,6 @@ IsSpeedPreferenceCompatible(
           optimization_guide::kOptimizationGuideManifestBroker)) {
     return base::unexpected(
         SpeedPreferenceIncompatibilityReason::kManifestBrokerDisabled);
-  }
-  if (!base::FeatureList::IsEnabled(
-          on_device_model::features::kOnDeviceModelLitertLmBackend)) {
-    return base::unexpected(
-        SpeedPreferenceIncompatibilityReason::kLiteRTBackendDisabled);
   }
 
   auto supported_langs =

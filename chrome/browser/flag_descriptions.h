@@ -5344,11 +5344,6 @@ inline constexpr char kSummarizerAPIDescription[] =
     "with a built-in large language model. "
     "Please refer to the built-in AI documentation [1] for details.";
 
-inline constexpr char kOnDeviceModelLitertLmBackendName[] =
-    "LiteRT-LM for On-Device AI";
-inline constexpr char kOnDeviceModelLitertLmBackendDescription[] =
-    "Use LiteRT-LM runtime for on-device model service inference.";
-
 inline constexpr char kOnDeviceWebSpeechSmallExpertModelName[] =
     "Web Speech API On-Device Small Expert Model";
 inline constexpr char kOnDeviceWebSpeechSmallExpertModelDescription[] =

@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/values.h"
 #include "media/base/audio_bus.h"
-#include "services/on_device_model/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -667,11 +666,7 @@ void LanguageModelPromptBuilder::ToMojo(AudioBuffer* audio_buffer,
   auto audio_data = on_device_model::mojom::blink::AudioData::New();
   // TODO(crbug.com/476192657) Remove hardcoded values after we initiate ODMS
   // session earlier.
-  audio_data->sample_rate = info_->audio_sample_rate_hz.value_or(
-      base::FeatureList::IsEnabled(
-          on_device_model::features::kOnDeviceModelLitertLmBackend)
-          ? 16000
-          : 48000);
+  audio_data->sample_rate = info_->audio_sample_rate_hz.value_or(16000);
   audio_data->channel_count = info_->audio_channel_count.value_or(1);
   CHECK_EQ(audio_data->channel_count, 1) << "Multi-channel audio not supported";
 
@@ -720,11 +715,7 @@ void LanguageModelPromptBuilder::AudioToMojo(base::span<uint8_t> bytes,
   auto audio_data = on_device_model::mojom::blink::AudioData::New();
   // TODO(crbug.com/476192657) Remove hardcoded values after we initiate ODMS
   // session earlier.
-  audio_data->sample_rate = info_->audio_sample_rate_hz.value_or(
-      base::FeatureList::IsEnabled(
-          on_device_model::features::kOnDeviceModelLitertLmBackend)
-          ? 16000
-          : 48000);
+  audio_data->sample_rate = info_->audio_sample_rate_hz.value_or(16000);
   audio_data->channel_count = info_->audio_channel_count.value_or(1);
   CHECK_EQ(audio_data->channel_count, 1) << "Multi-channel audio not supported";
   scoped_refptr<AudioBus> bus = AudioBus::CreateBusFromInMemoryAudioFile(

@@ -2619,9 +2619,7 @@ class AILanguageModelManifestTest : public AITestUtils::AITestManifestBase {
  public:
   AILanguageModelManifestTest() {
     scoped_feature_list_.InitWithFeatures(
-        {optimization_guide::kOptimizationGuideManifestBroker,
-         on_device_model::features::kOnDeviceModelLitertLmBackend},
-        {});
+        {optimization_guide::kOptimizationGuideManifestBroker}, {});
   }
 
  protected:
