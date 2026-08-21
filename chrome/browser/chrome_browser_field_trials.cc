@@ -204,14 +204,13 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // on desktop Android ahead of NDK r30 rollout across the rest of Android.
   feature_overrides.EnableFeature(media::kNdkVideoEncodeAcceleratorNativeSvc);
 
-  // Enables uninterrupted audio on headphone unplug for desktop Android; other
-  // Android form factors retain pause-on-unplug for privacy considerations.
-  feature_overrides.EnableFeature(media::kNoPauseMediaOnHeadphoneUnplug);
+  // Disables fullscreen video picture-in-picture on desktop Android for desktop
+  // behavior parity; deprecates the fullscreen -> swipe home -> enter PiP path.
+  feature_overrides.DisableFeature(media::kFullscreenVideoPictureInPicture);
 
-  // Pauses media on system sleep on desktop Android as a workaround for missing
-  // lid-close/suspend detection APIs (crbug.com/505630217); not needed on other
-  // form factors.
-  feature_overrides.EnableFeature(media::kPauseMediaOnSystemSleepAndroid);
+  // Enforces 2-pixel even boundary alignment for YUV SurfaceControl overlays
+  // on desktop Android as a native workaround for Intel hardware scalers.
+  feature_overrides.EnableFeature(features::kAndroidYuvOverlayEvenAlignment);
 
   // Enable by default for desktop platforms, pending a phone / foldable /
   // tablet rollout using the same flag.
