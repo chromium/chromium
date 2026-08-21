@@ -170,7 +170,7 @@ class AppUsageTelemetrySamplerBrowserTest
                         const base::TimeDelta& running_time) {
     // Launch web app and simulate web app usage before closing the browser
     // window to prevent further usage tracking.
-    Browser* const app_browser =
+    BrowserWindowInterface* const app_browser =
         ::web_app::LaunchWebAppBrowser(profile(), app_id);
     test::MockClock::Get().Advance(running_time);
     ::web_app::CloseAndWait(app_browser);

@@ -6,7 +6,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -121,7 +120,8 @@ IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
 
   const GURL app_url = GetMixedContentAppURL();
   const webapps::AppId app_id = InstallPWA(app_url);
-  Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
+  BrowserWindowInterface* const app_browser =
+      LaunchWebAppBrowserAndWait(app_id);
   CHECK(app_browser);
   web_app::CheckMixedContentLoaded(app_browser);
 }
@@ -134,7 +134,8 @@ IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
 
   const GURL app_url = GetMixedContentAppURL();
   const webapps::AppId app_id = InstallPWA(app_url);
-  Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
+  BrowserWindowInterface* const app_browser =
+      LaunchWebAppBrowserAndWait(app_id);
 
   // Mixed content should be able to load in web app windows.
   CheckMixedContentLoaded(app_browser);
@@ -143,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
   ASSERT_EQ(browser(),
             GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser());
   ASSERT_EQ(GetMixedContentAppURL(), browser()
-                                         ->tab_strip_model()
+                                         ->GetTabStripModel()
                                          ->GetActiveWebContents()
                                          ->GetLastCommittedURL());
 
@@ -174,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GetMixedContentAppURL()));
   content::WebContents* tab_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_EQ(tab_contents->GetLastCommittedURL(), GetMixedContentAppURL());
 
   // A regular tab should be able to load mixed content.
@@ -207,7 +208,8 @@ IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
 IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTest, IFrameMixedContentInPWA) {
   const GURL app_url = GetSecureIFrameAppURL();
   const webapps::AppId app_id = InstallPWA(app_url);
-  Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
+  BrowserWindowInterface* const app_browser =
+      LaunchWebAppBrowserAndWait(app_id);
 
   CheckMixedContentFailedToLoad(app_browser);
 }
@@ -226,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(
   CheckMixedContentFailedToLoad(browser());
 
   BrowserWindowInterface* const app_browser = ReparentWebContentsIntoAppBrowser(
-      browser()->tab_strip_model()->GetActiveWebContents(), app_id);
+      browser()->GetTabStripModel()->GetActiveWebContents(), app_id);
   CheckMixedContentFailedToLoad(app_browser);
 
   // Change the mixed content to be acceptable.
@@ -257,12 +259,13 @@ IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
 
   const GURL app_url = GetSecureIFrameAppURL();
   const webapps::AppId app_id = InstallPWA(app_url);
-  Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
+  BrowserWindowInterface* const app_browser =
+      LaunchWebAppBrowserAndWait(app_id);
 
   chrome::OpenInChrome(app_browser);
 
   content::RenderFrameHost* main_frame = browser()
-                                             ->tab_strip_model()
+                                             ->GetTabStripModel()
                                              ->GetActiveWebContents()
                                              ->GetPrimaryMainFrame();
   content::RenderFrameHost* iframe = content::ChildFrameAt(main_frame, 0);

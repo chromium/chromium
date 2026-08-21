@@ -5,10 +5,10 @@
 #include <string>
 
 #include "base/test/run_until.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest,
 
   // Figure out what display the original tabbed browser was created on, as well
   // as what the display Id is for a second display.
-  Browser* original_browser = browser();
+  BrowserWindowInterface* original_browser = browser();
   const std::vector<display::Display>& displays =
       display::Screen::Get()->GetAllDisplays();
   display::Display original_display =
@@ -85,9 +85,9 @@ IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest,
 
   // By default opening a PWA in a tab should open on the same display as the
   // existing tabbed browser, and thus in the same browser window.
-  Browser* app_browser = LaunchBrowserForWebAppInTab(app_id);
+  BrowserWindowInterface* app_browser = LaunchBrowserForWebAppInTab(app_id);
   EXPECT_EQ(app_browser, original_browser);
-  EXPECT_EQ(2, original_browser->tab_strip_model()->count());
+  EXPECT_EQ(2, original_browser->GetTabStripModel()->count());
 
   {
     // Setting the display for new windows only effects what display a browser
@@ -104,17 +104,17 @@ IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest,
                   ->GetDisplayNearestWindow(
                       app_browser->GetWindow()->GetNativeWindow())
                   .id());
-    EXPECT_EQ(2, original_browser->tab_strip_model()->count());
-    EXPECT_EQ(1, app_browser->tab_strip_model()->count());
+    EXPECT_EQ(2, original_browser->GetTabStripModel()->count());
+    EXPECT_EQ(1, app_browser->GetTabStripModel()->count());
 
     // A second launch should re-use the same browser window.
-    Browser* app_browser2 = LaunchBrowserForWebAppInTab(app_id);
+    BrowserWindowInterface* app_browser2 = LaunchBrowserForWebAppInTab(app_id);
     EXPECT_EQ(app_browser, app_browser2);
-    EXPECT_EQ(2, original_browser->tab_strip_model()->count());
-    EXPECT_EQ(2, app_browser->tab_strip_model()->count());
+    EXPECT_EQ(2, original_browser->GetTabStripModel()->count());
+    EXPECT_EQ(2, app_browser->GetTabStripModel()->count());
 #else
     EXPECT_EQ(app_browser, original_browser);
-    EXPECT_EQ(3, original_browser->tab_strip_model()->count());
+    EXPECT_EQ(3, original_browser->GetTabStripModel()->count());
 #endif
   }
 
@@ -125,9 +125,9 @@ IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest,
     app_browser = LaunchBrowserForWebAppInTab(app_id);
     EXPECT_EQ(app_browser, original_browser);
 #if BUILDFLAG(IS_CHROMEOS)
-    EXPECT_EQ(3, original_browser->tab_strip_model()->count());
+    EXPECT_EQ(3, original_browser->GetTabStripModel()->count());
 #else
-    EXPECT_EQ(4, original_browser->tab_strip_model()->count());
+    EXPECT_EQ(4, original_browser->GetTabStripModel()->count());
 #endif
   }
 }
@@ -145,9 +145,9 @@ IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest, FindBarFocusEvents) {
   auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
   web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
   const webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
-  Browser* const app_browser = LaunchWebAppBrowser(app_id);
+  BrowserWindowInterface* const app_browser = LaunchWebAppBrowser(app_id);
   content::WebContents* web_contents =
-      app_browser->tab_strip_model()->GetActiveWebContents();
+      app_browser->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
 
   // Create focus event tracker.

@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
@@ -1668,7 +1669,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelPWABrowserTest, OpenInChrome) {
   web_app_info->title = u"A Web App";
   webapps::AppId app_id =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info));
-  Browser* browser = web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
+  BrowserWindowInterface* browser =
+      web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
   SidePanelEntry::Key extension_key = GetKey(extension->id());
 
   // Call setOptions({enabled: true}) with a tab ID and new path, and wait for
@@ -1682,7 +1684,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelPWABrowserTest, OpenInChrome) {
   // over when the WebContents is moved to a normal browser window.
   {
     content::WebContents* web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
+        browser->GetTabStripModel()->GetActiveWebContents();
     int tab_id = ExtensionTabUtil::GetTabId(web_contents);
     auto* registry = SidePanelRegistry::From(browser->GetActiveTabInterface());
     ExtensionSidePanelRegistryWaiter waiter(registry, extension->id());

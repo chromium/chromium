@@ -432,8 +432,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
                        CaptureToOpenedWindowAndNavigateURL) {
   WaitForTestSystemAppInstall();
 
-  Browser* app_browser;
-  content::WebContents* web_contents = LaunchApp(GetAppType(), &app_browser);
+  content::WebContents* web_contents = LaunchApp(GetAppType());
 
   GURL kInitiatingChromeUrl = GURL(chrome::kChromeUIAboutURL);
   NavigateViaLinkClickToURLAndWait(browser(), kInitiatingChromeUrl);
@@ -454,9 +453,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
                          kPageURL)));
   observer.Wait();
 
-  EXPECT_EQ(kPageURL, app_browser->tab_strip_model()
-                          ->GetActiveWebContents()
-                          ->GetLastCommittedURL());
+  EXPECT_EQ(kPageURL, web_contents->GetLastCommittedURL());
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
@@ -507,8 +504,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWindowSizeControlsTest,
 
   content::TestNavigationObserver observer(GetStartUrl());
   observer.StartWatchingNewWebContents();
-  Browser* app_browser;
-  LaunchApp(GetAppType(), &app_browser);
+  content::WebContents* web_contents = LaunchApp(GetAppType());
+  BrowserWindowInterface* app_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
 
   EXPECT_FALSE(BrowserInitState::From(app_browser)->create_params().can_resize);
 }
@@ -519,8 +517,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWindowSizeControlsTest,
 
   content::TestNavigationObserver observer(GetStartUrl());
   observer.StartWatchingNewWebContents();
-  Browser* app_browser;
-  LaunchApp(GetAppType(), &app_browser);
+  content::WebContents* web_contents = LaunchApp(GetAppType());
+  BrowserWindowInterface* app_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
 
   EXPECT_FALSE(
       BrowserInitState::From(app_browser)->create_params().can_maximize);
@@ -902,18 +901,19 @@ class SystemWebAppManagerCloseFromScriptsTest
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerCloseFromScriptsTest, WindowClose) {
   WaitForTestSystemAppInstall();
 
-  Browser* app_browser;
-  LaunchApp(GetAppType(), &app_browser);
+  content::WebContents* web_contents = LaunchApp(GetAppType());
+  BrowserWindowInterface* app_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
 
   const GURL kPageURL = GetStartUrl().Resolve("/page2.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, kPageURL));
-  EXPECT_EQ(kPageURL, app_browser->tab_strip_model()
+  EXPECT_EQ(kPageURL, app_browser->GetTabStripModel()
                           ->GetActiveWebContents()
                           ->GetLastCommittedURL());
 
   ui_test_utils::BrowserDestroyedObserver observer(app_browser);
   EXPECT_TRUE(
-      content::ExecJs(app_browser->tab_strip_model()->GetActiveWebContents(),
+      content::ExecJs(app_browser->GetTabStripModel()->GetActiveWebContents(),
                       "window.close();"));
 
   observer.Wait();
@@ -935,22 +935,23 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShouldNotCloseFromScriptsTest,
                        ShouldNotCloseWindow) {
   WaitForTestSystemAppInstall();
 
-  Browser* app_browser;
-  LaunchApp(GetAppType(), &app_browser);
+  content::WebContents* web_contents = LaunchApp(GetAppType());
+  BrowserWindowInterface* app_browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
 
   const GURL kPageURL = GetStartUrl().Resolve("/page2.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, kPageURL));
-  EXPECT_EQ(kPageURL, app_browser->tab_strip_model()
+  EXPECT_EQ(kPageURL, app_browser->GetTabStripModel()
                           ->GetActiveWebContents()
                           ->GetLastCommittedURL());
 
   content::WebContentsConsoleObserver console_observer(
-      app_browser->tab_strip_model()->GetActiveWebContents());
+      app_browser->GetTabStripModel()->GetActiveWebContents());
   console_observer.SetPattern(
       "Scripts may close only the windows that were opened by them.");
 
   EXPECT_TRUE(
-      content::ExecJs(app_browser->tab_strip_model()->GetActiveWebContents(),
+      content::ExecJs(app_browser->GetTabStripModel()->GetActiveWebContents(),
                       "window.close();"));
 
   ASSERT_TRUE(console_observer.Wait());

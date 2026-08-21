@@ -118,7 +118,7 @@ class BrowserViewLayoutDelegateImplBrowsertest
     InteractiveBrowserTest::TearDownOnMainThread();
   }
 
-  Browser* CreateAppBrowser() {
+  BrowserWindowInterface* CreateAppBrowser() {
     const GURL kAppUrl("https://test.com");
     const auto app_id = web_app::test::InstallDummyWebApp(
         browser()->GetProfile(), "App Name", kAppUrl);

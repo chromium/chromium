@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/profiles/profile_io_data.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -303,11 +302,11 @@ webapps::AppId WebAppNavigationBrowserTest::InstallTestWebApp(
   return app_id;
 }
 
-Browser* WebAppNavigationBrowserTest::OpenTestWebApp() {
+BrowserWindowInterface* WebAppNavigationBrowserTest::OpenTestWebApp() {
   GURL app_url =
       embedded_https_test_server().GetURL(GetAppUrlHost(), GetAppUrlPath());
   auto observer = GetTestNavigationObserver(app_url);
-  Browser* app_browser = LaunchWebAppBrowser(test_web_app_);
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowser(test_web_app_);
   observer->Wait();
 
   return app_browser;

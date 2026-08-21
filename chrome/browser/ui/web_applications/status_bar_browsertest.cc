@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/test/with_feature_override.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_ui_controller/browser_ui_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -27,7 +27,7 @@ IN_PROC_BROWSER_TEST_P(WebAppStatusBarTest, NoStatusBar) {
   NavigateViaLinkClickToURLAndWait(
       browser(), embedded_https_test_server().GetURL("/web_apps/basic.html"));
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
-  Browser* const app_browser =
+  BrowserWindowInterface* const app_browser =
       ::web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
   EXPECT_EQ(0u,
             BrowserUiController::From(app_browser)->GetStatusBubbles().size());
@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_P(WebAppStatusBarTest, DisplayBrowserHasStatusBar) {
       browser(),
       embedded_https_test_server().GetURL("/web_apps/display_browser.html"));
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
-  Browser* const app_browser =
+  BrowserWindowInterface* const app_browser =
       ::web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
   EXPECT_LT(0u,
             BrowserUiController::From(app_browser)->GetStatusBubbles().size());
@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_P(WebAppStatusBarTest, NoManifestHasStatusBar) {
                                    embedded_https_test_server().GetURL(
                                        "/banners/no_manifest_test_page.html"));
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
-  Browser* const app_browser =
+  BrowserWindowInterface* const app_browser =
       ::web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
   EXPECT_LT(0u,
             BrowserUiController::From(app_browser)->GetStatusBubbles().size());
@@ -60,7 +60,7 @@ IN_PROC_BROWSER_TEST_P(WebAppStatusBarTest, DisplayMinimalUiHasStatusBar) {
       browser(),
       embedded_https_test_server().GetURL("/web_apps/minimal_ui/basic.html"));
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
-  Browser* const app_browser =
+  BrowserWindowInterface* const app_browser =
       ::web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
   EXPECT_LT(0u,
             BrowserUiController::From(app_browser)->GetStatusBubbles().size());

@@ -22,7 +22,6 @@
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shortcuts/shortcut_icon_generator.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -169,7 +168,7 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutBrowserTest,
   NavigateViaLinkClickToURLAndWait(browser(), GetInstallableAppURL());
   InstallDiyAppForCurrentUrl();
 
-  Browser* new_browser =
+  BrowserWindowInterface* new_browser =
       NavigateInNewWindowAndAwaitInstallabilityCheck(GetInstallableAppURL());
 
   EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, new_browser), kEnabled);
@@ -186,7 +185,7 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutBrowserTest,
   sync_bridge().SetAppUserDisplayModeForTesting(
       app_id, mojom::UserDisplayMode::kStandalone);
 
-  Browser* new_browser =
+  BrowserWindowInterface* new_browser =
       NavigateInNewWindowAndAwaitInstallabilityCheck(GetInstallableAppURL());
 
   EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, new_browser), kEnabled);
@@ -230,7 +229,8 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutBrowserTest,
 
   const webapps::AppId app_id = InstallDiyAppForCurrentUrl();
   ASSERT_FALSE(app_id.empty());
-  Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
+  BrowserWindowInterface* const app_browser =
+      LaunchWebAppBrowserAndWait(app_id);
   CHECK(app_browser);
   CHECK(app_browser != browser());
 
@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutBrowserTest, InstallOverTabShortcutApp) {
   EXPECT_FALSE(registrar().AppMatches(app_installed_from_menu,
                                       WebAppFilter::IsCraftedApp()));
 
-  Browser* new_browser =
+  BrowserWindowInterface* new_browser =
       NavigateInNewWindowAndAwaitInstallabilityCheck(GetInstallableAppURL());
 
   EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, new_browser), kEnabled);

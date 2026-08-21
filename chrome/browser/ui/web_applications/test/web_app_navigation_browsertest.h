@@ -19,7 +19,7 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "url/gurl.h"
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace content {
@@ -112,7 +112,7 @@ class WebAppNavigationBrowserTest : public WebAppBrowserTestBase {
   webapps::AppId InstallTestWebApp(const std::string& app_host,
                                    const std::string& app_scope);
 
-  Browser* OpenTestWebApp();
+  BrowserWindowInterface* OpenTestWebApp();
 
   // Navigates the active tab in |browser| to the launching page.
   void NavigateToLaunchingPage(BrowserWindowInterface* browser);

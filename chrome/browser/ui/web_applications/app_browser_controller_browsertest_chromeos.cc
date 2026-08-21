@@ -388,12 +388,12 @@ class AppBrowserControllerChromeUntrustedBrowserTest
             ash::TestSystemWebAppInstallation::SetUpChromeUntrustedApp()) {}
 
  protected:
-  Browser* InstallAndLaunchMockApp() {
+  BrowserWindowInterface* InstallAndLaunchMockApp() {
     test_system_web_app_installation_->WaitForAppInstall();
-    Browser* app_browser = web_app::LaunchWebAppBrowser(
+    BrowserWindowInterface* app_browser = web_app::LaunchWebAppBrowser(
         browser()->GetProfile(), test_system_web_app_installation_->GetAppId());
     CHECK(content::NavigateToURL(
-        app_browser->tab_strip_model()->GetActiveWebContents(),
+        app_browser->GetTabStripModel()->GetActiveWebContents(),
         test_system_web_app_installation_->GetAppUrl()));
     return app_browser;
   }
@@ -405,7 +405,7 @@ class AppBrowserControllerChromeUntrustedBrowserTest
 
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerChromeUntrustedBrowserTest,
                        DoesNotShowToolbar) {
-  Browser* app_browser = InstallAndLaunchMockApp();
+  BrowserWindowInterface* app_browser = InstallAndLaunchMockApp();
   EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
                    ->ShouldShowCustomTabBar());
 }

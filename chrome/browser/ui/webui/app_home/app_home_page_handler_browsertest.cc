@@ -14,6 +14,7 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/create_application_shortcut_view_test_support.h"
@@ -603,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerUpdateTest, HandlePageCalls) {
 
   const GURL app_url =
       embedded_https_test_server().GetURL("/web_apps/updating/index.html");
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       web_app::InstallWebAppFromPageGetBrowser(browser(), app_url);
   const webapps::AppId app_id =
       web_app::AppBrowserController::From(app_browser)->app_id();
@@ -649,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerUpdateTest, MigrationCalls) {
 
   const GURL from_url = embedded_https_test_server().GetURL(
       "/web_apps/migration/migrate_from/no_migration_info.html");
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       web_app::InstallWebAppFromPageGetBrowser(browser(), from_url);
   const webapps::AppId source_app_id =
       web_app::AppBrowserController::From(app_browser)->app_id();

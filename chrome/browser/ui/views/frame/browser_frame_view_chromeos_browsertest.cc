@@ -390,7 +390,7 @@ class WebAppFrameViewChromeOSTest
 
   static SkColor GetThemeColor() { return SK_ColorBLUE; }
 
-  raw_ptr<Browser, DanglingUntriaged> app_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface, DanglingUntriaged> app_browser_ = nullptr;
   raw_ptr<BrowserView, DanglingUntriaged> browser_view_ = nullptr;
   raw_ptr<chromeos::DefaultFrameHeader, DanglingUntriaged> frame_header_ =
       nullptr;
@@ -466,7 +466,7 @@ class WebAppFrameViewChromeOSTest
             views::ElementTrackerViews::GetContextForView(browser_view_)));
   }
 
-  BrowserView* CreateWebAppPopup(Browser* parent_browser) {
+  BrowserView* CreateWebAppPopup(BrowserWindowInterface* parent_browser) {
     NavigateParams navigate_params(parent_browser, GetAppURL(),
                                    ui::PAGE_TRANSITION_LINK);
     navigate_params.disposition = WindowOpenDisposition::NEW_POPUP;
@@ -496,7 +496,7 @@ class WebAppFrameViewChromeOSTest
   }
 
   ContentSettingImageView* GrantGeolocationPermission() {
-    content::RenderFrameHost* frame = app_browser_->tab_strip_model()
+    content::RenderFrameHost* frame = app_browser_->GetTabStripModel()
                                           ->GetActiveWebContents()
                                           ->GetPrimaryMainFrame();
     content_settings::PageSpecificContentSettings* content_settings =
@@ -1884,7 +1884,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshAvatarTest,
 
   const auto app_id = web_app::test::InstallDummyWebApp(
       primary_user_profile, "test_browser_app", GURL("https://test.org"));
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       web_app::LaunchWebAppBrowser(primary_user_profile, app_id);
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(app_browser);

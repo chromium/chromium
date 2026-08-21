@@ -230,7 +230,8 @@ class CustomTabBarViewBrowserTest : public web_app::WebAppBrowserTestBase {
   raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_;
   raw_ptr<LocationBarView, AcrossTasksDanglingUntriaged> location_bar_;
   raw_ptr<CustomTabBarView, AcrossTasksDanglingUntriaged> custom_tab_bar_;
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> app_browser_ =
+      nullptr;
   raw_ptr<web_app::AppBrowserController, AcrossTasksDanglingUntriaged>
       app_controller_ = nullptr;
 
@@ -346,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, ShowsWithMixedContent) {
                               ->toolbar()
                               ->custom_tab_bar();
   EXPECT_FALSE(bar->GetVisible());
-  EXPECT_TRUE(ExecJs(app_browser_->tab_strip_model()->GetActiveWebContents(),
+  EXPECT_TRUE(ExecJs(app_browser_->GetTabStripModel()->GetActiveWebContents(),
                      R"(
       let img = document.createElement('img');
       img.src = 'http://not-secure.com';
@@ -725,7 +726,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, BlobUrlLocation) {
       BrowserView::GetBrowserViewForBrowser(app_browser_);
   EXPECT_NE(app_browser_view, browser_view_);
   content::WebContents* web_contents =
-      app_browser_->tab_strip_model()->GetActiveWebContents();
+      app_browser_->GetTabStripModel()->GetActiveWebContents();
 
   content::TestNavigationObserver nav_observer(
       web_contents,

@@ -530,7 +530,7 @@ IN_PROC_BROWSER_TEST_F(
   auto app_id = web_app::test::InstallDummyWebApp(
       browser()->GetProfile(), GetDummyAppName(), GetDummyAppUrl());
 
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
 
   // Helper for the test sequence.

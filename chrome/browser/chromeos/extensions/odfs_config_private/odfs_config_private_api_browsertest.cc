@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(OfdsConfigPrivateApiBrowserTest,
   InstallMicrosoft365();
 
   // Launch M365 PWA in a window.
-  Browser* existing_m365_browser =
+  BrowserWindowInterface* existing_m365_browser =
       web_app::LaunchWebAppBrowser(profile(), ash::kMicrosoft365AppId);
   EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(
       existing_m365_browser, ash::kMicrosoft365AppId));

@@ -1312,7 +1312,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, BrowserWindowRestorationTest) {
 IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWA) {
   ASSERT_TRUE(DesksClient::Get());
 
-  Browser* pwa_browser = ash::test::InstallAndLaunchPWA(
+  BrowserWindowInterface* pwa_browser = ash::test::InstallAndLaunchPWA(
       profile(), GURL(kExampleUrl1), /*launch_in_browser=*/false);
   ASSERT_EQ(pwa_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
   aura::Window* pwa_window = pwa_browser->GetWindow()->GetNativeWindow();
@@ -1361,7 +1361,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWA) {
 IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithMissingPWA) {
   ASSERT_TRUE(DesksClient::Get());
 
-  Browser* pwa_browser = ash::test::InstallAndLaunchPWA(
+  BrowserWindowInterface* pwa_browser = ash::test::InstallAndLaunchPWA(
       profile(), GURL(kExampleUrl1), /*launch_in_browser=*/false);
   ASSERT_EQ(pwa_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
   aura::Window* pwa_window = pwa_browser->GetWindow()->GetNativeWindow();
@@ -1408,7 +1408,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithMissingPWA) {
 IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithOutOfScopeURL) {
   ASSERT_TRUE(DesksClient::Get());
 
-  Browser* pwa_browser = ash::test::InstallAndLaunchPWA(
+  BrowserWindowInterface* pwa_browser = ash::test::InstallAndLaunchPWA(
       profile(), GURL(kYoutubeUrl), /*launch_in_browser=*/false);
   ASSERT_EQ(pwa_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
   aura::Window* pwa_window = pwa_browser->GetWindow()->GetNativeWindow();
@@ -1446,7 +1446,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithOutOfScopeURL) {
 IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWAInBrowser) {
   ASSERT_TRUE(DesksClient::Get());
 
-  Browser* pwa_browser = ash::test::InstallAndLaunchPWA(
+  BrowserWindowInterface* pwa_browser = ash::test::InstallAndLaunchPWA(
       profile(), GURL(kYoutubeUrl), /*launch_in_browser=*/true);
   aura::Window* pwa_window = pwa_browser->GetWindow()->GetNativeWindow();
   const int32_t pwa_window_id =
@@ -2031,7 +2031,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUIBrowserWindowRestorationTest) {
 // Tests that saving and launching a template that contains a PWA works as
 // expected.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithPWA) {
-  Browser* pwa_browser = ash::test::InstallAndLaunchPWA(
+  BrowserWindowInterface* pwa_browser = ash::test::InstallAndLaunchPWA(
       profile(), GURL(kExampleUrl1), /*launch_in_browser=*/false);
   ASSERT_EQ(pwa_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
   aura::Window* pwa_window = pwa_browser->GetWindow()->GetNativeWindow();
@@ -2084,7 +2084,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithPWA) {
 // window works as expected.
 IN_PROC_BROWSER_TEST_F(DesksClientTest,
                        SystemUILaunchTemplateWithPWAInBrowser) {
-  Browser* pwa_browser = ash::test::InstallAndLaunchPWA(
+  BrowserWindowInterface* pwa_browser = ash::test::InstallAndLaunchPWA(
       profile(), GURL(kYoutubeUrl), /*launch_in_browser=*/true);
   aura::Window* pwa_window = pwa_browser->GetWindow()->GetNativeWindow();
   const int32_t pwa_window_id =

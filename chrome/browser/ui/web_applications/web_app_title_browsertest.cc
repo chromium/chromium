@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -40,9 +40,9 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, ValidAppTitle) {
   web_app_info->title = app_title;
   const webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
 
-  Browser* const app_browser = LaunchWebAppBrowser(app_id);
+  BrowserWindowInterface* const app_browser = LaunchWebAppBrowser(app_id);
   content::WebContents* const web_contents =
-      app_browser->tab_strip_model()->GetActiveWebContents();
+      app_browser->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   // Validate app title has app title.
@@ -67,9 +67,9 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, WithoutAppTitle) {
   web_app_info->title = app_title;
   const webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
 
-  Browser* const app_browser = LaunchWebAppBrowser(app_id);
+  BrowserWindowInterface* const app_browser = LaunchWebAppBrowser(app_id);
   content::WebContents* const web_contents =
-      app_browser->tab_strip_model()->GetActiveWebContents();
+      app_browser->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   // Validate app title is the same as page title.
@@ -94,9 +94,9 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, DynamicAppTitle) {
   web_app_info->title = app_title;
   const webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
 
-  Browser* const app_browser = LaunchWebAppBrowser(app_id);
+  BrowserWindowInterface* const app_browser = LaunchWebAppBrowser(app_id);
   content::WebContents* const web_contents =
-      app_browser->tab_strip_model()->GetActiveWebContents();
+      app_browser->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   // Validate that app title matches page title.
@@ -163,9 +163,9 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, AppTitleNavigation) {
   web_app_info->title = app_title;
   const webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
 
-  Browser* const app_browser = LaunchWebAppBrowser(app_id);
+  BrowserWindowInterface* const app_browser = LaunchWebAppBrowser(app_id);
   content::WebContents* const web_contents =
-      app_browser->tab_strip_model()->GetActiveWebContents();
+      app_browser->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   // Validate app title has app title.
@@ -213,9 +213,9 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, AppTitleIsEmpty) {
   web_app_info->title = app_title;
   const webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
 
-  Browser* const app_browser = LaunchWebAppBrowser(app_id);
+  BrowserWindowInterface* const app_browser = LaunchWebAppBrowser(app_id);
   content::WebContents* const web_contents =
-      app_browser->tab_strip_model()->GetActiveWebContents();
+      app_browser->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   // Validate app title has app title.

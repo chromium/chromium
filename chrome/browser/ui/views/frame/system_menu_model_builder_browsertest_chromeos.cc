@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -59,7 +60,7 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderWithOnTaskTest,
                        SystemMenuWhenNotLockedForOnTask) {
   // Install and launch app.
   webapps::AppId app_id = InstallMockApp();
-  Browser* const app_browser =
+  BrowserWindowInterface* const app_browser =
       web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
   ash::boca::OnTaskLockedController::From(app_browser)
       ->set_locked_for_on_task(false);
@@ -86,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderWithOnTaskTest,
                        SystemMenuWhenLockedForOnTask) {
   // Install and launch app.
   webapps::AppId app_id = InstallMockApp();
-  Browser* const app_browser =
+  BrowserWindowInterface* const app_browser =
       web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
   ash::boca::OnTaskLockedController::From(app_browser)
       ->set_locked_for_on_task(true);

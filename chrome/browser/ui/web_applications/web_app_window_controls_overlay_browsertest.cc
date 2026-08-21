@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
@@ -40,7 +39,7 @@ class WebAppWindowControlsOverlayBrowserTest
   webapps::AppId InstallTestApp(const char* path, bool await_metric) {
     GURL start_url = embedded_test_server()->GetURL(path);
     page_load_metrics::PageLoadMetricsTestWaiter metrics_waiter(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
     if (await_metric) {
       metrics_waiter.AddWebFeatureExpectation(window_controls_overlay_feature);
     }

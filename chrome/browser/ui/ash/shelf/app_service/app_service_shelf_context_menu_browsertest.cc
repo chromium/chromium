@@ -197,7 +197,8 @@ IN_PROC_BROWSER_TEST_P(AppServiceShelfContextMenuWebAppBrowserTest,
             1);
 
   // App window should have tab strip.
-  Browser* app_browser = web_app::LaunchWebAppBrowser(profile, app_id);
+  BrowserWindowInterface* app_browser =
+      web_app::LaunchWebAppBrowser(profile, app_id);
   EXPECT_TRUE(
       web_app::AppBrowserController::From(app_browser)->has_tab_strip());
 }
@@ -323,7 +324,8 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuTabbedWebAppBrowserTest,
             1);
 
   // App window should have tab strip.
-  Browser* app_browser = web_app::LaunchWebAppBrowser(profile, app_id);
+  BrowserWindowInterface* app_browser =
+      web_app::LaunchWebAppBrowser(profile, app_id);
   EXPECT_TRUE(
       web_app::AppBrowserController::From(app_browser)->has_tab_strip());
 }
@@ -370,7 +372,8 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuNonTabbedWebAppBrowserTest,
             1);
 
   // App window should not have a tab strip since the flag is disabled.
-  Browser* app_browser = web_app::LaunchWebAppBrowser(profile, app_id);
+  BrowserWindowInterface* app_browser =
+      web_app::LaunchWebAppBrowser(profile, app_id);
   EXPECT_FALSE(
       web_app::AppBrowserController::From(app_browser)->has_tab_strip());
 }

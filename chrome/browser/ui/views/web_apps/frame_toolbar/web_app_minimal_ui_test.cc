@@ -26,7 +26,7 @@ class WebAppMinimalUITest : public WebAppBrowserTestBase {
     web_app_info->display_mode = display_mode;
     web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
-    Browser* browser = LaunchWebAppBrowser(app_id);
+    BrowserWindowInterface* browser = LaunchWebAppBrowser(app_id);
     return BrowserView::GetBrowserViewForBrowser(browser);
   }
 };

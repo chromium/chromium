@@ -13,7 +13,7 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -492,9 +492,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBadgingBrowserTest,
 // Tests that badging incognito windows does not cause a crash.
 IN_PROC_BROWSER_TEST_F(WebAppBadgingBrowserTest,
                        BadgingIncognitoWindowsDoesNotCrash) {
-  Browser* incognito_browser =
+  BrowserWindowInterface* incognito_browser =
       OpenURLOffTheRecord(profile(), main_frame_->GetLastCommittedURL());
-  RenderFrameHost* incognito_frame = incognito_browser->tab_strip_model()
+  RenderFrameHost* incognito_frame = incognito_browser->GetTabStripModel()
                                          ->GetActiveWebContents()
                                          ->GetPrimaryMainFrame();
 

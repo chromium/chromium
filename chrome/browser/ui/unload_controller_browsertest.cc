@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -169,14 +170,14 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerWithOnTaskTest,
                        PreventCloseWhenLockedForOnTask) {
   // Install and launch app.
   webapps::AppId app_id = InstallMockApp();
-  Browser* const app_browser =
+  BrowserWindowInterface* const app_browser =
       web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
   ash::boca::OnTaskLockedController::From(app_browser)
       ->set_locked_for_on_task(true);
 
   // Verify tab cannot be closed.
   content::WebContents* const active_web_contents =
-      app_browser->tab_strip_model()->GetWebContentsAt(0);
+      app_browser->GetTabStripModel()->GetWebContentsAt(0);
   UnloadController* unload_controller = UnloadController::From(app_browser);
   EXPECT_FALSE(unload_controller->CanCloseContents(active_web_contents));
 }
@@ -185,14 +186,14 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerWithOnTaskTest,
                        AllowCloseWhenNotLockedForOnTask) {
   // Install and launch app.
   webapps::AppId app_id = InstallMockApp();
-  Browser* const app_browser =
+  BrowserWindowInterface* const app_browser =
       web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
   ash::boca::OnTaskLockedController::From(app_browser)
       ->set_locked_for_on_task(false);
 
   // Verify tab can be closed.
   content::WebContents* const active_web_contents =
-      app_browser->tab_strip_model()->GetWebContentsAt(0);
+      app_browser->GetTabStripModel()->GetWebContentsAt(0);
   UnloadController* unload_controller = UnloadController::From(app_browser);
   EXPECT_TRUE(unload_controller->CanCloseContents(active_web_contents));
 }

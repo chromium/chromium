@@ -75,7 +75,7 @@ constexpr char kMerchantTrustUrl[] = "b.test";
 constexpr char kMerchantTrustUrlWithoutSummary[] = "c.test";
 
 // Clicks the location icon to open the page info bubble.
-void OpenPageInfoBubble(Browser* browser) {
+void OpenPageInfoBubble(BrowserWindowInterface* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   LocationIconView* location_icon_view =
       browser_view->toolbar()->location_bar_view()->location_icon_view();
@@ -769,7 +769,7 @@ class PageInfoBubbleViewIsolatedWebAppBrowserTest : public DialogBrowserTest {
     // https://crbug.com/41419544.
     set_should_verify_dialog_bounds(false);
 
-    Browser* iwa_browser =
+    BrowserWindowInterface* iwa_browser =
         web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id_);
 
     ASSERT_TRUE(iwa_browser);
@@ -885,7 +885,7 @@ class PageInfoBubbleViewWebAppBrowserTest
     }
 #endif
 
-    Browser* app_browser = browser();
+    BrowserWindowInterface* app_browser = browser();
     switch (GetParam()) {
       case WebAppWindowMode::kBrowserTab:
         ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url_));

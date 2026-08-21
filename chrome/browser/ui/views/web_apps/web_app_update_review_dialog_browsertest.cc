@@ -332,7 +332,7 @@ class WebAppUpdateDialogBrowserTests : public WebAppBrowserTestBase {
         embedded_https_test_server().GetURL("/web_apps/updating/index.html");
     const webapps::AppId app_id =
         InstallWebAppInNewTabAndClose(browser(), app_url);
-    Browser* app_browser = LaunchWebAppBrowser(app_id);
+    BrowserWindowInterface* app_browser = LaunchWebAppBrowser(app_id);
     EXPECT_NE(app_browser, nullptr);
     // Ensure that the app browser is visible before proceeding. This ensures
     // that all PWA launching processes have finished.

@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_identity_view.h"
@@ -127,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
   webapps::AppId app_id = InstallTestWebApp(browser()->GetProfile());
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
   ASSERT_TRUE(app_browser);
   EXPECT_NE(app_browser, browser());
@@ -312,11 +313,11 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewIwaBrowserTest,
       parent_bundle->InstallChecked(profile());
 
   // Launch parent IWA.
-  Browser* parent_browser =
+  BrowserWindowInterface* parent_browser =
       LaunchWebAppBrowserAndWait(parent_url_info.app_id());
   ASSERT_NE(parent_browser, nullptr);
   content::WebContents* parent_contents =
-      parent_browser->tab_strip_model()->GetActiveWebContents();
+      parent_browser->GetTabStripModel()->GetActiveWebContents();
 
   // Install sub-app.
   webapps::AppId sub_app_id = InstallSubAppAndWait(

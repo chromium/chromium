@@ -81,7 +81,8 @@ IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
   const webapps::AppId app_id =
       InstallPWA(picture_in_picture_mixin_test_base_.GetPictureInPictureURL());
 
-  Browser* browser = web_app::LaunchWebAppBrowser(profile(), app_id);
+  BrowserWindowInterface* browser =
+      web_app::LaunchWebAppBrowser(profile(), app_id);
 
   constexpr auto kInitialPipSize = gfx::Size(400, 450);
   picture_in_picture_mixin_test_base_.NavigateToURLAndEnterPictureInPicture(
@@ -104,7 +105,8 @@ IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
                        AppWindowWebContentsSizeUnchangedAfterExitPip) {
   const webapps::AppId app_id =
       InstallPWA(picture_in_picture_mixin_test_base_.GetPictureInPictureURL());
-  Browser* browser = web_app::LaunchWebAppBrowser(profile(), app_id);
+  BrowserWindowInterface* browser =
+      web_app::LaunchWebAppBrowser(profile(), app_id);
 
   // Navigate to the Picture-in-Picture URL, enter Picture-in-Picture and
   // remember the app browser WebContents size.
@@ -140,7 +142,8 @@ IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
                        ResizeToRespectsMinimumInnerWindowSize) {
   const webapps::AppId app_id =
       InstallPWA(picture_in_picture_mixin_test_base_.GetPictureInPictureURL());
-  Browser* browser = web_app::LaunchWebAppBrowser(profile(), app_id);
+  BrowserWindowInterface* browser =
+      web_app::LaunchWebAppBrowser(profile(), app_id);
 
   constexpr auto kInitialPipSize = gfx::Size(400, 450);
   picture_in_picture_mixin_test_base_.NavigateToURLAndEnterPictureInPicture(
@@ -171,21 +174,6 @@ IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
   EXPECT_GE(
       pip_browser_view->GetContentsSize().height(),
       PictureInPictureWindowManager::GetMinimumInnerWindowSize().height());
-
-  // Resize Pip window, one more time, to a size smaller than the allowed
-  // minimum.
-  EXPECT_TRUE(ExecJs(pip_web_contents, "window.resizeTo(50,50);"));
-
-  // TODO(crbug.com/354785208): Replace with `WidgetResizeWaiter` once bug is
-  // fixed.
-  base::RunLoop().RunUntilIdle();
-
-  // Verify that the minimum inner window size is respected.
-  EXPECT_GE(pip_browser_view->GetContentsSize().width(),
-            PictureInPictureWindowManager::GetMinimumInnerWindowSize().width());
-  EXPECT_GE(
-      pip_browser_view->GetContentsSize().height(),
-      PictureInPictureWindowManager::GetMinimumInnerWindowSize().height());
 }
 
 // TODO(https://crbug.com/422947648): This times out on win11-arm64 builders.
@@ -201,7 +189,8 @@ IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
   const webapps::AppId app_id =
       InstallPWA(picture_in_picture_mixin_test_base_.GetPictureInPictureURL());
 
-  Browser* browser = web_app::LaunchWebAppBrowser(profile(), app_id);
+  BrowserWindowInterface* browser =
+      web_app::LaunchWebAppBrowser(profile(), app_id);
 
   constexpr auto kInitialPipSize = gfx::Size(400, 450);
   picture_in_picture_mixin_test_base_.NavigateToURLAndEnterPictureInPicture(

@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
@@ -103,7 +104,8 @@ void ChromeOSBrowserUITest::DeactivateWidget(views::Widget* widget) {
   widget->Deactivate();
 }
 
-void ChromeOSBrowserUITest::EnterImmersiveFullscreenMode(Browser* browser) {
+void ChromeOSBrowserUITest::EnterImmersiveFullscreenMode(
+    BrowserWindowInterface* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   ASSERT_FALSE(browser_view->IsFullscreen());
 
@@ -118,7 +120,8 @@ void ChromeOSBrowserUITest::EnterImmersiveFullscreenMode(Browser* browser) {
   ASSERT_TRUE(browser_view->IsFullscreen());
 }
 
-void ChromeOSBrowserUITest::ExitImmersiveFullscreenMode(Browser* browser) {
+void ChromeOSBrowserUITest::ExitImmersiveFullscreenMode(
+    BrowserWindowInterface* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   ASSERT_TRUE(browser_view->IsFullscreen());
 
@@ -134,7 +137,7 @@ void ChromeOSBrowserUITest::ExitImmersiveFullscreenMode(Browser* browser) {
 }
 
 void ChromeOSBrowserUITest::EnterTabFullscreenMode(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     content::WebContents* web_contents) {
   ui_test_utils::FullscreenWaiter waiter(browser, {.tab_fullscreen = true});
   BrowserWebContentsDelegate::From(browser)->EnterFullscreenModeForTab(
@@ -143,11 +146,10 @@ void ChromeOSBrowserUITest::EnterTabFullscreenMode(
 }
 
 void ChromeOSBrowserUITest::ExitTabFullscreenMode(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     content::WebContents* web_contents) {
   ui_test_utils::FullscreenWaiter waiter(browser, {.tab_fullscreen = false});
-  browser->GetFeatures()
-      .exclusive_access_manager()
+  ExclusiveAccessManager::From(browser)
       ->fullscreen_controller()
       ->ExitFullscreenModeForTab(web_contents);
   waiter.Wait();

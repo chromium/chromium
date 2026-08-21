@@ -6,7 +6,6 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -36,7 +35,8 @@ using WebAppTabRestoreBrowserTest = WebAppNavigationBrowserTest;
 IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest,
                        MAYBE_ReopenedPWASizeIsCorrectlyRestored) {
   InstallTestWebApp();
-  Browser* const app_browser = LaunchWebAppBrowserAndWait(test_web_app_id());
+  BrowserWindowInterface* const app_browser =
+      LaunchWebAppBrowserAndWait(test_web_app_id());
 
   EXPECT_TRUE(AppBrowserController::IsWebApp(app_browser));
   NavigateViaLinkClickToURLAndWait(app_browser, test_web_app_start_url());
@@ -69,7 +69,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest,
 // Tests that app windows are correctly restored.
 IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest, RestoreAppWindow) {
   InstallTestWebApp();
-  Browser* const app_browser = LaunchWebAppBrowserAndWait(test_web_app_id());
+  BrowserWindowInterface* const app_browser =
+      LaunchWebAppBrowserAndWait(test_web_app_id());
 
   ASSERT_EQ(app_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
   CloseAndWait(app_browser);
@@ -92,8 +93,9 @@ IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest, RestoreAppWindow) {
 // Tests that app popup windows are correctly restored.
 IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest, RestoreAppPopupWindow) {
   InstallTestWebApp();
-  Browser* const app_browser = web_app::LaunchWebAppBrowserAndWait(
-      profile(), test_web_app_id(), WindowOpenDisposition::NEW_POPUP);
+  BrowserWindowInterface* const app_browser =
+      web_app::LaunchWebAppBrowserAndWait(profile(), test_web_app_id(),
+                                          WindowOpenDisposition::NEW_POPUP);
 
   ASSERT_EQ(app_browser->GetType(),
             BrowserWindowInterface::Type::TYPE_APP_POPUP);

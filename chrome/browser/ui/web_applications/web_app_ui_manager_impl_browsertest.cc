@@ -8,7 +8,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -54,7 +53,7 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
     return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   }
 
-  Browser* LaunchWebApp(const webapps::AppId& app_id) {
+  BrowserWindowInterface* LaunchWebApp(const webapps::AppId& app_id) {
     return LaunchWebAppBrowser(profile(), app_id);
   }
 
@@ -214,13 +213,13 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
 
   const GURL app_url = embedded_test_server()->GetURL("/empty.html");
   const webapps::AppId app_id = InstallWebApp(app_url);
-  Browser* const app_browser = LaunchWebApp(app_id);
+  BrowserWindowInterface* const app_browser = LaunchWebApp(app_id);
 
   EXPECT_TRUE(app_browser);
   EXPECT_EQ(1u, ui_manager().GetNumWindowsForApp(app_id));
 
   content::WebContents* const web_contents =
-      app_browser->tab_strip_model()->GetActiveWebContents();
+      app_browser->GetTabStripModel()->GetActiveWebContents();
 
   // Inject beforeunload handler.
   ASSERT_TRUE(

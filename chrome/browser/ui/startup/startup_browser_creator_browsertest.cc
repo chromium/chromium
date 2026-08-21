@@ -2101,9 +2101,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
       InstallPWAWithName(&profile2, example_url4, app_name4);
 
   // Launch web apps for the two profiles.
-  Browser* app_browser1 =
+  BrowserWindowInterface* app_browser1 =
       web_app::LaunchWebAppBrowserAndWait(profile1, app_id1);
-  Browser* app_browser2 =
+  BrowserWindowInterface* app_browser2 =
       web_app::LaunchWebAppBrowserAndWait(&profile2, app_id3);
   ASSERT_NE(app_browser1, nullptr);
   ASSERT_NE(app_browser2, nullptr);
@@ -2222,9 +2222,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
       InstallPWAWithName(&profile2, example_url4, app_name4);
 
   // Launch web apps for the two profiles.
-  Browser* app_browser1 =
+  BrowserWindowInterface* app_browser1 =
       web_app::LaunchWebAppBrowserAndWait(profile1, app_id1);
-  Browser* app_browser2 =
+  BrowserWindowInterface* app_browser2 =
       web_app::LaunchWebAppBrowserAndWait(&profile2, app_id3);
   ASSERT_NE(app_browser1, nullptr);
   ASSERT_NE(app_browser2, nullptr);
@@ -2365,7 +2365,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
   // Install web app
   auto example_url = GURL("https://www.example.com");
   webapps::AppId app_id = InstallPWA(test_profile, example_url);
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       web_app::LaunchWebAppBrowserAndWait(test_profile, app_id);
 
   ASSERT_NE(app_browser, nullptr);
@@ -2786,7 +2786,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
 
   auto example_url = GURL("https://www.example.com");
   webapps::AppId new_app_id = InstallPWA(&profile1, example_url);
-  Browser* app = web_app::LaunchWebAppBrowserAndWait(&profile1, new_app_id);
+  BrowserWindowInterface* app =
+      web_app::LaunchWebAppBrowserAndWait(&profile1, new_app_id);
   ASSERT_TRUE(app);
 
   // destroy session services so we don't record this closure.

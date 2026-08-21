@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_caption_button_container_win.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_win.h"
@@ -241,7 +242,8 @@ class WebAppBrowserFrameViewWinTest : public InProcessBrowserTest {
 
   std::optional<SkColor> theme_color_ = SK_ColorBLUE;
   std::vector<web_app::DisplayOverride> display_override_;
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> app_browser_ =
+      nullptr;
   raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_ = nullptr;
   raw_ptr<BrowserFrameViewWin, AcrossTasksDanglingUntriaged> frame_view_ =
       nullptr;
@@ -391,7 +393,7 @@ class WebAppBrowserFrameViewWinWindowControlsOverlayTest
     content::TestNavigationObserver navigation_observer(start_url);
     base::RunLoop loop;
     navigation_observer.StartWatchingNewWebContents();
-    Browser* app_browser =
+    BrowserWindowInterface* app_browser =
         web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
 
     // TODO(crbug.com/40174440): Register binder for BrowserInterfaceBroker

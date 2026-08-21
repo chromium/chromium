@@ -154,10 +154,10 @@ Browser* CreateAndShowBrowser(Profile* profile,
   return browser;
 }
 
-Browser* InstallAndLaunchPWA(Profile* profile,
-                             const GURL& start_url,
-                             bool launch_in_browser,
-                             const std::u16string& app_title) {
+BrowserWindowInterface* InstallAndLaunchPWA(Profile* profile,
+                                            const GURL& start_url,
+                                            bool launch_in_browser,
+                                            const std::u16string& app_title) {
   auto web_app_info =
       web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   web_app_info->scope = start_url.GetWithoutFilename();

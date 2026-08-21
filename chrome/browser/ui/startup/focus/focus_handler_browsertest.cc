@@ -270,9 +270,9 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerWebAppBrowserTest,
   std::string manifest_id1 = GetManifestIdForApp(app_id1);
   std::string manifest_id2 = GetManifestIdForApp(app_id2);
 
-  Browser* app_browser1 =
+  BrowserWindowInterface* app_browser1 =
       web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id1);
-  Browser* app_browser2 =
+  BrowserWindowInterface* app_browser2 =
       web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id2);
   ASSERT_TRUE(app_browser1);
   ASSERT_TRUE(app_browser2);

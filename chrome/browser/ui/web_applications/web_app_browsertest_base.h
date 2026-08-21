@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/ash/test_util.h"
 #endif
 
+class BrowserWindowInterface;
 class Profile;
 
 namespace base {
@@ -80,17 +81,17 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
   void UninstallWebApp(const webapps::AppId& app_id);
 
   // Launches the app as a window and returns the browser.
-  Browser* LaunchWebAppBrowser(const webapps::AppId&);
+  BrowserWindowInterface* LaunchWebAppBrowser(const webapps::AppId&);
 
   // Launches the app, waits for the app url to load.
-  Browser* LaunchWebAppBrowserAndWait(const webapps::AppId&);
+  BrowserWindowInterface* LaunchWebAppBrowserAndWait(const webapps::AppId&);
 
   // Launches the app, waits for it to load and finish the installability check.
-  Browser* LaunchWebAppBrowserAndAwaitInstallabilityCheck(
+  BrowserWindowInterface* LaunchWebAppBrowserAndAwaitInstallabilityCheck(
       const webapps::AppId&);
 
   // Launches the app as a tab and returns the browser.
-  Browser* LaunchBrowserForWebAppInTab(const webapps::AppId&);
+  BrowserWindowInterface* LaunchBrowserForWebAppInTab(const webapps::AppId&);
 
   // Simulates a page navigating itself to an URL and waits for the
   // navigation.
@@ -102,14 +103,15 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
       BrowserWindowInterface* browser,
       const GURL& url);
 
-  Browser* NavigateInNewWindowAndAwaitInstallabilityCheck(const GURL&);
+  BrowserWindowInterface* NavigateInNewWindowAndAwaitInstallabilityCheck(
+      const GURL&);
 
   std::optional<webapps::AppId> FindAppWithUrlInScope(const GURL& url);
 
   // Opens |url| in a new popup window with the dimensions |popup_size|.
-  Browser* OpenPopupAndWait(BrowserWindowInterface* browser,
-                            const GURL& url,
-                            const gfx::Size& popup_size);
+  BrowserWindowInterface* OpenPopupAndWait(BrowserWindowInterface* browser,
+                                           const GURL& url,
+                                           const gfx::Size& popup_size);
 
   OsIntegrationTestOverrideImpl& os_integration_override();
 

@@ -591,7 +591,7 @@ class FeaturePromoLifecycleAppUiTest : public FeaturePromoLifecycleUiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForApp) {
-  Browser* const app_browser = LaunchWebAppBrowser(app1_id_);
+  BrowserWindowInterface* const app_browser = LaunchWebAppBrowser(app1_id_);
   RunTestSequenceInContext(
       BrowserElements::From(app_browser)->GetContext(),
       WaitForShow(kToolbarAppMenuButtonElementId),
@@ -600,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForApp) {
 }
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForAppThenBlocked) {
-  Browser* const app_browser = LaunchWebAppBrowser(app1_id_);
+  BrowserWindowInterface* const app_browser = LaunchWebAppBrowser(app1_id_);
   RunTestSequenceInContext(
       BrowserElements::From(app_browser)->GetContext(),
       WaitForShow(kToolbarAppMenuButtonElementId),
@@ -611,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForAppThenBlocked) {
 }
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, HasPromoBeenDismissed) {
-  Browser* const app_browser = LaunchWebAppBrowser(app1_id_);
+  BrowserWindowInterface* const app_browser = LaunchWebAppBrowser(app1_id_);
   RunTestSequenceInContext(
       BrowserElements::From(app_browser)->GetContext(),
       WaitForShow(kToolbarAppMenuButtonElementId), CheckDismissed(false),
@@ -620,8 +620,8 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, HasPromoBeenDismissed) {
 }
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForTwoApps) {
-  Browser* const app_browser = LaunchWebAppBrowser(app1_id_);
-  Browser* const app_browser2 = LaunchWebAppBrowser(app2_id_);
+  BrowserWindowInterface* const app_browser = LaunchWebAppBrowser(app1_id_);
+  BrowserWindowInterface* const app_browser2 = LaunchWebAppBrowser(app2_id_);
   RunTestSequenceInContext(
       BrowserElements::From(app_browser)->GetContext(),
       WaitForShow(kToolbarAppMenuButtonElementId),

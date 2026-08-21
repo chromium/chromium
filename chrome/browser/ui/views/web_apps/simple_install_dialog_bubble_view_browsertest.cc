@@ -115,14 +115,15 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
   Profile* profile = browser()->GetProfile();
   webapps::AppId app_id = test::InstallDummyWebApp(profile, "Test app",
                                                    GURL("https://example.com"));
-  Browser* browser = ::web_app::LaunchWebAppBrowser(profile, app_id);
+  BrowserWindowInterface* browser =
+      ::web_app::LaunchWebAppBrowser(profile, app_id);
   auto app_info = GetAppInfo();
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       GetInstallTracker(browser);
 
   // Tests that we don't crash when showing the install prompt in a PWA window.
   ShowSimpleInstallDialogForWebApps(
-      browser->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
+      browser->GetTabStripModel()->GetActiveWebContents(), std::move(app_info),
       std::move(install_tracker), base::DoNothing());
 }
 

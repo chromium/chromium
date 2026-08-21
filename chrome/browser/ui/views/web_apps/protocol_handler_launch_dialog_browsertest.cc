@@ -13,6 +13,8 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/web_apps/protocol_handler_launch_dialog_view.h"
 #include "chrome/browser/ui/views/web_apps/sub_apps/sub_apps_install_dialog_controller.h"
@@ -315,11 +317,11 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerLaunchDialogIwaTest,
   IsolatedWebAppUrlInfo parent_url_info =
       parent_bundle->InstallChecked(profile());
 
-  Browser* parent_browser =
+  BrowserWindowInterface* parent_browser =
       LaunchWebAppBrowserAndWait(parent_url_info.app_id());
   ASSERT_NE(parent_browser, nullptr);
   content::WebContents* parent_contents =
-      parent_browser->tab_strip_model()->GetActiveWebContents();
+      parent_browser->GetTabStripModel()->GetActiveWebContents();
 
   webapps::AppId sub_app_id = InstallSubAppAndWait(
       parent_contents, "/subapp/index.html",

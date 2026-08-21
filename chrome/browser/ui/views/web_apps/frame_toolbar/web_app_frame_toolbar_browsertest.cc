@@ -2133,7 +2133,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   // launch it stays toggled on.
   CloseBrowserSynchronously(helper()->app_browser());
 
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
 
   BrowserView* browser_view =
@@ -3606,7 +3606,7 @@ class WebAppFrameToolbarBrowserTest_OriginText
         helper()->InstallWebApp(browser()->GetProfile(), app_url());
     content::TestNavigationObserver navigation_observer(app_url());
     navigation_observer.StartWatchingNewWebContents();
-    Browser* app_browser =
+    BrowserWindowInterface* app_browser =
         web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
     helper()->SetViewFromAppBrowser(app_browser);
 
@@ -3847,7 +3847,7 @@ class WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText
         browser()->GetProfile(), std::move(web_app_info));
     content::TestNavigationObserver navigation_observer(app_url());
     navigation_observer.StartWatchingNewWebContents();
-    Browser* app_browser =
+    BrowserWindowInterface* app_browser =
         web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
     helper()->SetViewFromAppBrowser(app_browser);
 

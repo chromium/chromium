@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
       web_app::mojom::UserDisplayMode::kStandalone;
   webapps::AppId app_id = web_app::test::InstallWebApp(browser()->GetProfile(),
                                                        std::move(web_app_info));
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
 
   TestExtensionUninstallDialogDelegate delegate{base::DoNothing()};

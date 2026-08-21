@@ -635,9 +635,10 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerIsolatedWebAppsTest,
   ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
                        app->Install(profile()));
 
-  Browser* browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+  BrowserWindowInterface* browser =
+      LaunchWebAppBrowserAndWait(url_info.app_id());
   content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
 
   GURL protocol_url =
       url_info.origin().GetURL().Resolve("/index.html?params=%s");

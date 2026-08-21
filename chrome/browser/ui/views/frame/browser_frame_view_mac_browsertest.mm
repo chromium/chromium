@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
@@ -105,9 +106,9 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewMacBrowserTestTitlePrefixed,
 
   const GURL start_url = GetInstallableAppURL();
   const webapps::AppId app_id = InstallPWA(start_url);
-  Browser* const browser = LaunchWebAppBrowser(app_id);
+  BrowserWindowInterface* const browser = LaunchWebAppBrowser(app_id);
   content::WebContents* const web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   // Ensure the main page has loaded and is ready for ExecJs DOM manipulation.
   ASSERT_TRUE(content::NavigateToURL(web_contents, start_url));
 
@@ -159,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewMacBrowserTest,
 
   const GURL start_url = GetInstallableAppURL();
   const webapps::AppId app_id = InstallPWA(start_url);
-  Browser* const browser = LaunchWebAppBrowser(app_id);
+  BrowserWindowInterface* const browser = LaunchWebAppBrowser(app_id);
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   BrowserFrameView* const frame_view = static_cast<BrowserFrameView*>(

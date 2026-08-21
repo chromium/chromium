@@ -6,6 +6,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -122,7 +123,7 @@ class WebAppMenuBrowserTest
   webapps::AppId app_id_;
   std::unique_ptr<ScopedBundledIsolatedWebApp> isolated_web_app_;
 
-  raw_ptr<Browser> app_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> app_browser_ = nullptr;
 };
 
 void WebAppMenuBrowserTest::ShowUi(const std::string& name) {

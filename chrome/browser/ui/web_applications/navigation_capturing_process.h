@@ -114,8 +114,8 @@ class NavigationCapturingProcess
   // `browser_navigator.cc` to check if the navigation capturing process wants
   // to override the browser and or tab to use. A return value of `nullopt`
   // means that no overriding should happen (but the navigation could still be
-  // captured on later redirects). A null `Browser*` means that the navigation
-  // should be aborted.
+  // captured on later redirects). A null `BrowserWindowInterface*` means that
+  // the navigation should be aborted.
   MaybeNavigationCapturingOverride GetInitialNavigationParamsOverride(
       const NavigateParams& params);
 

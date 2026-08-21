@@ -13,9 +13,9 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 
-class Browser;
 class BrowserFrameViewChromeOS;
 class BrowserView;
+class BrowserWindowInterface;
 
 namespace views {
 class Widget;
@@ -61,13 +61,13 @@ class ChromeOSBrowserUITest : public MixinBasedInProcessBrowserTest {
   static void DeactivateWidget(views::Widget* widget);
 
   // Enters/exits immersive fullscreen mode for the given browser.
-  static void EnterImmersiveFullscreenMode(Browser* browser);
-  static void ExitImmersiveFullscreenMode(Browser* browser);
+  static void EnterImmersiveFullscreenMode(BrowserWindowInterface* browser);
+  static void ExitImmersiveFullscreenMode(BrowserWindowInterface* browser);
 
   // Enters/exits fullscreen mode in th tab associated with the given contents.
-  static void EnterTabFullscreenMode(Browser* browser,
+  static void EnterTabFullscreenMode(BrowserWindowInterface* browser,
                                      content::WebContents* web_contents);
-  static void ExitTabFullscreenMode(Browser* browser,
+  static void ExitTabFullscreenMode(BrowserWindowInterface* browser,
                                     content::WebContents* web_contents);
 
   // Returns the non-client frame view for `browser_view`.

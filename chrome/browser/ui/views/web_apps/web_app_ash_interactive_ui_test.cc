@@ -5,6 +5,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
@@ -38,7 +39,7 @@ class WebAppAshInteractiveUITest : public web_app::WebAppBrowserTestBase {
             GURL("https://test.org"));
     webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
 
-    Browser* browser = LaunchWebAppBrowser(app_id);
+    BrowserWindowInterface* browser = LaunchWebAppBrowser(app_id);
     browser_view_ = BrowserView::GetBrowserViewForBrowser(browser);
 
     controller_ = ImmersiveModeController::From(browser);

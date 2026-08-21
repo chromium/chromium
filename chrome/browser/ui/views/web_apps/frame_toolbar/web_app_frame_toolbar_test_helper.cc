@@ -68,7 +68,8 @@ webapps::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
   webapps::AppId app_id = InstallWebApp(profile, start_url);
   content::TestNavigationObserver navigation_observer(start_url);
   navigation_observer.StartWatchingNewWebContents();
-  Browser* app_browser = web_app::LaunchWebAppBrowser(profile, app_id);
+  BrowserWindowInterface* app_browser =
+      web_app::LaunchWebAppBrowser(profile, app_id);
   navigation_observer.WaitForNavigationFinished();
 
   SetViewFromAppBrowser(app_browser);
@@ -89,7 +90,7 @@ webapps::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchCustomWebApp(
                                                        std::move(web_app_info));
   content::TestNavigationObserver navigation_observer(start_url);
   navigation_observer.StartWatchingNewWebContents();
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       web_app::LaunchWebAppBrowser(browser->GetProfile(), app_id);
   navigation_observer.WaitForNavigationFinished();
 

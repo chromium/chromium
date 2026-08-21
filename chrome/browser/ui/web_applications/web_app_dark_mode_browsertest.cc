@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -37,7 +37,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDarkModeBrowserTest, DarkColors) {
   webapps::AppId app_id = InstallWebAppFromInfo();
 
   WebAppBrowserController* controller;
-  Browser* app_browser = LaunchWebAppBrowser(app_id);
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowser(app_id);
   controller = web_app::AppBrowserController::From(app_browser)
                    ->AsWebAppBrowserController();
 

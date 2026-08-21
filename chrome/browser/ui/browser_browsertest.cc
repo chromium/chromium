@@ -3377,7 +3377,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, PreventCloseYieldsCancelledEvent) {
       }));
   waiter.Await();
 
-  Browser* const browser =
+  BrowserWindowInterface* const browser =
       web_app::LaunchWebAppBrowser(profile(), ash::kCalculatorAppId);
   ASSERT_TRUE(browser);
 

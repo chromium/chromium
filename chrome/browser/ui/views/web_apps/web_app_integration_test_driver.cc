@@ -1953,7 +1953,10 @@ void WebAppIntegrationTestDriver::LaunchFromChromeApps(Site site) {
       app_registrar.AppMatches(app_id, WebAppFilter::OpensInDedicatedWindow());
 #if BUILDFLAG(IS_CHROMEOS)
   if (is_open_in_app_browser) {
-    app_browser_ = LaunchWebAppBrowserAndWait(profile(), app_id);
+    BrowserWindowInterface* app_browser =
+        LaunchWebAppBrowserAndWait(profile(), app_id);
+    app_browser_ =
+        app_browser ? app_browser->GetBrowserForMigrationOnly() : nullptr;
     active_app_id_ = app_id;
   } else {
     ui_test_utils::UrlLoadObserver url_observer(
@@ -4801,8 +4804,9 @@ Browser* WebAppIntegrationTestDriver::GetAppBrowserForSite(
   if (!launch_if_not_open) {
     return nullptr;
   }
-  Browser* browser = LaunchWebAppBrowserAndWait(profile(), app_state->id);
-  return browser;
+  BrowserWindowInterface* browser =
+      LaunchWebAppBrowserAndWait(profile(), app_state->id);
+  return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
 }
 
 bool WebAppIntegrationTestDriver::IsShortcutAndIconCreated(

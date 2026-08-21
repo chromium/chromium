@@ -6,7 +6,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -34,9 +34,9 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppBrowserTest, OpenLinkInWebApp) {
   size_t num_browsers =
       ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
           ->GetSize();
-  const int num_tabs = browser()->tab_strip_model()->count();
+  const int num_tabs = browser()->GetTabStripModel()->count();
   content::WebContents* initial_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   const GURL initial_url = initial_tab->GetLastCommittedURL();
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
@@ -52,14 +52,14 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppBrowserTest, OpenLinkInWebApp) {
     url_observer.Wait();
   }
 
-  Browser* const app_browser = browser_created_observer.Wait();
-  EXPECT_EQ(num_tabs, browser()->tab_strip_model()->count());
+  BrowserWindowInterface* const app_browser = browser_created_observer.Wait();
+  EXPECT_EQ(num_tabs, browser()->GetTabStripModel()->count());
   EXPECT_EQ(++num_browsers,
             ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
                 ->GetSize());
   EXPECT_NE(browser(), app_browser);
   EXPECT_EQ(initial_url, initial_tab->GetLastCommittedURL());
-  EXPECT_EQ(start_url, app_browser->tab_strip_model()
+  EXPECT_EQ(start_url, app_browser->GetTabStripModel()
                            ->GetActiveWebContents()
                            ->GetLastCommittedURL());
 

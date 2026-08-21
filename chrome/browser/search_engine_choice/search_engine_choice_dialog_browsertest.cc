@@ -651,8 +651,10 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   const webapps::AppId app_id = InstallPWA(profile, start_url);
 
   // PWA browsers should not show the dialog.
-  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
-  EXPECT_FALSE(service->IsShowingDialog(*app_browser));
+  BrowserWindowInterface* app_browser =
+      web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+  EXPECT_FALSE(
+      service->IsShowingDialog(*app_browser->GetBrowserForMigrationOnly()));
 
   // The same URL in the regular browser shows the dialog.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(

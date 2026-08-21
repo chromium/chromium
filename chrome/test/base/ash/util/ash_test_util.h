@@ -16,6 +16,7 @@
 #include "ui/events/event_constants.h"
 
 class Browser;
+class BrowserWindowInterface;
 class GlobalBrowserCollection;
 class Profile;
 
@@ -60,10 +61,11 @@ Browser* CreateAndShowBrowser(
     const std::vector<GURL>& urls,
     std::optional<size_t> active_url_index = std::nullopt);
 
-Browser* InstallAndLaunchPWA(Profile* profile,
-                             const GURL& start_url,
-                             bool launch_in_browser,
-                             const std::u16string& app_title = u"A Web App");
+BrowserWindowInterface* InstallAndLaunchPWA(
+    Profile* profile,
+    const GURL& start_url,
+    bool launch_in_browser,
+    const std::u16string& app_title = u"A Web App");
 
 // Class used to wait for multiple browser windows to be created.
 class BrowsersWaiter : public BrowserCollectionObserver {

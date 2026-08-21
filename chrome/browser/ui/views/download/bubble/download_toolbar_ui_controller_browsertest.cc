@@ -42,7 +42,7 @@ class DownloadToolbarUIControllerBrowserTest : public DownloadTestBase {
  public:
   DownloadToolbarUIControllerBrowserTest() = default;
 
-  DownloadToolbarUIController* controller(Browser* browser) {
+  DownloadToolbarUIController* controller(BrowserWindowInterface* browser) {
     return DownloadToolbarUIController::From(browser);
   }
 
@@ -65,7 +65,7 @@ class DownloadToolbarUIControllerBrowserTest : public DownloadTestBase {
     DownloadTestBase::TearDownOnMainThread();
   }
 
-  views::View* toolbar_container(Browser* browser) {
+  views::View* toolbar_container(BrowserWindowInterface* browser) {
     CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
         << "Test needs modification to support WebUIPinnedToolbarActions";
     return static_cast<PinnedToolbarActionsContainer*>(
@@ -74,7 +74,7 @@ class DownloadToolbarUIControllerBrowserTest : public DownloadTestBase {
             ->GetPinnedToolbarActions());
   }
 
-  ToolbarButton* toolbar_button(Browser* browser) {
+  ToolbarButton* toolbar_button(BrowserWindowInterface* browser) {
     return BrowserView::GetBrowserViewForBrowser(browser)
         ->toolbar_button_provider()
         ->GetDownloadButton();
@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
       browser()->GetProfile(), std::move(web_app_info),
       /*overwrite_existing_manifest_fields=*/false,
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
   ui_test_utils::DownloadURL(
       app_browser, chrome_test_utils::GetTestUrl(
@@ -241,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   CloseBrowserSynchronously(app_browser);
 
   // Reopen web app and verify download button appears.
-  Browser* app_browser2 =
+  BrowserWindowInterface* app_browser2 =
       web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
   views::test::WaitForAnimatingLayoutManager(toolbar_container(app_browser2));
   EXPECT_NE(toolbar_button(app_browser2), nullptr);
