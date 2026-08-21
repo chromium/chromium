@@ -16,8 +16,8 @@ source_set("web_ui") {
 
   deps = [
     "//base",
-    "//components/os_crypt/async/browser",
-    "//components/os_crypt/async/common",
+    "//components/os_crypt/browser",
+    "//components/os_crypt/common",
     "//components/prefs",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser:download_check_result",

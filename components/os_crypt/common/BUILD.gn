@@ -2,8 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+group("common") {
+  # TODO(crbug.com/547814493): Move to this file.
+  public_deps = [ "//components/os_crypt/async/common" ]
+}
+
 source_set("switches") {
   sources = [ "os_crypt_switches.h" ]
+}
+
+group("crypto_lib") {
+  # TODO(crbug.com/547814493): Move to this file.
+  public_deps = [ "//components/os_crypt/async/common:crypto_lib" ]
 }
 
 if (is_apple) {
@@ -22,6 +32,9 @@ if (is_apple) {
 
 source_set("unit_tests") {
   testonly = true
+
+  # TODO(crbug.com/547814493): Move to this file.
+  public_deps = [ "//components/os_crypt/async/common:unit_tests" ]
   if (is_apple) {
     sources = [ "keychain_password_mac_unittest.mm" ]
     deps = [

@@ -1003,7 +1003,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/os_crypt/async/browser",
+    "//components/os_crypt/browser",
     "//components/passage_embeddings/core",
     "//components/passage_embeddings/core:test_support",
     "//components/prefs:test_support",

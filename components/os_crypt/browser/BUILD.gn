@@ -1,0 +1,73 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+group("browser") {
+  # TODO(crbug.com/547814493): Move to this file.
+  public_deps = [ "//components/os_crypt/async/browser" ]
+}
+
+group("test_support") {
+  testonly = true
+
+  # TODO(crbug.com/547814493): Move to this file.
+  public_deps = [ "//components/os_crypt/async/browser:test_support" ]
+}
+
+group("key_provider_interface") {
+  # TODO(crbug.com/547814493): Move to this file.
+  public_deps = [ "//components/os_crypt/async/browser:key_provider_interface" ]
+}
+
+if (is_apple) {
+  group("keychain_key_provider") {
+    # TODO(crbug.com/547814493): Move to this file.
+    public_deps =
+        [ "//components/os_crypt/async/browser:keychain_key_provider" ]
+  }
+}
+
+if (is_win) {
+  group("dpapi_key_provider") {
+    # TODO(crbug.com/547814493): Move to this file.
+    public_deps = [ "//components/os_crypt/async/browser:dpapi_key_provider" ]
+  }
+}
+
+if ((is_posix || is_fuchsia) && !is_apple) {
+  group("posix_key_provider") {
+    # TODO(crbug.com/547814493): Move to this file.
+    public_deps = [ "//components/os_crypt/async/browser:posix_key_provider" ]
+  }
+}
+
+if (is_linux && use_dbus) {
+  group("secret_portal_key_provider") {
+    # TODO(crbug.com/547814493): Move to this file.
+    public_deps =
+        [ "//components/os_crypt/async/browser:secret_portal_key_provider" ]
+  }
+
+  group("freedesktop_secret_key_provider") {
+    # TODO(crbug.com/547814493): Move to this file.
+    public_deps = [
+      "//components/os_crypt/async/browser:freedesktop_secret_key_provider",
+    ]
+  }
+
+  group("test_secret_portal") {
+    testonly = true
+
+    # TODO(crbug.com/547814493): Move to this file.
+    public_deps = [ "//components/os_crypt/async/browser:test_secret_portal" ]
+  }
+}
+
+group("unit_tests") {
+  testonly = true
+
+  # TODO(crbug.com/547814493): Move to this file.
+  public_deps = [ "//components/os_crypt/async/browser:unit_tests" ]
+}

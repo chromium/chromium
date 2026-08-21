@@ -69,7 +69,7 @@ source_set("test_support") {
     "//components/metrics:test_support",
     "//components/metrics_services_manager",
     "//components/network_time",
-    "//components/os_crypt/async/browser:test_support",
+    "//components/os_crypt/browser:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common",

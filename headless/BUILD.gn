@@ -388,7 +388,7 @@ source_set("headless_browser") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/origin_trials:browser",
     "//components/origin_trials:common",
-    "//components/os_crypt/async/browser",
+    "//components/os_crypt/browser",
     "//components/profile_metrics",
     "//components/security_state/content",
     "//components/security_state/core",
@@ -496,7 +496,7 @@ source_set("headless_browser") {
   }
 
   if (is_win) {
-    deps += [ "//components/os_crypt/async/browser:dpapi_key_provider" ]
+    deps += [ "//components/os_crypt/browser:dpapi_key_provider" ]
   }
 
   if (is_linux || is_chromeos) {
@@ -512,15 +512,15 @@ source_set("headless_browser") {
   }
   if (is_linux && use_dbus) {
     deps += [
-      "//components/os_crypt/async/browser:freedesktop_secret_key_provider",
+      "//components/os_crypt/browser:freedesktop_secret_key_provider",
       "//components/password_manager/core/browser:password_switches",
     ]
   }
 
   if (is_apple) {
-    deps += [ "//components/os_crypt/async/browser:keychain_key_provider" ]
+    deps += [ "//components/os_crypt/browser:keychain_key_provider" ]
   } else if (is_posix) {
-    deps += [ "//components/os_crypt/async/browser:posix_key_provider" ]
+    deps += [ "//components/os_crypt/browser:posix_key_provider" ]
   }
 
   # Normally set to false (see build/args/headless.gn), but we can optionally

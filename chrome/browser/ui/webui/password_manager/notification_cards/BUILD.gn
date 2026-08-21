@@ -50,7 +50,7 @@ source_set("notification_cards") {
   if (is_linux || is_mac) {
     sources += [ "relaunch_chrome_banner.cc" ]
     public += [ "relaunch_chrome_banner.h" ]
-    deps += [ "//components/os_crypt/async/common" ]
+    deps += [ "//components/os_crypt/common" ]
   }
 }
 
@@ -78,6 +78,6 @@ source_set("unit_tests") {
 
   if (is_linux || is_mac) {
     sources += [ "relaunch_chrome_banner_unittest.cc" ]
-    deps += [ "//components/os_crypt/async/browser:test_support" ]
+    deps += [ "//components/os_crypt/browser:test_support" ]
   }
 }

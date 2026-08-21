@@ -33,10 +33,10 @@ source_set("device_identity") {
       "device_oauth2_token_store_desktop.cc",
       "device_oauth2_token_store_desktop.h",
     ]
-    public_deps += [ "//components/os_crypt/async/common" ]
+    public_deps += [ "//components/os_crypt/common" ]
     deps += [
       "//chrome/common:constants",
-      "//components/os_crypt/async/browser",
+      "//components/os_crypt/browser",
       "//components/policy/core/common:common_constants",
     ]
   } else {
@@ -79,8 +79,8 @@ source_set("unit_tests") {
     sources += [ "device_oauth2_token_store_desktop_unittest.cc" ]
     deps += [
       "//base/test:test_support",
-      "//components/os_crypt/async/browser",
-      "//components/os_crypt/async/browser:test_support",
+      "//components/os_crypt/browser",
+      "//components/os_crypt/browser:test_support",
       "//components/policy/core/common:common_constants",
       "//components/prefs",
     ]

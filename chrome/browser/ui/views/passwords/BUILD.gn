@@ -103,8 +103,8 @@ source_set("impl") {
   deps = [
     ":passwords",
     "//chrome/app/vector_icons",
-    "//chrome/browser/password_manager/factories",
     "//chrome/browser/favicon",
+    "//chrome/browser/password_manager/factories",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/signin",
@@ -141,7 +141,7 @@ source_set("impl") {
   if (is_linux || is_mac) {
     # password_relaunch_chrome_view is only shown on Linux and macOS.
     sources += [ "password_relaunch_chrome_view.cc" ]
-    deps += [ "//components/os_crypt/async/common" ]
+    deps += [ "//components/os_crypt/common" ]
   }
 }
 

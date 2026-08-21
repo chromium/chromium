@@ -71,7 +71,7 @@ source_set("webauthn") {
       "//chrome/common",
       "//chrome/common:version_header",
       "//components/keyed_service/core",
-      "//components/os_crypt/async/common",
+      "//components/os_crypt/common",
       "//components/trusted_vault",
       "//components/webauthn/core/browser",
       "//components/webauthn/core/browser:passkey_model",

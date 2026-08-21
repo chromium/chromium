@@ -1474,7 +1474,7 @@ source_set("core") {
       "//components/crash/core/app:crash_export_thunk_include",
       "//components/device_signals/core/browser/win",
       "//components/live_caption:utils",
-      "//components/os_crypt/async/browser:dpapi_key_provider",
+      "//components/os_crypt/browser:dpapi_key_provider",
       "//components/stylus_handwriting/win",
       "//media/mojo/services",
       "//sandbox/win:sandbox",
@@ -1550,7 +1550,7 @@ source_set("core") {
       "//components/enterprise/platform_auth:enterprise_platform_auth",
       "//components/handoff",
       "//components/metal_util",
-      "//components/os_crypt/async/browser:keychain_key_provider",
+      "//components/os_crypt/browser:keychain_key_provider",
       "//components/policy/core/common:common_constants",
       "//components/remote_cocoa/app_shim",
       "//components/remote_cocoa/app_shim:features",
@@ -1615,7 +1615,7 @@ source_set("core") {
     deps += [
       ":fullscreen",
       ":shell_integration_linux",
-      "//components/os_crypt/async/browser:posix_key_provider",
+      "//components/os_crypt/browser:posix_key_provider",
       "//third_party/libxml:xml_writer",
       "//ui/linux:display_server_utils",
     ]
@@ -1630,8 +1630,8 @@ source_set("core") {
         "//chrome/common:chrome_features",
         "//components/dbus",
         "//components/memory_pressure",
-        "//components/os_crypt/async/browser:freedesktop_secret_key_provider",
-        "//components/os_crypt/async/browser:secret_portal_key_provider",
+        "//components/os_crypt/browser:freedesktop_secret_key_provider",
+        "//components/os_crypt/browser:secret_portal_key_provider",
         "//dbus",
       ]
     }
@@ -1690,7 +1690,7 @@ source_set("core") {
       "//components/external_intents/android",
       "//components/messages/android:feature_flags",
       "//components/navigation_interception",
-      "//components/os_crypt/async/browser:posix_key_provider",
+      "//components/os_crypt/browser:posix_key_provider",
       "//components/page_info/android",
       "//components/payments/content/android",
       "//components/record_replay/core/common:mojom",
@@ -1811,7 +1811,7 @@ source_set("core") {
       "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
       "//chromeos/components/kiosk",
       "//components/cross_device/nearby",
-      "//components/os_crypt/async/browser:posix_key_provider",
+      "//components/os_crypt/browser:posix_key_provider",
       "//remoting/host/chromeos:features",
     ]
   }

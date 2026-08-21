@@ -14,7 +14,7 @@ source_set("os_crypt") {
     "//base",
     "//chrome/common:channel_info",
     "//chrome/install_static:install_static_util",
-    "//components/os_crypt/async/browser:key_provider_interface",
+    "//components/os_crypt/browser:key_provider_interface",
     "//components/prefs",
     "//crypto",
   ]

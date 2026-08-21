@@ -196,8 +196,8 @@ component("cpp") {
   deps = [
     "//base",
     "//components/link_header_util",
-    "//components/os_crypt/async/browser",
-    "//components/os_crypt/async/common",
+    "//components/os_crypt/browser",
+    "//components/os_crypt/common",
     "//components/prefs",
     "//components/url_pattern",
     "//ipc",

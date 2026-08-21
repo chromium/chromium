@@ -73,7 +73,7 @@ source_set("enterprise") {
     "//components/enterprise/watermarking",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
-    "//components/os_crypt/async/browser",
+    "//components/os_crypt/browser",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/prefs",

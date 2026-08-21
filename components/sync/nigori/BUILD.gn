@@ -36,7 +36,7 @@ static_library("nigori") {
     "sync_encryption_handler_observer_list.h",
   ]
 
-  deps = [ "//components/os_crypt/async/common" ]
+  deps = [ "//components/os_crypt/common" ]
 
   public_deps = [
     "//base",

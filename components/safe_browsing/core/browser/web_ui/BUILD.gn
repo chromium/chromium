@@ -41,7 +41,7 @@ source_set("handler") {
     ":local_state_delegate",
     ":util",
     "//base",
-    "//components/os_crypt/async/browser",
+    "//components/os_crypt/browser",
     "//components/password_manager/core/browser:hash_password_manager",
     "//components/safe_browsing/core/browser:download_check_result",
     "//components/safe_browsing/core/browser:referrer_chain_provider",

@@ -562,8 +562,8 @@ if (!is_android) {
     }
     if (is_linux && use_dbus) {
       deps += [
-        "//components/os_crypt/async/browser:secret_portal_key_provider",
-        "//components/os_crypt/async/browser:test_secret_portal",
+        "//components/os_crypt/browser:secret_portal_key_provider",
+        "//components/os_crypt/browser:test_secret_portal",
       ]
     }
 

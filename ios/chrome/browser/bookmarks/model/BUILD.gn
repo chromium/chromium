@@ -32,7 +32,7 @@ source_set("model") {
     "//components/favicon/core",
     "//components/favicon_base",
     "//components/history/core/browser",
-    "//components/os_crypt/async/browser",
+    "//components/os_crypt/browser",
     "//components/power_bookmarks/core",
     "//components/prefs",
     "//components/sync_bookmarks",
