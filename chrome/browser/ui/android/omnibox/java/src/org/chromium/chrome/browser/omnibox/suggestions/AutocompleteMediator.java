@@ -171,7 +171,7 @@ class AutocompleteMediator
     private final SettableNonNullObservableSupplier<Integer> mRoundSidesSupplier =
             ObservableSuppliers.createNonNull(RoundSides.TOP_AND_BOTTOM);
     private final Callback<@ControlsPosition Integer> mToolbarPositionChangedCallback =
-            this::onToolbarPositionChanged;
+            _ -> onToolbarPositionChanged();
     private final Callback<@AutocompleteRequestType Integer> mOnAutocompleteRequestTypeChanged =
             this::onAutocompleteRequestTypeChanged;
     private final Callback<@Nullable SiteSearchData> mOnSiteSearchDataChanged =
@@ -2156,8 +2156,7 @@ class AutocompleteMediator
                 mContext);
     }
 
-    private void onToolbarPositionChanged(@ControlsPosition Integer newPosition) {
-        mListPropertyModel.set(SuggestionListProperties.TOOLBAR_POSITION, newPosition);
+    private void onToolbarPositionChanged() {
         if (isInInputSession()) {
             // Hacky solution: rebuild the list if we're active when the position changes,
             // triggering recalculation of refine arrow icon. TODO(http://crbug.com/446058347):
