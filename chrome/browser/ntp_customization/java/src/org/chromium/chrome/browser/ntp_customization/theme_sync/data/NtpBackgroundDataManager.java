@@ -219,6 +219,18 @@ public class NtpBackgroundDataManager {
     }
 
     /**
+     * Removes the image file for the given synced {@link NtpBackgroundDataImageBase} if it is no
+     * longer referenced in any local or remote history list.
+     *
+     * @param imageBaseData The synced image base data to clean up.
+     */
+    public void maybeCleanUpUnusedSyncedImageData(NtpBackgroundDataImageBase imageBaseData) {
+        PostTask.postTask(
+                TaskTraits.USER_VISIBLE_MAY_BLOCK,
+                () -> maybeDeleteImageFileIfNotInUse(imageBaseData, /* platformToSkip= */ null));
+    }
+
+    /**
      * Removes the image file for the backgroundData if it is no longer referenced in any other
      * local or remote history list.
      *
@@ -228,27 +240,39 @@ public class NtpBackgroundDataManager {
      */
     private void cleanUpForBackgroundData(
             NtpBackgroundDataImageBase imageBaseData, boolean isLocalSelected) {
-        String fileIdHash = imageBaseData.getFileIdHash();
-        if (fileIdHash == null) return;
-
+        int platformToSkip;
         if (isLocalSelected) {
-            // If the data comes from the local history list, checks if the fileIdHash exists in
-            // any remote groups.
-            for (int i = PlatformType.ANDROID + 1; i < PlatformType.MAX_COUNT; i++) {
-                NtpBackgroundDataGroup remoteGroup = getBackgroundDataGroupFromSharedPreference(i);
-                if (isImageStillInUse(remoteGroup, fileIdHash)) return;
-            }
+            // If the data comes from the local history list, checks if the fileIdHash exists in any
+            // remote groups.
+            platformToSkip = PlatformType.ANDROID;
         } else {
             // If the data comes from a remote platform list, checks local group and other remote
             // groups which are different from the data's platform type.
-            int ownRemotePlatform = imageBaseData.getPlatformType();
-            assert ownRemotePlatform != PlatformType.ANDROID;
+            platformToSkip = imageBaseData.getPlatformType();
+            assert platformToSkip != PlatformType.ANDROID;
+        }
+        maybeDeleteImageFileIfNotInUse(imageBaseData, platformToSkip);
+    }
 
-            for (int i = PlatformType.ANDROID; i < PlatformType.MAX_COUNT; i++) {
-                if (i == ownRemotePlatform) continue;
+    /**
+     * Deletes the image file for the given {@link NtpBackgroundDataImageBase} if its file ID hash
+     * is not referenced in any checked history lists in SharedPreferences.
+     *
+     * @param imageBaseData The image base data to clean up.
+     * @param platformToSkip Optional platform type to skip checking, or null to check all
+     *     platforms.
+     */
+    private void maybeDeleteImageFileIfNotInUse(
+            NtpBackgroundDataImageBase imageBaseData, @Nullable Integer platformToSkip) {
+        String fileIdHash = imageBaseData.getFileIdHash();
+        if (fileIdHash == null) return;
 
-                NtpBackgroundDataGroup group = getBackgroundDataGroupFromSharedPreference(i);
-                if (isImageStillInUse(group, fileIdHash)) return;
+        for (int i = PlatformType.ANDROID; i < PlatformType.MAX_COUNT; i++) {
+            if (platformToSkip != null && i == platformToSkip.intValue()) continue;
+
+            NtpBackgroundDataGroup group = getBackgroundDataGroupFromSharedPreference(i);
+            if (isImageStillInUse(group, fileIdHash)) {
+                return;
             }
         }
 

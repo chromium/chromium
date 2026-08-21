@@ -135,7 +135,7 @@ public class NtpSyncedThemeManager {
                             /* primaryColor= */ null,
                             /* fileIdHash= */ fileId);
             NtpCustomizationConfigManager.getInstance()
-                    .onSyncedThemeCollectionImageChanged(themeCollectionData);
+                    .onSyncedThemeCollectionImageChanged(mContext, themeCollectionData);
         }
     }
 }

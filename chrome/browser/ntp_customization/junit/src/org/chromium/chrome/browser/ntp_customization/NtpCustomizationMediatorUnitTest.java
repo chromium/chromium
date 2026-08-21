@@ -924,6 +924,5 @@ public class NtpCustomizationMediatorUnitTest {
         }
 
         assertEquals(expectedState, NtpCustomizationPromoManager.getStateForTesting());
-        verify(mConfigManager).clearSyncedNtpBackgroundData();
     }
 }

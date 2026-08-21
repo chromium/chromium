@@ -798,7 +798,8 @@ public class NewTabPage
             return;
         }
 
-        NtpCustomizationConfigManager.getInstance().maybeApplyBackgroundUpdateFromDeviceSync();
+        NtpCustomizationConfigManager.getInstance()
+                .maybeApplyBackgroundUpdateFromDeviceSync(mActivity);
     }
 
     private void onBackgroundChangedImpl(boolean applyWhiteBackgroundOnSearchBox) {

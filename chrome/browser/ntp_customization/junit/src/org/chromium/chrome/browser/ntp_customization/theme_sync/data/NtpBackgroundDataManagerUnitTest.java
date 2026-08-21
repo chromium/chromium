@@ -43,6 +43,8 @@ import java.io.File;
 public class NtpBackgroundDataManagerUnitTest {
     private static final String TEST_COLLECTION_ID = "test_collection";
     private static final String OTHER_COLLECTION_ID = "other_collection";
+    private static final String UNUSED_FILE_HASH = "unusedFileHash";
+    private static final String HISTORY_FILE_HASH = "historyFileHash";
     private static final @PlatformType int REMOTE_PLATFORM_TYPE = PlatformType.IOS;
     private static final @ColorInt int TEST_PRIMARY_COLOR = Color.RED;
 
@@ -61,6 +63,8 @@ public class NtpBackgroundDataManagerUnitTest {
     @After
     public void tearDown() {
         mManager.resetSharedPreferenceForTesting();
+        NtpCustomizationUtils.deleteThemeImageFileDir(
+                NtpCustomizationUtils.NTP_THEME_COLLECTION_IMAGES_DIR);
     }
 
     @Test
@@ -705,5 +709,89 @@ public class NtpBackgroundDataManagerUnitTest {
         assertEquals(1, group.size());
         assertEquals(enrichedData, group.get(0));
         assertNotNull(((NtpBackgroundDataThemeCollection) group.get(0)).getBackgroundImageInfo());
+    }
+
+    @Test
+    public void testMaybeCleanUpUnusedSyncedImageData_unusedFile_deletesFile() {
+        Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+        NtpBackgroundDataThemeCollection themeData =
+                createAndSaveThemeCollectionData(bitmap, UNUSED_FILE_HASH);
+        File savedFile = new File(themeData.getLastUploadImageFilePath());
+
+        // File is not present in history.
+        mManager.maybeCleanUpUnusedSyncedImageData(themeData);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertFalse(savedFile.exists());
+    }
+
+    @Test
+    public void testMaybeCleanUpUnusedSyncedImageData_inUseByHistory_preservesFile() {
+        Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+        NtpBackgroundDataThemeCollection themeData =
+                createAndSaveThemeCollectionData(bitmap, HISTORY_FILE_HASH);
+        File savedFile = new File(themeData.getLastUploadImageFilePath());
+
+        // Save to local history.
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(themeData);
+
+        // Attempt to clean up.
+        mManager.maybeCleanUpUnusedSyncedImageData(themeData);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(savedFile.exists());
+    }
+
+    @Test
+    public void testMaybeCleanUpUnusedSyncedImageData_inUseByRemoteHistory_preservesFile() {
+        Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+        NtpBackgroundDataThemeCollection themeData =
+                createAndSaveThemeCollectionData(bitmap, HISTORY_FILE_HASH);
+        File savedFile = new File(themeData.getLastUploadImageFilePath());
+
+        // Save to remote (desktop) history.
+        CustomBackgroundInfo desktopBgInfo =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        NtpBackgroundDataThemeCollection desktopThemeData =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.DESKTOP,
+                        desktopBgInfo,
+                        /* backgroundImageInfo= */ null,
+                        bitmap,
+                        /* primaryColor= */ null,
+                        HISTORY_FILE_HASH);
+        mManager.saveRemoteSyncDataToSharedPreference(desktopThemeData);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Attempt to clean up.
+        mManager.maybeCleanUpUnusedSyncedImageData(themeData);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(savedFile.exists());
+    }
+
+    private NtpBackgroundDataThemeCollection createAndSaveThemeCollectionData(
+            Bitmap bitmap, String fileHash) {
+        CustomBackgroundInfo customBgInfo =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        NtpBackgroundDataThemeCollection themeData =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID,
+                        customBgInfo,
+                        /* backgroundImageInfo= */ null,
+                        bitmap,
+                        /* primaryColor= */ null,
+                        fileHash);
+
+        File savedFile = new File(themeData.getLastUploadImageFilePath());
+        NtpCustomizationUtils.saveBitmapImageToFile(bitmap, savedFile);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(savedFile.exists());
+        return themeData;
     }
 }

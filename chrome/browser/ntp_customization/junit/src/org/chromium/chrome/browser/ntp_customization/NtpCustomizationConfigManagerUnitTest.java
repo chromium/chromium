@@ -90,7 +90,9 @@ public class NtpCustomizationConfigManagerUnitTest {
     @Captor private ArgumentCaptor<Callback<Bitmap>> mBitmapCallbackCaptor;
 
     private static final String FILE_ID_HASH = "fileIdHash";
+    private static final String OTHER_FILE_ID_HASH = "otherFileIdHash";
     private static final String TEST_COLLECTION_ID = "collectionId";
+    private static final String OTHER_COLLECTION_ID = "otherCollection";
 
     private Context mContext;
     private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
@@ -1027,60 +1029,144 @@ public class NtpCustomizationConfigManagerUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
     public void testOnSyncedThemeCollectionImageChanged() {
         NtpCustomizationConfigManager manager = createConfigManagerWithListener();
         CustomBackgroundInfo info = createTestCustomBackgroundInfo();
         NtpBackgroundDataThemeCollection themeCollectionData = createTestThemeCollectionData(info);
 
-        manager.onSyncedThemeCollectionImageChanged(themeCollectionData);
+        manager.onSyncedThemeCollectionImageChanged(mContext, themeCollectionData);
         RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(
                 NtpBackgroundType.THEME_COLLECTION,
                 NtpCustomizationUtils.getNtpBackgroundTypeFromSharedPreference());
         assertEquals(info, NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
+        assertEquals(themeCollectionData, manager.getSyncedNtpBackgroundDataForTesting());
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void testMaybeSaveUserSelectedBackgroundTypeToSharedPreference() {
+        NtpCustomizationConfigManager manager = createConfigManagerWithListener();
+        CustomBackgroundInfo info = createTestCustomBackgroundInfo();
+        NtpBackgroundDataThemeCollection themeCollectionData = createTestThemeCollectionData(info);
+        manager.setNtpBackgroundDataForTesting(themeCollectionData);
+
+        manager.maybeSaveUserSelectedBackgroundTypeToSharedPreference(mContext);
+
+        verify(mNtpBackgroundDataManager)
+                .saveUserSelectedBackgroundTypeToSharedPreference(themeCollectionData);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
     public void testMaybeApplyBackgroundUpdateFromDeviceSync_withThemeMismatch() {
         NtpCustomizationConfigManager manager = createConfigManagerWithListener();
         CustomBackgroundInfo info = createTestCustomBackgroundInfo();
         NtpBackgroundDataThemeCollection themeCollectionData = createTestThemeCollectionData(info);
 
-        manager.onSyncedThemeCollectionImageChanged(themeCollectionData);
+        manager.onSyncedThemeCollectionImageChanged(mContext, themeCollectionData);
         RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mNtpThemeStateProvider, never()).notifyApplyThemeChanges();
-        manager.maybeApplyBackgroundUpdateFromDeviceSync();
+        manager.maybeApplyBackgroundUpdateFromDeviceSync(mContext);
 
         verify(mNtpThemeStateProvider).notifyApplyThemeChanges();
+        verify(mNtpBackgroundDataManager)
+                .saveUserSelectedBackgroundTypeToSharedPreference(themeCollectionData);
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
     public void testMaybeApplyBackgroundUpdateFromDeviceSync_withoutMismatch() {
         NtpCustomizationConfigManager manager = createConfigManagerWithListener();
 
         // No synced data has been received.
         verify(mNtpThemeStateProvider, never()).notifyApplyThemeChanges();
-        manager.maybeApplyBackgroundUpdateFromDeviceSync();
+        manager.maybeApplyBackgroundUpdateFromDeviceSync(mContext);
         verify(mNtpThemeStateProvider, never()).notifyApplyThemeChanges();
+        verify(mNtpBackgroundDataManager, never())
+                .saveUserSelectedBackgroundTypeToSharedPreference(any());
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
     public void testClearSyncedNtpBackgroundData() {
         NtpCustomizationConfigManager manager = createConfigManagerWithListener();
         CustomBackgroundInfo info = createTestCustomBackgroundInfo();
         NtpBackgroundDataThemeCollection themeCollectionData = createTestThemeCollectionData(info);
 
-        manager.onSyncedThemeCollectionImageChanged(themeCollectionData);
+        manager.onSyncedThemeCollectionImageChanged(mContext, themeCollectionData);
         RobolectricUtil.runAllBackgroundAndUi();
 
         // Clear synced background data before NTP foregrounds.
-        manager.clearSyncedNtpBackgroundData();
+        manager.clearSyncedNtpBackgroundData(mContext);
+        verify(mNtpBackgroundDataManager).maybeCleanUpUnusedSyncedImageData(themeCollectionData);
         verify(mNtpThemeStateProvider, never()).notifyApplyThemeChanges();
-        manager.maybeApplyBackgroundUpdateFromDeviceSync();
+        manager.maybeApplyBackgroundUpdateFromDeviceSync(mContext);
 
         verify(mNtpThemeStateProvider, never()).notifyApplyThemeChanges();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void testOnSyncedThemeCollectionImageChanged_replacesOldPendingSync_cleansUpOldImage() {
+        NtpCustomizationConfigManager manager = createConfigManagerWithListener();
+        CustomBackgroundInfo info1 = createTestCustomBackgroundInfo();
+        NtpBackgroundDataThemeCollection themeData1 = createTestThemeCollectionData(info1);
+
+        CustomBackgroundInfo info2 =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_2,
+                        OTHER_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        NtpBackgroundDataThemeCollection themeData2 =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID,
+                        info2,
+                        mBackgroundImageInfo,
+                        mBitmap,
+                        /* primaryColor= */ null,
+                        OTHER_FILE_ID_HASH);
+
+        manager.onSyncedThemeCollectionImageChanged(mContext, themeData1);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Second sync arrives before first sync was applied.
+        manager.onSyncedThemeCollectionImageChanged(mContext, themeData2);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Verify old pending sync image was cleaned up.
+        verify(mNtpBackgroundDataManager).maybeCleanUpUnusedSyncedImageData(themeData1);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void testOnBackgroundDataChanged_withPendingSync_clearsPendingSyncAndCleansUp() {
+        NtpCustomizationConfigManager manager = createConfigManagerWithListener();
+        CustomBackgroundInfo info = createTestCustomBackgroundInfo();
+        NtpBackgroundDataThemeCollection themeCollectionData = createTestThemeCollectionData(info);
+
+        manager.onSyncedThemeCollectionImageChanged(mContext, themeCollectionData);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(themeCollectionData, manager.getSyncedNtpBackgroundDataForTesting());
+
+        // User manually changes background (e.g. to a color or upload image).
+        NtpBackgroundDataUploadImage uploadImageData =
+                new NtpBackgroundDataUploadImage(
+                        PlatformType.ANDROID,
+                        mBackgroundImageInfo,
+                        mBitmap,
+                        /* primaryColor= */ null,
+                        FILE_ID_HASH);
+        manager.onBackgroundDataChanged(mContext, uploadImageData);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Verify pending sync was cleared and its unused image cleaned up.
+        assertNull(manager.getSyncedNtpBackgroundDataForTesting());
+        verify(mNtpBackgroundDataManager).maybeCleanUpUnusedSyncedImageData(themeCollectionData);
     }
 
     private NtpCustomizationConfigManager createConfigManagerWithListener() {
