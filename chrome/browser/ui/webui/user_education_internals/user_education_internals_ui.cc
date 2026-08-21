@@ -36,7 +36,8 @@ UserEducationInternalsUIConfig::UserEducationInternalsUIConfig()
 
 UserEducationInternalsUI::UserEducationInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
-      help_bubble_handler_factory_receiver_(this) {
+      help_bubble_handler_factory_receiver_(this),
+      user_education_handler_factory_receiver_(this) {
   Profile* profile = Profile::FromWebUI(web_ui);
   auto* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIUserEducationInternalsHost);
@@ -69,9 +70,8 @@ void UserEducationInternalsUI::BindInterface(
     mojo::PendingReceiver<
         mojom::user_education_internals::UserEducationInternalsPageHandler>
         receiver) {
-  user_education_handler_ =
-      std::make_unique<UserEducationInternalsPageHandlerImpl>(
-          web_ui(), Profile::FromWebUI(web_ui()), std::move(receiver));
+  page_handler_ = std::make_unique<UserEducationInternalsPageHandlerImpl>(
+      web_ui(), Profile::FromWebUI(web_ui()), std::move(receiver));
 }
 
 void UserEducationInternalsUI::BindInterface(
@@ -83,6 +83,16 @@ void UserEducationInternalsUI::BindInterface(
   help_bubble_handler_factory_receiver_.Bind(std::move(pending_receiver));
 }
 
+void UserEducationInternalsUI::BindInterface(
+    mojo::PendingReceiver<
+        user_education::mojom::UserEducationMixedTrustHandlerFactory>
+        pending_receiver) {
+  if (user_education_handler_factory_receiver_.is_bound()) {
+    user_education_handler_factory_receiver_.reset();
+  }
+  user_education_handler_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
 void UserEducationInternalsUI::CreateHelpBubbleHandler(
     mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> pending_client,
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler>
@@ -91,6 +101,13 @@ void UserEducationInternalsUI::CreateHelpBubbleHandler(
       std::move(pending_handler), std::move(pending_client),
       ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(
           web_ui()->GetRenderFrameHost()));
+}
+
+void UserEducationInternalsUI::CreateUserEducationMixedTrustHandler(
+    mojo::PendingReceiver<user_education::mojom::UserEducationMixedTrustHandler>
+        pending_handler) {
+  user_education_handler_ = std::make_unique<UserEducationMixedTrustHandler>(
+      std::move(pending_handler), *Profile::FromWebUI(web_ui()));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(UserEducationInternalsUI)

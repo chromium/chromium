@@ -2822,6 +2822,7 @@ source_set("browser") {
       "//chrome/browser/ui/webui/signin:signin_utils_impl",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:impl",
+      "//chrome/browser/ui/webui/user_education",
       "//chrome/browser/ui/webui/user_education_internals",
       "//chrome/browser/ui/webui/web_app_internals",
       "//chrome/browser/ui/webui/webui_gallery",

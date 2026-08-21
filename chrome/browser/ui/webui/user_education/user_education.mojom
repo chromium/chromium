@@ -1,0 +1,62 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module user_education.mojom;
+
+// Describes what to do when the feature associated with an IPH is used.
+enum FeaturePromoFeatureUsedAction {
+  // If the promo is showing, it is dismissed. If it is queued, it will be
+  // canceled. In most cases, the promo will not be shown again.
+  kClosePromoIfPresent,
+  // If the promo is showing or queued, it continues to be showing or queued.
+  // However, marking the feature as used may prevent the promo from showing
+  // in the future. If you intend to use e.g. CloseFeaturePromoAndContinue(),
+  // this option will avoid terminating the promo prematurely.
+  kIgnorePromoIfPresent,
+};
+
+// Used by the controller to bootstrap IPC. Any WebUIController can implement
+// this interface to access user education features.
+interface UserEducationMixedTrustHandlerFactory {
+  // This method is called on bootstrap to create the browser-side handler.
+  CreateUserEducationMixedTrustHandler(
+           pending_receiver<UserEducationMixedTrustHandler> handler);
+};
+
+// Object which handles the C++/browser side of user education for a
+// WebUIController. Exposes a subset of the functionality in
+// BrowserUserEducationInterface to WebUI.
+//
+// This is an interface that can be used by both trusted and untrusted WebUI.
+// Please do not add methods to this interface without contacting the Frizzle
+// (Desktop User Education) and IPC Security teams.
+interface UserEducationMixedTrustHandler {
+  // Records that the user has engaged the specific `feature` associated with an
+  // IPH promo; this information is used to determine whether to show the promo
+  // in the future. Also specifies which `action` should be taken regarding
+  // existing queued or showing promos associated with `feature`.
+  //
+  // Returns whether a promo was closed as a result.
+  NotifyFeaturePromoFeatureUsed(
+      string feature_name,
+      FeaturePromoFeatureUsedAction action);
+
+  // Records that the user has performed an action that is specified in in a
+  // FeaturePromoSpecification by calling the `SetAdditionalConditions()`
+  // method; this information may be used to determine whether and when to show
+  // the promo in the future.
+  NotifyAdditionalConditionEvent(string event_name);
+
+  // Records that the user has engaged the specific `feature_name` associated
+  // with a "New" Badge; this information is used to determine whether to show
+  // the badge in the future.
+  NotifyNewBadgeFeatureUsed(string feature_name);
+
+  // Returns whether a "New" Badge should be shown on the entry point for
+  // `feature_name`; the badge must be registered for the feature in
+  // browser_user_education_service.cc. Call exactly once per time the surface
+  // containing the badge will be shown to the user (calling more times may
+  // result in the badge disappearing faster than it ought to).
+  MaybeShowNewBadgeFor(string feature_name) => (bool should_show);
+};

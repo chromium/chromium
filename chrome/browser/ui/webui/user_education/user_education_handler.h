@@ -1,0 +1,86 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_WEBUI_USER_EDUCATION_USER_EDUCATION_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_USER_EDUCATION_USER_EDUCATION_HANDLER_H_
+
+#include "base/feature.h"
+#include "chrome/browser/ui/webui/user_education/user_education.mojom.h"
+#include "components/feature_engagement/public/tracker.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_registry.h"
+#include "components/user_education/common/new_badge/new_badge_controller.h"
+#include "content/public/browser/browser_context.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+
+// Provides a subset of the functionality of `BrowserUserEducationInterface`
+// for WebUI that is appropriate for use in both trusted and untrusted WebUI.
+//
+// This base class allows unit testing without being directly hooked up to a
+// WebUI.
+class UserEducationMixedTrustHandlerBase
+    : public user_education::mojom::UserEducationMixedTrustHandler {
+ public:
+  UserEducationMixedTrustHandlerBase();
+  UserEducationMixedTrustHandlerBase(
+      const UserEducationMixedTrustHandlerBase&) = delete;
+  void operator=(const UserEducationMixedTrustHandlerBase&) = delete;
+  ~UserEducationMixedTrustHandlerBase() override;
+
+  // UserEducationMixedTrustHandler:
+  void NotifyFeaturePromoFeatureUsed(
+      const std::string& feature_name,
+      user_education::mojom::FeaturePromoFeatureUsedAction action) override;
+  void NotifyAdditionalConditionEvent(const std::string& event_name) override;
+  void NotifyNewBadgeFeatureUsed(const std::string& feature_name) override;
+  void MaybeShowNewBadgeFor(const std::string& feature_name,
+                            MaybeShowNewBadgeForCallback callback) override;
+
+ protected:
+  // Override to use mojo error handling; defaults to NOTREACHED().
+  virtual void ReportBadMessage(std::string_view error);
+
+  virtual const user_education::NewBadgeRegistry* GetNewBadgeRegistry()
+      const = 0;
+  virtual user_education::NewBadgeController* GetNewBadgeController() = 0;
+  virtual const user_education::FeaturePromoRegistry* GetFeaturePromoRegistry()
+      const = 0;
+  virtual user_education::FeaturePromoController*
+  GetFeaturePromoController() = 0;
+  virtual feature_engagement::Tracker* GetFeatureEngagementTracker() = 0;
+
+ private:
+  const base::Feature* FeaturePromoFeatureFromName(
+      const std::string& feature_name) const;
+  const base::Feature* NewBadgeFeatureFromName(
+      const std::string& feature_name) const;
+};
+
+// The actual implementation to be used by WebUI.
+class UserEducationMixedTrustHandler
+    : public UserEducationMixedTrustHandlerBase {
+ public:
+  UserEducationMixedTrustHandler(
+      mojo::PendingReceiver<
+          user_education::mojom::UserEducationMixedTrustHandler>
+          pending_handler,
+      content::BrowserContext& context);
+  ~UserEducationMixedTrustHandler() override;
+
+ protected:
+  void ReportBadMessage(std::string_view error) override;
+  const user_education::NewBadgeRegistry* GetNewBadgeRegistry() const override;
+  user_education::NewBadgeController* GetNewBadgeController() override;
+  const user_education::FeaturePromoRegistry* GetFeaturePromoRegistry()
+      const override;
+  user_education::FeaturePromoController* GetFeaturePromoController() override;
+  feature_engagement::Tracker* GetFeatureEngagementTracker() override;
+
+ private:
+  mojo::Receiver<user_education::mojom::UserEducationMixedTrustHandler>
+      receiver_;
+  const raw_ref<content::BrowserContext> context_;
+};
+
+#endif  // CHROME_BROWSER_UI_WEBUI_USER_EDUCATION_USER_EDUCATION_HANDLER_H_

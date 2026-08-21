@@ -848,6 +848,9 @@ void UserEducationInternalsPageHandlerImpl::GetNewBadges(
   auto* const storage_service = GetStorageService(profile_);
   if (registry) {
     for (const auto& [feature, spec] : registry->feature_data()) {
+      if (!base::FeatureList::IsEnabled(*feature)) {
+        continue;
+      }
       info_list.emplace_back(FeaturePromoDemoPageInfo::New(
           RemovePrefixAndCamelCase(feature->name, ""),
           spec.metadata.additional_description, feature->name, "\"New\" Badge",

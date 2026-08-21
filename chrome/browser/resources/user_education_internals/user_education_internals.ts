@@ -33,6 +33,8 @@ import {TrackedElementManager} from 'chrome://resources/js/tracked_element/track
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {browserProxyFactory as userEducationProxyFactory, FeaturePromoFeatureUsedAction} from './user_education.mojom-webui.js';
+import type {UserEducationMixedTrustHandlerInterface} from './user_education.mojom-webui.js';
 import {getCss} from './user_education_internals.css.js';
 import {getHtml} from './user_education_internals.html.js';
 import type {FeaturePromoDemoPageData, FeaturePromoDemoPageInfo, UserEducationInternalsPageHandlerInterface, WhatsNewEditionDemoPageInfo, WhatsNewModuleDemoPageInfo} from './user_education_internals.mojom-webui.js';
@@ -53,7 +55,10 @@ const CLEAR_NTP_PROMO_WARNING =
 enum PromoActions {
   LAUNCH_PROMO,
   LAUNCH_TUTORIAL,
+  TEST_NEW_BADGE,
+  NOTIFY_PROMO_FEATURE_USED,
   CLEAR_FEATURE_PROMO_DATA,
+  NOTIFY_NEW_BADGE_FEATURE_USED,
   CLEAR_NEW_BADGE_DATA,
   CLEAR_NON_IPH_PROMO_DATA,
   CLEAR_NTP_PROMO_DATA,
@@ -64,6 +69,11 @@ const PROMO_ACTIONS: PromoActionDescription[] = [
     caption: 'Launch',
     isLaunch: true,
     key: PromoActions.LAUNCH_PROMO,
+  },
+  {
+    caption: 'Notify Feature Used',
+    isLaunch: false,
+    key: PromoActions.NOTIFY_PROMO_FEATURE_USED,
   },
   {
     caption: 'Clear Promo Data',
@@ -93,13 +103,24 @@ const NTP_PROMO_ACTIONS: PromoActionDescription[] = [{
   warning: CLEAR_NTP_PROMO_WARNING,
 }];
 
-const NEW_BADGE_ACTIONS: PromoActionDescription[] = [{
-  caption: 'Clear New Badge Data',
-  isLaunch: false,
-  key: PromoActions.CLEAR_NEW_BADGE_DATA,
-  warning: CLEAR_NEW_BADGE_DATA_WARNING,
-}];
-
+const NEW_BADGE_ACTIONS: PromoActionDescription[] = [
+  {
+    caption: 'Test',
+    isLaunch: true,
+    key: PromoActions.TEST_NEW_BADGE,
+  },
+  {
+    caption: 'Notify Feature Used',
+    isLaunch: false,
+    key: PromoActions.NOTIFY_NEW_BADGE_FEATURE_USED,
+  },
+  {
+    caption: 'Clear New Badge Data',
+    isLaunch: false,
+    key: PromoActions.CLEAR_NEW_BADGE_DATA,
+    warning: CLEAR_NEW_BADGE_DATA_WARNING,
+  },
+];
 
 export interface UserEducationInternalsElement {
   $: {
@@ -204,10 +225,12 @@ export class UserEducationInternalsElement extends
   protected accessor initialized_ = false;
 
   private handler_: UserEducationInternalsPageHandlerInterface;
+  private userEducation_: UserEducationMixedTrustHandlerInterface;
 
   constructor() {
     super();
     this.handler_ = UserEducationInternalsPageHandler.getRemote();
+    this.userEducation_ = userEducationProxyFactory.getInstance().handler;
   }
 
   override firstUpdated() {
@@ -331,6 +354,9 @@ export class UserEducationInternalsElement extends
       case PromoActions.LAUNCH_PROMO:
         this.onFeaturePromoLaunch_(e.detail.promo);
         break;
+      case PromoActions.NOTIFY_PROMO_FEATURE_USED:
+        this.onNotifyFeaturePromoFeatureUsed_(e.detail.promo);
+        break;
       case PromoActions.CLEAR_FEATURE_PROMO_DATA:
         this.onFeaturePromoClearPromoData_(e.detail.promo);
         break;
@@ -339,6 +365,12 @@ export class UserEducationInternalsElement extends
         break;
       case PromoActions.CLEAR_NON_IPH_PROMO_DATA:
         this.onNonIphClearPromoData_(e.detail.promo);
+        break;
+      case PromoActions.TEST_NEW_BADGE:
+        this.onTestNewBadge_(e.detail.promo);
+        break;
+      case PromoActions.NOTIFY_NEW_BADGE_FEATURE_USED:
+        this.onNotifyNewBadgeFeatureUsed_(e.detail.promo);
         break;
       case PromoActions.CLEAR_NEW_BADGE_DATA:
         this.onNewBadgeClearPromoData_(e.detail.promo);
@@ -376,6 +408,14 @@ export class UserEducationInternalsElement extends
       if (errorMessage !== '') {
         this.$.errorMessageToast.show();
       }
+    });
+  }
+
+  protected onNotifyFeaturePromoFeatureUsed_(id: string) {
+    this.userEducation_.notifyFeaturePromoFeatureUsed(
+        id, FeaturePromoFeatureUsedAction.kClosePromoIfPresent);
+    this.handler_.getFeaturePromos().then(({featurePromos}) => {
+      this.featurePromos_ = featurePromos;
     });
   }
 
@@ -439,6 +479,26 @@ export class UserEducationInternalsElement extends
           this.requestUpdate();
         });
       }
+    });
+  }
+
+  protected onTestNewBadge_(id: string) {
+    this.featurePromoErrorMessage_ = '';
+
+    this.userEducation_.maybeShowNewBadgeFor(id).then(({shouldShow}) => {
+      this.featurePromoErrorMessage_ =
+          shouldShow ? 'Badge would show!' : 'Badge would NOT show.';
+      this.$.errorMessageToast.show();
+      this.handler_.getNewBadges().then(({newBadges}) => {
+        this.newBadges_ = newBadges;
+      });
+    });
+  }
+
+  protected onNotifyNewBadgeFeatureUsed_(id: string) {
+    this.userEducation_.notifyNewBadgeFeatureUsed(id);
+    this.handler_.getNewBadges().then(({newBadges}) => {
+      this.newBadges_ = newBadges;
     });
   }
 

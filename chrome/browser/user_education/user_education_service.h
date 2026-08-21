@@ -35,6 +35,7 @@ BASE_DECLARE_FEATURE(kAllowRecentSessionTracking);
 class BrowserHelpBubble;
 class BrowserUserEducationInterfaceImpl;
 class ToolbarButtonMenuHighlighter;
+class UserEducationMixedTrustHandler;
 class UserEducationInternalsPageHandlerImpl;
 
 namespace web_app {
@@ -102,6 +103,7 @@ class UserEducationService : public KeyedService {
     requires std::same_as<T, BrowserHelpBubble> ||
              std::same_as<T, BrowserUserEducationInterfaceImpl> ||
              std::same_as<T, ToolbarButtonMenuHighlighter> ||
+             std::same_as<T, UserEducationMixedTrustHandler> ||
              std::same_as<T, UserEducationInternalsPageHandlerImpl> ||
              std::same_as<T, web_app::WebAppUiManagerImpl>
   const user_education::FeaturePromoController* GetFeaturePromoController(
