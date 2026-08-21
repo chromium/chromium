@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
 import android.app.Activity;
@@ -214,7 +213,8 @@ public abstract class TabDragHandlerBase
                 && getDragDropGlobalState(null) != null;
     }
 
-    protected boolean isDragSource() {
+    /** Returns whether this handler instance initiated the active drag operation. */
+    public boolean isDragSource() {
         // If this handler instance did not initiate the drag, it is not the drag source.
         if (mDragSourceView == null) return false;
 
@@ -224,30 +224,47 @@ public abstract class TabDragHandlerBase
         return globalState.isDragSourceInstance(mMultiInstanceManager.getCurrentInstanceId());
     }
 
-    protected boolean isDraggedItemIncognito() {
+    /** Returns whether the active drag operation was initiated by this Chrome window instance. */
+    public boolean isDragSourceInstance() {
         DragDropGlobalState globalState = getDragDropGlobalState(null);
-        assert globalState != null;
+        if (globalState == null) return false;
+        return globalState.isDragSourceInstance(mMultiInstanceManager.getCurrentInstanceId());
+    }
 
-        ChromeDropDataAndroid dropData = (ChromeDropDataAndroid) globalState.getData();
-        assert dropData != null;
+    /** Returns whether the item currently being dragged is incognito branded. */
+    public boolean isDraggedItemIncognito() {
+        DragDropGlobalState globalState = getDragDropGlobalState(null);
+        if (globalState == null) return false;
 
-        return dropData.isIncognito();
+        if (globalState.getData() instanceof ChromeDropDataAndroid dropData) {
+            return dropData.isIncognito();
+        }
+        return false;
     }
 
     protected boolean isTabGroupDrop() {
         DragDropGlobalState globalState = getDragDropGlobalState(/* dragEvent= */ null);
-        assertNonNull(globalState);
+        if (globalState == null) return false;
         return ChromeDragDropUtils.getTabGroupMetadataFromGlobalState(globalState) != null;
     }
 
     protected boolean isMultiTabDrop() {
         DragDropGlobalState globalState = getDragDropGlobalState(/* dragEvent= */ null);
-        assertNonNull(globalState);
+        if (globalState == null) return false;
         return ChromeDragDropUtils.getTabsFromGlobalState(globalState) != null;
     }
 
-    protected boolean doesBelongToCurrentModel(boolean draggedIncognito) {
-        return getTabModelSelector().getCurrentModel().isIncognitoBranded() == draggedIncognito;
+    /**
+     * Returns whether the incognito state of a dragged item matches the current tab model.
+     *
+     * @param draggedIncognito True if the dragged item is incognito, false otherwise.
+     * @return True if the dragged item belongs to the active {@link TabModel}, false otherwise.
+     */
+    public boolean doesBelongToCurrentModel(boolean draggedIncognito) {
+        if (mTabModelSelector == null) return false;
+        TabModel currentModel = mTabModelSelector.getCurrentModel();
+        if (currentModel == null) return false;
+        return currentModel.isIncognitoBranded() == draggedIncognito;
     }
 
     protected ChromeDropDataAndroid prepareTabDropData(Tab tab) {
@@ -345,8 +362,9 @@ public abstract class TabDragHandlerBase
     protected void finishDrag(boolean dropHandled) {
         // Get the drag source Chrome instance id before it is cleared as it may be closed.
         @Nullable DragDropGlobalState dragDropGlobalState = getDragDropGlobalState(null);
-        if (dragDropGlobalState != null && dragDropGlobalState.getData() != null) {
-            setTabDraggingState((ChromeDropDataAndroid) dragDropGlobalState.getData(), false);
+        if (dragDropGlobalState != null
+                && dragDropGlobalState.getData() instanceof ChromeDropDataAndroid chromeDropData) {
+            setTabDraggingState(chromeDropData, false);
         }
         int sourceInstanceId =
                 dragDropGlobalState != null
@@ -457,7 +475,9 @@ public abstract class TabDragHandlerBase
 
         if (tabs != null) {
             for (Tab tab : tabs) {
-                TabDragStateData.getOrCreateForTab(tab).setIsDragging(isDragging);
+                if (tab != null && tab.getUserDataHost() != null) {
+                    TabDragStateData.getOrCreateForTab(tab).setIsDragging(isDragging);
+                }
             }
         }
     }

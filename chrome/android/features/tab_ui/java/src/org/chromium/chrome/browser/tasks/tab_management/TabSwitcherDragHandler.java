@@ -312,23 +312,23 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
         switch (dragEvent.getAction()) {
             case DragEvent.ACTION_DRAG_STARTED:
                 if (isDraggingBrowserContent(dragEvent.getClipDescription())) {
+                    if (!doesBelongToCurrentModel(isDraggedItemIncognito())) {
+                        return false;
+                    }
                     res =
                             mDragHandlerDelegate.handleDragStart(
                                     view, dragEvent.getX(), dragEvent.getY());
                 }
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
+                // TODO(crbug.com/518307037): Use a TabModelObserver.
                 boolean isOSNewWindowDrop =
                         dragEvent.getResult()
                                 && DragDropGlobalState.hasValue()
                                 && !DragDropGlobalState.didChromeHandleDrop();
                 // Restore items's visibility.
                 if (mDragSourceView != null) {
-                    if (isOSNewWindowDrop) {
-                        View draggedView = mDragSourceView;
-                        // TODO(crbug.com/518307037): Use a TabModelObserver.
-                        draggedView.postDelayed(() -> draggedView.setAlpha(1), 1000L);
-                    } else {
+                    if (!isOSNewWindowDrop) {
                         mDragSourceView.setAlpha(1);
                     }
                     finishDrag(dragEvent.getResult());
@@ -341,17 +341,26 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
                 mCurrentDragShadowBuilder = null;
                 break;
             case DragEvent.ACTION_DRAG_ENTERED:
+                if (!doesBelongToCurrentModel(isDraggedItemIncognito())) {
+                    return false;
+                }
                 res = mDragHandlerDelegate.handleDragEnter();
                 break;
             case DragEvent.ACTION_DRAG_EXITED:
                 res = mDragHandlerDelegate.handleDragExit();
                 break;
             case DragEvent.ACTION_DRAG_LOCATION:
+                if (!doesBelongToCurrentModel(isDraggedItemIncognito())) {
+                    return false;
+                }
                 res =
                         mDragHandlerDelegate.handleDragLocation(
                                 view, dragEvent.getX(), dragEvent.getY());
                 break;
             case DragEvent.ACTION_DROP:
+                if (!doesBelongToCurrentModel(isDraggedItemIncognito())) {
+                    return false;
+                }
                 res = mDragHandlerDelegate.handleDrop(view, dragEvent.getX(), dragEvent.getY());
                 if (res) DragDropGlobalState.notifyChromeHandledDrop(dragEvent);
                 break;

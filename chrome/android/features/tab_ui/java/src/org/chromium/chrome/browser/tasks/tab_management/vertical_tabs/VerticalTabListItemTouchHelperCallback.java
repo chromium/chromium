@@ -901,8 +901,8 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         public final int height;
         public final int topMargin;
         public final int bottomMargin;
-        public final int leftMargin;
-        public final int rightMargin;
+        public final int marginStart;
+        public final int marginEnd;
 
         CollapsedItemState(
                 ViewGroup.MarginLayoutParams params, @Nullable CollapsedItemState fallback) {
@@ -910,24 +910,24 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             int h = params.height;
             int tm = params.topMargin;
             int bm = params.bottomMargin;
-            int lm = params.leftMargin;
-            int rm = params.rightMargin;
+            int ms = params.getMarginStart();
+            int me = params.getMarginEnd();
 
             if (w == 0 && h == 0 && fallback != null) {
                 w = fallback.width;
                 h = fallback.height;
                 tm = fallback.topMargin;
                 bm = fallback.bottomMargin;
-                lm = fallback.leftMargin;
-                rm = fallback.rightMargin;
+                ms = fallback.marginStart;
+                me = fallback.marginEnd;
             }
 
             this.width = w;
             this.height = h;
             this.topMargin = tm;
             this.bottomMargin = bm;
-            this.leftMargin = lm;
-            this.rightMargin = rm;
+            this.marginStart = ms;
+            this.marginEnd = me;
         }
 
         void restore(ViewGroup.MarginLayoutParams params) {
@@ -935,8 +935,8 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             params.height = height;
             params.topMargin = topMargin;
             params.bottomMargin = bottomMargin;
-            params.leftMargin = leftMargin;
-            params.rightMargin = rightMargin;
+            params.setMarginStart(marginStart);
+            params.setMarginEnd(marginEnd);
         }
 
         void collapse(ViewGroup.MarginLayoutParams params) {
@@ -944,8 +944,8 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             params.height = 0;
             params.topMargin = 0;
             params.bottomMargin = 0;
-            params.leftMargin = 0;
-            params.rightMargin = 0;
+            params.setMarginStart(0);
+            params.setMarginEnd(0);
         }
     }
 
@@ -957,6 +957,9 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
     private int mDraggedItemViewType = -1;
     private float mCollapsedItemInitialAlpha = 1f;
 
+    private @Nullable View mDelayedRestorationView;
+    private @Nullable CollapsedItemState mDelayedCollapsedItemState;
+    private float mDelayedRestorationTargetAlpha = 1.0f;
     @VisibleForTesting @Nullable Runnable mDelayedExternalItemRestorationRunnable;
 
     private final View.OnAttachStateChangeListener mDelayedExternalItemRestorationDetachListener =
@@ -966,13 +969,41 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
 
                 @Override
                 public void onViewDetachedFromWindow(View v) {
-                    v.removeOnAttachStateChangeListener(this);
-                    if (mDelayedExternalItemRestorationRunnable != null) {
-                        v.removeCallbacks(mDelayedExternalItemRestorationRunnable);
-                        mDelayedExternalItemRestorationRunnable.run();
-                    }
+                    cancelDelayedExternalItemRestoration();
                 }
             };
+
+    /** Cancels any pending delayed restoration of an externally dropped item. */
+    public void cancelDelayedExternalItemRestoration() {
+        if (mDelayedRestorationView != null) {
+            if (mDelayedExternalItemRestorationRunnable != null) {
+                mDelayedRestorationView.removeCallbacks(mDelayedExternalItemRestorationRunnable);
+            }
+            mDelayedRestorationView.removeOnAttachStateChangeListener(
+                    mDelayedExternalItemRestorationDetachListener);
+            // Reset the view to clean state when cancelled or detached so it is never left dirty
+            // when entering the RecycledViewPool.
+            if (mDelayedRestorationView.getId() != R.id.hidden_pinned_tab) {
+                mDelayedRestorationView.setVisibility(View.VISIBLE);
+            }
+            mDelayedRestorationView.setAlpha(mDelayedRestorationTargetAlpha);
+            if (mDelayedCollapsedItemState != null) {
+                ViewGroup.MarginLayoutParams params =
+                        (ViewGroup.MarginLayoutParams) mDelayedRestorationView.getLayoutParams();
+                if (params != null) {
+                    mDelayedCollapsedItemState.restore(params);
+                    mDelayedRestorationView.setLayoutParams(params);
+                }
+            }
+            mDelayedRestorationView = null;
+            mDelayedCollapsedItemState = null;
+        }
+        mDelayedExternalItemRestorationRunnable = null;
+    }
+
+    View.OnAttachStateChangeListener getDelayedExternalItemRestorationDetachListenerForTesting() {
+        return mDelayedExternalItemRestorationDetachListener;
+    }
 
     private RecyclerView.@Nullable ViewHolder getLiveViewHolder() {
         if (mCollapsedViewHolder != null) {
@@ -1025,6 +1056,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
      *     ViewHolder.
      */
     public void collapseDraggedItem(RecyclerView.@Nullable ViewHolder viewHolder) {
+        cancelDelayedExternalItemRestoration();
         if (viewHolder != null) {
             mCollapsedViewHolder = viewHolder;
             mDraggedItemViewType = viewHolder.getItemViewType();
@@ -1038,12 +1070,6 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         RecyclerView.ViewHolder liveViewHolder = getLiveViewHolder();
         if (liveViewHolder != null) {
             final View itemView = liveViewHolder.itemView;
-            if (mDelayedExternalItemRestorationRunnable != null) {
-                itemView.removeCallbacks(mDelayedExternalItemRestorationRunnable);
-                itemView.removeOnAttachStateChangeListener(
-                        mDelayedExternalItemRestorationDetachListener);
-                mDelayedExternalItemRestorationRunnable = null;
-            }
 
             float currentAlpha = itemView.getAlpha();
             if (currentAlpha > 0f) {
@@ -1071,10 +1097,11 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
      *
      * @param isOSNewWindowDrop If true, delays the restoration by {@link
      *     #EXTERNAL_DROP_RESTORE_DELAY_MS}. Required when the drag ended externally and the item
-     *     might be removed asynchronously. If the item is detached before the delay completes, it
-     *     is restored instantly to protect the RecyclerView pool.
+     *     might be removed asynchronously. If the item is detached before the delay completes, the
+     *     pending restoration is cancelled to prevent ghost tabs.
      */
     public void restoreDraggedItem(boolean isOSNewWindowDrop) {
+        cancelDelayedExternalItemRestoration();
         mIsOSNewWindowDrop = isOSNewWindowDrop;
         RecyclerView.ViewHolder targetHolder = getLiveViewHolder();
         final CollapsedItemState collapsedState = mCollapsedItemState;
@@ -1084,20 +1111,29 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         mCollapsedViewHolder = null;
 
         if (targetHolder != null) {
+            final View targetView = targetHolder.itemView;
+            mDelayedRestorationView = targetView;
+            mDelayedCollapsedItemState = collapsedState;
+            mDelayedRestorationTargetAlpha = targetAlpha;
             mDelayedExternalItemRestorationRunnable =
                     () -> {
-                        targetHolder.itemView.removeOnAttachStateChangeListener(
+                        targetView.removeOnAttachStateChangeListener(
                                 mDelayedExternalItemRestorationDetachListener);
-                        targetHolder.itemView.setVisibility(View.VISIBLE);
-                        targetHolder.itemView.setAlpha(targetAlpha);
+                        if (targetView.getId() != R.id.hidden_pinned_tab) {
+                            targetView.setVisibility(View.VISIBLE);
+                        }
+                        targetView.setAlpha(targetAlpha);
                         if (collapsedState != null) {
                             ViewGroup.MarginLayoutParams params =
-                                    (ViewGroup.MarginLayoutParams)
-                                            targetHolder.itemView.getLayoutParams();
-                            collapsedState.restore(params);
-                            targetHolder.itemView.setLayoutParams(params);
+                                    (ViewGroup.MarginLayoutParams) targetView.getLayoutParams();
+                            if (params != null) {
+                                collapsedState.restore(params);
+                                targetView.setLayoutParams(params);
+                            }
                         }
                         mDelayedExternalItemRestorationRunnable = null;
+                        mDelayedRestorationView = null;
+                        mDelayedCollapsedItemState = null;
 
                         RecyclerView recyclerView = mRecyclerViewSupplier.get();
                         if (recyclerView != null) {
@@ -1106,9 +1142,9 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                     };
 
             if (isOSNewWindowDrop) {
-                targetHolder.itemView.addOnAttachStateChangeListener(
+                targetView.addOnAttachStateChangeListener(
                         mDelayedExternalItemRestorationDetachListener);
-                targetHolder.itemView.postDelayed(
+                targetView.postDelayed(
                         mDelayedExternalItemRestorationRunnable, EXTERNAL_DROP_RESTORE_DELAY_MS);
             } else {
                 mDelayedExternalItemRestorationRunnable.run();

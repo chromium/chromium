@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -16,6 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.ClipDescription;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.PointF;
@@ -33,12 +36,19 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
+import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler.AnimatedDragShadowBuilder;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler.DragHandlerDelegate;
+import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.dragdrop.DropDataAndroid;
@@ -56,6 +66,8 @@ public class TabSwitcherDragHandlerUnitTest {
     @Mock private TabSwitcherBackPressHandlerManager mDragHandlerManager;
     @Mock private DragHandlerDelegate mDragHandlerDelegate;
     @Mock private Canvas mCanvas;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModel mTabModel;
 
     private TabSwitcherDragHandler mDragHandler;
 
@@ -224,6 +236,10 @@ public class TabSwitcherDragHandlerUnitTest {
 
     @Test
     public void testOnDrag_DispatchesViewToDelegate() {
+        mDragHandler.setTabModelSelector(mTabModelSelector);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModel.isIncognitoBranded()).thenReturn(false);
+
         View targetView = new View(ContextUtils.getApplicationContext());
 
         // ACTION_DRAG_LOCATION
@@ -266,5 +282,221 @@ public class TabSwitcherDragHandlerUnitTest {
         when(dragEndEvent.getY()).thenReturn(100f);
         mDragHandler.onDrag(targetView, dragEndEvent);
         verify(mDragHandlerDelegate).handleExternalDragEnd(targetView, 90f, 100f, false);
+    }
+
+    @Test
+    public void testOnDrag_IncognitoMismatch_Rejected() {
+        // Destination window is regular (non-incognito).
+        mDragHandler.setTabModelSelector(mTabModelSelector);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModel.isIncognitoBranded()).thenReturn(false);
+
+        // Dragged item is incognito.
+        Tab incognitoTab = mock(Tab.class);
+        when(incognitoTab.isIncognitoBranded()).thenReturn(true);
+        ChromeDropDataAndroid dropData =
+                new ChromeTabDropDataAndroid.Builder().withTab(incognitoTab).build();
+        Token token = DragDropGlobalState.store(1, dropData, null);
+        TabDragHandlerBase.setDragTokenForTesting(token);
+
+        View targetView = new View(ContextUtils.getApplicationContext());
+        ClipDescription clipDescription =
+                new ClipDescription("tab", new String[] {MimeTypeUtils.CHROME_MIMETYPE_TAB});
+
+        // ACTION_DRAG_STARTED
+        DragEvent dragStartEvent = mock(DragEvent.class);
+        when(dragStartEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_STARTED);
+        when(dragStartEvent.getClipDescription()).thenReturn(clipDescription);
+        assertFalse(
+                "ACTION_DRAG_STARTED must return false on incognito mismatch.",
+                mDragHandler.onDrag(targetView, dragStartEvent));
+        verify(mDragHandlerDelegate, never())
+                .handleDragStart(any(View.class), anyFloat(), anyFloat());
+
+        // ACTION_DRAG_ENTERED
+        DragEvent dragEnterEvent = mock(DragEvent.class);
+        when(dragEnterEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_ENTERED);
+        assertFalse(
+                "ACTION_DRAG_ENTERED must return false on incognito mismatch.",
+                mDragHandler.onDrag(targetView, dragEnterEvent));
+        verify(mDragHandlerDelegate, never()).handleDragEnter();
+
+        // ACTION_DRAG_LOCATION
+        DragEvent dragLocationEvent = mock(DragEvent.class);
+        when(dragLocationEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_LOCATION);
+        assertFalse(
+                "ACTION_DRAG_LOCATION must return false on incognito mismatch.",
+                mDragHandler.onDrag(targetView, dragLocationEvent));
+        verify(mDragHandlerDelegate, never())
+                .handleDragLocation(any(View.class), anyFloat(), anyFloat());
+
+        // ACTION_DROP
+        DragEvent dropEvent = mock(DragEvent.class);
+        when(dropEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        assertFalse(
+                "ACTION_DROP must return false on incognito mismatch.",
+                mDragHandler.onDrag(targetView, dropEvent));
+        verify(mDragHandlerDelegate, never()).handleDrop(any(View.class), anyFloat(), anyFloat());
+        assertFalse(DragDropGlobalState.didChromeHandleDrop());
+
+        DragDropGlobalState.clear(token);
+    }
+
+    @Test
+    public void testOnDrag_IncognitoMatch_Accepted() {
+        // Destination window is incognito.
+        mDragHandler.setTabModelSelector(mTabModelSelector);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+
+        // Dragged item is incognito.
+        Tab incognitoTab = mock(Tab.class);
+        when(incognitoTab.isIncognitoBranded()).thenReturn(true);
+        ChromeDropDataAndroid dropData =
+                new ChromeTabDropDataAndroid.Builder().withTab(incognitoTab).build();
+        Token token = DragDropGlobalState.store(1, dropData, null);
+        TabDragHandlerBase.setDragTokenForTesting(token);
+
+        View targetView = new View(ContextUtils.getApplicationContext());
+        ClipDescription clipDescription =
+                new ClipDescription("tab", new String[] {MimeTypeUtils.CHROME_MIMETYPE_TAB});
+
+        // ACTION_DRAG_STARTED
+        DragEvent dragStartEvent = mock(DragEvent.class);
+        when(dragStartEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_STARTED);
+        when(dragStartEvent.getClipDescription()).thenReturn(clipDescription);
+        when(dragStartEvent.getX()).thenReturn(10f);
+        when(dragStartEvent.getY()).thenReturn(20f);
+        when(mDragHandlerDelegate.handleDragStart(targetView, 10f, 20f)).thenReturn(true);
+        assertTrue(
+                "ACTION_DRAG_STARTED must return true when incognito matches.",
+                mDragHandler.onDrag(targetView, dragStartEvent));
+        verify(mDragHandlerDelegate).handleDragStart(targetView, 10f, 20f);
+
+        // ACTION_DRAG_ENTERED
+        DragEvent dragEnterEvent = mock(DragEvent.class);
+        when(dragEnterEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_ENTERED);
+        when(mDragHandlerDelegate.handleDragEnter()).thenReturn(true);
+        assertTrue(
+                "ACTION_DRAG_ENTERED must return true when incognito matches.",
+                mDragHandler.onDrag(targetView, dragEnterEvent));
+        verify(mDragHandlerDelegate).handleDragEnter();
+
+        // ACTION_DRAG_LOCATION
+        DragEvent dragLocationEvent = mock(DragEvent.class);
+        when(dragLocationEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_LOCATION);
+        when(dragLocationEvent.getX()).thenReturn(30f);
+        when(dragLocationEvent.getY()).thenReturn(40f);
+        when(mDragHandlerDelegate.handleDragLocation(targetView, 30f, 40f)).thenReturn(true);
+        assertTrue(
+                "ACTION_DRAG_LOCATION must return true when incognito matches.",
+                mDragHandler.onDrag(targetView, dragLocationEvent));
+        verify(mDragHandlerDelegate).handleDragLocation(targetView, 30f, 40f);
+
+        // ACTION_DROP
+        DragEvent dropEvent = mock(DragEvent.class);
+        when(dropEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(dropEvent.getX()).thenReturn(50f);
+        when(dropEvent.getY()).thenReturn(60f);
+        when(mDragHandlerDelegate.handleDrop(targetView, 50f, 60f)).thenReturn(true);
+        assertTrue(
+                "ACTION_DROP must return true when incognito matches.",
+                mDragHandler.onDrag(targetView, dropEvent));
+        verify(mDragHandlerDelegate).handleDrop(targetView, 50f, 60f);
+        assertTrue(DragDropGlobalState.didChromeHandleDrop());
+
+        DragDropGlobalState.clear(token);
+    }
+
+    @Test
+    public void testDoesBelongToCurrentModel_NullSelectorOrModel_FailsClosed() {
+        // TabModelSelector not set
+        assertFalse(mDragHandler.doesBelongToCurrentModel(false));
+        assertFalse(mDragHandler.doesBelongToCurrentModel(true));
+
+        // TabModelSelector set, but getCurrentModel() is null
+        mDragHandler.setTabModelSelector(mTabModelSelector);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(null);
+        assertFalse(mDragHandler.doesBelongToCurrentModel(false));
+        assertFalse(mDragHandler.doesBelongToCurrentModel(true));
+    }
+
+    @Test
+    public void testIsDragSourceInstance() {
+        when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(1);
+
+        // No active drag -> false
+        assertFalse(mDragHandler.isDragSourceInstance());
+
+        DropDataAndroid dropData = mock(DropDataAndroid.class);
+        Token token = DragDropGlobalState.store(1, dropData, null);
+        TabDragHandlerBase.setDragTokenForTesting(token);
+
+        // Active drag originated from instance 1 -> true
+        assertTrue(mDragHandler.isDragSourceInstance());
+
+        // Different instance
+        when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(2);
+        assertFalse(mDragHandler.isDragSourceInstance());
+
+        DragDropGlobalState.clear(token);
+    }
+
+    @Test
+    public void testOnDrag_DragEnded_OSNewWindowDrop_DoesNotRestoreSourceAlpha() {
+        View dragSourceView = new View(ContextUtils.getApplicationContext());
+        dragSourceView.setAlpha(0f);
+        mDragHandler.mDragSourceView = dragSourceView;
+
+        Tab tab = mock(Tab.class);
+        when(tab.getUserDataHost()).thenReturn(new UserDataHost());
+        ChromeDropDataAndroid dropData =
+                new ChromeTabDropDataAndroid.Builder().withTab(tab).build();
+        Token token = DragDropGlobalState.store(1, dropData, null);
+        TabDragHandlerBase.setDragTokenForTesting(token);
+
+        View targetView = new View(ContextUtils.getApplicationContext());
+        DragEvent dragEndEvent = mock(DragEvent.class);
+        when(dragEndEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_ENDED);
+        when(dragEndEvent.getResult()).thenReturn(true);
+        when(dragEndEvent.getX()).thenReturn(10f);
+        when(dragEndEvent.getY()).thenReturn(20f);
+
+        mDragHandler.onDrag(targetView, dragEndEvent);
+
+        // Alpha should NOT be restored to 1.0 on OS new window drops to prevent ghost tabs.
+        assertEquals(0f, dragSourceView.getAlpha(), 0.0f);
+        verify(mDragHandlerDelegate).handleExternalDragEnd(targetView, 10f, 20f, true);
+
+        DragDropGlobalState.clear(token);
+    }
+
+    @Test
+    public void testOnDrag_DragEnded_NonOSNewWindowDrop_RestoresSourceAlpha() {
+        View dragSourceView = new View(ContextUtils.getApplicationContext());
+        dragSourceView.setAlpha(0f);
+        mDragHandler.mDragSourceView = dragSourceView;
+
+        Tab tab = mock(Tab.class);
+        when(tab.getUserDataHost()).thenReturn(new UserDataHost());
+        ChromeDropDataAndroid dropData =
+                new ChromeTabDropDataAndroid.Builder().withTab(tab).build();
+        Token token = DragDropGlobalState.store(1, dropData, null);
+        TabDragHandlerBase.setDragTokenForTesting(token);
+
+        View targetView = new View(ContextUtils.getApplicationContext());
+        DragEvent dragEndEvent = mock(DragEvent.class);
+        when(dragEndEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_ENDED);
+        when(dragEndEvent.getResult()).thenReturn(false);
+        when(dragEndEvent.getX()).thenReturn(10f);
+        when(dragEndEvent.getY()).thenReturn(20f);
+
+        mDragHandler.onDrag(targetView, dragEndEvent);
+
+        // Alpha should be restored to 1.0 immediately for non-new-window drops.
+        assertEquals(1f, dragSourceView.getAlpha(), 0.0f);
+        verify(mDragHandlerDelegate).handleExternalDragEnd(targetView, 10f, 20f, false);
+
+        DragDropGlobalState.clear(token);
     }
 }

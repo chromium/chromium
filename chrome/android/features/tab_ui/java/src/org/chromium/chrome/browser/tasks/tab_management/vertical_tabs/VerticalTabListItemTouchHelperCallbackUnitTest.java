@@ -1928,8 +1928,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(100, 200);
         params.topMargin = 10;
         params.bottomMargin = 20;
-        params.leftMargin = 5;
-        params.rightMargin = 5;
+        params.setMarginStart(5);
+        params.setMarginEnd(8);
         realView.setLayoutParams(params);
         realView.setAlpha(1.0f);
 
@@ -1950,6 +1950,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         assertEquals(0, collapsedParams.height);
         assertEquals(0, collapsedParams.topMargin);
         assertEquals(0, collapsedParams.bottomMargin);
+        assertEquals(0, collapsedParams.getMarginStart());
+        assertEquals(0, collapsedParams.getMarginEnd());
 
         // Restore dragged item immediately
         mCallback.restoreDraggedItem(/* isOSNewWindowDrop= */ false);
@@ -1962,6 +1964,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         assertEquals(200, restoredParams.height);
         assertEquals(10, restoredParams.topMargin);
         assertEquals(20, restoredParams.bottomMargin);
+        assertEquals(5, restoredParams.getMarginStart());
+        assertEquals(8, restoredParams.getMarginEnd());
     }
 
     @Test
@@ -1991,6 +1995,65 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
                 (RecyclerView.LayoutParams) realView.getLayoutParams();
         assertEquals(100, restoredParams.width);
         assertEquals(200, restoredParams.height);
+    }
+
+    @Test
+    @SmallTest
+    public void testRestoreDraggedItem_OSNewWindowDrop_DetachedBeforeDelay_CancelsRestoration() {
+        android.widget.FrameLayout parent =
+                new android.widget.FrameLayout(ApplicationProvider.getApplicationContext());
+        View realView = new View(ApplicationProvider.getApplicationContext());
+        RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(100, 200);
+        realView.setLayoutParams(params);
+        parent.addView(realView);
+
+        SimpleRecyclerViewAdapter.ViewHolder realHolder =
+                spy(new SimpleRecyclerViewAdapter.ViewHolder(realView, null));
+        realHolder.model = mPropertyModel;
+
+        mCallback.collapseDraggedItem(realHolder);
+        assertTrue(mCallback.isDraggedItemCollapsed());
+
+        // Restore with OS new window drop (delayed)
+        mCallback.restoreDraggedItem(/* isOSNewWindowDrop= */ true);
+        assertFalse(mCallback.isDraggedItemCollapsed());
+        assertEquals(View.GONE, realView.getVisibility());
+        assertNotNull(mCallback.mDelayedExternalItemRestorationRunnable);
+
+        // When tab is removed upon reparenting, RecyclerView detaches the view.
+        parent.removeView(realView);
+        mCallback
+                .getDelayedExternalItemRestorationDetachListenerForTesting()
+                .onViewDetachedFromWindow(realView);
+
+        // Delayed runnable should be cancelled and null.
+        assertNull(mCallback.mDelayedExternalItemRestorationRunnable);
+        // The view must be restored to VISIBLE and original dimensions before recycling.
+        assertEquals(View.VISIBLE, realView.getVisibility());
+        assertEquals(100, realView.getLayoutParams().width);
+        assertEquals(200, realView.getLayoutParams().height);
+    }
+
+    @Test
+    @SmallTest
+    public void testCancelDelayedExternalItemRestoration() {
+        View realView = new View(ApplicationProvider.getApplicationContext());
+        RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(100, 200);
+        realView.setLayoutParams(params);
+        SimpleRecyclerViewAdapter.ViewHolder realHolder =
+                spy(new SimpleRecyclerViewAdapter.ViewHolder(realView, null));
+        realHolder.model = mPropertyModel;
+
+        mCallback.collapseDraggedItem(realHolder);
+        mCallback.restoreDraggedItem(/* isOSNewWindowDrop= */ true);
+        assertNotNull(mCallback.mDelayedExternalItemRestorationRunnable);
+
+        mCallback.cancelDelayedExternalItemRestoration();
+
+        assertNull(mCallback.mDelayedExternalItemRestorationRunnable);
+        assertEquals(View.VISIBLE, realView.getVisibility());
+        assertEquals(100, realView.getLayoutParams().width);
+        assertEquals(200, realView.getLayoutParams().height);
     }
 
     @Test
@@ -2058,6 +2121,43 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         assertEquals(View.GONE, realView.getVisibility());
         mCallback.restoreDraggedItem(/* isOSNewWindowDrop= */ false);
         assertEquals(View.VISIBLE, realView.getVisibility());
+        assertEquals(100, realView.getLayoutParams().width);
+        assertEquals(200, realView.getLayoutParams().height);
+    }
+
+    @Test
+    @SmallTest
+    public void testRestoreDraggedItem_OSNewWindowDrop_Detached_RestoresViewProperties() {
+        View realView = new View(ApplicationProvider.getApplicationContext());
+        RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(100, 200);
+        realView.setLayoutParams(params);
+        realView.setAlpha(1.0f);
+        SimpleRecyclerViewAdapter.ViewHolder realHolder =
+                spy(new SimpleRecyclerViewAdapter.ViewHolder(realView, null));
+        realHolder.model = mPropertyModel;
+
+        when(mRecyclerView.getChildCount()).thenReturn(1);
+        when(mRecyclerView.getChildAt(0)).thenReturn(realView);
+        when(mRecyclerView.getChildViewHolder(realView)).thenReturn(realHolder);
+
+        // 1. Collapse the item
+        mCallback.collapseDraggedItem(realHolder);
+        assertEquals(View.GONE, realView.getVisibility());
+        assertEquals(0f, realView.getAlpha(), 0.0f);
+        assertEquals(0, realView.getLayoutParams().width);
+        assertEquals(0, realView.getLayoutParams().height);
+
+        // 2. Schedule delayed restoration for OS new window drop
+        mCallback.restoreDraggedItem(/* isOSNewWindowDrop= */ true);
+
+        // 3. Tab is removed from TabModel -> view is detached from window before delay completes
+        View.OnAttachStateChangeListener detachListener =
+                mCallback.getDelayedExternalItemRestorationDetachListenerForTesting();
+        detachListener.onViewDetachedFromWindow(realView);
+
+        // 4. Verify the detached view is immediately restored so it enters RecycledViewPool cleanly
+        assertEquals(View.VISIBLE, realView.getVisibility());
+        assertEquals(1.0f, realView.getAlpha(), 0.0f);
         assertEquals(100, realView.getLayoutParams().width);
         assertEquals(200, realView.getLayoutParams().height);
     }

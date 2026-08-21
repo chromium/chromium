@@ -2849,7 +2849,7 @@ public class ItemTouchHelper2 extends RecyclerView.ItemDecoration
      * @param recoverItem whether the item should be recovered at its' original state and place.
      */
     public void onExternalDragStop(boolean recoverItem) {
-        if (mExternalDragInProgress) {
+        if (mExternalDragInProgress || mExternalDragItem != null) {
             if (mExternalDragItem != null) {
                 if (recoverItem) {
                     mExternalDragItem.itemView.setAlpha(mExternalDragItemInitialAlpha);

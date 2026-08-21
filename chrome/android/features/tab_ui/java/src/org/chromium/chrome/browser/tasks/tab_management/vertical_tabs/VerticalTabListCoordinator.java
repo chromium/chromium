@@ -172,6 +172,8 @@ public class VerticalTabListCoordinator {
     private @Nullable TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     private @Nullable Token mLastDraggedGroupId;
     private @Nullable VerticalTabListItemTouchHelperCallback mMainTouchHelperCallback;
+    private final List<VerticalTabListItemTouchHelperCallback> mTouchHelperCallbacks =
+            new ArrayList<>();
 
     private boolean mIsActive;
 
@@ -880,6 +882,10 @@ public class VerticalTabListCoordinator {
         if (mTabUnderlineManager != null) {
             mTabUnderlineManager.destroy();
         }
+        for (VerticalTabListItemTouchHelperCallback callback : mTouchHelperCallbacks) {
+            callback.cancelDelayedExternalItemRestoration();
+        }
+        mTouchHelperCallbacks.clear();
         mLastDraggedGroupId = null;
     }
 
@@ -1086,6 +1092,7 @@ public class VerticalTabListCoordinator {
         if (mMainTouchHelperCallback == null) {
             mMainTouchHelperCallback = touchHelperCallback;
         }
+        mTouchHelperCallbacks.add(touchHelperCallback);
 
         // Handles long-presses for tab item/group context menus. Long-presses for empty space
         // context menus are handled by the gesture detector.
@@ -1120,6 +1127,9 @@ public class VerticalTabListCoordinator {
 
         TabSwitcherDragHandler dragHandler =
                 createTabSwitcherDragHandler(activity, tabModelSelector);
+        DragHandlerDelegate nonOriginatingDelegate =
+                createNonOriginatingDragHandlerDelegate(recyclerView, dragHandler);
+        dragHandler.setDragHandlerDelegate(nonOriginatingDelegate);
         recyclerView.setOnDragListener(dragHandler);
         if (recyclerView == mRecyclerView) {
             mContainerView.setOnDragListener(dragHandler);
@@ -1135,6 +1145,10 @@ public class VerticalTabListCoordinator {
                         return;
                     }
 
+                    if (dragHandler.isViewDraggingInProgress()) {
+                        return;
+                    }
+
                     if (!(viewHolder
                             instanceof SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder)) {
                         return;
@@ -1147,22 +1161,39 @@ public class VerticalTabListCoordinator {
                     if (tabModel == null) return;
 
                     boolean isGroupHeader = TabProperties.isTabGroupHeader(model);
+                    @Nullable Tab tab = null;
+                    if (!isGroupHeader) {
+                        int tabId = model.get(TabProperties.TAB_ID);
+                        if (tabId == Tab.INVALID_TAB_ID) return;
+
+                        tab = tabModel.getTabById(tabId);
+                        if (tab == null) return;
+
+                        // Do not allow dragging out the last tab in a group.
+                        // (To be handled when dragging out tab groups is enabled).
+                        if (tabModel.isTabInTabGroup(tab)
+                                && tabModel.getRelatedTabList(tabId).size() == 1) {
+                            return;
+                        }
+                    }
+
                     PointF startPoint = new PointF(mLastTouchPoint.x + dX, mLastTouchPoint.y + dY);
 
+                    itemTouchHelper.setExternalDragItem(viewHolder);
+                    dragHandler.setDragHandlerDelegate(
+                            createDragHandlerDelegate(
+                                    recyclerView,
+                                    itemTouchHelper,
+                                    touchHelperCallback,
+                                    dragHandler,
+                                    nonOriginatingDelegate,
+                                    viewHolder,
+                                    model));
+
+                    boolean dragStarted;
                     if (isGroupHeader) {
                         Token tabGroupId =
                                 assumeNonNull(model.get(TabProperties.TAB_GROUP_HEADER_ID));
-
-                        itemTouchHelper.setExternalDragItem(viewHolder);
-                        dragHandler.setDragHandlerDelegate(
-                                createDragHandlerDelegate(
-                                        recyclerView,
-                                        itemTouchHelper,
-                                        touchHelperCallback,
-                                        dragHandler,
-                                        viewHolder,
-                                        model));
-
                         mLastDraggedGroupId = tabGroupId;
 
                         View groupDragShadowView = null;
@@ -1180,43 +1211,34 @@ public class VerticalTabListCoordinator {
                             groupDragShadowView = buildGroupHeaderDragShadow(activity, model);
                         }
 
-                        dragHandler.startGroupDragAction(
-                                viewHolder.itemView, tabGroupId, startPoint, groupDragShadowView);
-
-                        if (!TabProperties.isTabGroupCollapsed(model) && !groupTabs.isEmpty()) {
+                        dragStarted =
+                                dragHandler.startGroupDragAction(
+                                        viewHolder.itemView,
+                                        tabGroupId,
+                                        startPoint,
+                                        groupDragShadowView);
+                        if (dragStarted
+                                && !TabProperties.isTabGroupCollapsed(model)
+                                && !groupTabs.isEmpty()) {
                             int repTabId = groupTabs.get(0).getId();
                             recyclerView.post(() -> toggleTabGroupExpansion(repTabId));
                         }
-                        return;
+                    } else {
+                        mLastDraggedGroupId = null;
+                        View gridCardView = buildGridCardDragShadow(activity, model);
+                        dragStarted =
+                                dragHandler.startTabDragAction(
+                                        viewHolder.itemView,
+                                        assumeNonNull(tab),
+                                        startPoint,
+                                        gridCardView);
                     }
 
-                    int tabId = model.get(TabProperties.TAB_ID);
-                    if (tabId == Tab.INVALID_TAB_ID) return;
-
-                    Tab tab = tabModel.getTabById(tabId);
-                    if (tab == null) return;
-
-                    // Do not allow dragging out the last tab in a group.
-                    // (To be handled when dragging out tab groups is enabled).
-                    if (tabModel.isTabInTabGroup(tab)
-                            && tabModel.getRelatedTabList(tabId).size() == 1) {
-                        return;
+                    if (!dragStarted) {
+                        mLastDraggedGroupId = null;
+                        itemTouchHelper.onExternalDragStop(/* recoverItem= */ true);
+                        dragHandler.setDragHandlerDelegate(nonOriginatingDelegate);
                     }
-
-                    itemTouchHelper.setExternalDragItem(viewHolder);
-                    dragHandler.setDragHandlerDelegate(
-                            createDragHandlerDelegate(
-                                    recyclerView,
-                                    itemTouchHelper,
-                                    touchHelperCallback,
-                                    dragHandler,
-                                    viewHolder,
-                                    model));
-
-                    mLastDraggedGroupId = null;
-                    View gridCardView = buildGridCardDragShadow(activity, model);
-                    dragHandler.startTabDragAction(
-                            viewHolder.itemView, tab, startPoint, gridCardView);
                 });
 
         itemTouchHelper.attachToRecyclerView(recyclerView);
@@ -1252,11 +1274,54 @@ public class VerticalTabListCoordinator {
         return dragHandler;
     }
 
+    private DragHandlerDelegate createNonOriginatingDragHandlerDelegate(
+            RecyclerView recyclerView, TabSwitcherDragHandler dragHandler) {
+        return new DragHandlerDelegate() {
+            @Override
+            public boolean handleDragStart(float xPx, float yPx) {
+                mTabHoverCardController.hideHoverCard();
+                return true;
+            }
+
+            @Override
+            public boolean handleDragEnter() {
+                if (!dragHandler.isDragSourceInstance()) {
+                    dragHandler.showDragShadow(recyclerView, false);
+                }
+                return true;
+            }
+
+            @Override
+            public boolean handleDragLocation(float xPx, float yPx) {
+                return true;
+            }
+
+            @Override
+            public boolean handleDragExit() {
+                if (!dragHandler.isDragSourceInstance()) {
+                    dragHandler.showDragShadow(recyclerView, true);
+                }
+                return true;
+            }
+
+            @Override
+            public boolean handleExternalDragEnd(float xPx, float yPx, boolean isOSNewWindowDrop) {
+                return true;
+            }
+
+            @Override
+            public boolean handleDrop(float xPx, float yPx) {
+                return true;
+            }
+        };
+    }
+
     private DragHandlerDelegate createDragHandlerDelegate(
             RecyclerView recyclerView,
             ItemTouchHelper2 itemTouchHelper,
             VerticalTabListItemTouchHelperCallback touchHelperCallback,
             TabSwitcherDragHandler dragHandler,
+            DragHandlerDelegate nonOriginatingDelegate,
             RecyclerView.ViewHolder viewHolder,
             @Nullable PropertyModel model) {
         return new DragHandlerDelegate() {
@@ -1355,6 +1420,7 @@ public class VerticalTabListCoordinator {
                                 groupId, /* isCollapsed= */ false, /* animate= */ false);
                     }
                 }
+                dragHandler.setDragHandlerDelegate(nonOriginatingDelegate);
                 return true;
             }
 
@@ -1369,6 +1435,7 @@ public class VerticalTabListCoordinator {
                 updateSingleTabListMinHeight(model, /* useMinHeight= */ false);
                 itemTouchHelper.stopInternalDrag();
                 mLastDraggedGroupId = null;
+                dragHandler.setDragHandlerDelegate(nonOriginatingDelegate);
                 return BackPressHandler.BackPressResult.SUCCESS;
             }
 

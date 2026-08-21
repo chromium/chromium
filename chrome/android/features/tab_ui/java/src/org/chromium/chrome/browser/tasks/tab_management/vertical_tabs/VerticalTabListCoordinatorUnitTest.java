@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
@@ -25,9 +26,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.ClipDescription;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.SystemClock;
+import android.view.DragEvent;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -78,6 +81,8 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TabGroupContextMenu
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripContextMenuCoordinator;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
+import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -104,6 +109,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
+import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
 import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
@@ -133,7 +139,9 @@ import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -203,6 +211,8 @@ public class VerticalTabListCoordinatorUnitTest {
     @Mock private Tab mMockTab1;
     @Mock private Tab mMockTab2;
     @Mock private Tab mMockTab3;
+    @Mock private Tab mIncognitoTab;
+    @Mock private DragEvent mDragEvent;
 
     private static final int TAB_ID_1 = 1;
     private static final int TAB_ID_2 = 2;
@@ -1796,8 +1806,8 @@ public class VerticalTabListCoordinatorUnitTest {
         getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
 
         ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> captor =
-            ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
-        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(captor.capture());
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler, atLeastOnce()).setDragHandlerDelegate(captor.capture());
 
         captor.getValue().handleDragStart(10f, 10f);
 
@@ -2302,7 +2312,8 @@ public class VerticalTabListCoordinatorUnitTest {
 
         ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
                 ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
-        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+        verify(mMainTabSwitcherDragHandler, atLeastOnce())
+                .setDragHandlerDelegate(delegateCaptor.capture());
 
         delegateCaptor.getValue().handleDragExit();
         verify(mTabModel).moveTab(TAB_ID_1, 2);
@@ -2326,7 +2337,8 @@ public class VerticalTabListCoordinatorUnitTest {
 
         ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
                 ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
-        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+        verify(mMainTabSwitcherDragHandler, atLeastOnce())
+                .setDragHandlerDelegate(delegateCaptor.capture());
 
         delegateCaptor.getValue().handleDragExit();
         verify(mTabModel, never()).moveTab(anyInt(), anyInt());
@@ -2348,7 +2360,8 @@ public class VerticalTabListCoordinatorUnitTest {
 
         ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
                 ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
-        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+        verify(mMainTabSwitcherDragHandler, atLeastOnce())
+                .setDragHandlerDelegate(delegateCaptor.capture());
 
         delegateCaptor.getValue().handleDragExit();
         verify(mTabModel, never()).moveTab(anyInt(), anyInt());
@@ -2370,7 +2383,8 @@ public class VerticalTabListCoordinatorUnitTest {
 
         ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
                 ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
-        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+        verify(mMainTabSwitcherDragHandler, atLeastOnce())
+                .setDragHandlerDelegate(delegateCaptor.capture());
         TabSwitcherDragHandler.DragHandlerDelegate delegate = delegateCaptor.getValue();
 
         View container = mCoordinator.getView();
@@ -2416,7 +2430,8 @@ public class VerticalTabListCoordinatorUnitTest {
 
         ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
                 ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
-        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+        verify(mMainTabSwitcherDragHandler, atLeastOnce())
+                .setDragHandlerDelegate(delegateCaptor.capture());
         TabSwitcherDragHandler.DragHandlerDelegate delegate = delegateCaptor.getValue();
 
         View container = mCoordinator.getView();
@@ -2471,7 +2486,8 @@ public class VerticalTabListCoordinatorUnitTest {
 
         ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
                 ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
-        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+        verify(mMainTabSwitcherDragHandler, atLeastOnce())
+                .setDragHandlerDelegate(delegateCaptor.capture());
         TabSwitcherDragHandler.DragHandlerDelegate delegate = delegateCaptor.getValue();
 
         delegate.handleDragStart(0f, 0f);
@@ -2696,6 +2712,235 @@ public class VerticalTabListCoordinatorUnitTest {
         assertFalse(mCoordinator.getView().dispatchKeyEvent(event));
     }
 
+    @Test
+    public void testNonOriginatingDrag_ShadowTogglesOnEnterAndExit() {
+        createCoordinator();
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+        TabSwitcherDragHandler.DragHandlerDelegate delegate = delegateCaptor.getValue();
+
+        when(mMainTabSwitcherDragHandler.isDragSourceInstance()).thenReturn(false);
+
+        delegate.handleDragEnter();
+        verify(mMainTabSwitcherDragHandler).showDragShadow(any(RecyclerView.class), eq(false));
+
+        delegate.handleDragExit();
+        verify(mMainTabSwitcherDragHandler).showDragShadow(any(RecyclerView.class), eq(true));
+    }
+
+    @Test
+    public void testNonOriginatingDrag_InitializesDelegateAtStartup() {
+        createCoordinator();
+        verify(mMainTabSwitcherDragHandler)
+                .setDragHandlerDelegate(any(TabSwitcherDragHandler.DragHandlerDelegate.class));
+        verify(mPinnedTabSwitcherDragHandler)
+                .setDragHandlerDelegate(any(TabSwitcherDragHandler.DragHandlerDelegate.class));
+    }
+
+    @Test
+    public void
+            testNonOriginatingDrag_OriginatingWindow_DoesNotToggleShadowInNonOriginatingDelegate() {
+        createCoordinator();
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+        TabSwitcherDragHandler.DragHandlerDelegate delegate = delegateCaptor.getValue();
+
+        when(mMainTabSwitcherDragHandler.isDragSourceInstance()).thenReturn(true);
+
+        delegate.handleDragEnter();
+        verify(mMainTabSwitcherDragHandler, never()).showDragShadow(any(), anyBoolean());
+
+        delegate.handleDragExit();
+        verify(mMainTabSwitcherDragHandler, never()).showDragShadow(any(), anyBoolean());
+    }
+
+    @Test
+    public void testNonOriginatingDrag_IncognitoMismatch_Rejected() {
+        // Create coordinator with real TabSwitcherDragHandler instances.
+        VerticalTabListCoordinator.setTabSwitcherDragHandlerSupplierForTesting(null);
+        when(mTabModel.isIncognitoBranded()).thenReturn(false);
+
+        createCoordinatorWithoutMockDragHandlers();
+
+        // Dragged item is incognito.
+        when(mIncognitoTab.isIncognitoBranded()).thenReturn(true);
+        ChromeDropDataAndroid dropData =
+                new ChromeTabDropDataAndroid.Builder().withTab(mIncognitoTab).build();
+        Token token = DragDropGlobalState.store(1, dropData, null);
+        TabDragHandlerBase.setDragTokenForTesting(token);
+
+        View container = mCoordinator.getView();
+        TabListRecyclerView mainRecyclerView = container.findViewById(R.id.tab_list_recycler_view);
+        Object listenerInfo = ReflectionHelpers.getField(mainRecyclerView, "mListenerInfo");
+        View.OnDragListener dragListener =
+                ReflectionHelpers.getField(listenerInfo, "mOnDragListener");
+
+        ClipDescription clipDescription =
+                new ClipDescription("tab", new String[] {MimeTypeUtils.CHROME_MIMETYPE_TAB});
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_STARTED);
+        when(mDragEvent.getClipDescription()).thenReturn(clipDescription);
+
+        assertFalse(
+                "Non-originating window must reject drag on incognito mismatch.",
+                dragListener.onDrag(mainRecyclerView, mDragEvent));
+
+        DragDropGlobalState.clear(token);
+    }
+
+    @Test
+    public void testNonOriginatingDrag_IncognitoMatch_Accepted() {
+        // Create coordinator with real TabSwitcherDragHandler instances.
+        VerticalTabListCoordinator.setTabSwitcherDragHandlerSupplierForTesting(null);
+        when(mTabModel.isIncognitoBranded()).thenReturn(false);
+
+        createCoordinatorWithoutMockDragHandlers();
+
+        // Dragged item is regular (non-incognito).
+        when(mMockTab1.isIncognitoBranded()).thenReturn(false);
+        ChromeDropDataAndroid dropData =
+                new ChromeTabDropDataAndroid.Builder().withTab(mMockTab1).build();
+        Token token = DragDropGlobalState.store(1, dropData, null);
+        TabDragHandlerBase.setDragTokenForTesting(token);
+
+        View container = mCoordinator.getView();
+        TabListRecyclerView mainRecyclerView = container.findViewById(R.id.tab_list_recycler_view);
+        Object listenerInfo = ReflectionHelpers.getField(mainRecyclerView, "mListenerInfo");
+        View.OnDragListener dragListener =
+                ReflectionHelpers.getField(listenerInfo, "mOnDragListener");
+
+        ClipDescription clipDescription =
+                new ClipDescription("tab", new String[] {MimeTypeUtils.CHROME_MIMETYPE_TAB});
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_STARTED);
+        when(mDragEvent.getClipDescription()).thenReturn(clipDescription);
+        when(mDragEvent.getX()).thenReturn(10f);
+        when(mDragEvent.getY()).thenReturn(20f);
+
+        assertTrue(
+                "Non-originating window must accept drag when incognito matches.",
+                dragListener.onDrag(mainRecyclerView, mDragEvent));
+
+        DragDropGlobalState.clear(token);
+    }
+
+    @Test
+    public void testSingleTabDragOut_StartDragFailure_RestoresDelegate() {
+        Tab tab1 = prepareMockTab(mMockTab1, TAB_ID_1);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(tab1);
+        when(mTabModel.isTabInTabGroup(tab1)).thenReturn(false);
+
+        createCoordinator();
+        when(mMainTabSwitcherDragHandler.startTabDragAction(any(), any(), any(), any()))
+                .thenReturn(false);
+
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+        TabSwitcherDragHandler.DragHandlerDelegate nonOriginatingDelegate =
+                delegateCaptor.getValue();
+
+        PropertyModel model = createTabPropertyModel();
+        model.set(TabProperties.TAB_ID, TAB_ID_1);
+
+        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+        verify(mMainTabSwitcherDragHandler).startTabDragAction(any(), eq(tab1), any(), any());
+
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> restoredCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler, atLeastOnce())
+                .setDragHandlerDelegate(restoredCaptor.capture());
+        assertEquals(
+                "Non-originating delegate must be restored on tab drag start failure.",
+                nonOriginatingDelegate,
+                restoredCaptor.getValue());
+    }
+
+    @Test
+    public void testGroupHeaderDragOut_StartDragFailure_RestoresDelegate() {
+        Token tabGroupId = new Token(1L, 2L);
+        setupMockTabGroup(TAB_ID_1, tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
+        when(mTabModel.getCount()).thenReturn(2);
+
+        createCoordinator();
+        when(mMainTabSwitcherDragHandler.startGroupDragAction(any(), any(), any(), any()))
+                .thenReturn(false);
+
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+        TabSwitcherDragHandler.DragHandlerDelegate nonOriginatingDelegate =
+                delegateCaptor.getValue();
+
+        PropertyModel model = createTabPropertyModel();
+        model.set(TabProperties.TAB_GROUP_HEADER_ID, tabGroupId);
+
+        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+        verify(mMainTabSwitcherDragHandler)
+                .startGroupDragAction(any(), eq(tabGroupId), any(), any());
+
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> restoredCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler, atLeastOnce())
+                .setDragHandlerDelegate(restoredCaptor.capture());
+        assertEquals(
+                "Non-originating delegate must be restored on group drag start failure.",
+                nonOriginatingDelegate,
+                restoredCaptor.getValue());
+    }
+
+    @Test
+    public void testDragEnd_ReusesNonOriginatingDelegateInstance() {
+        Tab tab1 = prepareMockTab(mMockTab1, TAB_ID_1);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(tab1);
+        when(mTabModel.isTabInTabGroup(tab1)).thenReturn(false);
+        when(mMainTabSwitcherDragHandler.startTabDragAction(any(), any(), any(), any()))
+                .thenReturn(true);
+
+        createCoordinator();
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> initialCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(initialCaptor.capture());
+        TabSwitcherDragHandler.DragHandlerDelegate nonOriginatingDelegate =
+                initialCaptor.getValue();
+
+        PropertyModel model = createTabPropertyModel();
+        model.set(TabProperties.TAB_ID, TAB_ID_1);
+
+        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> activeCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler, atLeastOnce())
+                .setDragHandlerDelegate(activeCaptor.capture());
+        TabSwitcherDragHandler.DragHandlerDelegate activeDelegate = activeCaptor.getValue();
+        assertNotSame(nonOriginatingDelegate, activeDelegate);
+
+        activeDelegate.handleExternalDragEnd(0f, 0f, false);
+
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> restoredCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler, atLeastOnce())
+                .setDragHandlerDelegate(restoredCaptor.capture());
+        assertEquals(
+                "The exact same non-originating delegate instance must be restored on drag end.",
+                nonOriginatingDelegate,
+                restoredCaptor.getValue());
+    }
+
+    @Test
+    public void testDragOut_AlreadyInProgress_DoesNotStartDrag() {
+        createCoordinator();
+        when(mMainTabSwitcherDragHandler.isViewDraggingInProgress()).thenReturn(true);
+
+        PropertyModel model = createTabPropertyModel();
+        model.set(TabProperties.TAB_ID, TAB_ID_1);
+
+        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
+
+        verify(mMainTabSwitcherDragHandler, never()).startTabDragAction(any(), any(), any(), any());
+    }
+
     // =============================================================================================
     // Helper Methods
     // =============================================================================================
@@ -2709,6 +2954,39 @@ public class VerticalTabListCoordinatorUnitTest {
                                 ? mMainTabSwitcherDragHandler
                                 : mPinnedTabSwitcherDragHandler);
 
+        when(mMainTabSwitcherDragHandler.startTabDragAction(any(), any(), any(), any()))
+                .thenReturn(true);
+        when(mMainTabSwitcherDragHandler.startGroupDragAction(any(), any(), any(), any()))
+                .thenReturn(true);
+        when(mPinnedTabSwitcherDragHandler.startTabDragAction(any(), any(), any(), any()))
+                .thenReturn(true);
+        when(mPinnedTabSwitcherDragHandler.startGroupDragAction(any(), any(), any(), any()))
+                .thenReturn(true);
+
+        mCoordinator =
+                new VerticalTabListCoordinator(
+                        mActivity,
+                        mTabModelSelector,
+                        mProfile,
+                        mVerticalTabsActionDelegate,
+                        mWindowAndroid,
+                        mActivityResultTracker,
+                        mMultiInstanceManager,
+                        mSnackbarManager,
+                        mDesktopWindowStateManager,
+                        mShareDelegateSupplier,
+                        mDataSharingTabManager,
+                        mIsVerticalTabsActiveSupplier,
+                        mVerticalTabsWidthSupplier,
+                        /* canActivateTabLayoutToggleMenuSupplier= */ null,
+                        mTabHoverCardViewStub,
+                        mTabContentManagerSupplier,
+                        mUndoBarThrottle);
+
+        mCoordinator.getCollapseController().setRailCollapseListener(mMockRailCollapseListener);
+    }
+
+    private void createCoordinatorWithoutMockDragHandlers() {
         mCoordinator =
                 new VerticalTabListCoordinator(
                         mActivity,
