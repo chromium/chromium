@@ -51,25 +51,6 @@ namespace glic {
 
 namespace {
 
-std::optional<TaskMetadata> ExtractRequestTaskMetadata(
-    const components_sharing_message::GlicExperimentalTriggering& proto) {
-  if (!proto.has_task_metadata()) {
-    return std::nullopt;
-  }
-  const auto& proto_meta = proto.task_metadata();
-  TaskMetadata meta;
-  if (proto_meta.has_conversation_id()) {
-    meta.conversation_id = proto_meta.conversation_id();
-  }
-  if (proto_meta.has_task_id()) {
-    meta.task_id = proto_meta.task_id();
-  }
-  if (proto_meta.has_sender_sequence_number()) {
-    meta.sender_sequence_number = proto_meta.sender_sequence_number();
-  }
-  return meta;
-}
-
 GlicInvokeOptions CreateInvokeOptions(
     const ExperimentalTriggeringRequest& request,
     BrowserWindowInterface* window,
@@ -876,7 +857,7 @@ GlicExperimentalTriggeringCoordinator::OnProtoMessage(
   LogGlicExperimentalTriggeringProto(
       actor_service, "GlicExperimentalTriggering", context_id, proto);
 
-  auto request_metadata = ExtractRequestTaskMetadata(proto);
+  auto request_metadata = ProtoToTaskMetadata(proto);
   const TaskMetadata* request_metadata_ptr =
       request_metadata.has_value() ? &*request_metadata : nullptr;
 
@@ -897,7 +878,12 @@ GlicExperimentalTriggeringCoordinator::OnProtoMessage(
                                  /*sender_sequence_number=*/0);
   }
 
-  if (!proto.has_request() && !proto.has_task_metadata_updated()) {
+  const bool has_valid_request =
+      proto.has_request() &&
+      proto.request().payload_case() !=
+          components_sharing_message::GlicExperimentalTriggering::
+              ExperimentalTriggeringRequest::PAYLOAD_NOT_SET;
+  if (!has_valid_request && !proto.has_task_metadata_updated()) {
     result_logger.set_result(
         GlicExperimentalTriggeringIncomingMessageResult::kMissingPayload);
     return CreateResponseMessage(

@@ -431,4 +431,65 @@ TEST(GlicExperimentalTriggeringConvertersTest,
   EXPECT_FALSE(resp_proto.screenshot_result().has_error_message());
 }
 
+TEST(GlicExperimentalTriggeringConvertersTest, ProtoToTaskMetadata) {
+  {
+    components_sharing_message::GlicExperimentalTriggering proto;
+    EXPECT_FALSE(ProtoToTaskMetadata(proto).has_value());
+  }
+
+  {
+    components_sharing_message::GlicExperimentalTriggering proto;
+    proto.mutable_task_metadata()->set_conversation_id("conv_123");
+
+    auto meta = ProtoToTaskMetadata(proto);
+    ASSERT_TRUE(meta.has_value());
+    EXPECT_EQ(meta->conversation_id, "conv_123");
+    EXPECT_FALSE(meta->parent_conversation_metadata.has_value());
+  }
+
+  {
+    components_sharing_message::GlicExperimentalTriggering proto;
+    proto.mutable_task_metadata()->set_conversation_id("conv_123");
+    proto.mutable_task_metadata()->set_task_id("task_456");
+    proto.mutable_task_metadata()->set_sender_sequence_number(100);
+    proto.mutable_task_metadata()->set_last_seen_sequence_number(99);
+    proto.mutable_task_metadata()
+        ->mutable_parent_conversation_metadata()
+        ->set_conversation_id("p_conv");
+    proto.mutable_task_metadata()
+        ->mutable_parent_conversation_metadata()
+        ->set_conversation_title("p_title");
+
+    auto meta = ProtoToTaskMetadata(proto);
+    ASSERT_TRUE(meta.has_value());
+    EXPECT_EQ(meta->conversation_id, "conv_123");
+    EXPECT_EQ(meta->task_id, "task_456");
+    EXPECT_EQ(meta->sender_sequence_number, 100);
+    EXPECT_EQ(meta->last_seen_sequence_number, 99);
+    ASSERT_TRUE(meta->parent_conversation_metadata.has_value());
+    EXPECT_EQ(meta->parent_conversation_metadata->conversation_id, "p_conv");
+    EXPECT_EQ(meta->parent_conversation_metadata->conversation_title,
+              "p_title");
+  }
+}
+
+TEST(GlicExperimentalTriggeringConvertersTest, ResponseToTriggeringProto) {
+  ExperimentalTriggeringResponse response;
+  response.context_id = "test_context";
+  response.task_update = TaskUpdate{
+      .state = TaskUpdate::State::kComplete,
+      .data_type = TaskUpdate::DataType::kFinalResponse,
+      .data = "done",
+  };
+
+  auto triggering = ResponseToTriggeringProto(response);
+  EXPECT_EQ(triggering.context_id(), "test_context");
+  EXPECT_TRUE(triggering.has_response());
+  EXPECT_TRUE(triggering.response().has_task_update());
+  EXPECT_EQ(triggering.response().task_update().state(),
+            components_sharing_message::GlicExperimentalTriggering::
+                ExperimentalTriggeringResponse::TaskUpdate::COMPLETE);
+  EXPECT_EQ(triggering.response().task_update().data(), "done");
+}
+
 }  // namespace glic

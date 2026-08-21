@@ -46,8 +46,10 @@ void BrowserActuatorMessageHandler::HandleGlicExperimentalTriggering(
   }
 
   const auto& request = triggering.request();
-  if (!request.has_device_opt_in_request()) {
-    // Ignore non-opt-in messages.
+  // For GlicExperimentalTriggering, the first message can be either an opt-in
+  // or a trigger actuation message. Ignore other types.
+  if (!request.has_device_opt_in_request() &&
+      !request.has_trigger_actuation_request()) {
     return;
   }
 

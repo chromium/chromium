@@ -20,7 +20,6 @@
 #include "components/browser_actuator/public/common.h"
 #include "components/browser_actuator/public/transport_session.h"
 #include "components/sharing_message/proto/glic_experimental_triggering.pb.h"
-#include "components/sharing_message/proto/sharing_message.pb.h"
 
 namespace glic {
 
@@ -69,20 +68,12 @@ void GlicExperimentalTriggeringTransportHandler::OnMessage(
                                  kCoordinatorUnavailable);
     ExperimentalTriggeringResponse response;
     response.context_id = context_id;
-    if (triggering.has_task_metadata()) {
-      TaskMetadata meta;
-      const auto& proto_meta = triggering.task_metadata();
-      if (proto_meta.has_conversation_id()) {
-        meta.conversation_id = proto_meta.conversation_id();
-      }
-      if (proto_meta.has_task_id()) {
-        meta.task_id = proto_meta.task_id();
-      }
-      if (proto_meta.has_sender_sequence_number()) {
-        meta.last_seen_sequence_number = proto_meta.sender_sequence_number();
-      }
-      meta.sender_sequence_number = 0;
-      response.task_metadata = std::move(meta);
+    auto request_metadata = ProtoToTaskMetadata(triggering);
+    if (request_metadata.has_value()) {
+      request_metadata->last_seen_sequence_number =
+          request_metadata->sender_sequence_number;
+      request_metadata->sender_sequence_number = 0;
+      response.task_metadata = std::move(request_metadata);
     }
     TaskUpdate task_update;
     task_update.state = TaskUpdate::State::kFailed;
@@ -108,9 +99,8 @@ void GlicExperimentalTriggeringTransportHandler::OnMessage(
 
 void GlicExperimentalTriggeringTransportHandler::SendResponse(
     ExperimentalTriggeringResponse response) {
-  components_sharing_message::SharingMessage outgoing_message =
-      ResponseToProto(response);
-  const auto& triggering = outgoing_message.glic_experimental_triggering();
+  components_sharing_message::GlicExperimentalTriggering triggering =
+      ResponseToTriggeringProto(response);
 
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(profile_);
@@ -119,8 +109,8 @@ void GlicExperimentalTriggeringTransportHandler::SendResponse(
                                      response.context_id, triggering);
 
   // `SendMessage` synchronously serializes the protobuf `triggering`
-  // reference, so passing the const reference from `outgoing_message` is safe
-  // during this synchronous call.
+  // reference, so passing the const reference is safe during this synchronous
+  // call.
   auto send_result = session_->SendMessage(
       browser_actuator::PayloadType::kExperimentalTriggering, triggering);
   if (!send_result.has_value()) {

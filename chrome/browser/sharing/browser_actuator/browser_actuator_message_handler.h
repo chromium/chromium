@@ -15,8 +15,8 @@ class GlicExperimentalTriggering;
 }  // namespace components_sharing_message
 
 // Handler for incoming initial SharingMessages for BrowserActuator service.
-// Processes initial opt-in messages to set up a TransportChannel and
-// TransportSession.
+// Processes initial opt-in or trigger actuation messages to set up a
+// TransportChannel and TransportSession.
 class BrowserActuatorMessageHandler : public SharingMessageHandler {
  public:
   explicit BrowserActuatorMessageHandler(Profile* profile);

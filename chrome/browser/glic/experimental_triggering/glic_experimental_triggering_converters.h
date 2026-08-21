@@ -11,10 +11,20 @@
 
 namespace glic {
 
+// Extracts domain `TaskMetadata` from a `GlicExperimentalTriggering` protobuf
+// if present.
+std::optional<TaskMetadata> ProtoToTaskMetadata(
+    const components_sharing_message::GlicExperimentalTriggering& proto);
+
 // Converts a raw `GlicExperimentalTriggering` protobuf to a domain
 // `ExperimentalTriggeringRequest`.
 ExperimentalTriggeringRequest ProtoToRequest(
     const components_sharing_message::GlicExperimentalTriggering& proto);
+
+// Converts a domain `ExperimentalTriggeringResponse` into a
+// `GlicExperimentalTriggering` protobuf.
+components_sharing_message::GlicExperimentalTriggering
+ResponseToTriggeringProto(const ExperimentalTriggeringResponse& response);
 
 // Converts a domain `ExperimentalTriggeringResponse` back into a
 // `SharingMessage` protobuf for transmission.

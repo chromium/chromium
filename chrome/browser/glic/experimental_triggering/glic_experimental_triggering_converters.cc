@@ -56,6 +56,40 @@ ProtoTaskUpdate::DataType ToProtoDataType(TaskUpdate::DataType type) {
 
 }  // namespace
 
+std::optional<TaskMetadata> ProtoToTaskMetadata(
+    const components_sharing_message::GlicExperimentalTriggering& proto) {
+  if (!proto.has_task_metadata()) {
+    return std::nullopt;
+  }
+  TaskMetadata task_metadata;
+  const auto& proto_meta = proto.task_metadata();
+  if (proto_meta.has_conversation_id()) {
+    task_metadata.conversation_id = proto_meta.conversation_id();
+  }
+  if (proto_meta.has_task_id()) {
+    task_metadata.task_id = proto_meta.task_id();
+  }
+  if (proto_meta.has_sender_sequence_number()) {
+    task_metadata.sender_sequence_number = proto_meta.sender_sequence_number();
+  }
+  if (proto_meta.has_last_seen_sequence_number()) {
+    task_metadata.last_seen_sequence_number =
+        proto_meta.last_seen_sequence_number();
+  }
+  if (proto_meta.has_parent_conversation_metadata()) {
+    const auto& parent_proto = proto_meta.parent_conversation_metadata();
+    ParentConversationMetadata parent_meta;
+    if (parent_proto.has_conversation_id()) {
+      parent_meta.conversation_id = parent_proto.conversation_id();
+    }
+    if (parent_proto.has_conversation_title()) {
+      parent_meta.conversation_title = parent_proto.conversation_title();
+    }
+    task_metadata.parent_conversation_metadata = std::move(parent_meta);
+  }
+  return task_metadata;
+}
+
 ExperimentalTriggeringRequest ProtoToRequest(
     const components_sharing_message::GlicExperimentalTriggering& proto) {
   ExperimentalTriggeringRequest request;
@@ -66,37 +100,7 @@ ExperimentalTriggeringRequest ProtoToRequest(
     request.context_id = proto.context_id();
   }
 
-  if (proto.has_task_metadata()) {
-    TaskMetadata task_metadata;
-    const auto& proto_meta = proto.task_metadata();
-    if (proto_meta.has_conversation_id()) {
-      task_metadata.conversation_id = proto_meta.conversation_id();
-    }
-    if (proto_meta.has_task_id()) {
-      task_metadata.task_id = proto_meta.task_id();
-    }
-    if (proto_meta.has_sender_sequence_number()) {
-      task_metadata.sender_sequence_number =
-          proto_meta.sender_sequence_number();
-    }
-    if (proto_meta.has_last_seen_sequence_number()) {
-      task_metadata.last_seen_sequence_number =
-          proto_meta.last_seen_sequence_number();
-    }
-    if (proto_meta.has_parent_conversation_metadata()) {
-      ParentConversationMetadata parent_meta;
-      if (proto_meta.parent_conversation_metadata().has_conversation_id()) {
-        parent_meta.conversation_id =
-            proto_meta.parent_conversation_metadata().conversation_id();
-      }
-      if (proto_meta.parent_conversation_metadata().has_conversation_title()) {
-        parent_meta.conversation_title =
-            proto_meta.parent_conversation_metadata().conversation_title();
-      }
-      task_metadata.parent_conversation_metadata = std::move(parent_meta);
-    }
-    request.task_metadata = std::move(task_metadata);
-  }
+  request.task_metadata = ProtoToTaskMetadata(proto);
 
   if (proto.has_task_metadata_updated()) {
     request.payload = TaskMetadataUpdated();
@@ -173,16 +177,15 @@ ExperimentalTriggeringRequest ProtoToRequest(
   return request;
 }
 
-components_sharing_message::SharingMessage ResponseToProto(
-    const ExperimentalTriggeringResponse& response) {
-  components_sharing_message::SharingMessage message;
-  auto* triggering = message.mutable_glic_experimental_triggering();
+components_sharing_message::GlicExperimentalTriggering
+ResponseToTriggeringProto(const ExperimentalTriggeringResponse& response) {
+  components_sharing_message::GlicExperimentalTriggering triggering;
   if (!response.context_id.empty()) {
-    triggering->set_context_id(response.context_id);
+    triggering.set_context_id(response.context_id);
   }
 
   if (response.task_metadata.has_value()) {
-    auto* metadata = triggering->mutable_task_metadata();
+    auto* metadata = triggering.mutable_task_metadata();
     if (response.task_metadata->sender_sequence_number.has_value()) {
       metadata->set_sender_sequence_number(
           *response.task_metadata->sender_sequence_number);
@@ -216,7 +219,7 @@ components_sharing_message::SharingMessage ResponseToProto(
   }
 
   if (response.task_update.has_value()) {
-    auto* proto_update = triggering->mutable_response()->mutable_task_update();
+    auto* proto_update = triggering.mutable_response()->mutable_task_update();
     proto_update->set_state(ToProtoState(response.task_update->state));
     if (response.task_update->data_type.has_value()) {
       proto_update->set_data_type(
@@ -231,19 +234,19 @@ components_sharing_message::SharingMessage ResponseToProto(
   if (response.device_opt_in_result.has_value()) {
     switch (*response.device_opt_in_result) {
       case DeviceOptInResult::kUnknown:
-        triggering->mutable_response()->set_device_opt_in_result(
+        triggering.mutable_response()->set_device_opt_in_result(
             ProtoResponse::UNKNOWN);
         break;
       case DeviceOptInResult::kAccepted:
-        triggering->mutable_response()->set_device_opt_in_result(
+        triggering.mutable_response()->set_device_opt_in_result(
             ProtoResponse::ACCEPTED);
         break;
       case DeviceOptInResult::kDeclined:
-        triggering->mutable_response()->set_device_opt_in_result(
+        triggering.mutable_response()->set_device_opt_in_result(
             ProtoResponse::DECLINED);
         break;
       case DeviceOptInResult::kFailed:
-        triggering->mutable_response()->set_device_opt_in_result(
+        triggering.mutable_response()->set_device_opt_in_result(
             ProtoResponse::FAILED);
         break;
     }
@@ -251,7 +254,7 @@ components_sharing_message::SharingMessage ResponseToProto(
 
   if (response.screenshot_result.has_value()) {
     auto* proto_screenshot =
-        triggering->mutable_response()->mutable_screenshot_result();
+        triggering.mutable_response()->mutable_screenshot_result();
     switch (response.screenshot_result->status) {
       case ScreenshotResult::Status::kUnspecified:
         proto_screenshot->set_status(
@@ -283,6 +286,14 @@ components_sharing_message::SharingMessage ResponseToProto(
     }
   }
 
+  return triggering;
+}
+
+components_sharing_message::SharingMessage ResponseToProto(
+    const ExperimentalTriggeringResponse& response) {
+  components_sharing_message::SharingMessage message;
+  *message.mutable_glic_experimental_triggering() =
+      ResponseToTriggeringProto(response);
   return message;
 }
 

@@ -76,13 +76,45 @@ TEST_F(BrowserActuatorMessageHandlerTest, HandlesInitialSharingMessage) {
   EXPECT_EQ(done_future.Get(), nullptr);
 }
 
-TEST_F(BrowserActuatorMessageHandlerTest, IgnoresNonOptInMessage) {
+TEST_F(BrowserActuatorMessageHandlerTest, HandlesTriggerActuationMessage) {
   components_sharing_message::SharingMessage message;
   auto* triggering = message.mutable_glic_experimental_triggering();
   triggering->set_context_id("test_context_123");
   triggering->set_glic_experimental_triggering_version(1);
-  message.mutable_server_channel_configuration();
+  triggering->mutable_request()->mutable_trigger_actuation_request();
+
+  EXPECT_CALL(*mock_service_, GetOrCreateSession("test_context_123"));
+
+  base::test::TestFuture<
+      std::unique_ptr<components_sharing_message::ResponseMessage>>
+      done_future;
+  handler_->OnMessage(std::move(message), done_future.GetCallback());
+  EXPECT_TRUE(done_future.Wait());
+  EXPECT_EQ(done_future.Get(), nullptr);
+}
+
+TEST_F(BrowserActuatorMessageHandlerTest, IgnoresUnsupportedMessage) {
+  components_sharing_message::SharingMessage message;
+  auto* triggering = message.mutable_glic_experimental_triggering();
+  triggering->set_context_id("test_context_123");
+  triggering->set_glic_experimental_triggering_version(1);
   triggering->mutable_request()->mutable_stop_actuation_request();
+
+  EXPECT_CALL(*mock_service_, GetOrCreateSession(testing::_)).Times(0);
+
+  base::test::TestFuture<
+      std::unique_ptr<components_sharing_message::ResponseMessage>>
+      done_future;
+  handler_->OnMessage(std::move(message), done_future.GetCallback());
+  EXPECT_TRUE(done_future.Wait());
+  EXPECT_EQ(done_future.Get(), nullptr);
+}
+
+TEST_F(BrowserActuatorMessageHandlerTest, IgnoresMessageWithNoRequest) {
+  components_sharing_message::SharingMessage message;
+  auto* triggering = message.mutable_glic_experimental_triggering();
+  triggering->set_context_id("test_context_123");
+  triggering->set_glic_experimental_triggering_version(1);
 
   EXPECT_CALL(*mock_service_, GetOrCreateSession(testing::_)).Times(0);
 

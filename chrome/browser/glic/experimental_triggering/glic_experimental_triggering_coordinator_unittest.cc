@@ -521,6 +521,33 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorTest,
+       OnProtoMessage_EmptyRequestPayload) {
+  components_sharing_message::GlicExperimentalTriggering proto;
+  proto.set_context_id(kTestContextId);
+  // Create an empty request submessage where payload_case() == PAYLOAD_NOT_SET.
+  proto.mutable_request();
+
+  base::HistogramTester histogram_tester;
+  auto response = coordinator_->OnProtoMessage(
+      kTestContextId, proto,
+      ScopedIncomingMessageResultLogger(ScopedIncomingMessageResultLogger::
+                                            Channel::kBrowserActuatorTransport),
+      base::DoNothing(), nullptr);
+
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->task_update.has_value());
+  EXPECT_EQ(response->task_update->state, TaskUpdate::State::kFailed);
+  EXPECT_EQ(
+      response->task_update->data,
+      "Received GlicExperimentalTriggering message with no request payload.");
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.IncomingMessageResult."
+      "BrowserActuatorTransport",
+      GlicExperimentalTriggeringIncomingMessageResult::kMissingPayload, 1);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorTest,
        OnProtoMessage_VersionMismatch) {
   components_sharing_message::GlicExperimentalTriggering proto;
   proto.set_context_id(kTestContextId);
