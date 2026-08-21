@@ -106,29 +106,28 @@ bool IsValidWildcardPattern(std::string_view hostname_pattern) {
   }
 
   // Check that wildcards only appear beyond the eTLD+1.
-  size_t registry_length =
-      registry_controlled_domains::PermissiveGetHostRegistryLength(
+  std::string_view registry =
+      registry_controlled_domains::PermissiveGetHostRegistry(
           hostname_pattern,
           registry_controlled_domains::INCLUDE_UNKNOWN_REGISTRIES,
-          registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  // std::string::npos should only be returned for empty inputs, which should be
-  // filtered out by the IsValid() check above.
-  CHECK(registry_length != std::string::npos);
+          registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)
+          // std::nullopt should only be returned for empty inputs, which should
+          // be filtered out by the IsValid() check above.
+          .value();
   // If there is no registrar portion, the pattern is considered invalid.
-  if (registry_length == 0) {
+  if (registry.empty()) {
     return false;
   }
   // If the registrar portion contains a wildcard, the pattern is considered
   // invalid.
-  if (hostname_pattern.find('*', hostname_pattern.size() - registry_length) !=
-      std::string::npos) {
+  if (registry.contains('*')) {
     return false;
   }
   // If there is no component before the registrar portion, or if the component
   // immediately preceding the registrar portion contains a wildcard, the
   // pattern is not considered valid.
   std::string_view host_before_registrar =
-      hostname_pattern.substr(0, hostname_pattern.size() - registry_length);
+      hostname_pattern.substr(0, hostname_pattern.size() - registry.size());
   std::vector<std::string_view> components =
       base::SplitStringPiece(host_before_registrar, ".", base::KEEP_WHITESPACE,
                              base::SPLIT_WANT_NONEMPTY);

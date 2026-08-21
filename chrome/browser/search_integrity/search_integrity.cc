@@ -5,6 +5,7 @@
 #include "chrome/browser/search_integrity/search_integrity.h"
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -396,29 +397,31 @@ SiteSearchIntegrityReport SearchIntegrity::CheckSiteSearchReport() {
     // At this point we know the domains are not the same, so what's left is to
     // check whether it's a completely different domain, or a similar domain in
     // a different eTLD.
-    size_t keyword_registry_len =
-        net::registry_controlled_domains::PermissiveGetHostRegistryLength(
+    std::optional<size_t> keyword_registry_len =
+        net::registry_controlled_domains::PermissiveGetHostRegistry(
             keyword_host,
             net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
-            net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
-    size_t search_registry_len =
-        net::registry_controlled_domains::PermissiveGetHostRegistryLength(
+            net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES)
+            .transform(&std::string_view::size);
+    std::optional<size_t> search_registry_len =
+        net::registry_controlled_domains::PermissiveGetHostRegistry(
             search_host,
             net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
-            net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+            net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES)
+            .transform(&std::string_view::size);
 
     // Strip the eTLD
     std::string keyword_base = keyword_domain;
-    if (keyword_registry_len != std::string::npos && keyword_registry_len > 0 &&
+    if (keyword_registry_len > 0 &&
         keyword_domain.length() > keyword_registry_len) {
       keyword_base = keyword_domain.substr(
-          0, keyword_domain.length() - keyword_registry_len - 1);
+          0, keyword_domain.length() - *keyword_registry_len - 1);
     }
     std::string search_base = search_domain;
-    if (search_registry_len != std::string::npos && search_registry_len > 0 &&
+    if (search_registry_len > 0 &&
         search_domain.length() > search_registry_len) {
       search_base = search_domain.substr(
-          0, search_domain.length() - search_registry_len - 1);
+          0, search_domain.length() - *search_registry_len - 1);
     }
 
     if (keyword_base == search_base && !keyword_base.empty()) {

@@ -115,19 +115,20 @@ bool IsHostValidForScopeExtension(String host) {
     return true;
   }
 
-  const size_t registry_length =
-      net::registry_controlled_domains::PermissiveGetHostRegistryLength(
+  const std::optional<size_t> registry_length =
+      net::registry_controlled_domains::PermissiveGetHostRegistry(
           host.Utf8(),
           // Reject unknown registries (registries that don't have any matches
           // in effective TLD names).
           net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
           // Skip matching private registries that allow external users to
           // specify sub-domains, e.g. glitch.me, as this is allowed.
-          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES)
+          .transform(&std::string_view::size);
 
   // Host cannot be a TLD or invalid.
-  if (registry_length == 0 || registry_length == std::string::npos ||
-      registry_length >= host.length()) {
+  if (!registry_length || *registry_length == 0 ||
+      *registry_length >= host.length()) {
     return false;
   }
 

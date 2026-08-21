@@ -57,16 +57,18 @@ std::optional<std::string> GetRegistryFromURLIncludingPrivate(
   return std::string(registry);
 }
 
-size_t PermissiveGetHostRegistryLength(std::string_view host) {
-  return PermissiveGetHostRegistryLength(host, EXCLUDE_UNKNOWN_REGISTRIES,
-                                         EXCLUDE_PRIVATE_REGISTRIES);
+std::optional<std::string_view> PermissiveGetHostRegistry(
+    std::string_view host) {
+  return PermissiveGetHostRegistry(host, EXCLUDE_UNKNOWN_REGISTRIES,
+                                   EXCLUDE_PRIVATE_REGISTRIES);
 }
 
 // Only called when using ICU (avoids unused static function error).
 #if !BUILDFLAG(USE_PLATFORM_ICU_ALTERNATIVES)
-size_t PermissiveGetHostRegistryLength(std::u16string_view host) {
-  return PermissiveGetHostRegistryLength(host, EXCLUDE_UNKNOWN_REGISTRIES,
-                                         EXCLUDE_PRIVATE_REGISTRIES);
+std::optional<std::u16string_view> PermissiveGetHostRegistry(
+    std::u16string_view host) {
+  return PermissiveGetHostRegistry(host, EXCLUDE_UNKNOWN_REGISTRIES,
+                                   EXCLUDE_PRIVATE_REGISTRIES);
 }
 #endif
 
@@ -633,69 +635,72 @@ TEST_F(RegistryControlledDomainTest, TestDafsaJoinedSuffixes) {
 TEST_F(RegistryControlledDomainTest, Permissive) {
   UseDomainData(test1::kDafsa);
 
-  EXPECT_EQ(std::string::npos, PermissiveGetHostRegistryLength(""));
+  EXPECT_EQ(std::nullopt, PermissiveGetHostRegistry(""));
 
   // Regular non-canonical host name.
-  EXPECT_EQ(2U, PermissiveGetHostRegistryLength("Www.Google.Jp"));
-  EXPECT_EQ(3U, PermissiveGetHostRegistryLength("Www.Google.Jp."));
+  EXPECT_EQ("Jp", PermissiveGetHostRegistry("Www.Google.Jp"));
+  EXPECT_EQ("Jp.", PermissiveGetHostRegistry("Www.Google.Jp."));
 
-  // Empty returns npos.
-  EXPECT_EQ(std::string::npos, PermissiveGetHostRegistryLength(""));
+  // Empty returns std::nullopt.
+  EXPECT_EQ(std::nullopt, PermissiveGetHostRegistry(""));
 
   // Trailing spaces are counted as part of the hostname, meaning this will
   // not match a known registry.
-  EXPECT_EQ(0U, PermissiveGetHostRegistryLength("Www.Google.Jp "));
+  EXPECT_EQ("", PermissiveGetHostRegistry("Www.Google.Jp "));
 
   // Invalid characters at the beginning are OK if the suffix still matches.
-  EXPECT_EQ(2U, PermissiveGetHostRegistryLength("*%00#?.Jp"));
+  EXPECT_EQ("Jp", PermissiveGetHostRegistry("*%00#?.Jp"));
 
   // Escaped period, this will add new components (Www.Google.jp).
-  EXPECT_EQ(4U, PermissiveGetHostRegistryLength("Www.Googl%45%2e%4Ap"));
+  EXPECT_EQ("%4Ap", PermissiveGetHostRegistry("Www.Googl%45%2e%4Ap"));
 
   // Escaped period, the last component is invalid (Www.Google.%p).
-  EXPECT_EQ(0U, PermissiveGetHostRegistryLength("Www.Googl%45%2e%25p"));
+  EXPECT_EQ("", PermissiveGetHostRegistry("Www.Googl%45%2e%25p"));
 
   // The last component is invalid (Www.Google.%p).
-  EXPECT_EQ(0U, PermissiveGetHostRegistryLength("Www.Google.%25p"));
+  EXPECT_EQ("", PermissiveGetHostRegistry("Www.Google.%25p"));
 
   // Escaped period. er is a wildcard registry.
-  EXPECT_EQ(13U, PermissiveGetHostRegistryLength("Www.Googl%45%2eEr"));
+  EXPECT_EQ("Googl%45%2eEr", PermissiveGetHostRegistry("Www.Googl%45%2eEr"));
 
   // Escaped period. The first component is invalid because of %FF%FE.
   // er is a wildcard registry.
-  EXPECT_EQ(0U, PermissiveGetHostRegistryLength("%EF%2E%FF%FE.er"));
+  EXPECT_EQ("", PermissiveGetHostRegistry("%EF%2E%FF%FE.er"));
 
   // First component is invalid. Note that the RCD (test.er) doesn't fall into
   // the middle of a component here, so this doesn't execute the brute search
-  // at the end of DoPermissiveGetHostRegistryLength, nor the is_canonical check
-  // right before the search.
-  EXPECT_EQ(7U, PermissiveGetHostRegistryLength("%EF%2E%FF%FE.test.er"));
+  // at the end of DoPermissiveGetHostRegistry, nor the is_canonical check right
+  // before the search.
+  EXPECT_EQ("test.er", PermissiveGetHostRegistry("%EF%2E%FF%FE.test.er"));
 
 // IDN cases (not supported when not linking ICU).
 #if !BUILDFLAG(USE_PLATFORM_ICU_ALTERNATIVES)
-  EXPECT_EQ(10U, PermissiveGetHostRegistryLength("foo.xn--fiqs8s"));
-  EXPECT_EQ(11U, PermissiveGetHostRegistryLength("foo.xn--fiqs8s."));
-  EXPECT_EQ(18U, PermissiveGetHostRegistryLength("foo.%E4%B8%AD%E5%9B%BD"));
-  EXPECT_EQ(19U, PermissiveGetHostRegistryLength("foo.%E4%B8%AD%E5%9B%BD."));
-  EXPECT_EQ(6U,
-            PermissiveGetHostRegistryLength("foo.\xE4\xB8\xAD\xE5\x9B\xBD"));
-  EXPECT_EQ(7U,
-            PermissiveGetHostRegistryLength("foo.\xE4\xB8\xAD\xE5\x9B\xBD."));
+  EXPECT_EQ("xn--fiqs8s", PermissiveGetHostRegistry("foo.xn--fiqs8s"));
+  EXPECT_EQ("xn--fiqs8s.", PermissiveGetHostRegistry("foo.xn--fiqs8s."));
+  EXPECT_EQ("%E4%B8%AD%E5%9B%BD",
+            PermissiveGetHostRegistry("foo.%E4%B8%AD%E5%9B%BD"));
+  EXPECT_EQ("%E4%B8%AD%E5%9B%BD.",
+            PermissiveGetHostRegistry("foo.%E4%B8%AD%E5%9B%BD."));
+  EXPECT_EQ("\xE4\xB8\xAD\xE5\x9B\xBD",
+            PermissiveGetHostRegistry("foo.\xE4\xB8\xAD\xE5\x9B\xBD"));
+  EXPECT_EQ("\xE4\xB8\xAD\xE5\x9B\xBD.",
+            PermissiveGetHostRegistry("foo.\xE4\xB8\xAD\xE5\x9B\xBD."));
   // UTF-16 IDN.
-  EXPECT_EQ(2U, PermissiveGetHostRegistryLength(u"foo.\x4e2d\x56fd"));
+  EXPECT_EQ(u"\x4e2d\x56fd", PermissiveGetHostRegistry(u"foo.\x4e2d\x56fd"));
 
   // Fullwidth dot (u+FF0E) that will get canonicalized to a dot.
-  EXPECT_EQ(2U, PermissiveGetHostRegistryLength("Www.Google\xEF\xBC\x8Ejp"));
+  EXPECT_EQ("jp", PermissiveGetHostRegistry("Www.Google\xEF\xBC\x8Ejp"));
   // Same but also ending in a fullwidth dot.
-  EXPECT_EQ(5U, PermissiveGetHostRegistryLength(
-                    "Www.Google\xEF\xBC\x8Ejp\xEF\xBC\x8E"));
+  EXPECT_EQ("jp\xEF\xBC\x8E",
+            PermissiveGetHostRegistry("Www.Google\xEF\xBC\x8Ejp\xEF\xBC\x8E"));
   // Escaped UTF-8, also with an escaped fullwidth "Jp".
   // "Jp" = U+FF2A, U+FF50, UTF-8 = EF BC AA EF BD 90
-  EXPECT_EQ(27U, PermissiveGetHostRegistryLength(
-                     "Www.Google%EF%BC%8E%EF%BC%AA%EF%BD%90%EF%BC%8E"));
+  EXPECT_EQ("%EF%BC%AA%EF%BD%90%EF%BC%8E",
+            PermissiveGetHostRegistry(
+                "Www.Google%EF%BC%8E%EF%BC%AA%EF%BD%90%EF%BC%8E"));
   // UTF-16 (ending in a dot).
-  EXPECT_EQ(3U, PermissiveGetHostRegistryLength(
-                    u"Www.Google\xFF0E\xFF2A\xFF50\xFF0E"));
+  EXPECT_EQ(u"\xFF2A\xFF50\xFF0E",
+            PermissiveGetHostRegistry(u"Www.Google\xFF0E\xFF2A\xFF50\xFF0E"));
 #endif
 }
 

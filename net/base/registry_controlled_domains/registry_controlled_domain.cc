@@ -60,6 +60,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/types/is_instantiation.h"
 #include "net/base/lookup_string_in_fixed_set.h"
 #include "net/base/registry_controlled_domain_constants.h"
 #include "net/base/registry_controlled_domains/effective_tld_names-reversed-inc.cc"
@@ -354,12 +355,14 @@ void AppendInvalidString(std::u16string_view str, url::CanonOutput* output) {
   output->Append(base::UTF16ToUTF8(str));
 }
 
-// Backend for PermissiveGetHostRegistryLength that handles both UTF-8 and
-// UTF-16 input.
-template <typename T, typename CharT = typename T::value_type>
-size_t DoPermissiveGetHostRegistryLength(T host,
-                                         UnknownRegistryFilter unknown_filter,
-                                         PrivateRegistryFilter private_filter) {
+// Backend for PermissiveGetHostRegistry that handles both UTF-8 and UTF-16
+// input.
+template <typename T>
+  requires base::is_instantiation<T, std::basic_string_view>
+std::optional<T> DoPermissiveGetHostRegistry(
+    T host,
+    UnknownRegistryFilter unknown_filter,
+    PrivateRegistryFilter private_filter) {
   std::string canonical_host;  // Do not modify outside of canon_output.
   canonical_host.reserve(host.length());
   url::StdStringCanonOutput canon_output(&canonical_host);
@@ -401,8 +404,13 @@ size_t DoPermissiveGetHostRegistryLength(T host,
   size_t canonical_rcd_len =
       GetRegistryLengthImpl(canonical_host, unknown_filter, private_filter)
           .registry_length;
-  if (canonical_rcd_len == 0 || canonical_rcd_len == std::string::npos) {
-    return canonical_rcd_len;  // Error or no registry controlled domain.
+  if (canonical_rcd_len == std::string::npos) {
+    // Error.
+    return std::nullopt;
+  }
+  if (canonical_rcd_len == 0) {
+    // No registry controlled domain.
+    return T{};
   }
 
   // Find which host component the result started in.
@@ -413,7 +421,7 @@ size_t DoPermissiveGetHostRegistryLength(T host,
     // of a component and we can just return where that component was in the
     // original string.
     if (canonical_rcd_begin == mapping.canonical_begin) {
-      return host.length() - mapping.original_begin;
+      return host.substr(mapping.original_begin);
     }
 
     if (canonical_rcd_begin >= mapping.canonical_end) {
@@ -463,7 +471,7 @@ size_t DoPermissiveGetHostRegistryLength(T host,
 
       try_output.Complete();
       if (try_string == canonical_rcd) {
-        return host.length() - current_try;
+        return host.substr(current_try);
       }
     }
   }
@@ -471,7 +479,7 @@ size_t DoPermissiveGetHostRegistryLength(T host,
   // We may get here if the host has components that can't be canonicalized.
   // This should only happen in fuzzing and tests, as invalid hostnames will get
   // blocked much earlier in the stack.
-  return 0;
+  return T{};
 }
 
 bool SameDomainOrHost(std::string_view host1,
@@ -576,7 +584,9 @@ bool HostHasRegistryControlledDomain(std::string_view host,
       // Host is not canonicalizable. Fall back to the slower "permissive"
       // version.
       rcd_length =
-          PermissiveGetHostRegistryLength(host, unknown_filter, private_filter);
+          PermissiveGetHostRegistry(host, unknown_filter, private_filter)
+              .transform(&std::string_view::size)
+              .value_or(std::string_view::npos);
       break;
     case url::CanonHostInfo::NEUTRAL:
       rcd_length =
@@ -622,18 +632,18 @@ std::optional<std::string_view> GetCanonicalHostRegistry(
   return canon_host.substr(canon_host.length() - length);
 }
 
-size_t PermissiveGetHostRegistryLength(std::string_view host,
-                                       UnknownRegistryFilter unknown_filter,
-                                       PrivateRegistryFilter private_filter) {
-  return DoPermissiveGetHostRegistryLength(host, unknown_filter,
-                                           private_filter);
+std::optional<std::string_view> PermissiveGetHostRegistry(
+    std::string_view host,
+    UnknownRegistryFilter unknown_filter,
+    PrivateRegistryFilter private_filter) {
+  return DoPermissiveGetHostRegistry(host, unknown_filter, private_filter);
 }
 
-size_t PermissiveGetHostRegistryLength(std::u16string_view host,
-                                       UnknownRegistryFilter unknown_filter,
-                                       PrivateRegistryFilter private_filter) {
-  return DoPermissiveGetHostRegistryLength(host, unknown_filter,
-                                           private_filter);
+std::optional<std::u16string_view> PermissiveGetHostRegistry(
+    std::u16string_view host,
+    UnknownRegistryFilter unknown_filter,
+    PrivateRegistryFilter private_filter) {
+  return DoPermissiveGetHostRegistry(host, unknown_filter, private_filter);
 }
 
 void ResetFindDomainGraphForTesting() {

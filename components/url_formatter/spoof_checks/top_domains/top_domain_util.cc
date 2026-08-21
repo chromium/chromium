@@ -4,6 +4,9 @@
 
 #include "components/url_formatter/spoof_checks/top_domains/top_domain_util.h"
 
+#include <optional>
+#include <string_view>
+
 #include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
@@ -27,10 +30,12 @@ bool IsEditDistanceCandidate(const std::string& hostname) {
 std::string HostnameWithoutRegistry(const std::string& hostname) {
   DCHECK(!hostname.empty());
   const size_t registry_size =
-      net::registry_controlled_domains::PermissiveGetHostRegistryLength(
+      net::registry_controlled_domains::PermissiveGetHostRegistry(
           hostname.c_str(),
           net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
-          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES)
+          .transform(&std::string_view::size)
+          .value_or(std::string_view::npos);
   std::string out = hostname.substr(0, hostname.size() - registry_size);
   base::TrimString(out, ".", &out);
   return out;

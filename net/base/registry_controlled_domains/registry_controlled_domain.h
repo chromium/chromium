@@ -250,7 +250,7 @@ NET_EXPORT std::optional<std::string_view> GetRegistry(
 // Returns true if the given host name has a registry-controlled domain. The
 // host name will be internally canonicalized. Also returns true for invalid
 // host names like "*.google.com" as long as it has a valid registry-controlled
-// portion (see PermissiveGetHostRegistryLength for particulars).
+// portion (see PermissiveGetHostRegistry for particulars).
 NET_EXPORT bool HostHasRegistryControlledDomain(
     std::string_view host,
     UnknownRegistryFilter unknown_filter,
@@ -297,22 +297,17 @@ NET_EXPORT std::optional<std::string_view> GetCanonicalHostRegistry(
 //
 // The string won't be trimmed, so things like trailing spaces will be
 // considered part of the host and therefore won't match any TLD. It will
-// return std::string::npos like GetRegistry() for empty input, but
-// because invalid portions are skipped, it won't return npos in any other case.
-//
-// Returns the length of the registry, or std::string::npos if the input was
-// invalid or had no host.
-//
-// TODO(https://crbug.com/548509154): Rewrite this to return the substring, and
-// update callers.
-NET_EXPORT size_t
-PermissiveGetHostRegistryLength(std::string_view host,
-                                UnknownRegistryFilter unknown_filter,
-                                PrivateRegistryFilter private_filter);
-NET_EXPORT size_t
-PermissiveGetHostRegistryLength(std::u16string_view host,
-                                UnknownRegistryFilter unknown_filter,
-                                PrivateRegistryFilter private_filter);
+// return std::nullopt like GetRegistry() for empty input, but
+// because invalid portions are skipped, it won't return std::nullopt in any
+// other case.
+NET_EXPORT std::optional<std::string_view> PermissiveGetHostRegistry(
+    std::string_view host,
+    UnknownRegistryFilter unknown_filter,
+    PrivateRegistryFilter private_filter);
+NET_EXPORT std::optional<std::u16string_view> PermissiveGetHostRegistry(
+    std::u16string_view host,
+    UnknownRegistryFilter unknown_filter,
+    PrivateRegistryFilter private_filter);
 
 // Used for unit tests. Uses default domains.
 NET_EXPORT_PRIVATE void ResetFindDomainGraphForTesting();
