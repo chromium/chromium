@@ -335,8 +335,8 @@ public class GURL {
 
     /**
      * Deserialize a GURL serialized with {@link GURL#serialize()}. This will re-parse in case of
-     * version mismatch, which may trigger undesired native loading. {@see
-     * deserializeLatestVersionOnly} if you want to fail in case of version mismatch.
+     * version mismatch, which may trigger undesired native loading. See {@link
+     * #deserializeLatestVersionOnly} if you want to fail in case of version mismatch.
      *
      * <p>This function should *never* be used on a String coming from an untrusted source.
      *

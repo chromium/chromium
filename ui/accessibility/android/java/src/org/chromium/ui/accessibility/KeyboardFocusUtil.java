@@ -12,7 +12,7 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class KeyboardFocusUtil {
     /**
-     * Returns whether we successfully set focus on {@param viewGroup}'s 1st focusable descendant.
+     * Returns whether we successfully set focus on {@code viewGroup}'s 1st focusable descendant.
      *
      * @param viewGroup The {@link ViewGroup} whose 1st focusable descendant we want to focus.
      * @return Whether we successfully set focus on any item.
@@ -32,10 +32,10 @@ public class KeyboardFocusUtil {
     }
 
     /**
-     * Sets focus on {@param view}, regardless of whether {@param view} is focusable in touch mode.
+     * Sets focus on {@code view}, regardless of whether {@code view} is focusable in touch mode.
      *
      * @param view The view to set keyboard focus on.
-     * @return Whether we successfully set focus on {@param view}.
+     * @return Whether we successfully set focus on {@code view}.
      */
     public static boolean setFocus(View view) {
         if (!view.isFocusable()) return false;

@@ -20,7 +20,7 @@ public class LocationRewriterImpl {
      * callsite.
      *
      * @param input the contents of the input file
-     * @return output the rewritten input data. This is equal to the {@param input} object if no
+     * @return output the rewritten input data. This is equal to the {@code input} object if no
      *     rewriting was done.
      */
     public byte[] rewrite(byte[] input) {
