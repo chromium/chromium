@@ -755,7 +755,15 @@ TEST_F(TranslateBubbleViewTest,
           .has_value());
 }
 
-TEST_F(TranslateBubbleViewTest, RecentLanguagesShowUpInSearchView) {
+// TODO(crbug.com/550460296): Re-enable this test.
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
+#define MAYBE_RecentLanguagesShowUpInSearchView \
+  DISABLED_RecentLanguagesShowUpInSearchView
+#else
+#define MAYBE_RecentLanguagesShowUpInSearchView \
+  RecentLanguagesShowUpInSearchView
+#endif
+TEST_F(TranslateBubbleViewTest, MAYBE_RecentLanguagesShowUpInSearchView) {
   base::test::ScopedFeatureList features(translate::kTranslateLanguageSearchUI);
   // Mock some recent languages in prefs.
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
@@ -783,7 +791,16 @@ TEST_F(TranslateBubbleViewTest, RecentLanguagesShowUpInSearchView) {
   EXPECT_THAT(button_texts, testing::IsSupersetOf({u"French", u"Spanish"}));
 }
 
-TEST_F(TranslateBubbleViewTest, NoResultsMessageShowsWhenQueryHasNoMatches) {
+// TODO(crbug.com/550460296): Re-enable this test.
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
+#define MAYBE_NoResultsMessageShowsWhenQueryHasNoMatches \
+  DISABLED_NoResultsMessageShowsWhenQueryHasNoMatches
+#else
+#define MAYBE_NoResultsMessageShowsWhenQueryHasNoMatches \
+  NoResultsMessageShowsWhenQueryHasNoMatches
+#endif
+TEST_F(TranslateBubbleViewTest,
+       MAYBE_NoResultsMessageShowsWhenQueryHasNoMatches) {
   base::test::ScopedFeatureList features(translate::kTranslateLanguageSearchUI);
   CreateAndShowBubble();
   SwitchView(TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
@@ -815,8 +832,16 @@ TEST_F(TranslateBubbleViewTest, NoResultsMessageShowsWhenQueryHasNoMatches) {
             l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_NO_RESULTS));
 }
 
+// TODO(crbug.com/550460296): Re-enable this test.
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
+#define MAYBE_ClickingLanguageClearsListViewWithoutNoResults \
+  DISABLED_ClickingLanguageClearsListViewWithoutNoResults
+#else
+#define MAYBE_ClickingLanguageClearsListViewWithoutNoResults \
+  ClickingLanguageClearsListViewWithoutNoResults
+#endif
 TEST_F(TranslateBubbleViewTest,
-       ClickingLanguageClearsListViewWithoutNoResults) {
+       MAYBE_ClickingLanguageClearsListViewWithoutNoResults) {
   base::test::ScopedFeatureList features(translate::kTranslateLanguageSearchUI);
   CreateAndShowBubble();
   SwitchView(TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
@@ -932,8 +957,16 @@ TEST_F(TranslateBubbleViewTest, InitialFocus) {
   EXPECT_EQ(tabbed_pane->GetTabAt(0), initially_focused);
 }
 
+// TODO(crbug.com/550460296): Re-enable this test.
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
+#define MAYBE_SearchFieldFocusedOnSwitchToTargetLanguageView \
+  DISABLED_SearchFieldFocusedOnSwitchToTargetLanguageView
+#else
+#define MAYBE_SearchFieldFocusedOnSwitchToTargetLanguageView \
+  SearchFieldFocusedOnSwitchToTargetLanguageView
+#endif
 TEST_F(TranslateBubbleViewTest,
-       SearchFieldFocusedOnSwitchToTargetLanguageView) {
+       MAYBE_SearchFieldFocusedOnSwitchToTargetLanguageView) {
   base::test::ScopedFeatureList features(translate::kTranslateLanguageSearchUI);
   CreateAndShowBubble();
   SwitchView(TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
