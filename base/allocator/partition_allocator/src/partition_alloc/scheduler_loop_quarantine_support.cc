@@ -12,8 +12,7 @@ ScopedSchedulerLoopQuarantineExclusion::
   for (size_t index = 0; index < kNumPartitions; ++index) {
     internal::ThreadCache* tcache = internal::ThreadCache::Get(index);
     if (internal::ThreadCache::IsValid(tcache)) {
-      PA_UNSAFE_TODO(instances_[index])
-          .emplace(tcache->GetSchedulerLoopQuarantineBranch());
+      instances_[index].emplace(tcache->GetSchedulerLoopQuarantineBranch());
     }
   }
 }
