@@ -131,9 +131,9 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   // Do not use this method outside test purposes.
   // A resourfe URL is not enough to do a correct MemoryCache lookup, and
   // relying on the method would likely yield wrong results.
-  Resource* ResourceForURLForTesting(const KURL&) const;
+  Resource* ResourceForURLForTesting(const KURL&);
 
-  Resource* ResourceForURL(const KURL&, const String& cache_identifier) const;
+  Resource* ResourceForURL(const KURL&, const String& cache_identifier);
   HeapVector<Member<Resource>> ResourcesForURL(const KURL&) const;
 
   void Add(Resource*);
@@ -164,10 +164,6 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   size_t size() const { return size_; }
 
   void SaveStrongReference(Resource* resource);
-
-  // Save a data URI resource as a strong reference to prevent GC across
-  // navigations. Data URIs are immutable so caching is always safe.
-  void SaveDataURIStrongReference(Resource* resource);
 
   // Take memory usage snapshot for tracing.
   bool OnMemoryDump(WebMemoryDumpLevelOfDetail, WebProcessMemoryDump*) override;
@@ -213,6 +209,9 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   void PruneTieredStrongReferences();
 
   void PruneStrongReferences();
+  void AddOrTouchDataURIStrongReference(Resource*);
+  void PruneDataURIStrongReferences();
+  void RemoveDataURIStrongReference(Resource*);
   void ClearStrongReferences();
   void ClearDataURIStrongReferences();
 
@@ -275,6 +274,22 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
                            EvictsOldestWhenOverCapacity);
   FRIEND_TEST_ALL_PREFIXES(MemoryCacheDataURIEvictionTest,
                            LRUTouchPreventsEviction);
+  FRIEND_TEST_ALL_PREFIXES(MemoryCacheDataURIEvictionTest,
+                           SizeGrowthEvictsOldest);
+  FRIEND_TEST_ALL_PREFIXES(MemoryCacheDataURIEvictionTest,
+                           OversizedResourceIsNotRetained);
+  FRIEND_TEST_ALL_PREFIXES(MemoryCacheDataURIEvictionTest,
+                           SizeDecreaseUpdatesTotal);
+  FRIEND_TEST_ALL_PREFIXES(MemoryCacheDataURIEvictionTest,
+                           RemoveAfterSizeChange);
+  FRIEND_TEST_ALL_PREFIXES(MemoryCacheDataURIEvictionTest,
+                           ReplaceAfterSizeChange);
+  FRIEND_TEST_ALL_PREFIXES(MemoryCacheDataURIEvictionTest,
+                           OversizedResourcePreservesExistingEntries);
+  FRIEND_TEST_ALL_PREFIXES(MemoryCacheDataURIEvictionTest,
+                           GrowthBeyondBudgetIsNotRetained);
+  FRIEND_TEST_ALL_PREFIXES(MemoryCacheDataURIEvictionTest,
+                           GrowthBeyondBudgetPreservesEntriesThatFit);
 };
 
 // Sets the global cache, used to swap in a test instance. Saves the old
