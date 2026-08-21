@@ -12,19 +12,22 @@
 #include "ash/test/ash_test_base.h"
 #include "base/i18n/icubridge/date_time_formatter.h"
 #include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/tag_converters.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
+using ::base::i18n::GetKnownLanguageTag;
+using ::base::i18n::LanguageTag;
+using ::base::i18n::LanguageTagConverter;
+using ::base::i18n::ScopedDefaultIcuLocale;
+
 namespace ash {
 
 namespace {
-
-void SetDefaultLocale(std::string_view lang) {
-  base::i18n::SetICUDefaultLocale(lang);
-  ash::DateHelper::GetInstance()->ResetForTesting();
-}
 
 std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
     const char* start_time,
@@ -108,38 +111,57 @@ TEST_F(CalendarUtilsUnitTest, GetDayOfWeekInt) {
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
   // English (First day of week is Sunday)
-  SetDefaultLocale("en");
-  EXPECT_EQ(1, calendar_utils::GetDayOfWeekInt(sunday_date));  // Sunday is 1st
-  EXPECT_EQ(
-      4, calendar_utils::GetDayOfWeekInt(wednesday_date));  // Wednesday is 4th
+  {
+    ScopedDefaultIcuLocale scoped_locale(GetKnownLanguageTag("en"));
+    base::ResetFormattersForTesting();
+    ash::DateHelper::GetInstance()->ResetForTesting();
+    EXPECT_EQ(1,
+              calendar_utils::GetDayOfWeekInt(sunday_date));  // Sunday is 1st
+    EXPECT_EQ(4, calendar_utils::GetDayOfWeekInt(
+                     wednesday_date));  // Wednesday is 4th
+  }
 
   // German (First day of week is Monday)
-  SetDefaultLocale("de");
-  EXPECT_EQ(7, calendar_utils::GetDayOfWeekInt(sunday_date));  // Sunday is 7th
-  EXPECT_EQ(
-      3, calendar_utils::GetDayOfWeekInt(wednesday_date));  // Wednesday is 3rd
+  {
+    ScopedDefaultIcuLocale scoped_locale(GetKnownLanguageTag("de"));
+    base::ResetFormattersForTesting();
+    ash::DateHelper::GetInstance()->ResetForTesting();
+    EXPECT_EQ(7,
+              calendar_utils::GetDayOfWeekInt(sunday_date));  // Sunday is 7th
+    EXPECT_EQ(3, calendar_utils::GetDayOfWeekInt(
+                     wednesday_date));  // Wednesday is 3rd
+  }
 
   // Spanish (First day of week is Monday)
-  SetDefaultLocale("es");
-  EXPECT_EQ(7, calendar_utils::GetDayOfWeekInt(sunday_date));  // Sunday is 7th
-  EXPECT_EQ(
-      3, calendar_utils::GetDayOfWeekInt(wednesday_date));  // Wednesday is 3rd
+  {
+    ScopedDefaultIcuLocale scoped_locale(GetKnownLanguageTag("es"));
+    base::ResetFormattersForTesting();
+    ash::DateHelper::GetInstance()->ResetForTesting();
+    EXPECT_EQ(7,
+              calendar_utils::GetDayOfWeekInt(sunday_date));  // Sunday is 7th
+    EXPECT_EQ(3, calendar_utils::GetDayOfWeekInt(
+                     wednesday_date));  // Wednesday is 3rd
+  }
 
   // Farsi (First day of week is Saturday)
-  SetDefaultLocale("fa");
-  EXPECT_EQ(2, calendar_utils::GetDayOfWeekInt(sunday_date));  // Sunday is 2nd
-  EXPECT_EQ(
-      5, calendar_utils::GetDayOfWeekInt(wednesday_date));  // Wednesday is 5th
-
-  // Reset default locale to English for subsequent tests.
-  SetDefaultLocale("en");
+  {
+    ScopedDefaultIcuLocale scoped_locale(GetKnownLanguageTag("fa"));
+    base::ResetFormattersForTesting();
+    ash::DateHelper::GetInstance()->ResetForTesting();
+    EXPECT_EQ(2,
+              calendar_utils::GetDayOfWeekInt(sunday_date));  // Sunday is 2nd
+    EXPECT_EQ(5, calendar_utils::GetDayOfWeekInt(
+                     wednesday_date));  // Wednesday is 5th
+  }
 }
 
 TEST_F(CalendarUtilsUnitTest, DateFormatterClockTimes) {
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
   // Using "en" locale as other languages format their hours differently.
-  SetDefaultLocale("en");
+  ScopedDefaultIcuLocale scoped_locale(GetKnownLanguageTag("en"));
+  base::ResetFormattersForTesting();
+  ash::DateHelper::GetInstance()->ResetForTesting();
 
   // Create AM time: 9:05 GMT.
   base::Time am_time;
@@ -200,7 +222,10 @@ TEST_F(CalendarUtilsUnitTest, HoursAndMinutesInDifferentLocales) {
       continue;
     }
 
-    SetDefaultLocale(locale);
+    ScopedDefaultIcuLocale scoped_locale(
+        *LanguageTagConverter::GetInstance().FromString(locale));
+    base::ResetFormattersForTesting();
+    ash::DateHelper::GetInstance()->ResetForTesting();
 
     bool zero_padded_24H =
         calendar_utils::GetTwentyFourHourClockHours(am_time).length() > 1;
@@ -267,9 +292,49 @@ TEST_F(CalendarUtilsUnitTest, HoursAndMinutesInDifferentLocales) {
     EXPECT_EQ(u"30", calendar_utils::GetMinutes(pm_time));
     EXPECT_EQ(u"00", calendar_utils::GetMinutes(midnight));
   }
+}
 
-  // Reset locale to English for subsequent tests.
-  SetDefaultLocale("en");
+TEST_F(CalendarUtilsUnitTest, GetMinutesWithHalfHourTimezone) {
+  struct TestParam {
+    const std::u16string timezone_id;
+    const LanguageTag locale;
+    const std::u16string expected_minutes;
+  };
+
+  const std::vector<TestParam> test_cases = {
+      // Asia/Kolkata (GMT+5:30)
+      {u"Asia/Kolkata", GetKnownLanguageTag("en"), u"35"},
+      {u"Asia/Kolkata", GetKnownLanguageTag("bn"), u"৩৫"},
+      {u"Asia/Kolkata", GetKnownLanguageTag("fa"), u"۳۵"},
+      {u"Asia/Kolkata", GetKnownLanguageTag("mr"), u"३५"},
+
+      // Australia/Adelaide (GMT+9:30)
+      {u"Australia/Adelaide", GetKnownLanguageTag("en"), u"35"},
+      {u"Australia/Adelaide", GetKnownLanguageTag("bn"), u"৩৫"},
+      {u"Australia/Adelaide", GetKnownLanguageTag("fa"), u"۳۵"},
+      {u"Australia/Adelaide", GetKnownLanguageTag("mr"), u"३५"},
+
+      // Pacific/Chatham (GMT+12:45)
+      {u"Pacific/Chatham", GetKnownLanguageTag("en"), u"50"},
+      {u"Pacific/Chatham", GetKnownLanguageTag("bn"), u"৫০"},
+      {u"Pacific/Chatham", GetKnownLanguageTag("fa"), u"\u06f5\u06f0"},
+      {u"Pacific/Chatham", GetKnownLanguageTag("mr"), u"५०"},
+  };
+
+  // Create UTC time: 9:05 GMT.
+  base::Time am_time;
+  ASSERT_TRUE(base::Time::FromString("1 Aug 2021 9:05 GMT", &am_time));
+
+  for (const auto& test_case : test_cases) {
+    ash::system::ScopedTimezoneSettings timezone_settings(
+        test_case.timezone_id);
+    ScopedDefaultIcuLocale scoped_locale(test_case.locale);
+    base::ResetFormattersForTesting();
+    ash::DateHelper::GetInstance()->ResetForTesting();
+    EXPECT_EQ(test_case.expected_minutes, calendar_utils::GetMinutes(am_time))
+        << "Failed for timezone: " << base::UTF16ToUTF8(test_case.timezone_id)
+        << ", locale: " << test_case.locale;
+  }
 }
 
 TEST_F(CalendarUtilsUnitTest, LocalesWithUniqueNumerals) {
@@ -280,7 +345,10 @@ TEST_F(CalendarUtilsUnitTest, LocalesWithUniqueNumerals) {
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 23:03 GMT", &time));
 
   for (auto locale : kLocalesWithUniqueNumerals) {
-    SetDefaultLocale(locale);
+    ScopedDefaultIcuLocale scoped_locale(
+        *LanguageTagConverter::GetInstance().FromString(locale));
+    base::ResetFormattersForTesting();
+    ash::DateHelper::GetInstance()->ResetForTesting();
 
     if (locale == "bn") {
       EXPECT_EQ(u"২৩", calendar_utils::GetTwentyFourHourClockHours(time));
@@ -295,9 +363,6 @@ TEST_F(CalendarUtilsUnitTest, LocalesWithUniqueNumerals) {
       EXPECT_TRUE(false) << "Locale '" << locale << "' needs a test case.";
     }
   }
-
-  // Reset locale to English for subsequent tests.
-  SetDefaultLocale("en");
 }
 
 TEST_F(CalendarUtilsUnitTest, IntervalFormatter) {
@@ -520,7 +585,9 @@ TEST_F(CalendarUtilsUnitTest,
 
 // Regression test for b/263270426.
 TEST_F(CalendarUtilsUnitTest, GetYearOfDay) {
-  SetDefaultLocale("es");
+  ScopedDefaultIcuLocale scoped_locale(GetKnownLanguageTag("es"));
+  base::ResetFormattersForTesting();
+  ash::DateHelper::GetInstance()->ResetForTesting();
 
   // Create time: Jan 2023 23:03 GMT. Which is on the week year of 2022 with
   // Spanish locale.
@@ -528,9 +595,6 @@ TEST_F(CalendarUtilsUnitTest, GetYearOfDay) {
   ASSERT_TRUE(base::Time::FromString("1 Jan 2023 23:03 GMT", &time));
 
   EXPECT_EQ(u"2023", calendar_utils::GetYear(time));
-
-  // Reset locale to English for other tests.
-  SetDefaultLocale("en");
 }
 
 TEST_F(CalendarUtilsUnitTest, ChildLoggedIn) {

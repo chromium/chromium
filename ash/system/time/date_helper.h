@@ -35,13 +35,6 @@ class DateHelper : public LocaleChangeObserver,
   // Creates a formatter object used to format dates from the given `pattern`.
   icu::SimpleDateFormat CreateSimpleDateFormatter(const char* pattern);
 
-  // Creates a formatter object used to format dates without calling the
-  // `getBestPattern` function, which resolves the input pattern to the best
-  // fit, which is not always what we want. e.g. 'mm' returns 'm' even though we
-  // want it zero-padded (03 vs. 3 when given 12:03)
-  icu::SimpleDateFormat CreateSimpleDateFormatterWithoutBestPattern(
-      const char* pattern);
-
   // Creates a formatter object that extracts the hours field from a given date.
   // Uses `pattern` to differentiate between 12 and 24 hour clock formats.
   icu::SimpleDateFormat CreateHoursFormatter(const char* pattern);
@@ -76,8 +69,6 @@ class DateHelper : public LocaleChangeObserver,
   // local timezone is PST and time difference is 7 hrs. It returns Mar 31st
   // 7:00, which is Mar 31st 00:00 PST.
   ASH_EXPORT base::Time GetLocalMidnight(base::Time date);
-
-  icu::SimpleDateFormat& minutes_formatter() { return minutes_formatter_; }
 
   const icu::DateIntervalFormat* twelve_hour_clock_interval_formatter() {
     return twelve_hour_clock_interval_formatter_.get();
@@ -118,9 +109,6 @@ class DateHelper : public LocaleChangeObserver,
   // (For example: different languages are set in different accounts, and the
   // login screen will use the owener's locale setting.)
   void OnLocaleChanged() override;
-
-  // Formatter for getting the minutes.
-  icu::SimpleDateFormat minutes_formatter_;
 
   // Interval formatter for two dates. Formats time in twelve
   // hour clock format (e.g. 8:30 – 9:30 PM or 11:30 AM – 2:30 PM).
