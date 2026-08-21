@@ -15,6 +15,7 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "components/enterprise/device_attestation/common/device_attestation_types.h"
+#include "components/enterprise/device_attestation/device_attestation_service_factory.h"
 #include "components/enterprise/device_attestation/ios/attestation_service_ios.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -295,6 +296,53 @@ TEST_F(DeviceAttestationServiceIOSTest, ServiceDestroyedInsideSyncCallback) {
           [&](const AttestationResult& result) { local_service.reset(); }));
 
   EXPECT_EQ(local_service, nullptr);
+}
+
+TEST_F(DeviceAttestationServiceIOSTest, FactoryCreatesServiceWithProvider) {
+  enterprise_management::ChromeProfileReportRequest report;
+
+  DeviceAttestationServiceFactory::SetAttestationServiceIOSProvider(
+      base::BindRepeating(
+          []() -> std::unique_ptr<AttestationServiceIOS> {
+            return std::make_unique<MockAttestationServiceIOS>();
+          }));
+
+  std::unique_ptr<DeviceAttestationService> service =
+      DeviceAttestationServiceFactory::GetInstance()
+          ->CreateDeviceAttestationService();
+  ASSERT_NE(service, nullptr);
+
+  base::test::TestFuture<const AttestationResult&> future;
+  service->GetAttestationResponse("flow_name", report,
+                                   /*legacy_request_payload=*/"", "1700000000",
+                                   "nonce", future.GetCallback());
+
+  const AttestationResult& result = future.Get();
+  EXPECT_EQ(result.blob_generation_result.attestation_blob,
+            kTestAttestationBlob);
+  EXPECT_TRUE(result.blob_generation_result.error_message.empty());
+
+  DeviceAttestationServiceFactory::ClearAttestationServiceIOSProvider();
+}
+
+TEST_F(DeviceAttestationServiceIOSTest, FactoryCreatesServiceWithoutProvider) {
+  DeviceAttestationServiceFactory::ClearAttestationServiceIOSProvider();
+
+  std::unique_ptr<DeviceAttestationService> service =
+      DeviceAttestationServiceFactory::GetInstance()
+          ->CreateDeviceAttestationService();
+  ASSERT_NE(service, nullptr);
+
+  enterprise_management::ChromeProfileReportRequest report;
+  base::test::TestFuture<const AttestationResult&> future;
+  service->GetAttestationResponse("flow_name", report,
+                                   /*legacy_request_payload=*/"", "1700000000",
+                                   "nonce", future.GetCallback());
+
+  const AttestationResult& result = future.Get();
+  EXPECT_TRUE(result.blob_generation_result.attestation_blob.empty());
+  EXPECT_EQ(result.blob_generation_result.error_message,
+            "Attestation service unavailable");
 }
 
 }  // namespace enterprise

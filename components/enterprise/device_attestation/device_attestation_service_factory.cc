@@ -13,6 +13,9 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "components/enterprise/device_attestation/android/android_attestation_client.h"
 #include "components/enterprise/device_attestation/android/device_attestation_service_android.h"
+#elif BUILDFLAG(IS_IOS)
+#include "components/enterprise/device_attestation/ios/attestation_service_ios.h"
+#include "components/enterprise/device_attestation/ios/device_attestation_service_ios.h"
 #endif
 
 namespace enterprise {
@@ -23,6 +26,16 @@ std::optional<DeviceAttestationServiceFactory*>& GetTestInstanceStorage() {
   static std::optional<DeviceAttestationServiceFactory*> storage;
   return storage;
 }
+
+#if BUILDFLAG(IS_IOS)
+std::optional<DeviceAttestationServiceFactory::AttestationServiceIOSProvider>&
+GetAttestationServiceIOSProviderStorage() {
+  static base::NoDestructor<
+      std::optional<DeviceAttestationServiceFactory::AttestationServiceIOSProvider>>
+      storage;
+  return *storage;
+}
+#endif
 
 }  // namespace
 
@@ -43,10 +56,30 @@ DeviceAttestationServiceFactory::CreateDeviceAttestationService() {
 #if BUILDFLAG(IS_ANDROID)
   return std::make_unique<DeviceAttestationServiceAndroid>(
       std::make_unique<AndroidAttestationClient>());
+#elif BUILDFLAG(IS_IOS)
+  auto& provider = GetAttestationServiceIOSProviderStorage();
+  std::unique_ptr<AttestationServiceIOS> attestation_service_ios =
+      provider.has_value() && provider.value() ? provider.value().Run()
+                                               : nullptr;
+  return std::make_unique<DeviceAttestationServiceIOS>(
+      std::move(attestation_service_ios));
 #else
   return std::make_unique<DeviceAttestationService>();
 #endif
 }
+
+#if BUILDFLAG(IS_IOS)
+// static
+void DeviceAttestationServiceFactory::SetAttestationServiceIOSProvider(
+    AttestationServiceIOSProvider provider) {
+  GetAttestationServiceIOSProviderStorage().emplace(std::move(provider));
+}
+
+// static
+void DeviceAttestationServiceFactory::ClearAttestationServiceIOSProvider() {
+  GetAttestationServiceIOSProviderStorage().reset();
+}
+#endif
 
 // static
 void DeviceAttestationServiceFactory::SetInstanceForTesting(
