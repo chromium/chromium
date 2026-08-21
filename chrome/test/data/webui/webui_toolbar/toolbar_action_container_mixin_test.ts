@@ -687,10 +687,11 @@ suite('ToolbarActionContainerMixinTest', function() {
     // Drag should be aborted immediately
     assertEquals(null, (element as any).draggedItemId_);
 
-    // Layout updated immediately (a marked as exiting)
-    assertEquals(2, element.keyedStates.length);
-    assertEquals('a', element.keyedStates[0]!.key);
-    assertTrue(element.keyedStates[0]!.exiting === true);
-    assertEquals('b', element.keyedStates[1]!.key);
+    // Layout updated immediately: dragged item 'a' is removed completely from
+    // keyedStates rather than retained as an exiting state.
+    assertEquals(1, element.keyedStates.length);
+    assertEquals('b', element.keyedStates[0]!.key);
+    assertFalse(element.keyedStates.some(s => s.key === 'a'));
+    assertFalse(!!element.shadowRoot.querySelector('[data-key="a"]'));
   });
 });

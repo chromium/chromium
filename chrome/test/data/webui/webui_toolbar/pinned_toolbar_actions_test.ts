@@ -849,8 +849,9 @@ suite('PinnedToolbarActions', function() {
     ];
     await microtasksFinished();
 
-    // Verify drag is aborted immediately
+    // Verify drag is aborted immediately and element is set to display: 'none'
     assertEquals(null, (container as any).draggedItemId_);
+    assertEquals('none', firstAction.style.display);
 
     // Verify layout is updated immediately (Action 1 removed)
     const keyedStates = container.keyedStates;

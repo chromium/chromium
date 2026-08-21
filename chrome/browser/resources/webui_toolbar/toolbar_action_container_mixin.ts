@@ -541,11 +541,24 @@ export const ToolbarActionContainerMixin =
         }
 
         private abortDrag_() {
-          if (this.draggedItemId_ !== null && this.dragChannel_) {
-            this.dragChannel_.postMessage({
-              type: 'drag-end',
-              aborted: true,
-            });
+          if (this.draggedItemId_ !== null) {
+            const el = this.shadowRoot.querySelector<HTMLElement>(
+                `${this.childTagName}[data-key="${this.draggedItemId_}"]`);
+            if (el) {
+              el.style.display = 'none';
+            }
+            if (this.dragChannel_) {
+              this.dragChannel_.postMessage({
+                type: 'drag-end',
+                aborted: true,
+              });
+            }
+            // Remove the dragged item from keyedStates so reconcileKeys() does
+            // not retain it as an exiting state. Because display is set to
+            // 'none', no CSS transition will run or fire transitionend to clean
+            // it up.
+            this.keyedStates =
+                this.keyedStates.filter(s => s.key !== this.draggedItemId_);
           }
           this.draggedItemId_ = null;
           this.externallyDraggedItemId_ = null;
