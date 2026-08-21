@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
@@ -50,7 +49,6 @@ SendTabToSelfClientServiceFactory::SendTabToSelfClientServiceFactory()
               .WithGuest(ProfileSelection::kNone)
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
-  DependsOn(NotificationDisplayServiceFactory::GetInstance());
   DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
 }
 
