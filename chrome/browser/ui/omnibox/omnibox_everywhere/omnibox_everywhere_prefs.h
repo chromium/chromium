@@ -15,6 +15,9 @@ class Accelerator;
 namespace omnibox_everywhere {
 namespace prefs {
 
+// Returns true if the ephemeral model (close/hide on focus loss) is enabled.
+bool IsEphemeralModelEnabled();
+
 // Boolean preference specifying whether the global hotkey for Omnibox
 // Everywhere is enabled.
 inline constexpr char kHotkeyEnabled[] = "omnibox_everywhere.hotkey_enabled";

@@ -6,6 +6,7 @@
 
 #include <set>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -27,6 +28,7 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/test/widget_activation_waiter.h"
 
 namespace {
 
@@ -78,14 +80,18 @@ class FakeGlobalAcceleratorListener : public ui::GlobalAcceleratorListener {
 class OmniboxEverywhereControllerTest : public ChromeViewsTestBase {
  public:
   void SetUp() override {
+    set_native_widget_type(NativeWidgetType::kDesktop);
     ChromeViewsTestBase::SetUp();
+    profile_ = std::make_unique<TestingProfile>();
     template_url_service_test_util_ =
-        std::make_unique<TemplateURLServiceFactoryTestUtil>(&profile_);
+        std::make_unique<TemplateURLServiceFactoryTestUtil>(profile_.get());
     template_url_service_test_util_->VerifyLoad();
     SetDefaultSearchProvider(true);
   }
 
   void TearDown() override {
+    template_url_service_test_util_.reset();
+    profile_.reset();
     if (TestingBrowserProcess::GetGlobal()->GetFeatures()) {
       TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
     }
@@ -112,55 +118,122 @@ class OmniboxEverywhereControllerTest : public ChromeViewsTestBase {
 
  protected:
   base::test::ScopedFeatureList feature_list_{omnibox::kOmniboxEverywhere};
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TemplateURLServiceFactoryTestUtil>
       template_url_service_test_util_;
 };
 
-TEST_F(OmniboxEverywhereControllerTest, EnabledFeatureInstantiatesController) {
+using OmniboxEverywhereGlobalFeaturesTest = ChromeViewsTestBase;
+
+TEST_F(OmniboxEverywhereGlobalFeaturesTest,
+       EnabledFeatureInstantiatesController) {
+  base::test::ScopedFeatureList feature_list{omnibox::kOmniboxEverywhere};
   TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
       /*profile_manager=*/false);
 
   GlobalFeatures* features = TestingBrowserProcess::GetGlobal()->GetFeatures();
   ASSERT_TRUE(features);
   EXPECT_TRUE(features->omnibox_everywhere_controller());
+
+  TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
 }
 
-TEST_F(OmniboxEverywhereControllerTest, OnInvokeControlsWidget) {
+// Tests that invoking in ephemeral mode toggles between visible and hidden.
+TEST_F(OmniboxEverywhereControllerTest, OnInvokeEphemeralModeToggling) {
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+
+  FakeGlobalAcceleratorListener fake_listener;
   omnibox_everywhere::OmniboxEverywhereController controller(
       base::BindRepeating(
           [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
             return std::make_unique<TestWebUIContentsWrapper>(profile);
-          }));
+          }),
+      &fake_listener);
 
   EXPECT_FALSE(controller.IsVisible());
 
   controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
-                      &profile_, GetContext());
+                      profile_.get(), GetContext());
   EXPECT_TRUE(controller.IsVisible());
 
   controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
-                      &profile_, GetContext());
+                      profile_.get(), GetContext());
   EXPECT_FALSE(controller.IsVisible());
+
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
+                      profile_.get(), GetContext());
+  EXPECT_TRUE(controller.IsVisible());
+}
+
+// Tests that invoking in persistent mode toggles between floating active and
+// normal demoted.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_OnInvokePersistentModeToggling OnInvokePersistentModeToggling
+#else
+#define MAYBE_OnInvokePersistentModeToggling \
+  DISABLED_OnInvokePersistentModeToggling
+#endif
+TEST_F(OmniboxEverywhereControllerTest, MAYBE_OnInvokePersistentModeToggling) {
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+
+  FakeGlobalAcceleratorListener fake_listener;
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }),
+      &fake_listener);
+
+  EXPECT_FALSE(controller.IsVisible());
+
+  // Initial toggle: Shows widget and activates.
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
+                      profile_.get(), GetContext());
+  EXPECT_TRUE(controller.IsVisible());
+  views::Widget* widget = controller.ui_manager()->widget();
+  ASSERT_TRUE(widget);
+  views::test::WaitForWidgetActive(widget, true);
+  EXPECT_TRUE(controller.ui_manager()->IsActive());
+  EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
+
+  // Second toggle while active: Demotes widget and deactivates,
+  // keeping IsVisible() == true.
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
+                      profile_.get(), GetContext());
+  EXPECT_TRUE(controller.IsVisible());
+  EXPECT_FALSE(controller.ui_manager()->IsActive());
+  EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
+
+  // Third toggle while demoted/inactive: Re-activates widget.
+  controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
+                      profile_.get(), GetContext());
+  EXPECT_TRUE(controller.IsVisible());
+  views::test::WaitForWidgetActive(widget, true);
+  EXPECT_TRUE(controller.ui_manager()->IsActive());
+  EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
 }
 
 TEST_F(OmniboxEverywhereControllerTest, NonGoogleDseBlocksOnInvoke) {
   SetDefaultSearchProvider(false);
 
+  FakeGlobalAcceleratorListener fake_listener;
   omnibox_everywhere::OmniboxEverywhereController controller(
       base::BindRepeating(
           [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
             return std::make_unique<TestWebUIContentsWrapper>(profile);
-          }));
+          }),
+      &fake_listener);
 
   EXPECT_FALSE(controller.IsVisible());
 
   controller.OnInvoke(omnibox_everywhere::InvocationSource::kGlobalHotkey,
-                      &profile_, GetContext());
+                      profile_.get(), GetContext());
   EXPECT_FALSE(controller.IsVisible());
 
   controller.OnInvoke(omnibox_everywhere::InvocationSource::kProfilePicker,
-                      &profile_);
+                      profile_.get());
   EXPECT_FALSE(controller.IsVisible());
 }
 
@@ -223,13 +296,13 @@ TEST_F(OmniboxEverywhereControllerTest,
           }));
 
   Profile* otr_profile =
-      profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true);
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   ASSERT_TRUE(otr_profile);
 
   // SetTargetProfile with an off-the-record profile resolves to its original
   // profile.
   controller.SetTargetProfile(otr_profile);
-  EXPECT_EQ(&profile_, controller.target_profile());
+  EXPECT_EQ(profile_.get(), controller.target_profile());
 
   // Activating an off-the-record browser window also resolves to its original
   // profile.
@@ -238,7 +311,7 @@ TEST_F(OmniboxEverywhereControllerTest,
       .WillRepeatedly(testing::Return(otr_profile));
 
   controller.OnBrowserActivated(&otr_bwi);
-  EXPECT_EQ(&profile_, controller.target_profile());
+  EXPECT_EQ(profile_.get(), controller.target_profile());
 }
 
 TEST_F(OmniboxEverywhereControllerTest, TargetProfilePersistedToPref) {
@@ -252,17 +325,17 @@ TEST_F(OmniboxEverywhereControllerTest, TargetProfilePersistedToPref) {
           }));
 
   // Setting target profile should update prefs::kLastTargetProfileDir.
-  controller.SetTargetProfile(&profile_);
+  controller.SetTargetProfile(profile_.get());
   EXPECT_EQ(local_state->GetFilePath(
                 omnibox_everywhere::prefs::kLastTargetProfileDir),
-            profile_.GetPath());
+            profile_->GetPath());
 }
 
 TEST_F(OmniboxEverywhereControllerTest, RestoresTargetProfileOnStartup) {
   TestingPrefServiceSimple* local_state =
       TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
   local_state->SetFilePath(omnibox_everywhere::prefs::kLastTargetProfileDir,
-                           profile_.GetPath());
+                           profile_->GetPath());
 
   omnibox_everywhere::OmniboxEverywhereController controller(
       base::BindRepeating(
@@ -272,11 +345,11 @@ TEST_F(OmniboxEverywhereControllerTest, RestoresTargetProfileOnStartup) {
 
   // Simulating OnProfileAdded with matching profile path should restore it as
   // target_profile().
-  controller.OnProfileAdded(&profile_);
-  EXPECT_EQ(&profile_, controller.target_profile());
+  controller.OnProfileAdded(profile_.get());
+  EXPECT_EQ(profile_.get(), controller.target_profile());
   EXPECT_EQ(local_state->GetFilePath(
                 omnibox_everywhere::prefs::kLastTargetProfileDir),
-            profile_.GetPath());
+            profile_->GetPath());
 }
 
 TEST_F(OmniboxEverywhereControllerTest,
@@ -287,7 +360,7 @@ TEST_F(OmniboxEverywhereControllerTest,
 
   // Persist profile_'s path as the target profile.
   local_state->SetFilePath(omnibox_everywhere::prefs::kLastTargetProfileDir,
-                           profile_.GetPath());
+                           profile_->GetPath());
 
   omnibox_everywhere::OmniboxEverywhereController controller(
       base::BindRepeating(
@@ -302,8 +375,8 @@ TEST_F(OmniboxEverywhereControllerTest,
 
   // Adding profile_ (matching eligible profile) should restore it as target
   // profile.
-  controller.OnProfileAdded(&profile_);
-  EXPECT_EQ(&profile_, controller.target_profile());
+  controller.OnProfileAdded(profile_.get());
+  EXPECT_EQ(profile_.get(), controller.target_profile());
 }
 
 TEST_F(OmniboxEverywhereControllerTest,
@@ -318,7 +391,7 @@ TEST_F(OmniboxEverywhereControllerTest,
           }));
 
   Profile* otr_profile =
-      profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true);
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   ASSERT_TRUE(otr_profile);
 
   // OnProfileAdded ignores off-the-record profile.
@@ -329,8 +402,8 @@ TEST_F(OmniboxEverywhereControllerTest,
           .empty());
 
   // Normal regular profile is accepted when added.
-  controller.OnProfileAdded(&profile_);
-  EXPECT_EQ(&profile_, controller.target_profile());
+  controller.OnProfileAdded(profile_.get());
+  EXPECT_EQ(profile_.get(), controller.target_profile());
 }
 
 TEST_F(OmniboxEverywhereControllerTest,
@@ -342,13 +415,13 @@ TEST_F(OmniboxEverywhereControllerTest,
           }));
 
   // Initially set an eligible target profile.
-  controller.SetTargetProfile(&profile_);
-  EXPECT_EQ(&profile_, controller.target_profile());
+  controller.SetTargetProfile(profile_.get());
+  EXPECT_EQ(profile_.get(), controller.target_profile());
 
   // Passing an ineligible profile (e.g. missing service) is a NO-OP.
   TestingProfile ineligible_profile;
   controller.SetTargetProfile(&ineligible_profile);
-  EXPECT_EQ(&profile_, controller.target_profile());
+  EXPECT_EQ(profile_.get(), controller.target_profile());
 
   // Explicitly passing nullptr clears target profile to nullptr.
   controller.SetTargetProfile(nullptr);
@@ -372,14 +445,15 @@ TEST_F(OmniboxEverywhereControllerTest,
       util2.model()->Add(std::make_unique<TemplateURL>(data)));
 
   MockBrowserWindowInterface bwi1;
-  EXPECT_CALL(bwi1, GetProfile()).WillRepeatedly(testing::Return(&profile_));
+  EXPECT_CALL(bwi1, GetProfile())
+      .WillRepeatedly(testing::Return(profile_.get()));
 
   MockBrowserWindowInterface bwi2;
   EXPECT_CALL(bwi2, GetProfile()).WillRepeatedly(testing::Return(&profile2));
 
   // Activating bwi1 sets target profile to profile_.
   controller.OnBrowserActivated(&bwi1);
-  EXPECT_EQ(&profile_, controller.target_profile());
+  EXPECT_EQ(profile_.get(), controller.target_profile());
 
   // Activating bwi2 updates target profile to profile2.
   controller.OnBrowserActivated(&bwi2);
@@ -387,7 +461,7 @@ TEST_F(OmniboxEverywhereControllerTest,
 
   // Re-activating bwi1 updates target profile back to profile_.
   controller.OnBrowserActivated(&bwi1);
-  EXPECT_EQ(&profile_, controller.target_profile());
+  EXPECT_EQ(profile_.get(), controller.target_profile());
 }
 
 TEST_F(OmniboxEverywhereControllerTest, ControllerUpdatesCustomHotkey) {
@@ -488,14 +562,14 @@ TEST_F(OmniboxEverywhereControllerTest, MAYBE_OnInvokeCommandLineShowsUI) {
           }));
 
   controller.OnInvoke(omnibox_everywhere::InvocationSource::kCommandLine,
-                      &profile_, GetContext());
-  EXPECT_EQ(&profile_, controller.target_profile());
+                      profile_.get(), GetContext());
+  EXPECT_EQ(profile_.get(), controller.target_profile());
   EXPECT_TRUE(controller.IsVisible());
 
   // Repeated kCommandLine invocation should keep the widget open (not
   // toggle-closed).
   controller.OnInvoke(omnibox_everywhere::InvocationSource::kCommandLine,
-                      &profile_, GetContext());
+                      profile_.get(), GetContext());
   EXPECT_TRUE(controller.IsVisible());
 }
 
@@ -516,9 +590,9 @@ TEST_F(OmniboxEverywhereControllerTest,
 
   // Launching from command line with an eligible profile succeeds and shows UI.
   EXPECT_TRUE(controller.InvokeForStartup(
-      omnibox_everywhere::InvocationSource::kCommandLine, &profile_,
+      omnibox_everywhere::InvocationSource::kCommandLine, profile_.get(),
       GetContext()));
-  EXPECT_EQ(&profile_, controller.target_profile());
+  EXPECT_EQ(profile_.get(), controller.target_profile());
   EXPECT_TRUE(controller.IsVisible());
 }
 
@@ -543,7 +617,7 @@ TEST_F(OmniboxEverywhereControllerTest, MAYBE_InvokeForStartupIneligibleFails) {
 
   // Launching with off-the-record profile fails.
   Profile* otr_profile =
-      profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true);
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   ASSERT_TRUE(otr_profile);
   EXPECT_FALSE(controller.InvokeForStartup(
       omnibox_everywhere::InvocationSource::kCommandLine, otr_profile,
@@ -583,8 +657,8 @@ TEST_F(OmniboxEverywhereControllerTest,
   // InvokeForStartup should ignore invalid persisted path and fallback to
   // the provided eligible fallback_profile.
   EXPECT_TRUE(controller.InvokeForStartup(
-      omnibox_everywhere::InvocationSource::kCommandLine, &profile_,
+      omnibox_everywhere::InvocationSource::kCommandLine, profile_.get(),
       GetContext()));
-  EXPECT_EQ(&profile_, controller.target_profile());
+  EXPECT_EQ(profile_.get(), controller.target_profile());
   EXPECT_TRUE(controller.IsVisible());
 }

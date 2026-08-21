@@ -295,17 +295,23 @@ void OmniboxEverywhereController::OnInvoke(InvocationSource source,
   switch (source) {
     case InvocationSource::kGlobalHotkey:
     case InvocationSource::kStatusTrayIcon:
-      if (ui_manager_->IsVisible() && ui_manager_->profile() == profile) {
-        Close();
-      } else {
-        ui_manager_->ShowForProfile(profile, context);
+      if (ui_manager_->profile() == profile) {
+        if (prefs::IsEphemeralModelEnabled() && ui_manager_->IsVisible()) {
+          Close();
+          return;
+        }
+        if (!prefs::IsEphemeralModelEnabled() && ui_manager_->IsActive()) {
+          ui_manager_->Demote();
+          return;
+        }
       }
       break;
     case InvocationSource::kProfilePicker:
     case InvocationSource::kCommandLine:
-      ui_manager_->ShowForProfile(profile, context);
       break;
   }
+
+  ui_manager_->ShowForProfile(profile, context);
 }
 
 void OmniboxEverywhereController::Close() {

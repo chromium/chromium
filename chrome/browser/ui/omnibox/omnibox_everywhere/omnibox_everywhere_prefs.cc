@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -15,6 +16,18 @@
 
 namespace omnibox_everywhere {
 namespace prefs {
+
+bool IsEphemeralModelEnabled() {
+  if (g_browser_process && g_browser_process->local_state()) {
+    return g_browser_process->local_state()->GetBoolean(
+        kOmniboxEverywhereEphemeralModel);
+  }
+#if BUILDFLAG(IS_MAC)
+  return true;
+#else
+  return false;
+#endif
+}
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kHotkeyEnabled, true);

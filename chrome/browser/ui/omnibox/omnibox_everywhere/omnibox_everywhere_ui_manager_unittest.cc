@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -35,7 +34,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_runner_handler.h"
 #include "ui/views/test/menu_runner_test_api.h"
-#include "ui/views/test/widget_test.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -354,7 +353,36 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   EXPECT_FALSE(widget->IsVisible());
 }
 
-TEST_F(OmniboxEverywhereUIManagerTest, PersistentDeactivationDemotesZOrder) {
+TEST_F(OmniboxEverywhereUIManagerTest,
+       PersistentDeactivationKeepsWidgetVisible) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
+
+  // Simulating deactivation (active = false) in persistent mode keeps the
+  // widget visible without auto-closing.
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
+
+  // Re-invoking ShowForProfile keeps widget visible and active.
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
+
+  ui_manager->Close();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       PersistentDeactivationWithinGracePeriodDoesNotReactivate) {
   if (g_browser_process && g_browser_process->local_state()) {
     g_browser_process->local_state()->SetBoolean(
         omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
@@ -366,19 +394,165 @@ TEST_F(OmniboxEverywhereUIManagerTest, PersistentDeactivationDemotesZOrder) {
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
 
-  // Initial show promotes ZOrder to kFloatingUIElement.
-  EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kFloatingUIElement);
+  // Advance time within the grace period (e.g. 100ms < 500ms).
+  task_environment()->FastForwardBy(base::Milliseconds(100));
 
-  // Simulating deactivation (active = false) in persistent mode should demote
-  // ZOrder to kNormal while keeping widget visible.
+  // Simulating deactivation in persistent mode within 500ms should NOT trigger
+  // auto-close or reactivation tasks, keeping the widget visible.
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
   EXPECT_TRUE(widget->IsVisible());
+
+  // Advancing time past the grace period confirms the widget remains visible
+  // and no delayed close or reactivation tasks run.
+  task_environment()->FastForwardBy(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kActivationGracePeriod);
+  EXPECT_TRUE(widget->IsVisible());
+
+  ui_manager->Close();
+}
+
+// Tests that Demote() deactivates and keeps the widget visible.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DemoteWidget DemoteWidget
+#else
+#define MAYBE_DemoteWidget DISABLED_DemoteWidget
+#endif
+TEST_F(OmniboxEverywhereUIManagerTest, MAYBE_DemoteWidget) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+  views::test::WaitForWidgetActive(widget, true);
+  EXPECT_TRUE(ui_manager->IsActive());
   EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
 
-  // Re-invoking ShowForProfile should re-elevate ZOrder to kFloatingUIElement.
+  // Demote() should deactivate and keep visible.
+  ui_manager->Demote();
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_FALSE(ui_manager->IsActive());
+  EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
+
+  // Calling ShowForProfile again activates.
   ui_manager->ShowForProfile(&profile_, GetContext());
   EXPECT_TRUE(widget->IsVisible());
-  EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kFloatingUIElement);
+  views::test::WaitForWidgetActive(widget, true);
+  EXPECT_TRUE(ui_manager->IsActive());
+  EXPECT_EQ(widget->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
+
+  ui_manager->Close();
+}
+
+// Tests that Demote() cancels any open context menu before demoting.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DemoteCancelsOpenContextMenu DemoteCancelsOpenContextMenu
+#else
+#define MAYBE_DemoteCancelsOpenContextMenu DISABLED_DemoteCancelsOpenContextMenu
+#endif
+TEST_F(OmniboxEverywhereUIManagerTest, MAYBE_DemoteCancelsOpenContextMenu) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+
+  auto* rfh = ui_manager->contents_wrapper_for_testing()
+                  ->web_contents()
+                  ->GetPrimaryMainFrame();
+  content::ContextMenuParams params;
+  params.is_editable = true;
+
+  bool menu_runner_created = false;
+  ui_manager->SetMenuRunnerFactoryForTesting(base::BindRepeating(
+      [](bool* created, ui::MenuModel* model,
+         base::RepeatingClosure on_closed) {
+        *created = true;
+        auto runner = std::make_unique<views::MenuRunner>(
+            model,
+            views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU,
+            on_closed);
+        views::test::MenuRunnerTestAPI(runner.get())
+            .SetMenuRunnerHandler(std::make_unique<TestMenuRunnerHandler>());
+        return runner;
+      },
+      &menu_runner_created));
+
+  ui_manager->HandleContextMenu(*rfh, params);
+  EXPECT_TRUE(menu_runner_created);
+  EXPECT_TRUE(ui_manager->is_context_menu_open_for_testing());
+
+  // Demote() while context menu is open should cancel the runner and demote.
+  ui_manager->Demote();
+  EXPECT_FALSE(ui_manager->is_context_menu_open_for_testing());
+  EXPECT_TRUE(ui_manager->widget()->IsVisible());
+  EXPECT_EQ(ui_manager->widget()->GetZOrderLevel(), ui::ZOrderLevel::kNormal);
+
+  ui_manager->Close();
+}
+
+// Tests that Demote() is a no-op while a file chooser is open.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DemoteBypassedDuringFileChooser DemoteBypassedDuringFileChooser
+#else
+#define MAYBE_DemoteBypassedDuringFileChooser \
+  DISABLED_DemoteBypassedDuringFileChooser
+#endif
+TEST_F(OmniboxEverywhereUIManagerTest, MAYBE_DemoteBypassedDuringFileChooser) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  views::test::WaitForWidgetActive(ui_manager->widget(), true);
+
+  ui_manager->OnFileChooserOpened();
+  EXPECT_TRUE(ui_manager->HasOpenModalDialog());
+
+  ui_manager->Demote();
+  // Demote should have returned early, leaving widget active.
+  EXPECT_TRUE(ui_manager->IsActive());
+
+  ui_manager->OnFileChooserClosed();
+  EXPECT_FALSE(ui_manager->HasOpenModalDialog());
+
+  ui_manager->Close();
+}
+
+// Tests that closing a context menu in persistent mode leaves the widget
+// visible.
+TEST_F(OmniboxEverywhereUIManagerTest,
+       ContextMenuClosedInPersistentModeDoesNotDismiss) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+
+  ui_manager->set_is_context_menu_open_for_testing(true);
+
+  // Simulate deactivation while menu is open.
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Closing context menu while inactive in persistent mode leaves widget
+  // visible.
+  ui_manager->OnContextMenuClosedForTesting();
+  EXPECT_TRUE(widget->IsVisible());
 
   ui_manager->Close();
 }

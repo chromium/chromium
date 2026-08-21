@@ -102,6 +102,18 @@ class OmniboxEverywhereBrowserTest : public InteractiveBrowserTest {
         expected_visible);
   }
 
+  // Waits for the Omnibox Everywhere widget to reach `active` activation state.
+  auto WaitForWidgetActiveState(bool active) {
+    return Do([active]() {
+      OmniboxEverywhereController* controller =
+          g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+      if (controller && controller->ui_manager()->widget()) {
+        views::test::WaitForWidgetActive(controller->ui_manager()->widget(),
+                                         active);
+      }
+    });
+  }
+
   // Assigns a Kombucha element name to the widget's contents view for element
   // targeting in test steps.
   auto NameOmniboxContentsView(std::string_view name) {
@@ -134,6 +146,26 @@ class OmniboxEverywhereBrowserTest : public InteractiveBrowserTest {
                            ->GetContentsView();
                      })),
                  WaitForStateChange(web_contents_id, search_input_loaded));
+  }
+
+  // Waits until the WebUI draggable regions have been received by the browser
+  // process and applied to the widget delegate.
+  auto WaitForDraggableRegions() {
+    return CheckResult(
+        []() {
+          OmniboxEverywhereController* controller =
+              g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+          return base::test::RunUntil([controller]() {
+            return controller && controller->ui_manager() &&
+                   controller->ui_manager()
+                       ->draggable_region_for_testing()
+                       .has_value() &&
+                   !controller->ui_manager()
+                        ->draggable_region_for_testing()
+                        ->isEmpty();
+          });
+        },
+        true);
   }
 
   // Simulates dragging the mouse from `start_point` to `end_point` within
@@ -202,12 +234,22 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest, FocusAndActivationState) {
   ui_manager.Shutdown();
 }
 
+class OmniboxEverywhereEphemeralBrowserTest
+    : public OmniboxEverywhereBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    OmniboxEverywhereBrowserTest::SetUpOnMainThread();
+    g_browser_process->local_state()->SetBoolean(
+        prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
+};
+
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ShowAndDismissViaHotkey DISABLED_ShowAndDismissViaHotkey
 #else
 #define MAYBE_ShowAndDismissViaHotkey ShowAndDismissViaHotkey
 #endif
-IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereEphemeralBrowserTest,
                        MAYBE_ShowAndDismissViaHotkey) {
   OmniboxEverywhereController* controller =
       g_browser_process->GetFeatures()->omnibox_everywhere_controller();
@@ -227,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
 #else
 #define MAYBE_CopyPasteSupportInQueryBox CopyPasteSupportInQueryBox
 #endif
-IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereEphemeralBrowserTest,
                        MAYBE_CopyPasteSupportInQueryBox) {
   OmniboxEverywhereController* controller =
       g_browser_process->GetFeatures()->omnibox_everywhere_controller();
@@ -276,13 +318,23 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
       InvokeViaHotkey(), CheckWidgetVisible(false));
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+class OmniboxEverywherePersistentBrowserTest
+    : public OmniboxEverywhereBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    OmniboxEverywhereBrowserTest::SetUpOnMainThread();
+    g_browser_process->local_state()->SetBoolean(
+        prefs::kOmniboxEverywhereEphemeralModel, false);
+  }
+};
+
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_IgnoreDragToMoveInNoDragRegion IgnoreDragToMoveInNoDragRegion
 #else
 #define MAYBE_IgnoreDragToMoveInNoDragRegion \
   DISABLED_IgnoreDragToMoveInNoDragRegion
 #endif
-IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
+IN_PROC_BROWSER_TEST_F(OmniboxEverywherePersistentBrowserTest,
                        MAYBE_IgnoreDragToMoveInNoDragRegion) {
 #if BUILDFLAG(IS_OZONE)
   if (ui::OzonePlatform::RunningOnWaylandForTest()) {
@@ -296,27 +348,38 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
   ASSERT_TRUE(controller);
 
   gfx::Point initial_origin;
-  const char kContentsView[] = "OmniboxContentsView";
+  gfx::Point drag_target;
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOmniboxWebContentsId);
 
-  RunTestSequence(InvokeViaHotkey(), CheckWidgetVisible(true),
-                  WaitForOmniboxWebUIReady(kOmniboxWebContentsId), Do([&]() {
-                    initial_origin = controller->ui_manager()
-                                         ->widget()
-                                         ->GetWindowBoundsInScreen()
-                                         .origin();
-                  }),
-                  NameOmniboxContentsView(kContentsView),
-                  // Search input region is non-draggable (centered at y=40).
-                  MoveMouseInView(kContentsView, gfx::Point(400, 40)),
-                  ClickMouse(ui_controls::LEFT, /*release=*/false),
-                  MoveMouseInView(kContentsView, gfx::Point(500, 40)),
-                  ReleaseMouse(ui_controls::LEFT), Check([&]() {
-                    views::Widget* widget = controller->ui_manager()->widget();
-                    return widget->GetWindowBoundsInScreen().origin() ==
-                           initial_origin;
-                  }),
-                  InvokeViaHotkey(), CheckWidgetVisible(false));
+  const DeepQuery kSearchInputElement = {
+      "omnibox-everywhere-app",
+      "omnibox-everywhere-omnibox",
+      "cr-searchbox-input",
+      "#input",
+  };
+
+  RunTestSequence(
+      InvokeViaHotkey(), CheckWidgetVisible(true),
+      WaitForWidgetActiveState(true),
+      WaitForOmniboxWebUIReady(kOmniboxWebContentsId),
+      WaitForDraggableRegions(),
+      MoveMouseTo(kOmniboxWebContentsId, kSearchInputElement), Do([&]() {
+        initial_origin = controller->ui_manager()
+                             ->widget()
+                             ->GetWindowBoundsInScreen()
+                             .origin();
+        drag_target = display::Screen::Get()->GetCursorScreenPoint() +
+                      gfx::Vector2d(50, 0);
+      }),
+      // Drag horizontally within the non-draggable search input element.
+      ClickMouse(ui_controls::LEFT, /*release=*/false),
+      MoveMouseTo(std::ref(drag_target)), ReleaseMouse(ui_controls::LEFT),
+      Check([&]() {
+        views::Widget* widget = controller->ui_manager()->widget();
+        return widget->GetWindowBoundsInScreen().origin() == initial_origin;
+      }),
+      InvokeViaHotkey(), CheckWidgetVisible(true),
+      WaitForWidgetActiveState(false));
 }
 
 // TODO(crbug.com/40249472): Support modal dragging on Windows with Kombucha.
@@ -327,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
 #define MAYBE_DragToMoveWindowInDraggableRegion \
   DISABLED_DragToMoveWindowInDraggableRegion
 #endif
-IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
+IN_PROC_BROWSER_TEST_F(OmniboxEverywherePersistentBrowserTest,
                        MAYBE_DragToMoveWindowInDraggableRegion) {
 #if BUILDFLAG(IS_OZONE)
   if (ui::OzonePlatform::RunningOnWaylandForTest()) {
@@ -346,7 +409,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
 
   RunTestSequence(
       InvokeViaHotkey(), CheckWidgetVisible(true),
-      WaitForOmniboxWebUIReady(kOmniboxWebContentsId), Do([&]() {
+      WaitForWidgetActiveState(true),
+      WaitForOmniboxWebUIReady(kOmniboxWebContentsId),
+      WaitForDraggableRegions(), Do([&]() {
         initial_origin = controller->ui_manager()
                              ->widget()
                              ->GetWindowBoundsInScreen()
@@ -358,7 +423,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
         views::Widget* widget = controller->ui_manager()->widget();
         return widget->GetWindowBoundsInScreen().origin() != initial_origin;
       }),
-      InvokeViaHotkey(), CheckWidgetVisible(false));
+      InvokeViaHotkey(), CheckWidgetVisible(true),
+      WaitForWidgetActiveState(false));
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest, VoicePermissionState) {
@@ -388,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest, VoicePermissionState) {
 #else
 #define MAYBE_RetainPositionOnReinvoke RetainPositionOnReinvoke
 #endif
-IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereEphemeralBrowserTest,
                        MAYBE_RetainPositionOnReinvoke) {
 #if BUILDFLAG(IS_OZONE)
   if (ui::OzonePlatform::RunningOnWaylandForTest()) {
@@ -448,7 +514,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
 #else
 #define MAYBE_RetainInputTextOnReinvoke RetainInputTextOnReinvoke
 #endif
-IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereEphemeralBrowserTest,
                        MAYBE_RetainInputTextOnReinvoke) {
   OmniboxEverywhereController* controller =
       g_browser_process->GetFeatures()->omnibox_everywhere_controller();
@@ -485,6 +551,34 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
       CheckJsResultAt(kOmniboxWebContentsId, kInputElementQuery,
                       "el => el.value", "hello wor"),
       InvokeViaHotkey(), CheckWidgetVisible(false));
+}
+
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ShowAndDemoteViaHotkey ShowAndDemoteViaHotkey
+#else
+#define MAYBE_ShowAndDemoteViaHotkey DISABLED_ShowAndDemoteViaHotkey
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxEverywherePersistentBrowserTest,
+                       MAYBE_ShowAndDemoteViaHotkey) {
+  OmniboxEverywhereController* controller =
+      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+  ASSERT_TRUE(controller);
+
+  EXPECT_FALSE(controller->IsVisible());
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOmniboxWebContentsId);
+
+  RunTestSequence(
+      // First hotkey press: Shows widget and activates.
+      InvokeViaHotkey(), CheckWidgetVisible(true),
+      WaitForWidgetActiveState(true),
+      WaitForOmniboxWebUIReady(kOmniboxWebContentsId),
+      // Second hotkey press: Demotes widget (remains visible, but inactive).
+      InvokeViaHotkey(), CheckWidgetVisible(true),
+      WaitForWidgetActiveState(false),
+      // Third hotkey press: Re-activates widget.
+      InvokeViaHotkey(), CheckWidgetVisible(true),
+      WaitForWidgetActiveState(true));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

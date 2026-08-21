@@ -84,6 +84,9 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   // Closes the Omnibox Everywhere widget.
   void Close();
 
+  // Demotes the widget to normal Z-order and deactivates it without hiding.
+  void Demote();
+
   // Synchronously closes the widget and destroys the WebContents during profile
   // shutdown.
   void Shutdown();
@@ -93,6 +96,10 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
 
   // Returns true if the widget is active/focused.
   bool IsActive() const;
+
+  // Returns true if a file chooser, drive picker, or screenshare picker modal
+  // dialog is open.
+  bool HasOpenModalDialog() const;
 
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
@@ -207,7 +214,6 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void CleanUpWidget();
   void OnWidgetClosed(views::Widget::ClosedReason reason);
   void OnContextMenuClosed();
-  bool HasModalDialogOpen() const;
   void HandleWidgetDeactivated();
 
 #if defined(USE_AURA)
@@ -227,6 +233,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   bool is_file_chooser_open_ = false;
   bool is_drive_picker_open_ = false;
   bool is_context_menu_open_ = false;
+  bool is_demoted_ = false;
   bool is_screenshare_picker_open_ = false;
   bool is_dragging_ = false;
   std::optional<gfx::Size> pending_auto_resize_size_;

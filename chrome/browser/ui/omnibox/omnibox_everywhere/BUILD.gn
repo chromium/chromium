@@ -11,6 +11,7 @@ source_set("prefs") {
   public = [ "omnibox_everywhere_prefs.h" ]
   public_deps = [ "//base" ]
   deps = [
+    "//chrome/browser:browser_process",
     "//components/prefs",
     "//ui/base",
   ]

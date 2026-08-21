@@ -37,7 +37,6 @@
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/skia/include/core/SkRect.h"
-#include "ui/base/hit_test.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
@@ -56,6 +55,12 @@
 #include "extensions/browser/view_type_utils.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "ui/views/win/hwnd_util.h"
+#endif
+
 #if defined(USE_AURA)
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_event_handler_aura.h"
 #include "ui/aura/window.h"
@@ -68,14 +73,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxEverywhereUIManager,
                                       kOmniboxEverywhereElementId);
 
 namespace {
-bool IsEphemeral() {
-  bool is_ephemeral = false;
-  if (g_browser_process && g_browser_process->local_state()) {
-    is_ephemeral = g_browser_process->local_state()->GetBoolean(
-        prefs::kOmniboxEverywhereEphemeralModel);
-  }
-  return is_ephemeral;
-}
 
 class OmniboxEverywhereFileSelectListener : public content::FileSelectListener {
  public:
@@ -357,7 +354,7 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
-  bool is_ephemeral = IsEphemeral();
+  bool is_ephemeral = prefs::IsEphemeralModelEnabled();
 #if BUILDFLAG(IS_WIN)
   params.dont_show_in_taskbar = is_ephemeral;
 #endif  // BUILDFLAG(IS_WIN)
@@ -415,7 +412,7 @@ void OmniboxEverywhereUIManager::ActivateAndFocus() {
     return;
   }
 
-  widget_->SetZOrderLevel(ui::ZOrderLevel::kFloatingUIElement);
+  is_demoted_ = false;
   widget_->Show();
   widget_->Activate();
 
@@ -453,7 +450,7 @@ void OmniboxEverywhereUIManager::Close() {
   last_shown_time_.reset();
   deactivation_task_.Cancel();
   if (widget_) {
-    if (is_file_chooser_open_ || is_drive_picker_open_) {
+    if (HasOpenModalDialog()) {
       CleanUpWidget();
       return;
     }
@@ -464,6 +461,34 @@ void OmniboxEverywhereUIManager::Close() {
     widget_->Hide();
   }
   ReleaseKeepAlives();
+}
+
+void OmniboxEverywhereUIManager::Demote() {
+  last_shown_time_.reset();
+  deactivation_task_.Cancel();
+  if (HasOpenModalDialog()) {
+    return;
+  }
+  if (is_context_menu_open_ && context_menu_runner_) {
+    context_menu_runner_->Cancel();
+    is_context_menu_open_ = false;
+  }
+  if (widget_) {
+    is_demoted_ = true;
+    widget_->SetZOrderLevel(ui::ZOrderLevel::kNormal);
+    // Deactivate first so that the next window is activated before sending the
+    // widget to the bottom.
+    widget_->Deactivate();
+    // TODO(b/532195081): Add support for macOS to demote/send the widget to the
+    // background in persistent mode.
+#if BUILDFLAG(IS_WIN)
+    HWND hwnd = views::HWNDForWidget(widget_.get());
+    if (hwnd) {
+      ::SetWindowPos(hwnd, HWND_BOTTOM, 0, 0, 0, 0,
+                     SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+    }
+#endif
+  }
 }
 
 void OmniboxEverywhereUIManager::CleanUpWidget() {
@@ -504,6 +529,7 @@ void OmniboxEverywhereUIManager::CleanUpWidget() {
   is_file_chooser_open_ = false;
   is_drive_picker_open_ = false;
   is_context_menu_open_ = false;
+  is_demoted_ = false;
   is_screenshare_picker_open_ = false;
   is_dragging_ = false;
   pending_auto_resize_size_.reset();
@@ -527,10 +553,10 @@ bool OmniboxEverywhereUIManager::IsVisible() const {
 }
 
 bool OmniboxEverywhereUIManager::IsActive() const {
-  return widget_ && widget_->IsActive();
+  return widget_ && widget_->IsActive() && !is_demoted_;
 }
 
-bool OmniboxEverywhereUIManager::HasModalDialogOpen() const {
+bool OmniboxEverywhereUIManager::HasOpenModalDialog() const {
   return is_file_chooser_open_ || is_drive_picker_open_ ||
          is_screenshare_picker_open_;
 }
@@ -538,7 +564,12 @@ bool OmniboxEverywhereUIManager::HasModalDialogOpen() const {
 void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
     views::Widget* widget,
     bool active) {
-  if (!active && !is_context_menu_open_ && !HasModalDialogOpen()) {
+  if (active) {
+    is_demoted_ = false;
+    return;
+  }
+  if (!active && !HasOpenModalDialog() && !is_context_menu_open_ &&
+      prefs::IsEphemeralModelEnabled()) {
     HandleWidgetDeactivated();
   }
 }
@@ -553,32 +584,29 @@ void OmniboxEverywhereUIManager::OnContextMenuClosed() {
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, std::move(context_menu_model_));
   }
-  if (widget_ && !widget_->IsActive() && !HasModalDialogOpen()) {
+  if (widget_ && !widget_->IsActive() && !HasOpenModalDialog() &&
+      prefs::IsEphemeralModelEnabled()) {
     HandleWidgetDeactivated();
   }
 }
 
 void OmniboxEverywhereUIManager::HandleWidgetDeactivated() {
-  if (!widget_ || !widget_->IsVisible()) {
+  if (!widget_ || !widget_->IsVisible() || !prefs::IsEphemeralModelEnabled()) {
     return;
   }
-  if (IsEphemeral()) {
-    if (last_shown_time_.has_value() &&
-        base::TimeTicks::Now() - *last_shown_time_ < kActivationGracePeriod) {
-      deactivation_task_.Reset(
-          base::BindOnce(&OmniboxEverywhereUIManager::ActivateAndFocus,
-                         weak_factory_.GetWeakPtr()));
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, deactivation_task_.callback());
-      return;
-    }
-    deactivation_task_.Reset(base::BindOnce(&OmniboxEverywhereUIManager::Close,
-                                            weak_factory_.GetWeakPtr()));
+  if (last_shown_time_.has_value() &&
+      base::TimeTicks::Now() - *last_shown_time_ < kActivationGracePeriod) {
+    deactivation_task_.Reset(
+        base::BindOnce(&OmniboxEverywhereUIManager::ActivateAndFocus,
+                       weak_factory_.GetWeakPtr()));
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, deactivation_task_.callback());
-  } else if (widget_) {
-    widget_->SetZOrderLevel(ui::ZOrderLevel::kNormal);
+    return;
   }
+  deactivation_task_.Reset(base::BindOnce(&OmniboxEverywhereUIManager::Close,
+                                          weak_factory_.GetWeakPtr()));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, deactivation_task_.callback());
 }
 
 void OmniboxEverywhereUIManager::OnWidgetDestroying(views::Widget* widget) {
