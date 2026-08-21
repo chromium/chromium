@@ -4972,6 +4972,16 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SpellCheck.Browser.InitForRendererTime" units="ms"
+    expires_after="2027-03-01">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Logs the time taken to run SpellcheckService::InitForRenderer. This is
+    recorded whenever a new renderer process is created.
+  </summary>
+</histogram>
+
 <histogram name="SpellCheck.CheckedWords" units="words"
     expires_after="2024-12-01">
   <owner>shend@chromium.org</owner>
@@ -5025,6 +5035,17 @@ useful for Chirp alerts (go/crca-alerts). -->
     The number of misspelled words within a session.
 
     Warning: this histogram was expired from M83 to M107; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="SpellCheck.Renderer.InitializeTime" units="ms"
+    expires_after="2027-03-01">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Logs the time taken to run SpellCheck::Initialize on the renderer main
+    thread. This encompasses the construction of the custom dictionary and takes
+    place during renderer initialization.
   </summary>
 </histogram>
 

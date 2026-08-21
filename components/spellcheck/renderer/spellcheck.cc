@@ -18,10 +18,12 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "components/spellcheck/common/spellcheck_common.h"
 #include "components/spellcheck/common/spellcheck_features.h"
@@ -195,6 +197,7 @@ void SpellCheck::Initialize(
     std::vector<spellcheck::mojom::SpellCheckBDictLanguagePtr> dictionaries,
     const std::vector<std::string>& custom_words,
     bool enable) {
+  base::ScopedUmaHistogramTimer timer("SpellCheck.Renderer.InitializeTime");
   languages_.clear();
 
   for (const auto& dictionary : dictionaries)
