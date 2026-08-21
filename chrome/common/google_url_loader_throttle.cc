@@ -264,11 +264,15 @@ void GoogleURLLoaderThrottle::WillRedirectRequest(
             dynamic_params_->youtube_restrict));
   }
 
-  if (!dynamic_params_->allowed_domains_for_apps.empty() &&
-      redirect_info->new_url.DomainIs("google.com")) {
-    headers_update_params->modified_cors_exempt_headers.SetHeader(
-        safe_search_api::kGoogleAppsAllowedDomains,
-        dynamic_params_->allowed_domains_for_apps);
+  if (!dynamic_params_->allowed_domains_for_apps.empty()) {
+    if (redirect_info->new_url.DomainIs("google.com")) {
+      headers_update_params->modified_cors_exempt_headers.SetHeader(
+          safe_search_api::kGoogleAppsAllowedDomains,
+          dynamic_params_->allowed_domains_for_apps);
+    } else {
+      headers_update_params->removed_headers.push_back(
+          safe_search_api::kGoogleAppsAllowedDomains);
+    }
   }
 
 #if BUILDFLAG(IS_ANDROID)
