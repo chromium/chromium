@@ -72,9 +72,7 @@ IDR_X004_DEV            ICON       "theme\\google_chrome\\win\\chrome_dev.ico"
 IDR_X005_BETA           ICON       "theme\\google_chrome\\win\\chrome_beta.ico"
 IDR_X006_HTML_DOC       ICON       "theme\\google_chrome\\win\\chrome_doc.ico"
 IDR_X007_PDF_DOC        ICON       "theme\\google_chrome\\win\\chrome_pdf.ico"
-// TODO(b/540240990): Replace with Google Chrome branded icon once
-// added in google_chrome theme repo.
-IDR_X008_ISOLATED       ICON       "theme\\chromium\\win\\isolated.ico"
+IDR_X008_ISOLATED       ICON       "theme\\google_chrome\\win\\isolated.ico"
 #else
 IDR_X001_APP_LIST       ICON       "theme\\chromium\\win\\app_list.ico"
 IDR_X003_INCOGNITO      ICON       "theme\\chromium\\win\\incognito.ico"
