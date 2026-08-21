@@ -20,6 +20,7 @@ good-names=i,j,k,f,PRESUBMIT
 [REPORTS]
 
 reports=no
+score=no
 
 [DESIGN]
 

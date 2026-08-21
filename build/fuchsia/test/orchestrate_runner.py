@@ -67,7 +67,6 @@ def support_orchestrate(test_type: str) -> bool:
         'ozone_gl_unittests',
         'ozone_unittests',
         'perfetto_unittests',
-        'rust_gtest_interop_unittests',
         'services_unittests',
         'shell_dialogs_unittests',
         'skia_unittests',
