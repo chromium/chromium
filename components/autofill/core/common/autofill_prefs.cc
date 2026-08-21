@@ -270,10 +270,6 @@ bool IsAutofillCreditCardManaged(const PrefService* prefs) {
   return prefs->IsManagedPreference(kAutofillCreditCardEnabled);
 }
 
-bool IsAutofillTypesBlockedManaged(const PrefService* prefs) {
-  return prefs->IsManagedPreference(kAutofillTypesBlocked);
-}
-
 bool IsAutofillProfileEnabled(const PrefService* prefs) {
   return prefs->GetBoolean(kAutofillProfileEnabled);
 }
