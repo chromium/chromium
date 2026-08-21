@@ -257,10 +257,15 @@ constexpr int kSupportedCredentialTypesCount = 2;
   for (CredentialExchangePasskey* passkey : _passkeys) {
     // TODO(crbug.com/458337350): Handle extensions.
     std::vector<uint8_t> hmacSecret;
+    std::optional<std::string> hmacSecretAlgorithm;
     if (base::FeatureList::IsEnabled(kCredentialExchangeFidoExtensions)) {
       if (passkey.hmacSecret) {
         hmacSecret =
             base::ToVector(base::apple::NSDataToSpan(passkey.hmacSecret));
+      }
+      if (passkey.hmacSecretAlgorithm) {
+        hmacSecretAlgorithm =
+            base::SysNSStringToUTF8(passkey.hmacSecretAlgorithm);
       }
     }
     passkeys.push_back(webauthn::PasskeyImportCandidate{
@@ -274,6 +279,7 @@ constexpr int kSupportedCredentialTypesCount = 2;
             base::ToVector(base::apple::NSDataToSpan(passkey.privateKey)),
         .creation_time = timeNow,
         .hmac_secret = std::move(hmacSecret),
+        .hmac_secret_algorithm = std::move(hmacSecretAlgorithm),
     });
   }
 

@@ -40,7 +40,9 @@ enum class ImportedPasskeyStatus {
   kEncryptionFailed = 8,
   // HMAC secret does not have the required 32-byte length.
   kHmacSecretInvalidSize = 9,
-  kMaxValue = kHmacSecretInvalidSize,
+  // HMAC secret uses an algorithm not supported by GPM.
+  kHmacSecretUnsupportedAlgorithm = 10,
+  kMaxValue = kHmacSecretUnsupportedAlgorithm,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:ImportedPasskeyStatus)
 

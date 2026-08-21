@@ -163,6 +163,8 @@
                            privateKey:privateKey
                          creationDate:creationDate
                            hmacSecret:hmacSecret
+                  // Hardcoded to .sha256 in Swift layer.
+                  hmacSecretAlgorithm:nil
                             largeBlob:largeBlob
             largeBlobUncompressedSize:largeBlobUncompressedSize];
     [exportedPasskeys addObject:exportedPasskey];

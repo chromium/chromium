@@ -112,6 +112,7 @@ TEST(ImportedPasskeyCheckerTest, ReturnsStatusForInvalidHmacSecretSize) {
     PasskeyImportCandidate passkey = CreateValidPasskey();
     passkey.hmac_secret =
         base::RandBytesAsVector(passkey_model_utils::kHmacSecretSize - 1);
+    passkey.hmac_secret_algorithm = "sha256";
     EXPECT_EQ(CheckImportedPasskey(passkey),
               ImportedPasskeyStatus::kHmacSecretInvalidSize);
   }
@@ -119,15 +120,47 @@ TEST(ImportedPasskeyCheckerTest, ReturnsStatusForInvalidHmacSecretSize) {
     PasskeyImportCandidate passkey = CreateValidPasskey();
     passkey.hmac_secret =
         base::RandBytesAsVector(passkey_model_utils::kHmacSecretSize + 1);
+    passkey.hmac_secret_algorithm = "sha256";
     EXPECT_EQ(CheckImportedPasskey(passkey),
               ImportedPasskeyStatus::kHmacSecretInvalidSize);
   }
   {
-    // `kHmacSecretSize`-byte HMAC secret is valid.
+    // `kHmacSecretSize`-byte HMAC secret with sha256 is valid.
     PasskeyImportCandidate passkey = CreateValidPasskey();
     passkey.hmac_secret =
         base::RandBytesAsVector(passkey_model_utils::kHmacSecretSize);
+    passkey.hmac_secret_algorithm = "sha256";
     EXPECT_EQ(CheckImportedPasskey(passkey), ImportedPasskeyStatus::kOk);
+  }
+}
+
+TEST(ImportedPasskeyCheckerTest,
+     ReturnsStatusForUnsupportedHmacSecretAlgorithm) {
+  {
+    // HMAC secret without algorithm is unsupported.
+    PasskeyImportCandidate passkey = CreateValidPasskey();
+    passkey.hmac_secret =
+        base::RandBytesAsVector(passkey_model_utils::kHmacSecretSize);
+    passkey.hmac_secret_algorithm = std::nullopt;
+    EXPECT_EQ(CheckImportedPasskey(passkey),
+              ImportedPasskeyStatus::kHmacSecretUnsupportedAlgorithm);
+  }
+  {
+    // HMAC secret with non-sha256 algorithm is unsupported.
+    PasskeyImportCandidate passkey = CreateValidPasskey();
+    passkey.hmac_secret =
+        base::RandBytesAsVector(passkey_model_utils::kHmacSecretSize);
+    passkey.hmac_secret_algorithm = "sha512";
+    EXPECT_EQ(CheckImportedPasskey(passkey),
+              ImportedPasskeyStatus::kHmacSecretUnsupportedAlgorithm);
+  }
+  {
+    PasskeyImportCandidate passkey = CreateValidPasskey();
+    passkey.hmac_secret =
+        base::RandBytesAsVector(passkey_model_utils::kHmacSecretSize);
+    passkey.hmac_secret_algorithm = "unsupported";
+    EXPECT_EQ(CheckImportedPasskey(passkey),
+              ImportedPasskeyStatus::kHmacSecretUnsupportedAlgorithm);
   }
 }
 

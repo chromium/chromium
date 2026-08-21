@@ -44,9 +44,14 @@ ImportedPasskeyStatus CheckImportedPasskey(
     return ImportedPasskeyStatus::kPrivateKeyUnsupportedAlgorithm;
   }
 
-  if (!passkey.hmac_secret.empty() &&
-      passkey.hmac_secret.size() != passkey_model_utils::kHmacSecretSize) {
-    return ImportedPasskeyStatus::kHmacSecretInvalidSize;
+  if (!passkey.hmac_secret.empty()) {
+    if (passkey.hmac_secret.size() != passkey_model_utils::kHmacSecretSize) {
+      return ImportedPasskeyStatus::kHmacSecretInvalidSize;
+    }
+    if (!passkey.hmac_secret_algorithm.has_value() ||
+        *passkey.hmac_secret_algorithm != "sha256") {
+      return ImportedPasskeyStatus::kHmacSecretUnsupportedAlgorithm;
+    }
   }
 
   return ImportedPasskeyStatus::kOk;

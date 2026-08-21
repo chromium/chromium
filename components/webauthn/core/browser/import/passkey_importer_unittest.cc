@@ -225,6 +225,7 @@ TEST_F(PasskeyImporterTest, ImportsPasskeyWithHmacSecret) {
   PasskeyImportCandidate candidate = CreateCandidate(kRpId, kUserId);
   candidate.hmac_secret =
       std::vector<uint8_t>(passkey_model_utils::kHmacSecretSize, 'a');
+  candidate.hmac_secret_algorithm = "sha256";
   std::ignore = StartImport({candidate});
 
   int passkeys_imported = FinishImport(/*selected_passkey_ids=*/{});

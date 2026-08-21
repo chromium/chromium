@@ -81,6 +81,7 @@ CredentialExchangePasskey* CreateTestPasskey() {
                                                length:pkcs8_key.size()]
                    creationDate:nil
                      hmacSecret:nil
+            hmacSecretAlgorithm:nil
                       largeBlob:nil
       largeBlobUncompressedSize:nil];
 }
@@ -217,6 +218,7 @@ TEST_F(CredentialImporterTest, ImportsValidPasskey) {
 TEST_F(CredentialImporterTest, ImportsPasskeyWithHmacSecret) {
   CredentialExchangePasskey* passkey = CreateTestPasskey();
   passkey.hmacSecret = ToNSData("01234567890123456789012345678901");
+  passkey.hmacSecretAlgorithm = @"sha256";
 
   [importer_ onCredentialsTranslatedWithPasswords:@[]
                                          passkeys:@[ passkey ]
@@ -433,6 +435,7 @@ TEST_F(CredentialImporterTest, TestImportPasskeyWithInvalidPrivateKey) {
                      privateKey:ToNSData("invalid_private_key")
                    creationDate:nil
                      hmacSecret:nil
+            hmacSecretAlgorithm:nil
                       largeBlob:nil
       largeBlobUncompressedSize:nil];
 
@@ -472,6 +475,7 @@ TEST_F(CredentialImporterTest, TestImportPasskeyWithUnsupportedAlgorithm) {
                                                length:rsa_key.size()]
                    creationDate:nil
                      hmacSecret:nil
+            hmacSecretAlgorithm:nil
                       largeBlob:nil
       largeBlobUncompressedSize:nil];
 
@@ -510,6 +514,7 @@ TEST_F(CredentialImporterFidoExtensionsDisabledTest,
        ImportsPasskeyWithoutFidoExtensions) {
   CredentialExchangePasskey* passkey = CreateTestPasskey();
   passkey.hmacSecret = ToNSData("01234567890123456789012345678901");
+  passkey.hmacSecretAlgorithm = @"sha256";
 
   [importer_ onCredentialsTranslatedWithPasswords:@[]
                                          passkeys:@[ passkey ]

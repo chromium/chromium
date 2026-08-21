@@ -43,6 +43,9 @@
 // (https://fidoalliance.org/specs/cx/cxf-v1.0-ps-20250814.html#dict-fido2-hmac-credentials)
 @property(nonatomic, copy) NSData* hmacSecret;
 
+// The algorithm used for the hmac-secret extension.
+@property(nonatomic, copy) NSString* hmacSecretAlgorithm;
+
 // The contents of the DEFLATE-compressed large blob data.
 // (https://www.w3.org/TR/webauthn-3/#largeblob)
 @property(nonatomic, copy) NSData* largeBlob;
@@ -58,6 +61,7 @@
                           privateKey:(NSData*)privateKey
                         creationDate:(NSDate*)creationDate
                           hmacSecret:(NSData*)hmacSecret
+                 hmacSecretAlgorithm:(NSString*)hmacSecretAlgorithm
                            largeBlob:(NSData*)largeBlob
            largeBlobUncompressedSize:(NSNumber*)largeBlobUncompressedSize
     NS_DESIGNATED_INITIALIZER;

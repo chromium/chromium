@@ -16,6 +16,7 @@
                           privateKey:(NSData*)privateKey
                         creationDate:(NSDate*)creationDate
                           hmacSecret:(NSData*)hmacSecret
+                 hmacSecretAlgorithm:(NSString*)hmacSecretAlgorithm
                            largeBlob:(NSData*)largeBlob
            largeBlobUncompressedSize:(NSNumber*)largeBlobUncompressedSize {
   self = [super init];
@@ -28,6 +29,7 @@
     _privateKey = privateKey;
     _creationDate = creationDate;
     _hmacSecret = hmacSecret;
+    _hmacSecretAlgorithm = hmacSecretAlgorithm;
     _largeBlob = largeBlob;
     _largeBlobUncompressedSize = largeBlobUncompressedSize;
   }
@@ -51,6 +53,9 @@
           [self.creationDate isEqual:other.creationDate]) &&
          (self.hmacSecret == other.hmacSecret ||
           [self.hmacSecret isEqual:other.hmacSecret]) &&
+         (self.hmacSecretAlgorithm == other.hmacSecretAlgorithm ||
+          [self.hmacSecretAlgorithm
+              isEqualToString:other.hmacSecretAlgorithm]) &&
          (self.largeBlob == other.largeBlob ||
           [self.largeBlob isEqual:other.largeBlob]) &&
          (self.largeBlobUncompressedSize == other.largeBlobUncompressedSize ||
@@ -61,7 +66,8 @@
 - (NSUInteger)hash {
   return self.userName.hash ^ self.userDisplayName.hash ^ self.rpId.hash ^
          self.credentialId.hash ^ self.userId.hash ^ self.privateKey.hash ^
-         self.creationDate.hash ^ self.hmacSecret.hash ^ self.largeBlob.hash ^
+         self.creationDate.hash ^ self.hmacSecret.hash ^
+         self.hmacSecretAlgorithm.hash ^ self.largeBlob.hash ^
          self.largeBlobUncompressedSize.hash;
 }
 

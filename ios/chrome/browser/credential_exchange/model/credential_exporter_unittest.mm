@@ -96,6 +96,7 @@ CredentialExchangePasskey* CreateCredentialExchangePasskey() {
                    creationDate:[NSDate
                                     dateWithTimeIntervalSince1970:123456789.0]
                      hmacSecret:nil
+            hmacSecretAlgorithm:nil
                       largeBlob:nil
       largeBlobUncompressedSize:nil];
 }

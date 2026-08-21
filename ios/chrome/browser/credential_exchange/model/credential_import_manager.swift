@@ -102,6 +102,7 @@ import Foundation
           case .passkey(let passkey):
             stats.passkeyCount += 1
             var hmacSecret: Data? = nil
+            var hmacSecretAlgorithm: String? = nil
             #if compiler(>=6.3)
               if #available(iOS 26.4, *) {
                 if let hmacCred = passkey.fido2Extensions?.hmacCredentials {
@@ -109,6 +110,13 @@ import Foundation
                     hmacSecret = hmacCred.credentialWithUV
                   } else if !hmacCred.credentialWithoutUV.isEmpty {
                     hmacSecret = hmacCred.credentialWithoutUV
+                  }
+                  if hmacSecret != nil {
+                    if hmacCred.algorithm == .sha256 {
+                      hmacSecretAlgorithm = "sha256"
+                    } else {
+                      hmacSecretAlgorithm = "unsupported"
+                    }
                   }
                 }
               }
@@ -123,6 +131,7 @@ import Foundation
                 privateKey: passkey.key,
                 creationDate: nil,
                 hmacSecret: hmacSecret,
+                hmacSecretAlgorithm: hmacSecretAlgorithm,
                 // TODO(crbug.com/458337350): Handle large_blob.
                 largeBlob: nil,
                 largeBlobUncompressedSize: nil))
