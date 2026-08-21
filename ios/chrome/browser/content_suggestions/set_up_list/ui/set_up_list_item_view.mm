@@ -213,7 +213,7 @@ struct ViewConfig {
                                              : colorPalette.tertiaryColor;
   } else {
     _iconContainerView.backgroundColor = [UIColor
-        colorNamed:IsNewTabPageUICleanupEnabled() ? kSurfaceContainerColor
+        colorNamed:IsNewTabPageUICleanupEnabled() ? kNewTabPageBackgroundColor
                                                   : kGrey100Color];
   }
 }

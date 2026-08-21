@@ -142,7 +142,7 @@ UIColor* HeaderBackgroundColor(id<UITraitEnvironment> environment) {
         [environment.traitCollection objectForNewTabPageTrait];
     if (!colorPalette &&
         ![environment.traitCollection boolForNewTabPageImageBackgroundTrait]) {
-      return [UIColor colorNamed:kSurfaceContainerColor];
+      return [UIColor colorNamed:kNewTabPageBackgroundColor];
     }
   }
   if (IsSplitToolbarMode(environment)) {

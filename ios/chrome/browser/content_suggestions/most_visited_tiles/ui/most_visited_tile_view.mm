@@ -232,7 +232,7 @@
                                                   : colorPalette.tertiaryColor;
   } else {
     self.imageContainerView.backgroundColor = [UIColor
-        colorNamed:IsNewTabPageUICleanupEnabled() ? kSurfaceContainerColor
+        colorNamed:IsNewTabPageUICleanupEnabled() ? kNewTabPageBackgroundColor
                                                   : kGrey100Color];
   }
 }

@@ -283,7 +283,7 @@ UIView* BadgeIconInContainer(UIImageView* icon,
                                               : colorPalette.tertiaryColor;
   } else {
     _imageContainerView.backgroundColor = [UIColor
-        colorNamed:IsNewTabPageUICleanupEnabled() ? kSurfaceContainerColor
+        colorNamed:IsNewTabPageUICleanupEnabled() ? kNewTabPageBackgroundColor
                                                   : kGrey100Color];
   }
   _config.ntpBackgroundColorPalette = colorPalette;

@@ -1100,7 +1100,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
                                   endColor:colorPalette.primaryColor];
   } else if (IsNewTabPageUICleanupEnabled()) {
     _backgroundGradientView.hidden = YES;
-    self.view.backgroundColor = [UIColor colorNamed:kSurfaceContainerColor];
+    self.view.backgroundColor = [UIColor colorNamed:kNewTabPageBackgroundColor];
   } else {
     self.view.backgroundColor = [UIColor colorNamed:@"ntp_background_color"];
     [_backgroundGradientView
