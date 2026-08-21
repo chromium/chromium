@@ -15,7 +15,6 @@
 #include "base/clang_profiling_buildflags.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
@@ -156,30 +155,17 @@ void GetTestFunctionInstructions(std::vector<Instruction>* body) {
 
 #if defined(OFFICIAL_BUILD)
 
-// *  Verifies that `instructions` starts with `kRequiredBody`.
-// *  Flags a failed expectation if that's not so.
-// *  Crashes if `instructions` isn't at least `kRequiredBody.size()` in
-//    length.
-//
-// Returns `instructions` with `kRequiredBody.size()` elements consumed.
-span<const Instruction> ExpectImmediateCrashInvocation(
+// Consumes as many elements from the front of `instructions` as match
+// in `kOptionalFooter`, returning the result.
+span<const Instruction> MaybeSkipOptionalFooter(
     span<const Instruction> instructions) {
-  CHECK_GE(instructions.size(), kRequiredBody.size());
-  const auto [prefix, suffix] = instructions.split_at<kRequiredBody.size()>();
-  EXPECT_THAT(prefix, testing::ElementsAreArray(kRequiredBody));
-  return suffix;
-}
-
-std::vector<Instruction> MaybeSkipOptionalFooter(
-    std::vector<Instruction> instructions) {
-  auto iter = instructions.begin();
   for (const auto inst : kOptionalFooter) {
-    if (iter == instructions.end() || *iter != inst) {
+    if (instructions.empty() || inst != instructions[0u]) {
       break;
     }
-    iter++;
+    instructions.take_first<1u>();
   }
-  return std::vector<Instruction>(iter, instructions.end());
+  return instructions;
 }
 
 span<const Instruction> MaybeSkipCoverageHook(
@@ -234,12 +220,15 @@ TEST(ImmediateCrashTest, ExpectedOpcodeSequence) {
   it++;
 
   body = std::vector<Instruction>(it, body.end());
-  std::optional<std::vector<Instruction>> result =
-      ToVector(MaybeSkipCoverageHook(body));
-  result = ToVector(ExpectImmediateCrashInvocation(result.value()));
-  result = MaybeSkipOptionalFooter(result.value());
-  result = ToVector(MaybeSkipCoverageHook(result.value()));
-  ExpectImmediateCrashInvocation(result.value());
+  base::span<const Instruction> result = MaybeSkipCoverageHook(body);
+  // `result` must have a `kRequiredBody`.
+  ASSERT_TRUE(std::ranges::starts_with(result, kRequiredBody));
+  result.take_first<kRequiredBody.size()>();
+
+  result = MaybeSkipOptionalFooter(result);
+  result = MaybeSkipCoverageHook(result);
+  // `result` must have a second `kRequiredBody`.
+  ASSERT_TRUE(std::ranges::starts_with(result, kRequiredBody));
 #endif  // defined(OFFICIAL_BUILD)
 }
 
