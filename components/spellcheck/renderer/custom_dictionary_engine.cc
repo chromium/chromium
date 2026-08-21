@@ -6,7 +6,23 @@
 
 #include <stddef.h>
 
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+
+namespace {
+
+std::set<std::u16string> BuildDictionary(
+    const std::vector<std::string>& custom_words) {
+  std::set<std::u16string> dictionary;
+  for (const std::string& word : custom_words) {
+    dictionary.insert(base::UTF8ToUTF16(word));
+  }
+  return dictionary;
+}
+
+}  // namespace
 
 CustomDictionaryEngine::CustomDictionaryEngine() {
 }
@@ -23,6 +39,22 @@ void CustomDictionaryEngine::Init(const std::set<std::string>& custom_words) {
   // normalize the strings.
   for (const std::string& word : custom_words)
     dictionary_.insert(base::UTF8ToUTF16(word));
+}
+
+void CustomDictionaryEngine::InitAsync(
+    const std::vector<std::string>& custom_words) {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&BuildDictionary, custom_words),
+      base::BindOnce(&CustomDictionaryEngine::OnDictionaryBuilt,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CustomDictionaryEngine::OnDictionaryBuilt(
+    std::set<std::u16string> dictionary) {
+  dictionary_ = std::move(dictionary);
 }
 
 void CustomDictionaryEngine::OnCustomDictionaryChanged(

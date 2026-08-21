@@ -47,6 +47,10 @@ BASE_DECLARE_FEATURE(kEnableSpellcheckRegionalSignal);
 // launch.
 BASE_DECLARE_FEATURE(kLazyInitializeSpellcheckCharAttribute);
 
+// When enabled, the renderer custom dictionary is built asynchronously on
+// a background worker thread rather than blocking the main thread.
+BASE_DECLARE_FEATURE(kAsyncSpellcheckCustomDictionaryInit);
+
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
 }  // namespace spellcheck

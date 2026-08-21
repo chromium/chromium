@@ -57,6 +57,9 @@ BASE_FEATURE(kEnableSpellcheckRegionalSignal,
 BASE_FEATURE(kLazyInitializeSpellcheckCharAttribute,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAsyncSpellcheckCustomDictionaryInit,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
 }  // namespace spellcheck

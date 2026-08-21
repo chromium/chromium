@@ -203,8 +203,13 @@ void SpellCheck::Initialize(
   for (const auto& dictionary : dictionaries)
     AddSpellcheckLanguage(std::move(dictionary->file), dictionary->language);
 
-  custom_dictionary_.Init(
-      std::set<std::string>(custom_words.begin(), custom_words.end()));
+  if (base::FeatureList::IsEnabled(
+          spellcheck::kAsyncSpellcheckCustomDictionaryInit)) {
+    custom_dictionary_.InitAsync(custom_words);
+  } else {
+    custom_dictionary_.Init(
+        std::set<std::string>(custom_words.begin(), custom_words.end()));
+  }
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
   if (!spellcheck::UseBrowserSpellChecker()) {
     PostDelayedSpellCheckTask(pending_request_param_.release());
