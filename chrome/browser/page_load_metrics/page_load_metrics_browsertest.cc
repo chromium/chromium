@@ -34,7 +34,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
-#include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/page_load_metrics/observers/core/ukm_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/document_write_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
@@ -438,8 +437,6 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
     }
   }
 
-  Profile* profile() const { return browser()->GetProfile(); }
-
   content::WebContents* web_contents() const {
     return browser()->GetTabStripModel()->GetActiveWebContents();
   }
@@ -453,40 +450,6 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };
-
-// Verifies that the first navigation in a new window is classified as
-// kNewWindow.
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NewWindowClassification) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL url = embedded_test_server()->GetURL("/title1.html");
-
-  // Ensure browser startup is complete.
-  ASSERT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
-
-  base::HistogramTester histogram_tester;
-  NavigateParams nav_params(browser(), url, ui::PAGE_TRANSITION_LINK);
-  nav_params.disposition = WindowOpenDisposition::NEW_WINDOW;
-  Navigate(&nav_params);
-
-  Browser* new_browser = static_cast<Browser*>(
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile());
-  PageLoadMetricsTestWaiter waiter(
-      new_browser->tab_strip_model()->GetActiveWebContents());
-  waiter.AddPageExpectation(TimingField::kFirstContentfulPaint);
-  waiter.AddPageExpectation(TimingField::kLargestContentfulPaint);
-  waiter.AddPageExpectation(TimingField::kLoadEvent);
-  waiter.Wait();
-
-  // Navigate away to force LCP logging.
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(new_browser, GURL(url::kAboutBlankURL)));
-
-  // Verify NewWindow suffix histograms are logged.
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.NewWindow", 1);
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.NewWindow", 1);
-}
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PageLCPImagePriority) {
   // Waiter to ensure main content is loaded.

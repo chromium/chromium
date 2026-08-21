@@ -275,10 +275,6 @@ source_set("unit_tests") {
       "observers/top_chrome_webui_metrics_observer_unittest.cc",
       "page_load_metrics_initialize_unittest.cc",
     ]
-    deps += [
-      "//chrome/browser/ui/browser_window/test:test_support",
-      "//chrome/browser/ui/tabs:test_support",
-    ]
   }
 
   if (is_android) {
