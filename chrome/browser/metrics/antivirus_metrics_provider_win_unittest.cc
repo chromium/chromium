@@ -68,7 +68,9 @@ void VerifySystemProfileData(const metrics::SystemProfileProto& system_profile,
 class AntiVirusMetricsProviderTest : public ::testing::TestWithParam<bool> {
  public:
   AntiVirusMetricsProviderTest()
-      : got_results_(false), expect_unhashed_value_(GetParam()) {
+      : got_results_(false),
+        expect_unhashed_value_(GetParam()),
+        has_products_(false) {
     mojo::PendingRemote<chrome::mojom::UtilWin> remote;
     util_win_impl_.emplace(remote.InitWithNewPipeAndPassReceiver());
     provider_.SetRemoteUtilWinForTesting(std::move(remote));
@@ -86,6 +88,14 @@ class AntiVirusMetricsProviderTest : public ::testing::TestWithParam<bool> {
 
     metrics::SystemProfileProto system_profile;
     provider_.ProvideSystemProfileMetrics(&system_profile);
+
+    // If no antivirus products are found (for example in a CI VM or Windows
+    // Server environment where Windows Security Center or Defender is
+    // unavailable), gracefully skip the verification.
+    has_products_ = !system_profile.antivirus_product().empty();
+    if (!has_products_) {
+      return;
+    }
 
     VerifySystemProfileData(system_profile, expect_unhashed_value_, false);
     // This looks weird, but it's to make sure that reading the data out of the
@@ -108,6 +118,7 @@ class AntiVirusMetricsProviderTest : public ::testing::TestWithParam<bool> {
 
   bool got_results_;
   bool expect_unhashed_value_;
+  bool has_products_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
   std::optional<UtilWinImpl> util_win_impl_;
@@ -131,6 +142,12 @@ TEST_P(AntiVirusMetricsProviderTest, GetMetricsFullName) {
       base::BindOnce(&AntiVirusMetricsProviderTest::GetMetricsCallback,
                      base::Unretained(this)));
   task_environment_.RunUntilIdle();
+  if (!has_products_) {
+    GTEST_SKIP()
+        << "No antivirus products found (Windows Security Center or "
+           "Windows Defender is not available in this test environment).";
+  }
+
   EXPECT_TRUE(got_results_);
   histogram_tester_.ExpectTotalCount("UMA.AntiVirusMetricsProvider.Latency", 1);
 }
@@ -157,6 +174,12 @@ TEST_P(AntiVirusMetricsProviderTest, CallAsyncInitAfterCacheIsPopulated) {
       base::BindOnce(&AntiVirusMetricsProviderTest::GetMetricsCallback,
                      base::Unretained(this)));
   task_environment_.RunUntilIdle();
+  if (!has_products_) {
+    GTEST_SKIP()
+        << "No antivirus products found (Windows Security Center or "
+           "Windows Defender is not available in this test environment).";
+  }
+
   EXPECT_TRUE(got_results_);
   histogram_tester_.ExpectTotalCount("UMA.AntiVirusMetricsProvider.Latency", 1);
 
