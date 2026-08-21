@@ -693,10 +693,11 @@ TEST(RegistrationFetcherParamTest, ValidProviderParams) {
   EXPECT_EQ(param.registration_endpoint(),
             GURL("https://www.example.com/startsession"));
   EXPECT_THAT(param.supported_algos(), UnorderedElementsAre(ECDSA_SHA256));
-  EXPECT_EQ(param.challenge(), "c1");
-  EXPECT_EQ(param.provider_key(), "key");
-  EXPECT_EQ(param.provider_url(), GURL("https://provider.example.com"));
-  EXPECT_EQ(param.provider_session_id(), Session::Id("id"));
+  ASSERT_TRUE(param.provider_params().has_value());
+  EXPECT_EQ(param.provider_params()->provider_key, "key");
+  EXPECT_EQ(param.provider_params()->provider_url,
+            GURL("https://provider.example.com"));
+  EXPECT_EQ(param.provider_params()->provider_session_id, Session::Id("id"));
 }
 
 TEST(RegistrationFetcherParamTest, ValidProviderParamsWithoutSessionId) {
@@ -721,9 +722,11 @@ TEST(RegistrationFetcherParamTest, ValidProviderParamsWithoutSessionId) {
             GURL("https://www.example.com/startsession"));
   EXPECT_THAT(param.supported_algos(), UnorderedElementsAre(ECDSA_SHA256));
   EXPECT_EQ(param.challenge(), "c1");
-  EXPECT_EQ(param.provider_key(), "key");
-  EXPECT_EQ(param.provider_url(), GURL("https://provider.example.com"));
-  EXPECT_FALSE(param.provider_session_id().has_value());
+  ASSERT_TRUE(param.provider_params().has_value());
+  EXPECT_EQ(param.provider_params()->provider_key, "key");
+  EXPECT_EQ(param.provider_params()->provider_url,
+            GURL("https://provider.example.com"));
+  EXPECT_FALSE(param.provider_params()->provider_session_id.has_value());
 }
 
 TEST(RegistrationFetcherParamTest, InvalidProviderParamsWithoutSessionId) {

@@ -2187,8 +2187,11 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       "RelyingSession", "https://rp.com/refresh", "https://rp.com");
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-      "challenge", /*authorization=*/std::nullopt, key_thumbprint, kTestUrl,
-      Session::Id(kSessionId));
+      "challenge", /*authorization=*/std::nullopt,
+      ProviderRegistrationParams{.provider_key = key_thumbprint,
+                                 .provider_url = kTestUrl,
+                                 .provider_session_id =
+                                     Session::Id(kSessionId)});
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
       IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
@@ -2225,8 +2228,11 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       "RelyingSession", "https://rp.com/refresh", "https://rp.com");
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-      "challenge", /*authorization=*/std::nullopt, "not_the_thumbprint",
-      kTestRefreshUrl, Session::Id(kSessionId));
+      "challenge", /*authorization=*/std::nullopt,
+      ProviderRegistrationParams{.provider_key = "not_the_thumbprint",
+                                 .provider_url = kTestRefreshUrl,
+                                 .provider_session_id =
+                                     Session::Id(kSessionId)});
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
       IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
@@ -2266,8 +2272,11 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       "RelyingSession", "https://rp.com/refresh", "https://rp.com");
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-      "challenge", /*authorization=*/std::nullopt, key_thumbprint,
-      kTestRefreshUrl, Session::Id("incorrect-provider-session"));
+      "challenge", /*authorization=*/std::nullopt,
+      ProviderRegistrationParams{
+          .provider_key = key_thumbprint,
+          .provider_url = kTestRefreshUrl,
+          .provider_session_id = Session::Id("incorrect-provider-session")});
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
       IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
@@ -2310,8 +2319,11 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       "RelyingSession", "https://rp.com/refresh", "https://rp.com");
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-      "challenge", /*authorization=*/std::nullopt, key_thumbprint,
-      GURL("https://subdomain.example.com"), Session::Id(kSessionId));
+      "challenge", /*authorization=*/std::nullopt,
+      ProviderRegistrationParams{
+          .provider_key = key_thumbprint,
+          .provider_url = GURL("https://subdomain.example.com"),
+          .provider_session_id = Session::Id(kSessionId)});
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
       IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
@@ -2331,8 +2343,11 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       "RelyingSession", "https://rp.com/refresh", "https://rp.com");
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-      "challenge", /*authorization=*/std::nullopt, "key-thumbprint",
-      GURL("http:///"), Session::Id(kSessionId));
+      "challenge", /*authorization=*/std::nullopt,
+      ProviderRegistrationParams{.provider_key = "key-thumbprint",
+                                 .provider_url = GURL("http:///"),
+                                 .provider_session_id =
+                                     Session::Id(kSessionId)});
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
       IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
@@ -2355,8 +2370,11 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       "RelyingSession", "https://rp.com/refresh", "https://rp.com");
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-      "challenge", /*authorization=*/std::nullopt, "key-thumbprint",
-      GURL("data:text/html,session-provider"), Session::Id(kSessionId));
+      "challenge", /*authorization=*/std::nullopt,
+      ProviderRegistrationParams{
+          .provider_key = "key-thumbprint",
+          .provider_url = GURL("data:text/html,session-provider"),
+          .provider_session_id = Session::Id(kSessionId)});
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
       IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
@@ -2400,8 +2418,11 @@ TEST_F(SessionServiceImplTestWithoutFederatedSessions,
       "RelyingSession", "https://rp.com/refresh", "https://rp.com");
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-      "challenge", /*authorization=*/std::nullopt, key_thumbprint, kTestUrl,
-      Session::Id(kSessionId));
+      "challenge", /*authorization=*/std::nullopt,
+      ProviderRegistrationParams{.provider_key = key_thumbprint,
+                                 .provider_url = kTestUrl,
+                                 .provider_session_id =
+                                     Session::Id(kSessionId)});
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
       IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
@@ -3265,8 +3286,11 @@ TEST_F(SessionServiceImplWithStoreTest, FederatedRegistrationKeyUnrestored) {
       "RelyingSession", "https://rp.com/refresh", "https://rp.com");
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-      "challenge", /*authorization=*/std::nullopt, key_thumbprint, kTestUrl,
-      Session::Id(kSessionId));
+      "challenge", /*authorization=*/std::nullopt,
+      ProviderRegistrationParams{.provider_key = key_thumbprint,
+                                 .provider_url = kTestUrl,
+                                 .provider_session_id =
+                                     Session::Id(kSessionId)});
 
   // Mock persistent failure for RestoreSessionBindingKey
   EXPECT_CALL(
@@ -3354,8 +3378,11 @@ TEST_F(SessionServiceImplWithStoreTest,
       "RelyingSession", "https://rp.com/refresh", "https://rp.com");
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
-      "challenge", /*authorization=*/std::nullopt, key_thumbprint, kTestUrl,
-      Session::Id(kSessionId));
+      "challenge", /*authorization=*/std::nullopt,
+      ProviderRegistrationParams{.provider_key = key_thumbprint,
+                                 .provider_url = kTestUrl,
+                                 .provider_session_id =
+                                     Session::Id(kSessionId)});
   EXPECT_CALL(
       store(),
       RestoreSessionBindingKey(
@@ -4643,7 +4670,9 @@ TEST_F(SessionServiceImplPreProvisionedKeyTest,
           provider_url,
           {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
           "challenge",
-          /*authorization=*/std::nullopt, provider_key, provider_url);
+          /*authorization=*/std::nullopt,
+          ProviderRegistrationParams{.provider_key = provider_key,
+                                     .provider_url = provider_url});
 
   SessionErrorOr<unexportable_keys::UnexportableSigningKeyId> found_key =
       service().FindPreProvisionedKey(param, rp_origin);
@@ -4675,7 +4704,9 @@ TEST_F(SessionServiceImplPreProvisionedKeyTest,
           provider_url,
           {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
           "challenge",
-          /*authorization=*/std::nullopt, provider_key, provider_url);
+          /*authorization=*/std::nullopt,
+          ProviderRegistrationParams{.provider_key = provider_key,
+                                     .provider_url = provider_url});
   auto wrong_rp_origin = url::Origin::Create(GURL("https://wrong-rp.test"));
   EXPECT_THAT(service().FindPreProvisionedKey(matching_param, wrong_rp_origin),
               base::test::ErrorIs(SessionError::kPreProvisionedKeyNotFound));
@@ -4687,7 +4718,9 @@ TEST_F(SessionServiceImplPreProvisionedKeyTest,
           wrong_provider_url,
           {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
           "challenge",
-          /*authorization=*/std::nullopt, provider_key, wrong_provider_url);
+          /*authorization=*/std::nullopt,
+          ProviderRegistrationParams{.provider_key = provider_key,
+                                     .provider_url = wrong_provider_url});
   EXPECT_THAT(service().FindPreProvisionedKey(wrong_idp_param, rp_origin),
               base::test::ErrorIs(SessionError::kPreProvisionedKeyNotFound));
 
@@ -4698,7 +4731,9 @@ TEST_F(SessionServiceImplPreProvisionedKeyTest,
           provider_url,
           {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
           "challenge",
-          /*authorization=*/std::nullopt, wrong_provider_key, provider_url);
+          /*authorization=*/std::nullopt,
+          ProviderRegistrationParams{.provider_key = wrong_provider_key,
+                                     .provider_url = provider_url});
   EXPECT_THAT(service().FindPreProvisionedKey(wrong_digest_param, rp_origin),
               base::test::ErrorIs(SessionError::kPreProvisionedKeyNotFound));
 }
@@ -4750,7 +4785,9 @@ TEST_F(SessionServiceImplPreProvisionedKeyTest, MissingInitiator) {
           provider_url,
           {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
           "challenge",
-          /*authorization=*/std::nullopt, provider_key, provider_url);
+          /*authorization=*/std::nullopt,
+          ProviderRegistrationParams{.provider_key = provider_key,
+                                     .provider_url = provider_url});
 
   SessionErrorOr<unexportable_keys::UnexportableSigningKeyId> found_key =
       service().FindPreProvisionedKey(

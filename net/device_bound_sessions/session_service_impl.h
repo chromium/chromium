@@ -357,11 +357,9 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void RemoveFetcher(RegistrationFetcher* fetcher);
 
   // Asynchronously get the federated provider session specified by
-  // `registration_params`, if allowed.
+  // `provider_params`, if allowed.
   void GetFederatedProviderSessionIfValid(
-      GURL provider_url,
-      Session::Id provider_session_id,
-      std::string provider_key_thumbprint,
+      ProviderRegistrationParams provider_params,
       OnAccessCallback on_access_callback,
       base::OnceCallback<void(base::expected<Session*, SessionError>)>
           callback);

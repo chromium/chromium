@@ -20,6 +20,24 @@
 
 namespace net::device_bound_sessions {
 
+// Encapsulates parameters specific to a session registration initiated by an
+// Identity Provider (IdP). This can be used for:
+// - Single Sign-On (SSO): where the IdP pre-generates an attested key for a
+//   Relying Party (RP).
+// - Federated sessions: where the RP reuses the same key and session from the
+//   IdP.
+struct NET_EXPORT ProviderRegistrationParams {
+  std::string provider_key;
+  GURL provider_url;
+  // `provider_session_id` is populated only during federated session
+  // registrations when an RP reuses the same key as the IdP. It should be
+  // empty for DBSC-SSO flows when an IdP pre-generates an attested key for
+  // an RP.
+  std::optional<Session::Id> provider_session_id;
+
+  bool operator==(const ProviderRegistrationParams&) const = default;
+};
+
 // Class to parse Secure-Session-Registration header.
 // See explainer for details:
 // https://github.com/WICG/dbsc/blob/main/README.md#start-session
@@ -57,9 +75,8 @@ class NET_EXPORT RegistrationFetcherParam {
           supported_algos,
       std::optional<std::string> challenge,
       std::optional<std::string> authorization,
-      std::optional<std::string> provider_key = std::nullopt,
-      std::optional<GURL> provider_url = std::nullopt,
-      std::optional<Session::Id> provider_session_id = std::nullopt,
+      std::optional<ProviderRegistrationParams> provider_params =
+          std::nullopt,
       AttestationMode attestation_mode = AttestationMode::kNone,
       std::optional<url::Origin> maybe_referring_origin = std::nullopt);
 
@@ -81,14 +98,8 @@ class NET_EXPORT RegistrationFetcherParam {
     return authorization_;
   }
 
-  const std::optional<std::string>& provider_key() const {
-    return provider_key_;
-  }
-
-  const std::optional<GURL>& provider_url() const { return provider_url_; }
-
-  const std::optional<Session::Id>& provider_session_id() const {
-    return provider_session_id_;
+  const std::optional<ProviderRegistrationParams>& provider_params() const {
+    return provider_params_;
   }
 
   AttestationMode attestation_mode() const { return attestation_mode_; }
@@ -110,9 +121,7 @@ class NET_EXPORT RegistrationFetcherParam {
           supported_algos,
       std::optional<std::string> challenge,
       std::optional<std::string> authorization,
-      std::optional<std::string> provider_key,
-      std::optional<GURL> provider_url,
-      std::optional<Session::Id> provider_session_id,
+      std::optional<ProviderRegistrationParams> provider_params,
       AttestationMode attestation_mode);
 
   static std::optional<RegistrationFetcherParam> ParseItem(
@@ -124,9 +133,7 @@ class NET_EXPORT RegistrationFetcherParam {
   std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos_;
   std::optional<std::string> challenge_;
   std::optional<std::string> authorization_;
-  std::optional<std::string> provider_key_;
-  std::optional<GURL> provider_url_;
-  std::optional<Session::Id> provider_session_id_;
+  std::optional<ProviderRegistrationParams> provider_params_;
   AttestationMode attestation_mode_ = AttestationMode::kNone;
 };
 
