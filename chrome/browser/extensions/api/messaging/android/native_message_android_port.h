@@ -30,8 +30,8 @@ class NativeMessageAndroidPort : public MessagePort {
       Profile* profile,
       base::WeakPtr<ChannelDelegate> channel_delegate,
       const PortId& port_id,
-      const ExtensionId& extension_id,
       const std::string& package_name,
+      const ExtensionId& extension_id,
       std::string* error_out);
 
   ~NativeMessageAndroidPort() override;
@@ -59,8 +59,8 @@ class NativeMessageAndroidPort : public MessagePort {
   // Initiates connection to the Android app. Returns an error message if
   // connection failed, or std::nullopt on success.
   std::optional<std::string> ConnectToApp(Profile* profile,
-                                          const ExtensionId& extension_id,
-                                          const std::string& package_name);
+                                          const std::string& package_name,
+                                          const ExtensionId& extension_id);
 
   base::android::ScopedJavaGlobalRef<jobject> java_peer_;
 };

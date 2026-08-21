@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.extensions.api.messaging.IBrowserNativeMessageService;
 import org.chromium.chrome.browser.extensions.api.messaging.IExtensionNativeMessageCallback;
 import org.chromium.chrome.browser.extensions.api.messaging.IExtensionNativeMessagePort;
@@ -27,7 +28,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Android test Service equivalent of echo.py for browser tests. */
 public class EchoService extends Service {
     private static final String TAG = "EchoService";
-    public static final String ALLOWED_EXTENSION_ID = "knldjmfmopnpolahpmmgbagdohdnhkik";
+
+    // Always reject incoming connectExtension calls from an extension with this ID.
+    public static final String UNAUTHORIZED_EXTENSION_ID = "ddchlicdkolnonkihahngkmmmjnjlkkf";
+
+    // For other extension IDs, always accept incoming connectExtension calls and parrot back the
+    // isVerified value in the echo response. This allows tests to verify that Chrome passed the
+    // correct isVerified boolean across AIDL without having tests rely on connection rejection,
+    // which Chrome surfaces to extensions as a generic "Unable to connect" error indistinguishable
+    // from other connection failures.
 
     // Multiplexes sessions per extension ID.
     private final Map<String, EchoExtensionService> mSessions =
@@ -39,12 +48,15 @@ public class EchoService extends Service {
                 public IExtensionNativeMessageService connectExtension(
                         String extensionId, Bundle extensionInfo) {
                     Log.d(TAG, "connectExtension called for: %s", extensionId);
-                    if (!ALLOWED_EXTENSION_ID.equals(extensionId)) {
+                    if (UNAUTHORIZED_EXTENSION_ID.equals(extensionId)) {
                         Log.w(TAG, "Rejecting unauthorized extension: %s", extensionId);
                         throw new SecurityException("Unauthorized extension: " + extensionId);
                     }
+
+                    // Record isVerified to parrot back in echo reply.
+                    boolean isVerified = extensionInfo.getBoolean("isVerified", false);
                     return mSessions.computeIfAbsent(
-                            extensionId, id -> new EchoExtensionService(id));
+                            extensionId, id -> new EchoExtensionService(id, isVerified));
                 }
             };
 
@@ -56,28 +68,36 @@ public class EchoService extends Service {
 
     private static class EchoExtensionService extends IExtensionNativeMessageService.Stub {
         private final String mExtensionId;
+        private final @Nullable Boolean mIsVerified;
         private final AtomicInteger mPortIdCounter = new AtomicInteger(0);
 
-        EchoExtensionService(String extensionId) {
+        EchoExtensionService(String extensionId, @Nullable Boolean isVerified) {
             mExtensionId = extensionId;
+            mIsVerified = isVerified;
         }
 
         @Override
         public IExtensionNativeMessagePort connectPort(IExtensionNativeMessageCallback cb) {
             int portId = mPortIdCounter.incrementAndGet();
             Log.d(TAG, "connectPort for extension %s, portId=%d", mExtensionId, portId);
-            return new EchoPort(mExtensionId, portId, cb);
+            return new EchoPort(mExtensionId, mIsVerified, portId, cb);
         }
     }
 
     private static class EchoPort extends IExtensionNativeMessagePort.Stub {
         private final String mExtensionId;
+        private final @Nullable Boolean mIsVerified;
         private final int mPortId;
         private final IExtensionNativeMessageCallback mCallback;
         private int mMessageNumber;
 
-        EchoPort(String extensionId, int portId, IExtensionNativeMessageCallback callback) {
+        EchoPort(
+                String extensionId,
+                @Nullable Boolean isVerified,
+                int portId,
+                IExtensionNativeMessageCallback callback) {
             mExtensionId = extensionId;
+            mIsVerified = isVerified;
             mPortId = portId;
             mCallback = callback;
         }
@@ -109,6 +129,9 @@ public class EchoService extends Service {
                 reply.put("id", mMessageNumber);
                 reply.put("echo", input);
                 reply.put("caller_url", "chrome-extension://" + mExtensionId + "/");
+                if (mIsVerified != null) {
+                    reply.put("isVerified", mIsVerified);
+                }
 
                 mCallback.onMessage(reply.toString());
             } catch (JSONException e) {

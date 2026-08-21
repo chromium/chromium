@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 
@@ -70,14 +71,15 @@ public class NativeMessagingConnection implements ServiceConnection {
         return mIsBound;
     }
 
-    public @Nullable String addPort(String extensionId, NativeMessageAndroidPort port) {
+    public @Nullable String addPort(
+            String extensionId, boolean isVerifiedExtension, NativeMessageAndroidPort port) {
         if (!mIsBound) {
             return getUnableToConnectError(mPackageName);
         }
 
         ExtensionSession session = mSessions.get(extensionId);
         if (session == null) {
-            session = new ExtensionSession(extensionId, this);
+            session = new ExtensionSession(extensionId, isVerifiedExtension, this);
             mSessions.put(extensionId, session);
 
             if (mService != null) {
@@ -205,6 +207,7 @@ public class NativeMessagingConnection implements ServiceConnection {
         }
 
         private final String mExtensionId;
+        private final boolean mIsVerifiedExtension;
         private @Nullable IExtensionNativeMessageService mExtensionService;
         private @ConnectionState int mState = ConnectionState.DISCONNECTED;
 
@@ -216,8 +219,12 @@ public class NativeMessagingConnection implements ServiceConnection {
 
         private final NativeMessagingConnection mConnection;
 
-        public ExtensionSession(String extensionId, NativeMessagingConnection connection) {
+        public ExtensionSession(
+                String extensionId,
+                boolean isVerifiedExtension,
+                NativeMessagingConnection connection) {
             mExtensionId = extensionId;
+            mIsVerifiedExtension = isVerifiedExtension;
             mConnection = connection;
         }
 
@@ -256,7 +263,10 @@ public class NativeMessagingConnection implements ServiceConnection {
                     () -> {
                         ConnectionResult<IExtensionNativeMessageService> result =
                                 authenticateExtensionInBackground(
-                                        browserService, mExtensionId, mConnection.mPackageName);
+                                        browserService,
+                                        mExtensionId,
+                                        mIsVerifiedExtension,
+                                        mConnection.mPackageName);
                         PostTask.postTask(
                                 TaskTraits.UI_DEFAULT, () -> onConnectExtensionResult(result));
                     });
@@ -266,11 +276,14 @@ public class NativeMessagingConnection implements ServiceConnection {
                 authenticateExtensionInBackground(
                         IBrowserNativeMessageService browserService,
                         String extensionId,
+                        boolean isVerifiedExtension,
                         String packageName) {
             ThreadUtils.assertOnBackgroundThread();
             try {
+                Bundle info = new Bundle();
+                info.putBoolean("isVerified", isVerifiedExtension);
                 IExtensionNativeMessageService service =
-                        browserService.connectExtension(extensionId, null);
+                        browserService.connectExtension(extensionId, info);
                 if (service != null) {
                     return new ConnectionResult<>(service, null);
                 }

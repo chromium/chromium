@@ -84,9 +84,13 @@ public class NativeMessagingConnectionTest {
                     public IExtensionNativeMessageService connectExtension(
                             String extensionId, Bundle info) throws RemoteException {
                         if (EXT_1.equals(extensionId)) {
+                            Assert.assertNotNull(info);
+                            Assert.assertTrue(info.getBoolean("isVerified"));
                             return mMockExtensionService1;
                         }
                         if (EXT_2.equals(extensionId)) {
+                            Assert.assertNotNull(info);
+                            Assert.assertFalse(info.getBoolean("isVerified"));
                             return mMockExtensionService2;
                         }
                         return null; // EXT_FAIL returns null.
@@ -95,8 +99,13 @@ public class NativeMessagingConnectionTest {
     }
 
     private static @Nullable String connectExtension(
+            NativeMessagingConnection connection, String extensionId, boolean isVerifiedExtension) {
+        return connection.addPort(extensionId, isVerifiedExtension, new NativeMessageAndroidPort());
+    }
+
+    private static @Nullable String connectExtension(
             NativeMessagingConnection connection, String extensionId) {
-        return connection.addPort(extensionId, new NativeMessageAndroidPort());
+        return connectExtension(connection, extensionId, /* isVerifiedExtension= */ true);
     }
 
     // Test that:
@@ -140,9 +149,9 @@ public class NativeMessagingConnectionTest {
         // 1. Service connects first.
         mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
 
-        // 2. Connect two distinct extensions.
-        Assert.assertNull(connectExtension(connection, EXT_1));
-        Assert.assertNull(connectExtension(connection, EXT_2));
+        // 2. Connect two distinct extensions (EXT_1 verified, EXT_2 unverified).
+        Assert.assertNull(connectExtension(connection, EXT_1, /* isVerifiedExtension= */ true));
+        Assert.assertNull(connectExtension(connection, EXT_2, /* isVerifiedExtension= */ false));
 
         RobolectricUtil.runAllBackgroundAndUi();
 

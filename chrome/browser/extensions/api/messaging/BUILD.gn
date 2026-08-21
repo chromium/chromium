@@ -27,7 +27,12 @@ source_set("messaging") {
       "native_messaging_policy_handler.h",
     ]
 
-    if (!is_android) {
+    if (is_android) {
+      sources += [
+        "android/native_message_android_port.cc",
+        "android/native_message_android_port.h",
+      ]
+    } else {
       sources += [
         "launch_context.cc",
         "launch_context.h",
@@ -78,6 +83,7 @@ source_set("messaging") {
     "//chrome/common/extensions",
     "//components/infobars/content",
     "//components/infobars/core",
+    "//components/keyed_service/core",
     "//components/policy/core/browser",
     "//components/prefs",
     "//components/strings:components_strings",
@@ -85,7 +91,7 @@ source_set("messaging") {
   ]
 
   if (is_android) {
-    deps += [ "//chrome/browser/extensions/api/messaging/android" ]
+    deps += [ "//chrome/browser/extensions/api/messaging/android:jni_headers" ]
   }
 
   if (!is_android) {
@@ -108,10 +114,6 @@ source_set("messaging") {
       "//components/app_launch_prefetch",
       "//ui/views",
     ]
-  }
-
-  if (is_android) {
-    deps += [ "android" ]
   }
 }
 

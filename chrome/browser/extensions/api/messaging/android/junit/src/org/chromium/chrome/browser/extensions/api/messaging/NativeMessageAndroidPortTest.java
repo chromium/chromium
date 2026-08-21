@@ -142,6 +142,11 @@ public class NativeMessageAndroidPortTest {
         NativeMessagingManager.getForProfile(mProfile).destroy();
     }
 
+    private @Nullable String connectToApp(NativeMessageAndroidPort port) {
+        return port.connectToApp(
+                mProfile, TARGET_PACKAGE, EXTENSION_ID, /* isVerifiedExtension= */ true);
+    }
+
     // Test that messages queued in NativeMessageAndroidPort before the app connects
     // are flushed in FIFO order once connection is established, and bidirectional
     // replies from the app are delivered.
@@ -165,7 +170,7 @@ public class NativeMessageAndroidPortTest {
         port.forwardMessageToApp("msg_1");
         port.forwardMessageToApp("msg_2");
 
-        Assert.assertNull(port.connectToApp(mProfile, EXTENSION_ID, TARGET_PACKAGE));
+        Assert.assertNull(connectToApp(port));
 
         // 2. Service connects and completes authentication.
         mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
@@ -197,7 +202,7 @@ public class NativeMessageAndroidPortTest {
 
         // 1. Establish session first with port 1.
         NativeMessageAndroidPort port1 = new NativeMessageAndroidPort();
-        Assert.assertNull(port1.connectToApp(mProfile, EXTENSION_ID, TARGET_PACKAGE));
+        Assert.assertNull(connectToApp(port1));
         mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
         RobolectricUtil.runAllBackgroundAndUi();
 
@@ -208,7 +213,7 @@ public class NativeMessageAndroidPortTest {
         TestPortObserver port2Observer = new TestPortObserver();
         port2.setTestObserver(port2Observer);
 
-        Assert.assertNull(port2.connectToApp(mProfile, EXTENSION_ID, TARGET_PACKAGE));
+        Assert.assertNull(connectToApp(port2));
         RobolectricUtil.runAllBackgroundAndUi();
 
         Assert.assertEquals(2, createdPorts.size());
@@ -234,7 +239,7 @@ public class NativeMessageAndroidPortTest {
         TestPortObserver portObserver = new TestPortObserver();
         port.setTestObserver(portObserver);
 
-        Assert.assertNull(port.connectToApp(mProfile, EXTENSION_ID, TARGET_PACKAGE));
+        Assert.assertNull(connectToApp(port));
         mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
         RobolectricUtil.runAllBackgroundAndUi();
 
@@ -251,13 +256,13 @@ public class NativeMessageAndroidPortTest {
 
         // 1. Establish and authenticate session first.
         NativeMessageAndroidPort setupPort = new NativeMessageAndroidPort();
-        Assert.assertNull(setupPort.connectToApp(mProfile, EXTENSION_ID, TARGET_PACKAGE));
+        Assert.assertNull(connectToApp(setupPort));
         mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
         RobolectricUtil.runAllBackgroundAndUi();
 
         // 2. Add new port to the connected session (initiates connectPortInBackground).
         NativeMessageAndroidPort port = new NativeMessageAndroidPort();
-        Assert.assertNull(port.connectToApp(mProfile, EXTENSION_ID, TARGET_PACKAGE));
+        Assert.assertNull(connectToApp(port));
 
         // 3. Destroy port while connectPortInBackground is in-flight before tasks run.
         port.destroy();
@@ -287,7 +292,7 @@ public class NativeMessageAndroidPortTest {
         TestPortObserver portObserver = new TestPortObserver();
         port.setTestObserver(portObserver);
 
-        Assert.assertNull(port.connectToApp(mProfile, EXTENSION_ID, TARGET_PACKAGE));
+        Assert.assertNull(connectToApp(port));
         mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
         RobolectricUtil.runAllBackgroundAndUi();
 
@@ -319,7 +324,7 @@ public class NativeMessageAndroidPortTest {
                         });
 
         NativeMessageAndroidPort port = new NativeMessageAndroidPort();
-        Assert.assertNull(port.connectToApp(mProfile, EXTENSION_ID, TARGET_PACKAGE));
+        Assert.assertNull(connectToApp(port));
         mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
         RobolectricUtil.runAllBackgroundAndUi();
 
@@ -344,7 +349,7 @@ public class NativeMessageAndroidPortTest {
         TestPortObserver portObserver = new TestPortObserver();
         port.setTestObserver(portObserver);
 
-        Assert.assertNull(port.connectToApp(mProfile, EXTENSION_ID, TARGET_PACKAGE));
+        Assert.assertNull(connectToApp(port));
         mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
         RobolectricUtil.runAllBackgroundAndUi();
 
@@ -378,7 +383,7 @@ public class NativeMessageAndroidPortTest {
         port.forwardMessageToApp("pending_2");
         port.forwardMessageToApp("pending_3");
 
-        Assert.assertNull(port.connectToApp(mProfile, EXTENSION_ID, TARGET_PACKAGE));
+        Assert.assertNull(connectToApp(port));
         mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
         RobolectricUtil.runAllBackgroundAndUi();
 
@@ -406,7 +411,7 @@ public class NativeMessageAndroidPortTest {
         TestPortObserver portObserver = new TestPortObserver();
         port.setTestObserver(portObserver);
 
-        Assert.assertNull(port.connectToApp(mProfile, EXTENSION_ID, TARGET_PACKAGE));
+        Assert.assertNull(connectToApp(port));
         mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
         RobolectricUtil.runAllBackgroundAndUi();
 

@@ -89,9 +89,10 @@ public class NativeMessageAndroidPort {
     // to the external app. Returns an error message if the connection immediately fails, or null on
     // success.
     @CalledByNative
-    public @Nullable String connectToApp(Profile profile, String extensionId, String packageName) {
+    public @Nullable String connectToApp(
+            Profile profile, String packageName, String extensionId, boolean isVerifiedExtension) {
         NativeMessagingManager manager = NativeMessagingManager.getForProfile(profile);
-        return manager.addPort(packageName, extensionId, this);
+        return manager.addPort(packageName, extensionId, isVerifiedExtension, this);
     }
 
     // Sets the active callback for this port.

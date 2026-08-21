@@ -9,23 +9,6 @@ import("//third_party/jni_zero/jni_zero.gni")
 assert(enable_extensions_core)
 assert(is_android)
 
-source_set("android") {
-  sources = [
-    "native_message_android_port.cc",
-    "native_message_android_port.h",
-  ]
-
-  deps = [
-    ":jni_headers",
-    "//base",
-    "//chrome/browser/profiles:profile",
-    "//components/keyed_service/core",
-    "//content/public/browser",
-    "//extensions/browser",
-    "//extensions/common",
-  ]
-}
-
 android_aidl("aidl") {
   import_include = [ "java/src" ]
   sources = [

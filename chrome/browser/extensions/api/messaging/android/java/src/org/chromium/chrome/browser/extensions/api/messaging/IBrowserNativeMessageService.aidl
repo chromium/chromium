@@ -11,8 +11,9 @@ interface IBrowserNativeMessageService {
   // Called by the browser on behalf of the extension for its first native
   // messaging call.
   // extensionId: The string ID of the extension.
-  // TODO(crbug.com/515159909): Remove this @nullable once this information is
-  // available.
+  // extensionInfo: Contains additional extension metadata. This includes an
+  // "isVerified" boolean flag indicating if the extension's contents are
+  // verified against a source of truth.
   IExtensionNativeMessageService connectExtension(
-      String extensionId, in @nullable Bundle extensionInfo);
+      String extensionId, in Bundle extensionInfo);
 }

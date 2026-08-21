@@ -58,7 +58,10 @@ public class NativeMessagingManager implements Destroyable, NativeMessagingConne
     // external Android app.
     // Should only be called by the `port` which adds itself here.
     @Nullable String addPort(
-            String packageName, String extensionId, NativeMessageAndroidPort port) {
+            String packageName,
+            String extensionId,
+            boolean isVerifiedExtension,
+            NativeMessageAndroidPort port) {
         ThreadUtils.assertOnUiThread();
         NativeMessagingConnection connection = mConnections.get(packageName);
         // Initiate a connection to the app if the app is not connected.
@@ -71,7 +74,7 @@ public class NativeMessagingManager implements Destroyable, NativeMessagingConne
             mConnections.put(packageName, connection);
         }
 
-        return connection.addPort(extensionId, port);
+        return connection.addPort(extensionId, isVerifiedExtension, port);
     }
 
     @Nullable NativeMessagingConnection getConnectionForTesting(String packageName) {
