@@ -65,6 +65,7 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/components/sensitive_content/SensitiveContentClient.java" ]
     deps = [
       "//base:base_java",
+      "//base:tristate_java",
       "//content/public/android:content_full_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",

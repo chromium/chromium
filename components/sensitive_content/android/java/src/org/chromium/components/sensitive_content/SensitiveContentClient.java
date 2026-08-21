@@ -19,6 +19,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
@@ -92,7 +94,7 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
      * Has value if the content sensitivity was restored from tab state. The value is true if the
      * content is sensitive, and false otherwise.
      */
-    private @Nullable Boolean mContentRestoredFromTabStateIsSensitive;
+    private @TriState int mContentRestoredFromTabStateIsSensitive;
 
     /**
      * Retrieves the client from {@link WebContents}, by calling the native client. The native
@@ -156,7 +158,7 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
         // This is ok, because {@link TabImpl} is both the observer and the one that calls this
         // method, so it is aware of the content sensitivity.
         mContentIsSensitive = contentIsSensitive;
-        mContentRestoredFromTabStateIsSensitive = contentIsSensitive;
+        mContentRestoredFromTabStateIsSensitive = TriStateUtils.from(contentIsSensitive);
         setContentSensitivity(contentIsSensitive);
     }
 
@@ -218,7 +220,7 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
     }
 
     @VisibleForTesting
-    public @Nullable Boolean getContentRestoredFromTabStateIsSensitive() {
+    public @TriState int getContentRestoredFromTabStateIsSensitive() {
         return mContentRestoredFromTabStateIsSensitive;
     }
 
