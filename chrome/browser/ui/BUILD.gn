@@ -2183,8 +2183,6 @@ static_library("ui") {
     sources += [
       "views/autofill/payments/webauthn_dialog_view.cc",
       "views/autofill/payments/webauthn_dialog_view.h",
-      "views/external_protocol_dialog.cc",
-      "views/external_protocol_dialog.h",
       "views/profiles/incognito_menu_view.cc",
       "views/profiles/incognito_menu_view.h",
       "views/profiles/profile_menu_coordinator.cc",
@@ -2446,10 +2444,7 @@ static_library("ui") {
   }
 
   if (is_linux || is_mac) {
-    sources += [
-      "views/first_run_dialog.cc",  # Dialog shows only on Linux and macOS.
-      "views/first_run_dialog.h",
-    ]
+    deps += [ "//chrome/browser/ui/views:first_run_dialog" ]
   }
 
   if (is_linux) {
@@ -2589,8 +2584,6 @@ static_library("ui") {
       "views/certificate_selector.h",
       "views/chrome_browser_main_extra_parts_views.cc",
       "views/chrome_browser_main_extra_parts_views.h",
-      "views/chrome_constrained_window_views_client.cc",
-      "views/chrome_constrained_window_views_client.h",
       "views/chrome_views_delegate.cc",
       "views/chrome_views_delegate.h",
       "views/chrome_web_dialog_view.cc",
@@ -2598,8 +2591,6 @@ static_library("ui") {
       "views/constrained_web_dialog_delegate_views.cc",
       "views/content_setting_bubble_contents.cc",
       "views/content_setting_bubble_contents.h",
-      "views/content_setting_site_row_view.cc",
-      "views/content_setting_site_row_view.h",
       "views/context_hub/save_to_memory_bank_bubble_controller.cc",
       "views/context_hub/save_to_memory_bank_bubble_controller.h",
       "views/context_hub/save_to_memory_bank_bubble_view.cc",
@@ -2741,12 +2732,8 @@ static_library("ui") {
       "views/login_handler_views.cc",
       "views/session_crashed_bubble_view.cc",
       "views/session_crashed_bubble_view.h",
-      "views/simple_web_view_dialog.cc",
-      "views/simple_web_view_dialog.h",
       "views/ssl_client_certificate_selector.cc",
       "views/ssl_client_certificate_selector.h",
-      "views/tab_icon_view.cc",
-      "views/tab_icon_view.h",
       "views/tab_search_bubble_host.cc",
       "views/tab_search_bubble_host.h",
       "views/tabs/browser_tab_strip_controller.cc",
@@ -2937,18 +2924,23 @@ static_library("ui") {
       "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/converters",
       "//chrome/browser/ui/views:bubble_anchor_util_views",
       "//chrome/browser/ui/views:bubble_menu_item_factory",
+      "//chrome/browser/ui/views:chrome_constrained_window_views_client",
       "//chrome/browser/ui/views:color_provider_browser_helper",
       "//chrome/browser/ui/views:confirm_bubble",
+      "//chrome/browser/ui/views:content_setting_site_row_view",
       "//chrome/browser/ui/views:device_chooser_content_view",
       "//chrome/browser/ui/views:elevation_icon_setter",
+      "//chrome/browser/ui/views:external_protocol_dialog",
       "//chrome/browser/ui/views:find_bar_owner",
       "//chrome/browser/ui/views:flying_indicator",
       "//chrome/browser/ui/views:layout_provider_impl",
       "//chrome/browser/ui/views:login_view",
       "//chrome/browser/ui/views:media_picker_utils",
       "//chrome/browser/ui/views:message_box_dialog",
+      "//chrome/browser/ui/views:simple_web_view_dialog",
       "//chrome/browser/ui/views:status_bubble",
       "//chrome/browser/ui/views:sub_apps_permission_explanation",
+      "//chrome/browser/ui/views:tab_icon_view",
       "//chrome/browser/ui/views:task_manager_search_bar_view",
       "//chrome/browser/ui/views:theme_copying_widget",
       "//chrome/browser/ui/views:title_origin_label",

@@ -51,6 +51,7 @@ source_set("impl") {
     "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/call_to_action",
     "//chrome/browser/ui/commerce",
+    "//chrome/browser/ui/views:chrome_constrained_window_views_client",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/views/accessibility",
     "//components/commerce/core:feature_list",

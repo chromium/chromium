@@ -16,6 +16,7 @@ source_set("external_protocol_dialog_test_support") {
   ]
 
   public_deps = [
+    ":external_protocol_dialog",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/external_protocol",
@@ -195,6 +196,7 @@ if (!is_mac) {
     ]
     deps = [
       "//chrome/app:generated_resources",
+      "//chrome/browser/password_manager",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/views:layout_provider",
       "//chrome/browser/web_applications/extensions",
@@ -404,6 +406,7 @@ if (use_aura) {
     sources = [ "theme_profile_key.cc" ]
     deps = [
       "//base",
+      "//chrome/browser/password_manager",
       "//chrome/browser/profiles:profile",
       "//ui/aura",
       "//ui/base",
@@ -499,6 +502,7 @@ source_set("sub_apps_permission_explanation") {
   ]
   deps = [
     "//chrome/app:generated_resources",
+    "//chrome/browser/password_manager",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//components/webapps/common",
@@ -608,4 +612,166 @@ if (is_mac) {
     public = [ "javascript_app_modal_event_blocker_mac.h" ]
     public_deps = [ "//ui/gfx" ]
   }
+}
+
+source_set("tab_icon_view") {
+  public = [ "tab_icon_view.h" ]
+  sources = [ "tab_icon_view.cc" ]
+  public_deps = [
+    "//base",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    ":views",
+    "//chrome/app:command_ids",
+    "//chrome/app/theme:theme_resources",
+    "//ui/base",
+    "//ui/color",
+    "//ui/gfx",
+  ]
+  if (is_win) {
+    deps += [ "//chrome/browser/win" ]
+  }
+}
+
+source_set("external_protocol_dialog") {
+  public = [ "external_protocol_dialog.h" ]
+  sources = [ "external_protocol_dialog.cc" ]
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//ui/base/metadata",
+    "//ui/views",
+    "//url",
+  ]
+  deps = [
+    ":layout_provider",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/external_protocol",
+    "//chrome/browser/password_manager",
+    "//chrome/browser/picture_in_picture",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/tab_contents",
+    "//chrome/common:constants",
+    "//components/constrained_window",
+    "//components/prefs",
+    "//components/url_formatter",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/gfx",
+  ]
+  if (!is_android) {
+    deps += [ "//chrome/browser:shell_integration" ]
+  }
+}
+
+source_set("first_run_dialog") {
+  if (is_linux || is_mac) {
+    public = [ "first_run_dialog.h" ]
+    sources = [ "first_run_dialog.cc" ]
+    public_deps = [
+      "//base",
+      "//ui/base/metadata",
+      "//ui/views",
+    ]
+    deps = [
+      ":layout_provider",
+      "//chrome/app:branded_strings",
+      "//chrome/app:generated_resources",
+      "//chrome/browser:browser_process",
+      "//chrome/browser:primitives",
+      "//chrome/browser:shell_integration",
+      "//chrome/browser/first_run",
+      "//chrome/browser/headless",
+      "//chrome/browser/lifetime",
+      "//chrome/browser/metrics",
+      "//chrome/common:constants",
+      "//components/crash/core/app",
+      "//components/strings:components_strings",
+      "//ui/base",
+      "//ui/base/mojom:ui_base_types",
+      "//ui/gfx",
+    ]
+  }
+}
+
+source_set("chrome_constrained_window_views_client") {
+  public = [ "chrome_constrained_window_views_client.h" ]
+  sources = [ "chrome_constrained_window_views_client.cc" ]
+  public_deps = [
+    "//base",
+    "//components/constrained_window",
+  ]
+  deps = [
+    "//chrome/browser:primitives",
+    "//chrome/browser/ui:chrome_web_modal_dialog_manager_delegate",
+    "//chrome/browser/ui/browser_window",
+    "//components/web_modal",
+  ]
+  if (use_aura) {
+    deps += [ "//ui/aura" ]
+  }
+}
+
+source_set("content_setting_site_row_view") {
+  public = [ "content_setting_site_row_view.h" ]
+  sources = [ "content_setting_site_row_view.cc" ]
+  public_deps = [
+    "//base",
+    "//net",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    ":layout_provider",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui/views/accessibility",
+    "//components/favicon/core",
+    "//components/strings:components_strings",
+    "//components/url_formatter",
+    "//ui/base",
+    "//ui/views",
+  ]
+}
+
+source_set("simple_web_view_dialog") {
+  public = [ "simple_web_view_dialog.h" ]
+  sources = [ "simple_web_view_dialog.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/views/location_bar",
+    "//components/web_modal",
+    "//content/public/browser",
+    "//ui/base/metadata",
+    "//ui/gfx/geometry",
+    "//ui/views",
+    "//ui/views/controls/webview",
+    "//url",
+  ]
+  deps = [
+    "//chrome/app:command_ids",
+    "//chrome/app:generated_resources",
+    "//chrome/app/theme:theme_resources",
+    "//chrome/browser/password_manager",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui:chrome_web_modal_dialog_manager_delegate",
+    "//chrome/browser/ui:view_ids",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/content_settings",
+    "//chrome/browser/ui/views/toolbar",
+    "//components/omnibox/browser",
+    "//components/password_manager/core/browser",
+    "//components/safe_browsing:buildflags",
+    "//components/strings:components_strings",
+    "//content/public/common",
+    "//ui/base",
+    "//ui/color",
+    "//ui/display",
+  ]
 }
