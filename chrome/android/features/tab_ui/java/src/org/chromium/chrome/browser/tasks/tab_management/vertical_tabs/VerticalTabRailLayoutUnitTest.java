@@ -43,12 +43,14 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
@@ -110,6 +112,7 @@ public class VerticalTabRailLayoutUnitTest {
 
     @After
     public void tearDown() {
+        DeviceInfo.resetIsDesktopForTesting();
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(null);
         LocalizationUtils.setRtlForTesting(false);
     }
@@ -224,7 +227,10 @@ public class VerticalTabRailLayoutUnitTest {
         int buttonSize =
                 mActivity
                         .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tabs_header_button_size);
+                        .getDimensionPixelSize(
+                                VerticalTabUtils.isTablet(mActivity)
+                                        ? R.dimen.vertical_tabs_header_button_size_tablet
+                                        : R.dimen.vertical_tabs_header_button_size);
 
         View gridButton = mRailLayout.findViewById(R.id.grid_button);
 
@@ -495,11 +501,11 @@ public class VerticalTabRailLayoutUnitTest {
         int expectedTouchButtonSize =
                 mActivity
                         .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tabs_header_button_size);
+                        .getDimensionPixelSize(R.dimen.vertical_tabs_header_button_size_tablet);
         int expectedTouchNewTabHeight =
                 mActivity
                         .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tabs_footer_button_height);
+                        .getDimensionPixelSize(R.dimen.vertical_tabs_footer_button_height_tablet);
 
         assertEquals(36, expectedTouchButtonSize);
         assertEquals(40, expectedTouchNewTabHeight);
@@ -617,7 +623,10 @@ public class VerticalTabRailLayoutUnitTest {
         int expectedChipSize =
                 mActivity
                         .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tabs_footer_button_height);
+                        .getDimensionPixelSize(
+                                VerticalTabUtils.isTablet(mActivity)
+                                        ? R.dimen.vertical_tabs_footer_button_height_tablet
+                                        : R.dimen.vertical_tabs_footer_button_height);
         assertEquals(expectedChipSize, incognitoParams.width);
         assertEquals(expectedChipSize, incognitoParams.height);
 
@@ -631,7 +640,10 @@ public class VerticalTabRailLayoutUnitTest {
         int expectedCollapsedSize =
                 mActivity
                         .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tabs_header_button_size);
+                        .getDimensionPixelSize(
+                                VerticalTabUtils.isTablet(mActivity)
+                                        ? R.dimen.vertical_tabs_header_button_size_tablet
+                                        : R.dimen.vertical_tabs_header_button_size);
         assertEquals(expectedCollapsedSize, collapsedNewTabParams.width);
         assertEquals(expectedCollapsedSize, collapsedNewTabParams.height);
         assertEquals(expectedCollapsedSize, collapsedIncognitoParams.width);
@@ -646,13 +658,54 @@ public class VerticalTabRailLayoutUnitTest {
 
     @Test
     @SmallTest
-    public void testIncognitoChipDimensions() {
-        int chipSize =
+    public void testButtonDimensions_TabletVsDesktop() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        VerticalTabRailLayout tabletLayout =
+                (VerticalTabRailLayout)
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.vertical_tab_layout, null, false);
+        assertEquals(
                 mActivity
                         .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tabs_footer_button_height);
-        // 40dp
-        assertEquals(40, chipSize);
+                        .getDimensionPixelSize(R.dimen.vertical_tabs_header_button_size_tablet),
+                tabletLayout.getButtonSizePxForTesting());
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tabs_footer_button_height_tablet),
+                tabletLayout.getIncognitoChipSizePxForTesting());
+
+        DeviceInfo.setIsDesktopForTesting(true);
+        VerticalTabRailLayout desktopLayout =
+                (VerticalTabRailLayout)
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.vertical_tab_layout, null, false);
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tabs_header_button_size),
+                desktopLayout.getButtonSizePxForTesting());
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tabs_footer_button_height),
+                desktopLayout.getIncognitoChipSizePxForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testPinnedTabsRecyclerViewPadding() {
+        int expectedPaddingTop =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_tabs_padding_top);
+        int expectedPaddingBottom =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_tabs_padding_bottom);
+        assertEquals(expectedPaddingTop, mRailLayout.getPinnedTabsRecyclerView().getPaddingTop());
+        assertEquals(
+                expectedPaddingBottom, mRailLayout.getPinnedTabsRecyclerView().getPaddingBottom());
     }
 
     private void measureAndLayout(View view, int width, int height) {
