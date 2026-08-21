@@ -56,7 +56,7 @@ inline constexpr char kAiModeEntryPointAlwaysNavigatesDescription[] =
     "google.com/aimode.";
 
 inline constexpr char kDynamicAiModeButtonName[] =
-        "Omnibox Dynamic AI Mode Button";
+    "Omnibox Dynamic AI Mode Button";
 inline constexpr char kDynamicAiModeButtonDescription[] =
     "Enables dynamic behaviour for the AI mode button in the WebUI Omnibox.";
 
@@ -1599,7 +1599,8 @@ inline constexpr char kCollaborationSharedTabGroupAccountDataDescription[] =
 inline constexpr char kComposeboxSkillsContextualTasksName[] =
     "Composebox/Searchbox Skills (Contextual Tasks)";
 inline constexpr char kComposeboxSkillsContextualTasksDescription[] =
-    "Enables skills inside the composebox/searchbox input area for Contextual Tasks.";
+    "Enables skills inside the composebox/searchbox input area for Contextual "
+    "Tasks.";
 
 inline constexpr char kComposeboxSkillsNtpName[] =
     "Composebox/Searchbox Skills (NTP)";
@@ -1609,12 +1610,14 @@ inline constexpr char kComposeboxSkillsNtpDescription[] =
 inline constexpr char kComposeboxSkillsOmniboxEverywhereName[] =
     "Composebox/Searchbox Skills (Omnibox Everywhere)";
 inline constexpr char kComposeboxSkillsOmniboxEverywhereDescription[] =
-    "Enables skills inside the composebox/searchbox input area for Omnibox Everywhere.";
+    "Enables skills inside the composebox/searchbox input area for Omnibox "
+    "Everywhere.";
 
 inline constexpr char kComposeboxSkillsOmniboxPopupName[] =
     "Composebox/Searchbox Skills (Omnibox Popup)";
 inline constexpr char kComposeboxSkillsOmniboxPopupDescription[] =
-    "Enables skills inside the composebox/searchbox input area for Omnibox Popup.";
+    "Enables skills inside the composebox/searchbox input area for Omnibox "
+    "Popup.";
 
 inline constexpr char kCompressionDictionaryTransportName[] =
     "Compression dictionary transport";
@@ -3100,8 +3103,7 @@ inline constexpr char kInlinePdfV2Description[] =
     "Provides users a seamless, productive, and performant way to view, "
     "navigate, and edit PDF files inline in Clank.";
 
-inline constexpr char kInlinePdfV2IncognitoName[] =
-    "Inline PDF V2 Incognito";
+inline constexpr char kInlinePdfV2IncognitoName[] = "Inline PDF V2 Incognito";
 inline constexpr char kInlinePdfV2IncognitoDescription[] =
     "Enables inline PDF V2 in Incognito mode.";
 
@@ -3326,7 +3328,8 @@ inline constexpr char kLensBypassCompressionForC2paName[] =
     "Lens Bypass Compression for C2PA";
 inline constexpr char kLensBypassCompressionForC2paDescription[] =
     "Bypasses image downscaling and compression if a C2PA metadata urn is "
-    "detected, ensuring provenance is preserved during upload. Works across all surfaces.";
+    "detected, ensuring provenance is preserved during upload. Works across "
+    "all surfaces.";
 
 inline constexpr char kLoadAllTabsAtStartupName[] = "Load all tabs at startup";
 inline constexpr char kLoadAllTabsAtStartupDescription[] =
@@ -3917,8 +3920,7 @@ inline constexpr char kWebUIOmniboxHideAimUrlName[] =
 inline constexpr char kWebUIOmniboxHideAimUrlDescription[] =
     "If enabled, hides the AIM button when the default suggestion is a URL.";
 
-inline constexpr char kWebUIOmniboxFullPopupName[] =
-    "WebUI Omnibox Full Popup";
+inline constexpr char kWebUIOmniboxFullPopupName[] = "WebUI Omnibox Full Popup";
 inline constexpr char kWebUIOmniboxFullPopupDescription[] =
     "If enabled, then both the input row and suggestions dropdown (in the "
     "Omnibox) will be rendered using the WebUI stack (i.e. the cutout for the "
@@ -3947,7 +3949,8 @@ inline constexpr char kWebUIOmniboxSimplificationDescription[] =
 inline constexpr char kWebUiOmniboxAskGAboutThisPageName[] =
     "WebUI Omnibox Ask G About This Page";
 inline constexpr char kWebUiOmniboxAskGAboutThisPageDescription[] =
-    "If enabled, the 'Ask Google about this page' action will route to cobrowse.";
+    "If enabled, the 'Ask Google about this page' action will route to "
+    "cobrowse.";
 
 inline constexpr char kWebuiRefresh2026Name[] = "WebUI Refresh 2026";
 inline constexpr char kWebuiRefresh2026Description[] =
@@ -5693,7 +5696,8 @@ inline constexpr char kContextualPanelCloseButtonDescription[] =
     "When this is enabled, the contextual search panel will show a close "
     "button. Its scrim will also be hidden.";
 
-inline constexpr char kDisableGridTabSwitcherName[] = "Disable Grid Tab Switcher";
+inline constexpr char kDisableGridTabSwitcherName[] =
+    "Disable Grid Tab Switcher";
 inline constexpr char kDisableGridTabSwitcherDescription[] =
     "Disables the grid tab switcher on Android. Only applies to large form "
     "factor devices.";
@@ -5967,7 +5971,8 @@ inline constexpr char kCCTTabSwitcherEnabledForChromeExperimentDescription[] =
 inline constexpr char kCCTTabSwitcherEnabledForEmbedderExperimentName[] =
     "CCT Tab Switcher Enabled For Embedder Experiment";
 inline constexpr char kCCTTabSwitcherEnabledForEmbedderExperimentDescription[] =
-    "Enable the Custom Tabs tab switcher when enabled for embedder experiments.";
+    "Enable the Custom Tabs tab switcher when enabled for embedder "
+    "experiments.";
 
 inline constexpr char kChangeUnfocusedPriorityName[] =
     "Change Unfocused Priority";
@@ -7016,8 +7021,7 @@ inline constexpr char kNtpRealboxCr23ThemingName[] =
 inline constexpr char kNtpRealboxCr23ThemingDescription[] =
     "CR23 theming will be applied in Realbox when enabled.";
 
-inline constexpr char kNtpScaledActionChipsName[] =
-    "NTP Scaled Action Chips";
+inline constexpr char kNtpScaledActionChipsName[] = "NTP Scaled Action Chips";
 inline constexpr char kNtpScaledActionChipsDescription[] =
     "Enables scaled merchandising action chips (e.g., dynamic tool suggestions "
     "and resource pickers) on the New Tab Page.";
@@ -7488,7 +7492,8 @@ inline constexpr char kEnterpriseReportingUIDescription[] =
 inline constexpr char kEnterpriseTabTitleReportingName[] =
     "Enterprise Tab Title Reporting";
 inline constexpr char kEnterpriseTabTitleReportingDescription[] =
-    "Enables the reporting of destination tab titles in Chrome Enterprise URL navigation logs.";
+    "Enables the reporting of destination tab titles in Chrome Enterprise URL "
+    "navigation logs.";
 
 inline constexpr char kESimEmptyActivationCodeSupportedName[] =
     "Enable support for empty activation codes in eSIM activation dialog";
