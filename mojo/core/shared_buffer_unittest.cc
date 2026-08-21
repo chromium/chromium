@@ -6,15 +6,12 @@
 
 #include <string.h>
 
-#include <array>
 #include <string>
 #include <utility>
 
 #include "base/memory/platform_shared_memory_region.h"
-#include "base/notreached.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
-#include "mojo/core/embedder/embedder.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/public/c/system/types.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -198,82 +195,6 @@ TEST_F(SharedBufferTest, MAYBE_PassSharedBufferFromChildToChild) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
 }
 
-DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CreateAndPassBufferParent,
-                                  SharedBufferTest,
-                                  parent) {
-  RunTestClient("CreateAndPassBuffer", [&](MojoHandle child) {
-    // Read a pipe from the parent and forward it to our child.
-    MojoHandle pipe;
-    std::string message = ReadMessageWithHandles(parent, &pipe, 1);
-
-    WriteMessageWithHandles(child, message, &pipe, 1);
-
-    // Read a buffer handle from the child and pass it back to the parent.
-    MojoHandle buffer;
-    EXPECT_EQ("", ReadMessageWithHandles(child, &buffer, 1));
-    WriteMessageWithHandles(parent, "", &buffer, 1);
-
-    EXPECT_EQ("quit", ReadMessage(parent));
-    WriteMessage(child, "quit");
-  });
-  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(parent));
-}
-
-DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReceiveAndEditBufferParent,
-                                  SharedBufferTest,
-                                  parent) {
-  RunTestClient("ReceiveAndEditBuffer", [&](MojoHandle child) {
-    // Read a pipe from the parent and forward it to our child.
-    MojoHandle pipe;
-    std::string message = ReadMessageWithHandles(parent, &pipe, 1);
-    WriteMessageWithHandles(child, message, &pipe, 1);
-
-    EXPECT_EQ("quit", ReadMessage(parent));
-    WriteMessage(child, "quit");
-  });
-  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(parent));
-}
-
-#if BUILDFLAG(IS_ANDROID)
-// Android multi-process tests are not executing the new process. This is flaky.
-#define MAYBE_PassHandleBetweenCousins DISABLED_PassHandleBetweenCousins
-#else
-#define MAYBE_PassHandleBetweenCousins PassHandleBetweenCousins
-#endif
-TEST_F(SharedBufferTest, MAYBE_PassHandleBetweenCousins) {
-  if (IsMojoIpczEnabled()) {
-    // TODO(crbug.com/40058840): This test relies on Mojo invitations
-    // between non-broker nodes, which is not currently supported by MojoIpcz.
-    GTEST_SKIP() << "Invitations between non-brokers are not yet supported "
-                 << "by MojoIpcz.";
-  }
-
-  const std::string message = "hello";
-
-  // Spawn two children who will each spawn their own child. Make sure the
-  // grandchildren (cousins to each other) can pass platform handles.
-  MojoHandle b;
-  RunTestClient("CreateAndPassBufferParent", [&](MojoHandle child1) {
-    RunTestClient("ReceiveAndEditBufferParent", [&](MojoHandle child2) {
-      std::array<MojoHandle, 2> pipe;
-      CreateMessagePipe(&pipe[0], &pipe[1]);
-
-      WriteMessageWithHandles(child1, message, &pipe[0], 1);
-      WriteMessageWithHandles(child2, message, &pipe[1], 1);
-
-      // Receive the buffer back from the first child.
-      ReadMessageWithHandles(child1, &b, 1);
-
-      WriteMessage(child2, "quit");
-    });
-    WriteMessage(child1, "quit");
-  });
-
-  // The second grandchild should have written this message.
-  ExpectBufferContents(b, 0, message);
-  MojoClose(b);
-}
-
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadAndMapWriteSharedBuffer,
                                   SharedBufferTest,
                                   h) {
@@ -285,13 +206,9 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadAndMapWriteSharedBuffer,
   ExpectBufferContents(b, 0, "hello");
 
   // Extract the shared memory handle and verify that it is read-only.
-  if (IsMojoIpczEnabled()) {
-    auto buffer = ipcz_driver::SharedBuffer::Unbox(b);
-    EXPECT_EQ(buffer->region().GetMode(),
-              base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
-  } else {
-    NOTREACHED();
-  }
+  auto buffer = ipcz_driver::SharedBuffer::Unbox(b);
+  EXPECT_EQ(buffer->region().GetMode(),
+            base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
 
   WriteMessage(h, "ok");
   EXPECT_EQ("quit", ReadMessage(h));
@@ -352,13 +269,9 @@ TEST_F(SharedBufferTest, MAYBE_CreateAndPassFromChildReadOnlyBuffer) {
     ExpectBufferContents(b, 0, "hello");
 
     // Extract the shared memory handle and verify that it is read-only.
-    if (IsMojoIpczEnabled()) {
-      auto buffer = ipcz_driver::SharedBuffer::Unbox(b);
-      EXPECT_EQ(buffer->region().GetMode(),
-                base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
-    } else {
-      NOTREACHED();
-    }
+    auto buffer = ipcz_driver::SharedBuffer::Unbox(b);
+    EXPECT_EQ(buffer->region().GetMode(),
+              base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
 
     EXPECT_EQ("ok", ReadMessage(h));
     WriteMessage(h, "quit");

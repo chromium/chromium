@@ -474,41 +474,6 @@ TEST_F(FuseMessagePipeTest, NoFuseSelf) {
             MojoFuseMessagePipes(a, b, nullptr));
 }
 
-TEST_F(FuseMessagePipeTest, FuseInvalidArguments) {
-  if (IsMojoIpczEnabled()) {
-    // The MergePortals() API which supports MojoFuseMessagePipes() with
-    // MojoIpcz enabled is simpler and has fewer side effects on failure. Making
-    // this test pass would require additional complexity with no real value to
-    // production code.
-    GTEST_SKIP() << "Not relevant to MojoIpcz";
-  }
-
-  MojoHandle a, b, c, d;
-  CreateMessagePipe(&a, &b);
-  CreateMessagePipe(&c, &d);
-
-  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
-
-  // Can't fuse an invalid handle.
-  EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT, MojoFuseMessagePipes(b, c, nullptr));
-
-  // Handle c should be closed.
-  EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT, MojoClose(c));
-
-  // Can't fuse a non-message pipe handle.
-  MojoHandle e, f;
-  CreateDataPipe(&e, &f, 16);
-
-  EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT, MojoFuseMessagePipes(e, d, nullptr));
-
-  // Handles d and e should be closed.
-  EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT, MojoClose(d));
-  EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT, MojoClose(e));
-
-  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(a));
-  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(f));
-}
-
 TEST_F(FuseMessagePipeTest, FuseAfterPeerClosure) {
   // Test that peer closure prior to fusion can still be detected after fusion.
 

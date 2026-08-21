@@ -19,7 +19,6 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
-#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -42,25 +41,15 @@ namespace {
 
 template <typename T>
 MojoResult CreateSharedBufferFromRegion(T&& region, MojoHandle* handle) {
-  if (IsMojoIpczEnabled()) {
-    *handle = ipcz_driver::SharedBuffer::Box(
-        ipcz_driver::SharedBuffer::MakeForRegion(std::move(region)));
-    return MOJO_RESULT_OK;
-  }
-
-  NOTREACHED();
+  *handle = ipcz_driver::SharedBuffer::Box(
+      ipcz_driver::SharedBuffer::MakeForRegion(std::move(region)));
+  return MOJO_RESULT_OK;
 }
 
 template <typename T>
 MojoResult ExtractRegionFromSharedBuffer(MojoHandle handle, T* region) {
-  base::subtle::PlatformSharedMemoryRegion platform_region;
-  if (IsMojoIpczEnabled()) {
-    platform_region =
-        std::move(ipcz_driver::SharedBuffer::Unbox(handle)->region());
-  } else {
-    NOTREACHED();
-  }
-
+  base::subtle::PlatformSharedMemoryRegion platform_region =
+      std::move(ipcz_driver::SharedBuffer::Unbox(handle)->region());
   *region = T::Deserialize(std::move(platform_region));
   return MOJO_RESULT_OK;
 }

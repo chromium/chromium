@@ -246,6 +246,8 @@ struct ChromeConnectionConfig {
   std::string framework_version;
 
   // Indicates whether or not the MojoIpcz feature must be enabled.
+  // TODO(crbug.com/359926651): This is now always true. Remove the field
+  // and its bit in the encoded path.
   bool is_mojo_ipcz_enabled;
 
   // Returns a new configuration appropriate for the calling Chrome process to

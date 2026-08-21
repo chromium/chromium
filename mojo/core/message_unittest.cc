@@ -18,7 +18,6 @@
 #include "base/rand_util.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
-#include "mojo/core/embedder/embedder.h"
 #include "mojo/core/ipcz_driver/mojo_message.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -30,8 +29,6 @@ namespace mojo::core {
 namespace {
 
 using MessageTest = test::MojoTestBase;
-
-constexpr uint32_t kLegacyMinimumPayloadBufferSize = 0;
 
 // Helper class which provides a base implementation for an unserialized user
 // message context and helpers to go between these objects and opaque message
@@ -712,9 +709,7 @@ TEST_F(MessageTest, PreallocateEnoughMemoryForMessage) {
   // because if we use a total payload size smaller than that, the buffer may
   // not be reallocated when we expect it to (since at least
   // `kMinimumBufferSize` bytes of capacity will be allocated).
-  const size_t kMinimumBufferSize =
-      IsMojoIpczEnabled() ? ipcz_driver::MojoMessage::kMinBufferSize
-                          : kLegacyMinimumPayloadBufferSize;
+  const size_t kMinimumBufferSize = ipcz_driver::MojoMessage::kMinBufferSize;
   const std::string kMsgPart1(kMinimumBufferSize / 2, 'x');
   const std::string kMsgPart2(kMinimumBufferSize, 'y');
   const std::string kCombined = kMsgPart1 + kMsgPart2;
@@ -781,9 +776,7 @@ TEST_F(MessageTest, PreallocateNotEnoughMemoryForMessage) {
   // because if we use a total payload size smaller than that, the buffer may
   // not be reallocated when we expect it to (since at least
   // `kMinimumBufferSize` bytes of capacity will be allocated).
-  const size_t kMinimumBufferSize =
-      IsMojoIpczEnabled() ? ipcz_driver::MojoMessage::kMinBufferSize
-                          : kLegacyMinimumPayloadBufferSize;
+  const size_t kMinimumBufferSize = ipcz_driver::MojoMessage::kMinBufferSize;
   const std::string kMsgPart1(kMinimumBufferSize / 2, 'x');
   const std::string kMsgPart2(kMinimumBufferSize, 'y');
   const std::string kCombined = kMsgPart1 + kMsgPart2;

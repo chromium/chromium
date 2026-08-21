@@ -12,7 +12,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "components/version_info/version_info.h"
-#include "mojo/core/embedder/embedder.h"
 
 namespace app_mode {
 
@@ -77,7 +76,7 @@ static_assert(
 ChromeConnectionConfig ChromeConnectionConfig::GenerateForCurrentProcess() {
   return {
       .framework_version = std::string(version_info::GetVersionNumber()),
-      .is_mojo_ipcz_enabled = mojo::core::IsMojoIpczEnabled(),
+      .is_mojo_ipcz_enabled = true,
   };
 }
 

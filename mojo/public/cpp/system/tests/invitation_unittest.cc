@@ -369,25 +369,6 @@ DEFINE_TEST_CLIENT(CppSendWithMultiplePipesClient) {
   CHECK_EQ(kTestMessage2, ReadMessage(pipe1));
 }
 
-TEST(MAYBE_InvitationCppTest_NoParam, SendIsolatedInvitationWithDuplicateName) {
-  if (mojo::core::IsMojoIpczEnabled()) {
-    // This feature is not particularly useful in a world where isolated
-    // connections are only supported between broker nodes.
-    GTEST_SKIP() << "MojoIpcz does not support multiple isolated invitations "
-                 << "between the same two nodes.";
-  }
-
-  base::test::TaskEnvironment task_environment;
-  PlatformChannel channel1;
-  PlatformChannel channel2;
-  const char kConnectionName[] = "foo";
-  ScopedMessagePipeHandle pipe0 = OutgoingInvitation::SendIsolated(
-      channel1.TakeLocalEndpoint(), kConnectionName);
-  ScopedMessagePipeHandle pipe1 = OutgoingInvitation::SendIsolated(
-      channel2.TakeLocalEndpoint(), kConnectionName);
-  Wait(pipe0.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED);
-}
-
 const char kErrorMessage[] = "ur bad :{{";
 const char kDisconnectMessage[] = "go away plz";
 

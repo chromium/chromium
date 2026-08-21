@@ -50,8 +50,7 @@ int main(int argc, char** argv) {
   // processes are non-brokers, since by default, the process sending
   // invitations needs to be a broker, while the process accepting invitations
   // needs to be a non-broker.
-  bool is_broker_process = mojo::core::IsMojoIpczEnabled() &&
-                           !cmd->HasSwitch(switches::kTestChildProcess);
+  bool is_broker_process = !cmd->HasSwitch(switches::kTestChildProcess);
   mojo::core::Init({.is_broker_process = is_broker_process});
   mojo::core::ScopedIPCSupport ipc_support(
       ipc_thread.task_runner(),

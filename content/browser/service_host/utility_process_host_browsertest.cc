@@ -38,7 +38,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_service.mojom.h"
-#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -154,8 +153,7 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
   void RunSharedMemoryHandleTest() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     // Verify that shared memory handles can be transferred to and from the
-    // elevated process. This is only supported with MojoIpcz enabled.
-    DCHECK(mojo::core::IsMojoIpczEnabled());
+    // elevated process.
     auto region = base::WritableSharedMemoryRegion::Create(kTestMessage.size());
     auto mapping = region.Map();
     mapping.GetMemoryAsSpan<char>().copy_from(kTestMessage);
@@ -491,12 +489,8 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, LaunchElevatedProcess) {
           .WithSandboxType(
               sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges)
           .Pass(),
-      mojo::core::IsMojoIpczEnabled()
-          ? base::BindOnce(
-                &UtilityProcessHostBrowserTest::RunSharedMemoryHandleTest,
-                base::Unretained(this))
-          : base::BindOnce(&UtilityProcessHostBrowserTest::RunBasicPingPongTest,
-                           base::Unretained(this)));
+      base::BindOnce(&UtilityProcessHostBrowserTest::RunSharedMemoryHandleTest,
+                     base::Unretained(this)));
 }
 
 // Disabled because currently this causes a WER dialog to appear.

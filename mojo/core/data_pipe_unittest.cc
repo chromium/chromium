@@ -21,7 +21,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "mojo/core/embedder/embedder.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/public/c/system/functions.h"
 #include "mojo/public/c/system/message_pipe.h"
@@ -47,9 +46,6 @@ const size_t kMaxPoll = 100;
 const size_t kMultiprocessCapacity = 37;
 const char kMultiprocessTestData[] = "hello i'm a string that is 36 bytes";
 const int kMultiprocessMaxIter = 5;
-
-// Capacity that will cause data pipe creation to fail.
-constexpr size_t kOversizedCapacity = std::numeric_limits<uint32_t>::max();
 
 // A timeout smaller than |TestTimeouts::tiny_timeout()|, as a |MojoDeadline|.
 // Warning: This may lead to flakiness, but this is unavoidable if, e.g., you're
@@ -1048,103 +1044,6 @@ TEST_F(DataPipeTest, AllOrNone) {
   ASSERT_EQ(0u, num_bytes);
 }
 
-// Tests that |ProducerWriteData()| and |ConsumerReadData()| writes and reads,
-// respectively, as much as possible, even if it may have to "wrap around" the
-// internal circular buffer. (Note that the two-phase write and read need not do
-// this.)
-TEST_F(DataPipeTest, WrapAround) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "This test covers implementation details that are only "
-                 << "relevant with MojoIpcz disabled; namely that a data pipe "
-                 << "is backed by a circular ring buffer.";
-  }
-
-  std::array<unsigned char, 1000> test_data;
-  for (size_t i = 0; i < std::size(test_data); i++) {
-    test_data[i] = static_cast<unsigned char>(i);
-  }
-
-  const MojoCreateDataPipeOptions options = {
-      kSizeOfOptions,                   // |struct_size|.
-      MOJO_CREATE_DATA_PIPE_FLAG_NONE,  // |flags|.
-      1u,                               // |element_num_bytes|.
-      100u                              // |capacity_num_bytes|.
-  };
-
-  ASSERT_EQ(MOJO_RESULT_OK, Create(&options));
-  MojoHandleSignalsState hss;
-
-  // Write 20 bytes.
-  uint32_t num_bytes = 20u;
-  ASSERT_EQ(MOJO_RESULT_OK, WriteData(&test_data[0], &num_bytes, true));
-  ASSERT_EQ(20u, num_bytes);
-
-  // Wait for data.
-  ASSERT_EQ(MOJO_RESULT_OK,
-            WaitForSignals(consumer_, MOJO_HANDLE_SIGNAL_READABLE, &hss));
-  EXPECT_TRUE(hss.satisfied_signals & MOJO_HANDLE_SIGNAL_READABLE);
-  EXPECT_EQ(MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED |
-                MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE |
-                MOJO_HANDLE_SIGNAL_PEER_REMOTE,
-            hss.satisfiable_signals);
-
-  // Read 10 bytes.
-  unsigned char read_buffer[1000] = {};
-  num_bytes = 10u;
-  ASSERT_EQ(MOJO_RESULT_OK, ReadData(read_buffer, &num_bytes, true));
-  ASSERT_EQ(10u, num_bytes);
-  UNSAFE_TODO(ASSERT_EQ(0, memcmp(read_buffer, &test_data[0], 10u)));
-
-  // Check that a two-phase write can now only write (at most) 80 bytes. (This
-  // checks an implementation detail; this behavior is not guaranteed.)
-  void* write_buffer_ptr = nullptr;
-  num_bytes = 0u;
-  ASSERT_EQ(MOJO_RESULT_OK, BeginWriteData(&write_buffer_ptr, &num_bytes));
-  EXPECT_TRUE(write_buffer_ptr);
-  ASSERT_EQ(80u, num_bytes);
-  ASSERT_EQ(MOJO_RESULT_OK, EndWriteData(0));
-
-  size_t total_num_bytes = 0;
-  while (total_num_bytes < 90) {
-    // Wait to write.
-    ASSERT_EQ(MOJO_RESULT_OK,
-              WaitForSignals(producer_, MOJO_HANDLE_SIGNAL_WRITABLE, &hss));
-    ASSERT_EQ(hss.satisfied_signals, MOJO_HANDLE_SIGNAL_WRITABLE);
-    ASSERT_EQ(hss.satisfiable_signals, MOJO_HANDLE_SIGNAL_WRITABLE |
-                                           MOJO_HANDLE_SIGNAL_PEER_CLOSED |
-                                           MOJO_HANDLE_SIGNAL_PEER_REMOTE);
-
-    // Write as much as we can.
-    num_bytes = 100;
-    ASSERT_EQ(MOJO_RESULT_OK,
-              WriteData(&test_data[20 + total_num_bytes], &num_bytes, false));
-    total_num_bytes += num_bytes;
-  }
-
-  ASSERT_EQ(90u, total_num_bytes);
-
-  num_bytes = 0;
-  ASSERT_EQ(MOJO_RESULT_OK, QueryData(&num_bytes));
-  ASSERT_EQ(100u, num_bytes);
-
-  // Check that a two-phase read can now only read (at most) 90 bytes. (This
-  // checks an implementation detail; this behavior is not guaranteed.)
-  const void* read_buffer_ptr = nullptr;
-  num_bytes = 0;
-  ASSERT_EQ(MOJO_RESULT_OK, BeginReadData(&read_buffer_ptr, &num_bytes));
-  EXPECT_TRUE(read_buffer_ptr);
-  ASSERT_EQ(90u, num_bytes);
-  ASSERT_EQ(MOJO_RESULT_OK, EndReadData(0));
-
-  // Read as much as possible. We should read 100 bytes.
-  num_bytes =
-      static_cast<uint32_t>(std::size(read_buffer) * sizeof(read_buffer[0]));
-  UNSAFE_TODO(memset(read_buffer, 0, num_bytes));
-  ASSERT_EQ(MOJO_RESULT_OK, ReadData(read_buffer, &num_bytes));
-  ASSERT_EQ(100u, num_bytes);
-  UNSAFE_TODO(ASSERT_EQ(0, memcmp(read_buffer, &test_data[10], 100u)));
-}
-
 // Tests the behavior of writing (simple and two-phase), closing the producer,
 // then reading (simple and two-phase).
 TEST_F(DataPipeTest, WriteCloseProducerRead) {
@@ -1762,23 +1661,6 @@ bool ReadAllData(MojoHandle consumer,
   return num_bytes == 0;
 }
 
-TEST_F(DataPipeTest, CreateOversized) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "Data pipes do not allocate dedicated capacity when "
-                 << "MojoIpcz is enabled, so capacity limits are not enforced "
-                 << "and therefore cannot be tested.";
-  }
-
-  const MojoCreateDataPipeOptions options = {
-      kSizeOfOptions,                   // |struct_size|.
-      MOJO_CREATE_DATA_PIPE_FLAG_NONE,  // |flags|.
-      1,                                // |element_num_bytes|.
-      kOversizedCapacity,               // |capacity_num_bytes|.
-  };
-
-  ASSERT_EQ(MOJO_RESULT_RESOURCE_EXHAUSTED, Create(&options));
-}
-
 #if BUILDFLAG(USE_BLINK)
 
 constexpr size_t kNoSpuriousEvents_NumIterations = 1000;
@@ -2199,40 +2081,6 @@ TEST_F(DataPipeTest, StatusChangeInTransit) {
     for (size_t i = 3; i < 6; ++i) {
       CloseHandle(producers[i]);
     }
-  });
-}
-
-DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CreateOversizedChild, DataPipeTest, h) {
-  const MojoCreateDataPipeOptions options = {
-      kSizeOfOptions,                   // |struct_size|.
-      MOJO_CREATE_DATA_PIPE_FLAG_NONE,  // |flags|.
-      1,                                // |element_num_bytes|.
-      kOversizedCapacity                // |capacity_num_bytes|.
-  };
-
-  MojoHandle p, c;
-  ASSERT_EQ(MOJO_RESULT_RESOURCE_EXHAUSTED,
-            MojoCreateDataPipe(&options, &p, &c));
-  WriteMessage(h, "success");
-
-  // Wait for a quit message.
-  EXPECT_EQ("quit", ReadMessage(h));
-  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
-}
-
-TEST_F(DataPipeTest, CreateOversizedInChild) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "Data pipes do not allocate dedicated capacity when "
-                 << "MojoIpcz is enabled, so capacity limits are not enforced "
-                 << "and therefore cannot be tested.";
-  }
-
-  RunTestClient("CreateOversizedChild", [&](MojoHandle child) {
-    // Wait for the child to finish the test.
-    std::string expected_message = ReadMessage(child);
-    EXPECT_EQ("success", expected_message);
-
-    WriteMessage(child, "quit");
   });
 }
 

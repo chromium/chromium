@@ -50,19 +50,15 @@ scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner();
 // base::Features inside of Mojo.
 COMPONENT_EXPORT(MOJO_CORE_EMBEDDER) void InitFeatures();
 
-// Indicates whether the ipcz-based Mojo implementation is enabled. This is
-// always true: non-ipcz Mojo Core is no longer supported.
-COMPONENT_EXPORT(MOJO_CORE_EMBEDDER) bool IsMojoIpczEnabled();
-
 // Installs base shared shared memory allocation hooks appropriate for use in
-// a sandboxed environment when MojoIpcz is enabled on platforms where such
-// processes cannot allocate shared memory directly through the OS. Must be
-// called before any shared memory allocation is attempted in the process.
+// a sandboxed environment on platforms where such processes cannot allocate
+// shared memory directly through the OS. Must be called before any shared
+// memory allocation is attempted in the process.
 COMPONENT_EXPORT(MOJO_CORE_EMBEDDER)
 void InstallMojoIpczBaseSharedMemoryHooks();
 
 // These functions expose the IpczAPI and IpczDriver structures used internally
-// by the Mojo Core implementation when MojoIpcz is enabled.
+// by the Mojo Core implementation.
 COMPONENT_EXPORT(MOJO_CORE_EMBEDDER) const IpczAPI& GetIpczAPIForMojo();
 COMPONENT_EXPORT(MOJO_CORE_EMBEDDER) const IpczDriver& GetIpczDriverForMojo();
 

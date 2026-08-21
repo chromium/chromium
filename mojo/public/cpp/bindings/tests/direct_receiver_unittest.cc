@@ -86,12 +86,6 @@ ScopedHandle CreateDummyHandle(IpczHandle node) {
 // provides multiprocess test facilities.
 class DirectReceiverTest : public ipcz::test::internal::TestBase,
                            public core::test::MojoTestBase {
-  void SetUp() override {
-    if (!core::IsMojoIpczEnabled()) {
-      GTEST_SKIP() << "This test is only valid when MojoIpcz is enabled.";
-    }
-  }
-
  private:
   base::test::TaskEnvironment task_environment_;
 };

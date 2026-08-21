@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
-#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "build/build_config.h"
@@ -67,18 +66,14 @@ void Init(const Configuration& configuration) {
 
   CHECK(!configuration.disable_ipcz);
 
-  if (IsMojoIpczEnabled()) {
-    CHECK(InitializeIpczNodeForProcess({
-        .is_broker = configuration.is_broker_process,
-        .use_local_shared_memory_allocation =
-            configuration.is_broker_process ||
-            configuration.force_direct_shared_memory_allocation,
-        .enable_memv2 = g_enable_memv2,
-    }));
-    MojoEmbedderSetSystemThunks(GetMojoIpczImpl());
-  } else {
-    NOTREACHED();
-  }
+  CHECK(InitializeIpczNodeForProcess({
+      .is_broker = configuration.is_broker_process,
+      .use_local_shared_memory_allocation =
+          configuration.is_broker_process ||
+          configuration.force_direct_shared_memory_allocation,
+      .enable_memv2 = g_enable_memv2,
+  }));
+  MojoEmbedderSetSystemThunks(GetMojoIpczImpl());
 }
 
 void Init() {
@@ -86,27 +81,14 @@ void Init() {
 }
 
 void ShutDown() {
-  if (IsMojoIpczEnabled()) {
-    DestroyIpczNodeForProcess();
-  } else {
-    NOTREACHED();
-  }
+  DestroyIpczNodeForProcess();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() {
-  if (IsMojoIpczEnabled()) {
-    return ipcz_driver::Transport::GetIOTaskRunner();
-  } else {
-    NOTREACHED();
-  }
-}
-
-bool IsMojoIpczEnabled() {
-  return true;
+  return ipcz_driver::Transport::GetIOTaskRunner();
 }
 
 void InstallMojoIpczBaseSharedMemoryHooks() {
-  DCHECK(IsMojoIpczEnabled());
   ipcz_driver::BaseSharedMemoryService::InstallHooks();
 }
 

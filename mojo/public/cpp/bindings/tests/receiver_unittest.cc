@@ -21,7 +21,6 @@
 #include "base/test/bind.h"
 #include "base/threading/thread.h"
 #include "build/blink_buildflags.h"
-#include "mojo/core/embedder/embedder.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
@@ -1008,12 +1007,6 @@ TEST_F(MultiprocessReceiverTest, MultiprocessReceiver) {
   // incoming IO thread activity, as an event to signal peer closure on the new
   // receiver may arrive on the IO thread during receiver teardown on this
   // thread.
-  if (!mojo::core::IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "This is a regression test specifically for MojoIpcz. When "
-                 << "MojoIpcz is disabled, the test is flaky for unrelated "
-                 << "reasons which stem from a long-standing bug in Mojo Core "
-                 << "shutdown.";
-  }
   RunTestClient("MultiprocessReceiverClient", [&](MojoHandle client) {
     Remote<mojom::InterfaceDropper> dropper;
     MojoHandle dropper_pipe =

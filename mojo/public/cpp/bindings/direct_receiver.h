@@ -227,6 +227,8 @@ class DirectReceiver {
 };
 
 // Indicates whether DirectReceiver can be supported in the calling process.
+// TODO(crbug.com/359926651): This is now always true. Simplify it away,
+// along with the dead paths behind it at call sites.
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS) bool IsDirectReceiverSupported();
 
 // Indicates whether the current thread can receive async IO either because it's

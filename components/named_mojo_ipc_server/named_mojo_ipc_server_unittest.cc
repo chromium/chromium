@@ -36,7 +36,6 @@
 #include "components/named_mojo_ipc_server/named_mojo_ipc_test_util.h"
 #include "components/named_mojo_ipc_server/testing.test-mojom.h"
 #include "components/test/test_switches.h"
-#include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -217,10 +216,8 @@ base::Process NamedMojoIpcServerTest::LaunchClientProcess(
                              MessagePipeTypeToString(GetParam()));
   if (GetParam() == MessagePipeType::ISOLATED) {
     // Make sure the new process is a broker, because isolated connections are
-    // only supported between two brokers when ipcz is enabled.
-    if (mojo::core::IsMojoIpczEnabled()) {
-      cmd_line.AppendSwitch(switches::kInitializeMojoAsBroker);
-    }
+    // only supported between two brokers.
+    cmd_line.AppendSwitch(switches::kInitializeMojoAsBroker);
   }
   return base::SpawnMultiProcessTestChild(kEchoClientName, cmd_line,
                                           /* options= */ {});
