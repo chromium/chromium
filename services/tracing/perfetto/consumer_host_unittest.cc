@@ -33,6 +33,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_packet.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
+#include "third_party/perfetto/protos/perfetto/common/tracing_service_state.gen.h"
+#include "third_party/perfetto/protos/perfetto/common/track_event_descriptor.gen.h"
 #include "third_party/perfetto/protos/perfetto/config/trace_config.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pb.h"
@@ -139,6 +141,16 @@ class ThreadedPerfettoService : public mojom::TracingSessionClient {
     return trace_writer;
   }
 
+  void RegisterDataSourceOnly(const perfetto::DataSourceDescriptor& desc) {
+    base::RunLoop wait_for_datasource;
+    task_runner_->PostTaskAndReply(FROM_HERE,
+                                   base::BindLambdaForTesting([this, desc]() {
+                                     producer_->RegisterDataSource(desc);
+                                   }),
+                                   wait_for_datasource.QuitClosure());
+    wait_for_datasource.Run();
+  }
+
   std::unique_ptr<perfetto::TraceWriter> CreateTraceWriter(
       const std::string& data_source_name) {
     base::RunLoop wait_for_datasource;
@@ -238,6 +250,31 @@ class ThreadedPerfettoService : public mojom::TracingSessionClient {
     consumer_->EnableTracing(
         tracing_session_host_->BindNewPipeAndPassReceiver(),
         std::move(tracing_session_client), std::move(config), base::File());
+  }
+
+  std::pair<bool, std::string> QueryServiceState() {
+    base::RunLoop wait_for_call;
+    bool success = false;
+    std::string service_state_data;
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](ConsumerHost* consumer, base::OnceClosure quit_closure,
+               bool* out_success, std::string* out_data) {
+              consumer->QueryServiceState(base::BindOnce(
+                  [](base::OnceClosure quit_closure, bool* out_success,
+                     std::string* out_data, bool success,
+                     const std::string& service_state_data) {
+                    *out_success = success;
+                    *out_data = service_state_data;
+                    std::move(quit_closure).Run();
+                  },
+                  std::move(quit_closure), out_success, out_data));
+            },
+            consumer_.get(), wait_for_call.QuitClosure(), &success,
+            &service_state_data));
+    wait_for_call.Run();
+    return {success, service_state_data};
   }
 
   void ReadBuffers(mojo::ScopedDataPipeProducerHandle stream,
@@ -702,6 +739,47 @@ TEST_F(TracingConsumerTest, NoPrivacyFilterWithJsonConversion) {
   base::trace_event::TraceConfig base_config(
       config.chrome_config().trace_config());
   EXPECT_FALSE(base_config.IsArgumentFilterEnabled());
+}
+
+TEST_F(TracingConsumerTest, QueryServiceState) {
+  threaded_perfetto_service()->CreateProducer();
+
+  perfetto::DataSourceDescriptor dsd;
+  dsd.set_name(kDataSourceName);
+  perfetto::protos::gen::TrackEventDescriptor ted;
+  auto* cat = ted.add_available_categories();
+  cat->set_name("my_test_category");
+  cat->set_description("Test Category Description");
+  dsd.set_track_event_descriptor_raw(ted.SerializeAsString());
+
+  threaded_perfetto_service()->RegisterDataSourceOnly(dsd);
+
+  auto [success, service_state_data] =
+      threaded_perfetto_service()->QueryServiceState();
+  EXPECT_TRUE(success);
+  perfetto::protos::gen::TracingServiceState service_state;
+  EXPECT_TRUE(service_state.ParseFromArray(service_state_data.data(),
+                                           service_state_data.size()));
+  bool found_data_source = false;
+  bool found_category = false;
+  for (const auto& ds : service_state.data_sources()) {
+    if (ds.ds_descriptor().name() == kDataSourceName) {
+      found_data_source = true;
+      if (!ds.ds_descriptor().track_event_descriptor_raw().empty()) {
+        perfetto::protos::gen::TrackEventDescriptor parsed_ted;
+        if (parsed_ted.ParseFromString(
+                ds.ds_descriptor().track_event_descriptor_raw())) {
+          for (const auto& category : parsed_ted.available_categories()) {
+            if (category.name() == "my_test_category") {
+              found_category = true;
+            }
+          }
+        }
+      }
+    }
+  }
+  EXPECT_TRUE(found_data_source);
+  EXPECT_TRUE(found_category);
 }
 
 }  // namespace tracing

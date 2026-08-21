@@ -55,6 +55,11 @@ void MockProducer::RegisterDataSource(const std::string& name) {
   service_endpoint_->RegisterDataSource(ds_desc);
 }
 
+void MockProducer::RegisterDataSource(
+    const perfetto::DataSourceDescriptor& desc) {
+  service_endpoint_->RegisterDataSource(desc);
+}
+
 void MockProducer::UnregisterDataSource(const std::string& name) {
   service_endpoint_->UnregisterDataSource(name);
 }

@@ -46,6 +46,7 @@ class MockProducer : public perfetto::Producer {
                uid_t uid = 42,
                pid_t pid = 1025);
   void RegisterDataSource(const std::string& name);
+  void RegisterDataSource(const perfetto::DataSourceDescriptor& desc);
   void UnregisterDataSource(const std::string& name);
 
   perfetto::TracingService::ProducerEndpoint* endpoint() {

@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -36,6 +37,7 @@
 #include "third_party/perfetto/include/perfetto/trace_processor/basic_types.h"
 #include "third_party/perfetto/include/perfetto/trace_processor/trace_processor_storage.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
+#include "third_party/perfetto/protos/perfetto/common/tracing_service_state.gen.h"
 #include "third_party/perfetto/protos/perfetto/config/trace_config.pb.h"
 
 namespace tracing {
@@ -617,6 +619,26 @@ void ConsumerHost::CloneSession(
       this, std::move(tracing_session_host), std::move(tracing_session_client),
       host_privacy_filtering_enabled);
   tracing_session_->CloneSession(uuid, std::move(callback));
+}
+
+void ConsumerHost::QueryServiceState(QueryServiceStateCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!consumer_endpoint_) {
+    std::move(callback).Run(false, std::string());
+    return;
+  }
+  auto callback_holder =
+      base::MakeRefCounted<base::RefCountedData<QueryServiceStateCallback>>(
+          std::move(callback));
+  consumer_endpoint_->QueryServiceState(
+      {}, [callback_holder](bool success,
+                            const perfetto::TracingServiceState& state) {
+        std::string serialized;
+        if (success) {
+          serialized = state.SerializeAsString();
+        }
+        std::move(callback_holder->data).Run(success, std::move(serialized));
+      });
 }
 
 void ConsumerHost::OnConnect() {}
