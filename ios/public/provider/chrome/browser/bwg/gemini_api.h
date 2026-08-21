@@ -198,9 +198,6 @@ void UpdatePromptAction(gemini::EntryPoint entry_point,
 // Returns true if a URL is protected.
 bool IsProtectedUrl(std::string url);
 
-// Updates the page context of the floaty.
-void UpdatePageContext(GeminiPageContext* gemini_page_context);
-
 // Updates the floaty's active page context and shared tabs, if any.
 void UpdateActivePageContext(GeminiPageContext* gemini_page_context,
                              NSArray<GeminiPageContext*>* shared_tabs);

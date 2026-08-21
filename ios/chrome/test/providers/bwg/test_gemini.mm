@@ -74,8 +74,6 @@ bool IsProtectedUrl(std::string url) {
   return g_mock_protected_url;
 }
 
-void UpdatePageContext(GeminiPageContext* gemini_page_context) {}
-
 void UpdateActivePageContext(GeminiPageContext* gemini_page_context,
                              NSArray<GeminiPageContext*>* shared_tabs) {}
 
