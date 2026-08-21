@@ -127,12 +127,12 @@ fn parse_value<'a>(
     }
     let (major_type, info, arg) = parse_header(input)?;
     match major_type {
-        MAJOR_TYPE_UNSIGNED_INT => to_int(arg, false),
-        MAJOR_TYPE_NEGATIVE_INT => to_int(arg, true),
-        MAJOR_TYPE_BYTE_STRING => to_bytestring(input, arg),
+        MAJOR_TYPE_UNSIGNED_INT => to_int(arg, false).map(Value::Int),
+        MAJOR_TYPE_NEGATIVE_INT => to_int(arg, true).map(Value::Int),
+        MAJOR_TYPE_BYTE_STRING => to_bytestring(input, arg).map(Value::Bytestring),
         MAJOR_TYPE_TEXT_STRING => to_string(input, arg, config),
-        MAJOR_TYPE_ARRAY => to_array(input, arg, depth + 1, config),
-        MAJOR_TYPE_MAP => to_map(input, arg, depth + 1, config),
+        MAJOR_TYPE_ARRAY => to_array(input, arg, depth + 1, config).map(Value::Array),
+        MAJOR_TYPE_MAP => to_map(input, arg, depth + 1, config).map(Value::Map),
         MAJOR_TYPE_SIMPLE_VALUE => to_simple_value(info),
         _ => Err(Error::UnsupportedMajorType),
     }
@@ -206,33 +206,29 @@ fn get_argument<const N: usize, T: FromBytes<N>>(input: &mut &[u8]) -> Result<u6
     }
 }
 
-fn to_int(arg: u64, is_negative: bool) -> Result<Value<'static>, Error> {
+fn to_int(arg: u64, is_negative: bool) -> Result<i64, Error> {
     if is_negative {
         if arg > i64::MAX as u64 {
             Err(Error::OutOfRangeIntegerValue)
         } else {
-            Ok(Value::Int(!arg as i64))
+            Ok(!arg as i64)
         }
     } else if arg > i64::MAX as u64 {
         Err(Error::OutOfRangeIntegerValue)
     } else {
-        Ok(Value::Int(arg as i64))
+        Ok(arg as i64)
     }
 }
 
-fn to_bytestring<'a>(input: &mut &'a [u8], len64: u64) -> Result<Value<'a>, Error> {
+fn to_bytestring<'a>(input: &mut &'a [u8], len64: u64) -> Result<&'a [u8], Error> {
     let Ok(len) = usize::try_from(len64) else {
         return Err(Error::IncompleteCborData);
     };
-    let bytes = get(input, len)?;
-    Ok(Value::Bytestring(bytes))
+    get(input, len)
 }
 
 fn to_string<'a>(input: &mut &'a [u8], len64: u64, config: &Config) -> Result<Value<'a>, Error> {
-    let Ok(len) = usize::try_from(len64) else {
-        return Err(Error::IncompleteCborData);
-    };
-    let bytes = get(input, len)?;
+    let bytes = to_bytestring(input, len64)?;
     match str::from_utf8(bytes) {
         Ok(string) => Ok(Value::String(string)),
         Err(_) => {
@@ -250,12 +246,12 @@ fn to_array<'a>(
     num_elements: u64,
     depth: usize,
     config: &Config,
-) -> Result<Value<'a>, Error> {
+) -> Result<Vec<Value<'a>>, Error> {
     let mut ret = Vec::new();
     for _ in 0..num_elements {
         ret.push(parse_value(input, depth, config)?);
     }
-    Ok(Value::Array(ret))
+    Ok(ret)
 }
 
 fn to_map<'a>(
@@ -263,7 +259,7 @@ fn to_map<'a>(
     num_elements: u64,
     depth: usize,
     config: &Config,
-) -> Result<Value<'a>, Error> {
+) -> Result<Map<'a>, Error> {
     let mut ret: Vec<MapEntry> = Vec::new();
 
     for _ in 0..num_elements {
@@ -296,7 +292,7 @@ fn to_map<'a>(
 
         ret.push(MapEntry { key, value });
     }
-    Ok(Value::Map(Map::from_sorted_vec_unchecked(ret)))
+    Ok(Map::from_sorted_vec_unchecked(ret))
 }
 
 fn to_simple_value(info: u8) -> Result<Value<'static>, Error> {

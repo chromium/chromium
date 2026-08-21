@@ -29,7 +29,7 @@
 //! parse to `f64` and serialize back as `f64` (changing the byte string).
 //!
 //! ```
-//! let value = cbor::Value::String("hello".to_string());
+//! let value = cbor::Value::String("hello");
 //! let serialized = value.to_bytes();
 //! assert_eq!(serialized, vec![0x65u8, 0x68, 0x65, 0x6c, 0x6c, 0x6f]);
 //! assert_eq!(cbor::parse_with_config(serialized, cbor::Config::default()), Ok((value, 1)));

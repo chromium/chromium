@@ -49,9 +49,7 @@ pub enum Value<'a> {
 impl<'a> Value<'a> {
     // to_bytes serialises `self` to CBOR and returns the result.
     pub fn to_bytes(&self) -> Vec<u8> {
-        let mut ret = Vec::new();
-        self.append_bytes(&mut ret);
-        ret
+        writer::write(self)
     }
 
     // append_bytes appends a serialisation of `self` to `out`.
@@ -61,63 +59,63 @@ impl<'a> Value<'a> {
 
     pub fn kind(&self) -> ValueKind {
         match self {
-            Value::Int(_) => ValueKind::Int,
-            Value::Bytestring(_) => ValueKind::Bytestring,
-            Value::String(_) => ValueKind::String,
-            Value::Array(_) => ValueKind::Array,
-            Value::Map(_) => ValueKind::Map,
-            Value::Boolean(_) => ValueKind::Boolean,
-            Value::Null => ValueKind::Null,
-            Value::Undefined => ValueKind::Undefined,
-            Value::InvalidUtf8(_) => ValueKind::InvalidUtf8,
+            Self::Int(_) => ValueKind::Int,
+            Self::Bytestring(_) => ValueKind::Bytestring,
+            Self::String(_) => ValueKind::String,
+            Self::Array(_) => ValueKind::Array,
+            Self::Map(_) => ValueKind::Map,
+            Self::Boolean(_) => ValueKind::Boolean,
+            Self::Null => ValueKind::Null,
+            Self::Undefined => ValueKind::Undefined,
+            Self::InvalidUtf8(_) => ValueKind::InvalidUtf8,
         }
     }
 
     pub fn as_int(&self) -> Option<i64> {
         match self {
-            Value::Int(v) => Some(*v),
+            Self::Int(v) => Some(*v),
             _ => None,
         }
     }
 
     pub fn as_bool(&self) -> Option<bool> {
         match self {
-            Value::Boolean(v) => Some(*v),
+            Self::Boolean(v) => Some(*v),
             _ => None,
         }
     }
 
     pub fn as_bytestring(&self) -> Option<&'a [u8]> {
         match self {
-            Value::Bytestring(v) => Some(v),
+            Self::Bytestring(v) => Some(v),
             _ => None,
         }
     }
 
     pub fn as_string(&self) -> Option<&'a str> {
         match self {
-            Value::String(s) => Some(s),
+            Self::String(s) => Some(s),
             _ => None,
         }
     }
 
     pub fn as_invalid_utf8(&self) -> Option<&'a [u8]> {
         match self {
-            Value::InvalidUtf8(v) => Some(v),
+            Self::InvalidUtf8(v) => Some(v),
             _ => None,
         }
     }
 
     pub fn as_array(&self) -> Option<&[Value<'a>]> {
         match self {
-            Value::Array(v) => Some(v.as_slice()),
+            Self::Array(v) => Some(v),
             _ => None,
         }
     }
 
     pub fn map_entries(&self) -> Option<&[MapEntry<'a>]> {
         match self {
-            Value::Map(m) => Some(m.as_slice()),
+            Self::Map(m) => Some(m),
             _ => None,
         }
     }
@@ -166,10 +164,6 @@ impl<'a> Map<'a> {
             "CBOR map entries must be sorted by key and unique"
         );
         Self(vec)
-    }
-
-    pub fn as_slice(&self) -> &[MapEntry<'a>] {
-        self.0.as_slice()
     }
 
     /// Looks up a value by its `MapKey` using binary search.
@@ -221,7 +215,7 @@ pub enum MapKeyKind {
 }
 
 /// A MapKey is the type of values that can key a CBOR map.
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum MapKey<'a> {
     // A separate `MapKey` type is used because we want to exclude things like
     // maps keyed by arrays or other maps. Such structures never appear in
@@ -240,38 +234,38 @@ pub enum MapKey<'a> {
 impl<'a> MapKey<'a> {
     pub(crate) fn type_arg_and_payload(&self) -> (u8, u64, Option<&'a [u8]>) {
         match self {
-            MapKey::Int(v) if *v >= 0 => (MAJOR_TYPE_UNSIGNED_INT, *v as u64, None),
-            MapKey::Int(v) => (MAJOR_TYPE_NEGATIVE_INT, !*v as u64, None),
-            MapKey::Bytestring(b) => (MAJOR_TYPE_BYTE_STRING, b.len() as u64, Some(b)),
-            MapKey::String(s) => (MAJOR_TYPE_TEXT_STRING, s.len() as u64, Some(s.as_bytes())),
+            Self::Int(v) if *v >= 0 => (MAJOR_TYPE_UNSIGNED_INT, *v as u64, None),
+            Self::Int(v) => (MAJOR_TYPE_NEGATIVE_INT, !*v as u64, None),
+            Self::Bytestring(b) => (MAJOR_TYPE_BYTE_STRING, b.len() as u64, Some(b)),
+            Self::String(s) => (MAJOR_TYPE_TEXT_STRING, s.len() as u64, Some(s.as_bytes())),
         }
     }
 
     pub fn kind(&self) -> MapKeyKind {
         match self {
-            MapKey::Int(_) => MapKeyKind::Int,
-            MapKey::Bytestring(_) => MapKeyKind::Bytestring,
-            MapKey::String(_) => MapKeyKind::String,
+            Self::Int(_) => MapKeyKind::Int,
+            Self::Bytestring(_) => MapKeyKind::Bytestring,
+            Self::String(_) => MapKeyKind::String,
         }
     }
 
     pub fn as_int(&self) -> Option<i64> {
         match self {
-            MapKey::Int(v) => Some(*v),
+            Self::Int(v) => Some(*v),
             _ => None,
         }
     }
 
     pub fn as_bytestring(&self) -> Option<&'a [u8]> {
         match self {
-            MapKey::Bytestring(v) => Some(v),
+            Self::Bytestring(v) => Some(v),
             _ => None,
         }
     }
 
     pub fn as_string(&self) -> Option<&'a str> {
         match self {
-            MapKey::String(s) => Some(s),
+            Self::String(s) => Some(s),
             _ => None,
         }
     }

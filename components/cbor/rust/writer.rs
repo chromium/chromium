@@ -71,7 +71,7 @@ pub(crate) fn append_value(val: &Value, out: &mut Vec<u8>) {
         Value::Boolean(b) => write_header(
             out,
             MAJOR_TYPE_SIMPLE_VALUE,
-            if *b { SIMPLE_VALUE_TRUE as u64 } else { SIMPLE_VALUE_FALSE as u64 },
+            if *b { SIMPLE_VALUE_TRUE } else { SIMPLE_VALUE_FALSE } as u64,
         ),
         Value::Null => write_header(out, MAJOR_TYPE_SIMPLE_VALUE, SIMPLE_VALUE_NULL as u64),
         Value::Undefined => {
