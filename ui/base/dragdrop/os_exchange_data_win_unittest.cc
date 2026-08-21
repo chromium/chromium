@@ -620,7 +620,7 @@ TEST_F(OSExchangeDataWinTest, VirtualFilesAsyncChunkedCopy) {
 
   // Create a large file (50MB) to exercise the chunked copy code path.
   // The chunk size is 16MB, so this will require multiple iterations.
-  constexpr base::ByteSize kLargeFileSizeBytes = base::MiBU(50);
+  constexpr base::ByteSize kLargeFileSizeBytes = base::MiB(50);
   const std::vector<uint8_t> large_content(kLargeFileSizeBytes.InBytes(), 'X');
 
   const std::vector<std::pair<base::FilePath, base::span<const uint8_t>>>

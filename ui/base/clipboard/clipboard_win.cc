@@ -235,7 +235,7 @@ bool ReadFilenamesAvailable() {
 
 // Limit the size of clipboard data to 256 MiB to prevent allocation failures.
 // See https://crbug.com/1164680.
-constexpr auto kMaxClipboardSize = base::MiBU(256);
+constexpr auto kMaxClipboardSize = base::MiB(256);
 
 // A DIB scanline is padded up to a whole number of 4-byte (32-bit DWORD)
 // boundaries, so its byte length depends on this alignment rather than on
