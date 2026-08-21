@@ -322,11 +322,22 @@ export class OmniboxEverywhereOmniboxElement extends
   }
 
   protected onScreenshotWindowClick_() {
+    // TODO(crbug.com/532197177): Hook up screenshot/screenshare capture
+    // trigger.
     this.shadowRoot.querySelector<CrActionMenuElement>(
                        '#screenshotMenu')!.close();
   }
 
   protected onScreenshotEntireScreenClick_() {
+    // TODO(crbug.com/532197177): Hook up screenshot/screenshare capture
+    // trigger.
+    this.shadowRoot.querySelector<CrActionMenuElement>(
+                       '#screenshotMenu')!.close();
+  }
+
+  protected onScreenshotRegionClick_() {
+    // TODO(crbug.com/532198850): Hook up screenshot/screenshare capture
+    // trigger.
     this.shadowRoot.querySelector<CrActionMenuElement>(
                        '#screenshotMenu')!.close();
   }

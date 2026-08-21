@@ -190,6 +190,8 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
                              IDS_OMNIBOX_EVERYWHERE_WINDOW);
   source->AddLocalizedString("screenshotEntireScreenLabel",
                              IDS_OMNIBOX_EVERYWHERE_ENTIRE_SCREEN);
+  source->AddLocalizedString("screenshotRegionLabel",
+                             IDS_OMNIBOX_EVERYWHERE_REGION);
 
   // Sanitized image and favicon source initialization
   content::URLDataSource::Add(profile_,
