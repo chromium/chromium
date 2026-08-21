@@ -281,6 +281,29 @@ TEST_F(ContextualTasksUtilsTest,
   EXPECT_TRUE(IsTabSharingEligible(profile_.get()));
 }
 
+TEST_F(ContextualTasksUtilsTest, ShouldUseDarkMode_NullProfile) {
+  EXPECT_FALSE(ShouldUseDarkMode(nullptr));
+  EXPECT_FALSE(ShouldUseDarkMode(nullptr, GURL()));
+}
+
+TEST_F(ContextualTasksUtilsTest, ShouldUseDarkMode_UrlParamOverridesProfile) {
+  GURL dark_url("https://example.com/search?cs=1");
+  GURL light_url("https://example.com/search?cs=0");
+
+  EXPECT_TRUE(ShouldUseDarkMode(profile_.get(), dark_url));
+  EXPECT_FALSE(ShouldUseDarkMode(profile_.get(), light_url));
+
+  Profile* otr_profile = profile_->GetPrimaryOTRProfile(true);
+  EXPECT_TRUE(ShouldUseDarkMode(otr_profile, dark_url));
+  EXPECT_FALSE(ShouldUseDarkMode(otr_profile, light_url));
+}
+
+TEST_F(ContextualTasksUtilsTest, ShouldUseDarkMode_IncognitoProfile) {
+  Profile* otr_profile = profile_->GetPrimaryOTRProfile(true);
+  EXPECT_TRUE(ShouldUseDarkMode(otr_profile));
+  EXPECT_TRUE(ShouldUseDarkMode(otr_profile, GURL("https://example.com")));
+}
+
 }  // namespace
 
 }  // namespace contextual_tasks
