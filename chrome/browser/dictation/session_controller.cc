@@ -120,7 +120,11 @@ void SessionController::DidGetUserInteraction(
   }
 
   if (key_event.windows_key_code == ui::VKEY_ESCAPE) {
-    // TODO(crbug.com/538256768): Special case escape.
+    if (attached_stream_provider_) {
+      EndDictationStream();
+    } else {
+      FinalizeAndShutdown();
+    }
     return;
   }
 

@@ -829,6 +829,45 @@ TEST_F(DictationSessionControllerTest, DoNotEndStreamOnModifiersOrNonText) {
   EXPECT_NE(controller_->attached_stream_provider(), nullptr);
 }
 
+TEST_F(DictationSessionControllerTest, EscapeEndsActiveStreamElseEndsSession) {
+  controller_->StartDictationStream(TargetDetails(MockTargetInMainFrame(1)),
+                                    DictationStreamStartTrigger::kSessionStart);
+  EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
+  auto* stream_provider = controller_->attached_stream_provider();
+  ASSERT_NE(stream_provider, nullptr);
+
+  blink::WebKeyboardEvent esc_event(blink::WebInputEvent::Type::kRawKeyDown,
+                                    blink::WebInputEvent::kNoModifiers,
+                                    base::TimeTicks::Now());
+  esc_event.windows_key_code = ui::VKEY_ESCAPE;
+
+  // The first escape press ends the active stream.
+  controller_->DidGetUserInteraction(esc_event);
+  EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
+  EXPECT_EQ(controller_->attached_stream_provider(), nullptr);
+
+  // Complete finalization and verify the session does not shut down.
+  EXPECT_CALL(static_cast<MockStreamProvider&>(*stream_provider), GetState())
+      .WillRepeatedly(testing::Return(StreamProvider::StreamState::kComplete));
+  EXPECT_CALL(mock_delegate_, EndSession()).Times(0);
+
+  controller_->DidUpdateStreamProviderState(
+      *stream_provider, StreamProvider::StreamState::kTranscribing);
+  WaitForPostedTasks();
+
+  ASSERT_NE(controller_, nullptr);
+  EXPECT_EQ(controller_->GetState(), SessionState::kInactive);
+
+  // The second escape press with no active stream ends the session.
+  EXPECT_CALL(mock_delegate_, EndSession()).WillOnce([this]() {
+    controller_.reset();
+  });
+  controller_->DidGetUserInteraction(esc_event);
+  WaitForPostedTasks();
+
+  EXPECT_EQ(controller_, nullptr);
+}
+
 }  // namespace
 
 }  // namespace dictation
