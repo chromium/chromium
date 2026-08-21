@@ -207,7 +207,7 @@ const base::FeatureParam<bool> kWebViewHttpCacheQuotaApiForceBackendInit{
     &kWebViewHttpCacheQuotaApi, "ForceBackendInit", true};
 
 // This enables WebView's hyperlink context menu.
-BASE_FEATURE(kWebViewHyperlinkContextMenu, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWebViewHyperlinkContextMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether we ignore duplicate navigations or not, in favor of
 // preserving the already ongoing navigation.
