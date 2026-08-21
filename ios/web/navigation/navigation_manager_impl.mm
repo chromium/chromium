@@ -847,6 +847,10 @@ NavigationItem* NavigationManagerImpl::GetLastCommittedItem() const {
   return GetLastCommittedItemImpl();
 }
 
+bool NavigationManagerImpl::IsRestoreSessionInProgress() const {
+  return native_restore_in_progress_;
+}
+
 NavigationItemImpl* NavigationManagerImpl::GetLastCommittedItemImpl() const {
   if (empty_window_open_item_) {
     return empty_window_open_item_.get();

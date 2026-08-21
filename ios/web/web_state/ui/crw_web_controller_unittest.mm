@@ -9,6 +9,7 @@
 #import <memory>
 #import <utility>
 
+#import "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
@@ -22,6 +23,7 @@
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/navigation/block_universal_links_buildflags.h"
+#import "ios/web/navigation/crw_wk_navigation_handler.h"
 #import "ios/web/navigation/crw_wk_navigation_states.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
@@ -61,6 +63,27 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "third_party/ocmock/ocmock_extensions.h"
 #import "url/scheme_host_port.h"
+
+@interface CRWWebController (Testing)
+@property(nonatomic, readonly) CRWWKNavigationHandler* navigationHandler;
+@end
+
+@interface CRWWKNavigationHandler (Testing)
+@property(nonatomic, copy) NSURL* allowedErrorPageFileURL;
+@end
+@interface FakeWKFrameInfo : NSObject <NSCopying>
+@property(nonatomic, assign, getter=isMainFrame) BOOL mainFrame;
+@end
+
+@implementation FakeWKFrameInfo
+@synthesize mainFrame = _mainFrame;
+
+- (id)copyWithZone:(NSZone*)zone {
+  FakeWKFrameInfo* copy = [[[self class] allocWithZone:zone] init];
+  copy.mainFrame = self.mainFrame;
+  return copy;
+}
+@end
 
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
@@ -1246,6 +1269,85 @@ TEST_F(CRWWebControllerPolicyDeciderTest, CancelRequestAndDisplayError) {
   NSMutableURLRequest* url_request = [NSMutableURLRequest requestWithURL:url];
   EXPECT_TRUE(VerifyDecidePolicyForNavigationAction(
       url_request, WKNavigationActionPolicyCancel));
+}
+
+// Tests that a forged navigation to an error page URL is blocked/cancelled
+// when the browser didn't initiate it, and successfully allowed when the
+// browser did, but restricted strictly to main frame navigations and cleared.
+TEST_F(CRWWebControllerPolicyDeciderTest, RejectForgedErrorPageNavigation) {
+  NSString* path =
+      [base::apple::FrameworkBundle() pathForResource:@"error_page_loaded"
+                                               ofType:@"html"];
+  ASSERT_TRUE(path);
+  NSURL* forged_error_url = [NSURL
+      URLWithString:[NSString
+                        stringWithFormat:@"file://%@?url=chrome://settings",
+                                         path]];
+  NSMutableURLRequest* forged_request =
+      [NSMutableURLRequest requestWithURL:forged_error_url];
+  forged_request.mainDocumentURL = forged_error_url;
+
+  // Use FakeWKFrameInfo to avoid OCMock copying and swizzling issues.
+  FakeWKFrameInfo* fake_frame = [[FakeWKFrameInfo alloc] init];
+
+  CRWFakeWKNavigationAction* action = [[CRWFakeWKNavigationAction alloc] init];
+  action.request = forged_request;
+
+  // Default case: error page load is blocked when not initiated by browser.
+  fake_frame.mainFrame = YES;
+  action.targetFrame = (WKFrameInfo*)fake_frame;
+  __block bool callback_called = false;
+  [navigation_delegate_ webView:mock_web_view_
+      decidePolicyForNavigationAction:action
+                          preferences:[[WKWebpagePreferences alloc] init]
+                      decisionHandler:^(WKNavigationActionPolicy policy,
+                                        WKWebpagePreferences* ignored) {
+                        EXPECT_EQ(policy, WKNavigationActionPolicyCancel);
+                        callback_called = true;
+                      }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return callback_called;
+  }));
+
+  [web_controller() navigationHandler].allowedErrorPageFileURL =
+      forged_error_url;
+
+  // Subframe error page load is blocked and does not clear the flag.
+  fake_frame.mainFrame = NO;
+  action.targetFrame = (WKFrameInfo*)fake_frame;
+  callback_called = false;
+  [navigation_delegate_ webView:mock_web_view_
+      decidePolicyForNavigationAction:action
+                          preferences:[[WKWebpagePreferences alloc] init]
+                      decisionHandler:^(WKNavigationActionPolicy policy,
+                                        WKWebpagePreferences* ignored) {
+                        EXPECT_EQ(policy, WKNavigationActionPolicyCancel);
+                        callback_called = true;
+                      }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return callback_called;
+  }));
+
+  EXPECT_TRUE([[web_controller() navigationHandler].allowedErrorPageFileURL
+      isEqual:forged_error_url]);
+
+  // Main frame navigation is allowed and clears the flag.
+  fake_frame.mainFrame = YES;
+  action.targetFrame = (WKFrameInfo*)fake_frame;
+  callback_called = false;
+  [navigation_delegate_ webView:mock_web_view_
+      decidePolicyForNavigationAction:action
+                          preferences:[[WKWebpagePreferences alloc] init]
+                      decisionHandler:^(WKNavigationActionPolicy policy,
+                                        WKWebpagePreferences* ignored) {
+                        EXPECT_EQ(policy, WKNavigationActionPolicyAllow);
+                        callback_called = true;
+                      }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return callback_called;
+  }));
+
+  EXPECT_FALSE([web_controller() navigationHandler].allowedErrorPageFileURL);
 }
 
 // Test fixture for window.open tests.

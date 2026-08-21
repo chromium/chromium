@@ -208,6 +208,7 @@ class NavigationManagerImpl final : public NavigationManager {
   // TODO(crbug.com/41284081): Make this private once all navigation code is
   // moved out of CRWWebController.
   NavigationItemImpl* GetCurrentItemImpl() const;
+  bool IsRestoreSessionInProgress() const;
 
   // Implementation for corresponding NavigationManager getters.
   NavigationItemImpl* GetPendingItemImpl() const;

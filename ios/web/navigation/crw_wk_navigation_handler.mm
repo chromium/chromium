@@ -179,6 +179,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 }
 
 @property(nonatomic, weak) id<CRWWKNavigationHandlerDelegate> delegate;
+@property(nonatomic, copy) NSURL* allowedErrorPageFileURL;
 
 // Returns the WebStateImpl from self.delegate.
 @property(nonatomic, readonly, assign) web::WebStateImpl* webStateImpl;
@@ -331,9 +332,31 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     }
   }
 
-  // If this is a error navigation, pass through.
+  // Error pages must only be loaded in the main frame. Unconditionally clear
+  // the allowed error page URL on any main frame navigation to prevent dangling
+  // states (e.g., if a load HTML string request was made instead of a
+  // file URL load).
+  NSURL* allowedErrorPageFileURL = self.allowedErrorPageFileURL;
+  if (action.targetFrame.mainFrame) {
+    self.allowedErrorPageFileURL = nil;
+  }
+
+  // If this is an error navigation, pass through only if initiated by the
+  // browser, or if it is a back/forward or reload of an already committed page.
   if ([CRWErrorPageHelper isErrorPageFileURL:requestURL]) {
-    decisionHandler(WKNavigationActionPolicyAllow);
+    BOOL isHistoryOrReloadOrRestore =
+        action.navigationType == WKNavigationTypeBackForward ||
+        action.navigationType == WKNavigationTypeReload ||
+        self.navigationManagerImpl->IsRestoreSessionInProgress();
+    BOOL isExpectedErrorPage =
+        allowedErrorPageFileURL &&
+        requestURL == net::GURLWithNSURL(allowedErrorPageFileURL);
+    if ((isExpectedErrorPage && action.targetFrame.mainFrame) ||
+        isHistoryOrReloadOrRestore) {
+      decisionHandler(WKNavigationActionPolicyAllow);
+      return;
+    }
+    decisionHandler(WKNavigationActionPolicyCancel);
     return;
   }
 
@@ -1483,9 +1506,12 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     }
   }
 
-  // Allow navigation to WebUI pages from error pages.
+  // Allow navigation from an error page to the failed URL it represents so
+  // that error pages for app-specific URLs can retry the original navigation.
   if ([CRWErrorPageHelper isErrorPageFileURL:self.documentURL]) {
-    return YES;
+    return requestURL ==
+           [CRWErrorPageHelper
+               failedNavigationURLFromErrorPageFileURL:self.documentURL];
   }
 
   if (!action.sourceFrame.mainFrame) {
@@ -2144,6 +2170,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
           isErrorPageFileURLForFailedNavigationURL:backForwardItem.URL] &&
       !isSameURLFromWebClient &&
       ![backForwardItem.URL isEqual:errorPage.failedNavigationURL]) {
+    self.allowedErrorPageFileURL = errorPage.errorPageFileURL;
     errorNavigation = [webView loadFileURL:errorPage.errorPageFileURL
                    allowingReadAccessToURL:errorPage.errorPageFileURL];
   } else {
