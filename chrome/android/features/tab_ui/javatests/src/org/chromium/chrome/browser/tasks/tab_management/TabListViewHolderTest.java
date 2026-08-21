@@ -103,7 +103,6 @@ import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.commerce.PriceTracking.BuyableProduct;
-import org.chromium.components.commerce.PriceTracking.PriceTrackingData;
 import org.chromium.components.commerce.PriceTracking.ProductPrice;
 import org.chromium.components.commerce.PriceTracking.ProductPriceUpdate;
 import org.chromium.components.payments.ui.CurrencyFormatter;
@@ -148,11 +147,6 @@ public class TabListViewHolderTest {
             BuyableProduct.newBuilder()
                     .setCurrentPrice(createProductPrice(5_000_000L, "USD"))
                     .build();
-    private static final PriceTrackingData PRICE_TRACKING_DATA =
-            PriceTrackingData.newBuilder()
-                    .setBuyableProduct(BUYABLE_PRODUCT)
-                    .setProductUpdate(PRODUCT_PRICE_UPDATE)
-                    .build();
 
     private static ProductPrice createProductPrice(long amountMicros, String currencyCode) {
         return ProductPrice.newBuilder()
@@ -160,8 +154,6 @@ public class TabListViewHolderTest {
                 .setAmountMicros(amountMicros)
                 .build();
     }
-
-    private static final String USD_CURRENCY_SYMBOL = "$";
 
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
@@ -244,20 +236,6 @@ public class TabListViewHolderTest {
     private final AtomicBoolean mSelectClicked = new AtomicBoolean();
     private final AtomicInteger mSelectTabId = new AtomicInteger();
 
-    private final TabActionListener mMockCreateGroupButtonListener =
-            new TabActionListener() {
-                @Override
-                public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
-                    mCreateGroupButtonClicked.set(true);
-                    mCreateGroupTabId.set(tabId);
-                }
-
-                @Override
-                public void run(
-                        View view, String syncId, @Nullable MotionEventInfo triggeringMotion) {}
-            };
-    private final AtomicBoolean mCreateGroupButtonClicked = new AtomicBoolean();
-    private final AtomicInteger mCreateGroupTabId = new AtomicInteger();
     private boolean mShouldReturnBitmap;
 
     @BeforeClass

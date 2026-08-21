@@ -61,7 +61,6 @@ import java.util.Collections;
 @DisableFeatures({TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS})
 public class TabGroupVisualDataDialogManagerUnitTest {
     private static final Token TAB_GROUP_ID = new Token(34L, 378L);
-    private static final int TAB1_ID = 456;
     private static final String TAB_GROUP_CREATION_DIALOG_SHOWN =
             EventConstants.TAB_GROUP_CREATION_DIALOG_SHOWN;
     private static final String TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE =
