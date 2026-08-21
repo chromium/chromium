@@ -1567,13 +1567,12 @@ void PartitionRoot::ShrinkEmptySlotSpansRing(size_t limit) {
   int16_t index = global_empty_slot_span_ring_index_;
   int16_t starting_index = index;
   while (empty_slot_spans_dirty_bytes_ > limit) {
-    internal::SlotSpanMetadata* slot_span =
-        PA_UNSAFE_TODO(global_empty_slot_span_ring_[index]);
+    internal::SlotSpanMetadata* slot_span = global_empty_slot_span_ring_[index];
     // The ring is not always full, may be nullptr.
     if (slot_span) {
       slot_span->DecommitIfPossible(this);
       // DecommitIfPossible() should set the buffer to null.
-      PA_UNSAFE_TODO(PA_DCHECK(!global_empty_slot_span_ring_[index]));
+      PA_DCHECK(!global_empty_slot_span_ring_[index]);
     }
     index += 1;
     // Walk through the entirety of possible slots, even though the last ones
@@ -1658,23 +1657,17 @@ void PartitionRoot::DumpStats(const char* partition_name,
       // order to preserve a fast size->bucket map (see
       // PartitionRoot::Init() for details).
       if (!bucket->is_valid()) {
-        PA_UNSAFE_TODO(bucket_stats[i]).is_valid = false;
+        bucket_stats[i].is_valid = false;
       } else {
-        internal::PartitionDumpBucketStats(&PA_UNSAFE_TODO(bucket_stats[i]),
-                                           this, bucket,
+        internal::PartitionDumpBucketStats(&bucket_stats[i], this, bucket,
                                            populate_discardable_bytes);
       }
-      if (PA_UNSAFE_TODO(bucket_stats[i]).is_valid) {
-        stats.total_resident_bytes +=
-            PA_UNSAFE_TODO(bucket_stats[i]).resident_bytes;
-        stats.total_active_bytes +=
-            PA_UNSAFE_TODO(bucket_stats[i]).active_bytes;
-        stats.total_active_count +=
-            PA_UNSAFE_TODO(bucket_stats[i]).active_count;
-        stats.total_decommittable_bytes +=
-            PA_UNSAFE_TODO(bucket_stats[i]).decommittable_bytes;
-        stats.total_discardable_bytes +=
-            PA_UNSAFE_TODO(bucket_stats[i]).discardable_bytes;
+      if (bucket_stats[i].is_valid) {
+        stats.total_resident_bytes += bucket_stats[i].resident_bytes;
+        stats.total_active_bytes += bucket_stats[i].active_bytes;
+        stats.total_active_count += bucket_stats[i].active_count;
+        stats.total_decommittable_bytes += bucket_stats[i].decommittable_bytes;
+        stats.total_discardable_bytes += bucket_stats[i].discardable_bytes;
       }
     }
 
