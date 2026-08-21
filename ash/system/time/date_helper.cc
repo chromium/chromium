@@ -211,8 +211,7 @@ base::Time DateHelper::GetLocalMidnight(base::Time date) {
 }
 
 DateHelper::DateHelper()
-    : twenty_four_hour_clock_hours_formatter_(CreateHoursFormatter("HH:mm")),
-      minutes_formatter_(CreateSimpleDateFormatterWithoutBestPattern("mm")),
+    : minutes_formatter_(CreateSimpleDateFormatterWithoutBestPattern("mm")),
       twelve_hour_clock_interval_formatter_(CreateDateIntervalFormatter("hm")),
       twenty_four_hour_clock_interval_formatter_(
           CreateDateIntervalFormatter("Hm")) {
@@ -240,7 +239,6 @@ DateHelper::~DateHelper() {
 }
 
 void DateHelper::ResetFormatters() {
-  twenty_four_hour_clock_hours_formatter_ = CreateHoursFormatter("HH:mm");
   minutes_formatter_ = CreateSimpleDateFormatterWithoutBestPattern("mm");
   twelve_hour_clock_interval_formatter_ = CreateDateIntervalFormatter("hm");
   twenty_four_hour_clock_interval_formatter_ =
