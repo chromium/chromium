@@ -106,6 +106,7 @@ PageActionControllerImpl::PageActionControllerImpl(
                           base::Unretained(this)),
       base::BindRepeating(&PageActionControllerImpl::DoHideAnchoredMessage,
                           base::Unretained(this)));
+  chip_selector_->OnTabActiveChanged(tab_interface.IsActivated());
 
   metrics_recorder_ = CreateMetricsRecorder(
       tab_interface,
@@ -312,12 +313,14 @@ void PageActionControllerImpl::ActionItemChanged(
 
 void PageActionControllerImpl::OnTabActivated(tabs::TabInterface* tab) {
   SetModelsTabActive(/*is_active=*/true);
+  chip_selector_->OnTabActiveChanged(/*is_tab_active=*/true);
   if (anchored_message_timeout_.IsRunning()) {
     anchored_message_timeout_.Reset();
   }
 }
 
 void PageActionControllerImpl::OnTabWillDeactivate(tabs::TabInterface* tab) {
+  chip_selector_->OnTabActiveChanged(/*is_tab_active=*/false);
   SetModelsTabActive(/*is_active=*/false);
 }
 

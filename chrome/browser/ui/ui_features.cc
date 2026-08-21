@@ -325,6 +325,9 @@ BASE_FEATURE(kLensOverlayHomeworkPageActionFocusOptimization,
 BASE_FEATURE(kPageActionAnchoredMessageEasyDismiss,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPageActionAnchoredMessageActiveTabOnly,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAiModePageActionOptimization, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPageActionsPrioritySelector, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -11,7 +11,9 @@
 
 #include "base/functional/callback.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/action_id.h"
@@ -188,6 +190,12 @@ TEST_F(DefaultChipSelectorTest,
   selector->RequestAnchoredMessageHide(2);
   EXPECT_THAT(calls, ElementsAre(Pair("hide_anchored_message", 2),
                                  Pair("show_anchored_message", 1)));
+}
+
+TEST_F(DefaultChipSelectorTest, OnTabActiveChangedNoOp) {
+  selector->OnTabActiveChanged(false);
+  selector->RequestAnchoredMessageShow(0, AnchoredMessageConfig{});
+  EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0)));
 }
 
 class PriorityChipSelectorTest : public testing::Test {
@@ -471,6 +479,91 @@ TEST_F(PriorityChipSelectorTest,
       calls, ElementsAre(Pair("show_anchored_message", 0), Pair("show_chip", 1),
                          Pair("hide_anchored_message", 0),
                          Pair("show_anchored_message", 2)));
+}
+
+TEST_F(PriorityChipSelectorTest, AnchoredMessageDowngradedOnTabDeactivation) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPageActionAnchoredMessageActiveTabOnly);
+
+  selector->OnTabActiveChanged(true);
+  selector->RequestAnchoredMessageShow(
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kPrivacySecurity});
+  EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0)));
+
+  selector->OnTabActiveChanged(false);
+  EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0),
+                                 Pair("hide_anchored_message", 0),
+                                 Pair("show_chip", 0)));
+}
+
+TEST_F(PriorityChipSelectorTest,
+       AnchoredMessageNotDowngradedOnTabDeactivationWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPageActionAnchoredMessageActiveTabOnly);
+
+  selector->OnTabActiveChanged(true);
+  selector->RequestAnchoredMessageShow(
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kPrivacySecurity});
+  EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0)));
+
+  selector->OnTabActiveChanged(false);
+  EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0)));
+}
+
+TEST_F(PriorityChipSelectorTest,
+       AnchoredMessageUserInteractionNotDowngradedOnTabDeactivation) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPageActionAnchoredMessageActiveTabOnly);
+
+  selector->OnTabActiveChanged(true);
+  selector->RequestAnchoredMessageShow(
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kUserInteraction});
+  EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0)));
+
+  selector->OnTabActiveChanged(false);
+  EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0)));
+}
+
+TEST_F(PriorityChipSelectorTest,
+       AnchoredMessageDowngradedWhenRequestedOnInactiveTab) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPageActionAnchoredMessageActiveTabOnly);
+
+  selector->OnTabActiveChanged(false);
+  selector->RequestAnchoredMessageShow(
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kPrivacySecurity});
+  EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0)));
+}
+
+TEST_F(PriorityChipSelectorTest,
+       AnchoredMessageUserInteractionNotDowngradedWhenRequestedOnInactiveTab) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPageActionAnchoredMessageActiveTabOnly);
+
+  selector->OnTabActiveChanged(false);
+  selector->RequestAnchoredMessageShow(
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kUserInteraction});
+  EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0)));
+}
+
+TEST_F(
+    PriorityChipSelectorTest,
+    AnchoredMessageNotDowngradedWhenRequestedOnInactiveTabWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPageActionAnchoredMessageActiveTabOnly);
+
+  selector->OnTabActiveChanged(false);
+  selector->RequestAnchoredMessageShow(
+      0, AnchoredMessageConfig{
+             .priority = PageActionPriorityCategory::kPrivacySecurity});
+  EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0)));
 }
 
 }  // namespace

@@ -122,6 +122,8 @@ void DefaultChipSelector::RequestAnchoredMessageHide(
   }
 }
 
+void DefaultChipSelector::OnTabActiveChanged(bool is_tab_active) {}
+
 PriorityChipSelector::PriorityChipSelector(
     base::RepeatingCallback<void(actions::ActionId,
                                  const SuggestionChipConfig&)>
@@ -201,6 +203,13 @@ void PriorityChipSelector::RequestChipHide(actions::ActionId page_action_id) {
 void PriorityChipSelector::RequestAnchoredMessageShow(
     actions::ActionId page_action_id,
     const AnchoredMessageConfig& config) {
+  if (base::FeatureList::IsEnabled(
+          features::kPageActionAnchoredMessageActiveTabOnly) &&
+      !is_tab_active_ &&
+      config.priority != PageActionPriorityCategory::kUserInteraction) {
+    RequestChipShow(page_action_id, {.priority = config.priority});
+    return;
+  }
   if (active_anchored_message_ == page_action_id) {
     // This anchored message is already showing, but possibly at a different
     // priority.
@@ -275,6 +284,23 @@ void PriorityChipSelector::RequestAnchoredMessageHide(
   if (active_chips_.empty()) {
     active_priority_.reset();
   }
+}
+
+void PriorityChipSelector::OnTabActiveChanged(bool is_tab_active) {
+  is_tab_active_ = is_tab_active;
+  if (is_tab_active_ ||
+      !base::FeatureList::IsEnabled(
+          features::kPageActionAnchoredMessageActiveTabOnly) ||
+      !active_anchored_message_ ||
+      active_priority_ == PageActionPriorityCategory::kUserInteraction) {
+    return;
+  }
+
+  actions::ActionId page_action_id = active_anchored_message_.value();
+  PageActionPriorityCategory priority = active_priority_.value();
+  hide_anchored_message_callback_.Run(page_action_id);
+  active_anchored_message_.reset();
+  ShowChip(page_action_id, {.priority = priority});
 }
 
 void PriorityChipSelector::HideAllActive() {

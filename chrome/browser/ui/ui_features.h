@@ -290,6 +290,12 @@ BASE_DECLARE_FEATURE(kLensOverlayHomeworkPageActionFocusOptimization);
 // losing focus).
 BASE_DECLARE_FEATURE(kPageActionAnchoredMessageEasyDismiss);
 
+// If enabled, anchored messages will only be shown while their associated tab
+// is active. If the tab becomes inactive or a request to show an anchored
+// message arrives while the tab is inactive, the message is downgraded to a
+// suggestion chip.
+BASE_DECLARE_FEATURE(kPageActionAnchoredMessageActiveTabOnly);
+
 // Gates the optimization for AI Mode page action to reduce mouse pressed
 // latency.
 BASE_DECLARE_FEATURE(kAiModePageActionOptimization);

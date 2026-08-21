@@ -33,6 +33,7 @@ class ChipSelector {
       actions::ActionId page_action_id,
       const AnchoredMessageConfig& config) = 0;
   virtual void RequestAnchoredMessageHide(actions::ActionId page_action_id) = 0;
+  virtual void OnTabActiveChanged(bool is_tab_active) = 0;
 };
 
 // CreateChipSelector returns the appropriate implementation of the
@@ -76,6 +77,7 @@ class DefaultChipSelector : public ChipSelector {
   void RequestAnchoredMessageShow(actions::ActionId page_action_id,
                                   const AnchoredMessageConfig& config) override;
   void RequestAnchoredMessageHide(actions::ActionId page_action_id) override;
+  void OnTabActiveChanged(bool is_tab_active) override;
 
  private:
   const base::RepeatingCallback<void(actions::ActionId,
@@ -124,6 +126,7 @@ class PriorityChipSelector : public ChipSelector {
   void RequestAnchoredMessageShow(actions::ActionId page_action_id,
                                   const AnchoredMessageConfig& config) override;
   void RequestAnchoredMessageHide(actions::ActionId page_action_id) override;
+  void OnTabActiveChanged(bool is_tab_active) override;
 
  private:
   void HideAllActive();
@@ -140,6 +143,7 @@ class PriorityChipSelector : public ChipSelector {
       show_anchored_message_callback_;
   const base::RepeatingCallback<void(actions::ActionId)>
       hide_anchored_message_callback_;
+  bool is_tab_active_ = true;
   std::set<actions::ActionId> active_chips_;
   std::optional<actions::ActionId> active_anchored_message_;
   std::optional<PageActionPriorityCategory> active_priority_;
