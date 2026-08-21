@@ -1285,6 +1285,7 @@ crbug.com/491166375 external/wpt/css/css-variables/variable-supports-64.html [ F
 
 # ident() function
 crbug.com/384930424 [ Win ] external/wpt/css/css-values/ident-function-substitution.html [ Pass Timeout ]
+crbug.com/384930424 external/wpt/css/css-values/using-font-relative-units-in-font-properties.html [ Crash ]
 
 # ====== Style team owned tests to here ======
 
@@ -2699,7 +2700,6 @@ crbug.com/540322301 external/wpt/webaudio/the-audio-api/the-oscillatornode-inter
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/548482066 external/wpt/css/css-inline/text-box-trim/text-box-trim-first-line-pseudo-002.html [ Failure ]
-crbug.com/546278641 external/wpt/css/css-values/using-font-relative-units-in-font-properties.html [ Crash ]
 crbug.com/546159614 external/wpt/html/rendering/widgets/button-layout/anonymous-button-content-box.html [ Failure ]
 crbug.com/546146009 external/wpt/css/css-overflow/line-clamp/line-clamp-with-floats-012.html [ Failure ]
 crbug.com/546146009 virtual/disable-css-line-clamp-line-breaking-ellipsis/external/wpt/css/css-overflow/line-clamp/line-clamp-with-floats-012.html [ Failure ]
