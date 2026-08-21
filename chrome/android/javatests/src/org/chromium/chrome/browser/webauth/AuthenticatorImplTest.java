@@ -84,8 +84,6 @@ import java.util.Arrays;
     DeviceRestriction.RESTRICTION_TYPE_NON_AUTO
 })
 public class AuthenticatorImplTest {
-    private static final String TAG = "AuthImplTest";
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule

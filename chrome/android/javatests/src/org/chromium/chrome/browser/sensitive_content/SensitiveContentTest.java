@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -106,7 +105,6 @@ public class SensitiveContentTest {
 
     private WebPageStation mPage;
     private EmbeddedTestServer mTestServer;
-    private TabModelSelector mTabModelSelector;
 
     @Before
     public void setUp() throws Exception {

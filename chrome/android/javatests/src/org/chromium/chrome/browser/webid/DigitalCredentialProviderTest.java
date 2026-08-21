@@ -8,8 +8,6 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import android.app.Instrumentation.ActivityMonitor;
-
 import androidx.test.filters.LargeTest;
 
 import org.junit.Before;
@@ -54,7 +52,6 @@ public class DigitalCredentialProviderTest {
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
-    private ActivityMonitor mActivityMonitor;
     private EmbeddedTestServer mTestServer;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
