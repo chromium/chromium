@@ -6294,4 +6294,46 @@ public class WebContentsAccessibilityTest {
                     });
         }
     }
+
+    /**
+     * Test that when an element becomes disabled and DOM focus is reset to root, accessibility
+     * focus is not moved to the root if an element was already accessibility focused.
+     */
+    @Test
+    @SmallTest
+    public void testDisabledElementDoesNotMoveAccessibilityFocusToRoot() throws Throwable {
+        setupTestWithHTML(
+                "<button id='btn' onclick='this.disabled = true;'>Click me</button>"
+                        + "<p id='text'>Description</p>");
+
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int btnVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "btn");
+
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, createAccessibilityNodeInfo(rootVvid));
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, createAccessibilityNodeInfo(btnVvid));
+
+        // Focus the button.
+        focusNode(btnVvid);
+
+        AccessibilityNodeInfoCompat btnNodeInfo = createAccessibilityNodeInfo(btnVvid);
+        AccessibilityNodeInfoCompat rootNodeInfo = createAccessibilityNodeInfo(rootVvid);
+        Assert.assertTrue(FOCUSING_ERROR, btnNodeInfo.isAccessibilityFocused());
+        Assert.assertFalse(FOCUSING_ERROR, rootNodeInfo.isAccessibilityFocused());
+
+        // Perform click action on the button, which disables the button and clears DOM focus.
+        Assert.assertTrue(
+                performActionOnUiThread(btnVvid, ACTION_CLICK, null, () -> true));
+
+        // Verify that root does not gain accessibility focus and the button retains accessibility focus.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    AccessibilityNodeInfoCompat currentRoot = createAccessibilityNodeInfo(rootVvid);
+                    return currentRoot != null && !currentRoot.isAccessibilityFocused();
+                });
+
+        btnNodeInfo = createAccessibilityNodeInfo(btnVvid);
+        rootNodeInfo = createAccessibilityNodeInfo(rootVvid);
+        Assert.assertFalse(FOCUSING_ERROR, rootNodeInfo.isAccessibilityFocused());
+        Assert.assertTrue(FOCUSING_ERROR, btnNodeInfo.isAccessibilityFocused());
+    }
 }

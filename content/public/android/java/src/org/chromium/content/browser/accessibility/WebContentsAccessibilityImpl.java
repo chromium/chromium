@@ -2393,6 +2393,14 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             }
         }
 
+        // If focus changed to the root or frame root (e.g. because an element became
+        // disabled, was removed from DOM, or blurred), do not reset virtual accessibility
+        // focus to the root if a web element currently has accessibility focus.
+        // This prevents TalkBack from jumping all the way back to the top of the web content.
+        if (isRootOrFrameRoot && mAccessibilityFocusId != View.NO_ID) {
+            return;
+        }
+
         sendAccessibilityEvent(id, AccessibilityEvent.TYPE_VIEW_FOCUSED);
         moveAccessibilityFocusToId(id);
     }
