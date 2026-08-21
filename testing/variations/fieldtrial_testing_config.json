@@ -10622,21 +10622,6 @@
             ]
         }
     ],
-    "EnterpriseDownloadScanOnAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableDownloadEnterpriseScanOnClank"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnterpriseFileObfuscationArchiveAnalyzer": [
         {
             "platforms": [
