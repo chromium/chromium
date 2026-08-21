@@ -48,13 +48,14 @@ private let MojoPropertyRetrievalGenerator = CodeGenerator(
 {%- for receiver in interface_receivers %}
     {%- if receiver.methods %}
 
-/// Generates a call to add a callback to the {{receiver.name}}CallbackRouter.
+/// Generates a call to add a callback to the {{
+        receiver|format_unique_name|to_camel(true)}}CallbackRouter.
 ///
 /// The callback has one parameter, specified with `.parameters(n: 1)`. `build(n: 5)`
 /// then tells Fuzzilli to populate the callback body with five random expressions.
-private let Mojo{{receiver.name}}RouterListenerGenerator = CodeGenerator(
-    "Mojo{{receiver.name}}RouterListenerGenerator",
-    inputs: .required(.js{{receiver.name}}CallbackRouter)
+private let Mojo{{receiver|format_unique_name}}RouterListenerGenerator = CodeGenerator(
+    "Mojo{{receiver|format_unique_name}}RouterListenerGenerator",
+    inputs: .required(.js{{receiver|format_unique_name}}CallbackRouter)
 ) { b, router in
     guard
         let eventName = ILType.js{{receiver|format_unique_name}}CallbackRouter.properties

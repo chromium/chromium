@@ -255,7 +255,7 @@ extension ObjectGroup {
 
     fileprivate static let goldenObserverOnePendingReceiver = ObjectGroup(
         name: "golden.ObserverOnePendingReceiver",
-        instanceType: .jsGoldenObserverOneRemotePendingReceiver,
+        instanceType: .jsGoldenObserverOnePendingReceiver,
         properties: [:],
         methods: [:]
     )
@@ -300,7 +300,7 @@ extension ObjectGroup {
 
     fileprivate static let goldenObserverTwoPendingReceiver = ObjectGroup(
         name: "golden.ObserverTwoPendingReceiver",
-        instanceType: .jsGoldenObserverTwoRemotePendingReceiver,
+        instanceType: .jsGoldenObserverTwoPendingReceiver,
         properties: [:],
         methods: [:]
     )
@@ -434,13 +434,13 @@ private let MojoPropertyRetrievalGenerator = CodeGenerator(
     b.getProperty(propertyName, of: obj)
 }
 
-/// Generates a call to add a callback to the ObserverOneCallbackRouter.
+/// Generates a call to add a callback to the goldenObserverOneCallbackRouter.
 ///
 /// The callback has one parameter, specified with `.parameters(n: 1)`. `build(n: 5)`
 /// then tells Fuzzilli to populate the callback body with five random expressions.
-private let MojoObserverOneRouterListenerGenerator = CodeGenerator(
-    "MojoObserverOneRouterListenerGenerator",
-    inputs: .required(.jsObserverOneCallbackRouter)
+private let MojoGoldenObserverOneRouterListenerGenerator = CodeGenerator(
+    "MojoGoldenObserverOneRouterListenerGenerator",
+    inputs: .required(.jsGoldenObserverOneCallbackRouter)
 ) { b, router in
     guard
         let eventName = ILType.jsGoldenObserverOneCallbackRouter.properties

@@ -11,7 +11,7 @@ extension ILType {
             "{{method.name}}",
             {%- endfor %}
         ])
-    fileprivate static let {{remote|format_il_type}}Wrapper: ILType = .object(
+    fileprivate static let js{{remote|format_unique_name}}RemoteWrapper: ILType = .object(
         ofGroup: "{{remote|fully_qualified_name}}RemoteWrapper",
         withMethods: ["close", "isBound", "associateAndPassReceiver"])
     fileprivate static let js{{remote|format_unique_name}}PendingReceiver: ILType = .object(
@@ -34,7 +34,7 @@ extension ILType {
     fileprivate static let {{receiver|format_il_type}}: ILType = .object(
         ofGroup: "{{receiver|fully_qualified_name}}Remote",
         withProperties: ["$"])
-    fileprivate static let {{receiver|format_il_type}}Wrapper: ILType = .object(
+    fileprivate static let js{{receiver|format_unique_name}}RemoteWrapper: ILType = .object(
         ofGroup: "{{receiver|fully_qualified_name}}RemoteWrapper",
         withMethods: ["close", "isBound", "associateAndPassReceiver"])
     fileprivate static let js{{receiver|format_unique_name}}PendingReceiver: ILType = .object(
@@ -54,7 +54,7 @@ extension ObjectGroup {
     fileprivate static let {{remote|format_unique_name|to_camel(True)}}Remote = ObjectGroup(
         name: "{{remote|fully_qualified_name}}Remote",
         instanceType: .{{remote|format_il_type}},
-        properties: ["$": .{{remote|format_il_type}}Wrapper],
+        properties: ["$": .js{{remote|format_unique_name}}RemoteWrapper],
         {%- if remote.methods %}
         methods: [
         {%- for method in remote.methods %}
@@ -85,7 +85,7 @@ extension ObjectGroup {
 
     fileprivate static let {{remote|format_unique_name|to_camel(True)}}RemoteWrapper = ObjectGroup(
         name: "{{remote|fully_qualified_name}}RemoteWrapper",
-        instanceType: .{{remote|format_il_type}}Wrapper,
+        instanceType: .js{{remote|format_unique_name}}RemoteWrapper,
         properties: [:],
         methods: [
             "close": [] => .undefined,
@@ -147,13 +147,13 @@ extension ObjectGroup {
     fileprivate static let {{receiver|format_unique_name|to_camel(True)}}Remote = ObjectGroup(
         name: "{{receiver|fully_qualified_name}}Remote",
         instanceType: .{{receiver|format_il_type}},
-        properties: ["$": .{{receiver|format_il_type}}Wrapper],
+        properties: ["$": .js{{receiver|format_unique_name}}RemoteWrapper],
         methods: [:]
     )
 
     fileprivate static let {{receiver|format_unique_name|to_camel(True)}}RemoteWrapper = ObjectGroup(
         name: "{{receiver|fully_qualified_name}}RemoteWrapper",
-        instanceType: .{{receiver|format_il_type}}Wrapper,
+        instanceType: .js{{receiver|format_unique_name}}RemoteWrapper,
         properties: [:],
         methods: [
             "close": [] => .undefined,
@@ -165,7 +165,7 @@ extension ObjectGroup {
 
     fileprivate static let {{receiver|format_unique_name|to_camel(True)}}PendingReceiver = ObjectGroup(
         name: "{{receiver|fully_qualified_name}}PendingReceiver",
-        instanceType: .{{receiver|format_il_type}}PendingReceiver,
+        instanceType: .js{{receiver|format_unique_name}}PendingReceiver,
         properties: [:],
         methods: [:]
     )
