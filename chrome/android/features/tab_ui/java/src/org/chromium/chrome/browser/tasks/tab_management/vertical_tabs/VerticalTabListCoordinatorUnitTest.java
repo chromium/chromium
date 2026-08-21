@@ -29,6 +29,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.SystemClock;
 import android.view.InputDevice;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -2683,6 +2684,16 @@ public class VerticalTabListCoordinatorUnitTest {
                 View.MeasureSpec.makeMeasureSpec(
                         TEST_CONTAINER_HEIGHT_PX, View.MeasureSpec.EXACTLY));
         containerView.layout(0, 0, TEST_CONTAINER_WIDTH_PX, TEST_CONTAINER_HEIGHT_PX);
+    }
+
+    @Test
+    @SmallTest
+    public void testKeyboardHandler_InitializedAndRegisteredOnContainer() {
+        createCoordinator();
+        assertNotNull(mCoordinator.getKeyboardHandlerForTesting());
+
+        KeyEvent event = new KeyEvent(0, 0, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DPAD_UP, 0, 0);
+        assertFalse(mCoordinator.getView().dispatchKeyEvent(event));
     }
 
     // =============================================================================================

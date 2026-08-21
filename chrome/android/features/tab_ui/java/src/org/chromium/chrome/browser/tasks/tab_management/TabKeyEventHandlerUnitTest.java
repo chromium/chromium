@@ -7,11 +7,15 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static android.view.KeyEvent.KEYCODE_PAGE_DOWN;
 import static android.view.KeyEvent.KEYCODE_PAGE_UP;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.view.KeyEvent;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -115,6 +119,73 @@ public class TabKeyEventHandlerUnitTest {
                 /* moveSingleTab= */ false);
 
         verify(mTabModel).moveRelatedTabs(tab.getId(), 0);
+    }
+
+    @Test
+    public void testReorderTab_MoveForward() {
+        addTab();
+        Tab tab1 = addTab();
+
+        TabKeyEventHandler.reorderTab(
+                mTabModel, tab1.getId(), /* moveForward= */ true, /* moveSingleTab= */ true);
+
+        verify(mTabModel).moveTab(tab1.getId(), 0);
+    }
+
+    @Test
+    public void testReorderTab_MoveBackward() {
+        Tab tab0 = addTab();
+        addTab();
+
+        TabKeyEventHandler.reorderTab(
+                mTabModel, tab0.getId(), /* moveForward= */ false, /* moveSingleTab= */ true);
+
+        verify(mTabModel).moveTab(tab0.getId(), 1);
+    }
+
+    @Test
+    public void testIsCtrlDpadReorderEvent() {
+        KeyEvent ctrlUp =
+                new KeyEvent(
+                        0,
+                        0,
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_DPAD_UP,
+                        0,
+                        KeyEvent.META_CTRL_ON);
+        KeyEvent ctrlDown =
+                new KeyEvent(
+                        0,
+                        0,
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_DPAD_DOWN,
+                        0,
+                        KeyEvent.META_CTRL_ON);
+        KeyEvent nonCtrlUp =
+                new KeyEvent(0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_UP, 0, 0);
+        KeyEvent ctrlPageUp =
+                new KeyEvent(
+                        0,
+                        0,
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_PAGE_UP,
+                        0,
+                        KeyEvent.META_CTRL_ON);
+
+        assertTrue(TabKeyEventHandler.isCtrlDpadReorderEvent(ctrlUp));
+        assertTrue(TabKeyEventHandler.isCtrlDpadReorderEvent(ctrlDown));
+        assertFalse(TabKeyEventHandler.isCtrlDpadReorderEvent(nonCtrlUp));
+        assertFalse(TabKeyEventHandler.isCtrlDpadReorderEvent(ctrlPageUp));
+    }
+
+    @Test
+    public void testIsMovePrevious() {
+        KeyEvent dpadUp = new KeyEvent(0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_UP, 0, 0);
+        KeyEvent dpadDown =
+                new KeyEvent(0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_DOWN, 0, 0);
+
+        assertTrue(TabKeyEventHandler.isMovePrevious(dpadUp));
+        assertFalse(TabKeyEventHandler.isMovePrevious(dpadDown));
     }
 
     private Tab addTab() {

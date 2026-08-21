@@ -161,6 +161,7 @@ public class VerticalTabListCoordinator {
     private final View.OnLayoutChangeListener mPinnedTabsLayoutChangeListener;
     private final VerticalTabHoverCardController mTabHoverCardController;
     private final RecyclerView.OnScrollListener mOnScrollListener;
+    private final VerticalTabKeyboardHandler mKeyboardHandler;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final @Nullable AppHeaderObserver mAppHeaderObserver;
     private final @Nullable BooleanSupplier mCanActivateTabLayoutToggleMenuSupplier;
@@ -566,6 +567,7 @@ public class VerticalTabListCoordinator {
                         /* onDragStateChangedListener */ CallbackUtils.emptyRunnable());
 
         mMediator.initWithNative(profile.getOriginalProfile());
+        mMediator.setupAccessibilityDelegate(mRecyclerView);
 
         // Setup Pinned Tabs UI & Mediator.
         TabListRecyclerView pinnedTabsRecyclerView = mContainerView.getPinnedTabsRecyclerView();
@@ -672,6 +674,15 @@ public class VerticalTabListCoordinator {
                         pinnedTabsModelList,
                         this::updatePinnedTabsVisibility);
         updatePinnedTabsVisibility();
+
+        mKeyboardHandler =
+                new VerticalTabKeyboardHandler(
+                        tabModelSelector,
+                        mModelList,
+                        pinnedTabsModelList,
+                        mRecyclerView,
+                        pinnedTabsRecyclerView);
+        mContainerView.setKeyEventListener(mKeyboardHandler);
 
         mTabModelSelectorObserver =
                 new TabModelSelectorObserver() {
@@ -820,6 +831,7 @@ public class VerticalTabListCoordinator {
     }
 
     public void destroy() {
+        mContainerView.setKeyEventListener(null);
         mPinnedTabsModelList.removeObserver(mPinnedTabsListObserver);
         mPinnedTabsMediator.destroy();
         mPinnedTabsRecyclerView.setAdapter(null);
@@ -1964,5 +1976,10 @@ public class VerticalTabListCoordinator {
 
     RecyclerView.OnScrollListener getOnScrollListenerForTesting() {
         return mOnScrollListener;
+    }
+
+    /** Returns the {@link VerticalTabKeyboardHandler} instance for testing. */
+    VerticalTabKeyboardHandler getKeyboardHandlerForTesting() {
+        return mKeyboardHandler;
     }
 }

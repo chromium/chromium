@@ -32,6 +32,14 @@ public class UiTypeHelper {
 
     /**
      * @param type The {@link UiType} to check.
+     * @return Whether the given {@code type} represents a tab or a tab group.
+     */
+    public static boolean isTabOrTabGroup(@UiType int type) {
+        return type == UiType.TAB || type == UiType.TAB_GROUP;
+    }
+
+    /**
+     * @param type The {@link UiType} to check.
      * @return whether the given `type` is a message card.
      */
     public static boolean isMessageCard(@UiType int type) {

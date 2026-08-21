@@ -1722,12 +1722,12 @@ public class TabListMediator implements TabListNotificationHandler {
     }
 
     /**
-     * Setup the {@link View.AccessibilityDelegate} for grid layout.
+     * Sets up the {@link View.AccessibilityDelegate} for tab list accessibility actions.
      *
      * @param helper The {@link TabGridAccessibilityHelper} used to setup accessibility support.
      */
     @Initializer
-    void setupAccessibilityDelegate(TabGridAccessibilityHelper helper) {
+    public void setupAccessibilityDelegate(TabGridAccessibilityHelper helper) {
         mAccessibilityDelegate =
                 new View.AccessibilityDelegate() {
                     @Override

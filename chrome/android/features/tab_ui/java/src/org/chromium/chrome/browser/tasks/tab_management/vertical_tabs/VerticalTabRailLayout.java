@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.InputDevice;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,8 +37,20 @@ import org.chromium.chrome.tab_ui.R;
 // click handlers) from VerticalTabListCoordinator to VerticalTabRailLayout.
 @NullMarked
 public class VerticalTabRailLayout extends ConstraintLayout {
-    private @Nullable Callback<@RailCollapseState Integer> mExpandOrCollapseOnHoverListener;
+    /** Functional interface for delegating key events captured by the vertical tab rail. */
+    @FunctionalInterface
+    public interface KeyEventListener {
+        /**
+         * Handles a key event dispatched to the vertical tab rail.
+         *
+         * @param event The {@link KeyEvent} dispatched to the rail.
+         * @return Whether the event was handled.
+         */
+        boolean onKeyEvent(KeyEvent event);
+    }
 
+    private @Nullable Callback<@RailCollapseState Integer> mExpandOrCollapseOnHoverListener;
+    private @Nullable KeyEventListener mKeyEventListener;
     private VerticalTabListRecyclerView mRecyclerView;
     private TabListRecyclerView mPinnedTabsRecyclerView;
     private View mSpacerView;
@@ -203,6 +216,19 @@ public class VerticalTabRailLayout extends ConstraintLayout {
             }
         }
         return false;
+    }
+
+    /** Sets the {@link KeyEventListener} to intercept key events dispatched to the rail. */
+    public void setKeyEventListener(@Nullable KeyEventListener listener) {
+        mKeyEventListener = listener;
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (mKeyEventListener != null && mKeyEventListener.onKeyEvent(event)) {
+            return true;
+        }
+        return super.dispatchKeyEvent(event);
     }
 
     private void expandOrCollapseOnHover(@Nullable MotionEvent event) {

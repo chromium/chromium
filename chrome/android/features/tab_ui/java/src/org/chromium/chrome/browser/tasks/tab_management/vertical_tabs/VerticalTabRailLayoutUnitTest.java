@@ -22,6 +22,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.InputDevice;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -64,6 +65,7 @@ public class VerticalTabRailLayoutUnitTest {
     @Mock private View.OnClickListener mNewTabClickListener;
     @Mock private View.OnClickListener mIncognitoClickListener;
     @Mock private View.OnClickListener mCollapseClickListener;
+    @Mock private VerticalTabRailLayout.KeyEventListener mKeyEventListener;
 
     private Activity mActivity;
     private VerticalTabRailLayout mRailLayout;
@@ -618,6 +620,28 @@ public class VerticalTabRailLayoutUnitTest {
         assertEquals(expectedPaddingTop, mRailLayout.getPinnedTabsRecyclerView().getPaddingTop());
         assertEquals(
                 expectedPaddingBottom, mRailLayout.getPinnedTabsRecyclerView().getPaddingBottom());
+    }
+
+    @Test
+    @SmallTest
+    public void testDispatchKeyEvent_DelegatesToKeyEventListener() {
+        mRailLayout.setKeyEventListener(mKeyEventListener);
+
+        KeyEvent event =
+                new KeyEvent(
+                        0,
+                        0,
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_DPAD_UP,
+                        0,
+                        KeyEvent.META_CTRL_ON);
+
+        when(mKeyEventListener.onKeyEvent(event)).thenReturn(true);
+        assertTrue(mRailLayout.dispatchKeyEvent(event));
+        verify(mKeyEventListener).onKeyEvent(event);
+
+        when(mKeyEventListener.onKeyEvent(event)).thenReturn(false);
+        assertFalse(mRailLayout.dispatchKeyEvent(event));
     }
 
     private void measureAndLayout(View view, int width, int height) {
