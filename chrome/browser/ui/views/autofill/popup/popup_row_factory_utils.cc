@@ -79,6 +79,10 @@ constexpr int kCustomIconSize = 16;
 // The size of a close or delete icon.
 constexpr int kCloseIconSize = 16;
 
+// The custom horizontal spacing between labels in the same row for AtMemory
+// results suggestions.
+constexpr int kAtMemoryLabelHorizontalSpacing = 4;
+
 // Popup items that use a leading icon instead of a trailing one.
 constexpr auto kPopupItemTypesUsingLeadingIcons = DenseSet<SuggestionType>(
     {SuggestionType::kAllLoyaltyCardsEntry,
@@ -261,8 +265,13 @@ std::vector<std::unique_ptr<views::View>> CreateSubtextViews(
     const Suggestion& suggestion,
     FillingProduct main_filling_product) {
   std::vector<std::unique_ptr<views::View>> result;
-  const int kHorizontalSpacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
+  // TODO(crbug.com/550237412): Maybe this can be applied to all the
+  // suggestion types.
+  const int between_child_spacing =
+      suggestion.type == SuggestionType::kAtMemorySearchResult
+          ? kAtMemoryLabelHorizontalSpacing
+          : ChromeLayoutProvider::Get()->GetDistanceMetric(
+                DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
 
   for (const std::vector<Suggestion::Text>& label_row : suggestion.labels) {
     if (std::ranges::all_of(label_row, &std::u16string::empty,
@@ -274,7 +283,7 @@ std::vector<std::unique_ptr<views::View>> CreateSubtextViews(
     auto label_row_container_view =
         views::Builder<views::BoxLayoutView>()
             .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-            .SetBetweenChildSpacing(kHorizontalSpacing)
+            .SetBetweenChildSpacing(between_child_spacing)
             .Build();
     for (const Suggestion::Text& label_text : label_row) {
       // If a column is empty, do not include any further columns.

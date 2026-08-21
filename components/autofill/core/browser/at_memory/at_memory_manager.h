@@ -157,6 +157,11 @@ class AtMemoryManager {
   // Creates a source attribution suggestion ("Suggested by Gemini").
   static Suggestion CreateSourceAttributionSuggestion();
 
+  // Transforms an AtMemory search result entry into a `Suggestion`.
+  static Suggestion TransformResultIntoSuggestion(
+      const MemorySearchResult& entry,
+      std::string_view app_locale);
+
  private:
   friend class AtMemoryManagerTestApi;
 

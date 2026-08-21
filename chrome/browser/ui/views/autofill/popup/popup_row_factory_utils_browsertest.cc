@@ -189,7 +189,18 @@ struct AtMemoryTestParam {
   base::RepeatingCallback<Suggestion()> generator;
 };
 
+Suggestion CreateAtMemorySearchResultSuggestion() {
+  MemorySearchResult entry(MemoryDataType::kPassportNumber, u"Passport Number",
+                           u"987654321");
+  entry.metadata_list.emplace_back(MemoryDataType::kPassportName, u"Name",
+                                   u"John Doe");
+  entry.sources.emplace_back(MemoryEntrySourceType::kGmail);
+  return AtMemoryManager::TransformResultIntoSuggestion(entry, "en-US");
+}
+
 const AtMemoryTestParam kAtMemorySuggestions[] = {
+    {"AtMemory_search_result",
+     base::BindRepeating(&CreateAtMemorySearchResultSuggestion)},
     {"AtMemory_source_attribution",
      base::BindRepeating(&AtMemoryManager::CreateSourceAttributionSuggestion)},
     {"AtMemory_fetching",

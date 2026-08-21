@@ -218,71 +218,6 @@ std::vector<Suggestion> CreateFooterSuggestions(
   return suggestions;
 }
 
-Suggestion TransformResultIntoSuggestion(const MemorySearchResult& entry,
-                                         std::string_view app_locale) {
-  const bool is_personal_context_sourced =
-      !IsMemorySearchResultAutofillSourced(entry);
-  Suggestion suggestion(
-      MaybeObfuscateValue(entry.value, entry.type, is_personal_context_sourced),
-      SuggestionType::kAtMemorySearchResult);
-  suggestion.icon = GetSuggestionIcon(
-      entry.type,
-      /*is_autofill_only=*/entry.sources.size() == 1 &&
-          entry.sources.front().type == MemoryEntrySourceType::kAutofill);
-
-  // Label row: [type_name, metadata[0].value, ...]
-  std::vector<Suggestion::Text> label_row;
-  std::u16string type_name = GetSuggestionLabelTypeName(entry);
-  if (!type_name.empty()) {
-    label_row.emplace_back(type_name);
-  }
-  for (const EntryMetadata& metadata : entry.metadata_list) {
-    // CVCs are always fully obfuscated. They add no value to a label.
-    if (metadata.type == MemoryDataType::kCreditCardSecurityCode) {
-      continue;
-    }
-    if (!label_row.empty()) {
-      label_row.emplace_back(u"\u2022");  // Bullet (•)
-    }
-    std::u16string label_value = FormatMemoryDataTypeLabelValue(
-        metadata.type, metadata.value, metadata.typed_value, app_locale);
-    label_row.emplace_back(MaybeObfuscateValue(label_value, metadata.type,
-                                               is_personal_context_sourced));
-  }
-  if (!label_row.empty()) {
-    suggestion.labels.emplace_back(std::move(label_row));
-  }
-  Suggestion::AtMemoryPayload at_memory_payload(entry.value, entry.type);
-  at_memory_payload.type_name = std::move(type_name);
-  at_memory_payload.identifier =
-      GetPayloadIdentifier(entry.type, entry.identifier);
-  at_memory_payload.is_personal_context_sourced = is_personal_context_sourced;
-
-  std::underlying_type_t<MemoryEntrySourceType> sources_bitmask = 0;
-  for (const auto& source : entry.sources) {
-    sources_bitmask |= std::to_underlying(source.type);
-  }
-  at_memory_payload.sources_bitmask = sources_bitmask;
-
-  suggestion.payload = std::move(at_memory_payload);
-  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
-
-  suggestion.children =
-      CreateSecondarySuggestions(entry, is_personal_context_sourced);
-  std::vector<Suggestion> footer_children = CreateFooterSuggestions(entry);
-
-  // Add a separator only when there are both secondary suggestions above and
-  // footer links below so they do not visually blend together.
-  if (!suggestion.children.empty() && !footer_children.empty()) {
-    Suggestion separator(SuggestionType::kSeparator);
-    separator.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
-    suggestion.children.emplace_back(std::move(separator));
-  }
-  base::Extend(suggestion.children, std::move(footer_children));
-
-  return suggestion;
-}
-
 // Creates a suggestion to display when the query is supported, but yields no
 // results.
 Suggestion CreateNoDataSuggestion() {
@@ -373,6 +308,73 @@ bool ShouldEraseMemorySearchResult(MemoryDataType type,
 }
 
 }  // namespace
+
+// static
+Suggestion AtMemoryManager::TransformResultIntoSuggestion(
+    const MemorySearchResult& entry,
+    std::string_view app_locale) {
+  const bool is_personal_context_sourced =
+      !IsMemorySearchResultAutofillSourced(entry);
+  Suggestion suggestion(
+      MaybeObfuscateValue(entry.value, entry.type, is_personal_context_sourced),
+      SuggestionType::kAtMemorySearchResult);
+  suggestion.icon = GetSuggestionIcon(
+      entry.type,
+      /*is_autofill_only=*/entry.sources.size() == 1 &&
+          entry.sources.front().type == MemoryEntrySourceType::kAutofill);
+
+  // Label row: [type_name, metadata[0].value, ...]
+  std::vector<Suggestion::Text> label_row;
+  std::u16string type_name = GetSuggestionLabelTypeName(entry);
+  if (!type_name.empty()) {
+    label_row.emplace_back(type_name);
+  }
+  for (const EntryMetadata& metadata : entry.metadata_list) {
+    // CVCs are always fully obfuscated. They add no value to a label.
+    if (metadata.type == MemoryDataType::kCreditCardSecurityCode) {
+      continue;
+    }
+    if (!label_row.empty()) {
+      label_row.emplace_back(u"\u2022");  // Bullet (•)
+    }
+    std::u16string label_value = FormatMemoryDataTypeLabelValue(
+        metadata.type, metadata.value, metadata.typed_value, app_locale);
+    label_row.emplace_back(MaybeObfuscateValue(label_value, metadata.type,
+                                               is_personal_context_sourced));
+  }
+  if (!label_row.empty()) {
+    suggestion.labels.emplace_back(std::move(label_row));
+  }
+  Suggestion::AtMemoryPayload at_memory_payload(entry.value, entry.type);
+  at_memory_payload.type_name = std::move(type_name);
+  at_memory_payload.identifier =
+      GetPayloadIdentifier(entry.type, entry.identifier);
+  at_memory_payload.is_personal_context_sourced = is_personal_context_sourced;
+
+  std::underlying_type_t<MemoryEntrySourceType> sources_bitmask = 0;
+  for (const MemoryEntrySource& source : entry.sources) {
+    sources_bitmask |= std::to_underlying(source.type);
+  }
+  at_memory_payload.sources_bitmask = sources_bitmask;
+
+  suggestion.payload = std::move(at_memory_payload);
+  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+
+  suggestion.children =
+      CreateSecondarySuggestions(entry, is_personal_context_sourced);
+  std::vector<Suggestion> footer_children = CreateFooterSuggestions(entry);
+
+  // Add a separator only when there are both secondary suggestions above and
+  // footer links below so they do not visually blend together.
+  if (!suggestion.children.empty() && !footer_children.empty()) {
+    Suggestion separator(SuggestionType::kSeparator);
+    separator.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+    suggestion.children.emplace_back(std::move(separator));
+  }
+  base::Extend(suggestion.children, std::move(footer_children));
+
+  return suggestion;
+}
 
 // static
 Suggestion AtMemoryManager::CreateSourceAttributionSuggestion() {

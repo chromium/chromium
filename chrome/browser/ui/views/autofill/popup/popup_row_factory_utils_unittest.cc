@@ -334,4 +334,21 @@ TEST_F(PopupRowFactoryUtilsTest, RemoveAutofillAiRowView) {
       row_view().GetContentView().children().front()));
 }
 
+// Tests that when a `Suggestion` has `kAtMemorySearchResult` type, the
+// custom horizontal spacing between labels in the same row is applied.
+TEST_F(PopupRowFactoryUtilsTest, AtMemorySearchResultLabelsHorizontalSpacing) {
+  Suggestion suggestion(u"Main", SuggestionType::kAtMemorySearchResult);
+  suggestion.labels = {
+      {Suggestion::Text(u"Part1"), Suggestion::Text(u"Part2")}};
+  ShowSuggestion(suggestion);
+
+  views::Label* label1 =
+      FindLabelWithText(&row_view().GetContentView(), u"Part1");
+  ASSERT_THAT(label1, NotNull());
+
+  auto* container = views::AsViewClass<views::BoxLayoutView>(label1->parent());
+  ASSERT_THAT(container, NotNull());
+  EXPECT_EQ(container->GetBetweenChildSpacing(), 4);
+}
+
 }  // namespace autofill
