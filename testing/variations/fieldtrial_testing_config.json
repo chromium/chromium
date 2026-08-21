@@ -9502,7 +9502,8 @@
                         "dse_preload2_prefetch_priority_policy": "SearchPrefetchCompat"
                     },
                     "enable_features": [
-                        "DsePreload2"
+                        "DsePreload2",
+                        "DsePreload2OnPress"
                     ]
                 }
             ]
