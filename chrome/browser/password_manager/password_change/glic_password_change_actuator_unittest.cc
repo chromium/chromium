@@ -16,12 +16,12 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -39,6 +39,7 @@
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/password_manager/core/browser/actor_login/password_change_from_checkup_actor_login_service.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/mock_password_form_cache.h"
 #include "components/password_manager/core/browser/mock_password_manager.h"
@@ -376,7 +377,8 @@ class GlicPasswordChangeActuatorTest : public ChromeRenderViewHostTestHarness {
 // Simulates the full flow including form finding, form filling, and
 // verification OnUpdate with kTerminalCompletion /
 // PASSWORD_CHANGE_FINISHED_SUCCESSFULLY, verifying state transitions to
-// kPasswordSuccessfullyChanged and password store saving.
+// kPasswordSuccessfullyChanged, actor login service configuration for both
+// tasks, and password store saving.
 TEST_F(GlicPasswordChangeActuatorTest,
        VerificationSuccessSavesPasswordAndNotifiesObserver) {
   SetupFormInCache();
@@ -388,6 +390,19 @@ TEST_F(GlicPasswordChangeActuatorTest,
 
   // Start the actuator.
   actuator()->Start();
+
+  // Create find form task and verify its ActorLoginService is set.
+  actor::TaskId find_form_task_id = actor_service()->CreateTaskForTesting();
+  actor::ActorTask* find_form_task =
+      actor_service()->GetTask(find_form_task_id);
+  ASSERT_TRUE(find_form_task);
+  actor::AddTabToTask(mock_actuation_tab(), *find_form_task);
+  actor_service()->NotifyTaskStateChanged(*find_form_task);
+
+  EXPECT_NE(
+      static_cast<actor_login::PasswordChangeFromCheckupActorLoginService*>(
+          &find_form_task->GetExecutionEngine().GetActorLoginService()),
+      nullptr);
 
   EXPECT_CALL(observer(),
               OnActuationStateChanged(
@@ -425,6 +440,18 @@ TEST_F(GlicPasswordChangeActuatorTest,
                        glic::mojom::SubscriberObservationType::kUpdate);
 
   run_loop.Run();
+
+  // Create verification task and verify its ActorLoginService is set.
+  actor::TaskId verif_task_id = actor_service()->CreateTaskForTesting();
+  actor::ActorTask* verif_task = actor_service()->GetTask(verif_task_id);
+  ASSERT_TRUE(verif_task);
+  actor::AddTabToTask(mock_actuation_tab(), *verif_task);
+  actor_service()->NotifyTaskStateChanged(*verif_task);
+
+  EXPECT_NE(
+      static_cast<actor_login::PasswordChangeFromCheckupActorLoginService*>(
+          &verif_task->GetExecutionEngine().GetActorLoginService()),
+      nullptr);
 
   // Deliver successful verification update via public OnUpdate.
   EXPECT_CALL(observer(),

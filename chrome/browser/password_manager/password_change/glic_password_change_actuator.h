@@ -83,6 +83,7 @@ class GlicPasswordChangeActuator
 
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
+  void OnActorTaskStateChanged(actor::ActorTask& task);
   void OnChangePasswordFormManagerFound(
       password_manager::PasswordFormManager* form_manager);
   void OnChangePasswordFormFilled(
@@ -111,6 +112,7 @@ class GlicPasswordChangeActuator
 
   std::optional<actor::TaskId> find_form_task_id_;
   std::optional<actor::TaskId> verification_task_id_;
+  base::CallbackListSubscription actor_task_state_subscription_;
 
   std::unique_ptr<ChangePasswordFormFiller> form_filler_;
   std::unique_ptr<ChangePasswordFormWaiter> form_waiter_;

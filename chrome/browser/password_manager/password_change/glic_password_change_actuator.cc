@@ -31,6 +31,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/core/browser/actor_login/password_change_from_checkup_actor_login_service.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
@@ -264,6 +265,18 @@ void GlicPasswordChangeActuator::Start() {
   if (auto logger = GetLoggerIfAvailable(originator_.get())) {
     logger->LogMessage(Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_START_FLOW);
   }
+
+  actor::ActorKeyedService* actor_service = actor::ActorKeyedService::Get(
+      Profile::FromBrowserContext(new_contents->GetBrowserContext()));
+  if (!actor_service) {
+    CloseGlicSession();
+    NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
+    return;
+  }
+
+  actor_task_state_subscription_ = actor_service->AddTaskStateChangedCallback(
+      base::BindRepeating(&GlicPasswordChangeActuator::OnActorTaskStateChanged,
+                          base::Unretained(this)));
   NotifyStateChanged(
       PasswordChangeActuator::State::kWaitingForChangePasswordForm);
 }
@@ -353,6 +366,40 @@ void GlicPasswordChangeActuator::OnTabWillDetach(
   if (reason == tabs::TabInterface::DetachReason::kDelete) {
     Cancel();
     NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
+  }
+}
+
+void GlicPasswordChangeActuator::OnActorTaskStateChanged(
+    actor::ActorTask& task) {
+  if (!actuation_web_contents_) {
+    return;
+  }
+  tabs::TabInterface* actuation_tab =
+      tabs::TabInterface::MaybeGetFromContents(actuation_web_contents_.get());
+  // Ignore updates coming from other tabs, then we initiated actuation in.
+  if (!actuation_tab || !task.GetTabs().contains(actuation_tab->GetHandle())) {
+    return;
+  }
+
+  // TODO (crbug.com/543263568): Refactor to get rid of find_form_task_id_ and
+  // verification_task_id_.
+  if (!saved_form_manager_ && !find_form_task_id_.has_value()) {
+    find_form_task_id_ = task.id();
+  } else if (saved_form_manager_ && !verification_task_id_.has_value()) {
+    verification_task_id_ = task.id();
+  } else {
+    return;
+  }
+
+  task.GetExecutionEngine().SetActorLoginService(
+      std::make_unique<actor_login::PasswordChangeFromCheckupActorLoginService>(
+          password_manager::CloneStoredCredential(credential_)));
+
+  if (auto logger = GetLoggerIfAvailable(originator_.get())) {
+    logger->LogMessage(
+        verification_task_id_.has_value()
+            ? Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_VERIFICATION_CREATED
+            : Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_FIND_FORM_TASK_FOUND);
   }
 }
 
@@ -520,6 +567,7 @@ void GlicPasswordChangeActuator::ResetInternalState(
   form_waiter_.reset();
   saved_form_manager_.reset();
   updates_receiver_.reset();
+  actor_task_state_subscription_ = {};
 
   find_form_task_id_ = std::nullopt;
   verification_task_id_ = std::nullopt;
@@ -582,17 +630,6 @@ void GlicPasswordChangeActuator::OnUpdatesReceiverDisconnected() {
 void GlicPasswordChangeActuator::OnUpdate(
     glic::mojom::ExperimentalTriggeringUpdatePtr update,
     glic::mojom::SubscriberObservationType observation) {
-  if (glic_instance_ && glic_instance_->GetActorTaskManager() &&
-      glic_instance_->GetActorTaskManager()->current_task_id()) {
-    if (saved_form_manager_ && !verification_task_id_) {
-      verification_task_id_ = actor::TaskId(
-          *glic_instance_->GetActorTaskManager()->current_task_id());
-    } else if (!find_form_task_id_) {
-      find_form_task_id_ = actor::TaskId(
-          *glic_instance_->GetActorTaskManager()->current_task_id());
-    }
-  }
-
   if (auto logger = GetLoggerIfAvailable(originator_.get())) {
     logger->LogNumber(Logger::STRING_PASSWORD_CHANGE_STATUS_UPDATE,
                       static_cast<int>(observation));
