@@ -22,7 +22,7 @@
         },
         "linux": {
             "hash": "87f6c703091364246078c78127e5f4af7b76770c",
-            "full_remote_path": "chromium-telemetry/perfetto_binaries/trace_processor_shell/linux/045d97a29bdcf559cce9485b123f50d251ebc724/trace_processor_shell"
+            "full_remote_path": "chromium-telemetry/perfetto_binaries/trace_processor_shell/linux/afb109c06989c7ed48053a763bd84102f2f7f48e/trace_processor_shell"
         }
     },
     "power_profile.sql": {
