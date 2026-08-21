@@ -64,18 +64,29 @@ MockUrlCheckerClient::PendingCheck::PendingCheck(
     safe_search_api::URLCheckerClient::ClientCheckCallback callback)
     : url(url), callback(std::move(callback)) {}
 MockUrlCheckerClient::PendingCheck::~PendingCheck() = default;
+MockUrlCheckerClient::PendingCheck::PendingCheck(
+    PendingCheck&& other) noexcept = default;
+MockUrlCheckerClient::PendingCheck&
+MockUrlCheckerClient::PendingCheck::operator=(PendingCheck&& other) noexcept =
+    default;
 
-void MockUrlCheckerClient::RunFirstCallback(
-    safe_search_api::ClientClassification classification) {
-  const GURL& url = pending_checks_.front().url;
-  std::move(pending_checks_.front().callback).Run(url, classification);
-  pending_checks_.pop_front();
+void MockUrlCheckerClient::RunFrontCallback(
+    safe_search_api::ClientClassification classification,
+    std::size_t count) {
+  while (count-- > 0) {
+    PendingCheck check = std::move(pending_checks_.front());
+    pending_checks_.pop_front();
+    std::move(check.callback).Run(check.url, classification);
+  }
 }
-void MockUrlCheckerClient::RunLastCallback(
-    safe_search_api::ClientClassification classification) {
-  const GURL& url = pending_checks_.back().url;
-  std::move(pending_checks_.back().callback).Run(url, classification);
-  pending_checks_.pop_back();
+void MockUrlCheckerClient::RunBackCallback(
+    safe_search_api::ClientClassification classification,
+    std::size_t count) {
+  while (count-- > 0) {
+    PendingCheck check = std::move(pending_checks_.back());
+    pending_checks_.pop_back();
+    std::move(check.callback).Run(check.url, classification);
+  }
 }
 void MockUrlCheckerClient::ScheduleResolution(
     safe_search_api::ClientClassification classification) {

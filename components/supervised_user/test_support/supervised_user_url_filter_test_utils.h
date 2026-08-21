@@ -53,8 +53,12 @@ class MockUrlCheckerClient : public safe_search_api::URLCheckerClient {
               (const GURL& url, ClientCheckCallback callback),
               (override));
 
-  void RunFirstCallback(safe_search_api::ClientClassification classification);
-  void RunLastCallback(safe_search_api::ClientClassification classification);
+  // Run the first/last pending callback count times with the given
+  // classification.
+  void RunFrontCallback(safe_search_api::ClientClassification classification,
+                        std::size_t count = 1);
+  void RunBackCallback(safe_search_api::ClientClassification classification,
+                       std::size_t count = 1);
 
   // Next CheckURL will use scheduled resolutions synchronously, until
   // exhausted.
@@ -70,6 +74,8 @@ class MockUrlCheckerClient : public safe_search_api::URLCheckerClient {
     PendingCheck(const GURL& url, ClientCheckCallback callback);
     PendingCheck(const PendingCheck& other) = delete;
     PendingCheck& operator=(const PendingCheck& other) = delete;
+    PendingCheck(PendingCheck&& other) noexcept;
+    PendingCheck& operator=(PendingCheck&& other) noexcept;
     ~PendingCheck();
   };
   std::deque<PendingCheck> pending_checks_;

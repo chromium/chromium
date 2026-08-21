@@ -308,7 +308,7 @@ TEST_P(FamilyLinkUrlFilterMetricsTest, RecordsTopLevelMetricsForAsyncBlock) {
           base::DoNothing(),
           WebFilterMetricsOptions{.filtering_context = GetTestCase().context});
   supervised_user_test_environment_.family_link_url_checker_client()
-      .RunFirstCallback(safe_search_api::ClientClassification::kRestricted);
+      .RunFrontCallback(safe_search_api::ClientClassification::kRestricted);
 
   histogram_tester_.ExpectBucketCount(
       "ManagedUsers.TopLevelFilteringResult2",
@@ -325,7 +325,7 @@ TEST_P(FamilyLinkUrlFilterMetricsTest, RecordsTopLevelMetricsForAsyncAllow) {
           base::DoNothing(),
           WebFilterMetricsOptions{.filtering_context = GetTestCase().context});
   supervised_user_test_environment_.family_link_url_checker_client()
-      .RunFirstCallback(safe_search_api::ClientClassification::kAllowed);
+      .RunFrontCallback(safe_search_api::ClientClassification::kAllowed);
 
   histogram_tester_.ExpectBucketCount(
       "ManagedUsers.TopLevelFilteringResult2",
