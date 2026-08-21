@@ -1362,6 +1362,32 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectHelpURL) {
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
   EXPECT_EQ(GURL(ash::kChromeUIAppDisabledURL), dest_url);
 }
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+TEST_F(ChromeContentSettingsRedirectTest,
+       RedirectCertificateManagerURLWhenBrowserSettingsDisabled) {
+  TestChromeContentBrowserClient test_content_browser_client;
+  const GURL cert_manager_redirect_url("chrome://settings/certificates");
+  const GURL cert_manager_url("chrome://certificate-manager");
+
+  GURL dest_url = cert_manager_redirect_url;
+  test_content_browser_client.HandleWebUI(&dest_url, &profile_);
+  EXPECT_EQ(cert_manager_url, dest_url);
+
+  base::ListValue list;
+  list.Append(static_cast<int>(policy::SystemFeature::kBrowserSettings));
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
+      policy::policy_prefs::kSystemFeaturesDisableList, std::move(list));
+
+  dest_url = cert_manager_redirect_url;
+  test_content_browser_client.HandleWebUI(&dest_url, &profile_);
+  EXPECT_EQ(GURL(ash::kChromeUIAppDisabledURL), dest_url);
+
+  dest_url = cert_manager_url;
+  test_content_browser_client.HandleWebUI(&dest_url, &profile_);
+  EXPECT_EQ(GURL(ash::kChromeUIAppDisabledURL), dest_url);
+}
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

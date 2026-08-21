@@ -6340,6 +6340,12 @@ bool IsSystemFeatureURLDisabled(const GURL& url) {
     return IsSystemFeatureDisabled(policy::SystemFeature::kBrowserSettings);
   }
 
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+  if (url.DomainIs(chrome::kChromeUICertificateManagerHost)) {
+    return IsSystemFeatureDisabled(policy::SystemFeature::kBrowserSettings);
+  }
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+
   if (url.DomainIs(ash::kChromeUIUntrustedCroshHost)) {
     return IsSystemFeatureDisabled(policy::SystemFeature::kCrosh);
   }
@@ -7365,7 +7371,6 @@ bool ChromeContentBrowserClient::HandleWebUI(
       url->host() == chrome::kChromeUISettingsHost &&
       url->path() == chrome::kChromeUICertificateRedirectPath) {
     *url = GURL(chrome::kChromeUICertificateManagerDialogURL);
-    return true;
   }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
@@ -7375,13 +7380,6 @@ bool ChromeContentBrowserClient::HandleWebUI(
     replacements.SetQueryStr(query);
     *url = GURL(chrome::kChromeUIInternalDebugPagesDisabledURL)
                .ReplaceComponents(replacements);
-  }
-
-  if (!ChromeWebUIControllerFactory::GetInstance()->UseWebUIForURL(
-          browser_context, *url) &&
-      !content::WebUIConfigMap::GetInstance().GetConfig(browser_context,
-                                                        *url)) {
-    return false;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -7402,6 +7400,13 @@ bool ChromeContentBrowserClient::HandleWebUI(
     return true;
   }
 #endif
+
+  if (!ChromeWebUIControllerFactory::GetInstance()->UseWebUIForURL(
+          browser_context, *url) &&
+      !content::WebUIConfigMap::GetInstance().GetConfig(browser_context,
+                                                        *url)) {
+    return false;
+  }
 
   return true;
 }
