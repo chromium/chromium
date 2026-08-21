@@ -167,7 +167,10 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
     service_ = std::make_unique<contextual_search::ContextualSearchService>(
         nullptr, shared_url_loader_factory_, template_url_service(),
         fake_variations_client_.get(), version_info::Channel::STABLE, "en-US",
-        /*tab_validator=*/nullptr);
+        /*tab_validator=*/nullptr,
+        base::BindRepeating(
+            [](std::optional<size_t>,
+               base::OnceCallback<void(std::vector<std::string>)>) {}));
     auto config_params = std::make_unique<
         contextual_search::ContextualSearchContextController::ConfigParams>();
     static base::NoDestructor<network::TestURLLoaderFactory>

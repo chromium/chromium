@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/base64url.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
@@ -83,7 +84,9 @@ constexpr char kAimMultiContextQueryParameter[] = "amc";
 constexpr char kLnsModeQueryParameterKey[] = "lns_mode";
 constexpr char kLnsModeQueryParameterValue[] = "cvst";
 constexpr char kVoiceSearchQueryParameterKey[] = "gs_ivs";
-
+constexpr char kEncodeResponseIfExecutableHeader[] =
+    "X-Goog-Encode-Response-If-Executable";
+constexpr char kBase64Value[] = "base64";
 // TODO(crbug.com/432348301): Move away from hardcoded entrypoint and lns
 // surface values.
 constexpr char kLnsSurfaceParameterValue[] = "42";
@@ -488,12 +491,14 @@ ComposeboxQueryController::ComposeboxQueryController(
     variations::VariationsClient* variations_client,
     std::unique_ptr<
         contextual_search::ContextualSearchContextController::ConfigParams>
-        feature_params)
+        feature_params,
+    GetAuthHeadersCallback get_auth_headers_callback)
     : identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
       channel_(channel),
       locale_(locale),
       template_url_service_(template_url_service),
+      get_auth_headers_callback_(std::move(get_auth_headers_callback)),
       variations_client_(variations_client),
       cluster_info_backoff_(&kClusterInfoBackoffPolicy) {
   send_lns_surface_ = feature_params->send_lns_surface;
@@ -1364,9 +1369,13 @@ void ComposeboxQueryController::StartFileUploadFlow(
   // InitializeIfNeeded().
   // Async Flow 2: Retrieve the OAuth headers.
   current_file_info.context_upload_access_token_fetcher_ =
-      CreateOAuthHeadersAndContinue(base::BindOnce(
-          &ComposeboxQueryController::OnUploadRequestHeadersReady,
-          weak_ptr_factory_.GetWeakPtr(), file_token));
+      CreateAuthHeadersAndContinue(
+          // TODO(crbug.com/534400256): Get auth_user_index from the active
+          // webpage if available
+          /*auth_user_index=*/0,
+          base::BindOnce(
+              &ComposeboxQueryController::OnUploadRequestHeadersReady,
+              weak_ptr_factory_.GetWeakPtr(), file_token));
 
   // Async Flow 3: Creating the file and viewport upload request.
   CreateUploadRequestBodiesAndContinue(
@@ -1435,6 +1444,15 @@ ComposeboxQueryController::CreateEndpointFetcher(
     const std::vector<std::string>& request_headers,
     const std::vector<std::string>& cors_exempt_headers,
     UploadProgressCallback upload_progress_callback) {
+  // TODO(crbug.com/549767486): Refactor Lens headers into
+  // EndpointFetcher::RequestParams::Header structs
+  std::vector<std::string> headers = request_headers;
+  if (lens::features::UseIdentityDelegationForLensComposeboxRequests()) {
+    // Request base64-encoded response from ESP safely.
+    headers.push_back(kEncodeResponseIfExecutableHeader);
+    headers.push_back(kBase64Value);
+  }
+
   return std::make_unique<EndpointFetcher>(
       url_loader_factory_, /*identity_manager=*/nullptr,
       EndpointFetcher::RequestParams::Builder(http_method,
@@ -1444,7 +1462,7 @@ ComposeboxQueryController::CreateEndpointFetcher(
           .SetContentType(kContentType)
           .SetCorsExemptHeaders(cors_exempt_headers)
           .SetCredentialsMode(CredentialsMode::kInclude)
-          .SetHeaders(request_headers)
+          .SetHeaders(headers)
           .SetPostData(std::move(request_string))
           .SetSetSiteForCookies(true)
           .SetTimeout(timeout)
@@ -1623,8 +1641,15 @@ ComposeboxQueryController::CreateSuggestInputs(
 // TODO(crbug.com/424869589): Clean up code duplication with
 // LensOverlayQueryController.
 std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
-ComposeboxQueryController::CreateOAuthHeadersAndContinue(
+ComposeboxQueryController::CreateAuthHeadersAndContinue(
+    std::optional<size_t> auth_user_index,
     OAuthHeadersCreatedCallback callback) {
+  if (lens::features::UseIdentityDelegationForLensComposeboxRequests() &&
+      get_auth_headers_callback_) {
+    get_auth_headers_callback_.Run(auth_user_index, std::move(callback));
+    return nullptr;
+  }
+
   // Use OAuth if the user is logged in.
   if (identity_manager_ &&
       identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
@@ -1701,9 +1726,13 @@ void ComposeboxQueryController::SendInteractionRequest(
 
   // Start getting the OAuth headers for the interaction request.
   latest_interaction_request_data_->interaction_access_token_fetcher_ =
-      CreateOAuthHeadersAndContinue(base::BindOnce(
-          &ComposeboxQueryController::OnInteractionRequestHeadersReady,
-          weak_ptr_factory_.GetWeakPtr()));
+      CreateAuthHeadersAndContinue(
+          // TODO(crbug.com/534400256): Get auth_user_index from the active
+          // webpage if available
+          /*auth_user_index=*/0,
+          base::BindOnce(
+              &ComposeboxQueryController::OnInteractionRequestHeadersReady,
+              weak_ptr_factory_.GetWeakPtr()));
 
   lens::LensOverlayServerRequest server_request;
   if (client_logs.has_value()) {
@@ -1775,7 +1804,10 @@ void ComposeboxQueryController::FetchClusterInfo() {
     NOTREACHED() << "Cluster info access token fetcher already exists.";
 #endif  // DCHECK_IS_ON()
   }
-  cluster_info_access_token_fetcher_ = CreateOAuthHeadersAndContinue(
+  cluster_info_access_token_fetcher_ = CreateAuthHeadersAndContinue(
+      // TODO(crbug.com/534400256): Get auth_user_index from the active webpage
+      // if available
+      /*auth_user_index=*/0,
       base::BindOnce(&ComposeboxQueryController::SendClusterInfoNetworkRequest,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -1796,7 +1828,8 @@ void ComposeboxQueryController::SendClusterInfoNetworkRequest(
   }
 
   // Generate the URL to fetch.
-  GURL fetch_url = GURL(lens::features::GetLensOverlayClusterInfoEndpointUrl());
+  GURL fetch_url =
+      GURL(lens::features::GetLensComposeboxClusterInfoEndpointUrl());
 
   std::string request_string;
   // Create the client context to include in the request.
@@ -1860,7 +1893,14 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
   cluster_info_backoff_.Reset();
 
   lens::LensOverlayServerClusterInfoResponse server_response;
-  if (!server_response.ParseFromString(response->response)) {
+  std::string response_string = response->response;
+  if (lens::features::UseIdentityDelegationForLensComposeboxRequests()) {
+    std::string decoded_response;
+    if (base::Base64Decode(response_string, &decoded_response)) {
+      response_string = decoded_response;
+    }
+  }
+  if (!server_response.ParseFromString(response_string)) {
     SetQueryControllerState(QueryControllerState::kClusterInfoInvalid);
     if (pending_search_url_request_) {
       std::move(pending_search_url_request_).Run(/*failure=*/false);
@@ -2470,7 +2510,14 @@ void ComposeboxQueryController::HandleInteractionResponse(
   }
 
   lens::LensOverlayServerResponse server_response;
-  if (!server_response.ParseFromString(response->response)) {
+  std::string response_string = response->response;
+  if (lens::features::UseIdentityDelegationForLensComposeboxRequests()) {
+    std::string decoded_response;
+    if (base::Base64Decode(response_string, &decoded_response)) {
+      response_string = decoded_response;
+    }
+  }
+  if (!server_response.ParseFromString(response_string)) {
     return;
   }
 
@@ -2613,7 +2660,7 @@ void ComposeboxQueryController::PerformFetchRequest(
   std::string request_string;
   CHECK(request->SerializeToString(&request_string));
 
-  GURL fetch_url = GURL(lens::features::GetLensOverlayEndpointURL());
+  GURL fetch_url = GURL(lens::features::GetLensComposeboxEndpointUrl());
   PerformFetchRequest(std::move(request_string), request_headers, timeout,
                       std::move(fetcher_created_callback),
                       std::move(response_received_callback),
@@ -2808,9 +2855,13 @@ void ComposeboxQueryController::PrepareChunkedUpload(
 
   // Fetch OAuth headers first.
   file_info->context_upload_access_token_fetcher_ =
-      CreateOAuthHeadersAndContinue(base::BindOnce(
-          &ComposeboxQueryController::OnChunkedUploadHeadersReady,
-          weak_ptr_factory_.GetWeakPtr(), file_token));
+      CreateAuthHeadersAndContinue(
+          // TODO(crbug.com/534400256): Get auth_user_index from the active
+          // webpage if available
+          /*auth_user_index=*/0,
+          base::BindOnce(
+              &ComposeboxQueryController::OnChunkedUploadHeadersReady,
+              weak_ptr_factory_.GetWeakPtr(), file_token));
 }
 
 void ComposeboxQueryController::OnChunkedUploadHeadersReady(

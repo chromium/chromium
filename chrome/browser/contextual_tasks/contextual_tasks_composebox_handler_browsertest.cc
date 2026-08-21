@@ -378,7 +378,10 @@ class ContextualTasksComposeboxHandlerTest
         /*identity_manager=*/nullptr, url_loader_factory(),
         template_url_service(), fake_variations_client(),
         version_info::Channel::UNKNOWN, "en-US",
-        /*tab_validator=*/nullptr);
+        /*tab_validator=*/nullptr,
+        base::BindRepeating(
+            [](std::optional<size_t>,
+               base::OnceCallback<void(std::vector<std::string>)>) {}));
     auto contextual_session_handle = service_->CreateSessionForTesting(
         std::move(mock_controller),
         std::make_unique<contextual_search::ContextualSearchMetricsRecorder>(

@@ -87,6 +87,10 @@ class ComposeboxQueryController
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/histograms.xml:ComposeboxImageUploadType)
 
+  using GetAuthHeadersCallback = base::RepeatingCallback<void(
+      std::optional<size_t>,
+      base::OnceCallback<void(std::vector<std::string>)>)>;
+
   ComposeboxQueryController(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -96,7 +100,8 @@ class ComposeboxQueryController
       variations::VariationsClient* variations_client,
       std::unique_ptr<
           contextual_search::ContextualSearchContextController::ConfigParams>
-          config_params);
+          config_params,
+      GetAuthHeadersCallback get_auth_headers_callback);
   ~ComposeboxQueryController() override;
 
   // ContextualSearchContextController:
@@ -440,7 +445,8 @@ class ComposeboxQueryController
   using OAuthHeadersCreatedCallback =
       base::OnceCallback<void(std::vector<std::string>)>;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
-  CreateOAuthHeadersAndContinue(OAuthHeadersCreatedCallback callback);
+  CreateAuthHeadersAndContinue(std::optional<size_t> auth_user_index,
+                               OAuthHeadersCreatedCallback callback);
 
   // Gets an OAuth token for the cluster info request and proceeds with sending
   // a LensOverlayServerClusterInfoRequest to get the cluster info.
@@ -680,6 +686,8 @@ class ComposeboxQueryController
 
   // Owned by the Profile, and thus guaranteed to outlive this instance.
   const raw_ptr<TemplateURLService> template_url_service_;
+
+  GetAuthHeadersCallback get_auth_headers_callback_;
 
   // Owned by the Profile, and thus guaranteed to outlive this instance.
   const raw_ptr<variations::VariationsClient> variations_client_;

@@ -45,7 +45,7 @@ class ContextualSearchServiceTest : public testing::Test {
         identity_test_env_->identity_manager(), test_shared_loader_factory_,
         search_engines_test_environment_.template_url_service(),
         &fake_variations_client_, version_info::Channel::UNKNOWN, "en-US",
-        /*tab_validator=*/nullptr);
+        /*tab_validator=*/nullptr, base::DoNothing());
     ContextualSearchService::RegisterProfilePrefs(pref_service_.registry());
   }
 

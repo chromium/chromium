@@ -14,6 +14,7 @@ source_set("contextual_search") {
 
   deps = [
     "//chrome/browser:browser_process",
+    "//chrome/browser/lens:lens_identity_delegation_helper",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//chrome/browser/signin",

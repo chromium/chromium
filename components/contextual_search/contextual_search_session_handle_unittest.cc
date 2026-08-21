@@ -49,7 +49,7 @@ class ContextualSearchSessionHandleTest : public testing::Test {
 
     service_ = std::make_unique<ContextualSearchService>(
         nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "",
-        /*tab_validator=*/nullptr);
+        /*tab_validator=*/nullptr, base::DoNothing());
 
     handle_ = service_->CreateSessionForTesting(std::move(mock_controller),
                                                 std::move(metrics_recorder));
@@ -260,7 +260,7 @@ TEST_F(ContextualSearchSessionHandleTest,
 
   auto local_service = std::make_unique<ContextualSearchService>(
       nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "",
-      std::move(mock_validator));
+      std::move(mock_validator), base::DoNothing());
 
   auto local_handle = local_service->CreateSessionForTesting(
       std::move(mock_controller), nullptr);
@@ -331,7 +331,7 @@ TEST_F(
 
   auto local_service = std::make_unique<ContextualSearchService>(
       nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "",
-      std::move(mock_validator));
+      std::move(mock_validator), base::DoNothing());
 
   auto local_handle = local_service->CreateSessionForTesting(
       std::move(mock_controller), nullptr);
@@ -427,7 +427,7 @@ TEST_F(
 
   auto local_service = std::make_unique<ContextualSearchService>(
       nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "",
-      std::move(mock_validator));
+      std::move(mock_validator), base::DoNothing());
 
   auto local_handle = local_service->CreateSessionForTesting(
       std::move(mock_controller), nullptr);
@@ -531,7 +531,7 @@ TEST_F(ContextualSearchSessionHandleTest,
 
   auto local_service = std::make_unique<ContextualSearchService>(
       nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "",
-      std::move(mock_validator));
+      std::move(mock_validator), base::DoNothing());
 
   auto local_handle = local_service->CreateSessionForTesting(
       std::move(mock_controller), nullptr);
@@ -606,7 +606,7 @@ TEST_F(ContextualSearchSessionHandleTest,
 
   auto local_service = std::make_unique<ContextualSearchService>(
       nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "",
-      std::move(mock_validator));
+      std::move(mock_validator), base::DoNothing());
 
   auto local_handle = local_service->CreateSessionForTesting(
       std::move(mock_controller), nullptr);
@@ -683,7 +683,7 @@ TEST_F(
 
   auto local_service = std::make_unique<ContextualSearchService>(
       nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "",
-      std::move(mock_validator));
+      std::move(mock_validator), base::DoNothing());
 
   auto local_handle = local_service->CreateSessionForTesting(
       std::move(mock_controller), nullptr);
@@ -793,7 +793,7 @@ TEST_F(ContextualSearchSessionHandleTest,
 
   auto local_service = std::make_unique<ContextualSearchService>(
       nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "",
-      std::move(mock_validator));
+      std::move(mock_validator), base::DoNothing());
 
   auto local_handle = local_service->CreateSessionForTesting(
       std::move(mock_controller), nullptr);
@@ -888,7 +888,7 @@ TEST_F(ContextualSearchSessionHandleTest,
 
   auto local_service = std::make_unique<ContextualSearchService>(
       nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "",
-      std::move(mock_validator));
+      std::move(mock_validator), base::DoNothing());
 
   auto local_handle = local_service->CreateSessionForTesting(
       std::move(mock_controller), nullptr);
@@ -1304,7 +1304,7 @@ TEST_F(ContextualSearchSessionHandleTest,
 
   auto local_service = std::make_unique<ContextualSearchService>(
       nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "",
-      std::move(mock_validator));
+      std::move(mock_validator), base::DoNothing());
 
   auto local_handle = local_service->CreateSessionForTesting(
       std::move(mock_controller), nullptr);
@@ -1387,7 +1387,7 @@ TEST_F(ContextualSearchSessionHandleTest,
   MockTabValidator* mock_validator_ptr = mock_validator.get();
   auto local_service = std::make_unique<ContextualSearchService>(
       nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "",
-      std::move(mock_validator));
+      std::move(mock_validator), base::DoNothing());
 
   auto local_handle = local_service->CreateSessionForTesting(
       std::move(mock_controller), nullptr);

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -272,7 +273,7 @@ TEST_F(CompositeContextDecoratorTest, DecorateContext_DeduplicatesTokens) {
   // Set up mock controller and session handle
   contextual_search::ContextualSearchService service(
       nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "",
-      /*tab_validator=*/nullptr);
+      /*tab_validator=*/nullptr, base::DoNothing());
   auto mock_controller = std::make_unique<
       contextual_search::MockContextualSearchContextController>();
   auto* mock_controller_ptr = mock_controller.get();

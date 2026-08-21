@@ -19,7 +19,8 @@ IOSContextualSearchService::IOSContextualSearchService(
                                                  variations_client,
                                                  channel,
                                                  locale,
-                                                 /*tab_validator=*/nullptr) {
+                                                 /*tab_validator=*/nullptr,
+                                                 GetAuthHeadersCallback()) {
   // TODO(crbug.com/514803722): Implement and pass TabValidator for iOS.
 }
 
@@ -33,5 +34,5 @@ IOSContextualSearchService::CreateComposeboxQueryController(
   return std::make_unique<ComposeboxQueryControllerIOS>(
       identity_manager_, url_loader_factory_, channel_, locale_,
       template_url_service_, variations_client_,
-      std::move(query_controller_config_params));
+      std::move(query_controller_config_params), get_auth_headers_callback_);
 }
