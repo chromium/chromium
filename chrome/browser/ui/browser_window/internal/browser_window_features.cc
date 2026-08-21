@@ -10,6 +10,7 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/actor/ui/actor_border_view_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_window_controller.h"
@@ -206,6 +207,7 @@
 #include "chrome/browser/extensions/extension_browser_window_helper.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/extensions/settings_overridden_params_providers.h"
 #include "chrome/browser/ui/search_engines/default_search_extension_controlled_controller.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
@@ -739,6 +741,14 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
   if (browser_view) {
+    if (!browser_->GetProfile()->IsOffTheRecord()) {
+      base::UmaHistogramBoolean(
+          "Extensions.SettingsOverridden."
+          "UnacknowledgedMatchingDseExtensionPresent",
+          settings_overridden_params::HasUnacknowledgedMatchingDseExtension(
+              browser_->GetProfile()));
+    }
+
     if (base::FeatureList::IsEnabled(
             extensions_features::kSearchEngineExplicitChoiceDialog)) {
       default_search_extension_controlled_controller_ =

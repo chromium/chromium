@@ -4524,6 +4524,20 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram
+    name="Extensions.SettingsOverridden.UnacknowledgedMatchingDseExtensionPresent"
+    enum="BooleanPresent" expires_after="2027-02-01">
+  <owner>yeroshkin@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded on browser window initialization on Windows and Mac. Records true
+    if an installed extension controls the Default Search Engine (DSE), the
+    extension's search engine matches the user's existing engine, and the user
+    has not acknowledged the settings bubble (ack_settings_bubble). This detects
+    the impacted state associated with crbug.com/540532980.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.Startup.DefaultPinnedExtensionState"
     enum="DefaultPinnedExtensionState" expires_after="2027-01-01">
   <owner>evasu@chromium.org</owner>

@@ -45,6 +45,12 @@ std::optional<ExtensionSettingsOverriddenDialog::Params> GetNtpOverriddenParams(
 // https://crbug.com/540532980 for what happens when it is not.
 bool ExtensionSearchOverrideMatchesExistingEngine(Profile* profile);
 
+// Returns true if an extension is controlling the default search engine, the
+// search engine matches the user's existing engine, and the user has not yet
+// acknowledged the settings bubble (the state associated with
+// https://crbug.com/540532980).
+bool HasUnacknowledgedMatchingDseExtension(Profile* profile);
+
 // Retrieves the params for displaying the dialog indicating that the default
 // search engine has been overridden, if there is a controlling extension, and
 // asynchronously passes them to the supplied callback. Otherwise, the callback
