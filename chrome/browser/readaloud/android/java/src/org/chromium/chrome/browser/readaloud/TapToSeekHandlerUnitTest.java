@@ -24,8 +24,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextPart;
 import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextType;
-import org.chromium.url.GURL;
-import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link TapToSeekHandler} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -35,7 +33,6 @@ public class TapToSeekHandlerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Playback mPlayback;
     @Mock private Playback.Metadata mMetadata;
-    private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
     @Mock private ReadAloudFeatures.Natives mReadAloudFeaturesNatives;
 
     @Before

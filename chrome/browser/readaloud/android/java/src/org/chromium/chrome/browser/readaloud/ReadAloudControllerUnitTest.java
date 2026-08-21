@@ -143,8 +143,6 @@ import java.util.Locale;
 })
 public class ReadAloudControllerUnitTest {
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
-    private static final GURL sTestRedirectGURL = JUnitTestGURLs.URL_1_WITH_PATH;
-    private static final Locale EN_US = new Locale("en", "US");
     private static final Locale FR_FR = new Locale("fr", "FR");
 
     private static final ReadAloudController.ReadabilityInfo ALL_SUPPORTED =

@@ -39,7 +39,6 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 public class DataSharingFaviconProviderUnitTest {
     private static final GURL TAB_URL = new GURL("https://google.com");
-    private static final GURL BITMAP_URL = new GURL("https://google.com/xyz");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;

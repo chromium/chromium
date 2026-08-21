@@ -27,8 +27,6 @@ import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.touch_selection.SelectionEventType;
-import org.chromium.url.GURL;
-import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link TapToSeekSelectionManager} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -38,7 +36,6 @@ public class TapToSeekSelectionManagerUnitTest {
 
     @Mock private ReadAloudController mReadAloudController;
 
-    private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
     @Mock private Tab mTab;
     @Mock private Tab mTab2;
     @Mock private WebContents mWebContents;
