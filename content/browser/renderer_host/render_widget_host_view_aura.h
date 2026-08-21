@@ -193,6 +193,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       const blink::WebInputEvent& input_event) override;
   gfx::AcceleratedWidget AccessibilityGetAcceleratedWidget() override;
   gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible() override;
+  ui::AXTreeID AccessibilityGetParentAXTreeID() override;
   void SetMainFrameAXTreeID(ui::AXTreeID id) override;
   blink::mojom::PointerLockResult LockPointer(
       bool request_unadjusted_movement) override;

@@ -739,6 +739,10 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
 
   virtual ui::AXMode GetAccessibilityMode() = 0;
 
+  // Notifies this WebContents that the platform accessibility parent of its
+  // primary main frame may have changed.
+  virtual void NotifyAccessibilityParentChanged() = 0;
+
   // Forces a reset of accessibility state in the instance's renderers.
   // Observers will receive a new accessibility tree.
   virtual void ResetAccessibility() = 0;

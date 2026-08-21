@@ -6330,6 +6330,10 @@ ui::AXMode WebContentsImpl::GetAccessibilityMode() {
   return accessibility_mode_;
 }
 
+void WebContentsImpl::NotifyAccessibilityParentChanged() {
+  GetPrimaryMainFrame()->UpdateAXTreeData();
+}
+
 void WebContentsImpl::AXTreeIDForMainFrameHasChanged() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::AXTreeIDForMainFrameHasChanged");

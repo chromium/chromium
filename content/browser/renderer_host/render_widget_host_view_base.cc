@@ -45,6 +45,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "third_party/blink/public/mojom/unbounded_element/unbounded_element.mojom.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display_util.h"
 #include "ui/display/screen.h"
@@ -504,6 +505,10 @@ gfx::NativeViewAccessible
 gfx::NativeViewAccessible
 RenderWidgetHostViewBase::AccessibilityGetNativeViewAccessibleForWindow() {
   return gfx::NativeViewAccessible();
+}
+
+ui::AXTreeID RenderWidgetHostViewBase::AccessibilityGetParentAXTreeID() {
+  return ui::AXTreeIDUnknown();
 }
 
 bool RenderWidgetHostViewBase::ShouldInitiateStylusWriting() {

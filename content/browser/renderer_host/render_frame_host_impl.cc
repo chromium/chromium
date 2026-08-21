@@ -331,6 +331,7 @@
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_location_and_scroll_updates.h"
@@ -14616,6 +14617,15 @@ ui::AXTreeID RenderFrameHostImpl::GetParentAXTreeID() {
     }
     CHECK(AccessibilityIsRootFrame())
         << "Child frame requires a parent, root=" << GetLastCommittedURL();
+    // With ViewsAX enabled, the Views tree is above the web content tree. Only
+    // the primary main frame takes a place in it, so a prerendered or cached
+    // main frame must not name a parent.
+    if (::features::IsAccessibilityTreeForViewsEnabled() &&
+        IsInPrimaryMainFrame()) {
+      RenderWidgetHostViewBase* view = GetView();
+      return view ? view->AccessibilityGetParentAXTreeID()
+                  : ui::AXTreeIDUnknown();
+    }
     return ui::AXTreeIDUnknown();
   }
   // TODO(accessibility) The following check fails when running this test with

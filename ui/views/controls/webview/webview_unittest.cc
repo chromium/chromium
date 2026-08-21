@@ -274,6 +274,12 @@ class WebViewUnitTest : public views::test::WidgetTest {
     return web_view()->IsObservingWidgetAXManagerForTesting();
   }
 
+  void AddChildTreeBridge(WebView* view) {
+    view->GetViewAccessibility().SetChildTreeID(
+        ui::AXTreeID::CreateNewAXTreeID());
+    view->SetNativeViewHostAccessibleParent(view->parent());
+  }
+
  private:
   std::unique_ptr<content::RenderViewHostTestEnabler> rvh_enabler_;
   std::unique_ptr<content::TestBrowserContext> browser_context_;
@@ -803,6 +809,7 @@ TEST_F(WebViewAXTreeEnabledTest,
       CreateWebContents();
   WebView* test_web_view = web_view();
   test_web_view->SetWebContents(web_contents.get());
+  AddChildTreeBridge(test_web_view);
   ASSERT_TRUE(test_web_view->parent());
 
   if (!test_web_view->parent()->GetNativeViewAccessible()) {
@@ -822,6 +829,7 @@ TEST_F(WebViewAXTreeEnabledTest, ReparentingUpdatesParentAccessible) {
       CreateWebContents();
   auto web_view = std::make_unique<WebView>(web_contents->GetBrowserContext());
   web_view->SetWebContents(web_contents.get());
+  AddChildTreeBridge(web_view.get());
 
   WidgetAutoclosePtr widget_1(CreateTopLevelPlatformWidget());
   View* contents_view_1 = widget_1->GetContentsView();

@@ -104,6 +104,8 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
 
   gfx::NativeViewAccessible GetNativeViewAccessibleForId(ui::AXNodeID id);
 
+  ui::AXTreeID GetAXTreeID() const;
+
   // Sets a test callback that is invoked on every exit from
   // SendPendingUpdate(). If updates/events were actually sent, the optional
   // contains the ui::AXUpdatesAndEvents; otherwise it is absl::nullopt.

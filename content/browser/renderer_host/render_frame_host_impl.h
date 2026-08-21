@@ -480,7 +480,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   const blink::LocalFrameToken& GetFrameToken() const override;
   const perfetto::Track& GetTracingTrack() const override;
   const base::UnguessableToken& GetReportingSource() override;
-
   ui::AXTreeID GetAXTreeID() override;
   NavigationController& GetController() override;
   SiteInstanceImpl* GetSiteInstance() const override;
@@ -3864,9 +3863,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // ExecuteJavaScriptForTests.  See also AssertFrameWasCommitted method.
   bool CanExecuteJavaScript();
 
-  // Returns the AXTreeID of the parent when the current frame is a child frame
-  // (i.e. not a main frame) or when it's an embedded browser plugin guest, or
-  // ui::AXTreeIDUnknown() otherwise.
+  // Returns the AXTreeID of the parent frame, outer document, or platform
+  // accessibility tree, or ui::AXTreeIDUnknown() if none exists.
   ui::AXTreeID GetParentAXTreeID();
 
   // Returns the AXTreeID of the currently focused frame in the frame tree if

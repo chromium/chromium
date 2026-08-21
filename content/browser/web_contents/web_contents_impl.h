@@ -768,6 +768,7 @@ class CONTENT_EXPORT WebContentsImpl
                        const GURL& url) override;
   bool IsNeverComposited() override;
   ui::AXMode GetAccessibilityMode() override;
+  void NotifyAccessibilityParentChanged() override;
   // Broadcasts the mode change to all frames.
   void ResetAccessibility() override;
   void AXTreeIDForMainFrameHasChanged() override;

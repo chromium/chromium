@@ -408,6 +408,14 @@ gfx::NativeViewAccessible WidgetAXManager::GetNativeViewAccessibleForId(
   return browser_node->GetNativeViewAccessible();
 }
 
+ui::AXTreeID WidgetAXManager::GetAXTreeID() const {
+  if (!ax_tree_manager_) {
+    return ui::AXTreeIDUnknown();
+  }
+
+  return ax_tree_id_;
+}
+
 base::WeakPtr<ui::AXPlatformTreeManager>
 WidgetAXManager::GetAXTreeManagerWeakPtrForTesting() {
   if (!ax_tree_manager_) {
@@ -634,6 +642,10 @@ void WidgetAXManager::InitAXTreeManager() {
   ui::AXTreeUpdate update;
   update.root_id = root_data.id;
   update.nodes.push_back(root_data);
+
+  update.has_tree_data = true;
+  update.tree_data.tree_id = ax_tree_id_;
+  update.tree_data.parent_tree_id = parent_ax_tree_id_;
 
   cache_->Init(widget_->GetRootView()->GetViewAccessibility(),
                false /* full_tree */);

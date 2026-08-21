@@ -62,6 +62,7 @@
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/cursor_client.h"
@@ -1497,6 +1498,16 @@ RenderWidgetHostViewAura::AccessibilityGetNativeViewAccessible() {
   }
 
   return nullptr;
+}
+
+ui::AXTreeID RenderWidgetHostViewAura::AccessibilityGetParentAXTreeID() {
+  ui::AXPlatformNode* parent = ui::AXPlatformNode::FromNativeViewAccessible(
+      GetParentNativeViewAccessible());
+  if (!parent || parent->IsDestroyed() || !parent->GetDelegate()) {
+    return ui::AXTreeIDUnknown();
+  }
+
+  return parent->GetDelegate()->GetTreeData().tree_id;
 }
 
 void RenderWidgetHostViewAura::SetMainFrameAXTreeID(ui::AXTreeID id) {

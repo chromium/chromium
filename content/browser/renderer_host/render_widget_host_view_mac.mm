@@ -63,6 +63,8 @@
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #import "ui/accessibility/platform/browser_accessibility_cocoa.h"
 #import "ui/accessibility/platform/browser_accessibility_mac.h"
 #include "ui/accessibility/platform/browser_accessibility_manager_mac.h"
@@ -463,6 +465,15 @@ void RenderWidgetHostViewMac::SetParentUiLayer(ui::Layer* parent_ui_layer) {
 
 void RenderWidgetHostViewMac::SetParentAccessibilityElement(
     id parent_accessibility_element) {
+  parent_ax_tree_id_ = ui::AXTreeIDUnknown();
+  if (parent_accessibility_element) {
+    ui::AXPlatformNode* parent = ui::AXPlatformNode::FromNativeViewAccessible(
+        gfx::NativeViewAccessible(parent_accessibility_element));
+    if (parent && !parent->IsDestroyed() && parent->GetDelegate()) {
+      parent_ax_tree_id_ = parent->GetDelegate()->GetTreeData().tree_id;
+    }
+  }
+
   [GetInProcessNSView()
       setAccessibilityParentElement:parent_accessibility_element];
 }
@@ -1867,6 +1878,10 @@ RenderWidgetHostViewMac::AccessibilityGetNativeViewAccessibleForWindow() {
         (id<NSAccessibility>)remote_window_accessible_);
   }
   return gfx::NativeViewAccessible([GetInProcessNSView() window]);
+}
+
+ui::AXTreeID RenderWidgetHostViewMac::AccessibilityGetParentAXTreeID() {
+  return parent_ax_tree_id_;
 }
 
 void RenderWidgetHostViewMac::SetTextInputActive(bool active) {
