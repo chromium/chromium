@@ -36,10 +36,12 @@ import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.search.EmptyFragment;
 import org.chromium.chrome.browser.settings.search.SettingsSearchCoordinator;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
@@ -108,6 +110,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
 
     private @Nullable Context mThemedContext;
 
+    private @Nullable String mInitialUrl;
+
     @Override
     public void onAttach(Context context) {
         // Traditional settings has the theme applied at the activity level.
@@ -152,6 +156,16 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         return mMainSettings;
     }
 
+    /** Sets the initial settings URL for tab-based navigation. */
+    public void setInitialUrl(@Nullable String initialUrl) {
+        mInitialUrl = initialUrl;
+    }
+
+    /** Returns the initial settings URL for tab-based navigation. */
+    public @Nullable String getInitialUrl() {
+        return mInitialUrl;
+    }
+
     // Fragment data passed as extras of Intent via SettingsNavigation.
     private static class FragmentData {
         public final @Nullable Fragment fragment;
@@ -179,6 +193,28 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
             }
             return processed.fragment;
         }
+
+        // Under SettingsInTab mode, check if an initial settings URL was
+        // set (e.g. "chrome://settings/appearance"). If present, instantiate
+        // the target fragment directly as the initial detail fragment rather
+        // than defaulting to Account/GoogleServices.
+        if (ChromeFeatureList.sSettingsInTabUrlNav.isEnabled() && mInitialUrl != null) {
+            String initialUrl = mInitialUrl;
+            mInitialUrl = null;
+            var fragmentClass = SettingsFragmentRegistry.getFragmentClassForUrl(initialUrl);
+
+            if (fragmentClass != null && !MainSettings.class.equals(fragmentClass)) {
+                Bundle args = SettingsFragmentRegistry.parseUrlArguments(initialUrl);
+                Fragment initialDetailFragment =
+                        Fragment.instantiate(requireContext(), fragmentClass.getName(), args);
+
+                if (getSlidingPaneLayout() != null) {
+                    getSlidingPaneLayout().openPane();
+                }
+                return initialDetailFragment;
+            }
+        }
+
         // When SettingsInTab is enabled in single-column mode, do not instantiate an initial detail
         // fragment if no sub-fragment intent was specified. Returning null prevents
         // PreferenceHeaderFragmentCompat from calling openPane() on SlidingPaneLayout, keeping
@@ -188,6 +224,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         if (SettingsInTab.isEnabled() && !isTwoColumn()) {
             return null;
         }
+
         return super.onCreateInitialDetailFragment();
     }
 
@@ -230,6 +267,45 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
     /** Whether the detail panel is open. */
     public boolean isLayoutOpen() {
         return getSlidingPaneLayout().isOpen();
+    }
+
+    @Override
+    public boolean onPreferenceStartFragment(
+            PreferenceFragmentCompat caller, Preference preference) {
+        // Under SettingsInTab mode, preference selection in the primary
+        // navigation header (e.g. clicking "Appearance" or "Privacy" in the
+        // left column of MultiColumnSettings) must be routed through
+        // Tab.loadUrl() rather than directly triggering showDetailFragment().
+        //
+        // This ensures the target fragment class and arguments are translated
+        // into a canonical chrome://settings/<path> URL string, pushing a new
+        // NavigationEntry onto WebContents navigation history, updating the
+        // Omnibox URL, and synchronizing browser Back/Forward navigation.
+        if (!SettingsInTab.isEnabled() || !ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()) {
+            return super.onPreferenceStartFragment(caller, preference);
+        }
+
+        String fragmentClassName = preference.getFragment();
+        if (fragmentClassName == null) {
+            return super.onPreferenceStartFragment(caller, preference);
+        }
+
+        Class<? extends Fragment> fragmentClass;
+        try {
+            fragmentClass = Class.forName(fragmentClassName).asSubclass(Fragment.class);
+        } catch (ClassNotFoundException ignored) {
+            // Fall back to super method if fragment class cannot be loaded.
+            return super.onPreferenceStartFragment(caller, preference);
+        }
+
+        SettingsNavigation navigation =
+                SettingsNavigationFactory.createSettingsNavigation(requireContext());
+        if (navigation == null) {
+            return super.onPreferenceStartFragment(caller, preference);
+        }
+
+        navigation.startSettings(requireContext(), fragmentClass, preference.getExtras());
+        return true;
     }
 
     /** Shows a fragment inside the detail pane (`preferences_detail`). */
@@ -1008,7 +1084,13 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
                             }
                         });
 
-        requireActivity().getOnBackPressedDispatcher().addCallback(this, mOnBackPressedCallback);
+        // For SettingsInTabUrlNav, rely on the Chrome Navigation Stack to handle detailFragment
+        // loading.
+        if (!ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()) {
+            requireActivity()
+                    .getOnBackPressedDispatcher()
+                    .addCallback(this, mOnBackPressedCallback);
+        }
 
         mCanBeBackToMain = getSlidingPaneLayout().isSlideable() && !getSlidingPaneLayout().isOpen();
         mSlideStateTracker = new SlideStateTracker();

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -199,6 +200,36 @@ public class SettingsHostFragmentTest {
         assertTrue(
                 "Initial fragment should be MultiColumnSettings",
                 initial instanceof MultiColumnSettings);
+    }
+
+    @Test
+    public void testClearInitialUrl() {
+        mSettingsHostFragment = new TestMultiColumnSettingsHostFragment();
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(
+                        android.R.id.content,
+                        mSettingsHostFragment,
+                        SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
+                .commitNow();
+
+        MultiColumnSettings multiColumnSettings =
+                (MultiColumnSettings) mSettingsHostFragment.getActiveFragment();
+        assertNotNull(multiColumnSettings);
+
+        mSettingsHostFragment.setInitialUrl("chrome://settings/appearance");
+        multiColumnSettings.setInitialUrl("chrome://settings/appearance");
+        assertEquals("chrome://settings/appearance", mSettingsHostFragment.getInitialUrl());
+        assertEquals("chrome://settings/appearance", multiColumnSettings.getInitialUrl());
+
+        mSettingsHostFragment.clearInitialUrl();
+        assertNull(
+                "clearInitialUrl should clear initial URL on SettingsHostFragment",
+                mSettingsHostFragment.getInitialUrl());
+        assertNull(
+                "clearInitialUrl should clear initial URL on child MultiColumnSettings",
+                multiColumnSettings.getInitialUrl());
     }
 
     @Test
@@ -553,6 +584,30 @@ public class SettingsHostFragmentTest {
                 "Should not resolve tab-scoped delegate when URL nav is disabled",
                 mockNavigation,
                 resolved);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testOnPreferenceStartFragment_DelegatesToSettingsNavigation() {
+        attachHostFragment();
+        SettingsNavigation mockNavigation = mock(SettingsNavigation.class);
+        mSettingsHostFragment.setSettingsNavigation(mockNavigation);
+
+        Preference preference = mock(Preference.class);
+        when(preference.getFragment()).thenReturn(SecondFakeSettingsFragment.class.getName());
+        Bundle extras = new Bundle();
+        extras.putString("test_key", "test_value");
+        when(preference.getExtras()).thenReturn(extras);
+
+        PreferenceFragmentCompat caller = mock(PreferenceFragmentCompat.class);
+        boolean handled = mSettingsHostFragment.onPreferenceStartFragment(caller, preference);
+
+        assertTrue("Preference start fragment should be handled", handled);
+        verify(mockNavigation)
+                .startSettings(
+                        mSettingsHostFragment.getContext(),
+                        SecondFakeSettingsFragment.class,
+                        extras);
     }
 
     /** A test PreferenceFragmentCompat subclass. */
