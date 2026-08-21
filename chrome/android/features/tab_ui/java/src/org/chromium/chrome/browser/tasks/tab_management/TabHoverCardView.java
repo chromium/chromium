@@ -110,6 +110,7 @@ public class TabHoverCardView extends FrameLayout {
     private @Nullable TabContentManager mTabContentManager;
     private @Nullable Tab mHoveredTab;
     private @Nullable TabObserver mHoveredTabObserver;
+    private @Nullable Runnable mOnCardHeightChangedCallback;
 
     private int mLastHoveredTabId = INVALID_TAB_ID;
     private boolean mIsShowing;
@@ -137,7 +138,14 @@ public class TabHoverCardView extends FrameLayout {
     }
 
     /**
-     * Show the tab hover card at explicit coordinates.
+     * Set a callback invoked when the card height dynamically changes (e.g. memory usage update).
+     */
+    public void setOnCardHeightChangedCallback(@Nullable Runnable callback) {
+        mOnCardHeightChangedCallback = callback;
+    }
+
+    /**
+     * Bind tab data and show the tab hover card at explicit coordinates.
      *
      * @param hoveredTab The {@link Tab} instance of the hovered tab.
      * @param x The x-coordinate in px.
@@ -145,13 +153,36 @@ public class TabHoverCardView extends FrameLayout {
      */
     public void show(@Nullable Tab hoveredTab, float x, float y) {
         if (hoveredTab == null) return;
+        bindTab(hoveredTab);
+        show(x, y);
+    }
+
+    /**
+     * Show the tab hover card at explicit coordinates.
+     *
+     * @param x The x-coordinate in px.
+     * @param y The y-coordinate in px.
+     */
+    public void show(float x, float y) {
+        mIsShowing = true;
+        setX(x);
+        setY(y);
+        setVisibility(VISIBLE);
+    }
+
+    /**
+     * Bind the hovered tab data to the view components (title, url, alert status, thumbnail
+     * placeholder).
+     *
+     * @param hoveredTab The {@link Tab} instance of the hovered tab.
+     */
+    public void bindTab(Tab hoveredTab) {
         if (mHoveredTab != hoveredTab) {
             unsubscribeFromTab();
             mHoveredTab = hoveredTab;
             mHoveredTab.addObserver(getTabObserver());
         }
         mLastHoveredTabId = hoveredTab.getId();
-        mIsShowing = true;
 
         mTitleView.setText(hoveredTab.getTitle());
         updateUrlView(hoveredTab);
@@ -170,16 +201,14 @@ public class TabHoverCardView extends FrameLayout {
                                                 R.string.tab_hover_card_memory_usage, memoryText));
                         mMemoryUsageView.setVisibility(VISIBLE);
                         updateAlertStatusBottomMargin();
+                        if (mOnCardHeightChangedCallback != null) {
+                            mOnCardHeightChangedCallback.run();
+                        }
                     }
                 });
 
-        setX(x);
-        setY(y);
-
         int width = getHoverCardWidthPx(getContext());
         updateThumbnail(hoveredTab, width);
-
-        setVisibility(VISIBLE);
     }
 
     /** Hide the tab hover card. */
@@ -188,6 +217,7 @@ public class TabHoverCardView extends FrameLayout {
         mIsShowing = false;
         setVisibility(GONE);
         mThumbnailView.setImageDrawable(null);
+        mThumbnailView.setVisibility(GONE);
         mLastHoveredTabId = INVALID_TAB_ID;
     }
 
@@ -241,6 +271,7 @@ public class TabHoverCardView extends FrameLayout {
 
     public void destroy() {
         unsubscribeFromTab();
+        mOnCardHeightChangedCallback = null;
         if (mTabModelSelector != null) {
             assumeNonNull(mCurrentTabModelObserver);
             mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
@@ -249,8 +280,10 @@ public class TabHoverCardView extends FrameLayout {
     }
 
     private void unsubscribeFromTab() {
-        if (mHoveredTab != null && mHoveredTabObserver != null) {
-            mHoveredTab.removeObserver(mHoveredTabObserver);
+        if (mHoveredTab != null) {
+            if (mHoveredTabObserver != null) {
+                mHoveredTab.removeObserver(mHoveredTabObserver);
+            }
             mHoveredTab = null;
         }
     }
@@ -300,6 +333,7 @@ public class TabHoverCardView extends FrameLayout {
         @StringRes int stringRes = TabUtils.getTabAlertDescriptionRes(alertState);
 
         boolean showAlert = iconRes != Resources.ID_NULL && stringRes != Resources.ID_NULL;
+        boolean visibilityChanged = (mAlertStatusView.getVisibility() == VISIBLE) != showAlert;
         if (showAlert) {
             @ColorInt int defaultTint = SemanticColorUtils.getDefaultIconColorAccent1(getContext());
             @ColorInt
@@ -311,6 +345,9 @@ public class TabHoverCardView extends FrameLayout {
 
         mAlertStatusView.setVisibility(showAlert ? VISIBLE : GONE);
         updateAlertStatusBottomMargin();
+        if (visibilityChanged && mIsShowing && mOnCardHeightChangedCallback != null) {
+            mOnCardHeightChangedCallback.run();
+        }
     }
 
     private void updateAlertStatusBottomMargin() {
@@ -345,6 +382,13 @@ public class TabHoverCardView extends FrameLayout {
             mThumbnailView.setLayoutParams(thumbnailLayoutParams);
         }
 
+        // Display placeholder and make thumbnail visible synchronously so that initial hover card
+        // measurement accounts for the thumbnail's height prior to positioning calculations.
+        //  Always use the unselected tab version of the thumbnail placeholder.
+        mThumbnailView.updateThumbnailPlaceholder(
+                hoveredTab.isIncognito(), /* isSelected= */ false, /* colorId= */ null);
+        mThumbnailView.setVisibility(VISIBLE);
+
         var thumbnailSize = new Size(Math.round(hoverCardWidthPx), Math.round(thumbnailHeightPx));
         assumeNonNull(mTabContentManager);
         mTabContentManager.getTabThumbnailWithCallback(
@@ -358,14 +402,7 @@ public class TabHoverCardView extends FrameLayout {
                     if (thumbnail != null) {
                         TabUtils.setDrawableAndUpdateImageMatrix(
                                 mThumbnailView, new BitmapDrawable(thumbnail), thumbnailSize);
-                    } else {
-                        // Always use the unselected tab version of the thumbnail placeholder.
-                        mThumbnailView.updateThumbnailPlaceholder(
-                                hoveredTab.isIncognito(),
-                                /* isSelected= */ false,
-                                /* colorId= */ null);
                     }
-                    mThumbnailView.setVisibility(VISIBLE);
                 });
     }
 

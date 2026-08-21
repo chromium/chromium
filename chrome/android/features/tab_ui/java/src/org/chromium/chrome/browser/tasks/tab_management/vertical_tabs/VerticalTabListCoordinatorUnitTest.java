@@ -2956,7 +2956,7 @@ public class VerticalTabListCoordinatorUnitTest {
         hoverListener.onTabHoverCardStateChanged(TAB_ID_1, mMockChildView, /* isHovered= */ true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mTabHoverCardView).show(eq(tab), anyFloat(), anyFloat());
+        verify(mTabHoverCardView).show(anyFloat(), anyFloat());
 
         // Clear initial hide() invocation from setup/setActive(false)
         clearInvocations(mTabHoverCardView);

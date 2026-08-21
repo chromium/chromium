@@ -213,6 +213,9 @@ public class TabHoverCardViewUnitTest {
         when(mHoveredTab.getUrl()).thenReturn(url);
         when(mHoveredTab.getId()).thenReturn(1);
 
+        Runnable heightChangedCallback = mock(Runnable.class);
+        mTabHoverCardView.setOnCardHeightChangedCallback(heightChangedCallback);
+
         mTabHoverCardView.show(mHoveredTab, 10f, 20f);
 
         verify(mHoveredTab).getMemoryUsageBytes(mMemoryUsageCallbackCaptor.capture());
@@ -232,6 +235,7 @@ public class TabHoverCardViewUnitTest {
                 "Memory usage view should be visible.",
                 View.VISIBLE,
                 mMemoryUsageView.getVisibility());
+        verify(heightChangedCallback).run();
     }
 
     @Test
@@ -519,6 +523,9 @@ public class TabHoverCardViewUnitTest {
         when(mHoveredTab.getId()).thenReturn(1);
         when(mHoveredTab.getAlertState()).thenReturn(null);
 
+        Runnable heightChangedCallback = mock(Runnable.class);
+        mTabHoverCardView.setOnCardHeightChangedCallback(heightChangedCallback);
+
         mTabHoverCardView.show(mHoveredTab, 10f, 20f);
         verify(mHoveredTab).addObserver(mTabObserverCaptor.capture());
         TabObserver observer = mTabObserverCaptor.getValue();
@@ -538,6 +545,7 @@ public class TabHoverCardViewUnitTest {
                 "Alert status text is incorrect after update.",
                 mContext.getString(R.string.tooltip_tab_alert_state_glic_accessing),
                 mAlertStatusView.getText().toString());
+        verify(heightChangedCallback).run();
 
         // Live update title.
         when(mHoveredTab.getTitle()).thenReturn("Updated Title");

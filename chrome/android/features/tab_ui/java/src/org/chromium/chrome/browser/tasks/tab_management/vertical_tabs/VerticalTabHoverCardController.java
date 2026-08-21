@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
+import org.chromium.chrome.tab_ui.R;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -79,6 +80,7 @@ public class VerticalTabHoverCardController {
 
     private long mLastHoverCardExitTime = INVALID_TIME;
     private int mCurrentHoveredTabId = Tab.INVALID_TAB_ID;
+    private @Nullable View mCurrentHoveredTabView;
     private @Nullable TabHoverCardView mTabHoverCardView;
     private @Nullable Runnable mPendingHoverCardRunnable;
 
@@ -107,6 +109,7 @@ public class VerticalTabHoverCardController {
                     (ViewStub _, View view) -> {
                         mTabHoverCardView = (TabHoverCardView) view;
                         mTabHoverCardView.initialize(mTabModelSelector, tabContentManagerSupplier);
+                        mTabHoverCardView.setOnCardHeightChangedCallback(this::repositionHoverCard);
                         mTabHoverCardView.hide();
                     });
         }
@@ -136,17 +139,43 @@ public class VerticalTabHoverCardController {
             mTabHoverCardViewStub.setOnInflateListener(null);
         }
         if (mTabHoverCardView != null) {
+            mTabHoverCardView.setOnCardHeightChangedCallback(null);
             mTabHoverCardView.destroy();
             mTabHoverCardView = null;
         }
         mCurrentHoveredTabId = Tab.INVALID_TAB_ID;
+        mCurrentHoveredTabView = null;
         mLastHoverCardExitTime = INVALID_TIME;
+    }
+
+    /**
+     * Recalculates and updates the hover card's position when its content or dimensions change
+     * asynchronously while visible (e.g. when memory usage information is retrieved and displayed).
+     */
+    private void repositionHoverCard() {
+        if (mTabHoverCardView == null || !mTabHoverCardView.isShown()) return;
+        if (mCurrentHoveredTabView == null || mCurrentHoveredTabId == Tab.INVALID_TAB_ID) {
+            return;
+        }
+        Tab tab = mTabModelSelector.getTabById(mCurrentHoveredTabId);
+        if (tab == null) return;
+
+        float[] position =
+                getHoverCardPosition(
+                        mCurrentHoveredTabView,
+                        mContainerView,
+                        mTabHoverCardView,
+                        tab.getIsPinned(),
+                        mContainerView.isCollapsed());
+        mTabHoverCardView.setX(position[0]);
+        mTabHoverCardView.setY(position[1]);
     }
 
     /** Handles hover and keyboard focus state changes on vertical tab item views. */
     private void showOrHideTabHoverCard(int tabId, View view, boolean isHovered) {
         if (isHovered) {
             mCurrentHoveredTabId = tabId;
+            mCurrentHoveredTabView = view;
             cancelPendingHoverCard();
             if (mIsContextMenuShowingSupplier != null
                     && mIsContextMenuShowingSupplier.getAsBoolean()) {
@@ -169,6 +198,7 @@ public class VerticalTabHoverCardController {
             // Android may dispatch HOVER_ENTER on the new tab before HOVER_EXIT on the previous
             // one.
             mCurrentHoveredTabId = Tab.INVALID_TAB_ID;
+            mCurrentHoveredTabView = null;
             hideHoverCard();
         }
     }
@@ -212,6 +242,10 @@ public class VerticalTabHoverCardController {
             mTabHoverCardView.hide();
         }
 
+        // Bind tab content first so child views (title, URL, thumbnail) are populated
+        // with the target tab's data before measuring height.
+        mTabHoverCardView.bindTab(tab);
+
         float[] position =
                 getHoverCardPosition(
                         view,
@@ -219,7 +253,7 @@ public class VerticalTabHoverCardController {
                         mTabHoverCardView,
                         tab.getIsPinned(),
                         mContainerView.isCollapsed());
-        mTabHoverCardView.show(tab, position[0], position[1]);
+        mTabHoverCardView.show(position[0], position[1]);
     }
 
     private void cancelPendingHoverCard() {
@@ -246,44 +280,73 @@ public class VerticalTabHoverCardController {
             TabHoverCardView hoverCardView,
             boolean isPinnedTab,
             boolean isRailCollapsed) {
-        // 1. Calculate relative coordinates of the tab view and rail container relative to the root
-        // view.
-        View root = containerView.getRootView();
+        // 1. Calculate relative coordinates of the tab view and rail container relative to the
+        // hover card's parent container.
+        View parentView =
+                hoverCardView.getParent() instanceof View parent
+                        ? parent
+                        : containerView.getRootView();
         int[] tabViewLocation = new int[2];
         int[] containerLocation = new int[2];
-        int[] rootLocation = new int[2];
+        int[] parentLocation = new int[2];
         tabView.getLocationOnScreen(tabViewLocation);
         containerView.getLocationOnScreen(containerLocation);
-        root.getLocationOnScreen(rootLocation);
-        float relativeX = tabViewLocation[0] - rootLocation[0];
-        float relativeY = tabViewLocation[1] - rootLocation[1];
-        float containerRelativeX = containerLocation[0] - rootLocation[0];
+        parentView.getLocationOnScreen(parentLocation);
+        float relativeX = tabViewLocation[0] - parentLocation[0];
+        float relativeY = tabViewLocation[1] - parentLocation[1];
+        float containerRelativeX = containerLocation[0] - parentLocation[0];
 
-        // 2. Determine initial hover card position based on pinned and rail state.
-        float hoverCardX;
-        float hoverCardY;
-        if (isPinnedTab && !isRailCollapsed) {
-            hoverCardX = relativeX;
-            hoverCardY = relativeY + tabView.getHeight();
-        } else {
-            hoverCardX = containerRelativeX + containerView.getWidth();
-            hoverCardY = relativeY;
-        }
-
-        // 3. Measure the hover card to obtain its height for dynamic content.
+        // 2. Measure the hover card with exact card width to obtain its height for dynamic content.
+        int cardWidth = TabHoverCardView.getHoverCardWidthPx(containerView.getContext());
         hoverCardView.measure(
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(cardWidth, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
         float hoverCardHeight = hoverCardView.getMeasuredHeight();
 
-        // 4. Adjust the vertical position if the hover card extends beyond root view bounds.
-        float parentHeight = root.getHeight();
-        if (hoverCardY + hoverCardHeight > parentHeight) {
-            hoverCardY = parentHeight - hoverCardHeight;
+        // 3. Offset for shadow length, background inset, and card margin.
+        Context context = containerView.getContext();
+        float cardShadowOffset =
+                context.getResources().getDimension(R.dimen.popup_menu_shadow_length);
+        float backgroundInset =
+                (!isPinnedTab && !isRailCollapsed)
+                        ? context.getResources()
+                                .getDimension(
+                                        VerticalTabUtils.isTablet(context)
+                                                ? R.dimen
+                                                        .vertical_tab_item_touch_target_inset_tablet
+                                                : R.dimen.vertical_tab_item_touch_target_inset)
+                        : 0f;
+        float hoverCardMarginToRail =
+                context.getResources().getDimension(R.dimen.vertical_tab_hover_card_margin_to_rail);
+        float parentHeight = parentView.getHeight();
+        float visibleCardHeight = hoverCardHeight - 2 * cardShadowOffset;
+
+        // 4. Determine visible hover card position based on pinned and rail state.
+        float visibleX;
+        float visibleY;
+        if (isPinnedTab
+                && !isRailCollapsed
+                && relativeY + tabView.getHeight() + visibleCardHeight <= parentHeight) {
+            // Show below the pinned tab.
+            visibleX = relativeX;
+            visibleY = relativeY + tabView.getHeight();
+        } else {
+            // Show to the right of the rail container, top-aligned with the tab.
+            visibleX = containerRelativeX + containerView.getWidth() + hoverCardMarginToRail;
+            visibleY = relativeY + backgroundInset;
         }
-        if (hoverCardY < 0) {
-            hoverCardY = 0;
+
+        // When space below is limited, align the bottom of the card with the bottom of the window,
+        // leaving a margin.
+        float maxVisibleBottom = parentHeight - hoverCardMarginToRail;
+        if (visibleY + visibleCardHeight > maxVisibleBottom) {
+            visibleY = maxVisibleBottom - visibleCardHeight;
         }
+
+        // Convert visible coordinates to View coordinates by subtracting shadow offset.
+        visibleY = Math.max(0, visibleY);
+        float hoverCardX = visibleX - cardShadowOffset;
+        float hoverCardY = visibleY - cardShadowOffset;
         return new float[] {hoverCardX, hoverCardY};
     }
 }
