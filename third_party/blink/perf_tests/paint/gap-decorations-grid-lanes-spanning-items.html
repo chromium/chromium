@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<title>Grid-lanes gap decoration paint performance with spanning items</title>
+<script src="../resources/runner.js"></script>
+<script src="resources/paint.js"></script>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+
+  #container {
+    display: grid-lanes;
+    flow-tolerance: 0;
+    grid-template-columns: repeat(100, 4px);
+    column-gap: 2px;
+    row-gap: 1px;
+    width: 598px;
+    column-rule: 1px solid red;
+    column-rule-break: intersection;
+    row-rule: 1px solid red;
+    row-rule-break: intersection;
+  }
+
+  .spanning-item {
+    grid-column: span 8;
+  }
+</style>
+
+<div id="container"></div>
+
+<script>
+  const container = document.getElementById('container');
+  const fragment = document.createDocumentFragment();
+
+  for (let i = 0; i < 20000; ++i) {
+    const item = document.createElement('div');
+    if (i % 3 === 0)
+      item.className = 'spanning-item';
+    // Cycle through 8px to 30px heights to stagger row gaps.
+    item.style.height = (8 + (i * 37) % 23) + 'px';
+    fragment.appendChild(item);
+  }
+
+  container.appendChild(fragment);
+  PerfTestRunner.forceLayout();
+
+  let paintBlue = true;
+  measurePaint({
+    description: 'Measure row and column gap decoration painting with blocked segments from eight-track spanning items in a 100-lane grid-lanes container.',
+    run: function() {
+      container.style.columnRuleColor = paintBlue ? 'blue' : 'red';
+      container.style.rowRuleColor = paintBlue ? 'blue' : 'red';
+      paintBlue = !paintBlue;
+    },
+  });
+</script>
