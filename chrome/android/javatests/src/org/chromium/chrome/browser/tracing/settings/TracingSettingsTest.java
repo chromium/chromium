@@ -39,8 +39,8 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsActivityInterface;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tracing.TracingController;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -68,8 +68,8 @@ public class TracingSettingsTest {
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
-    public final SettingsActivityTestRule<TracingSettings> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(TracingSettings.class);
+    public final SettingsTestRule<TracingSettings> mSettingsActivityTestRule =
+            new SettingsTestRule<>(TracingSettings.class);
 
     private MockNotificationManagerProxy mMockNotificationManager;
 
@@ -335,7 +335,7 @@ public class TracingSettingsTest {
                 settingsNavigation.createSettingsIntent(
                         context, TracingCategoriesSettings.class, categoriesPref.getExtras());
         mSettingsActivityTestRule.launchActivity(intent);
-        SettingsActivity categoriesActivity = mSettingsActivityTestRule.getActivity();
+        SettingsActivityInterface categoriesActivity = (SettingsActivityInterface) mSettingsActivityTestRule.getActivity();
 
         PreferenceFragmentCompat categoriesFragment =
                 (PreferenceFragmentCompat) categoriesActivity.getMainFragment();
