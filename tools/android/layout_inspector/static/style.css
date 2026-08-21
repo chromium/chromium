@@ -3,8 +3,143 @@
  * found in the LICENSE file.
  */
 
+:root {
+  --body-padding: 5px;
+  --color-sep: #888;
+  --z-index-overlay: 1000;
+}
+
 body {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  font-family: sans-serif;
   height: 100vh;
   margin: 0;
+  padding: var(--body-padding);
+}
+
+button {
+  background-color: #007bff;
+  border-radius: 5px;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.action-button {
+  padding: 5px 5px;
+  width: 100px;
+}
+
+#div-controls {
+  align-items: center;
+  background-color: #f8f9fa;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  gap: 15px;
+  overflow-x: auto;
   padding: 10px;
+  user-select: none;
+  white-space: nowrap;
+  width: 100%;
+}
+
+#div-controls > * {
+  flex-shrink: 0;
+}
+
+#div-main {
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+#div-pane-screenshot {
+  display: flex;
+  flex-basis: 100%;
+  flex-direction: column;
+  flex-grow: 0;
+  flex-shrink: 0;
+  max-height: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+#div-screenshot {
+  align-items: safe start;
+  background-color: #fff;
+  display: grid;
+  flex-grow: 1;
+  justify-items: safe center;
+  min-height: 0;
+  overflow: auto;
+}
+
+#div-screenshot .screenshot-inner {
+  cursor: crosshair;
+  flex-shrink: 0;
+  position: relative;
+}
+
+#div-screenshot .canv-base {
+  display: block;
+  image-rendering: pixelated;
+  transition: opacity 0.15s;
+}
+
+#div-info-bar {
+  background-color: #f8f9fa;
+  border-top: solid 1px var(--color-sep);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  font-family: monospace;
+  height: 5em;
+  justify-content: flex-start;
+  padding: 10px;
+  user-select: none;
+  width: 100%;
+}
+
+#div-info-bar .hint-text {
+  color: #666;
+  font-style: italic;
+  margin-bottom: -4px;
+  margin-top: auto;
+}
+
+#div-overlay:not(.hidden) {
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  display: flex;
+  font-size: 2em;
+  height: 100%;
+  justify-content: center;
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: var(--z-index-overlay);
+}
+
+#div-overlay .content {
+  align-items: center;
+  display: flex;
+  inset: var(--body-padding);
+  justify-content: center;
+  position: absolute;
 }

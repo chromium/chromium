@@ -99,14 +99,16 @@ class ServerConfig:
         # User-configurable settings.
         self.serial = None
         self.port = 8000
-        self.local = True
         self.use_cache = False
-
-        # Security and imprint state.
+        self.local = True
         self.require_imprint = True
+
+        # Imprint states.
         self.imprint_lock = threading.Lock()
         self.allowed_client_ip = None
-        self.timeout = 120  # Seconds
+
+        # Other configs.
+        self.timeout = 120  # Seconds.
 
     @property
     def ip_address(self):
@@ -126,8 +128,8 @@ class MainRequestHandler(SimpleHTTPRequestHandler):
     def _get_density_data(self):
         """Gets the display density factor from the device."""
         result = _config.adb.run(['shell', 'wm', 'density'], text=True)
-        # Output can be "Physical density: 480" or include "Override density: 560"
-        # We want the last number found in the output.
+        # Output can be "Physical density: 480" or include
+        # "Override density: 560". We want the last number found in the output.
         densities = re.findall(r':\s*(\d+)', result.stdout)
         if not densities:
             raise ValueError(f'Could not parse density from: {result.stdout}')
