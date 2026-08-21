@@ -52,4 +52,5 @@ enum GPUVertexFormat {
     "sint32x4",
     "unorm10-10-10-2",
     "unorm8x4-bgra",
+    "snorm10-10-10-2",
 };

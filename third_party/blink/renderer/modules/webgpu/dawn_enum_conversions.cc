@@ -932,6 +932,8 @@ wgpu::VertexFormat AsDawnEnum(const V8GPUVertexFormat& webgpu_enum) {
       return wgpu::VertexFormat::Sint32x4;
     case V8GPUVertexFormat::Enum::kUnorm1010102:
       return wgpu::VertexFormat::Unorm10_10_10_2;
+    case V8GPUVertexFormat::Enum::kSnorm1010102:
+      return wgpu::VertexFormat::Snorm10_10_10_2;
     case V8GPUVertexFormat::Enum::kUnorm8X4Bgra:
       return wgpu::VertexFormat::Unorm8x4BGRA;
   }
