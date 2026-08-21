@@ -88,16 +88,23 @@ void RoundTripAndVerifyLogMessages(
 
 // Tests for the subresource_filter popup blocker.
 class SafeBrowsingTriggeredPopupBlockerBrowserTest
-    : public InProcessBrowserTest {
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   SafeBrowsingTriggeredPopupBlockerBrowserTest() {
     // Note the safe browsing popup blocker is still reliant on
     // SubresourceFilter to get notifications from the safe browsing navigation
     // throttle. We could consider separating that out in the future.
-    scoped_feature_list_.InitWithFeatures(
-        {subresource_filter::kSafeBrowsingSubresourceFilter,
-         blocked_content::kAbusiveExperienceEnforce},
-        {});
+    std::vector<base::test::FeatureRef> enabled = {
+        subresource_filter::kSafeBrowsingSubresourceFilter,
+        blocked_content::kAbusiveExperienceEnforce};
+    std::vector<base::test::FeatureRef> disabled;
+    if (UseV5()) {
+      enabled.push_back(safe_browsing::kLocalListsUseSBv5);
+    } else {
+      disabled.push_back(safe_browsing::kLocalListsUseSBv5);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled, disabled);
   }
 
   SafeBrowsingTriggeredPopupBlockerBrowserTest(
@@ -106,6 +113,8 @@ class SafeBrowsingTriggeredPopupBlockerBrowserTest
       const SafeBrowsingTriggeredPopupBlockerBrowserTest&) = delete;
 
   ~SafeBrowsingTriggeredPopupBlockerBrowserTest() override = default;
+
+  bool UseV5() const;
 
   void SetUp() override {
     FinalizeFeatures();
@@ -150,14 +159,18 @@ class SafeBrowsingTriggeredPopupBlockerBrowserTest
     metadata.subresource_filter_match = {
         {SubresourceFilterType::ABUSIVE, SubresourceFilterLevel::ENFORCE}};
     database_helper_->AddFullHashToDbAndFullHashCache(
-        url, safe_browsing::GetUrlSubresourceFilterId(), metadata);
+        url, safe_browsing::GetUrlSubresourceFilterId(), metadata,
+        safe_browsing::V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
+        /*is_warn_only=*/false, browser()->GetProfile());
   }
   void ConfigureAsAbusiveWarn(const GURL& url) {
     safe_browsing::ThreatMetadata metadata;
     metadata.subresource_filter_match = {
         {SubresourceFilterType::ABUSIVE, SubresourceFilterLevel::WARN}};
-    database_helper()->AddFullHashToDbAndFullHashCache(
-        url, safe_browsing::GetUrlSubresourceFilterId(), metadata);
+    database_helper_->AddFullHashToDbAndFullHashCache(
+        url, safe_browsing::GetUrlSubresourceFilterId(), metadata,
+        safe_browsing::V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
+        /*is_warn_only=*/true, browser()->GetProfile());
   }
 
   TestSafeBrowsingDatabaseHelper* database_helper() {
@@ -177,11 +190,22 @@ class SafeBrowsingTriggeredPopupBlockerBrowserTest
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 };
 
+bool SafeBrowsingTriggeredPopupBlockerBrowserTest::UseV5() const {
+  return GetParam();
+}
+
 class SafeBrowsingTriggeredPopupBlockerDisabledTest
     : public SafeBrowsingTriggeredPopupBlockerBrowserTest {
   void FinalizeFeatures() override {
-    scoped_feature_list_.InitAndDisableFeature(
-        blocked_content::kAbusiveExperienceEnforce);
+    std::vector<base::test::FeatureRef> enabled;
+    std::vector<base::test::FeatureRef> disabled = {
+        blocked_content::kAbusiveExperienceEnforce};
+    if (UseV5()) {
+      enabled.push_back(safe_browsing::kLocalListsUseSBv5);
+    } else {
+      disabled.push_back(safe_browsing::kLocalListsUseSBv5);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled, disabled);
   }
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -190,8 +214,7 @@ class SafeBrowsingTriggeredPopupBlockerDisabledTest
 // Instead, it mocks actual HTTP responses from the server by redirecting
 // requests to a custom test server with a special full hash request handler.
 class SafeBrowsingTriggeredInterceptingBrowserTest
-    : public SafeBrowsingTriggeredPopupBlockerBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+    : public SafeBrowsingTriggeredPopupBlockerBrowserTest {
  public:
   SafeBrowsingTriggeredInterceptingBrowserTest()
       : safe_browsing_server_(
@@ -203,8 +226,6 @@ class SafeBrowsingTriggeredInterceptingBrowserTest
       const SafeBrowsingTriggeredInterceptingBrowserTest&) = delete;
 
   ~SafeBrowsingTriggeredInterceptingBrowserTest() override = default;
-
-  bool UseV5() const { return GetParam(); }
 
   void FinalizeFeatures() override {
     if (UseV5()) {
@@ -275,7 +296,7 @@ class SafeBrowsingTriggeredInterceptingBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerDisabledTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerDisabledTest,
                        NoFeature_AllowCreatingNewWindows) {
   const char kWindowOpenPath[] = "/subresource_filter/window_open.html";
   GURL a_url(embedded_test_server()->GetURL("a.com", kWindowOpenPath));
@@ -291,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerDisabledTest,
                    ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerDisabledTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerDisabledTest,
                        NoFeature_NoMessages) {
   const char kWindowOpenPath[] = "/subresource_filter/window_open.html";
   GURL a_url(embedded_test_server()->GetURL("a.com", kWindowOpenPath));
@@ -312,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerDisabledTest,
                                  blocked_content::kAbusiveEnforceMessage});
 }
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                        DrivenByEnterprisePolicy) {
   // Disable Abusive experience intervention policy.
   policy::PolicyMap policy;
@@ -359,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                   ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                        NoList_AllowCreatingNewWindows) {
   const char kWindowOpenPath[] = "/subresource_filter/window_open.html";
   GURL a_url(embedded_test_server()->GetURL("a.com", kWindowOpenPath));
@@ -367,7 +388,9 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
   // Mark as matching social engineering, not subresource filter.
   safe_browsing::ThreatMetadata metadata;
   database_helper()->AddFullHashToDbAndFullHashCache(
-      a_url, safe_browsing::GetUrlSocEngId(), metadata);
+      a_url, safe_browsing::GetUrlSocEngId(), metadata,
+      safe_browsing::V5::ThreatType::SOCIAL_ENGINEERING,
+      /*is_warn_only=*/false, browser()->GetProfile());
 
   // Navigate to a_url, should not trigger the popup blocker.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
@@ -379,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                    ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                        NoAbusive_AllowCreatingNewWindows) {
   const char kWindowOpenPath[] = "/subresource_filter/window_open.html";
   GURL a_url(embedded_test_server()->GetURL("a.com", kWindowOpenPath));
@@ -394,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                    ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                        BlockCreatingNewWindows) {
   const char kWindowOpenPath[] = "/subresource_filter/window_open.html";
   GURL a_url(embedded_test_server()->GetURL("a.com", kWindowOpenPath));
@@ -423,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                    ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                        ShowBlockedPopup) {
   base::HistogramTester tester;
 
@@ -462,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
 }
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                        BlockCreatingNewWindows_LogsToConsole) {
   content::WebContentsConsoleObserver console_observer(web_contents());
   console_observer.SetPattern(blocked_content::kAbusiveEnforceMessage);
@@ -479,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
 }
 
 // Allowlisted sites should not have console logging.
-IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                        AllowCreatingNewWindows_NoLogToConsole) {
   const char kWindowOpenPath[] = "/subresource_filter/window_open.html";
   GURL a_url(embedded_test_server()->GetURL("a.com", kWindowOpenPath));
@@ -501,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                                  blocked_content::kAbusiveWarnMessage});
 }
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                        BlockOpenURLFromTab) {
   const char kWindowOpenPath[] =
       "/subresource_filter/window_open_spoof_click.html";
@@ -535,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                    ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                        BlockOpenURLFromTabInIframe) {
   const char popup_path[] = "/subresource_filter/iframe_spoof_click_popup.html";
   GURL a_url(embedded_test_server()->GetURL("a.com", popup_path));
@@ -551,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                   ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                        MultipleNavigations) {
   const char kWindowOpenPath[] = "/subresource_filter/window_open.html";
   const GURL url1(embedded_test_server()->GetURL("a.com", kWindowOpenPath));
@@ -581,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
   open_popup_and_expect_block(false);
 }
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                        WarningDoNotBlockCreatingNewWindows_LogsToConsole) {
   const char kWindowOpenPath[] = "/subresource_filter/window_open.html";
   GURL a_url(embedded_test_server()->GetURL("a.com", kWindowOpenPath));
@@ -601,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
 
 // If the site activates in warning mode, make sure warning messages are logged
 // even if the user has popups allowlisted via settings.
-IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                        WarningAllowCreatingNewWindows_LogsToConsole) {
   const char kWindowOpenPath[] = "/subresource_filter/window_open.html";
   GURL a_url(embedded_test_server()->GetURL("a.com", kWindowOpenPath));
@@ -693,7 +716,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          SafeBrowsingTriggeredInterceptingBrowserTest,
                          ::testing::Bool());
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                        AbusivePagesAreNotPutIntoBackForwardCache) {
   content::BackForwardCacheDisabledTester back_forward_cache_tester;
   const GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -723,7 +746,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
 // Tests that the popup blocker UI is shown when a sub frame tries to
 // open a new window if the main frame is marked as abusive since
 // SafeBrowsingTriggeredPopupBlocker works based on a main frame.
-IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                        OpenNewWindowInSubFrame) {
   content::BackForwardCacheDisabledTester back_forward_cache_tester;
   const GURL a_url(embedded_test_server()->GetURL("a.com", "/iframe.html"));
@@ -755,7 +778,6 @@ class SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest
             &SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest::
                 web_contents,
             base::Unretained(this))) {}
-
   ~SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest() override =
       default;
 
@@ -766,7 +788,7 @@ class SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest
 // Tests that the console logs for SafeBrowsingTriggeredPopupBlocker are from
 // correct source frames.
 // TODO: crbug.com/329145811 - The test is flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
                        DISABLED_ConsoleLogWithSourceFrame) {
   // Load a primary page.
   {
@@ -818,7 +840,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
 
 // Tests that a prerendered page doesn't create a window and if it's activated
 // creating a window triggers the popup blocker.
-IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
                        PopupBlockedAfterActivation) {
   GURL initial_url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
@@ -870,7 +892,7 @@ class SafeBrowsingTriggeredPopupBlockerFencedFrameBrowserTest
 // This test ensures that opening a new window in a fenced frame doesn't trigger
 // the popup blocker when the primary page is not marked as abusive, even if the
 // fenced frame's URL is.
-IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerFencedFrameBrowserTest,
                        ShouldNotTriggerPopupBlocker) {
   auto* first_web_contents = web_contents();
   // Load an initial page.
@@ -897,7 +919,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerFencedFrameBrowserTest,
 // This test ensures that the primary page has the popup blocker when
 // the primary page is marked as abusive and the fenced frame tries to open a
 // new window.
-IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredPopupBlockerFencedFrameBrowserTest,
                        ShouldTriggerPopupBlocker) {
   // Load an initial page.
   GURL initial_url(embedded_test_server()->GetURL("/simple.html"));
@@ -915,3 +937,21 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerFencedFrameBrowserTest,
                   web_contents()->GetPrimaryMainFrame())
                   ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SafeBrowsingTriggeredPopupBlockerBrowserTest,
+                         ::testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SafeBrowsingTriggeredPopupBlockerDisabledTest,
+                         ::testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
+    ::testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SafeBrowsingTriggeredPopupBlockerFencedFrameBrowserTest,
+    ::testing::Bool());
