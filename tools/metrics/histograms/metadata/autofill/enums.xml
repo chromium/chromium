@@ -624,6 +624,7 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="Network Error"/>
   <int value="4" label="Empty Response"/>
   <int value="5" label="Parsing Error"/>
+  <int value="6" label="Decryption Failed"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h:AutofillAiUnmaskResult) -->

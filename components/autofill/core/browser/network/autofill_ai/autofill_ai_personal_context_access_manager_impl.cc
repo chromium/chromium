@@ -364,6 +364,30 @@ void AutofillAiPersonalContextAccessManagerImpl::GetUnmaskedSpiiEntity(
     std::move(callback).Run(std::nullopt);
     return;
   }
+  const base::TimeTicks request_start_time = base::TimeTicks::Now();
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAmbientAutofillSpiiCache)) {
+    if (std::optional<personal_context::proto::Entity> decrypted_entity =
+            personal_context_service_->DecryptEntity(*proto_entity)) {
+      if (std::optional<EntityInstance> unmasked_entity =
+              PersonalContextEntityToEntityInstance(*decrypted_entity,
+                                                    /*is_masked=*/false)) {
+        EntityInstance final_entity = unmasked_entity->CopyWithNewEntityId(id);
+        CacheUnmaskedSpiiEntity(final_entity);
+        LogUnmaskResult(EntityInstance::RecordType::kPersonalContext,
+                        AutofillAiUnmaskResult::kSuccess);
+        LogRequestLatency(RequestType::kSpiiUnmasking,
+                          base::TimeTicks::Now() - request_start_time);
+        std::move(callback).Run(std::move(final_entity));
+        return;
+      }
+    }
+    LogUnmaskResult(EntityInstance::RecordType::kPersonalContext,
+                    AutofillAiUnmaskResult::kDecryptionFailed);
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
 
   personal_context::proto::FetchPiiEntitiesRequest request;
   request.set_feature(
@@ -375,7 +399,7 @@ void AutofillAiPersonalContextAccessManagerImpl::GetUnmaskedSpiiEntity(
       base::BindOnce(&AutofillAiPersonalContextAccessManagerImpl::
                          OnFetchPiiEntitiesComplete,
                      weak_factory_.GetWeakPtr(), id, std::move(callback),
-                     base::TimeTicks::Now()));
+                     request_start_time));
 }
 
 void AutofillAiPersonalContextAccessManagerImpl::OnFetchPiiEntitiesComplete(

@@ -74,7 +74,8 @@ enum class AutofillAiUnmaskResult {
   kNetworkError = 3,
   kEmptyResponse = 4,
   kParsingError = 5,
-  kMaxValue = kParsingError,
+  kDecryptionFailed = 6,
+  kMaxValue = kDecryptionFailed,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiUnmaskResult)
 

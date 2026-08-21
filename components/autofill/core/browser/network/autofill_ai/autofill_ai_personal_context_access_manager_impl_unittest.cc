@@ -2291,5 +2291,56 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
       access_manager().IsTypePrefetched(EntityType(EntityTypeName::kPassport)));
 }
 
+// Tests that GetUnmaskedSpiiEntity decrypts and unmasks the entity locally
+// on the first call, and serves it from cache on subsequent calls when
+// SpiiCache is enabled.
+TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
+       GetUnmaskedSpiiEntity_SpiiCacheEnabled_Success) {
+  EntityInstance::EntityId passport_guid =
+      PrefetchEncryptedPassportAndGetGuid("enc_bytes", "P123", "John Doe");
+  // GetUnmaskedSpiiEntity should call `DecryptEntity`.
+  EXPECT_CALL(mock_personal_context_service(),
+              DecryptEntity(MatchEncryptedEntity("enc_bytes")))
+      .WillOnce(
+          testing::Return(CreateDecryptedPassportEntity("P123", "John Doe")));
+
+  // Call GetUnmaskedSpiiEntity.
+  std::optional<EntityInstance> unmasked =
+      GetUnmaskedSpiiEntitySync(passport_guid);
+  ASSERT_TRUE(unmasked.has_value());
+  EXPECT_FALSE(unmasked->IsMaskedEntity());
+  EXPECT_THAT(
+      *unmasked,
+      AllOf(Property(&EntityInstance::type,
+                     Property(&EntityType::name, EntityTypeName::kPassport)),
+            HasAttributeWithValue(AttributeTypeName::kPassportNumber, u"P123"),
+            HasAttributeWithValue(AttributeTypeName::kPassportName,
+                                  u"John Doe")));
+
+  // Subsequent call should be a cache hit(no DecryptEntity call expected).
+  std::optional<EntityInstance> cached_unmasked =
+      GetUnmaskedSpiiEntitySync(passport_guid);
+  ASSERT_TRUE(cached_unmasked.has_value());
+  EXPECT_FALSE(cached_unmasked->IsMaskedEntity());
+  EXPECT_EQ(cached_unmasked->guid(), passport_guid);
+}
+
+// Tests that if local decryption fails during GetUnmaskedSpiiEntity, it
+// returns nullopt.
+TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
+       GetUnmaskedSpiiEntity_SpiiCacheEnabled_DecryptionFailure) {
+  EntityInstance::EntityId passport_guid =
+      PrefetchEncryptedPassportAndGetGuid("enc_bytes", "P123", "John Doe");
+
+  // GetUnmaskedSpiiEntity's decryption call fails.
+  EXPECT_CALL(mock_personal_context_service(),
+              DecryptEntity(MatchEncryptedEntity("enc_bytes")))
+      .WillOnce(testing::Return(std::nullopt));
+  EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport_guid), std::nullopt);
+  histogram_tester().ExpectUniqueSample(
+      "Autofill.Ai.Unmask.Result.PersonalContext",
+      AutofillAiUnmaskResult::kDecryptionFailed, 1);
+}
+
 }  // namespace
 }  // namespace autofill
