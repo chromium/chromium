@@ -10,6 +10,8 @@
 #include <string>
 
 #include "base/values.h"
+#include "build/build_config.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/service_provider_config.h"
@@ -21,6 +23,9 @@ namespace enterprise_connectors {
 // class should not be used directly, but rather through its subclasses.
 class AnalysisServiceSettingsBase {
  public:
+  AnalysisServiceSettingsBase(
+      const base::Value& settings_value,
+      const ServiceProviderConfig& service_provider_config);
   AnalysisServiceSettingsBase(const AnalysisServiceSettingsBase&) = delete;
   AnalysisServiceSettingsBase(AnalysisServiceSettingsBase&&);
   AnalysisServiceSettingsBase& operator=(const AnalysisServiceSettingsBase&) =
@@ -84,9 +89,6 @@ class AnalysisServiceSettingsBase {
       std::map<base::MatcherStringPattern::ID, URLPatternSettings>;
 
   AnalysisServiceSettingsBase();
-  explicit AnalysisServiceSettingsBase(
-      const base::Value& settings_value,
-      const ServiceProviderConfig& service_provider_config);
 
   // Helper methods for parsing the raw policy settings input
   // Service provider data must be provided and valid
@@ -116,6 +118,11 @@ class AnalysisServiceSettingsBase {
       const std::set<base::MatcherStringPattern::ID>& matches) const;
 
   CloudAnalysisSettings GetCloudAnalysisSettings(DataRegion data_region) const;
+  LocalAnalysisSettings GetLocalAnalysisSettings() const;
+
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+  void ParseVerificationSignatures(const base::DictValue& settings_dict);
+#endif
 
   // The next available ID for a settings pattern (e.g. URL,
   // source/destination). This is used to generate unique IDs for patterns as
@@ -149,6 +156,10 @@ class AnalysisServiceSettingsBase {
   PatternSettings disabled_patterns_settings_;
 
   std::string service_provider_name_;
+
+  // Arrays of base64 encoded signing key signatures used to verify the
+  // authenticity of the service provider.
+  std::vector<std::string> verification_signatures_;
 
   BlockUntilVerdict block_until_verdict_ = BlockUntilVerdict::kNoBlock;
   DefaultAction default_action_ = DefaultAction::kAllow;

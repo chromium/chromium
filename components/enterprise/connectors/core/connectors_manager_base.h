@@ -86,9 +86,14 @@ class ConnectorsManagerBase {
       const;
 
  protected:
+  // Factory method to create analysis service settings.
+  virtual std::unique_ptr<AnalysisServiceSettingsBase>
+  MakeAnalysisServiceSettings(
+      const base::Value& settings_value,
+      const ServiceProviderConfig& service_provider_config) const;
+
   // Read and cache the policy corresponding to |connector|.
-  virtual void CacheAnalysisConnectorPolicy(
-      AnalysisConnector connector) const = 0;
+  void CacheAnalysisConnectorPolicy(AnalysisConnector connector) const;
 
   virtual DataRegion GetDataRegion(AnalysisConnector connector) const = 0;
 

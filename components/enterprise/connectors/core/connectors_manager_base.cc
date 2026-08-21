@@ -230,6 +230,30 @@ void ConnectorsManagerBase::CacheReportingConnectorPolicy() {
   }
 }
 
+std::unique_ptr<AnalysisServiceSettingsBase>
+ConnectorsManagerBase::MakeAnalysisServiceSettings(
+    const base::Value& settings_value,
+    const ServiceProviderConfig& service_provider_config) const {
+  return std::make_unique<AnalysisServiceSettingsBase>(settings_value,
+                                                       service_provider_config);
+}
+
+void ConnectorsManagerBase::CacheAnalysisConnectorPolicy(
+    AnalysisConnector connector) const {
+  analysis_connector_settings_.erase(connector);
+
+  // Connectors with non-existing policies should not reach this code.
+  const char* pref = AnalysisConnectorPref(connector);
+  DCHECK(pref);
+
+  const base::ListValue& policy_value = prefs()->GetList(pref);
+  for (const base::Value& service_settings : policy_value) {
+    analysis_connector_settings_[connector].push_back(
+        MakeAnalysisServiceSettings(service_settings,
+                                    *service_provider_config_));
+  }
+}
+
 void ConnectorsManagerBase::OnAnalysisPrefChanged(AnalysisConnector connector) {
   CacheAnalysisConnectorPolicy(connector);
 }

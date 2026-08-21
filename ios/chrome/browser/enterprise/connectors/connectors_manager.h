@@ -19,8 +19,6 @@ class ConnectorsManager : public ConnectorsManagerBase {
   ~ConnectorsManager() override;
 
  private:
-  void CacheAnalysisConnectorPolicy(AnalysisConnector connector) const override;
-
   DataRegion GetDataRegion(AnalysisConnector connector) const override;
 };
 

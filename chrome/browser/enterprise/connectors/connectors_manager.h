@@ -84,8 +84,6 @@ class ConnectorsManager : public ConnectorsManagerBase {
       const TabStripSelectionChange& selection) override;
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
-  void CacheAnalysisConnectorPolicy(AnalysisConnector connector) const override;
-
   // Get data location region from policy.
   DataRegion GetDataRegion(AnalysisConnector connector) const override;
 
@@ -101,6 +99,10 @@ class ConnectorsManager : public ConnectorsManagerBase {
   // Re-cache analysis connector policy and update local agent connection if
   // needed.
   void OnAnalysisPrefChanged(AnalysisConnector connector) override;
+
+  std::unique_ptr<AnalysisServiceSettingsBase> MakeAnalysisServiceSettings(
+      const base::Value& settings_value,
+      const ServiceProviderConfig& service_provider_config) const override;
 };
 
 }  // namespace enterprise_connectors

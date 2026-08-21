@@ -24,11 +24,6 @@ class TestConnectorsManagerBase : public ConnectorsManagerBase {
  public:
   using ConnectorsManagerBase::ConnectorsManagerBase;
 
-  void CacheAnalysisConnectorPolicy(
-      AnalysisConnector connector) const override {
-    // do nothing
-  }
-
   DataRegion GetDataRegion(AnalysisConnector connector) const override {
     return DataRegion::NO_PREFERENCE;
   }
