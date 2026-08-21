@@ -28,10 +28,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/tabs/public/tab_interface.h"
-
-#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
-#endif
 
 namespace glic {
 
@@ -62,11 +59,8 @@ GlicSplitButtonController::GlicSplitButtonController(
       base::FeatureList::IsEnabled(features::kGlicActorUi) &&
       features::kGlicActorUiTaskIcon.Get() &&
       browser->GetProfile()->IsRegularProfile()) {
-// TODO(crbug.com/518584352): Port this to Android.
-#if !BUILDFLAG(IS_ANDROID)
     actor_task_list_bubble_controller_ =
         std::make_unique<ActorTaskListBubbleController>(browser, *this);
-#endif
     glic_actor_nudge_controller_ =
         std::make_unique<GlicActorNudgeController>(browser, this);
   }
@@ -94,7 +88,6 @@ void GlicSplitButtonController::OnGlicButtonClicked() {
     return;
   }
 
-// TODO(crbug.com/537848713): Maybe port to Android.
 #if !BUILDFLAG(IS_ANDROID)
   // Indicate that the glic button was pressed so that we can either close the
   // IPH promo (if present) or note that it has already been used to prevent

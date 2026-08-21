@@ -71,10 +71,8 @@ class GlicSplitButtonController {
 
   std::unique_ptr<GlicNudgeController> glic_nudge_controller_;
   std::unique_ptr<GlicButtonController> glic_button_controller_;
-#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ActorTaskListBubbleController>
       actor_task_list_bubble_controller_;
-#endif
   std::unique_ptr<GlicActorNudgeController> glic_actor_nudge_controller_;
 
   ui::ScopedUnownedUserData<GlicSplitButtonController>

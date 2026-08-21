@@ -81,6 +81,7 @@ source_set("impl") {
 
   deps = [
     ":browser_ui",
+    "//chrome/browser/actor/ui/task_list_bubble:controller",
     "//chrome/browser/contextual_tasks",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui/call_to_action",
@@ -93,7 +94,6 @@ source_set("impl") {
       "//chrome/browser:primitives",
       "//chrome/browser/actor",
       "//chrome/browser/actor/ui",
-      "//chrome/browser/actor/ui/task_list_bubble:controller",
       "//chrome/browser/glic",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/themes",

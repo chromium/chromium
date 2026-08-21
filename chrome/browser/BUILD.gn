@@ -2044,6 +2044,8 @@ source_set("browser") {
     "//chrome/browser/accessibility_annotator",
     "//chrome/browser/accessibility_annotator:impl",
     "//chrome/browser/account_settings",
+    "//chrome/browser/actor/ui/task_list_bubble:controller",
+    "//chrome/browser/actor/ui/task_list_bubble:controller_impl",
     "//chrome/browser/affiliations",
     "//chrome/browser/ai",
     "//chrome/browser/ai:impl",
@@ -2713,7 +2715,6 @@ source_set("browser") {
     deps += [
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/actor/ui:window_controller_impl",
-      "//chrome/browser/actor/ui/task_list_bubble:controller_impl",
       "//chrome/browser/actor/ui/task_list_bubble:ui",
       "//chrome/browser/actor/ui/task_list_bubble:ui_impl",
       "//chrome/browser/apps/app_service",

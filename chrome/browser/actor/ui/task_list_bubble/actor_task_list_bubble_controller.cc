@@ -83,6 +83,9 @@ void ActorTaskListBubbleController::ShowBubbleImpl(bool is_start_notification) {
       browser_->GetProfile());
   DCHECK(manager);
 
+  // TODO(crbug.com/518584352): Implement for Android. Figure out what to do
+  // instead of browser_->IsActive().
+#if !BUILDFLAG(IS_ANDROID)
   // If the browser is in the background, only show the bubble if this is a
   // start notification for an experimentalTriggering task triggered while
   // the Glic panel is visible on this window. We avoid popping up the bubble
@@ -95,6 +98,7 @@ void ActorTaskListBubbleController::ShowBubbleImpl(bool is_start_notification) {
       return;
     }
   }
+#endif
 
   const auto& task_id_to_state = manager->actor_task_list_bubble_rows();
   // Do not show bubble if there are no rows to show.
