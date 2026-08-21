@@ -31,7 +31,6 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

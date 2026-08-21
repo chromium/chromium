@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"

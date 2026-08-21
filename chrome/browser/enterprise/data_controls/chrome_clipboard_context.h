@@ -8,7 +8,6 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "components/enterprise/data_controls/core/browser/clipboard_context.h"
 #include "content/public/browser/clipboard_types.h"
-#include "content/public/browser/content_browser_client.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
 
 namespace data_controls {

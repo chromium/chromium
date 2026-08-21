@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_LOGIN_LOGIN_TAB_HELPER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/login_delegate.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"

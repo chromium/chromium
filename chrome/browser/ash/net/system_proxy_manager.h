@@ -17,7 +17,7 @@
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_service.pb.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
-#include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/login_delegate.h"
 #include "net/base/auth.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
