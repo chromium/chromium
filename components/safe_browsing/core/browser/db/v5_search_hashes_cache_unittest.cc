@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -914,8 +915,8 @@ TEST_P(V5SearchHashesCacheTest, CacheArtificialVerdictWithThreatType) {
       std::make_unique<V5SearchHashesCache>(/*history_service=*/nullptr);
   GURL test_url("https://example.com/malware.html");
 
-  cache->CacheArtificialV5SearchHashesLookupVerdict(test_url,
-                                                    V5::ThreatType::MALWARE);
+  cache->CacheArtificialV5SearchHashesLookupVerdict(
+      test_url, V5::ThreatType::MALWARE, /*is_warn_only=*/false);
   FullHashStr full_hash = SBProtocolManagerUtil::GetFullHash(test_url);
   std::string hash_prefix = SBProtocolManagerUtil::GetHashPrefix(full_hash);
 
@@ -930,16 +931,73 @@ TEST_P(V5SearchHashesCacheTest, CacheArtificialVerdictWithThreatType) {
   // Cache a second threat type for the same URL and verify both details
   // persist.
   cache->CacheArtificialV5SearchHashesLookupVerdict(
-      test_url, V5::ThreatType::UNWANTED_SOFTWARE);
+      test_url, V5::ThreatType::UNWANTED_SOFTWARE, /*is_warn_only=*/false);
   cache_results = cache->SearchCache({hash_prefix});
   ASSERT_EQ(cache_results[hash_prefix].size(), 1u);
   EXPECT_EQ(cache_results[hash_prefix][0].full_hash_details_size(), 2);
 
   // Caching a safe verdict clears prior threat details.
   cache->CacheArtificialV5SearchHashesLookupVerdict(
-      test_url, V5::ThreatType::THREAT_TYPE_UNSPECIFIED);
+      test_url, V5::ThreatType::THREAT_TYPE_UNSPECIFIED,
+      /*is_warn_only=*/false);
   cache_results = cache->SearchCache({hash_prefix});
   EXPECT_TRUE(cache_results.empty() || cache_results[hash_prefix].empty());
+}
+
+TEST_P(V5SearchHashesCacheTest, CacheArtificialVerdictWithWarnOnly) {
+#if BUILDFLAG(IS_IOS)
+  if (!GetParam()) {
+    GTEST_SKIP() << "iOS HPRT does not support CANARY attribute";
+  }
+#endif
+  auto cache =
+      std::make_unique<V5SearchHashesCache>(/*history_service=*/nullptr);
+  GURL test_url("https://example.com/phishing.html");
+
+  // Cache with is_warn_only=true and verify CANARY attribute is set.
+  cache->CacheArtificialV5SearchHashesLookupVerdict(
+      test_url, V5::ThreatType::SOCIAL_ENGINEERING, /*is_warn_only=*/true);
+  FullHashStr full_hash = SBProtocolManagerUtil::GetFullHash(test_url);
+  std::string hash_prefix = SBProtocolManagerUtil::GetHashPrefix(full_hash);
+
+  auto cache_results = cache->SearchCache({hash_prefix});
+  ASSERT_EQ(cache_results.size(), 1u);
+  ASSERT_EQ(cache_results[hash_prefix].size(), 1u);
+  EXPECT_EQ(cache_results[hash_prefix][0].full_hash(), full_hash);
+  ASSERT_EQ(cache_results[hash_prefix][0].full_hash_details_size(), 1);
+  EXPECT_EQ(cache_results[hash_prefix][0].full_hash_details(0).threat_type(),
+            V5::ThreatType::SOCIAL_ENGINEERING);
+  ASSERT_EQ(
+      cache_results[hash_prefix][0].full_hash_details(0).attributes_size(), 1);
+  EXPECT_EQ(cache_results[hash_prefix][0].full_hash_details(0).attributes(0),
+            V5::ThreatAttribute::CANARY);
+
+  // Calling with is_warn_only=false for the same threat type updates the detail
+  // to remove the CANARY attribute.
+  cache->CacheArtificialV5SearchHashesLookupVerdict(
+      test_url, V5::ThreatType::SOCIAL_ENGINEERING, /*is_warn_only=*/false);
+  cache_results = cache->SearchCache({hash_prefix});
+  ASSERT_EQ(cache_results.size(), 1u);
+  ASSERT_EQ(cache_results[hash_prefix].size(), 1u);
+  EXPECT_EQ(cache_results[hash_prefix][0].full_hash_details_size(), 1);
+  EXPECT_EQ(cache_results[hash_prefix][0].full_hash_details(0).threat_type(),
+            V5::ThreatType::SOCIAL_ENGINEERING);
+  EXPECT_EQ(
+      cache_results[hash_prefix][0].full_hash_details(0).attributes_size(), 0);
+
+  // Calling with is_warn_only=true again re-adds the CANARY attribute.
+  cache->CacheArtificialV5SearchHashesLookupVerdict(
+      test_url, V5::ThreatType::SOCIAL_ENGINEERING, /*is_warn_only=*/true);
+  cache_results = cache->SearchCache({hash_prefix});
+  ASSERT_EQ(cache_results.size(), 1u);
+  ASSERT_EQ(cache_results[hash_prefix].size(), 1u);
+  EXPECT_EQ(cache_results[hash_prefix][0].full_hash_details_size(), 1);
+  EXPECT_EQ(cache_results[hash_prefix][0].full_hash_details(0).threat_type(),
+            V5::ThreatType::SOCIAL_ENGINEERING);
+  ASSERT_EQ(
+      cache_results[hash_prefix][0].full_hash_details(0).attributes_size(), 1);
+  EXPECT_EQ(cache_results[hash_prefix][0].full_hash_details(0).attributes(0),
+            V5::ThreatAttribute::CANARY);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, V5SearchHashesCacheTest, ::testing::Bool());

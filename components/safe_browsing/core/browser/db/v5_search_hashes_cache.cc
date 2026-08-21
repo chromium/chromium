@@ -227,7 +227,8 @@ void V5SearchHashesCache::ScheduleNextCleanUp() {
 
 void V5SearchHashesCache::CacheArtificialV5SearchHashesLookupVerdict(
     const GURL& url,
-    V5::ThreatType threat_type) {
+    V5::ThreatType threat_type,
+    bool is_warn_only) {
   if (!url.is_valid()) {
     return;
   }
@@ -252,6 +253,9 @@ void V5SearchHashesCache::CacheArtificialV5SearchHashesLookupVerdict(
     if (threat_type != V5::ThreatType::THREAT_TYPE_UNSPECIFIED) {
       auto* details = full_hash_proto.add_full_hash_details();
       details->set_threat_type(threat_type);
+      if (is_warn_only) {
+        details->add_attributes(safe_browsing::V5::ThreatAttribute::CANARY);
+      }
     }
 
     // Look up existing cache entries under this prefix to preserve other
@@ -299,7 +303,8 @@ void V5SearchHashesCache::CacheArtificialV5SearchHashesLookupVerdict(
   V5::ThreatType threat_type = is_unsafe
                                    ? V5::ThreatType::SOCIAL_ENGINEERING
                                    : V5::ThreatType::THREAT_TYPE_UNSPECIFIED;
-  CacheArtificialV5SearchHashesLookupVerdict(url, threat_type);
+  CacheArtificialV5SearchHashesLookupVerdict(url, threat_type,
+                                             /*is_warn_only=*/false);
 }
 
 void V5SearchHashesCache::

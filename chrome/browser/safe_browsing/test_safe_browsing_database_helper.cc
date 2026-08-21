@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -17,9 +18,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
+#include "chrome/browser/safe_browsing/v5_search_hashes_cache_factory.h"
 #include "components/safe_browsing/core/browser/db/sb_database.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
+#include "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/test/test_utils.h"
 
@@ -130,14 +134,26 @@ TestSafeBrowsingDatabaseHelper::~TestSafeBrowsingDatabaseHelper() {
   safe_browsing::SafeBrowsingService::RegisterFactory(nullptr);
 }
 
+// TODO(crbug.com/372395685): Remove list_id (which can be derived from
+// threat_type in V5) and threat_metadata when deprecating V4.
 void TestSafeBrowsingDatabaseHelper::AddFullHashToDbAndFullHashCache(
     const GURL& bad_url,
     const safe_browsing::ListIdentifier& list_id,
-    const safe_browsing::ThreatMetadata& threat_metadata) {
-  // Should only be called if we are mocking the v4 hash factory.
-  DCHECK(v4_get_hash_factory_);
-
+    const safe_browsing::ThreatMetadata& threat_metadata,
+    safe_browsing::V5::ThreatType threat_type,
+    bool is_warn_only,
+    Profile* profile) {
   LocallyMarkPrefixAsBad(bad_url, list_id);
+
+  if (base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5)) {
+    safe_browsing::V5SearchHashesCacheFactory::GetForProfile(profile)
+        ->CacheArtificialV5SearchHashesLookupVerdict(bad_url, threat_type,
+                                                     is_warn_only);
+    return;
+  }
+
+  // Should only be called if we are mocking the v4 hash factory.
+  CHECK(v4_get_hash_factory_);
 
   safe_browsing::FullHashInfo full_hash_info =
       GetFullHashInfoWithMetadata(bad_url, list_id, threat_metadata);

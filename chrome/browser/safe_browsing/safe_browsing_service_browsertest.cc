@@ -491,7 +491,8 @@ class SBSafeBrowsingServiceTestBase : public InProcessBrowserTest {
       auto* cache =
           V5SearchHashesCacheFactory::GetForProfile(browser()->GetProfile());
       CHECK(cache);
-      cache->CacheArtificialV5SearchHashesLookupVerdict(bad_url, threat_type);
+      cache->CacheArtificialV5SearchHashesLookupVerdict(bad_url, threat_type,
+                                                        /*is_warn_only=*/false);
     } else {
       ThreatMetadata metadata;
       FullHashInfo full_hash_info =

@@ -1130,6 +1130,7 @@ source_set("test_database_helper") {
   public_deps = [
     "//base",
     "//components/safe_browsing/core/browser/db:util",
+    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
   ]
 
   deps = [
@@ -1138,6 +1139,8 @@ source_set("test_database_helper") {
     "//components/safe_browsing/core/browser/db:sb_database",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/browser/db:v4_test_util",
+    "//components/safe_browsing/core/browser/db:v5_search_hashes_cache",
+    "//components/safe_browsing/core/common:features",
     "//components/security_interstitials/core:unsafe_resource",
     "//content/test:test_support",
   ]
