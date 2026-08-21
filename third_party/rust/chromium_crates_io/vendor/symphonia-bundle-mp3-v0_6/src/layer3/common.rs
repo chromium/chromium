@@ -6,7 +6,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 /// Startng indicies of each scale factor band at various sampling rates for long blocks.
-pub const SFB_LONG_BANDS: [[usize; 23]; 9] = [
+pub static SFB_LONG_BANDS: [[usize; 23]; 9] = [
     // 44.1 kHz, MPEG version 1, derived from ISO/IEC 11172-3 Table B.8
     [
         0, 4, 8, 12, 16, 20, 24, 30, 36, 44, 52, 62, 74, 90, 110, 134, 162, 196, 238, 288, 342,
@@ -57,7 +57,7 @@ pub const SFB_LONG_BANDS: [[usize; 23]; 9] = [
 /// Starting indicies of each scale factor band at various sampling rates for short blocks. Each
 /// value must be multiplied by 3 since there are three equal length windows per short scale factor
 /// band.
-pub const SFB_SHORT_BANDS: [[usize; 40]; 9] = [
+pub static SFB_SHORT_BANDS: [[usize; 40]; 9] = [
     // 44.1 kHz, MPEG version 1, derived from ISO/IEC 11172-3 Table B.8
     [
         0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 54, 60, 66, 74, 82, 90, 100, 110, 120,

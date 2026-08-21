@@ -200,7 +200,7 @@ const MPEG_BITS_12: [u8; 64] = [
 ];
 
 #[rustfmt::skip]
-const MPEG_CODES_13: [u32; 256] = [
+static MPEG_CODES_13: [u32; 256] = [
     0x0001, 0x0005, 0x000e, 0x0015, 0x0022, 0x0033, 0x002e, 0x0047,
     0x002a, 0x0034, 0x0044, 0x0034, 0x0043, 0x002c, 0x002b, 0x0013,
     0x0003, 0x0004, 0x000c, 0x0013, 0x001f, 0x001a, 0x002c, 0x0021,
@@ -272,7 +272,7 @@ const MPEG_BITS_13: [u8; 256] = [
 ];
 
 #[rustfmt::skip]
-const MPEG_CODES_15: [u32; 256] = [
+static MPEG_CODES_15: [u32; 256] = [
     0x0007, 0x000c, 0x0012, 0x0035, 0x002f, 0x004c, 0x007c, 0x006c,
     0x0059, 0x007b, 0x006c, 0x0077, 0x006b, 0x0051, 0x007a, 0x003f,
     0x000d, 0x0005, 0x0010, 0x001b, 0x002e, 0x0024, 0x003d, 0x0033,
@@ -344,7 +344,7 @@ const MPEG_BITS_15: [u8; 256] = [
 ];
 
 #[rustfmt::skip]
-const MPEG_CODES_16: [u32; 256] = [
+static MPEG_CODES_16: [u32; 256] = [
     0x0001, 0x0005, 0x000e, 0x002c, 0x004a, 0x003f, 0x006e, 0x005d,
     0x00ac, 0x0095, 0x008a, 0x00f2, 0x00e1, 0x00c3, 0x0178, 0x0011,
     0x0003, 0x0004, 0x000c, 0x0014, 0x0023, 0x003e, 0x0035, 0x002f,
@@ -416,7 +416,7 @@ const MPEG_BITS_16: [u8; 256] = [
 ];
 
 #[rustfmt::skip]
-const MPEG_CODES_24: [u32; 256] = [
+static MPEG_CODES_24: [u32; 256] = [
     0x000f, 0x000d, 0x002e, 0x0050, 0x0092, 0x0106, 0x00f8, 0x01b2,
     0x01aa, 0x029d, 0x028d, 0x0289, 0x026d, 0x0205, 0x0408, 0x0058,
     0x000e, 0x000c, 0x0015, 0x0026, 0x0047, 0x0082, 0x007a, 0x00d8,
@@ -504,7 +504,7 @@ struct MpegQuadsTable {
     wrap: u16,
 }
 
-const MPEG_TABLES: [MpegTable; 18] = [
+static MPEG_TABLES: [MpegTable; 18] = [
     // Table 0
     MpegTable { codes: &MPEG_CODES_0, lens: &MPEG_BITS_0, wrap: 0x0 },
     // Table 1
@@ -578,7 +578,7 @@ lazy_static! {
             // Decode a maximum of 8 bits per read.
             builder.bits_per_read(8);
 
-            *codebook = builder.make(table.codes, table.lens, &values).unwrap();
+            *codebook = builder.make(table.codes, table.lens, &values).expect("valid static codebook data");
         }
 
         codebooks
@@ -604,7 +604,7 @@ lazy_static! {
             // Decode a maximum of 8 bits per read.
             builder.bits_per_read(8);
 
-            *codebook = builder.make(table.codes, table.lens, &values).unwrap();
+            *codebook = builder.make(table.codes, table.lens, &values).expect("valid static codebook data");
         }
 
         codebooks

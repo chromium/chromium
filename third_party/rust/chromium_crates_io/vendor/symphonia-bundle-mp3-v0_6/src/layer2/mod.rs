@@ -6,7 +6,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use symphonia_core::audio::{AudioBuffer, AudioMut};
-use symphonia_core::errors::Result;
+use symphonia_core::errors::{Result, decode_error};
 use symphonia_core::io::{BitReaderLtr, BufReader, ReadBitsLtr, ReadBytes};
 use symphonia_core::util::bits::sign_extend_leq32_to_i32;
 
@@ -376,7 +376,11 @@ impl Layer for Layer2 {
 
         for (ch, samples) in samples.iter().enumerate().take(num_channels) {
             // Perform polyphase synthesis and generate PCM samples.
-            synthesis::synthesis(&mut self.synthesis[ch], 36, samples, out.plane_mut(ch).unwrap());
+            let plane = match out.plane_mut(ch) {
+                Some(p) => p,
+                None => return decode_error("mp2: missing audio plane"),
+            };
+            synthesis::synthesis(&mut self.synthesis[ch], 36, samples, plane);
         }
 
         Ok(())

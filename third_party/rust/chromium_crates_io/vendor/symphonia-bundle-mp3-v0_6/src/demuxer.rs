@@ -138,7 +138,14 @@ impl ProbeableFormat<'_> for MpaReader<'_> {
 impl FormatReader for MpaReader<'_> {
     fn format_info(&self) -> &FormatInfo {
         // Safety: MpaReader only supports/has audio tracks.
-        match self.tracks[0].codec_params.as_ref().unwrap().audio().unwrap().codec {
+        match self.tracks[0]
+            .codec_params
+            .as_ref()
+            .expect("track has codec params")
+            .audio()
+            .expect("codec params are audio")
+            .codec
+        {
             CODEC_ID_MP1 => &MP1_FORMAT_INFO,
             CODEC_ID_MP2 => &MP2_FORMAT_INFO,
             CODEC_ID_MP3 => &MP3_FORMAT_INFO,
@@ -545,9 +552,11 @@ impl<'s> MpaReader<'s> {
         // start of the audio to a packet boundary. Then add to the lower-bound timestamp. In
         // theory, this should never exceed the upper-bound timestamp.
         //
-        // UNWRAP: The packet duration is always non-zero, and no larger than 1152.
-        self.next_packet_ts =
-            min_ts.checked_add(dur_to_pkt.align_down(pkt_dur).unwrap()).unwrap_or(max_ts);
+        self.next_packet_ts = min_ts
+            .checked_add(
+                dur_to_pkt.align_down(pkt_dur).expect("packet duration is always non-zero"),
+            )
+            .unwrap_or(max_ts);
 
         Ok(())
     }
@@ -762,15 +771,15 @@ fn try_read_info_tag_inner(buf: &[u8], header: &FrameHeader) -> Result<Option<Xi
     }
 
     // The position of the Xing/Info tag relative to the end of the header. This is equal to the
-    // side information length for the frame.
-    let offset = header.side_info_len();
+    // side information length for the frame. The CRC is not included in this offset calculation.
+    let offset = MPEG_HEADER_LEN + header.side_info_len();
 
     // Start the CRC with the header and side information.
     let mut crc16 = Crc16AnsiLe::new(0);
-    crc16.process_buf_bytes(&buf[..offset + MPEG_HEADER_LEN]);
+    crc16.process_buf_bytes(&buf[..offset]);
 
     // Start reading the Xing/Info tag after the side information.
-    let mut reader = MonitorStream::new(BufReader::new(&buf[offset + MPEG_HEADER_LEN..]), crc16);
+    let mut reader = MonitorStream::new(BufReader::new(&buf[offset..]), crc16);
 
     // Check for Xing/Info header.
     let id = reader.read_quad_bytes()?;
@@ -939,8 +948,8 @@ fn is_maybe_info_tag(buf: &[u8], header: &FrameHeader) -> bool {
     }
 
     // The position of the Xing/Info tag relative to the start of the packet. This is equal to the
-    // side information length for the frame.
-    let offset = header.side_info_len() + MPEG_HEADER_LEN;
+    // side information length for the frame. The CRC is not included in this offset calculation.
+    let offset = MPEG_HEADER_LEN + header.side_info_len();
 
     // The packet must be big enough to contain a tag.
     if buf.len() < offset + MIN_XING_TAG_LEN {
@@ -954,8 +963,8 @@ fn is_maybe_info_tag(buf: &[u8], header: &FrameHeader) -> bool {
         return false;
     }
 
-    // The side information should be zeroed.
-    !buf[MPEG_HEADER_LEN..offset].iter().any(|&b| b != 0)
+    // The side information, which follows the header and optional CRC, should be zeroed.
+    !buf[header.header_size()..offset].iter().any(|&b| b != 0)
 }
 
 const VBRI_TAG_ID: [u8; 4] = *b"VBRI";
@@ -1013,7 +1022,7 @@ fn try_read_vbri_tag_inner(buf: &[u8], header: &FrameHeader) -> Result<Option<Vb
 /// packet should be parsed fully to ensure it is in fact a tag.
 fn is_maybe_vbri_tag(buf: &[u8], header: &FrameHeader) -> bool {
     const MIN_VBRI_TAG_LEN: usize = 26;
-    const VBRI_TAG_OFFSET: usize = 36;
+    const VBRI_TAG_OFFSET: usize = MPEG_HEADER_LEN + 32;
 
     // Only supported with layer 3 packets.
     if header.layer != MpegLayer::Layer3 {
@@ -1033,5 +1042,71 @@ fn is_maybe_vbri_tag(buf: &[u8], header: &FrameHeader) -> bool {
     }
 
     // The bytes preceeding the VBRI tag (mostly the side information) should be all 0.
-    !buf[MPEG_HEADER_LEN..VBRI_TAG_OFFSET].iter().any(|&b| b != 0)
+    !buf[header.header_size()..VBRI_TAG_OFFSET].iter().any(|&b| b != 0)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::common::{ChannelMode, Emphasis, MpegVersion};
+
+    #[test]
+    fn test_is_maybe_info_tag_with_crc() {
+        let header = FrameHeader {
+            version: MpegVersion::Mpeg1,
+            layer: MpegLayer::Layer3,
+            bitrate: 128000,
+            sample_rate: 44100,
+            sample_rate_idx: 0,
+            channel_mode: ChannelMode::Stereo,
+            emphasis: Emphasis::None,
+            is_copyrighted: false,
+            is_original: false,
+            has_padding: false,
+            has_crc: true,
+            frame_size: 417,
+        };
+
+        let mut buf = vec![0u8; 100];
+        // Header
+        buf[0..4].copy_from_slice(&[0xff, 0xfa, 0x90, 0x44]);
+        // CRC (non-zero)
+        buf[4] = 0x12;
+        buf[5] = 0x34;
+        // Tag ID at offset 32 + 4 = 36
+        buf[36..40].copy_from_slice(b"Xing");
+
+        // Ensure the heuristic returns true even if a non-zero CRC is present.
+        assert!(is_maybe_info_tag(&buf, &header));
+    }
+
+    #[test]
+    fn test_is_maybe_vbri_tag_with_crc() {
+        let header = FrameHeader {
+            version: MpegVersion::Mpeg1,
+            layer: MpegLayer::Layer3,
+            bitrate: 128000,
+            sample_rate: 44100,
+            sample_rate_idx: 0,
+            channel_mode: ChannelMode::Stereo,
+            emphasis: Emphasis::None,
+            is_copyrighted: false,
+            is_original: false,
+            has_padding: false,
+            has_crc: true,
+            frame_size: 417,
+        };
+
+        let mut buf = vec![0u8; 100];
+        // Header
+        buf[0..4].copy_from_slice(&[0xff, 0xfa, 0x90, 0x44]);
+        // CRC (non-zero)
+        buf[4] = 0x12;
+        buf[5] = 0x34;
+        // Tag ID at offset 36
+        buf[36..40].copy_from_slice(b"VBRI");
+
+        // Ensure the heuristic returns true even if a non-zero CRC is present.
+        assert!(is_maybe_vbri_tag(&buf, &header));
+    }
 }

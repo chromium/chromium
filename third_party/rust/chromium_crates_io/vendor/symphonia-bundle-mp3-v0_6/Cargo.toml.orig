@@ -22,4 +22,7 @@ mp3 = []
 [dependencies]
 log = { workspace = true }
 lazy_static = { workspace = true }
-symphonia-core = { version = "0.6.0", path = "../symphonia-core" }
+symphonia-core = { version = "0.6.1", path = "../symphonia-core" }
+
+[lints]
+workspace = true

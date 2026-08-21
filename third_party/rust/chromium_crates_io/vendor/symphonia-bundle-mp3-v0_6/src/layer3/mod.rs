@@ -462,7 +462,10 @@ impl Layer for Layer3 {
                 hybrid_synthesis::frequency_inversion(&mut self.samples[gr][ch]);
 
                 // Perform polyphase synthesis and generate PCM samples.
-                let out_ch_samples = out.plane_mut(ch).unwrap();
+                let out_ch_samples = match out.plane_mut(ch) {
+                    Some(p) => p,
+                    None => return decode_error("mp3: missing audio plane"),
+                };
 
                 synthesis::synthesis(
                     &mut self.synthesis[ch],

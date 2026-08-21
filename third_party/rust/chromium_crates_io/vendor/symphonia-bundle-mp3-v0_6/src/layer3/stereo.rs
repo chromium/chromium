@@ -506,7 +506,10 @@ pub(super) fn stereo(
 
     // Split the sample buffer into two channels.
     let (ch0, ch1) = {
-        let (ch0, ch1) = ch.split_first_mut().unwrap();
+        let (ch0, ch1) = match ch.split_first_mut() {
+            Some(v) => v,
+            None => return decode_error("mp3: stereo channel pair is empty"),
+        };
         (ch0, &mut ch1[0])
     };
 
