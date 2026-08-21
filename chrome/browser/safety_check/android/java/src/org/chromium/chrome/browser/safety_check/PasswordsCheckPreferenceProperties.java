@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.Pas
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -21,7 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 class PasswordsCheckPreferenceProperties {
     /** State of the passwords check, one of the {@link PasswordsState} values. */
-    static final WritableIntPropertyKey PASSWORDS_STATE = new WritableIntPropertyKey();
+    static final WritableIntDefPropertyKey<PasswordsState> PASSWORDS_STATE =
+            new WritableIntDefPropertyKey<>(PasswordsState.UNCHECKED);
 
     /** Number of compromised passwords; only used when PASSWORDS_STATE is COMPROMISED_EXIST. */
     static final WritableIntPropertyKey COMPROMISED_PASSWORDS_COUNT = new WritableIntPropertyKey();
