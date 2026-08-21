@@ -28,7 +28,9 @@ class JniPtrImpl<T extends JniTypeToken> implements JniPtrInner<T> {
     @Override
     public long getNativePtr() {
         if (mNativePtr == 0) {
-            throw new IllegalStateException("Trying to access an already-released JniPtr");
+            throw new IllegalStateException(
+                    "Safe JNI Pointer violation: Attempted to access a JniPtr after it was"
+                            + " released.");
         }
         return mNativePtr;
     }

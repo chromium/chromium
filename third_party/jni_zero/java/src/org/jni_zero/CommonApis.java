@@ -29,4 +29,9 @@ public class CommonApis {
         }
         return ret;
     }
+
+    @NativeMethods
+    interface Natives {
+        void deleteDeleterBasePtr(long ptr, long deleterAddress);
+    }
 }

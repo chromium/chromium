@@ -2,11 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import("//build/config/android/rules.gni")
+import("//testing/test.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
-# All targets in this file are meant as compile tests only to make sure the
-# generated code compiles for all edgecases.
+# Most targets in this file are compile tests only, to make sure the generated
+# code compiles for all edgecases. jni_zero_unittests contains runnable tests.
 testonly = true
+
+# Note: jni_zero_unittests is not currently included in standard CI test suites
+# (no bot coverage) and is intended for local developer testing.
+test("jni_zero_unittests") {
+  sources = [ "jni_unique_ptr_unittest.cc" ]
+  deps = [
+    "//testing/gtest",
+    "//testing/gtest:gtest_main",
+    "//third_party/jni_zero",
+  ]
+}
 
 generate_jni("test_jni") {
   sources = [
