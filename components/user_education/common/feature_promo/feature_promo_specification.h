@@ -530,8 +530,10 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
   FeaturePromoSpecification& SetInAnyContext(bool in_any_context);
 
   // AnchorElementProvider:
-  ui::TrackedElement* GetAnchorElement(ui::ElementContext context,
-                                       std::optional<int> index) const override;
+  ui::TrackedElement* GetAnchorElement(
+      ui::ElementContext context,
+      user_education::AnchorElementFilter default_filter,
+      std::optional<int> index) const override;
   int GetNextValidIndex(int index) const override;
 
   const base::Feature* feature() const { return feature_; }

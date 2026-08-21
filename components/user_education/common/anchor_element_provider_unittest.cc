@@ -4,6 +4,7 @@
 
 #include "components/user_education/common/anchor_element_provider.h"
 
+#include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
@@ -27,20 +28,47 @@ TEST(AnchorElementProviderTest,
 
   // No visible element, so returns null.
   EXPECT_EQ(nullptr,
-            provider.GetAnchorElement(kTestElementContext1, std::nullopt));
+            provider.GetAnchorElement(kTestElementContext1,
+                                      AnchorElementFilter(), std::nullopt));
   el.Show();
 
   // Finds visible element.
-  EXPECT_EQ(&el, provider.GetAnchorElement(kTestElementContext1, std::nullopt));
+  EXPECT_EQ(&el,
+            provider.GetAnchorElement(kTestElementContext1,
+                                      AnchorElementFilter(), std::nullopt));
 
   // Does not find element in the wrong context.
   EXPECT_EQ(nullptr,
-            provider.GetAnchorElement(kTestElementContext2, std::nullopt));
+            provider.GetAnchorElement(kTestElementContext2,
+                                      AnchorElementFilter(), std::nullopt));
 
   // Wrong ID does not find element.
   AnchorElementProviderCommon provider2(kTestElementId2);
   EXPECT_EQ(nullptr,
-            provider2.GetAnchorElement(kTestElementContext1, std::nullopt));
+            provider2.GetAnchorElement(kTestElementContext1,
+                                       AnchorElementFilter(), std::nullopt));
+
+  // Finds an element matched by the filter.
+  EXPECT_EQ(&el,
+            provider.GetAnchorElement(
+                kTestElementContext1,
+                base::BindLambdaForTesting(
+                    [&el](const ui::ElementTracker::ElementList& elements) {
+                      return elements.front() == &el ? elements.front()
+                                                     : nullptr;
+                    }),
+                std::nullopt));
+
+  // Does not find an element rejected by the filter.
+  EXPECT_EQ(nullptr,
+            provider.GetAnchorElement(
+                kTestElementContext1,
+                base::BindLambdaForTesting(
+                    [&el](const ui::ElementTracker::ElementList& elements) {
+                      return elements.front() != &el ? elements.front()
+                                                     : nullptr;
+                    }),
+                std::nullopt));
 }
 
 }  // namespace user_education

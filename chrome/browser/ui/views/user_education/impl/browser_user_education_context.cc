@@ -8,6 +8,7 @@
 
 #include "base/callback_list.h"
 #include "base/check.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_preconditions.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
@@ -16,7 +17,12 @@
 #include "components/user_education/common/user_education_storage_service.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/safe_castable.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/view_subregion_anchor.h"
+#include "ui/webui/tracked_element/tracked_element_handler.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 // Forwarding precondition that releases its reference when the context is
 // invalidated or destroyed.
@@ -60,6 +66,14 @@ const ui::AcceleratorProvider*
 BrowserUserEducationContext::GetAcceleratorProvider() const {
   CHECK(IsValid());
   return browser_view_.get();
+}
+
+user_education::AnchorElementFilter
+BrowserUserEducationContext::GetDefaultElementFilter() const {
+  CHECK(IsValid());
+  return base::BindRepeating(&BrowserUserEducationContext::Filter,
+                             GetElementContext(),
+                             browser_view_->GetProfile()->GetWeakPtr());
 }
 
 BrowserUserEducationContext::PreconditionPtr
@@ -134,4 +148,83 @@ void BrowserUserEducationContext::CreateSharedPreconditions(
       *browser_view_->browser());
   CHECK(shared_preconditions_.emplace(ptr->GetIdentifier(), std::move(ptr))
             .second);
+}
+
+ui::TrackedElement* BrowserUserEducationContext::Filter(
+    ui::ElementContext default_context,
+    base::WeakPtr<content::BrowserContext> profile,
+    const ui::ElementTracker::ElementList& candidates) {
+  if (!profile) {
+    return nullptr;
+  }
+
+  // Find elements in the default context.
+  for (auto* const element : candidates) {
+    // Always prefer elements in the default context.
+    if (element->context() == default_context) {
+      return element;
+    }
+
+    // Web elements may have a different context, but will set in the same
+    // View/Widget hierarchy.
+    if (auto* const web_el = element->AsA<ui::TrackedElementWebUI>()) {
+      if (auto* const view = web_el->GetWebView()) {
+        const auto webview_context =
+            views::ElementTrackerViews::GetInstance()->GetContextForView(view);
+        if (webview_context == default_context) {
+          return element;
+        }
+      }
+    }
+  }
+
+  // No elements in the default context. Check for other contexts in active
+  // windows in the same profile.
+  ui::TrackedElement* background_element = nullptr;
+  for (auto* const element : candidates) {
+    // Find where this element is in the Views hierarchy.
+    const views::View* view = nullptr;
+    if (auto* const view_el = element->AsA<views::TrackedElementViews>()) {
+      view = view_el->view();
+    } else if (auto* const view_region_el =
+                   element->AsA<views::ViewSubregionAnchor>()) {
+      view = &view_region_el->view();
+    } else if (auto* const webui_el = element->AsA<ui::TrackedElementWebUI>()) {
+      // Reject WebUI in different profiles. It is not necessary to look up the
+      // View if it can be rejected here.
+      if (webui_el->handler()->web_contents()->GetBrowserContext() !=
+          profile.get()) {
+        continue;
+      }
+      view = webui_el->GetWebView();
+    }
+
+    // Find the primary widget, which should be in the foreground.
+    if (view && view->GetWidget()) {
+      auto* const primary = view->GetWidget()->GetPrimaryWindowWidget();
+
+      // Rule out browsers not in this profile. [Reluctantly] accept elements in
+      // Widgets not in any profile.
+      if (const auto* const browser_view =
+              BrowserView::GetBrowserViewForNativeWindow(
+                  primary->GetNativeWindow());
+          browser_view && browser_view->GetProfile() != profile.get()) {
+        continue;
+      }
+
+      // Strongly prefer elements in active windows.
+      if (primary->ShouldPaintAsActive()) {
+        return element;
+      }
+
+      // Worst case, return an element in an inactive window.
+      if (!background_element) {
+        background_element = element;
+      }
+    }
+  }
+
+  // Fall back to an element in a background window of the current profile, if
+  // one was found.
+  return background_element;
 }

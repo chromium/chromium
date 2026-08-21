@@ -8,6 +8,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/common/anchor_element_provider.h"
 #include "components/user_education/common/feature_promo/feature_promo_handle.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/common/user_education_features.h"
@@ -95,8 +96,10 @@ TEST(FeaturePromoSpecificationTest, GetAnchorElementFromRotatingPromo) {
   auto spec = FeaturePromoSpecification::CreateRotatingPromoForTesting(
       kTestRotatingPromo, std::move(promos));
 
-  EXPECT_EQ(&el1, spec.GetAnchorElement(kTestContext, 0));
-  EXPECT_EQ(&el2, spec.GetAnchorElement(kTestContext, 2));
+  EXPECT_EQ(&el1,
+            spec.GetAnchorElement(kTestContext, AnchorElementFilter(), 0));
+  EXPECT_EQ(&el2,
+            spec.GetAnchorElement(kTestContext, AnchorElementFilter(), 2));
 }
 
 TEST(FeaturePromoSpecificationTest, CustomActionCaptionLazyLoad) {

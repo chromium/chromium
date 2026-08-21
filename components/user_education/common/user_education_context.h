@@ -6,6 +6,7 @@
 #define COMPONENTS_USER_EDUCATION_COMMON_USER_EDUCATION_CONTEXT_H_
 
 #include "base/memory/ref_counted.h"
+#include "components/user_education/common/anchor_element_provider.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/safe_castable.h"
@@ -35,6 +36,12 @@ class UserEducationContext : public ui::SafeCastable,
   // Gets the element context, which corresponds to the surface or window in
   // question, if one is specified.
   virtual ui::ElementContext GetElementContext() const = 0;
+
+  // Returns a default filter to use for elements. This could, for example,
+  // limit the elements found to only the active window tree, the current
+  // profile, etc.
+  virtual user_education::AnchorElementFilter GetDefaultElementFilter()
+      const = 0;
 
   // Gets the accelerator provider associated with the window, surface, or
   // application.
