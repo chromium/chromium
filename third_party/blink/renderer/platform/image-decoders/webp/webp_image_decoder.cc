@@ -625,6 +625,7 @@ void WEBPImageDecoder::InitializeNewFrame(wtf_size_t index) {
   gfx::Rect frame_rect(animated_frame.x_offset, animated_frame.y_offset,
                        animated_frame.width, animated_frame.height);
   buffer->SetOriginalFrameRect(IntersectRects(frame_rect, gfx::Rect(Size())));
+  CHECK(!buffer->OriginalFrameRect().IsEmpty());
   buffer->SetDuration(base::Milliseconds(animated_frame.duration));
   buffer->SetDisposalMethod(animated_frame.dispose_method ==
                                     WEBP_MUX_DISPOSE_BACKGROUND
@@ -772,25 +773,31 @@ bool WEBPImageDecoder::DecodeSingleFrame(const uint8_t* data_bytes,
     buffer.SetOriginalFrameRect(gfx::Rect(Size()));
   }
 
-  const gfx::Rect& frame_rect = buffer.OriginalFrameRect();
   if (!decoder_) {
     // Set up decoder_buffer_ with output mode
     if (!WebPInitDecBuffer(&decoder_buffer_)) {
       return SetFailed();
     }
+    // WebPINewDecoder uses only decoder_buffer_.is_external_memory and
+    // decoder_buffer_.colorspace.
     decoder_buffer_.colorspace = RGBOutputMode();
-    decoder_buffer_.u.RGBA.stride =
-        Size().width() * sizeof(ImageFrame::PixelData);
-    decoder_buffer_.u.RGBA.size =
-        decoder_buffer_.u.RGBA.stride * frame_rect.height();
     decoder_buffer_.is_external_memory = 1;
     decoder_ = WebPINewDecoder(&decoder_buffer_);
     if (!decoder_) {
       return SetFailed();
     }
   }
+  const gfx::Rect& frame_rect = buffer.OriginalFrameRect();
+  CHECK(gfx::Rect(Size()).Contains(frame_rect));
+  CHECK(!frame_rect.IsEmpty());
   decoder_buffer_.u.RGBA.rgba = reinterpret_cast<uint8_t*>(
       buffer.GetAddr(frame_rect.x(), frame_rect.y()));
+  decoder_buffer_.u.RGBA.stride =
+      Size().width() * sizeof(ImageFrame::PixelData);
+  decoder_buffer_.u.RGBA.size =
+      static_cast<size_t>(decoder_buffer_.u.RGBA.stride) *
+          (frame_rect.height() - 1) +
+      frame_rect.width() * sizeof(ImageFrame::PixelData);
 
   switch (WebPIUpdate(decoder_, data_bytes, data_size)) {
     case VP8_STATUS_OK:
