@@ -20,7 +20,7 @@
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
                    ->has_text_for_testing());
 
   // Switch active tabs back to watermarked page.
-  browser()->tab_strip_model()->ActivateTabAt(
+  browser()->GetTabStripModel()->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kMouse));
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
@@ -485,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
                    ->has_text_for_testing());
 
   // Switch back to the watermarked tab. The watermark should still be showing.
-  browser()->tab_strip_model()->ActivateTabAt(
+  browser()->GetTabStripModel()->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kMouse));
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
@@ -545,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest,
                    ->has_text_for_testing());
 
   // Switch back to the watermarked tab. The watermark should show immediately.
-  browser()->tab_strip_model()->ActivateTabAt(
+  browser()->GetTabStripModel()->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kMouse));
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
@@ -568,10 +568,11 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest, SplitTabWatermark) {
   ASSERT_TRUE(
       AddTabAtIndex(2, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
 
-  browser()->tab_strip_model()->ActivateTabAt(0);
-  split_tabs::SplitTabId split_id = browser()->tab_strip_model()->AddToNewSplit(
-      {1}, split_tabs::SplitTabVisualData(),
-      split_tabs::SplitTabCreatedSource::kToolbarButton);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+  split_tabs::SplitTabId split_id =
+      browser()->GetTabStripModel()->AddToNewSplit(
+          {1}, split_tabs::SplitTabVisualData(),
+          split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   NavigateToAndWait(GURL("https://watermark.com"));
 
@@ -586,7 +587,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest, SplitTabWatermark) {
                    ->has_text_for_testing());
 
   // Reverse the tabs in the split.
-  browser()->tab_strip_model()->ReverseTabsInSplit(split_id);
+  browser()->GetTabStripModel()->ReverseTabsInSplit(split_id);
 
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
                   ->GetContentsContainerViews()[1]
@@ -599,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest, SplitTabWatermark) {
                    ->has_text_for_testing());
 
   // Switch to a different tab without split.
-  browser()->tab_strip_model()->ActivateTabAt(2);
+  browser()->GetTabStripModel()->ActivateTabAt(2);
   NavigateToAndWait(GURL("https://watermark.com"));
 
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
@@ -612,7 +613,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest, SplitTabWatermark) {
                    ->GetVisible());
 
   // Switch back to split view .
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
 
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
                   ->GetContentsContainerViews()[1]
@@ -625,7 +626,7 @@ IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest, SplitTabWatermark) {
                    ->has_text_for_testing());
 
   // Add watermark to the other split view as well.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   NavigateToAndWait(GURL("https://watermark.com"));
 
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
@@ -684,7 +685,7 @@ IN_PROC_BROWSER_TEST_P(WatermarkTestPageDynamicBrowserTest, DynamicWatermark) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUIWatermarkURL)));
 
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   auto* watermark_ui =
       web_contents->GetWebUI()->GetController()->GetAs<WatermarkUI>();
   ASSERT_TRUE(watermark_ui);

@@ -10,8 +10,8 @@
 #include "chrome/browser/enterprise/platform_auth/mock_platform_auth_provider.h"
 #include "chrome/browser/enterprise/platform_auth/scoped_set_provider_for_testing.h"
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #endif
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"

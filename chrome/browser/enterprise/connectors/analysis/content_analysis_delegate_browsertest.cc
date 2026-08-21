@@ -28,9 +28,9 @@
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/buildflags/buildflags.h"
@@ -416,7 +416,7 @@ class ContentAnalysisDelegateBrowserTest
           return static_cast<content::BrowserContext*>(browser()->GetProfile());
         }),
         *browser()
-             ->tab_strip_model()
+             ->GetTabStripModel()
              ->GetActiveWebContents()
              ->GetPrimaryMainFrame());
   }
@@ -430,7 +430,7 @@ class ContentAnalysisDelegateBrowserTest
                   /*create_if_needed*/ true));
         }),
         *browser()
-             ->tab_strip_model()
+             ->GetTabStripModel()
              ->GetActiveWebContents()
              ->GetPrimaryMainFrame());
   }
@@ -470,7 +470,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Unauthorized) {
   validator.ExpectNoReport();
 
   ContentAnalysisDelegate::CreateForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      browser()->GetTabStripModel()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [&quit_closure, &called](const ContentAnalysisDelegate::Data& data,
                                    ContentAnalysisDelegate::Result& result) {
@@ -590,7 +590,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
 
   // Start test.
   ContentAnalysisDelegate::CreateForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      browser()->GetTabStripModel()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [&called](const ContentAnalysisDelegate::Data& data,
                     ContentAnalysisDelegate::Result& result) {
@@ -711,7 +711,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
 
   // Start test.
   ContentAnalysisDelegate::CreateForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      browser()->GetTabStripModel()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [&called](const ContentAnalysisDelegate::Data& data,
                     ContentAnalysisDelegate::Result& result) {
@@ -786,7 +786,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, AllowTextAndImage) {
 
   // Start test.
   ContentAnalysisDelegate::CreateForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      browser()->GetTabStripModel()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [&called](const ContentAnalysisDelegate::Data& data,
                     ContentAnalysisDelegate::Result& result) {
@@ -903,7 +903,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
 
   // Start test.
   ContentAnalysisDelegate::CreateForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      browser()->GetTabStripModel()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [&called](const ContentAnalysisDelegate::Data& data,
                     ContentAnalysisDelegate::Result& result) {
@@ -1022,7 +1022,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
 
   // Start test.
   ContentAnalysisDelegate::CreateForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      browser()->GetTabStripModel()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [&called](const ContentAnalysisDelegate::Data& data,
                     ContentAnalysisDelegate::Result& result) {
@@ -1145,7 +1145,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
 
   // Start test.
   ContentAnalysisDelegate::CreateForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      browser()->GetTabStripModel()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [&called](const ContentAnalysisDelegate::Data& data,
                     ContentAnalysisDelegate::Result& result) {
@@ -1304,26 +1304,27 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
     validator.ExpectUnscannedFileEvent(std::move(expected_event));
 
   // Start test.
-  ContentAnalysisDelegate::CreateForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
-      base::BindLambdaForTesting(
-          [this, &called](const ContentAnalysisDelegate::Data& data,
-                          ContentAnalysisDelegate::Result& result) {
-            ASSERT_TRUE(result.text_results.empty());
-            ASSERT_EQ(result.paths_results.size(), 1u);
-            ASSERT_EQ(result.paths_results[0], expected_result());
-            called = true;
-          }),
-      DeepScanAccessPoint::DRAG_AND_DROP);
+    ContentAnalysisDelegate::CreateForWebContents(
+        browser()->GetTabStripModel()->GetActiveWebContents(), std::move(data),
+        base::BindLambdaForTesting(
+            [this, &called](const ContentAnalysisDelegate::Data& data,
+                            ContentAnalysisDelegate::Result& result) {
+              ASSERT_TRUE(result.text_results.empty());
+              ASSERT_EQ(result.paths_results.size(), 1u);
+              ASSERT_EQ(result.paths_results[0], expected_result());
+              called = true;
+            }),
+        DeepScanAccessPoint::DRAG_AND_DROP);
 
-  validator_run_loop.Run();
-  run_loop.Run();
-  EXPECT_TRUE(called);
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 0);
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 0);
+    validator_run_loop.Run();
+    run_loop.Run();
+    EXPECT_TRUE(called);
+    ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 0);
+    ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 0);
 
-  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
-  content_analysis_run_loop.Run();
+    // Ensure the ContentAnalysisDelegate is destroyed before the end of the
+    // test.
+    content_analysis_run_loop.Run();
 }
 
 // TODO(crbug.com/417992384) re-enable after the experiment is launched.
@@ -1433,7 +1434,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
   // Start test.
   ContentAnalysisDelegate::CreateForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      browser()->GetTabStripModel()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [this, &called](const ContentAnalysisDelegate::Data& data,
                           ContentAnalysisDelegate::Result& result) {
@@ -1543,7 +1544,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
   // Start test.
   ContentAnalysisDelegate::CreateForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      browser()->GetTabStripModel()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [this, &called](const ContentAnalysisDelegate::Data& data,
                           ContentAnalysisDelegate::Result& result) {
@@ -1728,22 +1729,22 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
         DocMimeTypes());
 
   // Start test.
-  ContentAnalysisDelegate::CreateForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
-      base::BindLambdaForTesting(
-          [this, &called](const ContentAnalysisDelegate::Data& data,
-                          ContentAnalysisDelegate::Result& result) {
-            ASSERT_TRUE(result.text_results.empty());
-            ASSERT_EQ(result.paths_results.size(), 1u);
-            ASSERT_EQ(result.paths_results[0], expected_result());
+    ContentAnalysisDelegate::CreateForWebContents(
+        browser()->GetTabStripModel()->GetActiveWebContents(), std::move(data),
+        base::BindLambdaForTesting(
+            [this, &called](const ContentAnalysisDelegate::Data& data,
+                            ContentAnalysisDelegate::Result& result) {
+              ASSERT_TRUE(result.text_results.empty());
+              ASSERT_EQ(result.paths_results.size(), 1u);
+              ASSERT_EQ(result.paths_results[0], expected_result());
 
-            called = true;
-          }),
-      DeepScanAccessPoint::DRAG_AND_DROP);
+              called = true;
+            }),
+        DeepScanAccessPoint::DRAG_AND_DROP);
 
-  if (!expected_result()) {
-    delayed_delivery_run_loop.Run();
-  }
+    if (!expected_result()) {
+      delayed_delivery_run_loop.Run();
+    }
   run_loop.Run();
   EXPECT_TRUE(called);
 
@@ -1860,7 +1861,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
   // Start test.
   ContentAnalysisDelegate::CreateForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      browser()->GetTabStripModel()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [this, &called](const ContentAnalysisDelegate::Data& data,
                           ContentAnalysisDelegate::Result& result) {
@@ -1966,7 +1967,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateDefaultActionSettingBrowserTest,
 
   // Start test.
   ContentAnalysisDelegate::CreateForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      browser()->GetTabStripModel()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [this, &called](const ContentAnalysisDelegate::Data& data,
                           ContentAnalysisDelegate::Result& result) {
@@ -2089,7 +2090,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Paste) {
       browser()->GetProfile(), GURL(kTestUrl), &data, BULK_DATA_ENTRY));
 
   ContentAnalysisDelegate::CreateForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      browser()->GetTabStripModel()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [&quit_closure, &called](const ContentAnalysisDelegate::Data& data,
                                    ContentAnalysisDelegate::Result& result) {
@@ -2150,7 +2151,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Files) {
       browser()->GetProfile(), GURL(kTestUrl), &data, FILE_ATTACHED));
 
   ContentAnalysisDelegate::CreateForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      browser()->GetTabStripModel()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [&quit_closure, &called](const ContentAnalysisDelegate::Data& data,
                                    ContentAnalysisDelegate::Result& result) {
@@ -2284,7 +2285,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateFilesBrowserTest, FilesUpload) {
 
   // Start test.
   ContentAnalysisDelegate::CreateForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      browser()->GetTabStripModel()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting(
           [&called](const ContentAnalysisDelegate::Data& data,
                     ContentAnalysisDelegate::Result& result) {
@@ -2425,7 +2426,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateFilesBrowserTest,
 
   // Start test.
   ContentAnalysisDelegate::CreateForFilesInWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      browser()->GetTabStripModel()->GetActiveWebContents(), std::move(data),
       base::BindLambdaForTesting([&called](std::vector<base::FilePath> paths,
                                            std::vector<bool> result) {
         ASSERT_EQ(paths.size(), 3u);
@@ -2491,7 +2492,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, UaFOnWebContentsDestr
   base::RunLoop run_loop;
   base::RepeatingClosure quit_closure = run_loop.QuitClosure();
 
-  content::WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   ContentAnalysisDelegate::CreateForWebContents(
       contents, std::move(data),
@@ -2503,7 +2505,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, UaFOnWebContentsDestr
             // Close the WebContents during the callback execution.
             // This destroys the web contents, triggering ContentAnalysisDialogController::WebContentsDestroyed()
             // which deletes the ContentAnalysisDelegate instance we are currently inside.
-            browser()->tab_strip_model()->CloseWebContents(
+            browser()->GetTabStripModel()->CloseWebContents(
                 contents, TabCloseTypes::CLOSE_USER_GESTURE);
             quit_closure.Run();
           }),

@@ -27,8 +27,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -231,7 +231,7 @@ class DataControlsClipboardUtilsBrowserTest
   }
 
   content::WebContents* contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   content::ClipboardEndpoint CreateURLClipboardEndpoint(const char* url) {
@@ -3060,7 +3060,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       blink::PermissionType::CLIPBOARD_READ_WRITE,
       blink::mojom::PermissionStatus::GRANTED);
 
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Create a waiter to wait for the clipboard to be successfully written with
   // the OS-level replacement string.
@@ -3149,7 +3149,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       blink::PermissionType::CLIPBOARD_READ_WRITE,
       blink::mojom::PermissionStatus::GRANTED);
 
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
 
   base::test::TestFuture<void> future;
   // In the allowed scenario, we expect the original text (100 'a's) to make it
