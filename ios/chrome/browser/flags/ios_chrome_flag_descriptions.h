@@ -1744,6 +1744,12 @@ inline constexpr char kPrepopulatedEnginesShadowVariantsDescription[] =
     "Enables shadow variants for prepopulated engines resolution, allowing "
     "alternative engines to be resolved in specific regions.";
 
+inline constexpr char kPreventCobrowseOnAimSrpTapName[] =
+    "Prevent Cobrowse on AIM SRP Tap";
+inline constexpr char kPreventCobrowseOnAimSrpTapDescription[] =
+    "Prevents Cobrowse from automatically opening when a user taps a link on "
+    "an AIM SRP page.";
+
 inline constexpr char kPriceTrackingPromoName[] =
     "Enables price tracking notification promo card";
 inline constexpr char kPriceTrackingPromoDescription[] =

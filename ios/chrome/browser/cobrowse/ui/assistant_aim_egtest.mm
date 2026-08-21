@@ -161,6 +161,7 @@ id<GREYMatcher> CloseButton() {
   config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);
   config.features_disabled.push_back(kAssistantAimMinimizedState);
   config.features_disabled.push_back(kComposeboxServerSideState);
+  config.features_disabled.push_back(kPreventCobrowseOnAimSrpTap);
   // TODO(crbug.com/536079613): Re-enable kAppBarHideInFullscreen once these
   // tests are updated to support it.
   config.features_disabled.push_back(kAppBarHideInFullscreen);
@@ -198,11 +199,20 @@ id<GREYMatcher> CloseButton() {
       [[EarlGrey selectElementWithMatcher:CloseButton()]
           performAction:grey_tap()];
     }
+    // Also explicitly clear the session active map preference in case the
+    // UI tap failed or the async preference write didn't complete.
+    [ChromeEarlGrey clearUserPrefWithName:"ios.cobrowse.session_active_map"];
+    [ChromeEarlGrey commitPendingUserPrefsWrite];
     [ComposeboxAppInterface setAllToolsEnabled:NO];
     [ComposeboxAppInterface setFuseboxEligible:NO];
     [ComposeboxAppInterface setTabUploadAutoSucceed:NO];
   }];
   [super setUp];
+  // Clear the pref at the beginning of the test as well to ensure a clean
+  // slate, especially for tests that immediately relaunch the app.
+  [ChromeEarlGrey clearUserPrefWithName:"ios.cobrowse.session_active_map"];
+  [ChromeEarlGrey commitPendingUserPrefsWrite];
+
   ResetMakeHomeSurfaceOpenImmediately();
   [ComposeboxAppInterface enableAllTools];
   self.testServer->ServeFilesFromSourceDirectory(
@@ -1276,6 +1286,40 @@ id<GREYMatcher> CloseButton() {
 
   [[EarlGrey selectElementWithMatcher:CloseButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that when a new tab is opened from an eligible AIM page while no
+// session is active, and the prevent flag is enabled, the assistant is NOT
+// shown.
+- (void)testNewTabFromAimSRPDoesNotTriggerCobrowseWhenFlagEnabled {
+  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxServerSideState is enabled.");
+  }
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  // Remove from disabled list to allow enabling it.
+  std::erase(config.features_disabled, kPreventCobrowseOnAimSrpTap);
+  config.features_enabled.push_back(kPreventCobrowseOnAimSrpTap);
+  // Use CleanShutdown so that the preference cleared in setUp is
+  // synchronously flushed to disk before the app relaunches.
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Navigate the main browser to a simulated AIM URL.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(
+                              "localhost", "/search?udm=50&q=HelloWorld")];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Tap a link on the simulated AIM page that opens in a new tab.
+  [ChromeEarlGrey tapWebStateElementWithID:@"my_link"];
+
+  // Wait for the new tab to open.
+  [ChromeEarlGrey waitForMainTabCount:2];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Verify the assistant is NOT visible.
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
+      assertWithMatcher:grey_nil()];
 }
 
 @end

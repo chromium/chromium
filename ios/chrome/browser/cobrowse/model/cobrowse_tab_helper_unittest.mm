@@ -37,8 +37,9 @@
 class CobrowseTabHelperTest : public PlatformTest {
  public:
   CobrowseTabHelperTest() {
-    feature_list_.InitWithFeatures({kAimCobrowse, kAssistantContainer},
-                                   {kComposeboxAIMDisabled});
+    feature_list_.InitWithFeatures(
+        {kAimCobrowse, kAssistantContainer},
+        {kComposeboxAIMDisabled, kPreventCobrowseOnAimSrpTap});
 
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
@@ -192,6 +193,30 @@ TEST_F(CobrowseTabHelperTest, TriggerAssistantFromOpener) {
   context.SetUrl(next_url);
 
   OCMExpect([mock_scene_commands_handler() showAssistantInMinimizedState:YES]);
+
+  tab_helper->DidStartNavigation(web_state, &context);
+
+  [mock_scene_commands_handler() verify];
+}
+
+// Tests that showAssistant is NOT called when navigating in a new tab if the
+// opener was an AIM URL but the prevent flag is enabled.
+TEST_F(CobrowseTabHelperTest, NoTriggerFromOpenerWhenPreventFlagEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kPreventCobrowseOnAimSrpTap);
+
+  GURL aim_url("https://www.google.com/search?q=test&udm=50");
+  GURL next_url("https://www.example.com");
+
+  web::FakeWebState* opener = CreateAndInsertWebState(aim_url);
+  web::FakeWebState* web_state = CreateAndInsertWebStateWithOpener({}, opener);
+  web_state->WasShown();
+  CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
+
+  web::FakeNavigationContext context;
+  context.SetUrl(next_url);
+
+  [[mock_scene_commands_handler() reject] showAssistantInMinimizedState:YES];
 
   tab_helper->DidStartNavigation(web_state, &context);
 

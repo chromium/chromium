@@ -173,6 +173,10 @@ bool CobrowseBrowserAgent::CanShowAssistantForWebState(
     return true;
   }
 
+  if (base::FeatureList::IsEnabled(kPreventCobrowseOnAimSrpTap)) {
+    return false;
+  }
+
   WebStateList* web_state_list = browser_->GetWebStateList();
   const int index = web_state_list->GetIndexOfWebState(web_state);
   CHECK_NE(index, WebStateList::kInvalidIndex);

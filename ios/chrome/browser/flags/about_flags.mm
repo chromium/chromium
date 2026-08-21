@@ -2991,6 +2991,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kAimButtonRefactor,
                                     kAimButtonRefactorVariations,
                                     "AimButtonRefactor")},
+    {"prevent-cobrowse-on-aim-srp-tap",
+     flag_descriptions::kPreventCobrowseOnAimSrpTapName,
+     flag_descriptions::kPreventCobrowseOnAimSrpTapDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kPreventCobrowseOnAimSrpTap)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
