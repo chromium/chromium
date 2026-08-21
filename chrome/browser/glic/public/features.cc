@@ -251,6 +251,11 @@ BASE_FEATURE(kGlicEnableMojoJs, base::FEATURE_DISABLED_BY_DEFAULT);
 // Runs the glic client in a PrivilegedWebContents instead of a webview.
 // This is a work in progress. See b/534807813.
 BASE_FEATURE(kGlicNoWebview, base::FEATURE_DISABLED_BY_DEFAULT);
+// Whether to disallow webview communication directly with the glic host
+// (chrome/browser/resources/glic/glic_api_impl/host). When enabled, some
+// functionality implemented by glic's webview.ts is implemented instead by c++
+// code.
+BASE_FEATURE(kGlicDisconnectedWebview, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicShakeTrigger,
              "GlicShakeTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);

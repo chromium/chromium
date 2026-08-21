@@ -249,6 +249,8 @@ class Host : public GlicSharingManagerProvider {
 
   InstanceId GetInstanceId() const;
 
+  void OnGuestNavigationBlocked(
+      mojom::GuestPageType page_type = mojom::GuestPageType::kLoadError);
   WebUIContentsContainer* contents_container() { return contents_.get(); }
   std::unique_ptr<content::WebContents> ReleaseWebContents();
   void ReclaimWebContents(std::unique_ptr<content::WebContents> web_contents);

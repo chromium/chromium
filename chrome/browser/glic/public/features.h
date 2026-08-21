@@ -142,6 +142,7 @@ BASE_DECLARE_FEATURE(kGlicStructuredYieldMetadata);
 BASE_DECLARE_FEATURE(kGlicEnableMojoJs);
 
 BASE_DECLARE_FEATURE(kGlicNoWebview);
+BASE_DECLARE_FEATURE(kGlicDisconnectedWebview);
 
 BASE_DECLARE_FEATURE(kGlicShakeTrigger);
 

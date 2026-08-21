@@ -1,5 +1,6 @@
 include_rules = [
   "+components/glic",
+  "+components/origin_matcher",
 ]
 
 specific_include_rules = {

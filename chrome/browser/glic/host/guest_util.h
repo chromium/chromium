@@ -38,6 +38,8 @@ GURL GetGuestURL();
 url::Origin GetGuestOrigin();
 std::string GetGlicAllowedOrigins(bool is_internal_google_account = false);
 bool IsOriginAllowedGlicApi(const url::Origin& origin);
+bool IsGuestOriginAllowed(const url::Origin& origin);
+bool IsAdminBlockedUrl(const GURL& url);
 bool IsFrameAllowedGlicApi(content::RenderFrameHost& frame_host);
 
 // Returns the StoragePartitionConfig for the Glic webview storage partition.

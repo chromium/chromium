@@ -543,6 +543,10 @@ content::WebContents* Host::web_client_contents() const {
   return content::WebContents::FromRenderFrameHost(GetGuestMainFrame());
 }
 
+void Host::OnGuestNavigationBlocked(mojom::GuestPageType page_type) {
+  // TODO(harringtond): use this signal
+}
+
 bool Host::IsGlicWebUiHost(content::RenderProcessHost* host) const {
   if (handler_info_) {
     if (handler_info_->page_handler->webui_contents()
