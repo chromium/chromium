@@ -448,6 +448,23 @@ suite('TopToolbarTest', () => {
       assertFalse(!!pinButton);
     });
 
+    test('hides pin button when not cobrowse eligible', async () => {
+      topToolbar.isCobrowseEligible = false;
+      await microtasksFinished();
+
+      const moreButton =
+          topToolbar.shadowRoot.querySelector<CrIconButtonElement>(
+              '#overflowMenuButton');
+      assertTrue(!!moreButton);
+      moreButton.click();
+      await microtasksFinished();
+
+      const menu = topToolbar.$.overflowMenu.get();
+      const pinButton =
+          menu.shadowRoot.querySelector<HTMLElement>('#pinButton');
+      assertFalse(!!pinButton);
+    });
+
     test('handles pin button click', async () => {
       const moreButton =
           topToolbar.shadowRoot.querySelector<CrIconButtonElement>(
