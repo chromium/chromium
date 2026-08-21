@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event_matcher.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event.h"
@@ -89,12 +90,13 @@ bool ArcTracingEventMatcher::Match(const ArcTracingEvent& event) const {
 
 std::optional<int64_t> ArcTracingEventMatcher::ReadAndroidEventInt64(
     const ArcTracingEvent& event) const {
-  if (!name_prefix_match_ || (event.GetName().find(name_) != 0)) {
+  const std::string event_name = event.GetName();
+  if (!name_prefix_match_ || !event_name.starts_with(name_)) {
     return std::nullopt;
   }
 
   int64_t value = 0;
-  if (!base::StringToInt64(UNSAFE_TODO(event.GetName().data() + name_.size()),
+  if (!base::StringToInt64(std::string_view(event_name).substr(name_.size()),
                            &value)) {
     return std::nullopt;
   }

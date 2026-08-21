@@ -4,11 +4,10 @@
 
 #include "chrome/browser/ash/arc/tracing/arc_system_model.h"
 
-#include <cstdio>
 #include <optional>
 #include <set>
 
-#include "base/compiler_specific.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 
 namespace arc {
@@ -29,7 +28,7 @@ bool LoadThreads(const base::Value* value,
 
   for (const auto it : value->GetDict()) {
     int tid;
-    if (UNSAFE_TODO(sscanf(it.first.c_str(), "%d", &tid)) != 1) {
+    if (!base::StringToInt(it.first, &tid)) {
       return false;
     }
 

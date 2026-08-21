@@ -9,12 +9,12 @@
 #include <string_view>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/linux_util.h"
 #include "base/process/process_iterator.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -221,23 +221,23 @@ base::trace_event::TraceConfig GetTracingConfig() {
 std::string OverviewTracingHandler::GetModelBaseNameFromTitle(
     std::string_view title,
     base::Time timestamp) {
-  constexpr size_t kMaxNameSize = 32;
-  char normalized_name[kMaxNameSize];
-  size_t index = 0;
+  constexpr size_t kMaxNameSize = 31;
+  std::string normalized_name;
+  normalized_name.reserve(kMaxNameSize);
   for (char c : title) {
-    if (index == kMaxNameSize - 1) {
+    if (normalized_name.size() >= kMaxNameSize) {
       break;
     }
+
     c = base::ToLowerASCII(c);
     if (c == ' ') {
-      UNSAFE_TODO(normalized_name[index++]) = '_';
+      normalized_name.push_back('_');
       continue;
     }
     if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
-      UNSAFE_TODO(normalized_name[index++]) = c;
+      normalized_name.push_back(c);
     }
   }
-  UNSAFE_TODO(normalized_name[index]) = 0;
 
   base::Time::Exploded exploded;
   timestamp.LocalExplode(&exploded);
@@ -245,8 +245,8 @@ std::string OverviewTracingHandler::GetModelBaseNameFromTitle(
   std::string time_str = base::StringPrintf(
       "%04d-%02d-%02d_%02d-%02d-%02d", exploded.year, exploded.month,
       exploded.day_of_month, exploded.hour, exploded.minute, exploded.second);
-  return base::StringPrintf("overview_tracing_%s_%s.json", normalized_name,
-                            time_str.c_str());
+  return base::StrCat(
+      {"overview_tracing_", normalized_name, "_", time_str, ".json"});
 }
 
 OverviewTracingHandler::OverviewTracingHandler(
