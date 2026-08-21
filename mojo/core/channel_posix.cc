@@ -372,18 +372,34 @@ bool ChannelPosix::WriteNoLock(MessageView message_view) {
 
     ssize_t result;
     if (handles_written < num_handles) {
-      iovec iov = {const_cast<void*>(message_view.data()),
-                   message_view.data_num_bytes()};
       size_t num_handles_to_send =
           std::min(num_handles - handles_written, kMaxSendmsgHandles);
-      // TODO(crbug.com/439305148): Sending a large number of handles without
-      // a payload causes the message to be dropped.
-      CHECK(num_handles_to_send && (message_view.data_num_bytes() > 0));
+
+      // On Linux SOCK_STREAM sockets, sendmsg() must transmit at least 1 byte
+      // of non-ancillary data payload alongside SCM_RIGHTS file descriptors;
+      // otherwise, the ancillary data may be silently dropped by the kernel. If
+      // there are more handle batches left to send after this one, hold back at
+      // least 1 byte of data payload per future handle batch so subsequent
+      // sendmsg() calls have data bytes to pair with their descriptors.
+      size_t remaining_handles_after_this =
+          (num_handles - handles_written) - num_handles_to_send;
+      size_t num_future_batches =
+          (remaining_handles_after_this + kMaxSendmsgHandles - 1) /
+          kMaxSendmsgHandles;
+
+      if (message_view.data_num_bytes() < num_future_batches + 1) {
+        return false;
+      }
+      size_t bytes_to_send = message_view.data_num_bytes();
+      if (num_future_batches > 0) {
+        bytes_to_send -= num_future_batches;
+      }
+
+      iovec iov = {const_cast<void*>(message_view.data()), bytes_to_send};
       std::vector<base::ScopedFD> fds(num_handles_to_send);
       for (size_t i = 0; i < num_handles_to_send; ++i) {
         fds[i] = handles[i + handles_written].TakeHandle().TakeFD();
       }
-      // TODO: Handle lots of handles.
       result = SendmsgWithHandles(socket_.get(), &iov, 1, fds);
       if (result >= 0) {
 #if BUILDFLAG(IS_IOS)
