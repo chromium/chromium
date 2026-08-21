@@ -938,6 +938,24 @@ public class TabVerticalViewBinderUnitTest {
 
     @Test
     @SmallTest
+    public void testActionButtonTouchDelegate_Desktop() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        mItemView.layout(0, 0, 100, 32);
+        mCloseButton.layout(80, 8, 96, 24);
+
+        TabActionButtonData actionButtonData =
+                new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
+        mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
+        mModel.set(TabProperties.IS_SELECTED, true);
+
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
+        ShadowLooper.idleMainLooper();
+
+        assertNotNull(mItemView.getTouchDelegate());
+    }
+
+    @Test
+    @SmallTest
     public void testBindPinnedTab_FaviconAndClick() {
         ViewGroup pinnedView = inflatePinnedTabView();
         ImageView faviconView = pinnedView.findViewById(R.id.tab_favicon);

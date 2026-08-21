@@ -1834,7 +1834,10 @@ public class VerticalTabListCoordinator {
         float maxTabWidthDp = TabUiThemeUtil.getMaxTabStripTabWidthDp();
         int width = (int) (maxTabWidthDp * res.getDisplayMetrics().density);
         int height =
-                res.getDimensionPixelSize(R.dimen.vertical_tab_action_button_touch_target_height);
+                res.getDimensionPixelSize(
+                        VerticalTabUtils.isTablet(activity)
+                                ? R.dimen.vertical_tab_item_height_tablet
+                                : R.dimen.vertical_tab_item_height);
 
         groupHeaderView.setLayoutParams(new ViewGroup.MarginLayoutParams(width, height));
         groupHeaderView.measure(
