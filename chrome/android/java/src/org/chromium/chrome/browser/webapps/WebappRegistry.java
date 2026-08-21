@@ -143,6 +143,12 @@ public class WebappRegistry {
         getInstance().initStorages(null);
     }
 
+    public static void setInstanceForTests(WebappRegistry registry) {
+        var oldValue = Holder.sInstance;
+        Holder.sInstance = registry;
+        ResettersForTesting.register(() -> Holder.sInstance = oldValue);
+    }
+
     /**
      * Registers the existence of a web app, creates a SharedPreference entry for it, and runs the
      * supplied callback (if not null) on the UI thread with the resulting WebappDataStorage object.
@@ -173,6 +179,10 @@ public class WebappRegistry {
                 mStorages.put(webappId, storage);
                 mPreferences.edit().putStringSet(KEY_WEBAPP_SET, mStorages.keySet()).apply();
                 storage.updateLastUsedTime();
+                if (storage.getId() != null
+                        && storage.getId().startsWith(WebApkConstants.WEBAPK_ID_PREFIX)) {
+                    storage.resetWebApkUninstallTimestamp();
+                }
                 if (callback != null) callback.onWebappDataStorageRetrieved(storage);
 
                 String manifestId = storage.getWebApkManifestId();
@@ -256,6 +266,7 @@ public class WebappRegistry {
         for (WebappDataStorage storage : mStorages.values()) {
             String scope = getWebApkScopeFromStorage(storage);
             if (scope.isEmpty()) continue;
+            if (storage.getWebApkUninstallTimestamp() > 0) continue;
 
             Origin origin = Origin.create(scope);
             assumeNonNull(origin);

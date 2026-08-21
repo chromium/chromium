@@ -3034,9 +3034,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
 
       <!-- Add to Home screen strings -->
-      <message name="IDS_MENU_OPEN_WEBAPK" desc="Menu item for opening the installed WebAPK associated with the current PWA. [CHAR_LIMIT=27]">
-        Open <ph name="WEBAPK_NAME">%1$s<ex>Telegram</ex></ph>
-      </message>
+
       <message name="IDS_OPEN_WEBAPK_FAILED" desc="Opening of a WebAPK failed.">
         Could not open app
       </message>

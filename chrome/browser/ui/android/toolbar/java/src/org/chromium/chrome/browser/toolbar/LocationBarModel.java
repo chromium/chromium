@@ -175,6 +175,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     protected GURL mVisibleGurl = GURL.emptyGURL();
     protected String mFormattedFullUrl;
     protected String mUrlForDisplay;
+    private LocationBarDataProvider.@Nullable AppInstalledDelegate mAppInstalledDelegate;
 
     // notifyUrlChanged and notifySecurityStateChanged are usually called 3 times across a same
     // document navigation. The first call is usually necessary, which updates the UrlBar to reflect
@@ -1047,5 +1048,15 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     @Override
     public NonNullObservableSupplier<@ControlsPosition Integer> getToolbarPositionSupplier() {
         return mToolbarPositionSupplier;
+    }
+
+    public void setAppInstalledDelegate(LocationBarDataProvider.AppInstalledDelegate delegate) {
+        mAppInstalledDelegate = delegate;
+    }
+
+    @Override
+    public boolean currentUrlHasInstalledApp() {
+        GURL url = getCurrentGurl();
+        return mAppInstalledDelegate != null && mAppInstalledDelegate.isAppInstalled(url);
     }
 }

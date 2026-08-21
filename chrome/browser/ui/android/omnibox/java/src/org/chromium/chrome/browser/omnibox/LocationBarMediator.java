@@ -248,6 +248,7 @@ class LocationBarMediator
     private final @Nullable PageZoomIndicatorCoordinator mPageZoomIndicatorCoordinator;
     private final @Nullable LocationBarFocusScrimHandler mScrimHandler;
     private @Nullable Callback<Boolean> mScrimVisibilityObserver;
+
     private final boolean mIsTablet;
     private final BooleanSupplier mIsToolbarMicEnabledSupplier;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
@@ -2402,12 +2403,14 @@ class LocationBarMediator
      */
     @VisibleForTesting
     boolean shouldShowInstallButton() {
-        if (mUrlHasFocus || mIsUrlFocusChangeInProgress) return false;
+        if (mUrlHasFocus
+                || mIsUrlFocusChangeInProgress
+                || mLocationBarDataProvider.currentUrlHasInstalledApp()) {
+            return false;
+        }
 
         WebContents webContents = getWebContentsForCurrentTab();
-        if (webContents == null) return false;
-
-        return AppBannerManager.isProbablyPromotable(webContents);
+        return webContents != null && AppBannerManager.isProbablyPromotable(webContents);
     }
 
     /**
@@ -2922,6 +2925,7 @@ class LocationBarMediator
 
     @Override
     public void onUrlChanged(boolean isTabChanging) {
+        updateInstallButtonVisibility(/* notifyEmbedder= */ true);
         if (isTabChanging) {
             var currentSession = FuseboxSessionState.from(mLocationBarDataProvider);
             if (currentSession == null || !currentSession.isSessionActive()) {

@@ -632,6 +632,11 @@ public class WebappDataStorage {
         return mPreferences.getLong(KEY_WEBAPK_UNINSTALL_TIMESTAMP, 0);
     }
 
+    /** Resets the timestamp when the WebAPK is reinstalled. */
+    public void resetWebApkUninstallTimestamp() {
+        mPreferences.edit().remove(KEY_WEBAPK_UNINSTALL_TIMESTAMP).apply();
+    }
+
     /** Records the current time as the local registration time. */
     public void updateLocalRegistrationTimestamp() {
         mPreferences

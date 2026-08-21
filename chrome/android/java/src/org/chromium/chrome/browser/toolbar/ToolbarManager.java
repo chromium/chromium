@@ -234,6 +234,7 @@ import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
+import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -1372,6 +1373,16 @@ public class ToolbarManager
             mToolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
             mToolbarLayout.setBrowserControlsStateProvider(mBrowserControlsSizer);
             mLocationBar = locationBarCoordinator;
+            mLocationBarModel.setAppInstalledDelegate(
+                    (url) -> {
+                        org.chromium.components.embedder_support.util.Origin origin =
+                                org.chromium.components.embedder_support.util.Origin.create(
+                                        url.getSpec());
+                        return origin != null
+                                && WebappRegistry.getInstance()
+                                        .getOriginsWithInstalledApp()
+                                        .contains(origin.toString());
+                    });
             locationBarCoordinator.setOnStatusViewHiddenForPageInfoRemoval(
                     () -> {
                         if (mSiteControlsIphController == null) {

@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.browsing_data.UrlFilters;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.webapps.WebappRegistry.GetWebApkSpecificsImplSetWebappInfoForTesting;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
+import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.sync.protocol.WebApkSpecifics;
 import org.chromium.ui.util.ColorUtils;
 
@@ -1034,5 +1035,44 @@ public class WebappRegistryTest {
     private BrowserServicesIntentDataProvider createShortcutIntentDataProvider(final String url) {
         return WebappIntentDataProviderFactory.create(
                 ShortcutHelper.createWebappShortcutIntentForTesting("id", url));
+    }
+
+    @Test
+    @Feature({"Webapp"})
+    public void testGetOriginsWithInstalledAppFiltersUninstalledWebApks() throws Exception {
+        String webApkPackage = "test.webapk.package";
+        String startUrl = "https://example.com/start";
+        Origin startUrlOrigin = Origin.create(startUrl);
+
+        BrowserServicesIntentDataProvider intentDataProvider =
+                new WebApkIntentDataProviderBuilder(webApkPackage, startUrl).build();
+        registerWebapp(intentDataProvider);
+
+        // 1. Initially it should be in the set of origins with installed app.
+        assertTrue(
+                WebappRegistry.getInstance()
+                        .getOriginsWithInstalledApp()
+                        .contains(startUrlOrigin.toString()));
+
+        // 2. Mark as uninstalled.
+        String webappId = intentDataProvider.getWebappExtras().id;
+        WebappDataStorage storage = WebappRegistry.getInstance().getWebappDataStorage(webappId);
+        assertNotNull(storage);
+        storage.setWebApkUninstallTimestamp();
+
+        // 3. Verify it is now filtered out.
+        assertFalse(
+                WebappRegistry.getInstance()
+                        .getOriginsWithInstalledApp()
+                        .contains(startUrlOrigin.toString()));
+
+        // 4. Re-register (simulate re-install)
+        registerWebapp(intentDataProvider);
+
+        // 5. Verify it is back in the set (uninstall timestamp was reset)
+        assertTrue(
+                WebappRegistry.getInstance()
+                        .getOriginsWithInstalledApp()
+                        .contains(startUrlOrigin.toString()));
     }
 }

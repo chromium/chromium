@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.app.appmenu;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -94,8 +93,6 @@ import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.SubscriptionType;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.webapk.lib.client.WebApkValidator;
-import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -589,128 +586,37 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      * @return The add to homescreen list item.
      */
     protected ListItem buildAddToHomescreenListItem(Tab currentTab, boolean showIcon) {
-        ResolveInfo resolveInfo = queryWebApkResolveInfo(mContext, currentTab);
-
         String manifestId = WebappRegistry.getManifestIdOrUrl(currentTab);
 
-        String webApkPackageName =
-                WebappRegistry.getInstance().findWebApkWithManifestId(manifestId);
-        boolean isWebApkInstalled = false;
+        PropertyModel model =
+                AppMenuItemUtils.buildModelForStandardMenuItem(
+                        mContext,
+                        mAppMenuItemTheme,
+                        R.id.universal_install,
+                        R.string.menu_install_create_shortcut,
+                        showIcon ? R.drawable.ic_add_to_home_screen : 0,
+                        isMenuIconAtStart());
 
-        if (webApkPackageName != null) {
-            if (org.chromium.base.PackageUtils.isPackageInstalled(webApkPackageName)) {
-                isWebApkInstalled = true;
-            } else {
-                String webappId =
-                        org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils
-                                .getIdForWebApkPackage(webApkPackageName);
-                org.chromium.chrome.browser.webapps.WebappDataStorage storage =
-                        WebappRegistry.getInstance().getWebappDataStorage(webappId);
-                if (storage != null) {
-                    long registrationTime = storage.getLocalRegistrationTimestamp();
-                    long latencyWindow = 5000; // 5 seconds
-                    if (org.chromium.base.TimeUtils.currentTimeMillis() - registrationTime
-                            < latencyWindow) {
-                        isWebApkInstalled = true;
-                    }
-                }
-            }
+        boolean isPending = WebappRegistry.getInstance().isWebApkPending(manifestId);
+        if (isPending) {
+            model.set(AppMenuItemProperties.ICON_COLOR_RES, R.color.default_icon_color_disabled);
+
+            String titleText = mContext.getString(R.string.menu_install_create_shortcut);
+            SpannableString spannableTitle = new SpannableString(titleText);
+            spannableTitle.setSpan(
+                    new ForegroundColorSpan(
+                            mContext.getColor(R.color.default_text_color_disabled_list)),
+                    0,
+                    titleText.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            model.set(AppMenuItemProperties.TITLE, spannableTitle);
         }
 
-        // When Universal Install is active, we only show this menu item if we are browsing
-        // the root page of an already installed app.
-        boolean openWebApkItemVisible =
-                (resolveInfo != null || isWebApkInstalled)
-                        && "/".equals(currentTab.getUrl().getPath());
-
-        if (openWebApkItemVisible) {
-            String appName = null;
-            if (resolveInfo != null) {
-                appName = resolveInfo.loadLabel(mContext.getPackageManager()).toString();
-            } else if (webApkPackageName != null) {
-                try {
-                    android.content.pm.PackageManager pm = mContext.getPackageManager();
-                    appName =
-                            pm.getApplicationLabel(pm.getApplicationInfo(webApkPackageName, 0))
-                                    .toString();
-                } catch (android.content.pm.PackageManager.NameNotFoundException e) {
-                }
-            }
-            if (appName == null) {
-                appName = currentTab.getTitle();
-            }
-            return new ListItem(
-                    showIcon
-                            ? AppMenuHandler.AppMenuItemType.STANDARD
-                            : AppMenuHandler.AppMenuItemType.STANDARD_NO_ICON,
-                    AppMenuItemUtils.buildBaseModelForTextItem(
-                                    mAppMenuItemTheme, R.id.open_webapk_id, isMenuIconAtStart())
-                            .with(
-                                    AppMenuItemProperties.TITLE,
-                                    mContext.getString(R.string.menu_open_webapk, appName))
-                            .with(
-                                    AppMenuItemProperties.ICON,
-                                    showIcon
-                                            ? AppCompatResources.getDrawable(
-                                                    mContext, R.drawable.ic_open_webapk)
-                                            : null)
-                            .build());
-        } else {
-            PropertyModel model =
-                    AppMenuItemUtils.buildModelForStandardMenuItem(
-                            mContext,
-                            mAppMenuItemTheme,
-                            R.id.universal_install,
-                            R.string.menu_install_create_shortcut,
-                            showIcon ? R.drawable.ic_add_to_home_screen : 0,
-                            isMenuIconAtStart());
-
-            boolean isPending = WebappRegistry.getInstance().isWebApkPending(manifestId);
-            if (isPending) {
-                model.set(
-                        AppMenuItemProperties.ICON_COLOR_RES, R.color.default_icon_color_disabled);
-
-                String titleText = mContext.getString(R.string.menu_install_create_shortcut);
-                SpannableString spannableTitle = new SpannableString(titleText);
-                spannableTitle.setSpan(
-                        new ForegroundColorSpan(
-                                mContext.getColor(R.color.default_text_color_disabled_list)),
-                        0,
-                        titleText.length(),
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                model.set(AppMenuItemProperties.TITLE, spannableTitle);
-            }
-
-            return new ListItem(
-                    showIcon
-                            ? AppMenuHandler.AppMenuItemType.STANDARD
-                            : AppMenuHandler.AppMenuItemType.STANDARD_NO_ICON,
-                    model);
-        }
-    }
-
-    public static @Nullable ResolveInfo queryWebApkResolveInfo(Context context, Tab currentTab) {
-        String manifestId =
-                AppBannerManager.maybeGetManifestId(assumeNonNull(currentTab.getWebContents()));
-        String expectedPackage = WebappRegistry.getInstance().findWebApkWithManifestId(manifestId);
-        ResolveInfo resolveInfo =
-                WebApkValidator.queryFirstWebApkResolveInfo(
-                        context, currentTab.getUrl().getSpec(), expectedPackage);
-
-        if (resolveInfo != null
-                && expectedPackage != null
-                && !expectedPackage.equals(resolveInfo.activityInfo.packageName)) {
-            resolveInfo = null;
-        }
-
-        if (resolveInfo == null) {
-            // If a WebAPK with matching manifestId can't be found, fallback to query without it.
-            resolveInfo =
-                    WebApkValidator.queryFirstWebApkResolveInfo(
-                            context, currentTab.getUrl().getSpec());
-        }
-
-        return resolveInfo;
+        return new ListItem(
+                showIcon
+                        ? AppMenuHandler.AppMenuItemType.STANDARD
+                        : AppMenuHandler.AppMenuItemType.STANDARD_NO_ICON,
+                model);
     }
 
     @Override

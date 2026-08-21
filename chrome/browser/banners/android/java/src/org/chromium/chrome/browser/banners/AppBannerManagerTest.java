@@ -46,6 +46,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
@@ -882,5 +883,56 @@ public class AppBannerManagerTest {
         // Navigate and check that the dialog was dismissed.
         mTabbedActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         waitUntilNoDialogsShowing(tab);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AppBanners"})
+    // Only run the test on Android desktop because the omnibox button shows up only on the
+    // desktop form factor.
+    @Restriction(DeviceFormFactor.DESKTOP)
+    public void testInstallButtonSuppressedWhenAppInstalled() throws Exception {
+        ChromeActivityTestRule<? extends ChromeActivity> rule =
+                mTabbedActivityTestRule.getActivityTestRule();
+
+        // 1. Verify button is shown when app is NOT installed.
+        String url =
+                WebappTestPage.getTestUrlWithManifest(
+                        mTestServer, WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL);
+        rule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        navigateToUrlAndWaitForBannerManager(rule, url);
+
+        // Verify that the install button is visible.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View installButton =
+                            rule.getActivity()
+                                    .findViewById(org.chromium.chrome.R.id.install_button);
+                    Criteria.checkThat(installButton, Matchers.notNullValue());
+                    Criteria.checkThat(installButton.getVisibility(), Matchers.is(View.VISIBLE));
+                });
+
+        // 2. Set the delegate to always return true (app is installed).
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    rule.getActivity()
+                            .getToolbarManager()
+                            .getLocationBarModelForTesting()
+                            .setAppInstalledDelegate((url2) -> true);
+                });
+
+        // Navigate again to trigger the check with the new delegate.
+        rule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        navigateToUrlAndWaitForBannerManager(rule, url);
+
+        // Verify that the install button is now GONE.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View installButton =
+                            rule.getActivity()
+                                    .findViewById(org.chromium.chrome.R.id.install_button);
+                    Criteria.checkThat(installButton, Matchers.notNullValue());
+                    Criteria.checkThat(installButton.getVisibility(), Matchers.is(View.GONE));
+                });
     }
 }

@@ -72,6 +72,11 @@ public interface LocationBarDataProvider {
         default void onTabCrashed() {}
     }
 
+    /** Delegate to resolve whether an app is installed for a URL. */
+    interface AppInstalledDelegate {
+        boolean isAppInstalled(GURL url);
+    }
+
     /** Adds an observer of changes to LocationBarDataProvider's data. */
     void addObserver(Observer observer);
 
@@ -189,4 +194,9 @@ public interface LocationBarDataProvider {
 
     /** Returns the user-selected placement of the Toolbar. */
     NonNullObservableSupplier<@ControlsPosition Integer> getToolbarPositionSupplier();
+
+    /** Returns whether the current URL has an installed app. */
+    default boolean currentUrlHasInstalledApp() {
+        return false;
+    }
 }

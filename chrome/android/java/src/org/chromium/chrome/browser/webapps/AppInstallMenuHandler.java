@@ -8,17 +8,17 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ResolveInfo;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
+import org.chromium.chrome.browser.open_in_app.OpenInAppDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.AddToHomescreenCoordinator;
 import org.chromium.components.webapps.InstallTrigger;
@@ -94,10 +94,12 @@ public class AppInstallMenuHandler {
                     AppMenuVerbiage.APP_MENU_OPTION_INSTALL);
         }
 
-        @Nullable ResolveInfo resolveInfo =
-                AppMenuPropertiesDelegateImpl.queryWebApkResolveInfo(activity, currentTab);
+        Origin currentTabOrigin = Origin.create(currentTab.getUrl().getSpec());
         boolean webAppInstalled =
-                resolveInfo != null && resolveInfo.activityInfo.packageName != null;
+                currentTabOrigin != null
+                        && WebappRegistry.getInstance()
+                                .getOriginsWithInstalledApp()
+                                .contains(currentTabOrigin.toString());
 
         PwaUniversalInstallBottomSheetCoordinator pwaUniversalInstallBottomSheetCoordinator =
                 new PwaUniversalInstallBottomSheetCoordinator(
@@ -179,6 +181,15 @@ public class AppInstallMenuHandler {
      * @return True after the launch attempt.
      */
     public static boolean doOpenWebApk(Activity activity, Tab currentTab) {
+        OpenInAppDelegate delegate = OpenInAppDelegate.from(currentTab);
+        if (delegate != null) {
+            OpenInAppDelegate.OpenInAppInfo openInAppInfo = delegate.getCurrentOpenInAppInfo();
+            if (openInAppInfo != null && openInAppInfo.action != null) {
+                openInAppInfo.action.run();
+                return true;
+            }
+        }
+
         Context context = ContextUtils.getApplicationContext();
         @Nullable String packageName = null;
         @Nullable WebContents webContents = currentTab.getWebContents();

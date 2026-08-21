@@ -3339,6 +3339,23 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    public void testInstallButtonSuppressedWhenAppInstalled() {
+        mTabletMediator.onFinishNativeInitialization();
+
+        // 1. If no app is installed, shouldShowInstallButton() can be true
+        doReturn(true).when(mAppBannerManagerJni).isProbablyPromotable(mWebContents);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(mTabletMediator.shouldShowInstallButton());
+
+        // 2. Mock the data provider to return true for installed app
+        doReturn(true).when(mLocationBarDataProvider).currentUrlHasInstalledApp();
+        mTabletMediator.onUrlChanged(/* isTabChanging= */ false);
+
+        // 3. Verify shouldShowInstallButton() is now false
+        assertFalse(mTabletMediator.shouldShowInstallButton());
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testZoomButtonToolbarWidthConsumer_notVisible() {
         int buttonWidth =
