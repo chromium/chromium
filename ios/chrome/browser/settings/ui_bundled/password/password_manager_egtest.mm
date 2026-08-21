@@ -2851,6 +2851,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
       performAction:grey_replaceText(@"2")];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   TapToolbarSelectButton();
 
