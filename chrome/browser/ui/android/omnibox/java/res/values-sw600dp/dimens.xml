@@ -5,28 +5,24 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <resources>
-    <dimen name="location_bar_status_icon_margin">12dp</dimen>
-    <dimen name="omnibox_verbose_text_negative_start_margin">-12dp</dimen>
-    <dimen name="omnibox_carousel_suggestion_minimum_item_spacing">16dp</dimen>
-
-    <!-- URL bar -->
-    <dimen name="url_bar_vertical_padding">
-        @dimen/modern_toolbar_background_vertical_offset
-    </dimen>
-    <!-- go/keep-sorted start -->
+    <!-- go/keep-sorted start group_start_regex=<dimen -->
     <dimen name="incognito_badge_lateral_padding_end">0dp</dimen>
     <dimen name="incognito_badge_lateral_padding_start">8dp</dimen>
     <dimen name="location_bar_action_icon_width">48dp</dimen>
     <dimen name="location_bar_height">48dp</dimen>
     <dimen name="location_bar_icon_margin_end">0dp</dimen>
     <dimen name="location_bar_icon_width">48dp</dimen>
+    <dimen name="location_bar_status_icon_margin">12dp</dimen>
     <dimen name="location_bar_status_icon_width">48dp</dimen>
+    <dimen name="omnibox_carousel_suggestion_minimum_item_spacing">16dp</dimen>
     <dimen name="omnibox_min_space_above_window_bottom">84dp</dimen>
     <dimen name="omnibox_suggestion_icon_area_size">40dp</dimen>
     <dimen name="omnibox_suggestion_list_toolbar_overlap">2dp</dimen>
-    <!-- go/keep-sorted end -->
-
-    <!-- Button highlight dimensions. -->
-    <dimen name="status_view_verbose_highlight_width">102dp</dimen>
+    <dimen name="omnibox_verbose_text_negative_start_margin">-12dp</dimen>
     <dimen name="status_view_verbose_highlight_height">32dp</dimen>
+    <dimen name="status_view_verbose_highlight_width">102dp</dimen>
+    <dimen name="url_bar_vertical_padding">
+        @dimen/modern_toolbar_background_vertical_offset
+    </dimen>
+    <!-- go/keep-sorted end -->
 </resources>
