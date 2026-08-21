@@ -101,8 +101,8 @@ class EchePresenceManagerTest : public testing::Test {
     num_stop_monitor_calls_ = 0;
   }
 
-  base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_;
 
  private:
   std::unique_ptr<FakeEcheConnector> fake_eche_connector_;

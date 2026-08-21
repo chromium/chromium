@@ -35,9 +35,9 @@ class TimeOfDayUtilsTest : public testing::Test {
     dlcservice_client_.set_install_root_path(kTestDlcRootPath);
   }
 
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   FakeDlcserviceClient dlcservice_client_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class TimeOfDayUtilsMetricsTest
