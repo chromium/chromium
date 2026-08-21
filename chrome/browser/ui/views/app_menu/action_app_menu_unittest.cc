@@ -10,9 +10,11 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
+#include "chrome/grit/generated_resources.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -104,4 +106,35 @@ TEST_F(ActionAppMenuTest, PopulatesRecentTabsSubmenu) {
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
 }
+
+TEST_F(ActionAppMenuTest, PopulatesTextAndIconOverrides) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  // Verify text override is applied (kActionNewIncognitoWindow).
+  views::MenuItemView* incognito_item =
+      root->GetMenuItemByID(kActionNewIncognitoWindow);
+  ASSERT_TRUE(incognito_item);
+  EXPECT_EQ(incognito_item->title(), l10n_util::GetStringUTF16(IDS_INCOGNITO));
+
+  // Verify icon override is applied (kActionNewTab).
+  views::MenuItemView* new_tab_item = root->GetMenuItemByID(kActionNewTab);
+  ASSERT_TRUE(new_tab_item);
+  EXPECT_FALSE(new_tab_item->GetIcon().IsEmpty());
+
+  // Verify an item without text override inherits delegate title.
+  views::MenuItemView* window_item = root->GetMenuItemByID(kActionNewWindow);
+  ASSERT_TRUE(window_item);
+  EXPECT_EQ(window_item->title(), u"New Window");
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
 }  // namespace

@@ -2704,6 +2704,14 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionExit)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_EXIT)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_EXIT)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kExitToAppIcon
+                                                : kExitMenuOldIcon,
+              ui::kColorIcon))
           .Build());
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
@@ -3765,6 +3773,14 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionOptions)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_SETTINGS)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_SETTINGS)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kSettingsIcon
+                                                : kSettingsMenuOldIcon,
+              ui::kColorIcon))
           .Build());
 
   root_action_item_->AddChild(
@@ -3951,6 +3967,14 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .SetActionId(kActionShowGoogleLensShortcut)
           .Build());
 
+  const gfx::VectorIcon& lens_icon =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      vector_icons::kGoogleLensMonochromeLogoIcon;
+#else
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kSearchIcon
+          : vector_icons::kSearchChromeRefreshOldIcon;
+#endif
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
@@ -3963,6 +3987,11 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionShowLensOverlayFromAppMenu)
+          .SetText(l10n_util::GetStringUTF16(
+              lens::GetLensOverlayEntrypointLabelAltIds()))
+          .SetTooltipText(l10n_util::GetStringUTF16(
+              lens::GetLensOverlayEntrypointLabelAltIds()))
+          .SetImage(ui::ImageModel::FromVectorIcon(lens_icon, ui::kColorIcon))
           .Build());
 
   root_action_item_->AddChild(

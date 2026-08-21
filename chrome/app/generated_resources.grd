@@ -1456,6 +1456,9 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_NEW_INCOGNITO_TAB" desc="The text label of a menu item for opening a new incognito tab">
             New Incognito &amp;tab
           </message>
+          <message name="IDS_INCOGNITO" desc="The text label for the Incognito button in the block header section of the App Menu">
+            Incognito
+          </message>
           <message name="IDS_SHOW_AS_TAB" desc="The text label for the Show As tab menu item">
             &amp;Show as tab
           </message>
@@ -1600,6 +1603,9 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_NEW_INCOGNITO_TAB" desc="In Title Case: The text label of a menu item for opening a new incognito tab">
             New Incognito &amp;Tab
+          </message>
+          <message name="IDS_INCOGNITO" desc="The text label for the Incognito button in the block header section of the App Menu">
+            Incognito
           </message>
           <message name="IDS_SHOW_AS_TAB" desc="In Title Case: The text label for the Show As tab menu item">
             &amp;Show As Tab

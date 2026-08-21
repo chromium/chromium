@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
 #include "ui/actions/actions.h"
 #include "ui/base/class_property.h"
+#include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 
 class RecentTabsDynamicMenu;
@@ -32,11 +33,15 @@ class ActionAppMenuManager {
 
   static const ui::ClassProperty<DisplayType>* const kDisplayTypeKey;
   static const ui::ClassProperty<ui::ColorId>* const kContainerColorKey;
+  static const ui::ClassProperty<std::u16string*>* const kTextOverrideKey;
+  static const ui::ClassProperty<ui::ImageModel*>* const kIconOverrideKey;
 
   static std::unique_ptr<actions::IndirectActionItem> CreateIndirectActionItem(
       actions::ActionId action_id,
       DisplayType display_type,
-      std::optional<ui::ColorId> container_color);
+      std::optional<ui::ColorId> container_color = std::nullopt,
+      std::optional<std::u16string> text_override = std::nullopt,
+      std::optional<ui::ImageModel> icon_override = std::nullopt);
 
   static actions::ActionItem* GetAppMenuRoot(
       BrowserWindowInterface* browser_window_interface);
@@ -56,7 +61,7 @@ class ActionAppMenuManager {
   std::unique_ptr<AppMenuSectionActionItem> CreateSectionActionItem(
       std::u16string text,
       DisplayType display_type,
-      std::optional<ui::ColorId> container_color);
+      std::optional<ui::ColorId> container_color = std::nullopt);
 
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
   std::unique_ptr<RecentTabsDynamicMenu> recent_tabs_menu_;
@@ -64,5 +69,6 @@ class ActionAppMenuManager {
 };
 
 DECLARE_UI_CLASS_PROPERTY_TYPE(ActionAppMenuManager::DisplayType)
+DECLARE_UI_CLASS_PROPERTY_TYPE(ui::ImageModel*)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_MANAGER_H_

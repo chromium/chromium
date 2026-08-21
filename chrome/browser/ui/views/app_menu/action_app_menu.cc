@@ -15,6 +15,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/actions/actions.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/color/color_id.h"
@@ -154,6 +155,16 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
       action_view_controller_.CreateActionViewRelationship(
           menu_item, child_ptr->GetAsWeakPtr());
       command_to_action_map_[command_id] = child_ptr;
+
+      if (std::u16string* text_override = children[i]->GetProperty(
+              ActionAppMenuManager::kTextOverrideKey)) {
+        menu_item->SetTitle(*text_override);
+      }
+
+      if (ui::ImageModel* icon_override = children[i]->GetProperty(
+              ActionAppMenuManager::kIconOverrideKey)) {
+        menu_item->SetIcon(*icon_override);
+      }
 
       // Set the border radius depending on the position a menu item has in
       // its section.

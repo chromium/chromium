@@ -47,20 +47,31 @@ void ActionAppMenuTestBase::SetUp() {
                        .Build());
   };
 
+  add_action(kActionNewTab, u"New Tab");
+  add_action(kActionNewWindow, u"New Window");
+  add_action(kActionNewIncognitoWindow, u"New Incognito Window");
   add_action(kActionShowPasswordManager, u"Password Manager");
   add_action(kActionShowHistory, u"History");
   add_action(kActionRecentTabsSubmenu, u"Recent Tabs");
+  add_action(kActionShowDownloads, u"Downloads");
   add_action(kActionManageExtensions, u"Extensions");
   add_action(kActionBookmarksSubmenu, u"Bookmarks and Lists");
   add_action(kActionBookmarkThisTab, u"Bookmark This Tab");
   add_action(kActionBookmarkAllTabs, u"Bookmark All Tabs");
+  add_action(kActionClearBrowsingData, u"Clear Browsing Data");
   add_action(kActionPrint, u"Print");
+  add_action(kActionOpenGlic, u"Open Glic");
+  add_action(kActionShowLensOverlayFromAppMenu, u"Lens Overlay");
+  add_action(kActionShowTranslate, u"Translate");
   add_action(kActionFind, u"Find");
   add_action(kActionRecentTabsSeeDeviceTabs, u"See Device Tabs");
   add_action(kActionRecentTabsLoginForDeviceTabs, u"Login for Device Tabs");
   add_action(kActionSidePanelShowHistoryCluster, u"History Clusters");
   add_action(kActionSidePanelShowTabsFromOtherDevices,
              u"Tabs from Other Devices");
+  add_action(kActionOptions, u"Settings");
+  add_action(kActionHelpSubmenu, u"Help");
+  add_action(kActionExit, u"Exit");
 
   actions::ActionManager::Get().AddAction(std::move(root));
 

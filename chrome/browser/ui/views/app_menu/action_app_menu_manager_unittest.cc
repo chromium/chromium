@@ -25,7 +25,7 @@ TEST_F(ActionAppMenuManagerTest, ProxySyncsWithDelegateAndInvokes) {
   actions::ActionItem* root = menu_manager.GetAppMenuRoot();
   ASSERT_NE(root, nullptr);
   actions::ActionItem* passwords_proxy = root->GetChildren()
-                                             .children()[0]
+                                             .children()[3]
                                              ->GetChildren()
                                              .children()[0]
                                              ->GetActionItem();

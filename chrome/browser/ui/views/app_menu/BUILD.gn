@@ -46,6 +46,7 @@ source_set("impl") {
     "//chrome/browser:command_updater_impl",
     "//chrome/browser:global_features",
     "//chrome/browser/favicon",
+    "//chrome/browser/glic",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search",
     "//chrome/browser/search_engines",
