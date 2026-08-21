@@ -30,6 +30,8 @@
 #include "components/autofill/core/browser/integrators/at_memory/mock_at_memory_query_service.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -237,6 +239,13 @@ IN_PROC_BROWSER_TEST_P(AtMemoryInteractiveUiTest, MAYBE_TriggerAndFill) {
            sel.removeAllRanges();
            sel.addRange(range);
          })"));
+  // Wait for the selection to be processed.
+  content::RunUntilInputProcessed(
+      GetWebContents()->GetRenderWidgetHostView()->GetRenderWidgetHost());
+
+  // The input events below will not be processed until the end of the current
+  // paint, so we need to wait for that to happen before sending the key events.
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(GetWebContents());
 
   // Type '@'.
   ASSERT_TRUE(SendKeyToPageAndWait(ui::DomKey::FromCharacter('@'),
