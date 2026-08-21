@@ -902,8 +902,7 @@ void ContextualTasksUiService::OnThreadLinkClicked(
     tabs::TabInterface* existing_tab = nullptr;
     existing_tab = MaybeFocusExistingOpenTab(url, tab_list, task_id);
     if (!existing_tab) {
-      if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
-          task_id.is_valid()) {
+      if (task_id.is_valid()) {
         AssociateWebContentsToTask(new_contents_ptr, task_id);
       }
 
@@ -1054,10 +1053,7 @@ void ContextualTasksUiService::OnTextFinderLookupComplete(
     new_contents->GetController().LoadURLWithParams(
         content::NavigationController::LoadURLParams(url));
 
-    if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
-        task_id.is_valid()) {
-      AssociateWebContentsToTask(new_contents_ptr, task_id);
-    }
+    AssociateWebContentsToTask(new_contents_ptr, task_id);
 
     TabListInterface* tab_list = TabListInterface::From(browser.get());
     // Insert the WebContents after the current active.

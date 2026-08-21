@@ -699,12 +699,6 @@ ContextualTasksSidePanelCoordinator::GetWebContentsCacheItemForWebContents(
 void ContextualTasksSidePanelCoordinator::OnTabAdded(TabListInterface& tab_list,
                                                      tabs::TabInterface* tab,
                                                      int index) {
-  // Do not associate newly opened child tabs with the contextual tasks session
-  // when the feature is disabled.
-  if (!base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
-    return;
-  }
-
   content::WebContents* content = tab->GetContents();
   // If the new tab is already associated with a task, do nothing.
   if (contextual_tasks_service_->GetContextualTaskForTab(
