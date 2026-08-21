@@ -1,0 +1,29 @@
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
+  const {dp, page} = await testRunner.startBlank(
+      'Tests receiving static router rules from the service worker.');
+
+  async function waitForServiceWorkerInstallation() {
+    let versions = [];
+    do {
+      const result = await dp.ServiceWorker.onceWorkerVersionUpdated();
+      versions = result.params.versions;
+    } while (versions.length == 0 || versions[0].status !== 'installed');
+    return versions;
+  }
+
+  await dp.Runtime.enable();
+
+  const versionsPromise = waitForServiceWorkerInstallation();
+  await dp.ServiceWorker.enable();
+  await page.navigate('resources/service-worker-with-static-router.html');
+
+  const versions = await versionsPromise;
+
+  // Log the entire typedRouterRules list received in the version update.
+  testRunner.log(versions[0].typedRouterRules);
+
+  // Log the individual rule IDs to verify ID assignment and ordering.
+  testRunner.log(versions[0].typedRouterRules[0].id);
+  testRunner.log(versions[0].typedRouterRules[1].id);
+  testRunner.completeTest();
+});

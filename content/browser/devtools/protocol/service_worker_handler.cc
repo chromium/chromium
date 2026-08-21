@@ -10,10 +10,12 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/background_sync/background_sync_context_impl.h"
 #include "content/browser/background_sync/background_sync_manager.h"
+#include "content/browser/devtools/protocol/service_worker.h"
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
@@ -31,6 +33,8 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "services/network/public/cpp/request_destination.h"
+#include "services/network/public/cpp/request_mode.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom.h"
@@ -38,9 +42,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace content {
-
-namespace protocol {
+namespace content::protocol {
 
 namespace {
 
@@ -78,6 +80,114 @@ const std::string GetVersionStatusString(
     default:
       NOTREACHED();
   }
+}
+
+std::unique_ptr<protocol::ServiceWorker::ServiceWorkerRouterSource>
+ConvertRouterSource(const blink::ServiceWorkerRouterSource& source) {
+  switch (source.type) {
+    case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
+      return protocol::ServiceWorker::ServiceWorkerRouterSource::Create()
+          .SetType(protocol::ServiceWorker::ServiceWorkerRouterSourceTypeEnum::
+                       Network)
+          .Build();
+    case network::mojom::ServiceWorkerRouterSourceType::
+        kRaceNetworkAndFetchEvent:
+      return protocol::ServiceWorker::ServiceWorkerRouterSource::Create()
+          .SetType(protocol::ServiceWorker::ServiceWorkerRouterSourceTypeEnum::
+                       RaceNetworkAndFetchHandler)
+          .Build();
+    case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
+      return protocol::ServiceWorker::ServiceWorkerRouterSource::Create()
+          .SetType(protocol::ServiceWorker::ServiceWorkerRouterSourceTypeEnum::
+                       FetchEvent)
+          .Build();
+    case network::mojom::ServiceWorkerRouterSourceType::kCache:
+      if (source.cache_source && source.cache_source->cache_name) {
+        return protocol::ServiceWorker::ServiceWorkerRouterSource::Create()
+            .SetType(protocol::ServiceWorker::
+                         ServiceWorkerRouterSourceTypeEnum::SourceDict)
+            .SetSourceDict(
+                protocol::ServiceWorker::ServiceWorkerRouterSourceDict::Create()
+                    .SetCacheName(*source.cache_source->cache_name)
+                    .Build())
+            .Build();
+      } else {
+        return protocol::ServiceWorker::ServiceWorkerRouterSource::Create()
+            .SetType(protocol::ServiceWorker::
+                         ServiceWorkerRouterSourceTypeEnum::Cache)
+            .Build();
+      }
+    case network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndCache:
+      return protocol::ServiceWorker::ServiceWorkerRouterSource::Create()
+          .SetType(protocol::ServiceWorker::ServiceWorkerRouterSourceTypeEnum::
+                       RaceNetworkAndCache)
+          .Build();
+  }
+  NOTREACHED();
+}
+
+// Converts blink internal RouterCondition type to that of CDP.
+// `c` shall not have nested conditions(`or` and `not`) because they are not yet
+// supported on CDP.
+// TODO(crbug.com/540469610): Support nested conditions.
+std::unique_ptr<protocol::ServiceWorker::ServiceWorkerRouterCondition>
+ConvertRouterCondition(const blink::ServiceWorkerRouterCondition& c) {
+  auto condition =
+      protocol::ServiceWorker::ServiceWorkerRouterCondition::Create().Build();
+  const auto& [url_pattern, request, running_status, or_condition,
+               not_condition] = c.get();
+  DCHECK(!or_condition.has_value() && !not_condition.has_value())
+      << "nested conditions are not yet supported.";
+  if (url_pattern) {
+    condition->SetUrlPattern(SafeURLPatternToJsonString(*url_pattern));
+  }
+  if (request) {
+    if (request->method) {
+      condition->SetRequestMethod(*request->method);
+    }
+    if (request->mode) {
+      condition->SetRequestMode(network::RequestModeToString(*request->mode));
+    }
+    if (request->destination) {
+      condition->SetRequestDestination(
+          network::RequestDestinationToString(*request->destination));
+    }
+  }
+  if (running_status) {
+    switch (running_status->status) {
+      case blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum::
+          kRunning:
+        condition->SetRunningStatus(
+            protocol::ServiceWorker::ServiceWorkerVersionRunningStatusEnum::
+                Running);
+        break;
+      case blink::ServiceWorkerRouterRunningStatusCondition::RunningStatusEnum::
+          kNotRunning:
+        condition->SetRunningStatus(
+            protocol::ServiceWorker::ServiceWorkerVersionRunningStatusEnum::
+                Stopped);
+        break;
+    }
+  }
+  return condition;
+}
+
+std::unique_ptr<
+    protocol::Array<protocol::ServiceWorker::ServiceWorkerRouterRule>>
+ConvertTypedRouterRules(
+    const std::vector<content::ServiceWorkerRouterRule>& rules) {
+  auto typed_router_rules = std::make_unique<
+      protocol::Array<protocol::ServiceWorker::ServiceWorkerRouterRule>>();
+  for (const auto& rule : rules) {
+    auto protocol_rule =
+        protocol::ServiceWorker::ServiceWorkerRouterRule::Create()
+            .SetCondition(ConvertRouterCondition(rule.condition))
+            .SetSource(ConvertRouterSource(rule.source))
+            .SetId(rule.id)
+            .Build();
+    typed_router_rules->emplace_back(std::move(protocol_rule));
+  }
+  return typed_router_rules;
 }
 
 Response CreateDomainNotEnabledErrorResponse() {
@@ -414,6 +524,10 @@ void ServiceWorkerHandler::OnWorkerVersionUpdated(
     if (version.router_rules) {
       version_value->SetRouterRules(*version.router_rules);
     }
+    if (!version.typed_router_rules.empty()) {
+      version_value->SetTypedRouterRules(
+          ConvertTypedRouterRules(version.typed_router_rules));
+    }
     result->emplace_back(std::move(version_value));
   }
   frontend_->WorkerVersionUpdated(std::move(result));
@@ -439,5 +553,4 @@ void ServiceWorkerHandler::ClearForceUpdate() {
     context_->SetForceUpdateOnPageLoad(false);
 }
 
-}  // namespace protocol
-}  // namespace content
+}  // namespace content::protocol

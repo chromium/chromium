@@ -5123,5 +5123,25 @@
       "--disable-blink-features=ElementCanvasTransform"
     ],
     "expires": "Jan 1, 2027"
+  },
+  {
+    "prefix": "static-routing-api-devtools-improvement",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "http/tests/inspector-protocol/service-worker/tentative/static-router/receive-typed-router-rules-on-update.js"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=ServiceWorkerStaticRouterTypedRulesForDevTools"
+    ],
+    "owners": [
+      "yyanagisawa@chromium.org",
+      "tnak@chromium.org"
+    ],
+    "expires": "Jul 1, 2027"
   }
 ]

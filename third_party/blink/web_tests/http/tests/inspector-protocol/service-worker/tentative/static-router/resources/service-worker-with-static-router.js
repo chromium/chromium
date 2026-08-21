@@ -1,6 +1,8 @@
 'use strict';
 
 self.addEventListener('install', async e => {
+  // TODO(crbug.com/548227769): Add test coverage for
+  // race-network-and-fetch-handler, cache, and named cache sources.
   await e.addRoutes([
     {condition: {requestMethod: 'POST'}, source: 'network'},
     {condition: {urlPattern: '/**/*.txt??*'}, source: 'fetch-event'}

@@ -32,6 +32,52 @@ experimental domain ServiceWorker
       activated
       redundant
 
+  # Mostly corresponds to `RouterCondition` in ServiceWorker spec
+  # (https://www.w3.org/TR/service-workers/#dictdef-routercondition) while this
+  # currently lacks support for the nested conditions ("or" and "not").
+  # TODO(crbug.com/540469610): Support recursive conditions.
+  type ServiceWorkerRouterCondition extends object
+    properties
+      # Plain text, or JSON serialization of URLPatternInit or URLPattern
+      optional string urlPattern
+      optional string requestMethod
+      optional string requestMode
+      optional string requestDestination
+      optional ServiceWorkerVersionRunningStatus runningStatus
+
+  type ServiceWorkerRouterSourceType extends string
+    enum
+      # https://www.w3.org/TR/service-workers/#enumdef-routersourceenum
+      cache
+      fetchEvent
+      network
+      raceNetworkAndFetchHandler
+      raceNetworkAndCache
+      # Tag for https://www.w3.org/TR/service-workers/#dictdef-routersourcedict
+      sourceDict
+
+  # https://www.w3.org/TR/service-workers/#dictdef-routersourcedict
+  type ServiceWorkerRouterSourceDict extends object
+    properties
+      string cacheName
+
+  # Corresponds to `RouterSource` in the spec while the representation is different as follows.
+  # (https://www.w3.org/TR/service-workers/#typedefdef-routersource)
+  # - `RouterSourceEnum`: `type` equals `cache`, `sourceDict` is null.
+  # - `RouterSourceDict`: `type` equals `sourceDict`, `sourceDict` has valid value.
+  type ServiceWorkerRouterSource extends object
+    properties
+      ServiceWorkerRouterSourceType type
+      # Non-empty iff `type` equals "sourceDict".
+      optional ServiceWorkerRouterSourceDict sourceDict
+
+  type ServiceWorkerRouterRule extends object
+    properties
+      ServiceWorkerRouterCondition condition
+      ServiceWorkerRouterSource source
+      # Rule ID assigned by the browser. Unique within each ServiceWorkerVersion.
+      integer id
+
   # ServiceWorker version.
   type ServiceWorkerVersion extends object
     properties
@@ -47,7 +93,11 @@ experimental domain ServiceWorker
       optional number scriptResponseTime
       optional array of Target.TargetID controlledClients
       optional Target.TargetID targetId
+      # Migration to `typedRouterRules` is in progress. The browser sends either
+      # `routerRules` or `typedRouterRules`.
+      # TODO(crbug.com/540469610): Remove `routerRules` after the migration.
       optional string routerRules
+      optional array of ServiceWorkerRouterRule typedRouterRules
 
   # ServiceWorker error message.
   type ServiceWorkerErrorMessage extends object

@@ -1,0 +1,24 @@
+Tests receiving static router rules from the service worker.
+[
+    [0] : {
+        condition : {
+            requestMethod : POST
+        }
+        id : <number>
+        source : {
+            type : network
+        }
+    }
+    [1] : {
+        condition : {
+            urlPattern : {"hash":"*","hostname":"127.0.0.1","password":"*","pathname":"/**/*.txt","port":"8000","protocol":"http","search":"*","username":"*"}
+        }
+        id : <number>
+        source : {
+            type : fetchEvent
+        }
+    }
+]
+1
+2
+
