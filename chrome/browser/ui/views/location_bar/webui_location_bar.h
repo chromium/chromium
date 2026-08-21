@@ -187,6 +187,8 @@ class WebUILocationBar : public LocationBar,
   // pushes it to the WebUI.
   void UpdateLhsChipsState(bool icon_known = false);
 
+  void UpdatePageActions(content::WebContents* contents);
+
   // Updates the state of the content setting models (e.g. camera, microphone,
   // sensors) to reflect status on the current page. Pushes the updated
   // right-hand side content setting states to the WebUI. Returns true if the

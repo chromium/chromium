@@ -220,6 +220,7 @@ void WebUILocationBar::OnThemeChanged() {
   }
   // Location icon cares about color scheme.
   UpdateLhsChipsState();
+  UpdatePageActions(/*contents=*/nullptr);
 }
 
 void WebUILocationBar::HandleContextMenu(
@@ -505,14 +506,7 @@ void WebUILocationBar::Update(content::WebContents* contents) {
   }
 
   UpdateContentSettingModels();
-
-  content::WebContents* active_contents = contents;
-  if (!active_contents && browser_) {
-    active_contents = browser_->tab_strip_model()->GetActiveWebContents();
-  }
-  page_action_control_.UpdateController(active_contents);
-  page_action_control_.SetShouldHidePageActions(ShouldHideRHSIcons());
-
+  UpdatePageActions(contents);
   OnChanged();
 }
 
@@ -602,6 +596,15 @@ void WebUILocationBar::UpdateLhsChipsState(bool icon_known) {
   }
 
   last_update_security_level_ = model->GetSecurityLevel();
+}
+
+void WebUILocationBar::UpdatePageActions(content::WebContents* contents) {
+  content::WebContents* active_contents = contents;
+  if (!active_contents && browser_) {
+    active_contents = browser_->tab_strip_model()->GetActiveWebContents();
+  }
+  page_action_control_.UpdateController(active_contents);
+  page_action_control_.SetShouldHidePageActions(ShouldHideRHSIcons());
 }
 
 ui::ImageModel WebUILocationBar::UpdateLocationIcon(

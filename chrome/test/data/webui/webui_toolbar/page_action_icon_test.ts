@@ -4,6 +4,7 @@
 
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
+import {hexColorToSkColor} from '//resources/js/color_utils.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -131,6 +132,7 @@ suite('PageActionIconTest', function() {
       shouldShowChip: false,
       shouldAnimateChipIn: false,
       shouldAnimateChipOut: false,
+      backgroundColorOverride: null,
     };
   }
 
@@ -150,6 +152,57 @@ suite('PageActionIconTest', function() {
     const button = icon.$.button;
     assertEquals('Translate this page', button.tooltip);
     assertEquals('Translate', button.ariaLabel);
+  });
+
+  test('Background color', async function() {
+    const button = icon.$.button;
+    const actualButton = button.$.button;
+    icon.style.setProperty(
+        '--color-omnibox-icon-background-tonal', 'rgb(255, 0, 0)');
+
+    // Default: transparent.
+    const style = actualButton.computedStyleMap();
+    assertEquals('rgba(0, 0, 0, 0)', style.get('background-color')?.toString());
+
+    // Show a text chip, should now use --color-omnibox-icon-background-tonal
+    icon.state = {
+      ...createBaseState(),
+      text: 'Inexplicably expanded bookmark chip',
+      shouldShowChip: true,
+    };
+    await microtasksFinished();
+
+    assertEquals('rgb(255, 0, 0)', style.get('background-color')?.toString());
+
+    // Custom color, no chip.
+    icon.state = {
+      ...createBaseState(),
+      backgroundColorOverride: hexColorToSkColor('#00ff00'),
+    };
+    await microtasksFinished();
+
+    assertEquals('rgb(0, 255, 0)', style.get('background-color')?.toString());
+
+    // Custom color, with chip -- still using custom color.
+    icon.state = {
+      ...createBaseState(),
+      text: 'Inexplicably expanded bookmark chip',
+      shouldShowChip: true,
+      backgroundColorOverride: hexColorToSkColor('#0000ff'),
+    };
+    await microtasksFinished();
+
+    assertEquals('rgb(0, 0, 255)', style.get('background-color')?.toString());
+
+    // And back to no custom color again.
+    icon.state = {
+      ...createBaseState(),
+      text: 'Inexplicably expanded bookmark chip',
+      shouldShowChip: true,
+    };
+    await microtasksFinished();
+
+    assertEquals('rgb(255, 0, 0)', style.get('background-color')?.toString());
   });
 
   test('Render without accessible name', async function() {

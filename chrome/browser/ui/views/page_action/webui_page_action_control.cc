@@ -212,12 +212,15 @@ WebUIPageActionControl::WebUIPageActionDelegate::GetState() {
   state->accessible_name = model->GetAccessibleName();
   state->tooltip_text = model->GetTooltipText();
   ui::ImageModel image_model = model->GetImage();
+
+  // `view` may be null in unit tests.
+  auto* view = owner_->webui_delegate_->GetView();
+  const ui::ColorProvider* color_provider =
+      view ? view->GetColorProvider() : nullptr;
   if (model->GetColorSource() ==
           page_actions::PageActionColorSource::kCascadingAccent &&
       image_model.IsVectorIcon()) {
     const auto& vector_icon_model = image_model.GetVectorIcon();
-    const ui::ColorProvider* color_provider =
-        owner_->webui_delegate_->GetView()->GetColorProvider();
     const SkColor default_color =
         color_provider->GetColor(ui::kColorFocusableBorderFocused);
     // Page actions are displayed on the toolbar, so `kColorToolbar` is used as
@@ -241,6 +244,13 @@ WebUIPageActionControl::WebUIPageActionDelegate::GetState() {
   state->should_show_chip = model->ShouldShowSuggestionChip();
   state->should_animate_chip_in = model->GetShouldAnimateChipIn();
   state->should_animate_chip_out = model->GetShouldAnimateChipOut();
+
+  std::optional<ui::ColorId> override_color_id =
+      model->GetOverrideBackgroundColorId();
+  if (override_color_id.has_value()) {
+    state->background_color_override =
+        color_provider->GetColor(*override_color_id);
+  }
   return state;
 }
 

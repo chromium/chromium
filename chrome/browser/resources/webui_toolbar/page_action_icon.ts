@@ -5,6 +5,7 @@
 import '/shared/icon_from_table.js';
 import './toolbar_chip_button.js';
 
+import {skColorToRgba} from '//resources/js/color_utils.js';
 import {ensureTransitionEndEvent} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -47,6 +48,9 @@ export class PageActionIconElement extends CrLitElement {
       // tabs through the Omnibox suggestions, keeping real focus in the text
       // field).
       forceFocusRing: {type: Boolean},
+
+      // Some additional style = attributes for the chip element.
+      chipStyleOverride_: {type: String, state: true},
     };
   }
 
@@ -59,9 +63,12 @@ export class PageActionIconElement extends CrLitElement {
     shouldShowChip: false,
     shouldAnimateChipIn: false,
     shouldAnimateChipOut: false,
+    backgroundColorOverride: null,
   };
 
   accessor forceFocusRing: boolean = false;
+
+  protected accessor chipStyleOverride_: string|null = null;
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
@@ -76,6 +83,18 @@ export class PageActionIconElement extends CrLitElement {
   protected shouldAnimate_(): boolean {
     return this.state.shouldShowChip ? this.state.shouldAnimateChipIn :
                                        this.state.shouldAnimateChipOut;
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>): void {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('state')) {
+      if (this.state.backgroundColorOverride) {
+        this.chipStyleOverride_ = `--toolbar-chip-bg-color: ${
+            skColorToRgba(this.state.backgroundColorOverride)};`;
+      } else {
+        this.chipStyleOverride_ = null;
+      }
+    }
   }
 
   override updated(changedProperties: PropertyValues<this>): void {

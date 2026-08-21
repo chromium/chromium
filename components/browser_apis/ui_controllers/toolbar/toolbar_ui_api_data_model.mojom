@@ -10,6 +10,7 @@ import "components/browser_apis/ui_controllers/toolbar/icon_handle.mojom";
 import "components/content_settings/core/common/content_settings_types.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "skia/public/mojom/skcolor.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/range/mojom/range.mojom";
 
@@ -452,6 +453,9 @@ struct PageActionState {
   // Represents whether the chip should animate when collapsing, as opposed to
   // snapping shut instantly. Has no effect if `should_show_chip` is true.
   bool should_animate_chip_out;
+
+  // Overrides background color from its usual behavior.
+  skia.mojom.SkColor? background_color_override;
 
   // TODO: crbug.com/501449027 - Add remaining fields.
 };
