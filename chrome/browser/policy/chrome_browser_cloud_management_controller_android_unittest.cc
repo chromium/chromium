@@ -9,6 +9,7 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "components/enterprise/browser/reporting/saas_usage/saas_usage_reporting_delegate_factory.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/enterprise/client_certificates/core/features.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
@@ -174,6 +175,13 @@ TEST_F(ChromeBrowserCloudManagementControllerAndroidTest,
           kEnableClientCertificateProvisioningOnAndroid);
   auto service = delegate.CreateCertificateProvisioningService();
   EXPECT_EQ(service, nullptr);
+}
+
+TEST_F(ChromeBrowserCloudManagementControllerAndroidTest,
+       GetSaasUsageReportingDelegateFactory) {
+  ChromeBrowserCloudManagementControllerAndroid delegate;
+  auto factory = delegate.GetSaasUsageReportingDelegateFactory();
+  EXPECT_NE(factory, nullptr);
 }
 
 }  // namespace policy
