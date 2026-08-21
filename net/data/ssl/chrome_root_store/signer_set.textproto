@@ -1,7 +1,7 @@
 timestamp: {
-  seconds: 1785430800
+  seconds: 1787162400
 }
-version: "2.0.5"
+version: "2.0.6"
 compatibility_version: 1
 operators: {
   name: "Cloudflare"
@@ -14,6 +14,14 @@ operators: {
 operators: {
   name: "mtcs.dev Test Mirror Operator"
   email: "mtc-mirror@mtcs.dev"
+}
+operators: {
+  name: "TrustAsia"
+  email: "mtc@trustasia.com"
+}
+operators: {
+  name: "Geomys"
+  email: "mtc@geomys.org"
 }
 issuers: {
   friendly_name: "cloudflare_experiment_shard3"
@@ -64,6 +72,58 @@ issuers: {
   min_log_number: 1
   signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
 }
+issuers: {
+  friendly_name: "TrustAsia Test CA 1"
+  base_id: "44494.3.1.1"
+  state_history: {
+    state: STATE_USABLE
+    state_start: {
+      seconds: 1787162400
+    }
+  }
+  operator_history: {
+    name: "TrustAsia"
+    operator_start: {
+      seconds: 1787162400
+    }
+  }
+  base_url: "https://log.mtc-staging.trustasia.com/44494.3.1.1/1"
+  type: SIGNER_TYPE_ISSUER
+  realm: REALM_UNTRUSTED_VALIDATION_ONLY
+  max_cert_lifetime: {
+    seconds: 604800
+  }
+  key_sha256: "d02f2326a08aa339b1d73e4ef2a4384126c17841e5551461e6e27806e829f05d"
+  crs_root_id: 110
+  min_log_number: 1
+  signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
+}
+issuers: {
+  friendly_name: "TrustAsia Test CA 2"
+  base_id: "44494.3.1.2"
+  state_history: {
+    state: STATE_USABLE
+    state_start: {
+      seconds: 1787162400
+    }
+  }
+  operator_history: {
+    name: "TrustAsia"
+    operator_start: {
+      seconds: 1787162400
+    }
+  }
+  base_url: "https://log.mtc-staging.trustasia.com/44494.3.1.2/1"
+  type: SIGNER_TYPE_ISSUER
+  realm: REALM_UNTRUSTED_VALIDATION_ONLY
+  max_cert_lifetime: {
+    seconds: 4060800
+  }
+  key_sha256: "fe15c094d961f12afb97c0261cb994a411cb2abc6c027dd388679bfd4ae471da"
+  crs_root_id: 111
+  min_log_number: 1
+  signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
+}
 mirrors: {
   friendly_name: "mtcs.dev Test Mirror 1"
   base_id: "11129.11.99.2"
@@ -83,5 +143,47 @@ mirrors: {
   type: SIGNER_TYPE_MIRROR
   realm: REALM_UNTRUSTED_VALIDATION_ONLY
   key_sha256: "4f0be97b157bae43f89d88afded1b5182b7774f112161cc73def7438afb37ea4"
+  signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
+}
+mirrors: {
+  friendly_name: "TrustAsia Test Mirror 1"
+  base_id: "44494.3.2.1"
+  state_history: {
+    state: STATE_USABLE
+    state_start: {
+      seconds: 1787162400
+    }
+  }
+  operator_history: {
+    name: "TrustAsia"
+    operator_start: {
+      seconds: 1787162400
+    }
+  }
+  base_url: "https://mirror.mtc-staging.trustasia.com/monitoring"
+  type: SIGNER_TYPE_MIRROR
+  realm: REALM_UNTRUSTED_VALIDATION_ONLY
+  key_sha256: "14ec38a7d66589bd60d24aa88194c2ab8ebbf89c817b8ec12802c4bd5de2d6f1"
+  signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
+}
+mirrors: {
+  friendly_name: "Geomys Test Mirror 1"
+  base_id: "66252.128.0"
+  state_history: {
+    state: STATE_USABLE
+    state_start: {
+      seconds: 1787162400
+    }
+  }
+  operator_history: {
+    name: "Geomys"
+    operator_start: {
+      seconds: 1787162400
+    }
+  }
+  base_url: "https://witness.navigli.skylight.geomys.org/mirror/"
+  type: SIGNER_TYPE_MIRROR
+  realm: REALM_UNTRUSTED_VALIDATION_ONLY
+  key_sha256: "ed9b91b23c895a940807816c3c1bca85c28d62959bc349e2b571d2c3ea9e4cce"
   signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
 }
