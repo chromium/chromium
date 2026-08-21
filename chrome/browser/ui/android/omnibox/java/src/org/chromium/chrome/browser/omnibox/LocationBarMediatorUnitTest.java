@@ -4494,11 +4494,21 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
-    public void testOnTabChanged_inactiveSession_focusesCurrentTab() {
+    public void testOnTabChanged_activeInput_focusesCurrentTab() {
+        mMediator.beginInput(mSessionState.getAutocompleteInput());
+        mSessionState.deactivate();
         assertFalse(mSessionState.isSessionActive());
         mMediator.onTabChanged(null);
 
         verify(mTabView).requestFocus();
+    }
+
+    @Test
+    public void testOnTabChanged_inactiveInput_doesNotFocusCurrentTab() {
+        assertFalse(mSessionState.isSessionActive());
+        mMediator.onTabChanged(null);
+
+        verify(mTabView, never()).requestFocus();
     }
 
     @Test
