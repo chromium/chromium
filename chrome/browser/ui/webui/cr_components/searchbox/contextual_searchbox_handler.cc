@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -54,6 +55,7 @@
 #include "ui/gfx/geometry/size.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/base64.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
@@ -86,6 +88,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/google/core/common/google_util.h"
 #include "components/lens/contextual_input.h"
+#include "components/lens/lens_bitmap_processing.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -205,18 +208,53 @@ content::WebContents* GetActiveTabWebContents(
 #if !BUILDFLAG(IS_ANDROID)
 constexpr char kScreenshotFileName[] = "Screenshot.png";
 constexpr char kScreenshotMimeType[] = "image/png";
+constexpr int kMaxImageDimension = 2048;
+constexpr int kMaxThumbnailDimension = 120;
+
+SkBitmap DownscaleScreenshotBitmapIfNeeded(const SkBitmap& bitmap,
+                                           int max_dimension) {
+  if (bitmap.empty() ||
+      (bitmap.width() <= max_dimension && bitmap.height() <= max_dimension)) {
+    return bitmap;
+  }
+
+  gfx::Size scaled_size = lens::GetPreferredSize(
+      gfx::Size(bitmap.width(), bitmap.height()), max_dimension, max_dimension);
+  return skia::ImageOperations::Resize(
+      bitmap, skia::ImageOperations::ResizeMethod::RESIZE_GOOD,
+      scaled_size.width(), scaled_size.height());
+}
 
 ContextualSearchboxHandler::ProcessedScreenshot ProcessScreenshotInBackground(
     const SkBitmap& bitmap) {
   ContextualSearchboxHandler::ProcessedScreenshot result;
+  SkBitmap final_bitmap =
+      DownscaleScreenshotBitmapIfNeeded(bitmap, kMaxImageDimension);
+
   std::optional<std::vector<uint8_t>> png_bytes =
-      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap,
+      gfx::PNGCodec::EncodeBGRASkBitmap(final_bitmap,
                                         /*discard_transparency=*/false);
-  if (png_bytes) {
-    result.png_bytes = std::move(*png_bytes);
+  if (!png_bytes) {
+    return result;
   }
-  // TODO(crbug.com/532197177): Populate result.thumbnail_data_url with the
-  // optimized base64 thumbnail URL.
+  result.png_bytes = std::move(*png_bytes);
+
+  if (final_bitmap.width() <= kMaxThumbnailDimension &&
+      final_bitmap.height() <= kMaxThumbnailDimension) {
+    result.thumbnail_data_url = base::StrCat(
+        {"data:image/png;base64,", base::Base64Encode(result.png_bytes)});
+    return result;
+  }
+
+  SkBitmap thumbnail_bitmap =
+      DownscaleScreenshotBitmapIfNeeded(final_bitmap, kMaxThumbnailDimension);
+  std::optional<std::vector<uint8_t>> thumbnail_png_bytes =
+      gfx::PNGCodec::EncodeBGRASkBitmap(thumbnail_bitmap,
+                                        /*discard_transparency=*/false);
+  if (thumbnail_png_bytes) {
+    result.thumbnail_data_url = base::StrCat(
+        {"data:image/png;base64,", base::Base64Encode(*thumbnail_png_bytes)});
+  }
   return result;
 }
 #endif
