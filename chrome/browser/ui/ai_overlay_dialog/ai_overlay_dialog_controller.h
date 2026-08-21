@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_AI_OVERLAY_DIALOG_AI_OVERLAY_DIALOG_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AI_OVERLAY_DIALOG_AI_OVERLAY_DIALOG_CONTROLLER_H_
 
-#include <memory>
-
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -16,11 +14,9 @@
 #include "ui/base/class_property.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
-#if defined(TOOLKIT_VIEWS)
 namespace views {
 class WebView;
 }  // namespace views
-#endif
 
 class HostContentSettingsMap;
 
@@ -91,11 +87,7 @@ class AiOverlayDialogController : public content::WebContentsDelegate {
   void RemoveObserver(Observer* observer);
 
  private:
-#if defined(TOOLKIT_VIEWS)
   views::WebView* GetActiveOverlayWebView() const;
-#else
-  content::WebContents* GetActiveOverlayWebContents() const;
-#endif
 
   raw_ptr<BrowserWindowInterface> browser_;
 
@@ -111,10 +103,6 @@ class AiOverlayDialogController : public content::WebContentsDelegate {
   absl::flat_hash_map<std::string, std::string> remembered_notes_;
 
   base::ObserverList<Observer> observers_;
-
-#if !defined(TOOLKIT_VIEWS)
-  std::unique_ptr<content::WebContents> android_shell_web_contents_;
-#endif
 };
 
 extern const ::ui::ClassProperty<bool>* const kActionAiOverlayActiveKey;

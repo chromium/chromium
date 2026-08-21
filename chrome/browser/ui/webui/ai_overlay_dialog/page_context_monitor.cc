@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/ai_overlay_dialog/page_context_monitor.h"
 
 #include "base/files/file_util.h"
-#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/page_content_annotations/page_content_screenshot_service_factory.h"
@@ -193,12 +192,10 @@ std::string FindUrlForDomNodeId(
 PageContextMonitor::PageContextMonitor(BrowserWindowInterface& window,
                                        AiOverlayDialogPageHandler& page_handler)
     : window_(window), page_handler_(page_handler) {
-#if !BUILDFLAG(IS_ANDROID)
   active_tab_subscription_ =
       window.RegisterActiveTabDidChange(base::BindRepeating(
           &PageContextMonitor::OnActiveTabChanged, base::Unretained(this)));
   OnActiveTabChanged(&window);
-#endif
 }
 
 PageContextMonitor::~PageContextMonitor() = default;
@@ -218,9 +215,6 @@ void PageContextMonitor::DidStopLoading() {
 }
 
 void PageContextMonitor::OnActiveTabChanged(BrowserWindowInterface* window) {
-#if BUILDFLAG(IS_ANDROID)
-  NOTREACHED();
-#else
   CHECK_EQ(window, &window_.get());
 
   tabs::TabInterface* active_tab = window_->GetActiveTabInterface();
@@ -234,7 +228,6 @@ void PageContextMonitor::OnActiveTabChanged(BrowserWindowInterface* window) {
   page_handler_->DidChangePage(web_contents()->GetLastCommittedURL(),
                                web_contents()->GetTitle(), std::nullopt);
   StartNewFetch();
-#endif
 }
 
 void PageContextMonitor::StartNewFetch() {
