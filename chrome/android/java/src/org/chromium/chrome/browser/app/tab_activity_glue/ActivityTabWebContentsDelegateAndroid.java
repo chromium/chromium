@@ -292,13 +292,29 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                             mActivity, webContents, pictureInPictureWindowOptions);
         }
 
+        boolean isGrouped = mTab.getTabGroupId() != null;
+        @TabLaunchType int tabLaunchType;
+        if (disposition == WindowOpenDisposition.NEW_BACKGROUND_TAB) {
+            tabLaunchType =
+                    isGrouped
+                            ? TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
+                            : TabLaunchType.FROM_LONGPRESS_BACKGROUND;
+        } else if (disposition == WindowOpenDisposition.NEW_FOREGROUND_TAB) {
+            tabLaunchType =
+                    isGrouped
+                            ? TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP
+                            : TabLaunchType.FROM_LONGPRESS_FOREGROUND;
+        } else {
+            tabLaunchType = TabLaunchType.FROM_LONGPRESS_FOREGROUND;
+        }
+
         final CompletableFuture<Boolean> addTabToModel = new CompletableFuture<Boolean>();
         final Tab tab =
                 tabCreator.createTabWithWebContents(
                         mTab,
                         /* shouldPin= */ false,
                         webContents,
-                        TabLaunchType.FROM_LONGPRESS_FOREGROUND,
+                        tabLaunchType,
                         targetUrl,
                         addTabToModel);
         if (tab == null) return false;
@@ -352,6 +368,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
             // Set notify to false so snackbar to undo the grouping will not be shown.
             if (tabModel != null
                     && tabModel.isTabInTabGroup(sourceTab)
+                    && !Objects.equals(newTab.getTabGroupId(), sourceTab.getTabGroupId())
                     && tabModel.isTabModelRestored()) {
                 tabModel.mergeListOfTabsToGroup(
                         Arrays.asList(newTab),
