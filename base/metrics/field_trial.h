@@ -183,7 +183,7 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   // AppendGroup can be called after calls to group() but it should be avoided
   // if possible. Doing so may be confusing since it won't change the group
   // selection.
-  void AppendGroup(const std::string& name, Probability group_probability);
+  void AppendGroup(std::string_view name, Probability group_probability);
 
   // Return the name of the FieldTrial (excluding the group name).
   const std::string& trial_name() const LIFETIME_BOUND { return trial_name_; }
@@ -316,7 +316,7 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   void SetTrialRegistered();
 
   // Sets the chosen group name and number.
-  void SetGroupChoice(const std::string& group_name, int number);
+  void SetGroupChoice(std::string_view group_name, int number);
 
   // Ensures that a group is chosen, if it hasn't yet been. The field trial
   // might yet be disabled, so this call will *not* notify observers of the

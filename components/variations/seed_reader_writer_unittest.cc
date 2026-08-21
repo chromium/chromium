@@ -264,7 +264,7 @@ class SeedReaderWriterGroupTest
       public TestWithParam<SeedReaderWriterTestParams> {
  public:
   SeedReaderWriterGroupTest() {
-    SetUpSeedFileTrial(std::string(GetParam().field_trial_group));
+    SetUpSeedFileTrial(GetParam().field_trial_group);
     std::string_view seed_data_field = GetParam().seed_fields_prefs.seed;
     histogram_suffix_ = seed_data_field.contains("Safe") ? "Safe" : "Latest";
   }

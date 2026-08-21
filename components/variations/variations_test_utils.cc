@@ -418,7 +418,7 @@ bool ContainsTrialAndGroupName(
   return false;
 }
 
-void SetUpSeedFileTrial(std::string group_name) {
+void SetUpSeedFileTrial(std::string_view group_name) {
   if (group_name.empty()) {
     return;
   }

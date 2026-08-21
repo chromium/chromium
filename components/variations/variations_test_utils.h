@@ -183,7 +183,7 @@ bool ContainsTrialAndGroupName(
     std::string_view group_name);
 
 // Sets up the seed file experiment where `group_name` is the active group.
-void SetUpSeedFileTrial(std::string group_name);
+void SetUpSeedFileTrial(std::string_view group_name);
 
 // Returns true if there are no adjacent elements (a, b) when iterating over
 // `container` such that a >= b.

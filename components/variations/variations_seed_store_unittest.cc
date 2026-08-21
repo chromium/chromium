@@ -419,7 +419,7 @@ class SeedStoreGroupTestBase : public ::testing::Test {
     temp_seed_file_path_ = temp_dir_.GetPath().Append(kSeedFilename);
 
     VariationsSeedStore::RegisterPrefs(prefs_.registry());
-    SetUpSeedFileTrial(std::string(field_trial_group));
+    SetUpSeedFileTrial(field_trial_group);
 
     const std::string_view seed_data_field = seed_fields_prefs.seed;
     std::string histogram_suffix =
