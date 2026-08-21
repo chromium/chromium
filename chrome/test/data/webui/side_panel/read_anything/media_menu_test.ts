@@ -6,17 +6,18 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import type {MediaMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {DEFAULT_SETTINGS, ReadAnythingSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {DEFAULT_SETTINGS, ReadAnythingSettingsChange, ToolbarEvent, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {assertTestSettingsAreNotDefaultSettings, mockMetrics, stubAnimationFrame} from './common.js';
-import {FakeReadingMode} from './fake_reading_mode.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('MediaMenuElement', () => {
   let mediaMenu: MediaMenuElement;
   let metrics: TestMetricsBrowserProxy;
+  let visualBrowserProxy: TestVisualBrowserProxy;
 
   suiteSetup(() => {
     assertTestSettingsAreNotDefaultSettings();
@@ -24,8 +25,8 @@ suite('MediaMenuElement', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const readingMode = new FakeReadingMode();
-    chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
+    visualBrowserProxy = new TestVisualBrowserProxy();
+    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
     metrics = mockMetrics();
 
     mediaMenu = document.createElement('media-menu');
@@ -90,12 +91,7 @@ suite('MediaMenuElement', () => {
   });
 
   test('on images row click toggles images exactly once', async () => {
-    let imagesToggledCount = 0;
-    chrome.readingMode.onImagesEnabledToggled = () => {
-      imagesToggledCount++;
-      chrome.readingMode.imagesEnabled = !chrome.readingMode.imagesEnabled;
-    };
-    chrome.readingMode.imagesEnabled = false;
+    visualBrowserProxy.imagesEnabled = false;
     mediaMenu.settingsPrefs = {
       ...DEFAULT_SETTINGS,
       imagesEnabled: false,
@@ -105,8 +101,8 @@ suite('MediaMenuElement', () => {
     getImagesButton().click();
     await microtasksFinished();
 
-    assertEquals(1, imagesToggledCount);
-    assertTrue(chrome.readingMode.imagesEnabled);
+    assertEquals(1, visualBrowserProxy.getCallCount('onImagesEnabledToggled'));
+    assertTrue(visualBrowserProxy.imagesEnabled);
     assertTrue(
         getImagesButton().querySelector<CrToggleElement>('cr-toggle')!.checked);
     assertEquals(
@@ -120,18 +116,13 @@ suite('MediaMenuElement', () => {
     imagesToggle.click();
     await microtasksFinished();
 
-    assertEquals(2, imagesToggledCount);
-    assertFalse(chrome.readingMode.imagesEnabled);
+    assertEquals(2, visualBrowserProxy.getCallCount('onImagesEnabledToggled'));
+    assertFalse(visualBrowserProxy.imagesEnabled);
     assertFalse(imagesToggle.checked);
   });
 
   test('on links row click toggles links exactly once', async () => {
-    let linksToggledCount = 0;
-    chrome.readingMode.onLinksEnabledToggled = () => {
-      linksToggledCount++;
-      chrome.readingMode.linksEnabled = !chrome.readingMode.linksEnabled;
-    };
-    chrome.readingMode.linksEnabled = false;
+    visualBrowserProxy.linksEnabled = false;
     mediaMenu.settingsPrefs = {
       ...DEFAULT_SETTINGS,
       linksEnabled: false,
@@ -141,8 +132,8 @@ suite('MediaMenuElement', () => {
     getLinksButton().click();
     await microtasksFinished();
 
-    assertEquals(1, linksToggledCount);
-    assertTrue(chrome.readingMode.linksEnabled);
+    assertEquals(1, visualBrowserProxy.getCallCount('onLinksEnabledToggled'));
+    assertTrue(visualBrowserProxy.linksEnabled);
     assertTrue(
         getLinksButton().querySelector<CrToggleElement>('cr-toggle')!.checked);
     assertEquals(
@@ -154,8 +145,8 @@ suite('MediaMenuElement', () => {
     linksToggle.click();
     await microtasksFinished();
 
-    assertEquals(2, linksToggledCount);
-    assertFalse(chrome.readingMode.linksEnabled);
+    assertEquals(2, visualBrowserProxy.getCallCount('onLinksEnabledToggled'));
+    assertFalse(visualBrowserProxy.linksEnabled);
     assertFalse(linksToggle.checked);
   });
 

@@ -64,6 +64,8 @@ export interface VisualBrowserProxy {
   onLetterSpacingChange(value: number): void;
   onThemeChange(theme: number): void;
   onLineFocusChanged(value: number, lastNonDisabledValue: number): void;
+  onLinksEnabledToggled(): void;
+  onImagesEnabledToggled(): void;
   togglePresentation(): void;
 }
 
@@ -266,6 +268,14 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
 
   togglePresentation(): void {
     chrome.readingMode.togglePresentation();
+  }
+
+  onLinksEnabledToggled(): void {
+    chrome.readingMode.onLinksEnabledToggled();
+  }
+
+  onImagesEnabledToggled(): void {
+    chrome.readingMode.onImagesEnabledToggled();
   }
 
   static getInstance(): VisualBrowserProxy {

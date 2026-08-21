@@ -104,6 +104,8 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
       'getMaxLineWidth',
       'maybeHasKeyPointsSection',
       'getKeyPointsRegex',
+      'onLinksEnabledToggled',
+      'onImagesEnabledToggled',
     ]);
   }
 
@@ -349,5 +351,15 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   getKeyPointsRegex(): string {
     this.methodCalled('getKeyPointsRegex');
     return this.keyPointsRegex;
+  }
+
+  onLinksEnabledToggled(): void {
+    this.methodCalled('onLinksEnabledToggled');
+    this.linksEnabled = !this.linksEnabled;
+  }
+
+  onImagesEnabledToggled(): void {
+    this.methodCalled('onImagesEnabledToggled');
+    this.imagesEnabled = !this.imagesEnabled;
   }
 }

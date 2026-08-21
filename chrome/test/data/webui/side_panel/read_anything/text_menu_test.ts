@@ -5,17 +5,18 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {TextMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {DEFAULT_SETTINGS, LineFocusMovement, LineFocusStyle, ReadAnythingSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {DEFAULT_SETTINGS, LineFocusMovement, LineFocusStyle, ReadAnythingSettingsChange, ToolbarEvent, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {assertCheckMarksForDropdown, assertTestSettingsAreNotDefaultSettings, mockMetrics, stubAnimationFrame} from './common.js';
-import {FakeReadingMode} from './fake_reading_mode.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('TextMenuElement', () => {
   let textMenu: TextMenuElement;
   let metrics: TestMetricsBrowserProxy;
+  let visualBrowserProxy: TestVisualBrowserProxy;
 
   suiteSetup(() => {
     assertTestSettingsAreNotDefaultSettings();
@@ -23,10 +24,10 @@ suite('TextMenuElement', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const readingMode = new FakeReadingMode();
-    readingMode.supportedFonts = ['Poppins', 'Sans-serif', 'Serif'];
-    readingMode.fontName = 'Poppins';
-    chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
+    visualBrowserProxy = new TestVisualBrowserProxy();
+    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
+    visualBrowserProxy.supportedFonts = ['Poppins', 'Sans-serif', 'Serif'];
+    visualBrowserProxy.fontName = 'Poppins';
     metrics = mockMetrics();
 
     textMenu = document.createElement('text-menu');
@@ -42,7 +43,7 @@ suite('TextMenuElement', () => {
       'updating font preference property renders checkmark on the selected font item',
       async () => {
         const newFont = 'Serif';
-        chrome.readingMode.fontName = newFont;
+        visualBrowserProxy.fontName = newFont;
         textMenu.settingsPrefs = {
           ...textMenu.settingsPrefs,
           font: newFont,
@@ -58,8 +59,6 @@ suite('TextMenuElement', () => {
   test(
       'on font change invokes reading mode callback and logs metrics',
       async () => {
-        let calledFont = '';
-        chrome.readingMode.onFontChange = (val: string) => calledFont = val;
         let closeAllMenusCount = 0;
         document.addEventListener(
             ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
@@ -69,7 +68,8 @@ suite('TextMenuElement', () => {
             new CustomEvent(ToolbarEvent.FONT, {detail: {data: newFont}}));
         await microtasksFinished();
 
-        assertEquals(newFont, calledFont);
+        assertEquals(1, visualBrowserProxy.getCallCount('onFontChange'));
+        assertEquals(newFont, visualBrowserProxy.getArgs('onFontChange')[0]);
         assertEquals(
             ReadAnythingSettingsChange.FONT_CHANGE,
             await metrics.whenCalled('recordTextSettingsChange'));
@@ -80,7 +80,7 @@ suite('TextMenuElement', () => {
   test(
       'updating line spacing preference property renders checkmark on the selected spacing item',
       async () => {
-        const looseLineSpacing = chrome.readingMode.looseLineSpacing;
+        const looseLineSpacing = visualBrowserProxy.looseLineSpacing;
         textMenu.settingsPrefs = {
           ...textMenu.settingsPrefs,
           lineSpacing: looseLineSpacing,
@@ -97,19 +97,18 @@ suite('TextMenuElement', () => {
   test(
       'on line spacing change invokes reading mode callback and logs metrics',
       async () => {
-        let calledSpacing = -1;
-        chrome.readingMode.onLineSpacingChange = (val: number) =>
-            calledSpacing = val;
         let closeAllMenusCount = 0;
         document.addEventListener(
             ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
 
-        const newSpacing = chrome.readingMode.looseLineSpacing;
+        const newSpacing = visualBrowserProxy.looseLineSpacing;
         textMenu.$.menu.dispatchEvent(new CustomEvent(
             ToolbarEvent.LINE_SPACING, {detail: {data: newSpacing}}));
         await microtasksFinished();
 
-        assertEquals(newSpacing, calledSpacing);
+        assertEquals(1, visualBrowserProxy.getCallCount('onLineSpacingChange'));
+        assertEquals(
+            newSpacing, visualBrowserProxy.getArgs('onLineSpacingChange')[0]);
         assertEquals(
             ReadAnythingSettingsChange.LINE_HEIGHT_CHANGE,
             await metrics.whenCalled('recordTextSettingsChange'));
@@ -120,7 +119,7 @@ suite('TextMenuElement', () => {
   test(
       'updating letter spacing preference property renders checkmark on the selected spacing item',
       async () => {
-        const wideLetterSpacing = chrome.readingMode.wideLetterSpacing;
+        const wideLetterSpacing = visualBrowserProxy.wideLetterSpacing;
         textMenu.settingsPrefs = {
           ...textMenu.settingsPrefs,
           letterSpacing: wideLetterSpacing,
@@ -138,19 +137,19 @@ suite('TextMenuElement', () => {
   test(
       'on letter spacing change invokes reading mode callback and logs metrics',
       async () => {
-        let calledSpacing = -1;
-        chrome.readingMode.onLetterSpacingChange = (val: number) =>
-            calledSpacing = val;
         let closeAllMenusCount = 0;
         document.addEventListener(
             ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
 
-        const newSpacing = chrome.readingMode.wideLetterSpacing;
+        const newSpacing = visualBrowserProxy.wideLetterSpacing;
         textMenu.$.menu.dispatchEvent(new CustomEvent(
             ToolbarEvent.LETTER_SPACING, {detail: {data: newSpacing}}));
         await microtasksFinished();
 
-        assertEquals(newSpacing, calledSpacing);
+        assertEquals(
+            1, visualBrowserProxy.getCallCount('onLetterSpacingChange'));
+        assertEquals(
+            newSpacing, visualBrowserProxy.getArgs('onLetterSpacingChange')[0]);
         assertEquals(
             ReadAnythingSettingsChange.LETTER_SPACING_CHANGE,
             await metrics.whenCalled('recordTextSettingsChange'));
@@ -187,7 +186,7 @@ suite('TextMenuElement', () => {
       });
 
   test('restores saved line spacing option', async () => {
-    const looseSpacing = chrome.readingMode.looseLineSpacing;
+    const looseSpacing = visualBrowserProxy.looseLineSpacing;
     const startingSelected =
         textMenu.$.menu.menuGroups[1]!.items.find(item => item.selected);
     assertNotEquals(looseSpacing, startingSelected?.data);
@@ -230,8 +229,7 @@ suite('TextMenuElement', () => {
   suite('With line focus enabled', () => {
     setup(async () => {
       metrics.reset();
-      chrome.readingMode.isLineFocusEnabled = true;
-      chrome.readingMode.isReadAnythingImprovedUiEnabled = true;
+      visualBrowserProxy.lineFocusEnabled = true;
       textMenu.lineFocusEnabled = true;
       textMenu.settingsPrefs = {...textMenu.settingsPrefs};
       await microtasksFinished();
@@ -363,7 +361,7 @@ suite('TextMenuElement', () => {
     test(
         'does not add line focus menu groups when isLineFocusEnabled is false',
         async () => {
-          chrome.readingMode.isLineFocusEnabled = false;
+          visualBrowserProxy.lineFocusEnabled = false;
           textMenu.settingsPrefs = {...textMenu.settingsPrefs};
           await microtasksFinished();
 
@@ -371,4 +369,3 @@ suite('TextMenuElement', () => {
         });
   });
 });
-
