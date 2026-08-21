@@ -110,19 +110,11 @@ class BuildConfigGenerator extends DefaultTask {
     // to point to the aliased target instead.
     static final Map<String, String> ALIASED_LIBS = [
             // Use fully-qualified labels here since androidx might refer to them.
-            androidx_media3_media3_common: '//third_party/androidx:exoplayer_java',
-            androidx_media3_media3_database: '//third_party/androidx:exoplayer_java',
-            androidx_media3_media3_datasource: '//third_party/androidx:exoplayer_java',
-            androidx_media3_media3_decoder: '//third_party/androidx:exoplayer_java',
             androidx_media3_media3_exoplayer: '//third_party/androidx:exoplayer_java',
-            androidx_media3_media3_extractor: '//third_party/androidx:exoplayer_java',
             com_google_android_material_material: '//third_party/android_deps:material_design_java',
             com_google_android_play_feature_delivery: '//third_party/android_deps:playcore_java',
             com_google_guava_failureaccess: '//third_party/android_deps:guava_java',
             com_google_guava_guava: '//third_party/android_deps:guava_java',
-            com_google_mlkit_common: '//third_party/android_deps:mlkit_java',
-            com_google_mlkit_genai_common: '//third_party/android_deps:mlkit_java',
-            com_google_mlkit_genai_prompt: '//third_party/android_deps:mlkit_java',
             com_google_protobuf_protobuf_javalite: '//third_party/android_deps:protobuf_lite_runtime_java',
             net_bytebuddy_byte_buddy: '//third_party/byte_buddy:byte_buddy_android_java',
             // Logic for google_play_services_package added below.
