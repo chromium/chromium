@@ -238,6 +238,10 @@ cr-searchbox-dropdown::part(dropdown-content) {
   padding-top: unset;
 }
 
+omnibox-popup-contextual-entrypoint {
+  --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 0;
+}
+
 .searchbox-icon-button-container.lens {
   margin-inline-end: 10px;
 }
