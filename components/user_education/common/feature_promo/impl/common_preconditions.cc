@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/user_education/common/anchor_element_provider.h"
 #include "components/user_education/common/feature_promo/feature_promo_lifecycle.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
@@ -136,11 +137,13 @@ DEFINE_CLASS_PROMO_PRECONDITION_CACHED_DATA(AnchorElementPrecondition,
 AnchorElementPrecondition::AnchorElementPrecondition(
     const AnchorElementProvider& provider,
     ui::ElementContext default_context,
+    AnchorElementFilter default_filter,
     bool pre_increment_index)
     : FeaturePromoPreconditionBase(kAnchorElementPrecondition,
                                    "Anchor Element Visible"),
       provider_(provider),
       default_context_(default_context),
+      default_filter_(std::move(default_filter)),
       pre_increment_index_(pre_increment_index) {
   InitCache(kAnchorElement, kRotatingPromoIndex);
 }
@@ -160,7 +163,8 @@ FeaturePromoResult AnchorElementPrecondition::CheckPrecondition(
     index = provider_->GetNextValidIndex(next_index);
   }
   GetCachedDataForComputation(data, kRotatingPromoIndex) = index;
-  auto* const element = provider_->GetAnchorElement(default_context_, index);
+  auto* const element =
+      provider_->GetAnchorElement(default_context_, default_filter_, index);
   GetCachedDataForComputation(data, kAnchorElement) = element;
   return element ? FeaturePromoResult::Success()
                  : FeaturePromoResult::kAnchorNotVisible;

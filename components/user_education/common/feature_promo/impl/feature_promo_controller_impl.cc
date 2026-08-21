@@ -793,7 +793,8 @@ void FeaturePromoControllerImpl::AddDemoPreconditionProviders(
                 ptr->current_promo() &&
                 ptr->current_promo()->iph_feature() == spec.feature();
             list.AddPrecondition(std::make_unique<AnchorElementPrecondition>(
-                spec, context->GetElementContext(), pre_increment));
+                spec, context->GetElementContext(),
+                context->GetDefaultElementFilter(), pre_increment));
           }
           return list;
         },
@@ -854,7 +855,8 @@ void FeaturePromoControllerImpl::AddPreconditionProviders(
                 std::make_unique<ForwardingFeaturePromoPrecondition>(
                     ptr->private_->get_tracker_precondition()));
             list.AddPrecondition(std::make_unique<AnchorElementPrecondition>(
-                spec, context->GetElementContext(), false));
+                spec, context->GetElementContext(),
+                context->GetDefaultElementFilter(), false));
             // Wait-for state *does* take the current promo into account, since
             // a higher-weight promo might block a lower-weight promo.
             list.AddPrecondition(std::make_unique<SessionPolicyPrecondition>(

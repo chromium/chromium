@@ -12,12 +12,6 @@
 
 namespace user_education {
 
-ui::TrackedElement* AnchorElementProvider::GetAnchorElement(
-    ui::ElementContext default_context,
-    std::optional<int> index) const {
-  return GetAnchorElement(default_context, AnchorElementFilter(), index);
-}
-
 AnchorElementProviderCommon::AnchorElementProviderCommon() = default;
 
 AnchorElementProviderCommon::AnchorElementProviderCommon(

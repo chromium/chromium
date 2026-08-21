@@ -27,11 +27,6 @@ class AnchorElementProvider {
 
   // Returns the target element, using `default_context`.
   // For rotating promos, specify `index`.
-  ui::TrackedElement* GetAnchorElement(ui::ElementContext default_context,
-                                       std::optional<int> index) const;
-
-  // Returns the target element, using `default_context`.
-  // For rotating promos, specify `index`.
   virtual ui::TrackedElement* GetAnchorElement(
       ui::ElementContext default_context,
       AnchorElementFilter default_filter,

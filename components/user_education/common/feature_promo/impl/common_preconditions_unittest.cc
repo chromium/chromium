@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/test/mock_tracker.h"
+#include "components/user_education/common/anchor_element_provider.h"
 #include "components/user_education/common/feature_promo/feature_promo_lifecycle.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
@@ -144,7 +145,8 @@ TEST(CommonPreconditionsTest, AnchorElementPrecondition) {
   ui::test::TestElement el(kTestId, kTestContext);
   el.Show();
   test::MockAnchorElementProvider provider;
-  AnchorElementPrecondition precond(provider, kTestContext, false);
+  AnchorElementPrecondition precond(provider, kTestContext,
+                                    AnchorElementFilter(), false);
 
   test::TestUserEducationStorageService storage_service;
   UnownedTypedDataCollection data;
@@ -189,7 +191,8 @@ TEST(CommonPreconditionsTest,
   el.Show();
 
   test::MockAnchorElementProvider provider;
-  AnchorElementPrecondition precond(provider, kTestContext, false);
+  AnchorElementPrecondition precond(provider, kTestContext,
+                                    AnchorElementFilter(), false);
 
   OwnedTypedDataCollection coll;
   test::TestUserEducationStorageService storage_service;
@@ -218,7 +221,8 @@ TEST(CommonPreconditionsTest,
      AnchorElementPrecondition_ExtractCachedDataReturnsNull) {
 
   test::MockAnchorElementProvider provider;
-  AnchorElementPrecondition precond(provider, kTestContext, false);
+  AnchorElementPrecondition precond(provider, kTestContext,
+                                    AnchorElementFilter(), false);
 
   OwnedTypedDataCollection coll;
   test::TestUserEducationStorageService storage_service;

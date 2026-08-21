@@ -109,6 +109,7 @@ class AnchorElementPrecondition : public FeaturePromoPreconditionBase {
 
   AnchorElementPrecondition(const AnchorElementProvider& provider,
                             ui::ElementContext default_context,
+                            AnchorElementFilter default_filter,
                             bool pre_increment_index);
   ~AnchorElementPrecondition() override;
 
@@ -119,6 +120,7 @@ class AnchorElementPrecondition : public FeaturePromoPreconditionBase {
  private:
   const raw_ref<const AnchorElementProvider> provider_;
   const ui::ElementContext default_context_;
+  const AnchorElementFilter default_filter_;
 
   // Whether to increment the rotating promo index before computing.
   // Used for demos in certain cases; see constructor call site.
