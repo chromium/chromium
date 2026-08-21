@@ -294,6 +294,11 @@ source_set("unit_tests") {
     ]
   }
 
+  if (is_ios) {
+    sources +=
+        [ "device_attestation/ios/device_attestation_service_ios_unittest.mm" ]
+  }
+
   if (is_win || is_linux || is_chromeos || is_mac) {
     deps +=
         [ "//components/enterprise/network_header_injection/core:unit_tests" ]
