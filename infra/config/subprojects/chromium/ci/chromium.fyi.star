@@ -2930,6 +2930,9 @@ ci.builder(
         additional_compile_targets = [
             "chrome",
         ],
+        mixins = [
+            "linux-jammy",
+        ],
         per_test_modifications = {
             "browser_tests": targets.mixin(
                 swarming = targets.swarming(
@@ -2970,6 +2973,9 @@ fyi_mac_builder(
         ],
         additional_compile_targets = [
             "chrome",
+        ],
+        mixins = [
+            "mac_default_arm64",
         ],
         per_test_modifications = {
             "browser_tests": targets.mixin(
