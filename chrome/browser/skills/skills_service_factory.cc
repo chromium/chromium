@@ -21,6 +21,7 @@
 #include "components/skills/internal/enterprise_skills_provider.h"
 #include "components/skills/internal/skills_service_impl.h"
 #include "components/skills/public/skills_features.h"
+#include "components/skills/public/skills_prefs.h"
 #include "components/sync/model/data_type_store_service.h"
 #include "content/public/browser/storage_partition.h"
 

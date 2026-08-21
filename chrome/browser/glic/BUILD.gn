@@ -806,6 +806,8 @@ source_set("unit_tests") {
       "//chrome/test:test_support",
       "//components/live_caption",
       "//components/live_caption:constants",
+      "//components/skills:features",
+      "//components/skills/public",
       "//components/skills/public:metrics",
     ]
   } else {

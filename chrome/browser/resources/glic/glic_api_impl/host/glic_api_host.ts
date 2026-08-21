@@ -312,25 +312,19 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
       actorReceiver = receiverVal;
     }
 
-    let skillsRemote: PendingRemote<SkillsHost>|undefined;
-    let skillsReceiver: PendingReceiver<SkillsClient>|undefined;
-
-    if (initialState.enableSkills) {
-      this.skillsHandler = new SkillsHandlerRemote();
-      const {remote: clientRemote, receiver: receiverVal} =
-          this.communicator.router.newPipeWithRemote(SkillsClientDef);
-      const skillsClientReceiver =
-          new SkillsClientReceiver(new SkillsClientImpl(clientRemote));
-      this.handler.createSkillsHandler(
-          this.skillsHandler.$.bindNewPipeAndPassReceiver(),
-          skillsClientReceiver.$.bindNewPipeAndPassRemote());
-      const skillsHostMessageHandler =
-          new SkillsHostMessageHandler(this.skillsHandler);
-      const {remote: hostRemote} = this.communicator.router.newPipeWithReceiver(
-          skillsHostMessageHandler, SkillsHostDef);
-      skillsRemote = hostRemote;
-      skillsReceiver = receiverVal;
-    }
+    this.skillsHandler = new SkillsHandlerRemote();
+    const {remote: skillsClientRemote, receiver: skillsReceiver} =
+        this.communicator.router.newPipeWithRemote(SkillsClientDef);
+    const skillsClientReceiver =
+        new SkillsClientReceiver(new SkillsClientImpl(skillsClientRemote));
+    this.handler.createSkillsHandler(
+        this.skillsHandler.$.bindNewPipeAndPassReceiver(),
+        skillsClientReceiver.$.bindNewPipeAndPassRemote());
+    const skillsHostMessageHandler =
+        new SkillsHostMessageHandler(this.skillsHandler);
+    const {remote: hostRemote} = this.communicator.router.newPipeWithReceiver(
+        skillsHostMessageHandler, SkillsHostDef);
+    const skillsRemote = hostRemote;
 
     const {remote: clientRemote, receiver: experimentalTriggeringReceiver} =
         this.communicator.router.newPipeWithRemote(
