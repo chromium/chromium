@@ -33,12 +33,14 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.TestFileUtil;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -49,9 +51,11 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.PdfCtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.content_public.browser.test.util.DomAutomationController;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.printing.PrintDocumentAdapterWrapper.LayoutResultCallbackWrapper;
@@ -202,6 +206,22 @@ public class PrintingControllerTest {
                 "PDF page is not loaded successfully.",
                 PDF_LOAD_TIMEOUT_MS,
                 POLLING_INTERVAL_MS);
+        testNormalPrintingFlowHelper(currentTab);
+    }
+
+    /** Test a basic printing flow on pdf page in incognito mode. */
+    @Test
+    @LargeTest
+    @Feature({"Printing"})
+    @EnableFeatures({ChromeFeatureList.INLINE_PDF_V2, ChromeFeatureList.INLINE_PDF_V2_INCOGNITO})
+    @MinAndroidSdkLevel(VERSION_CODES.VANILLA_ICE_CREAM)
+    public void testNormalPrintingFlow_PDF_Incognito() throws Throwable {
+        WebPageStation incognitoPage = mActivityTestRule.startOnIncognitoBlankPage();
+        EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
+        final String url = testServer.getURL("/pdf/test/data/hello_world2.pdf");
+        PdfCtaPageStation pdfPage =
+                incognitoPage.openFakeLink(url, PdfCtaPageStation.newBuilder());
+        Tab currentTab = pdfPage.getTab();
         testNormalPrintingFlowHelper(currentTab);
     }
 

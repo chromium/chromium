@@ -21,6 +21,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.pdf.PdfPage;
+import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -214,6 +215,19 @@ public class TabPrinter implements Printable {
                     return ContextUtils.getApplicationContext()
                             .getContentResolver()
                             .openInputStream(Uri.parse(pdfFilePath));
+                } else if (tab.isIncognito()) {
+                    Uri uri =
+                            PdfUtils.getContentUri(
+                                    pdfFilePath,
+                                    tab.getTitle(),
+                                    String.valueOf(tab.getId()),
+                                    /* isIncognito= */ true);
+                    if (uri != null) {
+                        return ContextUtils.getApplicationContext()
+                                .getContentResolver()
+                                .openInputStream(uri);
+                    }
+                    return null;
                 } else {
                     File file = new File(pdfFilePath);
                     return new FileInputStream(file);
