@@ -1041,6 +1041,12 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::Create(
       std::move(copy_manager), std::move(buffer_usage)));
 }
 
+// static
+void CompoundImageBacking::RecordBackingTypeUMA(
+    SharedImageBackingType backing_type) {
+  UMA_HISTOGRAM_ENUMERATION("GPU.SharedImage.BackingType", backing_type);
+}
+
 std::unique_ptr<SharedImageBacking> CompoundImageBacking::WrapExternalBacking(
     SharedImageFactory* shared_image_factory,
     scoped_refptr<SharedImageCopyManager> copy_manager,
@@ -1052,6 +1058,8 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::WrapExternalBacking(
   // We don't wrap an existing CompoundImageBacking which consists of a shm and
   // a gpu backing.
   CHECK_NE(backing->GetType(), SharedImageBackingType::kCompound);
+
+  RecordBackingTypeUMA(backing->GetType());
 
   backing->SetNotRefCounted();
 
@@ -1154,6 +1162,7 @@ CompoundImageBacking::CompoundImageBacking(
   shm_element.backing = std::move(shm_backing);
   has_shm_backing_ = true;
   elements_.push_back(std::move(shm_element));
+  RecordBackingTypeUMA(SharedImageBackingType::kSharedMemory);
 
   // Whenever CompoundImageBacking is created with a shm backing, mark it as
   // fully cleared.
@@ -2108,7 +2117,7 @@ void CompoundImageBacking::CreateBackingFromBackingFactory(
 
   // Since the owned GPU backing is never registered with SharedImageManager
   // it's not recorded in UMA histogram there.
-  UMA_HISTOGRAM_ENUMERATION("GPU.SharedImage.BackingType", backing->GetType());
+  RecordBackingTypeUMA(backing->GetType());
 
   backing->SetNotRefCounted();
 

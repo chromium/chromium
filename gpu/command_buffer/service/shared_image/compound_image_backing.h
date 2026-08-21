@@ -453,6 +453,9 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   static bool ComputeIsThreadSafe(SharedImageFactoryRef* factory_ref,
                                   SharedImageUsageSet usage);
 
+  // Helper to record GPU.SharedImage.BackingType UMA histogram.
+  static void RecordBackingTypeUMA(SharedImageBackingType backing_type);
+
   // This is required for CompoundImageBacking to be able to query an
   // appropriate SharedImageBackingFactory dynamically based on clients
   // required usage(Produce*) which typically happens after the backing
