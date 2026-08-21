@@ -93,10 +93,7 @@ public class SpareRendererTest extends AwParameterizedTest {
     @MediumTest
     @OnlyRunIn(MULTI_PROCESS)
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({
-        "enable-features=SpareRendererProcessPriority:not-perceptible-binding/true,"
-                + "CreateSpareRendererForDefaultProfile"
-    })
+    @CommandLineFlags.Add({"enable-features=CreateSpareRendererForDefaultProfile"})
     public void testProcessBindingState() throws Throwable {
         mRule.startBrowserProcess();
         assertEquals(0, RenderProcessHostUtils.getCurrentRenderProcessCount());
@@ -110,9 +107,7 @@ public class SpareRendererTest extends AwParameterizedTest {
         // The binding state is recalculated multiple times after the renderer is launched. Wait
         // for one second for the binding state to settle down.
         Thread.sleep(1100);
-        assertEquals(
-                ChildBindingState.NOT_PERCEPTIBLE,
-                RenderProcessHostUtils.getSpareRenderBindingState());
+        assertEquals(ChildBindingState.WAIVED, RenderProcessHostUtils.getSpareRenderBindingState());
     }
 
     @Test
