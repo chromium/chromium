@@ -212,6 +212,9 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
     case kCustomMedia:
       To<StyleRuleCustomMedia>(this)->TraceAfterDispatch(visitor);
       return;
+    case kPrivate:
+      To<StyleRulePrivate>(this)->TraceAfterDispatch(visitor);
+      return;
   }
   DUMP_WILL_BE_NOTREACHED();
 }
@@ -316,6 +319,9 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
       return;
     case kCustomMedia:
       To<StyleRuleCustomMedia>(this)->~StyleRuleCustomMedia();
+      return;
+    case kPrivate:
+      To<StyleRulePrivate>(this)->~StyleRulePrivate();
       return;
   }
   NOTREACHED();
@@ -444,6 +450,10 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
       rule = MakeGarbageCollected<CSSResultRule>(To<StyleRuleResult>(self),
                                                  parent_sheet);
       break;
+    case kPrivate:
+      // TODO(crbug.com/542651959): Add a CSSPrivateRule wrapper in followup CL.
+      // Return null so enumerating cssRules doesn't crash in the meanwhile.
+      return nullptr;
     case kApplyMixin:
       rule = MakeGarbageCollected<CSSApplyMixinRule>(
           To<StyleRuleApplyMixin>(self), parent_sheet);
@@ -797,6 +807,9 @@ StyleRuleBase* StyleRuleBase::Clone(
     case kCustomMedia:
       return MakeGarbageCollected<StyleRuleCustomMedia>(
           To<StyleRuleCustomMedia>(*this));
+    case kPrivate:
+      return MakeGarbageCollected<StyleRulePrivate>(
+          To<StyleRulePrivate>(*this));
   }
 }
 
@@ -1190,6 +1203,26 @@ StyleRuleResult::StyleRuleResult(const StyleRuleResult& other,
 
 void StyleRuleResult::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleGroup::TraceAfterDispatch(visitor);
+}
+
+StyleRulePrivate::StyleRulePrivate(
+    HeapVector<Member<const CSSPrivateVariable>> private_variables)
+    : StyleRuleBase(kPrivate),
+      private_variables_(std::move(private_variables)) {}
+
+StyleRulePrivate::StyleRulePrivate(const StyleRulePrivate& other)
+    : StyleRuleBase(other) {
+  private_variables_.ReserveInitialCapacity(other.private_variables_.size());
+  // Deep copy each private variable.
+  for (const CSSPrivateVariable* variable : other.private_variables_) {
+    private_variables_.push_back(
+        MakeGarbageCollected<CSSPrivateVariable>(*variable));
+  }
+}
+
+void StyleRulePrivate::TraceAfterDispatch(blink::Visitor* visitor) const {
+  visitor->Trace(private_variables_);
+  StyleRuleBase::TraceAfterDispatch(visitor);
 }
 
 StyleRuleApplyMixin::StyleRuleApplyMixin(

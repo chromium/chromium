@@ -96,6 +96,8 @@ constexpr FlaggedAtRuleEntry kFlaggedAtRuleEntries[] = {
      &RuntimeEnabledFeatures::CSSMixinsEnabled},
     {"navigation", CSSAtRuleID::kCSSAtRuleNavigation, WebFeature::kCSSAtRuleRoute,
      &RuntimeEnabledFeatures::RouteMatchingEnabled},
+    {"private", CSSAtRuleID::kCSSAtRulePrivate, WebFeature::kCSSAtPrivate,
+     &RuntimeEnabledFeatures::CSSPrivateEnabled},
     {"result", CSSAtRuleID::kCSSAtRuleResult, WebFeature::kCSSMixins,
      &RuntimeEnabledFeatures::CSSMixinsEnabled},
 };

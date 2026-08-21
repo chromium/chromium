@@ -1799,6 +1799,15 @@
       name: "CSSPositionStickyStaticScrollPosition",
       status: "test",
     },
+    {
+      // The @private rule declares lexically-scoped custom properties that are
+      // visible only within the enclosing style rule and the elements it
+      // matches, with their names rewritten so they are never observable as
+      // author custom properties.
+      // crbug.com/542651959
+      name: "CSSPrivate",
+      status: "experimental",
+    },
     // https://drafts.csswg.org/css-values-5/#progress
     // progress()
     {

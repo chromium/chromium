@@ -937,6 +937,8 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
       return ConsumeContentsRule(stream);
     case CSSAtRuleID::kCSSAtRuleResult:
       return ConsumeResultRule(stream);
+    case CSSAtRuleID::kCSSAtRulePrivate:
+      return ConsumePrivateRule(stream);
     case CSSAtRuleID::kCSSAtRulePositionTry:
       return ConsumePositionTryRule(stream);
     case CSSAtRuleID::kCSSAtRuleCharset:
@@ -2592,6 +2594,106 @@ StyleRuleResult* CSSParserImpl::ConsumeResultRule(
       HeapVector{std::move(*fake_parent_rule->ChildRules())});
 }
 
+// Parses one variable declared inside a @private block e.g. `--foo`,
+// `--foo:10px`, or `--foo <length>: 10px`. Returns nullptr if the declaration
+// is invalid.
+static CSSPrivateVariable* ConsumePrivateVariable(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context) {
+  CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
+
+  const CSSParserToken& name_token = stream.Peek();
+  if (!CSSVariableParser::IsValidVariableName(name_token)) {
+    return nullptr;
+  }
+  AtomicString name = name_token.Value().ToAtomicString();
+  stream.ConsumeIncludingWhitespace();
+
+  std::optional<CSSSyntaxDefinition> type = ConsumeFunctionType(stream);
+
+  CSSVariableData* default_value = nullptr;
+  if (stream.Peek().GetType() == kColonToken) {
+    stream.ConsumeIncludingWhitespace();
+    // TODO(crbug.com/549237151): !important is invalid in a @private block per
+    // CSSWG resolution and needs followup to ensure it is fully rejected.
+    bool important_ignored;
+    default_value = CSSVariableParser::ConsumeUnparsedDeclaration(
+        stream, /*allow_important_annotation=*/false,
+        /*is_animation_tainted=*/false,
+        /*must_contain_variable_reference=*/false,
+        /*restricted_value=*/false,
+        /*comma_ends_declaration=*/false, important_ignored, context);
+    if (!default_value) {
+      return nullptr;
+    }
+  }
+
+  // If a type and a default are both provided, the default must parse
+  // successfully according to that type.
+  CSSSyntaxDefinition syntax =
+      type.value_or(CSSSyntaxDefinition::CreateUniversal());
+  if (default_value && !default_value->NeedsVariableResolution() &&
+      !syntax.IsUniversal()) {
+    CSSParserLocalContext local_context =
+        CSSParserLocalContext::CreateWithoutPropertyForSyntaxParsing();
+    if (!syntax.Parse(default_value->OriginalText(), context, local_context,
+                      /*is_animation_tainted=*/false,
+                      /*is_attr_tainted=*/false)) {
+      return nullptr;
+    }
+  }
+
+  // Reject any tokens left over before the ';' (e.g. a stray type after the
+  // value, or other trailing garbage).
+  if (!stream.AtEnd()) {
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<CSSPrivateVariable>(name, std::move(syntax),
+                                                  default_value, &context);
+}
+
+StyleRulePrivate* CSSParserImpl::ConsumePrivateRule(
+    CSSParserTokenStream& stream) {
+  wtf_size_t header_start = stream.LookAheadOffset();
+
+  if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream,
+                                             CSSAtRuleID::kCSSAtRulePrivate)) {
+    return nullptr;
+  }
+
+  stream.EnsureLookAhead();
+  wtf_size_t header_end = stream.LookAheadOffset();
+  CSSParserTokenStream::BlockGuard guard(stream);
+  if (observer_) {
+    observer_->StartRuleHeader(StyleRule::kPrivate, header_start);
+    observer_->EndRuleHeader(header_end);
+    observer_->StartRuleBody(stream.Offset());
+  }
+
+  // Parse the variables declared in the block. Invalid declarations are skipped
+  // so that the valid ones are still collected.
+  HeapVector<Member<const CSSPrivateVariable>> private_variables;
+  stream.ConsumeWhitespace();
+  while (!stream.AtEnd()) {
+    if (CSSPrivateVariable* variable =
+            ConsumePrivateVariable(stream, *context_)) {
+      private_variables.push_back(variable);
+    } else {
+      stream.SkipUntilPeekedTypeIs<kSemicolonToken>();
+    }
+    if (!stream.AtEnd()) {
+      stream.ConsumeIncludingWhitespace();
+    }
+  }
+
+  if (observer_) {
+    observer_->EndRuleBody(stream.LookAheadOffset());
+  }
+
+  return MakeGarbageCollected<StyleRulePrivate>(std::move(private_variables));
+}
+
 StyleRule* CSSParserImpl::ConsumeDeclarationListForMixins(
     CSSParserTokenStream& stream) {
   CSSParserTokenStream::BlockGuard guard(stream);
@@ -3247,16 +3349,22 @@ AllowedRules AllowedNestedRules(StyleRule::RuleType parent_rule_type,
     case StyleRule::kStyle: {
       if (in_mixin) {
         AllowedRules allowed = CSSParserImpl::kNestedGroupRules |
-                               AllowedRules{CSSAtRuleID::kCSSAtRuleContents};
+                               AllowedRules{CSSAtRuleID::kCSSAtRuleContents,
+                                            CSSAtRuleID::kCSSAtRulePrivate};
         allowed.Remove(CSSAtRuleID::kCSSAtRuleLayer);
         return allowed;
       } else {
-        return CSSParserImpl::kNestedGroupRules;
+        // TODO(crbug.com/549226765): This also allows @private inside a
+        // @media/@supports rule nested in a style rule, but needs a resolution
+        // from the CSSWG.
+        return CSSParserImpl::kNestedGroupRules |
+               AllowedRules{CSSAtRuleID::kCSSAtRulePrivate};
       }
     }
     case StyleRule::kMixin:
       return CSSParserImpl::kConditionalRules |
-             AllowedRules{CSSAtRuleID::kCSSAtRuleResult};
+             AllowedRules{CSSAtRuleID::kCSSAtRulePrivate,
+                          CSSAtRuleID::kCSSAtRuleResult};
     case StyleRule::kPage:
       return CSSParserImpl::kPageMarginRules;
     case StyleRule::kFunction:

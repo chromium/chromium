@@ -321,6 +321,7 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
     case StyleRule::kSupports:
     case StyleRule::kStartingStyle:
     case StyleRule::kResult:
+    case StyleRule::kPrivate:
     case StyleRule::kApplyMixin:
     case StyleRule::kContents:
     case StyleRule::kPositionTry:

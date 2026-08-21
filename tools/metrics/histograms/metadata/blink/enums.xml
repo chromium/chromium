@@ -6724,6 +6724,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5990" label="PopoverTypeAutoShown"/>
   <int value="5991" label="PopoverTypeHintShown"/>
   <int value="5992" label="PopoverTypeManualShown"/>
+  <int value="5993" label="CSSAtPrivate"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

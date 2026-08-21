@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
+#include "third_party/blink/renderer/core/css/css_private_variable.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
@@ -1257,6 +1258,163 @@ TEST(CSSParserImplTest, CSSFunction) {
   ASSERT_TRUE(result);
 
   EXPECT_EQ("red", result->VariableDataValue()->OriginalText());
+}
+
+TEST(CSSParserImplTest, PrivateRuleInsideStyleRule) {
+  test::TaskEnvironment task_environment;
+  ScopedCSSPrivateForTest scoped_feature(true);
+
+  String sheet_text = R"CSS(
+    .a {
+      @private {
+        --x: 1px;
+        --y;
+      }
+    }
+  )CSS";
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet);
+  ASSERT_EQ(1u, sheet->ChildRules().size());
+
+  const StyleRule* style_rule =
+      DynamicTo<StyleRule>(sheet->ChildRules()[0].Get());
+  ASSERT_TRUE(style_rule);
+  ASSERT_NE(nullptr, style_rule->ChildRules());
+  ASSERT_EQ(1u, style_rule->ChildRules()->size());
+
+  const auto* private_rule =
+      DynamicTo<StyleRulePrivate>((*style_rule->ChildRules())[0].Get());
+  ASSERT_TRUE(private_rule);
+
+  const HeapVector<Member<const CSSPrivateVariable>>& variables =
+      private_rule->GetPrivateVariables();
+  ASSERT_EQ(2u, variables.size());
+
+  // An untyped variable with a default value.
+  EXPECT_EQ(AtomicString("--x"), variables[0]->Name());
+  ASSERT_TRUE(variables[0]->DefaultValue());
+  EXPECT_EQ("1px", variables[0]->DefaultValue()->OriginalText());
+
+  // An untyped variable without a default value.
+  EXPECT_EQ(AtomicString("--y"), variables[1]->Name());
+  EXPECT_EQ(nullptr, variables[1]->DefaultValue());
+}
+
+TEST(CSSParserImplTest, PrivateRuleNotAllowedAtTopLevel) {
+  test::TaskEnvironment task_environment;
+  ScopedCSSPrivateForTest scoped_feature(true);
+
+  // @private is only allowed nested inside a style rule, not at the top level.
+  String sheet_text = "@private { --x: 1px; }";
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet);
+  EXPECT_EQ(0u, sheet->ChildRules().size());
+}
+
+TEST(CSSParserImplTest, PrivateRuleTrailingWhitespace) {
+  test::TaskEnvironment task_environment;
+  ScopedCSSPrivateForTest scoped_feature(true);
+
+  String sheet_text = R"CSS(
+    .a {
+      @private {
+        --a    ;
+        --b: 1px    ;
+        --c <length>    ;
+        --d <length>: 2px    ;
+      }
+    }
+  )CSS";
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet);
+  ASSERT_EQ(1u, sheet->ChildRules().size());
+
+  const StyleRule* style_rule =
+      DynamicTo<StyleRule>(sheet->ChildRules()[0].Get());
+  ASSERT_TRUE(style_rule);
+  ASSERT_NE(nullptr, style_rule->ChildRules());
+  ASSERT_EQ(1u, style_rule->ChildRules()->size());
+
+  const auto* private_rule =
+      DynamicTo<StyleRulePrivate>((*style_rule->ChildRules())[0].Get());
+  ASSERT_TRUE(private_rule);
+
+  const HeapVector<Member<const CSSPrivateVariable>>& variables =
+      private_rule->GetPrivateVariables();
+  ASSERT_EQ(4u, variables.size());
+  EXPECT_EQ(AtomicString("--a"), variables[0]->Name());
+  EXPECT_EQ(nullptr, variables[0]->DefaultValue());
+  EXPECT_EQ(AtomicString("--b"), variables[1]->Name());
+  ASSERT_TRUE(variables[1]->DefaultValue());
+  EXPECT_EQ("1px", variables[1]->DefaultValue()->OriginalText());
+  EXPECT_EQ(AtomicString("--c"), variables[2]->Name());
+  EXPECT_EQ(nullptr, variables[2]->DefaultValue());
+  EXPECT_EQ(AtomicString("--d"), variables[3]->Name());
+  ASSERT_TRUE(variables[3]->DefaultValue());
+  EXPECT_EQ("2px", variables[3]->DefaultValue()->OriginalText());
+}
+
+TEST(CSSParserImplTest, PrivateRuleInvalidVariableIsSkipped) {
+  test::TaskEnvironment task_environment;
+  ScopedCSSPrivateForTest scoped_feature(true);
+
+  // "x" is not a valid custom property name, so it is skipped, leaving an
+  // empty (but still present) @private rule.
+  String sheet_text = ".a { @private { x: 1px; } }";
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet);
+  ASSERT_EQ(1u, sheet->ChildRules().size());
+
+  const StyleRule* style_rule =
+      DynamicTo<StyleRule>(sheet->ChildRules()[0].Get());
+  ASSERT_TRUE(style_rule);
+  ASSERT_NE(nullptr, style_rule->ChildRules());
+  ASSERT_EQ(1u, style_rule->ChildRules()->size());
+
+  const auto* private_rule =
+      DynamicTo<StyleRulePrivate>((*style_rule->ChildRules())[0].Get());
+  ASSERT_TRUE(private_rule);
+  EXPECT_EQ(0u, private_rule->GetPrivateVariables().size());
+}
+
+TEST(CSSParserImplTest, PrivateRuleSkipsInvalidDeclarationsKeepingValidOnes) {
+  test::TaskEnvironment task_environment;
+  ScopedCSSPrivateForTest scoped_feature(true);
+
+  // The invalid `background` declaration is skipped, but the valid `--foo`
+  // custom property is still collected.
+  String sheet_text =
+      ".a { @private { --foo: green; background: var(--foo, red); } }";
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet);
+  ASSERT_EQ(1u, sheet->ChildRules().size());
+
+  const StyleRule* style_rule =
+      DynamicTo<StyleRule>(sheet->ChildRules()[0].Get());
+  ASSERT_TRUE(style_rule);
+  ASSERT_NE(nullptr, style_rule->ChildRules());
+  ASSERT_EQ(1u, style_rule->ChildRules()->size());
+
+  const auto* private_rule =
+      DynamicTo<StyleRulePrivate>((*style_rule->ChildRules())[0].Get());
+  ASSERT_TRUE(private_rule);
+
+  const HeapVector<Member<const CSSPrivateVariable>>& variables =
+      private_rule->GetPrivateVariables();
+  ASSERT_EQ(1u, variables.size());
+  EXPECT_EQ(AtomicString("--foo"), variables[0]->Name());
+  ASSERT_TRUE(variables[0]->DefaultValue());
+  EXPECT_EQ("green", variables[0]->DefaultValue()->OriginalText());
 }
 
 static String RoundTripProperty(Document& document, String property_text) {

@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/container_query.h"
 #include "third_party/blink/renderer/core/css/container_query_set.h"
+#include "third_party/blink/renderer/core/css/css_private_variable.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
@@ -83,6 +84,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kFunction,
     kMixin,
     kResult,
+    kPrivate,
     kApplyMixin,
     kContents,
     kPositionTry,
@@ -139,6 +141,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   bool IsFunctionRule() const { return GetType() == kFunction; }
   bool IsMixinRule() const { return GetType() == kMixin; }
   bool IsResultRule() const { return GetType() == kResult; }
+  bool IsPrivateRule() const { return GetType() == kPrivate; }
   bool IsApplyMixinRule() const { return GetType() == kApplyMixin; }
   bool IsContentsRule() const { return GetType() == kContents; }
   bool IsPositionTryRule() const { return GetType() == kPositionTry; }
@@ -706,6 +709,23 @@ class CORE_EXPORT StyleRuleResult : public StyleRuleGroup {
   void TraceAfterDispatch(blink::Visitor*) const;
 };
 
+class CORE_EXPORT StyleRulePrivate : public StyleRuleBase {
+ public:
+  explicit StyleRulePrivate(
+      HeapVector<Member<const CSSPrivateVariable>> private_variables);
+  StyleRulePrivate(const StyleRulePrivate&);
+
+  const HeapVector<Member<const CSSPrivateVariable>>& GetPrivateVariables()
+      const {
+    return private_variables_;
+  }
+
+  void TraceAfterDispatch(blink::Visitor*) const;
+
+ private:
+  HeapVector<Member<const CSSPrivateVariable>> private_variables_;
+};
+
 // An @apply rule, representing applying a mixin. Its declaration block, if
 // present, is substituted for the mixin's @contents rule.
 class CORE_EXPORT StyleRuleApplyMixin : public StyleRuleGroup {
@@ -951,6 +971,13 @@ template <>
 struct DowncastTraits<StyleRuleResult> {
   static bool AllowFrom(const StyleRuleBase& rule) {
     return rule.IsResultRule();
+  }
+};
+
+template <>
+struct DowncastTraits<StyleRulePrivate> {
+  static bool AllowFrom(const StyleRuleBase& rule) {
+    return rule.IsPrivateRule();
   }
 };
 
