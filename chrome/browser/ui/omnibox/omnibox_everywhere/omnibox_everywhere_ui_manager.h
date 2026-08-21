@@ -174,6 +174,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void CreateAndInitWidget(gfx::NativeWindow context);
   void ActivateAndFocus();
   void OnEphemeralModelPrefChanged();
+  void OnMostVisitedPrefChanged();
   static gfx::Rect CalculateWidgetBounds(int height);
 
   std::unique_ptr<WebUIContentsWrapper> CreateContentsWrapper(Profile* profile);
@@ -209,6 +210,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
 
   PrefChangeRegistrar local_state_pref_change_registrar_;
+  PrefChangeRegistrar profile_pref_change_registrar_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
   base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
