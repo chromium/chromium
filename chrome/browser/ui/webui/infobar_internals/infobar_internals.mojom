@@ -28,6 +28,9 @@ enum InfoBarType {
   // Extension DevTools infobar.
   kExtensionDevTools,
 
+  // Google API keys infobar.
+  kGoogleApiKeys,
+
   // Incognito connectability infobar.
   [EnableIf=enable_extensions]
   kIncognitoConnectability,

@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
 #include "chrome/browser/ui/omnibox/alternate_nav_infobar_delegate.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
+#include "chrome/browser/ui/startup/google_api_keys_infobar_delegate.h"
 #include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -159,6 +160,12 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
       "The Extension DevTools infobar is used to globally warn users "
       "that an extension is debugging the browser. This trigger shows "
       "the infobar."));
+
+  infobar_list.emplace_back(InfoBarEntry::New(
+      /*type=*/InfoBarType::kGoogleApiKeys, /*name=*/"Google API Keys",
+      /*description=*/
+      "The Google API Keys infobar warns users when Google API keys are "
+      "missing. This trigger shows the infobar."));
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   infobar_list.emplace_back(InfoBarEntry::New(
@@ -379,6 +386,31 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
 #else
       return false;
 #endif
+    }
+    case InfoBarType::kGoogleApiKeys: {
+      if (!bwi || !bwi->GetActiveTabInterface()) {
+        return false;
+      }
+
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::GOOGLE_API_KEYS_INFOBAR_DELEGATE)) {
+        if (!browser_infobar_manager) {
+          return false;
+        }
+        browser_infobar_manager->Show(
+            bwi->GetActiveTabInterface(),
+            infobars::InfoBarDelegate::GOOGLE_API_KEYS_INFOBAR_DELEGATE);
+      } else {
+        content::WebContents* web_contents =
+            bwi->GetActiveTabInterface()->GetContents();
+        infobars::ContentInfoBarManager* infobar_manager =
+            infobars::ContentInfoBarManager::FromWebContents(web_contents);
+        if (!infobar_manager) {
+          return false;
+        }
+        GoogleApiKeysInfoBarDelegate::Create(infobar_manager);
+      }
+      return true;
     }
     case InfoBarType::kIncognitoConnectability: {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
