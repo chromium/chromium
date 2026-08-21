@@ -1407,24 +1407,38 @@ class GlicWebClientHandler
 
   void PanelWasClosed(base::OnceClosure done) override {
     host().SetInvocationSource(mojom::InvocationSource::kUnsupported);
-    web_client_->NotifyPanelWasClosed(
-        mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(done)));
+    if (web_client_) {
+      web_client_->NotifyPanelWasClosed(
+          mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(done)));
+    } else {
+      std::move(done).Run();
+    }
   }
 
   void StopMicrophone(base::OnceClosure done) override {
-    web_client_->StopMicrophone(std::move(done));
+    if (web_client_) {
+      web_client_->StopMicrophone(std::move(done));
+    } else {
+      std::move(done).Run();
+    }
   }
 
   void ManualResizeChanged(bool resizing) override {
-    web_client_->NotifyManualResizeChanged(resizing);
+    if (web_client_) {
+      web_client_->NotifyManualResizeChanged(resizing);
+    }
   }
 
   void NotifyAdditionalContext(mojom::AdditionalContextPtr context) override {
-    web_client_->NotifyAdditionalContext(std::move(context));
+    if (web_client_) {
+      web_client_->NotifyAdditionalContext(std::move(context));
+    }
   }
 
   void NotifyActorTaskListRowClicked(int32_t task_id) override {
-    web_client_->NotifyActorTaskListRowClicked(task_id);
+    if (web_client_) {
+      web_client_->NotifyActorTaskListRowClicked(task_id);
+    }
   }
 
   // BrowserAttachmentObserver implementation.
@@ -1690,7 +1704,9 @@ class GlicWebClientHandler
   }
 
   void NotifyInstanceActivationChanged(bool is_active) override {
-    web_client_->NotifyInstanceActivationChanged(is_active);
+    if (web_client_) {
+      web_client_->NotifyInstanceActivationChanged(is_active);
+    }
   }
 
   void MaybeNotifyFocusedTabChanged(
