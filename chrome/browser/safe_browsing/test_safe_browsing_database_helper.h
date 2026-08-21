@@ -53,16 +53,13 @@ class TestSafeBrowsingDatabaseHelper {
 
   // Only compatible with the kMock policy. Marks the hash prefix for the URL as
   // bad in the local database and inserts it into the full hash cache.
-  // TODO(crbug.com/362791941): Make params non-optional once all callers are
-  // migrated.
   void AddFullHashToDbAndFullHashCache(
       const GURL& bad_url,
       const safe_browsing::ListIdentifier& list_id,
       const safe_browsing::ThreatMetadata& threat_metadata,
-      safe_browsing::V5::ThreatType threat_type =
-          safe_browsing::V5::ThreatType::THREAT_TYPE_UNSPECIFIED,
-      bool is_warn_only = false,
-      Profile* profile = nullptr);
+      safe_browsing::V5::ThreatType threat_type,
+      bool is_warn_only,
+      Profile* profile);
 
   // Only marks the prefix as bad in the local database. Does not cache any full
   // hash response.

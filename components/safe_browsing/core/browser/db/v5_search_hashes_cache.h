@@ -84,11 +84,9 @@ class V5SearchHashesCache : public KeyedService,
   // `threat_type` is the V5 threat type to add to the cache entry.
   // `is_warn_only` specifies whether the threat is warning-only, adding the
   //  CANARY threat attribute if true.
-  // TODO(crbug.com/362791941): Make params non-optional once all callers are
-  // migrated.
   void CacheArtificialV5SearchHashesLookupVerdict(const GURL& url,
                                                   V5::ThreatType threat_type,
-                                                  bool is_warn_only = false);
+                                                  bool is_warn_only);
 
  private:
   friend class V5SearchHashesCacheTest;
