@@ -130,6 +130,44 @@ TEST_F(AccessibilityTest, TextAlternativeFromInterestForAttribute) {
   ASSERT_EQ("Button", ax_button->ComputedName());
 }
 
+TEST_F(AccessibilityTest, NativeLabelNameStripsLeadingAndTrailingWhitespace) {
+  auto expect_native_label_name_and_source_text =
+      [](const AXObject* ax_object, const String& expected_name) {
+        ax::mojom::blink::NameFrom name_from;
+        AXObject::NameSources name_sources;
+        EXPECT_EQ(expected_name,
+                  ax_object->GetName(name_from, nullptr, &name_sources));
+
+        const NameSource* native_label_source = nullptr;
+        for (const NameSource& source : name_sources) {
+          if (source.native_source == kAXTextFromNativeHTMLLabelFor ||
+              source.native_source == kAXTextFromNativeHTMLLabelWrapped) {
+            native_label_source = &source;
+            break;
+          }
+        }
+        ASSERT_NE(nullptr, native_label_source);
+        EXPECT_EQ(expected_name, native_label_source->text);
+      };
+
+  SetBodyInnerHTML(R"HTML(
+      <label><input id="leading"> foo</label>
+      <label>bar <input id="trailing"> </label>
+      <label><input id="internal">ok go</label>)HTML");
+
+  const AXObject* leading = GetAXObjectByElementId("leading");
+  EXPECT_EQ("foo", leading->ComputedName());
+  expect_native_label_name_and_source_text(leading, "foo");
+
+  const AXObject* trailing = GetAXObjectByElementId("trailing");
+  EXPECT_EQ("bar", trailing->ComputedName());
+  expect_native_label_name_and_source_text(trailing, "bar");
+
+  const AXObject* internal = GetAXObjectByElementId("internal");
+  EXPECT_EQ("ok go", internal->ComputedName());
+  expect_native_label_name_and_source_text(internal, "ok go");
+}
+
 TEST_F(AccessibilityTest, TextAlternativeFromPopoverTargetAttribute) {
   SetBodyInnerHTML(R"HTML(
       <div id="hint" popover="hint">Tooltip text</div>

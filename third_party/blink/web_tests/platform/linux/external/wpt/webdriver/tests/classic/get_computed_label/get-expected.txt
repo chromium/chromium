@@ -5,7 +5,5 @@ This is a wdspec test.
   AssertionError
 [FAIL] test_stale_element_reference[child_context]
   AssertionError
-[FAIL] test_get_computed_label[<label><input> foo</label>-input-foo]
-  AssertionError
 Harness: the test ran to completion.
 

@@ -7260,13 +7260,14 @@ String AXNodeObject::NativeTextAlternative(
       text_alternative =
           TextFromElements(false, visited, label_elements, related_objects);
       if (!text_alternative.IsNull()) {
+        text_alternative = text_alternative.StripWhiteSpace();
         *found_text_alternative = true;
         if (name_sources) {
           NameSource& source = name_sources->back();
           source.related_objects = *related_objects;
           source.text = text_alternative;
         } else {
-          return text_alternative.StripWhiteSpace();
+          return text_alternative;
         }
       } else if (name_sources) {
         name_sources->back().invalid = true;
