@@ -23,7 +23,7 @@ import {isMac} from '//resources/js/platform.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {SelectionLineState} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerInterface as SearchboxPageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerInterface as SearchboxPageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {browserProxyFactory, OmniboxEscapeAction} from './omnibox_popup.mojom-webui.js';
@@ -1121,6 +1121,18 @@ export class OmniboxPopupSearchboxElement extends
   private updateEditHistoryState_() {
     this.popupPageHandler_.setEditHistoryState(
         this.textfieldModel_.canUndo(), this.textfieldModel_.canRedo());
+  }
+
+  override computeMatchFillIntoEdit(match: AutocompleteMatch) {
+    const isDefaultMatch =
+        this.selectedMatchIndex === 0 && match.allowedToBeDefaultMatch;
+    // If default match, restore the original input text plus the inline
+    // autocompletion. If URL, it should not have https:// prepended to it.
+    if (isDefaultMatch && this.lastQueriedInput) {
+      return this.lastQueriedInput + match.inlineAutocompletion;
+    }
+
+    return super.computeMatchFillIntoEdit(match);
   }
 
   override handleKeyNavigation(e: KeyboardEvent) {

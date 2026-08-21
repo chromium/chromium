@@ -1596,6 +1596,69 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals('universe', inputEl.value);
  });
 
+ test(
+     'arrow up to default URL match restores typed text without https scheme',
+     async () => {
+       // Setup initial input state.
+       searchbox.getInputElement().inputElement.value = 'hello';
+       searchbox.lastQueriedInput = 'hello';
+       searchbox.activeQueryId = 0;
+
+       // Simulate autocomplete results.
+       const matches = [
+         createSearchMatchForTesting({
+           allowedToBeDefaultMatch: true,
+           isSearchType: false,
+           fillIntoEdit: 'https://helloworld.com',
+           inlineAutocompletion: 'world.com',
+         }),
+         createSearchMatchForTesting({
+           fillIntoEdit: 'hello second',
+         }),
+       ];
+       testProxy.page.autocompleteResultChanged(
+           createAutocompleteResultForTesting({
+             queryId: searchbox.activeQueryId,
+             input: 'hello',
+             matches: matches,
+           }));
+       await microtasksFinished();
+
+       assertTrue(searchbox.dropdownIsVisible);
+       assertEquals(
+           'helloworld.com', searchbox.getInputElement().inputElement.value);
+
+       // Arrow down to second match.
+       searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+         bubbles: true,
+         cancelable: true,
+         key: 'ArrowDown',
+       }));
+       await microtasksFinished();
+
+       assertEquals(1, searchbox.selectedMatchIndex);
+       assertEquals(
+           'hello second', searchbox.getInputElement().inputElement.value);
+
+       // Arrow up back to default match.
+       searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+         bubbles: true,
+         cancelable: true,
+         key: 'ArrowUp',
+       }));
+       await microtasksFinished();
+
+       assertEquals(0, searchbox.selectedMatchIndex);
+       assertEquals(
+           'helloworld.com', searchbox.getInputElement().inputElement.value);
+
+       // Check that internal state matches original query, meaning slicing
+       // worked properly and https:// wasn't prepended.
+       assertEquals('hello', searchbox.getInputElement().lastInput()?.text);
+       assertEquals(
+           'world.com', searchbox.getInputElement().lastInput()?.inline);
+     });
+
  suite('ContextEntrypoint', () => {
    test('CurrentTabChipShown', async () => {
      loadTimeData.overrideValues({
