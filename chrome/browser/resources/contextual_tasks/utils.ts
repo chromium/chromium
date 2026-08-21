@@ -30,7 +30,7 @@ export function showUnboundedMenu(
   if (enabled && dialogEl.showUnboundedElement) {
     const existingListener = toggleListeners.get(dialogEl);
     if (existingListener) {
-      dialogEl.removeEventListener('unbounded', existingListener);
+      dialogEl.removeEventListener('beforetoggle', existingListener);
     }
 
     dialogEl.setAttribute('unbounded', '');
@@ -38,22 +38,17 @@ export function showUnboundedMenu(
     const onUnboundedToggle = (event: Event) => {
       const toggleEvent = event as ToggleEvent;
       if (toggleEvent.newState === 'closed') {
-        if (toggleListeners.get(dialogEl) === onUnboundedToggle) {
-          dialogEl.removeAttribute('unbounded');
-          dialogEl.removeEventListener('unbounded', onUnboundedToggle);
-          toggleListeners.delete(dialogEl);
-          menu.close();
-        }
+        menu.close();
       }
     };
     toggleListeners.set(dialogEl, onUnboundedToggle);
-    dialogEl.addEventListener('unbounded', onUnboundedToggle);
+    dialogEl.addEventListener('beforetoggle', onUnboundedToggle);
 
     dialogEl.showUnboundedElement().catch((err: unknown) => {
       console.warn(`Failed to show unbounded ${menuName} menu:`, err);
       if (toggleListeners.get(dialogEl) === onUnboundedToggle) {
         dialogEl.removeAttribute('unbounded');
-        dialogEl.removeEventListener('unbounded', onUnboundedToggle);
+        dialogEl.removeEventListener('beforetoggle', onUnboundedToggle);
         toggleListeners.delete(dialogEl);
       }
     });
@@ -67,7 +62,7 @@ export function hideUnboundedMenu(
   if (!isOpen && dialogEl) {
     const listener = toggleListeners.get(dialogEl);
     if (listener) {
-      dialogEl.removeEventListener('unbounded', listener);
+      dialogEl.removeEventListener('beforetoggle', listener);
       toggleListeners.delete(dialogEl);
     }
     const wasUnbounded = dialogEl.hasAttribute('unbounded');

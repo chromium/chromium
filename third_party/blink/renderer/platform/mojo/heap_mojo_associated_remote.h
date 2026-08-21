@@ -79,6 +79,9 @@ class HeapMojoAssociatedRemote {
     wrapper_->associated_remote().Bind(std::move(pending_associated_remote),
                                        std::move(task_runner));
   }
+  [[nodiscard]] mojo::PendingAssociatedRemote<Interface> Unbind() {
+    return wrapper_->associated_remote().Unbind();
+  }
   void FlushForTesting() {
     return wrapper_->associated_remote().FlushForTesting();
   }

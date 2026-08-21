@@ -31,7 +31,7 @@
 promise_test(async t => {
   const target = document.getElementById('target');
 
-  target.addEventListener('unbounded', (e) => {
+  target.addEventListener('beforetoggle', (e) => {
     if (e.newState === 'closed') {
       target.removeAttribute('unbounded');
     }

@@ -159,7 +159,7 @@ export class UnboundedMenuManager {
   onContextMenuOpened(): void {
     const dialog = this.getDialog();
     if (dialog) {
-      dialog.addEventListener('unbounded', this.onToggle_);
+      dialog.addEventListener('beforetoggle', this.onToggle_);
       updateUnboundedElementVisibility(dialog, true);
     }
   }
@@ -167,7 +167,7 @@ export class UnboundedMenuManager {
   onContextMenuClosed(): void {
     const dialog = this.getDialog();
     if (dialog) {
-      dialog.removeEventListener('unbounded', this.onToggle_);
+      dialog.removeEventListener('beforetoggle', this.onToggle_);
       updateUnboundedElementVisibility(dialog, false);
     }
   }

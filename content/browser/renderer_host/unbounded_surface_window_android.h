@@ -30,11 +30,9 @@ namespace content {
 class RenderWidgetHostViewAndroid;
 class RenderWidgetHostViewBase;
 
-class UnboundedSurfaceWindowAndroid
-    : public UnboundedSurfaceWindow,
-      public viz::HostFrameSinkClient,
-      public cc::slim::LayerTreeClient,
-      public blink::mojom::UnboundedSurfaceHost {
+class UnboundedSurfaceWindowAndroid : public UnboundedSurfaceWindow,
+                                      public viz::HostFrameSinkClient,
+                                      public cc::slim::LayerTreeClient {
  public:
   static std::unique_ptr<UnboundedSurfaceWindowAndroid> Create(
       RenderWidgetHostViewAndroid* parent_view,
@@ -48,7 +46,7 @@ class UnboundedSurfaceWindowAndroid
 
   // UnboundedSurfaceWindow overrides:
   base::WeakPtr<UnboundedSurfaceWindow> GetWeakPtr() override;
-  bool is_valid() const override;
+  bool IsValid() const override;
   gfx::NativeWindow GetNativeWindow() const override;
   void SetBounds(const gfx::Rect& bounds_in_dips) override;
   viz::FrameSinkId GetFrameSinkId() const override;
@@ -67,8 +65,6 @@ class UnboundedSurfaceWindowAndroid
       base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback)
       override;
   void EnsureSurfaceSynchronizedForWebTest() override;
-  void Dismiss() override;
-
   // blink::mojom::UnboundedSurfaceHost overrides:
   void UpdateBounds(const gfx::Rect& bounds) override;
 
@@ -86,6 +82,9 @@ class UnboundedSurfaceWindowAndroid
   void DidFailToInitializeLayerTreeFrameSink() override;
   void DidSubmitCompositorFrame() override {}
   void DidLoseLayerTreeFrameSink() override;
+
+ protected:
+  void TeardownAndDestroy() override;
 
  private:
   UnboundedSurfaceWindowAndroid(
@@ -105,7 +104,6 @@ class UnboundedSurfaceWindowAndroid
   viz::ParentLocalSurfaceIdAllocator root_local_surface_id_allocator_;
   viz::ParentLocalSurfaceIdAllocator client_local_surface_id_allocator_;
   mojo::AssociatedReceiver<blink::mojom::UnboundedSurfaceHost> receiver_{this};
-  mojo::AssociatedRemote<blink::mojom::UnboundedSurfaceClient> client_remote_;
 
   raw_ptr<ui::WindowAndroid> window_android_ = nullptr;
   std::unique_ptr<AndroidSurfaceControlCompositor> compositor_;

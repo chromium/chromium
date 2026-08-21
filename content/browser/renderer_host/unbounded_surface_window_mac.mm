@@ -117,7 +117,7 @@ UnboundedSurfaceWindowMac::UnboundedSurfaceWindowMac(
   InitWindow(bounds_in_screen);
 }
 
-bool UnboundedSurfaceWindowMac::is_valid() const {
+bool UnboundedSurfaceWindowMac::IsValid() const {
   return window_ != nil;
 }
 
@@ -426,21 +426,15 @@ void UnboundedSurfaceWindowMac::UpdateBounds(const gfx::Rect& bounds) {
   }
 }
 
-void UnboundedSurfaceWindowMac::Dismiss() {
-  if (client_remote_.is_bound()) {
-    client_remote_->OnDismissed();
-    client_remote_.reset();
-  }
+void UnboundedSurfaceWindowMac::TeardownAndDestroy() {
   if (parent_view_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&RenderWidgetHostViewBase::DestroyUnboundedSurface,
-                       parent_view_->GetWeakPtr(), GetWeakPtr()));
+    parent_view_->DestroyUnboundedSurface(GetWeakPtr());
   }
 }
 
 void UnboundedSurfaceWindowMac::OnConnectionError() {
-  Dismiss();
+  dismiss_pending_ = true;
+  ScheduleDeferredDestroy();
 }
 
 void UnboundedSurfaceWindowMac::AcceleratedWidgetCALayerParamsUpdated(

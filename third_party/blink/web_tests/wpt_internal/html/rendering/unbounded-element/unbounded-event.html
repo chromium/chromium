@@ -21,10 +21,20 @@
 <script>
 promise_test(async t => {
   const element = document.getElementById('target');
+  let beforeToggleEvents = [];
   let toggleEvents = [];
-  element.addEventListener('unbounded', e => {
-    assert_true(e instanceof ToggleEvent, 'Event should be a ToggleEvent');
-    assert_equals(e.type, 'unbounded');
+
+  element.addEventListener('beforetoggle', e => {
+    assert_true(e instanceof ToggleEvent, 'beforetoggle should be a ToggleEvent');
+    assert_equals(e.type, 'beforetoggle');
+    assert_equals(e.bubbles, false);
+    assert_equals(e.target, element);
+    beforeToggleEvents.push({oldState: e.oldState, newState: e.newState, cancelable: e.cancelable});
+  });
+
+  element.addEventListener('toggle', e => {
+    assert_true(e instanceof ToggleEvent, 'toggle should be a ToggleEvent');
+    assert_equals(e.type, 'toggle');
     assert_equals(e.bubbles, false);
     assert_equals(e.cancelable, false);
     assert_equals(e.target, element);
@@ -34,61 +44,75 @@ promise_test(async t => {
   // 1. Test basic show
   await test_driver.bless("show");
   let showPromise = element.showUnboundedElement();
-  assert_equals(toggleEvents.length, 0, 'Should not fire synchronously on show call');
+  assert_equals(beforeToggleEvents.length, 1, 'Should fire beforetoggle synchronously on show call');
+  assert_equals(beforeToggleEvents[0].oldState, 'closed');
+  assert_equals(beforeToggleEvents[0].newState, 'open');
+  assert_equals(beforeToggleEvents[0].cancelable, false, 'Step 1 beforetoggle cancelable');
+  assert_equals(toggleEvents.length, 0, 'Should not fire toggle synchronously on show call');
   await showPromise;
-  // Because the show promise is resolved asynchronously after surface allocation,
-  // the event task has already run.
-  assert_equals(toggleEvents.length, 1, 'Should have fired one event when show promise resolves');
+  assert_equals(toggleEvents.length, 1, 'Should have fired toggle event when show promise resolves');
   assert_equals(toggleEvents[0].oldState, 'closed');
   assert_equals(toggleEvents[0].newState, 'open');
 
   // 2. Test basic hide
+  beforeToggleEvents = [];
   toggleEvents = [];
   let hidePromise = element.hideUnboundedElement();
-  assert_equals(toggleEvents.length, 0, 'Should not fire synchronously on hide call');
+  assert_equals(beforeToggleEvents.length, 1, 'Should fire beforetoggle synchronously on hide call');
+  assert_equals(beforeToggleEvents[0].oldState, 'open');
+  assert_equals(beforeToggleEvents[0].newState, 'closed');
+  assert_equals(beforeToggleEvents[0].cancelable, false, 'Step 2 beforetoggle cancelable');
+  assert_equals(toggleEvents.length, 0, 'Should not fire toggle synchronously when hide promise resolves');
   await hidePromise;
-  assert_equals(toggleEvents.length, 0, 'Should not fire synchronously when hide promise resolves');
   await new Promise(resolve => t.step_timeout(resolve, 0));
-  assert_equals(toggleEvents.length, 1, 'Should have fired one event');
+  assert_equals(toggleEvents.length, 1, 'Should have fired toggle event');
   assert_equals(toggleEvents[0].oldState, 'open');
   assert_equals(toggleEvents[0].newState, 'closed');
 
   // 3. Test immediate show/hide coalescing (closed -> open -> closed)
+  beforeToggleEvents = [];
   toggleEvents = [];
   await test_driver.bless("show/hide immediate");
   showPromise = element.showUnboundedElement();
   hidePromise = element.hideUnboundedElement();
-  assert_equals(toggleEvents.length, 0, 'Should not fire synchronously on show/hide');
+  assert_equals(beforeToggleEvents.length, 2, 'Should fire beforetoggle twice synchronously on show/hide');
+  assert_equals(beforeToggleEvents[0].cancelable, false, 'Step 3 show beforetoggle cancelable');
+  assert_equals(beforeToggleEvents[1].cancelable, false, 'Step 3 hide beforetoggle cancelable');
   // showPromise should be rejected with AbortError because show was aborted by hide.
   await promise_rejects_dom(t, 'AbortError', showPromise);
   await hidePromise;
   await new Promise(resolve => t.step_timeout(resolve, 0));
-  assert_equals(toggleEvents.length, 1, 'Should have fired one coalesced event');
+  assert_equals(toggleEvents.length, 1, 'Should have fired one coalesced toggle event');
   assert_equals(toggleEvents[0].oldState, 'closed');
   assert_equals(toggleEvents[0].newState, 'closed');
 
   // 4. Test immediate hide/show coalescing (open -> closed -> open)
-  // First, get it open again:
+  // First, get it open again (step 4 requires resetting the state to open first):
   await test_driver.bless("get open");
   await element.showUnboundedElement();
   await new Promise(resolve => t.step_timeout(resolve, 0));
 
+  beforeToggleEvents = [];
   toggleEvents = [];
   await test_driver.click(element);
   hidePromise = element.hideUnboundedElement();
   showPromise = element.showUnboundedElement();
   await hidePromise;
   await showPromise;
-  assert_equals(toggleEvents.length, 1, 'Should have fired one coalesced event');
+  assert_equals(toggleEvents.length, 1, 'Should have fired one coalesced toggle event');
   assert_equals(toggleEvents[0].oldState, 'open');
   assert_equals(toggleEvents[0].newState, 'open');
 
   // 5. Test attribute removal (open -> closed)
+  beforeToggleEvents = [];
   toggleEvents = [];
   element.removeAttribute('unbounded');
-  assert_equals(toggleEvents.length, 0, 'Should not fire synchronously on attribute removal');
+  assert_equals(beforeToggleEvents.length, 1, 'Should fire beforetoggle synchronously on attribute removal');
+  assert_equals(beforeToggleEvents[0].oldState, 'open');
+  assert_equals(beforeToggleEvents[0].newState, 'closed');
+  assert_equals(beforeToggleEvents[0].cancelable, false, 'Step 5 beforetoggle cancelable');
   await new Promise(resolve => t.step_timeout(resolve, 0));
-  assert_equals(toggleEvents.length, 1, 'Should have fired one event on attribute removal');
+  assert_equals(toggleEvents.length, 1, 'Should have fired toggle event on attribute removal');
   assert_equals(toggleEvents[0].oldState, 'open');
   assert_equals(toggleEvents[0].newState, 'closed');
 }, 'Verify unbounded event behavior.');

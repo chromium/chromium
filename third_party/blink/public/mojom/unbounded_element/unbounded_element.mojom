@@ -19,6 +19,13 @@ interface UnboundedSurfaceHost {
 
   // Updates the bounds of the allocated window in screen coordinates.
   UpdateBounds(gfx.mojom.Rect bounds);
+
+  // Signals that the renderer has presented a new frame after dismissing
+  // the unbounded window.
+  DidPresentFrameAfterDismissal();
+
+  // Signals that the renderer canceled dismissal via beforetoggle event.
+  DidCancelDismissal();
 };
 
 // Implemented on the renderer side to receive events from the browser.

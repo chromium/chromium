@@ -555,6 +555,8 @@ class CORE_EXPORT WebFrameWidgetImpl
           host_remote,
       ScriptPromiseResolver<IDLUndefined>* resolver);
   void UpdateUnboundedElementBounds(const gfx::Rect& bounds);
+  enum class UnboundedDismissReason { kTeardown, kProgrammatic, kInteractive };
+  void DismissUnboundedSurfaceState(UnboundedDismissReason reason);
   void IncrementActiveUnboundedElementCount() {
     active_unbounded_element_count_++;
   }
@@ -1488,7 +1490,6 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   UnboundedSurfaceState* GetOrCreateUnboundedSurfaceState(
       ExecutionContext* execution_context);
-  void DismissUnboundedSurfaceState(bool is_teardown);
   UnboundedSurfaceState* GetUnboundedSurfaceState() const {
     return unbounded_surface_state_.Get();
   }

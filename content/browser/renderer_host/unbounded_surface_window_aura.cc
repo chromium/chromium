@@ -143,7 +143,7 @@ base::WeakPtr<UnboundedSurfaceWindow> UnboundedSurfaceWindowAura::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-bool UnboundedSurfaceWindowAura::is_valid() const {
+bool UnboundedSurfaceWindowAura::IsValid() const {
   return window_ != nullptr;
 }
 
@@ -359,21 +359,15 @@ void UnboundedSurfaceWindowAura::UpdateBounds(const gfx::Rect& bounds) {
   }
 }
 
-void UnboundedSurfaceWindowAura::Dismiss() {
-  if (client_remote_.is_bound()) {
-    client_remote_->OnDismissed();
-    client_remote_.reset();
-  }
+void UnboundedSurfaceWindowAura::TeardownAndDestroy() {
   if (parent_view_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&RenderWidgetHostViewBase::DestroyUnboundedSurface,
-                       parent_view_->GetWeakPtr(), GetWeakPtr()));
+    parent_view_->DestroyUnboundedSurface(GetWeakPtr());
   }
 }
 
 void UnboundedSurfaceWindowAura::OnConnectionError() {
-  Dismiss();
+  dismiss_pending_ = true;
+  ScheduleDeferredDestroy();
 }
 
 void UnboundedSurfaceWindowAura::GetCompositorFrameSink(

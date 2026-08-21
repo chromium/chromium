@@ -2831,22 +2831,39 @@ WebFrameWidgetImpl::GetOrCreateUnboundedSurfaceState(
   return unbounded_surface_state_.Get();
 }
 
-void WebFrameWidgetImpl::DismissUnboundedSurfaceState(bool is_teardown) {
+void WebFrameWidgetImpl::DismissUnboundedSurfaceState(
+    UnboundedDismissReason reason) {
   CHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
   if (!unbounded_surface_state_) {
     return;
   }
   auto state = unbounded_surface_state_;
+
+  if (state->active_element_) {
+    UnboundedEvents events =
+        (reason == UnboundedDismissReason::kTeardown)
+            ? UnboundedEvents::kSuppress
+            : ((reason == UnboundedDismissReason::kInteractive)
+                   ? UnboundedEvents::kFireCancelable
+                   : UnboundedEvents::kFireNonCancelable);
+    if (!state->active_element_->SetUnboundedElementActive(false, events)) {
+      // beforetoggle was canceled - notify host and do not dismiss.
+      if (state->host_.is_bound()) {
+        state->host_->DidCancelDismissal();
+      }
+      return;
+    }
+  }
+
   unbounded_surface_state_ = nullptr;
-  state->host_.reset();
-  state->client_receiver_.reset();
+
   if (auto* resolver = state->unbounded_element_resolver_.Get()) {
     auto reject_promise = [](ScriptPromiseResolver<IDLUndefined>* resolver) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kAbortError,
           "The unbounded element was dismissed."));
     };
-    if (!is_teardown) {
+    if (reason != UnboundedDismissReason::kTeardown) {
       reject_promise(resolver);
     } else if (auto* context = resolver->GetExecutionContext()) {
       context->GetTaskRunner(TaskType::kInternalDefault)
@@ -2855,18 +2872,37 @@ void WebFrameWidgetImpl::DismissUnboundedSurfaceState(bool is_teardown) {
     }
     state->unbounded_element_resolver_ = nullptr;
   }
-  if (state->active_element_) {
-    state->active_element_->SetUnboundedElementActive(
-        false,
-        is_teardown ? UnboundedEvents::kSuppress : UnboundedEvents::kFire);
-  }
+
   if (auto* host = LayerTreeHost()) {
     host->DismissUnboundedFrameSink();
+  }
+
+  if (reason == UnboundedDismissReason::kTeardown) {
+    state->host_.reset();
+    state->client_receiver_.reset();
+  } else {
+    if (auto* host = LayerTreeHost()) {
+      host->SetNeedsCommitWithForcedRedraw();
+    }
+    if (state->host_.is_bound()) {
+      NotifyPresentationTime(BindOnce(
+          [](mojo::PendingAssociatedRemote<mojom::blink::UnboundedSurfaceHost>
+                 pending_host,
+             const viz::FrameTimingDetails&) {
+            if (pending_host.is_valid()) {
+              mojo::AssociatedRemote<mojom::blink::UnboundedSurfaceHost> host(
+                  std::move(pending_host));
+              host->DidPresentFrameAfterDismissal();
+            }
+          },
+          state->host_.Unbind()));
+    }
+    state->client_receiver_.reset();
   }
 }
 
 void WebFrameWidgetImpl::UnboundedContextDestroyed() {
-  DismissUnboundedSurfaceState(/*is_teardown=*/true);
+  DismissUnboundedSurfaceState(UnboundedDismissReason::kTeardown);
 }
 
 HTMLElement* WebFrameWidgetImpl::GetActiveUnboundedElement() const {
@@ -2987,7 +3023,7 @@ void WebFrameWidgetImpl::OnSurfaceAllocated(
 }
 
 void WebFrameWidgetImpl::OnDismissed() {
-  DismissUnboundedSurfaceState(/*is_teardown=*/false);
+  DismissUnboundedSurfaceState(UnboundedDismissReason::kInteractive);
 }
 
 void WebFrameWidgetImpl::UpdateUnboundedElementBounds(const gfx::Rect& bounds) {

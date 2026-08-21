@@ -685,7 +685,8 @@ TEST_P(CompositingReasonFinderTest, UnboundedElementCompositingReason) {
                 *GetLayoutObjectByElementId("target")));
 
   // 3. With attribute AND active: kUnboundedElement
-  html_element->SetUnboundedElementActive(true);
+  html_element->SetUnboundedElementActive(true,
+                                          UnboundedEvents::kFireNonCancelable);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(CompositingReasons{CompositingReason::kUnboundedElement},
             CompositingReasonFinder::DirectReasonsForPaintProperties(

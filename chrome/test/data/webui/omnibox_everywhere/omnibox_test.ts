@@ -306,7 +306,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     contextMenu.dispatchEvent(new CustomEvent('context-menu-opened'));
     await omnibox.updateComplete;
 
-    const event = new ToggleEvent('unbounded', {
+    const event = new ToggleEvent('beforetoggle', {
       oldState: 'open',
       newState: 'closed',
     });
@@ -593,7 +593,7 @@ suite('OmniboxEverywhereComposeboxTest', () => {
     composebox.onContextMenuOpened();
     await composebox.updateComplete;
 
-    const event = new ToggleEvent('unbounded', {
+    const event = new ToggleEvent('beforetoggle', {
       oldState: 'open',
       newState: 'closed',
     });
@@ -801,7 +801,7 @@ suite('UnboundedUtilsTest', () => {
     manager.onContextMenuOpened();
     assertTrue(showCalled);
 
-    const event = new ToggleEvent('unbounded', {
+    const event = new ToggleEvent('beforetoggle', {
       oldState: 'open',
       newState: 'closed',
     });

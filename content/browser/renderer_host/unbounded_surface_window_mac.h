@@ -37,8 +37,7 @@ class RenderWidgetHostViewBase;
 
 class UnboundedSurfaceWindowMac : public UnboundedSurfaceWindow,
                                   public viz::HostFrameSinkClient,
-                                  public ui::AcceleratedWidgetMacNSView,
-                                  public blink::mojom::UnboundedSurfaceHost {
+                                  public ui::AcceleratedWidgetMacNSView {
  public:
   UnboundedSurfaceWindowMac(
       RenderWidgetHostViewMac* parent_view,
@@ -51,7 +50,7 @@ class UnboundedSurfaceWindowMac : public UnboundedSurfaceWindow,
 
   // UnboundedSurfaceWindow overrides:
   base::WeakPtr<UnboundedSurfaceWindow> GetWeakPtr() override;
-  bool is_valid() const override;
+  bool IsValid() const override;
   gfx::NativeWindow GetNativeWindow() const override;
   void SetBounds(const gfx::Rect& bounds_in_screen) override;
   viz::FrameSinkId GetFrameSinkId() const override;
@@ -78,8 +77,6 @@ class UnboundedSurfaceWindowMac : public UnboundedSurfaceWindow,
   void RouteMouseEvent(const blink::WebMouseEvent& event) override;
   void RouteKeyboardEvent(NSEvent* event);
 
-  void Dismiss() override;
-
   // viz::HostFrameSinkClient overrides:
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override {
   }
@@ -89,6 +86,9 @@ class UnboundedSurfaceWindowMac : public UnboundedSurfaceWindow,
   // ui::AcceleratedWidgetMacNSView overrides:
   void AcceleratedWidgetCALayerParamsUpdated(
       gfx::CALayerParams ca_layer_params) override;
+
+ protected:
+  void TeardownAndDestroy() override;
 
  private:
   struct DisplayInfo {
@@ -107,7 +107,6 @@ class UnboundedSurfaceWindowMac : public UnboundedSurfaceWindow,
   viz::FrameSinkId frame_sink_id_;
   viz::ParentLocalSurfaceIdAllocator local_surface_id_allocator_;
   mojo::AssociatedReceiver<blink::mojom::UnboundedSurfaceHost> receiver_{this};
-  mojo::AssociatedRemote<blink::mojom::UnboundedSurfaceClient> client_remote_;
 #ifdef __OBJC__
   NSWindow* __strong window_ = nil;
 #else

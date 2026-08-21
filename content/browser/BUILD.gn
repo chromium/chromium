@@ -1902,6 +1902,7 @@ source_set("browser") {
     "renderer_host/transient_allow_popup.h",
     "renderer_host/transient_focus_source_user_activation.cc",
     "renderer_host/transient_focus_source_user_activation.h",
+    "renderer_host/unbounded_surface_window.cc",
     "renderer_host/unbounded_surface_window.h",
     "renderer_host/view_transition_commit_deferring_condition.cc",
     "renderer_host/view_transition_commit_deferring_condition.h",

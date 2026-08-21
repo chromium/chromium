@@ -69,7 +69,7 @@ UnboundedSurfaceWindowAndroid::UnboundedSurfaceWindowAndroid(
 
 UnboundedSurfaceWindowAndroid::~UnboundedSurfaceWindowAndroid() {
   parent_view_ = nullptr;
-  Dismiss();
+  TeardownAndDestroy();
   if (root_frame_sink_id_.is_valid() && client_frame_sink_id_.is_valid()) {
     GetHostFrameSinkManager()->UnregisterFrameSinkHierarchy(
         root_frame_sink_id_, client_frame_sink_id_);
@@ -85,7 +85,7 @@ UnboundedSurfaceWindowAndroid::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-bool UnboundedSurfaceWindowAndroid::is_valid() const {
+bool UnboundedSurfaceWindowAndroid::IsValid() const {
   return !j_popup_window_.is_null();
 }
 
@@ -94,7 +94,7 @@ gfx::NativeWindow UnboundedSurfaceWindowAndroid::GetNativeWindow() const {
 }
 
 void UnboundedSurfaceWindowAndroid::SetBounds(const gfx::Rect& bounds_in_dips) {
-  if (!is_valid() || !parent_view_) {
+  if (!IsValid() || !parent_view_) {
     return;
   }
   bool size_changed = bounds_in_dips_.size() != bounds_in_dips.size();
@@ -210,25 +210,17 @@ void UnboundedSurfaceWindowAndroid::DidLoseLayerTreeFrameSink() {
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-void UnboundedSurfaceWindowAndroid::Dismiss() {
-  if (!is_valid()) {
-    return;
-  }
+void UnboundedSurfaceWindowAndroid::TeardownAndDestroy() {
   compositor_.reset();
   surface_layer_ = nullptr;
   window_android_ = nullptr;
-  if (client_remote_.is_bound()) {
-    client_remote_->OnDismissed();
-    client_remote_.reset();
+  if (!j_popup_window_.is_null()) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_UnboundedSurfacePopupWindow_dismissPopup(env, j_popup_window_);
+    j_popup_window_.Reset();
   }
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_UnboundedSurfacePopupWindow_dismissPopup(env, j_popup_window_);
-  j_popup_window_.Reset();
   if (parent_view_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&RenderWidgetHostViewBase::DestroyUnboundedSurface,
-                       parent_view_, GetWeakPtr()));
+    parent_view_->DestroyUnboundedSurface(GetWeakPtr());
   }
 }
 
@@ -324,7 +316,8 @@ bool UnboundedSurfaceWindowAndroid::InitWindow(
 }
 
 void UnboundedSurfaceWindowAndroid::OnConnectionError() {
-  Dismiss();
+  dismiss_pending_ = true;
+  ScheduleDeferredDestroy();
 }
 
 }  // namespace content
