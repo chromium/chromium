@@ -44,7 +44,7 @@ BASE_FEATURE(kAncestorThrottleEvaluateRedirectSource,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables desktop-style scrollbars.
-BASE_FEATURE(kAndroidDesktopStyleScrollbars, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidDesktopStyleScrollbars, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allows Blink to request fonts from the Android Downloadable Fonts API through
 // the service implemented on the Java side.
