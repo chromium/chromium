@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.download.settings.DownloadSettings;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -44,8 +44,8 @@ public class DownloadSettingsTest {
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule
-    public final SettingsActivityTestRule<DownloadSettings> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(DownloadSettings.class);
+    public final SettingsTestRule<DownloadSettings> mSettingsActivityTestRule =
+            new SettingsTestRule<>(DownloadSettings.class);
 
     @Rule
     public final RuleChain mRuleChain =
