@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -43,16 +44,17 @@ InkDropHighlight::InkDropHighlight(
     std::unique_ptr<BasePaintedLayerDelegate> layer_delegate)
     : center_point_(center_point),
       layer_delegate_(std::move(layer_delegate)),
-      layer_(std::make_unique<ui::LayerTextured>()) {
+      layer_(std::in_place_type<ui::LayerTextured>) {
+  ui::LayerTextured& layer = std::get<ui::LayerTextured>(layer_);
   const gfx::RectF painted_bounds = layer_delegate_->GetPaintedBounds();
   size_ = painted_bounds.size();
 
-  layer_->SetBounds(gfx::ToEnclosingRect(painted_bounds));
-  layer_->SetFillsBoundsOpaquely(false);
-  layer_->set_delegate(layer_delegate_.get());
-  layer_->SetVisible(false);
-  layer_->SetMasksToBounds(false);
-  layer_->SetName("InkDropHighlight:layer");
+  layer.SetBounds(gfx::ToEnclosingRect(painted_bounds));
+  layer.SetFillsBoundsOpaquely(false);
+  layer.set_delegate(layer_delegate_.get());
+  layer.SetVisible(false);
+  layer.SetMasksToBounds(false);
+  layer.SetName("InkDropHighlight:layer");
 }
 
 InkDropHighlight::InkDropHighlight(const gfx::SizeF& size,
@@ -64,7 +66,7 @@ InkDropHighlight::InkDropHighlight(const gfx::SizeF& size,
           std::make_unique<RoundedRectangleLayerDelegate>(color,
                                                           size,
                                                           corner_radius)) {
-  layer_->SetOpacity(visible_opacity_);
+  layer()->SetOpacity(visible_opacity_);
 }
 
 InkDropHighlight::InkDropHighlight(const gfx::Size& size,
@@ -74,13 +76,14 @@ InkDropHighlight::InkDropHighlight(const gfx::Size& size,
     : InkDropHighlight(gfx::SizeF(size), corner_radius, center_point, color) {}
 
 InkDropHighlight::InkDropHighlight(const gfx::SizeF& size, SkColor base_color)
-    : size_(size), layer_(std::make_unique<ui::LayerSolidColor>()) {
-  layer_->AsSolidColor()->SetColor(SkColor4f::FromColor(base_color));
-  layer_->SetBounds(gfx::Rect(gfx::ToRoundedSize(size)));
-  layer_->SetVisible(false);
-  layer_->SetMasksToBounds(false);
-  layer_->SetOpacity(visible_opacity_);
-  layer_->SetName("InkDropHighlight:solid_color_layer");
+    : size_(size), layer_(std::in_place_type<ui::LayerSolidColor>) {
+  ui::LayerSolidColor& layer = std::get<ui::LayerSolidColor>(layer_);
+  layer.SetColor(SkColor4f::FromColor(base_color));
+  layer.SetBounds(gfx::Rect(gfx::ToRoundedSize(size)));
+  layer.SetVisible(false);
+  layer.SetMasksToBounds(false);
+  layer.SetOpacity(visible_opacity_);
+  layer.SetName("InkDropHighlight:solid_color_layer");
 }
 
 InkDropHighlight::~InkDropHighlight() {
@@ -94,8 +97,8 @@ bool InkDropHighlight::IsFadingInOrVisible() const {
 }
 
 void InkDropHighlight::FadeIn(const base::TimeDelta& duration) {
-  layer_->SetOpacity(kHiddenOpacity);
-  layer_->SetVisible(true);
+  layer()->SetOpacity(kHiddenOpacity);
+  layer()->SetVisible(true);
   AnimateFade(AnimationType::kFadeIn, duration);
 }
 
@@ -112,7 +115,7 @@ void InkDropHighlight::AnimateFade(AnimationType animation_type,
   last_animation_initiated_was_fade_in_ =
       animation_type == AnimationType::kFadeIn;
 
-  layer_->SetTransform(CalculateTransform());
+  layer()->SetTransform(CalculateTransform());
 
   const base::TimeDelta effective_duration =
       gfx::Animation::RichAnimationDuration(duration);
@@ -136,7 +139,7 @@ void InkDropHighlight::AnimateFade(AnimationType animation_type,
                                 InkDropAnimationEndedReason::PRE_EMPTED))
       .Once()
       .SetDuration(effective_duration)
-      .SetOpacity(layer_.get(), opacity, gfx::Tween::EASE_IN_OUT);
+      .SetOpacity(layer(), opacity, gfx::Tween::EASE_IN_OUT);
 }
 
 gfx::Transform InkDropHighlight::CalculateTransform() const {
@@ -151,8 +154,8 @@ gfx::Transform InkDropHighlight::CalculateTransform() const {
   transform.Translate(-layer_offset.x(), -layer_offset.y());
 
   // Add subpixel correction to the transform.
-  transform.PostConcat(
-      GetTransformSubpixelCorrection(transform, layer_->device_scale_factor()));
+  transform.PostConcat(GetTransformSubpixelCorrection(
+      transform, layer()->device_scale_factor()));
 
   return transform;
 }
@@ -166,10 +169,9 @@ void InkDropHighlight::AnimationStartedCallback(AnimationType animation_type) {
 void InkDropHighlight::AnimationEndedCallback(
     AnimationType animation_type,
     InkDropAnimationEndedReason reason) {
-  // AnimationEndedCallback() may be invoked when this is being destroyed and
-  // |layer_| may be null.
-  if (animation_type == AnimationType::kFadeOut && layer_) {
-    layer_->SetVisible(false);
+  // AnimationEndedCallback() may be invoked when this is being destroyed.
+  if (animation_type == AnimationType::kFadeOut) {
+    layer()->SetVisible(false);
   }
 
   if (observer_) {
