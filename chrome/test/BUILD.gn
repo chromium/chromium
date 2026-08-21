@@ -810,6 +810,9 @@ static_library("test_support") {
       "//chrome/browser/ui/views:chrome_constrained_window_views_client",
       "//chrome/browser/ui/views:content_setting_site_row_view",
       "//chrome/browser/ui/views:tab_icon_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_bnpl_footnote_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_notice_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_search_bar_view",
     ]
     deps += [
       "//chrome/browser/ui/color:mixers",
@@ -2339,6 +2342,8 @@ if (!is_android) {
       "//chrome/browser/ui/views/accessibility",
       "//chrome/browser/ui/views/app_menu:browser_tests",
       "//chrome/browser/ui/views/apps/app_info_dialog:browser_tests",
+      "//chrome/browser/ui/views/autofill/popup:popup_bnpl_footnote_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_notice_view",
       "//chrome/browser/ui/views/bookmarks:test_support",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/data_sharing",
@@ -3370,6 +3375,9 @@ if (!is_android) {
       "//chrome/browser/ui/views:content_setting_site_row_view",
       "//chrome/browser/ui/views:layout_provider",
       "//chrome/browser/ui/views:tab_icon_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_bnpl_footnote_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_notice_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_search_bar_view",
     ]
 
     if (enable_on_device_translation) {
@@ -6659,6 +6667,7 @@ test("unit_tests") {
     }
 
     public_deps += [
+      "//chrome/browser/ui/views/autofill/popup:popup_notice_view",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar",
     ]
@@ -7725,6 +7734,9 @@ test("unit_tests") {
       "//chrome/browser/ui/views:tab_icon_view",
       "//chrome/browser/ui/views/apps/app_info_dialog:unit_tests",
       "//chrome/browser/ui/views/autofill/payments:dialog_view_ids",
+      "//chrome/browser/ui/views/autofill/popup:popup_bnpl_footnote_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_notice_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_search_bar_view",
       "//chrome/browser/ui/views/bookmarks",
       "//chrome/browser/ui/views/bookmarks:unit_tests",
       "//chrome/browser/ui/views/commerce:unit_tests",
@@ -8091,6 +8103,7 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/test:dialog",
+      "//chrome/browser/ui/views/autofill/popup:popup_notice_view",
       "//chrome/browser/ui/views/frame:toolbar_button_provider",
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/page_action:page_action_test_support",
@@ -8687,6 +8700,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/autofill/payments:mandatory_reauth_confirmation_bubble_view",
       "//chrome/browser/ui/views/autofill/payments:mandatory_reauth_opt_in_bubble_view",
       "//chrome/browser/ui/views/autofill/payments:save_iban_bubble_view",
+      "//chrome/browser/ui/views/autofill/popup:popup_notice_view",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/contextual_tasks:interactive_ui_tests",
       "//chrome/browser/ui/views/download",
@@ -9073,6 +9087,9 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/views:external_protocol_dialog_test_support",
         "//chrome/browser/ui/views:layout_provider",
         "//chrome/browser/ui/views:tab_icon_view",
+        "//chrome/browser/ui/views/autofill/popup:popup_bnpl_footnote_view",
+        "//chrome/browser/ui/views/autofill/popup:popup_notice_view",
+        "//chrome/browser/ui/views/autofill/popup:popup_search_bar_view",
         "//chrome/browser/ui/views/bookmarks",
         "//chrome/browser/ui/views/bookmarks:interactive_ui_tests",
         "//chrome/browser/ui/views/bookmarks/saved_tab_groups:interactive_ui_tests",

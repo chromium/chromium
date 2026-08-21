@@ -16,6 +16,7 @@ source_set("popup") {
   ]
   public_deps = [
     "//base",
+    "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
@@ -134,5 +135,72 @@ source_set("password_favicon_loader") {
     "//net/traffic_annotation",
     "//ui/gfx",
     "//url",
+  ]
+}
+
+source_set("popup_bnpl_footnote_view") {
+  public = [ "popup_bnpl_footnote_view.h" ]
+  sources = [ "popup_bnpl_footnote_view.cc" ]
+  public_deps = [
+    "//base",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    ":popup",
+    "//chrome/browser/autofill",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:chrome_pages",
+    "//chrome/browser/ui/autofill",
+    "//chrome/common:constants",
+    "//components/autofill/core/browser",
+    "//components/strings:components_strings",
+    "//ui/base",
+    "//ui/views",
+  ]
+}
+
+source_set("popup_notice_view") {
+  public = [ "popup_notice_view.h" ]
+  sources = [ "popup_notice_view.cc" ]
+  public_deps = [
+    "//base",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    ":popup",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/ui:chrome_pages",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/autofill/core/browser",
+    "//components/strings:components_strings",
+    "//components/vector_icons",
+    "//ui/base",
+    "//ui/color",
+    "//ui/views",
+  ]
+}
+
+source_set("popup_search_bar_view") {
+  public = [ "popup_search_bar_view.h" ]
+  sources = [ "popup_search_bar_view.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/autofill",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/omnibox/browser:vector_icons",
+    "//components/strings:components_strings",
+    "//components/vector_icons",
+    "//ui/base",
+    "//ui/color",
+    "//ui/events",
+    "//ui/views",
   ]
 }
