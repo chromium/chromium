@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
@@ -82,7 +83,7 @@ public class NtpThemeSyncHistoryRecyclerViewAdaptor
                             /* isFromClick= */ true);
                 };
 
-        holder.bind(ntpBackgroundData, clickListener, mSelectedPosition);
+        holder.bind(mContext, ntpBackgroundData, clickListener, mSelectedPosition);
     }
 
     @Override
@@ -162,22 +163,29 @@ public class NtpThemeSyncHistoryRecyclerViewAdaptor
          * Binds the background data, a click listener and the current selected position to the
          * view.
          *
+         * @param context The activity context to get resources.
          * @param backgroundData The background data to bind.
          * @param onClickListener The click listener for the item view.
          * @param selectedPosition The currently selected position in the adapter.
          */
         void bind(
+                Context context,
                 NtpBackgroundDataBase backgroundData,
                 View.OnClickListener onClickListener,
                 int selectedPosition) {
             bindImpl(
-                    backgroundData, onClickListener, selectedPosition, getBindingAdapterPosition());
+                    context,
+                    backgroundData,
+                    onClickListener,
+                    selectedPosition,
+                    getBindingAdapterPosition());
         }
 
         /**
          * Binds the background data, a click listener, the current selected position, and the
          * adapter position to the view.
          *
+         * @param context The activity context to get resources.
          * @param backgroundData The background data to bind.
          * @param onClickListener The click listener for the item view.
          * @param selectedPosition The currently selected position in the adapter.
@@ -185,17 +193,21 @@ public class NtpThemeSyncHistoryRecyclerViewAdaptor
          */
         @VisibleForTesting
         void bindImpl(
+                Context context,
                 NtpBackgroundDataBase backgroundData,
                 View.OnClickListener onClickListener,
                 int selectedPosition,
                 int bindingAdaptorPosition) {
             ImageView backgroundView = itemView.findViewById(R.id.background_view);
             Drawable image = backgroundData.getImageDrawable();
+            if (backgroundData.getBackgroundType()
+                    == NtpCustomizationUtils.NtpBackgroundType.DEFAULT) {
+                image = context.getDrawable(R.drawable.default_theme_icon);
+            }
             if (image != null) {
-                backgroundView.setImageBitmap(null);
-                backgroundView.setForeground(image);
+                backgroundView.setImageDrawable(image);
             } else {
-                backgroundView.setForeground(null);
+                backgroundView.setImageDrawable(null);
                 backgroundData.getBitmapOrLoadImage(
                         (result) -> backgroundView.setImageBitmap(result));
             }

@@ -40,6 +40,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.NtpThemeSyncHistoryRecyclerViewAdaptor.OnItemClickCallback;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
@@ -80,8 +81,10 @@ public class NtpThemeSyncHistoryRecyclerViewAdaptorUnitTest {
         mDataList.add(mData2);
 
         when(mData1.getPlatformType()).thenReturn(PlatformType.ANDROID);
+        when(mData1.getBackgroundType()).thenReturn(NtpBackgroundType.CHROME_COLOR);
         when(mData1.getImageDrawable()).thenReturn(mDrawable);
         when(mData2.getPlatformType()).thenReturn(PlatformType.DESKTOP);
+        when(mData2.getBackgroundType()).thenReturn(NtpBackgroundType.CHROME_COLOR);
         when(mData2.getImageDrawable()).thenReturn(mDrawable);
 
         mAdapter =
@@ -122,7 +125,8 @@ public class NtpThemeSyncHistoryRecyclerViewAdaptorUnitTest {
         int bindingAdaptorPosition = 0;
 
         // Test selected item case, ANDROID (no badge).
-        mViewHolder.bindImpl(mData1, mOnClickListener, selectedPosition, bindingAdaptorPosition);
+        mViewHolder.bindImpl(
+                mContext, mData1, mOnClickListener, selectedPosition, bindingAdaptorPosition);
         assertTrue(mViewHolder.itemView.isActivated());
         assertTrue(mViewHolder.itemView.isSelected());
         ImageView badgeView = mViewHolder.itemView.findViewById(R.id.platform_badge);
@@ -130,13 +134,15 @@ public class NtpThemeSyncHistoryRecyclerViewAdaptorUnitTest {
 
         // Test unselected item case, DESKTOP (has badge).
         bindingAdaptorPosition = 1;
-        mViewHolder.bindImpl(mData2, mOnClickListener, selectedPosition, bindingAdaptorPosition);
+        mViewHolder.bindImpl(
+                mContext, mData2, mOnClickListener, selectedPosition, bindingAdaptorPosition);
         assertFalse(mViewHolder.itemView.isActivated());
         assertFalse(mViewHolder.itemView.isSelected());
         assertEquals(View.VISIBLE, badgeView.getVisibility());
 
         // Test recycling: bind back to ANDROID and verify badge is hidden.
-        mViewHolder.bindImpl(mData1, mOnClickListener, selectedPosition, bindingAdaptorPosition);
+        mViewHolder.bindImpl(
+                mContext, mData1, mOnClickListener, selectedPosition, bindingAdaptorPosition);
         assertEquals(View.GONE, badgeView.getVisibility());
     }
 
@@ -239,6 +245,7 @@ public class NtpThemeSyncHistoryRecyclerViewAdaptorUnitTest {
         mViewHolder = mAdapter.onCreateViewHolder(parent, /* viewType= */ 0);
 
         // Configure mData1 to return null drawable and null bitmap (needs loading).
+        when(mData1.getBackgroundType()).thenReturn(NtpBackgroundType.IMAGE_FROM_DISK);
         when(mData1.getImageDrawable()).thenReturn(null);
         when(mData1.getImageBitmapForTesting()).thenReturn(null);
 
@@ -253,6 +260,7 @@ public class NtpThemeSyncHistoryRecyclerViewAdaptorUnitTest {
                 .getBitmapOrLoadImage(any());
 
         mViewHolder.bindImpl(
+                mContext,
                 mData1,
                 mOnClickListener,
                 /* selectedPosition= */ 0,
@@ -265,5 +273,25 @@ public class NtpThemeSyncHistoryRecyclerViewAdaptorUnitTest {
         // Verify foreground (drawable) is cleared and image bitmap is set after load.
         assertNull(backgroundView.getForeground());
         assertNotNull(backgroundView.getDrawable());
+    }
+
+    @Test
+    public void testBindViewHolder_defaultBackgroundType() {
+        ViewGroup parent = new FrameLayout(mContext);
+        mViewHolder = mAdapter.onCreateViewHolder(parent, /* viewType= */ 0);
+
+        when(mData1.getBackgroundType()).thenReturn(NtpBackgroundType.DEFAULT);
+        when(mData1.getImageDrawable()).thenReturn(null);
+
+        mViewHolder.bindImpl(
+                mContext,
+                mData1,
+                mOnClickListener,
+                /* selectedPosition= */ 0,
+                /* bindingAdaptorPosition= */ 0);
+
+        ImageView backgroundView = mViewHolder.itemView.findViewById(R.id.background_view);
+        assertNotNull(backgroundView.getDrawable());
+        verify(mData1, never()).getBitmapOrLoadImage(any());
     }
 }

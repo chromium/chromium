@@ -21,7 +21,7 @@ import java.util.Objects;
 
 /** Base class for NTP background data. */
 @NullMarked
-public abstract class NtpBackgroundDataBase {
+public class NtpBackgroundDataBase {
     public static final String PORTRAIT_MATRIX_KEY = "portraitMatrix";
     public static final String LANDSCAPE_MATRIX_KEY = "landscapeMatrix";
     public static final String BACKGROUND_IMAGE_INFO_KEY = "backgroundImageInfo";
@@ -33,7 +33,10 @@ public abstract class NtpBackgroundDataBase {
 
     private final @PlatformType int mPlatformType;
 
-    protected NtpBackgroundDataBase(@PlatformType int platformType) {
+    /**
+     * @param platformType The type of platform where this NTP background data comes from.
+     */
+    public NtpBackgroundDataBase(@PlatformType int platformType) {
         mPlatformType = platformType;
     }
 
@@ -43,7 +46,9 @@ public abstract class NtpBackgroundDataBase {
     }
 
     /** Returns the NTP background type. */
-    public abstract @NtpBackgroundType int getBackgroundType();
+    public @NtpBackgroundType int getBackgroundType() {
+        return NtpBackgroundType.DEFAULT;
+    }
 
     /** Returns the image drawable of this background data. */
     public @Nullable Drawable getImageDrawable() {

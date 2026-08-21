@@ -341,7 +341,8 @@ public class NtpCustomizationConfigManager {
      */
     public void onBackgroundDataChanged(
             Context context, @Nullable NtpBackgroundDataBase backgroundData) {
-        if (backgroundData == null) {
+        if (backgroundData == null
+                || backgroundData.getBackgroundType() == NtpBackgroundType.DEFAULT) {
             onBackgroundReset();
         } else if (backgroundData instanceof NtpBackgroundDataColor ntpBackgroundDataColor) {
             if (ntpBackgroundDataColor.getThemeColorId() == NtpThemeColorId.DEFAULT) {

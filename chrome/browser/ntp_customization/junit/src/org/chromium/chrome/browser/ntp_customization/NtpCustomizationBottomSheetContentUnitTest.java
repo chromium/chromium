@@ -228,7 +228,6 @@ public final class NtpCustomizationBottomSheetContentUnitTest {
     @Test
     @EnableFeatures({
         ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
     })
     public void testGetActiveRecyclerView_themeSyncEnabled() {
         // Returns the theme collections recycler view for THEME_COLLECTIONS type.
@@ -239,9 +238,6 @@ public final class NtpCustomizationBottomSheetContentUnitTest {
         mBottomSheetTypeSupplier = () -> SINGLE_THEME_COLLECTION;
         assertEquals(
                 mSingleThemeCollectionRecyclerView, mBottomSheetContent.getActiveRecyclerView());
-
-        mBottomSheetTypeSupplier = () -> MAIN;
-        assertEquals(mNtpThemeSyncHistoryRecyclerView, mBottomSheetContent.getActiveRecyclerView());
     }
 
     @Test

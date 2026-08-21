@@ -141,9 +141,7 @@ public class NtpThemeSyncHistoryCoordinator {
 
     /** Initialize default options for users to choose. */
     private void initDefaultOptions(Context context) {
-        mDefaultOptions.add(
-                new NtpBackgroundDataColor(
-                        context, PlatformType.ANDROID, NtpThemeColorId.DEFAULT, false));
+        mDefaultOptions.add(new NtpBackgroundDataBase(PlatformType.ANDROID));
         mDefaultOptions.add(
                 new NtpBackgroundDataColor(
                         context, PlatformType.ANDROID, NtpThemeColorId.NTP_COLORS_ORANGE, false));

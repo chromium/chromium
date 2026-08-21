@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
@@ -195,11 +196,8 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
 
         List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
         assertEquals(3, dataList.size());
-        // First three items should be default data options.
-        assertTrue(dataList.get(0) instanceof NtpBackgroundDataColor);
-        assertEquals(
-                NtpThemeColorId.DEFAULT,
-                ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
+        // First item is DEFAULT, next two items are default color options.
+        assertEquals(NtpBackgroundType.DEFAULT, dataList.get(0).getBackgroundType());
         assertEquals(
                 NtpThemeColorId.NTP_COLORS_ORANGE,
                 ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
@@ -230,9 +228,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
         assertEquals(4, dataList.size());
         // First item is Default 0, second is local history, third and fourth are other defaults.
-        assertEquals(
-                NtpThemeColorId.DEFAULT,
-                ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
+        assertEquals(NtpBackgroundType.DEFAULT, dataList.get(0).getBackgroundType());
         assertEquals(
                 NtpThemeColorId.NTP_COLORS_BLUE,
                 ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
@@ -341,9 +337,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
         // Should contain: Default, Local history (blue), Remote history (blue), Orange, Violet.
         assertEquals(5, dataList.size());
-        assertEquals(
-                NtpThemeColorId.DEFAULT,
-                ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
+        assertEquals(NtpBackgroundType.DEFAULT, dataList.get(0).getBackgroundType());
         assertEquals(localColor, dataList.get(1));
         assertEquals(remoteDuplicateColor, dataList.get(2));
         assertEquals(
@@ -453,9 +447,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
         // Should contain: Default, localColor1 (blue), remoteColor1 (cyan), Orange, Violet.
         assertEquals(5, dataList.size());
-        assertEquals(
-                NtpThemeColorId.DEFAULT,
-                ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
+        assertEquals(NtpBackgroundType.DEFAULT, dataList.get(0).getBackgroundType());
         assertEquals(
                 NtpThemeColorId.NTP_COLORS_BLUE,
                 ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
@@ -499,9 +491,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         // remoteColor1 (cyan), Orange, Violet.
         // remoteColor2 (green) should NOT be here because remote history is not reloaded.
         assertEquals(6, dataList.size());
-        assertEquals(
-                NtpThemeColorId.DEFAULT,
-                ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
+        assertEquals(NtpBackgroundType.DEFAULT, dataList.get(0).getBackgroundType());
         assertEquals(
                 NtpThemeColorId.NTP_COLORS_VIRIDIAN,
                 ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
@@ -539,9 +529,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
         // Should contain 3 items: DEFAULT, ORANGE (local history), and VIOLET (default option).
         assertEquals(3, dataList.size());
-        assertEquals(
-                NtpThemeColorId.DEFAULT,
-                ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
+        assertEquals(NtpBackgroundType.DEFAULT, dataList.get(0).getBackgroundType());
         assertEquals(
                 NtpThemeColorId.NTP_COLORS_ORANGE,
                 ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
@@ -587,9 +575,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         // Should contain 6 items: DEFAULT, the 3 local history items, and ORANGE, VIOLET to fill up
         // to MAXIMUM_HISTORY_ITEM.
         assertEquals(6, dataList.size());
-        assertEquals(
-                NtpThemeColorId.DEFAULT,
-                ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
+        assertEquals(NtpBackgroundType.DEFAULT, dataList.get(0).getBackgroundType());
         assertEquals(
                 NtpThemeColorId.NTP_COLORS_GREEN,
                 ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
@@ -669,7 +655,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         List<NtpBackgroundDataBase> dataList = coordinator.getDataShowingListForTesting();
         // It should contain: Default Color, Orange, Violet, 2 Theme Collections.
         assertEquals(5, dataList.size());
-        assertTrue(dataList.get(0) instanceof NtpBackgroundDataColor);
+        assertEquals(NtpBackgroundType.DEFAULT, dataList.get(0).getBackgroundType());
         assertTrue(dataList.get(1) instanceof NtpBackgroundDataColor);
         assertTrue(dataList.get(2) instanceof NtpBackgroundDataColor);
         assertTrue(dataList.get(3) instanceof NtpBackgroundDataThemeCollection);
@@ -720,7 +706,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         // Should contain 4 items: Default, Local History (theme1), Orange, Violet.
         // It should NOT contain theme1 again at the end!
         assertEquals(4, dataList.size());
-        assertTrue(dataList.get(0) instanceof NtpBackgroundDataColor);
+        assertEquals(NtpBackgroundType.DEFAULT, dataList.get(0).getBackgroundType());
         assertEquals(localTheme, dataList.get(1));
         assertTrue(dataList.get(2) instanceof NtpBackgroundDataColor);
         assertTrue(dataList.get(3) instanceof NtpBackgroundDataColor);
