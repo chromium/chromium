@@ -222,14 +222,6 @@ bool ExtensionMayAttachToURL(const Extension& extension,
     return false;
   }
 
-  // Policy blocked hosts supersede the `debugger` permission.
-  if (extension.permissions_data()->IsPolicyBlockedHost(url) ||
-      extension.permissions_data()->IsPolicyBlockedHost(
-          url_for_restriction_check)) {
-    *error = kRestrictedError;
-    return false;
-  }
-
   return true;
 }
 
@@ -498,7 +490,6 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
   bool MayAttachToRenderFrameHost(
       content::RenderFrameHost* render_frame_host) override;
   bool MayAttachToURL(const GURL& url, bool is_webui) override;
-  bool MayAccessAllCookies() override;
   bool IsTrusted() override;
   bool MayReadLocalFiles() override;
   bool MayWriteLocalFiles() override;
@@ -813,10 +804,6 @@ bool ExtensionDevToolsClientHost::MayAttachToURL(const GURL& url,
                                            &error);
 }
 
-bool ExtensionDevToolsClientHost::MayAccessAllCookies() {
-  return false;
-}
-
 bool ExtensionDevToolsClientHost::IsTrusted() {
   return ExtensionIsTrusted(*extension_);
 }
@@ -878,8 +865,7 @@ bool DebuggerFunction::InitAgentHost(std::string* error) {
             ->GetBackgroundHostForExtension(*debuggee_.extension_id);
     if (extension_host) {
       const GURL& url = extension_host->GetLastCommittedURL();
-      if (extension()->permissions_data()->IsRestrictedUrl(url, error) ||
-          extension()->permissions_data()->IsPolicyBlockedHost(url)) {
+      if (extension()->permissions_data()->IsRestrictedUrl(url, error)) {
         return false;
       }
       agent_host_ =
