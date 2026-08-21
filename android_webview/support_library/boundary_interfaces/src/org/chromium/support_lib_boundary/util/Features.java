@@ -492,6 +492,7 @@ public class Features {
     // WebViewCompat.navigate
     public static final String WEBVIEW_NAVIGATE_V1 = "WEBVIEW_NAVIGATE_V1";
 
+    // WebViewCompat.navigate
     // Prefetch queue is drained prior to loading the URL in the WebView Navigate method.
     public static final String WEBVIEW_NAVIGATE_DRAIN_PREFETCH = "WEBVIEW_NAVIGATE_DRAIN_PREFETCH";
 
