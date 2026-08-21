@@ -6,9 +6,17 @@
 
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_deref.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
+#include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
+#include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/ui/payments/wallet_reminder_notice_ui_delegate.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -37,39 +45,64 @@ bool WalletReminderNoticeManager::IsWalletReminderNoticeEligible(
 }
 
 void WalletReminderNoticeManager::ShowWalletReminderNotice() {
-  // TODO(crbug.com/540389575): Issue the `GetWalletReminderNotice` RPC
-  // asynchronously via `PaymentsNetworkInterface` once the endpoint is added.
-  // The request is non-blocking; UI display and acknowledgment reporting will
-  // be triggered in `OnGetWalletReminderNoticeResponse` when the response
-  // arrives.
+  GetWalletReminderNoticeRequestDetails request_details;
+  request_details.app_locale = client_->GetAppLocale();
+  request_details.billing_customer_number = GetBillingCustomerId(
+      GetPaymentsAutofillClient().GetPaymentsDataManager());
+  request_details.billable_service_number =
+      kUnmaskPaymentMethodBillableServiceNumber;
+
+  GetPaymentsNetworkInterface().GetWalletReminderNotice(
+      request_details,
+      base::BindOnce(
+          &WalletReminderNoticeManager::OnGetWalletReminderNoticeResponse,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WalletReminderNoticeManager::OnGetWalletReminderNoticeResponse(
-    const LegalMessageLines& legal_message_lines,
-    const std::string& acknowledgement_token,
-    bool has_user_acknowledged) {
-  // TODO(crbug.com/540389575): Check HasShownWalletReminderNotice(~) before
-  // showing the reminder notice and call SetHasShownWalletReminderNotice(~)
-  // when `has_user_acknowledged` is `true`.
-  if (has_user_acknowledged) {
+    PaymentsAutofillClient::PaymentsRpcResult result,
+    const GetWalletReminderNoticeResponseDetails& response_details) {
+  if (result != PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
+    // TODO(crbug.com/549251808): Log network or server error as a reason why
+    // the reminder notice wasn't shown.
+    return;
+  }
+  if (response_details.has_user_been_shown_reminder) {
     return;
   }
 
-  if (legal_message_lines.empty() || acknowledgement_token.empty()) {
-    return;
-  }
+  CHECK(!response_details.legal_message_lines.empty());
+  CHECK(!response_details.acknowledgement_token.empty());
+  CHECK_DEREF(GetPaymentsAutofillClient().GetWalletReminderNoticeUiDelegate())
+      .ShowWalletReminderNotice(response_details.legal_message_lines);
 
-  if (PaymentsAutofillClient* payments_client =
-          client_->GetPaymentsAutofillClient()) {
-    if (WalletReminderNoticeUiDelegate* ui_delegate =
-            payments_client->GetWalletReminderNoticeUiDelegate()) {
-      ui_delegate->ShowWalletReminderNotice(legal_message_lines);
-    }
-  }
+  // Notify the Google Payments server that the user has been shown the Wallet
+  // reminder notice.
+  RecordLegalReminderAcknowledgmentRequestDetails request_details;
+  request_details.app_locale = client_->GetAppLocale();
+  request_details.billing_customer_number = GetBillingCustomerId(
+      GetPaymentsAutofillClient().GetPaymentsDataManager());
+  request_details.billable_service_number =
+      kUnmaskPaymentMethodBillableServiceNumber;
+  request_details.legal_message_token = response_details.acknowledgement_token;
+  request_details.flow_type = RecordLegalReminderAcknowledgmentRequestDetails::
+      FlowType::kChromeDownstream;
 
-  // TODO(crbug.com/540389575): Dispatch fire-and-forget
-  // ReportWalletReminderNoticeAcknowledged(acknowledgement_token) via
-  // PaymentsNetworkInterface.
+  GetPaymentsNetworkInterface().RecordLegalReminderAcknowledgment(
+      request_details,
+      base::BindOnce(&WalletReminderNoticeManager::
+                         OnRecordLegalReminderAcknowledgmentResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void WalletReminderNoticeManager::OnRecordLegalReminderAcknowledgmentResponse(
+    PaymentsAutofillClient::PaymentsRpcResult result) {
+  // We only record that the reminder notice was shown if the acknowledgment was
+  // successfully recorded. If we didn't record their acknowledgment, we should
+  // show the user the reminder notice again.
+  if (result == PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
+    prefs::SetHasShownWalletReminderNotice(client_->GetPrefs());
+  }
 }
 
 }  // namespace autofill::payments

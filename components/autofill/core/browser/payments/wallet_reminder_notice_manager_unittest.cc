@@ -10,52 +10,117 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_customer_data.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
+#include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/payments/wallet_reminder_notice_ui_delegate.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
-#include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::payments {
+
 namespace {
 
 using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::FieldsAre;
+using ::testing::Property;
+
+constexpr char kAppLocale[] = "en-US";
+constexpr int64_t kBillingCustomerNumber = 123456789;
+constexpr char kAcknowledgementToken[] = "test_acknowledgement_token";
 
 class MockWalletReminderNoticeUiDelegate
     : public WalletReminderNoticeUiDelegate {
  public:
+  MockWalletReminderNoticeUiDelegate() = default;
+  ~MockWalletReminderNoticeUiDelegate() override = default;
+
   MOCK_METHOD(void,
               ShowWalletReminderNotice,
               (LegalMessageLines legal_message_lines),
               (override));
 };
 
+class PaymentsNetworkInterfaceMock : public PaymentsNetworkInterface {
+ public:
+  PaymentsNetworkInterfaceMock()
+      : PaymentsNetworkInterface(/*url_loader_factory=*/nullptr,
+                                 /*identity_manager=*/nullptr,
+                                 /*account_info_getter=*/nullptr) {}
+  ~PaymentsNetworkInterfaceMock() override = default;
+
+  MOCK_METHOD(
+      void,
+      GetWalletReminderNotice,
+      (const GetWalletReminderNoticeRequestDetails& request_details,
+       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                               const GetWalletReminderNoticeResponseDetails&)>
+           callback),
+      (override));
+  MOCK_METHOD(
+      void,
+      RecordLegalReminderAcknowledgment,
+      (const RecordLegalReminderAcknowledgmentRequestDetails& request_details,
+       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult)>
+           callback),
+      (override));
+};
+
 class WalletReminderNoticeManagerTest : public testing::Test {
  public:
-  WalletReminderNoticeManagerTest() : manager_(&autofill_client_) {
+  WalletReminderNoticeManagerTest() {
     feature_list_.InitAndEnableFeature(
         autofill::features::kAutofillEnableWalletReminderNotice);
+
+    autofill_client_.set_app_locale(kAppLocale);
+    autofill_client_.GetPersonalDataManager()
+        .payments_data_manager()
+        .SetSyncingForTest(true);
+    autofill_client_.GetPersonalDataManager()
+        .test_payments_data_manager()
+        .SetPaymentsCustomerData(std::make_unique<PaymentsCustomerData>(
+            base::NumberToString(kBillingCustomerNumber)));
+
+    auto payments_network_interface =
+        std::make_unique<PaymentsNetworkInterfaceMock>();
+    payments_network_interface_ = payments_network_interface.get();
+    autofill_client_.GetPaymentsAutofillClient()
+        ->set_payments_network_interface(std::move(payments_network_interface));
+
     auto ui_delegate = std::make_unique<MockWalletReminderNoticeUiDelegate>();
     ui_delegate_ = ui_delegate.get();
     autofill_client_.GetPaymentsAutofillClient()
         ->set_wallet_reminder_notice_ui_delegate(std::move(ui_delegate));
+
+    manager_ = std::make_unique<WalletReminderNoticeManager>(&autofill_client_);
   }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   TestAutofillClient autofill_client_;
+  raw_ptr<PaymentsNetworkInterfaceMock> payments_network_interface_;
   raw_ptr<MockWalletReminderNoticeUiDelegate> ui_delegate_;
-  WalletReminderNoticeManager manager_;
+  std::unique_ptr<WalletReminderNoticeManager> manager_;
 };
 
 TEST_F(WalletReminderNoticeManagerTest,
@@ -66,24 +131,23 @@ TEST_F(WalletReminderNoticeManagerTest,
   autofill_client_.identity_test_environment().MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
   EXPECT_FALSE(
-      manager_.IsWalletReminderNoticeEligible(test::GetMaskedServerCard()));
+      manager_->IsWalletReminderNoticeEligible(test::GetMaskedServerCard()));
 }
 
 TEST_F(WalletReminderNoticeManagerTest,
        IsWalletReminderNoticeEligible_LocalCard_NotEligible) {
   autofill_client_.identity_test_environment().MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
-  EXPECT_FALSE(manager_.IsWalletReminderNoticeEligible(test::GetCreditCard()));
+  EXPECT_FALSE(manager_->IsWalletReminderNoticeEligible(test::GetCreditCard()));
 }
 
 TEST_F(WalletReminderNoticeManagerTest,
        IsWalletReminderNoticeEligible_AlreadyShown_NotEligible) {
-  CoreAccountInfo account_info =
-      autofill_client_.identity_test_environment().MakePrimaryAccountAvailable(
-          "user@gmail.com", signin::ConsentLevel::kSignin);
+  autofill_client_.identity_test_environment().MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
   prefs::SetHasShownWalletReminderNotice(autofill_client_.GetPrefs());
   EXPECT_FALSE(
-      manager_.IsWalletReminderNoticeEligible(test::GetMaskedServerCard()));
+      manager_->IsWalletReminderNoticeEligible(test::GetMaskedServerCard()));
 }
 
 TEST_F(WalletReminderNoticeManagerTest,
@@ -91,52 +155,101 @@ TEST_F(WalletReminderNoticeManagerTest,
   autofill_client_.identity_test_environment().MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
   EXPECT_TRUE(
-      manager_.IsWalletReminderNoticeEligible(test::GetMaskedServerCard()));
+      manager_->IsWalletReminderNoticeEligible(test::GetMaskedServerCard()));
 }
 
 TEST_F(WalletReminderNoticeManagerTest, ShowWalletReminderNotice) {
-  EXPECT_CALL(*ui_delegate_, ShowWalletReminderNotice(_)).Times(0);
+  EXPECT_CALL(*payments_network_interface_,
+              GetWalletReminderNotice(
+                  FieldsAre(kAppLocale, kBillingCustomerNumber,
+                            kUnmaskPaymentMethodBillableServiceNumber),
+                  _));
 
-  manager_.ShowWalletReminderNotice();
+  manager_->ShowWalletReminderNotice();
 }
 
 TEST_F(WalletReminderNoticeManagerTest,
-       OnGetWalletReminderNoticeResponse_UserAlreadyAcknowledgedOnServer) {
+       OnGetWalletReminderNoticeResponse_RpcFailure) {
   EXPECT_CALL(*ui_delegate_, ShowWalletReminderNotice(_)).Times(0);
+  EXPECT_CALL(*payments_network_interface_,
+              RecordLegalReminderAcknowledgment(_, _))
+      .Times(0);
 
+  GetWalletReminderNoticeResponseDetails response_details;
+  response_details.legal_message_lines.push_back(
+      TestLegalMessageLine("Legal message line"));
+  response_details.acknowledgement_token = kAcknowledgementToken;
+  response_details.has_user_been_shown_reminder = false;
+
+  manager_->OnGetWalletReminderNoticeResponse(
+      PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
+      response_details);
+
+  EXPECT_FALSE(
+      prefs::HasShownWalletReminderNotice(autofill_client_.GetPrefs()));
+}
+
+TEST_F(
+    WalletReminderNoticeManagerTest,
+    OnGetWalletReminderNoticeResponse_ServerDenotesUserHasBeenShownReminder) {
+  EXPECT_CALL(*ui_delegate_, ShowWalletReminderNotice(_)).Times(0);
+  EXPECT_CALL(*payments_network_interface_,
+              RecordLegalReminderAcknowledgment(_, _))
+      .Times(0);
+
+  GetWalletReminderNoticeResponseDetails response_details;
+  response_details.legal_message_lines.push_back(
+      TestLegalMessageLine("Legal message line"));
+  response_details.acknowledgement_token = kAcknowledgementToken;
+  response_details.has_user_been_shown_reminder = true;
+
+  manager_->OnGetWalletReminderNoticeResponse(
+      PaymentsAutofillClient::PaymentsRpcResult::kSuccess, response_details);
+}
+
+TEST_F(WalletReminderNoticeManagerTest,
+       OnGetWalletReminderNoticeResponse_RpcSuccess) {
   LegalMessageLines legal_message_lines;
-  legal_message_lines.push_back(TestLegalMessageLine("Test Legal Notice"));
-  manager_.OnGetWalletReminderNoticeResponse(legal_message_lines, "token",
-                                             /*has_user_acknowledged=*/true);
+  legal_message_lines.push_back(TestLegalMessageLine("Legal message line"));
+
+  EXPECT_CALL(*ui_delegate_,
+              ShowWalletReminderNotice(ElementsAre(Property(
+                  &LegalMessageLine::text, Eq(u"Legal message line")))));
+  EXPECT_CALL(*payments_network_interface_,
+              RecordLegalReminderAcknowledgment(
+                  FieldsAre(kAppLocale, kBillingCustomerNumber,
+                            kUnmaskPaymentMethodBillableServiceNumber,
+                            kAcknowledgementToken,
+                            RecordLegalReminderAcknowledgmentRequestDetails::
+                                FlowType::kChromeDownstream),
+                  _));
+
+  GetWalletReminderNoticeResponseDetails response_details;
+  response_details.legal_message_lines = std::move(legal_message_lines);
+  response_details.acknowledgement_token = kAcknowledgementToken;
+  response_details.has_user_been_shown_reminder = false;
+
+  manager_->OnGetWalletReminderNoticeResponse(
+      PaymentsAutofillClient::PaymentsRpcResult::kSuccess, response_details);
 }
 
 TEST_F(WalletReminderNoticeManagerTest,
-       OnGetWalletReminderNoticeResponse_EmptyLegalMessage) {
-  EXPECT_CALL(*ui_delegate_, ShowWalletReminderNotice(_)).Times(0);
+       OnRecordLegalReminderAcknowledgmentResponse_RpcFailure) {
+  manager_->OnRecordLegalReminderAcknowledgmentResponse(
+      PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure);
 
-  manager_.OnGetWalletReminderNoticeResponse(LegalMessageLines(), "token",
-                                             /*has_user_acknowledged=*/false);
+  EXPECT_FALSE(
+      prefs::HasShownWalletReminderNotice(autofill_client_.GetPrefs()));
 }
 
 TEST_F(WalletReminderNoticeManagerTest,
-       OnGetWalletReminderNoticeResponse_EmptyToken) {
-  EXPECT_CALL(*ui_delegate_, ShowWalletReminderNotice(_)).Times(0);
+       OnRecordLegalReminderAcknowledgmentResponse_RpcSuccess) {
+  manager_->OnRecordLegalReminderAcknowledgmentResponse(
+      PaymentsAutofillClient::PaymentsRpcResult::kSuccess);
 
-  LegalMessageLines legal_message_lines;
-  legal_message_lines.push_back(TestLegalMessageLine("Test Legal Notice"));
-  manager_.OnGetWalletReminderNoticeResponse(legal_message_lines, "",
-                                             /*has_user_acknowledged=*/false);
-}
-
-TEST_F(WalletReminderNoticeManagerTest,
-       OnGetWalletReminderNoticeResponse_SuccessShowsNotice) {
-  EXPECT_CALL(*ui_delegate_, ShowWalletReminderNotice(_)).Times(1);
-
-  LegalMessageLines legal_message_lines;
-  legal_message_lines.push_back(TestLegalMessageLine("Test Legal Notice"));
-  manager_.OnGetWalletReminderNoticeResponse(legal_message_lines, "token",
-                                             /*has_user_acknowledged=*/false);
+  EXPECT_TRUE(prefs::HasShownWalletReminderNotice(autofill_client_.GetPrefs()));
 }
 
 }  // namespace
+
 }  // namespace autofill::payments

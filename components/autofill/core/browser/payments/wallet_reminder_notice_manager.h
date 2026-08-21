@@ -10,6 +10,8 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 
 namespace autofill {
 
@@ -35,21 +37,30 @@ class WalletReminderNoticeManager {
   // issuing the GetWalletReminderNotice RPC via PaymentsNetworkInterface.
   // The request runs in the background without blocking the main thread. When
   // the server response is received, `OnGetWalletReminderNoticeResponse` is
-  // invoked to process the result and trigger the UI. Eligibility checks are
-  // performed by the caller.
+  // invoked to process the result and trigger the UI. The caller should check
+  // `IsWalletReminderNoticeEligible` before calling `ShowWalletReminderNotice`.
   virtual void ShowWalletReminderNotice();
 
   // Handles the response from the Payments server for the Wallet Reminder
   // Notice request.
-  // TODO(crbug.com/540389575): Replace with OnGetWalletReminderNoticeResponse
-  // taking PaymentsRpcResult and GetWalletReminderNoticeResponse once the RPC
-  // is added to PaymentsNetworkInterface.
   virtual void OnGetWalletReminderNoticeResponse(
-      const LegalMessageLines& legal_message_lines,
-      const std::string& acknowledgement_token,
-      bool has_user_acknowledged);
+      PaymentsAutofillClient::PaymentsRpcResult result,
+      const GetWalletReminderNoticeResponseDetails& response_details);
+
+  // Handles the response from the Payments server for the Record Legal Reminder
+  // Acknowledgement request.
+  virtual void OnRecordLegalReminderAcknowledgmentResponse(
+      PaymentsAutofillClient::PaymentsRpcResult result);
 
  private:
+  PaymentsAutofillClient& GetPaymentsAutofillClient() {
+    return *client_->GetPaymentsAutofillClient();
+  }
+
+  PaymentsNetworkInterface& GetPaymentsNetworkInterface() {
+    return *GetPaymentsAutofillClient().GetPaymentsNetworkInterface();
+  }
+
   const raw_ref<AutofillClient> client_;
 
   base::WeakPtrFactory<WalletReminderNoticeManager> weak_ptr_factory_{this};
