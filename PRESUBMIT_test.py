@@ -6785,6 +6785,51 @@ class TestCheckSettingsChanges(unittest.TestCase):
         # Non-settings file shouldn't trigger a CC
         self.assertEqual(len(self.mock_output.more_cc), 0)
 
+    def testTestFilesIgnored(self):
+        self.mock_input.files = [
+            MockFile(
+                'chrome/android/javatests/src/org/chromium/chrome/browser/settings/MainSettingsFragmentTest.java',
+                [
+                    'public class MainSettingsFragmentTest {',
+                    '    void testIndexing() {',
+                    '        var p = MainSettings.SEARCH_INDEX_DATA_PROVIDER;',
+                    '    }',
+                    '}'
+                ]),
+            MockFile(
+                'chrome/android/junit/src/org/chromium/chrome/browser/settings/MainSettingsUnitTest.java',
+                [
+                    'public class MainSettingsUnitTest {',
+                    '    void testIndexing() {',
+                    '        var p = MainSettings.SEARCH_INDEX_DATA_PROVIDER;',
+                    '    }',
+                    '}'
+                ])
+        ]
+
+        results = PRESUBMIT.CheckSettingsChanges(self.mock_input,
+                                                 self.mock_output)
+
+        self.assertEqual(len(results), 0)
+        self.assertEqual(len(self.mock_output.more_cc), 0)
+
+    def testReferencingProviderIgnored(self):
+        self.mock_input.files = [
+            MockFile('OtherClass.java', [
+                'public class OtherClass {',
+                '    void useProvider() {',
+                '        var p = MainSettings.SEARCH_INDEX_DATA_PROVIDER;',
+                '    }',
+                '}'
+            ])
+        ]
+
+        results = PRESUBMIT.CheckSettingsChanges(self.mock_input,
+                                                 self.mock_output)
+
+        self.assertEqual(len(results), 0)
+        self.assertEqual(len(self.mock_output.more_cc), 0)
+
 
 class CheckNoMainLayoutSwitcherTest(unittest.TestCase):
 

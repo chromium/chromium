@@ -8566,9 +8566,13 @@ def CheckSettingsChanges(input_api, output_api):
 
     registry_filename = 'SearchIndexProviderRegistry.java'
 
-    # Filter for Java files, excluding the registry file itself.
-    is_java_file = lambda f: (f.LocalPath().endswith('.java') and not f.
-                              LocalPath().endswith(registry_filename))
+    # Filter for Java files, excluding the registry file itself and test files.
+    is_java_file = lambda f: (
+        f.LocalPath().endswith('.java')
+        and not f.LocalPath().endswith(registry_filename)
+        and not f.LocalPath().endswith(('Test.java', 'TestCase.java'))
+        and not input_api.re.search(r'[\\/](?:javatests|junit|test)[\\/]',
+                                    f.LocalPath()))
     java_files = input_api.AffectedFiles(include_deletes=False,
                                          file_filter=is_java_file)
 
@@ -8654,13 +8658,14 @@ def CheckSettingsChanges(input_api, output_api):
         content = input_api.ReadFile(f)
 
         inheritance_match = java_inheritance_re.search(content)
+        has_provider_field = bool(provider_field_re.search(content))
         # Determine if the file is a Settings screen. We use three different checks
         # to cover the different possible scenarios:
         #   1. Inheritance: Does it extend a known Settings/Preference base class?
         #   2. Field existence: Does it already define a SEARCH_INDEX_DATA_PROVIDER?
         #   3. Signature methods: Does it override onCreatePreferences or
         #      getPreferenceResource (the standard entry points for settings UIs)?
-        if not (inheritance_match or 'SEARCH_INDEX_DATA_PROVIDER' in content
+        if not (inheritance_match or has_provider_field
                 or 'onCreatePreferences' in content):
             continue
 
@@ -8672,7 +8677,7 @@ def CheckSettingsChanges(input_api, output_api):
         name_match = inheritance_match or class_name_re.search(content)
         class_name = name_match.group(1) if name_match else None
 
-        if not provider_field_re.search(content):
+        if not has_provider_field:
             problems.append(
                 f'{f.LocalPath()}:0\n'
                 f'    \tIssue:  Missing SEARCH_INDEX_DATA_PROVIDER field.\n'
