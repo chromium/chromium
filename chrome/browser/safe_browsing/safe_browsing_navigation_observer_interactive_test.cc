@@ -7,7 +7,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_navigation_observer_manager.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -64,7 +64,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
     observer_manager_ =
         std::make_unique<TestSafeBrowsingNavigationObserverManager>(browser());
     observer_manager_->ObserveContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
     ASSERT_TRUE(InitialSetup());
   }
 
@@ -81,7 +81,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   void AppendRecentNavigations(int recent_navigation_count,
@@ -114,7 +114,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
 
   void CopyUrlToWebClipboard(std::string urlToCopy,
                              std::optional<int> subframe_index = std::nullopt) {
-    TabStripModel* tab_strip = browser()->tab_strip_model();
+    TabStripModel* tab_strip = browser()->GetTabStripModel();
     content::WebContents* current_web_contents =
         tab_strip->GetActiveWebContents();
     content::RenderFrameHost* script_executing_frame =
@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   ASSERT_TRUE(nav_list);
   ASSERT_EQ(2U, nav_list->NavigationEventsSize());
 
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
   ASSERT_TRUE(content::WaitForLoadStop(tab_strip->GetActiveWebContents()));
   ui_test_utils::SendToOmniboxAndSubmit(
       browser(), embedded_test_server()->GetURL(kLandingURL).spec());
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   ASSERT_TRUE(nav_list);
   ASSERT_EQ(2U, nav_list->NavigationEventsSize());
 
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
   ASSERT_TRUE(content::WaitForLoadStop(tab_strip->GetActiveWebContents()));
   ui_test_utils::SendToOmniboxAndSubmit(
       browser(), embedded_test_server()->GetURL(kLandingURL).spec());
@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   ASSERT_TRUE(nav_list);
   ASSERT_EQ(2U, nav_list->NavigationEventsSize());
 
-  TabStripModel* tab_strip = browser()->tab_strip_model();
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
   ASSERT_TRUE(content::WaitForLoadStop(tab_strip->GetActiveWebContents()));
   ui_test_utils::SendToOmniboxAndSubmit(
       browser(), embedded_test_server()->GetURL(kLandingURL).spec());

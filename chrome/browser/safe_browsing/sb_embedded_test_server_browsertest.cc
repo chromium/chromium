@@ -13,7 +13,7 @@
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_P(SBEmbeddedTestServerBrowserTest, SimpleTest) {
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bad_url));
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(contents));
 }
 
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_P(SBEmbeddedTestServerBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bad_url));
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
 }
 

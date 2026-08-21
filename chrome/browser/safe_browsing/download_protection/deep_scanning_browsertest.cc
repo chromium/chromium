@@ -36,7 +36,7 @@
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_test_utils.h"
 #include "chrome/common/chrome_paths.h"
@@ -1320,7 +1320,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Allowed) {
       browser()->GetProfile()->GetDownloadManager(), run_loop.QuitClosure());
   base::FilePath main_file = GetSaveDir().AppendASCII("text.htm");
   base::FilePath extra_files_dir = GetSaveDir().AppendASCII("text_files");
-  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents()->SavePage(
+  ASSERT_TRUE(browser()->GetTabStripModel()->GetActiveWebContents()->SavePage(
       main_file, extra_files_dir, content::SAVE_PAGE_TYPE_AS_ONLY_HTML));
   WaitForDeepScanRequest();
 
@@ -1370,7 +1370,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Blocked) {
       {download::DownloadItem::INTERRUPTED});
   base::FilePath main_file = GetSaveDir().AppendASCII("text.htm");
   base::FilePath extra_files_dir = GetSaveDir().AppendASCII("text_files");
-  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents()->SavePage(
+  ASSERT_TRUE(browser()->GetTabStripModel()->GetActiveWebContents()->SavePage(
       main_file, extra_files_dir, content::SAVE_PAGE_TYPE_AS_ONLY_HTML));
   WaitForDeepScanRequest();
 
@@ -1458,7 +1458,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
       save_package_run_loop.QuitClosure(), {download::DownloadItem::COMPLETE});
   base::FilePath main_file = GetSaveDir().AppendASCII("text.htm");
   base::FilePath extra_files_dir = GetSaveDir().AppendASCII("text_files");
-  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents()->SavePage(
+  ASSERT_TRUE(browser()->GetTabStripModel()->GetActiveWebContents()->SavePage(
       main_file, extra_files_dir, content::SAVE_PAGE_TYPE_AS_ONLY_HTML));
   WaitForDeepScanRequest();
 
@@ -1605,7 +1605,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
       save_package_run_loop.QuitClosure(), {download::DownloadItem::CANCELLED});
   base::FilePath main_file = GetSaveDir().AppendASCII("text.htm");
   base::FilePath extra_files_dir = GetSaveDir().AppendASCII("text_files");
-  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents()->SavePage(
+  ASSERT_TRUE(browser()->GetTabStripModel()->GetActiveWebContents()->SavePage(
       main_file, extra_files_dir, content::SAVE_PAGE_TYPE_AS_ONLY_HTML));
   WaitForDeepScanRequest();
 
@@ -1709,7 +1709,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, OpenNow) {
       save_package_run_loop.QuitClosure(), {download::DownloadItem::COMPLETE});
   base::FilePath main_file = GetSaveDir().AppendASCII("text.htm");
   base::FilePath extra_files_dir = GetSaveDir().AppendASCII("text_files");
-  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents()->SavePage(
+  ASSERT_TRUE(browser()->GetTabStripModel()->GetActiveWebContents()->SavePage(
       main_file, extra_files_dir, content::SAVE_PAGE_TYPE_AS_ONLY_HTML));
   WaitForDeepScanRequest();
 
@@ -1853,7 +1853,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, BlockedWrite) {
 
   // Setup message queue for JS responses.
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   content::DOMMessageQueue message_queue(web_contents);
 
@@ -1946,7 +1946,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, AllowedWrite) {
 
   // Setup message queue for JS responses.
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   content::DOMMessageQueue message_queue(web_contents);
 
@@ -1992,7 +1992,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest, WarnedWrite) {
 
   // Setup message queue for JS responses.
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   content::DOMMessageQueue message_queue(web_contents);
 
@@ -2080,7 +2080,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessDeepScanningBrowserTest,
 
   // Setup message queue for JS responses.
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   content::DOMMessageQueue message_queue(web_contents);
 

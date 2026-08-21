@@ -12,7 +12,7 @@
 #include "chrome/browser/safe_browsing/suspicious_site_warnings/suspicious_site_controller_desktop.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ssl/chrome_security_state_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/page_info/suspicious_site_bubble_view.h"
@@ -78,7 +78,7 @@ class SuspiciousSiteDesktopBrowserTest : public InProcessBrowserTest {
   }
 
   content::WebContents* GetActiveWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   void RunCheckWarningWithProtectionLevelTest(

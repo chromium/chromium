@@ -39,7 +39,7 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-ExtensionsMenuTestUtil::ExtensionsMenuTestUtil(Browser* browser)
+ExtensionsMenuTestUtil::ExtensionsMenuTestUtil(BrowserWindowInterface* browser)
     : scoped_allow_extensions_menu_instances_(
           ExtensionsMenuView::AllowInstancesForTesting()),
       browser_(browser) {
@@ -217,6 +217,6 @@ HoverButton* ExtensionsMenuTestUtil::GetActionButton(
 
 // static
 std::unique_ptr<ExtensionActionTestHelper> ExtensionActionTestHelper::Create(
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
   return std::make_unique<ExtensionsMenuTestUtil>(browser);
 }

@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "ui/views/view_observer.h"
 
-class Browser;
+class BrowserWindowInterface;
 class ExtensionsMenuView;
 class ExtensionsToolbarDesktop;
 class HoverButton;
@@ -21,7 +21,7 @@ class HoverButton;
 class ExtensionsMenuTestUtil : public ExtensionActionTestHelper,
                                views::ViewObserver {
  public:
-  explicit ExtensionsMenuTestUtil(Browser* browser);
+  explicit ExtensionsMenuTestUtil(BrowserWindowInterface* browser);
   ExtensionsMenuTestUtil(const ExtensionsMenuTestUtil&) = delete;
   ExtensionsMenuTestUtil& operator=(const ExtensionsMenuTestUtil&) = delete;
   ~ExtensionsMenuTestUtil() override;
@@ -57,7 +57,7 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper,
   // This has to be defined before |menu_view_| below.
   base::AutoReset<bool> scoped_allow_extensions_menu_instances_;
 
-  const raw_ptr<Browser, DanglingUntriaged> browser_;
+  const raw_ptr<BrowserWindowInterface, DanglingUntriaged> browser_;
   raw_ptr<ExtensionsToolbarDesktop, DanglingUntriaged> extensions_toolbar_ =
       nullptr;
 

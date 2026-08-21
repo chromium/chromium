@@ -43,7 +43,7 @@
 #include "net/dns/mock_host_resolver.h"
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -349,7 +349,7 @@ void FakeSafeBrowsingUIManager::SetExpectInterstitialInteractions(
 content::WebContents*
 SafeBrowsingBlockingPagePlatformBrowserTest::web_contents() {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-  return browser()->tab_strip_model()->GetActiveWebContents();
+  return browser()->GetTabStripModel()->GetActiveWebContents();
 #else
   return chrome_test_utils::GetActiveWebContents(this);
 #endif

@@ -21,7 +21,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_navigation_observer_manager.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -190,12 +190,12 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
     observer_manager_ =
         std::make_unique<TestSafeBrowsingNavigationObserverManager>(browser());
     observer_manager_->ObserveContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
     ASSERT_TRUE(InitialSetup());
   }
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   bool InitialSetup() {
@@ -253,7 +253,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
                      int number_of_navigations,
                      const GURL& page_url,
                      int subframe_index = -1) {
-    TabStripModel* tab_strip = browser()->tab_strip_model();
+    TabStripModel* tab_strip = browser()->GetTabStripModel();
     content::WebContents* current_web_contents =
         tab_strip->GetActiveWebContents();
     ASSERT_TRUE(content::WaitForLoadStop(current_web_contents));
@@ -298,7 +298,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
                             int number_of_navigations,
                             const GURL& page_url,
                             int subframe_index = -1) {
-    TabStripModel* tab_strip = browser()->tab_strip_model();
+    TabStripModel* tab_strip = browser()->GetTabStripModel();
     content::WebContents* current_web_contents =
         tab_strip->GetActiveWebContents();
     ASSERT_TRUE(content::WaitForLoadStop(current_web_contents));
@@ -334,7 +334,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
     content::DownloadManager* manager =
         browser()->GetProfile()->GetDownloadManager();
     content::WebContents* current_web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     ASSERT_TRUE(content::ExecJs(current_web_contents, "downloadViaFileApi()"));
     manager->GetAllDownloads(&items);
     ASSERT_EQ(0U, items.size());
@@ -473,7 +473,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
 
   void SimulateUserGesture() {
     observer_manager_->RecordUserGestureForWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
   }
 
   NavigationEventList* navigation_event_list() {
@@ -2102,7 +2102,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   ReferrerChain referrer_chain;
   SimulateUserGesture();
   IdentifyReferrerChainForWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents(), &referrer_chain);
+      browser()->GetTabStripModel()->GetActiveWebContents(), &referrer_chain);
   ASSERT_EQ(2, referrer_chain.size());
 
   // Verify url fragment is cleared in referrer chain.
@@ -2772,7 +2772,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   EXPECT_EQ(3U, nav_list->NavigationEventsSize());
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   // Simulates back.
   web_contents->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents));
@@ -2797,7 +2797,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest, ReloadNotRecorded) {
 
   // Simulates reload.
   ASSERT_TRUE(
-      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+      content::ExecJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                       "location.reload();"));
   base::RunLoop().RunUntilIdle();
 
@@ -2824,7 +2824,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   ASSERT_TRUE(
-      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+      content::ExecJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                       "window.location='../signed.exe'"));
   base::RunLoop().RunUntilIdle();
 
@@ -2851,7 +2851,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   content::WebContents* opener_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   ui_test_utils::TabAddedWaiter tab_added(browser());
   content::TestNavigationObserver new_tab_nav(initial_popup_url);
@@ -2986,7 +2986,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   // Navigate to landing_url. Keep the navigation in pending state so we can
   // test on the pending event API.
   content::TestNavigationManager navigation_manager(
-      browser()->tab_strip_model()->GetActiveWebContents(), landing_url);
+      browser()->GetTabStripModel()->GetActiveWebContents(), landing_url);
   ClickTestLinkPending("link_to_landing", 1, landing_referrer_url);
   EXPECT_TRUE(navigation_manager.WaitForResponse());
 
@@ -3052,13 +3052,16 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   content::TestNavigationManager navigation_manager(
-      browser()->tab_strip_model()->GetActiveWebContents(), request_url);
+      browser()->GetTabStripModel()->GetActiveWebContents(), request_url);
 
   // Navigate to request_url. Keep the navigation in pending state so we can
   // test on the pending event API.
-  browser()->tab_strip_model()->GetActiveWebContents()->GetController().LoadURL(
-      request_url, content::Referrer(), ui::PAGE_TRANSITION_LINK,
-      std::string());
+  browser()
+      ->GetTabStripModel()
+      ->GetActiveWebContents()
+      ->GetController()
+      .LoadURL(request_url, content::Referrer(), ui::PAGE_TRANSITION_LINK,
+               std::string());
   EXPECT_TRUE(navigation_manager.WaitForResponse());
 
   auto* nav_list = navigation_event_list();

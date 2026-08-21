@@ -13,7 +13,7 @@
 #include "extensions/common/extension_id.h"
 #include "ui/gfx/native_ui_types.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace gfx {
 class Image;
@@ -25,7 +25,8 @@ class Size;
 // the platform-abstract ExtensionsContainer class.
 class ExtensionActionTestHelper {
  public:
-  static std::unique_ptr<ExtensionActionTestHelper> Create(Browser* browser);
+  static std::unique_ptr<ExtensionActionTestHelper> Create(
+      BrowserWindowInterface* browser);
 
   ExtensionActionTestHelper(const ExtensionActionTestHelper&) = delete;
   ExtensionActionTestHelper& operator=(const ExtensionActionTestHelper&) =

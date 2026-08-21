@@ -20,7 +20,7 @@
 #include "chrome/browser/preloading/search_preload/search_preload_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -184,7 +184,7 @@ GURL SearchPrefetchBaseBrowserTest::GetRealPrefetchUrlForTesting(
 }
 
 content::WebContents* SearchPrefetchBaseBrowserTest::GetWebContents() const {
-  return browser()->tab_strip_model()->GetActiveWebContents();
+  return browser()->GetTabStripModel()->GetActiveWebContents();
 }
 
 std::string SearchPrefetchBaseBrowserTest::GetDocumentInnerHTML() const {
