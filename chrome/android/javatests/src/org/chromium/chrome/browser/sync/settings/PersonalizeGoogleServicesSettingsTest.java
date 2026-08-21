@@ -33,7 +33,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -49,15 +49,14 @@ public class PersonalizeGoogleServicesSettingsTest {
 
     private final SyncTestRule mSyncTestRule = new SyncTestRule();
 
-    private final SettingsActivityTestRule<PersonalizeGoogleServicesSettings>
-            mSettingsActivityTestRule =
-                    new SettingsActivityTestRule<>(PersonalizeGoogleServicesSettings.class);
+    private final SettingsTestRule<PersonalizeGoogleServicesSettings> mSettingsTestRule =
+            new SettingsTestRule<>(PersonalizeGoogleServicesSettings.class);
 
     // SettingsActivity needs to be initialized and destroyed with the mock
     // signin environment setup in SyncTestRule
     @Rule
     public final RuleChain mRuleChain =
-            RuleChain.outerRule(mSyncTestRule).around(mSettingsActivityTestRule);
+            RuleChain.outerRule(mSyncTestRule).around(mSettingsTestRule);
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -82,8 +81,8 @@ public class PersonalizeGoogleServicesSettingsTest {
     @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testLayout() throws Exception {
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        mSettingsActivityTestRule.startSettingsActivity();
-        PersonalizeGoogleServicesSettings fragment = mSettingsActivityTestRule.getFragment();
+        mSettingsTestRule.startSettingsActivity();
+        PersonalizeGoogleServicesSettings fragment = mSettingsTestRule.getFragment();
         ChromeRenderTestRule.sanitize(fragment.getView());
         mRenderTestRule.render(fragment.getView(), "personalize_google_services");
     }
@@ -93,7 +92,7 @@ public class PersonalizeGoogleServicesSettingsTest {
     @Feature({"PersonalizedGoogleServices"})
     public void testClickWebAndAppActivity() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        mSettingsActivityTestRule.startSettingsActivity();
+        mSettingsTestRule.startSettingsActivity();
 
         onView(withText(R.string.personalized_google_services_waa_title)).perform(click());
         verify(mGoogleActivityController).openWebAndAppActivitySettings(any(), any());
@@ -104,7 +103,7 @@ public class PersonalizeGoogleServicesSettingsTest {
     @Feature({"PersonalizedGoogleServices"})
     public void testClickLinkedGoogleServices() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        mSettingsActivityTestRule.startSettingsActivity();
+        mSettingsTestRule.startSettingsActivity();
 
         onView(withText(R.string.personalized_google_services_linked_services_title))
                 .perform(click());
@@ -116,9 +115,8 @@ public class PersonalizeGoogleServicesSettingsTest {
     @DisabledTest(message = "Flaky test: b/334206890")
     @Feature({"PersonalizedGoogleServices"})
     public void testUserNotSignedIn() {
-        mSettingsActivityTestRule.startSettingsActivity();
+        mSettingsTestRule.startSettingsActivity();
         // The activity should terminate immediately if the user is not signed in.
-        ApplicationTestUtils.waitForActivityState(
-                mSettingsActivityTestRule.getActivity(), Stage.DESTROYED);
+        ApplicationTestUtils.waitForActivityState(mSettingsTestRule.getActivity(), Stage.DESTROYED);
     }
 }

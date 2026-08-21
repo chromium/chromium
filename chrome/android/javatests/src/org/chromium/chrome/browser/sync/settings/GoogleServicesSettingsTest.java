@@ -45,9 +45,10 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -70,14 +71,14 @@ public class GoogleServicesSettingsTest {
     public final FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
-    public final SettingsActivityTestRule<GoogleServicesSettings> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(GoogleServicesSettings.class);
+    public final SettingsTestRule<GoogleServicesSettings> mSettingsTestRule =
+            new SettingsTestRule<>(GoogleServicesSettings.class);
 
     // SettingsActivity has to be finished before the outer CTA can be finished or trying to finish
     // CTA won't work.
     @Rule
     public final RuleChain mRuleChain =
-            RuleChain.outerRule(mActivityTestRule).around(mSettingsActivityTestRule);
+            RuleChain.outerRule(mActivityTestRule).around(mSettingsTestRule);
 
     @Mock private PasswordManagerUtilBridge.Natives mMockPasswordManagerUtilBridgeJni;
     @Mock private PrivacyPreferencesManagerImpl mMockPrivacyPreferencesManager;
@@ -146,7 +147,8 @@ public class GoogleServicesSettingsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SnackbarManager snackbarManager =
-                            mSettingsActivityTestRule.getActivity().getSnackbarManager();
+                            ((SnackbarManageable) mSettingsTestRule.getActivity())
+                                    .getSnackbarManager();
                     Assert.assertTrue(snackbarManager.isShowing());
                     Snackbar currentSnackbar = snackbarManager.getCurrentSnackbarForTesting();
                     Assert.assertEquals(
@@ -322,7 +324,7 @@ public class GoogleServicesSettingsTest {
     }
 
     private GoogleServicesSettings startGoogleServicesSettings() {
-        mSettingsActivityTestRule.startSettingsActivity();
-        return mSettingsActivityTestRule.getFragment();
+        mSettingsTestRule.startSettingsActivity();
+        return mSettingsTestRule.getFragment();
     }
 }
