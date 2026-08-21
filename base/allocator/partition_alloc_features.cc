@@ -384,11 +384,6 @@ BASE_FEATURE(kPartitionAllocSortSmallerSlotSpanFreeLists,
 // Whether to sort the active slot spans in PurgeMemory().
 BASE_FEATURE(kPartitionAllocSortActiveSlotSpans, FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_WIN)
-// Whether to retry allocations when commit fails.
-BASE_FEATURE(kPageAllocatorRetryOnCommitFailure, FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 // A parameter to exclude or not exclude PartitionAllocSupport from
 // PartialLowModeOnMidRangeDevices. This is used to see how it affects
