@@ -140,6 +140,7 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
     this.$.menu.showAt(target, {
       noOffset: true,
       anchorAlignmentY: AnchorAlignment.AFTER_END,
+      maxY: this.isUnboundedMenuEnabled_ ? Number.MAX_SAFE_INTEGER : undefined,
     });
     showUnboundedMenu(this.$.menu, this.isUnboundedMenuEnabled_, 'overflow');
   }

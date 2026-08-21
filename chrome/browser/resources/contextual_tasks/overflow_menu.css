@@ -26,6 +26,10 @@ cr-action-menu {
   --cr-menu-background-color: var(--toolbar-menu-background-color);
 }
 
+cr-action-menu::part(dialog) {
+  max-height: none;
+}
+
 cr-action-menu > button {
   padding-block: 4px;
   padding-inline-start: 16px;
