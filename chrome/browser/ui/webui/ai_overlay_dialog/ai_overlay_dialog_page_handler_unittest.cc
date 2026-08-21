@@ -6,12 +6,16 @@
 
 #include <optional>
 
+#include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -210,6 +214,30 @@ TEST_F(AiOverlayDialogPageHandlerTest, SaveDebugFile) {
       ai_overlay_dialog::mojom::DebugFileType::kPrimingTurnMarkdown,
       "# test markdown");
   handler_remote().FlushForTesting();
+}
+
+TEST_F(AiOverlayDialogPageHandlerTest, SaveDebugFile_WithDebugLogsEnabled) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableTtcDebugLogs);
+
+  handler_remote()->SaveDebugFile(
+      ai_overlay_dialog::mojom::DebugFileType::kPrimingTurnMarkdown,
+      "# test markdown");
+  handler_remote()->SaveDebugFile(
+      ai_overlay_dialog::mojom::DebugFileType::kImage,
+      "data:image/jpeg;base64,dGVzdA==");
+  handler_remote().FlushForTesting();
+
+  EXPECT_TRUE(base::test::RunUntil([]() {
+    base::FilePath md_path(FILE_PATH_LITERAL("/tmp/ttc/priming_turn.md"));
+    base::FilePath img_path(FILE_PATH_LITERAL("/tmp/ttc/image.jpg"));
+    std::string md_contents;
+    std::string img_contents;
+    return base::ReadFileToString(md_path, &md_contents) &&
+           md_contents == "# test markdown" &&
+           base::ReadFileToString(img_path, &img_contents) &&
+           img_contents == "test";
+  }));
 }
 
 }  // namespace

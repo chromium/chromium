@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_untrusted_ui.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/page_context_monitor.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/optimization_guide/content/browser/page_content_image_extractor.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/tabs/public/tab_interface.h"
@@ -90,6 +91,29 @@ class AnimatedIconSource : public gfx::CanvasImageSource {
   float energy_;
   SkColor color_;
 };
+
+void SaveDebugFileAsync(base::FilePath dir_path,
+                        base::FilePath file_path,
+                        std::string content,
+                        bool is_image) {
+  std::string data_to_write = std::move(content);
+  const std::string base64_prefix = "data:image/jpeg;base64,";
+  if (base::StartsWith(data_to_write, base64_prefix)) {
+    std::string decoded;
+    if (base::Base64Decode(data_to_write.substr(base64_prefix.size()),
+                           &decoded)) {
+      data_to_write = std::move(decoded);
+    }
+  } else if (is_image) {
+    std::string decoded;
+    if (base::Base64Decode(data_to_write, &decoded)) {
+      data_to_write = std::move(decoded);
+    }
+  }
+
+  base::CreateDirectory(dir_path);
+  base::WriteFile(file_path, data_to_write);
+}
 
 }  // namespace
 
@@ -353,7 +377,7 @@ void AiOverlayDialogPageHandler::SaveDebugFile(
     const std::string& content) {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch("enable-ttc-debug-logs")) {
+  if (!command_line->HasSwitch(switches::kEnableTtcDebugLogs)) {
     return;
   }
 
@@ -370,24 +394,12 @@ void AiOverlayDialogPageHandler::SaveDebugFile(
   }
 
   base::FilePath dir_path(FILE_PATH_LITERAL("/tmp/ttc"));
-  base::CreateDirectory(dir_path);
   base::FilePath file_path = dir_path.Append(filename);
 
-  std::string data_to_write = content;
-  std::string base64_prefix = "data:image/jpeg;base64,";
-  if (base::StartsWith(content, base64_prefix)) {
-    std::string decoded;
-    if (base::Base64Decode(content.substr(base64_prefix.size()), &decoded)) {
-      data_to_write = decoded;
-    }
-  } else if (is_image) {
-    std::string decoded;
-    if (base::Base64Decode(content, &decoded)) {
-      data_to_write = decoded;
-    }
-  }
-
-  base::WriteFile(file_path, data_to_write);
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&SaveDebugFileAsync, dir_path, file_path, content,
+                     is_image));
 }
 
 void AiOverlayDialogPageHandler::GetImageBytes(
