@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/wtf/base_hash_traits.h"
 
 namespace blink {
 class AbortController;
@@ -228,11 +229,10 @@ class CORE_EXPORT ModelContext : public EventTarget,
     void Trace(Visitor* visitor) const;
     String tool_name;
     ScriptToolExecutedCallback callback;
-    base::UnguessableToken invocation_id;
     // Created for every tool execution; never null.
     Member<AbortController> abort_controller;
   };
-  HeapHashMap<String, PendingExecution> pending_executions_;
+  HeapHashMap<base::UnguessableToken, PendingExecution> pending_executions_;
 
   Vector<CrossDocumentScriptToolResultCallback>
       cross_document_result_callbacks_;
