@@ -36,8 +36,9 @@ public class AppMenuItemTheme {
     public boolean isMenuItemManaged(@IdRes int itemId) {
         if (itemId == R.id.new_incognito_tab_menu_id
                 || itemId == R.id.new_incognito_window_menu_id) {
-            return IncognitoUtils.isIncognitoModeManaged(
-                    assumeNonNull(mTabModelSelector.getCurrentModel().getProfile()));
+            Profile profile = assumeNonNull(mTabModelSelector.getCurrentModel().getProfile());
+            return IncognitoUtils.isIncognitoModeManaged(profile)
+                    && !IncognitoUtils.isIncognitoModeEnabled(profile);
         }
         return false;
     }
