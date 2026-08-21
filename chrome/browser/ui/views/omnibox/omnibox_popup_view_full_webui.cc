@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -19,13 +20,17 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
+#include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/range/range.h"
@@ -53,6 +58,26 @@ searchbox::mojom::InputKeywordModelPtr CreateInputKeywordModel(
       SelectedKeywordView::GetKeywordLabelNames(keyword, turl_service);
   keyword_model->display_text = base::UTF16ToUTF8(names.full_name);
   return keyword_model;
+}
+
+// Returns true if `contents` should automatically focus the location bar by
+// default (e.g. New Tab Page), verifying both the visible and pending URLs to
+// avoid false-positives from stale navigation entries during tab creation.
+bool ShouldFocusLocationBarForTab(content::WebContents* contents) {
+  if (!contents || !contents->FocusLocationBarByDefault()) {
+    return false;
+  }
+  const GURL& visible_url = contents->GetVisibleURL();
+  content::NavigationEntry* pending_entry =
+      contents->GetController().GetPendingEntry();
+  const GURL& pending_url = pending_entry ? pending_entry->GetURL() : GURL();
+
+  auto is_ntp_url = [](const GURL& url) {
+    return search::IsNTPURL(url) ||
+           url.spec() == chrome::kChromeUISplitViewNewTabPageURL;
+  };
+
+  return is_ntp_url(visible_url) || is_ntp_url(pending_url);
 }
 
 }  // namespace
@@ -247,7 +272,7 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
     // the location bar by default (e.g., New Tab Page).
     controller()->edit_model()->Revert();
     controller()->edit_model()->OnChanged();
-    should_focus_popup = contents && contents->FocusLocationBarByDefault();
+    should_focus_popup = ShouldFocusLocationBarForTab(contents);
     if (should_focus_popup) {
       controller()->edit_model()->OnSetFocus(/*control_down=*/false);
       target_popup_state = OmniboxPopupState::kFull;
@@ -265,20 +290,36 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
   // overrides any OS-default focus selection (such as macOS Select-All).
   if (target_popup_state == OmniboxPopupState::kFull) {
     if (presenter()) {
+      // Reset cached height to 1 on tab switch. This forces
+      // `OmniboxPopupFullPresenter::SynchronizePopupBounds` to fall back to
+      // `default_height` (the single location bar height) and drop
+      // elevation to 0, preventing a transient blank white dropdown box from
+      // painting while WebUI updates matches for the new tab.
+      presenter()->OnContentHeightChanged(1);
       presenter()->Show();
-      // Only request native widget activation if the browser window is already
-      // active, to prevent stealing activation during initial window creation.
-      views::Widget* location_bar_widget =
-          presenter()->delegate().GetLocationBarWidget();
-      const bool can_activate =
-          !location_bar_widget || location_bar_widget->IsActive();
-      if (should_focus_popup && can_activate) {
+      if (should_focus_popup) {
+        // Reset stored focus for the newly active WebContents (e.g. NTP) so
+        // subsequent calls to `WebContents::RestoreFocus()` in BrowserView
+        // do not overwrite native FocusManager focus back to the page
+        // container.
+        if (contents) {
+          if (auto* focus_helper =
+                  ChromeWebContentsViewFocusHelper::FromWebContents(contents)) {
+            focus_helper->ResetStoredFocus();
+          }
+        }
         presenter()->RequestFocus();
       }
     }
   } else {
     if (presenter()) {
       presenter()->Hide();
+    }
+    if (contents) {
+      if (auto* focus_helper =
+              ChromeWebContentsViewFocusHelper::FromWebContents(contents)) {
+        focus_helper->RestoreFocus();
+      }
     }
   }
 

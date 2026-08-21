@@ -51,15 +51,6 @@ bool OmniboxFullPopupWebUIContent::EscClosesUI() const {
   return false;
 }
 
-void OmniboxFullPopupWebUIContent::CloseUI() {
-  // Call base class method first so that any focus operations downstream
-  // will be overridden by focusing the web contents.
-  OmniboxPopupWebUIBaseContent::CloseUI();
-
-  controller()->client()->FocusWebContents();
-  controller()->edit_model()->OnKillFocus();
-}
-
 void OmniboxFullPopupWebUIContent::Clear() {
   if (auto* handler = popup_handler()) {
     handler->ClearPopup(
