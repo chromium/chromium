@@ -1215,7 +1215,7 @@ bool Database::RazeInternal() {
       return false;
     }
     // Page size isn't changed until the database is vacuumed.
-    std::ignore = Execute("VACUUM");
+    std::ignore = Vacuum();
     // Re-enter WAL mode.
     if (UseWALMode()) {
       std::ignore = Execute("PRAGMA journal_mode=WAL;");
@@ -1266,6 +1266,17 @@ bool Database::Raze() {
   RecordTimingHistogram("Sql.Database.RazeTime.", raze_timer.Elapsed());
 
   return result;
+}
+
+bool Database::Vacuum() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT0("sql", "Database::Vacuum");
+
+  if (!is_open() || transaction_nesting_ != 0) {
+    return false;
+  }
+  Statement statement(GetCachedStatement(StatementID(SQL_FROM_HERE), "VACUUM"));
+  return statement.Run();
 }
 
 bool Database::RazeAndPoison() {

@@ -350,19 +350,15 @@ void FullStreamUIPolicy::DoDeleteDatabase() {
 
   // Not wrapped in a transaction because the deletion should happen even if
   // the vacuuming fails.
-  sql::Statement statement(
-      db->GetCachedStatement(SQL_FROM_HERE, "DELETE FROM activitylog_full"));
-  if (!statement.Run()) {
+  if (sql::Statement statement(db->GetCachedStatement(
+          SQL_FROM_HERE, "DELETE FROM activitylog_full"));
+      !statement.Run()) {
     LOG(ERROR) << "Deleting the database failed: "
                << statement.GetSQLStatement();
     return;
   }
-  statement.Clear();
-  statement.Assign(db->GetCachedStatement(sql::StatementID(SQL_FROM_HERE),
-                                          "VACUUM"));
-  if (!statement.Run()) {
-    LOG(ERROR) << "Vacuuming the database failed: "
-               << statement.GetSQLStatement();
+  if (!db->Vacuum()) {
+    LOG(ERROR) << "Vacuuming the database failed.";
   }
 }
 

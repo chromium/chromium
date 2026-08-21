@@ -1599,6 +1599,71 @@ TEST_P(SQLDatabaseTest, RazeTruncate) {
   EXPECT_THAT(base::GetFileSize(db_path_), Optional(expected_size));
 }
 
+TEST_P(SQLDatabaseTest, Vacuum) {
+  // Some platforms have `auto_vacuum` enabled by default. `auto_vacuum` must be
+  // disabled to test manual vacuuming with `Vacuum()`. From the documentation:
+  // "To change [auto_vacuum] from "full" or "incremental" back to "none" always
+  // requires running VACUUM even on an empty database."
+  // https://www.sqlite.org/pragma.html#pragma_auto_vacuum
+  ASSERT_TRUE(db_->Execute("PRAGMA auto_vacuum = 0"));
+  ASSERT_TRUE(db_->Vacuum());
+
+  ASSERT_TRUE(db_->Execute("CREATE TABLE foo (data)"));
+  for (int i = 0; i < 50; ++i) {
+    ASSERT_TRUE(
+        db_->Execute("INSERT INTO foo (data) VALUES (randomblob(1024))"));
+  }
+
+  // Deleted rows aren't freed, they are moved to the freelist.
+  const int initial_page_count = test::GetPageCount(db_.get());
+  ASSERT_TRUE(db_->Execute("DELETE FROM foo"));
+  ASSERT_EQ(test::GetPageCount(db_.get()), initial_page_count);
+
+  // Vacuum should clear the freelist and release pages.
+  EXPECT_TRUE(db_->Vacuum());
+  EXPECT_LT(test::GetPageCount(db_.get()), initial_page_count);
+}
+
+TEST_P(SQLDatabaseTest, VacuumUnopenedDatabase) {
+  Database unopened_db(test::kTestTag);
+  EXPECT_FALSE(unopened_db.Vacuum());
+}
+
+TEST_P(SQLDatabaseTest, VacuumClosedDatabase) {
+  db_->Close();
+  EXPECT_FALSE(db_->Vacuum());
+}
+
+TEST_P(SQLDatabaseTest, VacuumPoisonedDatabase) {
+  db_->Poison();
+  EXPECT_FALSE(db_->Vacuum());
+}
+
+TEST_P(SQLDatabaseTest, VacuumWithActiveTransaction) {
+  ASSERT_TRUE(db_->Execute("CREATE TABLE rows(data)"));
+
+  Transaction transaction(db_.get());
+  ASSERT_TRUE(transaction.Begin());
+  EXPECT_FALSE(db_->Vacuum());
+
+  ASSERT_TRUE(transaction.Commit());
+  EXPECT_TRUE(db_->Vacuum());
+}
+
+TEST_P(SQLDatabaseTest, VacuumWithActiveStatement) {
+  ASSERT_TRUE(db_->Execute("CREATE TABLE rows(data)"));
+  ASSERT_TRUE(db_->Execute("INSERT INTO rows(data) VALUES(1)"));
+  ASSERT_TRUE(db_->Execute("INSERT INTO rows(data) VALUES(2)"));
+
+  {
+    Statement select(db_->GetUniqueStatement("SELECT data FROM rows"));
+    ASSERT_TRUE(select.Step());
+    EXPECT_FALSE(db_->Vacuum());
+  }
+
+  EXPECT_TRUE(db_->Vacuum());
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_P(SQLDatabaseTest, SetTempDirForSQL) {
   MetaTable meta_table;
