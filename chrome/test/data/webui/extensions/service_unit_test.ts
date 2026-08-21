@@ -32,4 +32,17 @@ suite('ExtensionServiceUnitTest', function() {
     // dialog).
     await service.setItemEnabled('a'.repeat(32), true);
   });
+
+  test('Calling openReviewPage() does not cause a runtime error', async () => {
+    const originalOpenReviewPage = chrome.developerPrivate.openReviewPage;
+    chrome.developerPrivate.openReviewPage = () =>
+        Promise.reject(new Error('Review prompts are disabled by policy.'));
+
+    // Calling openReviewPage on an extension should not throw a runtime
+    // error if the backend rejects the call (e.g. policy disabled or
+    // extension removed).
+    await service.openReviewPage('a'.repeat(32));
+
+    chrome.developerPrivate.openReviewPage = originalOpenReviewPage;
+  });
 });

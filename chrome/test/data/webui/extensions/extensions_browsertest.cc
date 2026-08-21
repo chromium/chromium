@@ -258,6 +258,10 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, ShowErrorAsWarningsButtonLabel) {
   RunTestCase("ShowErrorAsWarningsButtonLabel");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, WriteReviewButtonVisibility) {
+  RunTestCase("WriteReviewButtonVisibility");
+}
+
 class CrExtensionsDetailViewTest : public ExtensionsBrowserTest {
  protected:
   void RunTestCase(const std::string& testCase) {
@@ -678,6 +682,11 @@ class CrExtensionsServiceUnitTest : public ExtensionsBrowserTest {
 IN_PROC_BROWSER_TEST_F(CrExtensionsServiceUnitTest,
                        CallingSetEnabledDoesNotGenerateARuntimeError) {
   RunTestCase("Calling setEnabled() does not cause a runtime error");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsServiceUnitTest,
+                       CallingOpenReviewPageDoesNotGenerateARuntimeError) {
+  RunTestCase("Calling openReviewPage() does not cause a runtime error");
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -109,6 +109,20 @@ function getErrorsButtonInfo(item: HTMLElement):
   };
 }
 
+/**
+ * Helper to create an extension info object for a standard store extension.
+ */
+function createStoreItemData(
+    overrides?: Partial<chrome.developerPrivate.ExtensionInfo>):
+    chrome.developerPrivate.ExtensionInfo {
+  return createExtensionInfo(Object.assign(
+      {
+        webStoreUrl: 'https://chromewebstore.google.com/detail/foo',
+        location: chrome.developerPrivate.Location.FROM_STORE,
+      },
+      overrides));
+}
+
 suite('ExtensionItemTest', function() {
   /**
    * Extension item created before each test.
@@ -199,6 +213,17 @@ suite('ExtensionItemTest', function() {
         item.shadowRoot.querySelector<HTMLElement>(
             '#inspect-views a[is="action-link"]')!,
         'inspectItemView', [item.data.id, item.data.views[0]]);
+
+    loadTimeData.overrideValues({cwsReviewPromptingEnabled: true});
+    const dataWithStoreUrl = createExtensionInfo(item.data);
+    dataWithStoreUrl.webStoreUrl =
+        'https://chromewebstore.google.com/detail/foo';
+    dataWithStoreUrl.location = chrome.developerPrivate.Location.FROM_STORE;
+    item.data = dataWithStoreUrl;
+    await microtasksFinished();
+    await mockDelegate.testClickingCalls(
+        item.shadowRoot.querySelector<HTMLElement>('#review-link')!,
+        'openReviewPage', [item.data.id]);
 
     // Setup for testing navigation buttons.
     let currentPage = null;
@@ -763,5 +788,128 @@ suite('ExtensionItemTest', function() {
     assertTrue(
         buttonInfo.isError,
         'Button should have error class when both errors and warnings exist');
+  });
+
+  test('WriteReviewButtonVisibility', async () => {
+    const card = item.shadowRoot.querySelector<HTMLElement>('#card')!;
+    card.style.transition = 'none';
+
+    function assertCardHeight(expected: number) {
+      assertEquals(expected, Math.round(card.getBoundingClientRect().height));
+    }
+
+    // Hidden when feature flag is disabled.
+    loadTimeData.overrideValues({cwsReviewPromptingEnabled: false});
+    item.data = createStoreItemData();
+    await microtasksFinished();
+    testVisible(item, '#review-link', false);
+    assertFalse(card.classList.contains('review-prompting-enabled'));
+    assertCardHeight(160);
+
+    item.inDevMode = true;
+    await microtasksFinished();
+    assertCardHeight(208);
+    item.inDevMode = false;
+
+    // Enable feature flag for all remaining layout state tests.
+    loadTimeData.overrideValues({cwsReviewPromptingEnabled: true});
+    item.data = createStoreItemData();
+    await microtasksFinished();
+    assertTrue(card.classList.contains('review-prompting-enabled'));
+    assertCardHeight(180);
+
+    // Hidden by default when webStoreUrl is empty.
+    item.data = createExtensionInfo();
+    await microtasksFinished();
+    testVisible(item, '#review-link', false);
+
+    // Visible when webStoreUrl is present and item is from store.
+    item.data = createStoreItemData();
+    await microtasksFinished();
+    testVisible(item, '#review-link', true);
+
+    // Visible in developer mode as well, expanding to 228px.
+    item.inDevMode = true;
+    await microtasksFinished();
+    testVisible(item, '#review-link', true);
+    assertCardHeight(228);
+    item.inDevMode = false;
+
+    // Hidden for local developer unpacked extensions.
+    item.data = createStoreItemData({
+      location: chrome.developerPrivate.Location.UNPACKED,
+    });
+    await microtasksFinished();
+    testVisible(item, '#review-link', false);
+
+    // Hidden for third-party extensions.
+    item.data = createStoreItemData({
+      location: chrome.developerPrivate.Location.THIRD_PARTY,
+    });
+    await microtasksFinished();
+    testVisible(item, '#review-link', false);
+
+    // Hidden for default pre-installed component extensions.
+    item.data = createStoreItemData({
+      location: chrome.developerPrivate.Location.INSTALLED_BY_DEFAULT,
+    });
+    await microtasksFinished();
+    testVisible(item, '#review-link', false);
+
+    // Hidden when extension must remain installed.
+    item.data = createStoreItemData({mustRemainInstalled: true});
+    await microtasksFinished();
+    testVisible(item, '#review-link', false);
+
+    // Hidden when extension is corrupted (repair state active).
+    const corruptedData = createStoreItemData();
+    corruptedData.disableReasons.corruptInstall = true;
+    item.data = corruptedData;
+    await microtasksFinished();
+    testVisible(item, '#review-link', false);
+
+    // Hidden when extension is terminated (reload button active).
+    item.data = createStoreItemData({
+      state: chrome.developerPrivate.ExtensionState.TERMINATED,
+    });
+    await microtasksFinished();
+    testVisible(item, '#review-link', false);
+
+    // Visible when runtime errors exist on the card (description still valid,
+    // Errors button in strip).
+    const errorData = createStoreItemData();
+    errorData.runtimeErrors = [createRuntimeError(errorData.id)];
+    item.data = errorData;
+    await microtasksFinished();
+    testVisible(item, '#review-link', true);
+
+    // Visible when install warnings exist on the card (description still valid,
+    // Warnings button in strip).
+    const installWarningData = createStoreItemData();
+    installWarningData.installWarnings = ['Some install warning'];
+    item.data = installWarningData;
+    await microtasksFinished();
+    testVisible(item, '#review-link', true);
+
+    // Hidden when severe runtime warnings replace description banner.
+    const severeWarningData = createStoreItemData();
+    severeWarningData.runtimeWarnings = ['Severe runtime warning'];
+    item.data = severeWarningData;
+    await microtasksFinished();
+    testVisible(item, '#review-link', false);
+
+    // Hidden when MV2 deprecation warning replaces description banner.
+    const mv2Data = createStoreItemData();
+    mv2Data.disableReasons.unsupportedManifestVersion = true;
+    item.data = mv2Data;
+    await microtasksFinished();
+    testVisible(item, '#review-link', false);
+
+    // Hidden when Safe Browsing allowlist warning replaces description banner.
+    const allowlistData = createStoreItemData();
+    allowlistData.showSafeBrowsingAllowlistWarning = true;
+    item.data = allowlistData;
+    await microtasksFinished();
+    testVisible(item, '#review-link', false);
   });
 });

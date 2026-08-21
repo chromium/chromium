@@ -184,6 +184,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       {"itemDependencies", IDS_EXTENSIONS_ITEM_DEPENDENCIES},
       {"itemDependentEntry", IDS_EXTENSIONS_DEPENDENT_ENTRY},
       {"itemDetails", IDS_EXTENSIONS_ITEM_DETAILS},
+      {"itemWriteReview", IDS_EXTENSIONS_ITEM_WRITE_REVIEW},
       {"itemDetailsBackButtonAriaLabel",
        IDS_EXTENSIONS_DETAILS_BACK_BUTTON_ARIA_LABEL},
       {"itemDetailsBackButtonRoleDescription",
@@ -474,6 +475,16 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
   source->AddBoolean(
       "enableExtensionsPinnedByDefault",
       base::FeatureList::IsEnabled(features::kExtensionsPinnedByDefault));
+  // `prefs::kExtensionReviewPromptsAllowed` is a dynamic preference that can
+  // change at runtime. We evaluate it statically at page load as a tradeoff:
+  // stale values will be updated the next time the page loads, and backend
+  // checks prevent execution if disabled mid-session.
+  source->AddBoolean("cwsReviewPromptingEnabled",
+                     base::FeatureList::IsEnabled(
+                         extensions_features::kCWSReviewPromptingNativeUI) &&
+                         profile->IsRegularProfile() &&
+                         profile->GetPrefs()->GetBoolean(
+                             prefs::kExtensionReviewPromptsAllowed));
   source->AddBoolean(kShowActivityLogKey,
                      base::CommandLine::ForCurrentProcess()->HasSwitch(
                          ::switches::kEnableExtensionActivityLogging));

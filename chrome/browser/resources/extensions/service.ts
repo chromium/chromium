@@ -211,6 +211,16 @@ export class Service implements ServiceInterface {
     return chrome.management.uninstall(id, {showConfirmDialog: true});
   }
 
+  openReviewPage(id: string): Promise<void> {
+    return chrome.developerPrivate.openReviewPage(id).catch(
+        () => {
+            // Opening the review page can fail for benign reasons, such as the
+            // extension being uninstalled or review prompts being disabled by
+            // policy after the page was loaded. Ignore errors to avoid noisy
+            // crash logs.
+        });
+  }
+
   deleteItems(ids: string[]): Promise<void> {
     this.isDeleting_ = true;
     return chrome.developerPrivate.removeMultipleExtensions(ids).finally(() => {

@@ -141,6 +141,14 @@ export function getHtml(this: ItemElement) {
           </div>
         ` : ''}
       ` : ''}
+      <div id="review-link-container"
+          ?hidden="${!this.showOpenReviewPageLink_()}">
+        <a id="review-link" is="action-link"
+            @click="${this.onOpenReviewPageClick_}"
+            aria-describedby="a11yAssociation">
+          $i18n{itemWriteReview}
+        </a>
+      </div>
     </div>
   </div>
   <div id="button-strip" class="layout-horizontal-center cr-secondary-text">
