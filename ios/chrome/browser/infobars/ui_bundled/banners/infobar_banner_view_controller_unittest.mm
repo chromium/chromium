@@ -16,6 +16,7 @@
 @property(nonatomic, weak) UIButton* infobarButton;
 @property(nonatomic, strong) UILabel* titleLabel;
 @property(nonatomic, strong) UILabel* subTitleLabel;
+@property(nonatomic, strong) UIScrollView* labelsScrollView;
 @end
 
 // Test fixture for testing InfobarBannerViewController class.
@@ -77,4 +78,19 @@ TEST_F(InfobarBannerViewControllerTest, TestSubtitleLabelHidden) {
   [scoped_key_window_.Get() setRootViewController:view_controller_];
   ASSERT_EQ(view_controller_.titleLabel.text, @"title");
   ASSERT_TRUE(view_controller_.subTitleLabel.hidden);
+}
+
+// Tests that the labels are wrapped inside a UIScrollView.
+TEST_F(InfobarBannerViewControllerTest, TestScrollViewHierarchy) {
+  [scoped_key_window_.Get() setRootViewController:view_controller_];
+
+  UIScrollView* scrollView = view_controller_.labelsScrollView;
+  ASSERT_NSNE(nil, scrollView);
+
+  // The scroll view should be in the view hierarchy.
+  ASSERT_TRUE([scrollView isDescendantOfView:view_controller_.view]);
+
+  // The labels should be inside the scroll view.
+  ASSERT_TRUE([view_controller_.titleLabel isDescendantOfView:scrollView]);
+  ASSERT_TRUE([view_controller_.subTitleLabel isDescendantOfView:scrollView]);
 }

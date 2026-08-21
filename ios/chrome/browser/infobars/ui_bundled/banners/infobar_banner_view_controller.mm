@@ -79,7 +79,7 @@ const CGFloat kHeightCornerRadiusThreshold = 90.0;
 const CGFloat kButtonMaxWidthMultiplier = 0.40;
 }  // namespace
 
-@interface InfobarBannerViewController ()
+@interface InfobarBannerViewController () <UIGestureRecognizerDelegate>
 
 // Properties backing the InfobarBannerConsumer protocol.
 @property(nonatomic, copy) NSString* bannerAccessibilityLabel;
@@ -118,6 +118,10 @@ const CGFloat kButtonMaxWidthMultiplier = 0.40;
 @property(nonatomic, strong) UILabel* titleLabel;
 // UILabel displaying `self.subTitleText`.
 @property(nonatomic, strong) UILabel* subTitleLabel;
+// The scroll view that contains the labels.
+@property(nonatomic, strong) UIScrollView* labelsScrollView;
+// The pan gesture recognizer used to dismiss the banner.
+@property(nonatomic, strong) UIPanGestureRecognizer* panGestureRecognizer;
 // Used to build and record metrics.
 @property(nonatomic, strong) InfobarMetricsRecorder* metricsRecorder;
 // The time in which the Banner appeared on screen.
@@ -168,11 +172,11 @@ const CGFloat kButtonMaxWidthMultiplier = 0.40;
   }
 
   // Gestures setup.
-  UIPanGestureRecognizer* panGestureRecognizer =
-      [[UIPanGestureRecognizer alloc] init];
-  [panGestureRecognizer addTarget:self action:@selector(handleGestures:)];
-  [panGestureRecognizer setMaximumNumberOfTouches:1];
-  [self.view addGestureRecognizer:panGestureRecognizer];
+  self.panGestureRecognizer = [[UIPanGestureRecognizer alloc] init];
+  [self.panGestureRecognizer addTarget:self action:@selector(handleGestures:)];
+  [self.panGestureRecognizer setMaximumNumberOfTouches:1];
+  self.panGestureRecognizer.delegate = self;
+  [self.view addGestureRecognizer:self.panGestureRecognizer];
 
   UILongPressGestureRecognizer* longPressGestureRecognizer =
       [[UILongPressGestureRecognizer alloc] init];
@@ -229,6 +233,9 @@ const CGFloat kButtonMaxWidthMultiplier = 0.40;
   self.subTitleLabel.adjustsFontForContentSizeCategory = YES;
   self.subTitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   self.subTitleLabel.numberOfLines = _subtitleNumberOfLines;
+  [self.subTitleLabel
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisVertical];
   self.subTitleLabel.lineBreakMode = _subtitleLineBreakMode;
   self.subTitleLabel.hidden = !self.subtitleText.length;
 
@@ -244,6 +251,9 @@ const CGFloat kButtonMaxWidthMultiplier = 0.40;
       kInfobarBannerLabelsStackViewIdentifier;
   labelsStackView.isAccessibilityElement = YES;
   labelsStackView.accessibilityLabel = [self accessibilityLabel];
+
+  self.labelsScrollView =
+      [self configureLabelsScrollViewWithStackView:labelsStackView];
 
   // Button setup.
   UIFont* titleLabelFont = [[UIFontMetrics defaultMetrics]
@@ -287,7 +297,7 @@ const CGFloat kButtonMaxWidthMultiplier = 0.40;
                            afterView:iconContainerView];
   }
   // Add labels.
-  [containerStack addArrangedSubview:labelsStackView];
+  [containerStack addArrangedSubview:self.labelsScrollView];
   // Open Modal Button setup.
   self.openModalButton = [self createOpenModalButton];
   [containerStack addArrangedSubview:self.openModalButton];
@@ -367,8 +377,7 @@ const CGFloat kButtonMaxWidthMultiplier = 0.40;
   titleLabel.font = headlineFont;
   titleLabel.adjustsFontForContentSizeCategory = YES;
   titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  titleLabel.numberOfLines =
-      _titleNumberOfLines > 0 ? MIN(_titleNumberOfLines, 2) : 2;
+  titleLabel.numberOfLines = _titleNumberOfLines;
   titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
   titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
   [titleLabel
@@ -386,13 +395,12 @@ const CGFloat kButtonMaxWidthMultiplier = 0.40;
   // implemented.
   if (_infobarType == InfobarType::kInfobarTypeFormsAiPrivateInference) {
     subTitleLabel.numberOfLines = 6;
-    [subTitleLabel
-        setContentCompressionResistancePriority:UILayoutPriorityRequired
-                                        forAxis:UILayoutConstraintAxisVertical];
   } else {
-    subTitleLabel.numberOfLines =
-        _subtitleNumberOfLines > 0 ? MIN(_subtitleNumberOfLines, 3) : 3;
+    subTitleLabel.numberOfLines = _subtitleNumberOfLines;
   }
+  [subTitleLabel
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisVertical];
   subTitleLabel.lineBreakMode = _subtitleLineBreakMode;
   subTitleLabel.hidden = (self.subtitleText.length == 0);
   self.subTitleLabel = subTitleLabel;
@@ -417,6 +425,9 @@ const CGFloat kButtonMaxWidthMultiplier = 0.40;
           kInfobarBannerRevampButtonMaxHeight +
           (2 * kInfobarBannerRevampMinimumButtonVerticalBreathingRoom)]
       .active = YES;
+
+  self.labelsScrollView =
+      [self configureLabelsScrollViewWithStackView:labelsStackView];
 
   // Button setup.
   UIButton* actionButton = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -482,7 +493,7 @@ const CGFloat kButtonMaxWidthMultiplier = 0.40;
     [containerStack setCustomSpacing:kInfobarBannerRevampSpacingAfterIcon
                            afterView:iconContainerView];
   }
-  [containerStack addArrangedSubview:labelsStackView];
+  [containerStack addArrangedSubview:self.labelsScrollView];
   [containerStack addArrangedSubview:modalButton];
   CGFloat gearButtonSafeGap = (kInfobarBannerRevampGearButtonMinSafeGap +
                                kInfobarBannerRevampGearButtonMaxSafeGap) /
@@ -650,6 +661,31 @@ const CGFloat kButtonMaxWidthMultiplier = 0.40;
     return [self configureCustomViewContainer];
   }
   return nil;
+}
+
+// Configures and returns the UIScrollView wrapping the `labelsStackView`.
+- (UIScrollView*)configureLabelsScrollViewWithStackView:
+    (UIStackView*)labelsStackView {
+  UIScrollView* labelsScrollView = [[UIScrollView alloc] init];
+  labelsScrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  labelsScrollView.showsVerticalScrollIndicator = NO;
+  labelsScrollView.bounces = YES;
+  [labelsScrollView addSubview:labelsStackView];
+  [labelsScrollView setContentHuggingPriority:UILayoutPriorityDefaultLow
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+
+  labelsStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSameConstraints(labelsStackView, labelsScrollView.contentLayoutGuide);
+  [labelsStackView.widthAnchor
+      constraintEqualToAnchor:labelsScrollView.frameLayoutGuide.widthAnchor]
+      .active = YES;
+
+  NSLayoutConstraint* heightConstraint = [labelsScrollView.heightAnchor
+      constraintEqualToAnchor:labelsStackView.heightAnchor];
+  heightConstraint.priority = UILayoutPriorityDefaultHigh;
+  heightConstraint.active = YES;
+
+  return labelsScrollView;
 }
 
 // Creates and configures the gear button used to present the modal options.
@@ -1000,6 +1036,30 @@ const CGFloat kButtonMaxWidthMultiplier = 0.40;
           [UIColor colorNamed:kBlueColor].CGColor;
     }
   }
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer {
+  if (gestureRecognizer == self.panGestureRecognizer) {
+    CGPoint velocity = [self.panGestureRecognizer velocityInView:self.view];
+    if (velocity.y < 0) {  // Dragging up (swiping up to dismiss)
+      // Check if the touch is within the scroll view.
+      CGPoint location =
+          [self.panGestureRecognizer locationInView:self.labelsScrollView];
+      if ([self.labelsScrollView pointInside:location withEvent:nil]) {
+        // If it is, only allow the gesture if the scroll view has reached the
+        // bottom.
+        CGFloat contentHeight = self.labelsScrollView.contentSize.height;
+        CGFloat scrollHeight = self.labelsScrollView.bounds.size.height;
+        CGFloat currentOffset = self.labelsScrollView.contentOffset.y;
+        if (currentOffset + scrollHeight < contentHeight - 1.0) {
+          return NO;
+        }
+      }
+    }
+  }
+  return YES;
 }
 
 #pragma mark - Accessibility
