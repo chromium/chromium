@@ -143,13 +143,14 @@ int MockRenderProcessHost::GetNextRoutingID() {
   return ++prev_routing_id_;
 }
 
-void MockRenderProcessHost::AddRoute(int32_t routing_id) {
-  listeners_.insert(routing_id);
+void MockRenderProcessHost::AddRoute(int32_t routing_id,
+                                     IPC::Listener* listener) {
+  listeners_.AddWithID(listener, routing_id);
 }
 
 void MockRenderProcessHost::RemoveRoute(int32_t routing_id) {
-  DCHECK(listeners_.contains(routing_id));
-  listeners_.erase(routing_id);
+  DCHECK(listeners_.Lookup(routing_id) != nullptr);
+  listeners_.Remove(routing_id);
   Cleanup();
 }
 
@@ -357,7 +358,7 @@ void MockRenderProcessHost::Cleanup() {
     return;
   }
 
-  if (listeners_.empty() && !deletion_callback_called_ &&
+  if (listeners_.IsEmpty() && !deletion_callback_called_ &&
       !pending_view_count_) {
     if (IsInitializedAndNotDead()) {
       ChildProcessTerminationInfo termination_info;
@@ -589,7 +590,7 @@ void MockRenderProcessHost::SetIsUsed() {
 }
 
 bool MockRenderProcessHost::HostHasNotBeenUsed() {
-  return IsUnused() && listeners_.empty();
+  return IsUnused() && listeners_.IsEmpty();
 }
 
 bool MockRenderProcessHost::IsSpare() const {
@@ -678,6 +679,8 @@ MockRenderProcessHost::StartRtpDump(bool incoming,
                                     WebRtcRtpPacketCallback packet_callback) {
   return base::NullCallback();
 }
+
+void MockRenderProcessHost::OnChannelConnected(int32_t peer_pid) {}
 
 void MockRenderProcessHost::OverrideBinderForTesting(
     const std::string& interface_name,

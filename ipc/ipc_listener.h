@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 
 namespace IPC {
@@ -32,8 +33,12 @@ class COMPONENT_EXPORT(IPC) Listener {
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) {}
 
+  // Debugging helper for identifying what kind of a Listener this is.
+  // TODO(crbug.com/40143346): Remove this method once the bug is fixed.
+  virtual std::string ToDebugString();
+
  protected:
-  virtual ~Listener();
+  virtual ~Listener() {}
 };
 
 }  // namespace IPC

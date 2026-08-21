@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/id_map.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/safe_ref.h"
 #include "base/state_transitions.h"
@@ -85,7 +85,7 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   // the future they will be handled directly by the AgentSchedulingGroupHost.
   // IPC:
   IPC::ChannelProxy* GetChannel();
-  void AddRoute(int32_t routing_id);
+  void AddRoute(int32_t routing_id, IPC::Listener* listener);
   void RemoveRoute(int32_t routing_id);
 
   // Mojo:
@@ -135,6 +135,8 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
 
   void SetState(LifecycleState state);
 
+  IPC::Listener* GetListener(int32_t routing_id);
+
   static int32_t GetNextID();
 
   // The RenderProcessHost this AgentSchedulingGroup is assigned to.
@@ -147,8 +149,8 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   // `features::MBIMode::kEnabledPerSiteInstance` mode.
   std::unique_ptr<IPC::ChannelProxy> channel_;
 
-  // Set of registered route IDs.
-  base::flat_set<int32_t> routes_;
+  // Map of registered IPC listeners.
+  base::IDMap<IPC::Listener*> listener_map_;
 
   // Remote stub of `mojom::AgentSchedulingGroup`, used for sending calls to the
   // (renderer-side) `AgentSchedulingGroup`.

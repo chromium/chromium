@@ -5,9 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_CHILD_PROCESS_HOST_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_CHILD_PROCESS_HOST_DELEGATE_H_
 
-#include <stdint.h>
-
 #include "base/process/process.h"
+#include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
@@ -18,18 +17,12 @@ class Channel;
 namespace content {
 
 // Interface that all users of ChildProcessHost need to provide.
-class ChildProcessHostDelegate {
+class ChildProcessHostDelegate : public IPC::Listener {
  public:
-  virtual ~ChildProcessHostDelegate() = default;
+  ~ChildProcessHostDelegate() override {}
 
   // Called when the IPC channel for the child process is initialized.
   virtual void OnChannelInitialized(IPC::Channel* channel) {}
-
-  // Called when the channel is connected and the peer process has responded.
-  virtual void OnChannelConnected(int32_t peer_pid) {}
-
-  // Called when an error causes the channel to close unexpectedly.
-  virtual void OnChannelError() {}
 
   // Called when the child process unexpected closes the IPC channel. Delegates
   // would normally delete the object in this case.

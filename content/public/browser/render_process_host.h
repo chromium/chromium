@@ -26,6 +26,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/common/child_process_id.h"
+#include "ipc/ipc_listener.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom-forward.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
@@ -127,7 +128,8 @@ class Renderer;
 // Interface that represents the browser side of the browser <-> renderer
 // communication channel. There will generally be one RenderProcessHost per
 // renderer process.
-class CONTENT_EXPORT RenderProcessHost : public base::SupportsUserData {
+class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
+                                         public base::SupportsUserData {
   // Do not remove this macro!
   // The macro is maintained by the memory safety team.
   ADVANCED_MEMORY_SAFETY_CHECKS();
@@ -150,7 +152,7 @@ class CONTENT_EXPORT RenderProcessHost : public base::SupportsUserData {
 
   // General functions ---------------------------------------------------------
 
-  ~RenderProcessHost() override = default;
+  ~RenderProcessHost() override {}
 
   // Initialize the new renderer process, returning true on success. This must
   // be called once before the object can be used, but can be called after
@@ -171,7 +173,7 @@ class CONTENT_EXPORT RenderProcessHost : public base::SupportsUserData {
   // Used for refcounting, each holder of this object must AddRoute and
   // RemoveRoute. This object should be allocated on the heap; when no
   // listeners own it any more, it will delete itself.
-  virtual void AddRoute(int32_t routing_id) = 0;
+  virtual void AddRoute(int32_t routing_id, IPC::Listener* listener) = 0;
   virtual void RemoveRoute(int32_t routing_id) = 0;
 
   // Add and remove observers for lifecycle events. The order in which

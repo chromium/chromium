@@ -2718,8 +2718,12 @@ RenderProcessHostImpl::GetInfoForBrowserContextDestructionCrashReporting() {
     ret += " prrc=" + base::NumberToString(pending_reuse_ref_count_);
   }
 
-  if (!listeners_.empty()) {
+  if (!listeners_.IsEmpty()) {
     ret += " lsn=" + base::NumberToString(listeners_.size());
+
+    base::IDMap<IPC::Listener*>::Iterator<IPC::Listener> it(&listeners_);
+    IPC::Listener* example_listener = it.GetCurrentValue();
+    ret += "[" + example_listener->ToDebugString() + "]";
   }
 
   if (deleting_soon_)
@@ -3183,7 +3187,8 @@ void RenderProcessHostImpl::SetIsUsed() {
   is_unused_ = false;
 }
 
-void RenderProcessHostImpl::AddRoute(int32_t routing_id) {
+void RenderProcessHostImpl::AddRoute(int32_t routing_id,
+                                     IPC::Listener* listener) {
   TRACE_EVENT("shutdown", "RenderProcessHostImpl::AddRoute",
               ChromeTrackEvent::kRenderProcessHost, *this,
               [&](perfetto::EventContext ctx) {
@@ -3192,9 +3197,9 @@ void RenderProcessHostImpl::AddRoute(int32_t routing_id) {
                 proto->set_routing_id(routing_id);
               });
   CHECK(!deleting_soon_);
-  CHECK(!listeners_.contains(routing_id))
+  CHECK(!listeners_.Lookup(routing_id))
       << "Found Routing ID Conflict: " << routing_id;
-  listeners_.insert(routing_id);
+  listeners_.AddWithID(listener, routing_id);
 }
 
 void RenderProcessHostImpl::RemoveRoute(int32_t routing_id) {
@@ -3207,8 +3212,8 @@ void RenderProcessHostImpl::RemoveRoute(int32_t routing_id) {
               });
   // TODO(crbug.com/541475235): CHECK-exclusion: Convert to a CHECK once we are
   // confident it won't be triggered.
-  DCHECK(listeners_.contains(routing_id));
-  listeners_.erase(routing_id);
+  DCHECK(listeners_.Lookup(routing_id) != nullptr);
+  listeners_.Remove(routing_id);
   Cleanup();
 }
 
@@ -3554,7 +3559,7 @@ void RenderProcessHostImpl::ClearAllResourceCaches() {
 }
 
 bool RenderProcessHostImpl::HostHasNotBeenUsed() {
-  return IsUnused() && listeners_.empty() && AreAllRefCountsZero() &&
+  return IsUnused() && listeners_.IsEmpty() && AreAllRefCountsZero() &&
          pending_views_ == 0;
 }
 
@@ -4468,7 +4473,7 @@ void RenderProcessHostImpl::Cleanup() {
   // ourselves. Note that it may be safe for the renderer process to exit even
   // if some non-live listeners remain, though they still depend on this
   // RenderProcessHost object.
-  if (!listeners_.empty() && !has_only_non_live_rfhs) {
+  if (!listeners_.IsEmpty() && !has_only_non_live_rfhs) {
     TRACE_EVENT(
         "shutdown", "RenderProcessHostImpl::Cleanup : Has listeners.",
         ChromeTrackEvent::kRenderProcessHost, *this,
@@ -4551,7 +4556,7 @@ void RenderProcessHostImpl::Cleanup() {
   // safe for the process to cleanly exit but not for the RenderProcessHost to
   // be deleted.
   if (has_only_non_live_rfhs) {
-    CHECK(!listeners_.empty(), base::NotFatalUntil::M152);
+    CHECK(!listeners_.IsEmpty(), base::NotFatalUntil::M152);
 
     // No need to terminate the renderer if it is already gone.
     if (!IsInitializedAndNotDead())

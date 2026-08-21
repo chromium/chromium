@@ -6,6 +6,8 @@
 
 namespace IPC {
 
-Listener::~Listener() = default;
+std::string Listener::ToDebugString() {
+  return "IPC::Listener";
+}
 
 }  // namespace IPC

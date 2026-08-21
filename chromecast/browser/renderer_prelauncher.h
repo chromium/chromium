@@ -6,6 +6,7 @@
 #define CHROMECAST_BROWSER_RENDERER_PRELAUNCHER_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "ipc/ipc_listener.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -20,7 +21,7 @@ namespace chromecast {
 // and retains a handle on its RenderProcessHost to keep it alive even when
 // there is no WebContents using the renderer process.  To release the
 // RenderProcessHost, this class must be deleted.
-class RendererPrelauncher {
+class RendererPrelauncher : private IPC::Listener {
  public:
   RendererPrelauncher(content::BrowserContext* browser_context,
                       const GURL& gurl);
@@ -28,7 +29,7 @@ class RendererPrelauncher {
   RendererPrelauncher(const RendererPrelauncher&) = delete;
   RendererPrelauncher& operator=(const RendererPrelauncher&) = delete;
 
-  virtual ~RendererPrelauncher();
+  ~RendererPrelauncher() override;
 
   virtual void Prelaunch();
   bool IsForURL(const GURL& gurl) const;

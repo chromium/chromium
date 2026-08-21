@@ -2690,7 +2690,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   // Only main frames have `waiting_for_init_` set.
   CHECK(!waiting_for_init_ || !parent_);
 
-  GetAgentSchedulingGroup().AddRoute(routing_id_);
+  GetAgentSchedulingGroup().AddRoute(routing_id_, this);
   g_routing_id_frame_map.Get().emplace(
       GlobalRenderFrameHostId(GetProcess()->GetDeprecatedID(), routing_id_),
       this);
@@ -4067,6 +4067,20 @@ PageVisibilityState RenderFrameHostImpl::GetVisibilityState() {
 
   return GetRenderWidgetHost()->IsHidden() ? PageVisibilityState::kHidden
                                            : PageVisibilityState::kVisible;
+}
+
+void RenderFrameHostImpl::OnAssociatedInterfaceRequest(
+    const std::string& interface_name,
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  // `this` is an `IPC::Listener`, but there is no path by which `this` would
+  // receive associated interface requests through this method. Associated
+  // interface requests come in through `GetAssociatedInterface()`.
+  NOTREACHED();
+}
+
+std::string RenderFrameHostImpl::ToDebugString() {
+  return "RFHI:" +
+         render_view_host_->GetDelegate()->GetCreatorLocation().ToString();
 }
 
 void RenderFrameHostImpl::AccessibilityPerformAction(
@@ -20132,9 +20146,7 @@ void RenderFrameHostImpl::AssertBrowserContextShutdownHasntStarted() {
     return;
   }
 
-  std::string debug_string =
-      "RFHI:" +
-      render_view_host_->GetDelegate()->GetCreatorLocation().ToString();
+  std::string debug_string = ToDebugString();
   SCOPED_CRASH_KEY_STRING256("shutdown", "frame->ToDebugString", debug_string);
   DUMP_WILL_BE_NOTREACHED()
       << "BrowserContext->ShutdownStarted() without first closing all "

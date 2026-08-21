@@ -82,7 +82,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool Init() override;
   void EnableSendQueue() override;
   int GetNextRoutingID() override;
-  void AddRoute(int32_t routing_id) override;
+  void AddRoute(int32_t routing_id, IPC::Listener* listener) override;
   void RemoveRoute(int32_t routing_id) override;
   void AddObserver(RenderProcessHostObserver* observer) override;
   void RemoveObserver(RenderProcessHostObserver* observer) override;
@@ -295,6 +295,9 @@ class MockRenderProcessHost : public RenderProcessHost {
 
   bool IsOnlyHostingPrerenderedFramesOrEmpty() override;
 
+  // IPC::Listener via RenderProcessHost.
+  void OnChannelConnected(int32_t peer_pid) override;
+
   void set_priority(base::Process::Priority priority) { priority_ = priority; }
 
   void SetIsForTopChromeWebUI(bool is_for_top_chrome_web_ui) {
@@ -339,7 +342,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   base::flat_set<raw_ptr<RenderProcessHostPriorityClient, CtnExperimental>>
       priority_clients_;
   int prev_routing_id_;
-  base::flat_set<int32_t> listeners_;
+  base::IDMap<IPC::Listener*> listeners_;
   bool shutdown_requested_;
   bool fast_shutdown_started_;
   bool within_process_died_observer_ = false;

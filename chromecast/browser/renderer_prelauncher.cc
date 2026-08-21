@@ -37,7 +37,7 @@ void RendererPrelauncher::Prelaunch() {
   content::RenderProcessHost* rph = site_instance_->GetOrCreateProcess(
       content::SiteInstanceProcessCreationClient::GetPassKey());
   rph_routing_id_ = rph->GetNextRoutingID();
-  rph->AddRoute(rph_routing_id_);
+  rph->AddRoute(rph_routing_id_, this);
   rph->Init();
 }
 
