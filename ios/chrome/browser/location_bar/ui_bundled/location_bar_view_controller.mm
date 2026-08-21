@@ -503,10 +503,6 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   _fullscreenProgress = progress;
   CGFloat alphaValue = fmax((progress - 0.85) / 0.15, 0);
-  CGFloat scaleValue =
-      IsChromeNextIaEnabled()
-          ? kFullscreenScaleFactor + (1 - kFullscreenScaleFactor) * progress
-          : 0.79 + 0.21 * progress;
   self.locationBarSteadyView.trailingButton.alpha = alphaValue;
   self.locationBarSteadyView.badgesContainerView.placeholderView.alpha =
       alphaValue;
@@ -517,8 +513,14 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
   BOOL badgeViewShouldCollapse = progress <= kFullscreenProgressThreshold;
   [self.locationBarSteadyView
       setFullScreenCollapsedMode:badgeViewShouldCollapse];
-  self.locationBarSteadyView.transform =
-      CGAffineTransformMakeScale(scaleValue, scaleValue);
+  if (!IsGlassToolbarEnabled()) {
+    CGFloat scaleValue =
+        IsChromeNextIaEnabled()
+            ? kFullscreenScaleFactor + (1 - kFullscreenScaleFactor) * progress
+            : (0.79 + 0.21 * progress);
+    self.locationBarSteadyView.transform =
+        CGAffineTransformMakeScale(scaleValue, scaleValue);
+  }
   [self updateCustomLeadingViewVisibilityAnimated:YES];
 }
 

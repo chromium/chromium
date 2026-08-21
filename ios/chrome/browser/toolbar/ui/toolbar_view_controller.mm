@@ -118,6 +118,9 @@ constexpr CGFloat kGlassShadowOpacity = 0.09;
 // Dark mode background opacity for the glass effect container (25% Black).
 constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
 
+// The scale factor for the glass effect container when in fullscreen.
+constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
+
 }  // namespace
 
 @interface ToolbarViewController () <TabGroupIndicatorViewDelegate,
@@ -248,6 +251,10 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
 
   // Used to record the latest fullscreen progress.
   CGFloat _fullscreenProgress;
+
+  // YES when the last "settled" state was Fullscreen and NO when the last
+  // "settled" state was not Fullscreen.
+  BOOL _isFullscreen;
 
   // Used to record the scroll progress to show and hide the toolbar.
   CGFloat _NTPScrollProgress;
@@ -763,6 +770,11 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
 #pragma mark - FullscreenUIElement
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
+  if (progress == 1.0) {
+    _isFullscreen = NO;
+  } else if (progress == 0.0) {
+    _isFullscreen = YES;
+  }
   _fullscreenProgress = progress;
   CGFloat locationBarExpandedHeight;
   if (IsGlassToolbarEnabled()) {
@@ -785,6 +797,9 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
   _locationBarContentView.layer.cornerRadius = locationBarHeight / 2.0;
 
   if (IsGlassToolbarEnabled()) {
+    CGFloat scaleValue = [self glassBackgroundScaleValueForProgress:progress];
+    _glassBackgroundContainer.transform =
+        CGAffineTransformMakeScale(scaleValue, scaleValue);
     CGFloat glassHeight = progress * kGlassExpandedHeight +
                           (1 - progress) * kGlassCollapsedHeight;
     _glassBackgroundHeightConstraint.constant = glassHeight;
@@ -915,6 +930,24 @@ constexpr CGFloat kGlassContainerDarkBackgroundAlpha = 0.25;
   CHECK(IsGlassToolbarEnabled());
   return progress * kGlassToolbarMargin +
          (1 - progress) * kGlassFullscreenMargin;
+}
+
+// Returns the scale value of the glass background for `progress`.
+- (CGFloat)glassBackgroundScaleValueForProgress:(CGFloat)progress {
+  CHECK(IsGlassToolbarEnabled());
+  CGFloat easedProgress;
+  if (_isFullscreen) {
+    // Scales fully to 1.0 by progress = 0.8 with ease-out.
+    CGFloat linearProgress = std::clamp<CGFloat>(progress / 0.8, 0.0, 1.0);
+    easedProgress = 1.0 - (1.0 - linearProgress) * (1.0 - linearProgress);
+  } else {
+    // Scales fully to 0.0 by progress = 0.2 with ease-in.
+    CGFloat linearProgress =
+        std::clamp<CGFloat>((progress - 0.2) / 0.8, 0.0, 1.0);
+    easedProgress = linearProgress * linearProgress;
+  }
+  CGFloat scaleDelta = 1.0 - kGlassFullscreenScaleFactor;
+  return kGlassFullscreenScaleFactor + scaleDelta * easedProgress;
 }
 
 // Updates all the `buttons` according to the fullscreen `progress`.
