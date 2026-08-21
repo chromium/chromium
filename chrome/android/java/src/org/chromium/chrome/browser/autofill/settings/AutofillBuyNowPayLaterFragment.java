@@ -29,6 +29,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillResourceProvider;
@@ -198,12 +199,18 @@ public class AutofillBuyNowPayLaterFragment extends ChromeBaseSettingsFragment
             new ChromeBaseSearchIndexProvider(AutofillBuyNowPayLaterFragment.class.getName(), 0) {
 
                 @Override
-                public void updateDynamicPreferences(Context context, SettingsIndexData indexData) {
-                    indexData.addEntryForKey(
-                            AutofillBuyNowPayLaterFragment.class.getName(),
-                            PREF_KEY_ENABLE_BUY_NOW_PAY_LATER,
-                            R.string.autofill_bnpl_settings_label,
-                            R.string.autofill_bnpl_settings_toggle_sublabel);
+                public void updateDynamicPreferences(
+                        Context context, SettingsIndexData indexData, Profile profile) {
+                    PersonalDataManager personalDataManager =
+                            PersonalDataManagerFactory.getForProfile(profile);
+                    if (AutofillPaymentMethodsFragment.shouldShowBnplPref(
+                            personalDataManager, profile)) {
+                        indexData.addEntryForKey(
+                                AutofillBuyNowPayLaterFragment.class.getName(),
+                                PREF_KEY_ENABLE_BUY_NOW_PAY_LATER,
+                                R.string.autofill_bnpl_settings_label,
+                                R.string.autofill_bnpl_settings_toggle_sublabel);
+                    }
                 }
             };
 }

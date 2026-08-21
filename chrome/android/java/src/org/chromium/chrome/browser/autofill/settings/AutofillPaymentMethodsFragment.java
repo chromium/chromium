@@ -881,7 +881,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                 && manager.isAutofillPaymentMethodsEnabled();
     }
 
-    private static boolean shouldShowBnplPref(PersonalDataManager manager, Profile profile) {
+    static boolean shouldShowBnplPref(PersonalDataManager manager, Profile profile) {
         return !disabledSettingsInThirdPartyMode(profile)
                 && manager.isAutofillPaymentMethodsEnabled()
                 && manager.shouldShowBnplSettings();
