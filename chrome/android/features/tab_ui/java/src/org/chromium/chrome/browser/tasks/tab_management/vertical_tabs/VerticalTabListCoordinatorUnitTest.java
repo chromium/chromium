@@ -89,6 +89,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridgeJni;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -162,6 +163,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
+    @Mock private TabModel mIncognitoTabModel;
     @Mock private TabCreator mTabCreator;
     @Mock private Profile mProfile;
     @Mock private FaviconHelper.Natives mFaviconHelperJniMock;
@@ -247,7 +249,9 @@ public class VerticalTabListCoordinatorUnitTest {
         mCurrentTabModelSupplier.set(mTabModel);
         when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mCurrentTabModelSupplier);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-        when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
+        when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel, mIncognitoTabModel));
+        when(mTabModelSelector.getModel(/* incognito= */ true)).thenReturn(mIncognitoTabModel);
+        when(mIncognitoTabModel.getCount()).thenReturn(0);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mTabModel.isTabModelRestored()).thenReturn(true);
@@ -282,10 +286,24 @@ public class VerticalTabListCoordinatorUnitTest {
 
         doAnswer(
                         invocation -> {
-                            mTabModelObservers.add(invocation.getArgument(0));
+                            TabModelObserver observer = invocation.getArgument(0);
+                            if (!mTabModelObservers.contains(observer)) {
+                                mTabModelObservers.add(observer);
+                            }
                             return null;
                         })
                 .when(mTabModel)
+                .addObserver(any(TabModelObserver.class));
+
+        doAnswer(
+                        invocation -> {
+                            TabModelObserver observer = invocation.getArgument(0);
+                            if (!mTabModelObservers.contains(observer)) {
+                                mTabModelObservers.add(observer);
+                            }
+                            return null;
+                        })
+                .when(mIncognitoTabModel)
                 .addObserver(any(TabModelObserver.class));
 
         FeatureOverrides.overrideParam(
@@ -1081,11 +1099,33 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @SmallTest
+    public void testIncognitoButtonClick() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                VerticalTabUtils.INCOGNITO_BUTTON_PARAM,
+                true);
+        when(mIncognitoTabModel.getCount()).thenReturn(1);
+        when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
+
+        createCoordinator();
+        ImageButton incognitoButton =
+                mCoordinator.getView().findViewById(R.id.new_incognito_tab_button);
+        assertNotNull(incognitoButton);
+        UserActionTester userActionTester = new UserActionTester();
+        incognitoButton.performClick();
+        verify(mTabModelSelector).selectModel(/* incognito= */ true);
+        assertTrue(userActionTester.getActions().contains("MobileToolbarModelSelected"));
+        userActionTester.tearDown();
+    }
+
+    @Test
+    @SmallTest
     public void testIncognitoButtonVisibility_TabletUnder10Inches() {
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS,
                 VerticalTabUtils.INCOGNITO_BUTTON_PARAM,
                 true);
+        when(mIncognitoTabModel.getCount()).thenReturn(1);
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(false);
         IncognitoUtils.setEnabledForTesting(true);
         createCoordinator();
@@ -1102,6 +1142,7 @@ public class VerticalTabListCoordinatorUnitTest {
                 ChromeFeatureList.ANDROID_VERTICAL_TABS,
                 VerticalTabUtils.INCOGNITO_BUTTON_PARAM,
                 true);
+        when(mIncognitoTabModel.getCount()).thenReturn(1);
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         IncognitoUtils.setEnabledForTesting(true);
         createCoordinator();
@@ -1118,12 +1159,66 @@ public class VerticalTabListCoordinatorUnitTest {
                 ChromeFeatureList.ANDROID_VERTICAL_TABS,
                 VerticalTabUtils.INCOGNITO_BUTTON_PARAM,
                 false);
+        when(mIncognitoTabModel.getCount()).thenReturn(1);
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(false);
         IncognitoUtils.setEnabledForTesting(true);
         createCoordinator();
         ImageButton incognitoButton =
                 mCoordinator.getView().findViewById(R.id.new_incognito_tab_button);
         assertNotNull(incognitoButton);
+        assertEquals(View.GONE, incognitoButton.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    public void testIncognitoButtonVisibility_NoIncognitoTabs_Gone() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                VerticalTabUtils.INCOGNITO_BUTTON_PARAM,
+                true);
+        when(mIncognitoTabModel.getCount()).thenReturn(0);
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(false);
+        IncognitoUtils.setEnabledForTesting(true);
+        createCoordinator();
+        ImageButton incognitoButton =
+                mCoordinator.getView().findViewById(R.id.new_incognito_tab_button);
+        assertNotNull(incognitoButton);
+        assertEquals(View.GONE, incognitoButton.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    public void testIncognitoButtonVisibility_UpdatesDynamically() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                VerticalTabUtils.INCOGNITO_BUTTON_PARAM,
+                true);
+        when(mIncognitoTabModel.getCount()).thenReturn(0);
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(false);
+        IncognitoUtils.setEnabledForTesting(true);
+        createCoordinator();
+        ImageButton incognitoButton =
+                mCoordinator.getView().findViewById(R.id.new_incognito_tab_button);
+        assertNotNull(incognitoButton);
+        assertEquals(View.GONE, incognitoButton.getVisibility());
+
+        // When an incognito tab is added
+        when(mIncognitoTabModel.getCount()).thenReturn(1);
+        Tab incognitoTab = mMockTab1;
+        for (TabModelObserver observer : mTabModelObservers) {
+            observer.didAddTab(
+                    incognitoTab,
+                    TabLaunchType.FROM_CHROME_UI,
+                    TabCreationState.LIVE_IN_FOREGROUND,
+                    /* markedForSelection= */ true);
+        }
+        assertEquals(View.VISIBLE, incognitoButton.getVisibility());
+
+        // When all tabs are closed
+        when(mIncognitoTabModel.getCount()).thenReturn(0);
+        for (TabModelObserver observer : mTabModelObservers) {
+            observer.didRemoveTabForClosure(incognitoTab);
+        }
         assertEquals(View.GONE, incognitoButton.getVisibility());
     }
 

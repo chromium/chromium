@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 
@@ -48,13 +50,17 @@ public class VerticalTabListViewBinder {
             assert newTabButton != null;
             newTabButton.setOnClickListener(
                     model.get(VerticalTabListProperties.ON_NEW_TAB_CLICK_LISTENER));
+        } else if (VerticalTabListProperties.ON_INCOGNITO_CLICK_LISTENER == propertyKey) {
+            View incognitoButton = view.getIncognitoButton();
+            assert incognitoButton != null;
+            incognitoButton.setOnClickListener(
+                    model.get(VerticalTabListProperties.ON_INCOGNITO_CLICK_LISTENER));
         } else if (VerticalTabListProperties.IS_INCOGNITO_BUTTON_VISIBLE == propertyKey) {
             View incognitoButton = view.getIncognitoButton();
             assert incognitoButton != null;
             boolean visible = model.get(VerticalTabListProperties.IS_INCOGNITO_BUTTON_VISIBLE);
             incognitoButton.setVisibility(visible ? View.VISIBLE : View.GONE);
             view.updateFooterLayout();
-            // TODO(crbug.com/537032526): Bind ON_INCOGNITO_CLICK_LISTENER to handle click actions.
         } else if (VerticalTabListProperties.ON_COLLAPSE_CLICK_LISTENER == propertyKey) {
             View collapseButton = view.findViewById(R.id.collapse_button);
             assert collapseButton != null;
@@ -72,7 +78,9 @@ public class VerticalTabListViewBinder {
         } else if (VerticalTabListProperties.COLLAPSE_STATE == propertyKey) {
             view.setCollapseState(model.get(VerticalTabListProperties.COLLAPSE_STATE));
         } else if (VerticalTabListProperties.IS_INCOGNITO == propertyKey) {
-            updateIncognitoColors(view, model.get(VerticalTabListProperties.IS_INCOGNITO));
+            boolean isIncognito = model.get(VerticalTabListProperties.IS_INCOGNITO);
+            updateIncognitoButton(view.getIncognitoButton(), isIncognito);
+            updateIncognitoColors(view, isIncognito);
         }
     }
 
@@ -132,5 +140,16 @@ public class VerticalTabListViewBinder {
         if (incognitoButton != null) {
             ViewCompat.setBackgroundTintList(incognitoButton, buttonBgTint);
         }
+    }
+
+    private static void updateIncognitoButton(@Nullable ImageButton button, boolean isIncognito) {
+        if (button == null) return;
+        int resId =
+                isIncognito
+                        ? R.string.accessibility_tabstrip_btn_incognito_toggle_incognito
+                        : R.string.accessibility_tabstrip_btn_incognito_toggle_standard;
+        String text = button.getContext().getString(resId);
+        button.setContentDescription(text);
+        TooltipCompat.setTooltipText(button, text);
     }
 }

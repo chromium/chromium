@@ -125,7 +125,7 @@ found in the LICENSE file.
             android:src="@drawable/ic_incognito_24dp"
             android:background="@drawable/vertical_tabs_button_background"
             android:focusable="true"
-            android:contentDescription="@string/accessibility_toolbar_btn_new_incognito_tab"
+            android:contentDescription="@string/accessibility_tabstrip_btn_incognito_toggle_standard"
             android:visibility="gone" />
     </LinearLayout>
 

@@ -98,7 +98,8 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         assert mIncognitoButton != null;
         TooltipCompat.setTooltipText(
                 mIncognitoButton,
-                getContext().getString(R.string.accessibility_toolbar_btn_new_incognito_tab));
+                getContext()
+                        .getString(R.string.accessibility_tabstrip_btn_incognito_toggle_standard));
 
         // Update header dimensions
         Resources res = getContext().getResources();
@@ -137,7 +138,7 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         return mFooterContainer;
     }
 
-    /** Returns the incognito chip button view. */
+    /** Returns the incognito tab switcher button view in the footer. */
     public ImageButton getIncognitoButton() {
         return mIncognitoButton;
     }

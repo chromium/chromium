@@ -62,6 +62,7 @@ public class VerticalTabRailLayoutUnitTest {
     @Mock private Callback<Integer> mMockHoverListener;
     @Mock private View.OnClickListener mSearchClickListener;
     @Mock private View.OnClickListener mNewTabClickListener;
+    @Mock private View.OnClickListener mIncognitoClickListener;
     @Mock private View.OnClickListener mCollapseClickListener;
 
     private Activity mActivity;
@@ -96,6 +97,9 @@ public class VerticalTabRailLayoutUnitTest {
                         .with(
                                 VerticalTabListProperties.ON_NEW_TAB_CLICK_LISTENER,
                                 mNewTabClickListener)
+                        .with(
+                                VerticalTabListProperties.ON_INCOGNITO_CLICK_LISTENER,
+                                mIncognitoClickListener)
                         .with(VerticalTabListProperties.IS_INCOGNITO_BUTTON_VISIBLE, false)
                         .with(
                                 VerticalTabListProperties.ON_COLLAPSE_CLICK_LISTENER,
@@ -144,7 +148,7 @@ public class VerticalTabRailLayoutUnitTest {
         assertEquals(
                 mRailLayout
                         .getContext()
-                        .getString(R.string.accessibility_toolbar_btn_new_incognito_tab),
+                        .getString(R.string.accessibility_tabstrip_btn_incognito_toggle_standard),
                 incognitoButton.getTooltipText());
     }
 
@@ -318,6 +322,12 @@ public class VerticalTabRailLayoutUnitTest {
         verify(mNewTabClickListener).onClick(newTabButton);
 
         VerticalTabListViewBinder.bind(
+                mModel, mRailLayout, VerticalTabListProperties.ON_INCOGNITO_CLICK_LISTENER);
+        View incognitoButton = mRailLayout.findViewById(R.id.new_incognito_tab_button);
+        incognitoButton.performClick();
+        verify(mIncognitoClickListener).onClick(incognitoButton);
+
+        VerticalTabListViewBinder.bind(
                 mModel, mRailLayout, VerticalTabListProperties.ON_COLLAPSE_CLICK_LISTENER);
         View collapseButton = mRailLayout.findViewById(R.id.collapse_button);
         collapseButton.performClick();
@@ -384,6 +394,14 @@ public class VerticalTabRailLayoutUnitTest {
 
         View searchButton = mRailLayout.findViewById(R.id.tab_search_button);
         assertNull(searchButton.getBackgroundTintList());
+
+        View incognitoButton = mRailLayout.findViewById(R.id.new_incognito_tab_button);
+        assertEquals(
+                mActivity.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_standard),
+                incognitoButton.getContentDescription());
+        assertEquals(
+                mActivity.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_standard),
+                incognitoButton.getTooltipText());
     }
 
     @Test
@@ -411,6 +429,14 @@ public class VerticalTabRailLayoutUnitTest {
         assertEquals(
                 mActivity.getColor(R.color.incognito_vertical_tabs_button_background_color),
                 buttonBgTint.getDefaultColor());
+
+        View incognitoButton = mRailLayout.findViewById(R.id.new_incognito_tab_button);
+        assertEquals(
+                mActivity.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_incognito),
+                incognitoButton.getContentDescription());
+        assertEquals(
+                mActivity.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_incognito),
+                incognitoButton.getTooltipText());
     }
 
     @Test
@@ -425,6 +451,14 @@ public class VerticalTabRailLayoutUnitTest {
         // When shouldOpenIncognitoAsWindow is true, updateIncognitoColors returns early without
         // overriding background or tints.
         assertNull(mRailLayout.getBackground());
+
+        View incognitoButton = mRailLayout.findViewById(R.id.new_incognito_tab_button);
+        assertEquals(
+                mActivity.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_incognito),
+                incognitoButton.getContentDescription());
+        assertEquals(
+                mActivity.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_incognito),
+                incognitoButton.getTooltipText());
     }
 
     @Test

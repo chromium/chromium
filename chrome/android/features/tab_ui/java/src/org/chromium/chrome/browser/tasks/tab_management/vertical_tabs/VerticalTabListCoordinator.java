@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -138,6 +139,7 @@ public class VerticalTabListCoordinator {
     private final GridLayoutManager mPinnedLayoutManager;
     private final ListObservable.ListObserver<Void> mPinnedTabsListObserver;
     private final TabModelSelector mTabModelSelector;
+    private final Profile mProfile;
     private final WindowAndroid mWindowAndroid;
     private final ActivityResultTracker mActivityResultTracker;
     private final MultiInstanceManager mMultiInstanceManager;
@@ -294,6 +296,7 @@ public class VerticalTabListCoordinator {
         mCanActivateTabLayoutToggleMenuSupplier = canActivateTabLayoutToggleMenuSupplier;
         mVerticalTabsActiveSupplier = verticalTabsActiveSupplier;
         mTabModelSelector = tabModelSelector;
+        mProfile = profile;
         mWindowAndroid = windowAndroid;
         mActivityResultTracker = activityResultTracker;
         mMultiInstanceManager = multiInstanceManager;
@@ -517,13 +520,12 @@ public class VerticalTabListCoordinator {
                         .with(
                                 VerticalTabListProperties.ON_NEW_TAB_CLICK_LISTENER,
                                 v -> handleNewTabButtonClick())
-                        // TODO(crbug.com/537032526): Wire ON_INCOGNITO_CLICK_LISTENER to handle
-                        // incognito tab creation.
+                        .with(
+                                VerticalTabListProperties.ON_INCOGNITO_CLICK_LISTENER,
+                                v -> handleIncognitoButtonClick())
                         .with(
                                 VerticalTabListProperties.IS_INCOGNITO_BUTTON_VISIBLE,
-                                VerticalTabUtils.isIncognitoButtonEnabled()
-                                        && !IncognitoUtils.shouldOpenIncognitoAsWindow()
-                                        && IncognitoUtils.isIncognitoModeEnabled(profile))
+                                isIncognitoButtonVisible())
                         .with(
                                 VerticalTabListProperties.ON_COLLAPSE_CLICK_LISTENER,
                                 v -> mCollapseController.toggleCollapseState())
@@ -676,6 +678,7 @@ public class VerticalTabListCoordinator {
                     @Override
                     public void onTabStateInitialized() {
                         resetWithListOfTabs(mTabModelSelector.getCurrentModel());
+                        updateIncognitoButtonVisibility();
                     }
                 };
         tabModelSelector.addObserver(mTabModelSelectorObserver);
@@ -724,6 +727,25 @@ public class VerticalTabListCoordinator {
                                 && tab.getId() == mTabModelSelector.getCurrentTabId()) {
                             mRecyclerView.post(() -> scrollActiveTabIntoView());
                         }
+                    }
+
+                    @Override
+                    public void didAddTab(
+                            Tab tab,
+                            @TabLaunchType int type,
+                            @TabCreationState int creationState,
+                            boolean markedForSelection) {
+                        updateIncognitoButtonVisibility();
+                    }
+
+                    @Override
+                    public void tabRemoved(Tab tab) {
+                        updateIncognitoButtonVisibility();
+                    }
+
+                    @Override
+                    public void didRemoveTabForClosure(Tab tab) {
+                        updateIncognitoButtonVisibility();
                     }
 
                     @Override
@@ -989,6 +1011,7 @@ public class VerticalTabListCoordinator {
         boolean isIncognito =
                 !IncognitoUtils.shouldOpenIncognitoAsWindow() && tabModel.isIncognitoBranded();
         mContainerModel.set(VerticalTabListProperties.IS_INCOGNITO, isIncognito);
+        updateIncognitoButtonVisibility();
     }
 
     private void handleNewTabButtonClick() {
@@ -997,6 +1020,30 @@ public class VerticalTabListCoordinator {
         if (!model.isIncognitoBranded()) model.commitAllTabClosures();
         TabCreatorUtil.launchNtp(model.getTabCreator());
         RecordUserAction.record("MobileNewTabOpened.VerticalTabs");
+    }
+
+    /** Switches between standard and incognito tab models when the incognito button is clicked. */
+    private void handleIncognitoButtonClick() {
+        mTabModelSelector.selectModel(!mTabModelSelector.isIncognitoSelected());
+        RecordUserAction.record("MobileToolbarModelSelected");
+    }
+
+    private boolean isIncognitoButtonVisible() {
+        if (!VerticalTabUtils.isIncognitoButtonEnabled()
+                || IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            return false;
+        }
+        TabModel incognitoModel = mTabModelSelector.getModel(/* incognito= */ true);
+        boolean hasIncognitoTabs = incognitoModel != null && incognitoModel.getCount() > 0;
+        return IncognitoUtils.isIncognitoModeEnabled(mProfile) && hasIncognitoTabs;
+    }
+
+    private void updateIncognitoButtonVisibility() {
+        if (mContainerModel != null) {
+            mContainerModel.set(
+                    VerticalTabListProperties.IS_INCOGNITO_BUTTON_VISIBLE,
+                    isIncognitoButtonVisible());
+        }
     }
 
     private void updatePinnedTabsVisibility() {
