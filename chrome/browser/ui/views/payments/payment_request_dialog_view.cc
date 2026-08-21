@@ -807,6 +807,12 @@ void PaymentRequestDialogView::OnPaymentHandlerTitleSet() {
   }
 }
 
+void PaymentRequestDialogView::OnPaymentHandlerThemeColorSet() {
+  if (observer_for_testing_) {
+    observer_for_testing_->OnPaymentHandlerThemeColorSet();
+  }
+}
+
 void PaymentRequestDialogView::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
   if (being_closed_) {

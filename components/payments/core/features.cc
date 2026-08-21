@@ -61,6 +61,9 @@ BASE_FEATURE(kPaymentHandlerDialogUseInitiatorInUrlLoad,
 #endif
 );
 
+BASE_FEATURE(kPaymentHandlerHtmlHeadThemeColor,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPaymentRequestMandatoryPaymentAppUi,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

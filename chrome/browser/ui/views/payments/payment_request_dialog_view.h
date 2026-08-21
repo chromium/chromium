@@ -106,6 +106,8 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
 
     virtual void OnPaymentHandlerTitleSet() = 0;
 
+    virtual void OnPaymentHandlerThemeColorSet() = 0;
+
     virtual void OnDialogSizeCheckAfterBrowserResize() = 0;
   };
 
@@ -202,6 +204,10 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   // Called when a PaymentHandler dialog detects a title being set from the
   // underlying WebContents.
   void OnPaymentHandlerTitleSet();
+
+  // Called when a PaymentHandler dialog detects a theme color being set from
+  // the underlying WebContents.
+  void OnPaymentHandlerThemeColorSet();
 
  private:
   friend class PaymentRequestDialogViewTestApi;

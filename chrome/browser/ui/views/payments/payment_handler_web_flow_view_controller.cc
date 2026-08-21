@@ -515,6 +515,16 @@ void PaymentHandlerWebFlowViewController::SetHeaderColorsAndOriginLabelText() {
   }
 }
 
+void PaymentHandlerWebFlowViewController::DidChangeThemeColor() {
+  if (base::FeatureList::IsEnabled(
+          payments::features::kPaymentHandlerHtmlHeadThemeColor)) {
+    SetHeaderColorsAndOriginLabelText();
+    if (web_contents() && web_contents()->GetThemeColor().has_value()) {
+      dialog()->OnPaymentHandlerThemeColorSet();
+    }
+  }
+}
+
 void PaymentHandlerWebFlowViewController::DidGetUserInteraction(
     const blink::WebInputEvent& event) {
   if (state()) {

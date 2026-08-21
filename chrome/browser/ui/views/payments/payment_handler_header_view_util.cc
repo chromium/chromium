@@ -46,6 +46,24 @@ SkColor GetContrastingGoogleColor(SkColor light_mode_color,
                                       contrast_ratio);
 }
 
+// Computes the effective background color for header subviews (e.g. origin
+// label, progress bar, close button). If `theme_color` is provided (e.g. from
+// an HTML head <meta name="theme-color"> tag), it is blended over the dialog's
+// background color (`ui::kColorDialogBackground`). Otherwise, the dialog's
+// background color is returned directly.
+SkColor GetEffectiveHeaderBackgroundColor(const views::View* view,
+                                          std::optional<SkColor> theme_color) {
+  if (!view || !view->GetWidget()) {
+    return gfx::kPlaceholderColor;
+  }
+  const SkColor dialog_background_color =
+      view->GetColorProvider()->GetColor(ui::kColorDialogBackground);
+  return theme_color.has_value()
+             ? color_utils::GetResultingPaintColor(theme_color.value(),
+                                                   dialog_background_color)
+             : dialog_background_color;
+}
+
 }  // namespace
 
 PaymentHandlerProgressBar::PaymentHandlerProgressBar() {
@@ -53,6 +71,25 @@ PaymentHandlerProgressBar::PaymentHandlerProgressBar() {
 }
 
 PaymentHandlerProgressBar::~PaymentHandlerProgressBar() = default;
+
+void PaymentHandlerProgressBar::SetThemeColor(
+    std::optional<SkColor> theme_color) {
+  theme_color_ = theme_color;
+  UpdateColors();
+}
+
+void PaymentHandlerProgressBar::OnThemeChanged() {
+  views::ProgressBar::OnThemeChanged();
+  UpdateColors();
+}
+
+void PaymentHandlerProgressBar::UpdateColors() {
+  if (!GetWidget()) {
+    return;
+  }
+  SetColorBasedOnBackground(
+      GetEffectiveHeaderBackgroundColor(this, theme_color_));
+}
 
 void PaymentHandlerProgressBar::SetColorBasedOnBackground(
     SkColor background_color) {
@@ -89,6 +126,25 @@ PaymentHandlerOriginLabel::PaymentHandlerOriginLabel() {
 
 PaymentHandlerOriginLabel::~PaymentHandlerOriginLabel() = default;
 
+void PaymentHandlerOriginLabel::SetThemeColor(
+    std::optional<SkColor> theme_color) {
+  theme_color_ = theme_color;
+  UpdateColors();
+}
+
+void PaymentHandlerOriginLabel::OnThemeChanged() {
+  views::Label::OnThemeChanged();
+  UpdateColors();
+}
+
+void PaymentHandlerOriginLabel::UpdateColors() {
+  if (!GetWidget()) {
+    return;
+  }
+  SetColorBasedOnBackground(
+      GetEffectiveHeaderBackgroundColor(this, theme_color_));
+}
+
 void PaymentHandlerOriginLabel::SetColorBasedOnBackground(
     SkColor background_color) {
   // Get the closest label color to kColorPrimaryForeground, with a minimum
@@ -122,6 +178,25 @@ PaymentHandlerCloseButton::PaymentHandlerCloseButton(
 }
 
 PaymentHandlerCloseButton::~PaymentHandlerCloseButton() = default;
+
+void PaymentHandlerCloseButton::SetThemeColor(
+    std::optional<SkColor> theme_color) {
+  theme_color_ = theme_color;
+  UpdateColors();
+}
+
+void PaymentHandlerCloseButton::OnThemeChanged() {
+  views::ImageButton::OnThemeChanged();
+  UpdateColors();
+}
+
+void PaymentHandlerCloseButton::UpdateColors() {
+  if (!GetWidget()) {
+    return;
+  }
+  SetColorBasedOnBackground(
+      GetEffectiveHeaderBackgroundColor(this, theme_color_));
+}
 
 void PaymentHandlerCloseButton::SetColorBasedOnBackground(
     SkColor background_color) {
@@ -253,23 +328,16 @@ void SetHeaderColors(views::View* header_view,
                 theme_color.value(), header_view->GetColorProvider()->GetColor(
                                          ui::kColorDialogBackground)))
           : views::CreateSolidBackground(ui::kColorDialogBackground));
-
-  SkColor background_color =
-      header_view->GetWidget()
-          ? header_view->background()->color().ResolveToSkColor(
-                header_view->GetColorProvider())
-          : gfx::kPlaceholderColor;
-
   if (origin_label) {
-    origin_label->SetColorBasedOnBackground(background_color);
+    origin_label->SetThemeColor(theme_color);
   }
 
   if (progress_bar) {
-    progress_bar->SetColorBasedOnBackground(background_color);
+    progress_bar->SetThemeColor(theme_color);
   }
 
   if (close_button) {
-    close_button->SetColorBasedOnBackground(background_color);
+    close_button->SetThemeColor(theme_color);
   }
 }
 

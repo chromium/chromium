@@ -102,6 +102,7 @@ class PaymentRequestBrowserTestBase
     // provided by WebcontentsObserver::TitleWasSet.
     PAYMENT_HANDLER_TITLE_SET,
     DIALOG_SIZE_CHECK_AFTER_BROWSER_RESIZE,
+    PAYMENT_HANDLER_THEME_COLOR_SET,
   };
 
   PaymentRequestBrowserTestBase(const PaymentRequestBrowserTestBase&) = delete;
@@ -166,6 +167,7 @@ class PaymentRequestBrowserTestBase
   void OnLoadingViewHidden() override;
   void OnPaymentHandlerWindowOpened() override;
   void OnPaymentHandlerTitleSet() override;
+  void OnPaymentHandlerThemeColorSet() override;
   void OnDialogSizeCheckAfterBrowserResize() override;
 
   void InstallPaymentApp(const std::string& hostname,

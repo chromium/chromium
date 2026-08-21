@@ -335,6 +335,12 @@ void PaymentRequestBrowserTestBase::OnPaymentHandlerTitleSet() {
   }
 }
 
+void PaymentRequestBrowserTestBase::OnPaymentHandlerThemeColorSet() {
+  if (event_waiter_) {
+    event_waiter_->OnEvent(DialogEvent::PAYMENT_HANDLER_THEME_COLOR_SET);
+  }
+}
+
 void PaymentRequestBrowserTestBase::OnDialogSizeCheckAfterBrowserResize() {
   if (event_waiter_) {
     event_waiter_->OnEvent(DialogEvent::DIALOG_SIZE_CHECK_AFTER_BROWSER_RESIZE);
@@ -1021,6 +1027,9 @@ std::ostream& operator<<(
       break;
     case DialogEvent::PAYMENT_HANDLER_TITLE_SET:
       out << "PAYMENT_HANDLER_TITLE_SET";
+      break;
+    case DialogEvent::PAYMENT_HANDLER_THEME_COLOR_SET:
+      out << "PAYMENT_HANDLER_THEME_COLOR_SET";
       break;
     case DialogEvent::DIALOG_SIZE_CHECK_AFTER_BROWSER_RESIZE:
       out << "DIALOG_SIZE_CHECK_AFTER_BROWSER_RESIZE";

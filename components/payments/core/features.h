@@ -59,6 +59,10 @@ BASE_DECLARE_FEATURE(kPaymentRequestRejectTooSmallWindows);
 // the URL load.
 BASE_DECLARE_FEATURE(kPaymentHandlerDialogUseInitiatorInUrlLoad);
 
+// Used to control whether to support HTML head <meta name="theme-color"> in
+// Payment Handler dialog headers.
+BASE_DECLARE_FEATURE(kPaymentHandlerHtmlHeadThemeColor);
+
 // Used to control whether Payment Handler dialog requires user interaction
 // before resolving a success payment response.
 BASE_DECLARE_FEATURE(kPaymentRequestMandatoryPaymentAppUi);
