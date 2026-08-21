@@ -72,6 +72,7 @@ gpu.try_.linux_rate_limited_builder(
     description_html = "Builds and tests ANGLE on x64 Linux using ToT ANGLE and a known good Chromium revision.",
     mirrors = [
         "ci/linux-angle-chromium-builder",
+        "ci/linux-angle-chromium-amd",
         "ci/linux-angle-chromium-intel",
         "ci/linux-angle-chromium-nvidia",
     ],

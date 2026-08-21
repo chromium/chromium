@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.angle builder group."""
 
-load("@chromium-luci//args.star", "args")
 load("@chromium-luci//builder_config.star", "builder_config")
 load("@chromium-luci//builder_health_indicators.star", "health_spec")
 load("@chromium-luci//builders.star", "cpu", "os")
@@ -276,9 +275,6 @@ ci.thin_tester(
         browser_config = targets.browser_config.RELEASE,
         os_type = targets.os_type.LINUX,
     ),
-    # TODO(crbug.com/538651934): Remove this and add this tester to
-    # linux-angle-chromium-try once it is confirmed to be stable.
-    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "Linux|AMD|Chromium",
         short_name = "x64",

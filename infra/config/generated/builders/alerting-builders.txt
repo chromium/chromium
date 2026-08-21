@@ -344,6 +344,7 @@ ci/ios-device
 ci/ios-simulator
 ci/ios-simulator-full-configs
 ci/ios-simulator-noncq
+ci/linux-angle-chromium-amd
 ci/linux-angle-chromium-builder
 ci/linux-angle-chromium-intel
 ci/linux-angle-chromium-nvidia
