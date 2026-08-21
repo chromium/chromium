@@ -240,8 +240,14 @@ class TestAutofillClientTemplate : public T {
     return *single_field_fill_router_;
   }
 
+  void set_autocomplete_history_manager(
+      std::unique_ptr<AutocompleteHistoryManager> manager) {
+    autocomplete_history_manager_ = std::move(manager);
+  }
+
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override {
-    return &mock_autocomplete_history_manager_;
+    return autocomplete_history_manager_ ? autocomplete_history_manager_.get()
+                                         : &mock_autocomplete_history_manager_;
   }
 
   AtMemoryQueryService* GetAtMemoryQueryService() override {
@@ -909,6 +915,7 @@ class TestAutofillClientTemplate : public T {
           std::make_unique<testing::NiceMock<MockAutofillAiManager>>(
               this,
               /*strike_database=*/nullptr);
+  std::unique_ptr<AutocompleteHistoryManager> autocomplete_history_manager_;
   ::testing::NiceMock<MockAutocompleteHistoryManager>
       mock_autocomplete_history_manager_;
   std::unique_ptr<one_time_tokens::SmsOtpBackend> injected_sms_otp_backend_;

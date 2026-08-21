@@ -34,6 +34,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
@@ -133,6 +135,7 @@
 #include "components/autofill/core/browser/ui/test_autofill_external_delegate.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
+#include "components/autofill/core/browser/webdata/mock_autofill_webdata_service.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -5864,6 +5867,56 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_TRUE(try_to_show_ttf_called);
   EXPECT_TRUE(on_after_called);
 
+  autofill_manager().RemoveObserver(&observer);
+}
+
+// Tests that if an asynchronous suggestion generator query (e.g. Autocomplete)
+// is in flight and is cancelled/destroyed on a background ThreadPool sequence,
+// `OnAfterAskForValuesToFill` is safely notified on the main thread sequence
+// without crashing or violating sequence checker assertions.
+TEST_F(BrowserAutofillManagerTest,
+       OnAskForValuesToFill_CancelledDatabaseQueryDoesNotCrash) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAutofillNewSuggestionGeneration);
+
+  auto mock_web_data_service =
+      base::MakeRefCounted<testing::NiceMock<MockAutofillWebDataService>>();
+  autofill_client().set_autocomplete_history_manager(
+      std::make_unique<MockAutocompleteHistoryManager>(mock_web_data_service));
+
+  FormData form =
+      test::GetFormData({.fields = {{.label = u"label", .name = u"name"}}});
+  FormsSeen({form});
+
+  using DbCallback = base::OnceCallback<void(WebDataServiceBase::Handle,
+                                             std::unique_ptr<WDTypedResult>)>;
+
+  EXPECT_CALL(*mock_web_data_service, GetFormValuesForElementName)
+      .WillOnce([&](const std::u16string&, const std::u16string&, int,
+                    DbCallback callback) {
+        constexpr int kDbQueryId = 100;
+        // Simulate a slow DB query running on a background worker thread:
+        // transfer the DB callback to ThreadPool and drop it there without
+        // running. This ensures that `callback` is destroyed on the ThreadPool
+        // worker thread without running.
+        base::ThreadPool::PostTask(
+            FROM_HERE,
+            base::BindOnce([](DbCallback cb) {}, std::move(callback)));
+        return kDbQueryId;
+      });
+
+  testing::NiceMock<MockAutofillManagerObserver> observer;
+  autofill_manager().AddObserver(&observer);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnAfterAskForValuesToFill).WillOnce([&]() {
+    run_loop.Quit();
+  });
+
+  // Trigger suggestion generation and the DB query.
+  OnAskForValuesToFill(form, form.fields().front());
+
+  run_loop.Run();
   autofill_manager().RemoveObserver(&observer);
 }
 
