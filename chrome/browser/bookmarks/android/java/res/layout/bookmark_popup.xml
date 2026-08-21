@@ -17,6 +17,8 @@ found in the LICENSE file.
     <!-- Popup Title and Close Button -->
     <TextView
         android:id="@+id/popup_title"
+        android:accessibilityTraversalBefore="@id/close_button"
+        android:nextFocusForward="@+id/close_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/bookmark_added"
@@ -28,6 +30,9 @@ found in the LICENSE file.
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/close_button"
+        android:accessibilityTraversalAfter="@id/popup_title"
+        android:accessibilityTraversalBefore="@id/bookmark_title"
+        android:nextFocusForward="@+id/bookmark_title"
         android:layout_width="@dimen/min_touch_target_size"
         android:layout_height="@dimen/min_touch_target_size"
         android:layout_marginTop="@dimen/bookmark_popup_close_button_margin"
@@ -42,6 +47,7 @@ found in the LICENSE file.
 
     <FrameLayout
         android:id="@+id/bookmark_image_container"
+        android:importantForAccessibility="no"
         android:layout_width="@dimen/bookmark_popup_image_size"
         android:layout_height="@dimen/bookmark_popup_image_size"
         android:background=
@@ -83,6 +89,10 @@ found in the LICENSE file.
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/bookmark_title"
+            android:selectAllOnFocus="true"
+            android:accessibilityTraversalAfter="@id/close_button"
+            android:accessibilityTraversalBefore="@id/folder_picker_row"
+            android:nextFocusForward="@+id/folder_picker_row"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:hint="@string/bookmark_name"
@@ -90,12 +100,17 @@ found in the LICENSE file.
             android:maxLines="1"
             android:paddingStart="@dimen/bookmark_popup_input_padding"
             android:paddingEnd="@dimen/bookmark_popup_input_padding"
-            android:paddingVertical="0dp" />
+            android:paddingVertical="0dp">
+            <requestFocus />
+        </com.google.android.material.textfield.TextInputEditText>
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Folder Row Container Replica -->
     <LinearLayout
         android:id="@+id/folder_picker_row"
+        android:accessibilityTraversalAfter="@id/bookmark_title"
+        android:accessibilityTraversalBefore="@id/remove_button"
+        android:nextFocusForward="@+id/remove_button"
         android:layout_width="0dp"
         android:layout_height="@dimen/bookmark_popup_folder_row_height"
         android:layout_marginStart="@dimen/bookmark_popup_row_margin_start"
@@ -235,6 +250,9 @@ found in the LICENSE file.
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/remove_button"
+            android:accessibilityTraversalAfter="@id/folder_picker_row"
+            android:accessibilityTraversalBefore="@id/done_button"
+            android:nextFocusForward="@+id/done_button"
             style="@style/TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -244,6 +262,7 @@ found in the LICENSE file.
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/done_button"
+            android:accessibilityTraversalAfter="@id/remove_button"
             style="@style/FilledButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

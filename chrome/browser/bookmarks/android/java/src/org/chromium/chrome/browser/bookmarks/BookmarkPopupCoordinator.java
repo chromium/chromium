@@ -82,6 +82,7 @@ public class BookmarkPopupCoordinator {
                                 rectProvider)
                         .setOutsideTouchable(true)
                         .setFocusable(true)
+                        .setTouchModal(true)
                         .setMaxWidth(popupWidth)
                         .setDesiredContentWidth(popupWidth)
                         .setDismissOnScreenSizeChange(true)
@@ -118,6 +119,7 @@ public class BookmarkPopupCoordinator {
     public void show(BookmarkId bookmarkId, boolean isNewBookmark) {
         mMediator.show(bookmarkId, isNewBookmark);
         mPopupWindow.show();
+        mView.focusTitleInput();
     }
 
     /** Destroys the coordinator, dismissing the popup. */

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -131,5 +132,33 @@ public class BookmarkPopupCoordinatorTest {
                 coordinator
                         .getPropertyModelForTesting()
                         .get(BookmarkPopupProperties.IMAGE_VISIBLE));
+    }
+
+    @Test
+    public void testAccessibilityAndFocusOrder() {
+        View popupView = mActivity.getLayoutInflater().inflate(R.layout.bookmark_popup, null);
+        View popupTitle = popupView.findViewById(R.id.popup_title);
+        View closeButton = popupView.findViewById(R.id.close_button);
+        View bookmarkTitle = popupView.findViewById(R.id.bookmark_title);
+        View folderPickerRow = popupView.findViewById(R.id.folder_picker_row);
+        View removeButton = popupView.findViewById(R.id.remove_button);
+        View doneButton = popupView.findViewById(R.id.done_button);
+
+        assertEquals(R.id.close_button, popupTitle.getAccessibilityTraversalBefore());
+        assertEquals(R.id.popup_title, closeButton.getAccessibilityTraversalAfter());
+        assertEquals(R.id.bookmark_title, closeButton.getAccessibilityTraversalBefore());
+        assertEquals(R.id.close_button, bookmarkTitle.getAccessibilityTraversalAfter());
+        assertEquals(R.id.folder_picker_row, bookmarkTitle.getAccessibilityTraversalBefore());
+        assertEquals(R.id.bookmark_title, folderPickerRow.getAccessibilityTraversalAfter());
+        assertEquals(R.id.remove_button, folderPickerRow.getAccessibilityTraversalBefore());
+        assertEquals(R.id.folder_picker_row, removeButton.getAccessibilityTraversalAfter());
+        assertEquals(R.id.done_button, removeButton.getAccessibilityTraversalBefore());
+        assertEquals(R.id.remove_button, doneButton.getAccessibilityTraversalAfter());
+
+        assertEquals(R.id.close_button, popupTitle.getNextFocusForwardId());
+        assertEquals(R.id.bookmark_title, closeButton.getNextFocusForwardId());
+        assertEquals(R.id.folder_picker_row, bookmarkTitle.getNextFocusForwardId());
+        assertEquals(R.id.remove_button, folderPickerRow.getNextFocusForwardId());
+        assertEquals(R.id.done_button, removeButton.getNextFocusForwardId());
     }
 }
