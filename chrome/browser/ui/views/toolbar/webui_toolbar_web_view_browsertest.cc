@@ -3321,6 +3321,23 @@ IN_PROC_BROWSER_TEST_F(WebUIReloadButtonBrowserTest, ClickReloadButton) {
 
   EXPECT_TRUE(WaitForButtonVisible(webui_contents, kReloadButtonSelector));
 
+  // Override matches(':hover') to always return false for the reload button.
+  // This prevents hover protection from triggering if the mouse cursor
+  // happens to be over the button during test runs.
+  EXPECT_TRUE(content::ExecJs(
+      webui_contents,
+      base::StringPrintf(
+          "(() => {"
+          "  const btn = %s;"
+          "  if (btn) {"
+          "    btn.matches = (selector) => {"
+          "      if (selector === ':hover') return false;"
+          "      return Element.prototype.matches.call(btn, selector);"
+          "    };"
+          "  }"
+          "})();",
+          GetButtonAppJS(kReloadButtonSelector).c_str())));
+
   const struct {
     const char* name;
     std::string script;
@@ -3336,6 +3353,20 @@ IN_PROC_BROWSER_TEST_F(WebUIReloadButtonBrowserTest, ClickReloadButton) {
     // Navigate to a known good URL before reloading to ensure a clean state
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/")));
+
+    // Wait for the reload button to transition to "Reload" state and be
+    // enabled. This is necessary because NavigateToURL returns when C++
+    // navigation finishes, but the WebUI might still be processing the state
+    // update asynchronously.
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return content::EvalJs(
+                 webui_contents,
+                 base::StrCat({GetButtonAppJS(kReloadButtonSelector),
+                               ".showStopIcon === false && ",
+                               GetButtonAppJS(kReloadButtonSelector),
+                               ".isDisabled === false"}))
+          .ExtractBool();
+    }));
 
     // Create a navigation observer on the active tab.
     content::WebContents* active_contents =
