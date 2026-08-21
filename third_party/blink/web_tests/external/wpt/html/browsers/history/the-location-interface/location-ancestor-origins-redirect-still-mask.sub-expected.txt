@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] no-referrer masks ancestorOrigins after same-origin 301 redirect
+  assert_array_equals: expected property 0 to be "null" but got "http://web-platform.test:8001" (expected array ["null"] got ["http://web-platform.test:8001"])
+[FAIL] no-referrer masks ancestorOrigins after same-origin 302 redirect
+  assert_array_equals: expected property 0 to be "null" but got "http://web-platform.test:8001" (expected array ["null"] got ["http://web-platform.test:8001"])
+[FAIL] no-referrer masks ancestorOrigins after same-origin 307 redirect
+  assert_array_equals: expected property 0 to be "null" but got "http://web-platform.test:8001" (expected array ["null"] got ["http://web-platform.test:8001"])
+[FAIL] no-referrer masks ancestorOrigins after same-origin 308 redirect
+  assert_array_equals: expected property 0 to be "null" but got "http://web-platform.test:8001" (expected array ["null"] got ["http://web-platform.test:8001"])
+[FAIL] no-referrer masks ancestorOrigins after cross-origin 301 redirect
+  assert_array_equals: expected property 0 to be "null" but got "http://web-platform.test:8001" (expected array ["null"] got ["http://web-platform.test:8001"])
+[FAIL] no-referrer masks ancestorOrigins after cross-origin 302 redirect
+  assert_array_equals: expected property 0 to be "null" but got "http://web-platform.test:8001" (expected array ["null"] got ["http://web-platform.test:8001"])
+[FAIL] no-referrer masks ancestorOrigins after cross-origin 307 redirect
+  assert_array_equals: expected property 0 to be "null" but got "http://web-platform.test:8001" (expected array ["null"] got ["http://web-platform.test:8001"])
+[FAIL] no-referrer masks ancestorOrigins after cross-origin 308 redirect
+  assert_array_equals: expected property 0 to be "null" but got "http://web-platform.test:8001" (expected array ["null"] got ["http://web-platform.test:8001"])
+[FAIL] testing referrerpolicy="same-origin" masking after 301 redirect for iframe of same-origin
+  assert_array_equals: expected property 0 to be "null" but got "http://web-platform.test:8001" (expected array ["null"] got ["http://web-platform.test:8001"])
+[FAIL] testing referrerpolicy="same-origin" masking after 302 redirect for iframe of same-origin
+  assert_array_equals: expected property 0 to be "null" but got "http://web-platform.test:8001" (expected array ["null"] got ["http://web-platform.test:8001"])
+[FAIL] testing referrerpolicy="same-origin" masking after 307 redirect for iframe of same-origin
+  assert_array_equals: expected property 0 to be "null" but got "http://web-platform.test:8001" (expected array ["null"] got ["http://web-platform.test:8001"])
+[FAIL] testing referrerpolicy="same-origin" masking after 308 redirect for iframe of same-origin
+  assert_array_equals: expected property 0 to be "null" but got "http://web-platform.test:8001" (expected array ["null"] got ["http://web-platform.test:8001"])
+Harness: the test ran to completion.
+

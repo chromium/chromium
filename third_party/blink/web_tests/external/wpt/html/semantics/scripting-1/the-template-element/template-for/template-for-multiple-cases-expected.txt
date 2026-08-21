@@ -1,0 +1,112 @@
+This is a testharness.js-based test.
+Found 54 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Empty marker name with <?start> and <?end> - innerHTML 
+  assert_equals: expected "<div><?start name=\\"\\"?>Old<?end ?></div><template for=\\"\\">New</template>" but got "<div><?start name=\\"\\"?>Old<?end ?></div>New"
+[FAIL] Empty marker name with <?start> and <?end> - innerHTML with 2 chunks
+  assert_equals: expected "<div><?start name=\\"\\"?>Old<?end ?></div><template for=\\"\\">New</template>" but got "<div><?start name=\\"\\"?>Old<?end ?></div>New"
+[FAIL] Empty marker name with <?start> and <?end> - innerHTML with 4 chunks
+  assert_equals: expected "<div><?start name=\\"\\"?>Old<?end ?></div><template for=\\"\\">New</template>" but got "<div><?start name=\\"\\"?>Old<?end ?></div>New"
+[FAIL] Empty marker name with <?start> and <?end> - iframe 
+  assert_equals: expected "<div><?start name=\\"\\"?>Old<?end ?></div><template for=\\"\\">New</template>" but got "<div><?start name=\\"\\"?>Old<?end ?></div>New"
+[FAIL] Empty marker name with <?start> and <?end> - iframe with 2 chunks
+  assert_equals: expected "<div><?start name=\\"\\"?>Old<?end ?></div><template for=\\"\\">New</template>" but got "<div><?start name=\\"\\"?>Old<?end ?></div>New"
+[FAIL] Empty marker name with <?start> and <?end> - iframe with 4 chunks
+  assert_equals: expected "<div><?start name=\\"\\"?>Old<?end ?></div><template for=\\"\\">New</template>" but got "<div><?start name=\\"\\"?>Old<?end ?></div>New"
+[FAIL] Empty marker name with <?start> and <?end> - template 
+  assert_equals: expected "<div><?start name=\\"\\"?>Old<?end ?></div><template for=\\"\\">New</template>" but got "<div><?start name=\\"\\"?>Old<?end ?></div>New"
+[FAIL] Empty marker name with <?start> and <?end> - template with 2 chunks
+  assert_equals: expected "<div><?start name=\\"\\"?>Old<?end ?></div><template for=\\"\\">New</template>" but got "<div><?start name=\\"\\"?>Old<?end ?></div>New"
+[FAIL] Empty marker name with <?start> and <?end> - template with 4 chunks
+  assert_equals: expected "<div><?start name=\\"\\"?>Old<?end ?></div><template for=\\"\\">New</template>" but got "<div><?start name=\\"\\"?>Old<?end ?></div>New"
+[FAIL] Empty marker name with <?start> and <?end> - parse 
+  assert_equals: expected "<div><?start name=\\"\\"?>Old<?end ?></div><template for=\\"\\">New</template>" but got "<div><?start name=\\"\\"?>Old<?end ?></div>New"
+[FAIL] Empty marker name with <?start> and <?end> - parse with 2 chunks
+  assert_equals: expected "<div><?start name=\\"\\"?>Old<?end ?></div><template for=\\"\\">New</template>" but got "<div><?start name=\\"\\"?>Old<?end ?></div>New"
+[FAIL] Empty marker name with <?start> and <?end> - parse with 4 chunks
+  assert_equals: expected "<div><?start name=\\"\\"?>Old<?end ?></div><template for=\\"\\">New</template>" but got "<div><?start name=\\"\\"?>Old<?end ?></div>New"
+[FAIL] Empty marker name with <?start> and <?end> - contextualFragment 
+  assert_equals: expected "<div><?start name=\\"\\"?>Old<?end ?></div><template for=\\"\\">New</template>" but got "<div><?start name=\\"\\"?>Old<?end ?></div>undefined"
+[FAIL] Empty marker name with <?start> and <?end> - contextualFragment with 2 chunks
+  assert_equals: expected "<div><?start name=\\"\\"?>Old<?end ?></div><template for=\\"\\">New</template>" but got "<div><?start name=\\"\\"?>Old<?end ?></div>undefined"
+[FAIL] Empty marker name with <?start> and <?end> - contextualFragment with 4 chunks
+  assert_equals: expected "<div><?start name=\\"\\"?>Old<?end ?></div><template for=\\"\\">New</template>" but got "<div><?start name=\\"\\"?>Old<?end ?></div>undefined"
+[FAIL] Empty marker name with <?start> and <?end> - stream 
+  assert_equals: expected "<div><?start name=\\"\\"?>Old<?end ?></div><template for=\\"\\">New</template>" but got "<div><?start name=\\"\\"?>Old<?end ?></div>New"
+[FAIL] Empty marker name with <?start> and <?end> - stream with 2 chunks
+  assert_equals: expected "<div><?start name=\\"\\"?>Old<?end ?></div><template for=\\"\\">New</template>" but got "<div><?start name=\\"\\"?>Old<?end ?></div>New"
+[FAIL] Empty marker name with <?start> and <?end> - stream with 4 chunks
+  assert_equals: expected "<div><?start name=\\"\\"?>Old<?end ?></div><template for=\\"\\">New</template>" but got "<div><?start name=\\"\\"?>Old<?end ?></div>New"
+[FAIL] Empty marker name with <?marker> - innerHTML 
+  assert_equals: expected "<div><?marker name=\\"\\"?>Old</div><template for=\\"\\">New</template>" but got "<div><?marker name=\\"\\"?>Old</div>New"
+[FAIL] Empty marker name with <?marker> - innerHTML with 2 chunks
+  assert_equals: expected "<div><?marker name=\\"\\"?>Old</div><template for=\\"\\">New</template>" but got "<div><?marker name=\\"\\"?>Old</div>New"
+[FAIL] Empty marker name with <?marker> - innerHTML with 4 chunks
+  assert_equals: expected "<div><?marker name=\\"\\"?>Old</div><template for=\\"\\">New</template>" but got "<div><?marker name=\\"\\"?>Old</div>New"
+[FAIL] Empty marker name with <?marker> - iframe 
+  assert_equals: expected "<div><?marker name=\\"\\"?>Old</div><template for=\\"\\">New</template>" but got "<div><?marker name=\\"\\"?>Old</div>New"
+[FAIL] Empty marker name with <?marker> - iframe with 2 chunks
+  assert_equals: expected "<div><?marker name=\\"\\"?>Old</div><template for=\\"\\">New</template>" but got "<div><?marker name=\\"\\"?>Old</div>New"
+[FAIL] Empty marker name with <?marker> - iframe with 4 chunks
+  assert_equals: expected "<div><?marker name=\\"\\"?>Old</div><template for=\\"\\">New</template>" but got "<div><?marker name=\\"\\"?>Old</div>New"
+[FAIL] Empty marker name with <?marker> - template 
+  assert_equals: expected "<div><?marker name=\\"\\"?>Old</div><template for=\\"\\">New</template>" but got "<div><?marker name=\\"\\"?>Old</div>New"
+[FAIL] Empty marker name with <?marker> - template with 2 chunks
+  assert_equals: expected "<div><?marker name=\\"\\"?>Old</div><template for=\\"\\">New</template>" but got "<div><?marker name=\\"\\"?>Old</div>New"
+[FAIL] Empty marker name with <?marker> - template with 4 chunks
+  assert_equals: expected "<div><?marker name=\\"\\"?>Old</div><template for=\\"\\">New</template>" but got "<div><?marker name=\\"\\"?>Old</div>New"
+[FAIL] Empty marker name with <?marker> - parse 
+  assert_equals: expected "<div><?marker name=\\"\\"?>Old</div><template for=\\"\\">New</template>" but got "<div><?marker name=\\"\\"?>Old</div>New"
+[FAIL] Empty marker name with <?marker> - parse with 2 chunks
+  assert_equals: expected "<div><?marker name=\\"\\"?>Old</div><template for=\\"\\">New</template>" but got "<div><?marker name=\\"\\"?>Old</div>New"
+[FAIL] Empty marker name with <?marker> - parse with 4 chunks
+  assert_equals: expected "<div><?marker name=\\"\\"?>Old</div><template for=\\"\\">New</template>" but got "<div><?marker name=\\"\\"?>Old</div>New"
+[FAIL] Empty marker name with <?marker> - contextualFragment 
+  assert_equals: expected "<div><?marker name=\\"\\"?>Old</div><template for=\\"\\">New</template>" but got "<div><?marker name=\\"\\"?>Old</div>undefined"
+[FAIL] Empty marker name with <?marker> - contextualFragment with 2 chunks
+  assert_equals: expected "<div><?marker name=\\"\\"?>Old</div><template for=\\"\\">New</template>" but got "<div><?marker name=\\"\\"?>Old</div>undefined"
+[FAIL] Empty marker name with <?marker> - contextualFragment with 4 chunks
+  assert_equals: expected "<div><?marker name=\\"\\"?>Old</div><template for=\\"\\">New</template>" but got "<div><?marker name=\\"\\"?>Old</div>undefined"
+[FAIL] Empty marker name with <?marker> - stream 
+  assert_equals: expected "<div><?marker name=\\"\\"?>Old</div><template for=\\"\\">New</template>" but got "<div><?marker name=\\"\\"?>Old</div>New"
+[FAIL] Empty marker name with <?marker> - stream with 2 chunks
+  assert_equals: expected "<div><?marker name=\\"\\"?>Old</div><template for=\\"\\">New</template>" but got "<div><?marker name=\\"\\"?>Old</div>New"
+[FAIL] Empty marker name with <?marker> - stream with 4 chunks
+  assert_equals: expected "<div><?marker name=\\"\\"?>Old</div><template for=\\"\\">New</template>" but got "<div><?marker name=\\"\\"?>Old</div>New"
+[FAIL] Unclosed element in template content with only start - innerHTML 
+  assert_equals: expected "<div><span>New content</span></div>" but got "<div><span>New</span></div>"
+[FAIL] Unclosed element in template content with only start - innerHTML with 2 chunks
+  assert_equals: expected "<div><span>New content</span></div>" but got "<div><span>New</span></div>"
+[FAIL] Unclosed element in template content with only start - innerHTML with 4 chunks
+  assert_equals: expected "<div><span>New content</span></div>" but got "<div><span>New</span></div>"
+[FAIL] Unclosed element in template content with only start - iframe 
+  assert_equals: expected "<div><span>New content</span></div>" but got "<div><span>New</span></div>"
+[FAIL] Unclosed element in template content with only start - iframe with 2 chunks
+  assert_equals: expected "<div><span>New content</span></div>" but got "<div><span>New</span></div>"
+[FAIL] Unclosed element in template content with only start - iframe with 4 chunks
+  assert_equals: expected "<div><span>New content</span></div>" but got "<div><span>New</span></div>"
+[FAIL] Unclosed element in template content with only start - template 
+  assert_equals: expected "<div><span>New content</span></div>" but got "<div><span>New</span></div>"
+[FAIL] Unclosed element in template content with only start - template with 2 chunks
+  assert_equals: expected "<div><span>New content</span></div>" but got "<div><span>New</span></div>"
+[FAIL] Unclosed element in template content with only start - template with 4 chunks
+  assert_equals: expected "<div><span>New content</span></div>" but got "<div><span>New</span></div>"
+[FAIL] Unclosed element in template content with only start - parse 
+  assert_equals: expected "<div><span>New content</span></div>" but got "<div><span>New</span></div>"
+[FAIL] Unclosed element in template content with only start - parse with 2 chunks
+  assert_equals: expected "<div><span>New content</span></div>" but got "<div><span>New</span></div>"
+[FAIL] Unclosed element in template content with only start - parse with 4 chunks
+  assert_equals: expected "<div><span>New content</span></div>" but got "<div><span>New</span></div>"
+[FAIL] Unclosed element in template content with only start - contextualFragment 
+  assert_equals: expected "<div><span>New content</span></div>" but got "<div><span>New</span></div>"
+[FAIL] Unclosed element in template content with only start - contextualFragment with 2 chunks
+  assert_equals: expected "<div><span>New content</span></div>" but got "<div><span>New</span></div>"
+[FAIL] Unclosed element in template content with only start - contextualFragment with 4 chunks
+  assert_equals: expected "<div><span>New content</span></div>" but got "<div><span>New</span></div>"
+[FAIL] Unclosed element in template content with only start - stream 
+  assert_equals: expected "<div><span>New content</span></div>" but got "<div><span>New</span></div>"
+[FAIL] Unclosed element in template content with only start - stream with 2 chunks
+  assert_equals: expected "<div><span>New content</span></div>" but got "<div><span>New</span></div>"
+[FAIL] Unclosed element in template content with only start - stream with 4 chunks
+  assert_equals: expected "<div><span>New content</span></div>" but got "<div><span>New</span></div>"
+Harness: the test ran to completion.
+

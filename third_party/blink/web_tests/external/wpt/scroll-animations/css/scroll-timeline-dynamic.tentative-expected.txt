@@ -1,4 +1,8 @@
 This is a testharness.js-based test.
+[FAIL] Changing to/from unresolved timeline [immediate]
+  assert_equals: expected "0px" but got "120px"
+[FAIL] Changing to/from unresolved timeline [scroll]
+  assert_equals: expected "0px" but got "120px"
 [FAIL] Switching timelines and pausing at the same time [immediate]
   assert_equals: expected "120px" but got "100px"
 [FAIL] Switching timelines and pausing at the same time [scroll]

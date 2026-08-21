@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Testcase #79, "<template><b>Hello</b></template>", config: "{ "replaceWithChildrenElements": ["template"] }".
+  assert_true: [object HTMLElement].isEqual(null) fails. Path: <DIV> / <B>. expected true got false
+[FAIL] Testcase #80, "<div><template><b>Hello</b></template>after</div>", config: "{ "replaceWithChildrenElements": ["template"] }".
+  assert_true: [object HTMLDivElement].isEqual([object HTMLDivElement]) fails. Path: <DIV> / <DIV>. expected true got false
+Harness: the test ran to completion.
+

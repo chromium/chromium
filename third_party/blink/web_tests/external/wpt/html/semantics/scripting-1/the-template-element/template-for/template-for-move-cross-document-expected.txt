@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Moving the target to another document while appending redirects parser output there
+  assert_equals: content appended before the move remains in the target expected "A" but got "\\n    otherDoc.body.appendChild(document.querySelector(\\"#target\\"));\\n  "
+Harness: the test ran to completion.
+

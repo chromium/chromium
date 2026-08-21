@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Change in scroll-timeline-name to match animation timeline updates animation.
+  assert_equals: expected "none" but got "50px"
+[FAIL] Change in scroll-timeline-name to no longer match animation timeline updates animation.
+  assert_equals: expected "none" but got "75px"
+[FAIL] Timeline lookup updates candidate when match becomes available.
+  assert_equals: expected "none" but got "50px"
+Harness: the test ran to completion.
+

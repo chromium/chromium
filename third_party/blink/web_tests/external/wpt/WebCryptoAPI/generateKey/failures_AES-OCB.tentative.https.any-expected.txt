@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 618 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 686 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [sign])
   assert_equals: Bad usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: generateKey({length: 128, name: AES-OCB}, true, [encrypt, sign])
@@ -1224,6 +1224,142 @@ Found 618 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Bad algorithm property not supported expected "OperationError" but got "NotSupportedError"
 [FAIL] Bad algorithm property: generateKey({length: 512, name: AES-OCB}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey])
   assert_equals: Bad algorithm property not supported expected "OperationError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, false, [encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, true, [encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, false, [decrypt, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, true, [decrypt, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, false, [wrapKey, decrypt, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, true, [wrapKey, decrypt, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, false, [unwrapKey, wrapKey, decrypt, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, false, [unwrapKey, decrypt, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, true, [unwrapKey, decrypt, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, false, [wrapKey, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, true, [wrapKey, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, false, [unwrapKey, wrapKey, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, true, [unwrapKey, wrapKey, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, false, [unwrapKey, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, true, [unwrapKey, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, false, [decrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, true, [decrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, false, [wrapKey, decrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, true, [wrapKey, decrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, false, [unwrapKey, wrapKey, decrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, false, [unwrapKey, decrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, true, [unwrapKey, decrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, false, [wrapKey])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, true, [wrapKey])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, false, [unwrapKey, wrapKey])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, true, [unwrapKey, wrapKey])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, false, [unwrapKey])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, true, [unwrapKey])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, false, [])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, true, [])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, false, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: 4294967424, name: AES-OCB}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, false, [encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, true, [encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, false, [decrypt, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, true, [decrypt, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, false, [wrapKey, decrypt, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, true, [wrapKey, decrypt, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, false, [unwrapKey, wrapKey, decrypt, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, false, [unwrapKey, decrypt, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, true, [unwrapKey, decrypt, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, false, [wrapKey, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, true, [wrapKey, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, false, [unwrapKey, wrapKey, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, true, [unwrapKey, wrapKey, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, false, [unwrapKey, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, true, [unwrapKey, encrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, false, [decrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, true, [decrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, false, [wrapKey, decrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, true, [wrapKey, decrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, false, [unwrapKey, wrapKey, decrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, true, [unwrapKey, wrapKey, decrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, false, [unwrapKey, decrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, true, [unwrapKey, decrypt])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, false, [wrapKey])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, true, [wrapKey])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, false, [unwrapKey, wrapKey])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, true, [unwrapKey, wrapKey])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, false, [unwrapKey])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, true, [unwrapKey])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, false, [])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, true, [])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, false, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
+[FAIL] Bad algorithm property: generateKey({length: -4294967168, name: AES-OCB}, true, [encrypt, decrypt, wrapKey, unwrapKey, encrypt, decrypt, wrapKey, unwrapKey])
+  assert_equals: Bad algorithm property not supported expected "TypeError" but got "NotSupportedError"
 [FAIL] Empty usages: generateKey({length: 128, name: AES-OCB}, false, [])
   assert_equals: Empty usages not supported expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Empty usages: generateKey({length: 128, name: AES-OCB}, true, [])

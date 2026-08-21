@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <meta charset="utf-8" />
 <title>
   HTML partial updates: various scenarios of patching using template for
@@ -49,7 +49,13 @@
           return element.innerHTML;
       }
     }
-    function add_test_scenario(label, placeholder, patch, expected_output, options = {}) {
+    function add_test_scenario(
+      label,
+      placeholder,
+      patch,
+      expected_output,
+      options = {},
+    ) {
       const wrapped_html = `<div>${placeholder}</div>${patch}`;
       const wrapped_expected_output = `<div>${expected_output}</div>${options.tail ? patch : ""}`;
       for (const method of [
@@ -157,7 +163,6 @@
       `<?start name="a"?>New X after`,
     );
 
-
     add_test_scenario(
       "Interleaved markers (a)",
       `<?start name="a">New <?start name="b"> content <?end name="a"> after<?end>`,
@@ -178,5 +183,80 @@
       `<template for="a#b">X</template>`,
       `X`,
     );
-      </script>
+    add_test_scenario(
+      "Empty marker name with <?start> and <?end>",
+      `<?start name="">Old<?end>`,
+      `<template for="">New</template>`,
+      `<?start name=""?>Old<?end ?>`,
+      { tail: true },
+    );
+    add_test_scenario(
+      "Empty marker name with <?marker>",
+      `<?marker name="">Old`,
+      `<template for="">New</template>`,
+      `<?marker name=""?>Old`,
+      { tail: true },
+    );
+
+    // The <span> is left open at </template>, so the current node is the <span>
+    // rather than the template. The markers must still be removed.
+    add_test_scenario(
+      "Unclosed element in template content with start and end",
+      `<?start name="p">Old<?end>`,
+      `<template for="p"><span>New</template>`,
+      `<span>New</span>`,
+    );
+
+    add_test_scenario(
+      "Unclosed element in template content with only start",
+      `<?start name="p">Old content`,
+      `<template for="p"><span>New</template>`,
+      `<span>New content</span>`,
+    );
+
+    add_test_scenario(
+      "Unclosed element in template content with void marker",
+      `New <?marker name="p"> content`,
+      `<template for="p"><span>X</template>`,
+      `New <span>X</span> content`,
+    );
+
+    // An empty <template for> patches the target with nothing, deleting the range.
+    add_test_scenario(
+      "Empty patch with start and end deletes the range",
+      `<?start name="p">Old<?end>`,
+      `<template for="p"></template>`,
+      ``,
+    );
+
+    add_test_scenario(
+      "Empty patch with only start deletes to the end of the parent",
+      `<?start name="p">Old content`,
+      `<template for="p"></template>`,
+      ``,
+    );
+
+    add_test_scenario(
+      "Empty patch with void marker inserts nothing",
+      `New <?marker name="p"> content`,
+      `<template for="p"></template>`,
+      `New  content`,
+    );
+
+    // A processing instruction whose name matches but whose target is not
+    // "marker", "start", or "end" is ignored; a real marker still wins.
+    add_test_scenario(
+      "Non-marker processing instruction with matching name is ignored",
+      `<?other name="p"><?marker name="p"> content`,
+      `<template for="p">New</template>`,
+      `<?other name="p"?>New content`,
+    );
+
+    add_test_scenario(
+      "Stray end processing instruction with matching name is ignored",
+      `<?end name="p"><?marker name="p"> content`,
+      `<template for="p">New</template>`,
+      `<?end name="p"?>New content`,
+    );
+  </script>
 </body>

@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Timelines are visible by default
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'ready')"
+[FAIL] Timeline lookups isn't stopped by timeline-scope if the name doesn't match
+  assert_equals: expected "100px" but got "0px"
+[FAIL] Timeline under a different timeline-scope subtree is not visible to the target.
+  assert_equals: expected "100px" but got "0px"
+[FAIL] Timeline with a different timeline-scope is not visible to the target.
+  assert_equals: expected "100px" but got "0px"
+[FAIL] A timline scope in the ancestor chain
+  assert_equals: expected "100px" but got "0px"
+Harness: the test ran to completion.
+
