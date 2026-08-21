@@ -186,6 +186,42 @@ TEST_F(FocusControllerTest, FocusablePopoverOwnedByInvokerIsReachableForward) {
                        *popover, mojom::blink::FocusType::kForward));
 }
 
+TEST_F(FocusControllerTest, PopoverInternalInvokerLoop) {
+  SetBodyInnerHTML(R"HTML(
+    <button id="before" tabindex="0">before</button>
+    <div id="popover" popover>
+      <button id="close" tabindex="-1" popovertarget="popover">close</button>
+      <button id="inside" tabindex="0">inside</button>
+    </div>
+    <button id="after" tabindex="0">after</button>
+  )HTML");
+
+  auto* popover = To<HTMLElement>(GetElementById("popover"));
+  Element* before = GetElementById("before");
+  Element* close = GetElementById("close");
+  Element* inside = GetElementById("inside");
+  Element* after = GetElementById("after");
+  ASSERT_TRUE(popover);
+  ASSERT_TRUE(before);
+  ASSERT_TRUE(close);
+  ASSERT_TRUE(inside);
+  ASSERT_TRUE(after);
+
+  popover->ShowPopoverInternal(close, /*exception_state=*/nullptr);
+  ASSERT_TRUE(popover->popoverOpen());
+
+  EXPECT_EQ(inside, FindFocusableElementAfter(
+                        *before, mojom::blink::FocusType::kForward));
+  EXPECT_EQ(inside, FindFocusableElementAfter(
+                        *close, mojom::blink::FocusType::kForward));
+  EXPECT_EQ(after, FindFocusableElementAfter(
+                       *inside, mojom::blink::FocusType::kForward));
+  EXPECT_EQ(inside, FindFocusableElementAfter(
+                        *after, mojom::blink::FocusType::kBackward));
+  EXPECT_EQ(before, FindFocusableElementAfter(
+                        *inside, mojom::blink::FocusType::kBackward));
+}
+
 TEST_F(FocusControllerTest, NextFocusableElementForIme) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<form>"

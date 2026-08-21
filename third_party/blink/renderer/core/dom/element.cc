@@ -1916,6 +1916,11 @@ HTMLElement* Element::GetOpenPopoverTarget() const {
     return nullptr;
   }
   CHECK_EQ(popover->GetPopoverData()->invoker(), this);
+  if (FlatTreeTraversal::Contains(*popover, *this)) {
+    // See crbug.com/542274292: if the popover contains its own invoker,
+    // returning the popover will lead to loops.
+    return nullptr;
+  }
   return popover;
 }
 

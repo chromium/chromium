@@ -363,7 +363,13 @@ Element* InvokerForOpenPopover(const Node* node) {
   if (!popover || !popover->popoverOpen()) {
     return nullptr;
   }
-  return popover->GetPopoverData()->invoker();
+  Element* invoker = popover->GetPopoverData()->invoker();
+  if (invoker && FlatTreeTraversal::Contains(*popover, *invoker)) {
+    // See crbug.com/542274292: if the popover contains its own invoker, break
+    // the loop here.
+    return nullptr;
+  }
+  return invoker;
 }
 
 const Element* InclusiveAncestorOpenPopoverWithInvoker(const Element* element) {
