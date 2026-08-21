@@ -31,6 +31,9 @@ class PannerHandler final : public AudioHandler {
     kDistanceConeGainDirty = 0x2,
   };
 
+  // Note: After calling Create, you must call InitializeSampleAccurateArrays()
+  // to complete initialization and handle potential allocation failures,
+  // regardless of IsInitialized().
   static scoped_refptr<PannerHandler> Create(AudioNode&,
                                              float sample_rate,
                                              AudioParamHandler& position_x,
@@ -83,6 +86,10 @@ class PannerHandler final : public AudioHandler {
   void SetRolloffFactor(double);
 
   void MarkPannerAsDirty(unsigned);
+
+  // Allocates sample-accurate value arrays. Returns true on success or false
+  // if memory allocation failed.
+  bool InitializeSampleAccurateArrays();
 
  private:
   PannerHandler(AudioNode&,

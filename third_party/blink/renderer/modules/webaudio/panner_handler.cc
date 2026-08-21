@@ -51,16 +51,7 @@ PannerHandler::PannerHandler(AudioNode& node,
       orientation_x_(&orientation_x),
       orientation_y_(&orientation_y),
       orientation_z_(&orientation_z),
-      listener_handler_(&node.context()->listener()->Handler()),
-      panner_x_values_(GetDeferredTaskHandler().RenderQuantumFrames()),
-      panner_y_values_(GetDeferredTaskHandler().RenderQuantumFrames()),
-      panner_z_values_(GetDeferredTaskHandler().RenderQuantumFrames()),
-      orientation_x_values_(GetDeferredTaskHandler().RenderQuantumFrames()),
-      orientation_y_values_(GetDeferredTaskHandler().RenderQuantumFrames()),
-      orientation_z_values_(GetDeferredTaskHandler().RenderQuantumFrames()),
-      azimuth_values_(GetDeferredTaskHandler().RenderQuantumFrames()),
-      elevation_values_(GetDeferredTaskHandler().RenderQuantumFrames()),
-      total_gain_values_(GetDeferredTaskHandler().RenderQuantumFrames()) {
+      listener_handler_(&node.context()->listener()->Handler()) {
   AddInput();
   AddOutput(kMaximumOutputChannels);
 
@@ -74,6 +65,20 @@ PannerHandler::PannerHandler(AudioNode& node,
   SetPanningModel(V8PanningModelType::Enum::kEqualpower);
 
   Initialize();
+}
+
+bool PannerHandler::InitializeSampleAccurateArrays() {
+  const unsigned render_quantum_frames =
+      GetDeferredTaskHandler().RenderQuantumFrames();
+  return panner_x_values_.TryAllocate(render_quantum_frames) &&
+         panner_y_values_.TryAllocate(render_quantum_frames) &&
+         panner_z_values_.TryAllocate(render_quantum_frames) &&
+         orientation_x_values_.TryAllocate(render_quantum_frames) &&
+         orientation_y_values_.TryAllocate(render_quantum_frames) &&
+         orientation_z_values_.TryAllocate(render_quantum_frames) &&
+         azimuth_values_.TryAllocate(render_quantum_frames) &&
+         elevation_values_.TryAllocate(render_quantum_frames) &&
+         total_gain_values_.TryAllocate(render_quantum_frames);
 }
 
 scoped_refptr<PannerHandler> PannerHandler::Create(

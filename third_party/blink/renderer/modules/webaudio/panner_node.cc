@@ -102,7 +102,14 @@ PannerNode* PannerNode::Create(BaseAudioContext& context,
                                ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  return MakeGarbageCollected<PannerNode>(context);
+  auto* node = MakeGarbageCollected<PannerNode>(context);
+  if (!node->GetPannerHandler().InitializeSampleAccurateArrays()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Failed to initialize PannerNode due to insufficient memory.");
+    return nullptr;
+  }
+  return node;
 }
 
 PannerNode* PannerNode::Create(BaseAudioContext* context,
