@@ -11,7 +11,6 @@
 #include "base/test/test_file_util.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/chrome_content_browser_client.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"

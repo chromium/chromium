@@ -216,9 +216,7 @@ ui::ElementContext InteractiveAshTest::FindSystemWebApp(
   ash::BrowserDelegate* browser =
       ash::FindSystemWebAppBrowser(profile, type, ash::BrowserType::kApp);
   CHECK(browser);
-  return BrowserElements::From(
-             browser->GetBrowser().GetBrowserForMigrationOnly())
-      ->GetContext();
+  return BrowserElements::From(&browser->GetBrowser())->GetContext();
 }
 
 void InteractiveAshTest::CloseSystemWebApp(ash::SystemWebAppType type) {

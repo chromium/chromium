@@ -5,7 +5,6 @@
 #include <cmath>
 #include <string_view>
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/fuzzing/in_process_proto_fuzzer.h"
 #include "chrome/test/fuzzing/speech_synthesis_in_process_fuzzer.pb.h"

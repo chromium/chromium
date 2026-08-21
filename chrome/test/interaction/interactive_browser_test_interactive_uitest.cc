@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/test/interaction/interactive_browser_test.h"
+
 #include <memory>
 #include <optional>
 #include <set>
@@ -12,9 +14,9 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -26,7 +28,6 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/page_navigator.h"
@@ -202,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, TestNameAndDrag) {
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                        MouseToNewWindowAndDoActionsInSameContext) {
-  Browser* const incognito = CreateIncognitoBrowser();
+  BrowserWindowInterface* const incognito = CreateIncognitoBrowser();
   const auto context = BrowserElements::From(incognito)->GetContext();
 
   RunTestSequenceInContext(
@@ -420,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBrowserPageId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kIncognitoPageId);
 
-  Browser* const incognito = this->CreateIncognitoBrowser();
+  BrowserWindowInterface* const incognito = this->CreateIncognitoBrowser();
   const auto context = BrowserElements::From(incognito)->GetContext();
 
   // Run the test in the context of the incognito browser.

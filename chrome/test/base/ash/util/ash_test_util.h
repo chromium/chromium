@@ -15,7 +15,6 @@
 #include "components/webapps/common/web_app_id.h"
 #include "ui/events/event_constants.h"
 
-class Browser;
 class BrowserWindowInterface;
 class GlobalBrowserCollection;
 class Profile;
@@ -52,11 +51,11 @@ webapps::AppId CreateSystemWebApp(
 
 // Creates a browser and tabs with given `urls`. The active tab is indicated by
 // `active_url_index`. The browser is not shown after creation.
-Browser* CreateBrowser(Profile* profile,
-                       const std::vector<GURL>& urls,
-                       std::optional<size_t> active_url_index);
+BrowserWindowInterface* CreateBrowser(Profile* profile,
+                                      const std::vector<GURL>& urls,
+                                      std::optional<size_t> active_url_index);
 
-Browser* CreateAndShowBrowser(
+BrowserWindowInterface* CreateAndShowBrowser(
     Profile* profile,
     const std::vector<GURL>& urls,
     std::optional<size_t> active_url_index = std::nullopt);

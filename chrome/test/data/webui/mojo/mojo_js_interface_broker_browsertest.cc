@@ -10,7 +10,6 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "chrome/browser/chrome_content_browser_client.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"

@@ -7,7 +7,6 @@
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/fuzzing/in_process_fuzzer.h"
 #include "chrome/test/fuzzing/in_process_proto_fuzzer.h"
 #include "content/public/test/browser_test_utils.h"

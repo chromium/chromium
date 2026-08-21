@@ -18,8 +18,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/memory/scoped_refptr.h"
 #include "base/task/current_thread.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "content/public/test/test_utils.h"
 #include "ui/display/display.h"

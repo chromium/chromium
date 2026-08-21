@@ -56,7 +56,7 @@ class InteractiveFeaturePromoTestPrivate
   void DoTestTearDown() override;
 
   // Returns the mock tracker for `browser` if in `UseMockTracker` mode.
-  MockTracker* GetMockTrackerFor(Browser* browser);
+  MockTracker* GetMockTrackerFor(BrowserWindowInterface* browser);
 
   // Implementation for `InteractiveFeaturePromoTestApi` methods.
   ClockMode clock_mode() const { return clock_mode_; }
@@ -65,7 +65,7 @@ class InteractiveFeaturePromoTestPrivate
 
   // Waits for the tracker to be initialized if the appropriate tracker mode is
   // set.
-  void MaybeWaitForTrackerInitialization(Browser* browser);
+  void MaybeWaitForTrackerInitialization(BrowserWindowInterface* browser);
 
   bool use_shortened_timeouts_for_internal_testing() const {
     return use_shortened_timeouts_for_internal_testing_;

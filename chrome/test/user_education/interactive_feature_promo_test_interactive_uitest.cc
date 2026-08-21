@@ -4,7 +4,6 @@
 
 #include "base/feature_list.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/grit/generated_resources.h"

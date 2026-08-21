@@ -10,8 +10,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -71,7 +71,8 @@ class InteractionTestUtilBrowserTest : public InteractiveBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest, GetBrowserFromContext) {
-  Browser* const other_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* const other_browser =
+      CreateBrowser(browser()->GetProfile());
   EXPECT_EQ(browser(), InteractionTestUtilBrowser::GetBrowserFromContext(
                            BrowserElements::From(browser())->GetContext()));
   EXPECT_EQ(other_browser,

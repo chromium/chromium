@@ -24,7 +24,6 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/invalidations/invalidations_status_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/supervised_user/browser_user.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/test_accounts.h"

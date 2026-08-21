@@ -22,7 +22,6 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ash/javascript_browser_test.h"
 #include "chrome/test/base/test_switches.h"
 #include "content/public/browser/browser_accessibility_state.h"

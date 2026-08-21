@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"

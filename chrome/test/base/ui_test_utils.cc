@@ -299,9 +299,7 @@ void NavigateToURL(NavigateParams* params) {
 }
 
 void NavigateToURLWithPost(BrowserWindowInterface* browser, const GURL& url) {
-  NavigateParams params(
-      browser ? browser->GetBrowserForMigrationOnly() : nullptr, url,
-      ui::PAGE_TRANSITION_FORM_SUBMIT);
+  NavigateParams params(browser, url, ui::PAGE_TRANSITION_FORM_SUBMIT);
 
   std::string post_data("test=body");
   params.post_data = network::ResourceRequestBody::CreateFromCopyOfBytes(
@@ -351,10 +349,9 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
   AllBrowserTabAddedWaiter tab_added_waiter;
 
   WebContents* const web_contents =
-      browser->GetBrowserForMigrationOnly()->OpenURL(
-          OpenURLParams(url, Referrer(), disposition, ui::PAGE_TRANSITION_TYPED,
-                        false),
-          /*navigation_handle_callback=*/{});
+      browser->OpenURL(OpenURLParams(url, Referrer(), disposition,
+                                     ui::PAGE_TRANSITION_TYPED, false),
+                       /*navigation_handle_callback=*/{});
   if (browser_test_flags & BROWSER_TEST_WAIT_FOR_BROWSER) {
     // `WaitForBrowserNotInSet()` waits until the new browser is created, and
     // `WaitForBrowserSetLastActive()` waits until the new browser is active.

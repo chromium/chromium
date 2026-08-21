@@ -15,7 +15,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/providers/test/test_media_route_provider.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/media_router/media_router_ui_for_test_base.h"

@@ -12,7 +12,6 @@
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"

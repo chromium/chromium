@@ -12,7 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/chrome_content_browser_client.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ash/web_ui_test_handler.h"
 #include "chrome/test/data/grit/webui_test_resources.h"

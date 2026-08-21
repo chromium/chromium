@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -17,9 +18,9 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
@@ -28,6 +29,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
+#include "ui/base/base_window.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
@@ -127,13 +129,12 @@ webapps::AppId CreateSystemWebApp(Profile* profile,
   return CreateSystemWebAppImpl(profile, std::move(params));
 }
 
-Browser* CreateBrowser(Profile* profile,
-                       const std::vector<GURL>& urls,
-                       std::optional<size_t> active_url_index) {
+BrowserWindowInterface* CreateBrowser(Profile* profile,
+                                      const std::vector<GURL>& urls,
+                                      std::optional<size_t> active_url_index) {
   BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL, profile,
                                    /*from_user_gesture=*/false);
-  Browser* browser =
-      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
   // Create a new tab and make sure the urls have loaded.
   for (size_t i = 0; i < urls.size(); i++) {
     content::TestNavigationObserver navigation_observer(urls[i]);
@@ -146,10 +147,12 @@ Browser* CreateBrowser(Profile* profile,
   return browser;
 }
 
-Browser* CreateAndShowBrowser(Profile* profile,
-                              const std::vector<GURL>& urls,
-                              std::optional<size_t> active_url_index) {
-  Browser* browser = CreateBrowser(profile, urls, active_url_index);
+BrowserWindowInterface* CreateAndShowBrowser(
+    Profile* profile,
+    const std::vector<GURL>& urls,
+    std::optional<size_t> active_url_index) {
+  BrowserWindowInterface* browser =
+      CreateBrowser(profile, urls, active_url_index);
   browser->GetWindow()->Show();
   return browser;
 }

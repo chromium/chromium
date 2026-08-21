@@ -7,7 +7,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/infobars/test_support/infobar_observer.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -33,7 +32,7 @@
 
 namespace {
 
-void SimulateGPUCrash(Browser* browser) {
+void SimulateGPUCrash(BrowserWindowInterface* browser) {
   // None of the ui_test_utils entry points supports what we need to
   // do here: navigate with the PAGE_TRANSITION_FROM_ADDRESS_BAR flag,
   // without waiting for the navigation. It would be painful to change

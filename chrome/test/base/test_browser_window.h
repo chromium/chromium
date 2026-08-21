@@ -13,7 +13,6 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -30,6 +29,7 @@
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #endif  //  !BUILDFLAG(IS_ANDROID)
 
+class Browser;
 class LocationBarTesting;
 class GlobalBrowserCollection;
 class OmniboxView;

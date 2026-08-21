@@ -898,7 +898,7 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
 
   SetBrowser(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
-  auto ensure_browser_visible = [](Browser* browser) {
+  auto ensure_browser_visible = [](BrowserWindowInterface* browser) {
 #if defined(TOOLKIT_VIEWS)
     if (browser &&
         browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
@@ -917,15 +917,12 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
   // "active" yet.
   if (!browser_ && GlobalBrowserCollection::GetInstance()->GetSize() > 0) {
     auto browsers = GetAllBrowserWindowInterfaces();
-    BrowserWindowInterface* normal_window_interface = nullptr;
-    Browser* normal_browser = nullptr;
+    BrowserWindowInterface* normal_browser = nullptr;
     for (auto* window_interface : browsers) {
-      if (Browser* browser = window_interface->GetBrowserForMigrationOnly()) {
-        if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
-          normal_window_interface = window_interface;
-          normal_browser = browser;
-          break;
-        }
+      if (window_interface->GetType() ==
+          BrowserWindowInterface::Type::TYPE_NORMAL) {
+        normal_browser = window_interface;
+        break;
       }
     }
 
@@ -938,8 +935,8 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
     // first normal one available, or the first available if none are normal,
     // so tests like WebUIMochaBrowserTest that rely on browser() don't crash.
     if (!browser_) {
-      if (normal_window_interface) {
-        SetBrowser(normal_window_interface);
+      if (normal_browser) {
+        SetBrowser(normal_browser);
       } else if (!browsers.empty()) {
         SetBrowser(browsers[0]);
       }
@@ -956,7 +953,7 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
   }
 
   if (browser_) {
-    ensure_browser_visible(browser_->GetBrowserForMigrationOnly());
+    ensure_browser_visible(browser_);
   }
 
 #if !BUILDFLAG(IS_ANDROID)
