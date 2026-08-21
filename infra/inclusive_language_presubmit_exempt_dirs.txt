@@ -668,7 +668,7 @@ third_party/rust/chromium_crates_io/vendor/itertools-v0_14/.github/workflows
 third_party/rust/chromium_crates_io/vendor/itoa-v1
 third_party/rust/chromium_crates_io/vendor/itoa-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/itoa-v1/src
-third_party/rust/chromium_crates_io/vendor/jxl-v0_5/src/util
+third_party/rust/chromium_crates_io/vendor/jxl-v0_6/src/util
 third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/common/nautilus
 third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors
 third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/mutators
