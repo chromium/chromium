@@ -99,7 +99,7 @@
  * Style the host as a solid white base layer for the static energy effect
  * to prevent dark flashing gaps when the inner glow animation runs.
  */
-:host-context([energy-effect-enabled_]):host([entrypoint-name='Realbox']:not([energy-effect-animation-enabled])) {
+:host-context([energy-effect-enabled_]):host([entrypoint-name='Realbox']:not([energy-effect-animation-enabled]):not([is-listening])) {
   background-color: var(--cr-composebox-background-color, var(--color-search-animated-glow-background));
   border-radius: inherit;
   display: block;
@@ -111,7 +111,7 @@
  * Hide the legacy outer glow when energy effect is active but animations
  * are disabled, keeping only the inner border-width animation.
  */
-:host-context([energy-effect-enabled_]):host([entrypoint-name='Realbox']:not([energy-effect-animation-enabled])) .gradient-outer-glow {
+:host-context([energy-effect-enabled_]):host([entrypoint-name='Realbox']:not([energy-effect-animation-enabled]):not([is-listening])) .gradient-outer-glow {
   display: none;
 }
 
