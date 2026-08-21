@@ -322,7 +322,7 @@ void Window::Init(ui::LayerType layer_type) {
   layer()->SetVisible(false);
   layer()->set_delegate(this);
   if (auto* surface = layer()->AsSurface()) {
-    surface->SetBackgroundColor(SkColors::kWhite);
+    surface->SetFallbackBackgroundColor(SkColors::kWhite);
   }
 
   UpdateLayerName();

@@ -367,7 +367,7 @@ void DelegatedFrameHost::EmbedSurface(
           cc::DeadlinePolicy::UseSpecifiedDeadline(*force_specified_deadline_);
     }
     current_frame_size_in_dip_ = surface_dip_size_;
-    client_->GetDelegatedFrameHostLayer()->SetBackgroundColor(
+    client_->GetDelegatedFrameHostLayer()->SetFallbackBackgroundColor(
         SkColor4f::FromColor(GetGutterColor()));
     client_->GetDelegatedFrameHostLayer()->SetShowSurface(
         new_primary_surface_id, current_frame_size_in_dip_, deadline_policy,
@@ -542,7 +542,7 @@ void DelegatedFrameHost::ContinueDelegatedFrameEviction(
     const std::vector<viz::SurfaceId>& surface_ids) {
   // Reset primary surface.
   if (HasPrimarySurface()) {
-    client_->GetDelegatedFrameHostLayer()->SetBackgroundColor(
+    client_->GetDelegatedFrameHostLayer()->SetFallbackBackgroundColor(
         SkColor4f::FromColor(GetGutterColor()));
     client_->GetDelegatedFrameHostLayer()->SetShowSurface(
         viz::SurfaceId(), current_frame_size_in_dip_,
@@ -712,8 +712,9 @@ void DelegatedFrameHost::TakeFallbackContentFrom(DelegatedFrameHost* other) {
       viz::ParentLocalSurfaceIdAllocator::InvalidLocalSurfaceId();
 
   if (!HasPrimarySurface()) {
-    client_->GetDelegatedFrameHostLayer()->SetBackgroundColor(
-        other->client_->GetDelegatedFrameHostLayer()->GetBackgroundColor());
+    client_->GetDelegatedFrameHostLayer()->SetFallbackBackgroundColor(
+        other->client_->GetDelegatedFrameHostLayer()
+            ->GetFallbackBackgroundColor());
     client_->GetDelegatedFrameHostLayer()->SetShowSurface(
         desired_fallback, other->client_->GetDelegatedFrameHostLayer()->size(),
         cc::DeadlinePolicy::UseDefaultDeadline(),

@@ -1113,7 +1113,7 @@ TEST_P(LayerWithDelegateTest, SurfaceLayerCloneAndMirror) {
   viz::ParentLocalSurfaceIdAllocator allocator;
   auto layer = CreateLayer<LayerSurface>();
   ui::LayerTestApi layer_test_api(layer.get());
-  layer->SetBackgroundColor(SkColors::kRed);
+  layer->SetFallbackBackgroundColor(SkColors::kRed);
 
   allocator.GenerateId();
   viz::LocalSurfaceId local_surface_id = allocator.GetCurrentLocalSurfaceId();
@@ -1126,21 +1126,23 @@ TEST_P(LayerWithDelegateTest, SurfaceLayerCloneAndMirror) {
     auto clone = layer->Clone();
     ui::LayerTestApi clone_test_api(clone.get());
     EXPECT_FALSE(clone->AsSurface()->StretchContentToFillBounds());
-    EXPECT_EQ(SkColors::kRed, clone->AsSurface()->GetBackgroundColor());
+    EXPECT_EQ(SkColors::kRed, clone->AsSurface()->GetFallbackBackgroundColor());
     EXPECT_EQ(SkColors::kRed, clone_test_api.cc_layer()->background_color());
 
     auto mirror = layer->Mirror();
     ui::LayerTestApi mirror_test_api(mirror.get());
     EXPECT_FALSE(mirror->AsSurface()->StretchContentToFillBounds());
-    EXPECT_EQ(SkColors::kRed, mirror->AsSurface()->GetBackgroundColor());
+    EXPECT_EQ(SkColors::kRed,
+              mirror->AsSurface()->GetFallbackBackgroundColor());
     EXPECT_EQ(SkColors::kRed, mirror_test_api.cc_layer()->background_color());
 
     // Background color updates propagate to the mirror, but not to the clone.
-    layer->SetBackgroundColor(SkColors::kGreen);
-    EXPECT_EQ(SkColors::kGreen, layer->GetBackgroundColor());
-    EXPECT_EQ(SkColors::kGreen, mirror->AsSurface()->GetBackgroundColor());
+    layer->SetFallbackBackgroundColor(SkColors::kGreen);
+    EXPECT_EQ(SkColors::kGreen, layer->GetFallbackBackgroundColor());
+    EXPECT_EQ(SkColors::kGreen,
+              mirror->AsSurface()->GetFallbackBackgroundColor());
     EXPECT_EQ(SkColors::kGreen, mirror_test_api.cc_layer()->background_color());
-    EXPECT_EQ(SkColors::kRed, clone->AsSurface()->GetBackgroundColor());
+    EXPECT_EQ(SkColors::kRed, clone->AsSurface()->GetFallbackBackgroundColor());
   }
 
   allocator.GenerateId();
@@ -1154,13 +1156,15 @@ TEST_P(LayerWithDelegateTest, SurfaceLayerCloneAndMirror) {
     auto clone = layer->Clone();
     ui::LayerTestApi clone_test_api(clone.get());
     EXPECT_TRUE(clone->AsSurface()->StretchContentToFillBounds());
-    EXPECT_EQ(SkColors::kGreen, clone->AsSurface()->GetBackgroundColor());
+    EXPECT_EQ(SkColors::kGreen,
+              clone->AsSurface()->GetFallbackBackgroundColor());
     EXPECT_EQ(SkColors::kGreen, clone_test_api.cc_layer()->background_color());
 
     auto mirror = layer->Mirror();
     ui::LayerTestApi mirror_test_api(mirror.get());
     EXPECT_TRUE(mirror->AsSurface()->StretchContentToFillBounds());
-    EXPECT_EQ(SkColors::kGreen, mirror->AsSurface()->GetBackgroundColor());
+    EXPECT_EQ(SkColors::kGreen,
+              mirror->AsSurface()->GetFallbackBackgroundColor());
     EXPECT_EQ(SkColors::kGreen, mirror_test_api.cc_layer()->background_color());
   }
 }
@@ -2810,7 +2814,7 @@ TEST_P(LayerWithDelegateTest, ExternalContent) {
   viz::FrameSinkId frame_sink_id(1u, 1u);
   viz::ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
-  child->SetBackgroundColor(SkColors::kWhite);
+  child->SetFallbackBackgroundColor(SkColors::kWhite);
   child->SetShowSurface(
       viz::SurfaceId(frame_sink_id, allocator.GetCurrentLocalSurfaceId()),
       gfx::Size(10, 10), cc::DeadlinePolicy::UseDefaultDeadline(), false);
@@ -2820,7 +2824,7 @@ TEST_P(LayerWithDelegateTest, ExternalContent) {
   EXPECT_EQ(std::nullopt, surface->deadline_in_frames());
 
   allocator.GenerateId();
-  child->SetBackgroundColor(SkColors::kWhite);
+  child->SetFallbackBackgroundColor(SkColors::kWhite);
   child->SetShowSurface(
       viz::SurfaceId(frame_sink_id, allocator.GetCurrentLocalSurfaceId()),
       gfx::Size(10, 10), cc::DeadlinePolicy::UseSpecifiedDeadline(4u), false);
@@ -2829,7 +2833,7 @@ TEST_P(LayerWithDelegateTest, ExternalContent) {
 
 TEST_P(LayerWithDelegateTest, ExternalContentMirroring) {
   auto layer = CreateLayer<LayerSurface>();
-  layer->SetBackgroundColor(SkColors::kWhite);
+  layer->SetFallbackBackgroundColor(SkColors::kWhite);
 
   viz::SurfaceId surface_id(
       viz::FrameSinkId(0, 1),
@@ -2864,13 +2868,13 @@ TEST_P(LayerWithDelegateTest, SurfaceLayerBackgroundColor) {
   auto layer = CreateLayer<LayerSurface>();
   ui::LayerTestApi test_api(layer.get());
 
-  layer->SetBackgroundColor(SkColors::kRed);
-  EXPECT_EQ(SkColors::kRed, layer->GetBackgroundColor());
+  layer->SetFallbackBackgroundColor(SkColors::kRed);
+  EXPECT_EQ(SkColors::kRed, layer->GetFallbackBackgroundColor());
 
   auto* surface = static_cast<cc::SurfaceLayer*>(test_api.cc_layer());
   EXPECT_EQ(SkColors::kRed, surface->background_color());
 
-  layer->SetBackgroundColor(SkColors::kGreen);
+  layer->SetFallbackBackgroundColor(SkColors::kGreen);
   EXPECT_EQ(SkColors::kGreen, surface->background_color());
 }
 

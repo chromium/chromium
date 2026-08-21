@@ -504,7 +504,8 @@ void SurfaceTreeHost::InitHostWindow(const std::string& window_name) {
   host_window_->Init(ui::LAYER_SURFACE);
   host_window_->set_owned_by_parent(false);
   host_window_->SetTransparent(true);
-  host_window_->layer()->AsSurface()->SetBackgroundColor(SkColors::kWhite);
+  host_window_->layer()->AsSurface()->SetFallbackBackgroundColor(
+      SkColors::kWhite);
 
   // The host window is a container of surface tree. It doesn't handle pointer
   // events.

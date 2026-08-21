@@ -1984,7 +1984,7 @@ void VideoOverlayWindowViews::SetSurfaceId(const viz::SurfaceId& surface_id) {
   GetCompositor()->AddChildFrameSink(surface_id.frame_sink_id());
   has_registered_frame_sink_hierarchy_ = true;
   auto* video_surface = video_view_->layer()->AsSurface();
-  video_surface->SetBackgroundColor(SkColor4f::FromColor(
+  video_surface->SetFallbackBackgroundColor(SkColor4f::FromColor(
       GetColorProvider()->GetColor(kColorPipWindowBackground)));
   video_surface->SetShowSurface(surface_id, GetBounds().size(),
                                 cc::DeadlinePolicy::UseDefaultDeadline(),

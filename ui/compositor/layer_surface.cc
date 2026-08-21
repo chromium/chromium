@@ -33,16 +33,16 @@ bool LayerSurface::ShouldSchedulePaint() const {
   return false;
 }
 
-void LayerSurface::SetBackgroundColor(SkColor4f color) {
+void LayerSurface::SetFallbackBackgroundColor(SkColor4f color) {
   surface_layer_->SetBackgroundColor(color);
   surface_layer_->SetSafeOpaqueBackgroundColor(color);
 
   for (const auto& mirror : mirrors_) {
-    mirror->dest()->AsSurface()->SetBackgroundColor(color);
+    mirror->dest()->AsSurface()->SetFallbackBackgroundColor(color);
   }
 }
 
-SkColor4f LayerSurface::GetBackgroundColor() const {
+SkColor4f LayerSurface::GetFallbackBackgroundColor() const {
   return surface_layer_->background_color();
 }
 
@@ -50,7 +50,8 @@ std::unique_ptr<Layer> LayerSurface::Clone() const {
   auto clone = Layer::Clone();
   auto* cloned_surface = clone->AsSurface();
 
-  cloned_surface->SetBackgroundColor(surface_layer_->background_color());
+  cloned_surface->SetFallbackBackgroundColor(
+      surface_layer_->background_color());
   cloned_surface->SetShowSurface(
       surface_layer_->surface_id(), frame_size_in_dip_,
       surface_layer_->deadline_in_frames()
@@ -102,6 +103,7 @@ void LayerSurface::SetShowReflectedSurface(
     const gfx::Size& frame_size_in_pixels) {
   surface_layer_->SetSurfaceId(surface_id,
                                cc::DeadlinePolicy::UseInfiniteDeadline());
+  // Set the fallback color (also used for gutters) as kBlack.
   surface_layer_->SetBackgroundColor(SkColors::kBlack);
   surface_layer_->SetSafeOpaqueBackgroundColor(SkColors::kBlack);
   surface_layer_->SetStretchContentToFillBounds(true);

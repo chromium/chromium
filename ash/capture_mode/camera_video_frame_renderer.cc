@@ -48,7 +48,8 @@ CameraVideoFrameRenderer::CameraVideoFrameRenderer(
       should_flip_frames_horizontally_(should_flip_frames_horizontally) {
   host_window_.set_owned_by_parent(false);
   host_window_.Init(ui::LAYER_SURFACE);
-  host_window_.layer()->AsSurface()->SetBackgroundColor(SkColors::kDkGray);
+  host_window_.layer()->AsSurface()->SetFallbackBackgroundColor(
+      SkColors::kDkGray);
   host_window_.SetName("CameraVideoFramesHost");
 }
 

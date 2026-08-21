@@ -59,7 +59,7 @@ BrowserCompositorMac::BrowserCompositorMac(
   root_layer_ = std::make_unique<ui::LayerSurface>();
   // Ensure that this layer draws nothing when it does not not have delegated
   // content (otherwise this solid color will be flashed during navigation).
-  root_layer_->SetBackgroundColor(SkColors::kTransparent);
+  root_layer_->SetFallbackBackgroundColor(SkColors::kTransparent);
   root_layer_->SetFillsBoundsOpaquely(false);
   delegated_frame_host_ = std::make_unique<DelegatedFrameHost>(
       frame_sink_id, this, true /* should_register_frame_sink_id */);

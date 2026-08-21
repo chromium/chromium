@@ -221,7 +221,7 @@ void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_screen) {
       content::GetContextFactory());
 
   root_layer_ = std::make_unique<ui::LayerSurface>();
-  root_layer_->SetBackgroundColor(SkColors::kTransparent);
+  root_layer_->SetFallbackBackgroundColor(SkColors::kTransparent);
   root_layer_->SetFillsBoundsOpaquely(false);
   root_layer_->SetBounds(gfx::Rect(bounds_in_screen.size()));
 

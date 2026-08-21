@@ -864,7 +864,7 @@ void RenderWidgetHostViewAura::UpdateBackgroundColor() {
   SkColor4f background_color =
       SkColor4f::FromColor(GetBackgroundColor().value());
   window_->layer()->SetFillsBoundsOpaquely(background_color.isOpaque());
-  window_->layer()->AsSurface()->SetBackgroundColor(background_color);
+  window_->layer()->AsSurface()->SetFallbackBackgroundColor(background_color);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -2971,7 +2971,7 @@ void RenderWidgetHostViewAura::CreateAuraWindow(aura::client::WindowType type) {
   SkColor4f background_color = SkColor4f::FromColor(
       GetBackgroundColor() ? *GetBackgroundColor() : SK_ColorWHITE);
   window_->layer()->SetFillsBoundsOpaquely(background_color.isOpaque());
-  window_->layer()->AsSurface()->SetBackgroundColor(background_color);
+  window_->layer()->AsSurface()->SetFallbackBackgroundColor(background_color);
   UpdateFrameSinkIdRegistration();
 }
 
