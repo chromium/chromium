@@ -18,6 +18,8 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "base/types/id_type.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -29,6 +31,7 @@
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -64,10 +67,6 @@ namespace personal_context {
 class PersonalContextService;
 }  // namespace personal_context
 
-namespace signin {
-class PersistentRepeatingTimer;
-}  // namespace signin
-
 namespace tab_groups {
 class TabGroupSyncService;
 }  // namespace tab_groups
@@ -78,7 +77,8 @@ class TabGroupStore;
 class ContextHubBackend;
 
 class ContextHubService : public KeyedService,
-                          public AutoTodosStore::Observer
+                          public AutoTodosStore::Observer,
+                          public signin::IdentityManager::Observer
 #if !BUILDFLAG(IS_ANDROID)
     ,
                           public BrowserTabStripTrackerDelegate,
@@ -97,6 +97,7 @@ class ContextHubService : public KeyedService,
 
   ContextHubService(
       Profile* profile,
+      signin::IdentityManager* identity_manager,
       personal_context::PersonalContextService* personal_context_service,
       optimization_guide::RemoteModelExecutor*
           optimization_guide_remote_model_executor,
@@ -117,6 +118,16 @@ class ContextHubService : public KeyedService,
 
   // AutoTodosStore::Observer:
   void OnAutoTodosChanged(base::span<const AutoTodoEntry> entries) override;
+
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnRefreshTokensLoaded() override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
 
 #if !BUILDFLAG(IS_ANDROID)
   // BrowserTabStripTrackerDelegate:
@@ -256,6 +267,9 @@ class ContextHubService : public KeyedService,
   }
 
  private:
+  // Attempts to generate 1P AutoTodos if eligible and not already in flight.
+  void MaybeTriggerFirstPartyAutoTodosGeneration();
+
   // Triggered periodically by `first_party_auto_todos_timer_` to generate 1P
   // AutoTodos.
   void OnFirstPartyAutoTodosTimerTriggered();
@@ -290,19 +304,15 @@ class ContextHubService : public KeyedService,
   // Handles the async response when all auto todos are fetched to populate
   // existing first party todos in the CMS request.
   void OnCachedFirstPartyAutoTodosFetched(
-      AutoTodosStore::OperationCallback callback,
       std::vector<AutoTodoEntry> stored_todos);
 
   // Handles the async response from the AutoTodos fetch.
   void OnFirstPartyAutoTodosFetched(
-      AutoTodosStore::OperationCallback callback,
       personal_context::FetchContextResult result);
 
   // Cleans up First Party Auto Todos generation state, notifies observers, and
-  // invokes the completion callback.
-  void FinishFirstPartyAutoTodosGeneration(
-      AutoTodosStore::OperationCallback callback,
-      bool success);
+  // invokes any pending completion callbacks.
+  void FinishFirstPartyAutoTodosGeneration(bool success);
 
   // Handles the async response when all auto todos are fetched to filter tabs
   // for tab-based todos generation.
@@ -347,6 +357,10 @@ class ContextHubService : public KeyedService,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
   const raw_ref<Profile> profile_;
+  const raw_ref<signin::IdentityManager> identity_manager_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
   const raw_ref<personal_context::PersonalContextService>
       personal_context_service_;
   const raw_ref<optimization_guide::RemoteModelExecutor>
@@ -358,6 +372,12 @@ class ContextHubService : public KeyedService,
 
   // Indicates if a First Party Auto Todos generation request is in flight.
   bool is_generating_first_party_auto_todos_ = false;
+
+  // Stores client callbacks waiting for completion of an in-flight
+  // `GenerateFirstPartyAutoTodos` request. This allows concurrent requests
+  // (e.g. a user click during a background timer fetch) to attach to the
+  // in-flight request rather than immediately failing with false.
+  std::vector<AutoTodosStore::OperationCallback> pending_first_party_callbacks_;
 
   // Stores the client's callback during an in-flight `GenerateTabBasedTodos`
   // request while page contexts are being extracted and model execution is
@@ -407,10 +427,12 @@ class ContextHubService : public KeyedService,
 
   std::unique_ptr<AutoTodosStore> auto_todos_store_;
 
-  // Recurring daily timer that generates and stores 1P AutoTodos across
-  // sessions.
-  std::unique_ptr<signin::PersistentRepeatingTimer>
-      first_party_auto_todos_timer_;
+  // Timestamp of the most recent successful First Party Auto Todos generation
+  // during the current browser session.
+  base::Time last_first_party_generation_time_;
+
+  // Periodic timer that generates and stores 1P AutoTodos during the session.
+  base::RepeatingTimer first_party_auto_todos_timer_;
 
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<BrowserTabStripTracker> browser_tab_strip_tracker_;

@@ -19,7 +19,6 @@
 #include "chrome/browser/context_hub/auto_todos/in_memory_auto_todos_store.h"
 #include "chrome/browser/context_hub/features.h"
 #include "chrome/browser/context_hub/memory_bank/in_memory_memory_bank.h"
-#include "chrome/browser/context_hub/prefs.h"
 #include "chrome/browser/context_hub/storage/context_hub_backend.h"
 #include "chrome/browser/context_hub/tab_group_store/in_memory_tab_group_store.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
@@ -31,12 +30,12 @@
 #include "components/personal_context/core/context_memory_error.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -103,6 +102,7 @@ class ContextHubServiceTest : public testing::Test {
  public:
   ContextHubServiceTest()
       : service_(&profile_,
+                 identity_test_environment_.identity_manager(),
                  &mock_personal_context_service_,
                  &mock_remote_model_executor_,
                  &fake_tab_group_sync_service_,
@@ -206,18 +206,11 @@ class ContextHubServiceTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   TestingProfile profile_;
+  signin::IdentityTestEnvironment identity_test_environment_;
   personal_context::MockPersonalContextService mock_personal_context_service_;
   optimization_guide::MockRemoteModelExecutor mock_remote_model_executor_;
   tab_groups::FakeTabGroupSyncService fake_tab_group_sync_service_;
   MockPageContentExtractionService mock_page_content_extraction_service_;
-  struct PrefInitializer {
-    explicit PrefInitializer(PrefService* prefs) {
-      prefs->SetTime(prefs::kContextHubLastAutoTodosGenerationTime,
-                     base::Time::Now());
-    }
-  };
-
-  PrefInitializer pref_initializer_{profile_.GetPrefs()};
   ContextHubService service_;
 };
 
@@ -255,6 +248,49 @@ TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ServiceSuccess) {
   service_.GenerateFirstPartyAutoTodos(future.GetCallback());
 
   EXPECT_TRUE(future.Get());
+}
+
+TEST_F(ContextHubServiceTest,
+       GenerateFirstPartyAutoTodos_ConcurrentRequestsQueueAndResolve) {
+  personal_context::proto::AutoTodosResponse expected_response;
+  auto* todo = expected_response.add_todos();
+  todo->set_title("Test Todo");
+  todo->set_description("Test Description");
+
+  personal_context::proto::Any any_response;
+  expected_response.SerializeToString(any_response.mutable_value());
+
+  personal_context::FetchContextCallback captured_callback;
+  EXPECT_CALL(
+      mock_personal_context_service_,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(testing::WithArg<3>(
+          [&](personal_context::FetchContextCallback callback) {
+            captured_callback = std::move(callback);
+          }));
+
+  base::test::TestFuture<bool> future1;
+  base::test::TestFuture<bool> future2;
+
+  // First request starts the fetch.
+  service_.GenerateFirstPartyAutoTodos(future1.GetCallback());
+  EXPECT_TRUE(service_.IsGeneratingFirstPartyAutoTodos());
+
+  // Second request arrives while first is in-flight. It should queue and not
+  // send duplicate fetch.
+  service_.GenerateFirstPartyAutoTodos(future2.GetCallback());
+
+  // Complete the backend fetch.
+  ASSERT_TRUE(captured_callback);
+  std::move(captured_callback)
+      .Run(personal_context::FetchContextResult(
+          base::ok(std::move(any_response))));
+
+  // Both callers receive success.
+  EXPECT_TRUE(future1.Get());
+  EXPECT_TRUE(future2.Get());
+  EXPECT_FALSE(service_.IsGeneratingFirstPartyAutoTodos());
 }
 
 TEST_F(ContextHubServiceTest,
@@ -1166,7 +1202,8 @@ TEST_F(ContextHubServiceTest, ChatHistory_LRUEviction) {
       browser::context_hub::mojom::kAutoTabGroups,
       {{features::kMaxTabGroupChatHistoryTurns.name, "3"}});
   ContextHubService service(
-      &profile_, &mock_personal_context_service_, &mock_remote_model_executor_,
+      &profile_, identity_test_environment_.identity_manager(),
+      &mock_personal_context_service_, &mock_remote_model_executor_,
       &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
@@ -1729,7 +1766,8 @@ TEST_F(ContextHubServiceTest, ConfirmAllTabGroups_Success) {
 
 TEST_F(ContextHubServiceTest, TabGroupStore_Null) {
   ContextHubService service_null_store(
-      &profile_, &mock_personal_context_service_, &mock_remote_model_executor_,
+      &profile_, identity_test_environment_.identity_manager(),
+      &mock_personal_context_service_, &mock_remote_model_executor_,
       &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
       std::make_unique<InMemoryMemoryBank>(),
       /*tab_group_store=*/nullptr,
@@ -1818,9 +1856,9 @@ TEST_F(ContextHubServiceTest, ConnectLocalTabGroup) {
             local_id);
 }
 
-TEST_F(ContextHubServiceTest, AutoTodosTimer_TriggersOnStartup) {
-  profile_.GetPrefs()->ClearPref(prefs::kContextHubLastAutoTodosGenerationTime);
-  const base::Time start_time = base::Time::Now();
+TEST_F(ContextHubServiceTest, AutoTodos_TriggersOnStartupWhenTokensLoaded) {
+  identity_test_environment_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
 
   personal_context::MockPersonalContextService mock_personal_context_service;
   EXPECT_CALL(
@@ -1829,20 +1867,66 @@ TEST_F(ContextHubServiceTest, AutoTodosTimer_TriggersOnStartup) {
                    _, _, _));
 
   ContextHubService service(
-      &profile_, &mock_personal_context_service, &mock_remote_model_executor_,
+      &profile_, identity_test_environment_.identity_manager(),
+      &mock_personal_context_service, &mock_remote_model_executor_,
+      &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      std::make_unique<InMemoryMemoryBank>(),
+      std::make_unique<InMemoryTabGroupStore>(),
+      /*context_hub_backend=*/nullptr,
+      std::make_unique<InMemoryAutoTodosStore>());
+}
+
+TEST_F(ContextHubServiceTest,
+       AutoTodos_DoesNotTriggerOnStartupWhenNotSignedIn) {
+  personal_context::MockPersonalContextService mock_personal_context_service;
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .Times(0);
+
+  ContextHubService service(
+      &profile_, identity_test_environment_.identity_manager(),
+      &mock_personal_context_service, &mock_remote_model_executor_,
+      &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      std::make_unique<InMemoryMemoryBank>(),
+      std::make_unique<InMemoryTabGroupStore>(),
+      /*context_hub_backend=*/nullptr,
+      std::make_unique<InMemoryAutoTodosStore>());
+}
+
+TEST_F(ContextHubServiceTest, AutoTodos_TriggersWhenPrimaryAccountSignedIn) {
+  personal_context::MockPersonalContextService mock_personal_context_service;
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .Times(0);
+
+  ContextHubService service(
+      &profile_, identity_test_environment_.identity_manager(),
+      &mock_personal_context_service, &mock_remote_model_executor_,
       &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
       /*context_hub_backend=*/nullptr,
       std::make_unique<InMemoryAutoTodosStore>());
 
-  EXPECT_EQ(profile_.GetPrefs()->GetTime(
-                prefs::kContextHubLastAutoTodosGenerationTime),
-            start_time);
+  // When the user signs in, generation is triggered.
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _));
+  identity_test_environment_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
 }
 
-TEST_F(ContextHubServiceTest, AutoTodosTimer_DoesNotRunWhenFeatureDisabled) {
-  profile_.GetPrefs()->ClearPref(prefs::kContextHubLastAutoTodosGenerationTime);
+TEST_F(ContextHubServiceTest, AutoTodos_TriggersWhenRefreshTokensLoaded) {
+  AccountInfo account_info =
+      identity_test_environment_.MakeAccountAvailable("test@example.com");
+  identity_test_environment_.SetPrimaryAccount(account_info.email,
+                                               signin::ConsentLevel::kSignin);
+  identity_test_environment_.ResetToAccountsNotYetLoadedFromDiskState();
 
   personal_context::MockPersonalContextService mock_personal_context_service;
   EXPECT_CALL(
@@ -1852,7 +1936,36 @@ TEST_F(ContextHubServiceTest, AutoTodosTimer_DoesNotRunWhenFeatureDisabled) {
       .Times(0);
 
   ContextHubService service(
-      &profile_, &mock_personal_context_service, &mock_remote_model_executor_,
+      &profile_, identity_test_environment_.identity_manager(),
+      &mock_personal_context_service, &mock_remote_model_executor_,
+      &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      std::make_unique<InMemoryMemoryBank>(),
+      std::make_unique<InMemoryTabGroupStore>(),
+      /*context_hub_backend=*/nullptr,
+      std::make_unique<InMemoryAutoTodosStore>());
+
+  // When refresh tokens finish loading from disk, generation is triggered.
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _));
+  identity_test_environment_.ReloadAccountsFromDisk();
+}
+
+TEST_F(ContextHubServiceTest, AutoTodos_DoesNotRunWhenFeatureDisabled) {
+  identity_test_environment_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+
+  personal_context::MockPersonalContextService mock_personal_context_service;
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .Times(0);
+
+  ContextHubService service(
+      &profile_, identity_test_environment_.identity_manager(),
+      &mock_personal_context_service, &mock_remote_model_executor_,
       &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
@@ -1860,20 +1973,27 @@ TEST_F(ContextHubServiceTest, AutoTodosTimer_DoesNotRunWhenFeatureDisabled) {
       /*auto_todos_store=*/nullptr);
 }
 
-TEST_F(ContextHubServiceTest, AutoTodosTimer_TriggersAfterIntervalElapsed) {
-  const base::Time start_time = base::Time::Now();
-  profile_.GetPrefs()->SetTime(prefs::kContextHubLastAutoTodosGenerationTime,
-                               start_time);
+TEST_F(ContextHubServiceTest,
+       AutoTodos_PeriodicTimer_TriggersAfterIntervalElapsed) {
+  identity_test_environment_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+
+  personal_context::proto::AutoTodosResponse expected_response;
+  personal_context::proto::Any any_response;
+  expected_response.SerializeToString(any_response.mutable_value());
 
   personal_context::MockPersonalContextService mock_personal_context_service;
+  // Triggers once on startup and completes.
   EXPECT_CALL(
       mock_personal_context_service,
       FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
                    _, _, _))
-      .Times(0);
+      .WillOnce(RunOnceCallback<3>(
+          personal_context::FetchContextResult(base::ok(any_response))));
 
   ContextHubService service(
-      &profile_, &mock_personal_context_service, &mock_remote_model_executor_,
+      &profile_, identity_test_environment_.identity_manager(),
+      &mock_personal_context_service, &mock_remote_model_executor_,
       &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),
@@ -1883,21 +2003,60 @@ TEST_F(ContextHubServiceTest, AutoTodosTimer_TriggersAfterIntervalElapsed) {
   // 12 hours later: should not trigger yet.
   task_environment_.FastForwardBy(base::Hours(12));
 
-  // Next 12 hours (total 24h): should trigger.
+  // Next 12 hours (total 24h interval): should trigger again.
   EXPECT_CALL(
       mock_personal_context_service,
       FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
                    _, _, _));
 
   task_environment_.FastForwardBy(base::Hours(12));
-  EXPECT_EQ(profile_.GetPrefs()->GetTime(
-                prefs::kContextHubLastAutoTodosGenerationTime),
-            start_time + base::Hours(24));
+}
+
+TEST_F(ContextHubServiceTest,
+       AutoTodos_DoesNotTriggerRepeatedlyInSameSessionWhenRecent) {
+  identity_test_environment_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+
+  personal_context::proto::AutoTodosResponse expected_response;
+  personal_context::proto::Any any_response;
+  expected_response.SerializeToString(any_response.mutable_value());
+
+  personal_context::MockPersonalContextService mock_personal_context_service;
+  // Triggers once on startup and finishes.
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          personal_context::FetchContextResult(base::ok(any_response))));
+
+  ContextHubService service(
+      &profile_, identity_test_environment_.identity_manager(),
+      &mock_personal_context_service, &mock_remote_model_executor_,
+      &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      std::make_unique<InMemoryMemoryBank>(),
+      std::make_unique<InMemoryTabGroupStore>(),
+      /*context_hub_backend=*/nullptr,
+      std::make_unique<InMemoryAutoTodosStore>());
+
+  // Advance time by only 10 minutes.
+  task_environment_.FastForwardBy(base::Minutes(10));
+
+  // Simulating token reloads or auth error updates within the same session
+  // should not trigger redundant generation.
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .Times(0);
+
+  identity_test_environment_.ReloadAccountsFromDisk();
 }
 
 TEST_F(ContextHubServiceTest, PendingMemoryBankEntryLifecycle) {
   ContextHubService service(
-      &profile_, &mock_personal_context_service_, &mock_remote_model_executor_,
+      &profile_, identity_test_environment_.identity_manager(),
+      &mock_personal_context_service_, &mock_remote_model_executor_,
       &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
       std::make_unique<InMemoryMemoryBank>(),
       std::make_unique<InMemoryTabGroupStore>(),

@@ -22,11 +22,13 @@
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/personal_context/personal_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "sql/database.h"
 
 namespace {
@@ -56,6 +58,7 @@ ContextHubServiceFactory::ContextHubServiceFactory()
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .Build()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(PersonalContextServiceFactory::GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(tab_groups::TabGroupSyncServiceFactory::GetInstance());
@@ -76,6 +79,11 @@ ContextHubServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    return nullptr;
+  }
   personal_context::PersonalContextService* personal_context_service =
       PersonalContextServiceFactory::GetForProfile(profile);
   if (!personal_context_service) {
@@ -138,8 +146,9 @@ ContextHubServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   return std::make_unique<context_hub::ContextHubService>(
-      profile, personal_context_service, optimization_guide_service,
-      tab_group_sync_service, page_content_extraction_service,
-      std::move(memory_bank), std::move(tab_group_store), std::move(backend),
+      profile, identity_manager, personal_context_service,
+      optimization_guide_service, tab_group_sync_service,
+      page_content_extraction_service, std::move(memory_bank),
+      std::move(tab_group_store), std::move(backend),
       std::move(auto_todos_store));
 }

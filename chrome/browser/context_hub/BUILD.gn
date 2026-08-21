@@ -55,6 +55,7 @@ source_set("context_hub") {
     "//components/page_content_annotations/content",
     "//components/personal_context/core",
     "//components/personal_context/proto:personal_context_proto",
+    "//components/signin/public/identity_manager",
     "//components/tab_groups",
   ]
 
@@ -67,11 +68,11 @@ source_set("context_hub") {
 
   deps = [
     "//chrome/browser/contextual_tasks",
+    "//chrome/browser/signin",
     "//chrome/browser/tab_group_sync",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui/browser_window",
-    "//components/prefs",
     "//components/saved_tab_groups/public",
     "//components/sessions",
     "//components/signin/public/base",
@@ -98,8 +99,8 @@ source_set("unit_tests") {
     "//components/page_content_annotations/content",
     "//components/page_content_annotations/content:test_support",
     "//components/personal_context/core:test_support",
-    "//components/prefs:test_support",
     "//components/saved_tab_groups/test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
