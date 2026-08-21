@@ -31,9 +31,6 @@
 
 namespace ui::win {
 
-BASE_FEATURE(kManuallyParsePathForShellExecute,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 // If this feature is enabled, then the COM interface on explorer will be used
@@ -71,22 +68,18 @@ bool InvokeShellExecuteDirectly(const std::wstring& path,
   sei.lpParameters = (args.empty() ? nullptr : args.c_str());
 
   base::win::ScopedCoMem<ITEMIDLIST_ABSOLUTE> path_id_list;
-  if (base::FeatureList::IsEnabled(kManuallyParsePathForShellExecute)) {
-    // ShellExecute will perform legacy resolution of a path if it can't detect
-    // an extension from a given path, appending .pif, .com, .exe, .bat, .lnk,
-    // and .cmd with an assumption the file is a truncated invocable path
-    // (Example: "chrome" referring to "chrome.exe"). ShellExecute will perform
-    // this resolution even if the path refers to a valid file. Chromium
-    // expects paths to be fully qualified and does not need this resolution.
-    if (FAILED(::SHParseDisplayName(path.c_str(), nullptr, &path_id_list,
-                                    SFGAO_FILESYSTEM, nullptr))) {
-      return false;
-    }
-    sei.fMask |= SEE_MASK_IDLIST;
-    sei.lpIDList = path_id_list.get();
-  } else {
-    sei.lpFile = path.c_str();
+  // ShellExecute will perform legacy resolution of a path if it can't detect
+  // an extension from a given path, appending .pif, .com, .exe, .bat, .lnk,
+  // and .cmd with an assumption the file is a truncated invocable path
+  // (Example: "chrome" referring to "chrome.exe"). ShellExecute will perform
+  // this resolution even if the path refers to a valid file. Chromium
+  // expects paths to be fully qualified and does not need this resolution.
+  if (FAILED(::SHParseDisplayName(path.c_str(), nullptr, &path_id_list,
+                                  SFGAO_FILESYSTEM, nullptr))) {
+    return false;
   }
+  sei.fMask |= SEE_MASK_IDLIST;
+  sei.lpIDList = path_id_list.get();
 
   // Mitigate the issues caused by loading DLLs on a background thread
   // (http://crbug/973868).
@@ -125,32 +118,30 @@ bool InvokeShellExecute(const std::wstring& path,
   // (Example: "chrome" referring to "chrome.exe"). ShellExecute will perform
   // this resolution even if the path refers to a valid file. Chromium
   // expects paths to be fully qualified and does not need this resolution.
-  std::wstring resolved_path = path;
-  if (base::FeatureList::IsEnabled(kManuallyParsePathForShellExecute)) {
-    base::win::ScopedCoMem<ITEMIDLIST_ABSOLUTE> path_id_list;
-    if (FAILED(::SHParseDisplayName(path.c_str(), nullptr, &path_id_list,
-                                    SFGAO_FILESYSTEM, nullptr))) {
-      return false;
-    }
+  base::win::ScopedCoMem<ITEMIDLIST_ABSOLUTE> path_id_list;
+  if (FAILED(::SHParseDisplayName(path.c_str(), nullptr, &path_id_list,
+                                  SFGAO_FILESYSTEM, nullptr))) {
+    return false;
+  }
 
-    wchar_t path_buffer[MAX_PATH];
-    if (!::SHGetPathFromIDList(path_id_list, path_buffer)) {
-      return false;
-    }
+  wchar_t path_buffer[MAX_PATH];
+  if (!::SHGetPathFromIDList(path_id_list, path_buffer)) {
+    return false;
+  }
 
-    // The \\?\ prefix (the Win32 File Namespace) is used to tell the Windows
-    // APIs to "disable all string parsing and to send the string that follows
-    // it directly to the file system.". See
-    // https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file#win32-file-namespace.
-    std::wstring path_str = path_buffer;
-    if (base::StartsWith(path_str, L"\\\\?\\", base::CompareCase::SENSITIVE)) {
-      resolved_path = path_str;
-    } else if (base::StartsWith(path_str, L"\\\\",
-                                base::CompareCase::SENSITIVE)) {
-      resolved_path = base::StrCat({L"\\\\?\\UNC\\", path_str.substr(2)});
-    } else {
-      resolved_path = base::StrCat({L"\\\\?\\", path_str});
-    }
+  // The \\?\ prefix (the Win32 File Namespace) is used to tell the Windows
+  // APIs to "disable all string parsing and to send the string that follows
+  // it directly to the file system.". See
+  // https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file#win32-file-namespace.
+  std::wstring resolved_path;
+  std::wstring path_str = path_buffer;
+  if (base::StartsWith(path_str, L"\\\\?\\", base::CompareCase::SENSITIVE)) {
+    resolved_path = path_str;
+  } else if (base::StartsWith(path_str, L"\\\\",
+                              base::CompareCase::SENSITIVE)) {
+    resolved_path = base::StrCat({L"\\\\?\\UNC\\", path_str.substr(2)});
+  } else {
+    resolved_path = base::StrCat({L"\\\\?\\", path_str});
   }
 
   // Mitigate the issues caused by loading DLLs on a background thread

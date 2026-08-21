@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/scoped_co_mem.h"
@@ -25,12 +24,9 @@
 
 namespace ui::win {
 
-class ShellTest : public testing::TestWithParam<bool> {
+class ShellTest : public testing::Test {
  public:
-  ShellTest() {
-    feature_list_.InitWithFeatureState(kManuallyParsePathForShellExecute,
-                                       GetParam());
-  }
+  ShellTest() = default;
 
   void SetUp() override {
 #if defined(ADDRESS_SANITIZER) || defined(COMPONENT_BUILD)
@@ -41,14 +37,11 @@ class ShellTest : public testing::TestWithParam<bool> {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(ShellTest, OpenFileWithSpaceInExtension) {
+TEST_F(ShellTest, OpenFileWithSpaceInExtension) {
   base::win::ScopedCOMInitializer com_initializer;
   ASSERT_TRUE(com_initializer.Succeeded());
-
-  const auto FeatureEnabled = GetParam;
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -74,19 +67,16 @@ TEST_P(ShellTest, OpenFileWithSpaceInExtension) {
   base::FilePath executed_sentinel = temp_dir.GetPath().Append(L"executed.txt");
   ASSERT_FALSE(base::PathExists(executed_sentinel));
 
-  if (FeatureEnabled()) {
-    // When feature is enabled, ui::win uses SHParseDisplayName.
-    // Verify that SHParseDisplayName resolves to the correct file.
-    base::win::ScopedCoMem<ITEMIDLIST_ABSOLUTE> path_id_list;
-    ASSERT_TRUE(SUCCEEDED(::SHParseDisplayName(file_path.value().c_str(),
-                                               nullptr, &path_id_list,
-                                               SFGAO_FILESYSTEM, nullptr)));
+  // Verify that SHParseDisplayName resolves to the correct file.
+  base::win::ScopedCoMem<ITEMIDLIST_ABSOLUTE> path_id_list;
+  ASSERT_TRUE(SUCCEEDED(::SHParseDisplayName(file_path.value().c_str(), nullptr,
+                                             &path_id_list, SFGAO_FILESYSTEM,
+                                             nullptr)));
 
-    wchar_t parsed_path[MAX_PATH];
-    ASSERT_TRUE(::SHGetPathFromIDList(path_id_list.get(), parsed_path));
-    base::FilePath parsed(parsed_path);
-    EXPECT_EQ(file_path, parsed);
-  }
+  wchar_t parsed_path[MAX_PATH];
+  ASSERT_TRUE(::SHGetPathFromIDList(path_id_list.get(), parsed_path));
+  base::FilePath parsed(parsed_path);
+  EXPECT_EQ(file_path, parsed);
 
   base::RunLoop sentinel_run_loop;
   base::FilePathWatcher watcher;
@@ -101,22 +91,16 @@ TEST_P(ShellTest, OpenFileWithSpaceInExtension) {
 
   ASSERT_TRUE(OpenFileViaShell(file_path));
 
-  if (FeatureEnabled()) {
-    // Feature enabled: it will not execute the exe, the openwith dialog will
-    // appear instead, which the test cannot easily check for. The runloop still
-    // needs to exit, so wait the time it might take to launch a process, then
-    // terminate it.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, sentinel_run_loop.QuitClosure(), base::Seconds(3));
-  }
+  // This test cannot easily check that the openwith dialog will appear.
+  // As a workaround, OpenFileViaShell only invoke a sentinel program in the
+  // failure case. The runloop allows the test to wait the time it might take to
+  // launch and terminate the sentinel program.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, sentinel_run_loop.QuitClosure(), base::Seconds(3));
 
   sentinel_run_loop.Run();
 
-  EXPECT_EQ(FeatureEnabled(), !base::PathExists(executed_sentinel));
+  EXPECT_FALSE(base::PathExists(executed_sentinel));
 }
-
-INSTANTIATE_TEST_SUITE_P(, ShellTest, testing::Bool(), [](const auto& info) {
-  return info.param ? "ManuallyParsed" : "AutomaticallyParsed";
-});
 
 }  // namespace ui::win
