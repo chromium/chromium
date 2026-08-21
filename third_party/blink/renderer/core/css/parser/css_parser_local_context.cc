@@ -41,6 +41,7 @@ bool CSSParserLocalContext::PercentagesDependOnUsedValue() const {
       case CSSValueID::kRay:
       case CSSValueID::kView:
         return true;
+      case CSSValueID::kAttr:
       case CSSValueID::kAlpha:
       case CSSValueID::kBlur:
       case CSSValueID::kBrightness:
@@ -55,6 +56,7 @@ bool CSSParserLocalContext::PercentagesDependOnUsedValue() const {
       case CSSValueID::kHsla:
       case CSSValueID::kHueRotate:
       case CSSValueID::kHwb:
+      case CSSValueID::kIf:
       case CSSValueID::kInvert:
       case CSSValueID::kLab:
       case CSSValueID::kLch:
@@ -99,7 +101,8 @@ void CSSParserLocalContext::CheckPercentagesFlagSetOnProperty() const {
   // should ideally be a longhand, some shorthands with custom expansion logic
   // skip generic helpers that update the context. Since percentage dependency
   // flags are only defined on longhands, we skip the check in this case.
-  if (InFunctionContext() || !unresolved_property_name_.has_value() ||
+  if (InFunctionContext() || custom_function_name_ ||
+      !unresolved_property_name_.has_value() ||
       unresolved_property_name_->IsCustomProperty() ||
       unresolved_property_name_->Id() == CSSPropertyID::kInvalid ||
       ResolveCSSPropertyID(unresolved_property_name_->Id()) ==

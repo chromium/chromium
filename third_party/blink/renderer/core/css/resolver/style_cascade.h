@@ -627,6 +627,7 @@ class CORE_EXPORT StyleCascade {
       CascadeResolver&,
       const CSSParserContext&,
       FunctionContext*,
+      CSSParserLocalContext&,
       bool& is_attr_tainted);
 
   // NOTE: The FunctionContext object must be the _caller's_ function context,
@@ -691,7 +692,7 @@ class CORE_EXPORT StyleCascade {
                                           CascadeResolver&,
                                           const CSSParserContext&,
                                           FunctionContext*,
-                                          const CSSPropertyName*);
+                                          CSSParserLocalContext&);
 
   // Find the type associated with a given local variable (or custom property).
   // The return value may be a pointer directly into a PropertyRegistration;

@@ -81,6 +81,12 @@ class CORE_EXPORT CascadeResolver {
     const AtomicString name;
     // Used for Type::kFunction and Type::kLocalVariable.
     const Member<const StyleRuleFunction> function;
+    // Tracks the number of random() functions evaluated early during arbitrary
+    // substitutions (arbsubs) as part of substitution rather than as the
+    // substitution value itself (e.g. within an if() condition). This maintains
+    // the correct sequential index in parse order for evaluation caching across
+    // all substitutions in the property.
+    wtf_size_t random_value_count = 0;
   };
 
   // TODO(crbug.com/985047): Probably use a HashMap for this.
@@ -134,6 +140,16 @@ class CORE_EXPORT CascadeResolver {
 
   // The CSSProperty::Flags of all properties rejected by the CascadeFilter.
   CSSProperty::Flags RejectedFlags() const { return rejected_flags_; }
+
+  wtf_size_t RandomValueCount() const {
+    return stack_.empty() ? 0 : stack_.back().random_value_count;
+  }
+
+  void SetRandomValueCount(wtf_size_t count) {
+    if (!stack_.empty()) {
+      stack_.back().random_value_count = count;
+    }
+  }
 
   // Automatically locks and unlocks the given property. (See
   // CascadeResolver::IsLocked).

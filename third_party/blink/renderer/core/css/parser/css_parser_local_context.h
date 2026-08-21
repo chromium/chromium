@@ -111,6 +111,8 @@ class CORE_EXPORT CSSParserLocalContext {
 
   void IncrementRandomValueCount() { ++random_value_count_; }
 
+  void SetRandomValueCount(wtf_size_t count) { random_value_count_ = count; }
+
   bool UseAliasParsing() const {
     if (!unresolved_property_name_) {
       return false;
