@@ -1629,8 +1629,7 @@ UIImage* SendButtonImage(BOOL highlighted,
 
   UIAction* aimAction = [self
       actionWithTitle:[_state.uiConfig menuLabelForTool:ComposeboxMode::kAIM]
-                image:SymbolWithPointSize(SymbolMagnifyingglassSpark,
-                                          kSymbolActionPointSize)
+                image:[_state.uiConfig iconForTool:ComposeboxMode::kAIM]
                hidden:[_state isToolHidden:ComposeboxMode::kAIM]
              disabled:NO
              selected:_state.activeTool == ComposeboxMode::kAIM
@@ -1643,7 +1642,8 @@ UIImage* SendButtonImage(BOOL highlighted,
   UIAction* createImageAction = [self
       actionWithTitle:[_state.uiConfig
                           menuLabelForTool:ComposeboxMode::kImageGeneration]
-                image:GetBananaIcon(kSymbolActionPointSize)
+                image:[_state.uiConfig
+                          iconForTool:ComposeboxMode::kImageGeneration]
                hidden:[_state isToolHidden:ComposeboxMode::kImageGeneration]
              disabled:[_state isToolDisabled:ComposeboxMode::kImageGeneration]
              selected:_state.activeTool == ComposeboxMode::kImageGeneration
@@ -1655,8 +1655,7 @@ UIImage* SendButtonImage(BOOL highlighted,
 
   UIAction* canvasAction = [self
       actionWithTitle:[_state.uiConfig menuLabelForTool:ComposeboxMode::kCanvas]
-                image:SymbolWithPointSize(SymbolDocumentBadgeSpark,
-                                          kSymbolActionPointSize)
+                image:[_state.uiConfig iconForTool:ComposeboxMode::kCanvas]
                hidden:[_state isToolHidden:ComposeboxMode::kCanvas]
              disabled:[_state isToolDisabled:ComposeboxMode::kCanvas]
              selected:_state.activeTool == ComposeboxMode::kCanvas
@@ -1664,17 +1663,16 @@ UIImage* SendButtonImage(BOOL highlighted,
                 [weakSelf handleCanvasTappedFromToolMenu];
               }];
 
-  UIAction* deepSearchAction =
-      [self actionWithTitle:[_state.uiConfig
-                                menuLabelForTool:ComposeboxMode::kDeepSearch]
-                      image:SymbolWithPointSize(SymbolDeepSearch,
-                                                kSymbolActionPointSize)
-                     hidden:[_state isToolHidden:ComposeboxMode::kDeepSearch]
-                   disabled:[_state isToolDisabled:ComposeboxMode::kDeepSearch]
-                   selected:_state.activeTool == ComposeboxMode::kDeepSearch
-                    handler:^{
-                      [weakSelf handleDeepSearchTappedFromToolMenu];
-                    }];
+  UIAction* deepSearchAction = [self
+      actionWithTitle:[_state.uiConfig
+                          menuLabelForTool:ComposeboxMode::kDeepSearch]
+                image:[_state.uiConfig iconForTool:ComposeboxMode::kDeepSearch]
+               hidden:[_state isToolHidden:ComposeboxMode::kDeepSearch]
+             disabled:[_state isToolDisabled:ComposeboxMode::kDeepSearch]
+             selected:_state.activeTool == ComposeboxMode::kDeepSearch
+              handler:^{
+                [weakSelf handleDeepSearchTappedFromToolMenu];
+              }];
 
   NSMutableArray<UIMenuElement*>* attachmentMenuElements =
       [[NSMutableArray alloc] init];
@@ -1729,7 +1727,8 @@ UIImage* SendButtonImage(BOOL highlighted,
     UIAction* regularModelOption = [self
         actionWithTitle:[_state.uiConfig
                             menuLabelForModel:ComposeboxModelOption::kRegular]
-                  image:SymbolWithPointSize(SymbolAcute, kSymbolActionPointSize)
+                  image:[_state.uiConfig
+                            iconForModel:ComposeboxModelOption::kRegular]
                  hidden:regularHidden
                disabled:[_state isModelDisabled:ComposeboxModelOption::kRegular]
                selected:_state.activeModel == ComposeboxModelOption::kRegular
@@ -1741,8 +1740,8 @@ UIImage* SendButtonImage(BOOL highlighted,
     UIAction* autoModelOption = [self
         actionWithTitle:[_state.uiConfig
                             menuLabelForModel:ComposeboxModelOption::kAuto]
-                  image:SymbolWithPointSize(SymbolSyncEnabled,
-                                            kSymbolActionPointSize)
+                  image:[_state.uiConfig
+                            iconForModel:ComposeboxModelOption::kAuto]
                  hidden:[_state isModelHidden:ComposeboxModelOption::kAuto]
                disabled:[_state isModelDisabled:ComposeboxModelOption::kAuto]
                selected:_state.activeModel == ComposeboxModelOption::kAuto
@@ -1754,7 +1753,8 @@ UIImage* SendButtonImage(BOOL highlighted,
     UIAction* thinkingModelOption = [self
         actionWithTitle:[_state.uiConfig
                             menuLabelForModel:ComposeboxModelOption::kThinking]
-                  image:SymbolWithPointSize(SymbolClock, kSymbolActionPointSize)
+                  image:[_state.uiConfig
+                            iconForModel:ComposeboxModelOption::kThinking]
                  hidden:[_state isModelHidden:ComposeboxModelOption::kThinking]
                disabled:[_state
                             isModelDisabled:ComposeboxModelOption::kThinking]
@@ -1768,7 +1768,8 @@ UIImage* SendButtonImage(BOOL highlighted,
         actionWithTitle:
             [_state.uiConfig
                 menuLabelForModel:ComposeboxModelOption::kThinkingNoGenUI]
-                  image:SymbolWithPointSize(SymbolClock, kSymbolActionPointSize)
+                  image:[_state.uiConfig iconForModel:ComposeboxModelOption::
+                                                          kThinkingNoGenUI]
                  hidden:[_state isModelHidden:ComposeboxModelOption::
                                                   kThinkingNoGenUI]
                disabled:[_state isModelDisabled:ComposeboxModelOption::
@@ -1783,7 +1784,8 @@ UIImage* SendButtonImage(BOOL highlighted,
     UIAction* flashModelOption = [self
         actionWithTitle:[_state.uiConfig
                             menuLabelForModel:ComposeboxModelOption::kFlash]
-                  image:SymbolWithPointSize(SymbolBolt, kSymbolActionPointSize)
+                  image:[_state.uiConfig
+                            iconForModel:ComposeboxModelOption::kFlash]
                  hidden:[_state isModelHidden:ComposeboxModelOption::kFlash]
                disabled:[_state isModelDisabled:ComposeboxModelOption::kFlash]
                selected:_state.activeModel == ComposeboxModelOption::kFlash
@@ -2128,7 +2130,9 @@ UIImage* SendButtonImage(BOOL highlighted,
       [_state.uiConfig chipLabelForTool:ComposeboxMode::kImageGeneration];
   UIButtonConfiguration* config = [self
       modeIndicatorButtonConfigWithTitle:title
-                                   image:GetBananaIcon(kSymbolActionPointSize)];
+                                   image:[_state.uiConfig
+                                             iconForTool:ComposeboxMode::
+                                                             kImageGeneration]];
   config.contentInsets = kImageGenerationButtonInsets;
   config.background.backgroundColor =
       [_theme toolButtonBackgroundColorWithActiveState:YES];

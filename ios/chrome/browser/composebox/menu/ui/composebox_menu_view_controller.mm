@@ -109,24 +109,6 @@ BOOL IsToolType(ComposeboxMenuItemType type) {
   }
 }
 
-// Maps a tool mode to its corresponding icon.
-UIImage* IconForTool(ComposeboxMode mode) {
-  switch (mode) {
-    case ComposeboxMode::kAIM:
-      return SymbolWithPointSize(SymbolMagnifyingglassSpark,
-                                 kSymbolActionPointSize);
-    case ComposeboxMode::kImageGeneration:
-      return GetBananaIcon(kSymbolActionPointSize);
-    case ComposeboxMode::kDeepSearch:
-      return SymbolWithPointSize(SymbolDeepSearch, kSymbolActionPointSize);
-    case ComposeboxMode::kCanvas:
-      return SymbolWithPointSize(SymbolDocumentBadgeSpark,
-                                 kSymbolActionPointSize);
-    case ComposeboxMode::kRegularSearch:
-      return nil;
-  }
-}
-
 // Maps a model option to its corresponding menu item type.
 ComposeboxMenuItemType MenuItemTypeForModel(ComposeboxModelOption option) {
   switch (option) {
@@ -142,24 +124,6 @@ ComposeboxMenuItemType MenuItemTypeForModel(ComposeboxModelOption option) {
       return ComposeboxMenuItemType::kModelFlash;
     case ComposeboxModelOption::kNone:
       return ComposeboxMenuItemType::kUnknown;
-  }
-}
-
-// Maps a model option to its corresponding icon.
-UIImage* IconForModel(ComposeboxModelOption option) {
-  switch (option) {
-    case ComposeboxModelOption::kRegular:
-      return SymbolWithPointSize(SymbolAcute, kSymbolActionPointSize);
-    case ComposeboxModelOption::kAuto:
-      return SymbolWithPointSize(SymbolArrowTrianglehead2ClockwiseRotate90,
-                                 kSymbolActionPointSize);
-    case ComposeboxModelOption::kThinking:
-    case ComposeboxModelOption::kThinkingNoGenUI:
-      return SymbolWithPointSize(SymbolClock, kSymbolActionPointSize);
-    case ComposeboxModelOption::kFlash:
-      return SymbolWithPointSize(SymbolBolt, kSymbolActionPointSize);
-    case ComposeboxModelOption::kNone:
-      return nil;
   }
 }
 
@@ -299,7 +263,7 @@ UIImage* IconForModel(ComposeboxModelOption option) {
       [toolsItems
           addObject:[[ComposeboxMenuItem alloc]
                         initWithTitle:[uiConfig menuLabelForTool:mode]
-                                image:IconForTool(mode)
+                                image:[uiConfig iconForTool:mode]
                                  type:MenuItemTypeForTool(mode)
                              disabled:[_inputState isToolDisabled:mode]]];
     }
@@ -326,7 +290,7 @@ UIImage* IconForModel(ComposeboxModelOption option) {
       [modelsItems
           addObject:[[ComposeboxMenuItem alloc]
                         initWithTitle:[uiConfig menuLabelForModel:option]
-                                image:IconForModel(option)
+                                image:[uiConfig iconForModel:option]
                                  type:MenuItemTypeForModel(option)
                              disabled:[_inputState isModelDisabled:option]]];
     }

@@ -33,11 +33,13 @@
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_collection.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_config.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
+#import "ios/chrome/browser/composebox/ui/composebox_ui_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
@@ -132,12 +134,18 @@ ComposeboxUIConfig* ServerUIConfigFromInputState(
     NSString* menuLabel = base::SysUTF8ToNSString(tool_config.menu_label());
     NSString* chipLabel = base::SysUTF8ToNSString(tool_config.chip_label());
     NSString* hintText = base::SysUTF8ToNSString(tool_config.hint_text());
+    UIImage* icon = nil;
+    if (tool_config.has_icon() && tool_config.icon().has_icon_id()) {
+      icon = ImageForIconResourceId(tool_config.icon().icon_id(),
+                                    kSymbolActionPointSize);
+    }
     std::optional<ComposeboxMode> mode = ModeForToolMode(tool_config.tool());
     if (mode) {
       tool_mapping[*mode] =
           [[ComposeboxItemUIConfig alloc] initWithMenuLabel:menuLabel
                                                   chipLabel:chipLabel
-                                                   hintText:hintText];
+                                                   hintText:hintText
+                                                       icon:icon];
     }
   }
 
@@ -146,10 +154,16 @@ ComposeboxUIConfig* ServerUIConfigFromInputState(
   for (const omnibox::ModelConfig& model_config : input_state.model_configs) {
     NSString* menuLabel = base::SysUTF8ToNSString(model_config.menu_label());
     NSString* hintText = base::SysUTF8ToNSString(model_config.hint_text());
+    UIImage* icon = nil;
+    if (model_config.has_icon() && model_config.icon().has_icon_id()) {
+      icon = ImageForIconResourceId(model_config.icon().icon_id(),
+                                    kSymbolActionPointSize);
+    }
     model_mapping[ModelOptionForModelMode(model_config.model())] =
         [[ComposeboxItemUIConfig alloc] initWithMenuLabel:menuLabel
                                                 chipLabel:nil
-                                                 hintText:hintText];
+                                                 hintText:hintText
+                                                     icon:icon];
   }
 
   NSString* modelSectionHeader = @"";
@@ -282,8 +296,8 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
              (scoped_refptr<network::SharedURLLoaderFactory>)urlLoaderFactory {
   self = [super init];
   if (self) {
-    // Initialize with local fallback UI config. These will be overwritten
-    // when server-side configs become available via the input state model.
+    // Initialize with local fallback config. These will be overwritten
+    // when server-side config becomes available via the input state model.
     _cachedUIConfig = [ComposeboxUIConfig localFallbackUIConfig];
     _webStateList = webStateList;
     _modeHolder = modeHolder;

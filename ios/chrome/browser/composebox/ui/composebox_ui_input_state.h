@@ -47,7 +47,7 @@
 @property(nonatomic, assign) std::unordered_set<ComposeboxModelOption>
     disabledModels;
 
-/// The composebox UI configuration.
+/// The composebox UI config (strings, headers, and icons).
 @property(nonatomic, strong) ComposeboxUIConfig* uiConfig;
 
 /// The remaining capacity for attachments.

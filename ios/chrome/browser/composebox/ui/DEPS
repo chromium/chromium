@@ -7,5 +7,6 @@ include_rules = [
   "+ios/chrome/browser/omnibox/public/omnibox_constants.h",
   "+ios/chrome/browser/omnibox/ui",
   "+ios/chrome/browser/tab_picker/coordinator",
+  "+third_party/omnibox_proto",
   # keep-sorted end
 ]

@@ -73,7 +73,13 @@ source_set("ui_util") {
     "composebox_ui_util.h",
     "composebox_ui_util.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//ios/chrome/browser/shared/ui:buildflags",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//third_party/omnibox_proto",
+  ]
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -85,12 +91,15 @@ source_set("state") {
     "composebox_ui_input_state.mm",
   ]
   deps = [
+    ":ui_util",
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/composebox/coordinator:constants",
     "//ios/chrome/browser/composebox/menu/coordinator:shared_tab",
     "//ios/chrome/browser/composebox/public:attachment_options",
+    "//ios/chrome/browser/composebox/public:composebox_mode",
     "//ios/chrome/browser/composebox/public:model_options",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ui/base",
   ]
 }

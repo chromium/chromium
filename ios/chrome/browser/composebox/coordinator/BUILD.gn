@@ -316,14 +316,17 @@ source_set("input_state_manager") {
     "//ios/chrome/browser/composebox/shared/metrics",
     "//ios/chrome/browser/composebox/ui",
     "//ios/chrome/browser/composebox/ui:state",
+    "//ios/chrome/browser/composebox/ui:ui_util",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common:string_conversions",
     "//ios/web/public",
     "//services/network/public/cpp",
+    "//third_party/omnibox_proto",
   ]
 }
 

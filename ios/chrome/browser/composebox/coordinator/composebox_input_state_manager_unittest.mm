@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_collection.h"
+#import "ios/chrome/browser/composebox/ui/composebox_ui_config.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -838,6 +839,76 @@ TEST_F(ComposeboxInputStateManagerTest,
 
   EXPECT_TRUE([state isToolAvailable:ComposeboxMode::kImageGeneration]);
   EXPECT_TRUE([state isModelAvailable:ComposeboxModelOption::kThinking]);
+}
+
+// Tests that `computeUIInputStateWithFavicon:attachedWebStateIDs:` parses
+// server-configured icons.
+TEST_F(ComposeboxInputStateManagerTest, ComputeUIInputState_ServerIcons) {
+  omnibox::SearchboxConfig config;
+  omnibox::ToolConfig* tool_config = config.add_tool_configs();
+  tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  tool_config->mutable_icon()->set_icon_id(omnibox::IconResourceIds::BANANA);
+  omnibox::ToolRule* rule = tool_config->mutable_rule();
+  rule->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  rule->set_allow_all_input_types(true);
+
+  omnibox::ModelConfig* model_config = config.add_model_configs();
+  model_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  model_config->mutable_icon()->set_icon_id(omnibox::IconResourceIds::TIMER);
+
+  config.mutable_rule_set()->add_allowed_models(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
+
+  ComposeboxUIInputState* state = [manager_ computeUIInputStateWithFavicon:nil
+                                                       attachedWebStateIDs:{}];
+  EXPECT_NE(state, nil);
+  EXPECT_NE([state.uiConfig iconForTool:ComposeboxMode::kImageGeneration], nil);
+  EXPECT_NE([state.uiConfig iconForModel:ComposeboxModelOption::kThinking],
+            nil);
+}
+
+// Tests that `computeUIInputStateWithFavicon:attachedWebStateIDs:` falls back
+// to default icons when an unknown icon resource ID is received from the
+// server.
+TEST_F(ComposeboxInputStateManagerTest,
+       ComputeUIInputState_UnknownServerIcons) {
+  omnibox::SearchboxConfig config;
+  omnibox::ToolConfig* tool_config = config.add_tool_configs();
+  tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  // Pass an unmapped/future icon ID value.
+  tool_config->mutable_icon()->set_icon_id(
+      static_cast<omnibox::IconResourceIds>(9999));
+  omnibox::ToolRule* rule = tool_config->mutable_rule();
+  rule->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  rule->set_allow_all_input_types(true);
+
+  omnibox::ModelConfig* model_config = config.add_model_configs();
+  model_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  model_config->mutable_icon()->set_icon_id(
+      static_cast<omnibox::IconResourceIds>(9999));
+
+  config.mutable_rule_set()->add_allowed_models(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
+
+  ComposeboxUIInputState* state = [manager_ computeUIInputStateWithFavicon:nil
+                                                       attachedWebStateIDs:{}];
+  EXPECT_NE(state, nil);
+  // Default icons should be returned without crashing.
+  EXPECT_NE([state.uiConfig iconForTool:ComposeboxMode::kImageGeneration], nil);
+  EXPECT_NE([state.uiConfig iconForModel:ComposeboxModelOption::kThinking],
+            nil);
 }
 
 // Tests that `computeUIInputStateWithFavicon:attachedWebStateIDs:` disables

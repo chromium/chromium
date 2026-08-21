@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/composebox/ui/composebox_ui_config.h"
 
+#import "ios/chrome/browser/composebox/ui/composebox_ui_util.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -12,11 +14,22 @@
 - (instancetype)initWithMenuLabel:(NSString*)menuLabel
                         chipLabel:(NSString*)chipLabel
                          hintText:(NSString*)hintText {
+  return [self initWithMenuLabel:menuLabel
+                       chipLabel:chipLabel
+                        hintText:hintText
+                            icon:nil];
+}
+
+- (instancetype)initWithMenuLabel:(NSString*)menuLabel
+                        chipLabel:(NSString*)chipLabel
+                         hintText:(NSString*)hintText
+                             icon:(UIImage*)icon {
   self = [super init];
   if (self) {
     _menuLabel = [menuLabel copy];
     _chipLabel = [chipLabel copy];
     _hintText = [hintText copy];
+    _icon = icon;
   }
 
   return self;
@@ -25,9 +38,9 @@
 @end
 
 @implementation ComposeboxUIConfig {
-  // Maps tools to their server-provided UI configs.
+  // Maps tools to their server-provided configs.
   std::unordered_map<ComposeboxMode, ComposeboxItemUIConfig*> _controlMapping;
-  // Maps models to their server-provided UI configs.
+  // Maps models to their server-provided configs.
   std::unordered_map<ComposeboxModelOption, ComposeboxItemUIConfig*>
       _modelMapping;
   // The server-provided header for the models section.
@@ -87,8 +100,16 @@
   return [self localFallbackForTool:tool isHint:YES];
 }
 
+- (UIImage*)iconForTool:(ComposeboxMode)tool {
+  ComposeboxItemUIConfig* config = [self uiConfigForTool:tool];
+  if (config.icon) {
+    return config.icon;
+  }
+  return [self localFallbackIconForTool:tool];
+}
+
 - (NSString*)menuLabelForModel:(ComposeboxModelOption)model {
-  ComposeboxItemUIConfig* config = [self uiConfigForModel:model];
+  ComposeboxItemUIConfig* config = [self configForModel:model];
   if (config.menuLabel.length > 0) {
     return config.menuLabel;
   }
@@ -96,11 +117,19 @@
 }
 
 - (NSString*)hintTextForModel:(ComposeboxModelOption)model {
-  ComposeboxItemUIConfig* config = [self uiConfigForModel:model];
+  ComposeboxItemUIConfig* config = [self configForModel:model];
   if (config.hintText.length > 0) {
     return config.hintText;
   }
   return [self localFallbackForModel:model isHint:YES];
+}
+
+- (UIImage*)iconForModel:(ComposeboxModelOption)model {
+  ComposeboxItemUIConfig* config = [self configForModel:model];
+  if (config.icon) {
+    return config.icon;
+  }
+  return [self localFallbackIconForModel:model];
 }
 
 - (NSString*)stringForAttachmentOption:(ComposeboxAttachmentOption)option {
@@ -137,7 +166,7 @@
 
 #pragma mark - Private
 
-// Returns the server UI config for the given tool, if available.
+// Returns the server config for the given tool, if available.
 - (ComposeboxItemUIConfig*)uiConfigForTool:(ComposeboxMode)tool {
   if (tool == ComposeboxMode::kRegularSearch) {
     // Don't use server configs for regular search.
@@ -150,8 +179,8 @@
   return nil;
 }
 
-// Returns the server UI config for the given model, if available.
-- (ComposeboxItemUIConfig*)uiConfigForModel:(ComposeboxModelOption)modelOption {
+// Returns the server config for the given model, if available.
+- (ComposeboxItemUIConfig*)configForModel:(ComposeboxModelOption)modelOption {
   auto it = _modelMapping.find(modelOption);
   if (it != _modelMapping.end()) {
     return it->second;
@@ -183,6 +212,30 @@
                           IDS_IOS_COMPOSEBOX_DEEP_SEARCH_ACTION);
     case kRegularSearch:
       return nil;
+    default:
+      return @"";
+  }
+}
+
+// Returns the local fallback icon for the given tool.
+- (UIImage*)localFallbackIconForTool:(ComposeboxMode)tool {
+  using enum ComposeboxMode;
+  switch (tool) {
+    case kAIM:
+      return SymbolWithPointSize(SymbolMagnifyingglassSpark,
+                                 kSymbolActionPointSize);
+    case kImageGeneration:
+      return GetBananaIcon(kSymbolActionPointSize);
+    case kDeepSearch:
+      return SymbolWithPointSize(SymbolDeepSearch, kSymbolActionPointSize);
+    case kCanvas:
+      return SymbolWithPointSize(SymbolDocumentBadgeSpark,
+                                 kSymbolActionPointSize);
+    case kRegularSearch:
+      return nil;
+    default:
+      return SymbolWithPointSize(SymbolMagnifyingglassSpark,
+                                 kSymbolActionPointSize);
   }
 }
 
@@ -206,6 +259,28 @@
     case kFlash:
       return l10n_util::GetNSString(
           IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_FLASH);
+    default:
+      return @"";
+  }
+}
+
+// Returns the local fallback icon for the given model.
+- (UIImage*)localFallbackIconForModel:(ComposeboxModelOption)model {
+  using enum ComposeboxModelOption;
+  switch (model) {
+    case kNone:
+      return nil;
+    case kRegular:
+    case kFlash:
+      return SymbolWithPointSize(SymbolBolt, kSymbolActionPointSize);
+    case kAuto:
+      return SymbolWithPointSize(SymbolArrowTrianglehead2ClockwiseRotate90,
+                                 kSymbolActionPointSize);
+    case kThinking:
+    case kThinkingNoGenUI:
+      return SymbolWithPointSize(SymbolClock, kSymbolActionPointSize);
+    default:
+      return SymbolWithPointSize(SymbolBolt, kSymbolActionPointSize);
   }
 }
 
