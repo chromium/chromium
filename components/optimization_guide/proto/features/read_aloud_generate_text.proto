@@ -41,17 +41,178 @@ message ReadAloudGenerateTextRequest {
 
   // Two-letter ISO 639-1 language code of the webpage (e.g., "es", "fr", "ja").
   string language_code = 4 [features = { field_presence: EXPLICIT }];
+
+  // When true, enables detailed debug decision rationales from Stage 1 Mapper.
+  // Intended for developer testing (e.g., rpcStudio) and offline evaluations.
+  bool include_mapper_rationales = 5 [features = { field_presence: EXPLICIT }];
 }
 
 // Response message containing the generated text for Read Aloud AI Playback
 // (conversational, podcast-like) feature.
 message ReadAloudGenerateTextResponse {
+  // Stage 1 classification and decision metadata.
+  oneof mapper_decision {
+    // Production Stage 1 decision (strict FST, enum-only).
+    ReadAloudFastMapperDecision fast_mapper_decision = 5;
+
+    // Debug Stage 1 decision with LLM rationales.
+    ReadAloudMapperDecision debug_mapper_decision = 6;
+  }
+
   // The generated text output ready to be sent for speech synthesis.
-  string generated_text = 1 [features = { field_presence: EXPLICIT }];
+  // Deprecated: Use dialogue_turns instead to support structured multi-speaker
+  // playback.
+  string generated_text = 1 [
+    deprecated = true,
+    features = { field_presence: EXPLICIT }
+  ];
 
   // Inferred title of the article/document.
   string title = 2 [features = { field_presence: EXPLICIT }];
 
   // Inferred publisher or domain of the article/document.
   string publisher = 3 [features = { field_presence: EXPLICIT }];
+
+  // Structured dialogue turns for audio playback.
+  // json_name maintains prompt parity and FST compatibility with Speakr's
+  // "conversation" JSON key.
+  repeated DialogueTurn dialogue_turns = 4;
+}
+
+// Structured output for Stage 2 Generation (Strict FST).
+message DialogueTurn {
+  // Identifier or role of the speaker (e.g., "Host", "Reporter").
+  string speaker = 1 [features = { field_presence: EXPLICIT }];
+
+  // Spoken text content for this dialogue turn.
+  string utterance = 2 [features = { field_presence: EXPLICIT }];
+
+  // Contextual topic or subject covered in this turn.
+  string topic = 3 [features = { field_presence: EXPLICIT }];
+}
+
+// Fast structured output for Stage 1 Mapper in production (Strict FST, zero
+// open strings).
+message ReadAloudFastMapperDecision {
+  // Inferred content type classification.
+  ReadAloudContentType content_type = 1 [features = { field_presence: EXPLICIT }];
+
+  // Inferred safety classification level.
+  ReadAloudSafetyLevel safety_level = 2 [features = { field_presence: EXPLICIT }];
+
+  // Selected Stage 2 prompt template ID based on classification.
+  ReadAloudPromptId prompt_id = 3 [features = { field_presence: EXPLICIT }];
+}
+
+// Structured output for Stage 1 Mapper with debug rationales (Strict FST)
+message ReadAloudMapperDecision {
+  // Inferred content type classification.
+  ReadAloudContentType content_type = 1 [features = { field_presence: EXPLICIT }];
+
+  // Inferred safety classification level.
+  ReadAloudSafetyLevel safety_level = 2 [features = { field_presence: EXPLICIT }];
+
+  // Debug rationale explaining the assigned safety level.
+  string safety_level_rationale = 3 [features = { field_presence: EXPLICIT }];
+
+  // Selected Stage 2 prompt template ID based on classification.
+  ReadAloudPromptId prompt_id = 4 [features = { field_presence: EXPLICIT }];
+
+  // Debug rationale explaining the selected prompt ID.
+  string prompt_id_rationale = 5 [features = { field_presence: EXPLICIT }];
+}
+
+// Internal classification metrics mirroring Speakr taxonomy.
+enum ReadAloudContentType {
+  READALOUD_CONTENT_TYPE_UNSPECIFIED = 0;
+
+  // Content is reliable, factual, or informational (e.g., news, Wikipedia).
+  RELIABLE_CONTENT = 1;
+
+  // Content is susceptible, opinionated, or requires sensitive handling.
+  SUSCEPTIBLE_CONTENT = 2;
+}
+
+// Content safety classification levels for policy enforcement.
+enum ReadAloudSafetyLevel {
+  READALOUD_SAFETY_LEVEL_UNSPECIFIED = 0;
+
+  // Content is safe for audio playback.
+  SAFE_CONTENT = 1;
+
+  // Child Sexual Abuse Material (strictly blocked).
+  UNSAFE_CSAM = 2;
+
+  // Harmful, dangerous, or illegal content.
+  UNSAFE_HARMFUL = 3;
+
+  // Gambling or betting-related content.
+  UNSAFE_GAMBLING = 4;
+
+  // Content related to weapons or weaponized tools.
+  WEAPONS_AND_TOOLS_CONTENT = 5;
+
+  // Content related to controlled substances or restricted products.
+  CONTROLLED_PRODUCTS_CONTENT = 6;
+
+  // Content that is borderline unsafe or policy-sensitive.
+  UNSAFE_BORDERLINE = 7;
+}
+
+
+// Stage 2 Prompt ID taxonomy identifying specific script generation templates.
+enum ReadAloudPromptId {
+  READALOUD_PROMPT_ID_UNSPECIFIED = 0;
+
+  WCD1 = 1;
+
+  SNAD1 = 2;
+
+  NAD1 = 3;
+
+  FOD1 = 4;
+
+  NPD1 = 5;
+
+  PRM1 = 6;
+
+  REM1 = 7;
+
+  LSTM1 = 8;
+
+  LTCD1 = 9;
+
+  POM1 = 10;
+
+  HOD1 = 11;
+
+  LYRM1 = 12;
+
+  RLGM1 = 13;
+
+  NOVM1 = 14;
+
+  DPM1 = 15;
+
+  SMPM1 = 16;
+
+  ARD1 = 17;
+
+  BUD1 = 18;
+
+  OTH1 = 19;
+
+  GMBM1 = 20;
+
+  UNSF1 = 21;
+
+  CSAM1 = 22;
+
+  WTSM1 = 23;
+
+  CPCM1 = 24;
+
+  BDLM1 = 25;
+
+  SHPM1 = 26;
 }
