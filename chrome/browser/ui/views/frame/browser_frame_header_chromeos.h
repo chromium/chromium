@@ -40,11 +40,11 @@ class BrowserFrameHeaderChromeOS : public chromeos::FrameHeader {
 
   // FrameHeader:
   void UpdateFrameColors() override;
+  views::CaptionButtonLayoutSize GetButtonLayoutSize() const override;
 
  protected:
   // FrameHeader:
   void DoPaintHeader(gfx::Canvas* canvas) override;
-  views::CaptionButtonLayoutSize GetButtonLayoutSize() const override;
   SkColor GetTitleColor() const override;
   SkColor GetCurrentFrameColor() const override;
 

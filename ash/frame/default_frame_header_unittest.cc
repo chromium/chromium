@@ -30,6 +30,7 @@
 #include "ui/views/test/test_views.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/caption_button_layout_constants.h"
 #include "ui/views/window/frame_view.h"
 #include "ui/wm/core/window_util.h"
 
@@ -46,7 +47,56 @@ namespace ash {
 
 using chromeos::AppType;
 
+namespace {
+
 using DefaultFrameHeaderTest = AshTestBase;
+
+class LayerDestroyedChecker : public ui::LayerObserver {
+ public:
+  explicit LayerDestroyedChecker(ui::Layer* layer) { layer->AddObserver(this); }
+  LayerDestroyedChecker(const LayerDestroyedChecker&) = delete;
+  LayerDestroyedChecker& operator=(const LayerDestroyedChecker&) = delete;
+  ~LayerDestroyedChecker() override = default;
+
+  void LayerDestroyed(ui::Layer* layer) override {
+    layer->RemoveObserver(this);
+    destroyed_ = true;
+  }
+  bool destroyed() const { return destroyed_; }
+
+ private:
+  bool destroyed_ = false;
+};
+
+// A class to wait until the frame header is painted.
+class FramePaintWaiter : public ui::CompositorObserver {
+ public:
+  explicit FramePaintWaiter(aura::Window* window)
+      : frame_header_(
+            FrameHeader::Get(Widget::GetWidgetForNativeWindow(window))) {
+    frame_header_->view()->GetWidget()->GetCompositor()->AddObserver(this);
+  }
+  FramePaintWaiter(const FramePaintWaiter&) = delete;
+  FramePaintWaiter& operator=(FramePaintWaiter&) = delete;
+  ~FramePaintWaiter() override {
+    frame_header_->view()->GetWidget()->GetCompositor()->RemoveObserver(this);
+  }
+
+  // ui::CompositorObserver:
+  void OnCompositingDidCommit(ui::Compositor* compositor) override {
+    if (frame_header_->painted_for_testing()) {
+      run_loop_.Quit();
+    }
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  base::RunLoop run_loop_;
+  raw_ptr<FrameHeader> frame_header_ = nullptr;
+};
+
+}  // namespace
 
 // Ensure the title text is vertically aligned with the window icon.
 TEST_F(DefaultFrameHeaderTest, TitleIconAlignment) {
@@ -103,6 +153,52 @@ TEST_F(DefaultFrameHeaderTest, MinimumHeaderWidthRTL) {
   EXPECT_EQ(ltr_minimum_width, rtl_minimum_width);
 }
 
+// Ensure caption button height is adjusted when painted header height is larger
+// than default button layout size.
+//
+// DefaultFrameHeader uses a fixed button size for both restored and maximized
+// states. SetHeaderHeightForPainting() is used here to test the button-
+// stretching and vertical centering behavior of FrameHeader.
+TEST_F(DefaultFrameHeaderTest, CaptionButtonHeightMatchesPaintedHeight) {
+  auto win0 =
+      CreateWindowWithAppType(AppType::BROWSER, gfx::Rect(0, 0, 500, 500));
+  Widget* widget = Widget::GetWidgetForNativeWindow(win0.get());
+  DefaultFrameHeader* frame_header =
+      static_cast<DefaultFrameHeader*>(FrameHeader::Get(widget));
+  FrameCaptionButtonContainerView* container =
+      frame_header->caption_button_container();
+
+  // By default, container height matches the default button layout size.
+  frame_header->LayoutHeader();
+  EXPECT_EQ(
+      views::GetCaptionButtonLayoutSize(frame_header->GetButtonLayoutSize())
+          .height(),
+      container->bounds().height());
+
+  // When painted height is larger than the default button layout size, the
+  // caption button container and the buttons inside should stretch to match
+  // the painted height.
+  constexpr int kCustomHeaderHeight = 45;
+  frame_header->SetHeaderHeightForPainting(kCustomHeaderHeight);
+  frame_header->LayoutHeader();
+
+  EXPECT_EQ(kCustomHeaderHeight, container->bounds().height());
+
+  FrameCaptionButtonContainerView::TestApi test_api(container);
+  EXPECT_EQ(kCustomHeaderHeight, test_api.close_button()->bounds().height());
+  EXPECT_EQ(kCustomHeaderHeight, test_api.size_button()->bounds().height());
+  EXPECT_EQ(kCustomHeaderHeight, test_api.minimize_button()->bounds().height());
+
+  // Buttons should be vertically centered within the custom header height.
+  const int expected_center_y = kCustomHeaderHeight / 2;
+  EXPECT_NEAR(expected_center_y,
+              test_api.close_button()->bounds().CenterPoint().y(), 1);
+  EXPECT_NEAR(expected_center_y,
+              test_api.size_button()->bounds().CenterPoint().y(), 1);
+  EXPECT_NEAR(expected_center_y,
+              test_api.minimize_button()->bounds().CenterPoint().y(), 1);
+}
+
 // Ensure the right frame colors are used.
 TEST_F(DefaultFrameHeaderTest, FrameColors) {
   const auto win0_bounds = gfx::Rect{1, 2, 3, 4};
@@ -136,54 +232,6 @@ TEST_F(DefaultFrameHeaderTest, FrameColors) {
   // Again, GetCurrentFrameColor should return the target color.
   EXPECT_EQ(new_new_active, frame_header->GetCurrentFrameColor());
 }
-
-namespace {
-
-class LayerDestroyedChecker : public ui::LayerObserver {
- public:
-  explicit LayerDestroyedChecker(ui::Layer* layer) { layer->AddObserver(this); }
-  LayerDestroyedChecker(const LayerDestroyedChecker&) = delete;
-  LayerDestroyedChecker& operator=(const LayerDestroyedChecker&) = delete;
-  ~LayerDestroyedChecker() override = default;
-
-  void LayerDestroyed(ui::Layer* layer) override {
-    layer->RemoveObserver(this);
-    destroyed_ = true;
-  }
-  bool destroyed() const { return destroyed_; }
-
- private:
-  bool destroyed_ = false;
-};
-
-}  // namespace
-
-// A class to wait until hthe frame header is painted.
-class FramePaintWaiter : public ui::CompositorObserver {
- public:
-  explicit FramePaintWaiter(aura::Window* window)
-      : frame_header_(
-            FrameHeader::Get(Widget::GetWidgetForNativeWindow(window))) {
-    frame_header_->view()->GetWidget()->GetCompositor()->AddObserver(this);
-  }
-  FramePaintWaiter(const FramePaintWaiter&) = delete;
-  FramePaintWaiter& operator=(FramePaintWaiter&) = delete;
-  ~FramePaintWaiter() override {
-    frame_header_->view()->GetWidget()->GetCompositor()->RemoveObserver(this);
-  }
-
-  // ui::CompositorObserver:
-  void OnCompositingDidCommit(ui::Compositor* compositor) override {
-    if (frame_header_->painted_)
-      run_loop_.Quit();
-  }
-
-  void Wait() { run_loop_.Run(); }
-
- private:
-  base::RunLoop run_loop_;
-  raw_ptr<FrameHeader> frame_header_ = nullptr;
-};
 
 TEST_F(DefaultFrameHeaderTest, DeleteDuringAnimation) {
   const auto bounds = gfx::Rect(100, 100);

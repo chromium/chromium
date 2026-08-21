@@ -183,6 +183,9 @@ class BrowserFrameViewChromeOS
   // Updates the kTopViewInset window property after a layout.
   void UpdateTopViewInset();
 
+  // Returns the target height of the header.
+  int GetTargetHeaderHeight() const;
+
   // Returns true if |profile_indicator_icon_| should be shown.
   bool GetShowProfileIndicatorIcon() const;
 

@@ -217,6 +217,99 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest, NonClientHitTest) {
   EXPECT_EQ(HTCLIENT, frame_view->NonClientHitTest(top_edge));
 }
 
+// Tests that caption buttons match tabstrip preferred height in restored,
+// maximized, and immersive fullscreen states.
+IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
+                       CaptionButtonHeightInRestoredMaximizedAndFullscreen) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::Widget* widget = browser_view->GetWidget();
+  BrowserFrameViewChromeOS* frame_view = GetFrameViewChromeOS(browser_view);
+
+  const int tabstrip_height =
+      browser_view->GetFrameElementInfo().tabstrip_preferred_height;
+  ASSERT_GT(tabstrip_height, 0);
+
+  // In restored state, caption button container height is the max of the
+  // tabstrip height and the default restored button layout height.
+  widget->Restore();
+  views::test::RunScheduledLayout(widget);
+  const int expected_restored_height =
+      std::max(tabstrip_height,
+               views::GetCaptionButtonLayoutSize(
+                   views::CaptionButtonLayoutSize::kBrowserCaptionRestored)
+                   .height());
+  EXPECT_EQ(expected_restored_height,
+            frame_view->caption_button_container()->bounds().height());
+
+  // In restored state, buttons should be vertically centered within the
+  // restored container height.
+  const int expected_restored_center_y = expected_restored_height / 2;
+  for (views::View* button :
+       frame_view->caption_button_container()->children()) {
+    if (button->GetVisible()) {
+      EXPECT_NEAR(expected_restored_center_y,
+                  button->bounds().CenterPoint().y(), 1);
+    }
+  }
+
+  // In maximized state, caption button container height should stretch to match
+  // the tabstrip height (stretched to fill the header rather than 34px).
+  widget->Maximize();
+  views::test::RunScheduledLayout(widget);
+  EXPECT_EQ(tabstrip_height,
+            frame_view->caption_button_container()->bounds().height());
+
+  // In maximized state, buttons should be vertically centered within the
+  // tabstrip / header height.
+  const int expected_center_y = tabstrip_height / 2;
+  for (views::View* button :
+       frame_view->caption_button_container()->children()) {
+    if (button->GetVisible()) {
+      EXPECT_NEAR(expected_center_y, button->bounds().CenterPoint().y(), 1);
+    }
+  }
+
+  // In immersive fullscreen state, caption button container height should
+  // match the tabstrip height both before and during revealed state, and
+  // buttons should be centered.
+  auto* const immersive_mode_controller =
+      ImmersiveModeController::From(browser());
+  auto tester = std::make_unique<ImmersiveModeTester>(browser());
+  EnterImmersiveFullscreenMode(browser());
+  tester->WaitForRevealStarted();
+  tester->WaitForRevealEnded();
+  tester.reset();
+
+  // Before revealed state: immersive frame is not revealed.
+  EXPECT_FALSE(immersive_mode_controller->IsRevealed());
+  views::test::RunScheduledLayout(widget);
+  EXPECT_EQ(tabstrip_height,
+            frame_view->caption_button_container()->bounds().height());
+  for (views::View* button :
+       frame_view->caption_button_container()->children()) {
+    if (button->GetVisible()) {
+      EXPECT_NEAR(expected_center_y, button->bounds().CenterPoint().y(), 1);
+    }
+  }
+
+  // During revealed state: immersive frame is revealed.
+  std::unique_ptr<ImmersiveRevealedLock> revealed_lock =
+      immersive_mode_controller->GetRevealedLock(
+          ImmersiveModeController::ANIMATE_REVEAL_NO);
+  EXPECT_TRUE(immersive_mode_controller->IsRevealed());
+  views::test::RunScheduledLayout(widget);
+  EXPECT_EQ(tabstrip_height,
+            frame_view->caption_button_container()->bounds().height());
+  for (views::View* button :
+       frame_view->caption_button_container()->children()) {
+    if (button->GetVisible()) {
+      EXPECT_NEAR(expected_center_y, button->bounds().CenterPoint().y(), 1);
+    }
+  }
+  revealed_lock.reset();
+  ExitImmersiveFullscreenMode(browser());
+}
+
 // Regression test for crbug.com/40945061. Asserts that the content window
 // accepts input from the edge of the browser frame when the browser is
 // maximized.

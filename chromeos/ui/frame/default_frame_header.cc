@@ -153,6 +153,9 @@ void DefaultFrameHeader::DoPaintHeader(gfx::Canvas* canvas) {
   PaintTitleBar(canvas);
 }
 
+// Non-browser windows maintain a uniform caption button size across restored
+// and maximized states. Browser windows override this in
+// BrowserFrameHeaderChromeOS to differentiate between restored and maximized.
 views::CaptionButtonLayoutSize DefaultFrameHeader::GetButtonLayoutSize() const {
   return views::CaptionButtonLayoutSize::kNonBrowserCaption;
 }

@@ -310,6 +310,30 @@ int BrowserFrameViewChromeOS::GetTopInset(bool restored) const {
              : caption_button_container_->bounds().bottom();
 }
 
+int BrowserFrameViewChromeOS::GetTargetHeaderHeight() const {
+  // For normal tabbed windows, the header height is determined by the tabstrip.
+  const int tabstrip_preferred_height =
+      GetClientFrameElementInfo().tabstrip_preferred_height;
+  if (tabstrip_preferred_height > 0) {
+    return tabstrip_preferred_height;
+  }
+
+  // For non-tabbed windows (e.g. popups, devtools, web apps), start with the
+  // default caption button layout size.
+  int target_height =
+      views::GetCaptionButtonLayoutSize(frame_header_->GetButtonLayoutSize())
+          .height();
+
+  // Web apps / PWAs may have a frame toolbar that requires additional height.
+  const gfx::Size toolbar_size =
+      GetBrowserView()->GetWebAppFrameToolbarPreferredSize();
+  if (!toolbar_size.IsEmpty()) {
+    target_height = std::max(target_height, toolbar_size.height());
+  }
+
+  return target_height;
+}
+
 void BrowserFrameViewChromeOS::UpdateThrobber(bool running) {
   if (window_icon_) {
     window_icon_->Update();
@@ -467,16 +491,11 @@ bool BrowserFrameViewChromeOS::AppIsPwaWithUnframedDisplayMode() const {
 }
 
 void BrowserFrameViewChromeOS::Layout(PassKey) {
-  // The header must be laid out before computing |painted_height| because the
-  // computation of |painted_height| for app and popup windows depends on the
-  // position of the window controls.
+  // Set the painted height early so that LayoutHeader() can use it to size
+  // the caption buttons correctly.
+  frame_header_->SetHeaderHeightForPainting(GetTargetHeaderHeight());
+
   frame_header_->LayoutHeader();
-
-  const int painted_height =
-      GetTopInset(false) +
-      GetClientFrameElementInfo().tabstrip_preferred_height;
-
-  frame_header_->SetHeaderHeightForPainting(painted_height);
 
   if (profile_indicator_icon_) {
     LayoutProfileIndicator();

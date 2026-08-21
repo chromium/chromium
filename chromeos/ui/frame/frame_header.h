@@ -23,7 +23,6 @@ namespace ash {
 FORWARD_DECLARE_TEST(DefaultFrameHeaderTest, BackButtonAlignment);
 FORWARD_DECLARE_TEST(DefaultFrameHeaderTest, TitleIconAlignment);
 FORWARD_DECLARE_TEST(DefaultFrameHeaderTest, FrameColors);
-class FramePaintWaiter;
 }  // namespace ash
 
 namespace gfx {
@@ -128,6 +127,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader
   int GetHeaderHeightForPainting() const;
   void SetHeaderHeightForPainting(int height_for_painting);
 
+  virtual views::CaptionButtonLayoutSize GetButtonLayoutSize() const = 0;
+
   // Schedule a re-paint of the entire title.
   void SchedulePaintForTitle();
 
@@ -183,6 +184,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader
   }
 
   gfx::Rect GetTitleBoundsForTesting() const { return GetTitleBounds(); }
+  bool painted_for_testing() const { return painted_; }
 
   // ui::LayerOwner::Observer overrides:
   void OnLayerRecreated(ui::Layer* old_layer) override;
@@ -208,7 +210,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader
   Mode mode() const { return mode_; }
 
   virtual void DoPaintHeader(gfx::Canvas* canvas) = 0;
-  virtual views::CaptionButtonLayoutSize GetButtonLayoutSize() const = 0;
   virtual SkColor GetTitleColor() const = 0;
   virtual SkColor GetCurrentFrameColor() const = 0;
 
@@ -221,7 +222,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader
   FRIEND_TEST_ALL_PREFIXES(ash::DefaultFrameHeaderTest, BackButtonAlignment);
   FRIEND_TEST_ALL_PREFIXES(ash::DefaultFrameHeaderTest, TitleIconAlignment);
   FRIEND_TEST_ALL_PREFIXES(ash::DefaultFrameHeaderTest, FrameColors);
-  friend class ash::FramePaintWaiter;
 
   void LayoutHeaderInternal();
 
