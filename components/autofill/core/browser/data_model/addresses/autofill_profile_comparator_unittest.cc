@@ -47,7 +47,6 @@ class AutofillProfileComparatorTest : public testing::Test {
     using Super::CompareTokens;
     using Super::HaveMergeableAddresses;
     using Super::HaveMergeableCompanyNames;
-    using Super::HaveMergeableEmailAddresses;
     using Super::HaveMergeablePhoneNumbers;
     using Super::Super;
     using Super::UniqueTokens;
@@ -122,7 +121,13 @@ class AutofillProfileComparatorTest : public testing::Test {
                                     const AutofillProfile& b,
                                     const EmailInfo& expected) {
     EmailInfo actual;
-    ASSERT_TRUE(comparator_.MergeEmailAddresses(a, b, actual));
+    const AutofillProfile::ProfileMergeResult expected_result =
+        b.GetEmailInfo() == expected
+            ? AutofillProfile::ProfileMergeResult::
+                  kMergeSucceededWithoutModification
+            : AutofillProfile::ProfileMergeResult::
+                  kMergeSucceededWithModification;
+    EXPECT_EQ(comparator_.MergeEmailAddresses(a, b, actual), expected_result);
     EXPECT_EQ(expected.GetRawInfo(EMAIL_ADDRESS),
               actual.GetRawInfo(EMAIL_ADDRESS));
   }
@@ -312,21 +317,6 @@ TEST_F(AutofillProfileComparatorTest, Compare) {
       u"ビルゲイツ", u"ヒル・ケイツ", normalization::WhitespaceSpec::kDiscard));
 }
 
-TEST_F(AutofillProfileComparatorTest, HaveMergeableEmailAddresses) {
-  AutofillProfile empty = CreateProfileWithEmail("");
-  AutofillProfile p1 = CreateProfileWithEmail("FOO@BAR.COM");
-  AutofillProfile p2 = CreateProfileWithEmail("foo@bar.com");
-  AutofillProfile different = CreateProfileWithEmail("not@the-same.com");
-
-  EXPECT_TRUE(comparator_.HaveMergeableEmailAddresses(p1, p2));
-  EXPECT_TRUE(comparator_.HaveMergeableEmailAddresses(p2, p1));
-  EXPECT_TRUE(comparator_.HaveMergeableEmailAddresses(p1, empty));
-  EXPECT_TRUE(comparator_.HaveMergeableEmailAddresses(empty, p2));
-
-  EXPECT_FALSE(comparator_.HaveMergeableEmailAddresses(p1, different));
-  EXPECT_FALSE(comparator_.HaveMergeableEmailAddresses(different, p1));
-}
-
 TEST_F(AutofillProfileComparatorTest, HaveMergeableCompanyNames) {
   AutofillProfile empty = CreateProfileWithCompanyName("");
   AutofillProfile p1 = CreateProfileWithCompanyName("Nestlé S.A.");
@@ -509,6 +499,8 @@ TEST_F(AutofillProfileComparatorTest, AreMergeable_EmptyValuePlaceholders) {
   EXPECT_TRUE(comparator_.AreMergeable(p1, p4));
 }
 
+// Tests that email addresses are merged correctly (by recency, non-empty, and
+// case-insensitivity) and that conflicting emails fail to merge.
 TEST_F(AutofillProfileComparatorTest, MergeEmailAddresses) {
   static const char kEmailA[] = "testaccount@domain.net";
   static const char16_t kEmailA16[] = u"testaccount@domain.net";
@@ -530,6 +522,17 @@ TEST_F(AutofillProfileComparatorTest, MergeEmailAddresses) {
   MergeEmailAddressesAndExpect(profile_b, profile_b, email_b);
   MergeEmailAddressesAndExpect(profile_a, profile_b, email_b);
   MergeEmailAddressesAndExpect(profile_b, profile_a, email_b);
+
+  AutofillProfile empty = CreateProfileWithEmail("");
+  MergeEmailAddressesAndExpect(profile_a, empty, email_a);
+  MergeEmailAddressesAndExpect(empty, profile_a, email_a);
+
+  AutofillProfile different = CreateProfileWithEmail("not@the-same.com");
+  EmailInfo email;
+  EXPECT_EQ(comparator_.MergeEmailAddresses(profile_a, different, email),
+            AutofillProfile::ProfileMergeResult::kMergeFailed);
+  EXPECT_EQ(comparator_.MergeEmailAddresses(different, profile_a, email),
+            AutofillProfile::ProfileMergeResult::kMergeFailed);
 }
 
 TEST_F(AutofillProfileComparatorTest, MergeCompanyNames) {

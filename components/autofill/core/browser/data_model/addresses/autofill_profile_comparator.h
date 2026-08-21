@@ -103,14 +103,16 @@ class AutofillProfileComparator {
   bool AreMergeable(const AutofillProfile& p1, const AutofillProfile& p2) const;
 
   // Populates `email_info` with the result of merging the email addresses in
-  // `new_profile` and `old_profile`. Returns true if successful. Expects that
-  // `new_profile` and `old_profile` have already been found to be mergeable.
+  // `new_profile` and `old_profile`. Returns the merge result.
   //
   // Heuristic: If one email address is empty, use the other; otherwise, prefer
   // the most recently used version of the email address.
-  bool MergeEmailAddresses(const AutofillProfile& new_profile,
-                           const AutofillProfile& old_profile,
-                           EmailInfo& email_info) const;
+  // TODO(crbug.com/453945181): Return a newly created `EmailInfo` instead of
+  // modifying `email_info`.
+  AutofillProfile::ProfileMergeResult MergeEmailAddresses(
+      const AutofillProfile& new_profile,
+      const AutofillProfile& old_profile,
+      EmailInfo& email_info) const;
 
   // Populates `company_info` with the result of merging the company names in
   // `new_profile` and `old_profile`. Returns true if successful. Expects that
@@ -187,15 +189,6 @@ class AutofillProfileComparator {
   std::u16string GetNonEmptyOf(const AutofillProfile& p1,
                                const AutofillProfile& p2,
                                AutofillType t) const;
-
-  // Returns true if `p1` and `p2` have email addresses which are equivalent
-  // for the purposes of merging the two profiles. This means one of the email
-  // addresses is empty, or the email addresses are the same (modulo case).
-  //
-  // Note that this method does not provide any guidance on actually merging
-  // the email addresses.
-  bool HaveMergeableEmailAddresses(const AutofillProfile& p1,
-                                   const AutofillProfile& p2) const;
 
   // Returns true if `p1` and `p2` have company names which are equivalent for
   // the purposes of merging the two profiles. This means one of the company

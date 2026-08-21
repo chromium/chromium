@@ -122,8 +122,11 @@ bool PaymentsProfileComparator::IsContactEqualOrSuperset(
         !super.HasInfo(autofill::EMAIL_ADDRESS)) {
       return false;
     }
-    if (!HaveMergeableEmailAddresses(super, sub))
+    autofill::EmailInfo email;
+    if (MergeEmailAddresses(super, sub, email) ==
+        autofill::AutofillProfile::ProfileMergeResult::kMergeFailed) {
       return false;
+    }
   }
   return true;
 }

@@ -178,7 +178,9 @@ bool AutofillProfileComparator::AreMergeable(const AutofillProfile& p1,
     return false;
   }
 
-  if (!HaveMergeableEmailAddresses(p1, p2)) {
+  EmailInfo email;
+  if (MergeEmailAddresses(p1, p2, email) ==
+      AutofillProfile::ProfileMergeResult::kMergeFailed) {
     DVLOG(1) << "Different email addresses.";
     return false;
   }
@@ -187,14 +189,19 @@ bool AutofillProfileComparator::AreMergeable(const AutofillProfile& p1,
   return true;
 }
 
-bool AutofillProfileComparator::MergeEmailAddresses(
+AutofillProfile::ProfileMergeResult
+AutofillProfileComparator::MergeEmailAddresses(
     const AutofillProfile& new_profile,
     const AutofillProfile& old_profile,
     EmailInfo& email_info) const {
-  DCHECK(HaveMergeableEmailAddresses(new_profile, old_profile));
-
   const std::u16string& e1 = new_profile.GetInfo(EMAIL_ADDRESS, app_locale_);
   const std::u16string& e2 = old_profile.GetInfo(EMAIL_ADDRESS, app_locale_);
+
+  if (!e1.empty() && !e2.empty() &&
+      !l10n::CaseInsensitiveCompare().StringsEqual(e1, e2)) {
+    return AutofillProfile::ProfileMergeResult::kMergeFailed;
+  }
+
   const std::u16string* best = nullptr;
 
   if (e1.empty()) {
@@ -208,8 +215,14 @@ bool AutofillProfileComparator::MergeEmailAddresses(
                : &e1;
   }
 
+  // TODO(crbug.com/453945181): Return a newly created `EmailInfo` instead of
+  // modifying `email_info`.
   email_info.SetInfo(EMAIL_ADDRESS, *best, app_locale_);
-  return true;
+  return *best == e2
+             ? AutofillProfile::ProfileMergeResult::
+                   kMergeSucceededWithoutModification
+             : AutofillProfile::ProfileMergeResult::
+                   kMergeSucceededWithModification;
 }
 
 bool AutofillProfileComparator::MergeCompanyNames(
@@ -420,7 +433,10 @@ AutofillProfileComparator::NonMergeableSettingVisibleTypes(
   }
   maybe_add_type(COMPANY_NAME, HaveMergeableCompanyNames(a, b));
   maybe_add_type(PHONE_HOME_WHOLE_NUMBER, HaveMergeablePhoneNumbers(a, b));
-  maybe_add_type(EMAIL_ADDRESS, HaveMergeableEmailAddresses(a, b));
+  EmailInfo email;
+  maybe_add_type(EMAIL_ADDRESS, MergeEmailAddresses(a, b, email) !=
+                                    AutofillProfile::ProfileMergeResult::
+                                        kMergeFailed);
   // Now, only address-related types remain in `setting_visible_types`. Using
   // `HaveMergeableAddresses()` is not fine-grained enough, since multiple
   // address types are setting-visible (e.g. city, zip, etc). Verify differences
@@ -505,15 +521,6 @@ std::u16string AutofillProfileComparator::GetNonEmptyOf(
     return s1;
   }
   return p2.GetInfo(t, app_locale_);
-}
-
-bool AutofillProfileComparator::HaveMergeableEmailAddresses(
-    const AutofillProfile& p1,
-    const AutofillProfile& p2) const {
-  const std::u16string& email_1 = p1.GetInfo(EMAIL_ADDRESS, app_locale_);
-  const std::u16string& email_2 = p2.GetInfo(EMAIL_ADDRESS, app_locale_);
-  return email_1.empty() || email_2.empty() ||
-         l10n::CaseInsensitiveCompare().StringsEqual(email_1, email_2);
 }
 
 bool AutofillProfileComparator::HaveMergeableCompanyNames(
