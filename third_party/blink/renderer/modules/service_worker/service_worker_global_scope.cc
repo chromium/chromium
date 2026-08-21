@@ -36,6 +36,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -44,6 +45,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/net_errors.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/cookie_manager.mojom-blink.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
@@ -828,6 +830,28 @@ void ServiceWorkerGlobalScope::MaybeRecordFetchError(
   if (request_data && request_data->ServiceWorkerRaceNetworkRequestToken()) {
     base::UnguessableToken token =
         request_data->ServiceWorkerRaceNetworkRequestToken();
+    ServiceWorkerRaceNetworkRequestLoaderState loader_state =
+        GetRaceNetworkRequestLoaderState(token);
+    race_network_request_loader_states_.erase(String(token.ToString()));
+    base::UmaHistogramSparse(
+        "ServiceWorker.FetchInFetchHandler.RaceFetchNetError", -net_error_code);
+    if (loader_state ==
+        ServiceWorkerRaceNetworkRequestLoaderState::kRaceLoaderUsed) {
+      base::UmaHistogramSparse(
+          "ServiceWorker.FetchInFetchHandler.RaceURLLoaderNetError",
+          -net_error_code);
+    }
+    if (net_error_code == net::OK) {
+      base::UmaHistogramEnumeration(
+          "ServiceWorker.FetchInFetchHandler."
+          "RaceNetworkRequestLoaderState.Success",
+          loader_state);
+      return;
+    }
+    base::UmaHistogramEnumeration(
+        "ServiceWorker.FetchInFetchHandler."
+        "RaceNetworkRequestLoaderState.Failure",
+        loader_state);
     for (const auto& entry : active_fetch_respond_with_observers_) {
       if (entry.value->race_network_request_token() &&
           *entry.value->race_network_request_token() == token) {
@@ -838,9 +862,17 @@ void ServiceWorkerGlobalScope::MaybeRecordFetchError(
     base::UmaHistogramSparse(
         "ServiceWorker.FetchInFetchHandler.PostRespondWithRaceFetchNetError",
         -net_error_code);
+    if (loader_state ==
+        ServiceWorkerRaceNetworkRequestLoaderState::kRaceLoaderUsed) {
+      base::UmaHistogramSparse(
+          "ServiceWorker.FetchInFetchHandler."
+          "PostRespondWithRaceURLLoaderNetError",
+          -net_error_code);
+    }
     return;
   }
-  if (active_fetch_respond_with_observers_.empty()) {
+  if (net_error_code == net::OK ||
+      active_fetch_respond_with_observers_.empty()) {
     return;
   }
   if (request_data) {
@@ -2836,18 +2868,71 @@ ServiceWorkerGlobalScope::RaceNetworkRequestInfo::RaceNetworkRequestInfo(
   }
 }
 
+mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
+ServiceWorkerGlobalScope::RaceNetworkRequestInfo::TakePendingRemote() {
+  if (url_loader_factory_remote_.is_bound()) {
+    return url_loader_factory_remote_.Unbind();
+  }
+  return std::move(pending_url_loader_factory_);
+}
+
+bool ServiceWorkerGlobalScope::RaceNetworkRequestInfo::IsValid() const {
+  return !is_disconnected_ && (pending_url_loader_factory_.is_valid() ||
+                               url_loader_factory_remote_.is_bound());
+}
+
+void ServiceWorkerGlobalScope::RaceNetworkRequestInfo::HandleDisconnected() {
+  is_disconnected_ = true;
+  if (url_loader_factory_remote_.is_bound()) {
+    url_loader_factory_remote_.reset();
+  }
+}
+
 std::optional<mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
 ServiceWorkerGlobalScope::FindRaceNetworkRequestURLLoaderFactory(
     const base::UnguessableToken& token) {
   const String token_key = String(token.ToString());
-  Member<RaceNetworkRequestInfo> info = race_network_requests_.Take(token_key);
-  if (info) {
+  ServiceWorkerRaceNetworkRequestLoaderState state =
+      ServiceWorkerRaceNetworkRequestLoaderState::kFallbackDueToNoFactory;
+  std::optional<mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
+      factory;
+
+  if (Member<RaceNetworkRequestInfo> info =
+          race_network_requests_.Take(token_key)) {
     fetch_event_ids_to_token_map_.erase(info->fetch_event_id());
-    if (info->IsValid()) {
-      return info->TakePendingRemote();
+    if (info->is_disconnected()) {
+      state =
+          ServiceWorkerRaceNetworkRequestLoaderState::kFallbackDueToDisconnect;
+    } else if (info->IsValid()) {
+      state = ServiceWorkerRaceNetworkRequestLoaderState::kRaceLoaderUsed;
+      factory = info->TakePendingRemote();
     }
+  } else if (auto it = race_network_request_loader_states_.find(token_key);
+             it != race_network_request_loader_states_.end() &&
+             it->value ==
+                 ServiceWorkerRaceNetworkRequestLoaderState::kRaceLoaderUsed) {
+    state = ServiceWorkerRaceNetworkRequestLoaderState::
+        kFallbackDueToAlreadyConsumed;
   }
-  return std::nullopt;
+
+  race_network_request_loader_states_.Set(token_key, state);
+  base::UmaHistogramEnumeration(
+      "ServiceWorker.FetchInFetchHandler.RaceNetworkRequestLoaderState", state);
+  return factory;
+}
+
+ServiceWorkerRaceNetworkRequestLoaderState
+ServiceWorkerGlobalScope::GetRaceNetworkRequestLoaderState(
+    const base::UnguessableToken& token) const {
+  if (token.is_empty()) {
+    return ServiceWorkerRaceNetworkRequestLoaderState::kInvalidToken;
+  }
+  const String token_key = String(token.ToString());
+  auto it = race_network_request_loader_states_.find(token_key);
+  if (it != race_network_request_loader_states_.end()) {
+    return it->value;
+  }
+  return ServiceWorkerRaceNetworkRequestLoaderState::kNotFound;
 }
 
 void ServiceWorkerGlobalScope::InsertNewItemToRaceNetworkRequestsForTesting(
@@ -2856,8 +2941,21 @@ void ServiceWorkerGlobalScope::InsertNewItemToRaceNetworkRequestsForTesting(
     mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
         url_loader_factory,
     const KURL& request_url) {
+  CHECK_IS_TEST();
   InsertNewItemToRaceNetworkRequests(
       fetch_event_id, token, std::move(url_loader_factory), request_url);
+}
+
+void ServiceWorkerGlobalScope::RemoveItemFromRaceNetworkRequestsForTesting(
+    int fetch_event_id) {
+  CHECK_IS_TEST();
+  RemoveItemFromRaceNetworkRequests(fetch_event_id);
+}
+
+void ServiceWorkerGlobalScope::OnRaceNetworkRequestDisconnectedForTesting(
+    const base::UnguessableToken& token) {
+  CHECK_IS_TEST();
+  OnRaceNetworkRequestDisconnected(token);
 }
 
 void ServiceWorkerGlobalScope::InsertNewItemToRaceNetworkRequests(
@@ -2867,6 +2965,9 @@ void ServiceWorkerGlobalScope::InsertNewItemToRaceNetworkRequests(
         url_loader_factory,
     const KURL& request_url) {
   auto race_network_request_token = String(token.ToString());
+  race_network_request_loader_states_.Set(
+      race_network_request_token,
+      ServiceWorkerRaceNetworkRequestLoaderState::kNotInitiated);
   const bool fallback_on_disconnect_enabled = base::FeatureList::IsEnabled(
       features::kServiceWorkerRaceNetworkRequestFallbackOnDisconnect);
   auto* info = MakeGarbageCollected<RaceNetworkRequestInfo>(
@@ -2886,19 +2987,24 @@ void ServiceWorkerGlobalScope::InsertNewItemToRaceNetworkRequests(
 
 void ServiceWorkerGlobalScope::RemoveItemFromRaceNetworkRequests(
     int fetch_event_id) {
+  // If `fetch_event_id` is still present in `fetch_event_ids_to_token_map_`,
+  // `FindRaceNetworkRequestURLLoaderFactory` was never called for this fetch
+  // event (i.e. `fetch(event.request)` was not initiated). Clean up the unused
+  // `kNotInitiated` entry to prevent memory leaks.
   if (const String token_to_remove =
           fetch_event_ids_to_token_map_.Take(fetch_event_id);
       !token_to_remove.empty()) {
     race_network_requests_.erase(token_to_remove);
+    race_network_request_loader_states_.erase(token_to_remove);
   }
 }
 
 void ServiceWorkerGlobalScope::OnRaceNetworkRequestDisconnected(
     const base::UnguessableToken& token) {
   const String token_key = String(token.ToString());
-  if (Member<RaceNetworkRequestInfo> info =
-          race_network_requests_.Take(token_key)) {
-    fetch_event_ids_to_token_map_.erase(info->fetch_event_id());
+  auto it = race_network_requests_.find(token_key);
+  if (it != race_network_requests_.end()) {
+    it->value->HandleDisconnected();
   }
 }
 

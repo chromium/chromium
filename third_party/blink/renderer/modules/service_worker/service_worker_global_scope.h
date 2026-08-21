@@ -89,6 +89,29 @@ class WorkerClassicScriptLoader;
 struct GlobalScopeCreationParams;
 struct WebServiceWorkerError;
 struct WebServiceWorkerObjectInfo;
+// LINT.IfChange(ServiceWorkerRaceNetworkRequestLoaderState)
+enum class ServiceWorkerRaceNetworkRequestLoaderState : uint8_t {
+  // An invalid or empty token was provided.
+  kInvalidToken = 0,
+  // The token is non-empty, but was not found in the table (never registered or
+  // already removed).
+  kNotFound = 1,
+  // Registered at FetchEvent start, but fetch has not yet been initiated.
+  kNotInitiated = 2,
+  // The RaceNetworkRequest URLLoaderFactory was used for the fetch.
+  kRaceLoaderUsed = 3,
+  // The RaceNetworkRequest was disconnected before use, falling back to regular
+  // loader.
+  kFallbackDueToDisconnect = 4,
+  // The RaceNetworkRequest was already consumed, falling back to regular
+  // loader.
+  kFallbackDueToAlreadyConsumed = 5,
+  // No matching RaceNetworkRequest factory was found, falling back to regular
+  // loader.
+  kFallbackDueToNoFactory = 6,
+  kMaxValue = kFallbackDueToNoFactory,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/service/enums.xml:ServiceWorkerRaceNetworkRequestLoaderState)
 
 class MODULES_EXPORT ServiceWorkerGlobalScope final
     : public WorkerGlobalScope,
@@ -377,12 +400,17 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   std::optional<mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
   FindRaceNetworkRequestURLLoaderFactory(
       const base::UnguessableToken& token) final;
+  ServiceWorkerRaceNetworkRequestLoaderState GetRaceNetworkRequestLoaderState(
+      const base::UnguessableToken& token) const;
   void InsertNewItemToRaceNetworkRequestsForTesting(
       int fetch_event_id,
       const base::UnguessableToken& token,
       mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
           url_loader_factory,
       const KURL& request_url);
+  void RemoveItemFromRaceNetworkRequestsForTesting(int fetch_event_id);
+  void OnRaceNetworkRequestDisconnectedForTesting(
+      const base::UnguessableToken& token);
 
   bool did_evaluate_script() { return did_evaluate_script_; }
 
@@ -864,22 +892,18 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
     // bound (feature enabled) or moving `pending_url_loader_factory_` (feature
     // disabled).
     mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
-    TakePendingRemote() {
-      if (url_loader_factory_remote_.is_bound()) {
-        return url_loader_factory_remote_.Unbind();
-      }
-      return std::move(pending_url_loader_factory_);
-    }
+    TakePendingRemote();
 
     // Returns true if either the bound HeapMojoRemote or the unbound
     // PendingRemote is valid.
-    bool IsValid() const {
-      return pending_url_loader_factory_.is_valid() ||
-             url_loader_factory_remote_.is_bound();
-    }
+    bool IsValid() const;
+
+    bool is_disconnected() const { return is_disconnected_; }
+    void HandleDisconnected();
 
    private:
     int fetch_event_id_;
+    bool is_disconnected_ = false;
 
     // Holds the un-bound PendingRemote when
     // `kServiceWorkerRaceNetworkRequestFallbackOnDisconnect` is disabled.
@@ -897,6 +921,11 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   // key. As a workaround uses String as a key instead.
   HeapHashMap<String, Member<RaceNetworkRequestInfo>> race_network_requests_;
   HashMap<int, String> fetch_event_ids_to_token_map_;
+  // Maps a RaceNetworkRequest token (string representation of
+  // base::UnguessableToken) to its loader state, tracking whether the race
+  // URLLoaderFactory was actually used or fell back to the regular loader.
+  HashMap<String, ServiceWorkerRaceNetworkRequestLoaderState>
+      race_network_request_loader_states_;
 
   HeapMojoAssociatedRemote<mojom::blink::AssociatedInterfaceProvider>
       remote_associated_interfaces_{this};

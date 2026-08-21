@@ -847,6 +847,15 @@ void FetchManager::Loader::DidFinishLoading(uint64_t) {
     window->GetFrame()->GetPage()->GetChromeClient().AjaxSucceeded(
         window->GetFrame());
   }
+
+  // Record success metrics and clean up race network request loader state if
+  // this fetch was initiated with a ServiceWorkerRaceNetworkRequest token.
+  // Non-race fetches do not track success metrics.
+  if (GetExecutionContext() && GetFetchRequestData() &&
+      GetFetchRequestData()->ServiceWorkerRaceNetworkRequestToken()) {
+    GetExecutionContext()->MaybeRecordFetchError(net::OK,
+                                                 GetFetchRequestData());
+  }
   NotifyFinished();
 }
 

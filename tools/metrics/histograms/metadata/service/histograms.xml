@@ -653,9 +653,87 @@ chromium-metrics-reviews@google.com.
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
-    Records net::Error code (as a positive integer) when a Service Worker race
-    network request fetch fails after its matching respondWith observer has
-    already settled/been erased.
+    Records net::Error code (as a positive integer) when a Service Worker fetch
+    request with a race network request token fails after its matching
+    respondWith observer has already settled/been erased. Note that this
+    includes requests that fell back to the regular network loader (e.g. due to
+    pipe disconnection).
+  </summary>
+</histogram>
+
+<histogram
+    name="ServiceWorker.FetchInFetchHandler.PostRespondWithRaceURLLoaderNetError"
+    enum="NetErrorCodes" expires_after="2027-07-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records net::Error code (as a positive integer) when a Service Worker fetch
+    fails after its matching respondWith observer has already settled/been
+    erased, specifically when the RaceNetworkRequest URLLoaderFactory (the pipe
+    to the browser process) was actually used for the fetch.
+  </summary>
+</histogram>
+
+<histogram name="ServiceWorker.FetchInFetchHandler.RaceFetchNetError"
+    enum="NetErrorCodes" expires_after="2027-07-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records net::Error code (as a positive integer, where 0 is net::OK for
+    success) when any Service Worker fetch request with a race network request
+    token completes (both during and after respondWith). Note that this includes
+    requests that fell back to the regular network loader (e.g. due to pipe
+    disconnection).
+  </summary>
+</histogram>
+
+<histogram
+    name="ServiceWorker.FetchInFetchHandler.RaceNetworkRequestLoaderState"
+    enum="ServiceWorkerRaceNetworkRequestLoaderState"
+    expires_after="2027-07-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records the loader state (e.g. race loader used, or reason for fallback)
+    when a fetch request with a Service Worker race network request token is
+    initiated in the Service Worker fetch handler.
+  </summary>
+</histogram>
+
+<histogram
+    name="ServiceWorker.FetchInFetchHandler.RaceNetworkRequestLoaderState.Failure"
+    enum="ServiceWorkerRaceNetworkRequestLoaderState"
+    expires_after="2027-07-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records the loader state when a fetch request with a Service Worker race
+    network request token fails.
+  </summary>
+</histogram>
+
+<histogram
+    name="ServiceWorker.FetchInFetchHandler.RaceNetworkRequestLoaderState.Success"
+    enum="ServiceWorkerRaceNetworkRequestLoaderState"
+    expires_after="2027-07-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records the loader state when a fetch request with a Service Worker race
+    network request token completes successfully.
+  </summary>
+</histogram>
+
+<histogram name="ServiceWorker.FetchInFetchHandler.RaceURLLoaderNetError"
+    enum="NetErrorCodes" expires_after="2027-07-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records net::Error code (as a positive integer, where 0 is net::OK for
+    success) when a Service Worker fetch request completes (both during and
+    after respondWith), specifically when the RaceNetworkRequest
+    URLLoaderFactory (the pipe to the browser process) was actually used for the
+    fetch.
   </summary>
 </histogram>
 
