@@ -3,16 +3,22 @@
 // found in the LICENSE file.
 
 #import "base/ios/ios_util.h"
+#import "base/strings/strcat.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
+#import "components/send_tab_to_self/features.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view_egtest_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -23,6 +29,7 @@
 #import "ios/testing/earl_grey/base_earl_grey_test_case_app_interface.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
 namespace {
@@ -112,6 +119,16 @@ void ReloadFromOmnibox() {
         {kChromeNextIa, {{"chrome_next_ia_lens_icon_visible", "true"}}});
   } else {
     config.features_enabled.push_back(kChromeNextIa);
+  }
+
+  if ([self isRunningTest:@selector(testSendTabToSelfOmniboxIPH)]) {
+    config.features_enabled.push_back(
+        send_tab_to_self::kSendTabToSelfExtraEntryPoints);
+    config.additional_args.push_back(base::StrCat({
+      "-", test_switches::kAddFakeIdentitiesAtStartup, "=",
+          [FakeSystemIdentity
+              encodeIdentitiesToBase64:@[ [FakeSystemIdentity fakeIdentity1] ]],
+    }));
   }
 
   return config;
@@ -670,6 +687,32 @@ void ReloadFromOmnibox() {
   // changed.
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
                       grey_accessibilityID(kBubbleViewArrowViewIdentifier)];
+}
+
+// Test that the Send Tab to Self omnibox IPH is displayed on startup when a
+// suitable page is already loaded.
+- (void)testSendTabToSelfOmniboxIPH {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
+  }
+
+  [ChromeEarlGrey addFakeSyncServerDeviceInfo:@"My other device"
+                         lastUpdatedTimestamp:base::Time::Now()];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey flushFakeSyncServerToDisk];
+  [ChromeEarlGrey commitPendingUserPrefsWrite];
+
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  const GURL destinationUrl = self.testServer->GetURL("/pony.html");
+  [ChromeEarlGrey loadURL:destinationUrl];
+
+  [self relaunchWithIPHFeature:@"IPH_SendTabToSelfOmnibox" safariSwitcher:NO];
+  [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          chrome_test_util::StaticTextWithAccessibilityLabel(
+              l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_OMNIBOX_IPH_TEXT))];
 }
 
 @end
