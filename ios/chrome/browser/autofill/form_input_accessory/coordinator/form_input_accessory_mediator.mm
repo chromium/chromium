@@ -812,21 +812,30 @@ bool IsStateless() {
                         webState:self.webState
         accessoryViewUpdateBlock:^(NSArray<FormSuggestion*>* suggestions,
                                    id<FormInputSuggestionsProvider> provider) {
-          // Ignore suggestions if the results aren't from the latest query
-          // which provides the most relevant suggestions to fit the current
-          // context (i.e. for the field being focused).
-          if (queryID != weakSelf.latestQueryId) {
-            return;
-          }
-
-          // No suggestions found, return and don't update suggestions in view
-          // model.
-          if (!suggestions) {
-            return;
-          }
-
-          [weakSelf updateWithProvider:provider suggestions:suggestions];
+          [weakSelf onSuggestionsRetrieved:suggestions
+                                  provider:provider
+                                   queryID:queryID];
         }];
+}
+
+// Handles retrieved suggestions for the given `queryID`.
+- (void)onSuggestionsRetrieved:(NSArray<FormSuggestion*>*)suggestions
+                      provider:(id<FormInputSuggestionsProvider>)provider
+                       queryID:(uint)queryID {
+  // Ignore suggestions if the results aren't from the latest query
+  // which provides the most relevant suggestions to fit the current
+  // context (i.e. for the field being focused).
+  if (queryID != _latestQueryId) {
+    return;
+  }
+
+  // No suggestions found, return and don't update suggestions in view
+  // model.
+  if (!suggestions) {
+    return;
+  }
+
+  [self updateWithProvider:provider suggestions:suggestions];
 }
 
 // Posts the passed `suggestions` to the consumer.

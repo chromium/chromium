@@ -130,6 +130,13 @@ FormSuggestion* SimpleFormSuggestion(
 - (void)updateFieldManagerWithFillingResults:(NSString*)jsonString
                                      inFrame:(web::WebFrame*)frame;
 - (void)onSuggestionsReady:(NSArray<FormSuggestion*>*)suggestions;
+- (void)queryAutofillForForm:(const autofill::FormData&)form
+             fieldIdentifier:(autofill::FieldRendererId)fieldIdentifier
+                        type:(autofill::FormActivityParams::ActivityType)type
+                  typedValue:(NSString*)typedValue
+                       frame:(base::WeakPtr<web::WebFrame>)frame
+                    webState:(base::WeakPtr<web::WebState>)webState
+           completionHandler:(SuggestionsAvailableCompletion)completion;
 @end
 
 // Test fixture for AutofillAgent testing.
@@ -523,6 +530,81 @@ TEST_F(AutofillAgentTest,
         return completion_handler_called;
       }));
   EXPECT_FALSE(completion_handler_success);
+}
+
+// Tests that issuing a second suggestion query while one is already in-flight
+// cleanly invokes the first completion handler with NO, and the second
+// completion handler is fulfilled when suggestions are ready.
+TEST_F(AutofillAgentTest, QueryAutofill_ConcurrentQueries) {
+  autofill::FormFieldData field;
+  field.set_form_control_type(autofill::FormControlType::kInputText);
+  field.set_name(u"address");
+  field.set_renderer_id(FieldRendererId(2));
+  field.set_is_focusable(true);
+
+  web::WebFrame* main_frame = fake_web_frames_manager_->GetMainWebFrame();
+  ASSERT_NE(nullptr, main_frame);
+  AutofillDriverIOS* main_frame_driver =
+      AutofillDriverIOS::FromWebStateAndWebFrame(&fake_web_state_, main_frame);
+  ASSERT_NE(nullptr, main_frame_driver);
+  field.set_host_frame(main_frame_driver->GetFrameToken());
+
+  autofill::FormData form;
+  form.set_host_frame(main_frame_driver->GetFrameToken());
+  form.set_renderer_id(autofill::FormRendererId(1));
+  field.set_host_form_id(form.renderer_id());
+  form.set_fields({field});
+  main_frame_driver->FormsSeen({form}, {});
+
+  __block BOOL first_completion_called = NO;
+  __block BOOL first_completion_success = YES;
+  __block BOOL second_completion_called = NO;
+  __block BOOL second_completion_success = NO;
+
+  // Issue first query.
+  [autofill_agent_
+      queryAutofillForForm:form
+           fieldIdentifier:field.renderer_id()
+                      type:autofill::FormActivityParams::ActivityType::kFocus
+                typedValue:@""
+                     frame:fake_web_frames_manager_->GetMainWebFrame()
+                               ->AsWeakPtr()
+                  webState:fake_web_state_.GetWeakPtr()
+         completionHandler:^(BOOL success) {
+           first_completion_called = YES;
+           first_completion_success = success;
+         }];
+
+  // First completion handler should not be called yet.
+  EXPECT_FALSE(first_completion_called);
+
+  // Issue second query while the first is in-flight.
+  [autofill_agent_
+      queryAutofillForForm:form
+           fieldIdentifier:field.renderer_id()
+                      type:autofill::FormActivityParams::ActivityType::kFocus
+                typedValue:@""
+                     frame:fake_web_frames_manager_->GetMainWebFrame()
+                               ->AsWeakPtr()
+                  webState:fake_web_state_.GetWeakPtr()
+         completionHandler:^(BOOL success) {
+           second_completion_called = YES;
+           second_completion_success = success;
+         }];
+
+  // Issuing the second query must have cleanly invoked the first completion
+  // handler with NO.
+  EXPECT_TRUE(first_completion_called);
+  EXPECT_FALSE(first_completion_success);
+  EXPECT_FALSE(second_completion_called);
+
+  // When suggestions arrive, the second completion handler is invoked with YES.
+  [autofill_agent_ onSuggestionsReady:@[
+    SimpleFormSuggestion(u"", autofill::SuggestionType::kAutocompleteEntry)
+  ]];
+
+  EXPECT_TRUE(second_completion_called);
+  EXPECT_TRUE(second_completion_success);
 }
 
 // Tests that virtual cards are being served as suggestions with the

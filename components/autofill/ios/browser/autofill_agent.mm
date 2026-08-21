@@ -1322,27 +1322,44 @@ bool HasGuid(const Suggestion::Payload& payload) {
                        frame:(base::WeakPtr<web::WebFrame>)frame
                     webState:(base::WeakPtr<web::WebState>)webState
            completionHandler:(SuggestionsAvailableCompletion)completion {
+  // If a query was already in flight, complete the previous completion callback
+  // with NO so it doesn't remain unresolved.
+  if (SuggestionsAvailableCompletion previousCompletion =
+          std::exchange(_suggestionsAvailableCompletion, nil)) {
+    previousCompletion(NO);
+  }
+
   if (!frame || !webState) {
-    completion(NO);
+    if (completion) {
+      completion(NO);
+    }
+    return;
+  }
+
+  if (!ContainsFocusableField(form, fieldIdentifier)) {
+    if (completion) {
+      completion(NO);
+    }
+    return;
+  }
+
+  auto* driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
+      _webState, frame.get());
+  DLOG_IF(WARNING, !driver) << "No AutofillDriverIOS found for WebFrame";
+  if (!driver) {
+    if (completion) {
+      completion(NO);
+    }
     return;
   }
 
   // Save the completion and go look for suggestions.
   _suggestionsAvailableCompletion = [completion copy];
   _typedValue = typedValue;
+  _lastQueriedFieldID = {form.host_frame(), fieldIdentifier};
 
   // Query the BrowserAutofillManager for suggestions. Results will arrive in
   // -showAutofillPopup:suggestionDelegate:.
-  if (!ContainsFocusableField(form, fieldIdentifier)) {
-    return;
-  }
-  _lastQueriedFieldID = {form.host_frame(), fieldIdentifier};
-  auto* driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
-      _webState, frame.get());
-  DLOG_IF(WARNING, !driver) << "No AutofillDriverIOS found for WebFrame";
-  if (!driver) {
-    return;
-  }
   driver->AskForValuesToFill(form, _lastQueriedFieldID);
 }
 
