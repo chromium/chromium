@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <map>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -121,8 +122,12 @@ class GraphBuilderTflite final {
 
   // Factory method that creates a GraphBuilderTflite and builds a TFLite
   // Flatbuffer Returns unexpected if it fails.
+  //
+  // `context_device` selects the runtime accelerator the model is being
+  // built for.
   [[nodiscard]] static base::expected<Result, std::string> CreateAndBuild(
       ContextProperties context_properties,
+      mojom::Device context_device,
       const mojom::GraphInfo& graph_info,
       const base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&
           constant_operands,
@@ -151,6 +156,7 @@ class GraphBuilderTflite final {
 
   GraphBuilderTflite(
       ContextProperties context_properties,
+      mojom::Device context_device,
       const mojom::GraphInfo& graph_info,
       const base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&
           constant_operands,
@@ -273,6 +279,11 @@ class GraphBuilderTflite final {
 
   OperatorCodeIndex GetOperatorCodeIndex(::tflite::BuiltinOperator code,
                                          int32_t version = 1);
+
+  // Registers (once per unique name) a `BuiltinOperator_CUSTOM` operator code
+  // with the given custom name and returns its index.
+  OperatorCodeIndex GetCustomOperatorCodeIndex(std::string_view custom_code,
+                                               int32_t version = 1);
 
   // Returns the Operand corresponding to an `operand_id` from `graph_info_`.
   // Will crash if `graph_info_` does not contain `operand_id`.
@@ -792,6 +803,10 @@ class GraphBuilderTflite final {
       const mojom::InstanceNormalization& instance_normalization);
   base::expected<OperatorOffset, std::string> SerializeLayerNormalization(
       const mojom::LayerNormalization& layer_normalization);
+  // Emits a `custom_call.LayerNorm` custom op if supported by
+  // `context_device_`. Returns `std::nullopt` otherwise.
+  std::optional<OperatorOffset> SerializeLayerNormalizationAsCustomCall(
+      const mojom::LayerNormalization& layer_normalization);
   base::expected<OperatorOffset, std::string> SerializeLeakyRelu(
       const mojom::LeakyRelu& leaky_relu);
   base::expected<OperatorOffset, std::string> SerializeLinear(
@@ -1012,6 +1027,9 @@ class GraphBuilderTflite final {
       bool graph_requires_fp32_precision);
 
   const ContextProperties context_properties_;
+
+  // The accelerator the compiled model will target.
+  const mojom::Device context_device_;
 
   // A reference to the WebNN compute graph that `this` instance is converting
   // to TFLite. The creator of `this` must ensure the GraphInfo reference passed

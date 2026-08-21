@@ -513,8 +513,8 @@ void GraphImplLiteRt::CreateAndBuild(
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock(),
          base::WithBaseSyncPrimitives()},
         base::BindOnce(&GraphImplLiteRt::BuildGraphOnBackgroundThread,
-                       context.properties(), std::move(graph_info),
-                       std::move(constant_operands),
+                       context.properties(), context.options().device,
+                       std::move(graph_info), std::move(constant_operands),
                        std::move(operand_to_dependent_operations),
                        std::move(operand_to_producing_operation),
                        std::move(weights_file), std::move(shared_session)),
@@ -558,7 +558,8 @@ GraphImplLiteRt::CreateAndBuildOnBackgroundThread(
   ASSIGN_OR_RETURN(
       tflite::GraphBuilderTflite::Result result,
       tflite::GraphBuilderTflite::CreateAndBuild(
-          context_properties, *graph_info, std::move(constant_operands),
+          context_properties, context_device, *graph_info,
+          std::move(constant_operands),
           std::move(operand_to_dependent_operations),
           std::move(operand_to_producing_operation), std::move(weights_file),
           /*session=*/
@@ -579,6 +580,7 @@ GraphImplLiteRt::CreateAndBuildOnBackgroundThread(
 base::expected<tflite::GraphBuilderTflite::Result, mojom::ErrorPtr>
 GraphImplLiteRt::BuildGraphOnBackgroundThread(
     ContextProperties context_properties,
+    mojom::Device context_device,
     mojom::GraphInfoPtr graph_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
@@ -590,7 +592,8 @@ GraphImplLiteRt::BuildGraphOnBackgroundThread(
   ASSIGN_OR_RETURN(
       tflite::GraphBuilderTflite::Result result,
       tflite::GraphBuilderTflite::CreateAndBuild(
-          context_properties, *graph_info, std::move(constant_operands),
+          context_properties, context_device, *graph_info,
+          std::move(constant_operands),
           std::move(operand_to_dependent_operations),
           std::move(operand_to_producing_operation), std::move(weights_file),
           std::move(shared_session),

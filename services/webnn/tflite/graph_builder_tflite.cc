@@ -33,12 +33,14 @@
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/cpp/supported_tensors.h"
+#include "services/webnn/public/cpp/webnn_buildflags.h"
 #include "services/webnn/public/cpp/webnn_errors.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_switches.h"
 #include "services/webnn/webnn_utils.h"
+#include "third_party/flatbuffers/src/include/flatbuffers/flexbuffers.h"
 #include "third_party/fp16/src/include/fp16.h"
 #include "third_party/tflite/buildflags.h"
 #include "third_party/tflite/src/tensorflow/compiler/mlir/lite/schema/schema_generated.h"
@@ -697,6 +699,7 @@ GraphBuilderTflite::Result::~Result() = default;
 // static
 auto GraphBuilderTflite::CreateAndBuild(
     ContextProperties context_properties,
+    mojom::Device context_device,
     const mojom::GraphInfo& graph_info,
     const base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&
         constant_operands,
@@ -707,8 +710,8 @@ auto GraphBuilderTflite::CreateAndBuild(
     mojo::SharedRemote<mojom::WeightsFileSession> session,
     bool use_external_buffer) -> base::expected<Result, std::string> {
   GraphBuilderTflite builder(
-      std::move(context_properties), graph_info, constant_operands,
-      std::move(operand_to_dependent_operations),
+      std::move(context_properties), context_device, graph_info,
+      constant_operands, std::move(operand_to_dependent_operations),
       std::move(operand_to_producing_operation), std::move(weights_file),
       std::move(session), use_external_buffer);
 
@@ -1155,6 +1158,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
 
 GraphBuilderTflite::GraphBuilderTflite(
     ContextProperties context_properties,
+    mojom::Device context_device,
     const mojom::GraphInfo& graph_info,
     const base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&
         constant_operands,
@@ -1166,6 +1170,7 @@ GraphBuilderTflite::GraphBuilderTflite(
     mojo::SharedRemote<mojom::WeightsFileSession> session,
     bool use_external_buffer)
     : context_properties_(std::move(context_properties)),
+      context_device_(context_device),
       graph_info_(graph_info),
       constant_operands_(constant_operands),
       operand_to_dependent_operations_(operand_to_dependent_operations),
@@ -3474,6 +3479,18 @@ GraphBuilderTflite::OperatorCodeIndex GraphBuilderTflite::GetOperatorCodeIndex(
 
   // The type of operation is determined by the index into the list of the valid
   // OperatorCodes.
+  return operator_code_index;
+}
+
+GraphBuilderTflite::OperatorCodeIndex
+GraphBuilderTflite::GetCustomOperatorCodeIndex(std::string_view custom_code,
+                                               int32_t version) {
+  auto operator_code_index =
+      base::checked_cast<OperatorCodeIndex>(operator_codes_.size());
+  operator_codes_.push_back(::tflite::CreateOperatorCode(
+      builder_, base::checked_cast<int8_t>(::tflite::BuiltinOperator_CUSTOM),
+      builder_.CreateString(custom_code), version,
+      ::tflite::BuiltinOperator_CUSTOM));
   return operator_code_index;
 }
 
@@ -7562,11 +7579,122 @@ auto GraphBuilderTflite::SerializeInstanceNormalization(
       reshape_bias_tensor_index);
 }
 
+auto GraphBuilderTflite::SerializeLayerNormalizationAsCustomCall(
+    const mojom::LayerNormalization& layer_normalization)
+    -> std::optional<OperatorOffset> {
+  // Gate: the fused kernel is only registered by LiteRT when the ML Drift
+  // WebGPU accelerator is selected (see
+  // `third_party/litert/src/litert/runtime/compiled_model.cc`, which calls
+  // `resolver->AddCustom("custom_call.LayerNorm", ...)` only under
+  // `kLiteRtHwAcceleratorGpu`).
+  if (context_device_ != mojom::Device::kGpu) {
+    return std::nullopt;
+  }
+
+  const mojom::Operand& input_operand =
+      GetOperand(layer_normalization.input_operand_id);
+  const auto& input_shape = input_operand.descriptor.shape();
+  const OperandDataType input_dtype = input_operand.descriptor.data_type();
+
+  // ML Drift: 2..4D input, float dtype, normalize over the innermost axis.
+  if (input_shape.size() < 2 || input_shape.size() > 4) {
+    return std::nullopt;
+  }
+  if (input_dtype != OperandDataType::kFloat32 &&
+      input_dtype != OperandDataType::kFloat16) {
+    return std::nullopt;
+  }
+  if (layer_normalization.axes.size() != 1 ||
+      layer_normalization.axes[0] !=
+          static_cast<uint32_t>(input_shape.size()) - 1) {
+    return std::nullopt;
+  }
+
+  // ML Drift indexes bias at inputs[2]; a `[x, bias]` inputs list would be
+  // misinterpreted as `[x, scale]`. Bail on that shape.
+  if (layer_normalization.bias_operand_id &&
+      !layer_normalization.scale_operand_id) {
+    return std::nullopt;
+  }
+
+  const uint32_t innermost_size = input_shape.back();
+  auto is_valid_param = [&](OperandId operand_id) -> bool {
+    const mojom::Operand& op = GetOperand(operand_id);
+    if (op.kind != mojom::Operand::Kind::kConstant) {
+      return false;
+    }
+    if (op.descriptor.data_type() != OperandDataType::kFloat32 &&
+        op.descriptor.data_type() != OperandDataType::kFloat16) {
+      return false;
+    }
+    const auto& s = op.descriptor.shape();
+    return s.size() == 1 && s[0] == innermost_size;
+  };
+  if (layer_normalization.scale_operand_id &&
+      !is_valid_param(*layer_normalization.scale_operand_id)) {
+    return std::nullopt;
+  }
+  if (layer_normalization.bias_operand_id &&
+      !is_valid_param(*layer_normalization.bias_operand_id)) {
+    return std::nullopt;
+  }
+
+  // All preconditions satisfied — emit the custom op.
+  ASSIGN_OR_RETURN(
+      const TensorInfo& input_tensor_info,
+      SerializeInputTensorInfo(layer_normalization.input_operand_id),
+      [](auto) { return std::nullopt; });
+  std::vector<TensorIndex> op_inputs;
+  op_inputs.reserve(3);
+  op_inputs.push_back(input_tensor_info.index);
+  if (layer_normalization.scale_operand_id) {
+    ASSIGN_OR_RETURN(
+        const TensorInfo& scale_tensor_info,
+        SerializeInputTensorInfo(*layer_normalization.scale_operand_id),
+        [](auto) { return std::nullopt; });
+    op_inputs.push_back(scale_tensor_info.index);
+  }
+  if (layer_normalization.bias_operand_id) {
+    ASSIGN_OR_RETURN(
+        const TensorInfo& bias_tensor_info,
+        SerializeInputTensorInfo(*layer_normalization.bias_operand_id),
+        [](auto) { return std::nullopt; });
+    op_inputs.push_back(bias_tensor_info.index);
+  }
+  ASSIGN_OR_RETURN(
+      const TensorInfo output_tensor_info,
+      SerializeOutputTensorInfo(layer_normalization.output_operand_id),
+      [](auto) { return std::nullopt; });
+  const std::array<TensorIndex, 1> op_outputs = {output_tensor_info.index};
+
+  // Attributes flexbuffer: `{"epsilon": float}`.
+  flexbuffers::Builder fbb;
+  fbb.Map([&] { fbb.Float("epsilon", layer_normalization.epsilon); });
+  fbb.Finish();
+  const auto custom_options = builder_.CreateVector(fbb.GetBuffer());
+
+  return ::tflite::CreateOperator(
+      builder_, GetCustomOperatorCodeIndex("custom_call.LayerNorm"),
+      builder_.CreateVector<TensorIndex>(op_inputs),
+      builder_.CreateVector<TensorIndex>(op_outputs),
+      ::tflite::BuiltinOptions_NONE, /*builtin_options=*/0, custom_options,
+      ::tflite::CustomOptionsFormat_FLEXBUFFERS);
+}
+
 auto GraphBuilderTflite::SerializeLayerNormalization(
     const mojom::LayerNormalization& layer_normalization)
     -> base::expected<OperatorOffset, std::string> {
   CHECK(context_properties_.data_type_limits.layer_normalization_input.Supports(
       GetOperand(layer_normalization.input_operand_id).descriptor));
+
+  // Try the fused `custom_call.LayerNorm` path first. If any precondition
+  // fails, fall through to the primitive emulation below.
+#if BUILDFLAG(WEBNN_USE_WEBGPU_ACCELERATOR)
+  if (auto fused = SerializeLayerNormalizationAsCustomCall(layer_normalization);
+      fused.has_value()) {
+    return *fused;
+  }
+#endif  // BUILDFLAG(WEBNN_USE_WEBGPU_ACCELERATOR)
   ASSIGN_OR_RETURN(
       const TensorInfo& input_tensor_info,
       SerializeInputTensorInfo(layer_normalization.input_operand_id));

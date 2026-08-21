@@ -85,6 +85,7 @@ class GraphImplLiteRt final : public WebNNGraphImpl {
   static base::expected<tflite::GraphBuilderTflite::Result, mojom::ErrorPtr>
   BuildGraphOnBackgroundThread(
       ContextProperties context_properties,
+      mojom::Device context_device,
       mojom::GraphInfoPtr graph_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
