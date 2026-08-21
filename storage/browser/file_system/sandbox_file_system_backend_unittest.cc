@@ -209,12 +209,12 @@ class SandboxFileSystemBackendTest : public testing::Test {
     return data_dir_.GetPath().Append(kWebStorageDirectory);
   }
 
+  base::test::ScopedFeatureList feature_list_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<leveldb::Env> incognito_env_override_;
   base::ScopedTempDir data_dir_;
-  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<SandboxFileSystemBackendDelegate> delegate_;
   std::unique_ptr<SandboxFileSystemBackend> backend_;
-  base::test::ScopedFeatureList feature_list_;
   scoped_refptr<QuotaManager> quota_manager_;
 };
 
