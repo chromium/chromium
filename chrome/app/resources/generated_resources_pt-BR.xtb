@@ -1212,7 +1212,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="189035593835762169">Termos e Condições</translation>
 <translation id="189210018541388520">Abrir tela cheia</translation>
 <translation id="1892341345406963517">Olá, <ph name="PARENT_NAME" /></translation>
-<translation id="1892453608039100484">1. Clique em <ph name="BUTTON_LABEL" /> abaixo
+<translation id="1892453608039100484">1. Clique abaixo em <ph name="BUTTON_LABEL" />
 2. Clique em <ph name="BUTTON_2" /> nas configurações do Windows</translation>
 <translation id="189358972401248634">Outros idiomas</translation>
 <translation id="1895658205118569222">Encerramento</translation>
@@ -4401,7 +4401,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4241224519481557898">Categoria</translation>
 <translation id="4242245038391716252">Baixado pela extensão: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="4242344119782070019">Agora você pode expandir as guias ao passar o cursor sobre elas. Para ativar essa função, clique com o botão direito aqui.</translation>
-<translation id="4242533952199664413">Abrir configurações.</translation>
+<translation id="4242533952199664413">Abrir configurações</translation>
 <translation id="4242577469625748426">Falha ao instalar configurações da política no dispositivo: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Seu navegador e seu perfil são gerenciados<ph name="END_LINK" /> por <ph name="DOMAIN" /></translation>
 <translation id="424315890655130736">Digite a senha longa</translation>
