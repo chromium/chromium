@@ -3677,11 +3677,6 @@
     "expiry_milestone": 153
   },
   {
-    "name": "enable-download-enterprise-scan",
-    "owners": [ "nancylanxiao@google.com", "cbe-cep-eng@google.com" ],
-    "expiry_milestone": 153
-  },
-  {
     "name": "enable-drdc",
     "owners": [ "vikassoni@chromium.org", "sunnyps@chromium.org" ],
     "expiry_milestone": 130

@@ -1966,11 +1966,6 @@ inline constexpr char kEnableContentAnalysisClipboardCopyName[] =
 inline constexpr char kEnableContentAnalysisClipboardCopyDescription[] =
     "Enables content analysis checks for the clipboard copy action.";
 
-inline constexpr char kEnableDownloadEnterpriseScanName[] =
-    "Enable enterprise download scanning on Android";
-inline constexpr char kEnableDownloadEnterpriseScanDescription[] =
-    "Enables enterprise deep scanning of downloads on Android.";
-
 inline constexpr char kEnableExperimentalCookieFeaturesName[] =
     "Enable experimental cookie features";
 inline constexpr char kEnableExperimentalCookieFeaturesDescription[] =
