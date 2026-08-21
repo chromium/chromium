@@ -661,7 +661,12 @@ void ProfileAttributesEntry::SetIsGlicEligible(bool value) {
 }
 
 void ProfileAttributesEntry::SetAiSubscriptionTier(int tier) {
+  int old_value = GetAiSubscriptionTier();
   SetInteger(kAiSubscriptionKey, tier);
+  if (old_value != tier) {
+    profile_attributes_storage_->NotifyProfileAiSubscriptionTierUpdated(
+        profile_path_, tier);
+  }
 }
 
 void ProfileAttributesEntry::SetLocalProfileName(const std::u16string& name,

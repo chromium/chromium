@@ -202,6 +202,9 @@ class ProfileAttributesStorage {
       const base::FilePath& profile_path) const;
   void NotifyProfileIsGlicEligibleChanged(
       const base::FilePath& profile_path) const;
+  void NotifyProfileAiSubscriptionTierUpdated(
+      const base::FilePath& profile_path,
+      int tier) const;
 
   // Returns a pref dictionary key of a profile at `profile_path`.
   std::string StorageKeyFromProfilePath(

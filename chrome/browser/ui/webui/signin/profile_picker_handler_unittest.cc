@@ -217,6 +217,34 @@ TEST_F(ProfilePickerHandlerTest, RenameProfile) {
   web_ui()->ClearTrackedCalls();
 }
 
+TEST_F(ProfilePickerHandlerTest, UpdateAiSubscriptionTier) {
+  ProfileAttributesEntry* profile_a = CreateTestingProfile("A");
+  ProfileAttributesEntry* profile_b = CreateTestingProfile("B");
+
+  InitializeMainViewAndVerifyProfileList({profile_a, profile_b});
+  web_ui()->ClearTrackedCalls();
+
+  // Changing the AI subscription tier updates the profile avatar and pushes a
+  // profile list update.
+  profile_a->SetAiSubscriptionTier(1);
+  VerifyProfileListWasPushed({profile_a, profile_b});
+  web_ui()->ClearTrackedCalls();
+
+  // Setting the same AI subscription tier does not trigger an update.
+  profile_a->SetAiSubscriptionTier(1);
+  EXPECT_TRUE(web_ui()->call_data().empty());
+  web_ui()->ClearTrackedCalls();
+
+  // Updating another profile's AI tier also pushes an update.
+  profile_b->SetAiSubscriptionTier(2);
+  VerifyProfileListWasPushed({profile_a, profile_b});
+  web_ui()->ClearTrackedCalls();
+
+  // Resetting the tier back to 0 pushes an update.
+  profile_a->SetAiSubscriptionTier(0);
+  VerifyProfileListWasPushed({profile_a, profile_b});
+}
+
 TEST_F(ProfilePickerHandlerTest, RemoveProfile) {
   ProfileAttributesEntry* profile_a = CreateTestingProfile("A");
   ProfileAttributesEntry* profile_b = CreateTestingProfile("B");
@@ -497,4 +525,25 @@ TEST_F(ProfilePickerHandlerGlicVersionTest, ChangeGlicEligibility) {
   // Trigger PushProfilesList() on empty list to verify no crash.
   eligible_1->SetLocalProfileName(u"E1 Final", false);
   VerifyProfileListWasPushed({});
+}
+
+TEST_F(ProfilePickerHandlerGlicVersionTest, ChangeAiSubscriptionTier) {
+  ProfileAttributesEntry* eligible_1 = CreateTestingProfile("E1");
+  eligible_1->SetIsGlicEligible(true);
+  ProfileAttributesEntry* ineligible_1 = CreateTestingProfile("I1");
+  ineligible_1->SetIsGlicEligible(false);
+
+  InitializeMainViewAndVerifyProfileList({eligible_1});
+  web_ui()->ClearTrackedCalls();
+
+  // Changing the AI subscription tier on an eligible profile pushes an update.
+  eligible_1->SetAiSubscriptionTier(1);
+  VerifyProfileListWasPushed({eligible_1});
+  web_ui()->ClearTrackedCalls();
+
+  // Changing the AI subscription tier on an ineligible profile does not add it
+  // to the Glic profile picker list, and does not crash.
+  ineligible_1->SetAiSubscriptionTier(1);
+  VerifyProfileListWasPushed({eligible_1});
+  web_ui()->ClearTrackedCalls();
 }

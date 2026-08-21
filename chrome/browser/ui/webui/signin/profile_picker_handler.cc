@@ -165,16 +165,16 @@ std::pair<std::string, bool> GetAvatarIconUrlAndAvatarRingStatus(
     float scale) {
   int avatar_icon_size = avatar_icon_size_dip * scale;
   std::string icon_url;
-  bool has_ai_ring = false;
+  bool has_gradient_ring = false;
   if (base::FeatureList::IsEnabled(switches::kEnableAiSubscriptionAvatarRing) &&
       entry->GetAiSubscriptionTier() > 0 && color_provider) {
     // Note: For linear gradient ring to appear, the corresponding profile
     // needs to have been loaded at least once (with
     // kEnableAiSubscriptionAvatarRing), so that the corresponding profile
-    // attribute entry is written.
-    // TODO(crbug.com/516792698): Clarify if the picker needs to listen and
-    // react to updates in the AI subscription level.
-    has_ai_ring = true;
+    // attribute entry is written. Updates to the AI subscription tier trigger
+    // ProfileAttributesStorage::Observer::OnProfileAiSubscriptionTierUpdated
+    // which refreshes the picker UI list.
+    has_gradient_ring = true;
 
     gfx::ImageSkia avatar_skia = gfx::ImageSkia::CreateFromBitmap(
         entry->GetAvatarIcon(avatar_icon_size).AsBitmap(), scale);
@@ -185,12 +185,12 @@ std::pair<std::string, bool> GetAvatarIconUrlAndAvatarRingStatus(
         kAvatarRingThicknessDip);
 
     SkBitmap bitmap = avatar_skia.GetRepresentation(scale).GetBitmap();
-    return {webui::GetBitmapDataUrl(bitmap), has_ai_ring};
+    return {webui::GetBitmapDataUrl(bitmap), has_gradient_ring};
   }
   gfx::Image icon =
       profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(avatar_icon_size),
                                    avatar_icon_size, avatar_icon_size);
-  return {webui::GetBitmapDataUrl(icon.AsBitmap()), has_ai_ring};
+  return {webui::GetBitmapDataUrl(icon.AsBitmap()), has_gradient_ring};
 }
 
 // ProfileState is the dictionary used to map a `ProfileAttributesEntry` in JS.
@@ -228,14 +228,14 @@ base::DictValue CreateProfileState(const ProfileAttributesEntry* entry,
   } else {
     profile_entry.Set("avatarBadge", "");
   }
-  auto [icon_url, has_ai_ring] = GetAvatarIconUrlAndAvatarRingStatus(
+  auto [icon_url, has_gradient_ring] = GetAvatarIconUrlAndAvatarRingStatus(
       entry, avatar_icon_size_dip, color_provider, scale);
-  if (has_ai_ring && !profileCardButtonLabel.empty()) {
+  if (has_gradient_ring && !profileCardButtonLabel.empty()) {
     profileCardButtonLabel = l10n_util::GetStringFUTF16(
         IDS_PROFILE_AVATAR_NAME_WITH_AI_MEMBERSHIP, profileCardButtonLabel);
   }
   profile_entry.Set("profileCardButtonLabel", profileCardButtonLabel);
-  profile_entry.Set("hasAvatarRing", has_ai_ring);
+  profile_entry.Set("hasAvatarRing", has_gradient_ring);
   profile_entry.Set("avatarIcon", icon_url);
   return profile_entry;
 }
@@ -1042,6 +1042,12 @@ void ProfilePickerHandler::OnProfileIsGlicEligibleChanged(
   } else {
     RemoveProfileFromListAndPushUpdates(profile_path);
   }
+}
+
+void ProfilePickerHandler::OnProfileAiSubscriptionTierUpdated(
+    const base::FilePath& profile_path,
+    int tier) {
+  PushProfilesList();
 }
 
 void ProfilePickerHandler::DidFirstVisuallyNonEmptyPaint() {
