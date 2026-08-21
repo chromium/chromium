@@ -851,6 +851,12 @@ void GpuChannelManager::OnUpdateMemoryLimit() {
   if (shared_context_state_) {
     shared_context_state_->OnUpdateMemoryLimit(memory_limit());
   }
+
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+  if (dawn_caching_interface_factory()) {
+    dawn_caching_interface_factory()->OnUpdateMemoryLimit(memory_limit());
+  }
+#endif  // BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
 }
 
 void GpuChannelManager::OnReleaseMemory() {
@@ -864,7 +870,7 @@ void GpuChannelManager::OnReleaseMemory() {
 
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
   if (dawn_caching_interface_factory()) {
-    dawn_caching_interface_factory()->PurgeMemory(memory_limit());
+    dawn_caching_interface_factory()->OnReleaseMemory(memory_limit());
   }
 #endif  // BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
 

@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/service/memory_cache.h"
 
+#include "base/feature_list.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "gpu/command_buffer/service/service_utils.h"
@@ -69,7 +71,9 @@ bool operator<(std::string_view lhs,
 
 MemoryCache::MemoryCache(size_t max_size,
                          std::string_view cache_hit_trace_event)
-    : max_size_(max_size), cache_hit_trace_event_(cache_hit_trace_event) {}
+    : max_size_(max_size),
+      size_limit_(max_size),
+      cache_hit_trace_event_(cache_hit_trace_event) {}
 
 MemoryCache::~MemoryCache() = default;
 
@@ -127,8 +131,31 @@ scoped_refptr<MemoryCacheEntry> MemoryCache::Store(
   return entry;
 }
 
-void MemoryCache::PurgeMemory(int memory_limit) {
+void MemoryCache::OnUpdateMemoryLimit(int memory_limit) {
   base::AutoLock lock(mutex_);
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    size_t target_limit =
+        gpu::UpdateShaderCacheSizeOnMemoryLimit(max_size_, memory_limit);
+    // Ensure no memory is released during OnUpdateMemoryLimit.
+    size_limit_ = std::max(current_size_, target_limit);
+  }
+}
+
+void MemoryCache::OnReleaseMemory(int memory_limit) {
+  base::AutoLock lock(mutex_);
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    // In OnUpdateMemoryLimit(), size_limit_ is clamped to current_size_
+    // to avoid unexpected eviction during subsequent Store() calls.
+    // When OnReleaseMemory() is called to explicitly free memory, we must
+    // update size_limit_ to the actual target limit before enforcing it.
+    size_limit_ =
+        gpu::UpdateShaderCacheSizeOnMemoryLimit(max_size_, memory_limit);
+    while (current_size_ > size_limit_) {
+      EvictEntry(lru_.head()->value());
+    }
+    return;
+  }
+
   size_t new_limit =
       gpu::UpdateShaderCacheSizeOnMemoryLimit(max_size_, memory_limit);
   while (current_size_ > new_limit) {
@@ -179,7 +206,7 @@ void MemoryCache::EvictEntry(MemoryCacheEntry* entry) {
 
 void MemoryCache::InsertEntry(scoped_refptr<MemoryCacheEntry> entry) {
   // Evict least used entries until we have enough room to add the new entry.
-  while (current_size_ + entry->TotalSize() > max_size_) {
+  while (current_size_ + entry->TotalSize() > size_limit_) {
     EvictEntry(lru_.head()->value());
   }
 
@@ -199,7 +226,7 @@ bool MemoryCache::CanFitMemoryCacheEntry(size_t data_size) const {
 
   // If this entry is larger than we can make space for, don't allow it to be
   // stored.
-  if (data_size >= max_size_) {
+  if (data_size >= size_limit_) {
     return false;
   }
 
