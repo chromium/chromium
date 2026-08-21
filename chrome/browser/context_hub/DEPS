@@ -9,4 +9,5 @@ include_rules = [
   "+components/page_content_annotations/content",
   "+components/personal_context/proto",
   "+components/saved_tab_groups/test_support",
+  "+components/tabs",
 ]

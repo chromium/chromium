@@ -66,6 +66,7 @@ source_set("context_hub") {
   }
 
   deps = [
+    "//chrome/browser/contextual_tasks",
     "//chrome/browser/tab_group_sync",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/tab_list",
@@ -74,6 +75,7 @@ source_set("context_hub") {
     "//components/saved_tab_groups/public",
     "//components/sessions",
     "//components/signin/public/base",
+    "//components/tabs:public",
     "//sql",
   ]
 }

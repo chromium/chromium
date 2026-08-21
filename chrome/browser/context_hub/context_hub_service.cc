@@ -31,6 +31,7 @@
 #include "chrome/browser/context_hub/tab_group_store/tab_group_entry.h"
 #include "chrome/browser/context_hub/tab_group_store/tab_group_entry_conversions.h"
 #include "chrome/browser/context_hub/tab_group_store/tab_group_store.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
@@ -47,6 +48,7 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
@@ -92,6 +94,18 @@ optimization_guide::proto::MemoryBankEntry ToMemoryBankEntryProto(
   return mb_proto;
 }
 
+base::TimeDelta GetDurationOfCurrentOrLastVisit(
+    content::WebContents* web_contents) {
+  if (tabs::TabInterface* tab =
+          tabs::TabInterface::MaybeGetFromContents(web_contents)) {
+    if (contextual_tasks::ContextualTasksTabVisitTracker* tracker =
+            contextual_tasks::ContextualTasksTabVisitTracker::From(tab)) {
+      return tracker->GetDurationOfCurrentOrLastVisit();
+    }
+  }
+  return base::TimeDelta();
+}
+
 using TabContextBarrierCallback = base::RepeatingCallback<void(
     std::pair<TabData, std::optional<optimization_guide::proto::PageContext>>)>;
 
@@ -115,6 +129,8 @@ void OnPageContentExtracted(
   tab.title = base::UTF16ToUTF8(web_contents->GetTitle());
   tab.url = web_contents->GetLastCommittedURL();
   tab.last_active_time = web_contents->GetLastActiveTime();
+  tab.last_foreground_duration =
+      GetDurationOfCurrentOrLastVisit(web_contents.get());
 
   std::optional<optimization_guide::proto::PageContext> page_context;
   if (extracted_result && extracted_result->page_content) {
