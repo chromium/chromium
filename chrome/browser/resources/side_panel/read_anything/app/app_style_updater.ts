@@ -5,6 +5,11 @@
 import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {LineFocusType} from '../content/read_anything_types.js';
+import type {AudioBrowserProxy} from '../read_aloud/audio_browser_proxy.js';
+import {AudioBrowserProxyImpl} from '../read_aloud/audio_browser_proxy.js';
+
+import type {VisualBrowserProxy} from './visual_browser_proxy.js';
+import {VisualBrowserProxyImpl} from './visual_browser_proxy.js';
 
 // Constants for styling the app when page zoom changes.
 const OVERFLOW_X_TYPICAL = 'hidden';
@@ -79,17 +84,22 @@ enum ColorSuffix {
 // Handles updating the visual styles for the Reading mode content panel.
 export class AppStyleUpdater {
   private app_: CrLitElement;
+  private visualBrowserProxy_: VisualBrowserProxy =
+      VisualBrowserProxyImpl.getInstance();
+  private audioBrowserProxy_: AudioBrowserProxy =
+      AudioBrowserProxyImpl.getInstance();
 
   constructor(app: CrLitElement) {
     this.app_ = app;
   }
 
   setMaxLineWidth() {
-    this.setStyle_('--max-width', `${chrome.readingMode.maxLineWidth}ch`);
+    this.setStyle_(
+        '--max-width', `${this.visualBrowserProxy_.getMaxLineWidth()}ch`);
   }
 
   setPaddingForLineFocus(padding: number) {
-    if (!chrome.readingMode.isLineFocusEnabled) {
+    if (!this.visualBrowserProxy_.isLineFocusEnabled()) {
       return;
     }
 
@@ -97,7 +107,7 @@ export class AppStyleUpdater {
   }
 
   getPaddingForLineFocus(): number {
-    if (!chrome.readingMode.isLineFocusEnabled) {
+    if (!this.visualBrowserProxy_.isLineFocusEnabled()) {
       return 0;
     }
     const padding = this.app_.style.getPropertyValue('--line-focus-padding');
@@ -113,7 +123,8 @@ export class AppStyleUpdater {
 
   setLineFocusStyle(type: LineFocusType) {
     this.setToolbarIconColorForLineFocus_(type);
-    if (!chrome.readingMode.isLineFocusEnabled || type === LineFocusType.NONE) {
+    if (!this.visualBrowserProxy_.isLineFocusEnabled() ||
+        type === LineFocusType.NONE) {
       this.setStyle_('--line-focus-display', 'none');
       return;
     }
@@ -133,14 +144,14 @@ export class AppStyleUpdater {
   }
 
   private setToolbarIconColorForLineFocus_(type: LineFocusType) {
-    if (!chrome.readingMode.isLineFocusEnabled) {
+    if (!this.visualBrowserProxy_.isLineFocusEnabled()) {
       return;
     }
 
     // Since the window line focus scrim goes into the toolbar area, update the
     // toolbar icons as needed to maintain visibility on top of the dark scrim.
     const isWindow = type === LineFocusType.WINDOW;
-    if (chrome.readingMode.isImmersiveEnabled) {
+    if (this.visualBrowserProxy_.isImmersiveEnabled()) {
       const colorSuffix =
           isWindow ? ColorSuffix.DARK : this.getCurrentColorSuffix_();
       this.setStyle_(
@@ -162,7 +173,9 @@ export class AppStyleUpdater {
     // window.
     this.setStyle_(
         '--line-focus-height',
-        `${chrome.readingMode.fontSize * LINE_FOCUS_LINE_HEIGHT_SCALE}px`);
+        `${
+            this.visualBrowserProxy_.getFontSize() *
+            LINE_FOCUS_LINE_HEIGHT_SCALE}px`);
   }
 
   setAllTextStyles() {
@@ -174,30 +187,32 @@ export class AppStyleUpdater {
   }
 
   setLineSpacing() {
-    const lineHeight =
-        chrome.readingMode.getLineSpacingValue(chrome.readingMode.lineSpacing);
+    const lineHeight = this.visualBrowserProxy_.getLineSpacingValue(
+        this.visualBrowserProxy_.getLineSpacing());
     this.setStyle_('--line-height', `${lineHeight}`);
 
-    const minLineHeight = chrome.readingMode.getLineSpacingValue(
-        chrome.readingMode.standardLineSpacing);
+    const minLineHeight = this.visualBrowserProxy_.getLineSpacingValue(
+        this.visualBrowserProxy_.getStandardLineSpacing());
     const pSpacing = minLineHeight ? (lineHeight / minLineHeight) : lineHeight;
     this.setStyle_('--paragraph-spacing', `${pSpacing}em`);
   }
 
   setLetterSpacing() {
-    const letterSpacing = chrome.readingMode.getLetterSpacingValue(
-        chrome.readingMode.letterSpacing);
+    const letterSpacing = this.visualBrowserProxy_.getLetterSpacingValue(
+        this.visualBrowserProxy_.getLetterSpacing());
     this.setStyle_('--letter-spacing', `${letterSpacing}em`);
   }
 
   setFontSize() {
-    this.setStyle_('--font-size', `${chrome.readingMode.fontSize}em`);
+    this.setStyle_(
+        '--font-size', `${this.visualBrowserProxy_.getFontSize()}em`);
   }
 
   setFont() {
     this.setStyle_(
         '--font-family',
-        chrome.readingMode.getValidatedFontName(chrome.readingMode.fontName));
+        this.visualBrowserProxy_.getValidatedFontName(
+            this.visualBrowserProxy_.getFontName()));
   }
 
   setHighlight() {
@@ -259,8 +274,8 @@ export class AppStyleUpdater {
     // disabled (via flag), off, or in line mode.
     const lineFocusDisplay =
         this.app_.style.getPropertyValue('--line-focus-display');
-    if (!chrome.readingMode.isLineFocusEnabled || lineFocusDisplay === 'none' ||
-        !isLineFocusWindow) {
+    if (!this.visualBrowserProxy_.isLineFocusEnabled() ||
+        lineFocusDisplay === 'none' || !isLineFocusWindow) {
       this.setStyle_(
           '--toolbar-icon-color', this.getToolbarIconColor_(colorSuffix));
     }
@@ -291,20 +306,20 @@ export class AppStyleUpdater {
   }
 
   private getCurrentColorSuffix_(): ColorSuffix {
-    switch (chrome.readingMode.colorTheme) {
-      case chrome.readingMode.lightTheme:
+    switch (this.visualBrowserProxy_.getColorTheme()) {
+      case this.visualBrowserProxy_.getLightTheme():
         return ColorSuffix.LIGHT;
-      case chrome.readingMode.darkTheme:
+      case this.visualBrowserProxy_.getDarkTheme():
         return ColorSuffix.DARK;
-      case chrome.readingMode.yellowTheme:
+      case this.visualBrowserProxy_.getYellowTheme():
         return ColorSuffix.YELLOW;
-      case chrome.readingMode.blueTheme:
+      case this.visualBrowserProxy_.getBlueTheme():
         return ColorSuffix.BLUE;
-      case chrome.readingMode.highContrastTheme:
+      case this.visualBrowserProxy_.getHighContrastTheme():
         return ColorSuffix.HIGH_CONTRAST;
-      case chrome.readingMode.lowContrastLightTheme:
+      case this.visualBrowserProxy_.getLowContrastLightTheme():
         return ColorSuffix.LOW_CONTRAST_LIGHT;
-      case chrome.readingMode.lowContrastDarkTheme:
+      case this.visualBrowserProxy_.getLowContrastDarkTheme():
         return ColorSuffix.LOW_CONTRAST_DARK;
       default:
         return ColorSuffix.DEFAULT;
@@ -321,7 +336,7 @@ export class AppStyleUpdater {
   }
 
   private getCurrentHighlightColor_(colorSuffix: ColorSuffix): string {
-    if (!chrome.readingMode.isHighlightOn()) {
+    if (!this.audioBrowserProxy_.isHighlightOn()) {
       return TRANSPARENT;
     }
     if (colorSuffix === ColorSuffix.DEFAULT) {

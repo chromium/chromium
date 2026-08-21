@@ -32,6 +32,7 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
       'getDisplayNameForLocale',
       'getDefaultLanguageForSpeech',
       'getBaseLanguageForSpeech',
+      'isHighlightOn',
       'onSpeechRateChange',
       'onHighlightGranularityChanged',
     ]);
@@ -90,6 +91,11 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
   getBaseLanguageForSpeech(): string {
     this.methodCalled('getBaseLanguageForSpeech');
     return this.baseLanguageForSpeech;
+  }
+
+  isHighlightOn(): boolean {
+    this.methodCalled('isHighlightOn');
+    return this.highlightGranularity !== this.noHighlighting;
   }
 
   onSpeechRateChange(rate: number): void {

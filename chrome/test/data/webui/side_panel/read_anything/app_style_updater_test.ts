@@ -1,17 +1,21 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {AppStyleUpdater, BrowserProxy, LineFocusType} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AppStyleUpdater, AudioBrowserProxyImpl, BrowserProxy, ContentBrowserProxyImpl, LineFocusType, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertGT, assertNotEquals, assertStringContains} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createApp} from './common.js';
-import {FakeReadingMode} from './fake_reading_mode.js';
+import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
+import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('AppStyleUpdater', () => {
   let app: AppElement;
   let updater: AppStyleUpdater;
+  let visualBrowserProxy: TestVisualBrowserProxy;
+  let audioBrowserProxy: TestAudioBrowserProxy;
 
   function computeStyle(style: string) {
     return window.getComputedStyle(app.$.container).getPropertyValue(style);
@@ -31,25 +35,28 @@ suite('AppStyleUpdater', () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
-    const readingMode = new FakeReadingMode();
-    chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
+    visualBrowserProxy = new TestVisualBrowserProxy();
+    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
+    audioBrowserProxy = new TestAudioBrowserProxy();
+    AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
+    ContentBrowserProxyImpl.setInstance(new TestContentBrowserProxy());
 
     app = await createApp();
     updater = new AppStyleUpdater(app);
   });
 
   test('max line width is max chars', () => {
-    chrome.readingMode.maxLineWidth = 100;
+    visualBrowserProxy.maxLineWidth = 100;
     updater.setMaxLineWidth();
     assertEquals('100ch', app.style.getPropertyValue('--max-width'));
 
-    chrome.readingMode.maxLineWidth = 40;
+    visualBrowserProxy.maxLineWidth = 40;
     updater.setMaxLineWidth();
     assertEquals('40ch', app.style.getPropertyValue('--max-width'));
   });
 
   test('setPaddingForLineFocus sets top and bottom padding', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
     const padding = 50;
 
     updater.setPaddingForLineFocus(padding);
@@ -60,17 +67,17 @@ suite('AppStyleUpdater', () => {
   });
 
   test('line focus height depends on font scale', () => {
-    chrome.readingMode.fontSize = 1;
+    visualBrowserProxy.fontSize = 1;
     updater.setLineFocusHeight();
     assertEquals('2px', app.style.getPropertyValue('--line-focus-height'));
 
-    chrome.readingMode.fontSize = 2;
+    visualBrowserProxy.fontSize = 2;
     updater.setLineFocusHeight();
     assertEquals('4px', app.style.getPropertyValue('--line-focus-height'));
   });
 
   test('setLineFocusStyle with no line focus hides view', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
 
     updater.setLineFocusStyle(LineFocusType.NONE);
 
@@ -81,8 +88,8 @@ suite('AppStyleUpdater', () => {
   });
 
   test('setLineFocusStyle with line focus off hides view', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
-    chrome.readingMode.colorTheme = chrome.readingMode.lowContrastDarkTheme;
+    visualBrowserProxy.lineFocusEnabled = true;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lowContrastDarkTheme;
 
     updater.setLineFocusStyle(LineFocusType.NONE);
 
@@ -93,8 +100,8 @@ suite('AppStyleUpdater', () => {
   });
 
   test('setLineFocusStyle with line focus line shows view', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
-    chrome.readingMode.colorTheme = chrome.readingMode.lowContrastDarkTheme;
+    visualBrowserProxy.lineFocusEnabled = true;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lowContrastDarkTheme;
 
     updater.setLineFocusStyle(LineFocusType.LINE);
 
@@ -107,7 +114,7 @@ suite('AppStyleUpdater', () => {
   });
 
   test('setLineFocusStyle with line focus window shows view', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
 
     updater.setLineFocusStyle(LineFocusType.WINDOW);
 
@@ -117,7 +124,7 @@ suite('AppStyleUpdater', () => {
   });
 
   test('setLineFocusStyle with line focus window does not set height', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
     updater.setLineFocusStyle(LineFocusType.WINDOW);
     assertEquals('', app.style.getPropertyValue('--line-focus-height'));
   });
@@ -125,7 +132,7 @@ suite('AppStyleUpdater', () => {
   test(
       'setLineFocusStyle sets different background and shadow for different types',
       () => {
-        chrome.readingMode.isLineFocusEnabled = true;
+        visualBrowserProxy.lineFocusEnabled = true;
         updater.setLineFocusStyle(LineFocusType.WINDOW);
         const windowShadow = app.style.getPropertyValue('--line-focus-shadow');
         const windowBg = app.style.getPropertyValue('--line-focus-bg');
@@ -142,7 +149,7 @@ suite('AppStyleUpdater', () => {
       'setLineFocusStyle does not update toolbar colors if line focus is ' +
           'disabled',
       () => {
-        chrome.readingMode.isLineFocusEnabled = false;
+        visualBrowserProxy.lineFocusEnabled = false;
         updater.setLineFocusStyle(LineFocusType.WINDOW);
         assertEquals('', app.style.getPropertyValue('--toolbar-icon-color'));
         assertEquals(
@@ -155,8 +162,8 @@ suite('AppStyleUpdater', () => {
       'setLineFocusStyle sets dark toolbar icon color in immersive mode for ' +
           'window line focus',
       () => {
-        chrome.readingMode.isLineFocusEnabled = true;
-        chrome.readingMode.isImmersiveEnabled = true;
+        visualBrowserProxy.lineFocusEnabled = true;
+        visualBrowserProxy.immersiveEnabled = true;
         updater.setLineFocusStyle(LineFocusType.WINDOW);
         assertEquals(
             'var(--color-read-anything-toolbar-icon-dark)',
@@ -167,9 +174,9 @@ suite('AppStyleUpdater', () => {
       'setLineFocusStyle sets themed toolbar icon color in immersive mode ' +
           'for non-window line focus',
       () => {
-        chrome.readingMode.isLineFocusEnabled = true;
-        chrome.readingMode.isImmersiveEnabled = true;
-        chrome.readingMode.colorTheme = chrome.readingMode.yellowTheme;
+        visualBrowserProxy.lineFocusEnabled = true;
+        visualBrowserProxy.immersiveEnabled = true;
+        visualBrowserProxy.colorTheme = visualBrowserProxy.yellowTheme;
         updater.setLineFocusStyle(LineFocusType.LINE);
         assertEquals(
             'var(--color-read-anything-toolbar-icon-yellow)',
@@ -180,8 +187,8 @@ suite('AppStyleUpdater', () => {
       'setLineFocusStyle sets dark legacy toolbar icon colors for window ' +
           'line focus',
       () => {
-        chrome.readingMode.isLineFocusEnabled = true;
-        chrome.readingMode.isImmersiveEnabled = false;
+        visualBrowserProxy.lineFocusEnabled = true;
+        visualBrowserProxy.immersiveEnabled = false;
         updater.setLineFocusStyle(LineFocusType.WINDOW);
         assertEquals(
             'var(--color-read-anything-toolbar-icon-dark)',
@@ -195,8 +202,8 @@ suite('AppStyleUpdater', () => {
       'setLineFocusStyle sets default legacy toolbar icon colors for ' +
           'non-window line focus',
       () => {
-        chrome.readingMode.isLineFocusEnabled = true;
-        chrome.readingMode.isImmersiveEnabled = false;
+        visualBrowserProxy.lineFocusEnabled = true;
+        visualBrowserProxy.immersiveEnabled = false;
         updater.setLineFocusStyle(LineFocusType.LINE);
         assertEquals(
             'var(--color-sys-on-surface-subtle)',
@@ -225,7 +232,7 @@ suite('AppStyleUpdater', () => {
   });
 
   test('line spacing depends on font size', () => {
-    chrome.readingMode.lineSpacing = 10;
+    visualBrowserProxy.lineSpacing = 10;
 
     setAppFontSize(10);
     updater.setLineSpacing();
@@ -241,12 +248,12 @@ suite('AppStyleUpdater', () => {
   test('paragraph spacing depends on line spacing', () => {
     setAppFontSize(10);
 
-    chrome.readingMode.lineSpacing = 10;
+    visualBrowserProxy.lineSpacing = 10;
     updater.setLineSpacing();
     const lineSpacing1 = parseInt(computeStyle('line-height'));
     const pSpacing1 = parseInt(computeStyle('--paragraph-spacing'));
 
-    chrome.readingMode.lineSpacing = 16;
+    visualBrowserProxy.lineSpacing = 16;
     updater.setLineSpacing();
     const lineSpacing2 = parseInt(computeStyle('line-height'));
     const pSpacing2 = parseInt(computeStyle('--paragraph-spacing'));
@@ -257,12 +264,12 @@ suite('AppStyleUpdater', () => {
 
   test('letter spacing depends on font size', () => {
     setAppFontSize(10);
-    chrome.readingMode.letterSpacing = 10;
+    visualBrowserProxy.letterSpacing = 10;
     updater.setLetterSpacing();
     assertEquals('100px', computeStyle('letter-spacing'));
 
     setAppFontSize(12);
-    chrome.readingMode.letterSpacing = 16;
+    visualBrowserProxy.letterSpacing = 16;
     updater.setLetterSpacing();
     assertEquals('192px', computeStyle('letter-spacing'));
   });
@@ -270,12 +277,12 @@ suite('AppStyleUpdater', () => {
   test('word spacing depends on letter spacing', () => {
     setAppFontSize(10);
 
-    chrome.readingMode.letterSpacing = 10;
+    visualBrowserProxy.letterSpacing = 10;
     updater.setLetterSpacing();
     const letterSpacing1 = +computeStyle('letter-spacing').replace('px', '');
     const wordSpacing1 = +computeStyle('word-spacing').replace('px', '');
 
-    chrome.readingMode.letterSpacing = 16;
+    visualBrowserProxy.letterSpacing = 16;
     updater.setLetterSpacing();
     const letterSpacing2 = +computeStyle('letter-spacing').replace('px', '');
     const wordSpacing2 = +computeStyle('word-spacing').replace('px', '');
@@ -286,29 +293,29 @@ suite('AppStyleUpdater', () => {
 
   test('font size scales', () => {
     setAppFontSize(10);
-    chrome.readingMode.fontSize = 1;
+    visualBrowserProxy.fontSize = 1;
     updater.setFontSize();
     assertEquals('10px', computeStyle('font-size'));
 
-    chrome.readingMode.fontSize = 2.5;
+    visualBrowserProxy.fontSize = 2.5;
     updater.setFontSize();
     assertEquals('25px', computeStyle('font-size'));
 
-    chrome.readingMode.fontSize = 0.5;
+    visualBrowserProxy.fontSize = 0.5;
     updater.setFontSize();
     assertEquals('5px', computeStyle('font-size'));
   });
 
   test('font name', () => {
-    chrome.readingMode.fontName = 'Poppins';
+    visualBrowserProxy.fontName = 'Poppins';
     updater.setFont();
     assertStringContains(
-        computeStyle('font-family'), chrome.readingMode.fontName);
+        computeStyle('font-family'), visualBrowserProxy.fontName);
 
-    chrome.readingMode.fontName = 'Lexend Deca';
+    visualBrowserProxy.fontName = 'Lexend Deca';
     updater.setFont();
     assertStringContains(
-        computeStyle('font-family'), chrome.readingMode.fontName);
+        computeStyle('font-family'), visualBrowserProxy.fontName);
   });
 
   test('current highlight', () => {
@@ -320,21 +327,21 @@ suite('AppStyleUpdater', () => {
       '--color-read-anything-current-read-aloud-highlight-dark':
           expectedDarkColor,
     });
-    chrome.readingMode.onHighlightGranularityChanged(
-        chrome.readingMode.autoHighlighting);
-    chrome.readingMode.colorTheme = chrome.readingMode.yellowTheme;
+    audioBrowserProxy.onHighlightGranularityChanged(
+        audioBrowserProxy.autoHighlighting);
+    visualBrowserProxy.colorTheme = visualBrowserProxy.yellowTheme;
     updater.setHighlight();
     assertEquals(
         expectedYellowColor, computeStyle('--current-highlight-bg-color'));
 
-    chrome.readingMode.colorTheme = chrome.readingMode.darkTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.darkTheme;
     updater.setHighlight();
     assertEquals(
         expectedDarkColor, computeStyle('--current-highlight-bg-color'));
 
-    chrome.readingMode.onHighlightGranularityChanged(
-        chrome.readingMode.noHighlighting);
-    chrome.readingMode.colorTheme = chrome.readingMode.lightTheme;
+    audioBrowserProxy.onHighlightGranularityChanged(
+        audioBrowserProxy.noHighlighting);
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lightTheme;
     updater.setHighlight();
     assertEquals('transparent', computeStyle('--current-highlight-bg-color'));
   });
@@ -489,11 +496,11 @@ suite('AppStyleUpdater', () => {
           expectedLowContrastDarkLinkVisited,
       '--line-focus-bg': expectedLightLineFocus,
     });
-    chrome.readingMode.onHighlightGranularityChanged(
-        chrome.readingMode.autoHighlighting);
+    audioBrowserProxy.onHighlightGranularityChanged(
+        audioBrowserProxy.autoHighlighting);
 
     // Verify default theme colors.
-    chrome.readingMode.colorTheme = chrome.readingMode.defaultTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.defaultTheme;
     updater.setTheme();
     assertStringContains(computeStyle('background'), expectedDefaultBackground);
     assertStringContains(computeStyle('color'), expectedDefaultForeground);
@@ -514,7 +521,7 @@ suite('AppStyleUpdater', () => {
     assertEquals(expectedDefaultLineFocus, computeStyle('--line-focus-bg'));
 
     // Verify yellow theme colors.
-    chrome.readingMode.colorTheme = chrome.readingMode.yellowTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.yellowTheme;
     updater.setTheme();
     assertStringContains(computeStyle('background'), expectedYellowBackground);
     assertStringContains(computeStyle('color'), expectedYellowForeground);
@@ -535,12 +542,12 @@ suite('AppStyleUpdater', () => {
     assertEquals(expectedLightLineFocus, computeStyle('--line-focus-bg'));
 
     // Verify light theme colors.
-    chrome.readingMode.colorTheme = chrome.readingMode.lightTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lightTheme;
     updater.setTheme();
     assertEquals(expectedLightLineFocus, computeStyle('--line-focus-bg'));
 
     // Verify dark theme colors.
-    chrome.readingMode.colorTheme = chrome.readingMode.darkTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.darkTheme;
     updater.setTheme();
     assertStringContains(computeStyle('background'), expectedDarkBackground);
     assertStringContains(computeStyle('color'), expectedDarkForeground);
@@ -560,7 +567,7 @@ suite('AppStyleUpdater', () => {
 
     // Verify high contrast theme colors.
     updateStyles({'--google-grey-700': expectedHighContrastEmptyBody});
-    chrome.readingMode.colorTheme = chrome.readingMode.highContrastTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.highContrastTheme;
     updater.setTheme();
     assertStringContains(
         computeStyle('background'), expectedHighContrastBackground);
@@ -585,7 +592,7 @@ suite('AppStyleUpdater', () => {
 
     // Verify lowContrast light theme colors.
     updateStyles({'--google-grey-700': expectedLowContrastLightEmptyBody});
-    chrome.readingMode.colorTheme = chrome.readingMode.lowContrastLightTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lowContrastLightTheme;
     updater.setTheme();
     assertStringContains(
         computeStyle('background'), expectedLowContrastLightBackground);
@@ -611,7 +618,7 @@ suite('AppStyleUpdater', () => {
 
     // Verify lowContrast dark theme colors.
     updateStyles({'--google-grey-700': expectedLowContrastDarkEmptyBody});
-    chrome.readingMode.colorTheme = chrome.readingMode.lowContrastDarkTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lowContrastDarkTheme;
     updater.setTheme();
     assertStringContains(
         computeStyle('background'), expectedLowContrastDarkBackground);
@@ -702,7 +709,7 @@ suite('AppStyleUpdater', () => {
     });
 
     // Default theme
-    chrome.readingMode.colorTheme = chrome.readingMode.defaultTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.defaultTheme;
     updater.setTheme();
     assertEquals(
         expectedDefaultBg, computeStyle('--audio-player-background-color'));
@@ -713,7 +720,7 @@ suite('AppStyleUpdater', () => {
         computeStyle('--audio-controls-icon-color'));
 
     // Light theme
-    chrome.readingMode.colorTheme = chrome.readingMode.lightTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lightTheme;
     updater.setTheme();
     assertEquals(
         expectedLightBg, computeStyle('--audio-player-background-color'));
@@ -722,7 +729,7 @@ suite('AppStyleUpdater', () => {
         expectedLightControlsIcon, computeStyle('--audio-controls-icon-color'));
 
     // Dark theme
-    chrome.readingMode.colorTheme = chrome.readingMode.darkTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.darkTheme;
     updater.setTheme();
     assertEquals(
         expectedDarkBg, computeStyle('--audio-player-background-color'));
@@ -731,7 +738,7 @@ suite('AppStyleUpdater', () => {
         expectedDarkControlsIcon, computeStyle('--audio-controls-icon-color'));
 
     // Yellow theme
-    chrome.readingMode.colorTheme = chrome.readingMode.yellowTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.yellowTheme;
     updater.setTheme();
     assertEquals(
         expectedYellowBg, computeStyle('--audio-player-background-color'));
@@ -741,7 +748,7 @@ suite('AppStyleUpdater', () => {
         computeStyle('--audio-controls-icon-color'));
 
     // Blue theme
-    chrome.readingMode.colorTheme = chrome.readingMode.blueTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.blueTheme;
     updater.setTheme();
     assertEquals(
         expectedBlueBg, computeStyle('--audio-player-background-color'));
@@ -750,7 +757,7 @@ suite('AppStyleUpdater', () => {
         expectedBlueControlsIcon, computeStyle('--audio-controls-icon-color'));
 
     // High contrast theme
-    chrome.readingMode.colorTheme = chrome.readingMode.highContrastTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.highContrastTheme;
     updater.setTheme();
     assertEquals(
         expectedHighContrastBg,
@@ -763,7 +770,7 @@ suite('AppStyleUpdater', () => {
 
 
     // LowContrast light theme
-    chrome.readingMode.colorTheme = chrome.readingMode.lowContrastLightTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lowContrastLightTheme;
     updater.setTheme();
     assertEquals(
         expectedLowContrastLightBg,
@@ -776,7 +783,7 @@ suite('AppStyleUpdater', () => {
         computeStyle('--audio-controls-icon-color'));
 
     // LowContrast dark theme
-    chrome.readingMode.colorTheme = chrome.readingMode.lowContrastDarkTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lowContrastDarkTheme;
     updater.setTheme();
     assertEquals(
         expectedLowContrastDarkBg,
@@ -812,48 +819,48 @@ suite('AppStyleUpdater', () => {
     });
 
     // Default theme
-    chrome.readingMode.colorTheme = chrome.readingMode.defaultTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.defaultTheme;
     updater.setTheme();
     assertEquals(
         expectedDefaultToolbarIcon, computeStyle('--toolbar-icon-color'));
 
     // Light theme
-    chrome.readingMode.colorTheme = chrome.readingMode.lightTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lightTheme;
     updater.setTheme();
     assertEquals(
         expectedLightToolbarIcon, computeStyle('--toolbar-icon-color'));
 
     // Dark theme
-    chrome.readingMode.colorTheme = chrome.readingMode.darkTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.darkTheme;
     updater.setTheme();
     assertEquals(expectedDarkToolbarIcon, computeStyle('--toolbar-icon-color'));
 
     // Yellow theme
-    chrome.readingMode.colorTheme = chrome.readingMode.yellowTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.yellowTheme;
     updater.setTheme();
     assertEquals(
         expectedYellowToolbarIcon, computeStyle('--toolbar-icon-color'));
 
     // Blue theme
-    chrome.readingMode.colorTheme = chrome.readingMode.blueTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.blueTheme;
     updater.setTheme();
     assertEquals(expectedBlueToolbarIcon, computeStyle('--toolbar-icon-color'));
 
     // High contrast theme
-    chrome.readingMode.colorTheme = chrome.readingMode.highContrastTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.highContrastTheme;
     updater.setTheme();
     assertEquals(
         expectedHighContrastToolbarIcon, computeStyle('--toolbar-icon-color'));
 
     // LowContrast light theme
-    chrome.readingMode.colorTheme = chrome.readingMode.lowContrastLightTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lowContrastLightTheme;
     updater.setTheme();
     assertEquals(
         expectedLowContrastLightToolbarIcon,
         computeStyle('--toolbar-icon-color'));
 
     // LowContrast dark theme
-    chrome.readingMode.colorTheme = chrome.readingMode.lowContrastDarkTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lowContrastDarkTheme;
     updater.setTheme();
     assertEquals(
         expectedLowContrastDarkToolbarIcon,
@@ -864,13 +871,13 @@ suite('AppStyleUpdater', () => {
       'setTheme does not update toolbar icon color if line focus is enabled ' +
           'and a visible window',
       () => {
-        chrome.readingMode.isLineFocusEnabled = true;
+        visualBrowserProxy.lineFocusEnabled = true;
         app.style.setProperty('--line-focus-display', 'block');
         app.style.setProperty('--line-focus-bg', 'none');
         const initialColor = 'rgb(255, 0, 0)';
         app.style.setProperty('--toolbar-icon-color', initialColor);
 
-        chrome.readingMode.colorTheme = chrome.readingMode.darkTheme;
+        visualBrowserProxy.colorTheme = visualBrowserProxy.darkTheme;
         updater.setTheme();
 
         assertEquals(initialColor, computeStyle('--toolbar-icon-color'));
@@ -880,7 +887,7 @@ suite('AppStyleUpdater', () => {
       'setTheme updates toolbar icon color if line focus is enabled but ' +
           'display is none',
       () => {
-        chrome.readingMode.isLineFocusEnabled = true;
+        visualBrowserProxy.lineFocusEnabled = true;
         app.style.setProperty('--line-focus-display', 'none');
         app.style.setProperty('--line-focus-bg', 'none');
         const initialColor = 'rgb(255, 0, 0)';
@@ -890,7 +897,7 @@ suite('AppStyleUpdater', () => {
           '--color-read-anything-toolbar-icon-dark': expectedDarkToolbarIcon,
         });
 
-        chrome.readingMode.colorTheme = chrome.readingMode.darkTheme;
+        visualBrowserProxy.colorTheme = visualBrowserProxy.darkTheme;
         updater.setTheme();
 
         assertEquals(
@@ -901,7 +908,7 @@ suite('AppStyleUpdater', () => {
       'setTheme updates toolbar icon color if line focus is enabled and a ' +
           'a visible line',
       () => {
-        chrome.readingMode.isLineFocusEnabled = true;
+        visualBrowserProxy.lineFocusEnabled = true;
         app.style.setProperty('--line-focus-display', 'none');
         app.style.setProperty(
             '--line-focus-bg', 'var(--color-read-anything-line-focus-dark)');
@@ -912,7 +919,7 @@ suite('AppStyleUpdater', () => {
           '--color-read-anything-toolbar-icon-dark': expectedDarkToolbarIcon,
         });
 
-        chrome.readingMode.colorTheme = chrome.readingMode.darkTheme;
+        visualBrowserProxy.colorTheme = visualBrowserProxy.darkTheme;
         updater.setTheme();
 
         assertEquals(
@@ -945,51 +952,51 @@ suite('AppStyleUpdater', () => {
     });
 
     // Default theme
-    chrome.readingMode.colorTheme = chrome.readingMode.defaultTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.defaultTheme;
     updater.setTheme();
     assertEquals(
         expectedDefault, computeStyle('--on-audio-player-focus-outline-color'));
 
     // Light theme
-    chrome.readingMode.colorTheme = chrome.readingMode.lightTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lightTheme;
     updater.setTheme();
     assertEquals(
         expectedLight, computeStyle('--on-audio-player-focus-outline-color'));
 
     // Dark theme
-    chrome.readingMode.colorTheme = chrome.readingMode.darkTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.darkTheme;
     updater.setTheme();
     assertEquals(
         expectedDark, computeStyle('--on-audio-player-focus-outline-color'));
 
     // Yellow theme
-    chrome.readingMode.colorTheme = chrome.readingMode.yellowTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.yellowTheme;
     updater.setTheme();
     assertEquals(
         expectedYellow, computeStyle('--on-audio-player-focus-outline-color'));
 
     // Blue theme
-    chrome.readingMode.colorTheme = chrome.readingMode.blueTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.blueTheme;
     updater.setTheme();
     assertEquals(
         expectedBlue, computeStyle('--on-audio-player-focus-outline-color'));
 
     // High contrast theme
-    chrome.readingMode.colorTheme = chrome.readingMode.highContrastTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.highContrastTheme;
     updater.setTheme();
     assertEquals(
         expectedHighContrast,
         computeStyle('--on-audio-player-focus-outline-color'));
 
     // LowContrast light theme
-    chrome.readingMode.colorTheme = chrome.readingMode.lowContrastLightTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lowContrastLightTheme;
     updater.setTheme();
     assertEquals(
         expectedLowContrastLight,
         computeStyle('--on-audio-player-focus-outline-color'));
 
     // LowContrast dark theme
-    chrome.readingMode.colorTheme = chrome.readingMode.lowContrastDarkTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lowContrastDarkTheme;
     updater.setTheme();
     assertEquals(
         expectedLowContrastDark,
@@ -1010,28 +1017,28 @@ suite('AppStyleUpdater', () => {
       '--line-focus-bg': expectedLineFocusBg,
     });
 
-    chrome.readingMode.colorTheme = chrome.readingMode.lowContrastDarkTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lowContrastDarkTheme;
     updater.setTheme();
     assertEquals(expectedLineFocusBg, computeStyle('--line-focus-bg'));
 
-    chrome.readingMode.colorTheme = chrome.readingMode.blueTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.blueTheme;
     updater.setTheme();
     assertEquals(expectedLineFocusBg, computeStyle('--line-focus-bg'));
 
-    chrome.readingMode.colorTheme = chrome.readingMode.defaultTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.defaultTheme;
     updater.setTheme();
     assertEquals(expectedLineFocusBg, computeStyle('--line-focus-bg'));
   });
 
   test('setAllTextStyles updates all text styles', () => {
     setAppFontSize(10);
-    chrome.readingMode.fontSize = 2;
-    chrome.readingMode.lineSpacing = 4;
-    chrome.readingMode.letterSpacing = 3;
-    chrome.readingMode.fontName = 'Andika';
-    chrome.readingMode.colorTheme = chrome.readingMode.blueTheme;
-    chrome.readingMode.onHighlightGranularityChanged(
-        chrome.readingMode.autoHighlighting);
+    visualBrowserProxy.fontSize = 2;
+    visualBrowserProxy.lineSpacing = 4;
+    visualBrowserProxy.letterSpacing = 3;
+    visualBrowserProxy.fontName = 'Andika';
+    visualBrowserProxy.colorTheme = visualBrowserProxy.blueTheme;
+    audioBrowserProxy.onHighlightGranularityChanged(
+        audioBrowserProxy.autoHighlighting);
     const expectedBlueBackground = 'rgb(1, 2, 3)';
     const expectedBlueForeground = 'rgb(4, 5, 6)';
     const expectedBlueCurrentHighlight = 'rgb(7, 8, 9)';
@@ -1059,7 +1066,7 @@ suite('AppStyleUpdater', () => {
     assertEquals('100px', computeStyle('line-height'));
     assertEquals('60px', computeStyle('letter-spacing'));
     assertStringContains(
-        computeStyle('font-family'), chrome.readingMode.fontName);
+        computeStyle('font-family'), visualBrowserProxy.fontName);
     assertStringContains(computeStyle('background'), expectedBlueBackground);
     assertStringContains(computeStyle('color'), expectedBlueForeground);
     assertEquals(
@@ -1103,49 +1110,49 @@ suite('AppStyleUpdater', () => {
     });
 
     // Light theme
-    chrome.readingMode.colorTheme = chrome.readingMode.lightTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lightTheme;
     updater.setTheme();
     assertEquals(
         expectedLightFullPageScrollbar,
         computeStyle('--color-read-anything-full-page-scrollbar'));
 
     // Dark theme
-    chrome.readingMode.colorTheme = chrome.readingMode.darkTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.darkTheme;
     updater.setTheme();
     assertEquals(
         expectedDarkFullPageScrollbar,
         computeStyle('--color-read-anything-full-page-scrollbar'));
 
     // Yellow theme
-    chrome.readingMode.colorTheme = chrome.readingMode.yellowTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.yellowTheme;
     updater.setTheme();
     assertEquals(
         expectedYellowFullPageScrollbar,
         computeStyle('--color-read-anything-full-page-scrollbar'));
 
     // Blue theme
-    chrome.readingMode.colorTheme = chrome.readingMode.blueTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.blueTheme;
     updater.setTheme();
     assertEquals(
         expectedBlueFullPageScrollbar,
         computeStyle('--color-read-anything-full-page-scrollbar'));
 
     // High contrast theme
-    chrome.readingMode.colorTheme = chrome.readingMode.highContrastTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.highContrastTheme;
     updater.setTheme();
     assertEquals(
         expectedHighContrastFullPageScrollbar,
         computeStyle('--color-read-anything-full-page-scrollbar'));
 
     // LowContrast light theme
-    chrome.readingMode.colorTheme = chrome.readingMode.lowContrastLightTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lowContrastLightTheme;
     updater.setTheme();
     assertEquals(
         expectedLowContrastLightFullPageScrollbar,
         computeStyle('--color-read-anything-full-page-scrollbar'));
 
     // LowContrast dark theme
-    chrome.readingMode.colorTheme = chrome.readingMode.lowContrastDarkTheme;
+    visualBrowserProxy.colorTheme = visualBrowserProxy.lowContrastDarkTheme;
     updater.setTheme();
     assertEquals(
         expectedLowContrastDarkFullPageScrollbar,

@@ -53,6 +53,7 @@ build_webui_tests("build") {
     "settings_menu_test.ts",
     "simple_action_menu_test.ts",
     "test_audio_browser_proxy.ts",
+    "test_content_browser_proxy.ts",
     "test_visual_browser_proxy.ts",
     "grouped_action_menu_test.ts",
     "speech_controller_content_test.ts",

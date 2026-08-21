@@ -44,6 +44,9 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   pdf: boolean = false;
   keyPointsSection: boolean = false;
   keyPointsRegex: string = 'key points|summary|the bottom line|why it matters';
+  maxLineWidth: number = 60;
+  letterSpacing: number = 0;
+  colorTheme: number = 0;
 
   constructor() {
     super([
@@ -51,6 +54,7 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
       'getInImmersiveOverlayPresentationState',
       'getFontName',
       'getSupportedFonts',
+      'getValidatedFontName',
       'getStandardLineSpacing',
       'getLooseLineSpacing',
       'getVeryLooseLineSpacing',
@@ -60,6 +64,8 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
       'getStandardLetterSpacing',
       'getWideLetterSpacing',
       'getVeryWideLetterSpacing',
+      'getLetterSpacing',
+      'getLetterSpacingValue',
       'getDefaultTheme',
       'getLightTheme',
       'getDarkTheme',
@@ -68,6 +74,7 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
       'getHighContrastTheme',
       'getLowContrastLightTheme',
       'getLowContrastDarkTheme',
+      'getColorTheme',
       'getActiveDistillationMethod',
       'getDistillationTypeReadability',
       'requestImageData',
@@ -90,6 +97,7 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
       'isImmersiveEnabled',
       'getActivePresentationState',
       'isPdf',
+      'getMaxLineWidth',
       'maybeHasKeyPointsSection',
       'getKeyPointsRegex',
     ]);
@@ -198,6 +206,31 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   getLowContrastDarkTheme(): number {
     this.methodCalled('getLowContrastDarkTheme');
     return this.lowContrastDarkTheme;
+  }
+
+  getColorTheme(): number {
+    this.methodCalled('getColorTheme');
+    return this.colorTheme;
+  }
+
+  getMaxLineWidth(): number {
+    this.methodCalled('getMaxLineWidth');
+    return this.maxLineWidth;
+  }
+
+  getValidatedFontName(font: string): string {
+    this.methodCalled('getValidatedFontName', font);
+    return font;
+  }
+
+  getLetterSpacing(): number {
+    this.methodCalled('getLetterSpacing');
+    return this.letterSpacing;
+  }
+
+  getLetterSpacingValue(letterSpacing: number): number {
+    this.methodCalled('getLetterSpacingValue', letterSpacing);
+    return letterSpacing;
   }
 
   getActiveDistillationMethod(): number {

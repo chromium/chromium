@@ -12,8 +12,11 @@ export interface VisualBrowserProxy {
   isImmersiveEnabled(): boolean;
   isPdf(): boolean;
 
+  getMaxLineWidth(): number;
+
   getFontName(): string;
   getSupportedFonts(): string[];
+  getValidatedFontName(font: string): string;
 
   getStandardLineSpacing(): number;
   getLooseLineSpacing(): number;
@@ -25,6 +28,8 @@ export interface VisualBrowserProxy {
   getStandardLetterSpacing(): number;
   getWideLetterSpacing(): number;
   getVeryWideLetterSpacing(): number;
+  getLetterSpacing(): number;
+  getLetterSpacingValue(letterSpacing: number): number;
 
   getDefaultTheme(): number;
   getLightTheme(): number;
@@ -34,6 +39,7 @@ export interface VisualBrowserProxy {
   getHighContrastTheme(): number;
   getLowContrastLightTheme(): number;
   getLowContrastDarkTheme(): number;
+  getColorTheme(): number;
 
   getActiveDistillationMethod(): number;
   getDistillationTypeReadability(): number;
@@ -83,12 +89,20 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
     return chrome.readingMode.isPdf;
   }
 
+  getMaxLineWidth(): number {
+    return chrome.readingMode.maxLineWidth;
+  }
+
   getFontName(): string {
     return chrome.readingMode.fontName;
   }
 
   getSupportedFonts(): string[] {
     return chrome.readingMode.supportedFonts;
+  }
+
+  getValidatedFontName(font: string): string {
+    return chrome.readingMode.getValidatedFontName(font);
   }
 
   getStandardLineSpacing(): number {
@@ -127,6 +141,14 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
     return chrome.readingMode.veryWideLetterSpacing;
   }
 
+  getLetterSpacing(): number {
+    return chrome.readingMode.letterSpacing;
+  }
+
+  getLetterSpacingValue(letterSpacing: number): number {
+    return chrome.readingMode.getLetterSpacingValue(letterSpacing);
+  }
+
   getDefaultTheme(): number {
     return chrome.readingMode.defaultTheme;
   }
@@ -157,6 +179,10 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
 
   getLowContrastDarkTheme(): number {
     return chrome.readingMode.lowContrastDarkTheme;
+  }
+
+  getColorTheme(): number {
+    return chrome.readingMode.colorTheme;
   }
 
   getActiveDistillationMethod(): number {

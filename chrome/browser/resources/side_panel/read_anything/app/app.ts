@@ -16,6 +16,8 @@ import {isRTL} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {ContentBrowserProxy} from '../content/content_browser_proxy.js';
+import {ContentBrowserProxyImpl} from '../content/content_browser_proxy.js';
 import {ContentController, ContentType} from '../content/content_controller.js';
 import type {ContentListener, ContentState} from '../content/content_controller.js';
 import {LineFocusController} from '../content/line_focus_controller.js';
@@ -145,6 +147,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
   private speechController_: SpeechController = SpeechController.getInstance();
   private contentController_: ContentController =
       ContentController.getInstance();
+  private contentBrowserProxy_: ContentBrowserProxy =
+      ContentBrowserProxyImpl.getInstance();
   private selectionController_: SelectionController =
       SelectionController.getInstance();
   private lineFocusController_: LineFocusController =
@@ -185,10 +189,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
     super.connectedCallback();
 
     // onConnected should always be called first in connectedCallback to ensure
-    // we're not blocking onConnected on anything else during WebUI setup.
-    if (chrome.readingMode) {
-      chrome.readingMode.onConnected();
-    }
+    // onConnected is not blocked on anything else during WebUI setup.
+    this.contentBrowserProxy_.onConnected();
 
     // Request the presentation state to determine whether we should use the UI
     // for immersive mode.
