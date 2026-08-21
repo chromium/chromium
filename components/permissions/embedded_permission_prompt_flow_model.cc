@@ -103,16 +103,13 @@ EmbeddedPermissionPromptFlowModel::DeterminePromptVariant(
   PermissionSetting setting = map->GetPermissionSetting(
       request->requesting_origin(), request->embedding_origin(), type, &info);
 
-  auto* permission_info =
-      content_settings::PermissionSettingsRegistry::GetInstance()->Get(type);
-
-  bool is_policy =
-      (info.source == content_settings::SettingSource::kPolicy ||
-       info.source == content_settings::SettingSource::kSupervised);
-
-  if (is_policy && permission_info->delegate().IsBlocked(setting)) {
+  if (PermissionsClient::Get()->IsPermissionBlockedByDevicePolicy(
+          web_contents(), setting, info, type)) {
     return Variant::kAdministratorDenied;
   }
+
+  auto* permission_info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(type);
 
 #if BUILDFLAG(IS_ANDROID)
   if (!HasSystemPermission(type, web_contents_) &&
@@ -134,8 +131,8 @@ EmbeddedPermissionPromptFlowModel::DeterminePromptVariant(
   }
 #endif
 
-  if (is_policy &&
-      permission_info->delegate().IsAnyPermissionAllowed(setting)) {
+  if (PermissionsClient::Get()->IsPermissionAllowedByDevicePolicy(
+          web_contents(), setting, info, type)) {
     return Variant::kAdministratorGranted;
   }
 

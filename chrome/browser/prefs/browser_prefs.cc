@@ -47,6 +47,7 @@
 #include "chrome/browser/media/unified_autoplay_config.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/media/webrtc/permission_bubble_media_access_handler.h"
 #include "chrome/browser/memory/enterprise_memory_limit_pref_observer.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
@@ -1824,6 +1825,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   payments::RegisterProfilePrefs(registry);
   performance_manager::user_tuning::prefs::RegisterProfilePrefs(registry);
   permissions::RegisterProfilePrefs(registry);
+  PermissionBubbleMediaAccessHandler::RegisterProfilePrefs(registry);
   PlatformNotificationServiceImpl::RegisterProfilePrefs(registry);
   policy::URLBlocklistManager::RegisterProfilePrefs(registry);
   PolicyUI::RegisterProfilePrefs(registry);

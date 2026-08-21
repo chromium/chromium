@@ -47,9 +47,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/common/proto/synced/dlp_policy_event.pb.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/common/mock_configuration_policy_provider.h"
-#include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -802,26 +799,6 @@ class CaptureModeSettingsBrowserTest : public extensions::ExtensionBrowserTest {
     CHECK(profile());
     file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile());
   }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    extensions::ExtensionBrowserTest::SetUpInProcessBrowserTestFixture();
-    policy_provider_.SetDefaultReturns(
-        /*is_initialization_complete_return=*/true,
-        /*is_first_policy_load_complete_return=*/true);
-    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
-        &policy_provider_);
-  }
-
- protected:
-  void SetAudioCaptureAllowedPolicy(bool allowed) {
-    policy::PolicyMap policies;
-    policies.Set(policy::key::kAudioCaptureAllowed,
-                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD, base::Value(allowed), nullptr);
-    policy_provider_.UpdateChromePolicy(policies);
-  }
-
-  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
 // Tests that the capture mode folder selection dialog window gets parented
@@ -848,10 +825,11 @@ IN_PROC_BROWSER_TEST_F(CaptureModeSettingsBrowserTest,
   EXPECT_EQ(ash::AudioRecordingMode::kMicrophone,
             test_api.GetEffectiveAudioRecordingMode());
 
-  SetAudioCaptureAllowedPolicy(false);
+  auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  prefs->SetBoolean(prefs::kAudioCaptureAllowed, false);
   EXPECT_EQ(ash::AudioRecordingMode::kOff,
             test_api.GetEffectiveAudioRecordingMode());
-  SetAudioCaptureAllowedPolicy(true);
+  prefs->SetBoolean(prefs::kAudioCaptureAllowed, true);
   EXPECT_EQ(ash::AudioRecordingMode::kMicrophone,
             test_api.GetEffectiveAudioRecordingMode());
 }

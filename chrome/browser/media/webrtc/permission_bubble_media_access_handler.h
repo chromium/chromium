@@ -15,6 +15,10 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}
+
 // MediaAccessHandler for permission bubble requests.
 class PermissionBubbleMediaAccessHandler
     : public MediaAccessHandler,
@@ -41,6 +45,9 @@ class PermissionBubbleMediaAccessHandler
                                int page_request_id,
                                blink::mojom::MediaStreamType stream_type,
                                content::MediaRequestState state) override;
+
+  // Registers the prefs backing the audio and video policies.
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
   struct PendingAccessRequest;
