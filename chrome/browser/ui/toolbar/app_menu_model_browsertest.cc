@@ -916,15 +916,17 @@ class TabSearchMenuModelTest : public AppMenuModelTest {
     AppMenuModelTest::SetUpOnMainThread();
     // This is necessary because the global features that GlicEnabling depends
     // on are not initialized for glic.
-    glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+    scoped_glic_bypass_.emplace();
   }
 
   void TearDownOnMainThread() override {
-    glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
+    scoped_glic_bypass_.reset();
     AppMenuModelTest::TearDownOnMainThread();
   }
 
  private:
+  std::optional<glic::GlicEnabling::ScopedBypassEnablementChecksForTesting>
+      scoped_glic_bypass_;
   base::test::ScopedFeatureList glic_enabled_feature_list_;
 };
 

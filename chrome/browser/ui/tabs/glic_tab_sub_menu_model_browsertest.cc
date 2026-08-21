@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/tabs/glic_tab_sub_menu_model.h"
 
+#include <optional>
+
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -107,7 +109,7 @@ class GlicTabSubMenuModelTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    GlicEnabling::SetBypassEnablementChecksForTesting(true);
+    scoped_glic_bypass_.emplace();
     glic::GlicKeyedService::Get(browser()->GetProfile())
         ->enabling()
         .SetCompletedFre(glic::prefs::FreStatus::kCompleted);
@@ -115,7 +117,7 @@ class GlicTabSubMenuModelTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    GlicEnabling::SetBypassEnablementChecksForTesting(false);
+    scoped_glic_bypass_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -135,6 +137,8 @@ class GlicTabSubMenuModelTest : public InProcessBrowserTest {
         &service->instance_coordinator());
   }
 
+  std::optional<GlicEnabling::ScopedBypassEnablementChecksForTesting>
+      scoped_glic_bypass_;
   base::test::ScopedFeatureList feature_list_;
 };
 

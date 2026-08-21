@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/feature_showcase/gemini_handler.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
@@ -37,17 +39,13 @@ class GeminiHandlerTest : public testing::Test {
 
     profile_ = testing_profile_manager_->CreateTestingProfile("test_profile");
 
-    glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+    scoped_glic_bypass_.emplace();
 
     mock_glic_service_ =
         std::make_unique<testing::NiceMock<glic::MockGlicKeyedService>>(
             profile_, IdentityManagerFactory::GetForProfile(profile_),
             TestingBrowserProcess::GetGlobal()->profile_manager(),
             glic_profile_manager_.get(), nullptr, nullptr);
-  }
-
-  void TearDown() override {
-    glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
   }
 
   Profile* profile() { return profile_; }
@@ -57,6 +55,8 @@ class GeminiHandlerTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
  private:
+  std::optional<glic::GlicEnabling::ScopedBypassEnablementChecksForTesting>
+      scoped_glic_bypass_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<glic::GlicProfileManager> glic_profile_manager_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;

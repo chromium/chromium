@@ -728,7 +728,6 @@ class ChromeAutofillClientTestWithMockWindow : public ChromeAutofillClientTest {
   }
 
   void TearDown() override {
-    glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
     manager_injector_.reset();
     ChromeAutofillClientTest::TearDown();
     profile_manager_.reset();
@@ -743,7 +742,7 @@ class ChromeAutofillClientTestWithMockWindow : public ChromeAutofillClientTest {
   }
 
   glic::MockGlicKeyedService* SetUpMockGlicKeyedService() {
-    glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+    scoped_glic_bypass_.emplace();
     glic::GlicKeyedServiceFactory::GetInstance()->SetTestingFactory(
         profile(),
         base::BindRepeating(
@@ -812,6 +811,8 @@ class ChromeAutofillClientTestWithMockWindow : public ChromeAutofillClientTest {
   TabAndWindowMocks main_mocks_;
   glic::GlicProfileManager glic_profile_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  std::optional<glic::GlicEnabling::ScopedBypassEnablementChecksForTesting>
+      scoped_glic_bypass_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
