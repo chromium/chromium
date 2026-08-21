@@ -95,3 +95,5 @@ crbug.com/545633687 [ iPad Device ] TabGroupsEGTest/testReopenGroupFromAnotherWi
 # Gardening suppression 2026-08-20
 crbug.com/549761710 InternalDiscoverFeedTestCase/testFeedAblationHidesFeed [ Pass Failure ]
 
+# Gardening suppression 2026-08-21
+crbug.com/550305483 [ iPad Device ] TabStripSharedGroupTestCase/testTabStripSharedGroupDeleteSharedGroup [ Pass Failure ]
