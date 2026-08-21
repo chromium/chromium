@@ -931,6 +931,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
                         ((SnackbarManager.SnackbarManageable) getActivity()).getSnackbarManager(),
                         SignoutReason.USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE,
                         /* showConfirmDialog= */ true,
+                        /* offerDataDeletionChoice= */ false,
                         CallbackUtils.emptyRunnable());
     }
 

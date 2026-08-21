@@ -237,6 +237,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                                 assertNonNull(assumeNonNull(mSnackbarManagerSupplier).get()),
                                 SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                                 /* showConfirmDialog= */ false,
+                                /* offerDataDeletionChoice= */ false,
                                 CallbackUtils.emptyRunnable());
                         return true;
                     });

@@ -223,6 +223,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                     assertNonNull(assumeNonNull(mSnackbarManagerSupplier).get()),
                     SignoutReason.USER_DISABLED_ALLOW_CHROME_SIGN_IN,
                     /* showConfirmDialog= */ true,
+                    /* offerDataDeletionChoice= */ false,
                     () -> {
                         mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, false);
                         updatePreferences();

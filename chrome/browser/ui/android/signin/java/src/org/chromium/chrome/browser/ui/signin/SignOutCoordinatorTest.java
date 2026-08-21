@@ -118,7 +118,7 @@ public class SignOutCoordinatorTest {
         @SignoutReason int signOutReason = SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS;
         mockSignOutSuccess(signOutReason);
 
-        startSignOutFlow(signOutReason, mOnSignOut, false, /* suppressSnackbar= */ true);
+        startSignOutFlow(signOutReason, mOnSignOut, false, false, true);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -421,12 +421,6 @@ public class SignOutCoordinatorTest {
 
         startSignOutFlow(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, mOnSignOut, true);
         onView(withText(R.string.sign_out_title)).inRoot(isDialog()).check(matches(isDisplayed()));
-        onView(withText(R.string.sign_out_delete_browsing_data_checkbox_title))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.sign_out_delete_browsing_data_checkbox_subtitle))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()));
         onView(withText(R.string.sign_out_remove_extensions_checkbox_title))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
@@ -445,12 +439,6 @@ public class SignOutCoordinatorTest {
 
         startSignOutFlow(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, mOnSignOut, true);
         onView(withText(R.string.sign_out_title)).inRoot(isDialog()).check(matches(isDisplayed()));
-        onView(withText(R.string.sign_out_delete_browsing_data_checkbox_title))
-                .inRoot(isDialog())
-                .check(doesNotExist());
-        onView(withText(R.string.sign_out_delete_browsing_data_checkbox_subtitle))
-                .inRoot(isDialog())
-                .check(doesNotExist());
         onView(withText(R.string.sign_out_remove_extensions_checkbox_title))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
@@ -468,12 +456,6 @@ public class SignOutCoordinatorTest {
 
         startSignOutFlow(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, mOnSignOut, true);
         onView(withText(R.string.sign_out_title)).inRoot(isDialog()).check(matches(isDisplayed()));
-        onView(withText(R.string.sign_out_delete_browsing_data_checkbox_title))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.sign_out_delete_browsing_data_checkbox_subtitle))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()));
         onView(withText(R.string.sign_out_remove_extensions_checkbox_title))
                 .inRoot(isDialog())
                 .check(doesNotExist());
@@ -491,12 +473,6 @@ public class SignOutCoordinatorTest {
 
         startSignOutFlow(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, mOnSignOut, true);
         onView(withText(R.string.sign_out_title)).inRoot(isDialog()).check(matches(isDisplayed()));
-        onView(withText(R.string.sign_out_delete_browsing_data_checkbox_title))
-                .inRoot(isDialog())
-                .check(doesNotExist());
-        onView(withText(R.string.sign_out_delete_browsing_data_checkbox_subtitle))
-                .inRoot(isDialog())
-                .check(doesNotExist());
         onView(withText(R.string.sign_out_remove_extensions_checkbox_title))
                 .inRoot(isDialog())
                 .check(doesNotExist());
@@ -513,9 +489,15 @@ public class SignOutCoordinatorTest {
         setUpMocks();
         @SignoutReason int signOutReason = SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS;
         mockSignOutSuccess(signOutReason);
-        startSignOutFlow(signOutReason, mOnSignOut, true);
+        startSignOutFlow(signOutReason, mOnSignOut, true, true, false);
 
         onView(withText(R.string.sign_out_title)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withText(R.string.sign_out_delete_browsing_data_checkbox_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.sign_out_delete_browsing_data_checkbox_subtitle))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
         onView(withText(R.string.sign_out_delete_browsing_data_checkbox_title))
                 .inRoot(isDialog())
                 .perform(click());
@@ -555,9 +537,15 @@ public class SignOutCoordinatorTest {
         setUpMocks();
         @SignoutReason int signOutReason = SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS;
         mockSignOutSuccess(signOutReason);
-        startSignOutFlow(signOutReason, mOnSignOut, true);
+        startSignOutFlow(signOutReason, mOnSignOut, true, true, false);
 
         onView(withText(R.string.sign_out_title)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withText(R.string.sign_out_delete_browsing_data_checkbox_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.sign_out_delete_browsing_data_checkbox_subtitle))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
         onView(withText(R.string.sign_out)).inRoot(isDialog()).perform(click());
 
         verifySignOutAndSnackbar();
@@ -649,6 +637,7 @@ public class SignOutCoordinatorTest {
             @SignoutReason int signoutReason,
             Runnable onSignOut,
             boolean showConfirmDialog,
+            boolean offerDataDeletionChoice,
             boolean suppressSnackbar) {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -659,12 +648,13 @@ public class SignOutCoordinatorTest {
                                 mSnackbarManager,
                                 signoutReason,
                                 showConfirmDialog,
+                                offerDataDeletionChoice,
                                 onSignOut,
                                 suppressSnackbar));
     }
 
     private void startSignOutFlow(
             @SignoutReason int signoutReason, Runnable onSignOut, boolean showConfirmDialog) {
-        startSignOutFlow(signoutReason, onSignOut, showConfirmDialog, false);
+        startSignOutFlow(signoutReason, onSignOut, showConfirmDialog, false, false);
     }
 }

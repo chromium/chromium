@@ -65,6 +65,7 @@ public class SignOutCoordinator {
      * @param snackbarManager The manager for displaying snackbars at the bottom of the activity.
      * @param signOutReason The access point to sign out from.
      * @param showConfirmDialog Whether a confirm dialog should be shown before sign-out.
+     * @param offerDataDeletionChoice Preset a checkbox to allow users to delete all browsing data.
      * @param onSignOut A {@link Runnable} to run when the user presses the confirm button. Will be
      *     called on the UI thread when the sign-out flow finishes. If sign-out fails it will not be
      *     called.
@@ -77,6 +78,7 @@ public class SignOutCoordinator {
             SnackbarManager snackbarManager,
             @SignoutReason int signOutReason,
             boolean showConfirmDialog,
+            boolean offerDataDeletionChoice,
             Runnable onSignOut) {
         startSignOutFlow(
                 context,
@@ -85,6 +87,7 @@ public class SignOutCoordinator {
                 snackbarManager,
                 signOutReason,
                 showConfirmDialog,
+                offerDataDeletionChoice,
                 onSignOut,
                 false);
     }
@@ -108,6 +111,7 @@ public class SignOutCoordinator {
      *     activity.
      * @param signOutReason The access point to sign out from.
      * @param showConfirmDialog Whether a confirm dialog should be shown before sign-out.
+     * @param offerDataDeletionChoice Preset a checkbox to allow users to delete all browsing data.
      * @param onSignOut A {@link Runnable} to run when the user presses the confirm button. Will be
      *     called on the UI thread when the sign-out flow finishes. If sign-out fails it will not be
      *     called.
@@ -121,6 +125,7 @@ public class SignOutCoordinator {
             SnackbarManager snackbarManager,
             @SignoutReason int signOutReason,
             boolean showConfirmDialog,
+            boolean offerDataDeletionChoice,
             Runnable onSignOut,
             boolean suppressSnackbar) {
         ThreadUtils.assertOnUiThread();
@@ -166,6 +171,7 @@ public class SignOutCoordinator {
                                         signinManager,
                                         browsingDataBridge,
                                         userActionableError,
+                                        offerDataDeletionChoice,
                                         signOutReason,
                                         onSignOut);
                         case UiState.SHOW_CONFIRM_DIALOG ->
@@ -176,6 +182,7 @@ public class SignOutCoordinator {
                                         signinManager,
                                         syncService,
                                         browsingDataBridge,
+                                        offerDataDeletionChoice,
                                         signOutReason,
                                         onSignOut);
                     }
@@ -323,6 +330,7 @@ public class SignOutCoordinator {
             SigninManager signinManager,
             BrowsingDataBridge browsingDataBridge,
             @UserActionableError int userActionableError,
+            boolean offerDataDeletionChoice,
             @SignoutReason int signOutReason,
             Runnable onSignOut) {
         String message = context.getString(R.string.sign_out_unsaved_data_message);
@@ -333,7 +341,8 @@ public class SignOutCoordinator {
                             NumberFormat.getIntegerInstance()
                                     .format(SyncService.SYNC_BOOKMARKS_LIMIT));
         }
-        View customView = createCustomView(context, signinManager, message);
+        View customView =
+                createCustomView(context, signinManager, offerDataDeletionChoice, message);
         ModalDialogProperties.Controller controller =
                 createController(
                         dialogManager,
@@ -369,10 +378,12 @@ public class SignOutCoordinator {
             SigninManager signinManager,
             SyncService syncService,
             BrowsingDataBridge browsingDataBridge,
+            boolean offerDataDeletionChoice,
             @SignoutReason int signOutReason,
             Runnable onSignOut) {
         String message = context.getString(R.string.sign_out_message);
-        View customView = createCustomView(context, signinManager, message);
+        View customView =
+                createCustomView(context, signinManager, offerDataDeletionChoice, message);
         ModalDialogProperties.Controller controller =
                 createController(
                         dialogManager,
@@ -408,7 +419,10 @@ public class SignOutCoordinator {
     }
 
     private static View createCustomView(
-            Context context, SigninManager signinManager, String message) {
+            Context context,
+            SigninManager signinManager,
+            boolean offerDataDeletionChoice,
+            String message) {
         View customView = LayoutInflater.from(context).inflate(R.layout.sign_out_dialog, null);
         TextView messageView = customView.findViewById(R.id.sign_out_message);
         CheckBoxWithDescription deleteDataCheckBox =
@@ -417,8 +431,9 @@ public class SignOutCoordinator {
                 customView.findViewById(R.id.remove_extensions_checkbox);
 
         messageView.setText(message);
-        if (DeviceInfo.isDesktop()
-                && SigninFeatureMap.isEnabled(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA)) {
+        if (offerDataDeletionChoice) {
+            assert DeviceInfo.isDesktop()
+                    && SigninFeatureMap.isEnabled(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA);
             deleteDataCheckBox.setVisibility(View.VISIBLE);
             deleteDataCheckBox.setPrimaryText(
                     context.getString(R.string.sign_out_delete_browsing_data_checkbox_title));

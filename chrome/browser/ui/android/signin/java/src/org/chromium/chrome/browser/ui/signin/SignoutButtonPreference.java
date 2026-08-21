@@ -79,6 +79,7 @@ public class SignoutButtonPreference extends Preference implements ContainmentIt
                             DeviceInfo.isDesktop()
                                     && SigninFeatureMap.isEnabled(
                                             SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA);
+                    boolean offerDataDeletionChoice = showConfirmDialog;
                     SignOutCoordinator.startSignOutFlow(
                             mContext,
                             mProfile,
@@ -86,6 +87,7 @@ public class SignoutButtonPreference extends Preference implements ContainmentIt
                             assertNonNull(mSnackbarManagerSupplier.get()),
                             SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                             showConfirmDialog,
+                            offerDataDeletionChoice,
                             CallbackUtils.emptyRunnable());
                 });
     }
