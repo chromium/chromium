@@ -58,6 +58,7 @@ class AudioProcessMlModelForwarder {
 
   // Set the Optimization Guide model provider. May only be called once. The
   // model provider must outlive the AudioProcessMlModelForwarder.
+  // Requires base::Threadpool to be initialized.
   void Initialize(
       optimization_guide::OptimizationGuideModelProvider& model_provider);
 
@@ -145,11 +146,14 @@ class AudioProcessMlModelForwarder {
     // nullptr or an open, valid model file.
     void OnModelFileOpened(WrappedFilePtr file);
 
+    SEQUENCE_CHECKER(sequence_checker_);
+
     const optimization_guide::proto::OptimizationTarget target_;
     const audio::mojom::MlModelType mojo_type_;
 
     const raw_ptr<AudioProcessMlModelForwarder> owner_;
 
+    // Task runner for loading model files.
     scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
     // Latest update from the model provider. Empty if no path received yet or
@@ -174,15 +178,14 @@ class AudioProcessMlModelForwarder {
 
   void MaybeSendModelsToAudioProcess();
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
   // Signals when the audio process is ready to start receiving model updates.
   const std::unique_ptr<AudioProcessObserver> audio_process_observer_;
 
   // Used for checking and updating the last observed input stream creation
   // time, in order to preload models where they are likely to be needed.
   raw_ptr<PrefService> pref_service_;
-
-  // Task runner for loading model files.
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   // Handle for passing models to the audio process.
   mojo::Remote<audio::mojom::MlModelManager> audio_process_model_manager_;
