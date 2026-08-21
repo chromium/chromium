@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/autofill/wallet_reminder_notice/coordinator/wallet_reminder_notice_coordinator.h"
 
+#import "base/test/metrics/histogram_tester.h"
+#import "components/autofill/core/browser/metrics/payments/wallet_reminder_notice_metrics.h"
 #import "components/autofill/core/browser/payments/legal_message_line.h"
 #import "ios/chrome/browser/autofill/wallet_reminder_notice/ui/wallet_reminder_notice_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -92,4 +94,116 @@ TEST_F(WalletReminderNoticeCoordinatorTest,
   [delegate walletReminderNoticeViewController:nil didTapLinkURL:test_url];
 
   EXPECT_OCMOCK_VERIFY(mock_scene_handler);
+}
+
+#pragma mark - Metrics Tests
+
+// Tests that tapping the primary action via the view controller delegate logs
+// the kAcknowledgedCta metric.
+TEST_F(WalletReminderNoticeCoordinatorTest, LogGotItMetricOnPrimaryAction) {
+  base::HistogramTester histogram_tester;
+  autofill::LegalMessageLines legal_message_lines;
+  WalletReminderNoticeCoordinator* coordinator =
+      [[WalletReminderNoticeCoordinator alloc]
+          initWithBaseViewController:base_view_controller_
+                             browser:browser_.get()
+                   legalMessageLines:legal_message_lines];
+
+  [coordinator start];
+
+  WalletReminderNoticeViewController* view_controller =
+      [[WalletReminderNoticeViewController alloc] init];
+  id<WalletReminderNoticeViewControllerDelegate> delegate =
+      static_cast<id<WalletReminderNoticeViewControllerDelegate>>(coordinator);
+  [delegate
+      walletReminderNoticeViewControllerDidTapPrimaryAction:view_controller];
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.Interaction",
+      autofill::autofill_metrics::WalletReminderNoticeInteraction::
+          kAcknowledgedCta,
+      1);
+}
+
+// Tests that tapping the primary action via ConfirmationAlertActionHandler
+// logs the kAcknowledgedCta metric.
+TEST_F(WalletReminderNoticeCoordinatorTest,
+       LogGotItMetricOnConfirmationAlertPrimaryAction) {
+  base::HistogramTester histogram_tester;
+  autofill::LegalMessageLines legal_message_lines;
+  WalletReminderNoticeCoordinator* coordinator =
+      [[WalletReminderNoticeCoordinator alloc]
+          initWithBaseViewController:base_view_controller_
+                             browser:browser_.get()
+                   legalMessageLines:legal_message_lines];
+
+  [coordinator start];
+
+  id<ConfirmationAlertActionHandler> handler =
+      static_cast<id<ConfirmationAlertActionHandler>>(coordinator);
+  [handler confirmationAlertPrimaryAction];
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.Interaction",
+      autofill::autofill_metrics::WalletReminderNoticeInteraction::
+          kAcknowledgedCta,
+      1);
+}
+
+// Tests that tapping a legal link logs the kClickedLink metric.
+TEST_F(WalletReminderNoticeCoordinatorTest, LogTapLinkMetricOnLinkTap) {
+  base::HistogramTester histogram_tester;
+  autofill::LegalMessageLines legal_message_lines;
+  WalletReminderNoticeCoordinator* coordinator =
+      [[WalletReminderNoticeCoordinator alloc]
+          initWithBaseViewController:base_view_controller_
+                             browser:browser_.get()
+                   legalMessageLines:legal_message_lines];
+
+  id mock_scene_handler = OCMProtocolMock(@protocol(SceneCommands));
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:mock_scene_handler
+                   forProtocol:@protocol(SceneCommands)];
+
+  [coordinator start];
+
+  NSURL* test_url = [NSURL URLWithString:@"https://wallet.google.com/settings"];
+  WalletReminderNoticeViewController* view_controller =
+      [[WalletReminderNoticeViewController alloc] init];
+  id<WalletReminderNoticeViewControllerDelegate> delegate =
+      static_cast<id<WalletReminderNoticeViewControllerDelegate>>(coordinator);
+  [delegate walletReminderNoticeViewController:view_controller
+                                 didTapLinkURL:test_url];
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.Interaction",
+      autofill::autofill_metrics::WalletReminderNoticeInteraction::kClickedLink,
+      1);
+}
+
+// Tests that dismissing the presentation controller logs the kDismissed metric.
+TEST_F(WalletReminderNoticeCoordinatorTest,
+       LogDismissMetricOnPresentationControllerDismiss) {
+  base::HistogramTester histogram_tester;
+  autofill::LegalMessageLines legal_message_lines;
+  WalletReminderNoticeCoordinator* coordinator =
+      [[WalletReminderNoticeCoordinator alloc]
+          initWithBaseViewController:base_view_controller_
+                             browser:browser_.get()
+                   legalMessageLines:legal_message_lines];
+
+  [coordinator start];
+
+  UIPresentationController* presentation_controller =
+      [[UIPresentationController alloc]
+          initWithPresentedViewController:base_view_controller_
+                 presentingViewController:nil];
+  id<UIAdaptivePresentationControllerDelegate> delegate =
+      static_cast<id<UIAdaptivePresentationControllerDelegate>>(coordinator);
+  [delegate presentationControllerDidDismiss:presentation_controller];
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.Interaction",
+      autofill::autofill_metrics::WalletReminderNoticeInteraction::kDismissed,
+      1);
 }

@@ -7,6 +7,7 @@
 #import <optional>
 #import <utility>
 
+#import "components/autofill/core/browser/metrics/payments/wallet_reminder_notice_metrics.h"
 #import "components/autofill/core/browser/payments/legal_message_line.h"
 #import "ios/chrome/browser/autofill/wallet_reminder_notice/coordinator/wallet_reminder_notice_mediator.h"
 #import "ios/chrome/browser/autofill/wallet_reminder_notice/ui/wallet_reminder_notice_view_controller.h"
@@ -86,6 +87,9 @@
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  autofill::autofill_metrics::LogWalletReminderNoticeInteraction(
+      autofill::autofill_metrics::WalletReminderNoticeInteraction::
+          kAcknowledgedCta);
   [self dismissNotice];
 }
 
@@ -93,12 +97,18 @@
 
 - (void)walletReminderNoticeViewControllerDidTapPrimaryAction:
     (WalletReminderNoticeViewController*)viewController {
+  autofill::autofill_metrics::LogWalletReminderNoticeInteraction(
+      autofill::autofill_metrics::WalletReminderNoticeInteraction::
+          kAcknowledgedCta);
   [self dismissNotice];
 }
 
 - (void)walletReminderNoticeViewController:
             (WalletReminderNoticeViewController*)viewController
                              didTapLinkURL:(NSURL*)URL {
+  autofill::autofill_metrics::LogWalletReminderNoticeInteraction(
+      autofill::autofill_metrics::WalletReminderNoticeInteraction::
+          kClickedLink);
   id<SceneCommands> sceneHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   [sceneHandler
@@ -110,6 +120,8 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
+  autofill::autofill_metrics::LogWalletReminderNoticeInteraction(
+      autofill::autofill_metrics::WalletReminderNoticeInteraction::kDismissed);
   [self dismissNotice];
 }
 
