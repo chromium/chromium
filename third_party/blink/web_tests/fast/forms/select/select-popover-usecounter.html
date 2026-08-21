@@ -13,10 +13,15 @@ select, ::picker(select) {
 </select>
 
 <script>
-const kValidPopoverAttribute = 4191;
+const kValidPopoverAttribute = 5607;
 const kPopoverTypeAuto = 4464;
 const kPopoverTypeManual = 4465;
 const kPopoverTypeInvalid = 4466;
+const kPopoverTypeHint = 4480;
+const kPopoverShown = 5579;
+const kPopoverTypeAutoShown = 5990;
+const kPopoverTypeHintShown = 5991;
+const kPopoverTypeManualShown = 5992;
 
 test(() => {
   assert_false(
@@ -31,5 +36,20 @@ test(() => {
   assert_false(
     internals.isUseCounted(document, kPopoverTypeInvalid),
     'PopoverTypeInvalid');
+  assert_false(
+    internals.isUseCounted(document, kPopoverTypeHint),
+    'PopoverTypeHint');
+  assert_false(
+    internals.isUseCounted(document, kPopoverShown),
+    'PopoverShown');
+  assert_false(
+    internals.isUseCounted(document, kPopoverTypeAutoShown),
+    'PopoverTypeAutoShown');
+  assert_false(
+    internals.isUseCounted(document, kPopoverTypeHintShown),
+    'PopoverTypeHintShown');
+  assert_false(
+    internals.isUseCounted(document, kPopoverTypeManualShown),
+    'PopoverTypeManualShown');
 }, '<select> should not trigger popover UseCounters.');
 </script>

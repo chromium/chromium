@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/popover.html">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+<script>
+const kValidPopoverAttribute = 5607;
+const kPopoverTypeAuto = 4464;
+const kPopoverTypeManual = 4465;
+const kPopoverTypeInvalid = 4466;
+const kPopoverTypeHint = 4480;
+const kPopoverShown = 5579;
+const kPopoverTypeAutoShown = 5990;
+const kPopoverTypeHintShown = 5991;
+const kPopoverTypeManualShown = 5992;
+
+const all_popover_features = [
+  kValidPopoverAttribute,
+  kPopoverTypeAuto,
+  kPopoverTypeManual,
+  kPopoverTypeInvalid,
+  kPopoverTypeHint,
+  kPopoverShown,
+  kPopoverTypeAutoShown,
+  kPopoverTypeHintShown,
+  kPopoverTypeManualShown,
+];
+
+function clearAllPopoverCounters(doc) {
+  for (const feature of all_popover_features) {
+    internals.clearUseCounter(doc, feature);
+  }
+}
+
+test(() => {
+  clearAllPopoverCounters(document);
+  const popover = document.createElement('div');
+  popover.setAttribute('popover', 'auto');
+  document.body.appendChild(popover);
+  assert_true(internals.isUseCounted(document, kValidPopoverAttribute), 'kValidPopoverAttribute');
+  assert_true(internals.isUseCounted(document, kPopoverTypeAuto), 'kPopoverTypeAuto');
+  assert_false(internals.isUseCounted(document, kPopoverTypeHint), 'kPopoverTypeHint');
+  assert_false(internals.isUseCounted(document, kPopoverTypeManual), 'kPopoverTypeManual');
+  assert_false(internals.isUseCounted(document, kPopoverShown), 'kPopoverShown');
+  assert_false(internals.isUseCounted(document, kPopoverTypeAutoShown), 'kPopoverTypeAutoShown');
+  assert_false(internals.isUseCounted(document, kPopoverTypeHintShown), 'kPopoverTypeHintShown');
+  assert_false(internals.isUseCounted(document, kPopoverTypeManualShown), 'kPopoverTypeManualShown');
+
+  popover.showPopover();
+  assert_true(internals.isUseCounted(document, kPopoverShown), 'kPopoverShown after show');
+  assert_true(internals.isUseCounted(document, kPopoverTypeAutoShown), 'kPopoverTypeAutoShown after show');
+  assert_false(internals.isUseCounted(document, kPopoverTypeHintShown), 'kPopoverTypeHintShown after show');
+  assert_false(internals.isUseCounted(document, kPopoverTypeManualShown), 'kPopoverTypeManualShown after show');
+  popover.remove();
+}, 'popover=auto use counters');
+
+test(() => {
+  clearAllPopoverCounters(document);
+  const popover = document.createElement('div');
+  popover.setAttribute('popover', 'hint');
+  document.body.appendChild(popover);
+  assert_true(internals.isUseCounted(document, kValidPopoverAttribute), 'kValidPopoverAttribute');
+  assert_true(internals.isUseCounted(document, kPopoverTypeHint), 'kPopoverTypeHint');
+  assert_false(internals.isUseCounted(document, kPopoverTypeAuto), 'kPopoverTypeAuto');
+  assert_false(internals.isUseCounted(document, kPopoverTypeManual), 'kPopoverTypeManual');
+  assert_false(internals.isUseCounted(document, kPopoverShown), 'kPopoverShown');
+  assert_false(internals.isUseCounted(document, kPopoverTypeAutoShown), 'kPopoverTypeAutoShown');
+  assert_false(internals.isUseCounted(document, kPopoverTypeHintShown), 'kPopoverTypeHintShown');
+  assert_false(internals.isUseCounted(document, kPopoverTypeManualShown), 'kPopoverTypeManualShown');
+
+  popover.showPopover();
+  assert_true(internals.isUseCounted(document, kPopoverShown), 'kPopoverShown after show');
+  assert_true(internals.isUseCounted(document, kPopoverTypeHintShown), 'kPopoverTypeHintShown after show');
+  assert_false(internals.isUseCounted(document, kPopoverTypeAutoShown), 'kPopoverTypeAutoShown after show');
+  assert_false(internals.isUseCounted(document, kPopoverTypeManualShown), 'kPopoverTypeManualShown after show');
+  popover.remove();
+}, 'popover=hint use counters');
+
+test(() => {
+  clearAllPopoverCounters(document);
+  const popover = document.createElement('div');
+  popover.setAttribute('popover', 'manual');
+  document.body.appendChild(popover);
+  assert_true(internals.isUseCounted(document, kValidPopoverAttribute), 'kValidPopoverAttribute');
+  assert_true(internals.isUseCounted(document, kPopoverTypeManual), 'kPopoverTypeManual');
+  assert_false(internals.isUseCounted(document, kPopoverTypeAuto), 'kPopoverTypeAuto');
+  assert_false(internals.isUseCounted(document, kPopoverTypeHint), 'kPopoverTypeHint');
+  assert_false(internals.isUseCounted(document, kPopoverShown), 'kPopoverShown');
+  assert_false(internals.isUseCounted(document, kPopoverTypeAutoShown), 'kPopoverTypeAutoShown');
+  assert_false(internals.isUseCounted(document, kPopoverTypeHintShown), 'kPopoverTypeHintShown');
+  assert_false(internals.isUseCounted(document, kPopoverTypeManualShown), 'kPopoverTypeManualShown');
+
+  popover.showPopover();
+  assert_true(internals.isUseCounted(document, kPopoverShown), 'kPopoverShown after show');
+  assert_true(internals.isUseCounted(document, kPopoverTypeManualShown), 'kPopoverTypeManualShown after show');
+  assert_false(internals.isUseCounted(document, kPopoverTypeAutoShown), 'kPopoverTypeAutoShown after show');
+  assert_false(internals.isUseCounted(document, kPopoverTypeHintShown), 'kPopoverTypeHintShown after show');
+  popover.remove();
+}, 'popover=manual use counters');
+
+test(() => {
+  clearAllPopoverCounters(document);
+  const popover = document.createElement('div');
+  popover.setAttribute('popover', 'invalid-value');
+  document.body.appendChild(popover);
+  // Note that the "valid" in kValidPopoverAttribute refers mostly to `popover`
+  // and not the value, since the InvalidValueDefault is `auto` which is valid.
+  assert_true(internals.isUseCounted(document, kValidPopoverAttribute), 'kValidPopoverAttribute still matches');
+  assert_true(internals.isUseCounted(document, kPopoverTypeInvalid), 'kPopoverTypeInvalid');
+  assert_false(internals.isUseCounted(document, kPopoverShown), 'kPopoverShown');
+  assert_false(internals.isUseCounted(document, kPopoverTypeAutoShown), 'kPopoverTypeAutoShown');
+  assert_false(internals.isUseCounted(document, kPopoverTypeHintShown), 'kPopoverTypeHintShown');
+  assert_false(internals.isUseCounted(document, kPopoverTypeManualShown), 'kPopoverTypeManualShown');
+
+  popover.showPopover();
+  assert_true(internals.isUseCounted(document, kPopoverShown), 'kPopoverShown after show');
+  assert_true(internals.isUseCounted(document, kPopoverTypeManualShown), 'kPopoverTypeManualShown after show (invalid defaults to manual)');
+  assert_false(internals.isUseCounted(document, kPopoverTypeAutoShown), 'kPopoverTypeAutoShown after show');
+  assert_false(internals.isUseCounted(document, kPopoverTypeHintShown), 'kPopoverTypeHintShown after show');
+  popover.remove();
+}, 'popover=invalid-value use counters');
+
+test(() => {
+  clearAllPopoverCounters(document);
+  const popover = document.createElement('div');
+  popover.setAttribute('popover', 'auto');
+  document.body.appendChild(popover);
+  popover.addEventListener('beforetoggle', (e) => {
+    if (e.newState === 'open') {
+      e.preventDefault();
+    }
+  });
+  popover.showPopover();
+  assert_false(internals.isUseCounted(document, kPopoverShown), 'kPopoverShown after canceled show');
+  assert_false(internals.isUseCounted(document, kPopoverTypeAutoShown), 'kPopoverTypeAutoShown after canceled show');
+  popover.remove();
+}, 'popover use counters are not counted when beforetoggle is canceled');
+</script>
+</body>

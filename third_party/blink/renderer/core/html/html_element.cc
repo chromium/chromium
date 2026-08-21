@@ -2144,6 +2144,19 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   if (!IsInUserAgentShadowRoot()) {
     // Don't count things like customizable-`<select>`'s use of a popover.
     UseCounter::Count(GetDocument(), WebFeature::kPopoverShown);
+    switch (PopoverType()) {
+      case PopoverValueType::kAuto:
+        UseCounter::Count(GetDocument(), WebFeature::kPopoverTypeAutoShown);
+        break;
+      case PopoverValueType::kHint:
+        UseCounter::Count(GetDocument(), WebFeature::kPopoverTypeHintShown);
+        break;
+      case PopoverValueType::kManual:
+        UseCounter::Count(GetDocument(), WebFeature::kPopoverTypeManualShown);
+        break;
+      case PopoverValueType::kNone:
+        NOTREACHED();
+    }
   }
   MarkPopoverInvokersDirty(*this);
   GetPopoverData()->setPreviouslyFocusedElement(nullptr);
