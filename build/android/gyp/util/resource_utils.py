@@ -15,6 +15,9 @@ import tempfile
 import zipfile
 
 from util import build_utils
+from util import parallel
+import action_helpers
+import zip_helpers
 
 _SOURCE_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..', '..', '..')
@@ -577,12 +580,12 @@ class RJavaBuildOptions:
 
 
 def CreateRJavaFiles(
-    srcjar_dir,
+    output_srcjar_path,
+    canonical_srcjar_path,
     package,
     main_r_txt_file,
     extra_res_packages,
     rjava_build_options,
-    srcjar_out,
     custom_root_package_name=None,
     grandparent_custom_package_name=None,
     ignore_mismatched_values=False,
@@ -591,7 +594,11 @@ def CreateRJavaFiles(
     """Create all R.java files for a set of packages and R.txt files.
 
     Args:
-      srcjar_dir: The top-level output directory for the generated files.
+      output_srcjar_path: Path of the srcjar zip file to write. This may be a
+        temporary file path (e.g. in an atomic build context).
+      canonical_srcjar_path: Canonical path of the final output srcjar file.
+        Used to derive a deterministic default package name when
+        custom_root_package_name is not provided.
       package: Package name for R java source files which will inherit
         from the root R java file.
       main_r_txt_file: The main R.txt file containing the valid values
@@ -599,8 +606,6 @@ def CreateRJavaFiles(
       extra_res_packages: A list of extra package names.
       rjava_build_options: An RJavaBuildOptions instance that controls how
         exactly the R.java file is generated.
-      srcjar_out: Path of desired output srcjar.
-      apk_under_test_rtxt: R.txt of the apk_under_test.
       custom_root_package_name: Custom package name for module root R.java file,
         (eg. vr for gen.vr package).
       grandparent_custom_package_name: Custom root package name for the root
@@ -611,6 +616,7 @@ def CreateRJavaFiles(
       ignore_mismatched_values: If True, ignores if a resource appears multiple
         times with different entry values (useful when all the values are
         dummy anyways).
+      apk_under_test_rtxt: R.txt of the apk_under_test.
     Raises:
       Exception if a package name appears several times in |extra_res_packages|
     """
@@ -665,42 +671,35 @@ def CreateRJavaFiles(
         # Custom package name is available, thus use it for root_r_java_package.
         root_r_java_package = GetCustomPackagePath(custom_root_package_name)
     else:
-        # Create a unique name using srcjar_out. Underscores are added to ensure
-        # no reserved keywords are used for directory names.
+        # Create a unique name using canonical_srcjar_path. Underscores are
+        # added to ensure no reserved keywords are used for directory names.
         root_r_java_package = re.sub(
-            r'[^\w\.]', '', srcjar_out.replace('/', '._')
+            r'[^\w\.]', '', canonical_srcjar_path.replace('/', '._')
         )
 
-    root_r_java_dir = os.path.join(srcjar_dir, *root_r_java_package.split('.'))
-    build_utils.MakeDirectory(root_r_java_dir)
-    root_r_java_path = os.path.join(root_r_java_dir, 'R.java')
     root_java_file_contents = _RenderRootRJavaSource(
         root_r_java_package,
         all_resources_by_type,
         rjava_build_options,
         grandparent_custom_package_name,
     )
-    with open(root_r_java_path, 'w', encoding='utf-8') as f:
-        f.write(root_java_file_contents)
+    body = _RenderRJavaBody(root_r_java_package, rjava_build_options)
 
-    for p in packages:
-        _CreateRJavaSourceFile(
-            srcjar_dir, p, root_r_java_package, rjava_build_options
-        )
-
-
-def _CreateRJavaSourceFile(
-    srcjar_dir, package, root_r_java_package, rjava_build_options
-):
-    """Generates an R.java source file."""
-    package_r_java_dir = os.path.join(srcjar_dir, *package.split('.'))
-    build_utils.MakeDirectory(package_r_java_dir)
-    package_r_java_path = os.path.join(package_r_java_dir, 'R.java')
-    java_file_contents = _RenderRJavaSource(
-        package, root_r_java_package, rjava_build_options
-    )
-    with open(package_r_java_path, 'w', encoding='utf-8') as f:
-        f.write(java_file_contents)
+    with action_helpers.atomic_output(output_srcjar_path) as f:
+        with zipfile.ZipFile(f, 'w') as z:
+            root_zip_path = root_r_java_package.replace('.', '/') + '/R.java'
+            zip_helpers.add_to_zip_hermetic(
+                z, root_zip_path, data=root_java_file_contents
+            )
+            for p in packages:
+                zip_path = p.replace('.', '/') + '/R.java'
+                data = _RenderRJavaSource(
+                    p,
+                    root_r_java_package,
+                    rjava_build_options,
+                    body=body,
+                )
+                zip_helpers.add_to_zip_hermetic(z, zip_path, data=data)
 
 
 # Resource IDs inside resource arrays are sorted. Application resource IDs start
@@ -718,34 +717,38 @@ def _GetNonSystemIndex(entry):
     return len(res_ids)
 
 
-def _RenderRJavaSource(package, root_r_java_package, rjava_build_options):
+def _RenderRJavaBody(root_r_java_package, rjava_build_options):
+    lines = []
+    for resource_type in sorted(ALL_RESOURCE_TYPES):
+        lines.append(
+            '    public static final class %s extends\n'
+            '            %s.R.%s {}\n'
+            % (resource_type, root_r_java_package, resource_type)
+        )
+    if rjava_build_options.has_on_resources_loaded:
+        lines.append(
+            '    public static void onResourcesLoaded(int packageId) {\n'
+            '        %s.R.onResourcesLoaded(packageId);\n'
+            '    }\n' % root_r_java_package
+        )
+    return ''.join(lines)
+
+
+def _RenderRJavaSource(
+    package,
+    root_r_java_package,
+    rjava_build_options,
+    body=None,
+):
     """Generates the contents of a R.java file."""
-    template = Template(
-        """/* AUTO-GENERATED FILE.  DO NOT MODIFY. */
-
-package {{ package }};
-
-public final class R {
-    {% for resource_type in resource_types %}
-    public static final class {{ resource_type }} extends
-            {{ root_package }}.R.{{ resource_type }} {}
-    {% endfor %}
-    {% if has_on_resources_loaded %}
-    public static void onResourcesLoaded(int packageId) {
-        {{ root_package }}.R.onResourcesLoaded(packageId);
-    }
-    {% endif %}
-}
-""",
-        trim_blocks=True,
-        lstrip_blocks=True,
-    )
-
-    return template.render(
-        package=package,
-        resource_types=sorted(ALL_RESOURCE_TYPES),
-        root_package=root_r_java_package,
-        has_on_resources_loaded=rjava_build_options.has_on_resources_loaded,
+    if body is None:
+        body = _RenderRJavaBody(root_r_java_package, rjava_build_options)
+    return (
+        '/* AUTO-GENERATED FILE.  DO NOT MODIFY. */\n\n'
+        'package %s;\n\n'
+        'public final class R {\n'
+        '%s'
+        '}\n' % (package, body)
     )
 
 
@@ -953,6 +956,20 @@ def _HasMultipleResDirs(zip_path):
         return z.comment == MULTIPLE_RES_MAGIC_STRING
 
 
+def _ExtractSingleDep(z, deps_dir):
+    subdirname = z.replace(os.path.sep, '_')
+    subdir = os.path.join(deps_dir, subdirname)
+    build_utils.ExtractAll(z, path=subdir)
+    if _HasMultipleResDirs(z):
+        # basename of the directory is used to create a zip during resource
+        # compilation, include the path in the basename to help blame errors
+        # on the correct target. For example directory 0_res may be renamed
+        # chrome_android_chrome_app_java_resources_0_res pointing to the
+        # name and path of the android_resources target from whence it came.
+        return _RenameSubdirsWithPrefix(subdir, subdirname)
+    return [subdir]
+
+
 def ExtractDeps(dep_zips, deps_dir):
     """Extract a list of resource dependency zip files.
 
@@ -967,23 +984,18 @@ def ExtractDeps(dep_zips, deps_dir):
       Exception: If a sub-directory already exists with the same name before
         extraction.
     """
-    dep_subdirs = []
+    seen_subdirs = set()
     for z in dep_zips:
         subdirname = z.replace(os.path.sep, '_')
         subdir = os.path.join(deps_dir, subdirname)
-        if os.path.exists(subdir):
+        if subdirname in seen_subdirs or os.path.exists(subdir):
             raise Exception('Resource zip name conflict: ' + subdirname)
-        build_utils.ExtractAll(z, path=subdir)
-        if _HasMultipleResDirs(z):
-            # basename of the directory is used to create a zip during resource
-            # compilation, include the path in the basename to help blame errors on
-            # the correct target. For example directory 0_res may be renamed
-            # chrome_android_chrome_app_java_resources_0_res pointing to the name and
-            # path of the android_resources target from whence it came.
-            subdir_subdirs = _RenameSubdirsWithPrefix(subdir, subdirname)
-            dep_subdirs.extend(subdir_subdirs)
-        else:
-            dep_subdirs.append(subdir)
+        seen_subdirs.add(subdirname)
+
+    dep_subdirs = []
+    arg_tuples = [(z, deps_dir) for z in dep_zips]
+    for subdirs in parallel.BulkForkAndCall(_ExtractSingleDep, arg_tuples):
+        dep_subdirs.extend(subdirs)
     return dep_subdirs
 
 
@@ -1011,9 +1023,6 @@ class _ResourceBuildContext:
         # A location to place aapt-generated files.
         self.gen_dir = os.path.join(self.temp_dir, 'gen')
         os.mkdir(self.gen_dir)
-        # A location to place generated R.java files.
-        self.srcjar_dir = os.path.join(self.temp_dir, 'java')
-        os.mkdir(self.srcjar_dir)
         # Temporary file locacations.
         self.r_txt_path = os.path.join(self.gen_dir, 'R.txt')
         self.srcjar_path = os.path.join(self.temp_dir, 'R.srcjar')

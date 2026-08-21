@@ -46,4 +46,5 @@ create_app_bundle.py
 util/__init__.py
 util/build_utils.py
 util/manifest_utils.py
+util/parallel.py
 util/resource_utils.py

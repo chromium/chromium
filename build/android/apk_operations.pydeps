@@ -95,6 +95,7 @@ gyp/dex.py
 gyp/util/__init__.py
 gyp/util/build_utils.py
 gyp/util/md5_check.py
+gyp/util/parallel.py
 gyp/util/resource_utils.py
 incremental_install/__init__.py
 incremental_install/installer.py

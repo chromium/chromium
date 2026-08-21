@@ -32,7 +32,6 @@ from util import parallel
 from util import protoresources
 from util import resource_utils
 import action_helpers  # build_utils adds //build to sys.path.
-import zip_helpers
 
 # Pngs that we shouldn't convert to webp. Please add rationale when updating.
 _PNG_WEBP_EXCLUSION_PATTERN = re.compile(
@@ -1046,18 +1045,16 @@ def main(args):
         if options.srcjar_out:
             logging.debug('Creating R.srcjar')
             resource_utils.CreateRJavaFiles(
-                build.srcjar_dir,
+                build.srcjar_path,
+                options.srcjar_out,
                 apk_package_name,
                 build.r_txt_path,
                 options.extra_res_packages,
                 rjava_build_options,
-                options.srcjar_out,
-                custom_root_package_name,
-                grandparent_custom_package_name,
+                custom_root_package_name=custom_root_package_name,
+                grandparent_custom_package_name=grandparent_custom_package_name,
                 apk_under_test_rtxt=options.apk_under_test_rtxt,
             )
-            with action_helpers.atomic_output(build.srcjar_path) as f:
-                zip_helpers.zip_directory(f, build.srcjar_dir)
 
         logging.debug('Copying outputs')
         _WriteOutputs(options, build)

@@ -7,6 +7,7 @@
 import os
 import sys
 import unittest
+import zipfile
 
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
@@ -302,6 +303,90 @@ class ResourceUtilsTest(unittest.TestCase):
                 test_file, lambda x: x in _TEST_RESOURCES_ALLOWLIST_1
             )
             self._CheckTestResourceFile(test_file, _TEST_XML_OUTPUT_2)
+
+    def test_RenderRJavaSource(self):
+        # pylint: disable=protected-access
+        rjava_build_options = resource_utils.RJavaBuildOptions()
+        result = resource_utils._RenderRJavaSource(
+            'org.chromium.test',
+            'gen.base_module',
+            rjava_build_options,
+        )
+        self.assertIn('package org.chromium.test;', result)
+        self.assertIn(
+            'public static final class anim extends\n'
+            '            gen.base_module.R.anim {}',
+            result,
+        )
+        self.assertNotIn('onResourcesLoaded', result)
+
+        rjava_build_options.GenerateOnResourcesLoaded()
+        result_with_loaded = resource_utils._RenderRJavaSource(
+            'org.chromium.test',
+            'gen.base_module',
+            rjava_build_options,
+        )
+        self.assertIn(
+            'public static void onResourcesLoaded(int packageId)',
+            result_with_loaded,
+        )
+
+    def test_CreateRJavaFiles(self):
+        with build_utils.TempDir() as tmp_dir:
+            tmp_rtxt_file = _CreateTestFile(tmp_dir, 'test_R.txt', _TEST_R_TXT)
+            srcjar_path = os.path.join(tmp_dir, 'test_R.srcjar')
+            rjava_build_options = resource_utils.RJavaBuildOptions()
+            resource_utils.CreateRJavaFiles(
+                srcjar_path,
+                srcjar_path,
+                'org.chromium.test',
+                tmp_rtxt_file,
+                ['org.chromium.extra'],
+                rjava_build_options,
+                custom_root_package_name='test',
+            )
+            self.assertTrue(os.path.exists(srcjar_path))
+            with zipfile.ZipFile(srcjar_path) as z:
+                names = set(z.namelist())
+                self.assertIn('gen/test_module/R.java', names)
+                self.assertIn('org/chromium/test/R.java', names)
+                self.assertIn('org/chromium/extra/R.java', names)
+
+    def test_CreateRJavaFiles_DefaultPackageName(self):
+        with build_utils.TempDir() as tmp_dir:
+            tmp_rtxt_file = _CreateTestFile(tmp_dir, 'test_R.txt', _TEST_R_TXT)
+            srcjar_path = os.path.join(tmp_dir, 'test_R.srcjar')
+            rjava_build_options = resource_utils.RJavaBuildOptions()
+            canonical_path = 'gen/base/module.srcjar'
+            resource_utils.CreateRJavaFiles(
+                srcjar_path,
+                canonical_path,
+                'org.chromium.test',
+                tmp_rtxt_file,
+                ['org.chromium.extra'],
+                rjava_build_options,
+            )
+            self.assertTrue(os.path.exists(srcjar_path))
+            with zipfile.ZipFile(srcjar_path) as z:
+                names = set(z.namelist())
+                self.assertIn('gen/_base/_module/srcjar/R.java', names)
+                self.assertIn('org/chromium/test/R.java', names)
+                self.assertIn('org/chromium/extra/R.java', names)
+
+    def test_ExtractDeps_Conflict(self):
+        with build_utils.TempDir() as tmp_dir:
+            deps_dir = os.path.join(tmp_dir, 'deps')
+            os.mkdir(deps_dir)
+            with self.assertRaisesRegex(
+                Exception, 'Resource zip name conflict'
+            ):
+                resource_utils.ExtractDeps(
+                    ['foo/bar.zip', 'foo_bar.zip'], deps_dir
+                )
+
+    def test_BuildContext_NoSrcjarDir(self):
+        with resource_utils.BuildContext() as build:
+            self.assertFalse(hasattr(build, 'srcjar_dir'))
 
 
 if __name__ == '__main__':
