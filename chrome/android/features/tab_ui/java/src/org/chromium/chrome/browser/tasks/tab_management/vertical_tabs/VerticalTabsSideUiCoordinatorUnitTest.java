@@ -242,6 +242,22 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     @SmallTest
+    public void testDetermineShowableSize_collapsedState_autoResizeDisabled() {
+        mCollapseController.requestRailCollapseStateChangeByUser(
+                RailCollapseState.EXPANDED, RailCollapseState.COLLAPSED);
+
+        // Available width smaller than expanded rail width (240dp), but >= collapsed rail width
+        // (76dp)
+        assertEquals(
+                new SideUiSize(mCollapsedRailWidth, HeightType.TOOLBAR),
+                mCoordinator.determineShowableSize(
+                        /* availableWidth= */ mCollapsedRailWidth + 10,
+                        /* windowWidth= */ mWideWindowWidth,
+                        /* isFullscreen= */ false));
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS + ":auto_resize/true"})
     public void testDetermineShowableSize_autoResize() {
         assertEquals(

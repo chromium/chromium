@@ -12,6 +12,7 @@ import android.util.TypedValue;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
@@ -20,13 +21,16 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /** Helper utilities for Vertical Tabs eligibility and preferences. */
 @NullMarked
@@ -89,6 +93,37 @@ public class VerticalTabUtils {
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidVerticalTabsLayoutToggleSourceAndDirection)
+
+    @IntDef({
+        WindowWidthBoundary.NOT_SHOWABLE,
+        WindowWidthBoundary.FORCED_COLLAPSED,
+        WindowWidthBoundary.DYNAMIC_EXPANDABLE,
+        WindowWidthBoundary.FULLY_EXPANDABLE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @Target(ElementType.TYPE_USE)
+    public @interface WindowWidthBoundary {
+        /** The vertical tab rail cannot fit and must not be shown. */
+        int NOT_SHOWABLE = 0;
+
+        /**
+         * The vertical tab rail fits collapsed, but is forced collapsed because the window is too
+         * narrow to expand.
+         */
+        int FORCED_COLLAPSED = 1;
+
+        /**
+         * The vertical tab rail can expand with a dynamic auto-resize width strictly less than
+         * {@link #SIDE_UI_CONTAINER_WIDTH_DP}.
+         */
+        int DYNAMIC_EXPANDABLE = 2;
+
+        /**
+         * The vertical tab rail can expand to its full fixed width {@link
+         * #SIDE_UI_CONTAINER_WIDTH_DP}.
+         */
+        int FULLY_EXPANDABLE = 3;
+    }
 
     /** Feature parameter name for enabling auto-resize. */
     public static final String AUTO_RESIZE_PARAM = "auto_resize";
@@ -332,10 +367,74 @@ public class VerticalTabUtils {
         return LayoutToggleSourceAndDirection.ENABLE_APP_MENU;
     }
 
+    /**
+     * Returns the window width boundary classification using default web contents constraints.
+     *
+     * @param windowWidthDp Total window width in dp.
+     * @return The {@link WindowWidthBoundary} for the given window width.
+     */
+    public static @WindowWidthBoundary int getWindowWidthBoundary(int windowWidthDp) {
+        int availableWidthDp = windowWidthDp - SideUiCoordinator.MIN_WEB_CONTENTS_WIDTH_DP;
+        return getWindowWidthBoundary(windowWidthDp, availableWidthDp);
+    }
+
+    /**
+     * Returns the window width boundary classification for a given window and available width.
+     *
+     * @param windowWidthDp Total window width in dp.
+     * @param availableWidthDp Maximum width in dp allocated for the Side UI container.
+     * @return The {@link WindowWidthBoundary} for the given window and available widths.
+     */
+    public static @WindowWidthBoundary int getWindowWidthBoundary(
+            int windowWidthDp, int availableWidthDp) {
+        // 1. Not showable: Available width cannot fit even the collapsed rail.
+        if (availableWidthDp < SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP) {
+            return WindowWidthBoundary.NOT_SHOWABLE;
+        }
+
+        // 2. Force Collapsed: Window is below threshold for expanding.
+        if (isWindowNarrow(windowWidthDp)) {
+            return WindowWidthBoundary.FORCED_COLLAPSED;
+        }
+
+        // When auto-resize is disabled, wide windows are fully expandable.
+        if (!isAutoResizeEnabled()) {
+            return WindowWidthBoundary.FULLY_EXPANDABLE;
+        }
+
+        // 3. Dynamic Expandable: Auto-resized width is strictly less than full container width.
+        int ratioWidthDp = Math.round(windowWidthDp * EXPANDED_WINDOW_WIDTH_RATIO);
+        int targetWidthDp =
+                Math.min(SIDE_UI_CONTAINER_WIDTH_DP, Math.min(ratioWidthDp, availableWidthDp));
+        if (targetWidthDp < SIDE_UI_CONTAINER_WIDTH_DP) {
+            return WindowWidthBoundary.DYNAMIC_EXPANDABLE;
+        }
+
+        // 4. Fully Expandable: Expanded to full SIDE_UI_CONTAINER_WIDTH_DP.
+        return WindowWidthBoundary.FULLY_EXPANDABLE;
+    }
+
     /** Resets Vertical Tabs SharedPreferences. For testing use only. */
     public static void resetSharedPrefsForTesting() {
         ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.VERTICAL_TABS_ENABLED);
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.VERTICAL_TABS_COLLAPSED);
+    }
+
+    /**
+     * Returns whether the window width is too narrow to support expanding the vertical tabs rail.
+     *
+     * @param windowWidthDp Total window width in dp.
+     * @return True if the window width is below the threshold required to expand the rail.
+     */
+    @VisibleForTesting
+    public static boolean isWindowNarrow(int windowWidthDp) {
+        if (isAutoResizeEnabled()) {
+            int minWidthByWebContents =
+                    SideUiCoordinator.MIN_WEB_CONTENTS_WIDTH_DP + MIN_EXPANDED_WIDTH_DP;
+            int minWidthByRatio = Math.round(MIN_EXPANDED_WIDTH_DP / EXPANDED_WINDOW_WIDTH_RATIO);
+            return windowWidthDp < Math.max(minWidthByWebContents, minWidthByRatio);
+        }
+        return windowWidthDp < MIN_EXPAND_WINDOW_WIDTH_DP;
     }
 }

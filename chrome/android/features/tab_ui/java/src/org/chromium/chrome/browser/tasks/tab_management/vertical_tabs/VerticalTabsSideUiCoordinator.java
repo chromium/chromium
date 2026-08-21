@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 import static java.util.Collections.emptySet;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.transition.ChangeBounds;
 import android.transition.Fade;
@@ -35,6 +36,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.Side
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.WindowWidthBoundary;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.TokenHolder;
 
@@ -93,7 +95,10 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
                         // current SideUiSpecs. If the window is resized without altering
                         // SideUiSpecs, this callback ensures we still update rail collapse and
                         // button state when crossing the narrow-window threshold.
-                        updateCollapseButtonAndRailState(isWindowNarrow(newConfig.screenWidthDp));
+                        boolean isForcedCollapsed =
+                                VerticalTabUtils.getWindowWidthBoundary(newConfig.screenWidthDp)
+                                        <= WindowWidthBoundary.FORCED_COLLAPSED;
+                        updateCollapseButtonAndRailState(isForcedCollapsed);
                     }
                 };
         mRootView.setLayoutParams(
@@ -191,10 +196,20 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     @Override
     public SideUiSize determineShowableSize(
             @Px int availableWidth, @Px int windowWidth, boolean isFullscreen) {
-        int targetWidth = calculateWidthPx(windowWidth, availableWidth);
-        int minShowableWidth =
-                VerticalTabUtils.isAutoResizeEnabled() ? mCollapsedViewWidth : targetWidth;
-        boolean shouldHide = availableWidth < minShowableWidth;
+        Context context = mRootView.getContext();
+        int availableWidthDp = ViewUtils.pxToDp(context, availableWidth);
+        int windowWidthDp = ViewUtils.pxToDp(context, windowWidth);
+        @WindowWidthBoundary
+        int boundary = VerticalTabUtils.getWindowWidthBoundary(windowWidthDp, availableWidthDp);
+
+        int targetWidth = calculateWidthPx(boundary, windowWidth, availableWidth);
+        boolean shouldHide;
+        if (VerticalTabUtils.isAutoResizeEnabled()) {
+            shouldHide = boundary == WindowWidthBoundary.NOT_SHOWABLE;
+        } else {
+            shouldHide = availableWidth < targetWidth;
+        }
+
         updateAutoHiddenState(mManualVisible && shouldHide);
         if (isFullscreen || shouldHide) {
             return new SideUiSize(0, HeightType.NOT_APPLICABLE);
@@ -260,7 +275,7 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
 
     @Override
     public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
-        updateCollapseButtonAndRailState(isWindowNarrow());
+        updateCollapseButtonAndRailState(isForcedCollapsed());
     }
 
     // Sequence when user requests state change:
@@ -274,7 +289,7 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
         // TODO(crbug.com/527641177): Remove this if check after expand on hovering UI is done.
         if (VerticalTabRailCollapseController.isExpanded(currentState)
                 && VerticalTabRailCollapseController.isExpanded(targetState)) {
-            updateCollapseButtonAndRailState(isWindowNarrow());
+            updateCollapseButtonAndRailState(isForcedCollapsed());
         } else {
             mSideUiCoordinator.updateUi(
                     new UiUpdateRequest(getSideUiId(), /* suppressAnimations= */ false));
@@ -282,52 +297,43 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     }
 
     /**
-     * Updates the collapse button enabled state and effective rail collapse state based on window
-     * width.
+     * Updates the collapse button enabled state and effective rail collapse state based on whether
+     * the window forces the rail to collapse.
      *
-     * @param isNarrow True if the current window width is below the threshold for expanding.
+     * @param isForcedCollapsed True if the window width is too narrow to expand.
      */
-    private void updateCollapseButtonAndRailState(boolean isNarrow) {
-        // Apply effective state (COLLAPSED if narrow, or mRailCollapseStateByUser if wide).
+    private void updateCollapseButtonAndRailState(boolean isForcedCollapsed) {
+        // Apply effective state (COLLAPSED if forced collapsed, or mRailCollapseStateByUser if
+        // expandable).
         mCollapseController.dispatchRailCollapseStateUpdate(
-                mCollapseController.getEffectiveRailCollapseState(isNarrow));
+                mCollapseController.getEffectiveRailCollapseState(isForcedCollapsed));
         // Disable the collapse button in narrow windows so users cannot expand beyond bounds.
-        mTabListCoordinator.setCollapseButtonEnabled(!isNarrow);
+        mTabListCoordinator.setCollapseButtonEnabled(!isForcedCollapsed);
     }
 
-    private @Px int calculateWidthPx(@Px int windowWidthPx, @Px int availableWidthPx) {
-        if (mCollapseController.getEffectiveRailCollapseState(isWindowNarrow())
+    private @Px int calculateWidthPx(
+            @WindowWidthBoundary int boundary, @Px int windowWidthPx, @Px int availableWidthPx) {
+        boolean isForcedCollapsed = boundary <= WindowWidthBoundary.FORCED_COLLAPSED;
+        if (mCollapseController.getEffectiveRailCollapseState(isForcedCollapsed)
                 == RailCollapseState.COLLAPSED) {
             return mCollapsedViewWidth;
         }
-        if (!VerticalTabUtils.isAutoResizeEnabled()) {
-            return mExpandedViewWidth;
+        if (boundary == WindowWidthBoundary.DYNAMIC_EXPANDABLE) {
+            int ratioWidthPx =
+                    Math.round(windowWidthPx * VerticalTabUtils.EXPANDED_WINDOW_WIDTH_RATIO);
+            return Math.min(mExpandedViewWidth, Math.min(ratioWidthPx, availableWidthPx));
         }
-        int ratioWidthPx = Math.round(windowWidthPx * VerticalTabUtils.EXPANDED_WINDOW_WIDTH_RATIO);
-        return Math.min(mExpandedViewWidth, Math.min(ratioWidthPx, availableWidthPx));
+        return mExpandedViewWidth;
     }
 
-    private boolean isWindowNarrow() {
-        return isWindowNarrow(
-                mRootView.getContext().getResources().getConfiguration().screenWidthDp);
-    }
-
-    private boolean isWindowNarrow(int windowWidthDp) {
-        if (VerticalTabUtils.isAutoResizeEnabled()) {
-            int minWidthByWebContents =
-                    SideUiCoordinator.MIN_WEB_CONTENTS_WIDTH_DP
-                            + VerticalTabUtils.MIN_EXPANDED_WIDTH_DP;
-            int minWidthByRatio =
-                    Math.round(
-                            VerticalTabUtils.MIN_EXPANDED_WIDTH_DP
-                                    / VerticalTabUtils.EXPANDED_WINDOW_WIDTH_RATIO);
-            return windowWidthDp < Math.max(minWidthByWebContents, minWidthByRatio);
-        }
-        return windowWidthDp < VerticalTabUtils.MIN_EXPAND_WINDOW_WIDTH_DP;
+    private boolean isForcedCollapsed() {
+        int screenWidthDp = mRootView.getContext().getResources().getConfiguration().screenWidthDp;
+        return VerticalTabUtils.getWindowWidthBoundary(screenWidthDp)
+                <= WindowWidthBoundary.FORCED_COLLAPSED;
     }
 
     @RailCollapseState
     int getRailCollapseStateForTesting() {
-        return mCollapseController.getEffectiveRailCollapseState(isWindowNarrow());
+        return mCollapseController.getEffectiveRailCollapseState(isForcedCollapsed());
     }
 }

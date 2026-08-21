@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -27,6 +28,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.WindowWidthBoundary;
 
 /** Unit tests for {@link VerticalTabUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -342,5 +344,121 @@ public class VerticalTabUtilsUnitTest {
     public void testIsTablet_FalseOnPhone() {
         DeviceInfo.setIsDesktopForTesting(false);
         assertFalse(VerticalTabUtils.isTablet(mContext));
+    }
+
+    @Test
+    @SmallTest
+    public void testIsWindowNarrow_AutoResizeDisabled() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                VerticalTabUtils.AUTO_RESIZE_PARAM,
+                /* testValue= */ false);
+
+        assertTrue(VerticalTabUtils.isWindowNarrow(651));
+        assertFalse(VerticalTabUtils.isWindowNarrow(652));
+        assertFalse(VerticalTabUtils.isWindowNarrow(800));
+    }
+
+    @Test
+    @SmallTest
+    public void testIsWindowNarrow_AutoResizeEnabled() {
+        FeatureOverrides.enable(ChromeFeatureList.ANDROID_VERTICAL_TABS);
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                VerticalTabUtils.AUTO_RESIZE_PARAM,
+                /* testValue= */ true);
+
+        // Threshold is max(412 + 92, round(92 / 0.33)) = max(504, 279) = 504dp.
+        assertTrue(VerticalTabUtils.isWindowNarrow(503));
+        assertFalse(VerticalTabUtils.isWindowNarrow(504));
+        assertFalse(VerticalTabUtils.isWindowNarrow(600));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetWindowWidthBoundary_AutoResizeDisabled() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                VerticalTabUtils.AUTO_RESIZE_PARAM,
+                /* testValue= */ false);
+
+        // < 488dp (412 + 76): NOT_SHOWABLE
+        assertEquals(
+                WindowWidthBoundary.NOT_SHOWABLE, VerticalTabUtils.getWindowWidthBoundary(487));
+
+        // [488dp, 652dp): FORCED_COLLAPSED
+        assertEquals(
+                WindowWidthBoundary.FORCED_COLLAPSED, VerticalTabUtils.getWindowWidthBoundary(488));
+        assertEquals(
+                WindowWidthBoundary.FORCED_COLLAPSED, VerticalTabUtils.getWindowWidthBoundary(651));
+
+        // >= 652dp: FULLY_EXPANDABLE
+        assertEquals(
+                WindowWidthBoundary.FULLY_EXPANDABLE, VerticalTabUtils.getWindowWidthBoundary(652));
+        assertEquals(
+                WindowWidthBoundary.FULLY_EXPANDABLE, VerticalTabUtils.getWindowWidthBoundary(800));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetWindowWidthBoundary_AutoResizeEnabled() {
+        FeatureOverrides.enable(ChromeFeatureList.ANDROID_VERTICAL_TABS);
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                VerticalTabUtils.AUTO_RESIZE_PARAM,
+                /* testValue= */ true);
+
+        // < 488dp (412 + 76): NOT_SHOWABLE
+        assertEquals(
+                WindowWidthBoundary.NOT_SHOWABLE, VerticalTabUtils.getWindowWidthBoundary(487));
+
+        // [488dp, 504dp): FORCED_COLLAPSED
+        assertEquals(
+                WindowWidthBoundary.FORCED_COLLAPSED, VerticalTabUtils.getWindowWidthBoundary(488));
+        assertEquals(
+                WindowWidthBoundary.FORCED_COLLAPSED, VerticalTabUtils.getWindowWidthBoundary(503));
+
+        // [504dp, 726dp): DYNAMIC_EXPANDABLE
+        assertEquals(
+                WindowWidthBoundary.DYNAMIC_EXPANDABLE,
+                VerticalTabUtils.getWindowWidthBoundary(504));
+        assertEquals(
+                WindowWidthBoundary.DYNAMIC_EXPANDABLE,
+                VerticalTabUtils.getWindowWidthBoundary(725));
+
+        // >= 726dp: FULLY_EXPANDABLE
+        assertEquals(
+                WindowWidthBoundary.FULLY_EXPANDABLE, VerticalTabUtils.getWindowWidthBoundary(726));
+        assertEquals(
+                WindowWidthBoundary.FULLY_EXPANDABLE,
+                VerticalTabUtils.getWindowWidthBoundary(1000));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetWindowWidthBoundary_CustomAvailableWidth() {
+        FeatureOverrides.enable(ChromeFeatureList.ANDROID_VERTICAL_TABS);
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                VerticalTabUtils.AUTO_RESIZE_PARAM,
+                /* testValue= */ true);
+
+        // Available width < 76dp -> NOT_SHOWABLE regardless of window width
+        assertEquals(
+                WindowWidthBoundary.NOT_SHOWABLE,
+                VerticalTabUtils.getWindowWidthBoundary(
+                        /* windowWidthDp= */ 800, /* availableWidthDp= */ 75));
+
+        // Available width >= 76dp and window is wide
+        assertEquals(
+                WindowWidthBoundary.FULLY_EXPANDABLE,
+                VerticalTabUtils.getWindowWidthBoundary(
+                        /* windowWidthDp= */ 800, /* availableWidthDp= */ 300));
+
+        // Available width restricts wide window to dynamic expandable
+        assertEquals(
+                WindowWidthBoundary.DYNAMIC_EXPANDABLE,
+                VerticalTabUtils.getWindowWidthBoundary(
+                        /* windowWidthDp= */ 800, /* availableWidthDp= */ 150));
     }
 }

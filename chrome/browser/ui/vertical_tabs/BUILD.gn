@@ -16,6 +16,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/ui/side_ui/public:java",
     "//components/browser_ui/styles/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
