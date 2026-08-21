@@ -254,8 +254,8 @@ struct OsSignalsResponse : BaseSignalResponse {
   std::optional<std::string> distribution_version = std::nullopt;
 
   // Android specific
-  bool has_potentially_harmful_apps;
-  bool verified_apps_enabled;
+  bool has_potentially_harmful_apps = false;
+  bool verified_apps_enabled = false;
   // The date when the device most recently applied a security patch, in ms
   // since epoch.
   std::optional<int64_t> security_patch_ms;
