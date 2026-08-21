@@ -125,6 +125,12 @@ TabDragWindowAdapterImpl::DetachToNewWindow(
         mojo_base::mojom::Code::kFailedPrecondition, "Profile is null"));
   }
 
+  views::Widget* source_widget = views::Widget::GetWidgetForNativeWindow(
+      browser_window_->GetWindow()->GetNativeWindow());
+  if (source_widget) {
+    source_widget->PrepareForMoveLoop(views::Widget::MoveLoopSource::kMouse);
+  }
+
   gfx::Rect initial_bounds(
       screen_point - drag_offset,
       browser_window_->GetWindow()->GetRestoredBounds().size());
@@ -148,6 +154,7 @@ TabDragWindowAdapterImpl::DetachToNewWindow(
   views::Widget* new_widget = views::Widget::GetWidgetForNativeWindow(
       new_window->GetWindow()->GetNativeWindow());
   new_widget->SetCanAppearInExistingFullscreenSpaces(true);
+  new_widget->SetBypassWindowManager(true);
 
   CHECK(registry_);
   gfx::NativeWindow native_window = new_window->GetWindow()->GetNativeWindow();
@@ -196,6 +203,9 @@ tabs_api::DragMoveLoopResult TabDragWindowAdapterImpl::RunWindowMoveLoop(
   base::WeakPtr<TabDragWindowAdapterImpl> weak_this =
       weak_factory_.GetWeakPtr();
 
+  widget->PrepareForMoveLoop(views::Widget::MoveLoopSource::kMouse);
+  widget->SetBypassWindowManager(true);
+
   views::Widget::MoveLoopResult result =
       widget->RunMoveLoop(drag_offset, views::Widget::MoveLoopSource::kMouse,
                           views::Widget::MoveLoopEscapeBehavior::kHide);
@@ -204,10 +214,17 @@ tabs_api::DragMoveLoopResult TabDragWindowAdapterImpl::RunWindowMoveLoop(
     return tabs_api::DragMoveLoopResult::kCanceled;
   }
 
+  if (widget_observation_.IsObserving()) {
+    widget->SetBypassWindowManager(false);
+  }
+
+  bool widget_alive = widget_observation_.IsObserving();
   widget_observation_.Reset();
   move_callback_.Reset();
 
-  widget->SetCanAppearInExistingFullscreenSpaces(false);
+  if (widget_alive) {
+    widget->SetCanAppearInExistingFullscreenSpaces(false);
+  }
 
   return result == views::Widget::MoveLoopResult::kSuccessful
              ? tabs_api::DragMoveLoopResult::kSuccess
