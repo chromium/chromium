@@ -95,11 +95,8 @@ void SetManualFilter(std::string_view content_pack_setting,
 }
 
 AccountInfo GetOrCreatePrimaryAccount(
-    signin::IdentityTestEnvironment& identity_test_env) {
+    signin::IdentityManager* identity_manager) {
   constexpr char kDefaultEmail[] = "name@gmail.com";
-
-  signin::IdentityManager* identity_manager =
-      identity_test_env.identity_manager();
 
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return identity_manager->FindExtendedAccountInfo(
@@ -109,12 +106,13 @@ AccountInfo GetOrCreatePrimaryAccount(
   std::vector<CoreAccountInfo> accounts =
       identity_manager->GetAccountsWithRefreshTokens();
   if (!accounts.empty()) {
-    return identity_test_env.MakePrimaryAccountAvailable(
-        accounts.front().email, signin::ConsentLevel::kSignin);
+    return signin::MakePrimaryAccountAvailable(identity_manager,
+                                               accounts.front().email,
+                                               signin::ConsentLevel::kSignin);
   }
 
-  return identity_test_env.MakePrimaryAccountAvailable(
-      kDefaultEmail, signin::ConsentLevel::kSignin);
+  return signin::MakePrimaryAccountAvailable(identity_manager, kDefaultEmail,
+                                             signin::ConsentLevel::kSignin);
 }
 }  // namespace
 
@@ -276,11 +274,15 @@ void SupervisedUserTestEnvironment::Shutdown() {
   pref_store_environment_.Shutdown();
 }
 
-void SupervisedUserTestEnvironment::EnableSupervisedAccount() {
-  AccountInfo account = GetOrCreatePrimaryAccount(identity_test_env_);
-  UpdateSupervisionStatusForAccount(account,
-                                    identity_test_env_.identity_manager(),
+void SupervisedUserTestEnvironment::EnableSupervisedAccount(
+    signin::IdentityManager* identity_manager) {
+  AccountInfo account = GetOrCreatePrimaryAccount(identity_manager);
+  UpdateSupervisionStatusForAccount(account, identity_manager,
                                     /*is_subject_to_parental_controls=*/true);
+}
+
+void SupervisedUserTestEnvironment::EnableSupervisedAccount() {
+  EnableSupervisedAccount(identity_test_env_.identity_manager());
   CHECK(IsSubjectToParentalControls(*pref_store_environment_.pref_service()));
 }
 

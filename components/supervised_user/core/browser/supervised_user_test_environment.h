@@ -163,6 +163,8 @@ class SupervisedUserTestEnvironment {
   // profile use.
   void EnableSupervisedAccount();
   void DisableSupervisedAccount();
+  static void EnableSupervisedAccount(
+      signin::IdentityManager* identity_manager);
 
   // SetWebFilterType methods simulate the custodian modifying "Google Chrome
   // and Web" settings.

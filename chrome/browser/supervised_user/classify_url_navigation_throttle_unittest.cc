@@ -17,6 +17,8 @@
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -38,6 +40,7 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/features.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
+#include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -69,6 +72,8 @@ class ClassifyUrlNavigationThrottleTestBase
  protected:
   std::unique_ptr<TestingProfile> CreateTestingProfile() override {
     TestingProfile::Builder builder;
+    builder.AddTestingFactories(IdentityTestEnvironmentProfileAdaptor::
+                                    GetIdentityTestEnvironmentFactories());
     builder.AddTestingFactory(
         SupervisedUserUrlFilteringServiceFactory::GetInstance(),
         base::BindRepeating(&ClassifyUrlNavigationThrottleTestBase::
@@ -79,10 +84,20 @@ class ClassifyUrlNavigationThrottleTestBase
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+    // Automatically fulfill all access token requests with a dummy token:
+    identity_test_env_adaptor_->identity_test_env()
+        ->SetAutomaticIssueOfAccessTokens(true);
     // Initialize the ChildAccountService which is responsible for wiring up
     // the supervision status to the FamilyLinkSettingsService (that ultimately
     // configures the url filtering, for the family link supervised users).
     ChildAccountServiceFactory::GetForProfile(profile());
+  }
+
+  void TearDown() override {
+    identity_test_env_adaptor_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   std::unique_ptr<content::MockNavigationThrottleRegistry>
@@ -136,6 +151,8 @@ class ClassifyUrlNavigationThrottleTestBase
   }
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
   bool resume_called() const { return resume_called_; }
   MockUrlCheckerClient& mock_url_checker_client() {
     return mock_url_checker_client_;
@@ -186,7 +203,8 @@ class ClassifyUrlNavigationThrottleTest
   ClassifyUrlNavigationThrottleTest() = default;
   void SetUp() override {
     ClassifyUrlNavigationThrottleTestBase::SetUp();
-    EnableParentalControls(*profile()->GetPrefs());
+    SupervisedUserTestEnvironment::EnableSupervisedAccount(
+        IdentityManagerFactory::GetForProfile(profile()));
   }
 };
 
@@ -284,7 +302,8 @@ class ClassifyUrlNavigationThrottleAsyncCheckerTest
     ClassifyUrlNavigationThrottleTestBase::SetUp();
     switch (GetTestCase().mode) {
       case SupervisionMode::kSupervisedByFamilyLink:
-        EnableParentalControls(*profile()->GetPrefs());
+        SupervisedUserTestEnvironment::EnableSupervisedAccount(
+            IdentityManagerFactory::GetForProfile(profile()));
         break;
 #if BUILDFLAG(IS_ANDROID)
       case SupervisionMode::kLocalSupervision:
@@ -493,7 +512,8 @@ class ClassifyUrlNavigationThrottleParallelizationTest
  protected:
   void SetUp() override {
     ClassifyUrlNavigationThrottleTestBase::SetUp();
-    EnableParentalControls(*profile()->GetPrefs());
+    SupervisedUserTestEnvironment::EnableSupervisedAccount(
+        IdentityManagerFactory::GetForProfile(profile()));
   }
 
   static const std::vector<GURL> GetRedirectChain() {
