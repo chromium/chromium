@@ -138,10 +138,4 @@ bool AwPrefetchServiceDelegate::IsContaminationExempt(
   return false;
 }
 
-void AwPrefetchServiceDelegate::OnPrefetchLikely(
-    content::WebContents* web_contents) {
-  // Only used for renderer initiated prefetching which WebView doesn't
-  // currently support.
-}
-
 }  // namespace android_webview

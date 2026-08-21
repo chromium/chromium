@@ -16,9 +16,7 @@ class MockPrefetchServiceDelegate : public PrefetchServiceDelegate {
  public:
   static const char kPrefetchProxyAddress[];
 
-  explicit MockPrefetchServiceDelegate(
-      std::optional<int> num_on_prefetch_likely_calls = 1);
-
+  MockPrefetchServiceDelegate();
   ~MockPrefetchServiceDelegate() override;
 
   MockPrefetchServiceDelegate(const MockPrefetchServiceDelegate&) = delete;
@@ -48,7 +46,6 @@ class MockPrefetchServiceDelegate : public PrefetchServiceDelegate {
   MOCK_METHOD(bool, IsBatterySaverEnabled, (), (override));
   MOCK_METHOD(bool, IsDomainInPrefetchAllowList, (const GURL&), (override));
   MOCK_METHOD(bool, IsContaminationExempt, (const url::Origin&), (override));
-  MOCK_METHOD(void, OnPrefetchLikely, (WebContents*), (override));
   MOCK_METHOD(void, SetAcceptLanguageHeader, (std::string), (override));
 };
 

@@ -437,14 +437,6 @@ void PageLoadMetricsForwardObserver::OnStorageAccessed(
                                       access_type);
 }
 
-void PageLoadMetricsForwardObserver::OnPrefetchLikely() {
-  // This event is delivered only for the primary page.
-  // TODO(crbug.com/40895492): Investigate whether this should truly be
-  // unreachable. Note that all NOTREACHED()s were made non-fatal in this file,
-  // they are not all necessarily hit.
-  DUMP_WILL_BE_NOTREACHED();
-}
-
 void PageLoadMetricsForwardObserver::DidActivatePrerenderedPage(
     content::NavigationHandle* navigation_handle) {}
 

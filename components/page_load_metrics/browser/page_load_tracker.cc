@@ -1110,12 +1110,6 @@ void PageLoadTracker::OnSoftNavigationLargestContentfulPaint(
   }
 }
 
-void PageLoadTracker::OnPrefetchLikely() {
-  for (const auto& observer : observers_) {
-    observer->OnPrefetchLikely();
-  }
-}
-
 void PageLoadTracker::UpdateFeaturesUsage(
     content::RenderFrameHost* rfh,
     const std::vector<blink::UseCounterFeature>& new_features) {

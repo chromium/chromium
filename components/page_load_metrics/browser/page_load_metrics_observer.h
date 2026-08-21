@@ -260,7 +260,6 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
                          const GURL& first_party_url,
                          bool blocked_by_policy,
                          StorageType access_type) override {}
-  void OnPrefetchLikely() override {}
   void DidActivatePrerenderedPage(
       content::NavigationHandle* navigation_handle) override {}
   void OnSharedStorageWorkletHostCreated() override {}

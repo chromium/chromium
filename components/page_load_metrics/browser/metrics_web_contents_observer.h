@@ -193,11 +193,6 @@ class MetricsWebContentsObserver
   void OnCustomUserTimingUpdated(content::RenderFrameHost* rfh,
                                  mojom::CustomUserTimingMarkPtr custom_timing);
 
-  // Informs the observers of the currently committed primary page load that
-  // it's likely that prefetch will occur in this WebContents. This should
-  // not be called within WebContentsObserver::DidFinishNavigation methods.
-  void OnPrefetchLikely();
-
   // Called when a `SharedStorageWorkletHost` is created for `rfh`.
   void OnSharedStorageWorkletHostCreated(content::RenderFrameHost* rfh);
 

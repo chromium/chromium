@@ -854,17 +854,6 @@ PrefetchService::CheckInitialEligibilityOfPrefetch(
         return std::move(params).Finish(PreloadingEligibility::kCrossOrigin);
       }
     }
-
-    // TODO(crbug.com/40946257): Current code doesn't support PageLoadMetrics
-    // when the prefetch is initiated by browser.
-    if (auto* renderer_initiator_info =
-            prefetch_container->request().GetRendererInitiatorInfo()) {
-      if (auto* rfh = renderer_initiator_info->GetRenderFrameHost()) {
-        if (auto* web_contents = WebContents::FromRenderFrameHost(rfh)) {
-          delegate_->OnPrefetchLikely(web_contents);
-        }
-      }
-    }
   }
 
   if (GetInjectedEligibilityCheckForTesting()) {

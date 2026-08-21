@@ -425,8 +425,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       const content::WebContentsObserver::MediaPlayerInfo& video_type,
       content::RenderFrameHost* render_frame_host);
 
-  void OnPrefetchLikely();
-
   void OnEnterBackForwardCache();
   void OnRestoreFromBackForwardCache(
       content::NavigationHandle* navigation_handle);

@@ -1335,15 +1335,6 @@ void MetricsWebContentsObserver::RemoveLifecycleObserver(
   lifecycle_observers_.RemoveObserver(observer);
 }
 
-void MetricsWebContentsObserver::OnPrefetchLikely() {
-  // Prefetching can be triggered by speculation rules (by SpeculationHostImpl::
-  // UpdateSpeculationCandidates()) or by NavigationPredictor, both of which
-  // work only on behalf of a primary page.
-  if (primary_page_) {
-    primary_page_->OnPrefetchLikely();
-  }
-}
-
 void MetricsWebContentsObserver::OnSharedStorageWorkletHostCreated(
     content::RenderFrameHost* rfh) {
   if (!rfh) {
