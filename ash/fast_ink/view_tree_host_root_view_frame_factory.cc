@@ -4,6 +4,7 @@
 
 #include "ash/fast_ink/view_tree_host_root_view_frame_factory.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/frame_sink/frame_sink_host.h"
 #include "ash/frame_sink/ui_resource.h"
 #include "base/check.h"
@@ -105,7 +106,9 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
     const gfx::Rect& content_rect,
     const gfx::Rect& total_damage_rect,
     bool use_overlays,
-    UiResourceManager& resource_manager) {
+    UiResourceManager& resource_manager,
+    viz::ClientResourceProvider& client_resource_provider,
+    cc::ResourcePool& resource_pool) {
   auto* window = widget_->GetNativeView();
   float device_scale_factor = window->GetHost()->device_scale_factor();
 
@@ -145,26 +148,6 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
       break;
   }
 
-  auto resource =
-      AcquireUiResource(buffer_size, use_overlays, resource_manager);
-
-  if (!resource) {
-    return nullptr;
-  }
-
-  Paint(total_damage_rect, rotation_transform, resource.get());
-
-  if (resource->damaged) {
-    resource->sync_token =
-        resource->client_shared_image()->BackingWasExternallyUpdated(
-            resource->sync_token);
-    resource->shared_image_interface->VerifySyncToken(resource->sync_token);
-    resource->damaged = false;
-  }
-
-  viz::TransferableResource transferable_resource =
-      resource_manager.OfferAndPrepareResourceForExport(std::move(resource));
-
   auto frame = std::make_unique<viz::CompositorFrame>();
   frame->metadata.begin_frame_ack = begin_frame_ack;
   frame->metadata.begin_frame_ack.has_damage = true;
@@ -175,10 +158,9 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
       gfx::ConvertSizeToPixels(content_rect.size(), device_scale_factor));
 
   gfx::Rect output_rect(size_in_pixel);
-  gfx::Rect damage_rect;
 
   // TODO(oshima): Support partial content update.
-  damage_rect = gfx::ToEnclosingRect(
+  gfx::Rect damage_rect = gfx::ToEnclosingRect(
       gfx::ConvertRectToPixels(total_damage_rect, device_scale_factor));
 
   // To ensure that the damage_rect is not bigger than the output_rect. We can
@@ -196,10 +178,70 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
   render_pass->SetNew(viz::CompositorRenderPassId{1}, output_rect, damage_rect,
                       buffer_to_target_transform);
 
-  AppendQuad(*render_pass, transferable_resource, output_rect, buffer_size,
-             buffer_to_target_transform);
+  if (features::IsFrameSinkHostNewBackendEnabled() &&
+      features::IsViewTreeHostNewBackendEnabled()) {
+    auto context_provider = aura::Env::GetInstance()
+                                ->context_factory()
+                                ->SharedMainThreadRasterContextProvider();
+    if (!context_provider) {
+      LOG(ERROR) << "Failed to acquire a context provider";
+      return nullptr;
+    }
 
-  frame->resource_list.push_back(transferable_resource);
+    scoped_refptr<gpu::SharedImageInterface> sii =
+        context_provider->SharedImageInterface();
+
+    cc::ResourcePool::InUsePoolResource resource =
+        AcquireResource(buffer_size, use_overlays, resource_pool, sii.get());
+    if (!resource) {
+      return nullptr;
+    }
+
+    Paint(total_damage_rect, rotation_transform,
+          resource.backing()->shared_image().get());
+
+    resource.backing()->mailbox_sync_token =
+        resource.backing()->shared_image()->BackingWasExternallyUpdated(
+            resource.backing()->returned_sync_token);
+
+    resource_pool.PrepareForExport(
+        resource, viz::TransferableResource::ResourceSource::kUI);
+
+    client_resource_provider.PrepareSendToParent(
+        {resource.resource_id_for_export()}, &frame->resource_list, sii.get());
+
+    AppendQuad(*render_pass, frame->resource_list.back(), output_rect,
+               buffer_size, buffer_to_target_transform);
+
+    resource_pool.ReleaseResource(std::move(resource));
+  } else {
+    auto resource =
+        AcquireUiResource(buffer_size, use_overlays, resource_manager);
+
+    if (!resource) {
+      return nullptr;
+    }
+
+    Paint(total_damage_rect, rotation_transform,
+          resource->client_shared_image().get());
+
+    if (resource->damaged) {
+      resource->sync_token =
+          resource->client_shared_image()->BackingWasExternallyUpdated(
+              resource->sync_token);
+      resource->shared_image_interface->VerifySyncToken(resource->sync_token);
+      resource->damaged = false;
+    }
+
+    viz::TransferableResource transferable_resource =
+        resource_manager.OfferAndPrepareResourceForExport(std::move(resource));
+
+    AppendQuad(*render_pass, transferable_resource, output_rect, buffer_size,
+               buffer_to_target_transform);
+
+    frame->resource_list.push_back(transferable_resource);
+  }
+
   frame->render_pass_list.push_back(std::move(render_pass));
 
   return frame;
@@ -208,7 +250,7 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
 void ViewTreeHostRootViewFrameFactory::Paint(
     const gfx::Rect& invalidation_rect,
     const gfx::Transform& rotate_transform,
-    UiResource* resource) {
+    gpu::ClientSharedImage* client_shared_image) {
   auto display_item_list = base::MakeRefCounted<cc::DisplayItemList>();
   float dsf = widget_->GetCompositor()->device_scale_factor();
 
@@ -218,8 +260,8 @@ void ViewTreeHostRootViewFrameFactory::Paint(
   widget_->OnNativeWidgetPaint(context);
   display_item_list->Finalize();
 
-  CHECK(resource->client_shared_image());
-  auto mapping = resource->client_shared_image()->Map();
+  CHECK(client_shared_image);
+  auto mapping = client_shared_image->Map();
   if (!mapping) {
     TRACE_EVENT0("ui", "ViewTreeHostRootView::Paint::Map");
     LOG(ERROR) << "MapSharedImage Failed.";
@@ -283,6 +325,42 @@ std::unique_ptr<UiResource> ViewTreeHostRootViewFrameFactory::AcquireUiResource(
   if (!resource) {
     resource = CreateUiResource(size, kSharedImageFormat, kUiSourceId,
                                 is_overlay_candidate);
+  }
+
+  return resource;
+}
+
+cc::ResourcePool::InUsePoolResource
+ViewTreeHostRootViewFrameFactory::AcquireResource(
+    const gfx::Size& size,
+    bool is_overlay_candidate,
+    cc::ResourcePool& resource_pool,
+    gpu::SharedImageInterface* sii) const {
+  DCHECK(sii);
+  cc::ResourcePool::InUsePoolResource resource = resource_pool.AcquireResource(
+      size, kSharedImageFormat, gfx::ColorSpace());
+  if (!resource) {
+    return resource;
+  }
+
+  if (!resource.backing()) {
+    auto backing = std::make_unique<cc::ResourcePool::Backing>(
+        resource.size(), resource.format(), resource.color_space());
+
+    gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+    if (is_overlay_candidate &&
+        sii->GetCapabilities().supports_scanout_shared_images) {
+      usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    }
+
+    if (!backing->CreateSharedImage(sii, usage, "FastInkRootViewFrame",
+                                    gfx::BufferUsage::SCANOUT_CPU_READ_WRITE)) {
+      LOG(ERROR) << "Failed to create MappableSharedImage";
+      resource_pool.ReleaseResource(std::move(resource));
+      return cc::ResourcePool::InUsePoolResource();
+    }
+
+    resource.set_backing(std::move(backing));
   }
 
   return resource;

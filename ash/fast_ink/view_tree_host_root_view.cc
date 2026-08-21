@@ -55,7 +55,8 @@ ViewTreeHostRootView::CreateCompositorFrame(
 
   auto frame = frame_factory_->CreateCompositorFrame(
       begin_frame_ack, GetContentRect(), GetTotalDamage(),
-      is_overlay_candidate_, resource_manager);
+      is_overlay_candidate_, resource_manager, client_resource_provider,
+      resource_pool);
 
   ResetDamage();
 

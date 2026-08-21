@@ -11,7 +11,14 @@
 #include "ash/ash_export.h"
 #include "ash/frame_sink/ui_resource.h"
 #include "base/memory/raw_ptr.h"
+#include "cc/resources/resource_pool.h"
+#include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
+
+namespace gpu {
+class ClientSharedImage;
+class SharedImageInterface;
+}  // namespace gpu
 
 namespace viz {
 class CompositorFrame;
@@ -56,12 +63,14 @@ class ASH_EXPORT ViewTreeHostRootViewFrameFactory {
       const gfx::Rect& content_rect,
       const gfx::Rect& total_damage_rect,
       bool use_overlays,
-      UiResourceManager& resource_manager);
+      UiResourceManager& resource_manager,
+      viz::ClientResourceProvider& client_resource_provider,
+      cc::ResourcePool& resource_pool);
 
  private:
   void Paint(const gfx::Rect& invalidation_rect,
              const gfx::Transform& rotate_transform,
-             UiResource* resource);
+             gpu::ClientSharedImage* client_shared_image);
 
   // Configures and adds a `TextureDrawQuad` to the `render_pass`.
   void AppendQuad(viz::CompositorRenderPass& render_pass,
@@ -76,6 +85,12 @@ class ASH_EXPORT ViewTreeHostRootViewFrameFactory {
       const gfx::Size& size,
       bool is_overlay_candidate,
       UiResourceManager& resource_manager) const;
+
+  cc::ResourcePool::InUsePoolResource AcquireResource(
+      const gfx::Size& size,
+      bool is_overlay_candidate,
+      cc::ResourcePool& resource_pool,
+      gpu::SharedImageInterface* sii) const;
 
   raw_ptr<views::Widget, DanglingUntriaged> widget_;
 };

@@ -11,6 +11,8 @@
 #include "ash/frame_sink/ui_resource_manager.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "cc/resources/resource_pool.h"
+#include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
