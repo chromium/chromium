@@ -52,8 +52,8 @@ class OtpSuggestionTest : public testing::Test {
 TEST_F(OtpSuggestionTest, OtpLongerThanNumberOfDetectedFields) {
   OtpFillData fill_data = CreateFillDataForOtpSuggestion(
       *form_structure_, *form_structure_->fields()[0], u"12345");
-  EXPECT_EQ(1u, fill_data.size());
-  EXPECT_EQ(u"12345", fill_data.at(field_id(0)));
+  EXPECT_EQ(fill_data.size(), 1u);
+  EXPECT_EQ(fill_data.at(field_id(0)), u"12345");
 }
 
 // If the length of the OTP value matches the number of detected OTP fields, it
@@ -61,11 +61,11 @@ TEST_F(OtpSuggestionTest, OtpLongerThanNumberOfDetectedFields) {
 TEST_F(OtpSuggestionTest, OtpLengthEqualsNumberOfDetectedFields) {
   OtpFillData fill_data = CreateFillDataForOtpSuggestion(
       *form_structure_, *form_structure_->fields()[0], u"1234");
-  EXPECT_EQ(4u, fill_data.size());
-  EXPECT_EQ(u"1", fill_data.at(field_id(0)));
-  EXPECT_EQ(u"2", fill_data.at(field_id(1)));
-  EXPECT_EQ(u"3", fill_data.at(field_id(2)));
-  EXPECT_EQ(u"4", fill_data.at(field_id(3)));
+  EXPECT_EQ(fill_data.size(), 4u);
+  EXPECT_EQ(fill_data.at(field_id(0)), u"1");
+  EXPECT_EQ(fill_data.at(field_id(1)), u"2");
+  EXPECT_EQ(fill_data.at(field_id(2)), u"3");
+  EXPECT_EQ(fill_data.at(field_id(3)), u"4");
 }
 
 // If the length of the OTP value matches the number of detected OTP fields, it
@@ -77,11 +77,11 @@ TEST_F(OtpSuggestionTest,
       *form_structure_, *form_structure_->fields()[3], u"1234");
   // The delta to the previous test OtpLengthEqualsNumberOfDetectedFields is
   // that the trigger field is the last field.
-  EXPECT_EQ(4u, fill_data.size());
-  EXPECT_EQ(u"1", fill_data.at(field_id(0)));
-  EXPECT_EQ(u"2", fill_data.at(field_id(1)));
-  EXPECT_EQ(u"3", fill_data.at(field_id(2)));
-  EXPECT_EQ(u"4", fill_data.at(field_id(3)));
+  EXPECT_EQ(fill_data.size(), 4u);
+  EXPECT_EQ(fill_data.at(field_id(0)), u"1");
+  EXPECT_EQ(fill_data.at(field_id(1)), u"2");
+  EXPECT_EQ(fill_data.at(field_id(2)), u"3");
+  EXPECT_EQ(fill_data.at(field_id(3)), u"4");
 }
 
 // If the length of the OTP value is smaller than the number of detected fields
@@ -91,9 +91,9 @@ TEST_F(OtpSuggestionTest,
 TEST_F(OtpSuggestionTest, OtpLengthSmallerThanNumberOfDetectedFields) {
   OtpFillData fill_data = CreateFillDataForOtpSuggestion(
       *form_structure_, *form_structure_->fields()[0], u"12");
-  EXPECT_EQ(2u, fill_data.size());
-  EXPECT_EQ(u"1", fill_data.at(field_id(0)));
-  EXPECT_EQ(u"2", fill_data.at(field_id(1)));
+  EXPECT_EQ(fill_data.size(), 2u);
+  EXPECT_EQ(fill_data.at(field_id(0)), u"1");
+  EXPECT_EQ(fill_data.at(field_id(1)), u"2");
 }
 
 // If the length of the OTP value is smaller than the number of detected fields
@@ -103,8 +103,8 @@ TEST_F(OtpSuggestionTest,
        OtpLengthSmallerThanNumberOfDetectedFields_NotEnoughFields) {
   OtpFillData fill_data = CreateFillDataForOtpSuggestion(
       *form_structure_, *form_structure_->fields()[3], u"12");
-  EXPECT_EQ(1u, fill_data.size());
-  EXPECT_EQ(u"12", fill_data.at(field_id(3)));
+  EXPECT_EQ(fill_data.size(), 1u);
+  EXPECT_EQ(fill_data.at(field_id(3)), u"12");
 }
 
 // If the OTP field is not among currently detected OTP fields (e.g. due to a
@@ -113,8 +113,8 @@ TEST_F(OtpSuggestionTest,
 TEST_F(OtpSuggestionTest, TriggerFieldIsNotOtpFieldAnymore) {
   OtpFillData fill_data = CreateFillDataForOtpSuggestion(
       *form_structure_, *form_structure_->fields()[4], u"1234");
-  EXPECT_EQ(1u, fill_data.size());
-  EXPECT_EQ(u"1234", fill_data.at(field_id(4)));
+  EXPECT_EQ(fill_data.size(), 1u);
+  EXPECT_EQ(fill_data.at(field_id(4)), u"1234");
 }
 
 // If a form contains visible OTP digit fields AND a hidden OTP field,
@@ -163,16 +163,16 @@ TEST_F(OtpSuggestionTest, DuplicateFirstDigitWithHiddenField) {
   OtpFillData fill_data =
       CreateFillDataForOtpSuggestion(*form_structure, trigger_field, u"123456");
 
-  EXPECT_EQ(6u, fill_data.size());
+  EXPECT_EQ(fill_data.size(), 6u);
   // First digit is empty.
   EXPECT_FALSE(fill_data.contains(form_structure->fields()[0]->global_id()));
-  EXPECT_EQ(u"1", fill_data.at(form_structure->fields()[1]->global_id()));
-  EXPECT_EQ(u"2", fill_data.at(form_structure->fields()[2]->global_id()));
-  EXPECT_EQ(u"3", fill_data.at(form_structure->fields()[3]->global_id()));
-  EXPECT_EQ(u"4", fill_data.at(form_structure->fields()[4]->global_id()));
-  EXPECT_EQ(u"5", fill_data.at(form_structure->fields()[5]->global_id()));
+  EXPECT_EQ(fill_data.at(form_structure->fields()[1]->global_id()), u"1");
+  EXPECT_EQ(fill_data.at(form_structure->fields()[2]->global_id()), u"2");
+  EXPECT_EQ(fill_data.at(form_structure->fields()[3]->global_id()), u"3");
+  EXPECT_EQ(fill_data.at(form_structure->fields()[4]->global_id()), u"4");
+  EXPECT_EQ(fill_data.at(form_structure->fields()[5]->global_id()), u"5");
   // Last digit is inserted into the hidden field.
-  EXPECT_EQ(u"6", fill_data.at(form_structure->fields()[6]->global_id()));
+  EXPECT_EQ(fill_data.at(form_structure->fields()[6]->global_id()), u"6");
 }
 
 }  // namespace autofill
