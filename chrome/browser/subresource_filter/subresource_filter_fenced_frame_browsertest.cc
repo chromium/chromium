@@ -37,14 +37,14 @@ constexpr const char kBlinkDisallowChildFrameConsoleMessageFormat[] =
 // Tests that AddMessageToConsole() is not called from NavigationConsoleLogger
 // with a fenced frame to ensure that it works only with the outermost main
 // frame.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterFencedFrameBrowserTest,
                        NavigatesToURLWithWarning_NoMessageLogged) {
   content::WebContentsConsoleObserver console_observer(web_contents());
   console_observer.SetPattern("*show ads*");
 
   GURL fenced_frame_url(GetTestUrl("/fenced_frames/title1.html"));
   ConfigureURLWithWarning(fenced_frame_url,
-                          {safe_browsing::SubresourceFilterType::BETTER_ADS});
+                          safe_browsing::SubresourceFilterType::BETTER_ADS);
   Configuration config(subresource_filter::mojom::ActivationLevel::kEnabled,
                        subresource_filter::ActivationScope::ACTIVATION_LIST,
                        subresource_filter::ActivationList::BETTER_ADS);
@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
 
   // Load a fenced frame.
   ConfigureURLWithWarning(fenced_frame_url,
-                          {safe_browsing::SubresourceFilterType::BETTER_ADS});
+                          safe_browsing::SubresourceFilterType::BETTER_ADS);
   RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
           web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
   ASSERT_EQ(0u, console_observer.messages().size());
 }
 
-IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterFencedFrameBrowserTest,
                        CollapseBlockedFencedFrame) {
   const GURL kTopLevelUrl(GetTestUrl("title1.html"));
   ConfigureAsPhishingURL(kTopLevelUrl);
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
 
 // Test that filtering resources inside a fencedframe works when the outer page
 // is activated.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterFencedFrameBrowserTest,
                        OutermostFrameActivation) {
   const std::string kMessageFilter =
       base::StringPrintf(kBlinkDisallowChildFrameConsoleMessageFormat, "*");
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
 // Tests that navigations of a fenced frame are correctly blocked when the
 // outer page is activated and the fenced frame URL matches a blocklist or
 // allowlist rule.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterFencedFrameBrowserTest,
                        FencedFrameLoadFiltering) {
   const GURL kTopLevelUrl(GetTestUrl("title1.html"));
   ConfigureAsPhishingURL(kTopLevelUrl);
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
 
 // Same as above test but tests filtering of navigations occurring inside
 // subframes embedded within in a fenced frame.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterFencedFrameBrowserTest,
                        LoadFilteringNestedInFencedFrame) {
   const GURL kTopLevelUrl(GetTestUrl("title1.html"));
   ConfigureAsPhishingURL(kTopLevelUrl);
@@ -279,5 +279,9 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
   GURL expected_url = url::Origin::Create(kUrlWithIncludedScript).GetURL();
   EXPECT_EQ(expected_url, subframe->GetLastCommittedURL());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SubresourceFilterFencedFrameBrowserTest,
+                         ::testing::Bool());
 
 }  // namespace subresource_filter

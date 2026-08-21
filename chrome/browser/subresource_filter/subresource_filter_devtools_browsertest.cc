@@ -106,14 +106,21 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDevtoolsBrowserTest,
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 }
 
-IN_PROC_BROWSER_TEST_F(SubresourceFilterListInsertingBrowserTest,
+class SubresourceFilterDevtoolsListInsertingBrowserTest
+    : public SubresourceFilterListInsertingBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  std::optional<bool> UseV5() const override { return GetParam(); }
+};
+
+IN_PROC_BROWSER_TEST_P(SubresourceFilterDevtoolsListInsertingBrowserTest,
                        WarningSiteWithForceActivation_LogsWarning) {
   const GURL url(
       GetTestUrl("subresource_filter/frame_with_included_script.html"));
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
   ConfigureURLWithWarning(url,
-                          {safe_browsing::SubresourceFilterType::BETTER_ADS});
+                          safe_browsing::SubresourceFilterType::BETTER_ADS);
 
   Configuration config(subresource_filter::mojom::ActivationLevel::kEnabled,
                        subresource_filter::ActivationScope::ACTIVATION_LIST,
@@ -144,6 +151,10 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterListInsertingBrowserTest,
   EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SubresourceFilterDevtoolsListInsertingBrowserTest,
+                         ::testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterDevtoolsBrowserTest,
                        ForceActivation_SubresourceLogging) {

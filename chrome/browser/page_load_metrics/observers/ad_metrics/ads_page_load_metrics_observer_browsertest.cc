@@ -130,13 +130,9 @@ class AdsPageLoadMetricsObserverBrowserTest
         web_contents);
   }
 
-  void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled = {
-        subresource_filter::kAdTagging};
-    std::vector<base::test::FeatureRef> disabled = {};
-
-    scoped_feature_list_.InitWithFeatures(enabled, disabled);
-    subresource_filter::SubresourceFilterBrowserTest::SetUp();
+  base::flat_set<base::test::FeatureRef> GetSubresourceFilterEnabledFeatures()
+      const override {
+    return {subresource_filter::kAdTagging};
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -156,9 +152,6 @@ class AdsPageLoadMetricsObserverBrowserTest
     // Ensure browser is active so that the expected dimensions are correct.
     ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that an embedded ad is same origin.
@@ -1860,6 +1853,11 @@ class AdsPageLoadMetricsObserverResourceBrowserTest
         switches::kEnableExperimentalWebPlatformFeatures);
   }
 
+  void TearDown() override {
+    scoped_feature_list_.Reset();
+    subresource_filter::SubresourceFilterBrowserTest::TearDown();
+  }
+
   void CloseAllTabs() {
     TabStripModel* tab_strip_model = browser()->GetTabStripModel();
     content::WebContentsDestroyedWatcher destroyed_watcher(
@@ -3076,27 +3074,18 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 class AdsPageLoadMetricsObserverPrerenderingBrowserTest
     : public AdsPageLoadMetricsObserverBrowserTest {
  public:
-  AdsPageLoadMetricsObserverPrerenderingBrowserTest() = default;
+  AdsPageLoadMetricsObserverPrerenderingBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &AdsPageLoadMetricsObserverPrerenderingBrowserTest::web_contents,
+            base::Unretained(this))) {}
   ~AdsPageLoadMetricsObserverPrerenderingBrowserTest() override = default;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    AdsPageLoadMetricsObserverBrowserTest::SetUpCommandLine(command_line);
-
-    // |prerender_helper_| has a ScopedFeatureList so we needed to delay its
-    // creation until now because AdsPageLoadMetricsObserverBrowserTest also
-    // uses a ScopedFeatureList and initialization order matters.
-    prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
-        base::BindRepeating(
-            &AdsPageLoadMetricsObserverPrerenderingBrowserTest::web_contents,
-            base::Unretained(this)));
-  }
-
   content::test::PrerenderTestHelper& prerender_helper() {
-    return *prerender_helper_;
+    return prerender_helper_;
   }
 
  private:
-  std::unique_ptr<content::test::PrerenderTestHelper> prerender_helper_;
+  content::test::PrerenderTestHelper prerender_helper_;
 };
 
 // Test that prerendering doesn't have metrics by AdsPageLoadMetricsObserver.

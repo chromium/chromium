@@ -37,15 +37,7 @@ class SubresourceFilterInterceptingBrowserTest
  public:
   SubresourceFilterInterceptingBrowserTest()
       : safe_browsing_test_server_(
-            std::make_unique<net::test_server::EmbeddedTestServer>()) {
-    if (UseV5()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          safe_browsing::kLocalListsUseSBv5);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          safe_browsing::kLocalListsUseSBv5);
-    }
-  }
+            std::make_unique<net::test_server::EmbeddedTestServer>()) {}
 
   SubresourceFilterInterceptingBrowserTest(
       const SubresourceFilterInterceptingBrowserTest&) = delete;
@@ -54,7 +46,7 @@ class SubresourceFilterInterceptingBrowserTest
 
   ~SubresourceFilterInterceptingBrowserTest() override = default;
 
-  bool UseV5() const { return GetParam(); }
+  std::optional<bool> UseV5() const override;
 
   net::test_server::EmbeddedTestServer* safe_browsing_test_server() {
     return safe_browsing_test_server_.get();
@@ -112,7 +104,7 @@ class SubresourceFilterInterceptingBrowserTest
         redirect_url, safe_browsing::GetUrlSubresourceFilterId());
 
     std::map<GURL, base::TimeDelta> delay_map{{url, initial_delay}};
-    if (UseV5()) {
+    if (UseV5().value()) {
       // Map URLs to policies: enforce on the initial URL, and safe (no match)
       // on the redirect URL.
       std::map<GURL, safe_browsing::V5::FullHash> response_map{
@@ -153,8 +145,11 @@ class SubresourceFilterInterceptingBrowserTest
   // parent class' server.
   std::unique_ptr<net::test_server::EmbeddedTestServer>
       safe_browsing_test_server_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+std::optional<bool> SubresourceFilterInterceptingBrowserTest::UseV5() const {
+  return GetParam();
+}
 
 IN_PROC_BROWSER_TEST_P(SubresourceFilterInterceptingBrowserTest,
                        BetterAdsMetadata) {
@@ -178,7 +173,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterInterceptingBrowserTest,
 
   // Register the test server to handle full hash requests for the two URLs
   // with the given matches, then start accepting connections on the server.
-  if (UseV5()) {
+  if (UseV5().value()) {
     std::map<GURL, safe_browsing::V5::FullHash> response_map{
         {enforce_url, GetBetterAdsMatchV5(enforce_url, /*is_warn_only=*/false)},
         {warn_url, GetBetterAdsMatchV5(warn_url, /*is_warn_only=*/true)}};

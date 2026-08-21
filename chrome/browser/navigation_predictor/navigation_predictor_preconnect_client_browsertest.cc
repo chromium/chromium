@@ -461,11 +461,9 @@ class NavigationPredictorPreconnectClientConnectionAllowlistBrowserTest
     subresource_filter::SubresourceFilterBrowserTest::SetUp();
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    NavigationPredictorPreconnectClientBrowserTest::SetUpCommandLine(
-        command_line);
-    feature_list_.InitWithFeatures(
-        {network::features::kConnectionAllowlists}, {});
+  base::flat_set<base::test::FeatureRef> GetSubresourceFilterEnabledFeatures()
+      const override {
+    return {network::features::kConnectionAllowlists};
   }
 
   void SetUpOnMainThread() override {
@@ -490,9 +488,6 @@ class NavigationPredictorPreconnectClientConnectionAllowlistBrowserTest
 
  protected:
   std::map<GURL, bool> preresolve_results_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(

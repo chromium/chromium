@@ -20,9 +20,12 @@
 namespace subresource_filter {
 
 class SubresourceFilterWorkerFetchBrowserTest
-    : public SubresourceFilterBrowserTest {
+    : public SubresourceFilterBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   SubresourceFilterWorkerFetchBrowserTest() = default;
+
+  std::optional<bool> UseV5() const override { return GetParam(); }
 
   SubresourceFilterWorkerFetchBrowserTest(
       const SubresourceFilterWorkerFetchBrowserTest&) = delete;
@@ -80,24 +83,28 @@ class SubresourceFilterWorkerFetchBrowserTest
 // worker script fetch and module script fetch.
 
 // Test if fetch() on dedicated workers is blocked by the subresource filter.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterWorkerFetchBrowserTest, WorkerFetch) {
+IN_PROC_BROWSER_TEST_P(SubresourceFilterWorkerFetchBrowserTest, WorkerFetch) {
   // This fetches "worklet_fetch_data.txt" by fetch().
   RunTest("subresource_filter/worker_fetch.html", "worker_fetch_data.txt");
 }
 
 // Test if top-level worklet script fetch is blocked by the subresource filter.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterWorkerFetchBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterWorkerFetchBrowserTest,
                        WorkletScriptFetch) {
   RunTest("subresource_filter/worklet_script_fetch.html",
           "worklet_script_fetch.js");
 }
 
 // Test if static import on worklets is blocked by the subresource filter.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterWorkerFetchBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterWorkerFetchBrowserTest,
                        WorkletStaticImport) {
   // This fetches "empty.js" by static import.
   RunTest("subresource_filter/worklet_script_fetch.html", "empty.js");
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SubresourceFilterWorkerFetchBrowserTest,
+                         ::testing::Bool());
 
 // Any network APIs including dynamic import are disallowed on worklets, so we
 // don't have to test them.

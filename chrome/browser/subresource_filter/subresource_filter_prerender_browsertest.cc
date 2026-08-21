@@ -39,7 +39,7 @@ namespace subresource_filter {
 // A very basic smoke test for prerendering; this test just activates on the
 // main frame of a prerender. It currently doesn't check any behavior but
 // passes if we don't crash.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterPrerenderingBrowserTest,
                        PrerenderingSmokeTest) {
   const GURL prerendering_url =
       embedded_test_server()->GetURL("/page_with_iframe.html");
@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 
 // Test that we correctly account for activation between the prerendering frame
 // and primary pages.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterPrerenderingBrowserTest,
                        OnlyPrerenderingFrameActivated) {
   const GURL prerendering_url = embedded_test_server()->GetURL(
       "/subresource_filter/frame_with_included_script.html");
@@ -73,13 +73,13 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 
   // Configure the filter to run only on the prerendering URL.
   {
-    ConfigureAsSubresourceFilterOnlyURL(prerendering_url);
+    ConfigureURLWithEnforcement(
+        prerendering_url, safe_browsing::SubresourceFilterType::BETTER_ADS);
     ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithPathSuffix(
         "suffix-that-does-not-match-anything"));
-    Configuration config(
-        subresource_filter::mojom::ActivationLevel::kEnabled,
-        subresource_filter::ActivationScope::ACTIVATION_LIST,
-        subresource_filter::ActivationList::SUBRESOURCE_FILTER);
+    Configuration config(subresource_filter::mojom::ActivationLevel::kEnabled,
+                         subresource_filter::ActivationScope::ACTIVATION_LIST,
+                         subresource_filter::ActivationList::BETTER_ADS);
     ResetConfiguration(std::move(config));
   }
 
@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 
 // Test that we don't start filtering an unactivated primary page when a
 // prerendering page becomes activated.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterPrerenderingBrowserTest,
                        UnactivatedPrimaryFrameNotFiltered) {
   const GURL prerendering_url = embedded_test_server()->GetURL("/empty.html");
   const GURL initial_url = embedded_test_server()->GetURL(
@@ -111,13 +111,13 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 
   // Configure filtering of `included_script.js` on the prerendering page only.
   {
-    ConfigureAsSubresourceFilterOnlyURL(prerendering_url);
+    ConfigureURLWithEnforcement(
+        prerendering_url, safe_browsing::SubresourceFilterType::BETTER_ADS);
     ASSERT_NO_FATAL_FAILURE(
         SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-    Configuration config(
-        subresource_filter::mojom::ActivationLevel::kEnabled,
-        subresource_filter::ActivationScope::ACTIVATION_LIST,
-        subresource_filter::ActivationList::SUBRESOURCE_FILTER);
+    Configuration config(subresource_filter::mojom::ActivationLevel::kEnabled,
+                         subresource_filter::ActivationScope::ACTIVATION_LIST,
+                         subresource_filter::ActivationList::BETTER_ADS);
     ResetConfiguration(std::move(config));
   }
 
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 
 // Test that we don't start filtering an unactivated prerendering page when the
 // primary page is activated.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterPrerenderingBrowserTest,
                        UnactivatedPrerenderingFrameNotFiltered) {
   const GURL prerendering_url = embedded_test_server()->GetURL(
       "/subresource_filter/frame_with_included_script.html");
@@ -156,13 +156,13 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 
   // Configure filtering of `included_script.js` on the initial URL only.
   {
-    ConfigureAsSubresourceFilterOnlyURL(initial_url);
+    ConfigureURLWithEnforcement(
+        initial_url, safe_browsing::SubresourceFilterType::BETTER_ADS);
     ASSERT_NO_FATAL_FAILURE(
         SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-    Configuration config(
-        subresource_filter::mojom::ActivationLevel::kEnabled,
-        subresource_filter::ActivationScope::ACTIVATION_LIST,
-        subresource_filter::ActivationList::SUBRESOURCE_FILTER);
+    Configuration config(subresource_filter::mojom::ActivationLevel::kEnabled,
+                         subresource_filter::ActivationScope::ACTIVATION_LIST,
+                         subresource_filter::ActivationList::BETTER_ADS);
     ResetConfiguration(std::move(config));
   }
 
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 // Test that we can filter a subresource while inside a prerender. Ensure we
 // don't display any UI while prerendered but once the prerender becomes
 // primary we then show notifications.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterPrerenderingBrowserTest,
                        FilterWhilePrerendered) {
   const GURL prerendering_url = embedded_test_server()->GetURL(
       "/subresource_filter/frame_with_included_script.html");
@@ -205,13 +205,13 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 
   // Configure filtering of `included_script.js` only on the prerendering URL.
   {
-    ConfigureAsSubresourceFilterOnlyURL(prerendering_url);
+    ConfigureURLWithEnforcement(
+        prerendering_url, safe_browsing::SubresourceFilterType::BETTER_ADS);
     ASSERT_NO_FATAL_FAILURE(
         SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-    Configuration config(
-        subresource_filter::mojom::ActivationLevel::kEnabled,
-        subresource_filter::ActivationScope::ACTIVATION_LIST,
-        subresource_filter::ActivationList::SUBRESOURCE_FILTER);
+    Configuration config(subresource_filter::mojom::ActivationLevel::kEnabled,
+                         subresource_filter::ActivationScope::ACTIVATION_LIST,
+                         subresource_filter::ActivationList::BETTER_ADS);
     ResetConfiguration(std::move(config));
   }
 
@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 // frame host. Note, this doesn't necessarily guarantee they won't be displayed
 // in the primary page's console (in fact, this is the current behavior), but
 // that's a more general problem of prerendering that will be fixed.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterPrerenderingBrowserTest,
                        ConsoleMessageFilterWhilePrerendered) {
   const GURL prerendering_url = embedded_test_server()->GetURL(
       "/subresource_filter/frame_with_delayed_script.html");
@@ -279,13 +279,13 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 
   // Configure filtering of `included_script.js` only on the prerendering URL.
   {
-    ConfigureAsSubresourceFilterOnlyURL(prerendering_url);
+    ConfigureURLWithEnforcement(
+        prerendering_url, safe_browsing::SubresourceFilterType::BETTER_ADS);
     ASSERT_NO_FATAL_FAILURE(
         SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-    Configuration config(
-        subresource_filter::mojom::ActivationLevel::kEnabled,
-        subresource_filter::ActivationScope::ACTIVATION_LIST,
-        subresource_filter::ActivationList::SUBRESOURCE_FILTER);
+    Configuration config(subresource_filter::mojom::ActivationLevel::kEnabled,
+                         subresource_filter::ActivationScope::ACTIVATION_LIST,
+                         subresource_filter::ActivationList::BETTER_ADS);
     ResetConfiguration(std::move(config));
   }
 
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 // Prerender a page, then navigate it. The prerender will be canceled. We check
 // this here since this could change in the future and we'd want to ensure
 // subresource filtering is correct in prerender navigations.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterPrerenderingBrowserTest,
                        NavigatePrerenderedPage) {
   const GURL prerendering_url1 = embedded_test_server()->GetURL("/title1.html");
   const GURL prerendering_url2 =
@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 // Tests that a prerendering page that has filtering activated, will continue
 // to filter subresources once made primary (i.e. once the user navigates to
 // the prerendered URL).
-IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterPrerenderingBrowserTest,
                        FilteringPrerenderBecomesPrimary) {
   const GURL prerendering_url = embedded_test_server()->GetURL(
       "/subresource_filter/frame_with_delayed_script.html");
@@ -346,13 +346,13 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 
   // Configure filtering of `included_script.js` only on the prerendering URL.
   {
-    ConfigureAsSubresourceFilterOnlyURL(prerendering_url);
+    ConfigureURLWithEnforcement(
+        prerendering_url, safe_browsing::SubresourceFilterType::BETTER_ADS);
     ASSERT_NO_FATAL_FAILURE(
         SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-    Configuration config(
-        subresource_filter::mojom::ActivationLevel::kEnabled,
-        subresource_filter::ActivationScope::ACTIVATION_LIST,
-        subresource_filter::ActivationList::SUBRESOURCE_FILTER);
+    Configuration config(subresource_filter::mojom::ActivationLevel::kEnabled,
+                         subresource_filter::ActivationScope::ACTIVATION_LIST,
+                         subresource_filter::ActivationList::BETTER_ADS);
     ResetConfiguration(std::move(config));
   }
 
@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 // Tests that a prerendering page that doesn't have filtering activated, will
 // continue to be unfiltered when made primary (i.e. once the user navigates to
 // the prerendered URL) from an activated initial URL.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterPrerenderingBrowserTest,
                        NonFilteringPrerenderBecomesPrimary) {
   const GURL prerendering_url = embedded_test_server()->GetURL(
       "/subresource_filter/frame_with_delayed_script.html");
@@ -389,13 +389,13 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 
   // Configure filtering of `included_script.js` only on the initial URL.
   {
-    ConfigureAsSubresourceFilterOnlyURL(initial_url);
+    ConfigureURLWithEnforcement(
+        initial_url, safe_browsing::SubresourceFilterType::BETTER_ADS);
     ASSERT_NO_FATAL_FAILURE(
         SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-    Configuration config(
-        subresource_filter::mojom::ActivationLevel::kEnabled,
-        subresource_filter::ActivationScope::ACTIVATION_LIST,
-        subresource_filter::ActivationList::SUBRESOURCE_FILTER);
+    Configuration config(subresource_filter::mojom::ActivationLevel::kEnabled,
+                         subresource_filter::ActivationScope::ACTIVATION_LIST,
+                         subresource_filter::ActivationList::BETTER_ADS);
     ResetConfiguration(std::move(config));
   }
 
@@ -429,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 }
 
 // Very basic test that ad tagging works in a prerender.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterPrerenderingBrowserTest,
                        AdTaggingSmokeTest) {
   const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
   const GURL prerendering_url =
@@ -484,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 // Tests that NavigationConsoleLogger works with a prerendered page by checking
 // if a console message is added in LogMessageOnCommit() from NotifyResult()
 // during navigation.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterPrerenderingBrowserTest,
                        NavigationConsoleLogger) {
   Configuration config(subresource_filter::mojom::ActivationLevel::kEnabled,
                        subresource_filter::ActivationScope::ACTIVATION_LIST,
@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   {
     GURL url(GetTestUrl("/empty.html"));
     ConfigureURLWithWarning(url,
-                            {safe_browsing::SubresourceFilterType::BETTER_ADS});
+                            safe_browsing::SubresourceFilterType::BETTER_ADS);
     content::WebContentsConsoleObserver console_observer(web_contents());
     console_observer.SetPattern(kActivationWarningConsoleMessage);
     // Initial page loading adds a console message.
@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   {
     GURL prerender_url(GetTestUrl("/title1.html"));
     ConfigureURLWithWarning(prerender_url,
-                            {safe_browsing::SubresourceFilterType::BETTER_ADS});
+                            safe_browsing::SubresourceFilterType::BETTER_ADS);
     content::WebContentsConsoleObserver console_observer(web_contents());
     console_observer.SetPattern(kActivationWarningConsoleMessage);
     // Trigger a prerender.
@@ -530,5 +530,9 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
               console_observer.GetMessageAt(0u));
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SubresourceFilterPrerenderingBrowserTest,
+                         ::testing::Bool());
 
 }  // namespace subresource_filter

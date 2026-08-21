@@ -30,8 +30,11 @@ const char kDisabledReasonHistogram[] =
 }  // namespace
 
 class SubresourceFilterDisabledReasonUmaBrowserTest
-    : public SubresourceFilterListInsertingBrowserTest {
+    : public SubresourceFilterListInsertingBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
+  std::optional<bool> UseV5() const override { return GetParam(); }
+
   SubresourceFilterDisabledReasonUmaBrowserTest() {
     // Disable `kPrewarm` to prevent any pre-warm navigation from firing during
     // test setup, which can race with the main navigation initiated by the test
@@ -61,7 +64,7 @@ class SubresourceFilterDisabledReasonUmaBrowserTest
   base::test::ScopedFeatureList prewarm_feature_;
 };
 
-IN_PROC_BROWSER_TEST_F(SubresourceFilterDisabledReasonUmaBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterDisabledReasonUmaBrowserTest,
                        ActivationEnabled) {
   base::HistogramTester histogram_tester;
   GURL url = GetURL("subresource_filter/frame_with_no_subresources.html");
@@ -77,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDisabledReasonUmaBrowserTest,
   histogram_tester.ExpectTotalCount(kDisabledReasonHistogram, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(SubresourceFilterDisabledReasonUmaBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterDisabledReasonUmaBrowserTest,
                        NoMatchingConfiguration_UrlNotOnPhishingList) {
   base::HistogramTester histogram_tester;
   GURL url = GetURL("subresource_filter/frame_with_no_subresources.html");
@@ -98,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDisabledReasonUmaBrowserTest,
       mojom::SubresourceFilterDisabledReason::kNoMatchingConfiguration, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SubresourceFilterDisabledReasonUmaBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterDisabledReasonUmaBrowserTest,
                        NoMatchingConfiguration_NewTabPage) {
   base::HistogramTester histogram_tester;
   GURL url = chrome::ChromeUINewTabPageURLAsGURL();
@@ -115,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDisabledReasonUmaBrowserTest,
       mojom::SubresourceFilterDisabledReason::kNoMatchingConfiguration, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SubresourceFilterDisabledReasonUmaBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterDisabledReasonUmaBrowserTest,
                        UrlNotHandledByNetworkStack_AboutBlankPage) {
   base::HistogramTester histogram_tester;
   GURL url = GURL(url::kAboutBlankURL);
@@ -132,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDisabledReasonUmaBrowserTest,
       mojom::SubresourceFilterDisabledReason::kUrlNotHandledByNetworkStack, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SubresourceFilterDisabledReasonUmaBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterDisabledReasonUmaBrowserTest,
                        DisabledByConfiguration) {
   base::HistogramTester histogram_tester;
   GURL url = GetURL("subresource_filter/frame_with_no_subresources.html");
@@ -151,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDisabledReasonUmaBrowserTest,
       mojom::SubresourceFilterDisabledReason::kDisabledByConfiguration, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SubresourceFilterDisabledReasonUmaBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterDisabledReasonUmaBrowserTest,
                        UrlAllowlisted) {
   base::HistogramTester histogram_tester;
   GURL url = GetURL("subresource_filter/frame_with_no_subresources.html");
@@ -172,13 +175,13 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDisabledReasonUmaBrowserTest,
 
 // Verifies that kWarningMode is recorded when the filter is in warning-only
 // mode.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterDisabledReasonUmaBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterDisabledReasonUmaBrowserTest,
                        WarningMode) {
   base::HistogramTester histogram_tester;
   GURL url = GetURL("subresource_filter/frame_with_no_subresources.html");
 
   ConfigureURLWithWarning(url,
-                          {safe_browsing::SubresourceFilterType::BETTER_ADS});
+                          safe_browsing::SubresourceFilterType::BETTER_ADS);
   Configuration config = Configuration::MakePresetForLiveRunForBetterAds();
   ResetConfiguration(std::move(config));
 
@@ -192,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDisabledReasonUmaBrowserTest,
       mojom::SubresourceFilterDisabledReason::kWarningMode, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SubresourceFilterDisabledReasonUmaBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterDisabledReasonUmaBrowserTest,
                        NavigationError) {
   base::HistogramTester histogram_tester;
   GURL url = GetURL("non-existent.html");
@@ -209,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDisabledReasonUmaBrowserTest,
       mojom::SubresourceFilterDisabledReason::kNavigationError, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(SubresourceFilterDisabledReasonUmaBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterDisabledReasonUmaBrowserTest,
                        RulesetUnavailableOrCorrupt) {
   base::HistogramTester histogram_tester;
   GURL url = GetURL("subresource_filter/frame_with_no_subresources.html");
@@ -228,16 +231,14 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterDisabledReasonUmaBrowserTest,
 class SubresourceFilterDisabledReasonAdTaggingDisabledBrowserTest
     : public SubresourceFilterDisabledReasonUmaBrowserTest {
  public:
-  SubresourceFilterDisabledReasonAdTaggingDisabledBrowserTest() {
-    // Disable ad tagging to prevent a default dry-run activation.
-    feature_list_.InitAndDisableFeature(kAdTagging);
+  // Disable ad tagging to prevent a default dry-run activation.
+  base::flat_set<base::test::FeatureRef> GetSubresourceFilterDisabledFeatures()
+      const override {
+    return {kAdTagging};
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SubresourceFilterDisabledReasonAdTaggingDisabledBrowserTest,
     FilterNeverCreated) {
   base::HistogramTester histogram_tester;
@@ -260,5 +261,14 @@ IN_PROC_BROWSER_TEST_F(
       kDisabledReasonHistogram,
       mojom::SubresourceFilterDisabledReason::kFilterNeverCreated, 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SubresourceFilterDisabledReasonUmaBrowserTest,
+                         ::testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SubresourceFilterDisabledReasonAdTaggingDisabledBrowserTest,
+    ::testing::Bool());
 
 }  // namespace subresource_filter

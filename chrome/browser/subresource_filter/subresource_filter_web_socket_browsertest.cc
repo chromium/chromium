@@ -27,7 +27,8 @@ enum WebSocketCreationPolicy {
 };
 class SubresourceFilterWebSocketBrowserTest
     : public SubresourceFilterBrowserTest,
-      public ::testing::WithParamInterface<WebSocketCreationPolicy> {
+      public ::testing::WithParamInterface<
+          std::tuple<WebSocketCreationPolicy, bool /*use_v5*/>> {
  public:
   SubresourceFilterWebSocketBrowserTest() = default;
 
@@ -35,6 +36,14 @@ class SubresourceFilterWebSocketBrowserTest
       const SubresourceFilterWebSocketBrowserTest&) = delete;
   SubresourceFilterWebSocketBrowserTest& operator=(
       const SubresourceFilterWebSocketBrowserTest&) = delete;
+
+  // Returns whether SafeBrowsingLocalListsUseSBv5 is enabled.
+  std::optional<bool> UseV5() const override { return std::get<1>(GetParam()); }
+
+  // Returns the policy for creating WebSockets in this test instance.
+  WebSocketCreationPolicy GetCreationPolicy() const {
+    return std::get<0>(GetParam());
+  }
 
   void SetUpOnMainThread() override {
     SubresourceFilterBrowserTest::SetUpOnMainThread();
@@ -67,7 +76,7 @@ class SubresourceFilterWebSocketBrowserTest
 IN_PROC_BROWSER_TEST_P(SubresourceFilterWebSocketBrowserTest, BlockWebSocket) {
   GURL url(GetTestUrl(
       base::StringPrintf("subresource_filter/page_with_websocket.html?%s",
-                         GetParam() == IN_WORKER ? "inWorker" : "")));
+                         GetCreationPolicy() == IN_WORKER ? "inWorker" : "")));
   GURL websocket_url(GetWebSocketUrl("/echo-with-no-extension"));
   ConfigureAsPhishingURL(url);
   ASSERT_NO_FATAL_FAILURE(
@@ -81,7 +90,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterWebSocketBrowserTest,
                        DoNotBlockWebSocketNoActivatedFrame) {
   GURL url(GetTestUrl(
       base::StringPrintf("subresource_filter/page_with_websocket.html?%s",
-                         GetParam() == IN_WORKER ? "inWorker" : "")));
+                         GetCreationPolicy() == IN_WORKER ? "inWorker" : "")));
   GURL websocket_url(GetWebSocketUrl("/echo-with-no-extension"));
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("echo-with-no-extension"));
@@ -95,7 +104,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterWebSocketBrowserTest,
                        DoNotBlockWebSocketInActivatedFrameWithNoRule) {
   GURL url(GetTestUrl(
       base::StringPrintf("subresource_filter/page_with_websocket.html?%s",
-                         GetParam() == IN_WORKER ? "inWorker" : "")));
+                         GetCreationPolicy() == IN_WORKER ? "inWorker" : "")));
   GURL websocket_url(GetWebSocketUrl("/echo-with-no-extension"));
   ConfigureAsPhishingURL(url);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -107,7 +116,9 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterWebSocketBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     SubresourceFilterWebSocketBrowserTest,
-    ::testing::Values(WebSocketCreationPolicy::IN_WORKER,
-                      WebSocketCreationPolicy::IN_MAIN_FRAME));
+    ::testing::Combine(
+        ::testing::Values(WebSocketCreationPolicy::IN_WORKER,
+                          WebSocketCreationPolicy::IN_MAIN_FRAME),
+        ::testing::Bool()));
 
 }  // namespace subresource_filter
