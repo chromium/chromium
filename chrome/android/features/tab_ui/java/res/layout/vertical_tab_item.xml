@@ -14,7 +14,9 @@ found in the LICENSE file.
     android:paddingStart="0dp"
     android:paddingEnd="@dimen/vertical_tab_item_padding_horizontal"
     android:layout_marginBottom="@dimen/vertical_tab_item_margin_bottom"
-    android:background="@drawable/vertical_tab_item_background">
+    android:background="@drawable/vertical_tab_item_background"
+    android:clickable="true"
+    android:focusable="true">
 
     <!-- AI Indicator -->
     <View

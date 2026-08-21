@@ -15,7 +15,8 @@ import org.chromium.build.annotations.NullMarked;
     KeyboardFocusRow.TAB_STRIP,
     KeyboardFocusRow.OMNIBOX,
     KeyboardFocusRow.BOOKMARKS_BAR,
-    KeyboardFocusRow.SIDE_PANEL
+    KeyboardFocusRow.SIDE_PANEL,
+    KeyboardFocusRow.VERTICAL_TABS
 })
 public @interface KeyboardFocusRow {
     /** The focus is not in one of the rows of top controls. */
@@ -32,4 +33,7 @@ public @interface KeyboardFocusRow {
 
     /** The focus is on the Side Panel (e.g. GLiC, AIM, etc). */
     int SIDE_PANEL = 4;
+
+    /** The focus is on the Vertical Tabs rail. */
+    int VERTICAL_TABS = 5;
 }
