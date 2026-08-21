@@ -12,7 +12,7 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/workspace_desk_helper.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_sync_service.h"
 #include "components/sync/base/time.h"

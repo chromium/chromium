@@ -8,7 +8,7 @@
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -93,7 +93,7 @@ class SyncSessionsRouterTabHelperBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
+    web_contents_ = browser()->GetTabStripModel()->GetActiveWebContents();
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
