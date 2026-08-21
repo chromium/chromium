@@ -23,6 +23,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/input/web_input_event_builders_mac.h"
+#include "components/remote_cocoa/app_shim/immersive_mode_controller_cocoa.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #import "content/browser/cocoa/system_hotkey_helper_mac.h"
 #import "content/browser/cocoa/system_hotkey_map.h"
@@ -1350,7 +1351,8 @@ static NSWindow* __weak _deferredResignKeyWindow;
   // ). A |performKeyEquivalent:| may also bubble up from a dialog child window
   // to perform browser commands such as switching tabs. We only want to handle
   // key equivalents if we're first responder in the keyWindow.
-  if (![[self window] isKeyWindow] || [[self window] firstResponder] != self) {
+  if (![self isKeyTrackingWindowKey] ||
+      [[self window] firstResponder] != self) {
     TRACE_EVENT_INSTANT("browser", "NotKeyWindow");
     return NO;
   }
@@ -1824,8 +1826,29 @@ static NSWindow* __weak _deferredResignKeyWindow;
   _hostHelper->PinchEvent(gestureEvent, injected);
 }
 
+// Replace -[self window] with -keyTrackingWindow for any cases involving
+// window key status (checking isKeyWindow, observing for
+// NSWindowDidBecomeKeyNotification, etc.)
+- (NSWindow*)keyTrackingWindow {
+  if (remote_cocoa::IsNSToolbarFullScreenWindow(self.window)) {
+    // In fullscreen, NSToolbarFullScreenWindow never becomes the key window.
+    // If this RWHVCocoa is in the Toolbar, uses the browser window's key
+    // status.
+    NSWindow* browser_window =
+        remote_cocoa::OriginalBrowserWindowFromFullScreenWindow(self.window);
+    CHECK(browser_window);
+    return browser_window;
+  }
+  return self.window;
+}
+
+- (BOOL)isKeyTrackingWindowKey {
+  return self.keyTrackingWindow.isKeyWindow;
+}
+
 - (void)viewWillMoveToWindow:(NSWindow*)newWindow {
   NSWindow* oldWindow = [self window];
+  NSWindow* oldKeyTrackingWindow = [self keyTrackingWindow];
 
   NSNotificationCenter* notificationCenter =
       [NSNotificationCenter defaultCenter];
@@ -1845,12 +1868,6 @@ static NSWindow* __weak _deferredResignKeyWindow;
                                   name:NSWindowDidResizeNotification
                                 object:oldWindow];
     [notificationCenter removeObserver:self
-                                  name:NSWindowDidBecomeKeyNotification
-                                object:oldWindow];
-    [notificationCenter removeObserver:self
-                                  name:NSWindowDidResignKeyNotification
-                                object:oldWindow];
-    [notificationCenter removeObserver:self
                                   name:NSWindowWillCloseNotification
                                 object:oldWindow];
     [notificationCenter removeObserver:self
@@ -1860,6 +1877,20 @@ static NSWindow* __weak _deferredResignKeyWindow;
                                   name:NSApplicationDidResignActiveNotification
                                 object:nil];
   }
+  if (oldKeyTrackingWindow) {
+    [notificationCenter removeObserver:self
+                                  name:NSWindowDidBecomeKeyNotification
+                                object:oldKeyTrackingWindow];
+    [notificationCenter removeObserver:self
+                                  name:NSWindowDidResignKeyNotification
+                                object:oldKeyTrackingWindow];
+  }
+
+  NSWindow* newKeyTrackingWindow =
+      remote_cocoa::IsNSToolbarFullScreenWindow(newWindow)
+          ? remote_cocoa::OriginalBrowserWindowFromFullScreenWindow(newWindow)
+          : newWindow;
+
   if (newWindow) {
     [notificationCenter
         addObserver:self
@@ -1880,14 +1911,6 @@ static NSWindow* __weak _deferredResignKeyWindow;
                                name:NSWindowDidResizeNotification
                              object:newWindow];
     [notificationCenter addObserver:self
-                           selector:@selector(windowDidBecomeKey:)
-                               name:NSWindowDidBecomeKeyNotification
-                             object:newWindow];
-    [notificationCenter addObserver:self
-                           selector:@selector(windowDidResignKey:)
-                               name:NSWindowDidResignKeyNotification
-                             object:newWindow];
-    [notificationCenter addObserver:self
                            selector:@selector(windowWillClose:)
                                name:NSWindowWillCloseNotification
                              object:newWindow];
@@ -1899,6 +1922,16 @@ static NSWindow* __weak _deferredResignKeyWindow;
                            selector:@selector(applicationDidResignActive:)
                                name:NSApplicationDidResignActiveNotification
                              object:nil];
+  }
+  if (newKeyTrackingWindow) {
+    [notificationCenter addObserver:self
+                           selector:@selector(windowDidBecomeKey:)
+                               name:NSWindowDidBecomeKeyNotification
+                             object:newKeyTrackingWindow];
+    [notificationCenter addObserver:self
+                           selector:@selector(windowDidResignKey:)
+                               name:NSWindowDidResignKeyNotification
+                             object:newKeyTrackingWindow];
   }
 
   _hostHelper->SetAccessibilityWindow(newWindow);
@@ -1985,25 +2018,25 @@ static NSWindow* __weak _deferredResignKeyWindow;
 }
 
 - (void)windowDidBecomeKey:(NSNotification*)notification {
-  DCHECK([self window]);
-  DCHECK_EQ([self window], [notification object]);
+  DCHECK([self keyTrackingWindow]);
+  DCHECK_EQ([self keyTrackingWindow], [notification object]);
   [self performDeferredResignKeyWindow];
   if ([_responderDelegate respondsToSelector:@selector(windowDidBecomeKey)])
     [_responderDelegate windowDidBecomeKey];
-  if ([self window].keyWindow) {
+  if ([self isKeyTrackingWindowKey]) {
     _host->OnWindowIsKeyChanged(true);
   }
 }
 
 - (void)windowDidResignKey:(NSNotification*)notification {
-  DCHECK([self window]);
-  DCHECK_EQ([self window], [notification object]);
+  DCHECK([self keyTrackingWindow]);
+  DCHECK_EQ([self keyTrackingWindow], [notification object]);
 
   // If our app is still active and we're still the key window, ignore this
   // message, since it just means that a menu extra (on the "system status bar")
   // was activated; we'll get another |-windowDidResignKey| if we ever really
   // lose key window status.
-  if ([NSApp isActive] && ([NSApp keyWindow] == [self window])) {
+  if ([NSApp isActive] && ([NSApp keyWindow] == [self keyTrackingWindow])) {
     // Defer processing when the window is still reported as key. This occurs
     // in:
     // 1. Menu extra activation (system status bar items)
@@ -2795,7 +2828,7 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
     [self updateScreenProperties];
   }
 
-  _host->OnWindowIsKeyChanged([[self window] isKeyWindow]);
+  _host->OnWindowIsKeyChanged([self isKeyTrackingWindowKey]);
   _host->OnFirstResponderChanged([[self window] firstResponder] == self);
 
   // If we switch windows (or are removed from the view hierarchy), cancel any
@@ -2910,8 +2943,9 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   NSPoint location = [self.window convertPointFromScreen:NSEvent.mouseLocation];
   location = [self convertPoint:location fromView:nil];
   if (![self mouse:location inRect:[self bounds]] ||
-      ![[self window] isKeyWindow])
+      ![self isKeyTrackingWindowKey]) {
     return NO;
+  }
 
   if (_cursorHidden || _showingContextMenu)
     return NO;

@@ -16,7 +16,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
-#include "components/remote_cocoa/app_shim/immersive_mode_delegate_mac.h"
+#include "components/remote_cocoa/app_shim/immersive_mode_controller_cocoa.h"
 #include "components/remote_cocoa/app_shim/mouse_capture.h"
 #include "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
@@ -258,17 +258,6 @@ std::map<uint64_t, NativeWidgetMacNSWindowHost*>& GetIdToWidgetHostImplMap() {
 
 uint64_t g_last_bridged_native_widget_id = 0;
 
-NSWindow* OriginalHostingWindowFromFullScreenWindow(
-    NSWindow* full_screen_window) {
-  if ([full_screen_window.delegate
-          conformsToProtocol:@protocol(ImmersiveModeDelegate)]) {
-    return base::apple::ObjCCastStrict<NSObject<ImmersiveModeDelegate>>(
-               full_screen_window.delegate)
-        .originalHostingWindow;
-  }
-  return nullptr;
-}
-
 }  // namespace
 
 // static
@@ -286,7 +275,8 @@ NativeWidgetMacNSWindowHost* NativeWidgetMacNSWindowHost::GetFromNativeWindow(
   // TODO(mek): Figure out how to make this work with remote remote_cocoa
   // windows.
   if (remote_cocoa::IsNSToolbarFullScreenWindow(window)) {
-    NSWindow* original = OriginalHostingWindowFromFullScreenWindow(window);
+    NSWindow* original =
+        remote_cocoa::OriginalHostingWindowFromFullScreenWindow(window);
     if (NativeWidgetMacNSWindow* widget_window =
             base::apple::ObjCCast<NativeWidgetMacNSWindow>(original)) {
       return GetFromId([widget_window bridgedNativeWidgetId]);
