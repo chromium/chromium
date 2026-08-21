@@ -9,7 +9,8 @@
 
 #searchField {
   --cr-toolbar-search-field-background: var(--color-toolbar);
-  margin: 8px 12px;
+  margin: 12px;
+  margin-top: 4px;
   width: auto;
 }
 

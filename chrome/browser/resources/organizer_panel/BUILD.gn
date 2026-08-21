@@ -15,6 +15,7 @@ build_webui("build") {
   ts_files = [
     "app.html.ts",
     "app.ts",
+    "delegates/open_tabs_delegate.ts",
     "organizer_list.html.ts",
     "organizer_list.ts",
     "organizer_list_item.html.ts",

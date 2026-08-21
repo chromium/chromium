@@ -25,13 +25,16 @@ suite('OrganizerPanelAppTest', () => {
   });
 
   test('renders search field with correct label and shortcut', () => {
-    const searchField = app.shadowRoot.querySelector('cr-toolbar-search-field');
-    assertTrue(!!searchField);
+    const searchField = app.$.searchField;
     assertEquals('Search Tabs', searchField.getAttribute('label'));
     assertEquals('Clear search', searchField.getAttribute('clear-label'));
 
     const shortcut = searchField.querySelector('#shortcut');
     assertTrue(!!shortcut);
     assertEquals('Ctrl+Shift+A', shortcut.textContent);
+  });
+
+  test('renders organizer list with expected sections', () => {
+    assertEquals(1, app.$.list.sectionDelegates.length);
   });
 });
