@@ -11,7 +11,7 @@
 #include "chrome/browser/extensions/api/bookmarks/bookmarks_api.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -104,12 +104,12 @@ IN_PROC_BROWSER_TEST_F(BookmarkManagerPrivateApiBrowsertest,
 
   // Verify the tab group and the tabs are created.
   ASSERT_EQ(
-      1u, browser()->tab_strip_model()->group_model()->ListTabGroups().size());
-  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+      1u, browser()->GetTabStripModel()->group_model()->ListTabGroups().size());
+  ASSERT_EQ(3, browser()->GetTabStripModel()->count());
   ASSERT_EQ(GURL(chrome::kChromeUISettingsURL),
-            browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+            browser()->GetTabStripModel()->GetWebContentsAt(1)->GetURL());
   ASSERT_EQ(GURL(chrome::kChromeUIVersionURL),
-            browser()->tab_strip_model()->GetWebContentsAt(2)->GetURL());
+            browser()->GetTabStripModel()->GetWebContentsAt(2)->GetURL());
 }
 
 // Regression test: openInNewTabGroup must apply the scheme deny-list to every
@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkManagerPrivateApiBrowsertest,
 IN_PROC_BROWSER_TEST_F(BookmarkManagerPrivateApiBrowsertest,
                        RunOpenInNewTabFunction) {
   // Browser starts with one tab.
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
   GURL url("https://www.google.com");
   const BookmarkNode* node =
@@ -271,8 +271,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkManagerPrivateApiBrowsertest,
   ASSERT_TRUE(
       api_test_utils::RunFunction(new_tab_function.get(), args, GetProfile()));
 
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
-  ASSERT_EQ(url, browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
+  ASSERT_EQ(url, browser()->GetTabStripModel()->GetWebContentsAt(1)->GetURL());
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarkManagerPrivateApiBrowsertest,
@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkManagerPrivateApiBrowsertest,
   std::string node_id = base::NumberToString(node->id());
 
   // Browser starts with one tab.
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
   auto new_tab_function =
       base::MakeRefCounted<BookmarkManagerPrivateOpenInNewTabFunction>();
@@ -294,9 +294,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkManagerPrivateApiBrowsertest,
       api_test_utils::RunFunction(new_tab_function.get(), args, GetProfile()));
 
   // Verify the tab was opened.
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
   // The new tab should be active.
-  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(1, browser()->GetTabStripModel()->active_index());
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarkManagerPrivateApiBrowsertest,

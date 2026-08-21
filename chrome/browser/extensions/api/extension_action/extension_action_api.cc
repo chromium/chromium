@@ -54,7 +54,6 @@
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #endif  // !BUILDFLAG(IS_ANDROID)

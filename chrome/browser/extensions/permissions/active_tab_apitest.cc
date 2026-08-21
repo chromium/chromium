@@ -13,7 +13,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FileURLs) {
         << "Unexpected committed url: "
         << file_iframe->GetLastCommittedURL().spec();
 
-    browser()->tab_strip_model()->CloseSelectedTabs();
+    browser()->GetTabStripModel()->CloseSelectedTabs();
     return allowed;
   };
 

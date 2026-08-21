@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -207,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionServiceBrowserTest,
       ui_test_utils::NavigateToURL(browser(), GURL("chrome://settings")));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::WebUI* web_ui = web_contents->GetWebUI();
   ASSERT_TRUE(web_ui);
 

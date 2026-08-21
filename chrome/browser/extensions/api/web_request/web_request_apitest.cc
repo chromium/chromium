@@ -164,8 +164,8 @@
 #include "chrome/browser/extensions/test_extension_action_dispatcher_observer.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/login/login_handler.h"                 // nogncheck
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"  // nogncheck
 #include "chrome/browser/ui/search/ntp_test_utils.h"
@@ -1893,7 +1893,8 @@ void ExtensionWebRequestApiTest::RunPermissionTest(
             content::EvalJs(tab, "document.body.textContent"));
 
   // Test that navigation in OTR window is properly redirected.
-  Browser* otr_browser = OpenURLOffTheRecord(profile(), GURL("about:blank"));
+  BrowserWindowInterface* otr_browser =
+      OpenURLOffTheRecord(profile(), GURL("about:blank"));
 
   if (wait_for_extension_loaded_in_incognito) {
     EXPECT_TRUE(listener_incognito.WaitUntilSatisfied());
@@ -1905,7 +1906,8 @@ void ExtensionWebRequestApiTest::RunPermissionTest(
       otr_browser,
       embedded_test_server()->GetURL("/extensions/test_file.html")));
 
-  WebContents* otr_tab = otr_browser->tab_strip_model()->GetActiveWebContents();
+  WebContents* otr_tab =
+      otr_browser->GetTabStripModel()->GetActiveWebContents();
   EXPECT_EQ(exptected_content_incognito_window,
             content::EvalJs(otr_tab, "document.body.textContent"));
 }

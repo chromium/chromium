@@ -45,7 +45,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -582,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, LaunchTabApp) {
   // hosting one tab.
   ASSERT_EQ(1u, extensions::browsertest_util::GetWindowControllerCountInProfile(
                     profile()));
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
   // Load an app with app.launch.container = "tab".
   std::string app_id;
@@ -592,7 +592,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, LaunchTabApp) {
   // Check that the app opened in a new tab of the existing browser.
   ASSERT_EQ(1u, extensions::browsertest_util::GetWindowControllerCountInProfile(
                     profile()));
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile());
@@ -667,7 +667,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, NoLaunchTabAppDeprecated) {
   // hosting one tab.
   ASSERT_EQ(1u, extensions::browsertest_util::GetWindowControllerCountInProfile(
                     profile()));
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
   // Load an app with app.launch.container = "tab". This is a chrome app, so
   // it shouldn't be launched where that functionality has been deprecated.

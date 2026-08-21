@@ -80,7 +80,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/unload_controller.h"
@@ -99,7 +98,6 @@
 #include "ash/wm/window_pin_util.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
-#include "chrome/browser/ui/browser.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -1308,7 +1306,7 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
   // TODO(https://crbug.com/545671279): Port to desktop android.
 #if !BUILDFLAG(IS_ANDROID)
   if (!moved_tab && urls_.empty() &&
-      new_window->GetType() == Browser::TYPE_NORMAL) {
+      new_window->GetType() == BrowserWindowInterface::TYPE_NORMAL) {
     // TODO(crbug.com/452431839) Make a new NewTabTypes value for
     // when new tabs are made because of an empty window.
     chrome::NewTab(new_window, NewTabTypes::kNewTabCommand);
@@ -1368,10 +1366,9 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
   if (create_data_ &&
       create_data_->state == windows::WindowState::kLockedFullscreen) {
 #if BUILDFLAG(IS_CHROMEOS)
-    Browser* const target_browser = new_window->GetBrowserForMigrationOnly();
-    if (target_browser) {
+    if (new_window) {
       auto* delegate =
-          ash::BrowserController::GetInstance()->GetDelegate(target_browser);
+          ash::BrowserController::GetInstance()->GetDelegate(new_window);
       if (delegate) {
         delegate->EnterLockedFullscreen(/*focus_toolbar=*/false);
       }
@@ -2205,8 +2202,7 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
   // back to the dawn of time, AKA the initial implementation in 2014:
   // https://codereview.chromium.org/245933002.
   if (browser && browser->GetType() != BrowserWindowInterface::TYPE_NORMAL &&
-      UnloadController::From(browser->GetBrowserForMigrationOnly())
-          ->is_attempting_to_close_browser()) {
+      UnloadController::From(browser)->is_attempting_to_close_browser()) {
     browser = nullptr;
     fallback_to_tabbed_browser = true;
   }

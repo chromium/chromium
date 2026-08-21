@@ -13,7 +13,7 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/navigation_entry.h"
@@ -819,11 +819,11 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperBrowserTest,
   // Open Tab B on the same origin.
   ASSERT_TRUE(AddTabAtIndex(1, original_url_, ui::PAGE_TRANSITION_TYPED));
   content::WebContents* tab_b =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
+      browser()->GetTabStripModel()->GetWebContentsAt(1);
   ASSERT_TRUE(content::WaitForLoadStop(tab_b));
 
   // Switch back to Tab A.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   auto reload_page_dialog_reset =
       ReloadPageDialogController::AcceptDialogForTesting(true);
@@ -847,7 +847,7 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperBrowserTest,
 
   // Activating Tab B triggers OnVisibilityChanged(), which displays the Reload
   // Page bubble on Tab B.
-  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
   ASSERT_TRUE(WaitForReloadToFinish());
   EXPECT_FALSE(tab_helper_b->IsReloadRequired());
 }

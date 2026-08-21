@@ -22,7 +22,7 @@
 #include "chrome/browser/extensions/sync/extension_sync_service.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
@@ -218,9 +218,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest,
   // Navigate a tab to the disabled extension, it will show a permission
   // increase dialog.
   GURL url = extension->url();
-  int starting_tab_count = browser()->tab_strip_model()->count();
+  int starting_tab_count = browser()->GetTabStripModel()->count();
   NavigateToURLInNewTab(url);
-  int tab_count = browser()->tab_strip_model()->count();
+  int tab_count = browser()->GetTabStripModel()->count();
   EXPECT_EQ(starting_tab_count + 1, tab_count);
 
   // Uninstall the extension while the dialog is being shown.

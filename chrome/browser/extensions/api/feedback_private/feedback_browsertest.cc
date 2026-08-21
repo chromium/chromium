@@ -15,7 +15,7 @@
 #include "chrome/browser/feedback/feedback_uploader_chrome.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -330,10 +330,10 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_GetTargetTabUrl) {
     ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), GURL(test_case.first)));
 
     // Sanity check that we always have one tab in the browser.
-    ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+    ASSERT_EQ(browser()->GetTabStripModel()->count(), 1);
 
     ASSERT_EQ(expected_url, browser()
-                                ->tab_strip_model()
+                                ->GetTabStripModel()
                                 ->GetWebContentsAt(0)
                                 ->GetLastCommittedURL());
 

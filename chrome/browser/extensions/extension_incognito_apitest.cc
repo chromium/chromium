@@ -19,8 +19,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #endif
 
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoApiTest, DISABLED_IncognitoPopup) {
   ASSERT_TRUE(extension);
 
   // Open incognito window and navigate to test page.
-  Browser* incognito_browser = OpenURLOffTheRecord(
+  BrowserWindowInterface* incognito_browser = OpenURLOffTheRecord(
       profile(), embedded_test_server()->GetURL("/extensions/test_file.html"));
 
   // Simulate the incognito's browser action being clicked.

@@ -23,7 +23,7 @@
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -248,13 +248,13 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
     EXPECT_EQ(
         expect_css,
         content::EvalJs(
-            browser()->tab_strip_model()->GetActiveWebContents(),
+            browser()->GetTabStripModel()->GetActiveWebContents(),
             "document.defaultView.getComputedStyle(document.body, null)."
             "getPropertyValue('background-color') == 'rgb(245, 245, 220)'"));
 
     EXPECT_EQ(
         expect_script,
-        content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+        content::EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                         "document.title == 'Modified'"));
   }
 

@@ -46,7 +46,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -434,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataApiTest, UnsupportedDataType) {
   ASSERT_TRUE(extension);
 
   content::WebContentsConsoleObserver console_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   console_observer.SetPattern(
       "Requested data type(s) are not supported: passwords.");
 
@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataApiTest, MultipleUnsupportedDataTypes) {
   ASSERT_TRUE(extension);
 
   content::WebContentsConsoleObserver console_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   console_observer.SetPattern(
       "Requested data type(s) are not supported: passwords, pluginData.");
 

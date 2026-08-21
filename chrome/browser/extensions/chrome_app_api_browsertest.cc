@@ -13,7 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -41,7 +41,7 @@ class ChromeAppAPITest : public extensions::ExtensionBrowserTest {
 
   bool IsAppInstalledInMainFrame() {
     return IsAppInstalledInFrame(browser()
-                                     ->tab_strip_model()
+                                     ->GetTabStripModel()
                                      ->GetActiveWebContents()
                                      ->GetPrimaryMainFrame());
   }
@@ -55,7 +55,7 @@ class ChromeAppAPITest : public extensions::ExtensionBrowserTest {
 
   std::string InstallStateInMainFrame() {
     return InstallStateInFrame(browser()
-                                   ->tab_strip_model()
+                                   ->GetTabStripModel()
                                    ->GetActiveWebContents()
                                    ->GetPrimaryMainFrame());
   }
@@ -73,7 +73,7 @@ class ChromeAppAPITest : public extensions::ExtensionBrowserTest {
 
   std::string RunningStateInMainFrame() {
     return RunningStateInFrame(browser()
-                                   ->tab_strip_model()
+                                   ->GetTabStripModel()
                                    ->GetActiveWebContents()
                                    ->GetPrimaryMainFrame());
   }
@@ -88,7 +88,7 @@ class ChromeAppAPITest : public extensions::ExtensionBrowserTest {
  private:
   content::RenderFrameHost* GetIFrame() {
     return content::FrameMatchingPredicate(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetPrimaryPage(),
+        browser()->GetTabStripModel()->GetActiveWebContents()->GetPrimaryPage(),
         base::BindRepeating(&content::FrameIsChildOfMainFrame));
   }
 };
@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppAPITest, IsInstalled) {
   const char kGetAppDetails[] =
       "JSON.stringify(window.chrome.app.getDetails());";
   EXPECT_EQ("null", content::EvalJs(
-                        browser()->tab_strip_model()->GetActiveWebContents(),
+                        browser()->GetTabStripModel()->GetActiveWebContents(),
                         kGetAppDetails));
 
   // Check that an app page has chrome.app.isInstalled = true.
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppAPITest, IsInstalled) {
   // chrome.app.getDetails().
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
   std::string result =
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+      content::EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                       kGetAppDetails)
           .ExtractString();
   std::optional<base::Value> result_value =
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppAPITest, IsInstalled) {
 
   // Should not be able to alter window.chrome.app.isInstalled from javascript";
   EXPECT_EQ("true", content::EvalJs(
-                        browser()->tab_strip_model()->GetActiveWebContents(),
+                        browser()->GetTabStripModel()->GetActiveWebContents(),
                         "    (function() {"
                         "        var value = window.chrome.app.isInstalled;"
                         "        window.chrome.app.isInstalled = !value;"
@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppAPITest, IsInstalledFromRemovedFrame) {
          });
          )";
   EXPECT_EQ(true, content::EvalJs(
-                      browser()->tab_strip_model()->GetActiveWebContents(),
+                      browser()->GetTabStripModel()->GetActiveWebContents(),
                       base::StringPrintf(kScript, app_url.spec().c_str())));
 }
 
@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppAPIFencedFrameTest, NoInfo) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
 
   auto render_frame_hosts = CollectAllRenderFrameHosts(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   ASSERT_EQ(2u, render_frame_hosts.size());
 
   content::RenderFrameHost* fenced_frame = render_frame_hosts.at(1);

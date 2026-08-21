@@ -28,8 +28,8 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/javascript_dialogs/chrome_javascript_app_modal_dialog_view_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -277,7 +277,7 @@ class ProcessManagerBrowserTest : public ExtensionBrowserTest {
   // this problem, we also wait until all previous frames have been deleted.
   void NavigateToURL(const GURL& url) {
     NavigationCompletedObserver observer(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()->GetTabStripModel()->GetActiveWebContents());
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
@@ -294,7 +294,7 @@ class ProcessManagerBrowserTest : public ExtensionBrowserTest {
         ExecJs(opener, "window.popup = window.open('" + url.spec() + "')"));
     waiter.Wait();
     content::WebContents* popup =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     WaitForLoadStop(popup);
     if (expect_success)
       EXPECT_EQ(url, popup->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, HttpHostMatchingExtensionId) {
 
   // Sanity check that there's no bleeding between the extension and the tab.
   content::WebContents* tab_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_EQ(url, tab_web_contents->GetVisibleURL());
   EXPECT_FALSE(pm->GetExtensionForWebContents(tab_web_contents))
       << "Non-extension content must not have an associated extension";
@@ -573,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_EQ(0u, pm->GetAllFrames().size());
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Tests extension frames in non-extension page.
   EXPECT_TRUE(content::NavigateIframeToURL(tab, "frame1", kExt1EmptyUrl));
@@ -1038,7 +1038,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_EQ(0u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Navigate first subframe to an extension URL. This will go into a new
   // extension process.
@@ -1089,7 +1089,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   content::WebContents* popup =
       OpenPopup(main_frame, GURL(url::kAboutBlankURL));
   EXPECT_NE(popup, tab);
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
   EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
   EXPECT_EQ(1u, pm->GetAllFrames().size());
 
@@ -1167,7 +1167,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_EQ(0u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Navigate iframe to an extension URL.
   const GURL extension_url(extension->GetResourceURL("empty.html"));
@@ -1240,7 +1240,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_EQ(0u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Navigate first subframe to an extension URL. This will go into a new
   // extension process.
@@ -1299,7 +1299,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_EQ(2u, GetActiveExtensionFrameCount(pm, extension->id()));
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::RenderFrameHost* main_frame = tab->GetPrimaryMainFrame();
 
   // Create blob and filesystem URLs in the extension's origin.
@@ -1402,7 +1402,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // Create a new tab, unrelated to the app, and navigate it to a web URL.
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   content::WebContents* web_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL web_url(embedded_test_server()->GetURL("/title1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), web_url));
   EXPECT_NE(web_tab, app_tab);
@@ -1457,7 +1457,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_EQ(0u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::RenderFrameHost* main_frame = tab->GetPrimaryMainFrame();
 
   // Have the web page navigate the popup to each nested URL with extension
@@ -1509,7 +1509,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_EQ(0u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::RenderFrameHost* main_frame = tab->GetPrimaryMainFrame();
 
   // Open a new about:blank popup from main frame.  This should stay in the web
@@ -1517,7 +1517,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   content::WebContents* popup =
       OpenPopup(main_frame, GURL(url::kAboutBlankURL));
   EXPECT_NE(popup, tab);
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
   EXPECT_EQ(0u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
   EXPECT_EQ(0u, pm->GetAllFrames().size());
 
@@ -1572,7 +1572,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_EQ(0u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::RenderFrameHost* main_frame = tab->GetPrimaryMainFrame();
 
   // For this extension, only "*.html" resources are listed as web accessible;
@@ -1619,7 +1619,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
   ProcessManager* pm = ProcessManager::Get(profile());
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::RenderFrameHost* main_frame = tab->GetPrimaryMainFrame();
 
   // Navigate the first iframe to a webaccessible resource of extension 2. This
@@ -1723,7 +1723,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   content::RenderFrameHost* main_frame = tab->GetPrimaryMainFrame();
 
@@ -1732,7 +1732,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   GURL popup_url(embedded_test_server()->GetURL("/empty.html"));
   content::WebContents* popup = OpenPopup(main_frame, popup_url);
   EXPECT_NE(popup, tab);
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
   EXPECT_NE(popup->GetPrimaryMainFrame()->GetProcess(),
             main_frame->GetProcess());
 
@@ -1761,7 +1761,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_EQ(0u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Navigate first subframe to an extension URL.
   const GURL extension_url(extension->GetResourceURL("empty.html"));
@@ -1777,7 +1777,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   GURL popup_url(embedded_test_server()->GetURL("/empty.html"));
   content::WebContents* popup = OpenPopup(extension_frame, popup_url);
   EXPECT_NE(popup, tab);
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
   EXPECT_NE(popup->GetPrimaryMainFrame()->GetProcess(),
             extension_frame->GetProcess());
   EXPECT_EQ(popup->GetPrimaryMainFrame()->GetProcess(),
@@ -1812,7 +1812,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_EQ(0u, pm->GetRenderFrameHostsForExtension(extension->id()).size());
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Navigate subframe to an extension URL.  This should go into a new
   // extension process.
@@ -1864,7 +1864,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   GURL foo_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
   NavigateToURL(foo_url);
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_EQ(foo_url, tab->GetLastCommittedURL());
 
   // So far, there should be two extension frames: one for the background page,
@@ -1909,7 +1909,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, HostedAppFilesAccess) {
   ASSERT_TRUE(extension);
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Navigating to the manifest should be blocked with an error page.
   {
@@ -1940,7 +1940,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, HostedAppAlerts) {
   ASSERT_TRUE(extension);
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL hosted_app_url(embedded_test_server()->GetURL(
       "localhost", "/extensions/hosted_app/main.html"));
   {
@@ -1966,7 +1966,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, HostedAppAlerts) {
   ASSERT_TRUE(content::ExecJs(
       tab, base::StringPrintf("window.open('%s');", web_url.spec().c_str())));
   content::WebContents* new_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_NE(new_tab, tab);
   EXPECT_TRUE(content::WaitForLoadStop(new_tab));
   EXPECT_EQ(web_url, new_tab->GetLastCommittedURL());
@@ -2132,7 +2132,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, SynchronousClosureUAF) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_EQ(main_url, tab->GetLastCommittedURL());
 
   // Verify that ProcessManager registered frames for main.html.

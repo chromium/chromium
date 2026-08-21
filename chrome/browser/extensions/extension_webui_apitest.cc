@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -329,7 +329,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebUIEmbeddedOptionsTest,
                               "document.getElementById('link').click();"));
   content::WebContents* new_contents = new_contents_observer.GetWebContents();
   EXPECT_NE(TabStripModel::kNoTab,
-            browser()->tab_strip_model()->GetIndexOfWebContents(new_contents));
+            browser()->GetTabStripModel()->GetIndexOfWebContents(new_contents));
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionWebUIEmbeddedOptionsTest,

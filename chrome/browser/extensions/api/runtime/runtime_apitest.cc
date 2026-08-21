@@ -57,8 +57,8 @@
 #include "url/url_constants.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
 
@@ -725,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(extension.get());
   extension_registrar()->AddExtension(extension.get());
   ASSERT_TRUE(extension_registrar()->IsExtensionEnabled(extension->id()));
-  TabStripModel* tabs = browser()->tab_strip_model();
+  TabStripModel* tabs = browser()->GetTabStripModel();
 
   ASSERT_EQ(1, tabs->count());
   ASSERT_EQ("about:blank", GetActiveUrl());
@@ -770,7 +770,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeApiTest,
   // Uninstall the extension and expect its uninstall url to open.
   extension_registrar()->UninstallExtension(
       extension->id(), UNINSTALL_REASON_USER_INITIATED, nullptr);
-  TabStripModel* tabs = browser()->tab_strip_model();
+  TabStripModel* tabs = browser()->GetTabStripModel();
 
   EXPECT_EQ(2, tabs->count());
   content::WaitForLoadStop(tabs->GetActiveWebContents());

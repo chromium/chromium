@@ -10,7 +10,6 @@
 #include "components/tabs/public/tab_interface.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #endif
 

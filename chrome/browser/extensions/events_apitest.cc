@@ -15,7 +15,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/web_navigation.h"
 #include "chrome/test/base/profile_destruction_waiter.h"

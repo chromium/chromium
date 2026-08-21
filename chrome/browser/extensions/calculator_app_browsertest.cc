@@ -4,7 +4,7 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -26,6 +26,6 @@ IN_PROC_BROWSER_TEST_F(CalculatorBrowserTest, Model) {
                                            net::FilePathToFileURL(test_file)));
 
   ASSERT_EQ(true, content::EvalJs(
-                      browser()->tab_strip_model()->GetActiveWebContents(),
+                      browser()->GetTabStripModel()->GetActiveWebContents(),
                       "window.runTests().success"));
 }

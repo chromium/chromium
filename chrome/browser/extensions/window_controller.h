@@ -25,7 +25,7 @@ class GURL;
 class Profile;
 
 #if !BUILDFLAG(IS_ANDROID)
-class Browser;  // TODO(stevenjb) eliminate this dependency.
+// TODO(stevenjb) eliminate this dependency.
 #endif
 
 namespace content {

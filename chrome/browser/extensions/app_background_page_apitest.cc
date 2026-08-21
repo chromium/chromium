@@ -25,8 +25,8 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/common/chrome_paths.h"
@@ -645,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest,
       base::StringPrintf("window.open('%s', 'bg', 'background') == null;",
                          out_of_extent_url.spec().c_str());
   EXPECT_EQ(content::EvalJs(
-                browser()->tab_strip_model()->GetActiveWebContents(), script),
+                browser()->GetTabStripModel()->GetActiveWebContents(), script),
             true);
 
   EXPECT_FALSE(BackgroundContentsServiceFactory::GetForProfile(profile())
@@ -691,7 +691,7 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest,
   std::string open_script = base::StringPrintf(
       "window.open('%s', 'bg', 'background');", launch_url.spec().c_str());
   EXPECT_TRUE(content::ExecJs(
-      browser()->tab_strip_model()->GetActiveWebContents(), open_script));
+      browser()->GetTabStripModel()->GetActiveWebContents(), open_script));
   background_waiter.WaitForBackgroundContents(extension->id());
 
   BackgroundContents* background_contents =

@@ -17,7 +17,6 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -322,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, MAYBE_TestOpenPopup) {
   }
 
   EXPECT_TRUE(listener.WaitUntilSatisfied());
-  Browser* new_browser = nullptr;
+  BrowserWindowInterface* new_browser = nullptr;
   {
     // Open a new window.
     BrowserWindowInterface* new_browser_interface =
@@ -333,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, MAYBE_TestOpenPopup) {
                                        ui::PAGE_TRANSITION_TYPED, false),
                 /*navigation_handle_callback=*/{}));
     ui_test_utils::BrowserActivationWaiter waiter(new_browser_interface);
-    new_browser = new_browser_interface->GetBrowserForMigrationOnly();
+    new_browser = new_browser_interface;
     waiter.WaitForActivation();
 
     // Pin the extension to test that it opens when the action is on the
@@ -385,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
   host_helper.RestrictToType(mojom::ViewType::kExtensionPopup);
 
   // Open an incognito window.
-  Browser* incognito_browser =
+  BrowserWindowInterface* incognito_browser =
       OpenURLOffTheRecord(profile(), GURL("about:blank"));
   ASSERT_TRUE(incognito_browser);
 
@@ -431,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
   ASSERT_TRUE(extension);
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
 
-  Browser* incognito_browser =
+  BrowserWindowInterface* incognito_browser =
       OpenURLOffTheRecord(profile(), GURL("chrome://newtab/"));
   ASSERT_TRUE(incognito_browser);
 
@@ -484,14 +483,15 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
                        TestOpenPopupDoesNotGrantTabPermissions) {
   OpenPopupViaAPI(false);
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->GetProfile());
-  ASSERT_FALSE(registry->enabled_extensions()
-                   .GetByID(last_loaded_extension_id())
-                   ->permissions_data()
-                   ->HasAPIPermissionForTab(
-                       sessions::SessionTabHelper::IdForTab(
-                           browser()->tab_strip_model()->GetActiveWebContents())
-                           .id(),
-                       mojom::APIPermissionID::kTab));
+  ASSERT_FALSE(
+      registry->enabled_extensions()
+          .GetByID(last_loaded_extension_id())
+          ->permissions_data()
+          ->HasAPIPermissionForTab(
+              sessions::SessionTabHelper::IdForTab(
+                  browser()->GetTabStripModel()->GetActiveWebContents())
+                  .id(),
+              mojom::APIPermissionID::kTab));
 
   extensions_container()->HideActivePopup();
   EXPECT_FALSE(HasPopupNativeView());
@@ -527,14 +527,14 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
                        MAYBE_TabSwitchClosesPopup) {
   // Add a second tab to the browser and open an extension popup.
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
-  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(1),
-            browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
+  EXPECT_EQ(browser()->GetTabStripModel()->GetWebContentsAt(1),
+            browser()->GetTabStripModel()->GetActiveWebContents());
   OpenPopupViaAPI(false);
 
   ExtensionHostTestHelper host_helper(profile());
   // Change active tabs, the extension popup should close.
-  browser()->tab_strip_model()->ActivateTabAt(
+  browser()->GetTabStripModel()->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
   host_helper.WaitForHostDestroyed();
@@ -573,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, PopupZoomsIndependently) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), extension->GetResourceURL("popup.html")));
   content::WebContents* tab_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Zoom the extension page in the tab.
   zoom::ZoomController* zoom_controller =
@@ -1144,7 +1144,7 @@ class NavigatingExtensionPopupInteractiveTest
     // the extension popup (as it might if ExtensionViewHost::OpenURLFromTab
     // forwards the navigation to Browser::OpenURL [which doesn't specify a
     // source WebContents]).
-    TabStripModel* tabs = browser()->tab_strip_model();
+    TabStripModel* tabs = browser()->GetTabStripModel();
     for (int i = 0; i < tabs->count(); i++) {
       content::WebContents* tab_contents = tabs->GetWebContentsAt(i);
       EXPECT_TRUE(WaitForLoadStop(tab_contents));

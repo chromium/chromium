@@ -4,8 +4,8 @@
 
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/test/test_windows.h"

@@ -16,7 +16,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
 
   // The extension takes a couple round-trips to the renderer in order
   // to crash, so open a new tab to wait long enough.
-  ASSERT_FALSE(AddTabAtIndex(browser()->tab_strip_model()->count(),
+  ASSERT_FALSE(AddTabAtIndex(browser()->GetTabStripModel()->count(),
                              GURL("http://www.google.com/"),
                              ui::PAGE_TRANSITION_TYPED));
 

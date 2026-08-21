@@ -7,8 +7,8 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -85,7 +85,7 @@ class ActionAPIInteractiveUITest : public ExtensionApiTest {
   }
 
   // Returns true if the given `browser` has an active popup.
-  bool BrowserHasPopup(Browser* browser) {
+  bool BrowserHasPopup(BrowserWindowInterface* browser) {
     return ExtensionActionTestHelper::Create(browser)->HasPopup();
   }
 
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(ActionAPIInteractiveUITest, OpenPopupInSpecifiedWindow) {
   const Extension* extension = LoadStubExtension();
   ASSERT_TRUE(extension);
 
-  Browser* second_browser = CreateBrowser(profile());
+  BrowserWindowInterface* second_browser = CreateBrowser(profile());
   ASSERT_TRUE(second_browser);
   ui_test_utils::BrowserActivationWaiter(second_browser).WaitForActivation();
 
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(ActionAPIInteractiveUITest, OpenPopupInInactiveWindow) {
   const Extension* extension = LoadStubExtension();
   ASSERT_TRUE(extension);
 
-  Browser* second_browser = CreateBrowser(profile());
+  BrowserWindowInterface* second_browser = CreateBrowser(profile());
   ASSERT_TRUE(second_browser);
   ui_test_utils::BrowserActivationWaiter(second_browser).WaitForActivation();
 

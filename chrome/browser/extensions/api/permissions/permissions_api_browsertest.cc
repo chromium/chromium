@@ -46,7 +46,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/test_browser_window.h"
 #endif
@@ -820,7 +820,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   // Open tab on a url requested by the extension.
   NavigateTo("http://www.requested.com");
   int tab_id = ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   auto* permissions_manager = PermissionsManager::Get(profile());
 
@@ -874,7 +874,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   // Open tab on a url requested by the extension.
   NavigateTo("http://www.requested.com");
   int tab_id = ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   auto* permissions_manager = PermissionsManager::Get(profile());
 
@@ -956,7 +956,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   // Open tab on a url not requested by the extension.
   NavigateTo("http://www.not-requested.com");
   int tab_id = ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   auto* permissions_manager = PermissionsManager::Get(profile());
 
@@ -1013,7 +1013,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   // Open tab on any url.
   NavigateTo("http://www.example.com");
   int tab_id = ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   auto* permissions_manager = PermissionsManager::Get(profile());
 
@@ -1047,7 +1047,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   // Open tab on a url not requested by the extension.
   NavigateTo("chrome://extensions");
   int tab_id = ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   auto* permissions_manager = PermissionsManager::Get(profile());
 
@@ -1085,7 +1085,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   // Verify there is no host access request.
   NavigateTo("http://www.optional.com");
   int tab_id = ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   EXPECT_FALSE(
       permissions_manager->HasActiveHostAccessRequest(tab_id, extension->id()));
 
@@ -1119,7 +1119,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   // there is no host access request.
   NavigateTo("http://www.contentscript.com");
   int tab_id = ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   EXPECT_FALSE(
       permissions_manager->HasActiveHostAccessRequest(tab_id, extension->id()));
 
@@ -1152,7 +1152,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   // Navigate to url requested by the extension.
   NavigateTo("http://www.requested.com");
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   int tab_id = ExtensionTabUtil::GetTabId(web_contents);
 
   // Block all extensions on requested.com.
@@ -1213,7 +1213,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   // Navigate to url requested by the extension.
   NavigateTo("http://www.requested.com");
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   int tab_id = ExtensionTabUtil::GetTabId(web_contents);
 
   // Grant one-time host access.
@@ -1252,7 +1252,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   // Open tab on a url requested by the extension.
   NavigateTo("http://www.requested.com");
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   int tab_id = ExtensionTabUtil::GetTabId(web_contents);
   std::string document_id =
       ExtensionApiFrameIdMap::GetDocumentId(web_contents->GetPrimaryMainFrame())
@@ -1312,7 +1312,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   // Open tab on a url requested by the extension.
   NavigateTo("http://www.requested.com");
   int tab_id = ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   auto* permissions_manager = PermissionsManager::Get(profile());
 
@@ -1417,7 +1417,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   // Open tab on a url requested by the extension.
   NavigateTo("http://www.requested.com");
   int tab_id = ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   auto* permissions_manager = PermissionsManager::Get(profile());
 
@@ -1527,7 +1527,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   // Open tab on a url requested by the extension.
   NavigateTo("http://www.requested.com");
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   int tab_id = ExtensionTabUtil::GetTabId(web_contents);
   std::string document_id =
       ExtensionApiFrameIdMap::GetDocumentId(web_contents->GetPrimaryMainFrame())
@@ -1598,7 +1598,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
 
   NavigateTo("http://www.requested.com");
   int tab_id = ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
 
   auto* permissions_manager = PermissionsManager::Get(profile());
 

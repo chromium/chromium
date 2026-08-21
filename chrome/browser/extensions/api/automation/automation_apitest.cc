@@ -19,8 +19,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -337,9 +337,9 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
   const GURL url = GetURLForPath(kDomain, "/index.html");
   ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
 
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
   content::WebContents* const tab =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   ASSERT_FALSE(tab->IsFullAccessibilityModeForTesting());
   ASSERT_FALSE(tab->IsWebContentsOnlyAccessibilityModeForTesting());
 
@@ -358,9 +358,9 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, ServiceWorker) {
   const GURL url = GetURLForPath(kDomain, "/index.html");
   ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
 
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
   content::WebContents* const tab =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   ASSERT_FALSE(tab->IsFullAccessibilityModeForTesting());
   ASSERT_FALSE(tab->IsWebContentsOnlyAccessibilityModeForTesting());
 
@@ -389,9 +389,9 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, ImageLabels) {
                                     true);
 
   // Initially there should be no accessibility mode set.
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->GetTabStripModel()->count());
   content::WebContents* const web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   auto accessibility_mode = web_contents->GetAccessibilityMode();
   // Strip off kNativeAPIs, which may be set in some situations.
   accessibility_mode.set_mode(ui::AXMode::kNativeAPIs, false);
@@ -999,7 +999,7 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithHijackInterception,
   GURL victim_url("data:text/html,<title>Victim</title><input type=\"text\">");
   ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), victim_url));
   content::WebContents* victim_tab =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
 
   // Enable accessibility for victim tab to ensure it gets a tree ID.
   victim_accessibility_mode_ =
@@ -1019,7 +1019,7 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithHijackInterception,
   chrome::AddSelectedTabWithURL(browser(), attacker_url,
                                 ui::PAGE_TRANSITION_LINK);
   content::WebContents* attacker_tab =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
+      browser()->GetTabStripModel()->GetWebContentsAt(1);
 
   // Enable accessibility for attacker tab.
   attacker_accessibility_mode_ =
@@ -1037,9 +1037,9 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithHijackInterception,
 
   // Activate the victim tab so its accessibility tree is visible to the
   // desktop.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return browser()->tab_strip_model()->active_index() == 0; }));
+      [&]() { return browser()->GetTabStripModel()->active_index() == 0; }));
 
   // Run the test extension.
   ASSERT_TRUE(CreateExtensionAndRunTest("desktop/action_result_hijack.js",

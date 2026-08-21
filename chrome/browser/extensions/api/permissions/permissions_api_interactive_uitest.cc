@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/bind.h"
 #include "chrome/browser/extensions/api/permissions/permissions_api.h"
+
+#include "base/test/bind.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -34,11 +35,11 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiInteractiveTest,
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("permissions/optional_request_from_popup"));
 
-  Browser* first_browser = browser();
+  BrowserWindowInterface* first_browser = browser();
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(first_browser));
 
   // Create a second browser window and wait for activation.
-  Browser* second_browser = CreateBrowser(profile());
+  BrowserWindowInterface* second_browser = CreateBrowser(profile());
   ASSERT_NE(first_browser, second_browser);
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(second_browser));
 
