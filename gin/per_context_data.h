@@ -8,6 +8,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "gin/gin_export.h"
+#include "v8/include/cppgc/garbage-collected.h"
+#include "v8/include/cppgc/visitor.h"
 #include "v8/include/v8-forward.h"
 
 namespace gin {
@@ -19,13 +21,18 @@ class ContextHolder;
 // can be associated with this class by way of the SupportsUserData methods.
 // Instances of this class (and any associated user data) are destroyed before
 // the associated v8::Context.
-class GIN_EXPORT PerContextData : public base::SupportsUserData {
+class GIN_EXPORT PerContextData
+    : public cppgc::GarbageCollected<PerContextData>,
+      public base::SupportsUserData {
  public:
   PerContextData(ContextHolder* context_holder,
                  v8::Local<v8::Context> context);
   PerContextData(const PerContextData&) = delete;
   PerContextData& operator=(const PerContextData&) = delete;
-  ~PerContextData() override;
+  ~PerContextData() override = default;
+
+  void Trace(cppgc::Visitor* visitor) const;
+  void Detach();
 
   // Can return NULL after the ContextHolder has detached from context.
   static PerContextData* From(v8::Local<v8::Context> context);

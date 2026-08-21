@@ -39,6 +39,7 @@ enum WrappablePointerTag : uint16_t {
   kGamepadControllerBindings,        // content::GameControllerBindings
   kGCController,                     // content::GCController
   kGinJavaBridgeObject,              // content::GinJavaBridgeObject
+  kGinPerContextData,                // gin::PerContextData
   kGinPort,                          // extensions::GinPort
   kGpuBenchmarking,                  // content::GpuBenchmarking
   kIndigoContext,                    // indigo::IndigoContext

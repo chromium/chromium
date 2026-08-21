@@ -5,10 +5,9 @@
 #ifndef GIN_PUBLIC_CONTEXT_HOLDER_H_
 #define GIN_PUBLIC_CONTEXT_HOLDER_H_
 
-#include <memory>
-
 #include "base/memory/raw_ptr.h"
 #include "gin/gin_export.h"
+#include "v8/include/cppgc/persistent.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-persistent-handle.h"
@@ -51,7 +50,7 @@ class GIN_EXPORT ContextHolder {
   const raw_ptr<v8::Isolate> isolate_;
   v8::UniquePersistent<v8::Context> context_;
   // Data is declared after `context_` so it gets destructed first.
-  std::unique_ptr<PerContextData> data_;
+  cppgc::Persistent<PerContextData> data_;
 };
 
 }  // namespace gin
