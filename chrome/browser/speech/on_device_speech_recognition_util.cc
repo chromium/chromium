@@ -10,6 +10,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/feature_list.h"
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -72,8 +73,8 @@ std::optional<FeatureAndService> GetOnDeviceFeatureAndService(
 
     bool is_language_supported = false;
     for (const std::string& enabled_language : enabled_languages) {
-      if (l10n_util::GetLanguage(language) ==
-          l10n_util::GetLanguage(enabled_language)) {
+      if (base::i18n::GetLanguageSubtagUsingLanguageTag(language) ==
+          base::i18n::GetLanguageSubtagUsingLanguageTag(enabled_language)) {
         is_language_supported = true;
         break;
       }
@@ -82,7 +83,8 @@ std::optional<FeatureAndService> GetOnDeviceFeatureAndService(
     if (!is_language_supported) {
       return std::nullopt;
     }
-  } else if (l10n_util::GetLanguage(language) != kEnglishLanguageCode) {
+  } else if (base::i18n::GetLanguageSubtagUsingLanguageTag(language) !=
+             kEnglishLanguageCode) {
     return std::nullopt;
   }
 

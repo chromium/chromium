@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
@@ -39,7 +40,8 @@ base::DictValue GetStrings() {
 
   base::DictValue dict;
   dict.Set("textdirection", base::i18n::IsRTL() ? "rtl" : "ltr");
-  dict.Set("language", l10n_util::GetLanguage(application_locale));
+  dict.Set("language",
+           base::i18n::GetLanguageSubtagUsingLanguageTag(application_locale));
   dict.Set("indigoTitle", l10n_util::GetStringUTF16(IDS_INDIGO_TITLE));
   dict.Set("textLayerStep1",
            l10n_util::GetStringUTF16(IDS_INDIGO_TEXT_LAYER_STEP_1));

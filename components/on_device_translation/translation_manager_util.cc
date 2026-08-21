@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/rand_util.h"
 #include "base/strings/string_split.h"
 #include "components/language/core/browser/pref_names.h"
@@ -34,7 +35,8 @@ const std::vector<std::string_view> GetAcceptLanguages(
 
 bool IsInAcceptLanguage(const std::vector<std::string_view>& accept_languages,
                         const std::string_view lang) {
-  return std::ranges::contains(accept_languages, l10n_util::GetLanguage(lang));
+  return std::ranges::contains(
+      accept_languages, base::i18n::GetLanguageSubtagUsingLanguageTag(lang));
 }
 
 bool IsTranslatorAllowed(content::BrowserContext* browser_context) {

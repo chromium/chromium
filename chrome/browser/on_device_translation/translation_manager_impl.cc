@@ -7,6 +7,8 @@
 #include <string_view>
 
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "chrome/browser/on_device_translation/service_controller_manager_factory.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -478,11 +480,16 @@ void TranslationManagerImpl::TranslationAvailable(
   const std::vector<std::string_view> accept_languages =
       GetAcceptLanguages(browser_context());
 
+  std::optional<base::i18n::LanguageTag> source_tag =
+      base::i18n::GetLanguageTagFromString(source_language);
+  std::optional<base::i18n::LanguageTag> target_tag =
+      base::i18n::GetLanguageTagFromString(target_language);
+
   bool are_source_and_target_accept_or_english =
       (IsInAcceptLanguage(accept_languages, source_language) ||
-       l10n_util::GetLanguage(source_language) == "en") &&
+       (source_tag && source_tag->language_subtag() == "en")) &&
       (IsInAcceptLanguage(accept_languages, target_language) ||
-       l10n_util::GetLanguage(target_language) == "en");
+       (target_tag && target_tag->language_subtag() == "en"));
 
   bool mask_readily_result =
       !HasInitializedTranslator(source_language, target_language) &&

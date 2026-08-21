@@ -45,6 +45,7 @@ static_library("core") {
   deps = [
     ":proto",
     "//base",
+    "//base/i18n:language_tag",
     "//components/commerce/core:proto",
     "//components/history/core/browser",
     "//components/keyed_service/core",

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
@@ -33,8 +34,8 @@ struct LazyDirectoryListerCacher {
               l10n_util::GetStringUTF8(IDS_DIRECTORY_LISTING_SIZE));
     value.Set("headerDateModified",
               l10n_util::GetStringUTF8(IDS_DIRECTORY_LISTING_DATE_MODIFIED));
-    value.Set("language",
-              l10n_util::GetLanguage(base::i18n::GetConfiguredLocale()));
+    value.Set("language", base::i18n::GetLanguageSubtagUsingLanguageTag(
+                              base::i18n::GetConfiguredLocale()));
     value.Set("textdirection", base::i18n::IsRTL() ? "rtl" : "ltr");
     std::string str = webui::GetI18nTemplateHtml(
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(

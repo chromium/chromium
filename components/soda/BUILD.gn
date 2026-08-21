@@ -54,6 +54,7 @@ source_set("constants") {
 
   deps = [
     "//base",
+    "//base/i18n:language_tag",
     "//components/component_updater:component_updater_paths",
     "//components/crx_file",
     "//components/language/core/browser",
@@ -74,6 +75,7 @@ source_set("utils") {
     ":constants",
     ":soda",
     "//base",
+    "//base/i18n:language_tag",
     "//media",
     "//media/mojo/mojom",
     "//ui/base",

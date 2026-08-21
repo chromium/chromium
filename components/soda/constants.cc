@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -222,8 +223,10 @@ GetLanguageComponentConfigMatchingLanguageSubtag(
 
   for (const SodaLanguagePackComponentConfig& config :
        kLanguageComponentConfigs) {
-    if (l10n_util::GetLanguage(base::ToLowerASCII(config.language_name)) ==
-        l10n_util::GetLanguage(base::ToLowerASCII(language_name))) {
+    if (base::i18n::GetLanguageSubtagUsingLanguageTag(
+            base::ToLowerASCII(config.language_name)) ==
+        base::i18n::GetLanguageSubtagUsingLanguageTag(
+            base::ToLowerASCII(language_name))) {
       return config;
     }
   }

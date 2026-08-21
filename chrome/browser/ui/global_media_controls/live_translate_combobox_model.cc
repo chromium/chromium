@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,7 +32,8 @@ bool LanguageSupportsTranslate(translate::TranslateLanguageInfo language) {
     return true;
   }
 
-  const auto& base_language = l10n_util::GetLanguage(language.code);
+  const auto base_language =
+      base::i18n::GetLanguageSubtagUsingLanguageTag(language.code);
   if (base_language == "nb") {
     // Norwegian Bokmål (nb) is listed as supporting translate but the
     // Translate server only supports Norwegian (no).

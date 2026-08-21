@@ -80,6 +80,7 @@ static_library("core") {
   ]
   deps = [
     "//base",
+    "//base/i18n:language_tag",
     "//components/history/core/browser",
     "//components/history_clusters/public/mojom:mojo_bindings",
     "//components/keyed_service/core",

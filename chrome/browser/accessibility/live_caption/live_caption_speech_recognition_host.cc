@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -170,8 +171,8 @@ void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionRecognitionEvent(
   // live-translating a video.
   if (media::IsLiveTranslateEnabled() &&
       prefs_->GetBoolean(prefs::kLiveTranslateEnabled) &&
-      l10n_util::GetLanguage(target_language) !=
-          l10n_util::GetLanguage(source_language_)) {
+      base::i18n::GetLanguageSubtagUsingLanguageTag(target_language) !=
+          base::i18n::GetLanguageSubtagUsingLanguageTag(source_language_)) {
     auto cache_result = translation_cache_.FindCachedTranslationOrRemaining(
         result.transcription, source_language_, target_language);
 

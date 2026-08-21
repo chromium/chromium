@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/validation_rules_storage_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -31,13 +32,13 @@ SubKeyRequester* SubKeyRequesterFactory::GetInstance() {
 }
 
 SubKeyRequesterFactory::SubKeyRequesterFactory()
-    : subkey_requester_(
-          std::make_unique<ChromeMetadataSource>(
-              I18N_ADDRESS_VALIDATION_DATA_URL,
-              g_browser_process->system_network_context_manager()
-                  ->GetSharedURLLoaderFactory()),
-          ValidationRulesStorageFactory::CreateStorage(),
-          l10n_util::GetLanguage(g_browser_process->GetApplicationLocale())) {}
+    : subkey_requester_(std::make_unique<ChromeMetadataSource>(
+                            I18N_ADDRESS_VALIDATION_DATA_URL,
+                            g_browser_process->system_network_context_manager()
+                                ->GetSharedURLLoaderFactory()),
+                        ValidationRulesStorageFactory::CreateStorage(),
+                        base::i18n::GetLanguageSubtagUsingLanguageTag(
+                            g_browser_process->GetApplicationLocale())) {}
 
 SubKeyRequesterFactory::~SubKeyRequesterFactory() = default;
 

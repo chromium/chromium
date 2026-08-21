@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -99,7 +100,7 @@ std::optional<GURL> BuildInstallerDownloadUrl(bool is_metrics_enabled) {
                                          /*start_offset=*/0, "STATS",
                                          is_metrics_enabled ? "1" : "0");
 
-  std::string_view language_code = l10n_util::GetLanguage(
+  std::string language_code = base::i18n::GetLanguageSubtagUsingLanguageTag(
       g_browser_process->GetFeatures()->application_locale_storage()->Get());
   CHECK(!language_code.empty());
 

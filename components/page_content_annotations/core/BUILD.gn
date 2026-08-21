@@ -14,7 +14,10 @@ component("features") {
     "page_content_annotations_switches.h",
   ]
   public_deps = [ "//base" ]
-  deps = [ "//ui/base" ]
+  deps = [
+    "//base/i18n:language_tag",
+    "//ui/base",
+  ]
   defines = [ "IS_PAGE_CONTENT_ANNOTATIONS_FEATURES_IMPL" ]
 }
 

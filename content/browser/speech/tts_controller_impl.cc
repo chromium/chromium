@@ -12,6 +12,7 @@
 
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/i18n/tag_converters.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_macros.h"
@@ -848,14 +849,17 @@ int TtsControllerImpl::GetMatchingVoice(TtsUtterance* utterance,
           base::i18n::GetLanguageTagFromString(utterance->GetLang());
 
       std::string voice_language =
-          voice_tag ? base::ToLowerASCII(voice_tag->language_subtag())
-                    : base::ToLowerASCII(l10n_util::GetLanguage(voice.lang));
+          voice_tag
+              ? base::ToLowerASCII(voice_tag->language_subtag())
+              : base::ToLowerASCII(
+                    base::i18n::GetLanguageSubtagUsingLanguageTag(voice.lang));
       std::string voice_country =
           voice_tag ? base::ToLowerASCII(voice_tag->region_subtag()) : "";
       std::string utterance_language =
           utterance_tag ? base::ToLowerASCII(utterance_tag->language_subtag())
                         : base::ToLowerASCII(
-                              l10n_util::GetLanguage(utterance->GetLang()));
+                              base::i18n::GetLanguageSubtagUsingLanguageTag(
+                                  utterance->GetLang()));
       std::string utterance_country =
           utterance_tag ? base::ToLowerASCII(utterance_tag->region_subtag())
                         : "";
@@ -915,8 +919,8 @@ int TtsControllerImpl::GetMatchingVoice(TtsUtterance* utterance,
       if (voice.lang == app_lang) {
         score += 2;
       } else if (base::EqualsCaseInsensitiveASCII(
-                     l10n_util::GetLanguage(voice.lang),
-                     l10n_util::GetLanguage(app_lang))) {
+                     base::i18n::GetLanguageSubtagUsingLanguageTag(voice.lang),
+                     base::i18n::GetLanguageSubtagUsingLanguageTag(app_lang))) {
         score += 1;
       }
     }

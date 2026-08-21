@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
@@ -70,10 +71,9 @@ bool IsSupportedLocale(const std::string& locale,
     return true;
   }
 
-  // Otherwise, the locale or the primary language subtag must match an element
-  // of the allowlist.
   return std::ranges::contains(supported, locale) ||
-         std::ranges::contains(supported, l10n_util::GetLanguage(locale));
+         std::ranges::contains(
+             supported, base::i18n::GetLanguageSubtagUsingLanguageTag(locale));
 }
 
 bool IsSupportedCountry(const std::string& country_code,

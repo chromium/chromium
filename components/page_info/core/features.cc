@@ -8,6 +8,7 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
+#include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -22,7 +23,8 @@ constexpr auto kDefaultLangs = base::MakeFixedFlatSet<std::string_view>({
 });
 
 extern bool IsAboutThisSiteFeatureEnabled(const std::string& locale) {
-  if (kDefaultLangs.contains(l10n_util::GetLanguage(locale))) {
+  if (kDefaultLangs.contains(
+          base::i18n::GetLanguageSubtagUsingLanguageTag(locale))) {
     return base::FeatureList::IsEnabled(kPageInfoAboutThisSite);
   }
   return base::FeatureList::IsEnabled(kPageInfoAboutThisSiteMoreLangs);
