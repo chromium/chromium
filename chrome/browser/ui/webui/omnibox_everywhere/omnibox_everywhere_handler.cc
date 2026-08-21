@@ -17,10 +17,14 @@
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_omnibox_client.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "components/omnibox/browser/searchbox.mojom-shared.h"
+#include "components/omnibox/browser/searchbox_utils.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition_utils.h"
 
@@ -198,4 +202,63 @@ void OmniboxEverywhereHandler::OpenProfilePicker() {
   if (service_) {
     service_->ShowProfilePicker();
   }
+}
+
+void OmniboxEverywhereHandler::ActivateKeyword(
+    uint8_t line,
+    const GURL& url,
+    base::TimeTicks match_selection_timestamp,
+    bool is_mouse_event) {
+  // OmniboxEverywhere does not make use of OmniboxEditModel. Keyword mode is
+  // handled directly by the frontend SearchboxMixin via `onKeywordClick`.
+}
+
+// TODO(crbug.com/550402735): Combine into SearchboxHandler for clean reuse.
+std::optional<searchbox::mojom::AutocompleteMatchPtr>
+OmniboxEverywhereHandler::CreateAutocompleteMatch(
+    const AutocompleteMatch& match,
+    size_t line,
+    bookmarks::BookmarkModel* bookmark_model,
+    const omnibox::GroupConfigMap& suggestion_groups_map,
+    const TemplateURLService* turl_service) const {
+  auto mojom_match = SearchboxHandler::CreateAutocompleteMatch(
+      match, line, bookmark_model, suggestion_groups_map, turl_service);
+
+  if (mojom_match) {
+    KeywordState keyword_state;
+    std::u16string keyword;
+    std::u16string keyword_placeholder;
+    match.GetKeywordUiState(turl_service,
+                            client()->IsHistoryEmbeddingsEnabled(),
+                            &keyword_state, &keyword, &keyword_placeholder);
+
+    searchbox::mojom::KeywordType keyword_type;
+    bool has_keyword = false;
+    if (keyword_state == KeywordState::kKeyword) {
+      keyword_type = searchbox::mojom::KeywordType::kInKeyword;
+      has_keyword = true;
+    } else if (match.HasInstantKeyword(turl_service)) {
+      keyword_type = searchbox::mojom::KeywordType::kInstant;
+      has_keyword = true;
+    } else if (keyword_state == KeywordState::kHint ||
+               !match.associated_keyword.empty()) {
+      keyword_type = searchbox::mojom::KeywordType::kChip;
+      has_keyword = true;
+    }
+
+    // Populate `keyword_model`.
+    if (has_keyword) {
+      auto keyword_model = searchbox::mojom::MatchKeywordModel::New();
+      keyword_model->type = keyword_type;
+      keyword_model->keyword = base::UTF16ToUTF8(keyword);
+      keyword_model->placeholder = base::UTF16ToUTF8(keyword_placeholder);
+      const auto names = searchbox::GetKeywordLabelNames(keyword, turl_service);
+      keyword_model->chip_hint = base::UTF16ToUTF8(names.full_name);
+      keyword_model->chip_a11y =
+          l10n_util::GetStringFUTF8(IDS_ACC_KEYWORD_MODE, names.short_name);
+      mojom_match.value()->keyword_model = std::move(keyword_model);
+    }
+  }
+
+  return mojom_match;
 }

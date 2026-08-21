@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/navigation_metrics/navigation_metrics.h"
@@ -23,7 +24,6 @@
 #if !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/geolocation_header_service.h"
 #endif  // !BUILDFLAG(IS_IOS)
-#include "base/metrics/histogram_functions.h"
 #include "components/omnibox/browser/history_fuzzy_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/omnibox_client.h"
@@ -35,7 +35,9 @@
 #include "components/omnibox/browser/verbatim_match.h"
 #include "components/search_engines/template_url.h"
 #include "components/sessions/core/session_id.h"
+#include "components/strings/grit/components_strings.h"
 #include "net/cookies/cookie_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 
 using metrics::OmniboxEventProto;
@@ -512,6 +514,25 @@ WindowOpenDisposition ComputeOpenDispositionFromModifiersAndLogToUma(
   base::UmaHistogramEnumeration("Omnibox.OpenMatchWithKeyboardModifiers",
                                 metric_value);
   return disposition;
+}
+
+KeywordLabelNames GetKeywordLabelNames(const std::u16string& keyword,
+                                       const TemplateURLService* service) {
+  KeywordLabelNames names;
+  if (!service) {
+    return names;
+  }
+
+  const TemplateURL* template_url = service->GetTemplateURLForKeyword(keyword);
+  if (template_url) {
+    names.short_name = template_url->AdjustedShortNameForLocaleDirection();
+    names.full_name = template_url->GetFullName();
+    return names;
+  }
+
+  names.full_name =
+      l10n_util::GetStringFUTF16(IDS_OMNIBOX_KEYWORD_TEXT_MD, names.short_name);
+  return names;
 }
 
 }  // namespace searchbox

@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "components/omnibox/browser/searchbox_utils.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
@@ -27,10 +28,7 @@ class SelectedKeywordView : public IconLabelBubbleView {
   METADATA_HEADER(SelectedKeywordView, IconLabelBubbleView)
 
  public:
-  struct KeywordLabelNames {
-    std::u16string short_name;
-    std::u16string full_name;
-  };
+  using KeywordLabelNames = searchbox::KeywordLabelNames;
   // Returns the short and long names that can be used to describe keyword
   // behavior, e.g. "Search google.com" or an equivalent translation, with
   // consideration for bidirectional text safety using |service|. Empty

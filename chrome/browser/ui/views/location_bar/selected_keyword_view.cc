@@ -46,21 +46,7 @@ constexpr auto kForegroundColorId = kColorOmniboxKeywordSelected;
 SelectedKeywordView::KeywordLabelNames
 SelectedKeywordView::GetKeywordLabelNames(const std::u16string& keyword,
                                           const TemplateURLService* service) {
-  KeywordLabelNames names;
-  if (!service) {
-    return names;
-  }
-
-  const TemplateURL* template_url = service->GetTemplateURLForKeyword(keyword);
-  if (template_url) {
-    names.short_name = template_url->AdjustedShortNameForLocaleDirection();
-    names.full_name = template_url->GetFullName();
-    return names;
-  }
-
-  names.full_name =
-      l10n_util::GetStringFUTF16(IDS_OMNIBOX_KEYWORD_TEXT_MD, names.short_name);
-  return names;
+  return searchbox::GetKeywordLabelNames(keyword, service);
 }
 
 // static

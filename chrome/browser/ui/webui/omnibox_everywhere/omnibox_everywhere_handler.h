@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -36,6 +37,10 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler {
   ~OmniboxEverywhereHandler() override;
 
   // searchbox::mojom::PageHandler:
+  void ActivateKeyword(uint8_t line,
+                       const GURL& url,
+                       base::TimeTicks match_selection_timestamp,
+                       bool is_mouse_event) override;
   void OnThumbnailRemoved() override {}
   void SubmitQuery(const std::string& query_text,
                    uint8_t mouse_button,
@@ -44,6 +49,14 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler {
                    bool meta_key,
                    bool shift_key,
                    bool is_voice_search) override;
+
+  // SearchboxHandler:
+  std::optional<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatch(
+      const AutocompleteMatch& match,
+      size_t line,
+      bookmarks::BookmarkModel* bookmark_model,
+      const omnibox::GroupConfigMap& suggestion_groups_map,
+      const TemplateURLService* turl_service) const override;
 
   // Overridden to intercept the Drive upload request, dynamically associate the
   // standalone WebContents with the latest active BrowserWindowInterface, and

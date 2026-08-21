@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_omnibox_client.h"
@@ -370,8 +369,8 @@ WebuiOmniboxHandler::CreateAutocompleteMatch(
             : searchbox_internal::kReplyRotated180IconResourceName;
   }
 
+  // TODO(crbug.com/550402735): Combine into SearchboxHandler for clean reuse.
   if (mojom_match) {
-    // Get keyword state from .cc source of truth.
     KeywordState keyword_state;
     std::u16string keyword;
     std::u16string keyword_placeholder;
@@ -379,11 +378,6 @@ WebuiOmniboxHandler::CreateAutocompleteMatch(
                             controller_->client()->IsHistoryEmbeddingsEnabled(),
                             &keyword_state, &keyword, &keyword_placeholder);
 
-    // Map the .cc `KeywordState` to mojom `KeywordType`. The .cc `KeywordState`
-    // does not distinguish between hint (aka chip) and instant keywords. It
-    // also has a 0-none value; whereas mojom simply nulls the `keyword_model`
-    // field for this case. The mojom approach is clearer and the .cc should
-    // mimic it.
     searchbox::mojom::KeywordType keyword_type;
     bool has_keyword = false;
     if (keyword_state == KeywordState::kKeyword) {
@@ -404,8 +398,7 @@ WebuiOmniboxHandler::CreateAutocompleteMatch(
       keyword_model->type = keyword_type;
       keyword_model->keyword = base::UTF16ToUTF8(keyword);
       keyword_model->placeholder = base::UTF16ToUTF8(keyword_placeholder);
-      const auto names =
-          SelectedKeywordView::GetKeywordLabelNames(keyword, turl_service);
+      const auto names = searchbox::GetKeywordLabelNames(keyword, turl_service);
       keyword_model->chip_hint = base::UTF16ToUTF8(names.full_name);
       keyword_model->chip_a11y =
           l10n_util::GetStringFUTF8(IDS_ACC_KEYWORD_MODE, names.short_name);

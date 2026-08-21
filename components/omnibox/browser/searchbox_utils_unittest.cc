@@ -18,6 +18,9 @@
 #include "components/omnibox/browser/fake_autocomplete_controller.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
@@ -221,6 +224,23 @@ TEST_F(SearchboxUtilsTest, GenerateDotComMatch) {
   EXPECT_EQ(AutocompleteMatchType::URL_WHAT_YOU_TYPED, match.type);
   EXPECT_TRUE(match.destination_url.is_valid());
   EXPECT_EQ(GURL("http://www.example.com/"), match.destination_url);
+}
+
+TEST_F(SearchboxUtilsTest, GetKeywordLabelNames) {
+  TemplateURLService* turl_service = client_.GetTemplateURLService();
+  TemplateURLData data;
+  data.SetShortName(u"example");
+  data.SetKeyword(u"example");
+  data.SetURL("https://example.com/search?q={searchTerms}");
+  turl_service->Add(std::make_unique<TemplateURL>(data));
+
+  KeywordLabelNames names = GetKeywordLabelNames(u"example", turl_service);
+  EXPECT_EQ(u"example", names.short_name);
+  EXPECT_FALSE(names.full_name.empty());
+
+  KeywordLabelNames empty_names = GetKeywordLabelNames(u"example", nullptr);
+  EXPECT_TRUE(empty_names.short_name.empty());
+  EXPECT_TRUE(empty_names.full_name.empty());
 }
 
 }  // namespace searchbox

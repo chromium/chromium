@@ -32,6 +32,25 @@ enum class FocusResultedInNavigationType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:FocusResultedInNavigationTypes)
 
+// Display names for a keyword search provider chip or button.
+struct KeywordLabelNames {
+  // The short name of the keyword or search provider (e.g. "google.com"),
+  // adjusted for locale text direction. Used in compact UI and accessibility
+  // labels (e.g. "Press Tab to search google.com").
+  std::u16string short_name;
+
+  // The full user-facing label describing the keyword search action
+  // (e.g. "Search google.com", "Ask Google"), used as the chip label.
+  std::u16string full_name;
+};
+
+// Returns the short and long names that can be used to describe keyword
+// behavior, e.g. "Search google.com" or an equivalent translation, with
+// consideration for bidirectional text safety using `service`. Empty names
+// are returned if `service` is null.
+KeywordLabelNames GetKeywordLabelNames(const std::u16string& keyword,
+                                       const TemplateURLService* service);
+
 // Tracks searchbox-related metrics and focus state.
 class InteractionMetricsTracker {
  public:

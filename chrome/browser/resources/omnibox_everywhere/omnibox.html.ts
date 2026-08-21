@@ -29,6 +29,7 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
           searchbox-aria-description="${this.searchboxAriaDescription}"
           searchbox-icon="${this.searchboxIcon_}"
           .selectedMatch="${this.selectedMatch}"
+          .inputKeywordModel="${this.inputKeywordModel}"
           ?input-has-matches="${this.hasMatches()}"
           ?allow-file-paste="${this.fileContextEnabled_}"
           @focusin="${this.onInputFocusin_}"
@@ -54,6 +55,7 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
             @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
             @match-focusin="${this.onMatchFocusin}"
             @match-click="${this.onMatchClick}"
+            @keyword-click="${this.onKeywordClick}"
             ?hidden="${!this.dropdownIsVisible}">
         </cr-searchbox-dropdown>
       </div>
