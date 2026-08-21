@@ -582,6 +582,8 @@ chromium-metrics-reviews@google.com.
     <variant name=".OmniboxMenu" summary="the context menu on the Omnibox"/>
     <variant name=".ShareMenu" summary="the Share menu in the 3-dot menu"/>
     <variant name=".ShareSheet" summary="the OS-level Share Sheet"/>
+    <variant name=".ShareSheetDirectShare"
+        summary="a DirectShare target on the OS-level Share Sheet"/>
     <variant name=".TabMenu"
         summary="the context menu on a tab (in the tab strip or tab switcher)"/>
     <variant name=".ToolbarIcon"
