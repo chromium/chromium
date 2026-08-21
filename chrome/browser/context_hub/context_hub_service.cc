@@ -980,8 +980,15 @@ void ContextHubService::HandleTabGroupModelExecutionResult(
         optimization_guide::proto::ContextHubResponse>(*result.response);
   }
   if (!response || !response->has_group_response()) {
-    std::move(callback).Run({}, std::move(tabs));
+    std::move(callback).Run({}, std::move(tabs), /*text_response=*/"");
     return;
+  }
+
+  std::string text_response = response->group_response().text_response();
+  if (!text_response.empty()) {
+    AddTabGroupChatHistoryTurn(
+        optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT,
+        text_response);
   }
 
   std::vector<TabGroupEntry> groups;
@@ -1037,14 +1044,15 @@ void ContextHubService::HandleTabGroupModelExecutionResult(
     }
   }
 
-  std::move(callback).Run(std::move(groups), std::move(ungrouped_tabs));
+  std::move(callback).Run(std::move(groups), std::move(ungrouped_tabs),
+                          std::move(text_response));
 }
 
 void ContextHubService::GroupTabs(std::vector<TabData> tabs,
                                   const std::string& user_command,
                                   GroupTabsCallback callback) {
   if (tabs.size() < 2) {
-    std::move(callback).Run({}, std::move(tabs));
+    std::move(callback).Run({}, std::move(tabs), /*text_response=*/"");
     return;
   }
 

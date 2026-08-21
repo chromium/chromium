@@ -1125,6 +1125,7 @@ TEST_F(ContextHubPageHandlerTest, RetrieveAndGroupTabs_WithTabs) {
         optimization_guide::proto::ContextHubResponse response;
         optimization_guide::proto::GroupResponse* group_response =
             response.mutable_group_response();
+        group_response->set_text_response("Here are your organized tabs.");
         optimization_guide::proto::TabGroupMinimal* group1 =
             group_response->add_minimal_tab_groups();
         group1->set_label("Group 1");
@@ -1166,7 +1167,10 @@ TEST_F(ContextHubPageHandlerTest, RetrieveAndGroupTabs_WithTabs) {
     EXPECT_GE(group->tabs.size(), 2u);
   }
   EXPECT_EQ(total_tabs, 5u);
-  EXPECT_FALSE(llm_response);
+  ASSERT_TRUE(llm_response);
+  EXPECT_EQ(llm_response->role,
+            browser::context_hub::mojom::ChatRole::kAssistant);
+  EXPECT_EQ(llm_response->content, "Here are your organized tabs.");
 }
 
 TEST_F(ContextHubPageHandlerTest, GetExistingTabGroupsAndChats_WithGroups) {

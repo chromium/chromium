@@ -364,7 +364,8 @@ void ContextHubPageHandler::RetrieveAndGroupTabs(
       base::BindOnce(
           [](RetrieveAndGroupTabsCallback callback,
              std::vector<context_hub::TabGroupEntry> groups,
-             std::vector<context_hub::TabData> ungrouped_tabs) {
+             std::vector<context_hub::TabData> ungrouped_tabs,
+             std::string text_response) {
             std::vector<browser::context_hub::mojom::TabGroupPtr> mojo_groups;
             for (const auto& group : groups) {
               auto mojo_group = browser::context_hub::mojom::TabGroup::New();
@@ -373,10 +374,18 @@ void ContextHubPageHandler::RetrieveAndGroupTabs(
               mojo_groups.push_back(std::move(mojo_group));
             }
 
-            // TODO(crbug.com/535675010): Add LLM Response.
+            browser::context_hub::mojom::ChatMessagePtr mojo_llm_response;
+            if (!text_response.empty()) {
+              mojo_llm_response =
+                  browser::context_hub::mojom::ChatMessage::New();
+              mojo_llm_response->role =
+                  browser::context_hub::mojom::ChatRole::kAssistant;
+              mojo_llm_response->content = std::move(text_response);
+            }
+
             std::move(callback).Run(std::move(mojo_groups),
                                     ToMojoTabs(ungrouped_tabs),
-                                    /*llm_response=*/nullptr);
+                                    std::move(mojo_llm_response));
           },
           std::move(callback)));
 }

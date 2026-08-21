@@ -170,7 +170,8 @@ class ContextHubService : public KeyedService,
 
   using GroupTabsCallback =
       base::OnceCallback<void(std::vector<TabGroupEntry> groups,
-                              std::vector<TabData> ungrouped_tabs)>;
+                              std::vector<TabData> ungrouped_tabs,
+                              std::string text_response)>;
   // Groups tabs based on the provided `tabs` list.
   void GroupTabs(std::vector<TabData> tabs,
                  const std::string& user_command,
