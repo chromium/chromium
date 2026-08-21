@@ -12,15 +12,12 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/device_signals/core/common/common_types.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "components/device_signals/core/common/win/win_types.h"
 #endif  // BUILDFLAG(IS_WIN)
-
-namespace enterprise_connectors {
-enum EnterpriseRealTimeUrlCheckMode : int;
-}  // namespace enterprise_connectors
 
 namespace device_signals {
 
@@ -277,17 +274,19 @@ struct ProfileSignalsResponse : BaseSignalResponse {
 
   ~ProfileSignalsResponse() override;
 
-  bool built_in_dns_client_enabled;
-  bool chrome_remote_desktop_app_blocked;
+  bool built_in_dns_client_enabled = false;
+  bool chrome_remote_desktop_app_blocked = false;
   std::optional<safe_browsing::PasswordProtectionTrigger>
       password_protection_warning_trigger = std::nullopt;
   std::optional<std::string> profile_enrollment_domain = std::nullopt;
-  safe_browsing::SafeBrowsingState safe_browsing_protection_level;
-  bool site_isolation_enabled;
+  safe_browsing::SafeBrowsingState safe_browsing_protection_level =
+      safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING;
+  bool site_isolation_enabled = false;
   std::optional<std::string> profile_id = std::nullopt;
 
   // Enterprise cloud content analysis exclusives
-  enterprise_connectors::EnterpriseRealTimeUrlCheckMode realtime_url_check_mode;
+  enterprise_connectors::EnterpriseRealTimeUrlCheckMode realtime_url_check_mode =
+      enterprise_connectors::REAL_TIME_CHECK_DISABLED;
   std::vector<std::string> file_downloaded_providers{};
   std::vector<std::string> file_attached_providers{};
   std::vector<std::string> bulk_data_entry_providers{};
