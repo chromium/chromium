@@ -36,12 +36,6 @@ shouldNotThrow("new RTCPeerConnection({iceServers:[], iceTransportPolicy:'all'})
 shouldThrow("new RTCPeerConnection({iceServers:[], iceTransportPolicy:'none'});");
 shouldThrow("new RTCPeerConnection({iceServers:[], iceTransportPolicy:'foo'});");
 
-// TODO(foolip): |iceTransports| is not in the spec.
-shouldNotThrow("new RTCPeerConnection({iceServers:[], iceTransports:'relay'});");
-shouldNotThrow("new RTCPeerConnection({iceServers:[], iceTransports:'all'});");
-shouldThrow("new RTCPeerConnection({iceServers:[], iceTransports:'none'});");
-shouldThrow("new RTCPeerConnection({iceServers:[], iceTransports:'foo'});");
-
 shouldNotThrow("new RTCPeerConnection({iceServers:[], bundlePolicy:'balanced'});");
 shouldNotThrow("new RTCPeerConnection({iceServers:[], bundlePolicy:'max-bundle'});");
 shouldNotThrow("new RTCPeerConnection({iceServers:[], bundlePolicy:'max-compat'});");

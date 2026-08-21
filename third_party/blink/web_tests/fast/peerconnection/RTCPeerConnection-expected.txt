@@ -26,10 +26,6 @@ PASS new RTCPeerConnection({iceServers:[], iceTransportPolicy:'relay'}); did not
 PASS new RTCPeerConnection({iceServers:[], iceTransportPolicy:'all'}); did not throw exception.
 PASS new RTCPeerConnection({iceServers:[], iceTransportPolicy:'none'}); threw exception TypeError: Failed to construct 'RTCPeerConnection': Failed to read the 'iceTransportPolicy' property from 'RTCConfiguration': The provided value 'none' is not a valid enum value of type RTCIceTransportPolicy..
 PASS new RTCPeerConnection({iceServers:[], iceTransportPolicy:'foo'}); threw exception TypeError: Failed to construct 'RTCPeerConnection': Failed to read the 'iceTransportPolicy' property from 'RTCConfiguration': The provided value 'foo' is not a valid enum value of type RTCIceTransportPolicy..
-PASS new RTCPeerConnection({iceServers:[], iceTransports:'relay'}); did not throw exception.
-PASS new RTCPeerConnection({iceServers:[], iceTransports:'all'}); did not throw exception.
-PASS new RTCPeerConnection({iceServers:[], iceTransports:'none'}); threw exception TypeError: Failed to construct 'RTCPeerConnection': Failed to read the 'iceTransports' property from 'RTCConfiguration': The provided value 'none' is not a valid enum value of type RTCIceTransportPolicy..
-PASS new RTCPeerConnection({iceServers:[], iceTransports:'foo'}); threw exception TypeError: Failed to construct 'RTCPeerConnection': Failed to read the 'iceTransports' property from 'RTCConfiguration': The provided value 'foo' is not a valid enum value of type RTCIceTransportPolicy..
 PASS new RTCPeerConnection({iceServers:[], bundlePolicy:'balanced'}); did not throw exception.
 PASS new RTCPeerConnection({iceServers:[], bundlePolicy:'max-bundle'}); did not throw exception.
 PASS new RTCPeerConnection({iceServers:[], bundlePolicy:'max-compat'}); did not throw exception.

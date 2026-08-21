@@ -5177,6 +5177,12 @@
       base_feature: "none",
     },
     {
+      // Non-standard RTCConfiguration.iceTransports alias. Off by default
+      // (alias removed). Enable via Finch to restore if sites break.
+      // https://crbug.com/488071544
+      name: "RTCConfigurationIceTransports",
+    },
+    {
       name: "RTCDataChannelPriority",
       status: "experimental",
     },
