@@ -62,6 +62,10 @@ class VIZ_CLIENT_EXPORT FrameEvictor : public FrameEvictionManagerClient {
   // Notifies that the visibility state of the child has changed.
   void SetVisible(bool visible);
 
+  // Opts this frame out of frame eviction. Once opted out, the frame cannot
+  // be opted back in and is unregistered from FrameEvictionManager.
+  void OptOutFrameEviction();
+
   bool visible() const { return visible_; }
 
   // Returns an ordered collection of `SurfaceIds` that should be evicted.
@@ -74,6 +78,7 @@ class VIZ_CLIENT_EXPORT FrameEvictor : public FrameEvictionManagerClient {
   raw_ptr<FrameEvictorClient> client_;
   bool has_surface_ = false;
   bool visible_ = false;
+  bool opted_out_from_frame_eviction_ = false;
 };
 
 }  // namespace viz

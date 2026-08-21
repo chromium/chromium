@@ -194,6 +194,7 @@ class CONTENT_EXPORT DelegatedFrameHost
   void ActivatedOrEvictedFromBackForwardCache();
 
   void WindowTitleChanged(const std::string& title);
+  void OptOutFrameEviction();
 
   // If our SurfaceLayer doesn't have a fallback, use the fallback info of
   // |other|.

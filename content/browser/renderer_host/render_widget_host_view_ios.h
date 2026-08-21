@@ -112,6 +112,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
       const DisplayFeature* display_feature) override;
   void UpdateBackgroundColor() override;
   bool HasFallbackSurface() const override;
+  void OptOutFrameEviction() override;
   void NotifyHostAndDelegateOnWasShown(
       std::optional<blink::RecordContentToVisibleTimeRequest>
           visible_time_request) override;

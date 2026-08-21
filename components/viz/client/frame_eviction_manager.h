@@ -81,6 +81,9 @@ class VIZ_CLIENT_EXPORT FrameEvictionManager
   size_t GetUnlockedFramesCountForTesting() const {
     return unlocked_frames_.size();
   }
+  size_t GetLockedFramesCountForTesting() const {
+    return locked_frames_.size();
+  }
 
   // Purges all unlocked frames, allowing us to reclaim resources.
   void PurgeAllUnlockedFrames();

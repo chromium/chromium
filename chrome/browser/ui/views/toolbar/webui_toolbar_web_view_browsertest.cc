@@ -122,6 +122,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/ax_inspect_factory.h"
+#include "content/public/browser/frame_eviction_opt_out_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/navigation_entry.h"
@@ -160,6 +161,7 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/compositor/compositor.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/image/image.h"
@@ -3303,7 +3305,9 @@ class WebUIReloadButtonBrowserTest : public InProcessBrowserTest {
  public:
   WebUIReloadButtonBrowserTest() {
     feature_list_.InitWithFeatures(
-        {features::kInitialWebUI, features::kWebUIReloadButton}, {});
+        {features::kInitialWebUI, features::kWebUIReloadButton,
+         features::kWebUIToolbarFrameEvictionOptOut},
+        {});
   }
 
  private:
@@ -3343,6 +3347,79 @@ IN_PROC_BROWSER_TEST_F(WebUIReloadButtonBrowserTest, ClickReloadButton) {
     nav_observer.Wait();
     // If the navigation happened, it means the reload button was activated.
   }
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIReloadButtonBrowserTest, FrameCacheUsage) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* webui_contents = web_view->GetWebContents();
+
+  EXPECT_TRUE(WaitForButtonVisible(webui_contents, kReloadButtonSelector));
+
+  // Capture the baseline frame counts.
+  const size_t baseline_unlocked = content::GetUnlockedCompositorFrameCount();
+  const size_t baseline_locked = content::GetLockedCompositorFrameCount();
+
+  // Hide the WebUI toolbar's WebContents (e.g. simulating window minimize /
+  // hide).
+  webui_contents->WasHidden();
+
+  // The WebUI toolbar opted out of frame eviction and is unregistered from
+  // FrameEvictionManager, so frame counts are unaffected.
+  EXPECT_EQ(baseline_unlocked, content::GetUnlockedCompositorFrameCount());
+  EXPECT_EQ(baseline_locked, content::GetLockedCompositorFrameCount());
+
+  webui_contents->WasShown();
+  EXPECT_EQ(baseline_unlocked, content::GetUnlockedCompositorFrameCount());
+  EXPECT_EQ(baseline_locked, content::GetLockedCompositorFrameCount());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIReloadButtonBrowserTest,
+                       EndToEndTabSwitchMitigation) {
+  // Set max saved frames to 2 (1 for the active tab + 1 for 1 background tab).
+  content::SetMaxUnlockedCompositorFramesForTesting(2);
+
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  ASSERT_TRUE(webui_toolbar_view);
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* webui_contents = web_view->GetWebContents();
+  ASSERT_TRUE(webui_contents);
+  EXPECT_TRUE(WaitForButtonVisible(webui_contents, kReloadButtonSelector));
+
+  const size_t baseline_unlocked = content::GetUnlockedCompositorFrameCount();
+  const size_t baseline_locked = content::GetLockedCompositorFrameCount();
+  EXPECT_EQ(baseline_unlocked, 0u);
+
+  // Add tab 1 and wait for it to render a frame.
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, GURL("chrome://version/"),
+                                     ui::PAGE_TRANSITION_TYPED));
+  content::WebContents* tab1 =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+  ASSERT_TRUE(tab1);
+  content::RenderFrameSubmissionObserver frame_observer1(tab1);
+  if (frame_observer1.render_frame_count() == 0) {
+    frame_observer1.WaitForAnyFrameSubmission();
+  }
+
+  // Background tab 1 by activating tab 0.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_EQ(content::GetUnlockedCompositorFrameCount(), baseline_unlocked + 1);
+  EXPECT_EQ(content::GetLockedCompositorFrameCount(), baseline_locked);
+  EXPECT_TRUE(tab1->GetRenderWidgetHostView()->HasSavedCompositorFrame());
+
+  // Hide the WebUI toolbar: because the WebUI toolbar opted out of frame
+  // eviction, it does NOT register in FrameEvictionManager and does NOT
+  // evict tab 1's saved frame even though max saved frames is 2.
+  webui_contents->WasHidden();
+  EXPECT_EQ(content::GetUnlockedCompositorFrameCount(), baseline_unlocked + 1);
+  EXPECT_EQ(content::GetLockedCompositorFrameCount(), baseline_locked);
+  EXPECT_TRUE(tab1->GetRenderWidgetHostView()->HasSavedCompositorFrame());
+
+  // Showing webui_contents again does not change frame counts.
+  webui_contents->WasShown();
+  EXPECT_EQ(content::GetUnlockedCompositorFrameCount(), baseline_unlocked + 1);
+  EXPECT_EQ(content::GetLockedCompositorFrameCount(), baseline_locked);
+  EXPECT_TRUE(tab1->GetRenderWidgetHostView()->HasSavedCompositorFrame());
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIReloadButtonBrowserTest, NoCrashOnCommandUpdate) {

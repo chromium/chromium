@@ -260,6 +260,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
 
   virtual void SendInitialPropertiesIfNeeded() {}
 
+  // Opts the view out of frame eviction.
+  virtual void OptOutFrameEviction() {}
+
   // Called when screen information or native widget bounds change.
   virtual void UpdateScreenInfo();
 

@@ -571,6 +571,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // RenderWidgetHostViewBase:
   void UpdateBackgroundColor() override;
   bool HasFallbackSurface() const override;
+  void OptOutFrameEviction() override;
   std::optional<DisplayFeature> GetDisplayFeature() override;
   void DisableDisplayFeatureOverrideForEmulation() override;
   void OverrideDisplayFeatureForEmulation(

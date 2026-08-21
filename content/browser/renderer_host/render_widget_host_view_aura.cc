@@ -2516,6 +2516,11 @@ bool RenderWidgetHostViewAura::HasFallbackSurface() const {
   return delegated_frame_host_->HasFallbackSurface();
 }
 
+void RenderWidgetHostViewAura::OptOutFrameEviction() {
+  CHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
+  delegated_frame_host_->OptOutFrameEviction();
+}
+
 bool RenderWidgetHostViewAura::TransformPointToCoordSpaceForView(
     const gfx::PointF& point,
     input::RenderWidgetHostViewInput* target_view,

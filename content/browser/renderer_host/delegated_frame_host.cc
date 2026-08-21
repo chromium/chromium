@@ -493,6 +493,10 @@ viz::SurfaceId DelegatedFrameHost::GetPreNavigationSurfaceId() const {
   return viz::SurfaceId(frame_sink_id_, pre_navigation_local_surface_id_);
 }
 
+void DelegatedFrameHost::OptOutFrameEviction() {
+  frame_evictor_->OptOutFrameEviction();
+}
+
 void DelegatedFrameHost::DidCopyStaleContent(
     std::unique_ptr<viz::CopyOutputResult> result) {
   // host may have become visible by the time the request to capture surface is

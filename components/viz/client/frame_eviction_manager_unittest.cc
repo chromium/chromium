@@ -12,6 +12,7 @@
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "components/viz/client/frame_evictor.h"
 #include "components/viz/common/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,6 +47,24 @@ class TestFrameEvictionManagerClient : public FrameEvictionManagerClient {
  private:
   raw_ptr<FrameEvictionManager> manager_ = FrameEvictionManager::GetInstance();
   bool has_frame_ = true;
+};
+
+class FakeFrameEvictorClient : public FrameEvictorClient {
+ public:
+  FakeFrameEvictorClient() = default;
+  ~FakeFrameEvictorClient() override = default;
+
+  void EvictDelegatedFrame(const std::vector<SurfaceId>& surface_ids) override {
+    evicted_ = true;
+  }
+  EvictIds CollectSurfaceIdsForEviction() const override { return EvictIds(); }
+  SurfaceId GetCurrentSurfaceId() const override { return SurfaceId(); }
+  SurfaceId GetPreNavigationSurfaceId() const override { return SurfaceId(); }
+
+  bool evicted() const { return evicted_; }
+
+ private:
+  bool evicted_ = false;
 };
 
 }  // namespace
@@ -208,6 +227,92 @@ TEST_P(FrameEvictionManagerTest, ScalableEvictionReleaseMemory) {
   // Verify culling occurred down to baseline.
   EXPECT_EQ(baseline, static_cast<size_t>(std::ranges::count_if(
                           frames, &TestFrameEvictionManagerClient::has_frame)));
+}
+
+TEST_P(FrameEvictionManagerTest, FrameEvictorOptOutUnregistersFromManager) {
+  FrameEvictionManager* manager = FrameEvictionManager::GetInstance();
+  FakeFrameEvictorClient client;
+  FrameEvictor evictor(&client);
+
+  EXPECT_EQ(0u, manager->GetUnlockedFramesCountForTesting());
+  EXPECT_EQ(0u, manager->GetLockedFramesCountForTesting());
+
+  evictor.OnNewSurfaceEmbedded();
+  evictor.SetVisible(true);
+  EXPECT_EQ(1u, manager->GetLockedFramesCountForTesting());
+  EXPECT_EQ(0u, manager->GetUnlockedFramesCountForTesting());
+
+  // Opting out unregisters the frame from FrameEvictionManager.
+  evictor.OptOutFrameEviction();
+  EXPECT_EQ(0u, manager->GetLockedFramesCountForTesting());
+  EXPECT_EQ(0u, manager->GetUnlockedFramesCountForTesting());
+
+  // Subsequent visibility changes do not re-register with FrameEvictionManager.
+  evictor.SetVisible(false);
+  EXPECT_EQ(0u, manager->GetLockedFramesCountForTesting());
+  EXPECT_EQ(0u, manager->GetUnlockedFramesCountForTesting());
+
+  evictor.SetVisible(true);
+  EXPECT_EQ(0u, manager->GetLockedFramesCountForTesting());
+  EXPECT_EQ(0u, manager->GetUnlockedFramesCountForTesting());
+}
+
+TEST_P(FrameEvictionManagerTest, FrameEvictorOptOutWhileUnlocked) {
+  FrameEvictionManager* manager = FrameEvictionManager::GetInstance();
+  FakeFrameEvictorClient client;
+  FrameEvictor evictor(&client);
+
+  evictor.OnNewSurfaceEmbedded();
+  evictor.SetVisible(false);
+  EXPECT_EQ(0u, manager->GetLockedFramesCountForTesting());
+  EXPECT_EQ(1u, manager->GetUnlockedFramesCountForTesting());
+
+  // Opting out while unlocked unregisters from FrameEvictionManager.
+  evictor.OptOutFrameEviction();
+  EXPECT_EQ(0u, manager->GetLockedFramesCountForTesting());
+  EXPECT_EQ(0u, manager->GetUnlockedFramesCountForTesting());
+}
+
+TEST_P(FrameEvictionManagerTest, FrameEvictorOptOutBeforeSurfaceEmbedded) {
+  FrameEvictionManager* manager = FrameEvictionManager::GetInstance();
+  FakeFrameEvictorClient client;
+  FrameEvictor evictor(&client);
+
+  evictor.OptOutFrameEviction();
+  evictor.OnNewSurfaceEmbedded();
+  evictor.SetVisible(true);
+  EXPECT_EQ(0u, manager->GetLockedFramesCountForTesting());
+  EXPECT_EQ(0u, manager->GetUnlockedFramesCountForTesting());
+
+  evictor.SetVisible(false);
+  EXPECT_EQ(0u, manager->GetLockedFramesCountForTesting());
+  EXPECT_EQ(0u, manager->GetUnlockedFramesCountForTesting());
+}
+
+TEST_P(FrameEvictionManagerTest, OptedOutFrameIsNotEvictedOnCulling) {
+  FrameEvictionManager* manager = FrameEvictionManager::GetInstance();
+  manager->set_max_number_of_saved_frames(1);
+
+  FakeFrameEvictorClient opted_out_client;
+  FrameEvictor opted_out_evictor(&opted_out_client);
+  opted_out_evictor.OnNewSurfaceEmbedded();
+  opted_out_evictor.OptOutFrameEviction();
+
+  // Add participating frames.
+  TestFrameEvictionManagerClient participating_frame1{manager};
+  manager->AddFrame(&participating_frame1, /*locked=*/false);
+  EXPECT_TRUE(participating_frame1.has_frame());
+  EXPECT_FALSE(opted_out_client.evicted());
+
+  // Adding a second participating frame exceeds the limit (2 > 1 limit),
+  // so participating_frame1 is culled.
+  TestFrameEvictionManagerClient participating_frame2{manager};
+  manager->AddFrame(&participating_frame2, /*locked=*/false);
+
+  EXPECT_FALSE(participating_frame1.has_frame());
+  EXPECT_TRUE(participating_frame2.has_frame());
+  // The opted-out frame was not evicted.
+  EXPECT_FALSE(opted_out_client.evicted());
 }
 
 }  // namespace viz
