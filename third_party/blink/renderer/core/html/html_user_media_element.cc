@@ -74,8 +74,7 @@ HTMLUserMediaElement::HTMLUserMediaElement(Document& document)
 
 bool HTMLUserMediaElement::IsLegacyMode() const {
   return RuntimeEnabledFeatures::UserMediaElementLegacyEnabled(
-             GetExecutionContext()) &&
-         hasAttribute(html_names::kTypeAttr);
+      GetExecutionContext());
 }
 
 DOMException* HTMLUserMediaElement::error() const {
