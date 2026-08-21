@@ -6,6 +6,10 @@
 
 namespace autofill::features {
 
+// Enables the fix to allow reentry in PaymentsNetworkInterface::IssueRequest()
+// from PaymentsRequest::RespondToDelegate().
+BASE_FEATURE(kAllowReentryFromRespondToDelegate,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #if BUILDFLAG(IS_IOS)
 // When enabled, users are given the option to use their phone camera to scan
 // their credit card when adding it via Autofill iOS settings.
