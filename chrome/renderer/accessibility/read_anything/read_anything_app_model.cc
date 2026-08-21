@@ -602,6 +602,28 @@ bool ReadAnythingAppModel::IsWhatsNew() const {
   return tree_infos_.at(root_tree_id_)->is_whats_new;
 }
 
+void ReadAnythingAppModel::ResetDistillationCompleteIfNeeded() {
+  GURL current_url = GetActiveTreeUrl();
+
+  // If no content has been successfully distilled yet, or the current URL
+  // is invalid, or the scheme is not HTTP/HTTPS, there is nothing to compare or
+  // reset.
+  if (!last_readability_distilled_url_.is_valid() || !current_url.is_valid() ||
+      !current_url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  // Same-document / SPA navigations typically change the URL path or query,
+  // but keep the same AXTree ID. Ignore hash fragments (#ref) when comparing.
+  bool url_changed = last_readability_distilled_url_.GetWithoutRef() !=
+                     current_url.GetWithoutRef();
+
+  if (url_changed) {
+    // Reset the flag to trigger a new distillation for same-document nav.
+    readability_distillation_complete_for_current_tree_ = false;
+  }
+}
+
 void ReadAnythingAppModel::AddPendingUpdates(const ui::AXTreeID& tree_id,
                                              Updates& updates) {
   pending_updates_[tree_id].emplace_back(std::move(updates));
@@ -1327,6 +1349,22 @@ void ReadAnythingAppModel::RemoveObserver(ModelObserver* observer) {
 
 void ReadAnythingAppModel::SetFontSize(double font_size, int increment) {
   font_size_ = AdjustFontScale(font_size, increment);
+}
+
+GURL ReadAnythingAppModel::GetActiveTreeUrl() const {
+  // Guard against retrieving trees that have not been initialized or registered
+  // yet.
+  if (!ContainsActiveTree()) {
+    return GURL();
+  }
+
+  ui::AXSerializableTree* tree = GetActiveTree();
+  if (tree && tree->root() &&
+      tree->root()->HasStringAttribute(ax::mojom::StringAttribute::kUrl)) {
+    return GURL(
+        tree->root()->GetStringAttribute(ax::mojom::StringAttribute::kUrl));
+  }
+  return GURL();
 }
 
 const std::set<ui::AXNodeID>* ReadAnythingAppModel::GetCurrentlyVisibleNodes()
