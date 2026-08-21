@@ -136,14 +136,22 @@ bool IsNTPRedesignStaticFakeboxEnabled() {
          kNewTabPageRedesignStaticFakeboxParamFeature.Get();
 }
 
-bool IsNewTabPageUICleanupEnabled() {
-  return base::FeatureList::IsEnabled(kNewTabPageUICleanup);
-}
-
 NTPUICleanupVariation GetNewTabPageUICleanupVariation() {
-  if (IsNewTabPageUICleanupEnabled()) {
+  if (base::FeatureList::IsEnabled(kNewTabPageUICleanup)) {
     return static_cast<NTPUICleanupVariation>(
         kNewTabPageUICleanupArmParamFeature.Get());
   }
   return NTPUICleanupVariation::kDisabled;
+}
+
+bool IsNewTabPageUICleanupEnabled() {
+  NTPUICleanupVariation variation = GetNewTabPageUICleanupVariation();
+  return variation == NTPUICleanupVariation::kTightPadding ||
+         variation == NTPUICleanupVariation::kMediumPadding ||
+         variation == NTPUICleanupVariation::kPreferredPadding;
+}
+
+bool IsNewTabPageUICleanupFakeboxOnlyEnabled() {
+  return GetNewTabPageUICleanupVariation() ==
+         NTPUICleanupVariation::kFakeboxBackgroundAndShadow;
 }

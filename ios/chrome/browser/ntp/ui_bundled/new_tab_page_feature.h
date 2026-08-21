@@ -23,6 +23,7 @@ enum class NTPUICleanupVariation {
   kTightPadding,
   kMediumPadding,
   kPreferredPadding,
+  kFakeboxBackgroundAndShadow,
 };
 
 #pragma mark - Feature declarations
@@ -129,8 +130,12 @@ bool IsNTPRedesignEnabled();
 // NTP redesign.
 bool IsNTPRedesignStaticFakeboxEnabled();
 
-// Whether the New Tab Page UI cleanup is enabled.
+// Whether the full New Tab Page UI cleanup is enabled. This cleanup includes
+// all color, sizing, and padding updates.
 bool IsNewTabPageUICleanupEnabled();
+
+// Whether only the fakebox background color and shadow updates are enabled.
+bool IsNewTabPageUICleanupFakeboxOnlyEnabled();
 
 // Returns the enabled variation of feature kNewTabPageUICleanup.
 NTPUICleanupVariation GetNewTabPageUICleanupVariation();
