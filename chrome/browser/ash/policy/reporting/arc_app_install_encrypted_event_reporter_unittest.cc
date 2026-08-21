@@ -11,7 +11,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
-#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/policy/reporting/app_install_event_log_manager_wrapper.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log.h"
@@ -52,10 +51,7 @@ class AppInstallEventEncryptedReporterTest : public testing::Test {
     chromeos::PowerManagerClient::InitializeFake();
   }
 
-  void TearDown() override {
-    task_environment_.RunUntilIdle();
-    chromeos::PowerManagerClient::Shutdown();
-  }
+  void TearDown() override { chromeos::PowerManagerClient::Shutdown(); }
 
   em::AppInstallReportLogEvent CreateEventWithType(
       em::AppInstallReportLogEvent::EventType event_type) {
