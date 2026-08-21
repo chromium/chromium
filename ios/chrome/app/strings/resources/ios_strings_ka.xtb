@@ -1060,6 +1060,7 @@
 <translation id="454217142158335225">დახურული ერთეულების ხელახლა გახსნა შეგიძლიათ ბოლოს გამოყენებული ჩანართებიდან ან ჩანართების ჯგუფების სექციებიდან. თქვენი ჩამაგრებული ჩანართები არ დაიხურება.</translation>
 <translation id="4547181496285029457">ბოლოდროინდელ ჩანართზე დაბრუნება</translation>
 <translation id="4552042254369397518">მიმდინარეობს კოპირება…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">წვდომის სხვა გასაღებები</translation>
 <translation id="4564893319561643483">დაიმალოს „<ph name="TITLE" />“</translation>
 <translation id="456502772933839252">ზიარდება <ph name="PAGE_TITLE" /></translation>
@@ -1293,6 +1294,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" />-ს ახლა შეუძლია თქვენი მომხმარებლის სახლისა და პაროლის გამოყენება, როცა <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />-ში შესასვლელად ის ისარგებლებს Google პაროლების მმართველით.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, მართავს თქვენი ორგანიზაცია (ამჟამად არჩეული). აირჩიეთ ანგარიში.</translation>
 <translation id="5242899254250321823">პაროლის შეცვლა ვებსაიტზე</translation>
+<translation id="524751727772074981">იკითხეთ ნებისმიერი რამ პირდაპირ იქ, სადაც ხართ, Gemini-ს მეშვეობით Chrome-ში</translation>
 <translation id="5248640482715684545">ეს საიტი ცდილობს, გახსნას სხვა აპლიკაცია.</translation>
 <translation id="5250371859659394278">უცნობი წყაროდან</translation>
 <translation id="525510229763628836">დაპატარავებული</translation>
@@ -1309,6 +1311,7 @@
 <translation id="5300589172476337783">ჩვენება</translation>
 <translation id="5311061401280561833">კამერასა და მიკროფონზე წვდომა დაშვებულია</translation>
 <translation id="5313967007315987356">საიტის დამატება</translation>
+<translation id="5315029634103634221">Gemini ხელოვნური ინტელექტია და შეიძლება შეცდეს. <ph name="BEGIN_LINK" />ვრცლად Google-ისთვის გაგზავნილი შესაბამისი მონაცემების შესახებ<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">იმპორტისთვის არაფერია</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" />-დან</translation>
 <translation id="5317780077021120954">შენახვა</translation>
@@ -1391,6 +1394,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="5596627076506792578">დამატებითი ვარიანტები</translation>
 <translation id="560322036295180549">გამორთულია თქვენი ორგანიზაციის მიერ</translation>
 <translation id="5611398002774823980">ანგარიშში შენახვა</translation>
+<translation id="5612225021788368236">ნაგულისხმევი ბრაუზერის პრომოს დახურვა</translation>
 <translation id="561269594905823128">შეეხეთ: <ph name="BEGIN_BOLD" />თქვენი ფაილის არჩევა<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">დალაგება უახლესის მიხედვით</translation>
 <translation id="5614553682702429503">გსურთ პაროლის შენახვა?</translation>

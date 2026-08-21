@@ -465,6 +465,7 @@
 <translation id="1757773103848038814">मोनोस्पेस फ़ॉन्ट</translation>
 <translation id="1757935267918149452">'Google पासवर्ड बदलें' बटन, अपने Google खाते का पासवर्ड बदलने के लिए इसे चालू करें</translation>
 <translation id="1759776526873274358">पुष्टि करने वाले कोड ऑटोमैटिक तरीके से भरें. इन कोड का इस्तेमाल साइटें आपकी सुरक्षा को और बेहतर बनाने के लिए करती हैं. Chrome आपके Gmail खाते से ये कोड ऐक्सेस कर सकता है. <ph name="BEGIN_LINK" />इस सुविधा के बारे में ज़्यादा जानें<ph name="LINK_END" /></translation>
+<translation id="176013700366797492"><ph name="BEGIN_LINK1" />डेटा और निजता से जुड़ी प्राथमिकताएं<ph name="END_LINK1" /> कंट्रोल करने या <ph name="BEGIN_LINK2" />पेमेंट के तरीके<ph name="END_LINK2" /> और <ph name="BEGIN_LINK3" />पास<ph name="END_LINK3" /> मैनेज करने के लिए Google Wallet पर जाएं. जैसे, लॉयल्टी कार्ड और आईडी</translation>
 <translation id="1763864636252898013">यह सर्वर यह नहीं प्रमाणित कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र आपके डिवाइस के ऑपरेटिंग सिस्टम द्वारा विश्वसनीय नहीं है. ऐसा गलत कॉन्फ़िगरेशन या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows नेटवर्क निदान चलाकर देखें<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">फ़ोटो (आर्काइवल)</translation>
@@ -788,6 +789,7 @@
 <translation id="2321291402658100099">जानकारी को मैनेज करें</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 विंडो}one{# विंडो}other{# विंडो}}</translation>
 <translation id="232390861414237658">अगर आपने Google Pay में इस्तेमाल करने के लिए इस कार्ड की जानकारी सेव की है, तो Chrome में खरीदारी करने के लिए कार्ड की जानकारी ऑटोमैटिक भरने की सुविधा चालू करें</translation>
+<translation id="2325722389016720813">सर्च क्वेरी के अपने-आप पूरे होने की सुविधा इस्तेमाल करने के लिए, अप ऐरो या डाउन ऐरो दबाएं. सर्च क्वेरी अपने-आप पूरी हो, इसके लिए कुछ टाइप करें.</translation>
 <translation id="2326283484705860548">अब Google Wallet से ऑटोमैटिक तरीके से ज़्यादा जानकारी भरी जा सकती है</translation>
 <translation id="2326747055382936979">बेहतर ऑटोफ़िल की सुविधा को मैनेज करें</translation>
 <translation id="2328651992442742497">अनुमति है (डिफ़ॉल्ट रूप से)</translation>
@@ -3369,6 +3371,7 @@
 <translation id="6743841972744298686">सिंक सेटिंग</translation>
 <translation id="6745212570062463886">ऑटोमैटिक तरीके से भरने की सुविधा का इस्तेमाल करके अपने Google खाते से, नाम और ईमेल पता भरें</translation>
 <translation id="674580074662200768">पासपोर्ट की जानकारी सुरक्षित तरीके से अपडेट करें</translation>
+<translation id="6749473226660745022">फ़ोटो</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">नीति मान</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> की एंट्री मिटाएं</translation>
@@ -3708,6 +3711,7 @@
 <translation id="7366117520888504990">198 x 275 मि॰मी॰</translation>
 <translation id="7366362069757178916">पेमेंट हैंडलर</translation>
 <translation id="7366594738862061263">इस बारे में जानें कि Chrome आपके पासवर्ड की सुरक्षा कैसे करता है</translation>
+<translation id="7366909168761621528">ब्राउज़िंग डेटा</translation>
 <translation id="7370751048350026847">इस कॉन्टेंट को इस साइट पर चिपकाने का सुझाव नहीं दिया जाता है</translation>
 <translation id="7372526636730851647">फ़ोटो (ग्लॉसी)</translation>
 <translation id="7372973238305370288">खोज नतीजे</translation>
@@ -4656,6 +4660,7 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Chrome Enterprise Core आज़माएं</translation>
 <translation id="9027531288681624875">फ़ुल स्क्रीन से बाहर निकलने के लिए, |<ph name="ACCELERATOR" />| दबाकर रखें</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">सुरक्षा गड़बड़ी</translation>
 <translation id="9035699147763101514">यह सुविधा Gemini के पर्सनल इंटेलिजेंस की मदद से काम करती है. सेटिंग में जाकर, अपनी पसंद के मुताबिक बदलाव करें.</translation>
 <translation id="9035824888276246493">सुरक्षा कोड सेव करें</translation>

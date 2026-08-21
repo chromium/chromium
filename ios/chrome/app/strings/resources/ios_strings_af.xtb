@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">Kry gestoorde wagwoorde in ander apps</translation>
 <translation id="4431224949908513835">Kies ’n betaalmetode om in te vul.</translation>
 <translation id="4432122368769493392">Instellings …</translation>
+<translation id="4439968635693513370">Beplan jou naweek met</translation>
 <translation id="4442550905108052454">Maak <ph name="BEGIN_BOLD" />Instellings<ph name="END_BOLD" /> oop</translation>
 <translation id="4445840280797509738">Meer opsies vir <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Jy kan die rand swiep om terug of vorentoe te gaan.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">Jy kan toegemaakte items weer oopmaak vanuit die Onlangse Oortjies- of Oortjiegroepe-afdeling. Jou vasgespelde oortjies sal nie toegemaak word nie.</translation>
 <translation id="4547181496285029457">Keer terug na onlangse oortjie</translation>
 <translation id="4552042254369397518">Kopieer tans …</translation>
+<translation id="4552089082226364758">Flits</translation>
 <translation id="4553044860350038560">Meer toegangsleutels</translation>
 <translation id="4564893319561643483">Versteek “<ph name="TITLE" />”</translation>
 <translation id="456502772933839252">Deel tans <ph name="PAGE_TITLE" /></translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Jou organisasie vereis dat jy privaat blaai. Oortjiegroepe word nie in Incognito-modus gesinkroniseer nie.
 <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">Koop met vertroue met</translation>
 <translation id="467189612236587057">Kom met ’n besigheid in aanraking deur ’n foonoproep te inisieer</translation>
 <translation id="4673565891421389203">As jy met jou bestuurde rekening aanmeld, help dit jou om webblaai wat met jou organisasie te doen het (insluitend oortjies, geskiedenis en wagwoorde), afsonderlik van jou ander webblaai te hou.
 
@@ -1291,6 +1294,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> kan nou jou gebruikersnaam en wagwoord gebruik wanneer hulle Google Wagwoordbestuurder gebruik om by <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> aan te meld.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, bestuur deur jou organisasie wat tans gekies is. Kies ’n rekening.</translation>
 <translation id="5242899254250321823">Verander wagwoord op webwerf</translation>
+<translation id="524751727772074981">Vra enigiets, net waar jy is, met Gemini in Chrome</translation>
 <translation id="5248640482715684545">Hierdie werf probeer om ’n ander app oop te maak.</translation>
 <translation id="5250371859659394278">Vanaf ’n onbekende bron</translation>
 <translation id="525510229763628836">Geminimeer</translation>
@@ -1307,6 +1311,7 @@
 <translation id="5300589172476337783">Wys</translation>
 <translation id="5311061401280561833">Kamera- en mikrofoontoegang word toegelaat</translation>
 <translation id="5313967007315987356">Voeg werf by</translation>
+<translation id="5315029634103634221">Gemini is KI en kan foute maak. <ph name="BEGIN_LINK" />Meer oor relevante data wat na Google toe gestuur word<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Niks om in te voer nie</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> van <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Berg</translation>
@@ -1389,6 +1394,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5596627076506792578">Meer opsies</translation>
 <translation id="560322036295180549">Afgeskakel deur jou organisasie</translation>
 <translation id="5611398002774823980">Stoor in rekening</translation>
+<translation id="5612225021788368236">Maak verstekblaaierpromosie toe</translation>
 <translation id="561269594905823128">Tik op <ph name="BEGIN_BOLD" />Kies jou lêer<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Rangskik volgens jongste</translation>
 <translation id="5614553682702429503">Stoor wagwoord?</translation>
@@ -2474,6 +2480,7 @@ Skakel oor na <ph name="OTHER_EMAIL" /> om van jou rekenaar af voort te gaan. Jy
 <translation id="9029650858822697271">Jy is afgemeld</translation>
 <translation id="9032405509996909363">Bevestig Vee blaaierdata uit</translation>
 <translation id="9035699147763101514">Aangedryf deur Persoonlike Intelligensie met Gemini. Bestuur jou keuses in instellings.</translation>
+<translation id="9038526468059454274">Som dit op met</translation>
 <translation id="9039373489628511875">Bandwydte</translation>
 <translation id="9042893549633094279">Privaatheid en sekuriteit</translation>
 <translation id="9055291197094969722">Skep oortjiegroepe om jou oop oortjies te organiseer en produktief te bly</translation>

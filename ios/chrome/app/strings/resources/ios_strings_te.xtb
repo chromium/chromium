@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">ఇతర యాప్‌లలో సేవ్ చేసిన పాస్‌వర్డ్‌లను పొందండి</translation>
 <translation id="4431224949908513835">పూరించడం కోసం ఒక పేమెంట్ ఆప్షన్‌ను ఎంచుకోండి.</translation>
 <translation id="4432122368769493392">సెట్టింగ్‌లు…</translation>
+<translation id="4439968635693513370">దీనితో మీ వీకెండ్‌ను ప్లాన్ చేసుకోండి</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />సెట్టింగ్‌ల<ph name="END_BOLD" />ను తెరవండి</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> కోసం మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="4455710003856931944">మీరు వెనుకకు లేదా ముందుకు వెళ్లడానికి అంచుని స్వైప్ చేయవచ్చు.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">మీరు ఇటీవలి ట్యాబ్‌లు లేదా ట్యాబ్ గ్రూప్‌ల విభాగాల నుండి మూసివేసిన ఐటెమ్‌లను మళ్లీ తెరవవచ్చు. మీ పిన్ చేసిన ట్యాబ్‌లు మూసివేయబడవు.</translation>
 <translation id="4547181496285029457">ఇటీవలి ట్యాబ్‌కు తిరిగి వెళ్ళండి</translation>
 <translation id="4552042254369397518">కాపీ చేస్తోంది…</translation>
+<translation id="4552089082226364758">ఫ్లాష్</translation>
 <translation id="4553044860350038560">మరిన్ని పాస్-కీలు</translation>
 <translation id="4564893319561643483">"<ph name="TITLE" />"ను దాచండి</translation>
 <translation id="456502772933839252"><ph name="PAGE_TITLE" />‌ను షేర్ చేస్తోంది</translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">మీ సంస్థ పాలసీ ప్రకారం మీరు ప్రైవేట్‌గా బ్రౌజ్ చేయాలి. అజ్ఞాత మోడ్‌లో ట్యాబ్ గ్రూప్‌లు సింక్ అవ్వవు.
 <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">దీనితో నమ్మకంగా షాపింగ్ చేయండి</translation>
 <translation id="467189612236587057">ఫోన్ కాల్ చేసి బిజినెస్‌తో కనెక్ట్ అవ్వండి</translation>
 <translation id="4673565891421389203">మీ మేనేజ్ చేయబడే ఖాతాతో సైన్ ఇన్ చేయడం వలన మీ సంస్థకు సంబంధించిన బ్రౌజింగ్‌ను (ట్యాబ్‌లు, హిస్టరీ, ఇంకా పాస్‌వర్డ్‌లతో సహా) మీ ఇతర బ్రౌజింగ్ నుండి వేరుగా ఉంచడంలో మీకు సహాయపడుతుంది.
 
@@ -1291,6 +1294,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" />, <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />‌కు సైన్ ఇన్ చేయడానికి Google Password Managerను ఉపయోగించినప్పుడు, వారు ఇప్పుడు మీ యూజర్‌నేమ్‌ను, పాస్‌వర్డ్‌ను ఉపయోగించవచ్చు.</translation>
 <translation id="5241106044372754566">ప్రస్తుతం <ph name="NAME" />, <ph name="EMAIL" />, ప్రస్తుతంఎంపిక చేయబడింది, ఇది మీ సంస్థ ద్వారా మేనేజ్ చేయబడుతోంది. ఒక ఖాతాను ఎంచుకోండి.</translation>
 <translation id="5242899254250321823">వెబ్‌సైట్‌లో పాస్‌వర్డ్‌ను మార్చండి</translation>
+<translation id="524751727772074981">Chromeలో Geminiతో, మీరు ఎక్కడ ఉన్నా సరే, ఏదైనా అడగండి</translation>
 <translation id="5248640482715684545">ఈ సైట్ మరొక యాప్‌ను తెరవడానికి ట్రై చేస్తోంది.</translation>
 <translation id="5250371859659394278">తెలియని సోర్స్ నుండి డౌన్‌లోడ్ అవుతోంది</translation>
 <translation id="525510229763628836">కుదించబడింది</translation>
@@ -1307,6 +1311,7 @@
 <translation id="5300589172476337783">చూపించు</translation>
 <translation id="5311061401280561833">కెమెరా, మైక్రోఫోన్ యాక్సెస్ అనుమతించబడ్డాయి</translation>
 <translation id="5313967007315987356">సైట్‌ను జోడించండి</translation>
+<translation id="5315029634103634221">Gemini అనేది AI, అది పొరపాట్లు చేయవచ్చు. <ph name="BEGIN_LINK" />Googleకు పంపే సంబంధిత డేటా గురించి మరింత సమాచారం<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">దిగుమతి చేయడానికి ఏవీ లేవు</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />లో <ph name="INDEX" /></translation>
 <translation id="5317780077021120954">సేవ్ చేయండి</translation>
@@ -1389,6 +1394,7 @@
 <translation id="5596627076506792578">మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="560322036295180549">మీ సంస్థ ఆఫ్ చేసింది</translation>
 <translation id="5611398002774823980">ఖాతాలో సేవ్ చేయండి</translation>
+<translation id="5612225021788368236">ఆటోమేటిక్ బ్రౌజర్ ప్రోమోను మూసివేయండి</translation>
 <translation id="561269594905823128"><ph name="BEGIN_BOLD" />మీ ఫైల్‌ను ఎంచుకోండి<ph name="END_BOLD" /> అనే ఆప్షన్‌ను ట్యాప్ చేయండి</translation>
 <translation id="5613297089029360427">ఇటీవలి లేబుల్ టెక్స్ట్ ఆధారంగా క్రమపద్ధతిలో అమర్చండి</translation>
 <translation id="5614553682702429503">పాస్‌వర్డ్‌ను సేవ్ చేయాలా?</translation>
@@ -2474,6 +2480,7 @@
 <translation id="9029650858822697271">మీరు సైన్ అవుట్ చేయబడ్డారు</translation>
 <translation id="9032405509996909363">బ్రౌజింగ్ డేటాను తొలగించడాన్ని నిర్ధారించండి</translation>
 <translation id="9035699147763101514">Geminiలోని పర్సనల్ ఇంటెలిజెన్స్ సహాయంతో పని చేస్తుంది. సెట్టింగ్‌లలో మీ ఎంపికలను మేనేజ్ చేయండి.</translation>
+<translation id="9038526468059454274">దీనితో సారాంశాన్ని పొందండి</translation>
 <translation id="9039373489628511875">బ్యాండ్‌విడ్త్</translation>
 <translation id="9042893549633094279">గోప్యత, సెక్యూరిటీ</translation>
 <translation id="9055291197094969722">ట్యాబ్ గ్రూప్‌లను క్రియేట్ చేసి, తెరిచి ఉన్న మీ ట్యాబ్‌లను ఆర్గనైజ్ చేసి, ప్రొడక్టివ్‌గా ఉండండి</translation>

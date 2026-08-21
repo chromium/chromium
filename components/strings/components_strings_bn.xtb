@@ -70,6 +70,7 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> এর জন্য অনুমতি বেছে নিন</translation>
 <translation id="1113000785583998331">IBAN সেভ করতে চান?</translation>
 <translation id="1113869188872983271">&amp;পুনর্বিন্যাসকে পূর্বাবস্থায় ফেরান</translation>
+<translation id="1117709830616495622">Gemini-র পার্সোনাল ইন্টেলিজেন্স দ্বারা পরিচালিত।</translation>
 <translation id="111897705806685148">অন্য ডিভাইস থেকে পাসকী ব্যবহার করুন</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Google অ্যাকাউন্টে Chrome-এর কোন কোন তথ্য সেভ করবেন তা ম্যানেজ করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="1121990216147052230">একটি টু-ডু লিস্ট তৈরি করে দাও</translation>
@@ -1171,6 +1172,7 @@
 <translation id="3005723025932146533">সেভ করা কপি দেখুন</translation>
 <translation id="300580149047131921">সম্প্রতি ব্যবহার করা হয়েছে</translation>
 <translation id="3006864083554020786">বাড়ির ঠিকানা</translation>
+<translation id="3008410317623852235">এখন আপনি Gmail ও আরও অনেক অ্যাপ থেকে তথ্য খুঁজে পেতে এবং পূরণ করতে পারবেন।</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, উপলভ্য অ্যাকশন ব্রাউজ করতে ট্যাব প্রেস করুন, তারপরে বেছে নেওয়া অ্যাকশন এডিট করতে এন্টার প্রেস করুন।</translation>
 <translation id="3010991137650052245">এই সাইটে আপনার <ph name="PERMISSION" /> ব্যবহার করতে, <ph name="SHORT_PRODUCT_NAME" />-কে অ্যাক্সেস দিন</translation>
 <translation id="3014726756341138577">উন্নত প্রিন্টারের ফিচার</translation>
@@ -2320,6 +2322,7 @@
 <translation id="4941627891654116707">হরফের মাপ</translation>
 <translation id="4943620199112228840">আপনার মাইক্রোফোন ব্যবহার করুন</translation>
 <translation id="4943872375798546930">কোন ফলাফল নেই</translation>
+<translation id="494701040141924538">বুঝেছি, বিজ্ঞপ্তি বন্ধ করুন</translation>
 <translation id="495170559598752135">ক্রিয়াসমূহ</translation>
 <translation id="4953689047182316270">ব্যবহারযোগ্যতা সংক্রান্ত ইভেন্টে প্রতিবার্তা দিতে চায়</translation>
 <translation id="4954505713046251871">এই ফিচার উন্নত ও সাজেশন অফার করতে, পৃষ্ঠার কন্টেন্ট ও URL Google-এর সাথে শেয়ার করা হয়</translation>
@@ -3369,6 +3372,7 @@
 <translation id="6743841972744298686">সিঙ্ক সেটিংস করুন</translation>
 <translation id="6745212570062463886">আপনার Google অ্যাকাউন্ট থেকে নাম ও ইমেল আইডি অটোফিল করুন</translation>
 <translation id="674580074662200768">পাসপোর্টের তথ্য নিরাপদে আপডেট করুন</translation>
+<translation id="6749473226660745022">ফটো</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">নীতি মান</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> এন্ট্রি মুছুন</translation>
@@ -3708,6 +3712,7 @@
 <translation id="7366117520888504990">১৯৮ x ২৭৫ মিমি</translation>
 <translation id="7366362069757178916">পেমেন্ট হ্যান্ডলার</translation>
 <translation id="7366594738862061263">Chrome কীভাবে পাসওয়ার্ড সুরক্ষিত রাখে সেই বিষয়ে জানুন</translation>
+<translation id="7366909168761621528">ব্রাউজিং ডেটা</translation>
 <translation id="7370751048350026847">এই সাইটে কন্টেন্ট পেস্ট করার সাজেশন দেওয়া হয় না</translation>
 <translation id="7372526636730851647">ফটো (গ্লসি)</translation>
 <translation id="7372973238305370288">ফলাফল খুঁজুন</translation>
@@ -4296,6 +4301,7 @@
 <translation id="8350416046273606058">শর্টকাটে স্পেস থাকা চলবে না: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">নোট তৈরি করুন</translation>
 <translation id="8352849934814541340">এই ডিভাইসের অ্যাডমিনিস্ট্রেটর অতিরিক্ত ফাংশনের জন্য এক্সটেনশন ইনস্টল করেছেন। এক্সটেনশন আপনার কিছু ডেটা অ্যাক্সেস করেছে।</translation>
+<translation id="8353273112634584260">Gemini-র পার্সোনাল ইন্টেলিজেন্স দ্বারা পরিচালিত। 'উন্নত অটোফিল' ফিচারের পারফর্ম্যান্স উন্নত করতে আপনার অনুরোধ, পেজ টাইটেল ও URL পর্যালোচনা করা হতে পারে।</translation>
 <translation id="8355270400102541638">স্থানীয় স্তরে ক্র্যাশ রিপোর্টের প্রসঙ্গ:</translation>
 <translation id="8362914115861174987">এই ভাষায় অনুবাদ করুন</translation>
 <translation id="8363502534493474904">বিমান মোড বন্ধ করে দেখুন</translation>
@@ -4655,6 +4661,7 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Chrome Enterprise Core ব্যবহার করে দেখুন</translation>
 <translation id="9027531288681624875">ফুল স্ক্রিন থেকে বেরিয়ে আসতে, |<ph name="ACCELERATOR" />| প্রেস করে ধরে রাখুন</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">নিরাপত্তা ত্রুটি</translation>
 <translation id="9035699147763101514">Gemini-র পার্সোনাল ইন্টেলিজেন্স দ্বারা পরিচালিত। সেটিংস থেকে আপনার পছন্দ ম্যানেজ করুন।</translation>
 <translation id="9035824888276246493">নিরাপত্তা কোড সেভ করুন</translation>

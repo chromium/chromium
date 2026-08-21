@@ -372,6 +372,7 @@
 <translation id="4676059169848868271">For å la <ph name="APP_NAME" /> bruke håndsporing, slå på håndsporing i <ph name="BEGIN_LINK" />systeminnstillingene<ph name="END_LINK" /> også.</translation>
 <translation id="4688045258817337666">Administrer kortene dine</translation>
 <translation id="4722332387043141878">Nettsteder bruker vanligvis bevegelses- og lyssensorene på enheten din for å kunne tilby funksjoner som virtuell virkelighet eller helsesporing</translation>
+<translation id="4748783296226936791">Nettsteder kobler vanligvis til HID-enheter for å kunne tilby funksjoner som bruker uvanlige tastaturer, spillkontrollere og andre enheter</translation>
 <translation id="4755971844837804407">Når dette er på, kan nettsteder vise deg alle slags annonser. Når dette er av, kan ikke nettsteder vise forstyrrende eller villedende annonser.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Slå på Safe Browsing</translation>
@@ -456,6 +457,7 @@
 <translation id="5700761515355162635">Informasjonskapsler fra tredjeparter tillates</translation>
 <translation id="5706552988683188916">Dette medfører sletting av informasjonskapsler og andre nettstedsdata for <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Nettsteder kan vise påloggingsforespørsler fra identitetstjenester</translation>
+<translation id="5719854774000914513">Nettsteder kan be om å få koble til HID-enheter</translation>
 <translation id="5740126560802162366">Nettsteder kan lagre data på enheten din</translation>
 <translation id="5743425052258407233">Få loggen din på alle enhetene dine, slik at du enkelt kan fortsette der du slapp</translation>
 <translation id="5749158352074143502">Fortsett med denne fanen</translation>
@@ -575,6 +577,7 @@
 <translation id="6950072572526089586">Nettsteder du besøker, kan lagre informasjon om hva du gjør, slik at nettstedene fungerer som forventet – for eksempel for å holde deg pålogget eller for å lagre varer i handlekurven din. Ofte lagrer nettsteder denne informasjonen midlertidig på enheten din.</translation>
 <translation id="6964291282260073066">«WebGPU» er deaktivert.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6972629891077993081">HID-enheter</translation>
 <translation id="6980507581230208647">Rose tema</translation>
 <translation id="6980861169612950611">Vil du slette nettstedsdata? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Tilgjengelighet</translation>
@@ -587,7 +590,6 @@
 <translation id="7053983685419859001">Blokkér</translation>
 <translation id="7055552182600664515">For å spille av opphavsrettsbeskyttet innhold må nettsteder kanskje bruke en tjeneste for innholdsbeskyttelse. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 er valgt}other{# er valgt}}</translation>
-<translation id="708014373017851679"><ph name="APP_NAME" /> er utdatert. Oppdater appen.</translation>
 <translation id="7084115944294706056">Velg adressefeltets plassering</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> er valgt. Du finner alternativer oppe på skjermen</translation>
 <translation id="7141896414559753902">Blokkér nettsteder fra å vise forgrunnsvinduer og viderekoblinger (anbefales)</translation>
@@ -732,6 +734,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:</translation>
 <translation id="8593422116412089302">Når dette er på, kan nettsteder be om å få bruke informasjon de har lagret om deg. Når dette er av, kan ikke nettsteder be om å få bruke informasjon de har lagret om deg.</translation>
 <translation id="8609465669617005112">Flytt opp</translation>
 <translation id="8617611086246832542">Når dette er på, vises datamaskinvisningen av nettsteder. Når dette er av, vises mobilvisningen av nettsteder.</translation>
+<translation id="8625916342247441948">Ikke la nettsteder koble til HID-enheter</translation>
 <translation id="8670078035093027626">Feltet nederst for standardnettleser er åpnet i full høyde</translation>
 <translation id="8676316391139423634">Når dette er på, kan nettsteder be om å få spore hendene dine. Når dette er av, kan ikke nettsteder spore hendene dine.</translation>
 <translation id="8676374126336081632">Slett teksten</translation>

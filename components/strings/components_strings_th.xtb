@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">เลือกสิทธิ์สำหรับ<ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">บันทึก IBAN ไหม</translation>
 <translation id="1113869188872983271">&amp;เลิกทำการจัดลำดับใหม่</translation>
+<translation id="1117709830616495622">ขับเคลื่อนโดย Personal Intelligence จาก Gemini</translation>
 <translation id="111897705806685148">ใช้พาสคีย์จากอุปกรณ์อื่น</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการข้อมูล Chrome ที่คุณบันทึกไว้ในบัญชี Google</translation>
 <translation id="1121990216147052230">สร้างรายการสิ่งที่ต้องทำให้ฉันหน่อย</translation>
@@ -1170,6 +1171,7 @@
 <translation id="3005723025932146533">แสดงสำเนาที่บันทึกไว้</translation>
 <translation id="300580149047131921">ใช้ล่าสุด</translation>
 <translation id="3006864083554020786">ที่อยู่บ้าน</translation>
+<translation id="3008410317623852235">ตอนนี้คุณสามารถค้นหาและป้อนข้อมูลจาก Gmail และอื่นๆ ได้แล้ว</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab เพื่อเรียกดูการดำเนินการที่ใช้ได้ จากนั้นกด Enter เพื่อเรียกใช้การดำเนินการที่เลือก</translation>
 <translation id="3010991137650052245">ให้สิทธิ์เข้าถึงแก่ <ph name="SHORT_PRODUCT_NAME" /> หากต้องการใช้<ph name="PERMISSION" />ในเว็บไซต์นี้</translation>
 <translation id="3014726756341138577">ฟีเจอร์เครื่องพิมพ์ขั้นสูง</translation>
@@ -2318,6 +2320,7 @@
 <translation id="4941627891654116707">ขนาดแบบอักษร</translation>
 <translation id="4943620199112228840">ใช้ไมโครโฟน</translation>
 <translation id="4943872375798546930">ไม่มีผลการค้นหา</translation>
+<translation id="494701040141924538">รับทราบ ปิดการแจ้งเตือน</translation>
 <translation id="495170559598752135">การทำงาน</translation>
 <translation id="4953689047182316270">ตอบสนองต่อเหตุการณ์การเข้าถึงพิเศษ</translation>
 <translation id="4954505713046251871">ระบบจะแชร์ URL และเนื้อหาของหน้าเว็บกับ Google เพื่อแสดงคำแนะนำและปรับปรุงฟีเจอร์นี้</translation>
@@ -3368,6 +3371,7 @@
 <translation id="6743841972744298686">การตั้งค่าการซิงค์</translation>
 <translation id="6745212570062463886">ป้อนชื่อและอีเมลจากบัญชี Google โดยอัตโนมัติ</translation>
 <translation id="674580074662200768">อัปเดตหนังสือเดินทางอย่างปลอดภัย</translation>
+<translation id="6749473226660745022">รูปภาพ</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">ค่านโยบาย</translation>
 <translation id="6753434778807740853">ลบรายการข้อมูล <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3707,6 +3711,7 @@
 <translation id="7366117520888504990">198 x 275 มม.</translation>
 <translation id="7366362069757178916">เครื่องจัดการการชำระเงิน</translation>
 <translation id="7366594738862061263">ดูข้อมูลเพิ่มเติมเกี่ยวกับวิธีที่ Chrome ปกป้องรหัสผ่านของคุณ</translation>
+<translation id="7366909168761621528">ข้อมูลการท่องเว็บ</translation>
 <translation id="7370751048350026847">ไม่แนะนำให้วางเนื้อหานี้ในเว็บไซต์นี้</translation>
 <translation id="7372526636730851647">รูปภาพ (เงา)</translation>
 <translation id="7372973238305370288">ผลการค้นหา</translation>
@@ -4295,6 +4300,7 @@
 <translation id="8350416046273606058">ทางลัดจะมีเว้นวรรคไม่ได้: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">สร้างโน้ต</translation>
 <translation id="8352849934814541340">ผู้ดูแลระบบของอุปกรณ์นี้ได้ติดตั้งแอปพลิเคชันสำหรับฟังก์ชันเพิ่มเติม แอปพลิเคชันมีสิทธิ์เข้าถึงข้อมูลบางส่วนของคุณได้</translation>
+<translation id="8353273112634584260">ขับเคลื่อนโดย Personal Intelligence จาก Gemini ระบบอาจตรวจสอบคำขอ ชื่อหน้า และ URL เพื่อปรับปรุงการป้อนข้อความอัตโนมัติที่ดียิ่งขึ้น</translation>
 <translation id="8355270400102541638">บริบทของการขัดข้องในเครื่อง:</translation>
 <translation id="8362914115861174987">แปลเป็นภาษา</translation>
 <translation id="8363502534493474904">ปิดโหมดบนเครื่องบิน</translation>
@@ -4655,6 +4661,7 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">ทดลองใช้ Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">หากต้องการออกจากโหมดเต็มหน้าจอ ให้กด |<ph name="ACCELERATOR" />| ค้างไว้</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">ข้อผิดพลาดของการรักษาความปลอดภัย</translation>
 <translation id="9035699147763101514">ขับเคลื่อนโดย Personal Intelligence จาก Gemini จัดการตัวเลือกได้ในการตั้งค่า</translation>
 <translation id="9035824888276246493">บันทึกรหัสความปลอดภัย</translation>

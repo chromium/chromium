@@ -70,6 +70,7 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> အတွက် ခွင့်ပြုချက်များ ရွေးပါ</translation>
 <translation id="1113000785583998331">အိုင်ဘီအေအန် (IBAN) သိမ်းမလား။</translation>
 <translation id="1113869188872983271">&amp;ပြန်စီစဉ်ကို ပြန်လုပ်ရန်</translation>
+<translation id="1117709830616495622">Gemini ရှိ ‘ပုဂ္ဂိုလ်ရေးသီးသန့် ဉာဏ်ရည်တု’ က ပံ့ပိုးသည်။</translation>
 <translation id="111897705806685148">အခြားစက်မှ လျှို့ဝှက်ကီးသုံးရန်</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ သင်၏ Google Account တွင် သိမ်းသော Chrome အချက်အလက်ကို စီမံရန်အတွက် ‘တဘ်’ ကို နှိပ်ပြီးနောက် Enter ခလုတ်နှိပ်ပါ</translation>
 <translation id="1121990216147052230">လုပ်စရာစာရင်း ပြုလုပ်ပေးပါ</translation>
@@ -1175,6 +1176,7 @@
 <translation id="3005723025932146533">သိမ်းထားသည့် မိတ္တူကိုပြပါ</translation>
 <translation id="300580149047131921">မကြာသေးမီက သုံးထားသည်</translation>
 <translation id="3006864083554020786">အိမ်လိပ်စာ</translation>
+<translation id="3008410317623852235">ယခု Gmail နှင့် အခြားနေရာများမှ အချက်အလက်များကို ရှာဖွေဖြည့်သွင်းနိုင်ပါပြီ။</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ ရနိုင်သောလုပ်ဆောင်ချက်များ ကြည့်ရန် ‘တဘ်’ ကိုနှိပ်ပြီး ရွေးထားသောလုပ်ဆောင်ချက်ကို ဆောင်ရွက်ရန် Enter နှိပ်ပါ။</translation>
 <translation id="3010991137650052245">ဤဝဘ်ဆိုက်တွင် သင်၏ <ph name="PERMISSION" /> သုံးရန် <ph name="SHORT_PRODUCT_NAME" /> အား သုံးခွင့်ပေးပါ</translation>
 <translation id="3014726756341138577">အဆင့်မြင့် ပရင်တာတူးလ်များ</translation>
@@ -2320,6 +2322,7 @@
 <translation id="4941627891654116707">ဖောင့်အရွယ်</translation>
 <translation id="4943620199112228840">သင့်မိုက်ခရိုဖုန်းများ သုံးရန်</translation>
 <translation id="4943872375798546930">ရလဒ်မရှိပါ</translation>
+<translation id="494701040141924538">ရပါပြီ။ အသိပေးချက် ပိတ်ရန်</translation>
 <translation id="495170559598752135">လုပ်ဆောင်ချက်များ</translation>
 <translation id="4953689047182316270">အများသုံးနိုင်မှု ဖြစ်ရပ်များကို တုန့်ပြန်ပါ</translation>
 <translation id="4954505713046251871">အကြံပြုချက်များ ကမ်းလှမ်းရန်နှင့် ဤတူးလ် ပိုကောင်းအောင်လုပ်ရန် စာမျက်နှာ၏ URL နှင့် အကြောင်းအရာကို Google နှင့် မျှဝေထားသည်</translation>
@@ -3369,6 +3372,7 @@
 <translation id="6743841972744298686">စင့်ခ်ဆက်တင်များ</translation>
 <translation id="6745212570062463886">သင့်အမည်၊ အီးမေးလ်လိပ်စာတို့ကို သင့် Google Account ထံမှ အော်တိုဖြည့်ရန်</translation>
 <translation id="674580074662200768">ပတ်စ်ပို့ကို လုံခြုံစွာ အပ်ဒိတ်လုပ်ပါ</translation>
+<translation id="6749473226660745022">ဓာတ်ပုံများ</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">ပေါ်လစီတန်ဖိုး</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> ထည့်သွင်းမှု ဖျက်ရန်</translation>
@@ -3708,6 +3712,7 @@
 <translation id="7366117520888504990">၁၉၈ x ၂၇၅ မီလီမီတာ</translation>
 <translation id="7366362069757178916">ငွေပေးချေမှု စီမံသူများ</translation>
 <translation id="7366594738862061263">Chrome က သင့်စကားဝှက်များကို မည်သို့ကာကွယ်ကြောင်း လေ့လာရန်</translation>
+<translation id="7366909168761621528">အင်တာနက်အသုံးပြုမှုဒေတာ</translation>
 <translation id="7370751048350026847">ဤဝဘ်ဆိုက်တွင် ဤအကြောင်းအရာ ကူးထည့်ခြင်းကို အကြံမပြုပါ</translation>
 <translation id="7372526636730851647">ဓာတ်ပုံ (တောက်ပြောင်)</translation>
 <translation id="7372973238305370288">ရှာဖွေခြင်းရလာဒ်</translation>
@@ -4297,6 +4302,7 @@
 <translation id="8350416046273606058">ဖြတ်လမ်းလင့်ခ်တွင် နေရာလွတ်များ မပါဝင်ရပါ- “<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="8351131234907093545">မှတ်စုရေးရန်</translation>
 <translation id="8352849934814541340">ဤစက်၏ စီမံခန့်ခွဲသူက ထပ်ဆောင်းဝန်ဆောင်မှုများအတွက် အပလီကေးရှင်းများ ထည့်သွင်းထားသည်။ အပလီကေးရှင်းများက သင့်ဒေတာအချို့ကို ဝင်သုံးခွင့်ရှိပါသည်။</translation>
+<translation id="8353273112634584260">Gemini ရှိ ‘ပုဂ္ဂိုလ်ရေးသီးသန့် ဉာဏ်ရည်တု’ က ပံ့ပိုးသည်။ ‘အဆင့်မြင့် အော်တိုဖြည့်ခြင်း’ ကို ပိုကောင်းအောင် လုပ်ဆောင်ရန် သင့်တောင်းဆိုချက်၊ စာမျက်နှာခေါင်းစဉ်နှင့် URL များကို စိစစ်နိုင်ပါသည်။</translation>
 <translation id="8355270400102541638">စက်တွင်း ရပ်တန့်သွားမှု အခြေအနေ-</translation>
 <translation id="8362914115861174987">ဤဘာသာသို့ ပြန်ဆိုရန်</translation>
 <translation id="8363502534493474904">လေယာဉ်ပျံမုဒ်ကို ပိတ်နေသည်</translation>
@@ -4656,6 +4662,7 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Chrome Enterprise Core ကို စမ်းကြည့်ရန်</translation>
 <translation id="9027531288681624875">ဖန်သားပြင်အပြည့်မှ ထွက်ရန် |<ph name="ACCELERATOR" />| နှိပ်ထားပါ</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">လုံခြုံမှု အမှား</translation>
 <translation id="9035699147763101514">Gemini ရှိ ‘ပုဂ္ဂိုလ်ရေးသီးသန့် ဉာဏ်ရည်တု’ က ပံ့ပိုးသည်။ ဆက်တင်များတွင် သင့်ရွေးချယ်မှုများကို စီမံပါ။</translation>
 <translation id="9035824888276246493">လုံခြုံရေးကုဒ်များ ထည့်ရန်</translation>

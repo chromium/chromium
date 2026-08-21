@@ -1060,6 +1060,7 @@
 <translation id="454217142158335225">Закрытыя элементы можна зноў адкрыць у раздзелах нядаўніх укладак або груп укладак. Замацаваныя ўкладкі не будуць закрыты.</translation>
 <translation id="4547181496285029457">Вярнуцца да апошняй укладкі</translation>
 <translation id="4552042254369397518">Ідзе капіраванне…</translation>
+<translation id="4552089082226364758">Флэш-даныя</translation>
 <translation id="4553044860350038560">Іншыя ключы доступу</translation>
 <translation id="4564893319561643483">Схаваць модуль "<ph name="TITLE" />"</translation>
 <translation id="456502772933839252">Ідзе абагульванне старонкі "<ph name="PAGE_TITLE" />"</translation>
@@ -1293,6 +1294,7 @@
 <translation id="5238596603078743134">Цяпер <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> можа ўваходзіць на сайт <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> з вашым імем карыстальніка і паролем, якія захоўваюцца ў Менеджары пароляў Google.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, выбраным уліковым запісам кіруе ваша арганізацыя. Выберыце ўліковы запіс.</translation>
 <translation id="5242899254250321823">Змяніць пароль на вэб-сайце</translation>
+<translation id="524751727772074981">Gemini ў Chrome: задавайце любыя пытанні з любога месца</translation>
 <translation id="5248640482715684545">Гэты сайт спрабуе адкрыць іншую праграму.</translation>
 <translation id="5250371859659394278">З невядомай крыніцы</translation>
 <translation id="525510229763628836">Згорнута</translation>
@@ -1309,6 +1311,7 @@
 <translation id="5300589172476337783">Паказаць</translation>
 <translation id="5311061401280561833">Доступ да камеры і мікрафона дазволены</translation>
 <translation id="5313967007315987356">Дадаванне сайта</translation>
+<translation id="5315029634103634221">Gemini – штучны інтэлект і можа рабіць памылкі. <ph name="BEGIN_LINK" />Больш пра адпраўку рэлевантных даных у Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Няма што імпартаваць</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> з <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Захаваць</translation>
@@ -1391,6 +1394,7 @@
 <translation id="5596627076506792578">Дадатковыя параметры</translation>
 <translation id="560322036295180549">Ваша арганізацыя выключыла гэты параметр</translation>
 <translation id="5611398002774823980">Захаваць ва ўліковым запісе</translation>
+<translation id="5612225021788368236">Закрыць параду па выбары стандартнага браўзера</translation>
 <translation id="561269594905823128">Націсніце <ph name="BEGIN_BOLD" />Выбраць файл<ph name="END_BOLD" />.</translation>
 <translation id="5613297089029360427">Сартаваць па апошняй даце</translation>
 <translation id="5614553682702429503">Захаваць пароль?</translation>

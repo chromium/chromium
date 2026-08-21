@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">Користуйтеся збереженими паролями в інших додатках</translation>
 <translation id="4431224949908513835">Виберіть спосіб оплати.</translation>
 <translation id="4432122368769493392">Налаштування…</translation>
+<translation id="4439968635693513370">Плануйте вихідні з</translation>
 <translation id="4442550905108052454">Відкрийте <ph name="BEGIN_BOLD" />Налаштування<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Інші опції для цього запису: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Щоб перейти назад або вперед, проведіть пальцем за край.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">Закриті вкладки й групи можна знову відкрити в розділах "Останні вкладки" й "Групи вкладок". Закріплені вкладки не закриються.</translation>
 <translation id="4547181496285029457">Повернутися на останню вкладку</translation>
 <translation id="4552042254369397518">Копіювання…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Інші ключі доступу</translation>
 <translation id="4564893319561643483">Приховати модуль "<ph name="TITLE" />"</translation>
 <translation id="456502772933839252">Надання доступу до сторінки <ph name="PAGE_TITLE" /></translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Адміністратор вашої організації вимагає, щоб ви переглядали вебсторінки конфіденційно. Групи вкладок не синхронізуються в анонімному режимі.
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">Упевнено здійснюйте покупки з</translation>
 <translation id="467189612236587057">Зв’язатися з компанією, зателефонувавши на її номер</translation>
 <translation id="4673565891421389203">Увійдіть у керований обліковий запис, щоб відокремити дані вебперегляду, пов’язані з вашою організацією (зокрема вкладки, історію і паролі), від особистих.
 
@@ -1291,6 +1294,7 @@
 <translation id="5238596603078743134">Тепер <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> зможе використовувати ваші ім’я користувача й пароль, коли входитиме на сайт <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> за допомогою Google Менеджера паролів.</translation>
 <translation id="5241106044372754566">Зараз вибрано обліковий запис користувача <ph name="NAME" /> (<ph name="EMAIL" />), яким керує ваша організація. Виберіть обліковий запис.</translation>
 <translation id="5242899254250321823">Змінити пароль на вебсайті</translation>
+<translation id="524751727772074981">Ставте запитання, де б ви не були, завдяки Gemini у Chrome</translation>
 <translation id="5248640482715684545">Цей сайт намагається відкрити інший додаток.</translation>
 <translation id="5250371859659394278">З невідомого джерела</translation>
 <translation id="525510229763628836">Згорнуто</translation>
@@ -1307,6 +1311,7 @@
 <translation id="5300589172476337783">Показати</translation>
 <translation id="5311061401280561833">Доступ до камери й мікрофона надано</translation>
 <translation id="5313967007315987356">Додати сайт</translation>
+<translation id="5315029634103634221">Gemini – це штучний інтелект, і він може помилятися. <ph name="BEGIN_LINK" />Докладніше про відповідні дані, що надсилаються в Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Нічого імпортувати</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> з <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Зберегти</translation>
@@ -1389,6 +1394,7 @@
 <translation id="5596627076506792578">Інші опції</translation>
 <translation id="560322036295180549">Вимкнено адміністратором організації</translation>
 <translation id="5611398002774823980">Зберегти в обліковому записі</translation>
+<translation id="5612225021788368236">Закрити пропозицію щодо вебпереглядача за умовчанням</translation>
 <translation id="561269594905823128">Натисніть <ph name="BEGIN_BOLD" />Вибрати файл<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Сортувати за категорією "Останні"</translation>
 <translation id="5614553682702429503">Зберегти пароль?</translation>
@@ -2474,6 +2480,7 @@
 <translation id="9029650858822697271">Ви вийшли з облікового запису</translation>
 <translation id="9032405509996909363">Підтвердити видалення даних вебперегляду</translation>
 <translation id="9035699147763101514">Працює на основі персоналізованого інтелекту в Gemini. Параметри можна змінити в налаштуваннях.</translation>
+<translation id="9038526468059454274">Підсумовуйте будь-що з</translation>
 <translation id="9039373489628511875">Трафік</translation>
 <translation id="9042893549633094279">Конфіденційність і безпека</translation>
 <translation id="9055291197094969722">Упорядковуйте відкриті вкладки в групи, щоб працювати ефективніше</translation>

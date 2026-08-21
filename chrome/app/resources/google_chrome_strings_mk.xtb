@@ -148,6 +148,7 @@
 <translation id="2424440923901031101">Екстензијава ги прекршува правилата на „Веб-продавницата на Chrome“, па можеби не е безбедна. Отстранете ја од Chrome за да не може веќе да ги гледа и променува вашите податоци на сајтовите што ги отворате, што ги опфаќа и вашите лични податоци.</translation>
 <translation id="2467438592969358367">Google Chrome сака да ги извезе вашите лозинки. Внесете ја лозинката за Windows за да го дозволите ова.</translation>
 <translation id="2472092250898121027">Екстензијава содржи злонамерен софтвер, па не е безбедна. Отстранете ја од Chrome за да не може веќе да ги гледа и променува вашите податоци на сајтовите што ги отворате, што ги опфаќа и вашите лични податоци.</translation>
+<translation id="2482846200327569645">Корисникот <ph name="EXISTING_USER" /> веќе е најавен. За да прелистувате одделно, најавете се на Chrome во вашиот профил како <ph name="USER_EMAIL_ADDRESS" />. Ќе ги добиете и вашите обележувачи и друго од <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Деинсталирај</translation>
 <translation id="2513154137948333830">Потребно е рестартирање: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2523492931736391680">Вашата работа е заштитена на Chrome</translation>
@@ -199,6 +200,7 @@
 <translation id="2916983411556218750">Ајде да го подготвиме вашиот Chrome</translation>
 <translation id="2926952073016206995">На Chrome му треба дозвола за камерата за сајтов</translation>
 <translation id="2945997411976714835">Грешка при инсталирање: процесот на инсталаторот не можеше да започне.</translation>
+<translation id="2959224682348913614">Корисникот <ph name="EXISTING_USER" /> веќе е најавен. За да прелистувате одделно, најавете се на Chrome во вашиот профил како <ph name="USER_EMAIL_ADDRESS" />. Ќе ги добиете и вашите лозинки и друго од <ph name="DEVICE" />.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Мрежно најавување - Chrome</translation>
 <translation id="2970681950995291301">Одјавете се од Chrome на страницата „Поставки“ за да се отстрани вашата сметка на Google од Chrome</translation>
 <translation id="2976869732253036751">Добивајте известувања за „Следење цена“ со Chrome на телефонот</translation>
@@ -218,6 +220,7 @@
 <translation id="3073571714401714450">Вклучете/исклучете го Gemini во Chrome Dev</translation>
 <translation id="3080151273017101988">Продолжи со извршување апликации во заднина кога е затворен Google Chrome</translation>
 <translation id="308397506772922478">Ако сте ја заборавиле лозинката или сакате да ја промените поставкава, <ph name="BEGIN_LINK" />избришете ги податоците од Chrome во вашата сметка<ph name="END_LINK" /></translation>
+<translation id="3089427491314610412">Корисникот <ph name="EXISTING_USER" /> веќе е најавен. За да прелистувате одделно, најавете се на Chrome во вашиот профил како <ph name="USER_EMAIL_ADDRESS" />. Ќе ги добиете и вашите зачувани податоци и друго од <ph name="DEVICE" />.</translation>
 <translation id="3100998948628680988">Именувајте го профилот на Chrome</translation>
 <translation id="310459126943037700">Задачите не можеше да се сопрат.</translation>
 <translation id="3104828284009500087">Пребарувајте што било на страницата</translation>
@@ -230,6 +233,7 @@
 <translation id="3140883423282498090">Вашите промени ќе делуваат со следното рестартирање на Google Chrome.</translation>
 <translation id="3149510190863420837">Апликации на Chrome</translation>
 <translation id="3161522574479303604">Сите јазици</translation>
+<translation id="318555301233810762">Корисникот <ph name="EXISTING_USER" /> веќе е најавен. За да прелистувате одделно, најавете се на Chrome во вашиот профил како <ph name="USER_EMAIL_ADDRESS" />. Ќе ги добиете и вашите обележувачи и друго на сите ваши уреди.</translation>
 <translation id="319199214552513804">За да ја добиете екстензијава, а и друго на сите ваши компјутери, најавете се на Chrome</translation>
 <translation id="3196187562065225381">Chrome го блокираше преземањево затоа што датотеката е опасна</translation>
 <translation id="3222857603094643834">Пребарајте што било на страницава со Google Lens</translation>
@@ -268,6 +272,7 @@
 <translation id="3598673391539778844">Прикажувај го Gemini во Chrome во системската фиока</translation>
 <translation id="3622716124581627104">Идентификувајте работи или места и копирајте или преведувајте текст. При користење на Google Lens, до Google се испраќа слика од екранот на страницата. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Сега е полесно да го користите Chrome со вашата сметка на Google и на споделени компјутери.</translation>
+<translation id="3628103251823745322">Корисникот <ph name="EXISTING_USER" /> веќе е најавен. За да прелистувате одделно, најавете се на Chrome во вашиот профил како <ph name="USER_EMAIL_ADDRESS" />. Ќе ги добиете и вашите зачувани податоци и друго на сите ваши уреди.</translation>
 <translation id="3635073343384702370">Chrome може да ги проверува вашите лозинки кога ги зачувувате</translation>
 <translation id="3636970668267555808">Добијте лесен пристап до функциите што ги знаете, ги обожавате и во коишто имате доверба така што ќе го поставите Chrome како стандарден прелистувач.</translation>
 <translation id="3667616615096815454">Не можеше да се инсталира. Апликацијата е непозната за серверот.</translation>
@@ -514,6 +519,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6166185671393271715">Увоз на лозинки во Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
+<translation id="6177442314419606057">Пребарувајте во Chrome</translation>
 <translation id="6180522807229584611">Картичкава користи дополнителни ресурси. За да се подобри изведбата, дозволете му на Chrome да ја деактивира.</translation>
 <translation id="6182736845697986886">Инсталацијата не успеа поради внатрешна грешка на серверот за ажурирање.</translation>
 <translation id="6192058120268468905">Вашата сметка во Chrome</translation>
@@ -595,6 +601,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6933858244219479645">Систем ChromeOS</translation>
 <translation id="6938166777909186039">За да добивате идни ажурирања на Google Chrome, потребен ви е Windows 10 или понова верзија. Компјутеров користи Windows 8.1.</translation>
 <translation id="6943584222992551122">Податоците од прелистување на ова лице ќе се избришат од уредов. За да ги вратите податоците, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
+<translation id="6962628299694876291">Корисникот <ph name="EXISTING_USER" /> веќе е најавен. За да прелистувате одделно, најавете се на Chrome во вашиот профил како <ph name="USER_EMAIL_ADDRESS" />. Ќе ги добиете и вашите лозинки и друго на сите ваши уреди.</translation>
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="6967962315388095737">Дојдовно правило за Google Chrome Beta за овозможување mDNS-сообраќај.</translation>
 <translation id="6979589607440534284">Дознајте зошто Chrome блокира некои датотеки, се отвора во нова картичка</translation>

@@ -465,6 +465,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1757773103848038814">Fon Monospace</translation>
 <translation id="1757935267918149452">Butang tukar kata laluan Google, aktifkan untuk menukar kata laluan Google Account anda</translation>
 <translation id="1759776526873274358">Buat autolengkap kod pengesahan yang digunakan oleh laman untuk meningkatkan keselamatan anda. Chrome boleh mendapatkan kod ini daripada Gmail anda. <ph name="BEGIN_LINK" />Ketahui perihal ciri ini dengan lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="176013700366797492">Lawati Google Wallet untuk mengawal <ph name="BEGIN_LINK1" />pilihan data dan privasi<ph name="END_LINK1" /> atau mengurus <ph name="BEGIN_LINK2" />kaedah pembayaran<ph name="END_LINK2" /> dan <ph name="BEGIN_LINK3" />pas<ph name="END_LINK3" /> seperti kad kesetiaan dan ID</translation>
 <translation id="1763864636252898013">Pelayan ini tidak dapat membuktikan bahawa domainnya ialah <ph name="DOMAIN" />; sijil keselamatannya tidak dipercayai oleh sistem pengendalian peranti anda. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang yang memintasi sambungan anda.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Cuba jalankan Diagnostik Rangkaian Windows<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">Foto (Arkib)</translation>
@@ -788,6 +789,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2321291402658100099">Urus maklumat</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 tetingkap}other{# tetingkap}}</translation>
 <translation id="232390861414237658">Autolengkap kad ini untuk pembelian yang dibuat dalam Chrome apabila kad tersebut disimpan untuk digunakan dengan Google Pay</translation>
+<translation id="2325722389016720813">Tekan anak panah ke atas atau ke bawah untuk pelengkapan automatik. Taip untuk autolengkap.</translation>
 <translation id="2326283484705860548">Kini anda boleh membuat autolengkap lebih banyak maklumat daripada Google Wallet</translation>
 <translation id="2326747055382936979">Urus autolengkap dipertingkatkan</translation>
 <translation id="2328651992442742497">Dibenarkan (lalai)</translation>
@@ -3373,6 +3375,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6743841972744298686">Tetapan penyegerakan</translation>
 <translation id="6745212570062463886">Autolengkap nama dan alamat e-mel anda daripada Google Account anda</translation>
 <translation id="674580074662200768">Kemas kinikan pasport dengan selamat</translation>
+<translation id="6749473226660745022">Foto</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Nilai dasar</translation>
 <translation id="6753434778807740853">Padam entri <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3712,6 +3715,7 @@ Butiran tambahan:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Pengendali pembayaran</translation>
 <translation id="7366594738862061263">Ketahui tentang cara Chrome melindungi kata laluan anda</translation>
+<translation id="7366909168761621528">Data penyemakan imbas</translation>
 <translation id="7370751048350026847">Penampalan kandungan ini pada laman ini tidak disyorkan</translation>
 <translation id="7372526636730851647">Foto (Berkilat)</translation>
 <translation id="7372973238305370288">hasil carian</translation>
@@ -4661,6 +4665,7 @@ Butiran tambahan:
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Cuba Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Untuk keluar daripada skrin penuh, tekan dan tahan |<ph name="ACCELERATOR" />|</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Ralat keselamatan</translation>
 <translation id="9035699147763101514">Dikuasakan oleh Kecerdasan Peribadi dengan Gemini. Urus pilihan anda dalam tetapan.</translation>
 <translation id="9035824888276246493">Simpan kod keselamatan</translation>

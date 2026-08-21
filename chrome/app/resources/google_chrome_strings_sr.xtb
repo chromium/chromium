@@ -148,6 +148,7 @@
 <translation id="2424440923901031101">Овај додатак крши смернице Chrome веб-продавнице и можда није безбедан. Уклоните га из Chrome-а да више не би могао да види и мења податке на сајтовима које посећујете, укључујући личне податке.</translation>
 <translation id="2467438592969358367">Google Chrome жели да извезе лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="2472092250898121027">Овај додатак садржи малвер и није безбедан. Уклоните га из Chrome-а да више не би могао да види и мења податке на сајтовима које посећујете, укључујући личне податке.</translation>
+<translation id="2482846200327569645">Корисник <ph name="EXISTING_USER" /> је већ пријављен. Да би вам прегледање било раздвојено, пријавите се у Chrome преко свог профила као <ph name="USER_EMAIL_ADDRESS" />. Добићете и обележиваче и друго са <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Деинсталирај</translation>
 <translation id="2513154137948333830">Потребно је рестартовање: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2523492931736391680">Ваш рад је безбедан у Chrome-у</translation>
@@ -199,6 +200,7 @@
 <translation id="2916983411556218750">Хајде да подесимо Chrome</translation>
 <translation id="2926952073016206995">Chrome-у треба дозвола за камеру за овај сајт</translation>
 <translation id="2945997411976714835">Грешка при инсталацији: Процес инсталације није успео.</translation>
+<translation id="2959224682348913614">Корисник <ph name="EXISTING_USER" /> је већ пријављен. Да би вам прегледање било раздвојено, пријавите се у Chrome преко свог профила као <ph name="USER_EMAIL_ADDRESS" />. Добићете и своје лозинке и друго са <ph name="DEVICE" />.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – пријављивање на мрежу – Chrome</translation>
 <translation id="2970681950995291301">Да бисте уклонили Google налог из Chrome-а, одјавите се из Chrome-а на страници Подешавања</translation>
 <translation id="2976869732253036751">Добијајте обавештења о праћењу цена уз Chrome на телефону</translation>
@@ -218,6 +220,7 @@
 <translation id="3073571714401714450">Укључите или искључите Gemini у Chrome Dev-у</translation>
 <translation id="3080151273017101988">Настави са покретањем апликација у позадини када се Google Chrome затвори</translation>
 <translation id="308397506772922478">Ако сте заборавили приступну фразу или желите да промените ово подешавање, <ph name="BEGIN_LINK" />избришите Chrome податке на налогу<ph name="END_LINK" /></translation>
+<translation id="3089427491314610412">Корисник <ph name="EXISTING_USER" /> је већ пријављен. Да би вам прегледање било раздвојено, пријавите се у Chrome преко свог профила као <ph name="USER_EMAIL_ADDRESS" />. Добићете и сачуване информације и друго са <ph name="DEVICE" />.</translation>
 <translation id="3100998948628680988">Дајте назив Chrome профилу</translation>
 <translation id="310459126943037700">Завршавање задатака није успело.</translation>
 <translation id="3104828284009500087">Претражите било шта на страници</translation>
@@ -230,6 +233,7 @@
 <translation id="3140883423282498090">Промене ће ступити на снагу када следећи пут поново покренете Google Chrome.</translation>
 <translation id="3149510190863420837">Chrome апликације</translation>
 <translation id="3161522574479303604">Сви језици</translation>
+<translation id="318555301233810762">Корисник <ph name="EXISTING_USER" /> је већ пријављен. Да би вам прегледање било раздвојено, пријавите се у Chrome преко свог профила као <ph name="USER_EMAIL_ADDRESS" />. Моћи ћете да приступате и својим обележивачима и другом садржају нa свим уређајима.</translation>
 <translation id="319199214552513804">Да би вам овај додатак и други садржај били доступни на свим рачунарима, пријавите се у Chrome</translation>
 <translation id="3196187562065225381">Chrome је блокирао ово преузимање јер је овај фајл опасан</translation>
 <translation id="3222857603094643834">Претражите било шта на овој страници помоћу Google објектива</translation>
@@ -268,6 +272,7 @@
 <translation id="3598673391539778844">Прикажи Gemini у Chrome-у на системској палети</translation>
 <translation id="3622716124581627104">Идентификујте ствари или места и копирајте или преводите текст. Када користите Google објектив, снимак екрана странице се шаље Google-у. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Сада можете лакше да користите Chrome са Google налогом и на дељеним рачунарима.</translation>
+<translation id="3628103251823745322">Корисник <ph name="EXISTING_USER" /> је већ пријављен. Да би вам прегледање било раздвојено, пријавите се у Chrome преко свог профила као <ph name="USER_EMAIL_ADDRESS" />. Моћи ћете дa приступате и сачуваним информацијама и другом садржају на свим уређајима.</translation>
 <translation id="3635073343384702370">Chrome може да проверава лозинке када их сачувате</translation>
 <translation id="3636970668267555808">Подесите Chrome као подразумевани прегледач да бисте лако приступали функцијама које знате, волите и којима верујете.</translation>
 <translation id="3667616615096815454">Инсталирање није успело, апликације је непозната серверу.</translation>
@@ -514,6 +519,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6166185671393271715">Увезите лозинке у Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome бета</translation>
+<translation id="6177442314419606057">Претражите у Chrome-у</translation>
 <translation id="6180522807229584611">Ова картица користи додатне ресурсе. Да бисте побољшали перформансе, дозволите Chrome-у да је учини неактивном.</translation>
 <translation id="6182736845697986886">Инсталација није успела због интерне грешке сервера за ажурирање.</translation>
 <translation id="6192058120268468905">Ваш налог у Chrome-у</translation>
@@ -595,6 +601,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6933858244219479645">Систем ChromeOS</translation>
 <translation id="6938166777909186039">Да бисте добијали будућа Google Chrome ажурирања, треба вам Windows 10 или новија верзија. Овај рачунар користи Windows 8.1.</translation>
 <translation id="6943584222992551122">Подаци прегледања ове особе ће бити избрисани са овог уређаја. Да бисте вратили податке, пријавите се у Chrome као <ph name="USER_EMAIL" />.</translation>
+<translation id="6962628299694876291">Корисник <ph name="EXISTING_USER" /> је већ пријављен. Да би вам прегледање било раздвојено, пријавите се у Chrome преко свог профила као <ph name="USER_EMAIL_ADDRESS" />. Моћи ћете да приступате и својим лозинкама и другом садржају на свим уређајима.</translation>
 <translation id="6965382102122355670">Потврди</translation>
 <translation id="6967962315388095737">Правило за долазни саобраћај за Google Chrome бета да бисте омогућили mDNS саобраћај.</translation>
 <translation id="6979589607440534284">Сазнајте зашто Chrome блокира неке фајлове, отвара се на новој картици</translation>

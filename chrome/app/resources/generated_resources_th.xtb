@@ -500,6 +500,7 @@
 <translation id="1378715594598306389">ดูแท็บเพิ่มเติม</translation>
 <translation id="1380028686461971526">เชื่อมต่อกับเครือข่ายโดยอัตโนมัติ</translation>
 <translation id="1381567580865186407">ระบบจะส่งคำพูดภาษา<ph name="LANGUAGE" />ไปประมวลผลที่ Google</translation>
+<translation id="138181280295369883">ลงชื่อเข้าใช้เพื่อรับข้อมูลที่บันทึกไว้และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="1382174183118245544">หมายเลขบัตรเครดิต</translation>
 <translation id="1383065744946263511">ปักหมุดไว้บนแถบเครื่องมือ</translation>
 <translation id="1383381142702995121">จัดการส่วนขยายนี้</translation>
@@ -715,6 +716,7 @@
 <translation id="1554640914375980459">กะพริบหน้าจอเมื่อคุณได้รับการแจ้งเตือน ใช้การแจ้งเตือนด้วยแฟลชอย่างระมัดระวัง หากคุณมีภาวะดวงตาไวต่อแสง</translation>
 <translation id="1555130319947370107">สีน้ำเงิน</translation>
 <translation id="1556127816860282890">ระบบอาจจำกัดกิจกรรมในเบื้องหลังและเอฟเฟกต์ภาพบางอย่าง เช่น การเลื่อนอย่างราบรื่น</translation>
+<translation id="1557806604681757705">คอมพิวเตอร์ของคุณ</translation>
 <translation id="1557939148300698553">สร้างโปรไฟล์</translation>
 <translation id="155803912725350982">เพิ่มระยะเวลาในการกดปุ่ม</translation>
 <translation id="155865706765934889">ทัชแพด</translation>
@@ -1016,6 +1018,7 @@
 <translation id="1784707308176068866">ทำงานในเบื้องหลังเมื่อมีการขอจากแอปพลิเคชันที่มาพร้อมเครื่องที่ประสานงานกัน</translation>
 <translation id="1784849162047402014">อุปกรณ์เครื่องนี้เหลือพื้นที่ว่างในดิสก์ต่ำ</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{การถอนการติดตั้ง "<ph name="APP_NAME" />" จะถอนการติดตั้งแอปนี้ด้วย}other{การถอนการติดตั้ง "<ph name="APP_NAME" />" จะถอนการติดตั้งแอปเหล่านี้ด้วย}}</translation>
+<translation id="1785698972112179866">ลงชื่อเข้าใช้เพื่อรับบุ๊กมาร์กและอื่นๆ จาก <ph name="DEVICE" /></translation>
 <translation id="1786290960428378411">กำลังขออ่านและเปลี่ยนแปลง</translation>
 <translation id="1789543093145556097">ซ่อนไว้ตลอด</translation>
 <translation id="179021551944139249">เพิ่มลิงก์ไปยังเรื่องรออ่าน</translation>
@@ -3287,6 +3290,7 @@
 <translation id="3527085408025491307">โฟลเดอร์</translation>
 <translation id="3527473647192919613">หน้าต่างแยกใหม่</translation>
 <translation id="3528498924003805721">เป้าหมายทางลัด</translation>
+<translation id="35296112145429559">ปักหมุดปุ่มเลื่อน</translation>
 <translation id="3529851166527095708">ที่อยู่และอื่นๆ</translation>
 <translation id="3530919970074558307">ยกเลิกการสนทนากลุ่ม</translation>
 <translation id="3531070080754387701">Microsoft 365 เปิด <ph name="FILE_NAMES" /> จากโฟลเดอร์นี้ไม่ได้</translation>
@@ -3488,6 +3492,7 @@
 <translation id="3681191721636073359">Chrome คิดว่าคุณไม่ต้องการใช้ตำแหน่งในเว็บไซต์นี้ ระบบจึงซ่อนคำขอเพื่อลดสิ่งรบกวน</translation>
 <translation id="3681311097828166361">ขอขอบคุณสำหรับความคิดเห็น คุณกำลังออฟไลน์อยู่ในขณะนี้ และระบบจะส่งรายงานของคุณในภายหลัง</translation>
 <translation id="3681548574519135185">กรอบโฟกัส</translation>
+<translation id="3682207069037179944">คุณสามารถเลื่อนหรือใช้ลูกกลิ้งเมาส์เพื่อดูแท็บทั้งหมดได้</translation>
 <translation id="3683524264665795342">คำขอการแชร์หน้าจอของ <ph name="APP_NAME" /></translation>
 <translation id="3685598397738512288">ค่ากำหนด USB ใน Linux</translation>
 <translation id="3686108296937784939">ทางลัดขององค์กรของฉัน</translation>
@@ -3506,6 +3511,7 @@
 <translation id="369522892592566391">{NUM_FILES,plural, =0{ตรวจสอบความปลอดภัยเสร็จแล้ว ระบบจะอัปโหลดข้อมูลของคุณ}=1{ตรวจสอบความปลอดภัยเสร็จแล้ว ระบบจะอัปโหลดไฟล์ของคุณ}other{ตรวจสอบความปลอดภัยเสร็จแล้ว ระบบจะอัปโหลดไฟล์ของคุณ}}</translation>
 <translation id="369736917241079046">Launcher + ลูกศรซ้าย</translation>
 <translation id="3697716475445175867">เปิดล่าสุด</translation>
+<translation id="3697962048674120810">{COUNT,plural, =0{ไม่มีรหัสผ่าน}=1{ตรวจสอบรหัสผ่าน 1 รายการแล้ว}other{ตรวจสอบรหัสผ่าน {COUNT} รายการแล้ว}}</translation>
 <translation id="3698471669415859717">ตรวจสอบเรียบร้อยแล้ว</translation>
 <translation id="3699624789011381381">ที่อยู่อีเมล</translation>
 <translation id="3699920817649120894">ปิดการซิงค์และการปรับเปลี่ยนในแบบของคุณไหม</translation>
@@ -4300,6 +4306,7 @@
 <translation id="4290898381118933198">ปัดเพื่อไปยังหน้าต่างๆ</translation>
 <translation id="4292613336957320546">การเร่งความเร็ว</translation>
 <translation id="429312253194641664">เว็บไซต์กำลังเล่นสื่อ</translation>
+<translation id="4293154608148215505">โทรศัพท์ของคุณ</translation>
 <translation id="4293219510510666933">ใช้ภาษาที่ใช้ในชีวิตประจำวันเพื่อค้นหาประวัติการท่องเว็บและหาเว็บไซต์ที่เคยเข้าชม คุณยังถามคำถามและรับคำตอบตามประวัติการท่องเว็บได้ด้วย การตั้งค่านี้เปิดอยู่</translation>
 <translation id="429344752071832554">ยกเลิกการสนทนากลุ่ม</translation>
 <translation id="4294392694389031609">ลบ <ph name="FILE_NAME" /> ออกจากประวัติการดาวน์โหลดแล้ว แต่ยังคงอยู่ในอุปกรณ์ของคุณ</translation>
@@ -5379,6 +5386,7 @@
 <translation id="5125714798187802869">เปิดใช้งาน</translation>
 <translation id="5125751979347152379">URL ไม่ถูกต้อง</translation>
 <translation id="5125967981703109366">เกี่ยวกับการ์ดนี้</translation>
+<translation id="5126335625961252141">แท็บเล็ตของคุณ</translation>
 <translation id="512642543295077915">ค้นหา + Backspace</translation>
 <translation id="5126611267288187364">ดูการเปลี่ยนแปลง</translation>
 <translation id="5127620150973591153">รหัสการเชื่อมต่อที่ปลอดภัย: <ph name="TOKEN" /></translation>
@@ -5443,6 +5451,7 @@
 <translation id="5176671554021050278">ใช้ Google Lens เพื่อดูข้อมูลเพิ่มเติมเกี่ยวกับรูปภาพหรือข้อความที่เฉพาะเจาะจงในหน้า</translation>
 <translation id="5177479852722101802">บล็อกการเข้าถึงกล้องถ่ายรูปและไมโครโฟนต่อไป</translation>
 <translation id="5178667623289523808">ค้นหาก่อนหน้านี้</translation>
+<translation id="5179428098696668914">ปิดการเล่นโดย AI</translation>
 <translation id="5180276433875360121">แสดง <ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">กำลังดาวน์โหลด</translation>
 <translation id="5181172023548002891">ที่เครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="ACCOUNT" /></translation>
@@ -5555,6 +5564,7 @@
 <translation id="5262334727506665688">บันทึกรหัสผ่านไว้ในบัญชี Google เสมอ</translation>
 <translation id="5262784498883614021">เชื่อมต่อกับเครือข่ายโดยอัตโนมัติ</translation>
 <translation id="5263656105659419083">หากต้องการกลับไปที่แผงด้านข้างได้โดยง่าย ให้คลิก "ปักหมุด" ที่ด้านขวาบน</translation>
+<translation id="5266117308710480775">ดูแท็บทั้งหมด</translation>
 <translation id="526622169288322445">การดำเนินการเพิ่มเติมสำหรับ <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5267544731219369573">หากต้องการใช้ทักษะ ให้ลงชื่อเข้าใช้ Chrome ด้วยบัญชี Google ที่เปิดใช้ Gemini ใน Chrome</translation>
 <translation id="5267572070504076962">เปิด Google Safe Browsing เพื่อปกป้องคุณจากเว็บไซต์ที่เป็นอันตราย</translation>
@@ -5748,6 +5758,7 @@
 <translation id="5427459444770871191">หมุน&amp;ตามเข็มนาฬิกา</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (มีการอัปเดต)</translation>
 <translation id="5429818411180678468">ตัวเต็ม</translation>
+<translation id="5430283833237000571">หากต้องการตรวจสอบรหัสผ่านที่บันทึกไว้จากอุปกรณ์อื่นๆ โปรด<ph name="BEGIN_LINK" />ยืนยันว่าเป็นคุณ<ph name="END_LINK" /></translation>
 <translation id="5430931332414098647">การเชื่อมต่อ Wi-Fi ฮอตสปอตจากมือถือโดยอัตโนมัติ</translation>
 <translation id="5431318178759467895">สี</translation>
 <translation id="5432145523462851548">แสดง <ph name="FILE_NAME" /> ในโฟลเดอร์</translation>
@@ -6665,6 +6676,7 @@
 <translation id="6164832038898943453">เพิ่มภาษาที่จะให้แปลโดยอัตโนมัติ</translation>
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="6169040057125497443">โปรดตรวจสอบไมโครโฟน</translation>
+<translation id="616942303645148485">แสดงปุ่มเลื่อนแท็บโดยอัตโนมัติเมื่อจำเป็น</translation>
 <translation id="6169967265765719844">คุณสามารถจัดการสิทธิ์สำหรับเกมและแอปที่ติดตั้งผ่าน Steam ได้ใน<ph name="LINK_BEGIN" />การตั้งค่าแอป Steam<ph name="LINK_END" /></translation>
 <translation id="6170313103929479668">จัดเรียงมุมมองแบบแยก</translation>
 <translation id="6170470584681422115">แซนด์วิช</translation>
@@ -7527,6 +7539,7 @@
 <translation id="6832815922179448173">{MULTI_GROUP_TAB_COUNT,plural, =0{นําแท็บออกและลบกลุ่มใช่ไหม}=1{นําแท็บออกและลบกลุ่มใช่ไหม}other{นําแท็บออกและลบกลุ่มใช่ไหม}}</translation>
 <translation id="6833479554815567477">แท็บถูกนำออกจากกลุ่ม <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">สมดุล (แนะนำ)</translation>
+<translation id="6838672728804308905">ปักหมุดปุ่มเลื่อน</translation>
 <translation id="6838992358006915573">แว่นขยายตามโฟกัสของ ChromeVox</translation>
 <translation id="6840155290835956714">ถามก่อนที่จะส่ง</translation>
 <translation id="6840184929775541289">ไม่ได้เป็นผู้ออกใบรับรอง</translation>
@@ -7970,6 +7983,7 @@
 <translation id="7182051712900867547">ใช้บัญชีอื่น</translation>
 <translation id="7182063559013288142">ฮอตสปอตด่วน</translation>
 <translation id="7182791023900310535">ย้ายรหัสผ่าน</translation>
+<translation id="7184054569440068670">เปิดการเล่นด้วย AI</translation>
 <translation id="718427252411067142">หากไม่ต้องการให้ผู้อื่นใช้รหัสผ่านของคุณ ให้เปิดแอปเพื่อเปลี่ยนรหัสผ่าน</translation>
 <translation id="718512729823942418">ไม่มีไมโครโฟนที่พร้อมใช้งาน</translation>
 <translation id="7186088072322679094">เก็บในแถบเครื่องมือ</translation>
@@ -8184,6 +8198,7 @@
 <translation id="7349010927677336670">ความลื่นไหลของวิดีโอ</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{รหัสผ่าน {COUNT} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}other{รหัสผ่าน {COUNT} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}}</translation>
 <translation id="7352651011704765696">มีข้อผิดพลาดเกิดขึ้น</translation>
+<translation id="735288298862560236">{COUNT,plural, =0{ไม่มีรหัสผ่าน}=1{กำลังตรวจสอบรหัสผ่าน {COUNT} รายการ...}other{กำลังตรวจสอบรหัสผ่าน {COUNT} รายการ...}}</translation>
 <translation id="7353261921908507769">รายชื่อติดต่อจะแชร์เนื้อหากับคุณได้เมื่ออยู่ใกล้เคียง การโอนจะไม่เริ่มจนกว่าคุณจะยอมรับ</translation>
 <translation id="7353432112255316844">ยืนยันว่าเป็นคุณ</translation>
 <translation id="7356506068433555887">ต้นปาล์ม</translation>
@@ -8625,6 +8640,7 @@
 ซึ่งอาจรวมถึงข้อมูลเกี่ยวกับซอฟต์แวร์ที่ติดตั้งไว้ ไฟล์ เบราว์เซอร์ ระบบปฏิบัติการของอุปกรณ์ และที่อยู่ IP</translation>
 <translation id="7683834360226457448">เครื่องมือแสดงผลสำหรับผู้ที่มีสายตาเลือนราง</translation>
 <translation id="7684212569183643648">ติดตั้งโดยผู้ดูแลระบบ</translation>
+<translation id="7684547908663093354">ลงชื่อเข้าใช้เพื่อรับรหัสผ่านและอื่นๆ จาก <ph name="DEVICE" /></translation>
 <translation id="7684718995427157417">หากต้องการสร้างและทดสอบแอป ให้เปิดใช้ Android Debug Bridge (ADB) โปรดทราบว่าการดำเนินการนี้จะอนุญาตให้ติดตั้งแอป Android ที่ยังไม่ได้รับการยืนยันจาก Google และต้องรีเซ็ตเป็นค่าเริ่มต้นเพื่อปิดใช้</translation>
 <translation id="7684803937028953000">องค์กรบล็อกการดาวน์โหลดไฟล์นี้ลงในเครื่อง</translation>
 <translation id="7684913007876670600">เปิดแผงด้านข้างแล้วเลือกโหมดการอ่านเพื่อแสดงมุมมองอย่างง่ายของหน้านี้</translation>
@@ -9045,6 +9061,7 @@
 <translation id="8011372169388649948">ย้าย '<ph name="BOOKMARK_TITLE" />' แล้ว</translation>
 <translation id="8012188750847319132">Caps Lock</translation>
 <translation id="8013181884974864006">งานตามบริบท</translation>
+<translation id="8013462234418290522">ลงชื่อเข้าใช้เพื่อรับข้อมูลที่บันทึกไว้และอื่นๆ จาก <ph name="DEVICE" /></translation>
 <translation id="8013534738634318212">เว็บไซต์เหล่านี้อยู่ในกลุ่มที่ <ph name="RWS_OWNER" /> กำหนดไว้ เว็บไซต์ในกลุ่มจะดูกิจกรรมของคุณในกลุ่มได้</translation>
 <translation id="8013993649590906847">หากรูปภาพไม่มีคำอธิบายที่เป็นประโยชน์ Chrome จะพยายามใส่คำอธิบายให้คุณ รูปภาพจะส่งมายัง Google เพื่อสร้างคำอธิบาย</translation>
 <translation id="8014154204619229810">โปรแกรมอัปเดตกำลังทำงาน โปรดรีเฟรชในอีก 1 นาทีเพื่อตรวจสอบอีกครั้ง</translation>
@@ -9473,6 +9490,7 @@
 <translation id="8331822764922665615">ตั้งชื่อกลุ่ม เลือกสี แล้วกด Esc</translation>
 <translation id="833256022891467078">โฟลเดอร์ที่แชร์ใน Crostini</translation>
 <translation id="833262891116910667">ไฮไลต์</translation>
+<translation id="8334621501749011645">แสดงปุ่มเลื่อนแท็บโดยอัตโนมัติเมื่อจำเป็น</translation>
 <translation id="8336407002559723354">การอัปเดตจะสิ้นสุดใน<ph name="MONTH_AND_YEAR" /></translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{อุปกรณ์นี้จะได้รับการบันทึกไว้เป็นเวลา 1 ชั่วโมงและคุณสามารถเชื่อมต่อโดยไม่ใช้รหัสได้ในครั้งถัดไป ผู้ดูแลระบบเป็นคนตั้งค่านี้}other{อุปกรณ์นี้จะได้รับการบันทึกไว้เป็นเวลา {HOURS} ชั่วโมงและคุณสามารถเชื่อมต่อโดยไม่ใช้รหัสได้ในครั้งถัดไป ผู้ดูแลระบบเป็นคนตั้งค่านี้}}</translation>
 <translation id="8337399713761067085">ขณะนี้คุณอยู่ในสถานะออฟไลน์</translation>
@@ -9530,6 +9548,7 @@
 <translation id="8377625247046155446">พาสคีย์นี้จะบันทึกในอุปกรณ์นี้เท่านั้น และพาสคีย์จะยังคงอยู่ในอุปกรณ์นี้หลังจากที่คุณปิดหน้าต่างที่ไม่ระบุตัวตนทั้งหมด</translation>
 <translation id="837790003026572432">อุปกรณ์นี้ไม่รองรับการแคสต์เสียงของแท็บ</translation>
 <translation id="8378714024927312812">จัดการโดยองค์กร</translation>
+<translation id="8378855320830505539">ภูมิภาค</translation>
 <translation id="8379988659465232385">ต้องระบุชื่อ</translation>
 <translation id="8379991678458444070">บุ๊กมาร์กแท็บนี้ไว้เพื่อให้กลับมาได้อย่างรวดเร็ว</translation>
 <translation id="8380266723152870797">ชื่อหน้าต่าง</translation>
@@ -9541,6 +9560,7 @@
 <translation id="8387361103813440603">ไม่ได้รับอนุญาตให้ดูตำแหน่งของคุณ</translation>
 <translation id="8389492867173948260">อนุญาตให้ส่วนขยายนี้อ่านและเปลี่ยนแปลงข้อมูลทั้งหมดในเว็บไซต์ที่คุณเข้าชม</translation>
 <translation id="8390449457866780408">เซิร์ฟเวอร์ไม่พร้อมใช้งาน</translation>
+<translation id="8391172837960094276">หากต้องการดูและจัดการรหัสผ่าน โปรด<ph name="BEGIN_LINK" />ยืนยันว่าเป็นคุณ<ph name="END_LINK" /></translation>
 <translation id="8391218455464584335">แผ่นเสียง</translation>
 <translation id="8391918125842702622">การแจ้งเตือนปัญหาด้านประสิทธิภาพ</translation>
 <translation id="8392726714909453725">การตั้งค่าการเลือกเพื่อให้อ่าน</translation>

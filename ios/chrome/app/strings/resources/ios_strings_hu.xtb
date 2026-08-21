@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">Mentett jelszavak lekérése más alkalmazásokban</translation>
 <translation id="4431224949908513835">Válassza ki a kitöltéshez használni kívánt fizetési módot.</translation>
 <translation id="4432122368769493392">Beállítások…</translation>
+<translation id="4439968635693513370">Tervezze meg a hétvégét a következővel:</translation>
 <translation id="4442550905108052454">Nyissa meg a <ph name="BEGIN_BOLD" />Beállításokat<ph name="END_BOLD" />.</translation>
 <translation id="4445840280797509738">További lehetőségek a következőhöz: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Az előre- vagy visszalépéshez csúsztassa gyorsan ujját a képernyő szélére.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">A bezárt elemeket a Nemrég megnyitott lapok vagy a Lapcsoportok szakaszban nyithatja meg újra. A rögzített lapok nem lesznek bezárva.</translation>
 <translation id="4547181496285029457">Vissza a legutóbbi lapra</translation>
 <translation id="4552042254369397518">Másolás…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">További azonosítókulcsok</translation>
 <translation id="4564893319561643483">A(z) „<ph name="TITLE" />” elrejtése</translation>
 <translation id="456502772933839252"><ph name="PAGE_TITLE" /> megosztása…</translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Szervezete privát böngészés használatát követeli meg. Inkognitó módban nem szinkronizálódnak a lapcsoportok.
 <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
+<translation id="4670422040696550256">Vásároljon magabiztosan a következővel:</translation>
 <translation id="467189612236587057">Telefonhívás indításával kapcsolatba léphet a kívánt vállalkozással.</translation>
 <translation id="4673565891421389203">A felügyelt fiókjával való bejelentkezéssel segíthet elkülöníteni a szervezetéhez kapcsolódó böngészési adatokat (például a lapokat, az előzményeket és a jelszavakat) a többi böngészési adatától.
 
@@ -1291,6 +1294,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> mostantól használhatja az Ön felhasználónevét és jelszavát, amikor a Google Jelszókezelővel jelentkezik be a(z) <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> webhelyen.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, a szervezete által kezelt (jelenleg kijelölve). Válasszon fiókot.</translation>
 <translation id="5242899254250321823">Jelszómódosítás a webhelyen</translation>
+<translation id="524751727772074981">Bármit megkérdezhet, közvetlenül a Gemini Chrome-ban segítségével</translation>
 <translation id="5248640482715684545">Ez a webhely egy másik alkalmazást próbál megnyitni.</translation>
 <translation id="5250371859659394278">Ismeretlen forrásból</translation>
 <translation id="525510229763628836">Kis méret</translation>
@@ -1307,6 +1311,7 @@
 <translation id="5300589172476337783">Megjelenítés</translation>
 <translation id="5311061401280561833">Kamera- és mikrofon-hozzáférés engedélyezve</translation>
 <translation id="5313967007315987356">Webhely hozzáadása</translation>
+<translation id="5315029634103634221">A Gemini egy mesterséges intelligencia, amely hibázhat. <ph name="BEGIN_LINK" />További információ a Google-nak küldött releváns adatokról<ph name="END_LINK" />.</translation>
 <translation id="5315870524563628285">Nincs importálható elem</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />/<ph name="INDEX" />.</translation>
 <translation id="5317780077021120954">Mentés</translation>
@@ -1389,6 +1394,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5596627076506792578">További lehetőségek</translation>
 <translation id="560322036295180549">Kikapcsolta a szervezete</translation>
 <translation id="5611398002774823980">Mentés a fiókba</translation>
+<translation id="5612225021788368236">Alapértelmezett böngésző promóciójának bezárása</translation>
 <translation id="561269594905823128">Koppintson a <ph name="BEGIN_BOLD" />Fájl kiválasztása<ph name="END_BOLD" /> elemre.</translation>
 <translation id="5613297089029360427">Rendezés a legutóbbiak szerint</translation>
 <translation id="5614553682702429503">Szeretné elmenteni a jelszót?</translation>
@@ -2474,6 +2480,7 @@ Ha a számítógépén szeretné folytatni, váltson a következőre: <ph name="
 <translation id="9029650858822697271">A rendszer kijelentkeztette Önt</translation>
 <translation id="9032405509996909363">Böngészési adatok törlésének megerősítése</translation>
 <translation id="9035699147763101514">A Gemini Személyre szabott intelligencia funkciójával. A beállításokban kezelheti a választásait.</translation>
+<translation id="9038526468059454274">Összegezze a következővel:</translation>
 <translation id="9039373489628511875">Sávszélesség</translation>
 <translation id="9042893549633094279">Adatvédelem és biztonság</translation>
 <translation id="9055291197094969722">Létrehozhat lapcsoportokat a megnyitott lapok rendszerezéséhez és a hatékonyság fenntartásához</translation>

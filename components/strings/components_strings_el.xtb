@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Επιλέξτε άδεια για <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Αποθήκευση IBAN;</translation>
 <translation id="1113869188872983271">&amp;Αναίρεση αναδιάταξης</translation>
+<translation id="1117709830616495622">Με την υποστήριξη της Προσωπικής νοημοσύνης με το Gemini.</translation>
 <translation id="111897705806685148">Χρήση κλειδιού πρόσβασης από άλλη συσκευή</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και μετά Enter, για να διαχειριστείτε τις πληροφορίες του Chrome που αποθηκεύετε στον Λογαριασμό σας Google</translation>
 <translation id="1121990216147052230">Φτιάξε μια λίστα με τις εκκρεμότητές μου</translation>
@@ -1170,6 +1171,7 @@
 <translation id="3005723025932146533">Εμφάνιση αποθηκευμένου αντιγράφου</translation>
 <translation id="300580149047131921">Χρησιμοποιήθηκε πρόσφατα</translation>
 <translation id="3006864083554020786">διεύθυνση σπιτιού</translation>
+<translation id="3008410317623852235">Μπορείτε πλέον να βρίσκετε και να συμπληρώνετε πληροφορίες από το Gmail και άλλα.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab για να περιηγηθείτε στις διαθέσιμες ενέργειες και έπειτα πατήστε Enter για να εκτελέσετε την επιλεγμένη ενέργεια.</translation>
 <translation id="3010991137650052245">Για να χρησιμοποιήσετε την άδεια <ph name="PERMISSION" /> σε αυτόν τον ιστότοπο, παραχωρήστε πρόσβαση στο <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3014726756341138577">Σύνθετες λειτουργίες εκτυπωτή</translation>
@@ -2320,6 +2322,7 @@
 <translation id="4941627891654116707">Μέγεθος γραμματοσειράς</translation>
 <translation id="4943620199112228840">Χρήση των μικροφώνων σας</translation>
 <translation id="4943872375798546930">Δεν υπάρχουν αποτελέσματα</translation>
+<translation id="494701040141924538">Το κατάλαβα, κλείσιμο ειδοποίησης</translation>
 <translation id="495170559598752135">Ενέργειες</translation>
 <translation id="4953689047182316270">Απάντηση σε συμβάντα προσβασιμότητας</translation>
 <translation id="4954505713046251871">Για την παροχή προτάσεων και τη βελτίωση αυτής της λειτουργίας, το URL και το περιεχόμενο της σελίδας κοινοποιούνται στην Google.</translation>
@@ -3371,6 +3374,7 @@
 <translation id="6743841972744298686">Ρυθμίσεις συγχρονισμού</translation>
 <translation id="6745212570062463886">Συμπληρώστε αυτόματα το όνομα και τη διεύθυνση ηλεκτρονικού ταχυδρομείου σας από τον Λογαριασμό σας Google</translation>
 <translation id="674580074662200768">Ασφαλής ενημέρωση διαβατηρίου</translation>
+<translation id="6749473226660745022">Φωτογραφίες</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Τιμή πολιτικής</translation>
 <translation id="6753434778807740853">Διαγραφή καταχώρισης <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3710,6 +3714,7 @@
 <translation id="7366117520888504990">198 x 275 χλστ.</translation>
 <translation id="7366362069757178916">Δείκτες χειρισμού για πληρωμές</translation>
 <translation id="7366594738862061263">Μάθετε σχετικά με το πώς το Chrome προστατεύει τους κωδικούς πρόσβασής σας</translation>
+<translation id="7366909168761621528">Δεδομένα περιήγησης</translation>
 <translation id="7370751048350026847">Δεν συνιστάται η επικόλληση αυτού του περιεχομένου στον συγκεκριμένο ιστότοπο</translation>
 <translation id="7372526636730851647">Φωτογραφία (Γυαλιστερή)</translation>
 <translation id="7372973238305370288">αποτέλεσμα αναζήτησης</translation>
@@ -4298,6 +4303,7 @@
 <translation id="8350416046273606058">Η συντόμευση δεν μπορεί να περιέχει κενά: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Δημιουργία σημείωσης</translation>
 <translation id="8352849934814541340">Ο διαχειριστής αυτής της συσκευής εγκατέστησε εφαρμογές για επιπλέον λειτουργίες. Οι εφαρμογές έχουν πρόσβαση σε κάποια από τα δεδομένα σας.</translation>
+<translation id="8353273112634584260">Με την υποστήριξη της Προσωπικής νοημοσύνης με το Gemini. Τα αιτήματα, οι τίτλοι σελίδων και τα URL σας ενδέχεται να ελεγχθούν για τη βελτίωση της βελτιωμένης αυτόματης συμπλήρωσης.</translation>
 <translation id="8355270400102541638">Περιβάλλον τοπικού σφάλματος:</translation>
 <translation id="8362914115861174987">Μετάφραση στα</translation>
 <translation id="8363502534493474904">Απενεργοποιήστε τη λειτουργία πτήσης.</translation>
@@ -4658,6 +4664,7 @@
 <translation id="9026253329950610248">Ιστότοποι Google</translation>
 <translation id="9027020981272345766">Δοκιμή του Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Για έξοδο από την πλήρη οθόνη, πατήστε παρατεταμένα |<ph name="ACCELERATOR" />|</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Σφάλμα ασφάλειας</translation>
 <translation id="9035699147763101514">Με την υποστήριξη της Προσωπικής νοημοσύνης με το Gemini. Διαχειριστείτε τις επιλογές σας στις Ρυθμίσεις.</translation>
 <translation id="9035824888276246493">Αποθήκευση κωδικών ασφαλείας</translation>

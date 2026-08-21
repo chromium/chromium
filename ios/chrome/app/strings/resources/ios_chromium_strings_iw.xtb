@@ -116,7 +116,7 @@
 <translation id="3410395242749598859">‏חלק מהנתונים ב-Chromium עדיין לא נשמרו בחשבון <ph name="EMAIL" />.
 כדאי לחכות כמה דקות לפני שמחליפים חשבונות. אם החשבונות יוחלפו עכשיו, הנתונים האלה יימחקו.</translation>
 <translation id="3440830787838130530">‏אפשר לשתף עותק של סיסמה עם הקבוצה המשפחתית באופן קל ומאובטח ב"מנהל הסיסמאות של Google"</translation>
-<translation id="3445351634096573377">‏אפשר לפתוח קישורים מהודעות וממסמכים ישירות ב-Chromium.</translation>
+<translation id="3445351634096573377">‏רוצה לפתוח קישורים מהודעות וממסמכים ישירות ב-Chromium?</translation>
 <translation id="3472200483164753384">‏אין תמיכה ב-Chromium Canary</translation>
 <translation id="347967311580159871">‏כדי לראות אילו הגדרות נוספות מתבססות על נתונים לצורך שיפור חוויית השימוש ב-Chromium, אפשר לעבור אל <ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">‏הסיסמה שלך לא שותפה. רצוי לבדוק את החיבור לאינטרנט ולוודא שנכנסת לחשבון ב-Chromium. אחר כך אפשר לנסות שוב.</translation>
@@ -253,6 +253,7 @@
 <translation id="6154098560469640583">‏שימוש ב-Chromium בכל פעם שלוחצים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="6157162508956739031">‏אפשר להיכנס לאפליקציות ולאתרים במהירות באמצעות מילוי אוטומטי של הסיסמאות ומפתחות הגישה מ-Chromium</translation>
 <translation id="6170619162539716595">‏מתן הרשאה ל-Chromium להשתמש במפות Google כדי לספק מסלולים ומידע מקומי על כתובות שזוהו.</translation>
+<translation id="6170834619568075230">‏את כל מה שמופיע על המסך אפשר לחפש עם Google Lens ב-Chromium</translation>
 <translation id="6244277266078678766">הנתונים שלך יישמרו במנהל הסיסמאות בחשבון <ph name="USER_EMAIL" /></translation>
 <translation id="6268381023930128611">‏האם לצאת מ-Chromium?</translation>
 <translation id="6301717043141881464">‏אפשר לבחור ב-Chromium למילוי אוטומטי כדי לגשת בקלות לסיסמאות השמורות שלך באפליקציות אחרות</translation>
@@ -272,7 +273,7 @@
 <translation id="6590232959690355435">‏פתיחת הדף 'היסטוריה' ב-Chromium.</translation>
 <translation id="6674470628873622334">‏פתיחת כרטיסייה פרטית חדשה ב-Chromium.</translation>
 <translation id="6680609900732453726">‏אפשר לשמור על פרטיות הגלישה באמצעות אימות המכשיר כשסוגרים את Chromium</translation>
-<translation id="6696512128741076907">‏כדי שקישורים מאפליקציות אחרות ייפתחו ישירות, כדאי להגדיר את Chromium כדפדפן ברירת המחדל.</translation>
+<translation id="6696512128741076907">‏כדי לפתוח ברגע קישורים מאפליקציות אחרות ישירות ב-Chromium, כדאי להגדיר אותו כדפדפן ברירת המחדל.</translation>
 <translation id="6752854822223394465">‏הארגון שלך מגדיר את Chromium…</translation>
 <translation id="6794054469102824109">‏פתיחת המשחק Chromium Dino.</translation>
 <translation id="6820823224820483452">‏Chromium לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מחר.</translation>
@@ -314,7 +315,7 @@
 <translation id="7762622637388462191">‏ניתן לנעול את הכרטיסיות הפרטיות כשיוצאים מ-Chromium או עוברים לאפליקציה אחרת.</translation>
 <translation id="7763454117143368771">‏כדאי להשתמש ב-Chromium כדפדפן ברירת המחדל כדי ליהנות מהגנה מפני אתרים מסוכנים ולשמור על אבטחת הסיסמאות</translation>
 <translation id="7784950022329154821">‏נעילת הכרטיסיות הפרטיות כשסוגרים את Chromium</translation>
-<translation id="7798616345453618228">‏כדי לפתוח תוכן מהאינטרנט באופן אוטומטי, כדאי להגדיר את Chromium כדפדפן ברירת המחדל.</translation>
+<translation id="7798616345453618228">‏כדי לפתוח תוכן מהאינטרנט ב-Chromium באופן אוטומטי, כדאי להגדיר אותו כדפדפן ברירת המחדל.</translation>
 <translation id="78025249032851484">‏Chromium לא מעודכן.</translation>
 <translation id="784098351033299289">‏‫Chromium נעזר במפות Google כדי לספק מסלולים ומידע מקומי בקישורים למפות</translation>
 <translation id="7859018312476869945">‏כשמקלידים טקסט בסרגל הכתובות או בתיבת החיפוש, Chromium שולח את הטקסט הזה למנוע החיפוש שמוגדר כברירת מחדל כדי לקבל הצעות טובות יותר. האפשרות הזו מושבתת במצב הפרטי.</translation>
@@ -379,6 +380,7 @@
 <translation id="9177628952266852500">‏‫<ph name="EMAIL" />. Chromium מנוהל.</translation>
 <translation id="921174536258924340">‏Chromium לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מחר או <ph name="BEGIN_LINK" />לבדוק את הסיסמאות בחשבון Google.<ph name="END_LINK" /></translation>
 <translation id="924957577793602335">‏אפשר להתאים אישית את Chromium בדרך שנוחה לך</translation>
+<translation id="925642420047255224">‏אפשר להשתמש ב-Chromium בכל פעם שלוחצים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="981812233959540767">‏פתיחת המשחק Chromium Dino</translation>
 <translation id="985602178874221306">‏מחברי Chromium</translation>
 <translation id="986520777495807752">‏להגדיר את Chromium כדפדפן ברירת המחדל?</translation>

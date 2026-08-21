@@ -1060,6 +1060,7 @@
 <translation id="454217142158335225">Yopilgan obyektlarni oxirgi varaqlar yoki varaqlar guruhi boʻlimlaridan qayta ochish mumkin. Qadalgan varaqlar yopilmaydi.</translation>
 <translation id="4547181496285029457">Oxirgi varaqqa qaytish</translation>
 <translation id="4552042254369397518">Nusxalanmoqda…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Boshqa kalitlar</translation>
 <translation id="4564893319561643483"><ph name="TITLE" /> panelini yopish</translation>
 <translation id="456502772933839252"><ph name="PAGE_TITLE" /> ulashilmoqda</translation>
@@ -1293,6 +1294,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> saytiga kirishda Google Parollar menejeri orqali login va parolingizdan foydalanishi mumkin.</translation>
 <translation id="5241106044372754566">Joriy tanlangan <ph name="NAME" />, <ph name="EMAIL" /> hisobi tashkilot boshqaruvida. Hisobni tanlang.</translation>
 <translation id="5242899254250321823">Saytdagi parolni yangilash</translation>
+<translation id="524751727772074981">Chrome ichida Gemini yordamchisiga istalgan savolni bering</translation>
 <translation id="5248640482715684545">Bu sayt boshqa ilovani ochishga urinmoqda.</translation>
 <translation id="5250371859659394278">Nomaʼlum manbadan</translation>
 <translation id="525510229763628836">Yigʻilgan</translation>
@@ -1309,6 +1311,7 @@
 <translation id="5300589172476337783">Ko‘rsatish</translation>
 <translation id="5311061401280561833">Kamera va mikrofondan foydalanishga ruxsat berildi</translation>
 <translation id="5313967007315987356">Sayt qo‘shish</translation>
+<translation id="5315029634103634221">Gemini bu – AI va u xato qilishi mumkin. <ph name="BEGIN_LINK" />Googlega yuboriladigan tegishli maʼlumotlar haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Import qilinadigan kontaktlar yoʻq</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Saqlash</translation>
@@ -1391,6 +1394,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5596627076506792578">Boshqa sozlamalar</translation>
 <translation id="560322036295180549">Tashkilotingiz tomonidan faolsizlantirilgan</translation>
 <translation id="5611398002774823980">Hisobda saqlash</translation>
+<translation id="5612225021788368236">Birlamchi brauzer tanituvini yopish</translation>
 <translation id="561269594905823128"><ph name="BEGIN_BOLD" />Faylni tanlang<ph name="END_BOLD" /> ustiga bosing</translation>
 <translation id="5613297089029360427">Oxirgilar asosida saralash</translation>
 <translation id="5614553682702429503">Parol saqlansinmi?</translation>

@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">Obtenez des mots de passe enregistrés dans d'autres applis</translation>
 <translation id="4431224949908513835">Sélectionner un mode de paiement à entrer.</translation>
 <translation id="4432122368769493392">Paramètres…</translation>
+<translation id="4439968635693513370">Planifier votre fin de semaine avec</translation>
 <translation id="4442550905108052454">Ouvrez <ph name="BEGIN_BOLD" />Paramètres<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Plus d'options pour <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Vous pouvez balayer l'écran à partir du bord pour revenir en arrière ou en avant.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">Vous pouvez rouvrir les éléments fermés à partir des sections Onglets récents ou Groupes d'onglets. Vos onglets épinglés ne seront pas fermés.</translation>
 <translation id="4547181496285029457">Revenir au dernier onglet</translation>
 <translation id="4552042254369397518">Copie en cours…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Plus de clés d'accès</translation>
 <translation id="4564893319561643483">Masquez « <ph name="TITLE" /> »</translation>
 <translation id="456502772933839252">Partage de <ph name="PAGE_TITLE" /></translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Votre organisation vous demande de naviguer en mode Privé. Les groupes d'onglets ne sont pas synchronisés en mode Navigation privée.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">Faire vos achats en toute confiance avec</translation>
 <translation id="467189612236587057">Communiquez avec une entreprise en passant un appel téléphonique</translation>
 <translation id="4673565891421389203">La connexion avec votre compte géré vous permet de séparer la navigation liée à votre organisation (y compris les onglets, l'historique et les mots de passe) de vos autres navigations.
 
@@ -1291,6 +1294,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> peut désormais utiliser votre nom d'utilisateur et votre mot de passe lorsqu'il utilise le gestionnaire de mots de passe Google pour se connecter à <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, géré par votre organisation, actuellement sélectionné. Sélectionnez un compte.</translation>
 <translation id="5242899254250321823">Modifier le mot de passe sur le site Web</translation>
+<translation id="524751727772074981">Poser toutes vos questions, où que vous soyez, avec Gemini dans Chrome</translation>
 <translation id="5248640482715684545">Ce site essaie d'ouvrir une autre application.</translation>
 <translation id="5250371859659394278">À partir d'une source inconnue</translation>
 <translation id="525510229763628836">Réduit</translation>
@@ -1307,6 +1311,7 @@
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5311061401280561833">Accès à l'appareil photo et au microphone autorisé</translation>
 <translation id="5313967007315987356">Ajouter un site</translation>
+<translation id="5315029634103634221">Gemini est une IA et peut se tromper. <ph name="BEGIN_LINK" />En savoir plus sur les données pertinentes envoyées à Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Rien à importer</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Enregistrer</translation>
@@ -1389,6 +1394,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5596627076506792578">Autres options</translation>
 <translation id="560322036295180549">Option désactivée par votre organisation</translation>
 <translation id="5611398002774823980">Enregistrer dans le compte</translation>
+<translation id="5612225021788368236">Fermer la promotion du navigateur par défaut</translation>
 <translation id="561269594905823128">Touchez <ph name="BEGIN_BOLD" />Sélectionner votre fichier<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Trier par Plus récents</translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe?</translation>
@@ -2474,6 +2480,7 @@ Pour continuer à partir de votre ordinateur, passez à <ph name="OTHER_EMAIL" /
 <translation id="9029650858822697271">Vous avez été déconnecté</translation>
 <translation id="9032405509996909363">Confirmer la suppression des données de navigation</translation>
 <translation id="9035699147763101514">Propulsé par l'Intelligence personnalisée avec Gemini. Gérez vos choix dans les paramètres.</translation>
+<translation id="9038526468059454274">Résumer avec</translation>
 <translation id="9039373489628511875">Bande passante</translation>
 <translation id="9042893549633094279">Confidentialité et sécurité</translation>
 <translation id="9055291197094969722">Créez des groupes d'onglets pour organiser vos onglets ouverts et rester productif</translation>

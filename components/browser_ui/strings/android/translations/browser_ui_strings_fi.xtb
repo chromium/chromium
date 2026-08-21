@@ -372,6 +372,7 @@
 <translation id="4676059169848868271">Salli, että <ph name="APP_NAME" /> voi seurata käsien liikettä, laittamalla käsien liikkeen seuranta päälle myös <ph name="BEGIN_LINK" />järjestelmäasetuksista<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Korttien ylläpito</translation>
 <translation id="4722332387043141878">Sivustot käyttävät yleensä laitteen liike- ja valoantureita esim. virtuaalitodellisuuteen tai aktiivisuuden seurantaan</translation>
+<translation id="4748783296226936791">Sivustot yhdistävät yleensä HID-laitteisiin esim. käyttääkseen epätavallisia näppäimistöjä, peliohjaimia tai muita laitteita</translation>
 <translation id="4755971844837804407">Kun tämä on päällä, sivustot voivat näyttää sinulle mitä tahansa mainoksia. Kun tämä on pois päältä, sivustoilla ei voi näkyä häiritseviä tai harhaanjohtavia mainoksia.</translation>
 <translation id="4779083564647765204">Lähennä</translation>
 <translation id="4807122856660838973">Laita Selaussuoja päälle</translation>
@@ -456,6 +457,7 @@
 <translation id="5700761515355162635">Kolmannen osapuolen evästeet sallittu</translation>
 <translation id="5706552988683188916">Tämä poistaa evästeet ja muun sivustodatan täällä: <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Sivustot voivat näyttää identiteettipalveluiden sisäänkirjautumiskehotteita</translation>
+<translation id="5719854774000914513">Sivustot saavat pyytää lupaa yhdistää HID-laitteisiin</translation>
 <translation id="5740126560802162366">Sivustot voivat tallentaa dataa laitteellesi</translation>
 <translation id="5743425052258407233">Historia löytyy kaikilta laitteilta, joten voit helposti jatkaa siitä, mihin jäit</translation>
 <translation id="5749158352074143502">Jatka tällä välilehdellä</translation>
@@ -575,6 +577,7 @@
 <translation id="6950072572526089586">Avaamasi sivusto voi tallentaa tietoja toiminnastasi, jotta se toimii odotetulla tavalla – esimerkiksi pitääksesi sinut kirjautuneena sivustolle tai tallentaaksesi tuotteita ostoskoriin. Sivustot tallentavat usein nämä tiedot väliaikaisesti laitteellesi.</translation>
 <translation id="6964291282260073066">"WebGPU" on poistettu käytöstä.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6972629891077993081">HID-laitteet</translation>
 <translation id="6980507581230208647">Ruusunpunainen teema</translation>
 <translation id="6980861169612950611">Poistetaanko sivustodata? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Saavutettavuus</translation>
@@ -587,7 +590,6 @@
 <translation id="7053983685419859001">Estä</translation>
 <translation id="7055552182600664515">Sivustojen on ehkä käytettävä sisällönsuojauspalvelua, jotta ne voivat toistaa tekijänoikeudella suojattua sisältöä. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 valittu}other{# valittu}}</translation>
-<translation id="708014373017851679"><ph name="APP_NAME" /> on vanhentunut. Päivitä sovellus.</translation>
 <translation id="7084115944294706056">Valitse osoitepalkin sijainti</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> valittu. Toimintoja on käytettävissä näytön yläosassa.</translation>
 <translation id="7141896414559753902">Estä ponnahdusikkunoiden näyttäminen sivustoilla (suositus)</translation>
@@ -732,6 +734,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:</translation>
 <translation id="8593422116412089302">Kun tämä on päällä, sivustot voivat pyytää lupaa käyttää tietoja, jotka ne ovat tallentaneet sinusta. Kun tämä on pois päältä, sivustot eivät voi pyytää sinua käyttämään tietoja, jotka ne ovat tallentaneet sinusta.</translation>
 <translation id="8609465669617005112">Siirrä ylös</translation>
 <translation id="8617611086246832542">Kun tämä on päällä, näet verkkosivustojen tietokonenäkymän. Kun tämä on pois päältä, näet sivustojen mobiilinäkymän.</translation>
+<translation id="8625916342247441948">Älä salli sivustojen yhdistää HID-laitteisiin</translation>
 <translation id="8670078035093027626">Oletusselaimen alapaneeli avattu koko näytön kokoisena</translation>
 <translation id="8676316391139423634">Kun tämä on päällä, sivustot voivat pyytää lupaa seurata käsiäsi. Kun tämä on pois päältä, sivustot eivät voi seurata käsiäsi.</translation>
 <translation id="8676374126336081632">Tyhjennä teksti</translation>

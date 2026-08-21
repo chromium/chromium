@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">Добијте сачуване лозинке у другим апликацијама</translation>
 <translation id="4431224949908513835">Изаберите начин плаћања који ће бити унет.</translation>
 <translation id="4432122368769493392">Подешавања…</translation>
+<translation id="4439968635693513370">Испланирајте викенд помоћу</translation>
 <translation id="4442550905108052454">Отворите <ph name="BEGIN_BOLD" />Подешавања<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Још опција за: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Можете да превучете ивицу да бисте ишли назад или напред.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">Затворене ставке можете поново да отворите у одељцима Недавне картице или Групе картица. Прикачене картице се неће затворити.</translation>
 <translation id="4547181496285029457">Вратите се на недавну картицу</translation>
 <translation id="4552042254369397518">Копира се…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Још приступних кључева</translation>
 <translation id="4564893319561643483">Сакријте „<ph name="TITLE" />“</translation>
 <translation id="456502772933839252">Дели се страница <ph name="PAGE_TITLE" /></translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Организација захтева да прегледате приватно. Групе картица се не синхронизују у режиму без архивирања.
 <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">Купујте без бриге помоћу</translation>
 <translation id="467189612236587057">Повежите се са предузећем покретањем телефонског позива</translation>
 <translation id="4673565891421389203">Пријављивање помоћу управљаног налога вам помаже да одвојите прегледање повезано са организацијом (укључујући картице, историју и лозинке) од осталог прегледања.
 
@@ -1291,6 +1294,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> сада може да користи корисничко име и лозинку када користи Google менаџер лозинки за пријављивање на <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5241106044372754566">Тренутно је изабран налог <ph name="NAME" />, <ph name="EMAIL" />, којим управља организација. Одаберите налог.</translation>
 <translation id="5242899254250321823">Промени лозинку на веб-сајту</translation>
+<translation id="524751727772074981">Питајте било шта где год да сте помоћу Gemini-ја у Chrome-у</translation>
 <translation id="5248640482715684545">Овај сајт покушава да отвори другу апликацију.</translation>
 <translation id="5250371859659394278">Из непознатог извора</translation>
 <translation id="525510229763628836">Скупи</translation>
@@ -1307,6 +1311,7 @@
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5311061401280561833">Приступ камери и микрофону је дозвољен</translation>
 <translation id="5313967007315987356">Додајте сајт</translation>
+<translation id="5315029634103634221">Gemini је вештачка интелигенција и може да погреши. <ph name="BEGIN_LINK" />Више о релевантним подацима који се шаљу Google-у<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Нема ничега за увоз</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Сачувај</translation>
@@ -1389,6 +1394,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5596627076506792578">Још опција</translation>
 <translation id="560322036295180549">Искључила је организација</translation>
 <translation id="5611398002774823980">Сачувај на налогу</translation>
+<translation id="5612225021788368236">Затвори промоцију подразумеваног прегледача</translation>
 <translation id="561269594905823128">Додирните <ph name="BEGIN_BOLD" />Изабери фајл<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Сортирај према најновијем</translation>
 <translation id="5614553682702429503">Желите ли да сачувате лозинку?</translation>
@@ -2474,6 +2480,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9029650858822697271">Одјављени сте</translation>
 <translation id="9032405509996909363">Потврдите брисање података прегледања</translation>
 <translation id="9035699147763101514">Омогућава Персонализована интелигенција помоћу Gemini-ја. Управљајте изборима у подешавањима.</translation>
+<translation id="9038526468059454274">Резимирајте помоћу</translation>
 <translation id="9039373489628511875">Пропусни опсег</translation>
 <translation id="9042893549633094279">Приватност и безбедност</translation>
 <translation id="9055291197094969722">Правите групе картица да бисте организовали отворене картице и остали продуктивни</translation>

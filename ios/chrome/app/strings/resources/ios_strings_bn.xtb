@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">অন্য অ্যাপে সেভ করা পাসওয়ার্ড পান</translation>
 <translation id="4431224949908513835">সম্পূর্ণ করার জন্য পেমেন্ট পদ্ধতি বেছে নিন।</translation>
 <translation id="4432122368769493392">সেটিংস…</translation>
+<translation id="4439968635693513370">এর সাহায্যে আপনার উইকএন্ড প্ল্যান করুন</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />সেটিংস<ph name="END_BOLD" /> খুলুন</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" />-এর জন্য আরও বিকল্প</translation>
 <translation id="4455710003856931944">পিছনে বা সামনে যেতে স্ক্রিনের প্রান্তটি সোয়াইপ করুন।</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">আপনি সাম্প্রতিক ট্যাব বা ট্যাব গ্রুপ বিভাগ থেকে বন্ধ করা আইটেম আবার খুলতে পারবেন। আপনার পিন করা ট্যাব বন্ধ করা হবে না।</translation>
 <translation id="4547181496285029457">সাম্প্রতিক ট্যাবে ফিরে যান</translation>
 <translation id="4552042254369397518">কপি করা হচ্ছে…</translation>
+<translation id="4552089082226364758">ফ্ল্যাশ</translation>
 <translation id="4553044860350038560">আরও পাসকী</translation>
 <translation id="4564893319561643483">"<ph name="TITLE" />" আড়াল করুন</translation>
 <translation id="456502772933839252"><ph name="PAGE_TITLE" /> শেয়ার করা হচ্ছে</translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">আপনার সংস্থার নিয়ম অনুযায়ী আপনাকে ব্যক্তিগত মোডে ব্রাউজ করতে হবে। ছদ্মবেশী মোডে ট্যাব গ্রুপ সিঙ্ক করা হয় না।
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">এর সাহায্যে আত্মবিশ্বাসের সাথে কেনাকাটা করুন</translation>
 <translation id="467189612236587057">ফোন কল শুরু করে ব্যবসার সাথে কানেক্ট করুন</translation>
 <translation id="4673565891421389203">আপনার ম্যানেজ করা অ্যাকাউন্ট দিয়ে সাইন-ইন করলে, এটি আপনার প্রতিষ্ঠানের সাথে সম্পর্কিত ব্রাউজিং (ট্যাব, ইতিহাস ও পাসওয়ার্ড সহ) থেকে অন্য ব্রাউজিং আলাদা রাখতে সাহায্য করে।
 
@@ -1291,6 +1294,7 @@
 <translation id="5238596603078743134">Google Password Manager ব্যবহার করে <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />-এ সাইন-ইন করার সময় <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> এখন আপনার ইউজারনেম ও পাসওয়ার্ড ব্যবহার করতে পারবেন।</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, আপনার সংস্থা ম্যানেজ করে যা বর্তমানে বেছে নেওয়া হয়েছে। একটি অ্যাকাউন্ট বেছে নিন।</translation>
 <translation id="5242899254250321823">ওয়েবসাইটে পাসওয়ার্ড পরিবর্তন করুন</translation>
+<translation id="524751727772074981">Chrome-এ Gemini দিয়ে যেখানে আছেন সেখান থেকেই প্রশ্ন করুন</translation>
 <translation id="5248640482715684545">এই সাইটটি অন্য একটি অ্যাপ্লিকেশন খোলার চেষ্টা করছে।</translation>
 <translation id="5250371859659394278">কোনও একটি অজানা সোর্স থেকে</translation>
 <translation id="525510229763628836">ছোট করা হয়েছে</translation>
@@ -1307,6 +1311,7 @@
 <translation id="5300589172476337783">দেখান</translation>
 <translation id="5311061401280561833">ক্যামেরা ও মাইক্রোফোন অ্যাক্সেসের অনুমতি আছে</translation>
 <translation id="5313967007315987356">সাইট যোগ করুন</translation>
+<translation id="5315029634103634221">Gemini হল AI এবং এটি ভুল করতে পারে। <ph name="BEGIN_LINK" />Google-এ পাঠানো প্রাসঙ্গিক ডেটা সম্পর্কে আরও তথ্য<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">ইমপোর্ট করার জন্য কিছুই নেই</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />-এর <ph name="INDEX" /></translation>
 <translation id="5317780077021120954">সেভ করুন</translation>
@@ -1390,6 +1395,7 @@
 <translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
 <translation id="560322036295180549">আপনার সংস্থা বন্ধ করে দিয়েছে</translation>
 <translation id="5611398002774823980">অ্যাকাউন্টে সেভ করুন</translation>
+<translation id="5612225021788368236">ডিফল্ট ব্রাউজার প্রোমো বন্ধ করুন</translation>
 <translation id="561269594905823128"><ph name="BEGIN_BOLD" />আপনার ফাইল বেছে নিন<ph name="END_BOLD" /> বিকল্পে ট্যাপ করুন</translation>
 <translation id="5613297089029360427">লেটেস্ট অনুযায়ী সাজান</translation>
 <translation id="5614553682702429503">পাসওয়ার্ড সেভ করবেন?</translation>
@@ -2475,6 +2481,7 @@
 <translation id="9029650858822697271">আপনি সাইন-আউট হয়ে গেছেন</translation>
 <translation id="9032405509996909363">ব্রাউজ করা ডেটা মোছার বিষয়টি কনফার্ম করুন</translation>
 <translation id="9035699147763101514">Gemini-র পার্সোনাল ইন্টেলিজেন্স দ্বারা পরিচালিত। সেটিংস থেকে আপনার পছন্দ ম্যানেজ করুন।</translation>
+<translation id="9038526468059454274">এর মাধ্যমে সারসংক্ষেপ করুন</translation>
 <translation id="9039373489628511875">ব্যান্ডউইথ</translation>
 <translation id="9042893549633094279">গোপনীয়তা এবং নিরাপত্তা</translation>
 <translation id="9055291197094969722">আপনার খোলা থাকা ট্যাব সাজাতে ও প্রোডাক্টিভ থাকার জন্য ট্যাব গ্রুপ তৈরি করুন</translation>

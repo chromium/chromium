@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">گذرواژه‌های ذخیره‌شده را در برنامه‌های دیگر دریافت کنید</translation>
 <translation id="4431224949908513835">روش پرداختی را برای تکمیل انتخاب کنید.</translation>
 <translation id="4432122368769493392">تنظیمات…</translation>
+<translation id="4439968635693513370">برای آخر هفته‌تان برنامه‌ریزی کنید با</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />تنظیمات<ph name="END_BOLD" /> را باز کنید</translation>
 <translation id="4445840280797509738">گزینه‌های بیشتر برای <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">برای رفتن به‌عقب یا جلو، می‌توانید از لبه تند بکشید.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">می‌توانید موارد بسته‌شده را از بخش زبانه‌های اخیر یا گروه‌های زبانه دوباره باز کنید. زبانه‌های سنجاق‌شده بسته نخواهند شد.</translation>
 <translation id="4547181496285029457">برگشتن به زبانه اخیر</translation>
 <translation id="4552042254369397518">درحال کپی کردن…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">گذرکلیدهای بیشتر</translation>
 <translation id="4564893319561643483">پنهان کردن «<ph name="TITLE" />»</translation>
 <translation id="456502772933839252">درحال هم‌رسانی <ph name="PAGE_TITLE" /></translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">،</translation>
 <translation id="4669618761237477717">سازمانتان از شما می‌خواهد به‌طور خصوصی مرور کنید. گروه‌های زبانه در حالت «ناشناس» همگام‌سازی نمی‌شود.
 <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">خرید کردن امن و مطمئن با</translation>
 <translation id="467189612236587057">با شروع تماس تلفنی، با کسب‌وکار ارتباط برقرار کنید</translation>
 <translation id="4673565891421389203">وارد شدن به سیستم با حساب مدیریت‌شده‌تان به شما کمک می‌کند داده‌های مرور مربوط به سازمانتان (مانند زبانه‌ها، سابقه، و گذرواژه‌ها) را از دیگر داده‌های مرور جدا نگه دارید.
 
@@ -1291,6 +1294,7 @@
 <translation id="5238596603078743134">‏‫<ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> اکنون می‌تواند هنگام ورود به سیستم <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> بااستفاده از «مدیر گذرواژه Google»، نام کاربری و گذرواژه شما را به‌کار ببرد.</translation>
 <translation id="5241106044372754566">‫<ph name="NAME" />،‏ <ph name="EMAIL" />، توسط سازمانتان مدیریت می‌شود، اکنون انتخاب شده است. حسابی انتخاب کنید.</translation>
 <translation id="5242899254250321823">تغییر دادن گذرواژه در وب‌سایت</translation>
+<translation id="524751727772074981">‏در همان جایی که هستید، درباره هر چیزی از «Gemini در Chrome» بپرسید</translation>
 <translation id="5248640482715684545">این سایت تلاش می‌کند برنامه دیگری را باز کند.</translation>
 <translation id="5250371859659394278">از منبع ناشناخته</translation>
 <translation id="525510229763628836">کوچک‌شده</translation>
@@ -1307,6 +1311,7 @@
 <translation id="5300589172476337783">نمایش</translation>
 <translation id="5311061401280561833">دسترسی به دوربین و میکروفون مجاز است</translation>
 <translation id="5313967007315987356">افزودن سایت</translation>
+<translation id="5315029634103634221">‏‫Gemini هوشواره است و ممکن است اشتباه کند. <ph name="BEGIN_LINK" />اطلاعات بیشتر درباره داده‌های مربوط که به Google ارسال می‌شود<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">چیزی برای وارد کردن نیست</translation>
 <translation id="5316356981864168850">‫<ph name="INDEX" /> از <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">ذخیره</translation>
@@ -1389,6 +1394,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5596627076506792578">گزینه‌های بیشتر</translation>
 <translation id="560322036295180549">سازمانتان آن را خاموش کرده است.</translation>
 <translation id="5611398002774823980">ذخیره کردن در حساب</translation>
+<translation id="5612225021788368236">بستن تبلیغات مرورگر پیش‌فرض</translation>
 <translation id="561269594905823128">روی <ph name="BEGIN_BOLD" />انتخاب فایل<ph name="END_BOLD" /> تک‌ضرب بزنید.</translation>
 <translation id="5613297089029360427">مرتب کردن براساس جدیدترین</translation>
 <translation id="5614553682702429503">گذرواژه ذخیره شود؟</translation>
@@ -2474,6 +2480,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="9029650858822697271">از سیستم خارج شدید</translation>
 <translation id="9032405509996909363">تأیید کردن حذف داده‌های مرور</translation>
 <translation id="9035699147763101514">‏پشتیبانی شده توسط «هوش شخصی‌سازی‌شده» با Gemini. انتخاب‌هایتان را در تنظیمات مدیریت کنید.</translation>
+<translation id="9038526468059454274">خلاصه کردن با</translation>
 <translation id="9039373489628511875">پهنای باند</translation>
 <translation id="9042893549633094279">حریم خصوصی و امنیت</translation>
 <translation id="9055291197094969722">با ساختن گروه زبانه‌ها می‌توانید زبانه‌های باز را سازمان‌دهی کنید و بهره‌وری خود را حفظ کنید</translation>

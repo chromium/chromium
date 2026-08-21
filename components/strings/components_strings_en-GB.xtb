@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Select permission for <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Save IBAN?</translation>
 <translation id="1113869188872983271">&amp;Undo reorder</translation>
+<translation id="1117709830616495622">Powered by Personal Intelligence with Gemini.</translation>
 <translation id="111897705806685148">Use Passkey from another device</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to manage what Chrome info you save in your Google Account</translation>
 <translation id="1121990216147052230">Make me a to-do list</translation>
@@ -1170,6 +1171,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3005723025932146533">Show saved copy</translation>
 <translation id="300580149047131921">Recently used</translation>
 <translation id="3006864083554020786">home address</translation>
+<translation id="3008410317623852235">Now you can find and fill info from Gmail and more.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab to browse available actions, then Enter to execute selected action.</translation>
 <translation id="3010991137650052245">To use your <ph name="PERMISSION" /> on this site, give <ph name="SHORT_PRODUCT_NAME" /> access</translation>
 <translation id="3014726756341138577">Advanced printer features</translation>
@@ -2319,6 +2321,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4941627891654116707">Font size</translation>
 <translation id="4943620199112228840">Use your microphones</translation>
 <translation id="4943872375798546930">No results</translation>
+<translation id="494701040141924538">Got it, close notice</translation>
 <translation id="495170559598752135">Actions</translation>
 <translation id="4953689047182316270">Respond to Accessibility Events</translation>
 <translation id="4954505713046251871">To offer suggestions and improve this feature, the page's URL and content are shared with Google</translation>
@@ -3369,6 +3372,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6743841972744298686">Sync settings</translation>
 <translation id="6745212570062463886">Autofill your name and email address from your Google Account</translation>
 <translation id="674580074662200768">Update passport securely</translation>
+<translation id="6749473226660745022">Photos</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Policy Value</translation>
 <translation id="6753434778807740853">Delete entry <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3708,6 +3712,7 @@ Additional details:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Payment handlers</translation>
 <translation id="7366594738862061263">Learn about how Chrome protects your passwords</translation>
+<translation id="7366909168761621528">Browsing data</translation>
 <translation id="7370751048350026847">Pasting this content to this site is not recommended</translation>
 <translation id="7372526636730851647">Photo (glossy)</translation>
 <translation id="7372973238305370288">search result</translation>
@@ -4296,6 +4301,7 @@ Additional details:
 <translation id="8350416046273606058">Shortcut can't contain spaces: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Create note</translation>
 <translation id="8352849934814541340">The administrator of this device has installed applications for additional functions. Applications have access to some of your data.</translation>
+<translation id="8353273112634584260">Powered by Personal Intelligence with Gemini. Your requests, page titles and URLs may be reviewed to improve enhanced autofill.</translation>
 <translation id="8355270400102541638">Local crash context:</translation>
 <translation id="8362914115861174987">Translate to</translation>
 <translation id="8363502534493474904">Turning off aeroplane mode</translation>
@@ -4655,6 +4661,7 @@ Additional details:
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Try Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">To exit full screen, press and hold |<ph name="ACCELERATOR" />|</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Security error</translation>
 <translation id="9035699147763101514">Powered by Personal Intelligence with Gemini. Manage your choices in settings.</translation>
 <translation id="9035824888276246493">Save security codes</translation>

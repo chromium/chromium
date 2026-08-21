@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Chọn quyền cho <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Lưu IBAN?</translation>
 <translation id="1113869188872983271">&amp;Hoàn tác sắp xếp lại</translation>
+<translation id="1117709830616495622">Dựa trên Trí thông minh cá nhân của Gemini.</translation>
 <translation id="111897705806685148">Sử dụng khoá truy cập từ một thiết bị khác</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn phím Enter để quản lý thông tin Chrome bạn lưu trong Tài khoản Google</translation>
 <translation id="1121990216147052230">Lập cho tôi một danh sách việc cần làm</translation>
@@ -1170,6 +1171,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3005723025932146533">Hiển thị bản sao đã lưu</translation>
 <translation id="300580149047131921">Vừa mới sử dụng</translation>
 <translation id="3006864083554020786">địa chỉ nhà riêng</translation>
+<translation id="3008410317623852235">Giờ đây, bạn có thể tìm và điền thông tin từ Gmail và nhiều nguồn khác.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab để duyệt xem các thao tác có sẵn, sau đó nhấn phím Enter để thực thi thao tác đã chọn.</translation>
 <translation id="3010991137650052245">Để dùng <ph name="PERMISSION" /> của bạn trên trang web này, hãy cấp cho <ph name="SHORT_PRODUCT_NAME" /> quyền truy cập</translation>
 <translation id="3014726756341138577">Tính năng nâng cao của máy in</translation>
@@ -2319,6 +2321,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4941627891654116707">Cỡ chữ</translation>
 <translation id="4943620199112228840">Sử dụng micrô của bạn</translation>
 <translation id="4943872375798546930">Không tìm thấy kết quả nào</translation>
+<translation id="494701040141924538">Tôi hiểu, đóng thông báo</translation>
 <translation id="495170559598752135">Tác vụ</translation>
 <translation id="4953689047182316270">Phản hồi các sự kiện trợ năng</translation>
 <translation id="4954505713046251871">Để tính năng này có thể đưa ra đề xuất và ngày càng cải thiện, URL và nội dung của trang sẽ được chia sẻ với Google</translation>
@@ -3369,6 +3372,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6743841972744298686">Cài đặt cách đồng bộ hoá</translation>
 <translation id="6745212570062463886">Tự động điền tên và địa chỉ email từ Tài khoản Google của bạn</translation>
 <translation id="674580074662200768">Cập nhật thông tin hộ chiếu một cách an toàn</translation>
+<translation id="6749473226660745022">Ảnh</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Giá trị chính sách</translation>
 <translation id="6753434778807740853">Xoá mục <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3708,6 +3712,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Trình xử lý thanh toán</translation>
 <translation id="7366594738862061263">Tìm hiểu về cách Chrome bảo vệ mật khẩu của bạn</translation>
+<translation id="7366909168761621528">Dữ liệu duyệt web</translation>
 <translation id="7370751048350026847">Không nên dán nội dung này vào trang web này</translation>
 <translation id="7372526636730851647">Ảnh (Bóng)</translation>
 <translation id="7372973238305370288">kết quả tìm kiếm</translation>
@@ -4296,6 +4301,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8350416046273606058">Lối tắt không được chứa dấu cách: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Tạo ghi chú</translation>
 <translation id="8352849934814541340">Quản trị viên của thiết bị này đã cài đặt một số ứng dụng nhằm bổ sung chức năng. Các ứng dụng sẽ có quyền truy cập vào một số dữ liệu của bạn.</translation>
+<translation id="8353273112634584260">Dựa trên Trí thông minh cá nhân của Gemini. Các yêu cầu, tiêu đề trang và URL của bạn có thể được xem xét để cải thiện tính năng tự động điền nâng cao.</translation>
 <translation id="8355270400102541638">Bối cảnh dẫn đến sự cố trên máy:</translation>
 <translation id="8362914115861174987">Dịch sang</translation>
 <translation id="8363502534493474904">Tắt chế độ trên máy bay</translation>
@@ -4656,6 +4662,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Hãy dùng thử Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Để thoát khỏi chế độ toàn màn hình, hãy nhấn và giữ |<ph name="ACCELERATOR" />|</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Lỗi bảo mật</translation>
 <translation id="9035699147763101514">Dựa trên Trí thông minh cá nhân của Gemini. Quản lý lựa chọn của bạn trong phần cài đặt.</translation>
 <translation id="9035824888276246493">Lưu mã bảo mật</translation>

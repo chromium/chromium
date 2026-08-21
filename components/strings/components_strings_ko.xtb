@@ -70,6 +70,7 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> 권한을 선택합니다</translation>
 <translation id="1113000785583998331">IBAN을 저장하시겠습니까?</translation>
 <translation id="1113869188872983271">재정렬 실행 취소(&amp;U)</translation>
+<translation id="1117709830616495622">Gemini의 개인 인텔리전스를 기반으로 합니다.</translation>
 <translation id="111897705806685148">다른 기기의 패스키 사용</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab과 Enter를 차례로 눌러 Google 계정에 저장할 Chrome 정보 관리</translation>
 <translation id="1121990216147052230">할 일 목록 만들어 줘</translation>
@@ -1170,6 +1171,7 @@
 <translation id="3005723025932146533">저장된 사본 표시</translation>
 <translation id="300580149047131921">방금 사용</translation>
 <translation id="3006864083554020786">집 주소</translation>
+<translation id="3008410317623852235">이제 Gmail 등에서 정보를 찾고 자동으로 입력할 수 있습니다.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 눌러 사용 가능한 작업을 둘러보고 Enter를 눌러 선택한 작업을 실행합니다.</translation>
 <translation id="3010991137650052245">이 사이트에서 <ph name="PERMISSION" /> 권한을 사용하려면 <ph name="SHORT_PRODUCT_NAME" />에 액세스 권한을 부여하세요.</translation>
 <translation id="3014726756341138577">고급 프린터 기능</translation>
@@ -2319,6 +2321,7 @@
 <translation id="4941627891654116707">글꼴 크기</translation>
 <translation id="4943620199112228840">마이크 사용</translation>
 <translation id="4943872375798546930">검색결과가 없습니다.</translation>
+<translation id="494701040141924538">확인, 알림 닫기</translation>
 <translation id="495170559598752135">작업</translation>
 <translation id="4953689047182316270">접근성 이벤트에 응답</translation>
 <translation id="4954505713046251871">추천을 제공하고 이 기능을 개선하기 위해 페이지의 URL 및 콘텐츠가 Google과 공유됩니다</translation>
@@ -3369,6 +3372,7 @@
 <translation id="6743841972744298686">동기화 설정</translation>
 <translation id="6745212570062463886">Google 계정의 이름 및 이메일 주소를 자동 완성합니다.</translation>
 <translation id="674580074662200768">안전하게 여권 업데이트하기</translation>
+<translation id="6749473226660745022">사진</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">정책 값</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> 항목 삭제</translation>
@@ -3708,6 +3712,7 @@
 <translation id="7366117520888504990">198x275mm</translation>
 <translation id="7366362069757178916">결제 핸들러</translation>
 <translation id="7366594738862061263">Chrome에서 비밀번호를 보호하는 방법 알아보기</translation>
+<translation id="7366909168761621528">인터넷 사용 기록</translation>
 <translation id="7370751048350026847">이 사이트에 해당 콘텐츠를 붙여넣지 않는 것이 좋습니다.</translation>
 <translation id="7372526636730851647">사진(유광)</translation>
 <translation id="7372973238305370288">검색결과</translation>
@@ -4295,6 +4300,7 @@
 <translation id="8350416046273606058">단축어에는 공백을 포함할 수 없습니다. "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">메모 만들기</translation>
 <translation id="8352849934814541340">이 기기의 관리자가 추가 기능을 위한 애플리케이션을 설치했습니다. 애플리케이션에는 내 데이터 중 일부에 액세스할 권한이 있습니다.</translation>
+<translation id="8353273112634584260">Gemini의 개인 인텔리전스를 기반으로 합니다. 향상된 자동 완성을 개선하기 위해 요청, 페이지 제목, URL이 검토될 수 있습니다.</translation>
 <translation id="8355270400102541638">로컬 비정상 종료 컨텍스트:</translation>
 <translation id="8362914115861174987">도착어</translation>
 <translation id="8363502534493474904">비행기 모드 사용 중지</translation>
@@ -4654,6 +4660,7 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Chrome Enterprise Core 사용해 보기</translation>
 <translation id="9027531288681624875">전체 화면을 종료하려면 |<ph name="ACCELERATOR" />| 키를 길게 누르세요.</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">보안 오류</translation>
 <translation id="9035699147763101514">Gemini의 개인 인텔리전스를 기반으로 합니다. 설정에서 선택사항을 관리하세요</translation>
 <translation id="9035824888276246493">보안 코드 저장</translation>

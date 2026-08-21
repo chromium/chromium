@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Selectează permisiunea pentru <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Salvezi codul IBAN?</translation>
 <translation id="1113869188872983271">&amp;Anulați reordonarea</translation>
+<translation id="1117709830616495622">Dezvoltat de Inteligența personalizată cu Gemini.</translation>
 <translation id="111897705806685148">Folosește o cheie de acces de pe alt dispozitiv</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona informațiile din Chrome pe care le salvezi în Contul Google</translation>
 <translation id="1121990216147052230">Creează o listă de activități</translation>
@@ -1170,6 +1171,7 @@
 <translation id="3005723025932146533">Afișați o copie salvată</translation>
 <translation id="300580149047131921">Utilizată recent</translation>
 <translation id="3006864083554020786">adresa de acasă</translation>
+<translation id="3008410317623852235">Acum poți să găsești și să completezi informații din Gmail și altele.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab pentru a răsfoi acțiunile disponibile, apoi pe Enter pentru a executa acțiunea selectată.</translation>
 <translation id="3010991137650052245">Pentru a folosi <ph name="PERMISSION" /> pe acest site, permite accesul browserului <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3014726756341138577">Funcții avansate ale imprimantei</translation>
@@ -2319,6 +2321,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4941627891654116707">Dimensiunea fontului</translation>
 <translation id="4943620199112228840">Îți folosească microfoanele</translation>
 <translation id="4943872375798546930">Nu există rezultate</translation>
+<translation id="494701040141924538">Am înțeles, închide notificarea</translation>
 <translation id="495170559598752135">Acțiuni</translation>
 <translation id="4953689047182316270">să răspundă evenimentelor de accesibilitate</translation>
 <translation id="4954505713046251871">Pentru a oferi sugestii și a îmbunătăți această funcție, adresa URL și conținutul paginii sunt trimise la Google</translation>
@@ -3369,6 +3372,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="6743841972744298686">Setări de sincronizare</translation>
 <translation id="6745212570062463886">Completează automat numele și adresa de e-mail din Contul Google</translation>
 <translation id="674580074662200768">Actualizează în siguranță pașaportul</translation>
+<translation id="6749473226660745022">Fotografii</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Valoarea politicii</translation>
 <translation id="6753434778807740853">Șterge intrarea <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3708,6 +3712,7 @@ Detalii suplimentare:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Handlere pentru plăți</translation>
 <translation id="7366594738862061263">Află mai multe despre modul în care Chrome îți protejează parolele</translation>
+<translation id="7366909168761621528">Date de navigare</translation>
 <translation id="7370751048350026847">Inserarea acestui conținut pe site nu este recomandată</translation>
 <translation id="7372526636730851647">Foto (lucios)</translation>
 <translation id="7372973238305370288">rezultat al căutării</translation>
@@ -4296,6 +4301,7 @@ Detalii suplimentare:
 <translation id="8350416046273606058">Comanda rapidă nu poate conține spații: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="8351131234907093545">Creează o notă</translation>
 <translation id="8352849934814541340">Administratorul acestui dispozitiv a instalat aplicații pentru funcții suplimentare. Aplicațiile au acces la unele dintre datele tale.</translation>
+<translation id="8353273112634584260">Dezvoltat de Inteligența personalizată cu Gemini. Solicitările, titlurile paginilor și adresele URL pot fi examinate pentru a îmbunătăți completarea automată îmbunătățită.</translation>
 <translation id="8355270400102541638">Contextul local al blocării:</translation>
 <translation id="8362914115861174987">Tradu în</translation>
 <translation id="8363502534493474904">să dezactivezi modul Avion;</translation>
@@ -4656,6 +4662,7 @@ Detalii suplimentare:
 <translation id="9026253329950610248">Site-uri Google</translation>
 <translation id="9027020981272345766">Încearcă Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Pentru a ieși din ecranul complet, apasă lung pe |<ph name="ACCELERATOR" />|</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Eroare de securitate</translation>
 <translation id="9035699147763101514">Dezvoltat de Inteligența personalizată cu Gemini. Gestionează-ți opțiunile în setări.</translation>
 <translation id="9035824888276246493">Salvează codurile de securitate</translation>

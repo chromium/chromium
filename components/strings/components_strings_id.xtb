@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Pilih izin untuk <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Simpan IBAN?</translation>
 <translation id="1113869188872983271">&amp;Urungkan pengaturan ulang</translation>
+<translation id="1117709830616495622">Didukung oleh Kecerdasan Personal dengan Gemini.</translation>
 <translation id="111897705806685148">Gunakan Kunci Sandi dari Perangkat Lain</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola info Chrome yang Anda simpan di Akun Google Anda</translation>
 <translation id="1121990216147052230">Buatkan daftar tugas</translation>
@@ -1171,6 +1172,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3005723025932146533">Tampilkan salinan yang disimpan</translation>
 <translation id="300580149047131921">Baru saja digunakan</translation>
 <translation id="3006864083554020786">alamat rumah</translation>
+<translation id="3008410317623852235">Anda kini dapat menemukan dan mengisi info dari Gmail dan lainnya.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab untuk menjelajahi tindakan yang tersedia, lalu tekan Enter untuk menjalankan tindakan yang dipilih.</translation>
 <translation id="3010991137650052245">Untuk menggunakan <ph name="PERMISSION" /> Anda di situs ini, berikan akses ke <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3014726756341138577">Fitur printer lanjutan</translation>
@@ -2319,6 +2321,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4941627891654116707">Ukuran font</translation>
 <translation id="4943620199112228840">Menggunakan mikrofon Anda</translation>
 <translation id="4943872375798546930">Tidak ada hasil</translation>
+<translation id="494701040141924538">Oke, tutup pemberitahuan</translation>
 <translation id="495170559598752135">Tindakan</translation>
 <translation id="4953689047182316270">Merespons Acara Aksesibilitas</translation>
 <translation id="4954505713046251871">Untuk memberikan saran dan meningkatkan kualitas fitur ini, URL dan konten halaman dibagikan ke Google</translation>
@@ -3369,6 +3372,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6743841972744298686">Setelan sinkronisasi</translation>
 <translation id="6745212570062463886">Isi otomatis nama dan alamat email Anda dari Akun Google Anda</translation>
 <translation id="674580074662200768">Perbarui paspor dengan aman</translation>
+<translation id="6749473226660745022">Foto</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Nilai kebijakan</translation>
 <translation id="6753434778807740853">Hapus entri <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3706,6 +3710,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Pengendali pembayaran</translation>
 <translation id="7366594738862061263">Pelajari cara Chrome melindungi sandi Anda</translation>
+<translation id="7366909168761621528">Data browsing</translation>
 <translation id="7370751048350026847">Tidak disarankan menempel konten ini ke situs ini</translation>
 <translation id="7372526636730851647">Foto (Mengilap)</translation>
 <translation id="7372973238305370288">hasil penelusuran</translation>
@@ -4294,6 +4299,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8350416046273606058">Pintasan tidak boleh berisi spasi: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Buat catatan</translation>
 <translation id="8352849934814541340">Administrator perangkat ini telah menginstal aplikasi untuk fungsi tambahan. Aplikasi memiliki akses ke sebagian data Anda.</translation>
+<translation id="8353273112634584260">Didukung oleh Kecerdasan Personal dengan Gemini. Permintaan, judul halaman, dan URL Anda dapat ditinjau untuk meningkatkan kualitas isi otomatis yang ditingkatkan.</translation>
 <translation id="8355270400102541638">Konteks Error Lokal:</translation>
 <translation id="8362914115861174987">Terjemahkan ke</translation>
 <translation id="8363502534493474904">Nonaktifkan mode pesawat</translation>
@@ -4651,6 +4657,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Coba Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Untuk keluar dari layar penuh, tekan lama |<ph name="ACCELERATOR" />|</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Kesalahan keamanan</translation>
 <translation id="9035699147763101514">Didukung oleh Kecerdasan Personal dengan Gemini. Kelola pilihan Anda di setelan.</translation>
 <translation id="9035824888276246493">Simpan kode keamanan</translation>

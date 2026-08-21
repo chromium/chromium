@@ -247,11 +247,12 @@ Wichtige Hinweise:
 <translation id="6104024151682120539">In Chromium öffnen</translation>
 <translation id="61109258320235597">Gib deine Passphrase ein, um Chromium-Daten in deinem Google-Konto zu verwenden und zu speichern.</translation>
 <translation id="6132149203299792222">Melde dich mit deinem Google-Konto an, um z. B. deine Passwörter und Lesezeichen zu synchronisieren.</translation>
-<translation id="6139490926154511684">Du kannst Chromium als Standardbrowser festlegen, um Links mit nur einem Tippen zu öffnen, anstatt sie zu kopieren.</translation>
+<translation id="6139490926154511684">Du kannst Chromium als Standardbrowser festlegen, um Links mit nur einem Fingertipp zu öffnen, anstatt sie zu kopieren.</translation>
 <translation id="6148377327556085395">Lesezeichen zu Chromium hinzufügen</translation>
 <translation id="6154098560469640583">Du kannst Chromium jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
 <translation id="6157162508956739031">Melde dich schnell in Apps und auf Websites an, indem du deine Passwörter und Passkeys aus Chromium automatisch ausfüllen lässt</translation>
 <translation id="6170619162539716595">Erlaube Chromium, über Google Maps Wegbeschreibungen und lokale Informationen zu erkannten Adressen bereitzustellen.</translation>
+<translation id="6170834619568075230">Mit Google Lens in Chromium kannst du nach allem suchen, was du siehst</translation>
 <translation id="6244277266078678766">Deine Daten werden im Passwortmanager für <ph name="USER_EMAIL" /> gespeichert</translation>
 <translation id="6268381023930128611">Von Chromium abmelden?</translation>
 <translation id="6301717043141881464">Wähle „Autofill“ in Chromium, um deine gespeicherten Passwörter ganz einfach in deinen anderen Apps abzurufen</translation>
@@ -378,6 +379,7 @@ Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, wer
 <translation id="9177628952266852500"><ph name="EMAIL" />. Chromium wird verwaltet.</translation>
 <translation id="921174536258924340">Chromium konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="924957577793602335">Chromium personalisieren</translation>
+<translation id="925642420047255224">Du kannst Chromium jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst</translation>
 <translation id="981812233959540767">Chromium Dino spielen</translation>
 <translation id="985602178874221306">Die Chromium-Autoren</translation>
 <translation id="986520777495807752">Chromium als Standardbrowser festlegen</translation>

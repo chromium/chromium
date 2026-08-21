@@ -3373,6 +3373,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="6743841972744298686">Sinchronizavimo nustatymai</translation>
 <translation id="6745212570062463886">Vardo ir pavardės bei el. pašto adreso laukus automatiškai užpildyti naudojant duomenis iš „Google“ paskyros</translation>
 <translation id="674580074662200768">Patikimai atnaujinkite paso duomenis</translation>
+<translation id="6749473226660745022">Nuotraukos</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Politikos vertė</translation>
 <translation id="6753434778807740853">Ištrinti įrašą <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3712,6 +3713,7 @@ Papildoma išsami informacija:
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Mokėjimų doroklės</translation>
 <translation id="7366594738862061263">Sužinokite daugiau, kaip „Chrome“ apsaugo jūsų slaptažodžius</translation>
+<translation id="7366909168761621528">Naršymo duomenys</translation>
 <translation id="7370751048350026847">Nerekomenduojama įklijuoti šio turinio šioje svetainėje</translation>
 <translation id="7372526636730851647">Fotopopierius (blizgus)</translation>
 <translation id="7372973238305370288">paieškos rezultatas</translation>
@@ -4661,6 +4663,7 @@ Papildoma išsami informacija:
 <translation id="9026253329950610248">„Google“ svetainės</translation>
 <translation id="9027020981272345766">Išbandykite „Chrome Enterprise Core“</translation>
 <translation id="9027531288681624875">Jei norite išeiti iš viso ekrano režimo, paspauskite ir palaikykite |<ph name="ACCELERATOR" />|</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Saugos klaida</translation>
 <translation id="9035699147763101514">Teikia Asmeninis intelektas su „Gemini“. Tvarkykite pasirinkimus nustatymuose.</translation>
 <translation id="9035824888276246493">Išsaugoti saugos kodus</translation>

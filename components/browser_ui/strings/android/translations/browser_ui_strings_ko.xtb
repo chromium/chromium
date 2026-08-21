@@ -372,6 +372,7 @@
 <translation id="4676059169848868271"><ph name="APP_NAME" />에서 손 추적을 사용하려면 <ph name="BEGIN_LINK" />시스템 설정<ph name="END_LINK" />에서도 손 추적을 사용 설정하세요.</translation>
 <translation id="4688045258817337666">카드 관리</translation>
 <translation id="4722332387043141878">사이트에서는 주로 가상 현실 또는 피트니스 모니터링 같은 기능을 지원하기 위해 기기의 움직임 감지 센서와 조도 센서를 사용합니다.</translation>
+<translation id="4748783296226936791">사이트에서는 흔히 사용되지 않는 키보드, 게임 컨트롤러, 기타 기기가 필요한 기능을 지원하기 위해 주로 HID 기기에 연결합니다.</translation>
 <translation id="4755971844837804407">사용 설정하면 사이트에서 모든 광고를 표시할 수 있습니다. 사용 중지하면 사이트에서 방해가 되거나 사용자를 현혹하는 광고를 표시할 수 없습니다.</translation>
 <translation id="4779083564647765204">확대/축소</translation>
 <translation id="4807122856660838973">세이프 브라우징 사용 설정</translation>
@@ -456,6 +457,7 @@
 <translation id="5700761515355162635">서드 파티 쿠키 허용됨</translation>
 <translation id="5706552988683188916"><ph name="WEBSITE" />의 쿠키 및 기타 사이트 데이터가 삭제됩니다.</translation>
 <translation id="571222594670061844">사이트에서 ID 서비스의 로그인 메시지를 표시할 수 있음</translation>
+<translation id="5719854774000914513">사이트에서 HID 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="5740126560802162366">사이트에서 기기에 데이터를 저장할 수 있습니다.</translation>
 <translation id="5743425052258407233">모든 기기에서 방문 기록을 확인하면 중단한 부분부터 쉽게 다시 시작할 수 있습니다.</translation>
 <translation id="5749158352074143502">이 탭으로 계속</translation>
@@ -575,6 +577,7 @@
 <translation id="6950072572526089586">내가 방문하는 사이트에서 로그인 상태를 유지하거나 장바구니에 상품을 저장하는 등 사이트의 정상적인 작동을 위하여 내 활동 정보를 저장할 수 있습니다. 사이트에서는 이 정보를 주로 기기에 임시 저장합니다.</translation>
 <translation id="6964291282260073066">'WebGPU'가 사용 중지되었습니다.</translation>
 <translation id="6965382102122355670">확인</translation>
+<translation id="6972629891077993081">HID 기기</translation>
 <translation id="6980507581230208647">장미 테마</translation>
 <translation id="6980861169612950611"><ph name="SITE_NAME" /> 사이트 데이터를 삭제하시겠습니까?</translation>
 <translation id="6981982820502123353">접근성</translation>
@@ -587,7 +590,6 @@
 <translation id="7053983685419859001">차단</translation>
 <translation id="7055552182600664515">저작권으로 보호되는 콘텐츠를 재생하려면 사이트에서 콘텐츠 보호 서비스를 사용해야 할 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1개 선택됨}other{#개 선택됨}}</translation>
-<translation id="708014373017851679">'<ph name="APP_NAME" />' 앱이 최신 버전이 아닙니다. 앱을 업데이트하세요.</translation>
 <translation id="7084115944294706056">주소 표시줄 위치 선택</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" />개 선택됨. 화면 상단에서 옵션 선택 가능</translation>
 <translation id="7141896414559753902">사이트에서 팝업 및 리디렉션을 표시하지 못하도록 차단(권장)</translation>
@@ -732,6 +734,7 @@
 <translation id="8593422116412089302">사용 설정하면 사이트에서 나에 관해 저장된 정보 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 나에 관해 저장된 정보 사용을 요청할 수 없습니다.</translation>
 <translation id="8609465669617005112">위로 이동</translation>
 <translation id="8617611086246832542">사용 설정하면 웹사이트 데스크톱 뷰가 표시됩니다. 사용 중지하면 웹사이트 모바일 뷰가 표시됩니다.</translation>
+<translation id="8625916342247441948">사이트에서 HID 기기에 연결하도록 허용하지 않음</translation>
 <translation id="8670078035093027626">기본 브라우저 하단 시트가 전체 높이로 열림</translation>
 <translation id="8676316391139423634">이 옵션을 사용 설정하면 사이트에서 손 추적을 요청할 수 있습니다. 사용 중지하면 사이트에서 내 손을 추적할 수 없습니다.</translation>
 <translation id="8676374126336081632">입력내용 지우기</translation>

@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Виберіть тип для дозволу "<ph name="PERMISSION_NAME" />"</translation>
 <translation id="1113000785583998331">Зберегти номер IBAN?</translation>
 <translation id="1113869188872983271">&amp;Відмінити перевпорядкування</translation>
+<translation id="1117709830616495622">Працює на основі персоналізованого інтелекту в Gemini.</translation>
 <translation id="111897705806685148">Використовувати ключ доступу з іншого пристрою</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб вибрати, які дані Chrome зберігати в обліковому записі Google.</translation>
 <translation id="1121990216147052230">Створи список справ</translation>
@@ -1170,6 +1171,7 @@
 <translation id="3005723025932146533">Показати збережену копію</translation>
 <translation id="300580149047131921">Використано нещодавно</translation>
 <translation id="3006864083554020786">домашня адреса</translation>
+<translation id="3008410317623852235">Тепер ви можете знаходити й заповнювати інформацію з Gmail тощо.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />: натисніть Tab, щоб переглянути доступні дії, а потім – Enter, щоб виконати вибрану дію.</translation>
 <translation id="3010991137650052245">Щоб застосовувати на цьому сайті дозвіл "<ph name="PERMISSION" />", надайте його <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3014726756341138577">Розширені функції принтера</translation>
@@ -2319,6 +2321,7 @@
 <translation id="4941627891654116707">Розмір шрифту</translation>
 <translation id="4943620199112228840">Використовувати мікрофони</translation>
 <translation id="4943872375798546930">Не знайдено жодного результату</translation>
+<translation id="494701040141924538">Зрозуміло, закрити сповіщення</translation>
 <translation id="495170559598752135">Дії</translation>
 <translation id="4953689047182316270">реагувати на події спеціальних можливостей</translation>
 <translation id="4954505713046251871">Щоб пропонувати рекомендації і покращувати цю функцію, ми надсилаємо в Google URL-адресу й контент сторінки</translation>
@@ -3369,6 +3372,7 @@
 <translation id="6743841972744298686">Налаштування синхронізації</translation>
 <translation id="6745212570062463886">Автоматично заповніть ім’я і електронну адресу даними з облікового запису Google</translation>
 <translation id="674580074662200768">Безпечно оновіть паспортні дані</translation>
+<translation id="6749473226660745022">Фото</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Значення правила</translation>
 <translation id="6753434778807740853">Видалити запис "<ph name="ENTRY_VOICEOVER" />"</translation>
@@ -3708,6 +3712,7 @@
 <translation id="7366117520888504990">198 x 275 мм</translation>
 <translation id="7366362069757178916">Обробники платежів</translation>
 <translation id="7366594738862061263">Дізнайтесь, як Chrome захищає ваші паролі</translation>
+<translation id="7366909168761621528">Дані вебперегляду</translation>
 <translation id="7370751048350026847">Вставляти такий контент на цей сайт не рекомендується</translation>
 <translation id="7372526636730851647">Фотопапір (глянцевий)</translation>
 <translation id="7372973238305370288">результат пошуку</translation>
@@ -4296,6 +4301,7 @@
 <translation id="8350416046273606058">Швидка команда не може містити пробіли: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Створити нотатку</translation>
 <translation id="8352849934814541340">Адміністратор пристрою встановив додатки для розширених функцій. Ці додатки мають доступ до деяких ваших даних.</translation>
+<translation id="8353273112634584260">Працює на основі персоналізованого інтелекту в Gemini. Ваші запити, назви сторінок і URL-адреси можуть перевірятися, щоб удосконалити функцію покращеного автозаповнення.</translation>
 <translation id="8355270400102541638">Локальний контекст аварійного завершення роботи:</translation>
 <translation id="8362914115861174987">Перекласти такою мовою:</translation>
 <translation id="8363502534493474904">вимкнути режим польоту</translation>
@@ -4656,6 +4662,7 @@
 <translation id="9026253329950610248">Google Сайти</translation>
 <translation id="9027020981272345766">Спробувати Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">Щоб вийти з повноекранного режиму, утримуйте клавішу |<ph name="ACCELERATOR" />|</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">Помилка системи безпеки</translation>
 <translation id="9035699147763101514">Працює на основі персоналізованого інтелекту в Gemini. Параметри можна змінити в налаштуваннях.</translation>
 <translation id="9035824888276246493">Зберігати коди безпеки</translation>

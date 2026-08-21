@@ -372,6 +372,7 @@
 <translation id="4676059169848868271">Om <ph name="APP_NAME" /> toe te laat om handnasporing te gebruik, moet jy ook handnasporing in <ph name="BEGIN_LINK" />stelselinstellings<ph name="END_LINK" /> aanskakel.</translation>
 <translation id="4688045258817337666">Bestuur jou kaarte</translation>
 <translation id="4722332387043141878">Werwe gebruik gewoonlik jou toestel se beweging- en ligsensors vir kenmerke soos virtuele realiteit of fiksheidnasporing</translation>
+<translation id="4748783296226936791">Werwe koppel gewoonlik aan HID-toestelle vir kenmerke wat ongewone sleutelborde, speletjiekontroleerders en ander toestelle gebruik</translation>
 <translation id="4755971844837804407">Wanneer dit aan is, kan werwe enige advertensie vir jou wys. Wanneer dit af is, kan werwe nie indringerige of misleidende advertensies wys nie.</translation>
 <translation id="4779083564647765204">Zoem</translation>
 <translation id="4807122856660838973">Skakel Veiligblaai aan</translation>
@@ -456,6 +457,7 @@
 <translation id="5700761515355162635">Derdepartywebkoekies toegelaat</translation>
 <translation id="5706552988683188916">Dit vee webkoekies en ander werfdata vir <ph name="WEBSITE" /> uit</translation>
 <translation id="571222594670061844">Werwe kan vir jou aanmeldporboodskappe van identiteitsdienste af wys</translation>
+<translation id="5719854774000914513">Werwe kan vra om aan HID-toestelle te koppel</translation>
 <translation id="5740126560802162366">Werwe kan data op jou toestel stoor</translation>
 <translation id="5743425052258407233">Kry jou geskiedenis op al jou toestelle sodat jy maklik kan voortgaan waar jy opgehou het</translation>
 <translation id="5749158352074143502">Gaan voort met hierdie oortjie</translation>
@@ -575,6 +577,7 @@
 <translation id="6950072572526089586">’n Werf wat jy besoek, kan inligting stoor oor wat jy besig is om te doen sodat dit kan werk soos verwag – byvoorbeeld, om jou by ’n werf aangemeld te hou of items in jou inkopiemandjie te stoor. Werwe stoor hierdie inligting dikwels tydelik op jou toestel.</translation>
 <translation id="6964291282260073066">“WebGPU” is gedeaktiveer.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6972629891077993081">HID-toestelle</translation>
 <translation id="6980507581230208647">Roostema</translation>
 <translation id="6980861169612950611">Vee werfdata uit? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Toeganklikheid</translation>
@@ -587,7 +590,6 @@
 <translation id="7053983685419859001">Blokkeer</translation>
 <translation id="7055552182600664515">Werwe sal dalk ’n inhoudbeskermingdiens moet gebruik om inhoud te speel wat deur kopiereg beskerm word. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 gekies}other{# gekies}}</translation>
-<translation id="708014373017851679">“<ph name="APP_NAME" />” is verouderd. Dateer asseblief die app op.</translation>
 <translation id="7084115944294706056">Kies adresbalk se posisie</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> gekies. Opsies is naby aan die bokant van die skerm beskikbaar</translation>
 <translation id="7141896414559753902">Verhinder werwe om opspringers en herleidings te wys (aanbeveel)</translation>
@@ -732,6 +734,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:</translation>
 <translation id="8593422116412089302">Wanneer dit aan is, kan werwe vra om inligting te gebruik wat hulle oor jou gestoor het. Wanneer dit af is, kan werwe jou nie vra om inligting te gebruik wat hulle oor jou gestoor het nie.</translation>
 <translation id="8609465669617005112">Skuif op</translation>
 <translation id="8617611086246832542">Wanneer dit aan is, word die lessenaaraansig van webwerwe gewys. Wanneer dit af is, word die mobielaansig van webwerwe gewys.</translation>
+<translation id="8625916342247441948">Moenie werwe toelaat om aan HID-toestelle te koppel nie</translation>
 <translation id="8670078035093027626">Onderste blad van verstekblaaier is teen volle hoogte oopgemaak</translation>
 <translation id="8676316391139423634">Wanneer dit aan is, kan werwe vra om jou hande na te spoor. Wanneer dit af is, kan werwe nie jou hande naspoor nie.</translation>
 <translation id="8676374126336081632">Vee invoer uit</translation>

@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">Uzyskaj dostęp do zapisanych haseł w innych aplikacjach</translation>
 <translation id="4431224949908513835">Wybierz formę płatności, której dane chcesz podać.</translation>
 <translation id="4432122368769493392">Ustawienia…</translation>
+<translation id="4439968635693513370">Zaplanuj weekend z pomocą</translation>
 <translation id="4442550905108052454">Otwórz <ph name="BEGIN_BOLD" />Ustawienia<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> – więcej opcji</translation>
 <translation id="4455710003856931944">Aby przejść wstecz lub do przodu, możesz przesunąć palcem po krawędzi.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">Zamknięte elementy możesz ponownie otworzyć w sekcjach Ostatnie karty lub Grupy kart. Przypięte karty nie zostaną zamknięte.</translation>
 <translation id="4547181496285029457">Powrót na ostatnio wyświetlaną kartę</translation>
 <translation id="4552042254369397518">Kopiuję…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Więcej kluczy dostępu</translation>
 <translation id="4564893319561643483">Ukryj: „<ph name="TITLE" />”</translation>
 <translation id="456502772933839252">Udostępniasz <ph name="PAGE_TITLE" /></translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Twoja organizacja wymaga przeglądania prywatnego. W trybie incognito grupy kart nie są synchronizowane.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">Kupuj bez obaw z pomocą</translation>
 <translation id="467189612236587057">Zadzwoń do firmy, aby nawiązać z nią kontakt</translation>
 <translation id="4673565891421389203">Logowanie się na konto zarządzane pozwala oddzielić dane przeglądania związane z organizacją (w tym karty, historię i hasła) od pozostałych danych przeglądania.
 
@@ -1291,6 +1294,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> może teraz korzystać z Twojej nazwy użytkownika i Twojego hasła podczas logowania się na stronie <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> za pomocą Menedżera haseł Google.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, konto zarządzane przez Twoją organizację (obecnie wybraną). Wybierz konto.</translation>
 <translation id="5242899254250321823">Zmień hasło na stronie</translation>
+<translation id="524751727772074981">Gemini w Chrome – zapytaj o cokolwiek, gdziekolwiek jesteś</translation>
 <translation id="5248640482715684545">Ta witryna próbuje otworzyć inną aplikację.</translation>
 <translation id="5250371859659394278">Z nieznanego źródła</translation>
 <translation id="525510229763628836">Zminimalizowane</translation>
@@ -1307,6 +1311,7 @@
 <translation id="5300589172476337783">Pokaż</translation>
 <translation id="5311061401280561833">Przyznano dostęp do aparatu i mikrofonu</translation>
 <translation id="5313967007315987356">Dodaj stronę</translation>
+<translation id="5315029634103634221">Gemini to AI i może popełniać błędy. <ph name="BEGIN_LINK" />Więcej informacji o odpowiednich danych wysyłanych do Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Nic do zaimportowania</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> z <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Zapisz</translation>
@@ -1389,6 +1394,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5596627076506792578">Więcej opcji</translation>
 <translation id="560322036295180549">Wyłączone przez organizację</translation>
 <translation id="5611398002774823980">Zapisz na koncie</translation>
+<translation id="5612225021788368236">Zamknij promocję przeglądarki domyślnej</translation>
 <translation id="561269594905823128">Kliknij <ph name="BEGIN_BOLD" />Wybierz plik<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Sortuj od najnowszego</translation>
 <translation id="5614553682702429503">Zapisać hasło?</translation>
@@ -2474,6 +2480,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="9029650858822697271">Nastąpiło wylogowanie</translation>
 <translation id="9032405509996909363">Potwierdź usunięcie danych przeglądania</translation>
 <translation id="9035699147763101514">Technologia spersonalizowanej inteligencji w Gemini Możesz zarządzać swoimi wyborami w ustawieniach.</translation>
+<translation id="9038526468059454274">Podsumuj z pomocą</translation>
 <translation id="9039373489628511875">Przepustowość</translation>
 <translation id="9042893549633094279">Prywatność i bezpieczeństwo</translation>
 <translation id="9055291197094969722">Twórz grupy kart, aby porządkować otwarte karty i utrzymywać produktywność</translation>

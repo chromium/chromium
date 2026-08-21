@@ -465,6 +465,7 @@
 <translation id="1757773103848038814">Monospace फॉंट</translation>
 <translation id="1757935267918149452">Google पासवर्ड बदला बटण, तुमचा Google खाते पासवर्ड बदलण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="1759776526873274358">तुमच्या सुरक्षेमध्ये सुधारणा करण्यासाठी साइट वापरत असलेले पडताळणी कोड ऑटोफिल करा. Chrome हे कोड तुमच्या Gmail मधून मिळवू शकते. <ph name="BEGIN_LINK" />या वैशिष्ट्याबद्दल अधिक जाणून घ्या<ph name="LINK_END" /></translation>
+<translation id="176013700366797492"><ph name="BEGIN_LINK1" />डेटा आणि गोपनीयता प्राधान्ये<ph name="END_LINK1" /> नियंत्रित करण्यासाठी किंवा लॉयल्टी कार्ड व आयडी यांसारख्या <ph name="BEGIN_LINK2" />पेमेंट पद्धती<ph name="END_LINK2" /> आणि <ph name="BEGIN_LINK3" />पास<ph name="END_LINK3" /> व्यवस्थापित करण्यासाठी Google Wallet ला भेट द्या</translation>
 <translation id="1763864636252898013">हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षितता सर्टिफिकेट तुम्हाला डिव्हाइसच्या ऑपरेटिंग सिस्टमद्वारे विश्वसनीय नाही. हे कदाचित एका चुकीच्या कॉन्फिगरेशनमुळे किंवा हल्लेखोराने तुमचे कनेक्शन इंटरसेप्ट केल्यामुळे झाले असू शकते.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows नेटवर्क निदान चालवून पहा<ph name="END_LINK" />.</translation>
 <translation id="1777422078676229054">फोटो (आर्कायव्हल)</translation>
@@ -632,6 +633,7 @@
 <translation id="2090451897496479509">अधिक माहितीसाठी पुरवठादाराशी संपर्क साधा</translation>
 <translation id="2090686487550343086">IBANs</translation>
 <translation id="2091887806945687916">ध्वनी</translation>
+<translation id="2092361763640578821">बद्दल आणखी जाणून घ्या</translation>
 <translation id="2093184051799735948"><ph name="ENGINE_NAME" /> शोधा किंवा URL टाइप करा</translation>
 <translation id="2093982008204312032">Google Chrome पासवर्ड एंटर करण्यासाठी Windows Hello बंद करण्याचा प्रयत्न करत आहे.</translation>
 <translation id="2094505752054353250">डोमेन जुळत नाही</translation>
@@ -788,6 +790,7 @@
 <translation id="2321291402658100099">माहिती व्यवस्थापित करा</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{१ विंडो}other{# विंडो}}</translation>
 <translation id="232390861414237658">हे कार्ड Google Pay सह वापरण्यासाठी सेव्ह केलेले असते, तेव्हा Chrome मध्ये केलेल्या खरेदीसाठी ते ऑटोफिल करा</translation>
+<translation id="2325722389016720813">आपोआप पूर्ण करण्यासाठी अप किंवा डाउन ॲरो प्रेस करा. ऑटोकंप्लीट करण्यासाठी टाइप करा.</translation>
 <translation id="2326283484705860548">तुम्ही आता Google Wallet मधून आणखी माहिती ऑटोफिल करू शकता</translation>
 <translation id="2326747055382936979">वर्धित ऑटोफिल व्यवस्थापित करा</translation>
 <translation id="2328651992442742497">अनुमती आहे (डीफॉल्ट)</translation>
@@ -1541,6 +1544,7 @@
 <translation id="3642638418806704195">ॲप्लिकेशन:</translation>
 <translation id="3647286794400715637">प्रत्येक URLs स्ट्रिंग एंट्रीमध्ये एक ते दोन URLs असणे आवश्यक आहे.</translation>
 <translation id="3647400963805615193">Chrome टीप डिसमिस करण्यासाठी बटण, डिसमिस करण्यासाठी एंटर प्रेस करा, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
+<translation id="3647730822767756911">ॲक्टिव्हिटीचे परीक्षण करणे</translation>
 <translation id="3648667207586409316">ताण कमी करण्यात मदत व्हावी, यासाठी माझी काय मदत होऊ शकते?</translation>
 <translation id="3650584904733503804">प्रमाणीकरण यशस्वी</translation>
 <translation id="3650594806107685466">तुमचे कार्ड सुरक्षित ठेवण्यात मदत करण्यासाठी, <ph name="SIDE_OF_CARD" /> वरील CVC एंटर करा</translation>
@@ -2003,6 +2007,7 @@
 <translation id="4377869186417956230">या मेनू आयटमच्या अंतर्गत सर्व लॉयल्टी कार्डवर बदला.</translation>
 <translation id="4378154925671717803">फोन</translation>
 <translation id="4378221908737133050">माझ्या घरासाठी डीप क्लीन चेकलिस्ट तयार कर</translation>
+<translation id="4379357028567121852"><ph name="APP_NAME" /> कडून</translation>
 <translation id="4381997246130185847">तुम्ही जिथे सोडले होते तिथून पुढे सुरू करू शकता किंवा फिरतीवर असताना नवीन टॅब गट तयार करू शकता</translation>
 <translation id="4382484599443659549">पीडीएफ</translation>
 <translation id="4382833368532556056">आतापासून तुमच्या फाइल क्लाउड स्‍टोरेजवर सेव्ह करा</translation>
@@ -2392,6 +2397,7 @@
 <translation id="5061227663725596739">तुम्हाला <ph name="LOOKALIKE_DOMAIN" />असे म्हणायचे होते का?</translation>
 <translation id="5066056036849835175">प्रिंटिंग इतिहास</translation>
 <translation id="5068524481479508725">A10</translation>
+<translation id="5068915318814087203">डेटाचे नुकसान टाळण्यासाठी तुमच्या संस्थेद्वारे ठरावीक ब्राउझिंग ॲक्टिव्हिटीचे निरीक्षण केले जाऊ शकते; अधिक तपशिलांसाठी <ph name="BEGIN_LINK" />chrome://management<ph name="END_LINK" /> वर जा</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />प्रॉक्सी पत्ता तपासणे<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">दहावा रोल</translation>
 <translation id="507130231501693183">मेलबॉक्स ४</translation>
@@ -2756,6 +2762,7 @@
 <translation id="5659593005791499971">ई-मेल</translation>
 <translation id="5660122698869360728">नवीन स्मार्ट फोल्डर जे तुम्हाला तुमची सर्व खरेदी पेज एकाच ठिकाणी सेव्ह करण्यात आणि किमतीचा आपोआप माग ठेवण्यात, किंमतीचे इनसाइट मिळवण्यास आणि बरेच काही करण्यात मदत करते.</translation>
 <translation id="5663955426505430495">या डिव्हाइसच्या अ‍ॅडमिनिस्ट्रेटरने अतिरिक्त फंक्शनसाठी एक्स्टेंशन इंस्टॉल केले आहे. एक्स्टेंशनकडे तुमच्या काही डेटाचा अ‍ॅक्सेस आहे.</translation>
+<translation id="5664075349639500330">अलिप्त मोडमध्ये ब्राउझ करण्याबद्दल अधिक जाणून घ्या.</translation>
 <translation id="5675650730144413517">हे पेज काम करत नाही</translation>
 <translation id="5675959228867414813">तारखेनुसार दाखवा</translation>
 <translation id="567604591393105935">वाणिज्य तळाशी असलेली शीट अर्ध्या उंचीवर उघडली</translation>
@@ -3269,6 +3276,7 @@
 <translation id="6547208576736763147">ड्युअल पंच लेफ्ट</translation>
 <translation id="6550245281449521513">माउस लॉकला अनुमती नाही</translation>
 <translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />, नवीन</translation>
+<translation id="6552244083450538912">तुमची ॲक्टिव्हिटी पुढील लोकांना दृश्यमान असू शकते: तुम्ही भेट दिलेल्या वेबसाइट, तुमचा नियोक्ता किंवा शाळा, तुमचा इंटरनेट सेवा पुरवठादार</translation>
 <translation id="6552566579578780089">पेमेंट</translation>
 <translation id="6553777254569586547"><ph name="SUGGESTION_TITLE" />. <ph name="SUGGESTION_TYPE" />. <ph name="GROUP_HEADER" /> गटामधील <ph name="NUM_MATCHES_IN_GROUP" /> पैकी <ph name="MATCH_POSITION" />.</translation>
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> दिवसांपूर्वी शेवटची भेट दिली</translation>
@@ -3372,6 +3380,7 @@
 <translation id="6743841972744298686">सेटिंग्ज सिंक करा</translation>
 <translation id="6745212570062463886">Google खाते मधून तुमचे नाव आणि ईमेल अ‍ॅड्रेस ऑटोफिल करा</translation>
 <translation id="674580074662200768">पासपोर्ट सुरक्षितपणे अपडेट करा</translation>
+<translation id="6749473226660745022">फोटो</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">धोरण मूल्य</translation>
 <translation id="6753434778807740853">एंट्री हटवा <ph name="ENTRY_VOICEOVER" /></translation>
@@ -3502,6 +3511,7 @@
 <translation id="6972867931824045907">तुमचा क्लिपबोर्ड वापरण्यासाठी, Chrome ला <ph name="LINK" /> मध्ये अ‍ॅक्सेस द्या.</translation>
 <translation id="6973656660372572881">निश्चित प्रॉक्सी सर्व्हर आणि .pac स्क्रिप्ट URL निर्दिष्‍ट करण्‍यात आले आहेत.</translation>
 <translation id="6973988895180423160">३.५ x ५ इं</translation>
+<translation id="6976229914347655621">तुमच्या संस्थेला आवश्यक असलेली एक्स्टेंशन सुरू राहतील; अधिक तपशिलांसाठी <ph name="BEGIN_LINK" />chrome://extensions<ph name="END_LINK" /> वर जा</translation>
 <translation id="6978236010531171013">तरीही शेअर करा</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">निःशब्द करा (डीफॉल्ट)</translation>
@@ -3668,6 +3678,7 @@
 <translation id="7269151392155523061">शॉर्टकट हा <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> नुसार परिभाषित केलेल्या शोध अ‍ॅग्रिगेटर कीवर्डसारखा असू शकत नाही: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7273111226200291353">तुम्ही डाउनलोड केलेल्या फाइल विश्लेषणासाठी Google Cloud किंवा तृतीय पक्षांकडे पाठवल्या जातात. उदाहरणार्थ, त्या संवेदनशील डेटा किंवा मालवेअरसाठी स्कॅन केल्या जाऊ शकतात आणि कंपनीच्या धोरणांच्या आधारावर स्टोअर केल्या जाऊ शकतात व तुमच्या अ‍ॅडमिनिस्ट्रेटरला दृश्यमान असू शकतात.</translation>
 <translation id="7275334191706090484">व्यवस्थापित केलेले बुकमार्क</translation>
+<translation id="7278933725460302617">तुम्ही आता अलिप्त मोडमध्ये आहात</translation>
 <translation id="7282894295403887199">तुम्ही गुप्त मोडमध्ये या पेजला भेट देऊ शकत नाही</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमचा Google खाते पासवर्ड बदलण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="7286908876112207905">या साइटवर हा आशय पेस्ट करण्याची अनुमती नाही</translation>
@@ -3711,6 +3722,7 @@
 <translation id="7366117520888504990">१९८ x २७५ मिमी</translation>
 <translation id="7366362069757178916">पेमेंट हँडलर</translation>
 <translation id="7366594738862061263">Chrome तुमच्या पासवर्डचे संरक्षण कसे करते याबद्दल जाणून घ्या</translation>
+<translation id="7366909168761621528">ब्राउझिंग डेटा</translation>
 <translation id="7370751048350026847">या साइटवर हा आशय पेस्ट करण्याची शिफारस करत नाही</translation>
 <translation id="7372526636730851647">फोटो (ग्लॉसी)</translation>
 <translation id="7372973238305370288">शोध परिणाम</translation>
@@ -3839,6 +3851,7 @@
 <translation id="7554791636758816595">नवीन टॅब</translation>
 <translation id="7556328470713619625">पासकी वापरा</translation>
 <translation id="7559278538486662777">या अ‍ॅपचा आकार बदलला जाऊ शकत नाही.</translation>
+<translation id="7561202748196702434">अलिप्त मोडमध्ये ब्राउझ करत आहे</translation>
 <translation id="7561784249784255101">डिजिटल वर्सटाइस डिस्क</translation>
 <translation id="7564049878696755256">तुम्ही तुमच्या Google <ph name="ORG_NAME" /> चा ॲक्सेस गमावू शकता किंवा तुमची संवेदनशील माहिती चोरीला जाऊ शकते. Chrome लगेच तुमचा पासवर्ड बदलण्याची शिफारस करत आहे.</translation>
 <translation id="7567204685887185387">हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षितता सर्टिफिकेट कदाचित लबाडीने जारी केले असावे. हे कदाचित एका चुकीच्या कॉंफिगरेशनमुळे किंवा हल्लेखोराने तुमचे कनेक्शन इंटरसेप्ट केल्यामुळे झाले असू शकते.</translation>
@@ -4374,6 +4387,7 @@
 <translation id="8473626140772740486">३०० x ४५० मिमी</translation>
 <translation id="8473863474539038330">अ‍ॅड्रेस आणि बरेच काही</translation>
 <translation id="8474910779563686872">डेव्हलपर तपशील दाखवा</translation>
+<translation id="84764251640219124">साइटना तृतीय पक्ष कुकी वापरण्यापासून ब्लॉक केले आहे. या कुकीवर अवलंबून असलेली साइट काम करत नसल्यास, तुम्ही <ph name="BEGIN_LINK" />त्या साइटला तृतीय पक्ष कुकीचा तात्पुरता ॲक्सेस देऊन पाहणे<ph name="END_LINK" /> हे करू शकता.</translation>
 <translation id="8479754468255770962">स्टेपल बॉटम लेफ्ट</translation>
 <translation id="8483229036294884935">तुमच्या <ph name="ACCOUNT" /> Google खाते वरून हा पत्ता हटवला जाईल</translation>
 <translation id="8488350697529856933">यावर लागू होते</translation>
@@ -4440,6 +4454,7 @@
 <translation id="8619130384334725124">सद्य डीफॉल्ट</translation>
 <translation id="8620276786115098679">एन्व्हलप काकू ७</translation>
 <translation id="8622864575115813231">तुमच्या आर्थिक संस्थेशी संपर्क साधत आहे...</translation>
+<translation id="8632584659860846053">तुम्ही सर्व अलिप्त विंडो बंद केल्यावर तुमचा ब्राउझिंग इतिहास, कुकी आणि साइट डेटा, कॅशे व फॉर्ममध्ये एंटर केलेली माहिती हटवली जाईल</translation>
 <translation id="8634957317623797170">५४ x ८६ मिमी</translation>
 <translation id="8637362707224133343">तुम्ही ब्राउझ करत असताना तुमचे संरक्षण करण्यासाठी Chrome मध्ये बिल्ट-इन सुरक्षितता वैशिष्‍ट्ये आहेत — जसे की Google सुरक्षित ब्राउझिंग, ज्याला तुम्ही भेट देण्याचा प्रयत्न केलेल्या साइटवर <ph name="BEGIN_LINK" />अलीकडे फिशिंग आढळले आहे<ph name="END_LINK" />. फिशिंग साइट तुमची फसवणूक करण्यासाठी इतर साइट असल्याचे भासवतात. <ph name="NEW_LINE" />साधारणपणे सुरक्षित असलेल्या साइटदेखील काहीवेळा हल्लेखोरांमुळे धोक्यात येऊ शकतात. एखादी चूक झाली आहे आणि या साइटला धोका नाही असे तुम्हाला वाटत असल्यास, <ph name="BEGIN_ERROR_LINK" />आम्हाला कळवा<ph name="END_ERROR_LINK" />.</translation>
 <translation id="8640996933372643759">टॅब शेअर करण्यासाठी आणि इतरांसोबत सहयोग करण्यासाठी, तुम्हाला Chrome मध्ये साइन इन करता येणे आवश्यक आहे</translation>
@@ -4659,6 +4674,7 @@
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Chrome Enterprise Core वापरून पहा</translation>
 <translation id="9027531288681624875">फुल स्क्रीनमधून बाहेर पडण्यासाठी, |<ph name="ACCELERATOR" />| प्रेस करून धरून ठेवा</translation>
+<translation id="9030785788945687215">Gmail</translation>
 <translation id="9035022520814077154">सुरक्षितता एरर</translation>
 <translation id="9035699147763101514">Gemini सह पर्सनल इंटेलिजन्स द्वारे सक्षम केलेले. सेटिंग्जमध्ये तुमच्या निवडी व्यवस्थापित करा.</translation>
 <translation id="9035824888276246493">सुरक्षा कोड सेव्ह करा</translation>

@@ -372,6 +372,7 @@
 <translation id="4676059169848868271">Jei leidžiate „<ph name="APP_NAME" />“ naudoti rankų stebėjimą, <ph name="BEGIN_LINK" />sistemos nustatymuose<ph name="END_LINK" /> taip pat įjunkite rankų stebėjimą.</translation>
 <translation id="4688045258817337666">Tvarkykite savo korteles</translation>
 <translation id="4722332387043141878">Paprastai svetainėse naudojami įrenginio judesio ir šviesos jutikliai vykdant tokias funkcijas kaip virtualioji realybė ar kūno rengybos stebėjimas</translation>
+<translation id="4748783296226936791">Paprastai svetainėse prisijungiama prie HID įrenginių vykdant tam tikras funkcijas, kurioms naudojamos neįprastos klaviatūros, žaidimų valdikliai ir kiti įrenginiai</translation>
 <translation id="4755971844837804407">Įjungus svetainėse gali būti rodomas jums bet koks skelbimas. Išjungus svetainėse negalima rodyti nepageidaujamų ar klaidinančių skelbimų.</translation>
 <translation id="4779083564647765204">Keisti mastelį</translation>
 <translation id="4807122856660838973">Įjunkite Saugų naršymą</translation>
@@ -456,6 +457,7 @@
 <translation id="5700761515355162635">Trečiųjų šalių slapukai leidžiami</translation>
 <translation id="5706552988683188916">Bus ištrinti <ph name="WEBSITE" /> slapukai ir kiti svetainės duomenys</translation>
 <translation id="571222594670061844">Svetainėse gali būti rodomi raginimai prisijungti iš tapatybės nustatymo paslaugų</translation>
+<translation id="5719854774000914513">Svetainėse gali būti prašoma prisijungti prie HID įrenginių</translation>
 <translation id="5740126560802162366">Svetainės gali išsaugoti duomenis įrenginyje</translation>
 <translation id="5743425052258407233">Gaukite istoriją visuose įrenginiuose, kad galėtumėte lengvai tęsti darbą nuo ten, kur baigėte</translation>
 <translation id="5749158352074143502">Tęsti naudojant šį skirtuką</translation>
@@ -575,6 +577,7 @@
 <translation id="6950072572526089586">Svetainė, kurioje lankotės, gali išsaugoti informaciją apie jūsų atliktus veiksmus, kad galėtų veikti taip, kaip numatyta, pvz., kad liktumėte prisijungę prie svetainės arba galėtumėte išsaugoti prekes pirkinių krepšelyje. Dažnai svetainės laikinai išsaugo šią informaciją įrenginyje.</translation>
 <translation id="6964291282260073066">„WebGPU“ išjungta.</translation>
 <translation id="6965382102122355670">Gerai</translation>
+<translation id="6972629891077993081">HID įrenginiai</translation>
 <translation id="6980507581230208647">Rožinė tema</translation>
 <translation id="6980861169612950611">Ištrinti svetainės duomenis? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Pritaikymas neįgaliesiems</translation>
@@ -587,7 +590,6 @@
 <translation id="7053983685419859001">Blokuoti</translation>
 <translation id="7055552182600664515">Norint leisti autorių teisių apsaugotą turinį, svetainėse gali būti reikalinga turinio apsaugos paslauga. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Pasirinktas 1 elementas}one{Pasirinktas # elementas}few{Pasirinkti # elementai}many{Pasirinkta # elemento}other{Pasirinkta # elementų}}</translation>
-<translation id="708014373017851679">„<ph name="APP_NAME" />“ pasenusi. Atnaujinkite programą.</translation>
 <translation id="7084115944294706056">Adreso juostos pozicijos pasirinkimas</translation>
 <translation id="7087918508125750058">Pasirinkta: <ph name="ITEM_COUNT" />. Parinktys pasiekiamos netoli ekrano viršaus</translation>
 <translation id="7141896414559753902">Blokuoti, kad svetainėse nebūtų rodomi iššokantieji langai ir peradresavimai (rekomenduojama)</translation>
@@ -732,6 +734,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.</
 <translation id="8593422116412089302">Įjungus svetainėse gali būti prašoma naudoti apie jus išsaugotą informaciją. Išjungus svetainėse negali būti prašoma naudoti apie jus išsaugotos informacijos.</translation>
 <translation id="8609465669617005112">Perkelti į viršų</translation>
 <translation id="8617611086246832542">Įjungus rodoma svetainių rodinio versija staliniams kompiuteriams. Išjungus rodoma svetainių rodinio versija mobiliesiems.</translation>
+<translation id="8625916342247441948">Neleisti svetainėms prisijungti prie HID įrenginių</translation>
 <translation id="8670078035093027626">Numatytosios naršyklės apatinis lapas atidarytas per visą ekrano aukštį</translation>
 <translation id="8676316391139423634">Įjungus svetainėse gali būti prašoma stebėti jūsų rankas. Išjungus svetainės negali stebėti jūsų rankų.</translation>
 <translation id="8676374126336081632">Išvalyti įvestą tekstą</translation>

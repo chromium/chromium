@@ -1060,6 +1060,7 @@
 <translation id="454217142158335225">तुम्ही अलीकडील टॅब किंवा टॅब गट या विभागांमधील बंद केलेले आयटम पुन्हा उघडू शकता. तुमचे पिन केलेले टॅब बंद केले जाणार नाहीत.</translation>
 <translation id="4547181496285029457">अलीकडील टॅबवर परत जा</translation>
 <translation id="4552042254369397518">कॉपी करत आहे…</translation>
+<translation id="4552089082226364758">फ्लॅश</translation>
 <translation id="4553044860350038560">आणखी पासकी</translation>
 <translation id="4564893319561643483">"<ph name="TITLE" />" लपवा</translation>
 <translation id="456502772933839252"><ph name="PAGE_TITLE" /> शेअर करत आहे</translation>
@@ -1293,6 +1294,7 @@
 <translation id="5238596603078743134"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> हे <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> मध्ये साइन इन करण्यासाठी Google Password Manager वापरतात, तेव्हा ते आता तुमचे वापरकर्ता नाव आणि पासवर्ड वापरू शकतात.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, तुमच्या संस्थेने व्यवस्थापित केला आहे, सध्या निवडलेले. खाते निवडा.</translation>
 <translation id="5242899254250321823">वेबसाइटवर पासवर्ड बदला</translation>
+<translation id="524751727772074981">Chrome मधील Gemini वापरून तुम्ही जिथे आहात तिथेच काहीही विचारा</translation>
 <translation id="5248640482715684545">ही साइट दुसरे अ‍ॅप्लिकेशन उघडण्याचा प्रयत्न करत आहे.</translation>
 <translation id="5250371859659394278">अज्ञात स्रोताकडून</translation>
 <translation id="525510229763628836">लहान केलेली</translation>
@@ -1309,6 +1311,7 @@
 <translation id="5300589172476337783">दर्शवा</translation>
 <translation id="5311061401280561833">कॅमेरा आणि मायक्रोफोन ॲक्सेस करण्याची अनुमती दिली आहे</translation>
 <translation id="5313967007315987356">साइट जोडा</translation>
+<translation id="5315029634103634221">Gemini हे AI आहे आणि ते चुका करू शकते. <ph name="BEGIN_LINK" />Google ला पाठवलेल्या सुसंबद्ध डेटाबद्दल अधिक माहिती<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">इंपोर्ट करण्यासाठी काहीही नाही</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> पैकी <ph name="INDEX" /></translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
@@ -1391,6 +1394,7 @@
 <translation id="5596627076506792578">अधिक पर्याय</translation>
 <translation id="560322036295180549">तुमच्या संस्थेने बंद केले</translation>
 <translation id="5611398002774823980">खात्यामध्ये सेव्ह करा</translation>
+<translation id="5612225021788368236">डीफॉल्ट ब्राउझर प्रोमो बंद करा</translation>
 <translation id="561269594905823128"><ph name="BEGIN_BOLD" />तुमची फाइल निवडा<ph name="END_BOLD" /> वर टॅप करा</translation>
 <translation id="5613297089029360427">नवीनतम यानुसार क्रमाने लावा</translation>
 <translation id="5614553682702429503">पासवर्ड सेव्ह करायचा आहे का?</translation>

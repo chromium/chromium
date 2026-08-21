@@ -253,6 +253,7 @@ Things to consider:
 <translation id="6154098560469640583">Use Chromium any time that you click links in messages, documents and other apps</translation>
 <translation id="6157162508956739031">Sign in quickly to apps and sites by autofilling your passwords and passkeys from Chromium</translation>
 <translation id="6170619162539716595">Allow Chromium to use Google Maps to give you directions and local info on detected addresses.</translation>
+<translation id="6170834619568075230">You can use Google Lens in Chromium to search anything that you see</translation>
 <translation id="6244277266078678766">Your data will be saved to Password Manager for <ph name="USER_EMAIL" /></translation>
 <translation id="6268381023930128611">Sign out of Chromium?</translation>
 <translation id="6301717043141881464">To easily get your saved passwords in your other apps, choose Chromium for Autofill</translation>
@@ -379,6 +380,7 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="9177628952266852500"><ph name="EMAIL" />. Chromium is managed.</translation>
 <translation id="921174536258924340">Chromium couldn't check all passwords. Try again tomorrow or <ph name="BEGIN_LINK" />check passwords in your Google Account.<ph name="END_LINK" /></translation>
 <translation id="924957577793602335">Make Chromium your own</translation>
+<translation id="925642420047255224">You can use Chromium any time that you tap links in messages, documents and other apps</translation>
 <translation id="981812233959540767">Play Chromium Dino Game</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 <translation id="986520777495807752">Set Chromium as default</translation>
