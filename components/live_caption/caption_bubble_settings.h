@@ -6,8 +6,8 @@
 #define COMPONENTS_LIVE_CAPTION_CAPTION_BUBBLE_SETTINGS_H_
 
 #include <string>
-#include <string_view>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/weak_ptr.h"
 
 namespace captions {
@@ -45,12 +45,12 @@ class CaptionBubbleSettings {
   virtual bool GetLiveCaptionBubbleExpanded() = 0;
   virtual bool GetLiveTranslateEnabled() = 0;
   virtual std::string GetLiveCaptionLanguageCode() = 0;
-  virtual std::string GetLiveTranslateTargetLanguageCode() = 0;
+  virtual base::i18n::LanguageTag GetLiveTranslateTargetLanguageCode() = 0;
 
   virtual void SetLiveCaptionEnabled(bool enabled) = 0;
   virtual void SetLiveCaptionBubbleExpanded(bool expanded) = 0;
   virtual void SetLiveTranslateTargetLanguageCode(
-      std::string_view language_code) = 0;
+      const base::i18n::LanguageTag& language_tag) = 0;
 
   virtual bool ShouldAdjustPositionOnExpand() = 0;
 

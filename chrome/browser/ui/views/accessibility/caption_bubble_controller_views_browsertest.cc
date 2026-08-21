@@ -1747,7 +1747,7 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, LabelTextDirection) {
             GetLabel()->GetHorizontalAlignment());
 
   browser()->GetProfile()->GetPrefs()->SetString(
-      prefs::kLiveTranslateTargetLanguageCode, "iw");
+      prefs::kLiveTranslateTargetLanguageCode, "he");
   OnPartialTranscription("Sloths can sleep for up to 20 hours a day.");
   EXPECT_EQ(gfx::HorizontalAlignment::ALIGN_RIGHT,
             GetLabel()->GetHorizontalAlignment());

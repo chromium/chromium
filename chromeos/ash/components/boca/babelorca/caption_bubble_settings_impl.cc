@@ -10,6 +10,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/boca/babelorca/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -24,8 +26,13 @@ CaptionBubbleSettingsImpl::CaptionBubbleSettingsImpl(
     : profile_prefs_(profile_prefs),
       caption_language_code_(caption_language_code),
       on_local_caption_closed_cb_(on_local_caption_closed_cb) {
-  if (GetLiveTranslateTargetLanguageCode().empty()) {
-    SetLiveTranslateTargetLanguageCode(caption_language_code_);
+  if (GetLiveTranslateTargetLanguageCode() ==
+      base::i18n::GetKnownLanguageTag("und")) {
+    std::optional<base::i18n::LanguageTag> tag =
+        base::i18n::GetLanguageTagFromString(caption_language_code_);
+    if (tag) {
+      SetLiveTranslateTargetLanguageCode(*tag);
+    }
   }
 }
 
@@ -64,8 +71,9 @@ std::string CaptionBubbleSettingsImpl::GetLiveCaptionLanguageCode() {
   return caption_language_code_;
 }
 
-std::string CaptionBubbleSettingsImpl::GetLiveTranslateTargetLanguageCode() {
-  return profile_prefs_->GetString(prefs::kTranslateTargetLanguageCode);
+base::i18n::LanguageTag
+CaptionBubbleSettingsImpl::GetLiveTranslateTargetLanguageCode() {
+  return profile_prefs_->GetLanguageTag(prefs::kTranslateTargetLanguageCode);
 }
 
 void CaptionBubbleSettingsImpl::SetLiveCaptionEnabled(bool enabled) {
@@ -79,8 +87,9 @@ void CaptionBubbleSettingsImpl::SetLiveCaptionBubbleExpanded(bool expanded) {
 }
 
 void CaptionBubbleSettingsImpl::SetLiveTranslateTargetLanguageCode(
-    std::string_view language_code) {
-  profile_prefs_->SetString(prefs::kTranslateTargetLanguageCode, language_code);
+    const base::i18n::LanguageTag& language_tag) {
+  profile_prefs_->SetLanguageTag(prefs::kTranslateTargetLanguageCode,
+                                 language_tag);
 }
 
 bool CaptionBubbleSettingsImpl::ShouldAdjustPositionOnExpand() {

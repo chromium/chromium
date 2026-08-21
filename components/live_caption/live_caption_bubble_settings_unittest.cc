@@ -4,6 +4,7 @@
 
 #include "components/live_caption/live_caption_bubble_settings.h"
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/live_caption/caption_bubble_settings.h"
@@ -40,8 +41,9 @@ class LiveCaptionBubbleSettingsTest : public testing::Test {
                                                   false);
     pref_service_.registry()->RegisterStringPref(
         prefs::kLiveCaptionLanguageCode, kEnglishLanguage);
-    pref_service_.registry()->RegisterStringPref(
-        prefs::kLiveTranslateTargetLanguageCode, kEnglishLanguage);
+    pref_service_.registry()->RegisterLanguageTagPref(
+        prefs::kLiveTranslateTargetLanguageCode,
+        base::i18n::GetKnownLanguageTag("en"));
   }
 
   TestingPrefServiceSimple pref_service_;
@@ -65,10 +67,12 @@ TEST_F(LiveCaptionBubbleSettingsTest, SetLiveCaptionEnabled) {
 
 TEST_F(LiveCaptionBubbleSettingsTest, SetLiveTranslateTargetLanguageCode) {
   LiveCaptionBubbleSettings caption_bubble_settings(&pref_service_);
-  caption_bubble_settings.SetLiveTranslateTargetLanguageCode(kArabicLanguage);
+  caption_bubble_settings.SetLiveTranslateTargetLanguageCode(
+      base::i18n::GetKnownLanguageTag("ar"));
 
-  EXPECT_THAT(pref_service_.GetString(prefs::kLiveTranslateTargetLanguageCode),
-              testing::StrEq(kArabicLanguage));
+  EXPECT_EQ(
+      pref_service_.GetLanguageTag(prefs::kLiveTranslateTargetLanguageCode),
+      base::i18n::GetKnownLanguageTag("ar"));
 }
 
 TEST_F(LiveCaptionBubbleSettingsTest, GetLiveCaptionBubbleExpanded) {
@@ -110,15 +114,15 @@ TEST_F(LiveCaptionBubbleSettingsTest, GetLiveTranslateTargetLanguageCode) {
   LiveCaptionBubbleSettings caption_bubble_settings(&pref_service_);
   caption_bubble_settings.SetObserver(observer_weak_ptr_factory_.GetWeakPtr());
 
-  EXPECT_THAT(caption_bubble_settings.GetLiveTranslateTargetLanguageCode(),
-              testing::StrEq(kEnglishLanguage));
+  EXPECT_EQ(caption_bubble_settings.GetLiveTranslateTargetLanguageCode(),
+            base::i18n::GetKnownLanguageTag("en"));
 
   EXPECT_CALL(observer_, OnLiveTranslateTargetLanguageChanged).Times(1);
-  pref_service_.SetUserPref(prefs::kLiveTranslateTargetLanguageCode,
-                            base::Value(kArabicLanguage));
+  pref_service_.SetLanguageTag(prefs::kLiveTranslateTargetLanguageCode,
+                               base::i18n::GetKnownLanguageTag("ar"));
 
-  EXPECT_THAT(caption_bubble_settings.GetLiveTranslateTargetLanguageCode(),
-              testing::StrEq(kArabicLanguage));
+  EXPECT_EQ(caption_bubble_settings.GetLiveTranslateTargetLanguageCode(),
+            base::i18n::GetKnownLanguageTag("ar"));
 }
 
 TEST_F(LiveCaptionBubbleSettingsTest, RemoveObservation) {

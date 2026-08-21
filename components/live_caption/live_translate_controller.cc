@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_util.h"
@@ -21,7 +22,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-#include "components/soda/constants.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/browser_context.h"
 #include "google_apis/google_api_keys.h"
@@ -66,8 +66,10 @@ void LiveTranslateController::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kLiveTranslateEnabled, false);
 
-  registry->RegisterStringPref(prefs::kLiveTranslateTargetLanguageCode,
-                               speech::kEnglishLocaleNoCountry);
+  registry->RegisterLanguageTagPref(
+      prefs::kLiveTranslateTargetLanguageCode,
+      base::i18n::GetKnownLanguageTag("en"),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 void LiveTranslateController::GetTranslation(const std::string& result,

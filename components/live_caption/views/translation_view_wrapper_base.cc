@@ -135,7 +135,9 @@ void TranslationViewWrapperBase::Init(views::View* translate_container,
   std::string source_language_code =
       caption_bubble_settings()->GetLiveCaptionLanguageCode();
   std::string target_language_code =
-      caption_bubble_settings()->GetLiveTranslateTargetLanguageCode();
+      std::string(caption_bubble_settings()
+                      ->GetLiveTranslateTargetLanguageCode()
+                      .tag_string());
   translate_ui_languages_manager_ =
       std::make_unique<translate::TranslateUILanguagesManager>(
           language_codes, source_language_code, target_language_code);
@@ -413,7 +415,7 @@ void TranslationViewWrapperBase::ExecuteCommand(int target_language_code_index,
         GetLanguageTagFromString(GetTargetLanguageCode());
     if (parsed_tag) {
       caption_bubble_settings()->SetLiveTranslateTargetLanguageCode(
-          parsed_tag->tag_string());
+          *parsed_tag);
     }
   }
 }
@@ -441,7 +443,9 @@ void TranslationViewWrapperBase::OnLiveCaptionLanguageChanged() {
 
 void TranslationViewWrapperBase::OnLiveTranslateTargetLanguageChanged() {
   std::string target_language_code =
-      caption_bubble_settings()->GetLiveTranslateTargetLanguageCode();
+      std::string(caption_bubble_settings()
+                      ->GetLiveTranslateTargetLanguageCode()
+                      .tag_string());
   translate_ui_languages_manager_->UpdateTargetLanguage(target_language_code);
   target_language_text_ = GetTargetLanguageName();
   UpdateLanguageLabel();

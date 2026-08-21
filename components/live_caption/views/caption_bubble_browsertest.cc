@@ -10,6 +10,7 @@
 #include "base/cfi_buildflags.h"
 #include "base/command_line.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -66,8 +67,9 @@ class CaptionBubbleBrowserTest : public UiBrowserTest {
                                                   false);
     pref_service_.registry()->RegisterStringPref(
         prefs::kLiveCaptionLanguageCode, kEnglishLanguage);
-    pref_service_.registry()->RegisterStringPref(
-        prefs::kLiveTranslateTargetLanguageCode, kEnglishLanguage);
+    pref_service_.registry()->RegisterLanguageTagPref(
+        prefs::kLiveTranslateTargetLanguageCode,
+        base::i18n::GetKnownLanguageTag("en"));
     UiBrowserTest::SetUpOnMainThread();
   }
 
