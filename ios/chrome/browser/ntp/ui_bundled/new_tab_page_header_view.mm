@@ -309,6 +309,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
                      (BOOL)useNewBadgeForCustomizationMenu {
   self = [super initWithFrame:CGRectZero];
   if (self) {
+    self.translatesAutoresizingMaskIntoConstraints = NO;
     _fakeLocationBar = [[FakeLocationBarView alloc] init];
     self.clipsToBounds = YES;
     _useNewBadgeForLensButton = useNewBadgeForLensButton;
@@ -2131,10 +2132,10 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   self.fakeOmniboxContainer.hidden =
       CanShowTabStrip(self) &&
       (self.searchEngineLogoState == SearchEngineLogoState::kNone);
-  [self layoutIfNeeded];
   self.headerViewHeightConstraint.constant =
       content_suggestions::HeightForLogoHeader(self.searchEngineLogoState,
                                                self.traitCollection);
+  [self layoutIfNeeded];
 }
 
 - (void)addConstraintsForLogoView:(UIView*)logoView
