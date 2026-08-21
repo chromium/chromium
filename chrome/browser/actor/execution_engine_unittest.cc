@@ -1515,6 +1515,57 @@ TEST_F(ExecutionEngineUrlGatingTest,
   CheckUrl(url, /*expected_allowed=*/true);
 }
 
+TEST_F(ExecutionEngineUrlGatingTest,
+       ShouldDeferNavigation_CrossOriginNonSensitiveAllowed) {
+  const GURL source_url("https://a.test/");
+  const GURL destination_url("https://b.test/");
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{kGlicCrossOriginNavigationGating,
+        {{"prompt_user_for_sensitive_navigations", "false"}}}},
+      {});
+
+  SetExpectedOptimizationGuideCall(
+      destination_url, optimization_guide::OptimizationGuideDecision::kTrue);
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             source_url);
+
+  content::MockNavigationHandle navigation_handle(destination_url, main_rfh());
+
+  base::test::TestFuture<bool> future;
+  EXPECT_EQ(GetExecutionEngine().ShouldDeferNavigation(navigation_handle,
+                                                       future.GetCallback()),
+            content::NavigationThrottle::DEFER);
+
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(ExecutionEngineUrlGatingTest,
+       ShouldDeferNavigation_CrossOriginSensitiveBlocked) {
+  const GURL source_url("https://a.test/");
+  const GURL destination_url("https://b.test/");
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kGlicCrossOriginNavigationGating);
+
+  SetExpectedOptimizationGuideCall(
+      destination_url, optimization_guide::OptimizationGuideDecision::kFalse);
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             source_url);
+
+  content::MockNavigationHandle navigation_handle(destination_url, main_rfh());
+
+  base::test::TestFuture<bool> future;
+  EXPECT_EQ(GetExecutionEngine().ShouldDeferNavigation(navigation_handle,
+                                                       future.GetCallback()),
+            content::NavigationThrottle::DEFER);
+
+  EXPECT_FALSE(future.Get());
+}
+
 }  // namespace
 
 }  // namespace actor

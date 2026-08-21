@@ -254,14 +254,33 @@ CustomPredicate CreateSafetyListPredicate() {
       kSafetyListPredicateName);
 }
 
+// Returns whether the given `url` is considered non-sensitive. Caches the
+// result in `context`, for future queries.
 void IsNonSensitiveUrl(Profile* profile,
-                       const origin_gating::GatingDecisionContext* context,
-                       const GURL& source,
-                       const GURL& destination,
+                       origin_gating::GatingDecisionContext* context,
+                       const GURL& url,
                        base::OnceCallback<void(bool)> callback) {
+  CHECK_NE(context, nullptr);
+  auto* decision_context = static_cast<OriginGatingDecisionContext*>(context);
+  if (decision_context->destination_is_sensitive.has_value()) {
+    std::move(callback).Run(
+        !decision_context->destination_is_sensitive.value());
+    return;
+  }
   base::expected<void, base::OnceCallback<void(bool)>> sensitive_check_result =
-      MaybeCheckOptimizationGuideForSensitiveUrl(destination, profile,
-                                                 std::move(callback));
+      MaybeCheckOptimizationGuideForSensitiveUrl(
+          url, profile,
+          base::BindOnce(
+              [](OriginGatingDecisionContext* decision_context,
+                 bool not_sensitive) {
+                decision_context->destination_is_sensitive = !not_sensitive;
+                return not_sensitive;
+              },
+              // Passing `decision_context` as a raw pointer is safe here
+              // because the pointee is owned by `callback`, and won't be freed
+              // until after `callback` executes.
+              decision_context)
+              .Then(std::move(callback)));
   if (!sensitive_check_result.has_value()) {
     // Optimization guide is unavailable; assume the URL is non-sensitive.
     std::move(sensitive_check_result).error().Run(/*not_sensitive=*/true);
@@ -274,28 +293,12 @@ void BlockSensitiveUrl(
     const GURL& source,
     const GURL& destination,
     base::OnceCallback<void(origin_gating::Decision)> callback) {
-  CHECK_NE(context, nullptr);
-  auto* decision_context = static_cast<OriginGatingDecisionContext*>(context);
-  if (decision_context->destination_is_sensitive.has_value()) {
-    std::move(callback).Run(decision_context->destination_is_sensitive
-                                ? origin_gating::Decision::kBlocked
-                                : origin_gating::Decision::kNoDecision);
-    return;
-  }
-  IsNonSensitiveUrl(
-      profile, context, source, destination,
-      base::BindOnce(
-          [](OriginGatingDecisionContext* decision_context,
-             bool not_sensitive) {
-            decision_context->destination_is_sensitive = !not_sensitive;
-            return not_sensitive ? origin_gating::Decision::kNoDecision
+  IsNonSensitiveUrl(profile, context, destination,
+                    base::BindOnce([](bool not_sensitive) {
+                      return not_sensitive
+                                 ? origin_gating::Decision::kNoDecision
                                  : origin_gating::Decision::kBlocked;
-          },
-          // Passing `decision_context` as a raw pointer is safe here because
-          // the pointee is owned by `callback`, and won't be freed until after
-          // `callback` executes.
-          decision_context)
-          .Then(std::move(callback)));
+                    }).Then(std::move(callback)));
 }
 
 void BlockSensitiveUrlWhenNavigationGatingDisabled(
@@ -868,26 +871,11 @@ void ExecutionEngine::DoesOriginRequireUserConfirmation(
     std::move(callback).Run(/*requires_user_confirmation=*/false);
     return;
   }
-  CHECK_NE(context, nullptr);
-  auto* decision_context = static_cast<OriginGatingDecisionContext*>(context);
-  if (decision_context->destination_is_sensitive.has_value()) {
-    std::move(callback).Run(decision_context->destination_is_sensitive.value());
-    return;
-  }
 
-  IsNonSensitiveUrl(task_->GetProfile(), context, source, destination,
-                    base::BindOnce(
-                        [](OriginGatingDecisionContext* decision_context,
-                           bool not_sensitive) {
-                          decision_context->destination_is_sensitive =
-                              !not_sensitive;
-                          return !not_sensitive;
-                        },
-                        // Passing `decision_context` as a raw pointer is safe
-                        // here because the pointee is owned by `callback`, and
-                        // won't be freed until after `callback` executes.
-                        decision_context)
-                        .Then(std::move(callback)));
+  IsNonSensitiveUrl(task_->GetProfile(), context, destination,
+                    base::BindOnce([](bool not_sensitive) {
+                      return !not_sensitive;
+                    }).Then(std::move(callback)));
 }
 
 void ExecutionEngine::EvaluateEnterprisePolicy(
