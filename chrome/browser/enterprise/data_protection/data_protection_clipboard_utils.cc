@@ -61,13 +61,11 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
-#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
-#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_factory.h"
-#endif  // BUILDFLAG(ENTERPRISE_DATA_PROTECTION)
-
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/data_controls/android_data_controls_dialog.h"
 #include "chrome/browser/enterprise/data_controls/android_data_controls_dialog_factory.h"
+#else
+#include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_factory.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -374,10 +372,8 @@ void CopyIfAllowedByContentAnalysis(
 data_controls::DataControlsDialogFactory* GetDialogFactory() {
 #if BUILDFLAG(IS_ANDROID)
   return data_controls::AndroidDataControlsDialogFactory::GetInstance();
-#elif BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
-  return data_controls::DesktopDataControlsDialogFactory::GetInstance();
 #else
-  return nullptr;
+  return data_controls::DesktopDataControlsDialogFactory::GetInstance();
 #endif
 }
 

@@ -17,6 +17,8 @@
 #include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
+static_assert(BUILDFLAG(ENTERPRISE_DATA_CONTROLS));
+
 class Profile;
 
 namespace content {
