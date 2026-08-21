@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
+#include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_manager.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_hotkey.h"
@@ -58,10 +59,6 @@
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/device_form_factor.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
-#endif
 
 namespace glic {
 
@@ -991,7 +988,6 @@ void GlicInternalsPageHandler::SetShowErrorAllowed(bool allowed) {
 }
 
 void GlicInternalsPageHandler::ShowExperimentalOptIn() {
-#if !BUILDFLAG(IS_ANDROID)
   GlicKeyedService* service = GetGlicService();
   if (!service) {
     return;
@@ -1004,7 +1000,6 @@ void GlicInternalsPageHandler::ShowExperimentalOptIn() {
           : webui_contents_.get();
 
   service->opt_in_controller().ShowDialog(target_contents, base::DoNothing());
-#endif
 }
 
 void GlicInternalsPageHandler::RevokeExperimentalTriggeringConsent() {
