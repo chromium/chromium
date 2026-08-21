@@ -149,7 +149,11 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
                           extensions::ExtensionRegistryObserver>
       extension_registry_observation_{this};
 
-  PopupShowAction show_action_;
+  // Action (as requested by the caller) to be done when the popup gets shown.
+  const PopupShowAction show_action_;
+
+  // Whether DevTools is currently inspecting the popup contents.
+  bool inspected_ = false;
 
   ShowPopupCallback shown_callback_;
 

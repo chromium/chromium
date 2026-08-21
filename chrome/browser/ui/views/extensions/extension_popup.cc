@@ -252,7 +252,7 @@ void ExtensionPopup::DevToolsAgentHostAttached(
     content::DevToolsAgentHost* agent_host) {
   DCHECK(host_);
   if (host_->host_contents() == agent_host->GetWebContents()) {
-    show_action_ = PopupShowAction::kShowAndInspect;
+    inspected_ = true;
   }
 }
 
@@ -260,7 +260,7 @@ void ExtensionPopup::DevToolsAgentHostDetached(
     content::DevToolsAgentHost* agent_host) {
   DCHECK(host_);
   if (host_->host_contents() == agent_host->GetWebContents()) {
-    show_action_ = PopupShowAction::kShow;
+    inspected_ = false;
   }
 }
 
@@ -352,7 +352,7 @@ void ExtensionPopup::ShowBubble() {
 
 void ExtensionPopup::CloseUnlessBlockedByInspectionOrJSDialog() {
   // Don't close if the extension page is under inspection.
-  if (show_action_ == PopupShowAction::kShowAndInspect) {
+  if (inspected_) {
     return;
   }
 

@@ -229,6 +229,7 @@ source_set("interactive_ui_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/app:generated_resources",
+    "//chrome/browser/devtools",
     "//chrome/browser/extensions",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/metrics/critical_user_journeys",
