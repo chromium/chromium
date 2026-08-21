@@ -598,12 +598,7 @@ const base::FeatureParam<std::string> kGlicIneligibleAccountHelpUrl{
     "https://support.google.com/gemini/answer/17117411#gic_access"};
 
 const base::FeatureParam<int> kGlicMinRequiredRamMb{
-    &kGlic, "glic-min-required-ram-mb",
-#if BUILDFLAG(IS_ANDROID)
-    3600};
-#else
-    0};
-#endif
+    &kGlic, "glic-min-required-ram-mb", 0};
 
 const base::FeatureParam<bool> kGlicAdaptiveToolbarAutoPin{
     &kGlic, "adaptive-toolbar-auto-pin", true};
