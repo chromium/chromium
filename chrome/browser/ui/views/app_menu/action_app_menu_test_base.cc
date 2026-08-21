@@ -63,7 +63,11 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionOpenGlic, u"Open Glic");
   add_action(kActionShowLensOverlayFromAppMenu, u"Lens Overlay");
   add_action(kActionShowTranslate, u"Translate");
+  add_action(kActionFindAndEditSubmenu, u"Find and edit");
   add_action(kActionFind, u"Find");
+  add_action(actions::kActionCut, u"Cut");
+  add_action(actions::kActionCopy, u"Copy");
+  add_action(actions::kActionPaste, u"Paste");
   add_action(kActionRecentTabsSeeDeviceTabs, u"See Device Tabs");
   add_action(kActionRecentTabsLoginForDeviceTabs, u"Login for Device Tabs");
   add_action(kActionSidePanelShowHistoryCluster, u"History Clusters");

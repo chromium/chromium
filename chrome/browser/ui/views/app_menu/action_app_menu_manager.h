@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
+#include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 #include "ui/base/class_property.h"
 #include "ui/base/models/image_model.h"
@@ -43,6 +44,11 @@ class ActionAppMenuManager {
       std::optional<std::u16string> text_override = std::nullopt,
       std::optional<ui::ImageModel> icon_override = std::nullopt);
 
+  static std::unique_ptr<AppMenuSectionActionItem> CreateSectionActionItem(
+      std::u16string text,
+      DisplayType display_type,
+      std::optional<ui::ColorId> container_color = std::nullopt);
+
   static actions::ActionItem* GetAppMenuRoot(
       BrowserWindowInterface* browser_window_interface);
 
@@ -58,10 +64,10 @@ class ActionAppMenuManager {
   actions::ActionItem* GetAppMenuRoot() const;
 
  private:
-  std::unique_ptr<AppMenuSectionActionItem> CreateSectionActionItem(
-      std::u16string text,
-      DisplayType display_type,
-      std::optional<ui::ColorId> container_color = std::nullopt);
+  void AddBlockHeaderActions(actions::ActionItem* root);
+  void AddYourChromeActions(actions::ActionItem* root);
+  void AddToolsAndActionsActions(actions::ActionItem* root);
+  void AddFooterActions(actions::ActionItem* root);
 
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
   std::unique_ptr<RecentTabsDynamicMenu> recent_tabs_menu_;

@@ -10,6 +10,8 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/function_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -54,6 +56,92 @@ const ui::ClassProperty<std::u16string*>* const
 
 const ui::ClassProperty<ui::ImageModel*>* const
     ActionAppMenuManager::kIconOverrideKey = kAppMenuIconOverrideInternal;
+
+namespace {
+
+// Builder helper to simplify declaring the action item structure for the app
+// menu.
+class AppMenuBuilder {
+ public:
+  using DisplayType = ActionAppMenuManager::DisplayType;
+
+  explicit AppMenuBuilder(actions::ActionItem* parent,
+                          std::optional<ui::ColorId> bg_color = std::nullopt)
+      : AppMenuBuilder(static_cast<actions::BaseAction*>(parent), bg_color) {}
+  explicit AppMenuBuilder(actions::BaseAction* parent,
+                          std::optional<ui::ColorId> bg_color = std::nullopt)
+      : parent_(parent), bg_color_(bg_color) {}
+  AppMenuBuilder(const AppMenuBuilder&) = delete;
+  AppMenuBuilder& operator=(const AppMenuBuilder&) = delete;
+  ~AppMenuBuilder() = default;
+
+  // Adds a standard row item.
+  AppMenuBuilder& AddAction(
+      actions::ActionId id,
+      DisplayType type = DisplayType::kRow,
+      std::optional<std::u16string> text_override = std::nullopt,
+      std::optional<ui::ImageModel> icon_override = std::nullopt) {
+    auto item = ActionAppMenuManager::CreateIndirectActionItem(
+        id, type, bg_color_, std::move(text_override),
+        std::move(icon_override));
+    if (item && parent_) {
+      parent_->AddChild(std::move(item));
+    }
+    return *this;
+  }
+
+  // Adds a section header.
+  AppMenuBuilder& AddSectionHeader(int string_id) {
+    auto section_item = ActionAppMenuManager::CreateSectionActionItem(
+        l10n_util::GetStringUTF16(string_id), DisplayType::kRow, bg_color_);
+    if (parent_) {
+      parent_ = parent_->AddChild(std::move(section_item));
+    }
+    return *this;
+  }
+
+  // Adds a static submenu via lambda.
+  AppMenuBuilder& AddSubmenu(
+      actions::ActionId id,
+      base::FunctionRef<void(AppMenuBuilder&)> build_submenu) {
+    auto item = ActionAppMenuManager::CreateIndirectActionItem(
+        id, DisplayType::kRow, bg_color_);
+    if (!item || !parent_) {
+      return *this;
+    }
+    auto* item_ptr = parent_->AddChild(std::move(item));
+    AppMenuBuilder sub_builder(item_ptr);
+    build_submenu(sub_builder);
+    return *this;
+  }
+
+  // Adds a dynamic submenu populated at runtime.
+  AppMenuBuilder& AddDynamicSubmenu(
+      actions::ActionId id,
+      actions::BaseAction::PopulateChildActions populate_callback,
+      std::optional<base::FunctionRef<void(AppMenuBuilder&)>> build_submenu =
+          std::nullopt) {
+    auto item = ActionAppMenuManager::CreateIndirectActionItem(
+        id, DisplayType::kRow, bg_color_);
+    if (!item || !parent_) {
+      return *this;
+    }
+    if (build_submenu.has_value()) {
+      AppMenuBuilder sub_builder(item.get(), bg_color_);
+      (*build_submenu)(sub_builder);
+    }
+    item->SetPopulateChildrenCallback(std::move(populate_callback));
+    item->PopulateChildItems();
+    parent_->AddChild(std::move(item));
+    return *this;
+  }
+
+ private:
+  raw_ptr<actions::BaseAction> parent_;
+  std::optional<ui::ColorId> bg_color_;
+};
+
+}  // namespace
 
 // Creates the Indirect Action Item which is the basis for the app menu in
 // order to preserve hierarchy in action items
@@ -135,112 +223,73 @@ void ActionAppMenuManager::CreateMenuHierarchy() {
     return;
   }
 
-  std::optional<ui::ColorId> your_chrome_background =
-      kColorAppMenuYourChromeBackground;
-  std::optional<ui::ColorId> tools_actions_background =
-      kColorAppMenuToolsAndActionsBackground;
+  AddBlockHeaderActions(root);
+  AddYourChromeActions(root);
+  AddToolsAndActionsActions(root);
+  AddFooterActions(root);
+}
 
-  // Block Header Setup
-  root->AddChild(CreateIndirectActionItem(
-      kActionNewTab, DisplayType::kBlock,
-      /*container_color=*/std::nullopt,
-      /*text_override=*/std::nullopt,
-      /*icon_override=*/
-      ui::ImageModel::FromVectorIcon(
-          features::IsRoundedIconsEnabled() ? kTabIcon : kNewTabRefreshOldIcon,
-          ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize)));
+void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
+  AppMenuBuilder(root)
+      .AddAction(kActionNewTab, DisplayType::kBlock,
+                 /*text_override=*/std::nullopt,
+                 /*icon_override=*/
+                 ui::ImageModel::FromVectorIcon(
+                     features::IsRoundedIconsEnabled() ? kTabIcon
+                                                       : kNewTabRefreshOldIcon,
+                     ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
+      .AddAction(kActionNewWindow, DisplayType::kBlock)
+      .AddAction(kActionNewIncognitoWindow, DisplayType::kBlock,
+                 /*text_override=*/l10n_util::GetStringUTF16(IDS_INCOGNITO));
+}
 
-  root->AddChild(
-      CreateIndirectActionItem(kActionNewWindow, DisplayType::kBlock));
+void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
+  AppMenuBuilder(root, kColorAppMenuYourChromeBackground)
+      .AddSectionHeader(IDS_APP_MENU_YOUR_CHROME_HEADER)
+      .AddAction(kActionShowPasswordManager)
+      .AddDynamicSubmenu(
+          kActionRecentTabsSubmenu,
+          base::BindRepeating(&RecentTabsDynamicMenu::BuildRecentTabsActions,
+                              recent_tabs_menu_->GetWeakPtr()))
+      .AddAction(kActionShowDownloads)
+      .AddAction(kActionManageExtensions)
+      .AddDynamicSubmenu(
+          kActionBookmarksSubmenu,
+          base::BindRepeating(&BookmarksDynamicMenu::BuildBookmarksActions,
+                              bookmarks_menu_->GetWeakPtr()),
+          [](AppMenuBuilder& sub_builder) {
+            sub_builder.AddAction(kActionBookmarkThisTab)
+                .AddAction(kActionBookmarkAllTabs);
+          })
+      .AddAction(kActionClearBrowsingData);
+}
 
-  root->AddChild(CreateIndirectActionItem(
-      kActionNewIncognitoWindow, DisplayType::kBlock,
-      /*container_color=*/std::nullopt,
-      /*text_override=*/l10n_util::GetStringUTF16(IDS_INCOGNITO)));
+void ActionAppMenuManager::AddToolsAndActionsActions(
+    actions::ActionItem* root) {
+  AppMenuBuilder builder(root, kColorAppMenuToolsAndActionsBackground);
 
-  // Chrome Heading (Your Chrome)
-  std::unique_ptr<actions::BaseAction> your_chrome_heading =
-      CreateSectionActionItem(
-          l10n_util::GetStringUTF16(IDS_APP_MENU_YOUR_CHROME_HEADER),
-          DisplayType::kRow, your_chrome_background);
-
-  auto* chrome_ptr = root->AddChild(std::move(your_chrome_heading));
-
-  // Your Chrome Children Setup
-  chrome_ptr->AddChild(CreateIndirectActionItem(
-      kActionShowPasswordManager, DisplayType::kRow, your_chrome_background));
-
-  auto recent_tabs_menu = CreateIndirectActionItem(
-      kActionRecentTabsSubmenu, DisplayType::kRow, your_chrome_background);
-
-  recent_tabs_menu->SetPopulateChildrenCallback(
-      base::BindRepeating(&RecentTabsDynamicMenu::BuildRecentTabsActions,
-                          recent_tabs_menu_->GetWeakPtr()));
-
-  recent_tabs_menu->PopulateChildItems();
-
-  chrome_ptr->AddChild(std::move(recent_tabs_menu));
-
-  chrome_ptr->AddChild(CreateIndirectActionItem(
-      kActionShowDownloads, DisplayType::kRow, your_chrome_background));
-
-  chrome_ptr->AddChild(CreateIndirectActionItem(
-      kActionManageExtensions, DisplayType::kRow, your_chrome_background));
-
-  auto bookmarks_submenu = CreateIndirectActionItem(
-      kActionBookmarksSubmenu, DisplayType::kRow, your_chrome_background);
-
-  bookmarks_submenu->AddChild(CreateIndirectActionItem(
-      kActionBookmarkThisTab, DisplayType::kRow, your_chrome_background));
-
-  bookmarks_submenu->AddChild(CreateIndirectActionItem(
-      kActionBookmarkAllTabs, DisplayType::kRow, your_chrome_background));
-
-  bookmarks_submenu->SetPopulateChildrenCallback(
-      base::BindRepeating(&BookmarksDynamicMenu::BuildBookmarksActions,
-                          bookmarks_menu_->GetWeakPtr()));
-
-  bookmarks_submenu->PopulateChildItems();
-
-  chrome_ptr->AddChild(std::move(bookmarks_submenu));
-
-  chrome_ptr->AddChild(CreateIndirectActionItem(
-      kActionClearBrowsingData, DisplayType::kRow, your_chrome_background));
-
-  // Tools and Actions Heading
-  std::unique_ptr<actions::BaseAction> tools_actions_heading =
-      CreateSectionActionItem(
-          l10n_util::GetStringUTF16(IDS_APP_MENU_TOOLS_AND_ACTIONS_HEADER),
-          DisplayType::kRow, tools_actions_background);
-
-  auto* tools_actions_ptr = root->AddChild(std::move(tools_actions_heading));
-
-  // Tools and Actions Setup
-  tools_actions_ptr->AddChild(CreateIndirectActionItem(
-      kActionPrint, DisplayType::kRow, tools_actions_background));
+  builder.AddSectionHeader(IDS_APP_MENU_TOOLS_AND_ACTIONS_HEADER)
+      .AddAction(kActionPrint);
 
   if (glic::GlicEnabling::IsEnabledForProfile(
           browser_window_interface_->GetProfile())) {
-    tools_actions_ptr->AddChild(CreateIndirectActionItem(
-        kActionOpenGlic, DisplayType::kRow, tools_actions_background));
+    builder.AddAction(kActionOpenGlic);
   }
 
-  tools_actions_ptr->AddChild(
-      CreateIndirectActionItem(kActionShowLensOverlayFromAppMenu,
-                               DisplayType::kRow, tools_actions_background));
+  builder.AddAction(kActionShowLensOverlayFromAppMenu)
+      .AddAction(kActionShowTranslate);
 
-  tools_actions_ptr->AddChild(CreateIndirectActionItem(
-      kActionShowTranslate, DisplayType::kRow, tools_actions_background));
+  builder.AddSubmenu(kActionFindAndEditSubmenu, [](AppMenuBuilder& sub) {
+    sub.AddAction(kActionFind)
+        .AddAction(actions::kActionCut)
+        .AddAction(actions::kActionCopy)
+        .AddAction(actions::kActionPaste);
+  });
+}
 
-  tools_actions_ptr->AddChild(CreateIndirectActionItem(
-      kActionFind, DisplayType::kRow, tools_actions_background));
-
-  // Footer Setup
-  root->AddChild(
-      CreateIndirectActionItem(kActionOptions, DisplayType::kFooter));
-
-  root->AddChild(
-      CreateIndirectActionItem(kActionHelpSubmenu, DisplayType::kFooter));
-
-  root->AddChild(CreateIndirectActionItem(kActionExit, DisplayType::kFooter));
+void ActionAppMenuManager::AddFooterActions(actions::ActionItem* root) {
+  AppMenuBuilder(root)
+      .AddAction(kActionOptions, DisplayType::kFooter)
+      .AddAction(kActionHelpSubmenu, DisplayType::kFooter)
+      .AddAction(kActionExit, DisplayType::kFooter);
 }

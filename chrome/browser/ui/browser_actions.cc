@@ -873,7 +873,7 @@ void BrowserActions::InitializePageActionIconActions() {
               bwi))
           .SetActionId(kActionFind)
           .SetText(BrowserActions::GetCleanTitleAndTooltipText(
-              l10n_util::GetStringUTF16(IDS_FIND_AND_EDIT_MENU)))
+              l10n_util::GetStringUTF16(IDS_FIND)))
           .SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_FIND))
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled()
@@ -2113,6 +2113,14 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(actions::kActionCut)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_CUT)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_CUT)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kContentCutIcon
+                                                : kCutMenuOldIcon))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_CUT))
           .Build());
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
@@ -2123,6 +2131,14 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(actions::kActionCopy)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_COPY)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_COPY)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? vector_icons::kContentCopyIcon
+                                                : kCopyMenuOldIcon))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_COPY))
           .Build());
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
@@ -2133,6 +2149,14 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(actions::kActionPaste)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_PASTE)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_PASTE)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kContentPasteIcon
+                                                : kPasteMenuOldIcon))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_PASTE))
           .Build());
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
