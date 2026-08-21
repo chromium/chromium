@@ -42,7 +42,8 @@ const auto kFeedbackEncryptionPublicKey = std::to_array<uint8_t>(
 
 // Exits the browser with a helpful error message.
 void ExitWithMessage(const std::string& message) {
-  UNSAFE_TODO(puts(message.c_str()));
+  // SAFETY: `std::string::c_str()` is guaranteed to be NUL-terminated.
+  UNSAFE_BUFFERS(puts(message.c_str()));
   exit(1);
 }
 
