@@ -288,11 +288,19 @@ const UrlFilteringDelegate&
 SupervisedUserUrlFilteringService::GetFamilyLinkUrlFilter() const {
   return *family_link_url_filter_;
 }
+const UrlFilteringDelegate&
+SupervisedUserUrlFilteringService::GetDeviceParentalControlsUrlFilter() const {
+  return *device_parental_controls_url_filter_;
+}
 
 SupervisedUserUrlFilteringService::Observer::~Observer() = default;
 
 UrlFilteringDelegate::UrlFilteringDelegate() = default;
 UrlFilteringDelegate::~UrlFilteringDelegate() = default;
+
+bool UrlFilteringDelegate::IsEnabled() const {
+  return GetWebFilterType() != WebFilterType::kDisabled;
+}
 
 UrlFilteringDelegate::Statistics UrlFilteringDelegate::GetFilteringStatistics()
     const {

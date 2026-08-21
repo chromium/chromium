@@ -56,17 +56,21 @@ int GetDayId(base::Time time) {
   return time.LocalMidnight().since_origin().InDaysFloored();
 }
 
-std::string GetWebFilterTypeHistogramName(bool is_family_link,
-                                          bool is_locally_supervised) {
-  CHECK(is_family_link || is_locally_supervised)
-      << "Callsite should assume at least one supervision type";
+std::string GetWebFilterTypeHistogramName(
+    bool is_family_link_url_filter_enabled,
+    bool is_device_parental_controls_filter_enabled) {
+  CHECK(is_family_link_url_filter_enabled ||
+        is_device_parental_controls_filter_enabled)
+      << "Callsite should assume at least one web filter is enabled.";
   // When the system is recovering from two supervision types available at the
   // same time to settle in "Family Link", it will record in the target
   // "FamilyLink" histogram.
 
   // LINT.IfChange(supervised_user_web_filter_type_user_type)
   return base::StrCat({kSupervisedUserWebFilterTypeHistogramBaseName,
-                       is_family_link ? ".FamilyLink" : ".LocallySupervised"});
+                       is_family_link_url_filter_enabled
+                           ? ".FamilyLink"
+                           : ".LocallySupervised"});
   // LINT.ThenChange(//tools/metrics/histograms/metadata/families/histograms.xml:supervised_user_web_filter_type_user_type)
 }
 
@@ -183,12 +187,12 @@ void SupervisedUserMetricsService::OnUrlFilteringServiceChanged() {
 
 bool SupervisedUserMetricsService::TryEmittingMetricsAndRecordCurrentDay() {
   bool emitted = false;
-  if (IsSubjectToParentalControls(*pref_service_.get()) &&
+  if (url_filtering_service_->GetFamilyLinkUrlFilter().IsEnabled() &&
       TryEmittingFamilyLinkMetrics()) {
     emitted = true;
   }
   if ((device_parental_controls_->IsEnabled() ||
-       IsSubjectToParentalControls(*pref_service_.get())) &&
+       url_filtering_service_->GetFamilyLinkUrlFilter().IsEnabled()) &&
       TryEmittingSupervisedUserMetrics()) {
     emitted = true;
   }
@@ -241,8 +245,9 @@ bool SupervisedUserMetricsService::TryEmittingSupervisedUserMetrics() {
 
   base::UmaHistogramEnumeration(
       GetWebFilterTypeHistogramName(
-          IsSubjectToParentalControls(*pref_service_.get()),
-          device_parental_controls_->IsEnabled()),
+          url_filtering_service_->GetFamilyLinkUrlFilter().IsEnabled(),
+          url_filtering_service_->GetDeviceParentalControlsUrlFilter()
+              .IsEnabled()),
       current);
   last_recorded_supervised_user_web_filter_type_ = current;
   return true;

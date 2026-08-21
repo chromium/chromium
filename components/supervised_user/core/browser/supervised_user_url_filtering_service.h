@@ -127,7 +127,10 @@ class UrlFilteringDelegate {
   UrlFilteringDelegate();
   virtual ~UrlFilteringDelegate();
 
+  // Information about the type of web filter.
   virtual WebFilterType GetWebFilterType() const = 0;
+  // True if the delegate is performing any kind of filtering.
+  bool IsEnabled() const;
 
   // TODO(crbug.com/481303877): Reconsider naming of GetFiltering* methods.
   virtual WebFilteringResult GetFilteringBehavior(const GURL& url) const = 0;
@@ -230,6 +233,7 @@ class SupervisedUserUrlFilteringService : public KeyedService,
   void RemoveObserver(Observer* observer);
 
   const UrlFilteringDelegate& GetFamilyLinkUrlFilter() const;
+  const UrlFilteringDelegate& GetDeviceParentalControlsUrlFilter() const;
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   // Test-only accessor for the family link url filter delegate. Used only in
