@@ -220,6 +220,16 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
     source_config.processing = processing_layout_.webrtc_processing_settings();
 
   } else {
+    // MediaStreamAudioProcessor runs in the Renderer process.
+    // Invariant: MediaStreamAudioProcessor must NEVER be created with Voice
+    // Isolation enabled, as the ML model execution only exists in the Audio
+    // Service.
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+    CHECK(!processing_layout_.webrtc_processing_settings().voice_isolation)
+        << "Voice isolation requested in Renderer APM, which lacks ML execution "
+           "support!";
+#endif
+
     // Create the MediaStreamAudioProcessor, bound to the WebRTC audio device
     // module.
 
