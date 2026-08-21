@@ -33,7 +33,7 @@ dependencies = [
 
 [[package]]
 name = "diplomat"
-version = "0.16.0"
+version = "0.16.1"
 dependencies = [
  "diplomat_core",
  "insta",
@@ -45,9 +45,9 @@ dependencies = [
 
 [[package]]
 name = "diplomat_core"
-version = "0.16.0"
+version = "0.16.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f4ede23809e2fcc555d8b2e10ffa7a1c31331ebca8e5477f4f2b48ab8a0a9a6b"
+checksum = "73b18e806f9ecb92df828d080efe47984ae1193958295d4a84fb8b32c9a1aa1b"
 dependencies = [
  "annotate-snippets",
  "proc-macro2",

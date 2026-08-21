@@ -497,7 +497,7 @@ dependencies = [
 
 [[package]]
 name = "diplomat"
-version = "0.16.0"
+version = "0.16.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "diplomat_core 0.16.1",
@@ -2168,7 +2168,7 @@ name = "temporal_capi"
 version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "diplomat 0.16.0",
+ "diplomat 0.16.1",
  "diplomat-runtime",
  "icu_calendar",
  "icu_locale_core",

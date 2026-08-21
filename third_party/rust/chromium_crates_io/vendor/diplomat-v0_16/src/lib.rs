@@ -138,12 +138,12 @@ fn gen_custom_vtable(custom_trait: &ast::Trait, custom_trait_vtable_type: &Ident
         pub alignment: usize,
     ));
     for m in &custom_trait.methods {
-        // TODO check that this is the right conversion, it might be the wrong direction
         let mut param_types: Vec<syn::Type> = m.params.iter().map(|p| param_ty(&p.ty)).collect();
         let method_name = Ident::new(&format!("run_{}_callback", m.name), Span::call_site());
         let return_tokens = match &m.output_type {
             Some(ret_ty) => {
-                let conv_ret_ty = ret_ty.to_syn();
+                let conv_ret_ty = ret_ty.ffi_safe_version().to_syn();
+
                 quote!( -> #conv_ret_ty)
             }
             None => {
@@ -194,7 +194,16 @@ fn gen_custom_trait_impl(custom_trait: &ast::Trait, custom_trait_struct_name: &I
         let (return_tokens, end_token) = match &m.output_type {
             Some(ret_ty) => {
                 let conv_ret_ty = ret_ty.to_syn();
-                (quote!( -> #conv_ret_ty), quote! {})
+                (
+                    quote!( -> #conv_ret_ty),
+                    match ret_ty {
+                        ast::TypeName::Result(_, _, StdlibOrDiplomat::Stdlib)
+                        | ast::TypeName::Option(_, StdlibOrDiplomat::Stdlib) => {
+                            quote!(.into())
+                        }
+                        _ => quote!(),
+                    },
+                )
             }
             None => (quote! {}, quote! {;}),
         };
@@ -328,13 +337,9 @@ fn gen_custom_function(func_info: FuncGen) -> Item {
     };
 
     let (return_tokens, maybe_into) = if let Some(return_type) = func_info.return_type {
-        if let ast::TypeName::Result(ok, err, StdlibOrDiplomat::Stdlib) = return_type {
-            let ok = ok.to_syn();
-            let err = err.to_syn();
-            (
-                quote! { -> diplomat_runtime::DiplomatResult<#ok, #err> },
-                quote! { .into() },
-            )
+        if let ast::TypeName::Result(_, _, StdlibOrDiplomat::Stdlib) = return_type {
+            let return_type_syn = return_type.ffi_safe_version().to_syn();
+            (quote! { -> #return_type_syn }, quote! { .into() })
         } else if let ast::TypeName::StrReference(_, _, StdlibOrDiplomat::Stdlib)
         | ast::TypeName::StrSlice(.., StdlibOrDiplomat::Stdlib)
         | ast::TypeName::PrimitiveSlice(_, _, StdlibOrDiplomat::Stdlib) = return_type
@@ -591,6 +596,9 @@ fn gen_bridge(mut input: ItemMod) -> ItemMod {
                     syn::FnArg::Typed(t) => AttributeInfo::extract(&mut t.attrs),
                 };
             }
+        }
+        Item::Trait(t) => {
+            let _attrs = AttributeInfo::extract(&mut t.attrs);
         }
         _ => (),
     });
