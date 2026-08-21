@@ -2683,6 +2683,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/enterprise/signin/signals_disclaimer_metrics.h:EnterpriseSignalsDisclaimerModalResult) -->
 
+<!-- LINT.IfChange(EnterpriseSignalsDisclaimerNotShownReason) -->
+
+<enum name="EnterpriseSignalsDisclaimerNotShownReason">
+  <int value="0" label="Active web contents/tab not ready"/>
+  <int value="1" label="Profile creation in progress"/>
+  <int value="2" label="Other modal dialog shown"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/enterprise/signin/signals_disclaimer_metrics.h:EnterpriseSignalsDisclaimerNotShownReason) -->
+
 <!-- LINT.IfChange(EnterpriseSignalsDisclaimerProfilePickerResult) -->
 
 <enum name="EnterpriseSignalsDisclaimerProfilePickerResult">

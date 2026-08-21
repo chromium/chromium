@@ -4243,6 +4243,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.SignalsDisclaimer.NotShownReason"
+    enum="EnterpriseSignalsDisclaimerNotShownReason" expires_after="2027-04-01">
+  <owner>ssolarewicz@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Records the reason why the Enterprise Signals Disclaimer modal dialog was
+    not shown on browser activation.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.SignalsDisclaimer.ProfilePicker.LearnMoreClicked"
     enum="BooleanClicked" expires_after="2027-04-01">
   <owner>ssolarewicz@chromium.org</owner>

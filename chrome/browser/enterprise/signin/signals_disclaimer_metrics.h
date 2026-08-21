@@ -11,6 +11,21 @@ inline constexpr char kEnterpriseSignalsDisclaimerModalShown[] =
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
+// LINT.IfChange(EnterpriseSignalsDisclaimerNotShownReason)
+enum class EnterpriseSignalsDisclaimerNotShownReason {
+  kTabsNotReady = 0,
+  kProfileCreationInProgress = 1,
+  kOtherModalDialogShown = 2,
+  kMaxValue = kOtherModalDialogShown,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseSignalsDisclaimerNotShownReason)
+
+inline constexpr char kEnterpriseSignalsDisclaimerNotShownReason[] =
+    "Enterprise.SignalsDisclaimer.NotShownReason";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
 // LINT.IfChange(EnterpriseSignalsDisclaimerModalResult)
 enum class EnterpriseSignalsDisclaimerModalResult {
   kAccepted = 0,

@@ -376,9 +376,28 @@ void ProfileManagementDisclaimerService::MaybeShowDeviceSignalsDisclaimerDialog(
     return;
   }
 
-  // The management notice dialog or this dialog are already open.
-  if ((state_ && state_->profile_creation_controller) ||
-      browser->GetFeatures().signin_view_controller()->ShowsModalDialog()) {
+  // A tab must be active to present a modal dialog. We'll back off and try
+  // again once the next OnBrowserActivated is fired.
+  if (browser && !browser->GetActiveTabInterface()) {
+    base::UmaHistogramEnumeration(
+        kEnterpriseSignalsDisclaimerNotShownReason,
+        EnterpriseSignalsDisclaimerNotShownReason::kTabsNotReady);
+    return;
+  }
+
+  // Profile creation is already in progress.
+  if (state_ && state_->profile_creation_controller) {
+    base::UmaHistogramEnumeration(
+        kEnterpriseSignalsDisclaimerNotShownReason,
+        EnterpriseSignalsDisclaimerNotShownReason::kProfileCreationInProgress);
+    return;
+  }
+
+  // The management notice dialog or another modal dialog is already open.
+  if (browser->GetFeatures().signin_view_controller()->ShowsModalDialog()) {
+    base::UmaHistogramEnumeration(
+        kEnterpriseSignalsDisclaimerNotShownReason,
+        EnterpriseSignalsDisclaimerNotShownReason::kOtherModalDialogShown);
     return;
   }
 

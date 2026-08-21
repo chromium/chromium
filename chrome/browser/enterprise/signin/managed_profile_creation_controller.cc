@@ -264,6 +264,18 @@ void ManagedProfileCreationController::ShowManagementDisclaimer() {
     return;
   }
 
+  if (browser && !browser->GetActiveTabInterface()) {
+    // The tabs have not been initialized yet.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback_),
+            base::unexpected(
+                ManagedProfileCreationFailureReason::kNoActiveBrowser),
+            profile_creation_required_by_policy_));
+    return;
+  }
+
   auto* switch_to_entry = GetExistingProfileEntryOtherThanSourceProfile(
       source_profile_, account_info_);
   bool managed_profile_already_exists =
