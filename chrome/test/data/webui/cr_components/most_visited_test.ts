@@ -250,6 +250,34 @@ suite('General', () => {
         new KeyboardEvent('keyup', {key: ' '}));
     assertTrue(mostVisited.$.dialog.open);
   });
+
+  test(
+      'favicon scale factor when mostVisitedHighDpiFaviconsEnabled is false',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        loadTimeData.overrideValues({mostVisitedHighDpiFaviconsEnabled: false});
+        await setUpTest();
+        await addTiles(1);
+        const img = mostVisited.shadowRoot.querySelector<HTMLImageElement>(
+            '.tile-icon img')!;
+        const url = new URL(img.src);
+        assertEquals('1x', url.searchParams.get('scaleFactor'));
+      });
+
+  test(
+      'favicon scale factor when mostVisitedHighDpiFaviconsEnabled is true',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        loadTimeData.overrideValues({mostVisitedHighDpiFaviconsEnabled: true});
+        await setUpTest();
+        await addTiles(1);
+        const img = mostVisited.shadowRoot.querySelector<HTMLImageElement>(
+            '.tile-icon img')!;
+        const url = new URL(img.src);
+        assertEquals(
+            `${window.devicePixelRatio || 1}x`,
+            url.searchParams.get('scaleFactor'));
+      });
 });
 
 suite('ShowAddButton', () => {

@@ -247,6 +247,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   source->AddBoolean(
       "prerenderOnPressEnabled",
       base::FeatureList::IsEnabled(features::kNewTabPageTriggerForPrerender2));
+  source->AddBoolean("mostVisitedHighDpiFaviconsEnabled",
+                     base::FeatureList::IsEnabled(
+                         ntp_features::kNtpMostVisitedHighDpiFavicons));
 
   source->AddInteger("maxTilesInCollapsedState",
                      ntp_features::GetMaxTilesInCollapsedState());

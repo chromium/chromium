@@ -134,6 +134,9 @@ void CreateAndAddNewTabPageThirdPartyUiHtmlSource(Profile* profile,
   source->AddBoolean(
       "prerenderOnPressEnabled",
       base::FeatureList::IsEnabled(features::kNewTabPageTriggerForPrerender2));
+  source->AddBoolean("mostVisitedHighDpiFaviconsEnabled",
+                     base::FeatureList::IsEnabled(
+                         ntp_features::kNtpMostVisitedHighDpiFavicons));
 
   // Needed by <cr-most-visited> but not used in
   // chrome://new-tab-page-third-party/.
