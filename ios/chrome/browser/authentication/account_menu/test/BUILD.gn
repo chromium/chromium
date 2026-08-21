@@ -10,6 +10,7 @@ source_set("eg2_tests") {
   sources = [ "account_menu_egtest.mm" ]
   deps = [
     "//base/test:test_support",
+    "//components/signin/public/base:signin_switches",
     "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/authentication/account_menu/public",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",

@@ -121,6 +121,21 @@ enum class UserSelectableType;
 // in the test app.
 + (BOOL)areSeparateProfilesForManagedAccountsEnabled;
 
+// Triggers a persistent MDM error for the provided identity.
++ (void)setMDMErrorForIdentity:(FakeSystemIdentity*)fakeIdentity
+                userActionable:(BOOL)userActionable;
+
+// Clears the persistent MDM error for the provided identity.
++ (void)clearMDMErrorForIdentity:(FakeSystemIdentity*)fakeIdentity;
+
+// Resets the recorded MDM notification display status in
+// `FakeSystemIdentityManager`.
++ (void)resetMDMNotificationDisplayed;
+
+// Returns YES if `DisplayMDMNotification()` was called on
+// `FakeSystemIdentityManager`.
++ (BOOL)wasMDMNotificationDisplayed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_TEST_SIGNIN_EARL_GREY_APP_INTERFACE_H_

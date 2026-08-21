@@ -73,6 +73,34 @@ using base::test::ios::WaitUntilConditionOrTimeout;
                                            accountId.ToString())];
 }
 
+- (void)setMDMErrorForIdentity:(FakeSystemIdentity*)fakeIdentity
+                userActionable:(BOOL)userActionable {
+  [SigninEarlGreyAppInterface setMDMErrorForIdentity:fakeIdentity
+                                      userActionable:userActionable];
+}
+
+- (void)clearMDMErrorForIdentity:(FakeSystemIdentity*)fakeIdentity {
+  [SigninEarlGreyAppInterface clearMDMErrorForIdentity:fakeIdentity];
+}
+
+- (void)resetMDMNotificationDisplayed {
+  [SigninEarlGreyAppInterface resetMDMNotificationDisplayed];
+}
+
+- (BOOL)wasMDMNotificationDisplayed {
+  return [SigninEarlGreyAppInterface wasMDMNotificationDisplayed];
+}
+
+- (void)waitForMDMNotificationDisplayed {
+  ConditionBlock condition = ^bool {
+    return [SigninEarlGreyAppInterface wasMDMNotificationDisplayed];
+  };
+  EG_TEST_HELPER_ASSERT_TRUE(
+      WaitUntilConditionOrTimeout(base::test::ios::kWaitForActionTimeout,
+                                  condition),
+      @"The MDM notification was not requested.");
+}
+
 - (GaiaId)primaryAccountGaiaID {
   return GaiaId([SigninEarlGreyAppInterface primaryAccountGaiaIDString]);
 }

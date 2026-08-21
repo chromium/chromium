@@ -65,6 +65,24 @@ class GURL;
 // Simulates a persistent authentication error for an account.
 - (void)setPersistentAuthErrorForAccount:(const CoreAccountId&)accountId;
 
+// Triggers a persistent MDM error for the provided identity.
+- (void)setMDMErrorForIdentity:(FakeSystemIdentity*)fakeIdentity
+                userActionable:(BOOL)userActionable;
+
+// Clears the persistent MDM error for the provided identity.
+- (void)clearMDMErrorForIdentity:(FakeSystemIdentity*)fakeIdentity;
+
+// Resets the recorded MDM notification display status in
+// `FakeSystemIdentityManager`.
+- (void)resetMDMNotificationDisplayed;
+
+// Returns YES if `DisplayMDMNotification()` was called on
+// `FakeSystemIdentityManager`.
+- (BOOL)wasMDMNotificationDisplayed;
+
+// Waits for the MDM notification to be displayed.
+- (void)waitForMDMNotificationDisplayed;
+
 // Returns the gaia ID of the signed-in account.
 // If there is no signed-in account returns an empty string.
 - (GaiaId)primaryAccountGaiaID;

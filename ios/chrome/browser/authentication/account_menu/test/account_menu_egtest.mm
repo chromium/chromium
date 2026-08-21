@@ -7,6 +7,7 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/account_menu/public/ai_subscription_chip_constants.h"
 #import "ios/chrome/browser/authentication/test/separate_profiles_util.h"
@@ -84,6 +85,11 @@ id<GREYMatcher> identityDiscMatcher() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  if ([self isRunningTest:@selector(testUserActionableMDMErrorFlow)] ||
+      [self isRunningTest:@selector(testNonActionableMDMErrorFlow)]) {
+    config.features_enabled.push_back(
+        switches::kHandleMdmErrorsForDasherAccounts);
+  }
   config.features_enabled.push_back(kAiSubscriptionAvatarRingIOS);
   return config;
 }
@@ -567,6 +573,85 @@ id<GREYMatcher> identityDiscMatcher() {
   [SigninEarlGrey verifySignedOut];
 
   // Verify the Account Menu is dismissed.
+  [self assertAccountMenuIsNotShown];
+}
+
+// Tests the MDM error resolution flow in the account menu.
+- (void)testUserActionableMDMErrorFlow {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+
+  // Set the MDM error.
+  [SigninEarlGrey setMDMErrorForIdentity:fakeIdentity userActionable:YES];
+
+  [self selectIdentityDisc];
+
+  // Verify the error message is visible.
+  id<GREYMatcher> errorMatcher = grey_text(l10n_util::GetNSString(
+      IDS_IOS_IDENTITY_ERROR_INFOBAR_DEVICE_MANAGEMENT_SERVICES_UNAVAILABLE_MESSAGE));
+  [[EarlGrey selectElementWithMatcher:errorMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Reset the MDM notification status.
+  [SigninEarlGrey resetMDMNotificationDisplayed];
+
+  // Tap "Fix Now".
+  id<GREYMatcher> fixNowMatcher = grey_text(l10n_util::GetNSString(
+      IDS_IOS_IDENTITY_ERROR_INFOBAR_DEVICE_MANAGEMENT_REQUIRED_FIX_NOW_BUTTON));
+  [[EarlGrey selectElementWithMatcher:fixNowMatcher] performAction:grey_tap()];
+
+  // Verify that the MDM dialog was requested.
+  [SigninEarlGrey waitForMDMNotificationDisplayed];
+
+  // Resolve the error and verify the error UI is dismissed.
+  [SigninEarlGrey resetMDMNotificationDisplayed];
+  [SigninEarlGrey clearMDMErrorForIdentity:fakeIdentity];
+  [[EarlGrey selectElementWithMatcher:errorMatcher]
+      assertWithMatcher:grey_notVisible()];
+  GREYAssertFalse([SigninEarlGrey wasMDMNotificationDisplayed],
+                  @"MDM dialog should not be shown.");
+
+  [self closeAccountMenu];
+  [self assertAccountMenuIsNotShown];
+}
+
+// Tests the non-actionable MDM error resolution flow in the account menu.
+- (void)testNonActionableMDMErrorFlow {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+
+  // Set the MDM error.
+  [SigninEarlGrey setMDMErrorForIdentity:fakeIdentity userActionable:NO];
+
+  [self selectIdentityDisc];
+
+  // Verify the error message is visible.
+  id<GREYMatcher> errorMatcher = grey_text(l10n_util::GetNSString(
+      IDS_IOS_IDENTITY_ERROR_INFOBAR_DEVICE_MANAGEMENT_SERVICES_UNAVAILABLE_MESSAGE));
+  [[EarlGrey selectElementWithMatcher:errorMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Reset the MDM notification status.
+  [SigninEarlGrey resetMDMNotificationDisplayed];
+
+  // Tap "Learn More".
+  id<GREYMatcher> learnMoreMatcher = grey_text(l10n_util::GetNSString(
+      IDS_IOS_IDENTITY_ERROR_INFOBAR_DEVICE_MANAGEMENT_REQUIRED_LEARN_MORE_BUTTON));
+  [[EarlGrey selectElementWithMatcher:learnMoreMatcher]
+      performAction:grey_tap()];
+
+  // Verify that the MDM dialog was requested.
+  [SigninEarlGrey waitForMDMNotificationDisplayed];
+
+  // Resolve the error and verify the error UI is dismissed.
+  [SigninEarlGrey resetMDMNotificationDisplayed];
+  [SigninEarlGrey clearMDMErrorForIdentity:fakeIdentity];
+  [[EarlGrey selectElementWithMatcher:errorMatcher]
+      assertWithMatcher:grey_notVisible()];
+  GREYAssertFalse([SigninEarlGrey wasMDMNotificationDisplayed],
+                  @"MDM dialog should not be shown.");
+
+  [self closeAccountMenu];
   [self assertAccountMenuIsNotShown];
 }
 

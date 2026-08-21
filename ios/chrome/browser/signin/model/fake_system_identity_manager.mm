@@ -301,6 +301,16 @@ FakeSystemIdentityManager::CreateRefreshAccessTokenFailure(
   return details.error;
 }
 
+bool FakeSystemIdentityManager::WasMDMNotificationDisplayed() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return was_mdm_notification_displayed_;
+}
+
+void FakeSystemIdentityManager::ResetMDMNotificationDisplayed() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  was_mdm_notification_displayed_ = false;
+}
+
 bool FakeSystemIdentityManager::IsSigninSupported() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return true;
@@ -581,9 +591,10 @@ bool FakeSystemIdentityManager::DisplayMDMNotification(
     HandleMDMCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK([storage_ containsIdentityWithGaiaID:identity.gaiaId]);
+  was_mdm_notification_displayed_ = true;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), false));
-  return false;
+  return true;
 }
 
 bool FakeSystemIdentityManager::IsScopeLimitedError(

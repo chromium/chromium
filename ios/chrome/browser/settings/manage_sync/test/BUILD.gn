@@ -11,6 +11,7 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//components/policy:generated",
     "//components/regional_capabilities",
+    "//components/signin/public/base:signin_switches",
     "//components/strings",
     "//components/sync/base",
     "//components/sync/base:features",

@@ -138,6 +138,12 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
       id<SystemIdentity> identity,
       HandleMDMNotificationCallback callback);
 
+  // Returns whether an MDM notification was displayed.
+  bool WasMDMNotificationDisplayed() const;
+
+  // Resets the MDM notification displayed flag.
+  void ResetMDMNotificationDisplayed();
+
   // SystemIdentityManager implementation.
   bool IsSigninSupported() final;
   bool HandleSessionOpenURLContexts(
@@ -253,6 +259,7 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   void ExecuteClosure(base::OnceClosure closure);
 
   bool instantly_fill_hosted_domain_cache_ = true;
+  bool was_mdm_notification_displayed_ = false;
   NSMutableSet<id<SystemIdentity>>* hosted_domain_cache_ = [NSMutableSet set];
   NSError* get_hosted_domain_error_ = nil;
   size_t num_hosted_domain_errors_returned_ = 0;
