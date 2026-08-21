@@ -674,6 +674,75 @@ TEST_F(BrowserAccessibilityTest,
           ui::AXClippingBehavior::kUnclipped));
 }
 
+TEST_F(BrowserAccessibilityTest, ViewsAXWebBoundsStopAtRootFrame) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAccessibilityTreeForViews);
+
+  const ui::AXTreeID views_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  const ui::AXTreeID web_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+  ui::AXNodeData views_root;
+  views_root.id = 1;
+  views_root.role = ax::mojom::Role::kWindow;
+  views_root.child_ids = {2};
+
+  ui::AXNodeData web_view;
+  web_view.id = 2;
+  web_view.role = ax::mojom::Role::kClient;
+  web_view.relative_bounds.bounds = gfx::RectF(50, 60, 700, 500);
+  web_view.AddChildTreeId(web_tree_id);
+
+  ui::AXTreeUpdate views_update =
+      MakeAXTreeUpdateForTesting(views_root, web_view);
+  views_update.tree_data.tree_id = views_tree_id;
+  views_update.root_id = views_root.id;
+  views_update.has_tree_data = true;
+
+  ui::AXNodeData web_root;
+  web_root.id = 10;
+  web_root.role = ax::mojom::Role::kRootWebArea;
+  web_root.child_ids = {11};
+
+  ui::AXNodeData web_node;
+  web_node.id = 11;
+  web_node.role = ax::mojom::Role::kButton;
+  web_node.relative_bounds.bounds = gfx::RectF(5, 7, 40, 30);
+
+  ui::AXTreeUpdate web_update = MakeAXTreeUpdateForTesting(web_root, web_node);
+  web_update.tree_data.tree_id = web_tree_id;
+  web_update.tree_data.parent_tree_id = views_tree_id;
+  web_update.root_id = web_root.id;
+  web_update.has_tree_data = true;
+
+  auto views_delegate =
+      std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
+  views_delegate->is_root_frame_ = false;
+  views_delegate->is_web_content_source_ = false;
+
+  auto web_delegate = std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
+  web_delegate->is_root_frame_ = true;
+  web_delegate->view_bounds_ = gfx::Rect(150, 260, 700, 500);
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> views_manager(
+      CreateBrowserAccessibilityManager(views_update, node_id_delegate_,
+                                        views_delegate.get()));
+  std::unique_ptr<ui::BrowserAccessibilityManager> web_manager(
+      CreateBrowserAccessibilityManager(web_update, node_id_delegate_,
+                                        web_delegate.get()));
+
+  ASSERT_EQ(views_manager->GetFromID(web_view.id),
+            web_manager->GetBrowserAccessibilityRoot()->PlatformGetParent());
+
+  EXPECT_EQ(gfx::Rect(5, 7, 40, 30), web_manager->GetFromID(11)->GetBoundsRect(
+                                         ui::AXCoordinateSystem::kRootFrame,
+                                         ui::AXClippingBehavior::kUnclipped));
+  EXPECT_EQ(gfx::Rect(155, 267, 40, 30),
+            web_manager->GetFromID(11)->GetBoundsRect(
+                ui::AXCoordinateSystem::kScreenDIPs,
+                ui::AXClippingBehavior::kUnclipped));
+}
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(USE_ATK)
 TEST_F(BrowserAccessibilityTest, PlatformChildIterator) {
   // (i) => node is ignored

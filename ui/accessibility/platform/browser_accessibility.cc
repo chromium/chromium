@@ -889,10 +889,10 @@ gfx::Rect BrowserAccessibility::RelativeToAbsoluteBounds(
       }
     }
 
-    // Only web content composes bounds across tree boundaries; other sources,
-    // such as Views, are anchored in screen coordinates by their own delegate.
+    // Only child web frames compose bounds across tree boundaries. Root web
+    // frames and other sources are anchored by their own native view.
     if (coordinate_system == AXCoordinateSystem::kFrame ||
-        !manager->IsWebContentSource()) {
+        manager->IsRootFrameManager() || !manager->IsWebContentSource()) {
       break;
     }
 
