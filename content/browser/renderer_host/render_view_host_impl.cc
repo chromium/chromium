@@ -641,8 +641,7 @@ void RenderViewHostImpl::SetFrameTree(FrameTree& frame_tree) {
   render_widget_host_->SetFrameTree(frame_tree);
 }
 
-void RenderViewHostImpl::EnterBackForwardCache(
-    const base::optional_ref<const GURL> navigation_request_url) {
+void RenderViewHostImpl::EnterBackForwardCache() {
   if (!will_enter_back_forward_cache_callback_for_testing_.is_null())
     will_enter_back_forward_cache_callback_for_testing_.Run();
 
@@ -658,8 +657,7 @@ void RenderViewHostImpl::EnterBackForwardCache(
   }
   is_in_back_forward_cache_ = true;
   page_lifecycle_state_manager_->SetIsInBackForwardCache(
-      is_in_back_forward_cache_, /*page_restore_params=*/nullptr,
-      navigation_request_url);
+      is_in_back_forward_cache_, /*page_restore_params=*/nullptr);
 }
 
 void RenderViewHostImpl::PrepareToLeaveBackForwardCache(
@@ -685,8 +683,7 @@ void RenderViewHostImpl::LeaveBackForwardCache(
   }
   is_in_back_forward_cache_ = false;
   page_lifecycle_state_manager_->SetIsInBackForwardCache(
-      is_in_back_forward_cache_, std::move(page_restore_params),
-      /*navigation_request_url=*/std::nullopt);
+      is_in_back_forward_cache_, std::move(page_restore_params));
 }
 
 void RenderViewHostImpl::ActivatePrerenderedPage(

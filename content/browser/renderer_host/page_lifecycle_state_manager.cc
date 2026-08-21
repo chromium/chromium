@@ -112,8 +112,7 @@ void PageLifecycleStateManager::SetBackForwardCacheEntered(
 
 void PageLifecycleStateManager::SetIsInBackForwardCache(
     bool is_in_back_forward_cache,
-    blink::mojom::PageRestoreParamsPtr page_restore_params,
-    const base::optional_ref<const GURL> navigation_request_url) {
+    blink::mojom::PageRestoreParamsPtr page_restore_params) {
   if (IsInBackForwardCache() == is_in_back_forward_cache) {
     return;
   }

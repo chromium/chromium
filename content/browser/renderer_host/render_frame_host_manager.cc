@@ -1016,12 +1016,11 @@ void RenderFrameHostManager::DidNavigateFrame(
     const blink::FramePolicy& frame_policy,
     bool allow_paint_holding,
     const ViewTransitionCommitInfo& view_transition_commit_info,
-    const base::optional_ref<const GURL> navigation_request_url,
     bool is_backward_navigation) {
   CommitPendingIfNecessary(render_frame_host, was_caused_by_user_gesture,
                            is_same_document_navigation, clear_proxies_on_commit,
                            allow_paint_holding, view_transition_commit_info,
-                           navigation_request_url, is_backward_navigation);
+                           is_backward_navigation);
 
   // Make sure any dynamic changes to this frame's sandbox flags and permissions
   // policy that were made prior to navigation take effect.  This should only
@@ -1063,7 +1062,6 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
     bool clear_proxies_on_commit,
     bool allow_paint_holding,
     const ViewTransitionCommitInfo& view_transition_commit_info,
-    const base::optional_ref<const GURL> navigation_request_url,
     bool is_backward_navigation) {
   if (!speculative_render_frame_host_) {
     // There's no speculative RenderFrameHost so it must be that the current
@@ -1076,7 +1074,7 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
     CommitPending(std::move(speculative_render_frame_host_),
                   std::move(stored_page_to_restore_), clear_proxies_on_commit,
                   allow_paint_holding, view_transition_commit_info,
-                  navigation_request_url, is_backward_navigation);
+                  is_backward_navigation);
 
     // If there are other navigation requests that are ongoing, set their
     // "associated RenderFrameHost type" NONE, as the old type may no longer be
@@ -1364,7 +1362,6 @@ void RenderFrameHostManager::UpdateOpener(
 void RenderFrameHostManager::UnloadOldFrame(
     std::unique_ptr<RenderFrameHostImpl> old_render_frame_host,
     const ViewTransitionCommitInfo& view_transition_commit_info,
-    const base::optional_ref<const GURL> navigation_request_url,
     bool is_backward_navigation,
     FrameTreeNodeId focused_frame_tree_node_id) {
   TRACE_EVENT1("navigation", "RenderFrameHostManager::UnloadOldFrame",
@@ -1464,7 +1461,7 @@ void RenderFrameHostManager::UnloadOldFrame(
           std::make_unique<BackForwardCacheImpl::Entry>(std::move(stored_page));
       // Ensures RenderViewHosts are not reused while they are in the cache.
       for (const auto& rvh : entry->render_view_hosts()) {
-        rvh->EnterBackForwardCache(navigation_request_url);
+        rvh->EnterBackForwardCache();
       }
       back_forward_cache.StoreEntry(std::move(entry));
       return;
@@ -1892,7 +1889,6 @@ void RenderFrameHostManager::PerformEarlyRenderFrameHostSwapIfNeeded(
       /*pending_stored_page=*/nullptr,
       request->browsing_context_group_swap().ShouldClearProxiesOnCommit(),
       /*allow_paint_holding=*/false, view_transition_commit_info,
-      /*navigation_request_url=*/request->GetURL(),
       /*is_backward_navigation=*/false);
   request->SetAssociatedRFHType(
       NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
@@ -5244,7 +5240,6 @@ void RenderFrameHostManager::CommitPending(
     bool clear_proxies_on_commit,
     bool allow_paint_holding,
     const ViewTransitionCommitInfo& view_transition_commit_info,
-    const base::optional_ref<const GURL> navigation_request_url,
     bool is_backward_navigation) {
   TRACE_EVENT1("navigation", "RenderFrameHostManager::CommitPending",
                "FrameTreeNode id", frame_tree_node_->frame_tree_node_id());
@@ -5655,8 +5650,7 @@ void RenderFrameHostManager::CommitPending(
   // This will unload it and schedule it for deletion when the unload ack
   // arrives (or immediately if the process isn't live).
   UnloadOldFrame(std::move(old_render_frame_host), view_transition_commit_info,
-                 navigation_request_url, is_backward_navigation,
-                 focused_frame_tree_node_id);
+                 is_backward_navigation, focused_frame_tree_node_id);
 
   // Since the new RenderFrameHost is now committed, there must be no proxies
   // for its SiteInstance. Delete any existing ones.
@@ -6166,7 +6160,6 @@ void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
                 /*pending_stored_page=*/nullptr,
                 /*clear_proxies_on_commit=*/false,
                 /*allow_paint_holding=*/false, view_transition_commit_info,
-                /*navigation_request_url=*/std::nullopt,
                 /*is_backward_navigation=*/false);
   NotifyPrepareForInnerDelegateAttachComplete(true /* success */);
 }

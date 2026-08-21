@@ -419,7 +419,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
       const blink::FramePolicy& frame_policy,
       bool allow_paint_holding,
       const ViewTransitionCommitInfo& view_transition_commit_info,
-      const base::optional_ref<const GURL> navigation_request_url,
       bool is_backward_navigation);
 
   // Called when this frame's opener is changed to the frame specified by
@@ -1138,8 +1137,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // |allow_paint_holding| Indicates whether paint holding is allowed.
   // |view_transition_commit_info| Information about the ViewTransition state
   // for the navigation commit.
-  // `navigation_request_url` is a URL for the next new page's
-  // NavigationRequest's url.
   // `is_backward_navigation` Indicates whether the navigation is a backward
   // navigation.
   void CommitPending(
@@ -1148,7 +1145,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
       bool clear_proxies_on_commit,
       bool allow_paint_holding,
       const ViewTransitionCommitInfo& view_transition_commit_info,
-      const base::optional_ref<const GURL> navigation_request_url,
       bool is_backward_navigation);
 
   // Helper to call CommitPending() in all necessary cases.
@@ -1159,7 +1155,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
       bool clear_proxies_on_commit,
       bool allow_paint_holding,
       const ViewTransitionCommitInfo& view_transition_commit_info,
-      const base::optional_ref<const GURL> navigation_request_url,
       bool is_backward_navigation);
 
   // Called when either a same-RenderFrameHost or pending RenderFrameHost
@@ -1172,7 +1167,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
   void UnloadOldFrame(
       std::unique_ptr<RenderFrameHostImpl> old_render_frame_host,
       const ViewTransitionCommitInfo& view_transition_commit_info,
-      const base::optional_ref<const GURL> navigation_request_url,
       bool is_backward_navigation,
       FrameTreeNodeId focused_frame_tree_node_id);
 

@@ -616,9 +616,7 @@ void Navigator::DidNavigate(
       navigation_request->browsing_context_group_swap()
           .ShouldClearProxiesOnCommit(),
       navigation_request->commit_params().frame_policy, allow_paint_holding,
-      view_transition_commit_info, navigation_request->GetURL(),
-      is_backward_navigation);
-
+      view_transition_commit_info, is_backward_navigation);
 
   // The main frame, same site, and cross-site navigation checks for user
   // activation mirror the checks in DocumentLoader::CommitNavigation() (note:

@@ -22705,29 +22705,6 @@
             ]
         }
     ],
-    "SkipPagehideInCommitForDSENavigation": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "delay": "100ms"
-                    },
-                    "enable_features": [
-                        "SkipPagehideInCommitForDSENavigation"
-                    ]
-                }
-            ]
-        }
-    ],
     "SkipPostTaskForCallbacks": [
         {
             "platforms": [
