@@ -510,6 +510,7 @@ TEST_P(URLRequestQuicTest, DelayedResponseStart) {
   LoadTimingInfo timing_info;
   request->GetLoadTimingInfo(&timing_info);
   EXPECT_EQ(OK, delegate.request_status());
+  EXPECT_EQ(kHelloBodyValue, delegate.data_received());
   EXPECT_GE((timing_info.receive_headers_start - timing_info.request_start),
             delay);
   EXPECT_GE(timing_info.receive_non_informational_headers_start,
