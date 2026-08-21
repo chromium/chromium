@@ -2247,13 +2247,6 @@ if (_is_default_toolchain) {
       deps += [ "//chrome/android/modules/dev_ui/provider:java" ]
     }
 
-    if (use_mlkit_for_aicore) {
-      # The lib must be in the base module so that MlKitInitProvider is merged
-      # into the base manifest, where it is removed via tools:node="remove" (see
-      # AndroidManifest.xml) to keep MLKit off the startup critical path.
-      deps += [ "//third_party/android_deps:com_google_mlkit_common_java" ]
-    }
-
     srcjar_deps = [
       ":base_module_jni",
       ":chrome_product_config",

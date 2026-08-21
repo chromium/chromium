@@ -224,12 +224,6 @@
         <action android:name="com.google.firebase.MESSAGING_EVENT"/>
       </intent-filter>  # DIFF-ANCHOR: 69e70070
     </service>  # DIFF-ANCHOR: 2295960c
-    <service  # DIFF-ANCHOR: 85869b23
-        android:name="com.google.mlkit.common.internal.MlKitComponentDiscoveryService"
-        android:directBootAware="true"
-        android:exported="false">
-      <meta-data android:name="com.google.firebase.components:com.google.mlkit.common.internal.CommonComponentRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
-    </service>  # DIFF-ANCHOR: 85869b23
     <service  # DIFF-ANCHOR: a550decc
         android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskJobService"
         android:exported="false"

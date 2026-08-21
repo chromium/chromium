@@ -901,6 +901,12 @@
         android:exported="false">
     </receiver>  # DIFF-ANCHOR: 2553238b
     <service android:name="androidx.browser.customtabs.PostMessageService"/>
+    <service  # DIFF-ANCHOR: 85869b23
+        android:name="com.google.mlkit.common.internal.MlKitComponentDiscoveryService"
+        android:directBootAware="true"
+        android:exported="false">
+      <meta-data android:name="com.google.firebase.components:com.google.mlkit.common.internal.CommonComponentRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+    </service>  # DIFF-ANCHOR: 85869b23
     <service  # DIFF-ANCHOR: 70fcecc3
         android:name="org.chromium.chrome.browser.GracefulShutdownService"
         android:exported="false"

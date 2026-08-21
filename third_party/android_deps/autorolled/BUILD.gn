@@ -672,63 +672,67 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy
     # instead.
-    android_aar_prebuilt("com_google_mlkit_common_java") {
-      aar_path = "autorolled/cipd/libs/com_google_mlkit_common/common.aar"
-      info_path = "autorolled/committed/libs/com_google_mlkit_common/com_google_mlkit_common.info"
-      enable_bytecode_checks = false
-      deps = [
-        "$google_play_services_package:google_android_datatransport_transport_api_java",
-        "$google_play_services_package:google_android_datatransport_transport_backend_cct_java",
-        "$google_play_services_package:google_android_datatransport_transport_runtime_java",
-        "$google_play_services_package:google_firebase_firebase_components_java",
-        "$google_play_services_package:google_firebase_firebase_encoders_java",
-        "$google_play_services_package:google_firebase_firebase_encoders_json_java",
-        "$google_play_services_package:google_play_services_base_java",
-        "$google_play_services_package:google_play_services_basement_java",
-        "$google_play_services_package:google_play_services_tasks_java",
-        "//third_party/androidx:androidx_appcompat_appcompat_java",
-        "//third_party/androidx:androidx_core_core_java",
-      ]
+    if (!defined(mlkit_target)) {
+      android_aar_prebuilt("com_google_mlkit_common_java") {
+        aar_path = "autorolled/cipd/libs/com_google_mlkit_common/common.aar"
+        info_path = "autorolled/committed/libs/com_google_mlkit_common/com_google_mlkit_common.info"
+        enable_bytecode_checks = false
+        deps = [
+          "$google_play_services_package:google_android_datatransport_transport_api_java",
+          "$google_play_services_package:google_android_datatransport_transport_backend_cct_java",
+          "$google_play_services_package:google_android_datatransport_transport_runtime_java",
+          "$google_play_services_package:google_firebase_firebase_components_java",
+          "$google_play_services_package:google_firebase_firebase_encoders_java",
+          "$google_play_services_package:google_firebase_firebase_encoders_json_java",
+          "$google_play_services_package:google_play_services_base_java",
+          "$google_play_services_package:google_play_services_basement_java",
+          "$google_play_services_package:google_play_services_tasks_java",
+          "//third_party/androidx:androidx_appcompat_appcompat_java",
+          "//third_party/androidx:androidx_core_core_java",
+        ]
+      }
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy
     # instead.
-    android_aar_prebuilt("com_google_mlkit_genai_common_java") {
-      aar_path =
-          "autorolled/cipd/libs/com_google_mlkit_genai_common/genai-common.aar"
-      info_path = "autorolled/committed/libs/com_google_mlkit_genai_common/com_google_mlkit_genai_common.info"
-      enable_bytecode_checks = false
-      deps = [
-        "$google_play_services_package:google_play_services_basement_java",
-        "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
-        "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_guava_java",
-        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
-      ]
+    if (!defined(mlkit_target)) {
+      android_aar_prebuilt("com_google_mlkit_genai_common_java") {
+        aar_path = "autorolled/cipd/libs/com_google_mlkit_genai_common/genai-common.aar"
+        info_path = "autorolled/committed/libs/com_google_mlkit_genai_common/com_google_mlkit_genai_common.info"
+        enable_bytecode_checks = false
+        deps = [
+          "$google_play_services_package:google_play_services_basement_java",
+          "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+          "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_guava_java",
+          "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+        ]
+      }
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy
     # instead.
-    android_aar_prebuilt("com_google_mlkit_genai_prompt_java") {
-      aar_path =
-          "autorolled/cipd/libs/com_google_mlkit_genai_prompt/genai-prompt.aar"
-      info_path = "autorolled/committed/libs/com_google_mlkit_genai_prompt/com_google_mlkit_genai_prompt.info"
-      enable_bytecode_checks = false
-      deps = [
-        "$google_play_services_package:google_android_datatransport_transport_api_java",
-        "$google_play_services_package:google_android_datatransport_transport_backend_cct_java",
-        "$google_play_services_package:google_android_datatransport_transport_runtime_java",
-        "$google_play_services_package:google_firebase_firebase_encoders_java",
-        "$google_play_services_package:google_firebase_firebase_encoders_json_java",
-        "$google_play_services_package:google_play_services_basement_java",
-        "$google_play_services_package:google_play_services_tasks_java",
-        "//third_party/android_deps:com_google_mlkit_common_java",
-        "//third_party/android_deps:com_google_mlkit_genai_common_java",
-        "//third_party/android_deps:com_google_mlkit_genai_schema_java",
-        "//third_party/android_deps:guava_java",
-        "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
-        "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_guava_java",
-        "//third_party/kotlin_stdlib:kotlin_stdlib_java",
-      ]
+    if (!defined(mlkit_target)) {
+      android_aar_prebuilt("com_google_mlkit_genai_prompt_java") {
+        aar_path = "autorolled/cipd/libs/com_google_mlkit_genai_prompt/genai-prompt.aar"
+        info_path = "autorolled/committed/libs/com_google_mlkit_genai_prompt/com_google_mlkit_genai_prompt.info"
+        enable_bytecode_checks = false
+        deps = [
+          "$google_play_services_package:google_android_datatransport_transport_api_java",
+          "$google_play_services_package:google_android_datatransport_transport_backend_cct_java",
+          "$google_play_services_package:google_android_datatransport_transport_runtime_java",
+          "$google_play_services_package:google_firebase_firebase_encoders_java",
+          "$google_play_services_package:google_firebase_firebase_encoders_json_java",
+          "$google_play_services_package:google_play_services_basement_java",
+          "$google_play_services_package:google_play_services_tasks_java",
+          "//third_party/android_deps:com_google_mlkit_common_java",
+          "//third_party/android_deps:com_google_mlkit_genai_common_java",
+          "//third_party/android_deps:com_google_mlkit_genai_schema_java",
+          "//third_party/android_deps:guava_java",
+          "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+          "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_guava_java",
+          "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+        ]
+      }
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy
@@ -1596,21 +1600,22 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy
     # instead.
-    java_prebuilt("com_google_mlkit_genai_schema_java") {
-      jar_path =
-          "autorolled/cipd/libs/com_google_mlkit_genai_schema/genai-schema.jar"
-      output_name = "com_google_mlkit_genai_schema"
-      supports_android = true
-      requires_android = true
-      enable_bytecode_checks = false
+    if (!defined(mlkit_target)) {
+      java_prebuilt("com_google_mlkit_genai_schema_java") {
+        jar_path = "autorolled/cipd/libs/com_google_mlkit_genai_schema/genai-schema.jar"
+        output_name = "com_google_mlkit_genai_schema"
+        supports_android = true
+        requires_android = true
+        enable_bytecode_checks = false
 
-      # To remove visibility constraint, add this dependency to
-      # //third_party/android_deps/autorolled/build.gradle.template
-      visibility = [
-        ":*",
-        "//third_party/androidx:*",
-      ]
-      deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+        # To remove visibility constraint, add this dependency to
+        # //third_party/android_deps/autorolled/build.gradle.template
+        visibility = [
+          ":*",
+          "//third_party/androidx:*",
+        ]
+        deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+      }
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy

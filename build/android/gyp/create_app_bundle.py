@@ -104,6 +104,8 @@ _ALLOWLISTED_NON_BASE_SERVICES = {
     'androidx.pdf.service.PdfDocumentServiceImpl',
     'androidx.pdf.service.PdfDocumentService',
     "com.google.android.apps.chrome.browser.media.ChromeAppContentProjectionService",
+    # Not an actual service; used only as a metadata container for ComponentDiscovery.
+    'com.google.mlkit.common.internal.MlKitComponentDiscoveryService',
     # These need to be burned down - these have likely never fully worked.
     'com.google.apps.tiktok.concurrent.AndroidFuturesService',
     'com.google.apps.tiktok.concurrent.InternalForegroundService',

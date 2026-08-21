@@ -107,10 +107,8 @@ android_library("java") {
   # Dependencies of MLKit-based implementations for AICore backend.
   if (use_mlkit_for_aicore) {
     deps += [
-      "//third_party/android_deps:com_google_mlkit_common_java",
-      "//third_party/android_deps:com_google_mlkit_genai_common_java",
-      "//third_party/android_deps:com_google_mlkit_genai_prompt_java",
       "//third_party/android_deps:guava_java",
+      "//third_party/android_deps:mlkit_java",
     ]
   }
 
@@ -180,10 +178,8 @@ if (use_mlkit_for_aicore) {
       "//base:base_junit_test_support",
       "//components/optimization_guide/proto:optimization_guide_proto_java",
       "//services/on_device_model/public/mojom:mojom_java",
-      "//third_party/android_deps:com_google_mlkit_common_java",
-      "//third_party/android_deps:com_google_mlkit_genai_common_java",
-      "//third_party/android_deps:com_google_mlkit_genai_prompt_java",
       "//third_party/android_deps:guava_java",
+      "//third_party/android_deps:mlkit_java",
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
     ]

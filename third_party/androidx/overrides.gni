@@ -109,4 +109,13 @@ template("define_override_androidx_targets") {
       "//third_party/junit",
     ]
   }
+
+  java_group("exoplayer_java") {
+    preferred_dep = true
+    if (defined(media3_target)) {
+      deps = [ media3_target ]
+    } else {
+      deps = [ ":androidx_media3_media3_exoplayer_java" ]
+    }
+  }
 }
