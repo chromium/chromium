@@ -12,3 +12,7 @@ per-file suspicious_site_warning_allowlist*=awado@google.com
 
 # HaTS
 per-file safe_browsing_hats_delegate*=nwokedi@chromium.org
+
+per-file safe_browsing_metrics_collector*=skrakowi@chromium.org
+per-file ping_manager*=skrakowi@chromium.org
+per-file intelligent_scan_delegate*=skrakowi@chromium.org

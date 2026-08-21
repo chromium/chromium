@@ -3,6 +3,8 @@ file://components/safe_browsing/OWNERS
 # Interstitials and reports
 # For non-mechanical changes, send to nwokedi@ first, as pre-reviewer.
 per-file chrome_safe_browsing_blocking_page_factory.*=skrakowi@chromium.org
+per-file phishy_interaction_tracker*=skrakowi@chromium.org
+per-file safe_browsing_blocking_page_platform_test_helper.*=skrakowi@chromium.org
 per-file safe_browsing_blocking_page_test.*=skrakowi@chromium.org
 per-file threat_details_unittest.cc=skrakowi@chromium.org
 
@@ -16,6 +18,8 @@ per-file safe_browsing_pref_change_handler*=jacastro@chromium.org
 per-file *client_side_detection*=nwokedi@chromium.org
 per-file *client_side_detection*=jdh@chromium.org
 per-file *client_side_detection*=andysjlim@chromium.org #{LAST_RESORT_SUGGESTION}
+per-file *client_side_detection*=skrakowi@chromium.org #{LAST_RESORT_SUGGESTION}
+per-file *intelligent_scan_delegate*=skrakowi@chromium.org
 
 per-file *notification_content_detection*=skrakowi@chromium.org
 

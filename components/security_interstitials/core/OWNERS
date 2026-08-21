@@ -1,1 +1,4 @@
 per-file *safe_browsing_*=file://components/safe_browsing/OWNERS
+
+per-file *safe_browsing*error_ui*=skrakowi@chromium.org
+per-file unsafe_resource.*=skrakowi@chromium.org

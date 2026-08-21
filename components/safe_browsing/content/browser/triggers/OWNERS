@@ -1,0 +1,3 @@
+per-file mock_trigger_manager*=skrakowi@chromium.org
+per-file suspicious_site_trigger*=skrakowi@chromium.org
+per-file trigger_manager*=skrakowi@chromium.org
