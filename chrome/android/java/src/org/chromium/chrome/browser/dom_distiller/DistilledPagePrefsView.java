@@ -139,8 +139,7 @@ public class DistilledPagePrefsView extends LinearLayout
 
                     private View overrideTypeFace(View view, int family) {
                         FontFamily.validate(family);
-                        if (view instanceof TextView) {
-                            TextView textView = (TextView) view;
+                        if (view instanceof TextView textView) {
                             if (family == FontFamily.MONOSPACE) {
                                 textView.setTypeface(Typeface.MONOSPACE);
                             } else if (family == FontFamily.SANS_SERIF) {
@@ -263,12 +262,9 @@ public class DistilledPagePrefsView extends LinearLayout
         Theme.validate(theme);
         final RadioButton button = findViewById(id);
         button.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ReaderModeMetrics.reportReaderModePrefsThemeChanged(theme);
-                        mDistilledPagePrefs.setUserPrefTheme(theme);
-                    }
+                (View v) -> {
+                    ReaderModeMetrics.reportReaderModePrefsThemeChanged(theme);
+                    mDistilledPagePrefs.setUserPrefTheme(theme);
                 });
         return button;
     }

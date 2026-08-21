@@ -245,10 +245,7 @@ public class DesktopSiteSettingsIphController {
                         .setAnchorView(mToolbarMenuButton)
                         .setOnShowCallback(
                                 () -> turnOnHighlightForMenuItem(R.id.request_desktop_site_id))
-                        .setOnDismissCallback(
-                                () -> {
-                                    turnOffHighlightForMenuItem();
-                                })
+                        .setOnDismissCallback(this::turnOffHighlightForMenuItem)
                         .build());
     }
 

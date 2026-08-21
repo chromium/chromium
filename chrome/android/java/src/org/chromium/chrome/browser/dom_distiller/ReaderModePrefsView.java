@@ -18,7 +18,6 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
@@ -171,7 +170,7 @@ public class ReaderModePrefsView extends LinearLayout
         mFontScalingSlider.setStepSize(FONT_SCALE_STEP_SIZE);
         mFontScalingSlider.setTickActiveRadius(0);
         mFontScalingSlider.setTickInactiveRadius(0);
-        mFontScalingSlider.setLabelFormatter(value -> mPercentageFormatter.format(value));
+        mFontScalingSlider.setLabelFormatter(mPercentageFormatter::format);
 
         mFontScalingSlider.addOnChangeListener(
                 (slider, value, fromUser) -> {
@@ -262,21 +261,18 @@ public class ReaderModePrefsView extends LinearLayout
         final int fontHeightPx = fontMetrics.descent - fontMetrics.ascent;
         final int fontDescentPx = fontMetrics.descent;
         fontStyleSignifierString.setSpan(
-                new LineHeightSpan() {
-                    @Override
-                    public void chooseHeight(
-                            CharSequence text,
-                            int start,
-                            int end,
-                            int spanstartv,
-                            int v,
-                            FontMetricsInt fm) {
-                        fm.ascent = -(fontHeightPx - fontDescentPx);
-                        fm.descent = fontDescentPx;
-                        fm.top = fm.ascent;
-                        fm.bottom = fm.descent;
-                    }
-                },
+                (LineHeightSpan)
+                        (CharSequence text,
+                                int start,
+                                int end,
+                                int spanstartv,
+                                int v,
+                                FontMetricsInt fm) -> {
+                            fm.ascent = -(fontHeightPx - fontDescentPx);
+                            fm.descent = fontDescentPx;
+                            fm.top = fm.ascent;
+                            fm.bottom = fm.descent;
+                        },
                 0,
                 line1.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);

@@ -44,7 +44,7 @@ public class TabDistillabilityProvider extends EmptyTabObserver
         int OTHER = 0;
         int LONG_ARTICLE = 1;
         int COUNT = 2;
-    };
+    }
 
     /** An observer of the distillable state of a tab and its active web content. */
     public interface DistillabilityObserver {

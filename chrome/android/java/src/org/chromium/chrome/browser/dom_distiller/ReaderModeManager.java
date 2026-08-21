@@ -916,12 +916,10 @@ public class ReaderModeManager extends EmptyTabObserver
      * @return Whether Reader mode and its new UI are enabled.
      */
     public static boolean isEnabled() {
-        boolean enabled =
-                CommandLine.getInstance().hasSwitch(ChromeSwitches.ENABLE_DOM_DISTILLER)
-                        && !CommandLine.getInstance()
-                                .hasSwitch(ChromeSwitches.DISABLE_READER_MODE_BOTTOM_BAR)
-                        && DomDistillerTabUtils.isDistillerHeuristicsEnabled();
-        return enabled;
+        return CommandLine.getInstance().hasSwitch(ChromeSwitches.ENABLE_DOM_DISTILLER)
+                && !CommandLine.getInstance()
+                        .hasSwitch(ChromeSwitches.DISABLE_READER_MODE_BOTTOM_BAR)
+                && DomDistillerTabUtils.isDistillerHeuristicsEnabled();
     }
 
     /**

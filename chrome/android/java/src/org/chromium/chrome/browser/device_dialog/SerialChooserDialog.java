@@ -181,8 +181,6 @@ public class SerialChooserDialog
                                             // Get rid of the highlight background on selection.
                                             view.invalidate();
                                         })));
-        SpannableString statusIdleNoneFound = statusActive;
-        SpannableString statusIdleSomeFound = statusActive;
 
         ItemChooserDialog.ItemChooserLabels labels =
                 new ItemChooserDialog.ItemChooserLabels(
@@ -190,8 +188,8 @@ public class SerialChooserDialog
                         searching,
                         activity.getString(R.string.serial_chooser_dialog_no_devices_found_prompt),
                         statusActive,
-                        statusIdleNoneFound,
-                        statusIdleSomeFound,
+                        statusActive,
+                        statusActive,
                         activity.getString(R.string.serial_chooser_dialog_connect_button_text));
         mItemChooserDialog = new ItemChooserDialog(activity, activity.getWindow(), this, labels);
 
