@@ -39,6 +39,11 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   lineFocusLargeCursorWindow: number = 56;
   lineFocusStaticLine: number = 57;
   lineFocusCursorLine: number = 58;
+  immersiveEnabled: boolean = true;
+  activePresentationState: number = 1;
+  pdf: boolean = false;
+  keyPointsSection: boolean = false;
+  keyPointsRegex: string = 'key points|summary|the bottom line|why it matters';
 
   constructor() {
     super([
@@ -82,6 +87,11 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
       'onThemeChange',
       'onLineFocusChanged',
       'togglePresentation',
+      'isImmersiveEnabled',
+      'getActivePresentationState',
+      'isPdf',
+      'maybeHasKeyPointsSection',
+      'getKeyPointsRegex',
     ]);
   }
 
@@ -276,5 +286,30 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
 
   togglePresentation(): void {
     this.methodCalled('togglePresentation');
+  }
+
+  isImmersiveEnabled(): boolean {
+    this.methodCalled('isImmersiveEnabled');
+    return this.immersiveEnabled;
+  }
+
+  getActivePresentationState(): number {
+    this.methodCalled('getActivePresentationState');
+    return this.activePresentationState;
+  }
+
+  isPdf(): boolean {
+    this.methodCalled('isPdf');
+    return this.pdf;
+  }
+
+  maybeHasKeyPointsSection(): boolean {
+    this.methodCalled('maybeHasKeyPointsSection');
+    return this.keyPointsSection;
+  }
+
+  getKeyPointsRegex(): string {
+    this.methodCalled('getKeyPointsRegex');
+    return this.keyPointsRegex;
   }
 }

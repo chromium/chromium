@@ -8,6 +8,10 @@
 export interface VisualBrowserProxy {
   getInSidePanelPresentationState(): number;
   getInImmersiveOverlayPresentationState(): number;
+  getActivePresentationState(): number;
+  isImmersiveEnabled(): boolean;
+  isPdf(): boolean;
+
   getFontName(): string;
   getSupportedFonts(): string[];
 
@@ -33,6 +37,9 @@ export interface VisualBrowserProxy {
 
   getActiveDistillationMethod(): number;
   getDistillationTypeReadability(): number;
+
+  maybeHasKeyPointsSection(): boolean;
+  getKeyPointsRegex(): string;
 
   requestImageData(nodeId: number): void;
 
@@ -62,6 +69,18 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
 
   getInImmersiveOverlayPresentationState(): number {
     return chrome.readingMode.inImmersiveOverlayPresentationState;
+  }
+
+  getActivePresentationState(): number {
+    return chrome.readingMode.activePresentationState;
+  }
+
+  isImmersiveEnabled(): boolean {
+    return chrome.readingMode.isImmersiveEnabled;
+  }
+
+  isPdf(): boolean {
+    return chrome.readingMode.isPdf;
   }
 
   getFontName(): string {
@@ -146,6 +165,14 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
 
   getDistillationTypeReadability(): number {
     return chrome.readingMode.distillationTypeReadability;
+  }
+
+  maybeHasKeyPointsSection(): boolean {
+    return chrome.readingMode.maybeHasKeyPointsSection();
+  }
+
+  getKeyPointsRegex(): string {
+    return chrome.readingMode.getKeyPointsRegex();
   }
 
   requestImageData(nodeId: number): void {

@@ -16,6 +16,7 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
   noHighlighting: number = 4;
   isPhraseHighlightingEnabledFlag: boolean = false;
   defaultLanguageForSpeech: string = 'en';
+  baseLanguageForSpeech: string = '';
   localeToDisplayName: {[key: string]: string} = {};
 
   constructor() {
@@ -30,6 +31,7 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
       'isPhraseHighlightingEnabled',
       'getDisplayNameForLocale',
       'getDefaultLanguageForSpeech',
+      'getBaseLanguageForSpeech',
       'onSpeechRateChange',
       'onHighlightGranularityChanged',
     ]);
@@ -83,6 +85,11 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
   getDefaultLanguageForSpeech(): string {
     this.methodCalled('getDefaultLanguageForSpeech');
     return this.defaultLanguageForSpeech;
+  }
+
+  getBaseLanguageForSpeech(): string {
+    this.methodCalled('getBaseLanguageForSpeech');
+    return this.baseLanguageForSpeech;
   }
 
   onSpeechRateChange(rate: number): void {
