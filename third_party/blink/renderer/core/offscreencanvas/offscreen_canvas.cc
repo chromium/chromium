@@ -130,6 +130,30 @@ void ClearAllRenderedTextOnMainThread(int placeholder_canvas_id) {
   }
 }
 
+void UpdateDrawnElementGeometryOnMainThread(int placeholder_canvas_id,
+                                            Element& element,
+                                            const gfx::Transform* transform,
+                                            bool update_hit_test_order) {
+  DCHECK(IsMainThread());
+  if (auto* placeholder = OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(
+          placeholder_canvas_id)) {
+    placeholder->UpdateDrawnElementGeometry(element, transform,
+                                            update_hit_test_order);
+  }
+}
+
+void UpdateDrawnElementGeometryOnMainThread(int placeholder_canvas_id,
+                                            ElementImage& element_image,
+                                            const gfx::Transform* transform,
+                                            bool update_hit_test_order) {
+  DCHECK(IsMainThread());
+  if (auto* placeholder = OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(
+          placeholder_canvas_id)) {
+    placeholder->UpdateDrawnElementGeometry(element_image, transform,
+                                            update_hit_test_order);
+  }
+}
+
 }  // namespace
 
 OffscreenCanvas::OffscreenCanvas(ExecutionContext* context,
@@ -420,7 +444,9 @@ DOMMatrix* OffscreenCanvas::getElementTransform(
       return nullptr;
     }
     gfx::Transform transform = GetElementTransform(
-        paint_record->paint_state, Size(), draw_transform->Matrix());
+        paint_record->paint_state, Size(), draw_transform->Matrix(),
+        RuntimeEnabledFeatures::ElementCanvasTransformEnabled(
+            GetExecutionContext()));
     return MakeGarbageCollected<DOMMatrix>(transform,
                                            transform.Is2dTransform());
   }
@@ -863,6 +889,27 @@ void OffscreenCanvas::ClearRenderedText() {
                                 placeholder_canvas_id_));
       }
     }
+  }
+}
+
+void OffscreenCanvas::UpdateDrawnElementGeometry(
+    Element& element,
+    const gfx::Transform* transform,
+    bool update_hit_test_order) {
+  UpdateDrawnElementGeometryOnMainThread(placeholder_canvas_id_, element,
+                                         transform, update_hit_test_order);
+}
+
+void OffscreenCanvas::UpdateDrawnElementGeometry(
+    ElementImage& element_image,
+    const gfx::Transform* transform,
+    bool update_hit_test_order) {
+  if (IsMainThread()) {
+    UpdateDrawnElementGeometryOnMainThread(placeholder_canvas_id_,
+                                           element_image, transform,
+                                           update_hit_test_order);
+  } else {
+    // TODO(paint-dev): queue update for event dispatch to main thread
   }
 }
 

@@ -27,7 +27,8 @@ bool CanvasChildPaintState::operator==(
 
 gfx::Transform GetElementTransform(const CanvasChildPaintState& paint_state,
                                    const gfx::Size& canvas_size,
-                                   const gfx::Transform& draw_transform) {
+                                   const gfx::Transform& draw_transform,
+                                   bool element_canvas_transform_enabled) {
   gfx::Vector2dF physical_to_canvas_grid =
       GetCanvasGridScaleFactor(paint_state, canvas_size);
   float physical_to_css = 1.0f / paint_state.effective_zoom;
@@ -41,6 +42,10 @@ gfx::Transform GetElementTransform(const CanvasChildPaintState& paint_state,
   css_transform.Scale(canvas_grid_to_css_x, canvas_grid_to_css_y);
   css_transform.PreConcat(draw_transform);
   css_transform.Scale(1.0f / canvas_grid_to_css_x, 1.0f / canvas_grid_to_css_y);
+
+  if (element_canvas_transform_enabled) {
+    return css_transform;
+  }
 
   // 2. Apply the transform relative to the transform origin.
   gfx::Transform result;

@@ -580,6 +580,12 @@ like layout, hit testing, accessibility, etc. See the
 *   **Fallback content prevention**: If `layoutsubtree` is not specified,
     `PaintLayerPainter::PaintChildren` returns early, preventing canvas
     fallback content from being rendered.
+*   **Hit Testing**: HTMLCanvasElement maintains a list of descendants that have
+    been drawn into the canvas, in the order of drawing. When a hit test reaches
+    the canvas's PaintLayer it iterates backwards through the list of
+    descendants (the last-drawn descendant is tested first). By design this
+    skips any hierarchy between the drawn descendant and the canvas element, so
+    intervening clips won't prevent the hit test from reaching the descendant.
 
 ### Compositing and layerization
 *   **Child direct compositing reason**: Direct children of a `layoutsubtree`

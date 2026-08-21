@@ -34,4 +34,13 @@ std::unique_ptr<CanvasChildPaintRecord> ElementImage::TransferPaintRecord() {
   return std::move(record_);
 }
 
+DOMNodeId ElementImage::GetNodeId() const {
+  return record_ ? record_->paint_state.canvas_child_node_id
+                 : kInvalidDOMNodeId;
+}
+
+DOMNodeId ElementImage::GetCanvasNodeId() const {
+  return record_ ? record_->paint_state.canvas_node_id : kInvalidDOMNodeId;
+}
+
 }  // namespace blink

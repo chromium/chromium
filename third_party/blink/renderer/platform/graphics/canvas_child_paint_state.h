@@ -31,6 +31,7 @@ struct PLATFORM_EXPORT CanvasChildPaintState {
   gfx::SizeF canvas_content_size;
   gfx::Size canvas_device_pixel_content_box;
   DOMNodeId canvas_node_id = kInvalidDOMNodeId;
+  DOMNodeId canvas_child_node_id = kInvalidDOMNodeId;
   scoped_refptr<const cc::AnimatedImageFrameIndexMap>
       animated_image_frame_index_map;
   // NOTE: If adding more members, be sure to update operator==().
@@ -39,7 +40,8 @@ struct PLATFORM_EXPORT CanvasChildPaintState {
 PLATFORM_EXPORT gfx::Transform GetElementTransform(
     const CanvasChildPaintState&,
     const gfx::Size& canvas_size,
-    const gfx::Transform& draw_transform);
+    const gfx::Transform& draw_transform,
+    bool element_canvas_transform_enabled);
 
 PLATFORM_EXPORT gfx::Vector2dF GetCanvasGridScaleFactor(
     const CanvasChildPaintState&,

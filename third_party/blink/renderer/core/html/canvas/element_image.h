@@ -23,6 +23,8 @@ class CORE_EXPORT ElementImage final : public ScriptWrappable {
   double height() const;
   void close();
 
+  DOMNodeId GetNodeId() const;
+  DOMNodeId GetCanvasNodeId() const;
   const std::unique_ptr<CanvasChildPaintRecord>& PaintRecord() const {
     return record_;
   }

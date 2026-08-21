@@ -1587,20 +1587,28 @@ DOMMatrix* BaseRenderingContext2D::DrawElementInternal(
                              -src_rect.y() * scale_factor.y());
   }
 
+  bool element_canvas_transform_enabled =
+      RuntimeEnabledFeatures::ElementCanvasTransformEnabled(
+          GetCanvasRenderingContextHost()->GetTopExecutionContext());
+
   // This call will take our draw transform in canvas grid coordinates, and
   // convert it to a transform in CSS pixels suitable for positioning the
   // element.
   gfx::Transform result_transform = blink::GetElementTransform(
-      child_paint_record->paint_state, Host()->Size(), draw_transform);
+      child_paint_record->paint_state, Host()->Size(), draw_transform,
+      element_canvas_transform_enabled);
 
-  if (element->IsElement()) {
-    if ((!options || options->updateGeometry()) &&
-        RuntimeEnabledFeatures::ElementCanvasTransformEnabled(
-            element->GetAsElement()->GetExecutionContext())) {
-      element->GetAsElement()->SetCanvasTransformInternal(result_transform);
+  if ((!options || options->updateGeometry()) &&
+      element_canvas_transform_enabled) {
+    if (element->IsElement()) {
+      Host()->UpdateDrawnElementGeometry(*element->GetAsElement(),
+                                         &result_transform,
+                                         /*update_hit_test_geometry*/ true);
+    } else if (element->IsElementImage()) {
+      Host()->UpdateDrawnElementGeometry(*element->GetAsElementImage(),
+                                         &result_transform,
+                                         /*update_hit_test_geometry*/ true);
     }
-  } else if (element->IsElementImage()) {
-    // TODO(crbug.com/532229486): Support DrawElementOptions.
   }
 
   return MakeGarbageCollected<DOMMatrix>(result_transform,

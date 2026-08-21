@@ -1996,6 +1996,7 @@ FragmentPaintPropertyTreeBuilder::ParentForViewTransitionPseudoEffect() const {
 }
 
 static void PopulateCanvasChildPaintState(HTMLCanvasElement* canvas,
+                                          Element* canvas_child,
                                           CanvasChildPaintState& paint_state) {
   const LayoutReplaced* replaced = To<LayoutReplaced>(canvas->GetLayoutBox());
   const ComputedStyle& style = replaced->StyleRef();
@@ -2008,6 +2009,7 @@ static void PopulateCanvasChildPaintState(HTMLCanvasElement* canvas,
                         style.GetWritingMode()),
           *replaced, style);
   paint_state.canvas_node_id = canvas->GetDomNodeId();
+  paint_state.canvas_child_node_id = canvas_child->GetDomNodeId();
   paint_state.animated_image_frame_index_map =
       canvas->GetDocument().View()->GetAnimatedImageFrameIndexes();
 }
@@ -2039,7 +2041,8 @@ static void PopulateCanvasChildState(
       transform_origin, 1.0f / object.StyleRef().EffectiveZoom());
   state.canvas_child_state->paint_state.box_size =
       gfx::SizeF(To<LayoutBox>(object).StitchedSize());
-  PopulateCanvasChildPaintState(canvas, state.canvas_child_state->paint_state);
+  PopulateCanvasChildPaintState(canvas, To<Element>(object.GetNode()),
+                                state.canvas_child_state->paint_state);
   state.canvas_child_state->content_effect = canvas_fragment.ContentsEffect();
   state.canvas_child_state->content_clip = canvas_fragment.ContentsClip();
   const auto* properties = object.FirstFragment().PaintProperties();

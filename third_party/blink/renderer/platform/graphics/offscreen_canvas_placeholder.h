@@ -18,10 +18,13 @@
 
 namespace gfx {
 class RectF;
+class Transform;
 }
 
 namespace blink {
 
+class Element;
+class ElementImage;
 class ExportedCanvasResource;
 
 class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
@@ -134,6 +137,12 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
                                   float font_height) {}
   virtual void ClearRenderedText(const gfx::RectF& rect) {}
   virtual void ClearRenderedText() {}
+  virtual void UpdateDrawnElementGeometry(Element&,
+                                          const gfx::Transform*,
+                                          bool update_hit_test_order) {}
+  virtual void UpdateDrawnElementGeometry(ElementImage&,
+                                          const gfx::Transform*,
+                                          bool update_hit_test_order) {}
 
   AnimationState GetAnimationStateForTesting() const {
     return current_animation_state_;

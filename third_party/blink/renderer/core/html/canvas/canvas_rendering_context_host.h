@@ -35,6 +35,7 @@ namespace blink {
 class CanvasRenderingContext;
 class CanvasResourceDispatcher;
 class ComputedStyle;
+class ElementImage;
 class KURL;
 class LayoutLocale;
 class PlainTextPainter;
@@ -165,6 +166,14 @@ class CORE_EXPORT CanvasRenderingContextHost
       DOMNodeId child_id) const {
     return std::nullopt;
   }
+
+  enum UpdateGeometryBehavior { kUpdateHitTestOrder, kPreserveHitTestOrder };
+  virtual void UpdateDrawnElementGeometry(Element&,
+                                          const gfx::Transform*,
+                                          bool update_hit_test_order) = 0;
+  virtual void UpdateDrawnElementGeometry(ElementImage&,
+                                          const gfx::Transform*,
+                                          bool update_hit_test_order) = 0;
 
  protected:
   ~CanvasRenderingContextHost() override;

@@ -744,6 +744,34 @@ void HTMLCanvasElement::SetNeedsCompositingUpdate() {
   Element::SetNeedsCompositingUpdate();
 }
 
+void HTMLCanvasElement::UpdateDrawnElementGeometry(
+    Element& element,
+    const gfx::Transform* transform,
+    bool update_hit_test_order) {
+  if (element.CanvasForDrawing() != this) {
+    return;
+  }
+  if (update_hit_test_order) {
+    hit_testable_descendants_.AppendOrMoveToLast(&element);
+  }
+  if (transform) {
+    element.SetCanvasTransformInternal(*transform);
+  }
+}
+
+void HTMLCanvasElement::UpdateDrawnElementGeometry(
+    ElementImage& element_image,
+    const gfx::Transform* transform,
+    bool update_hit_test_order) {
+  if (element_image.GetCanvasNodeId() != GetDomNodeId()) {
+    return;
+  }
+  if (Element* element = DynamicTo<Element>(
+          DOMNodeIds::NodeForId(element_image.GetNodeId()))) {
+    UpdateDrawnElementGeometry(*element, transform, update_hit_test_order);
+  }
+}
+
 bool HTMLCanvasElement::DoDeferredPaintInvalidation() {
   if (dirty_rect_.IsEmpty()) {
     return false;
@@ -913,7 +941,9 @@ DOMMatrix* HTMLCanvasElement::getElementTransform(
   }
 
   gfx::Transform transform =
-      GetElementTransform(*paint_state, Size(), draw_transform->Matrix());
+      GetElementTransform(*paint_state, Size(), draw_transform->Matrix(),
+                          RuntimeEnabledFeatures::ElementCanvasTransformEnabled(
+                              GetExecutionContext()));
   return MakeGarbageCollected<DOMMatrix>(transform, transform.Is2dTransform());
 }
 
@@ -1550,6 +1580,7 @@ void HTMLCanvasElement::Trace(Visitor* visitor) const {
   visitor->Trace(listeners_);
   visitor->Trace(context_);
   visitor->Trace(accessibility_manager_);
+  visitor->Trace(hit_testable_descendants_);
   ExecutionContextLifecycleObserver::Trace(visitor);
   PageVisibilityObserver::Trace(visitor);
   CanvasRenderingContextHost::Trace(visitor);

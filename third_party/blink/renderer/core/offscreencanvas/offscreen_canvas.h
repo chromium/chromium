@@ -142,6 +142,12 @@ class CORE_EXPORT OffscreenCanvas final
                           float font_height) override;
   void ClearRenderedText(const gfx::RectF& rect) override;
   void ClearRenderedText() override;
+  void UpdateDrawnElementGeometry(Element&,
+                                  const gfx::Transform*,
+                                  bool update_hit_test_order) override;
+  void UpdateDrawnElementGeometry(ElementImage&,
+                                  const gfx::Transform*,
+                                  bool update_hit_test_order) override;
 
   bool PushFrameIfNeeded();
   bool PushFrame(scoped_refptr<CanvasResource>&& frame);
