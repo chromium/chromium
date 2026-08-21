@@ -2557,6 +2557,7 @@ class CORE_EXPORT Document : public ContainerNode,
   void BeginLifecycleUpdatesIfRenderingReady();
 
   void ChildrenChanged(const ChildrenChange&) override;
+  void DefaultEventHandler(Event&) override;
 
   String nodeName() const final;
   bool ChildTypeAllowed(NodeType) const final;

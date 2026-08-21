@@ -207,6 +207,7 @@
 #include "third_party/blink/renderer/core/events/before_unload_event.h"
 #include "third_party/blink/renderer/core/events/event_factory.h"
 #include "third_party/blink/renderer/core/events/event_util.h"
+#include "third_party/blink/renderer/core/events/focus_event.h"
 #include "third_party/blink/renderer/core/events/hash_change_event.h"
 #include "third_party/blink/renderer/core/events/page_transition_event.h"
 #include "third_party/blink/renderer/core/events/visual_viewport_resize_event.h"
@@ -290,6 +291,7 @@
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/input/touch_list.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
@@ -1320,6 +1322,34 @@ void Document::ChildrenChanged(const ChildrenChange& change) {
   // frames when there's only a <head>, but such documents are pretty rare.
   if (document_element_ && !IsA<HTMLDocument>(this))
     BeginLifecycleUpdatesIfRenderingReady();
+}
+
+namespace {
+
+void HandleFrameOwnerInterestForFocusEvent(FocusEvent* focus_event,
+                                           HTMLFrameOwnerElement* owner,
+                                           Document& current_document) {
+  if (!owner || !focus_event) {
+    return;
+  }
+  // If focus transitioned to another element inside the same child document,
+  // the frame owner element does not lose focus/interest. This focus shift
+  // will be handled by the Element::DefaultEventHandler code.
+  if (focus_event->type() == event_type_names::kFocusout &&
+      focus_event->relatedTarget() && focus_event->relatedTarget()->ToNode() &&
+      &focus_event->relatedTarget()->ToNode()->GetDocument() ==
+          &current_document) {
+    return;
+  }
+  owner->HandleFocusEventsForInterestFor(focus_event);
+}
+
+}  // namespace
+
+void Document::DefaultEventHandler(Event& event) {
+  HandleFrameOwnerInterestForFocusEvent(DynamicTo<FocusEvent>(event),
+                                        LocalOwner(), *this);
+  Node::DefaultEventHandler(event);
 }
 
 bool Document::IsInMainFrame() const {

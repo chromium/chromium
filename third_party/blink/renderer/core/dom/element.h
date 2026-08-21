@@ -130,6 +130,7 @@ class ElementAnimations;
 class ElementInternals;
 class ElementIntersectionObserverData;
 class ExceptionState;
+class FocusEvent;
 class FocusOptions;
 class GetAnimationsOptions;
 class HTMLCanvasElement;
@@ -1470,6 +1471,14 @@ class CORE_EXPORT Element : public ContainerNode {
   // Lose interest immediately in all elements that currently have interest.
   static void LoseInterestInAllElements(Document&);
 
+  enum class InterestSource {
+    kHover,
+    kDeHover,
+    kFocus,
+    kBlur,
+  };
+  void HandleInterestForHoverOrFocus(InterestSource source);
+
   // Returns true if any of its (non-inclusive) flat tree descendants is
   // keyboard focusable. Note that this is quite slow, since it traverses the
   // entire subtree, and calls `IsKeyboardFocusableSlow()` on each element.
@@ -2018,6 +2027,7 @@ class CORE_EXPORT Element : public ContainerNode {
   InterestInvokerTargetData& EnsureInterestInvokerTargetData();
   InterestInvokerTargetData* GetInterestInvokerTargetData() const;
   void HandlePointerEventsForInterestFor(const AtomicString& event_type);
+  void HandleFocusEventsForInterestFor(FocusEvent* focus_event);
 
   void DefaultEventHandler(Event&) override;
 
@@ -2726,13 +2736,6 @@ class CORE_EXPORT Element : public ContainerNode {
   // These schedule interest gained/lost events, for `interestfor` invokers.
   void ScheduleInterestGainedTask();
   void ScheduleInterestLostTask();
-  enum class InterestSource {
-    kHover,
-    kDeHover,
-    kFocus,
-    kBlur,
-  };
-  void HandleInterestForHoverOrFocus(InterestSource source);
   void ScheduleInterestChangesIfNeeded(InterestSource source);
 
   // Highlight pseudos inherit all properties from the corresponding highlight

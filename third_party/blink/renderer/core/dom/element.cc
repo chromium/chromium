@@ -2085,21 +2085,28 @@ void Element::HandlePointerEventsForInterestFor(
   }
 }
 
+void Element::HandleFocusEventsForInterestFor(FocusEvent* focus_event) {
+  if (!focus_event || !focus_event->isTrusted()) {
+    return;
+  }
+  if (focus_event->sourceCapabilities() &&
+      focus_event->sourceCapabilities()->firesTouchEvents()) {
+    return;
+  }
+  const AtomicString& type = focus_event->type();
+  if (type == event_type_names::kFocusin) {
+    HandleInterestForHoverOrFocus(InterestSource::kFocus);
+  } else if (type == event_type_names::kFocusout) {
+    HandleInterestForHoverOrFocus(InterestSource::kBlur);
+  }
+}
+
 void Element::DefaultEventHandler(Event& event) {
-  if (InterestForElement() || SourceInterestInvoker() ||
-      GetInterestState() != InterestState::kNoInterest) [[unlikely]] {
+  if (event.isTrusted() && (InterestForElement() || SourceInterestInvoker() ||
+                            GetInterestState() != InterestState::kNoInterest))
+      [[unlikely]] {
     // Handle new `interestfor` activation via keyboard or long-press.
-    String type = event.type();
-    if (auto* focus_event = DynamicTo<FocusEvent>(event);
-        focus_event &&
-        (!focus_event->sourceCapabilities() ||
-         !focus_event->sourceCapabilities()->firesTouchEvents())) {
-      if (type == event_type_names::kFocusin) {
-        HandleInterestForHoverOrFocus(InterestSource::kFocus);
-      } else if (type == event_type_names::kFocusout) {
-        HandleInterestForHoverOrFocus(InterestSource::kBlur);
-      }
-    }
+    HandleFocusEventsForInterestFor(DynamicTo<FocusEvent>(event));
 
     // For long presses on buttons, no context menu will be generated, because
     // the UA stylesheet adds `user-select:none` in this case. However, this
@@ -2112,7 +2119,7 @@ void Element::DefaultEventHandler(Event& event) {
     // InterestState::kExplicitInterest.
     if (auto* button = DynamicTo<HTMLButtonElement>(this);
         button && IsA<GestureEvent>(event) &&
-        type == event_type_names::kGesturelongpress &&
+        event.type() == event_type_names::kGesturelongpress &&
         GetInterestState() == InterestState::kNoInterest) {
       // The pointer event manager will send a `pointerup` at the end of
       // this long-press, and (without intervention) that will immediately
@@ -13025,9 +13032,14 @@ void AllSourceInterestInvokersRecursive(
     sources.insert(upstream);
     AllSourceInterestInvokersRecursive(*upstream, sources);
   }
-  if (Element* parent = target.parentElement();
+  if (Element* parent = FlatTreeTraversal::ParentElement(target);
       parent && !sources.Contains(parent)) {
     AllSourceInterestInvokersRecursive(*parent, sources);
+  } else if (target.isConnected()) {
+    if (Element* owner = target.GetDocument().LocalOwner();
+        owner && !sources.Contains(owner)) {
+      AllSourceInterestInvokersRecursive(*owner, sources);
+    }
   }
 }
 
@@ -13058,9 +13070,15 @@ void Element::HandleInterestForHoverOrFocus(InterestSource source) {
   if (!IsInTreeScope() || !GetDocument().IsActive()) {
     return;
   }
-  for (Node& node : FlatTreeTraversal::InclusiveAncestorsOf(*this)) {
-    if (Element* element = DynamicTo<Element>(node)) {
-      element->ScheduleInterestChangesIfNeeded(source);
+  Element* element = this;
+  while (element) {
+    element->ScheduleInterestChangesIfNeeded(source);
+    if (Element* parent = FlatTreeTraversal::ParentElement(*element)) {
+      element = parent;
+    } else if (element->isConnected()) {
+      element = element->GetDocument().LocalOwner();
+    } else {
+      break;
     }
   }
 }
