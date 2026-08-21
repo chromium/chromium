@@ -186,12 +186,16 @@ bool LensOverlayEntryPointController::IsEnabled() const {
   }
 
   // Disable in fullscreen without top-chrome.
-  if (!lens::features::GetLensOverlayEnableInFullscreen() &&
-      ExclusiveAccessManager::From(browser_window_interface_)
-          ->context()
-          ->IsFullscreen() &&
-      !browser_window_interface_->IsTabStripVisible()) {
-    return false;
+  if (!lens::features::GetLensOverlayEnableInFullscreen()) {
+    auto* const exclusive_access_manager =
+        ExclusiveAccessManager::From(browser_window_interface_);
+    if (exclusive_access_manager &&
+        exclusive_access_manager->context()->IsFullscreen() &&
+        (!browser_window_interface_->IsTabStripVisible() ||
+         exclusive_access_manager->fullscreen_controller()
+             ->IsWindowFullscreenForTabOrPending())) {
+      return false;
+    }
   }
 
   return true;

@@ -1465,8 +1465,14 @@ void LensOverlayController::OnFullscreenStateChanged() {
   if (lens::features::GetLensOverlayEnableInFullscreen()) {
     return;
   }
-  // If there is top chrome we can keep the overlay open.
-  if (tab_->GetBrowserWindowInterface()->IsTabStripVisible()) {
+  // If there is top chrome and we are not in tab fullscreen we can keep the
+  // overlay open.
+  auto* const exclusive_access_manager =
+      ExclusiveAccessManager::From(tab_->GetBrowserWindowInterface());
+  if (tab_->GetBrowserWindowInterface()->IsTabStripVisible() &&
+      exclusive_access_manager &&
+      !exclusive_access_manager->fullscreen_controller()
+           ->IsWindowFullscreenForTabOrPending()) {
     return;
   }
   lens_search_controller_->CloseLensSync(
