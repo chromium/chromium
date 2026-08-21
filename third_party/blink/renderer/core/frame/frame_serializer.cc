@@ -1323,6 +1323,11 @@ function main(metadata) {
       case CSSRule::kLocationRule:
         break;
 
+      case CSSRule::kPrivateRule:
+        // TODO(crbug.com/549892110): Ensure resources referenced through
+        // @private variables are included in serialization.
+        break;
+
       // FIXME(sesse): We can reference external resources in a @contents
       // argument.
       case CSSRule::kApplyMixinRule:

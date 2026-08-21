@@ -271,6 +271,8 @@ blink_core_sources_css = [
   "css_position_try_rule.h",
   "css_primitive_value.cc",
   "css_primitive_value.h",
+  "css_private_rule.cc",
+  "css_private_rule.h",
   "css_private_variable.h",
   "css_progress_value.cc",
   "css_progress_value.h",

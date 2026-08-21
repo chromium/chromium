@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/css/css_nested_declarations_rule.h"
 #include "third_party/blink/renderer/core/css/css_page_rule.h"
 #include "third_party/blink/renderer/core/css/css_position_try_rule.h"
+#include "third_party/blink/renderer/core/css/css_private_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_rule.h"
 #include "third_party/blink/renderer/core/css/css_result_rule.h"
 #include "third_party/blink/renderer/core/css/css_scope_rule.h"
@@ -451,9 +452,9 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
                                                  parent_sheet);
       break;
     case kPrivate:
-      // TODO(crbug.com/542651959): Add a CSSPrivateRule wrapper in followup CL.
-      // Return null so enumerating cssRules doesn't crash in the meanwhile.
-      return nullptr;
+      rule = MakeGarbageCollected<CSSPrivateRule>(To<StyleRulePrivate>(self),
+                                                  parent_sheet);
+      break;
     case kApplyMixin:
       rule = MakeGarbageCollected<CSSApplyMixinRule>(
           To<StyleRuleApplyMixin>(self), parent_sheet);

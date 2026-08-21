@@ -164,6 +164,7 @@ constexpr bool IsCSSGroupingRuleType(CSSRule::Type type) {
     case CSSRule::kNamespaceRule:
     case CSSRule::kNestedDeclarationsRule:
     case CSSRule::kPositionTryRule:
+    case CSSRule::kPrivateRule:
     case CSSRule::kPropertyRule:
     case CSSRule::kStyleRule:
     case CSSRule::kViewTransitionRule:
