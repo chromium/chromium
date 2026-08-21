@@ -1272,12 +1272,12 @@
     {
         "name": "work-multiprocess",
         "group": "androidx.work",
-        "version": "2.12.0-SNAPSHOT"
+        "version": "2.13.0-SNAPSHOT"
     },
     {
         "name": "work-runtime",
         "group": "androidx.work",
-        "version": "2.12.0-SNAPSHOT"
+        "version": "2.13.0-SNAPSHOT"
     },
     {
         "name": "arcore",
