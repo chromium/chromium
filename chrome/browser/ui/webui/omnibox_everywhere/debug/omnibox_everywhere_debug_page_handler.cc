@@ -118,6 +118,32 @@ void OmniboxEverywhereDebugPageHandler::InvokeOmniboxEverywhere(
   }
 }
 
+void OmniboxEverywhereDebugPageHandler::CreateStartMenuShortcut(
+    CreateStartMenuShortcutCallback callback) {
+  if (g_browser_process && g_browser_process->GetFeatures()) {
+    auto* controller =
+        g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+    if (controller) {
+      controller->CreateStartMenuShortcut(std::move(callback));
+      return;
+    }
+  }
+  std::move(callback).Run(false);
+}
+
+void OmniboxEverywhereDebugPageHandler::PinToTaskbar(
+    PinToTaskbarCallback callback) {
+  if (g_browser_process && g_browser_process->GetFeatures()) {
+    auto* controller =
+        g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+    if (controller) {
+      controller->OfferPinToTaskbar(std::move(callback));
+      return;
+    }
+  }
+  std::move(callback).Run(false);
+}
+
 void OmniboxEverywhereDebugPageHandler::OnPrefChanged(
     const std::string& pref_name) {
   PrefService* local_state = g_browser_process->local_state();

@@ -42,6 +42,7 @@ export class OmniboxEverywhereDebugAppElement extends CrLitElement {
       hotkeyEnabled: {type: Boolean},
       ephemeralModelEnabled: {type: Boolean},
       selectedInvocationSource: {type: Number},
+      shortcutStatus: {type: String},
     };
   }
 
@@ -50,6 +51,7 @@ export class OmniboxEverywhereDebugAppElement extends CrLitElement {
   protected accessor ephemeralModelEnabled: boolean = false;
   protected accessor selectedInvocationSource: InvocationSource =
       InvocationSource.kGlobalHotkey;
+  protected accessor shortcutStatus: string = '';
 
   private listenerIds_: number[] = [];
 
@@ -134,7 +136,24 @@ export class OmniboxEverywhereDebugAppElement extends CrLitElement {
     browserProxyFactory.getInstance().handler.invokeOmniboxEverywhere(
         this.selectedInvocationSource);
   }
+
+  protected async onCreateShortcutClick() {
+    this.shortcutStatus = 'Creating Start Menu shortcut...';
+    const res = await browserProxyFactory.getInstance()
+                    .handler.createStartMenuShortcut();
+    this.shortcutStatus = res.success ?
+        'Start Menu shortcut created successfully.' :
+        'Failed to create Start Menu shortcut.';
+  }
+
+  protected async onPinToTaskbarClick() {
+    this.shortcutStatus = 'Requesting taskbar pin...';
+    const res = await browserProxyFactory.getInstance().handler.pinToTaskbar();
+    this.shortcutStatus = res.success ? 'Taskbar pin requested successfully.' :
+                                        'Failed to pin to taskbar.';
+  }
 }
+
 
 declare global {
   interface HTMLElementTagNameMap {

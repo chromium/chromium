@@ -52,6 +52,12 @@ interface PageHandler {
   // Directly invokes the Omnibox Everywhere widget with the specified
   // invocation source.
   InvokeOmniboxEverywhere(InvocationSource source);
+
+  // Creates the Start Menu shortcut and sets up AppUserModelId and icon.
+  CreateStartMenuShortcut() => (bool success);
+
+  // Requests pinning Omnibox Everywhere to the Windows taskbar.
+  PinToTaskbar() => (bool success);
 };
 
 // Factory interface used to set up the connection between the WebUI

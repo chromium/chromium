@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
@@ -661,4 +662,18 @@ TEST_F(OmniboxEverywhereControllerTest,
       GetContext()));
   EXPECT_EQ(profile_.get(), controller.target_profile());
   EXPECT_TRUE(controller.IsVisible());
+}
+
+TEST_F(OmniboxEverywhereControllerTest, CreateStartMenuShortcut) {
+  omnibox_everywhere::OmniboxEverywhereController controller;
+  base::test::TestFuture<bool> future;
+  controller.CreateStartMenuShortcut(future.GetCallback());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(OmniboxEverywhereControllerTest, PinToTaskbar) {
+  omnibox_everywhere::OmniboxEverywhereController controller;
+  base::test::TestFuture<bool> future;
+  controller.OfferPinToTaskbar(future.GetCallback());
+  EXPECT_FALSE(future.Get());
 }

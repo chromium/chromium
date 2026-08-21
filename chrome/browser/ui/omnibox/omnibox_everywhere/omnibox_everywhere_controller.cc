@@ -385,4 +385,18 @@ void OmniboxEverywhereController::ExecuteCommand(
     const std::string& accelerator_group_id,
     const std::string& command_id) {}
 
+void OmniboxEverywhereController::CreateStartMenuShortcut(
+    base::OnceCallback<void(bool)> callback) {
+  if (callback) {
+    std::move(callback).Run(false);
+  }
+}
+
+void OmniboxEverywhereController::OfferPinToTaskbar(
+    base::OnceCallback<void(bool)> callback) {
+  if (callback) {
+    std::move(callback).Run(false);
+  }
+}
+
 }  // namespace omnibox_everywhere

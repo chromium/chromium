@@ -108,3 +108,49 @@ input:checked + .slider:before {
 .invoke-button:active {
   background-color: #174ea6;
 }
+
+.shortcut-container {
+  border-top: 1px solid #e0e0e0;
+  margin-top: 32px;
+  padding-top: 16px;
+}
+
+.shortcut-container h2 {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.action-button {
+  background-color: #0b57d0;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  transition: background-color .2s;
+}
+
+.action-button:hover {
+  background-color: #0842a0;
+}
+
+.action-button:active {
+  background-color: #063178;
+}
+
+.status-message {
+  color: #1f1f1f;
+  font-size: 13px;
+  font-style: italic;
+  margin-top: 12px;
+}
+

@@ -49,5 +49,22 @@ export function getHtml(this: OmniboxEverywhereDebugAppElement) {
   <button class="invoke-button" @click="${this.onInvokeClick}">
     Invoke Omnibox Everywhere
   </button>
+</div>
+<div class="shortcut-container">
+  <h2>Shortcut & Pinning Setup</h2>
+  <div class="button-row">
+    <button id="createShortcutBtn" class="action-button"
+        @click="${this.onCreateShortcutClick}">
+      Create Start Menu Shortcut
+    </button>
+    <button id="pinToTaskbarBtn" class="action-button"
+        @click="${this.onPinToTaskbarClick}">
+      Pin to Taskbar
+    </button>
+  </div>
+  ${this.shortcutStatus ? html`
+    <div class="status-message">${this.shortcutStatus}</div>
+  ` : ''}
 </div>`;
 }
+

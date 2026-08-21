@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -92,6 +93,15 @@ class OmniboxEverywhereController
   // Sets the current target profile for Omnibox Everywhere and notifies the
   // background mode manager.
   void SetTargetProfile(Profile* profile);
+
+  // Creates the Start Menu shortcut for Omnibox Everywhere.
+  // Performs blocking operations asynchronously on a COM STA background runner.
+  void CreateStartMenuShortcut(base::OnceCallback<void(bool)> callback = {});
+
+  // Offers to pin Omnibox Everywhere to the Windows taskbar via Windows
+  // ITaskbarManager, which checks eligibility and prompts the user with the
+  // native OS confirmation dialog.
+  void OfferPinToTaskbar(base::OnceCallback<void(bool)> callback = {});
 
   // Returns the current target profile.
   Profile* target_profile() const { return target_profile_; }

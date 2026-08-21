@@ -43,6 +43,11 @@ class OmniboxEverywhereDebugPageHandler : public mojom::PageHandler {
 
   void InvokeOmniboxEverywhere(mojom::InvocationSource source) override;
 
+  void CreateStartMenuShortcut(
+      CreateStartMenuShortcutCallback callback) override;
+
+  void PinToTaskbar(PinToTaskbarCallback callback) override;
+
  private:
   void OnPrefChanged(const std::string& pref_name);
 
