@@ -137,6 +137,7 @@ public class BookmarksItemBuilderUnitTest {
         mBookmarksItemBuilder.setImageFetcherForTesting(mBookmarkImageFetcher);
 
         BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
+        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
         DeviceInfo.setIsDesktopForTesting(true);
     }
 
