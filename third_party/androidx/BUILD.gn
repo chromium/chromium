@@ -1170,6 +1170,10 @@ if (!limit_android_deps) {
           "cipd/libs/androidx_media3_media3_exoplayer/media3-exoplayer.aar"
       info_path = "committed/libs/androidx_media3_media3_exoplayer/androidx_media3_media3_exoplayer.info"
       enable_bytecode_checks = false
+
+      # Target is swapped out when internal code is enabled.
+      # Please depend on //third_party/androidx:exoplayer_java instead.
+      visibility = [ "//third_party/androidx:*" ]
       deps = [
         ":androidx_annotation_annotation_java",
         ":androidx_collection_collection_java",
