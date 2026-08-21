@@ -53,7 +53,14 @@ class PageContentImageExtractorBrowserTest
   content::WebContents* web_contents() const { return shell()->web_contents(); }
 };
 
-IN_PROC_BROWSER_TEST_F(PageContentImageExtractorBrowserTest, GetImageBytes) {
+// TODO(crbug.com/): Re-enable this test on Linux TSan.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_GetImageBytes DISABLED_GetImageBytes
+#else
+#define MAYBE_GetImageBytes GetImageBytes
+#endif
+IN_PROC_BROWSER_TEST_F(PageContentImageExtractorBrowserTest,
+                       MAYBE_GetImageBytes) {
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), embedded_test_server()->GetURL("/simple.html")));
 
