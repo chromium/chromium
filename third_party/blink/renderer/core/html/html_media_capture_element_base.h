@@ -38,14 +38,10 @@ class CORE_EXPORT HTMLMediaCaptureElementBase
   void OnEmbeddedPermissionsDecided(
       mojom::blink::EmbeddedPermissionControlResult result) override;
 
-  Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
-
   void DefaultEventHandler(Event& event) override;
   mojom::blink::EmbeddedPermissionRequestDescriptorPtr
   CreateEmbeddedPermissionRequestDescriptor() override;
   void OnActivationFailed(const String& error_message) override;
-
-  virtual void ApplyDefaultConstraints();
 
   void ResetMediaStreamRequestTime();
 

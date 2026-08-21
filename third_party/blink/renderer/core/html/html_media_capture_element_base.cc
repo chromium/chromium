@@ -216,29 +216,4 @@ void HTMLMediaCaptureElementBase::UpdateIcon(PermissionName permission) {
   permission_internal_icon()->SetIcon(icon_type);
 }
 
-Node::InsertionNotificationRequest HTMLMediaCaptureElementBase::InsertedInto(
-    ContainerNode& insertion_point) {
-  HTMLCapabilityElementBase::InsertedInto(insertion_point);
-  if (permission_descriptors_.empty()) {
-    GetTaskRunner()->PostTask(
-        FROM_HERE,
-        blink::BindOnce(
-            [](HTMLMediaCaptureElementBase* element) {
-              if (element) {
-                element->ApplyDefaultConstraints();
-              }
-            },
-            WrapWeakPersistent(this)));
-  }
-  return kInsertionDone;
-}
-
-void HTMLMediaCaptureElementBase::ApplyDefaultConstraints() {
-  if (isConnected() && !permission_descriptors_.empty()) {
-    MaybeRegisterCacheClient();
-    MaybeRegisterPageEmbeddedPermissionControl();
-    UpdatePermissionStatusAndAppearance();
-  }
-}
-
 }  // namespace blink

@@ -17,14 +17,8 @@ HTMLCameraElement::HTMLCameraElement(Document& document)
     : HTMLMediaTrackElementBase(document, html_names::kCameraTag) {
   CHECK(RuntimeEnabledFeatures::CameraAndMicrophoneElementsEnabled(
       document.GetExecutionContext()));
-}
-
-void HTMLCameraElement::ApplyDefaultConstraints() {
-  if (permission_descriptors_.empty()) {
-    permission_descriptors_.push_back(
-        CreatePermissionDescriptor(PermissionName::VIDEO_CAPTURE));
-  }
-  HTMLMediaTrackElementBase::ApplyDefaultConstraints();
+  permission_descriptors_.push_back(
+      CreatePermissionDescriptor(PermissionName::VIDEO_CAPTURE));
 }
 
 }  // namespace blink

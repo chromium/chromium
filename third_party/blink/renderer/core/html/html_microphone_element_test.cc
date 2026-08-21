@@ -25,7 +25,6 @@ TEST_F(HTMLMicrophoneElementTest, DefaultConstraintsContainMicrophoneOnly) {
   ScopedCameraAndMicrophoneElementsForTest scoped_feature(true);
   auto* element = MakeGarbageCollected<HTMLMicrophoneElement>(GetDocument());
   GetDocument().body()->AppendChild(element);
-  element->ApplyDefaultConstraints();
 
   const auto& descriptors = element->GetPermissionDescriptors();
   ASSERT_EQ(descriptors.size(), 1u);

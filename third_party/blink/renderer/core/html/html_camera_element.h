@@ -20,8 +20,6 @@ class CORE_EXPORT HTMLCameraElement : public HTMLMediaTrackElementBase {
     return ElementType::kHTMLCameraElement;
   }
   bool IsHTMLCameraElement() const final { return true; }
-
-  void ApplyDefaultConstraints() override;
 };
 
 template <>

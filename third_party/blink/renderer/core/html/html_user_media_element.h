@@ -35,8 +35,6 @@ class CORE_EXPORT HTMLUserMediaElement : public HTMLMediaCaptureElementBase {
   void DefaultEventHandler(Event& event) override;
   void OnActivationFailed(const String& error_message) override;
 
-  void ApplyDefaultConstraints() override;
-
   Vector<mojom::blink::PermissionDescriptorPtr> ParseType(
       const AtomicString& type);
 

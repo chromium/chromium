@@ -20,8 +20,6 @@ class CORE_EXPORT HTMLMicrophoneElement : public HTMLMediaTrackElementBase {
     return ElementType::kHTMLMicrophoneElement;
   }
   bool IsHTMLMicrophoneElement() const final { return true; }
-
-  void ApplyDefaultConstraints() override;
 };
 
 template <>
