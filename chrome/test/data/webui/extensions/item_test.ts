@@ -856,6 +856,20 @@ suite('ExtensionItemTest', function() {
     await microtasksFinished();
     testVisible(item, '#review-link', false);
 
+    // Hidden for unknown installation location.
+    item.data = createStoreItemData({
+      location: chrome.developerPrivate.Location.UNKNOWN,
+    });
+    await microtasksFinished();
+    testVisible(item, '#review-link', false);
+
+    // Hidden for policy-controlled extensions.
+    item.data = createStoreItemData({
+      controlledInfo: {text: 'policy'},
+    });
+    await microtasksFinished();
+    testVisible(item, '#review-link', false);
+
     // Hidden when extension must remain installed.
     item.data = createStoreItemData({mustRemainInstalled: true});
     await microtasksFinished();

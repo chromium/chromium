@@ -21,7 +21,9 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -597,6 +599,58 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiRateExtensionTest,
   EXPECT_NE(web_contents, new_tab);
 
   EXPECT_EQ(expected_url, new_tab->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiRateExtensionTest,
+                       OpenReviewPage_IncognitoIneligible) {
+  content::WebContents* incognito_contents =
+      PlatformOpenURLOffTheRecord(profile(), GURL("about:blank"));
+  ASSERT_TRUE(incognito_contents);
+
+  Profile* incognito_profile =
+      Profile::FromBrowserContext(incognito_contents->GetBrowserContext());
+
+  scoped_refptr<const Extension> cws_extension =
+      ExtensionBuilder("CWS Extension")
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .AddFlags(Extension::FROM_WEBSTORE)
+          .Build();
+  PermissionsUpdater updater(profile());
+  updater.InitializePermissions(cws_extension.get());
+  updater.GrantActivePermissions(cws_extension.get());
+  extension_registrar()->AddExtension(cws_extension.get());
+
+  auto function =
+      base::MakeRefCounted<api::DeveloperPrivateOpenReviewPageFunction>();
+  function->SetRenderFrameHost(incognito_contents->GetPrimaryMainFrame());
+
+  std::string args =
+      base::StringPrintf(R"(["%s"])", cws_extension->id().c_str());
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), args, incognito_profile);
+  EXPECT_EQ("The extension is ineligible for review prompts.", error);
+}
+
+IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiRateExtensionTest,
+                       ExtensionsUI_CwsReviewPromptingEnabled) {
+  static constexpr char kScript[] =
+      "import('chrome://resources/js/load_time_data.js').then(m => "
+      "m.loadTimeData.getBoolean('cwsReviewPromptingEnabled'))";
+
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  // 1. Regular profile with policy allowed: cwsReviewPromptingEnabled is true.
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents, GURL("chrome://extensions")));
+  EXPECT_EQ(true, content::EvalJs(web_contents, kScript));
+
+  // 2. Enterprise policy disabled: cwsReviewPromptingEnabled is false.
+  profile()->GetPrefs()->SetBoolean(prefs::kExtensionReviewPromptsAllowed,
+                                    false);
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents, GURL("chrome://extensions")));
+  EXPECT_EQ(false, content::EvalJs(web_contents, kScript));
 }
 
 }  // namespace extensions
