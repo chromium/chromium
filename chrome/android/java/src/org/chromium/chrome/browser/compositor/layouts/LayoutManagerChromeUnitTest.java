@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -45,6 +46,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
@@ -383,6 +385,45 @@ public class LayoutManagerChromeUnitTest {
         layoutManagerChrome.tabsAllClosing(false);
 
         verify(layoutManagerChrome).showLayout(eq(LayoutType.HUB), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
+    public void testTabModelSwitched_zeroTabs_disabledOnDesktop_doesNotShowHub() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);
+        TabModel normalTabModel = mock(TabModel.class);
+        when(normalTabModel.getCount()).thenReturn(0);
+        when(mTabModelSelector.getModel(false)).thenReturn(normalTabModel);
+
+        LayoutManagerChrome layoutManagerChrome = createLayoutManagerChromeSpy();
+        doReturn(mTabModelSelector).when(layoutManagerChrome).getTabModelSelector();
+        layoutManagerChrome.mStaticLayout = mStaticLayout;
+        when(layoutManagerChrome.getActiveLayout()).thenReturn(mStaticLayout);
+
+        layoutManagerChrome.tabModelSwitched(false);
+
+        verify(layoutManagerChrome, never()).showLayout(eq(LayoutType.HUB), anyBoolean());
+    }
+
+    @Test
+    public void testTabModelSwitched_zeroTabs_enabledOnPhone_showsHub() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);
+        TabModel normalTabModel = mock(TabModel.class);
+        when(normalTabModel.getCount()).thenReturn(0);
+        when(mTabModelSelector.getModel(false)).thenReturn(normalTabModel);
+
+        LayoutManagerChrome layoutManagerChrome = createLayoutManagerChromeSpy();
+        doReturn(mTabModelSelector).when(layoutManagerChrome).getTabModelSelector();
+        layoutManagerChrome.mStaticLayout = mStaticLayout;
+        when(layoutManagerChrome.getActiveLayout()).thenReturn(mStaticLayout);
+
+        layoutManagerChrome.tabModelSwitched(false);
+
+        verify(layoutManagerChrome).showLayout(eq(LayoutType.HUB), eq(false));
     }
 
     private LayoutManagerChrome createLayoutManagerChromeSpy() {

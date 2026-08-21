@@ -373,6 +373,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
         TabModelSelector selector = getTabModelSelector();
         selector.commitAllTabClosures();
 
+        if (!isHubEnabled()) return;
+
         // Skip forcing the tab switcher to show with 0 tabs until tab state is fully restored in
         // the event it is slow.
         TabModelUtils.runOnTabStateInitialized(
