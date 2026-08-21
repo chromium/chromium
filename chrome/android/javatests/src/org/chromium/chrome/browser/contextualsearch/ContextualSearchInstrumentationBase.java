@@ -768,7 +768,8 @@ public class ContextualSearchInstrumentationBase {
 
     /**
      * Fakes a server response with the parameters given and startAdjust and endAdjust equal to 0.
-     * {@See ContextualSearchManager#handleSearchTermResolutionResponse}.
+     *
+     * @see ContextualSearchManager#handleSearchTermResolutionResponse
      */
     protected void fakeResponse(
             boolean isNetworkUnavailable,
@@ -789,8 +790,9 @@ public class ContextualSearchInstrumentationBase {
     }
 
     /**
-     * Fakes a server response with the parameters given. {@See
-     * ContextualSearchManager#handleSearchTermResolutionResponse}.
+     * Fakes a server response with the parameters given.
+     *
+     * @see ContextualSearchManager#handleSearchTermResolutionResponse
      */
     protected void fakeResponse(ResolvedSearchTerm resolvedSearchTerm) {
         if (mFakeServer.getSearchTermRequested() != null) {

@@ -1136,7 +1136,7 @@ public class AutofillOptionsTest {
         assertEquals(getRadioButtonComponent().getOptInButton().isChecked(), usesThirdParty);
     }
 
-    /** {@see verifyAndDismissDialogManager(@Nullable Integer buttonToClick)} */
+    /** {@link verifyAndDismissDialogManager(@Nullable Integer buttonToClick)} */
     private void verifyAndDismissDialogManager() {
         verifyAndDismissDialogManager(null);
     }

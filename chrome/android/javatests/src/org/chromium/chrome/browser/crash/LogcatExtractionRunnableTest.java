@@ -130,7 +130,7 @@ public class LogcatExtractionRunnableTest {
     }
 
     /**
-     * Verifies that the contents of the {@param filename} are the expected ones.
+     * Verifies that the contents of the {@code filename} are the expected ones.
      *
      * @param filename The name of the file containing the concatenated logcat and minidump output.
      */
