@@ -758,6 +758,16 @@ public class TabBottomSheetWebUiUnitTest {
         verify(mockPermissions, times(1)).release();
     }
 
+    @Test
+    public void testSetWebContents_forwardsPermissionDelegate() {
+        WindowAndroid thinWindow = mock(WindowAndroid.class);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(thinWindow);
+
+        mWebUi.setWebContents(mWebContents, true);
+
+        verify(thinWindow).setAndroidPermissionDelegate(mWindowAndroid);
+    }
+
     private static class TestTabBottomSheetWebUi extends TabBottomSheetWebUi {
         private final ContentView mMockContentView;
         private boolean mDisableActionModeSelectionMenuCalled;

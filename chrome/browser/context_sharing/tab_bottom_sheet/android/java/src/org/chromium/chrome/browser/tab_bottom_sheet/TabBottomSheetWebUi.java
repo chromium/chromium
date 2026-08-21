@@ -136,13 +136,16 @@ public class TabBottomSheetWebUi {
         // ThinWebView creates an orphaned WindowAndroid. We explicitly map the host
         // activity's KeyboardShortcutsDelegate to this orphaned window so that
         // keyboard shortcuts (Ctrl+T, etc.) aren't swallowed by Bottom Sheet WebUIs.
-        if (mWebContents.getTopLevelNativeWindow() != null) {
+        WindowAndroid thinWindow = mWebContents.getTopLevelNativeWindow();
+        if (thinWindow != null) {
             Activity activity = ContextUtils.activityFromContext(mContext);
             if (activity instanceof KeyboardShortcutsDelegate) {
-                mWebContents
-                        .getTopLevelNativeWindow()
-                        .setKeyboardShortcutsDelegate((KeyboardShortcutsDelegate) activity);
+                thinWindow.setKeyboardShortcutsDelegate((KeyboardShortcutsDelegate) activity);
             }
+            // Forward the host WindowAndroid so permission requests from ThinWebView
+            // are routed through the host activity and resolved when onRequestPermissionsResult
+            // fires.
+            thinWindow.setAndroidPermissionDelegate(mWindowAndroid);
         }
 
         if (requestFocus) {
