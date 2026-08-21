@@ -1571,12 +1571,16 @@ ValidateGruAndInferOutput(const ContextProperties& context_properties,
           context_properties, input.data_type(),
           std::array{num_directions, batch_size, hidden_size}, label));
   outputs.push_back(std::move(output));
+
+  // Validate the full-sequence output tensor unconditionally since some
+  // backends may produce this output internally even when `return_sequence` is
+  // false.
+  ASSIGN_OR_RETURN(
+      OperandDescriptor return_sequence_output,
+      OperandDescriptor::Create(
+          context_properties, input.data_type(),
+          std::array{steps, num_directions, batch_size, hidden_size}, label));
   if (attributes.return_sequence) {
-    ASSIGN_OR_RETURN(
-        OperandDescriptor return_sequence_output,
-        OperandDescriptor::Create(
-            context_properties, input.data_type(),
-            std::array{steps, num_directions, batch_size, hidden_size}, label));
     outputs.push_back(std::move(return_sequence_output));
   }
 
@@ -1983,13 +1987,16 @@ ValidateLstmAndInferOutput(const ContextProperties& context_properties,
           std::array{direction_count, batch_size, hidden_size}, label));
   outputs.push_back(output);
   outputs.push_back(std::move(output));
+
+  // Validate the full-sequence output tensor unconditionally since some
+  // backends may produce this output internally even when `return_sequence` is
+  // false.
+  ASSIGN_OR_RETURN(
+      OperandDescriptor return_sequence_output,
+      OperandDescriptor::Create(
+          context_properties, input.data_type(),
+          std::array{steps, direction_count, batch_size, hidden_size}, label));
   if (attributes.return_sequence) {
-    ASSIGN_OR_RETURN(
-        OperandDescriptor return_sequence_output,
-        OperandDescriptor::Create(
-            context_properties, input.data_type(),
-            std::array{steps, direction_count, batch_size, hidden_size},
-            label));
     outputs.push_back(std::move(return_sequence_output));
   }
 
