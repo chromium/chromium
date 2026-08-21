@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/infobars/infobar_features.h"
@@ -165,6 +166,19 @@ void RegisterInfoBars() {
                     .SetIsCloseable(false)
                     .SetPriority(InfoBarDelegate::InfobarPriority::kLow)
                     .Build();
+    browser_infobar_manager->Register(std::move(spec));
+  }
+
+  if (IsInfoBarMigrated(InfoBarDelegate::THEME_INSTALLED_INFOBAR_DELEGATE)) {
+    auto spec =
+        InfoBarSpec::Builder(InfoBarDelegate::THEME_INSTALLED_INFOBAR_DELEGATE)
+            .SetIcon(features::IsRoundedIconsEnabled() ? kBrushFilledIcon
+                                                       : kPaintbrushOldIcon)
+            .SetScope(InfoBarScope::kTab)
+            .AddCancelButton(l10n_util::GetStringUTF16(
+                                 IDS_THEME_INSTALL_INFOBAR_UNDO_BUTTON),
+                             base::DoNothing())
+            .Build();
     browser_infobar_manager->Register(std::move(spec));
   }
 }

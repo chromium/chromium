@@ -692,9 +692,16 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
         }
       }
 
-      ThemeInstalledInfoBarDelegate::CreateForLastActiveTab(
-          profile, theme_name, theme_id,
-          theme_service->BuildReinstallerForCurrentTheme());
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::THEME_INSTALLED_INFOBAR_DELEGATE)) {
+        ThemeService::ShowThemeInstalledInfoBar(
+            profile, theme_name, theme_id,
+            theme_service->BuildReinstallerForCurrentTheme());
+      } else {
+        ThemeInstalledInfoBarDelegate::CreateForLastActiveTab(
+            profile, theme_name, theme_id,
+            theme_service->BuildReinstallerForCurrentTheme());
+      }
       return true;
     }
 #endif

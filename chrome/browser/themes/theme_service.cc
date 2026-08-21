@@ -32,8 +32,12 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/theme_installed_infobar_delegate.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"
+#include "chrome/browser/infobars/infobar_features.h"
+#include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
@@ -45,14 +49,18 @@
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/themes/theme_service_utils.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/themes/pref_names.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
@@ -64,6 +72,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/themes.mojom.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/ui_base_features.h"
@@ -1136,9 +1145,68 @@ void ThemeService::OnThemeBuiltFromExtension(
 
   // Offer to revert to the old theme.
   if (can_revert_theme && !suppress_infobar && extension->is_theme()) {
-    ThemeInstalledInfoBarDelegate::CreateForLastActiveTab(
-        profile_, extension->name(), extension->id(), std::move(reinstaller));
+    if (infobars::IsInfoBarMigrated(
+            infobars::InfoBarDelegate::THEME_INSTALLED_INFOBAR_DELEGATE)) {
+      ShowThemeInstalledInfoBar(profile_, extension->name(), extension->id(),
+                                std::move(reinstaller));
+    } else {
+      ThemeInstalledInfoBarDelegate::CreateForLastActiveTab(
+          profile_, extension->name(), extension->id(), std::move(reinstaller));
+    }
   }
+}
+
+// static
+void ThemeService::ShowThemeInstalledInfoBar(
+    Profile* profile,
+    const std::string& theme_name,
+    const std::string& theme_id,
+    std::unique_ptr<ThemeReinstaller> prev_theme_reinstaller) {
+  BrowserWindowInterface* browser =
+      ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser(
+          /*match_original_profiles=*/true);
+  if (!browser) {
+    return;
+  }
+  tabs::TabInterface* tab = browser->GetActiveTabInterface();
+  if (!tab) {
+    return;
+  }
+  content::WebContents* web_contents = tab->GetContents();
+  if (!web_contents) {
+    return;
+  }
+
+  auto* browser_infobar_manager =
+      infobars::BrowserInfoBarManager::From(g_browser_process);
+  if (!browser_infobar_manager) {
+    return;
+  }
+
+  browser_infobar_manager->Hide(
+      web_contents,
+      infobars::InfoBarDelegate::THEME_INSTALLED_INFOBAR_DELEGATE);
+
+  infobars::InfoBarShowParams params;
+  params.message_text = l10n_util::GetStringFUTF16(
+      IDS_THEME_INSTALL_INFOBAR_LABEL, base::UTF8ToUTF16(theme_name));
+  if (prev_theme_reinstaller) {
+    auto shared_reinstaller = base::MakeRefCounted<
+        base::RefCountedData<std::unique_ptr<ThemeReinstaller>>>(
+        std::move(prev_theme_reinstaller));
+    params.cancel_button_callback = base::BindRepeating(
+        [](scoped_refptr<base::RefCountedData<
+               std::unique_ptr<ThemeReinstaller>>> reinstaller,
+           content::WebContents*) {
+          if (reinstaller && reinstaller->data) {
+            reinstaller->data->Reinstall();
+          }
+        },
+        std::move(shared_reinstaller));
+  }
+  browser_infobar_manager->Show(
+      tab, infobars::InfoBarDelegate::THEME_INSTALLED_INFOBAR_DELEGATE,
+      std::move(params));
 }
 
 void ThemeService::HandlePolicyColorUpdate() {

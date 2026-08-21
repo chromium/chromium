@@ -170,7 +170,8 @@ class InfoBarUiTest : public TestInfoBar,
           {{"MigratedCollectedCookies", "true"},
            {"MigratedPageInfo", "true"},
            {"MigratedGoogleApiKeys", "true"},
-           {"MigratedObsoleteSystem", "true"}});
+           {"MigratedObsoleteSystem", "true"},
+           {"MigratedThemeInstalled", "true"}});
     } else {
       feature_list_.InitAndDisableFeature(
           infobars::kCentralizedInfoBarFramework);
@@ -264,12 +265,20 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
     }
 
     case IBD::THEME_INSTALLED_INFOBAR_DELEGATE:
-      ThemeInstalledInfoBarDelegate::Create(
-          GetInfoBarManager(),
-          ThemeServiceFactory::GetForProfile(browser()->GetProfile()),
-          "New Theme", "id",
-          std::make_unique<ThemeService::ThemeReinstaller>(
-              browser()->GetProfile(), base::OnceClosure()));
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::THEME_INSTALLED_INFOBAR_DELEGATE)) {
+        ThemeService::ShowThemeInstalledInfoBar(
+            browser()->GetProfile(), "New Theme", "id",
+            std::make_unique<ThemeService::ThemeReinstaller>(
+                browser()->GetProfile(), base::OnceClosure()));
+      } else {
+        ThemeInstalledInfoBarDelegate::Create(
+            GetInfoBarManager(),
+            ThemeServiceFactory::GetForProfile(browser()->GetProfile()),
+            "New Theme", "id",
+            std::make_unique<ThemeService::ThemeReinstaller>(
+                browser()->GetProfile(), base::OnceClosure()));
+      }
       break;
 
 #if BUILDFLAG(ENABLE_PLUGINS)

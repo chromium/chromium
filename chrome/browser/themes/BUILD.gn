@@ -33,7 +33,10 @@ source_set("themes") {
   ]
   deps = [
     "//chrome/app/theme:theme_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/infobars",
     "//chrome/browser/search/background",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/frame",
     "//chrome/browser/ui/tabs:features",
@@ -48,6 +51,7 @@ source_set("themes") {
     "//components/sync/protocol",
     "//components/sync_preferences",
     "//components/tab_groups",
+    "//components/tabs:public",
     "//components/themes",
     "//components/themes:prefs",
     "//components/themes/cross_device",
