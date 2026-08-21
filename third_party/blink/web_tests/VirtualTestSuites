@@ -5043,7 +5043,10 @@
     "platforms": ["Mac"],
     "bases": ["external/wpt/resource-timing/response-status-code.html"],
     "exclusive_tests": "ALL",
-    "args": ["--disable-features=TcpPortRandomizationMac"],
+    "args": [
+      "--disable-field-trial-config",
+      "--disable-features=TcpPortRandomizationMac"
+    ],
     "expires": "Oct 31, 2026"
   },
   {
