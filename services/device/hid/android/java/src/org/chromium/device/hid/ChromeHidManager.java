@@ -8,6 +8,7 @@ import android.app.AppOpsManager;
 import android.app.AppOpsManager.OnOpChangedListener;
 import android.content.Context;
 import android.os.Build;
+import android.os.OutcomeReceiver;
 
 import androidx.annotation.RequiresApi;
 
@@ -24,6 +25,7 @@ import org.chromium.base.hid.HidDeviceListener;
 import org.chromium.base.hid.HidManager;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
+import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -46,6 +48,7 @@ final class ChromeHidManager {
 
     private final SequencedTaskRunner mExecutor =
             PostTask.createSequencedTaskRunner(TaskTraits.USER_BLOCKING_MAY_BLOCK);
+    private final TaskRunner mUiTaskRunner = PostTask.getUiUserVisibleExecutor();
     private @Nullable OnOpChangedListener mOpListener;
     private @Nullable HidDeviceListener mListener;
 
@@ -114,7 +117,7 @@ final class ChromeHidManager {
                             handleDeviceRemoved(device);
                         }
                     };
-            mHidManager.registerListener(mListener, PostTask.getUiUserVisibleExecutor());
+            mHidManager.registerListener(mListener, mUiTaskRunner);
             enumerateDevices();
         } else if (!hasPermission && mListener != null) {
             try {
@@ -138,6 +141,7 @@ final class ChromeHidManager {
         ChromeHidManagerJni.get()
                 .onDeviceAdded(
                         mNativePointer,
+                        device,
                         device.hashCode(),
                         vendorId,
                         productId,
@@ -196,6 +200,47 @@ final class ChromeHidManager {
     }
 
     @CalledByNative
+    private void openDevice(HidDevice device, int callbackId) {
+        if (device == null) {
+            if (mNativePointer != 0) {
+                ChromeHidManagerJni.get().onConnectComplete(mNativePointer, callbackId, null);
+            }
+            return;
+        }
+
+        try {
+            device.open(
+                    mUiTaskRunner,
+                    new OutcomeReceiver<HidDevice, Exception>() {
+                        @Override
+                        public void onResult(HidDevice connection) {
+                            if (mNativePointer != 0) {
+                                ChromeHidConnection chromeConnection =
+                                        ChromeHidConnection.create(connection);
+                                ChromeHidManagerJni.get()
+                                        .onConnectComplete(
+                                                mNativePointer, callbackId, chromeConnection);
+                            }
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.e(TAG, "Error opening device: " + device.hashCode(), e);
+                            if (mNativePointer != 0) {
+                                ChromeHidManagerJni.get()
+                                        .onConnectComplete(mNativePointer, callbackId, null);
+                            }
+                        }
+                    });
+        } catch (SecurityException | IllegalStateException e) {
+            Log.e(TAG, "Error opening device (exception): " + device.hashCode(), e);
+            if (mNativePointer != 0) {
+                ChromeHidManagerJni.get().onConnectComplete(mNativePointer, callbackId, null);
+            }
+        }
+    }
+
+    @CalledByNative
     private void shutdown() {
         mNativePointer = 0;
         if (mListener != null) {
@@ -221,6 +266,7 @@ final class ChromeHidManager {
     interface Natives {
         void onDeviceAdded(
                 long nativeHidServiceAndroid,
+                HidDevice device,
                 int deviceId,
                 int vendorId,
                 int productId,
@@ -231,6 +277,11 @@ final class ChromeHidManager {
                 @JniType("std::vector<uint8_t>") byte @Nullable [] reportDescriptor);
 
         void onDeviceRemoved(long nativeHidServiceAndroid, int deviceId);
+
+        void onConnectComplete(
+                long nativeHidServiceAndroid,
+                int callbackId,
+                @Nullable ChromeHidConnection connection);
 
         void onEnumerationComplete(long nativeHidServiceAndroid);
 

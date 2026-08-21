@@ -14,7 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "services/device/hid/hid_connection.h"
+#include "services/device/hid/hid_connection_android.h"
 #include "services/device/hid/hid_device_info.h"
 #include "services/device/hid/jni_headers/ChromeHidManager_jni.h"
 #include "third_party/jni_zero/default_conversions.h"
@@ -34,6 +34,7 @@ constexpr int kTransportUhid = 6;       // TRANSPORT_UHID
 }  // namespace
 
 HidServiceAndroid::HidServiceAndroid() {
+  task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   JNIEnv* env = base::android::AttachCurrentThread();
   obj_ = Java_ChromeHidManager_create(env, reinterpret_cast<intptr_t>(this));
   if (obj_) {
@@ -48,14 +49,81 @@ HidServiceAndroid::~HidServiceAndroid() {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_ChromeHidManager_shutdown(env, obj_);
   }
+
+  auto pending_connects = std::move(pending_connects_);
+  for (auto& [id, callback] : pending_connects) {
+    std::move(callback).Run(base::android::ScopedJavaLocalRef<jobject>());
+  }
 }
 
 void HidServiceAndroid::Connect(const std::string& device_guid,
                                 bool allow_protected_reports,
                                 bool allow_fido_reports,
                                 ConnectCallback callback) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  std::move(callback).Run(nullptr);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = devices().find(device_guid);
+  if (it == devices().end() || !obj_) {
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(std::move(callback), nullptr));
+    return;
+  }
+
+  auto it_java = java_devices_by_guid_.find(device_guid);
+  if (it_java == java_devices_by_guid_.end()) {
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(std::move(callback), nullptr));
+    return;
+  }
+
+  uint32_t callback_id = next_connect_callback_id_++;
+  pending_connects_[callback_id] = base::BindOnce(
+      &HidServiceAndroid::CreateConnectionAndRunCallback,
+      weak_factory_.GetWeakPtr(), it->second, allow_protected_reports,
+      allow_fido_reports, std::move(callback));
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ChromeHidManager_openDevice(env, obj_, it_java->second, callback_id);
+}
+
+void HidServiceAndroid::OnConnectComplete(
+    int32_t callback_id,
+    const base::android::JavaRef<jobject>& j_connection) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = pending_connects_.find(callback_id);
+  if (it == pending_connects_.end()) {
+    return;
+  }
+
+  ConnectHelperCallback helper = std::move(it->second);
+  pending_connects_.erase(it);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaGlobalRef<jobject> j_connection_ref(env,
+                                                               j_connection);
+  std::move(helper).Run(std::move(j_connection_ref));
+}
+
+void HidServiceAndroid::CreateConnectionAndRunCallback(
+    scoped_refptr<HidDeviceInfo> device_info,
+    bool allow_protected_reports,
+    bool allow_fido_reports,
+    ConnectCallback callback,
+    const base::android::JavaRef<jobject>& j_connection) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!j_connection) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaGlobalRef<jobject> j_connection_ref(env,
+                                                               j_connection);
+  auto connection = base::MakeRefCounted<HidConnectionAndroid>(
+      std::move(device_info), allow_protected_reports, allow_fido_reports,
+      std::move(j_connection_ref));
+
+  std::move(callback).Run(std::move(connection));
 }
 
 base::WeakPtr<HidService> HidServiceAndroid::GetWeakPtr() {
@@ -63,6 +131,7 @@ base::WeakPtr<HidService> HidServiceAndroid::GetWeakPtr() {
 }
 
 void HidServiceAndroid::OnDeviceAdded(
+    const base::android::JavaRef<jobject>& j_device,
     int32_t device_id,
     int32_t vendor_id,
     int32_t product_id,
@@ -116,12 +185,18 @@ void HidServiceAndroid::OnDeviceAdded(
       product_name,
       /*serial_number=*/serial_number, bus_type, report_descriptor);
 
+  java_devices_by_guid_[device_info->device_guid()] =
+      base::android::ScopedJavaGlobalRef<jobject>(j_device);
   AddDevice(device_info);
 }
 
 void HidServiceAndroid::OnDeviceRemoved(int32_t device_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RemoveDevice(base::NumberToString(device_id));
+  std::string platform_id = base::NumberToString(device_id);
+  if (auto guid = FindDeviceGuidInDeviceMap(platform_id)) {
+    java_devices_by_guid_.erase(*guid);
+  }
+  RemoveDevice(platform_id);
 }
 
 void HidServiceAndroid::OnEnumerationComplete() {
@@ -131,6 +206,7 @@ void HidServiceAndroid::OnEnumerationComplete() {
 
 void HidServiceAndroid::OnAllDevicesRemoved() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  java_devices_by_guid_.clear();
   while (!devices().empty()) {
     scoped_refptr<HidDeviceInfo> device_info = devices().begin()->second;
     for (const auto& platform_id_entry :

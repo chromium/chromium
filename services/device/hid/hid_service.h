@@ -90,12 +90,13 @@ class HidService {
 
   const DeviceMap& devices() const { return devices_; }
 
+  std::optional<std::string> FindDeviceGuidInDeviceMap(
+      const HidPlatformDeviceId& platform_device_id);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
   void RunPendingEnumerations();
-  std::optional<std::string> FindDeviceGuidInDeviceMap(
-      const HidPlatformDeviceId& platform_device_id);
   scoped_refptr<HidDeviceInfo> FindSiblingDevice(
       const HidDeviceInfo& device_info) const;
 

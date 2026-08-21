@@ -32,8 +32,9 @@ class HidServiceAndroidTest : public testing::Test {
 TEST_F(HidServiceAndroidTest, OnAllDevicesRemoved) {
   auto service = std::make_unique<HidServiceAndroid>();
 
-  service->OnDeviceAdded(/*device_id=*/1, /*vendor_id=*/0x1234,
-                         /*product_id=*/0x5678, /*product_name=*/"Test Device",
+  service->OnDeviceAdded(/*j_device=*/nullptr, /*device_id=*/1,
+                         /*vendor_id=*/0x1234, /*product_id=*/0x5678,
+                         /*product_name=*/"Test Device",
                          /*serial_number=*/"12345",
                          /*physical_address=*/"", /*transport_type=*/3,
                          /*report_descriptor=*/{});
@@ -56,7 +57,8 @@ TEST_F(HidServiceAndroidTest, PhysicalDeviceIdBluetooth) {
   constexpr int kTransportBluetooth = 5;
   // Two Bluetooth devices connected to the same host adapter share the same
   // host MAC physical_address, but have unique device serial_number MACs.
-  service->OnDeviceAdded(/*device_id=*/1, /*vendor_id=*/0x1234,
+  service->OnDeviceAdded(/*j_device=*/nullptr, /*device_id=*/1,
+                         /*vendor_id=*/0x1234,
                          /*product_id=*/0x5678,
                          /*product_name=*/"BT Device 1",
                          /*serial_number=*/"AA:BB:CC:DD:EE:01",
@@ -64,7 +66,8 @@ TEST_F(HidServiceAndroidTest, PhysicalDeviceIdBluetooth) {
                          /*transport_type=*/kTransportBluetooth,
                          /*report_descriptor=*/{});
 
-  service->OnDeviceAdded(/*device_id=*/2, /*vendor_id=*/0x1234,
+  service->OnDeviceAdded(/*j_device=*/nullptr, /*device_id=*/2,
+                         /*vendor_id=*/0x1234,
                          /*product_id=*/0x5678,
                          /*product_name=*/"BT Device 2",
                          /*serial_number=*/"AA:BB:CC:DD:EE:02",
@@ -87,7 +90,8 @@ TEST_F(HidServiceAndroidTest, PhysicalDeviceIdUsb) {
   auto service = std::make_unique<HidServiceAndroid>();
 
   constexpr int kTransportUsb = 3;
-  service->OnDeviceAdded(/*device_id=*/1, /*vendor_id=*/0x1234,
+  service->OnDeviceAdded(/*j_device=*/nullptr, /*device_id=*/1,
+                         /*vendor_id=*/0x1234,
                          /*product_id=*/0x5678,
                          /*product_name=*/"USB Device",
                          /*serial_number=*/"",
@@ -108,7 +112,8 @@ TEST_F(HidServiceAndroidTest, PhysicalDeviceIdFallback) {
   constexpr int kTransportUsb = 3;
   // If neither serial_number nor physical_address is available, fallback to
   // platform_device_id ("1").
-  service->OnDeviceAdded(/*device_id=*/1, /*vendor_id=*/0x1234,
+  service->OnDeviceAdded(/*j_device=*/nullptr, /*device_id=*/1,
+                         /*vendor_id=*/0x1234,
                          /*product_id=*/0x5678,
                          /*product_name=*/"Generic Device",
                          /*serial_number=*/"",
