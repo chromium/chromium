@@ -31,6 +31,51 @@ pub enum Error {
 // LINT.ThenChange(//components/cbor/reader.h:DecoderError,
 // //components/cbor/reader.cc:DecoderErrorAsserts)
 
+impl Error {
+    pub const fn to_str(self) -> &'static str {
+        match self {
+            Self::UnsupportedMajorType => "Unsupported major type.",
+            Self::UnknownAdditionalInfo => {
+                "Unknown additional info format in the first byte."
+            }
+            Self::IncompleteCborData => {
+                "Prematurely terminated CBOR data byte array."
+            }
+            Self::IncorrectMapKeyType => {
+                "Specified map key type is not supported by the current implementation."
+            }
+            Self::TooMuchNesting => "Too much nesting.",
+            Self::InvalidUtf8 => {
+                "String encodings other than UTF-8 are not allowed."
+            }
+            Self::ExtraneousData => "Trailing data bytes are not allowed.",
+            Self::OutOfOrderKey => {
+                "Map keys must be strictly monotonically increasing based on byte length and then by byte-wise lexical order."
+            }
+            Self::NonMinimalCborEncoding => {
+                "Unsigned integers must be encoded with minimum number of bytes."
+            }
+            Self::UnsupportedSimpleValue => {
+                "Unsupported or unassigned simple value."
+            }
+            Self::UnsupportedFloatingPointValue => {
+                "Floating point numbers are not supported."
+            }
+            Self::OutOfRangeIntegerValue => {
+                "Integer values must be between INT64_MIN and INT64_MAX."
+            }
+            Self::DuplicateKey => "Duplicate map keys are not allowed.",
+            Self::UnknownError => "An unknown error occured.",
+        }
+    }
+}
+
+impl core::fmt::Display for Error {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.write_str(self.to_str())
+    }
+}
+
 #[repr(C)]
 #[derive(Clone, Copy)]
 pub struct Config {

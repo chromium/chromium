@@ -163,3 +163,39 @@ fn test_map_unsupported_simple_values() {
     let result_value = parse_bytes(&bytes_value);
     assert_eq!(result_value, Err(Error::UnsupportedSimpleValue));
 }
+
+#[gtest(CBORReaderRustTest, TestErrorToString)]
+fn test_error_to_string() {
+    assert_eq!(Error::UnsupportedMajorType.to_str(), "Unsupported major type.");
+    assert_eq!(
+        format!("{}", Error::IncompleteCborData),
+        "Prematurely terminated CBOR data byte array."
+    );
+    assert_eq!(
+        Error::OutOfOrderKey.to_str(),
+        "Map keys must be strictly monotonically increasing based on byte length and then by byte-wise lexical order."
+    );
+}
+
+#[gtest(CBORReaderRustTest, TestMapLookups)]
+fn test_map_lookups() {
+    let map = Map::new();
+    assert_eq!(map.get(&MapKey::String("foo")), None);
+    assert_eq!(map.get(&MapKey::Int(42)), None);
+
+    let bytes = hex::decode("a3010a420102182a63666f6f63626172").unwrap();
+    let parsed = parse_with_config(&bytes, Config::default()).unwrap();
+
+    let Value::Map(map) = parsed.value else {
+        panic!("expected map");
+    };
+
+    assert_eq!(map.get(&MapKey::Int(1)), Some(&Value::Int(10)));
+    assert_eq!(map.get(&MapKey::Int(2)), None);
+
+    assert_eq!(map.get(&MapKey::String("foo")), Some(&Value::String("bar")));
+    assert_eq!(map.get(&MapKey::String("bar")), None);
+
+    assert_eq!(map.get(&MapKey::Bytestring(&[1, 2])), Some(&Value::Int(42)));
+    assert_eq!(map.get(&MapKey::Bytestring(&[1, 3])), None);
+}

@@ -171,6 +171,12 @@ impl<'a> Map<'a> {
     pub fn as_slice(&self) -> &[MapEntry<'a>] {
         self.0.as_slice()
     }
+
+    /// Looks up a value by its `MapKey` using binary search.
+    pub fn get(&self, key: &MapKey<'_>) -> Option<&Value<'a>> {
+        let index = self.0.binary_search_by_key(&key, |entry| &entry.key).ok()?;
+        Some(&self.0[index].value)
+    }
 }
 
 impl<'a> From<Vec<MapEntry<'a>>> for Map<'a> {
