@@ -21307,6 +21307,26 @@
             ]
         }
     ],
+    "SafeBrowsingLocalListsUseSBv5": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingLocalListsUseSBv5"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingSyncCheckerCheckAllowlist": [
         {
             "platforms": [
