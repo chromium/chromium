@@ -9,38 +9,51 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "components/infobars/core/infobar.h"
 #include "components/webui/flags/pref_service_flags_storage.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/mojom/dialog_button.mojom.h"
-#include "ui/base/mojom/ui_base_types.mojom-shared.h"
-#include "ui/gfx/native_ui_types.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/layout_provider.h"
-#include "ui/views/window/dialog_delegate.h"
+#include "ui/base/models/dialog_model.h"
 
 namespace {
-std::unique_ptr<views::View> MakeRestartView() {
-  auto view = std::make_unique<views::View>();
 
-  views::LayoutProvider* provider = views::LayoutProvider::Get();
-  view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
-      provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG),
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+void OptOutAndRestart(base::WeakPtr<content::WebContents> web_contents) {
+#if BUILDFLAG(IS_CHROMEOS)
+  PrefService* prefs =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext())
+          ->GetPrefs();
+#else
+  PrefService* prefs = g_browser_process->local_state();
+#endif
+  // Note: Both ChromeOS owner and non-owner use PrefServiceFlagsStorage
+  // under the hood. OwnersFlagsStorage has additional functionalities
+  // for setting flags but since we are just reading the storage assume
+  // non-owner case and bypass asynchronous owner check.
+  auto flags_storage =
+      std::make_unique<flags_ui::PrefServiceFlagsStorage>(prefs);
 
-  const std::u16string message = l10n_util::GetStringUTF16(
-      IDS_DEV_TOOLS_SHARED_PROCESS_INFOBAR_RESTART_NEEDED);
-  views::Label* message_label = new views::Label(message);
-  message_label->SetMultiLine(true);
-  message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  view->AddChildViewRaw(message_label);
+  about_flags::SetFeatureEntryEnabled(
+      flags_storage.get(),
+      "enable-process-per-site-up-to-main-frame-threshold@2", true);
+  flags_storage->CommitPendingWrites();
 
-  return view;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&chrome::AttemptRestart));
+}
+
+void ShowRestartDialog(content::WebContents* web_contents) {
+  constrained_window::ShowBrowserModal(
+      ui::DialogModel::Builder()
+          .SetInternalName("ProcessSharingAppRestart")
+          .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
+              IDS_DEV_TOOLS_SHARED_PROCESS_INFOBAR_RESTART_NEEDED)))
+          .AddOkButton(
+              base::BindOnce(&OptOutAndRestart, web_contents->GetWeakPtr()))
+          .AddCancelButton(base::DoNothing())
+          .Build(),
+      web_contents->GetTopLevelNativeWindow());
 }
 
 }  // namespace
@@ -81,49 +94,9 @@ ProcessSharingInfobarDelegate::GetIdentifier() const {
 }
 
 bool ProcessSharingInfobarDelegate::Accept() {
-  if (!inspected_web_contents_) {
-    return true;
+  if (inspected_web_contents_) {
+    ShowRestartDialog(inspected_web_contents_.get());
   }
-  auto delegate = std::make_unique<views::DialogDelegate>();
-  delegate->set_internal_name("ProcessSharingAppRestart");
-  delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
-                       static_cast<int>(ui::mojom::DialogButton::kCancel));
-  delegate->SetContentsView(MakeRestartView());
-  delegate->SetModalType(ui::mojom::ModalType::kSystem);
-  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
-  delegate->SetShowCloseButton(false);
-  delegate->set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
-  delegate->SetAcceptCallback(base::BindOnce(
-      [](base::WeakPtr<content::WebContents> inspected_web_contents) {
-#if BUILDFLAG(IS_CHROMEOS)
-        PrefService* prefs = Profile::FromBrowserContext(
-                                 inspected_web_contents->GetBrowserContext())
-                                 ->GetPrefs();
-#else
-        PrefService* prefs = g_browser_process->local_state();
-#endif
-        //  Note: Both ChromeOS owner and non-owner use PrefServiceFlagsStorage
-        //  under the hood. OwnersFlagsStorage has additional functionalities
-        //  for setting flags but since we are just reading the storage assume
-        //  non-owner case and bypass asynchronous owner check.
-        auto flags_storage =
-            std::make_unique<flags_ui::PrefServiceFlagsStorage>(prefs);
-
-        about_flags::SetFeatureEntryEnabled(
-            flags_storage.get(),
-            "enable-process-per-site-up-to-main-frame-threshold@2", true);
-        flags_storage->CommitPendingWrites();
-
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(&chrome::AttemptRestart));
-      },
-      inspected_web_contents_));
-
-  views::DialogDelegate::CreateDialogWidget(
-      std::move(delegate), inspected_web_contents_->GetTopLevelNativeWindow(),
-      gfx::NativeView())
-      ->Show();
 
   return ConfirmInfoBarDelegate::Accept();
 }
