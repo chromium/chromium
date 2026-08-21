@@ -49,7 +49,7 @@ TEST_F(SubresourceFilterTest, SimpleAllowedLoad) {
 TEST_F(SubresourceFilterTest, SimpleDisallowedLoad) {
   base::HistogramTester histogram_tester;
   GURL url("https://example.test");
-  ConfigureAsSubresourceFilterOnlyURL(url);
+  ConfigureAsBetterAdsURL(url);
   SimulateNavigateAndCommit(url, main_rfh());
   EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(main_rfh()));
 
@@ -59,7 +59,7 @@ TEST_F(SubresourceFilterTest, SimpleDisallowedLoad) {
 
 TEST_F(SubresourceFilterTest, DeactivateUrl_ChangeSiteActivationToFalse) {
   GURL url("https://a.test");
-  ConfigureAsSubresourceFilterOnlyURL(url);
+  ConfigureAsBetterAdsURL(url);
   SimulateNavigateAndCommit(url, main_rfh());
   EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(main_rfh()));
 
@@ -79,7 +79,7 @@ TEST_F(SubresourceFilterTest, DeactivateUrl_ChangeSiteActivationToFalse) {
 // we should clear the metadata.
 TEST_F(SubresourceFilterTest, ActivationToDryRun_ChangeSiteActivationToFalse) {
   GURL url("https://a.test");
-  ConfigureAsSubresourceFilterOnlyURL(url);
+  ConfigureAsBetterAdsURL(url);
   SimulateNavigateAndCommit(url, main_rfh());
   EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(main_rfh()));
 
@@ -89,7 +89,7 @@ TEST_F(SubresourceFilterTest, ActivationToDryRun_ChangeSiteActivationToFalse) {
   // it should also be removed from the metadata.
   scoped_configuration().ResetConfiguration(Configuration(
       mojom::ActivationLevel::kDryRun, ActivationScope::ACTIVATION_LIST,
-      ActivationList::SUBRESOURCE_FILTER));
+      ActivationList::BETTER_ADS));
 
   // Navigate to |url| again and expect the site's activation to be set to
   // false.
@@ -102,7 +102,7 @@ TEST_F(SubresourceFilterTest, ActivationToDryRun_ChangeSiteActivationToFalse) {
 TEST_F(SubresourceFilterTest,
        ExplicitAllowlisting_ShouldNotChangeSiteActivation) {
   GURL url("https://a.test");
-  ConfigureAsSubresourceFilterOnlyURL(url);
+  ConfigureAsBetterAdsURL(url);
   SimulateNavigateAndCommit(url, main_rfh());
   EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(main_rfh()));
 
@@ -117,7 +117,7 @@ TEST_F(SubresourceFilterTest,
 
 TEST_F(SubresourceFilterTest, SimpleAllowedLoad_WithObserver) {
   GURL url("https://example.test");
-  ConfigureAsSubresourceFilterOnlyURL(url);
+  ConfigureAsBetterAdsURL(url);
 
   TestSubresourceFilterObserver observer(web_contents());
   SimulateNavigateAndCommit(url, main_rfh());
@@ -135,7 +135,7 @@ TEST_F(SubresourceFilterTest, SimpleAllowedLoad_WithObserver) {
 
 TEST_F(SubresourceFilterTest, SimpleDisallowedLoad_WithObserver) {
   GURL url("https://example.test");
-  ConfigureAsSubresourceFilterOnlyURL(url);
+  ConfigureAsBetterAdsURL(url);
 
   TestSubresourceFilterObserver observer(web_contents());
   SimulateNavigateAndCommit(url, main_rfh());
@@ -161,7 +161,7 @@ TEST_F(SubresourceFilterTest, SimpleDisallowedLoad_WithObserver) {
 
 TEST_F(SubresourceFilterTest, RefreshMetadataOnActivation) {
   const GURL url("https://a.test");
-  ConfigureAsSubresourceFilterOnlyURL(url);
+  ConfigureAsBetterAdsURL(url);
   SimulateNavigateAndCommit(url, main_rfh());
   EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(main_rfh()));
 
@@ -178,7 +178,7 @@ TEST_F(SubresourceFilterTest, RefreshMetadataOnActivation) {
 
   // Site re-added to the blocklist. Should not activate due to allowlist, but
   // there should be page info / site details.
-  ConfigureAsSubresourceFilterOnlyURL(url);
+  ConfigureAsBetterAdsURL(url);
   SimulateNavigateAndCommit(url, main_rfh());
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
@@ -198,10 +198,7 @@ TEST_F(SubresourceFilterTest, NotifySafeBrowsing) {
     bool expected_warning;
   } kTestCases[]{
       // AdBlockOnAbusiveSitesTest::kDisabled
-      {AdBlockOnAbusiveSitesTest::kDisabled,
-       {},
-       ActivationList::SUBRESOURCE_FILTER,
-       false},
+      {AdBlockOnAbusiveSitesTest::kDisabled, {}, ActivationList::NONE, false},
       {AdBlockOnAbusiveSitesTest::kDisabled,
        {{Type::ABUSIVE, Level::ENFORCE}},
        ActivationList::NONE,

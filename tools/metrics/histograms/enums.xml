@@ -145,14 +145,18 @@ uploading your change for review.  These are checked by presubmit scripts.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_generator.h:ActionChipsRequestStatus) -->
 
+<!-- LINT.IfChange(ActivationList) -->
+
 <enum name="ActivationList">
   <int value="0" label="No match"/>
   <int value="1" label="Social Eng Ads Interstitial"/>
   <int value="2" label="Phishing Interstitial"/>
-  <int value="3" label="Subresource Filter"/>
+  <int value="3" label="(Deprecated) Subresource Filter"/>
   <int value="4" label="Better Ads Standard"/>
   <int value="5" label="Abusive"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/subresource_filter/core/common/activation_list.h:ActivationList) -->
 
 <!-- LINT.IfChange(AdaptiveToolbarButtonVariant) -->
 

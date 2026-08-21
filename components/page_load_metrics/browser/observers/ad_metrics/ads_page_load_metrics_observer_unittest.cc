@@ -488,14 +488,14 @@ class AdsPageLoadMetricsObserverTest
         web_contents(), this,
         base::BindRepeating(&AdsPageLoadMetricsObserverTest::RegisterObservers,
                             base::Unretained(this)));
-    ConfigureAsSubresourceFilterOnlyURL(GURL(kAdUrl));
+    ConfigureAsBetterAdsURL(GURL(kAdUrl));
 
     // Run all sites in dry run mode, so that AdTagging works as expected. In
     // browser environments, all sites activate with dry run by default.
     scoped_configuration().ResetConfiguration(subresource_filter::Configuration(
         subresource_filter::mojom::ActivationLevel::kDryRun,
         subresource_filter::ActivationScope::ALL_SITES,
-        subresource_filter::ActivationList::SUBRESOURCE_FILTER));
+        subresource_filter::ActivationList::BETTER_ADS));
   }
 
   // Returns the final RenderFrameHost after navigation commits.
@@ -1461,7 +1461,7 @@ TEST_P(AdsPageLoadMetricsObserverTest,
   scoped_configuration().ResetConfiguration(subresource_filter::Configuration(
       subresource_filter::mojom::ActivationLevel::kDisabled,
       subresource_filter::ActivationScope::ALL_SITES,
-      subresource_filter::ActivationList::SUBRESOURCE_FILTER));
+      subresource_filter::ActivationList::BETTER_ADS));
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
@@ -1488,9 +1488,9 @@ TEST_P(AdsPageLoadMetricsObserverTest, FilterAds_DoNotLogMetrics) {
   scoped_configuration().ResetConfiguration(subresource_filter::Configuration(
       subresource_filter::mojom::ActivationLevel::kEnabled,
       subresource_filter::ActivationScope::ACTIVATION_LIST,
-      subresource_filter::ActivationList::SUBRESOURCE_FILTER));
+      subresource_filter::ActivationList::BETTER_ADS));
 
-  ConfigureAsSubresourceFilterOnlyURL(GURL(kNonAdUrl));
+  ConfigureAsBetterAdsURL(GURL(kNonAdUrl));
   NavigateMainFrame(kNonAdUrl);
 
   ResourceDataUpdate(main_rfh(), ResourceCached::kNotCached, base::KiB(10),

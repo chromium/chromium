@@ -21,9 +21,6 @@ std::ostream& operator<<(std::ostream& os, const ActivationList& type) {
     case ActivationList::PHISHING_INTERSTITIAL:
       os << "PHISHING_INTERSTITIAL";
       break;
-    case ActivationList::SUBRESOURCE_FILTER:
-      os << "SUBRESOURCE_FILTER";
-      break;
     case ActivationList::BETTER_ADS:
       os << "BETTER_ADS";
       break;

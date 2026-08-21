@@ -46,13 +46,6 @@ ActivationList GetSubresourceFilterMatch(
         abusive_it->second == safe_browsing::SubresourceFilterLevel::WARN;
     return ActivationList::ABUSIVE;
   }
-
-  // Keep a generic subresource_filter list without warning implemented, for
-  // subresource filter matches with no metadata.
-  if (subresource_filter_match.empty()) {
-    return ActivationList::SUBRESOURCE_FILTER;
-  }
-
   return ActivationList::NONE;
 }
 

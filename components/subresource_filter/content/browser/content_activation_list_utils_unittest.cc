@@ -36,7 +36,7 @@ TEST(ContentActivationListUtilsTest, GetListForThreatTypeAndMetadata) {
        SB_THREAT_TYPE_SUBRESOURCE_FILTER,
        {},
        AdBlockOnAbusiveSitesTest::kDisabled,
-       ActivationList::SUBRESOURCE_FILTER,
+       ActivationList::NONE,
        false},
       {"BetterAds_Warn_DisableAdBlockOnAbusiveSites",
        SB_THREAT_TYPE_SUBRESOURCE_FILTER,

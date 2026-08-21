@@ -70,7 +70,7 @@ class SubresourceFilterTestHarness : public content::RenderViewHostTestHarness {
   content::RenderFrameHost* CreateAndNavigateDisallowedSubframe(
       content::RenderFrameHost* parent);
 
-  void ConfigureAsSubresourceFilterOnlyURL(const GURL& url);
+  void ConfigureAsBetterAdsURL(const GURL& url);
 
   void RemoveURLFromBlocklist(const GURL& url);
 

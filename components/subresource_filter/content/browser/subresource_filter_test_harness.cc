@@ -59,7 +59,7 @@ void SubresourceFilterTestHarness::SetUp() {
   // Ensure correct features.
   scoped_configuration_.ResetConfiguration(Configuration(
       mojom::ActivationLevel::kEnabled, ActivationScope::ACTIVATION_LIST,
-      ActivationList::SUBRESOURCE_FILTER));
+      ActivationList::BETTER_ADS));
 
   // Set up the ruleset service.
   ASSERT_TRUE(ruleset_service_dir_.CreateUniqueTempDir());
@@ -170,10 +170,14 @@ SubresourceFilterTestHarness::CreateAndNavigateDisallowedSubframe(
   return SimulateNavigateAndCommit(GURL(kDefaultDisallowedUrl), subframe);
 }
 
-void SubresourceFilterTestHarness::ConfigureAsSubresourceFilterOnlyURL(
-    const GURL& url) {
+void SubresourceFilterTestHarness::ConfigureAsBetterAdsURL(const GURL& url) {
+  safe_browsing::ThreatMetadata metadata;
+  metadata.subresource_filter_match
+      [safe_browsing::SubresourceFilterType::BETTER_ADS] =
+      safe_browsing::SubresourceFilterLevel::ENFORCE;
   fake_safe_browsing_database()->AddBlocklistedUrl(
-      url, safe_browsing::SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER);
+      url, safe_browsing::SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER,
+      metadata);
 }
 
 void SubresourceFilterTestHarness::RemoveURLFromBlocklist(const GURL& url) {
