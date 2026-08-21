@@ -19,6 +19,7 @@
 
 class AvatarToolbarButtonInterface;
 class BrowserView;
+class BrowserWindowInterface;
 class Profile;
 class AIModeSignInPromoViewBase;
 
@@ -110,6 +111,14 @@ class ComposeboxDriveSignInPromoController
   explicit ComposeboxDriveSignInPromoController(
       content::WebContents* web_contents);
   ~ComposeboxDriveSignInPromoController() override;
+
+  using AIModeSignInPromoControllerBase::MaybeShowPromo;
+
+  // Triggers the sign-in promo bubble anchored to the browser window.
+  // Returns false if `browser_window_interface` is null, its `BrowserView`
+  // cannot be resolved, or promo eligibility checks (`CanShowPromo`) fail.
+  // Otherwise, shows the promo and returns true.
+  bool MaybeShowPromo(BrowserWindowInterface* browser_window_interface);
 
   base::WeakPtr<ComposeboxDriveSignInPromoController> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

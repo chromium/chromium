@@ -17,6 +17,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/rule_set.pb.h"
@@ -49,6 +50,7 @@ class InputStateModelTest : public testing::Test {
 
     input_state_model_ = std::make_unique<InputStateModel>(
         session_handle_, config_, active_url_, /*is_off_the_record=*/false,
+        /*is_signed_in=*/false,
         /*browser_identity_matches_aim_identity=*/false);
     input_state_model_->SetPrefService(&pref_service_);
   }
@@ -84,6 +86,7 @@ TEST_F(InputStateModelTest, DoesNotRemoveDriveInputWhenSignedInAndFlagEnabled) {
 
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/true,
       /*browser_identity_matches_aim_identity=*/true);
   input_state_model_->SetPrefService(&pref_service_);
   pref_service_.SetInteger(
@@ -112,6 +115,7 @@ TEST_F(InputStateModelTest, RemovesDriveInputWhenFlagDisabled) {
 
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/true,
       /*browser_identity_matches_aim_identity=*/true);
   const auto& state = input_state_model_->get_state_for_testing();
 
@@ -136,6 +140,7 @@ TEST_F(InputStateModelTest, RemovesDriveInputWhenNotSignedIn) {
 
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
   const auto& state = input_state_model_->get_state_for_testing();
 
@@ -144,6 +149,63 @@ TEST_F(InputStateModelTest, RemovesDriveInputWhenNotSignedIn) {
                                             omnibox::INPUT_TYPE_LENS_FILE,
                                             omnibox::INPUT_TYPE_BROWSER_TAB));
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(InputStateModelTest,
+       DoesNotRemoveDriveInputWhenNotSignedInAndPromoFlagEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {omnibox::kComposeboxDriveContextMenuOption,
+       omnibox::kComposeboxDriveContextMenuOptionSigninPromo},
+      {});
+
+  omnibox::SearchboxConfig config;
+  config.add_input_type_configs()->set_input_type(
+      omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+  config.add_input_type_configs()->set_input_type(
+      omnibox::InputType::INPUT_TYPE_LENS_FILE);
+
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
+      /*browser_identity_matches_aim_identity=*/false);
+  const auto& state = input_state_model_->get_state_for_testing();
+
+  EXPECT_THAT(state.allowed_input_types,
+              testing::UnorderedElementsAre(
+                  omnibox::INPUT_TYPE_LENS_IMAGE, omnibox::INPUT_TYPE_LENS_FILE,
+                  omnibox::INPUT_TYPE_BROWSER_TAB, omnibox::INPUT_TYPE_DRIVE));
+}
+
+TEST_F(InputStateModelTest,
+       RemovesDriveInputWhenSignedInWithIdentityMismatchAndPromoFlagEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {omnibox::kComposeboxDriveContextMenuOption,
+       omnibox::kComposeboxDriveContextMenuOptionSigninPromo},
+      {});
+
+  omnibox::SearchboxConfig config;
+  config.add_input_type_configs()->set_input_type(
+      omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+  config.add_input_type_configs()->set_input_type(
+      omnibox::InputType::INPUT_TYPE_LENS_FILE);
+  config.add_input_type_configs()->set_input_type(
+      omnibox::InputType::INPUT_TYPE_DRIVE);
+
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/true,
+      /*browser_identity_matches_aim_identity=*/false);
+  const auto& state = input_state_model_->get_state_for_testing();
+
+  EXPECT_THAT(state.allowed_input_types,
+              testing::UnorderedElementsAre(omnibox::INPUT_TYPE_LENS_IMAGE,
+                                            omnibox::INPUT_TYPE_LENS_FILE,
+                                            omnibox::INPUT_TYPE_BROWSER_TAB));
+}
+
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 TEST_F(InputStateModelTest, TestInitialization) {
   EXPECT_TRUE(input_state_model_);
@@ -171,6 +233,7 @@ TEST_F(InputStateModelTest,
 
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
   const auto& state = input_state_model_->get_state_for_testing();
 
@@ -209,6 +272,7 @@ TEST_F(InputStateModelTest, DefaultToFirstAllowedModel) {
   // Initialize Model.
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
   const auto& state = input_state_model_->get_state_for_testing();
 
@@ -244,6 +308,7 @@ TEST_F(InputStateModelTest, ParsesActiveModelFromUrl) {
   GURL regular_url("https://example.com/?abc=1");
   auto state_model_regular = std::make_unique<InputStateModel>(
       session_handle_, config, regular_url, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
 
   EXPECT_EQ(state_model_regular->get_state_for_testing().active_model,
@@ -252,6 +317,7 @@ TEST_F(InputStateModelTest, ParsesActiveModelFromUrl) {
   GURL pro_url("https://example.com/?xyz=1");
   auto state_model_pro = std::make_unique<InputStateModel>(
       session_handle_, config, pro_url, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
 
   EXPECT_EQ(state_model_pro->get_state_for_testing().active_model,
@@ -260,6 +326,7 @@ TEST_F(InputStateModelTest, ParsesActiveModelFromUrl) {
   GURL unknown_url("https://example.com/?qwe=1");
   auto state_model_unknown = std::make_unique<InputStateModel>(
       session_handle_, config, unknown_url, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
 
   // Fallback to the default model which is the first one in the list.
@@ -285,6 +352,7 @@ TEST_F(InputStateModelTest, ParsesActiveToolFromUrl) {
   GURL ds_url("https://example.com/?dr=1");
   auto state_model_ds = std::make_unique<InputStateModel>(
       session_handle_, config, ds_url, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
 
   EXPECT_EQ(state_model_ds->get_state_for_testing().active_tool,
@@ -293,6 +361,7 @@ TEST_F(InputStateModelTest, ParsesActiveToolFromUrl) {
   GURL canvas_url("https://example.com/?rc=1");
   auto state_model_canvas = std::make_unique<InputStateModel>(
       session_handle_, config, canvas_url, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
 
   EXPECT_EQ(state_model_canvas->get_state_for_testing().active_tool,
@@ -301,6 +370,7 @@ TEST_F(InputStateModelTest, ParsesActiveToolFromUrl) {
   GURL unknown_url("https://example.com/?qwe=1");
   auto state_model_unknown = std::make_unique<InputStateModel>(
       session_handle_, config, unknown_url, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
 
   // Defaults to ToolMode::TOOL_MODE_UNSPECIFIED if not in the URL.
@@ -320,6 +390,7 @@ TEST_F(InputStateModelTest, HidesToolsFromMenu) {
 
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/true,
       /*browser_identity_matches_aim_identity=*/true);
 
   const auto& state = input_state_model_->get_state_for_testing();
@@ -341,6 +412,7 @@ TEST_F(InputStateModelTest, UpdateToolFromUrl) {
 
   auto state_model = std::make_unique<InputStateModel>(
       session_handle_, config, GURL(), /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
 
   EXPECT_EQ(state_model->get_state_for_testing().active_tool,
@@ -376,6 +448,7 @@ TEST_F(InputStateModelTest, UpdateToolFromUrl_ThreadChangedResetsTool) {
   GURL canvas_url("https://example.com/?rc=1&mtid=123");
   auto state_model = std::make_unique<InputStateModel>(
       session_handle_, config, canvas_url, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
 
   EXPECT_EQ(state_model->get_state_for_testing().active_tool,
@@ -412,6 +485,7 @@ TEST_F(InputStateModelTest, UserRemovedTool_PreventsStaleUrlReactivatingTool) {
   GURL canvas_url("https://example.com/?rc=1&mtid=123");
   auto state_model = std::make_unique<InputStateModel>(
       session_handle_, config, canvas_url, /*is_off_the_record=*/false,
+      /*is_signed_in=*/true,
       /*browser_identity_matches_aim_identity=*/true);
 
   EXPECT_EQ(state_model->get_state_for_testing().active_tool,
@@ -454,6 +528,7 @@ TEST_F(
   GURL normal_url("https://example.com/?mtid=123");
   auto state_model = std::make_unique<InputStateModel>(
       session_handle_, config, normal_url, /*is_off_the_record=*/false,
+      /*is_signed_in=*/true,
       /*browser_identity_matches_aim_identity=*/true);
 
   EXPECT_EQ(state_model->get_state_for_testing().active_tool,
@@ -486,6 +561,7 @@ TEST_F(InputStateModelTest, DelayedRc1ParameterAddedOnSameThread) {
   GURL initial_url("https://www.google.com/search?mtid=123");
   auto state_model = std::make_unique<InputStateModel>(
       session_handle_, config, initial_url, /*is_off_the_record=*/false,
+      /*is_signed_in=*/true,
       /*browser_identity_matches_aim_identity=*/true);
 
   EXPECT_EQ(state_model->get_state_for_testing().active_tool,
@@ -514,6 +590,7 @@ TEST_F(InputStateModelTest,
   GURL canvas_url("https://www.google.com/search?rc=1&mtid=123");
   auto state_model = std::make_unique<InputStateModel>(
       session_handle_, config, canvas_url, /*is_off_the_record=*/false,
+      /*is_signed_in=*/true,
       /*browser_identity_matches_aim_identity=*/true);
 
   EXPECT_EQ(state_model->get_state_for_testing().active_tool,
@@ -575,6 +652,7 @@ TEST_F(InputStateModelTest, RegularModelAllowsAllToolsAndInputsWithEmptyLists) {
   // 3. Initialize the model.
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
   input_state_model_->SetPrefService(&pref_service_);
 
@@ -615,6 +693,7 @@ TEST_F(InputStateModelTest, ModelWithAllowAllToolsIsNotDisabled) {
 
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
   input_state_model_->SetPrefService(&pref_service_);
 
@@ -656,6 +735,7 @@ TEST_F(InputStateModelTest, ModelWithAllowAllInputsIsNotDisabled) {
 
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
   input_state_model_->SetPrefService(&pref_service_);
 
@@ -851,6 +931,7 @@ TEST_F(InputStateModelTest, GetAdditionalQueryParams) {
   // Recreate the model with the new config.
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config_, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
   input_state_model_->SetPrefService(&pref_service_);
 
@@ -908,6 +989,7 @@ TEST_F(InputStateModelCompatibilityTest, PolicyDisablesInputs) {
 
   auto local_model = std::make_unique<InputStateModel>(
       session_handle_, custom_config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/true,
       /*browser_identity_matches_aim_identity=*/true);
   local_model->SetPrefService(&pref_service_);
 
@@ -982,6 +1064,7 @@ TEST_F(InputStateModelCompatibilityTest, MaxTotalInputsDisablesInputs) {
   // Recreate the model with the new config.
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config_, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
   input_state_model_->SetPrefService(&pref_service_);
   input_state_model_->setActiveModel(
@@ -1071,6 +1154,7 @@ TEST_F(InputStateModelCompatibilityTest, ToolWithAllowAllInputs) {
   // Re-create the model with the modified config.
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config_, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
   input_state_model_->SetPrefService(&pref_service_);
   input_state_model_->setActiveModel(
@@ -1110,6 +1194,7 @@ TEST_F(InputStateModelCompatibilityTest, ToolWithSpecificInputs) {
   // Re-create the model with the modified config.
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config_, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
   input_state_model_->SetPrefService(&pref_service_);
   input_state_model_->setActiveModel(
@@ -1188,6 +1273,7 @@ TEST_F(InputStateModelTest, FiltersImageGenInIncognito) {
   // Initialize with is_off_the_record = true.
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/true,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
   const auto& state = input_state_model_->get_state_for_testing();
 
@@ -1206,6 +1292,7 @@ TEST_F(InputStateModelTest,
 
   auto local_model = std::make_unique<InputStateModel>(
       *local_session, config, GURL(), /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
 
   local_session.reset();  // Destroy session.
@@ -1231,6 +1318,7 @@ TEST_F(InputStateModelTest,
 
   auto model_with_image = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
   model_with_image->SetPrefService(&prefs);
 
@@ -1320,6 +1408,7 @@ TEST_F(InputStateModelCompatibilityTest,
   // Re-create the model with the modified config.
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config_, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
   input_state_model_->SetPrefService(&pref_service_);
   input_state_model_->setActiveModel(
@@ -1392,6 +1481,7 @@ TEST_F(InputStateModelCompatibilityTest,
   // Re-create the model with the modified config.
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config_, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
   input_state_model_->SetPrefService(&pref_service_);
   input_state_model_->setActiveModel(
@@ -1468,6 +1558,7 @@ TEST_F(InputStateModelTest, UpdateModelFromUrl) {
   GURL pro_url("https://example.com/?udm=50&arv=1");
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, pro_url, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
 
   EXPECT_EQ(input_state_model_->get_state_for_testing().active_model,
@@ -1534,6 +1625,7 @@ TEST_F(InputStateModelTest,
 
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/true,
       /*browser_identity_matches_aim_identity=*/true);
   input_state_model_->SetPrefService(&pref_service_);
 
@@ -1586,6 +1678,7 @@ TEST_F(InputStateModelTest, DriveConsentStateWithDisclaimerToggle) {
 
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/true,
       /*browser_identity_matches_aim_identity=*/true);
   input_state_model_->SetPrefService(&pref_service_);
 
@@ -1627,6 +1720,7 @@ TEST_F(InputStateModelTest, SetPrefServiceInitializesConsentState) {
                            static_cast<int>(DriveConsentState::kNotReady));
   auto model1 = std::make_unique<InputStateModel>(
       session_handle_, config_, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/true,
       /*browser_identity_matches_aim_identity=*/true);
   model1->SetPrefService(&pref_service_);
   EXPECT_EQ(GetDriveConsentState(model1.get()), DriveConsentState::kNotReady);
@@ -1636,6 +1730,7 @@ TEST_F(InputStateModelTest, SetPrefServiceInitializesConsentState) {
                            static_cast<int>(DriveConsentState::kConsent));
   auto model2 = std::make_unique<InputStateModel>(
       session_handle_, config_, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/true,
       /*browser_identity_matches_aim_identity=*/true);
   model2->SetPrefService(&pref_service_);
   EXPECT_EQ(GetDriveConsentState(model2.get()), DriveConsentState::kConsent);
@@ -1645,6 +1740,7 @@ TEST_F(InputStateModelTest, SetPrefServiceInitializesConsentState) {
                            static_cast<int>(DriveConsentState::kRestricted));
   auto model3 = std::make_unique<InputStateModel>(
       session_handle_, config_, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/true,
       /*browser_identity_matches_aim_identity=*/true);
   model3->SetPrefService(&pref_service_);
   EXPECT_EQ(GetDriveConsentState(model3.get()), DriveConsentState::kRestricted);
@@ -1654,6 +1750,7 @@ TEST_F(InputStateModelTest, SetPrefServiceInitializesConsentState) {
                            static_cast<int>(DriveConsentState::kNotConsent));
   auto model4 = std::make_unique<InputStateModel>(
       session_handle_, config_, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/true,
       /*browser_identity_matches_aim_identity=*/true);
   model4->SetPrefService(&pref_service_);
   EXPECT_EQ(GetDriveConsentState(model4.get()), DriveConsentState::kNotConsent);
@@ -1676,6 +1773,7 @@ TEST_F(InputStateModelTest, PrefChangesDynamicallyUpdateInputTypes) {
 
   auto model = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/true,
       /*browser_identity_matches_aim_identity=*/true);
 
   pref_service_.SetInteger(
@@ -1749,6 +1847,7 @@ TEST_F(InputStateModelTest, CopyConstructorCopiesAllRelevantFields) {
 
   auto original_model = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/true,
       /*browser_identity_matches_aim_identity=*/true);
   original_model->Initialize();
 
@@ -1786,6 +1885,7 @@ TEST_F(InputStateModelTest, HasValidConfig) {
   omnibox::SearchboxConfig empty_config;
   auto model_without_config = std::make_unique<InputStateModel>(
       session_handle_, empty_config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
   EXPECT_FALSE(model_without_config->has_valid_config());
 
@@ -1794,6 +1894,7 @@ TEST_F(InputStateModelTest, HasValidConfig) {
   valid_config.mutable_rule_set();
   auto model_with_config = std::make_unique<InputStateModel>(
       session_handle_, valid_config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
       /*browser_identity_matches_aim_identity=*/false);
   EXPECT_TRUE(model_with_config->has_valid_config());
 

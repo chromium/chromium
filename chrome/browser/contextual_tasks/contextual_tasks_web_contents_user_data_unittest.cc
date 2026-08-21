@@ -94,7 +94,7 @@ TEST_F(ContextualTasksWebContentsUserDataTest, SetAndGetModel) {
       std::make_shared<contextual_search::MockContextualSearchSessionHandle>();
   omnibox::SearchboxConfig config;
   auto input_state_model = std::make_unique<contextual_search::InputStateModel>(
-      *mock_handle, config, GURL(), false, false);
+      *mock_handle, config, GURL(), false, false, false);
 
   auto weak_ptr = input_state_model->AsWeakPtr();
 

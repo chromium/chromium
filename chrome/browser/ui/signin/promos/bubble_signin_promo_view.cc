@@ -279,9 +279,12 @@ void IncrementContextualPromoDismissCountPerSignedOutProfile(
               prefs::
                   kBookmarkSignInPromoDismissCountPerProfileForLimitsExperiment) +
               1);
+    case signin::SignInPromoType::kComposeboxDriveContextMenuOption:
+      // Composebox Drive signin promo does not track dismiss counts as it is
+      // explicitly triggered by the user from the context menu.
+      return;
     case signin::SignInPromoType::kExtension:
     case signin::SignInPromoType::kSendTabToSelf:
-    case signin::SignInPromoType::kComposeboxDriveContextMenuOption:
       NOTREACHED();
   }
 }
@@ -316,9 +319,12 @@ void IncrementContextualPromoDismissCountPerAccount(
       SigninPrefs(*profile->GetPrefs())
           .IncrementSearchAIModeSigninPromoDismissCount(account.gaia);
       break;
+    case signin::SignInPromoType::kComposeboxDriveContextMenuOption:
+      // Composebox Drive signin promo does not track dismiss counts as it is
+      // explicitly triggered by the user from the context menu.
+      break;
     case signin::SignInPromoType::kExtension:
     case signin::SignInPromoType::kSendTabToSelf:
-    case signin::SignInPromoType::kComposeboxDriveContextMenuOption:
       NOTREACHED();
   }
 }

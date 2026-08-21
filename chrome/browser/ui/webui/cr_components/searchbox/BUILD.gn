@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/signin/features.gni")
 import("//ui/webui/webui_features.gni")
 
 assert(!is_ios || enable_webui_ntp)
@@ -114,5 +115,8 @@ source_set("searchbox_impl") {
       "//chrome/browser/ui/webui/omnibox_popup",
       "//components/contextual_search/footprints/internal",
     ]
+  }
+  if (enable_dice_support) {
+    deps += [ "//chrome/browser/ui/views/search_ai_mode" ]
   }
 }

@@ -1680,9 +1680,8 @@ TEST_F(ContextualTasksUiServiceTest,
       .WillByDefault(Return(&metrics_recorder));
   mock_session->set_smart_tab_sharing_active(true);
 
-  auto input_state_model =
-      std::make_unique<contextual_search::InputStateModel>(
-          *mock_session, omnibox::SearchboxConfig(), GURL(), false, false);
+  auto input_state_model = std::make_unique<contextual_search::InputStateModel>(
+      *mock_session, omnibox::SearchboxConfig(), GURL(), false, false, false);
   input_state_model->SetSmartTabSharingActive(true);
   std::vector<int32_t> selected_tabs = {123, 456};
   helper->SetTaskSession(std::nullopt, std::move(mock_session),

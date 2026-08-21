@@ -791,7 +791,8 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
 
   _inputStateModel = std::make_unique<contextual_search::InputStateModel>(
       *_sessionHandle, *searchboxConfig, GURL(), _isIncognito,
-      has_primary_account);
+      /*is_signed_in=*/has_primary_account,
+      /*browser_identity_matches_aim_identity=*/has_primary_account);
   if (_prefService) {
     _inputStateModel->SetPrefService(_prefService);
   }

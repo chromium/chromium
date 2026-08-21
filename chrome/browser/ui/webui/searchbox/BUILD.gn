@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/signin/features.gni")
 import("//ui/webui/webui_features.gni")
 
 assert(!is_ios)
@@ -182,6 +183,9 @@ if (!is_android) {
       "//ui/display",
       "//ui/gfx",
     ]
+    if (enable_dice_support) {
+      deps += [ "//chrome/browser/ui/views/search_ai_mode" ]
+    }
   }
 }
 

@@ -9,10 +9,13 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
@@ -22,7 +25,10 @@
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -31,6 +37,11 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/display/display_switches.h"
+#include "ui/views/interaction/element_tracker_views.h"
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/views/search_ai_mode/signin_promo_view.h"
+#endif
 
 class TestSearchboxHandler : public ContextualSearchboxHandler {
  public:
@@ -234,6 +245,77 @@ IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTest,
   handler_->GetSmartTabSharingActive(get_future2.GetCallback());
   EXPECT_TRUE(get_future2.Get());
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class ContextualSearchboxHandlerDriveSigninPromoBrowserTest
+    : public ContextualSearchboxHandlerBrowserTest {
+ public:
+  ContextualSearchboxHandlerDriveSigninPromoBrowserTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{contextual_tasks::kContextualTasksContext,
+          {{"ContextualTasksContextSmartTabSharing", "true"}}},
+         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
+         {omnibox::kComposeboxDriveContextMenuOption, {}},
+         {omnibox::kComposeboxDriveContextMenuOptionSigninPromo, {}},
+         {switches::kEnableSearchAIModeSigninPromo, {}}},
+        {});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualSearchboxHandlerDriveSigninPromoBrowserTest,
+    OnDriveUploadClicked_SignedOut_ShowsComposeboxDriveSigninPromo) {
+  // Enable context sharing in prefs.
+  browser()->GetProfile()->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+  base::test::TestFuture<searchbox::mojom::DriveUploadResponsePtr> future;
+  handler_->OnDriveUploadClicked(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  views::View* promo_view =
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kComposeboxDriveSignInPromoViewId,
+          BrowserView::GetBrowserViewForBrowser(browser())
+              ->GetElementContext());
+  EXPECT_NE(promo_view, nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualSearchboxHandlerDriveSigninPromoBrowserTest,
+    OnDriveUploadClicked_SigninPending_ShowsComposeboxDriveSigninPromo) {
+  // Enable context sharing in prefs.
+  browser()->GetProfile()->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+  // Set up primary account in persistent error state (Signin Pending).
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "test@gmail.com", signin::ConsentLevel::kSignin);
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager, account_info.account_id,
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+
+  base::test::TestFuture<searchbox::mojom::DriveUploadResponsePtr> future;
+  handler_->OnDriveUploadClicked(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  views::View* promo_view =
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kComposeboxDriveSignInPromoViewId,
+          BrowserView::GetBrowserViewForBrowser(browser())
+              ->GetElementContext());
+  EXPECT_NE(promo_view, nullptr);
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 class WebuiOmniboxHandlerBrowserTest
     : public ContextualSearchboxHandlerBrowserTest {
