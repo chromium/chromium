@@ -35,14 +35,12 @@ TEST(DllPreReadPolicyTest, TestIsFixedSsd) {
 }
 
 TEST(DllPreReadPolicyTest, ShouldPrefetch) {
-  base::test::ScopedFeatureList list(features::kNoPreReadMainDllIfSsd);
   SetChromeDllOnSsdForTesting(false);
 
   EXPECT_TRUE(ShouldPreReadDllInChild());
 }
 
 TEST(DllPreReadPolicyTest, FixedSsdShouldNotPrefetch) {
-  base::test::ScopedFeatureList list(features::kNoPreReadMainDllIfSsd);
   SetChromeDllOnSsdForTesting(true);
 
   EXPECT_FALSE(ShouldPreReadDllInChild());

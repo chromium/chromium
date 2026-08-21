@@ -97,7 +97,6 @@ BASE_DECLARE_FEATURE(kBrowserDynamicCodeDisabled);
 BASE_DECLARE_FEATURE(kIsolatedProcess);
 
 BASE_DECLARE_FEATURE(kNoPreReadMainDll);
-BASE_DECLARE_FEATURE(kNoPreReadMainDllIfSsd);
 BASE_DECLARE_FEATURE(kNoPreReadMainDllStartup);
 extern const base::FeatureParam<base::TimeDelta>
     kNoPreReadMainDllStartup_StartupDuration;

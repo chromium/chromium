@@ -203,10 +203,6 @@ BASE_FEATURE(kIsolatedProcess, base::FEATURE_DISABLED_BY_DEFAULT);
 // When enabled, child processes never pre-read the Chrome DLL.
 BASE_FEATURE(kNoPreReadMainDll, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, child processes don't pre-read the Chrome DLL if we believe the
-// Chrome DLL is on an SSD (i.e. pre-read only on spinning disk).
-BASE_FEATURE(kNoPreReadMainDllIfSsd, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, the browser process suppresses pre-read in child processes
 // shortly after browser startup, where "shortly after" is dictated by the
 // feature param below. This is thought to be a productive strategy since the
