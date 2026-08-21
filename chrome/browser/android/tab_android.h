@@ -32,7 +32,6 @@
 
 class GURL;
 class TabAndroidDataProvider;
-class TabInterfaceAndroid;
 class TabModelJniBridge;
 class Profile;
 
@@ -86,6 +85,12 @@ class TabAndroid : public tabs::TabInterface,
   static TabAndroid* FromWebContents(content::WebContents* web_contents);
   static const TabAndroid* FromWebContents(
       const content::WebContents* web_contents);
+
+  // Returns the native TabAndroid associated with the given `tab_interface`.
+  // Can return nullptr.
+  static TabAndroid* FromTabInterface(tabs::TabInterface* tab_interface);
+  static const TabAndroid* FromTabInterface(
+      const tabs::TabInterface* tab_interface);
 
   // Returns the native TabAndroid associated with the given `handle`.
   // Returns nullptr if the `handle` is not associated with a TabAndroid.

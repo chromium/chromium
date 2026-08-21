@@ -18,7 +18,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/token.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/android/tab_android_conversions.h"
 #include "chrome/browser/android/tab_group_android.h"
 #include "chrome/browser/android/tab_group_features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -135,9 +134,10 @@ std::string TabStoragePackagerAndroid::GetWindowTag(
 
 std::unique_ptr<StoragePackage> TabStoragePackagerAndroid::Package(
     const TabInterface* tab) {
+  CHECK(tab);
   JNIEnv* env = base::android::AttachCurrentThread();
-  long ptr_value = Java_TabStoragePackager_packageTab(env, java_obj_,
-                                                      ToTabAndroidChecked(tab));
+  long ptr_value = Java_TabStoragePackager_packageTab(
+      env, java_obj_, TabAndroid::FromTabInterface(tab));
   TabStoragePackage* data = reinterpret_cast<TabStoragePackage*>(ptr_value);
 
   return base::WrapUnique(data);

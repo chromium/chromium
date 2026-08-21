@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/android/tab_android_conversions.h"
 #include "chrome/browser/android/tab_group_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/tab_groups/tab_group_color.h"
@@ -170,7 +169,8 @@ std::vector<TabAndroid*> TabCollectionTabModelImpl::GetTabsInGroup(
 
   tabs.reserve(group_collection->TabCountRecursive());
   for (TabInterface* group_tab : *group_collection) {
-    tabs.push_back(ToTabAndroidChecked(group_tab));
+    CHECK(group_tab);
+    tabs.push_back(TabAndroid::FromTabInterface(group_tab));
   }
   return tabs;
 }
@@ -348,7 +348,7 @@ std::vector<TabAndroid*> TabCollectionTabModelImpl::GetAllTabs(
   tabs.reserve(tab_strip_collection_->TabCountRecursive());
 
   for (TabInterface* tab_in_collection : *tab_strip_collection_) {
-    TabAndroid* tab = ToTabAndroidOrNull(tab_in_collection);
+    TabAndroid* tab = TabAndroid::FromTabInterface(tab_in_collection);
     if (!tab) {
       continue;
     }
@@ -381,7 +381,8 @@ std::vector<TabAndroid*> TabCollectionTabModelImpl::GetRepresentativeTabList(
     std::optional<TabGroupId> tab_group_id = tab->GetGroup();
     if (!tab_group_id) {
       current_group_id = std::nullopt;
-      tabs.push_back(ToTabAndroidChecked(tab));
+      CHECK(tab);
+      tabs.push_back(TabAndroid::FromTabInterface(tab));
     } else if (current_group_id != tab_group_id) {
       current_group_id = tab_group_id;
       TabGroupAndroid* group =

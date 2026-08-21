@@ -18,7 +18,6 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/actor/ui/test_support/mock_actor_ui_tab_controller.h"
-#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_features.h"
 #include "chrome/browser/android/tab_group_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
@@ -36,6 +35,7 @@
 #include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/window_container_type.mojom.h"
@@ -116,6 +116,55 @@ class TabAndroidTest : public testing::Test {
 TEST_F(TabAndroidTest, TabIsInitialized) {
   EXPECT_EQ(kTabId, tab_android_->GetAndroidId());
   EXPECT_NE(nullptr, tab_android_->GetProfile());
+}
+
+TEST_F(TabAndroidTest, FromTabInterface) {
+  // Non-const valid pointer.
+  tabs::TabInterface* tab_interface = tab_android_.get();
+  EXPECT_EQ(tab_android_.get(), TabAndroid::FromTabInterface(tab_interface));
+
+  // Non-const null pointer.
+  EXPECT_EQ(nullptr, TabAndroid::FromTabInterface(
+                         static_cast<tabs::TabInterface*>(nullptr)));
+
+  // Const valid pointer.
+  const tabs::TabInterface* const_tab_interface = tab_android_.get();
+  const TabAndroid* const_tab_android = tab_android_.get();
+  EXPECT_EQ(const_tab_android,
+            TabAndroid::FromTabInterface(const_tab_interface));
+
+  // Const null pointer.
+  EXPECT_EQ(nullptr, TabAndroid::FromTabInterface(
+                         static_cast<const tabs::TabInterface*>(nullptr)));
+}
+
+TEST_F(TabAndroidTest, FromTabHandle) {
+  // Valid handle.
+  tabs::TabHandle valid_handle = tab_android_->GetHandle();
+  EXPECT_EQ(tab_android_.get(), TabAndroid::FromTabHandle(valid_handle));
+
+  // Invalid handle: default constructed.
+  tabs::TabHandle default_handle;
+  EXPECT_EQ(nullptr, TabAndroid::FromTabHandle(default_handle));
+
+  // Invalid handle: explicit null handle.
+  tabs::TabHandle null_handle = tabs::TabHandle::Null();
+  EXPECT_EQ(nullptr, TabAndroid::FromTabHandle(null_handle));
+
+  // Invalid handle: non-existent ID.
+  tabs::TabHandle non_existent_handle(123456);
+  EXPECT_EQ(nullptr, TabAndroid::FromTabHandle(non_existent_handle));
+
+  // Invalid handle: handle for a destroyed tab.
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile_.get()));
+  std::unique_ptr<TabAndroid> temp_tab = TabAndroid::CreateForTesting(
+      profile_.get(), kTabId + 1, std::move(web_contents));
+  tabs::TabHandle temp_handle = temp_tab->GetHandle();
+  EXPECT_EQ(temp_tab.get(), TabAndroid::FromTabHandle(temp_handle));
+  temp_tab.reset();
+  EXPECT_EQ(nullptr, TabAndroid::FromTabHandle(temp_handle));
 }
 
 TEST_F(TabAndroidTest, PinnedCollectionParent) {

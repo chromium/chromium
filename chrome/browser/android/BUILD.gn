@@ -387,8 +387,6 @@ if (is_android) {
       "storage_restore_orchestrator_factory_android.cc",
       "storage_restore_orchestrator_factory_android.h",
       "tab_android.cc",  # TODO(crbug.com/486820940): Move to tabs_impl.
-      "tab_android_conversions.cc",
-      "tab_android_conversions.h",
       "tab_android_user_data.h",
       "tab_browser_controls_constraints_helper.cc",
       "tab_favicon.cc",

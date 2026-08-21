@@ -45,7 +45,7 @@ class TabModelJniBridgeTest : public AndroidBrowserTest {
 
   // Converts a TabInterface to TabAndroid.
   TabAndroid* ToTabAndroid(tabs::TabInterface* tab) {
-    return tab ? TabAndroid::FromTabHandle(tab->GetHandle()) : nullptr;
+    return TabAndroid::FromTabInterface(tab);
   }
 
   // Returns the HostContentSettingsMap for the current profile.

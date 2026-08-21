@@ -11,7 +11,6 @@
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/android/tab_android_conversions.h"
 #include "chrome/browser/tab/protocol/children.pb.h"
 #include "chrome/browser/tab/protocol/token.pb.h"
 #include "chrome/browser/tab/storage_id.h"
@@ -83,7 +82,7 @@ void RestoreEntityTrackerAndroid::RegisterTab(
 bool RestoreEntityTrackerAndroid::AssociateTab(const TabInterface* tab) {
   DCHECK(context_);
 
-  const TabAndroid* tab_android = ToTabAndroidChecked(tab);
+  const TabAndroid* tab_android = TabAndroid::FromTabInterface(tab);
   TabHandle handle = tab->GetHandle();
   if (associated_nodes_.contains(handle)) {
     return false;
