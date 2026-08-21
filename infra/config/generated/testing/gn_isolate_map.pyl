@@ -1722,6 +1722,7 @@
   "perfetto_diff_tests": {
     "label": "//base/tracing:perfetto_diff_tests",
     "type": "generated_script",
+    "module_scheme": "single",
     "skip_usage_check": True,
   },
   "perfetto_unittests": {

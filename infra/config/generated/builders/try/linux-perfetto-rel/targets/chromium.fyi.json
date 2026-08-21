@@ -95,6 +95,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//base/tracing:perfetto_diff_tests",
+        "module_scheme": "single",
         "name": "perfetto_diff_tests",
         "swarming": {
           "dimensions": {

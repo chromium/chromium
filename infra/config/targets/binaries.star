@@ -1918,6 +1918,7 @@ targets.binaries.generated_script(
     name = "perfetto_diff_tests",
     label = "//base/tracing:perfetto_diff_tests",
     skip_usage_check = True,
+    module_scheme = "single",
 )
 
 targets.binaries.console_test_launcher(
