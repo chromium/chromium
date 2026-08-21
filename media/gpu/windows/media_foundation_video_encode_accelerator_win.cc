@@ -2460,9 +2460,18 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
     RETURN_ON_HR_FAILURE(hr, "Failed to perform D3D video processing", hr);
     sample_texture = scaled_d3d11_texture_;
   } else if (input.generate_sample_on_wait_sync_token) {
-    // Shared images that are not GpuMemoryBuffers have already
-    // been copied.
-    sample_texture = input_texture;
+    // Shared images that are not GpuMemoryBuffers have already been staged
+    // for the encoder. If the staged texture is guarded by a keyed mutex,
+    // copy it to a private texture so that the mutex only needs to be held
+    // for the duration of the copy rather than the encode.
+    ComDXGIKeyedMutex keyed_mutex;
+    if (SUCCEEDED(input_texture->QueryInterface(IID_PPV_ARGS(&keyed_mutex)))) {
+      hr = PerformD3DCopy(input_texture.Get(), gfx::Rect(input_visible_size_));
+      RETURN_ON_HR_FAILURE(hr, "Failed to perform D3D texture copy", hr);
+      sample_texture = copied_d3d11_texture_;
+    } else {
+      sample_texture = input_texture;
+    }
   } else {
     // Even though no scaling is needed we still need to copy the texture to
     // avoid concurrent usage causing glitches (https://crbug.com/1462315). This
@@ -3199,7 +3208,7 @@ void MediaFoundationVideoEncodeAccelerator::OnSharedImageResourceAvailable(
     // a copy of it. Hardware encoders are not guaranteed to be done with the
     // texture when ProcessInput is finished.
     bool need_perform_copy =
-        !has_been_copied &&
+        !has_been_copied.value_or(false) &&
         ((frame->format() == PIXEL_FORMAT_NV12 &&
           frame->visible_rect().size() == input_visible_size_) ||
          !frame->visible_rect().origin().IsOrigin());
