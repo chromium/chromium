@@ -16,7 +16,7 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
@@ -30,7 +30,8 @@ class AtMemoryBottomSheetProperties {
     static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey();
 
     // Reflects which screen is currently displayed (main vs flyout).
-    static final WritableIntPropertyKey CURRENT_SCREEN = new WritableIntPropertyKey();
+    static final WritableIntDefPropertyKey<ScreenId> CURRENT_SCREEN =
+            new WritableIntDefPropertyKey<>(ScreenId.HOME_SCREEN);
 
     static final PropertyKey[] ALL_KEYS = {VISIBLE, CURRENT_SCREEN};
 

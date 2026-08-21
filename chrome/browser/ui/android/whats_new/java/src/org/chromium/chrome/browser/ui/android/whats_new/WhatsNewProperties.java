@@ -8,7 +8,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -34,7 +34,8 @@ public class WhatsNewProperties {
     }
 
     /* PropertyKey indicates the view state of the what's new page. */
-    static final WritableIntPropertyKey VIEW_STATE = new WritableIntPropertyKey();
+    static final WritableIntDefPropertyKey<ViewState> VIEW_STATE =
+            new WritableIntDefPropertyKey<>(ViewState.HIDDEN);
 
     static final PropertyKey[] ALL_KEYS = new PropertyKey[] {VIEW_STATE};
 }

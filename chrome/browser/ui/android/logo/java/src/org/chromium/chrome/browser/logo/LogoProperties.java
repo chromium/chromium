@@ -9,9 +9,11 @@ import android.graphics.drawable.Drawable;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
+import org.chromium.chrome.browser.logo.LogoUtils.DoodleSize;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -50,7 +52,8 @@ interface LogoProperties {
     WritableObjectPropertyKey<Object> ANIMATED_LOGO = new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<Callback<Logo>> LOGO_AVAILABLE_CALLBACK =
             new WritableObjectPropertyKey<>();
-    WritableIntPropertyKey DOODLE_SIZE = new WritableIntPropertyKey();
+    WritableIntDefPropertyKey<DoodleSize> DOODLE_SIZE =
+            new WritableIntDefPropertyKey<>(DoodleSize.REGULAR);
     WritableObjectPropertyKey<Boolean> SHOW_DEFAULT_GOOGLE_LOGO =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true);
     WritableBooleanPropertyKey IS_NIGHT_MODE = new WritableBooleanPropertyKey();

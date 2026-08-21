@@ -5,15 +5,18 @@
 package org.chromium.chrome.browser.ui.bottombar;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 
 /** Properties for the bottom bar. */
 @NullMarked
 public class BottomBarProperties {
     public static final WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
-    public static final WritableIntPropertyKey COLOR_SCHEME = new WritableIntPropertyKey();
+    public static final WritableIntDefPropertyKey<BrandedColorScheme> COLOR_SCHEME =
+            new WritableIntDefPropertyKey<>(BrandedColorScheme.APP_DEFAULT);
     public static final WritableBooleanPropertyKey IS_NEW_TAB_BACKGROUND_VISIBLE =
             new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey IS_HOME_BUTTON_VISIBLE =

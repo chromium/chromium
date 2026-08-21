@@ -13,7 +13,7 @@ import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
@@ -135,7 +135,8 @@ class AccountPickerBottomSheetProperties {
             new ReadableObjectPropertyKey<>("on_confirm_management_cancel_clicked");
 
     // PropertyKey indicates the view state of the account picker bottom sheet
-    static final WritableIntPropertyKey VIEW_STATE = new WritableIntPropertyKey("view_state");
+    static final WritableIntDefPropertyKey<ViewState> VIEW_STATE =
+            new WritableIntDefPropertyKey<>(ViewState.NO_ACCOUNTS, "view_state");
 
     // PropertyKey indicating the title, subtitle, and cancel text for the bottom sheet.
     static final ReadableObjectPropertyKey<AccountPickerBottomSheetStrings> BOTTOM_SHEET_STRINGS =
@@ -173,7 +174,6 @@ class AccountPickerBottomSheetProperties {
                 .with(
                         ON_CONFIRM_MANAGEMENT_CANCEL_CLICKED,
                         v -> onConfirmManagementCancelClicked.run())
-                .with(VIEW_STATE, ViewState.NO_ACCOUNTS)
                 .with(BOTTOM_SHEET_STRINGS, accountPickerBottomSheetStrings)
                 .build();
     }
