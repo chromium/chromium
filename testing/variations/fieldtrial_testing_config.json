@@ -27402,6 +27402,26 @@
             ]
         }
     ],
+    "XMLParsingRustNonXslt": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "XMLRustForNonXslt"
+                    ]
+                }
+            ]
+        }
+    ],
     "XSLTSpecialTrial": [
         {
             "platforms": [
