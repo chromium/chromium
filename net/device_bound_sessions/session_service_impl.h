@@ -200,7 +200,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   };
 
   // Parameters required to initiate a session refresh. Encapsulates trigger
-  // cause, isolation context, priority, and net logging.
+  // cause, isolation context, site for cookies, priority, and net logging.
   struct RefreshParams {
     RefreshTrigger trigger = RefreshTrigger::kProactive;
     net::IsolationInfo isolation_info;

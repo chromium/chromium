@@ -130,13 +130,20 @@ class NET_EXPORT SessionService {
   virtual ~SessionService() = default;
 
   // Called to register a new session after getting a
-  // Secure-Session-Registration header. Registration parameters to be used for
-  // creating the registration request. Isolation info to be used for
-  // registration request, this should be the same as was used for the response
-  // with the Secure-Session-Registration header. `net_log` is the log
-  // corresponding to the request receiving the Secure-Session-Registration
-  // header. 'original_request_initiator` was the initiator for the request that
-  // received the Secure-Session-Registration header.
+  // Sec-Session-Registration header.
+  // - `on_access_callback`: Callback invoked when a session is successfully
+  //   created. Not invoked if registration fails.
+  // - `registration_params`: Parameters parsed from the
+  //   Sec-Session-Registration header used for creating the registration
+  //   request.
+  //
+  // The following parameters configure the registration request and they should
+  // correspond to the request that received the Sec-Session-Registration
+  // header:
+  // - `isolation_info`
+  // - `site_for_cookies`
+  // - `net_log`
+  // - `original_request_initiator`
   virtual void RegisterBoundSession(
       OnAccessCallback on_access_callback,
       RegistrationFetcherParam registration_params,
