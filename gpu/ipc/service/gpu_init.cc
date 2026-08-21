@@ -374,6 +374,14 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   LOG(WARNING) << "Starting gpu initialization.";
 #endif  //  BUILDFLAG(IS_CHROMEOS)
   gpu_preferences_ = gpu_preferences;
+
+  // Record the number of recent GPU process crashes as a crash key so that it
+  // is included in crash reports if this GPU process terminates unexpectedly.
+  if (command_line->HasSwitch(switches::kGpuRecentCrashCount)) {
+    static crash_reporter::CrashKeyString<16> crash_key("gpu_recent_crash_count");
+    crash_key.Set(
+        command_line->GetSwitchValueASCII(switches::kGpuRecentCrashCount));
+  }
   // Blocklist decisions based on basic GPUInfo may not be final. It might
   // need more context based GPUInfo. In such situations, switching to
   // SwiftShader needs to wait until creating a context.

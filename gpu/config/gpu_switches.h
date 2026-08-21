@@ -9,6 +9,7 @@
 
 namespace switches {
 
+GPU_CONFIG_EXPORT extern const char kGpuRecentCrashCount[];
 GPU_CONFIG_EXPORT extern const char kDisableGpuRasterization[];
 GPU_CONFIG_EXPORT extern const char kDisableMipmapGeneration[];
 GPU_CONFIG_EXPORT extern const char kEnableGpuRasterization[];

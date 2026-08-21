@@ -1391,6 +1391,12 @@ bool GpuProcessHost::LaunchGpuProcess() {
     }
   }
 
+  if (kind_ == GPU_PROCESS_KIND_SANDBOXED) {
+    cmd_line->AppendSwitchASCII(
+        switches::kGpuRecentCrashCount,
+        base::NumberToString(recent_crash_count_));
+  }
+
   // TODO(penghuang): Replace all GPU related switches with GpuPreferences.
   // https://crbug.com/590825
   // If you want a browser command-line switch passed to the GPU process

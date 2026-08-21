@@ -6,6 +6,9 @@
 
 namespace switches {
 
+// Passes the number of recent GPU crashes to the GPU process.
+const char kGpuRecentCrashCount[] = "gpu-recent-crash-count";
+
 // Disable GPU rasterization, i.e. rasterize on the CPU only.
 // Overrides the kEnableGpuRasterization flag.
 const char kDisableGpuRasterization[] = "disable-gpu-rasterization";
