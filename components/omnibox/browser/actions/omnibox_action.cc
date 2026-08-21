@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/actions/omnibox_action.h"
 
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "build/build_config.h"
@@ -133,7 +134,10 @@ OmniboxActionId OmniboxAction::ActionId() const {
 #if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject> OmniboxAction::GetOrCreateJavaObject(
     JNIEnv* env) const {
-  NOTREACHED() << "This implementation does not have a java counterpart";
+  LOG(WARNING)
+      << "This implementation does not have a java counterpart. ActionId: "
+      << static_cast<int>(ActionId());
+  return nullptr;
 }
 #endif
 
