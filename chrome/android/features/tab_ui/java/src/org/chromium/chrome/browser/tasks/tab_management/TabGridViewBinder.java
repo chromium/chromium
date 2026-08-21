@@ -139,7 +139,8 @@ public class TabGridViewBinder {
                             ? model.get(TabProperties.MEDIA_INDICATOR)
                             : MediaState.NONE;
             @StringRes
-            int contentDescriptionStringId = getTabContentDescriptionStringId(isPinned, mediaState);
+            int contentDescriptionStringId =
+                    TabListViewBinderUtils.getTabContentDescriptionStringId(isPinned, mediaState);
             tabTitleView.setContentDescription(
                     view.getResources().getString(contentDescriptionStringId, title));
         } else if (TabProperties.IS_SELECTED == propertyKey) {
@@ -514,33 +515,6 @@ public class TabGridViewBinder {
             labelView = rootView.fastFindViewById(R.id.tab_card_label);
         }
         labelView.setData(tabCardLabelData);
-    }
-
-    private static @StringRes int getTabContentDescriptionStringId(
-            boolean isPinned, @MediaState int mediaState) {
-        switch (mediaState) {
-            case MediaState.MUTED:
-                return isPinned
-                        ? R.string.accessibility_tabstrip_tab_pinned_muted
-                        : R.string.accessibility_tabstrip_tab_muted;
-            case MediaState.AUDIBLE:
-                return isPinned
-                        ? R.string.accessibility_tabstrip_tab_pinned_audible
-                        : R.string.accessibility_tabstrip_tab_audible;
-            case MediaState.RECORDING:
-                return isPinned
-                        ? R.string.accessibility_tabstrip_tab_pinned_recording
-                        : R.string.accessibility_tabstrip_tab_recording;
-            case MediaState.SHARING:
-                return isPinned
-                        ? R.string.accessibility_tabstrip_tab_pinned_sharing
-                        : R.string.accessibility_tabstrip_tab_sharing;
-            case MediaState.NONE:
-            default:
-                return isPinned
-                        ? R.string.accessibility_tabstrip_tab_pinned
-                        : R.string.accessibility_tabstrip_tab;
-        }
     }
 
     static void setThumbnailFetcherForTesting(ThumbnailFetcher fetcher) {

@@ -8,10 +8,13 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.StringRes;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
+import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.util.TextResolver;
@@ -237,6 +240,11 @@ public class TabListViewBinderUtils {
         }
     }
 
+    /** Returns whether an actor indicator is active for the given UI state. */
+    public static boolean isActorActive(@Nullable UiTabState state) {
+        return state != null && state.tabIndicator != TabIndicatorStatus.NONE;
+    }
+
     /**
      * Resolves the ACTOR_UI_STATE and updates the accessibility content description.
      *
@@ -246,40 +254,16 @@ public class TabListViewBinderUtils {
      */
     public static boolean setupActorIndicator(PropertyModel model, View view) {
         @Nullable UiTabState state = model.get(TabProperties.ACTOR_UI_STATE);
-        boolean shouldBeVisible =
-                state != null
-                        && (state.tabIndicator == TabIndicatorStatus.DYNAMIC
-                                || state.tabIndicator == TabIndicatorStatus.STATIC);
-        updateIndicatorAccessibilityDescription(model, view);
-        return shouldBeVisible;
-    }
-
-    /**
-     * Resolves IS_GLIC_ACTIVE and updates the accessibility content description.
-     *
-     * @param model the model containing the tab properties.
-     * @param view the View to receive the accessibility content description.
-     * @return true if the Glic indicator should be visible, false otherwise.
-     */
-    public static boolean setupGlicIndicator(PropertyModel model, View view) {
-        boolean shouldBeVisible =
-                model.containsKey(TabProperties.IS_GLIC_ACTIVE)
-                        && model.get(TabProperties.IS_GLIC_ACTIVE);
+        boolean shouldBeVisible = isActorActive(state);
         updateIndicatorAccessibilityDescription(model, view);
         return shouldBeVisible;
     }
 
     private static void updateIndicatorAccessibilityDescription(PropertyModel model, View view) {
-        boolean isGlicActive =
-                model.containsKey(TabProperties.IS_GLIC_ACTIVE)
-                        && model.get(TabProperties.IS_GLIC_ACTIVE);
         @Nullable UiTabState actorState = model.get(TabProperties.ACTOR_UI_STATE);
-        boolean isActorActive =
-                actorState != null
-                        && (actorState.tabIndicator == TabIndicatorStatus.DYNAMIC
-                                || actorState.tabIndicator == TabIndicatorStatus.STATIC);
+        boolean isActorActive = isActorActive(actorState);
 
-        if (isGlicActive || isActorActive) {
+        if (isActorActive) {
             String title = model.get(TabProperties.TITLE);
             String accessibilityDesc =
                     view.getResources().getString(R.string.tab_ax_label_actor_accessing, title);
@@ -291,6 +275,47 @@ public class TabListViewBinderUtils {
             } else if (model.containsKey(TabProperties.TITLE)) {
                 view.setContentDescription(model.get(TabProperties.TITLE));
             }
+        }
+    }
+
+    /**
+     * Resolves the string template resource for the tab's accessibility description based on pinned
+     * state and media indicator.
+     */
+    public static @StringRes int getTabContentDescriptionStringId(
+            boolean isPinned, @MediaState int mediaState) {
+        switch (mediaState) {
+            case MediaState.MUTED:
+                // e.g. "Google, Pinned Muted Tab" or "Google, Muted Tab".
+                return isPinned
+                        ? R.string.accessibility_tabstrip_tab_pinned_muted
+                        : R.string.accessibility_tabstrip_tab_muted;
+            case MediaState.AUDIBLE:
+                // e.g. "Google, Pinned Audible Tab" or "Google, Audible Tab".
+                return isPinned
+                        ? R.string.accessibility_tabstrip_tab_pinned_audible
+                        : R.string.accessibility_tabstrip_tab_audible;
+            case MediaState.RECORDING:
+                // e.g. "Google, Pinned Recording Tab" or "Google, Recording Tab".
+                return isPinned
+                        ? R.string.accessibility_tabstrip_tab_pinned_recording
+                        : R.string.accessibility_tabstrip_tab_recording;
+            case MediaState.SHARING:
+                // e.g. "Google, Pinned Sharing Tab" or "Google, Sharing Tab".
+                return isPinned
+                        ? R.string.accessibility_tabstrip_tab_pinned_sharing
+                        : R.string.accessibility_tabstrip_tab_sharing;
+            case MediaState.PICTURE_IN_PICTURE:
+                // e.g. "Google, Pinned Picture-in-Picture Tab" or "Google, Picture-in-Picture Tab".
+                return isPinned
+                        ? R.string.accessibility_tabstrip_tab_pinned_picture_in_picture
+                        : R.string.accessibility_tabstrip_tab_picture_in_picture;
+            case MediaState.NONE:
+            default:
+                // e.g. "Google, Pinned Tab" or "Google, Tab".
+                return isPinned
+                        ? R.string.accessibility_tabstrip_tab_pinned
+                        : R.string.accessibility_tabstrip_tab;
         }
     }
 }
