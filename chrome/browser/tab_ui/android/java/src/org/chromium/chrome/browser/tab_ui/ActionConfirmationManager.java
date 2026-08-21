@@ -96,7 +96,7 @@ public class ActionConfirmationManager {
 
     /**
      * Process a close tab group operation that would delete the group. This does not include
-     * per-tab operations, for that {@see processCloseTabAttempt}.
+     * per-tab operations, for that {@link #processCloseTabAttempt}.
      */
     public void processDeleteGroupAttempt(Callback<@ActionConfirmationResult Integer> onResult) {
         processMaybeSyncAndPrefAction(

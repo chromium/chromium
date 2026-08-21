@@ -111,8 +111,9 @@ class TabRestorer {
         void onActiveTabRestored(boolean incognito);
 
         /**
-         * Called when the details of a tab have been read {@see
-         * TabPersistentStoreObserver#onDetailsRead}.
+         * Called when the details of a tab have been read.
+         *
+         * @see TabPersistentStoreObserver#onDetailsRead
          */
         void onDetailsRead(
                 int index,

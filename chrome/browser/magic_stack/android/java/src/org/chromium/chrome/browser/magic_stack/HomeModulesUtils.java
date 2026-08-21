@@ -325,8 +325,8 @@ public class HomeModulesUtils {
     }
 
     /**
-     * Updates the C++ boolean user pref for profile {@param profile} with key {@param cKey}, to
-     * have the same value as the Java SharedPreference with key {@param javaKey}.
+     * Updates the C++ boolean user pref for profile {@code profile} with key {@code cKey}, to have
+     * the same value as the Java SharedPreference with key {@code javaKey}.
      *
      * @param javaKey The key of the Java preference.
      * @param cKey The key of the C++ preference.

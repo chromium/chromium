@@ -912,7 +912,7 @@ public class ProcessInitializationHandler {
 
             /**
              * Returns whether or not it's appropriate to try to extract recent logcat output and
-             * include that logcat output alongside the given {@param minidump} in a crash report.
+             * include that logcat output alongside the given {@code minidump} in a crash report.
              * Logcat output should only be extracted if (a) it hasn't already been extracted for
              * this minidump file, and (b) the minidump is fairly fresh. The freshness check is
              * important for two reasons: (1) First of all, it helps avoid including irrelevant

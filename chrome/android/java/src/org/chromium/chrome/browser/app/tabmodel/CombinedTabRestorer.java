@@ -56,8 +56,9 @@ class CombinedTabRestorer {
         default void onRestoreFinished() {}
 
         /**
-         * Called when the details of a tab have been read {@see
-         * TabPersistentStoreObserver#onDetailsRead}.
+         * Called when the details of a tab have been read.
+         *
+         * @see TabPersistentStoreObserver#onDetailsRead
          */
         default void onDetailsRead(
                 int index,

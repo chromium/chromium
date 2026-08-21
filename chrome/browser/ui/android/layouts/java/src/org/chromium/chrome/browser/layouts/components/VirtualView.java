@@ -101,7 +101,7 @@ public interface VirtualView {
     void onAccessibilityFocused();
 
     /**
-     * Set keyboard focus state of {@link VirtualView} to {@param isFocused}.
+     * Set keyboard focus state of {@link VirtualView} to {@code isFocused}.
      *
      * @param isFocused Whether this {@link VirtualView} is focused.
      */

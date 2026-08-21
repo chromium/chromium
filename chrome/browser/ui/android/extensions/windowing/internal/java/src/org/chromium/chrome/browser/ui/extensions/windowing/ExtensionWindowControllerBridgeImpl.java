@@ -149,7 +149,7 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
         void onTaskFocusChanged(long nativeExtensionWindowControllerBridge, boolean hasFocus);
 
         /**
-         * Returns the extension internal window ID for the given {@param
+         * Returns the extension internal window ID for the given {@code
          * nativeExtensionWindowControllerBridge}, as in {@code
          * extensions::WindowController::GetWindowId()}.
          */
