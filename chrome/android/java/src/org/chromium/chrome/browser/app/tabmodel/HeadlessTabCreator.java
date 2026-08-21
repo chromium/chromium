@@ -76,7 +76,7 @@ public class HeadlessTabCreator implements TabCreator, NeedsTabModel {
     }
 
     @Override
-    public @Nullable Tab createFrozenTab(TabState state, int id, int index) {
+    public @Nullable Tab createFrozenTab(@Nullable TabState state, int id, int index) {
         checkNotIncognito();
         Tab tab =
                 TabBuilder.createFromFrozenState(mProfile)

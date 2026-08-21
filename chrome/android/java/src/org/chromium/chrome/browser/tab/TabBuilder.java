@@ -172,10 +172,11 @@ public class TabBuilder {
 
     /**
      * Sets a {@link TabState} object containing information about this Tab, if it was persisted.
+     *
      * @param tabState State object.
      * @return {@link TabBuilder} creating the Tab.
      */
-    public TabBuilder setTabState(TabState tabState) {
+    public TabBuilder setTabState(@Nullable TabState tabState) {
         mTabState = tabState;
         return this;
     }

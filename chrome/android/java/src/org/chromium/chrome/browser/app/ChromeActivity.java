@@ -92,7 +92,6 @@ import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.download.DownloadMessageUiDelegate;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl;
-import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFactory;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
@@ -2311,9 +2310,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
         mTabReparentingControllerSupplier.set(
                 new TabReparentingController(
-                        ReparentingDelegateFactory.createReparentingControllerDelegate(
-                                getTabModelSelector()),
-                        AsyncTabParamsManagerSingleton.getInstance()));
+                        this::getTabModelSelector, AsyncTabParamsManagerSingleton.getInstance()));
 
         // This must be initialized after initialization of tab reparenting controller.
         var windowAndroid = getWindowAndroid();
