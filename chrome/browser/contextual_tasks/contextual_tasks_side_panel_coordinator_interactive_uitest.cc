@@ -1079,17 +1079,8 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExistsEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFrameLoadedEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kComposeboxFocusedEvent);
 
-// TODO(b/540260179, b/528971436): Flaky on Linux dbg and ChromeOS.
-#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ComposeboxFocusOnBoundsUpdateWhenComposeboxHidden \
-  DISABLED_ComposeboxFocusOnBoundsUpdateWhenComposeboxHidden
-#else
-#define MAYBE_ComposeboxFocusOnBoundsUpdateWhenComposeboxHidden \
-  ComposeboxFocusOnBoundsUpdateWhenComposeboxHidden
-#endif
-IN_PROC_BROWSER_TEST_F(
-    ContextualTasksSidePanelCoordinatorInteractiveUiTest,
-    MAYBE_ComposeboxFocusOnBoundsUpdateWhenComposeboxHidden) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+                       ComposeboxFocusOnBoundsUpdateWhenComposeboxHidden) {
   SetUpTasks();
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
