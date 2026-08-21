@@ -216,11 +216,11 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
                                   bank_accounts, benefits, payment_instruments,
                                   payment_instrument_creation_options);
 
-  ASSERT_EQ(2U, wallet_cards.size());
+  ASSERT_EQ(wallet_cards.size(), 2U);
 
-  EXPECT_EQ("deadbeef", customer_data.back().customer_id);
+  EXPECT_EQ(customer_data.back().customer_id, "deadbeef");
 
-  EXPECT_EQ("data1", cloud_token_data.back().instrument_token);
+  EXPECT_EQ(cloud_token_data.back().instrument_token, "data1");
 
   // The first card's nickname is empty.
   EXPECT_TRUE(wallet_cards.front().nickname().empty());
@@ -392,7 +392,7 @@ TEST_P(PaymentsSyncBridgeUtilCardBenefitsSyncTest,
                                   bank_accounts, benefits, payment_instruments,
                                   payment_instrument_creation_options);
 
-  EXPECT_EQ(2U, wallet_cards.size());
+  EXPECT_EQ(wallet_cards.size(), 2U);
 
   // Verify that the `product_terms_url` and `card_benefit` are set correctly.
   if (IsBenefitsSyncEnabled()) {
@@ -474,9 +474,9 @@ TEST_P(PaymentsSyncBridgeUtilCardCategoryBenefitsTest, VerifyBenefitCategory) {
 
   if (GetCardBenefitCategory() ==
       CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory) {
-    ASSERT_EQ(0U, benefits.size());
+    ASSERT_EQ(benefits.size(), 0U);
   } else {
-    ASSERT_EQ(1U, benefits.size());
+    ASSERT_EQ(benefits.size(), 1U);
     //  This call is correct only because we know that the
     // `CreditCardCategoryBenefit` alternative is active at index 0
     CreditCardCategoryBenefit* category_benefit_alternative =
@@ -585,7 +585,7 @@ TEST_P(PaymentsSyncBridgeUtilCardBenefitsSourceSyncTest, BenefitSourceMapping) {
                                   bank_accounts, benefits, payment_instruments,
                                   payment_instrument_creation_options);
 
-  ASSERT_EQ(1U, wallet_cards.size());
+  ASSERT_EQ(wallet_cards.size(), 1U);
   EXPECT_EQ(wallet_cards.front().benefit_source(), GetBenefitSourceString());
 }
 
@@ -615,7 +615,7 @@ TEST_F(PaymentsSyncBridgeUtilTest,
 
   CopyRelevantWalletMetadataAndCvc(table, &wallet_cards);
 
-  ASSERT_EQ(1U, wallet_cards.size());
+  ASSERT_EQ(wallet_cards.size(), 1U);
 
   // Make sure the wallet card replace its billing address id for the one that
   // was saved on disk.
@@ -647,7 +647,7 @@ TEST_F(PaymentsSyncBridgeUtilTest,
 
   CopyRelevantWalletMetadataAndCvc(table, &wallet_cards);
 
-  ASSERT_EQ(1U, wallet_cards.size());
+  ASSERT_EQ(wallet_cards.size(), 1U);
 
   // Make sure the local address billing id that was saved on disk did not
   // replace the new one.
@@ -678,10 +678,10 @@ TEST_F(PaymentsSyncBridgeUtilTest,
 
   CopyRelevantWalletMetadataAndCvc(table, &wallet_cards);
 
-  ASSERT_EQ(1U, wallet_cards.size());
+  ASSERT_EQ(wallet_cards.size(), 1U);
 
   // Make sure the use stats from disk were kept
-  EXPECT_EQ(3U, wallet_cards.back().usage_history().use_count());
+  EXPECT_EQ(wallet_cards.back().usage_history().use_count(), 3U);
   EXPECT_EQ(disk_time, wallet_cards.back().usage_history().use_date());
 }
 
@@ -704,10 +704,10 @@ TEST_F(PaymentsSyncBridgeUtilTest,
 
   CopyRelevantWalletMetadataAndCvc(table, &wallet_cards);
 
-  ASSERT_EQ(1U, wallet_cards.size());
+  ASSERT_EQ(wallet_cards.size(), 1U);
 
   // Verify the wallet credential (CVC) data.
-  EXPECT_EQ(u"123", wallet_cards.back().cvc());
+  EXPECT_EQ(wallet_cards.back().cvc(), u"123");
 }
 
 // Test to ensure the general-purpose fields from an AutofillOfferData are
@@ -1198,7 +1198,7 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateBankAccountFromSyncData) {
                                   bank_accounts, benefits, payment_instruments,
                                   payment_instrument_creation_options);
 
-  ASSERT_EQ(1u, bank_accounts.size());
+  ASSERT_EQ(bank_accounts.size(), 1u);
   EXPECT_EQ(expected_bank_account, bank_accounts.at(0));
 }
 
@@ -1258,7 +1258,7 @@ TEST_F(PaymentsSyncBridgeUtilTest,
                                   bank_accounts, benefits, payment_instruments,
                                   payment_instrument_creation_options);
 
-  ASSERT_EQ(1u, payment_instruments.size());
+  ASSERT_EQ(payment_instruments.size(), 1u);
   sync_pb::PaymentInstrument payment_instrument = payment_instruments.at(0);
   EXPECT_EQ(payment_instrument_ewallet_account_specifics.payment_instrument()
                 .instrument_id(),
@@ -1330,7 +1330,7 @@ TEST_F(PaymentsSyncBridgeUtilTest,
                                   bank_accounts, benefits, payment_instruments,
                                   payment_instrument_creation_options);
 
-  EXPECT_EQ(0u, payment_instruments.size());
+  EXPECT_EQ(payment_instruments.size(), 0u);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -1374,7 +1374,7 @@ TEST_F(PaymentsSyncBridgeUtilTest,
                                   bank_accounts, benefits, payment_instruments,
                                   payment_instrument_creation_options);
 
-  ASSERT_EQ(1u, payment_instruments.size());
+  ASSERT_EQ(payment_instruments.size(), 1u);
   sync_pb::PaymentInstrument payment_instrument = payment_instruments.at(0);
   ASSERT_TRUE(
       payment_instrument_linked_bnpl_issuer_specifics.has_payment_instrument());
@@ -1436,7 +1436,7 @@ TEST_F(PaymentsSyncBridgeUtilTest,
                                   bank_accounts, benefits, payment_instruments,
                                   payment_instrument_creation_options);
 
-  ASSERT_EQ(0u, payment_instruments.size());
+  ASSERT_EQ(payment_instruments.size(), 0u);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
@@ -1483,7 +1483,7 @@ TEST_P(PaymentsSyncBridgeUtilTest_WalletCardMapping,
                                   bank_accounts, benefits, payment_instruments,
                                   payment_instrument_creation_options);
 
-  ASSERT_EQ(1U, wallet_cards.size());
+  ASSERT_EQ(wallet_cards.size(), 1U);
   EXPECT_EQ(test_case.card_network, wallet_cards.front().network());
 }
 
