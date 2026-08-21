@@ -91,19 +91,6 @@
 #include "ui/base/resource/scoped_startup_resource_bundle.h"
 #include "ui/base/ui_base_switches.h"
 
-#if !defined(BUILDING_CHROME_RENDERER)
-#include "chrome/browser/buildflags.h"                           // nogncheck
-#include "chrome/browser/chrome_content_browser_client.h"        // nogncheck
-#include "chrome/browser/chrome_resource_bundle_helper.h"        // nogncheck
-#include "chrome/browser/defaults.h"                             // nogncheck
-#include "chrome/browser/headless/headless_mode_util.h"          // nogncheck
-#include "chrome/browser/lifetime/browser_shutdown.h"            // nogncheck
-#include "chrome/browser/metrics/chrome_feature_list_creator.h"  // nogncheck
-#include "chrome/browser/startup_data.h"                         // nogncheck
-#include "chrome/gpu/chrome_content_gpu_client.h"                // nogncheck
-#include "chrome/utility/chrome_content_utility_client.h"        // nogncheck
-#include "components/devtools/devtools_pipe/devtools_pipe.h"     // nogncheck
-#endif  // !defined(BUILDING_CHROME_RENDERER)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_MAC)
@@ -127,12 +114,6 @@
 #include "sandbox/win/src/sandbox_factory.h"
 #include "ui/base/resource/resource_bundle_win.h"
 
-#if !defined(BUILDING_CHROME_RENDERER)
-#include "chrome/browser/chrome_browser_main_win.h"       // nogncheck
-#include "chrome/browser/win/browser_util.h"              // nogncheck
-#include "chrome/browser/win/isolated_browser/isolated_browser_support.h"  // nogncheck
-#include "chrome/chrome_elf/chrome_elf_main.h"
-#endif  // !defined(BUILDING_CHROME_RENDERER)
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
@@ -142,38 +123,25 @@
 #include "chrome/browser/mac/relauncher.h"
 #include "components/crash/core/common/objc_zombie.h"
 #include "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(BUILDING_CHROME_RENDERER)
-#include "chrome/browser/chrome_browser_application_mac.h"  // nogncheck
-#include "chrome/browser/shell_integration.h"  // nogncheck
-#endif  // !defined(BUILDING_CHROME_RENDERER)
-#endif
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_POSIX)
 #include <locale.h>
 #include <signal.h>
 
 #include "chrome/app/chrome_crash_reporter_client.h"
-
-#if !defined(BUILDING_CHROME_RENDERER)
-#include "components/webui/about/credit_utils.h"  // nogncheck
-#endif  // !defined(BUILDING_CHROME_RENDERER)
-#endif
+#endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"  // nogncheck
-#include "chrome/browser/ash/dbus/ash_dbus_helper.h"           // nogncheck
-#include "chrome/browser/ash/locale/startup_settings_cache.h"  // nogncheck
-#include "chrome/browser/ash/schedqos/dbus_schedqos_state_handler.h"  // nogncheck
 #include "chromeos/ash/components/memory/memory.h"
 #include "chromeos/ash/components/memory/mglru.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "content/public/common/content_features.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/java_exception_reporter.h"
@@ -186,13 +154,7 @@
 #include "components/crash/android/pure_java_exception_handler.h"
 #include "components/metrics/android_unconditional_persistent_histograms_field_trial.h"
 #include "net/android/network_change_notifier_factory_android.h"
-#else  // BUILDFLAG(IS_ANDROID)
-// Diagnostics is only available on non-android platforms.
-#if !defined(BUILDING_CHROME_RENDERER)
-#include "chrome/browser/diagnostics/diagnostics_controller.h"  // nogncheck
-#include "chrome/browser/diagnostics/diagnostics_writer.h"      // nogncheck
-#endif  // !defined(BUILDING_CHROME_RENDERER)
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 #include "v8/include/v8-wasm-trap-handler-posix.h"
@@ -205,19 +167,14 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "base/nix/scoped_xdg_activation_token_injector.h"
-#include "ui/linux/display_server_utils.h"
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#if !defined(BUILDING_CHROME_RENDERER)
-#include "chrome/browser/policy/policy_path_parser.h"  // nogncheck
-#endif  // !defined(BUILDING_CHROME_RENDERER)
 #include "components/crash/core/app/crashpad.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#include "chrome/browser/extensions/startup_helper.h"  // nogncheck
 #include "extensions/common/constants.h"
 #endif
 
@@ -226,19 +183,74 @@
 #endif
 
 #if !defined(BUILDING_CHROME_RENDERER)
+#include "chrome/browser/buildflags.h"  // nogncheck
+#include "chrome/browser/chrome_content_browser_client.h"  // nogncheck
+#include "chrome/browser/chrome_resource_bundle_helper.h"  // nogncheck
+#include "chrome/browser/defaults.h"  // nogncheck
+#include "chrome/browser/headless/headless_mode_util.h"  // nogncheck
+#include "chrome/browser/lifetime/browser_shutdown.h"  // nogncheck
+#include "chrome/browser/metrics/chrome_feature_list_creator.h"  // nogncheck
+#include "chrome/browser/startup_data.h"  // nogncheck
+#include "chrome/gpu/chrome_content_gpu_client.h"  // nogncheck
+#include "chrome/utility/chrome_content_utility_client.h"  // nogncheck
+#include "components/devtools/devtools_pipe/devtools_pipe.h"  // nogncheck
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/chrome_browser_main_win.h"  // nogncheck
+#include "chrome/browser/win/browser_util.h"  // nogncheck
+#include "chrome/browser/win/isolated_browser/isolated_browser_support.h"  // nogncheck
+#include "chrome/chrome_elf/chrome_elf_main.h"
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/chrome_browser_application_mac.h"  // nogncheck
+#include "chrome/browser/shell_integration.h"  // nogncheck
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_POSIX)
+#include "components/webui/about/credit_utils.h"  // nogncheck
+#endif  // BUILDFLAG(IS_POSIX)
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"  // nogncheck
+#include "chrome/browser/ash/dbus/ash_dbus_helper.h"  // nogncheck
+#include "chrome/browser/ash/locale/startup_settings_cache.h"  // nogncheck
+#include "chrome/browser/ash/schedqos/dbus_schedqos_state_handler.h"  // nogncheck
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+// Diagnostics is only available on non-android platforms.
+#include "chrome/browser/diagnostics/diagnostics_controller.h"  // nogncheck
+#include "chrome/browser/diagnostics/diagnostics_writer.h"  // nogncheck
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/display_server_utils.h"  // nogncheck
+#endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/policy/policy_path_parser.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/startup_helper.h"  // nogncheck
+#endif
+
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 #include "chrome/browser/chrome_process_singleton.h"  // nogncheck
-#include "chrome/browser/process_singleton.h"         // nogncheck
+#include "chrome/browser/process_singleton.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
-#endif  // !defined(BUILDING_CHROME_RENDERER)
 
 #if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/ozone_platform.h"  // nogncheck
 #endif  // BUILDFLAG(IS_OZONE)
 
-#if BUILDFLAG(CHROME_FOR_TESTING) && !defined(BUILDING_CHROME_RENDERER)
+#if BUILDFLAG(CHROME_FOR_TESTING)
 #include "chrome/browser/chrome_for_testing/config.h"  // nogncheck
-#endif
+#endif  // BUILDFLAG(CHROME_FOR_TESTING)
+#endif  // !defined(BUILDING_CHROME_RENDERER)
+
 
 #if !defined(BUILDING_CHROME_RENDERER)
 base::LazyInstance<ChromeContentGpuClient>::DestructorAtExit
@@ -1152,7 +1164,7 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
     LOG(ERROR) << "Remote debugging pipe file descriptors are not open.";
     return CHROME_RESULT_CODE_UNSUPPORTED_PARAM;
   }
-#else   // !defined(BUILDING_CHROME_RENDERER)
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   const bool is_browser = false;
 #endif  // !defined(BUILDING_CHROME_RENDERER)
 
