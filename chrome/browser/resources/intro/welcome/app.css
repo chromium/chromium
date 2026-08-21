@@ -46,6 +46,15 @@
   text-align: center;
 }
 
+#default-browser-container {
+  align-items: center;
+  color: var(--color-sys-on-surface);
+  display: flex;
+  font-size: 13px;
+  gap: 16px;
+  justify-content: center;
+}
+
 @media screen and ((max-width: 780px) or (max-height: 600px)) {
   :host {
     --product-logo-size: 48px;

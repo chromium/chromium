@@ -8,11 +8,27 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "chrome/browser/shell_integration.h"
 
 WelcomeHandler::WelcomeHandler(
     base::OnceClosure callback,
     mojo::PendingReceiver<intro::mojom::WelcomePageHandler> receiver)
-    : callback_(std::move(callback)), receiver_(this, std::move(receiver)) {
+    : WelcomeHandler(std::move(callback),
+                     std::move(receiver),
+                     base::NullCallback()) {}
+
+WelcomeHandler::WelcomeHandler(
+    base::OnceClosure callback,
+    mojo::PendingReceiver<intro::mojom::WelcomePageHandler> receiver,
+    base::OnceClosure on_set_as_default_completed_callback)
+    : callback_(std::move(callback)),
+      receiver_(this, std::move(receiver)),
+      on_set_as_default_completed_callback_for_testing_(
+          std::move(on_set_as_default_completed_callback)) {
+  CHECK_IS_TEST();
   CHECK(callback_);
 }
 
@@ -20,9 +36,23 @@ WelcomeHandler::~WelcomeHandler() = default;
 
 void WelcomeHandler::Continue(std::optional<bool> is_uma_opt_in,
                               std::optional<bool> is_default_browser) {
-  // TODO(crbug.com/542895787): Handle UMA opt-in and default browser state
-  // choices.
-  if (callback_) {
-    std::move(callback_).Run();
+  if (!callback_) {
+    return;
   }
+
+  // TODO(crbug.com/542895787): Handle UMA opt-in
+  if (is_default_browser.has_value() && *is_default_browser) {
+    base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
+        ->StartSetAsDefault(base::BindOnce(
+            [](base::OnceClosure on_completed_callback,
+               shell_integration::DefaultWebClientState state) {
+              if (on_completed_callback) {
+                std::move(on_completed_callback).Run();
+              }
+            },
+            std::move(on_set_as_default_completed_callback_for_testing_)));
+    // TODO(crbug.com/542895787): Record metrics
+  }
+
+  std::move(callback_).Run();
 }

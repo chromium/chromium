@@ -11,13 +11,17 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/intro/intro_handler.h"
 #include "chrome/browser/ui/webui/intro/sign_in_promo_handler.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -25,6 +29,7 @@
 #include "chrome/grit/intro_resources.h"
 #include "chrome/grit/intro_resources_map.h"
 #include "chrome/grit/signin_resources.h"
+#include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -45,6 +50,24 @@ int GetBackupCardDescriptionId(bool is_first_run_desktop_refresh_enabled) {
   return is_first_run_desktop_refresh_enabled
              ? IDS_UNO_FRE_REFRESH_BACKUP_CARD_DESCRIPTION_WITH_PASSWORDS
              : IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION_WITH_PASSWORDS;
+}
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+bool IsDefaultBrowserDisabledByPolicy() {
+  const auto* local_state = g_browser_process->local_state();
+  return local_state->IsManagedPreference(
+             prefs::kDefaultBrowserSettingEnabled) &&
+         !local_state->GetBoolean(prefs::kDefaultBrowserSettingEnabled);
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+bool ShouldShowDefaultBrowserToggle() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  return !IsDefaultBrowserDisabledByPolicy() &&
+         shell_integration::CanSetAsDefaultBrowser();
+#else
+  return false;
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 }  // namespace
 
@@ -98,6 +121,7 @@ IntroUI::IntroUI(content::WebUI* web_ui)
       // Strings for welcome subpage.
       {"welcomeTitle", IDS_FRE_WELCOME_TITLE},
       {"welcomeStartButtonLabel", IDS_FRE_WELCOME_START_BUTTON_LABEL},
+      {"welcomeSetDefaultBrowser", IDS_FRE_DEFAULT_BROWSER_TITLE},
       // Strings for default browser promo subpage.
       {"defaultBrowserTitle", IDS_FRE_DEFAULT_BROWSER_TITLE_NEW},
       {"defaultBrowserSubtitle", IDS_FRE_DEFAULT_BROWSER_SUBTITLE_NEW},
@@ -168,6 +192,8 @@ IntroUI::IntroUI(content::WebUI* web_ui)
   source->AddBoolean("isDeviceManaged", is_device_managed);
   source->AddBoolean("isFirstRunDesktopRevampEnabled",
                      is_first_run_desktop_revamp_enabled);
+  source->AddBoolean("showDefaultBrowserToggle",
+                     ShouldShowDefaultBrowserToggle());
   if (base::FeatureList::IsEnabled(
           switches::kDisableFirstRunAnimationsForTesting)) {
     CHECK_IS_TEST();
