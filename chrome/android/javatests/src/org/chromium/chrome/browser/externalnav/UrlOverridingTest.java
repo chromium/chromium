@@ -218,8 +218,6 @@ public class UrlOverridingTest {
             BASE_PATH + "navigation_from_java_redirection.html";
     private static final String NAVIGATION_TO_CCT_FROM_INTENT_URI =
             BASE_PATH + "navigation_to_cct_via_intent_uri.html";
-    private static final String FALLBACK_URL =
-            "https://play.google.com/store/apps/details?id=com.android.chrome";
     private static final String SUBFRAME_REDIRECT_WITH_PLAY_FALLBACK =
             BASE_PATH + "subframe_navigation_with_play_fallback_parent.html";
     private static final String REDIRECT_TO_OTHER_BROWSER =

@@ -44,7 +44,6 @@ import java.lang.annotation.RetentionPolicy;
 })
 public class CaptivePortalTest {
     private static final String CAPTIVE_PORTAL_INTERSTITIAL_TITLE_PREFIX = "Connect to";
-    private static final String SSL_INTERSTITIAL_TITLE = "Privacy error";
     private static final int INTERSTITIAL_TITLE_UPDATE_TIMEOUT_SECONDS = 5;
     private RegularNewTabPageStation mNtp;
 

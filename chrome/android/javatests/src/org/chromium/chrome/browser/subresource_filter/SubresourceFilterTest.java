@@ -77,10 +77,6 @@ public final class SubresourceFilterTest {
             "/chrome/test/data/android/subresource_filter/page-with-img.html";
     private static final String LEARN_MORE_PAGE =
             "https://support.google.com/chrome/?p=blocked_ads";
-    private static final String METADATA_FOR_ENFORCEMENT =
-            "{\"matches\":[{\"threat_type\":\"13\",\"sf_bas\":\"\"}]}";
-    private static final String METADATA_FOR_WARNING =
-            "{\"matches\":[{\"threat_type\":\"13\",\"sf_bas\":\"warn\"}]}";
     private static boolean sRulesetPublished;
     private WebPageStation mPage;
 
