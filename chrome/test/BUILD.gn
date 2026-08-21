@@ -6396,6 +6396,7 @@ test("unit_tests") {
       "../browser/ui/views/autofill/popup/email_verifier/email_verification_popup_view_unittest.cc",
       "../browser/ui/views/autofill/save_address_profile_view_unittest.cc",
       "../browser/ui/views/autofill/update_address_profile_view_unittest.cc",
+      "../browser/ui/views/context_hub/save_to_memory_bank_bubble_view_unittest.cc",
       "../browser/ui/views/infobars/infobar_view_unittest.cc",
       "../browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_metrics_unittest.cc",
       "../browser/ui/views/tabs/dragging/test/mock_tab_drag_context.cc",

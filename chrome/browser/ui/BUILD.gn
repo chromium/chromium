@@ -1438,6 +1438,7 @@ static_library("ui") {
 
       # No reason for this dependencies be out of alphabetical order.
       "//chrome/browser/content_extraction",
+      "//chrome/browser/context_hub",
       "//chrome/browser/download",
       "//chrome/browser/download:impl",
       "//chrome/browser/hid",
@@ -2599,6 +2600,10 @@ static_library("ui") {
       "views/content_setting_bubble_contents.h",
       "views/content_setting_site_row_view.cc",
       "views/content_setting_site_row_view.h",
+      "views/context_hub/save_to_memory_bank_bubble_controller.cc",
+      "views/context_hub/save_to_memory_bank_bubble_controller.h",
+      "views/context_hub/save_to_memory_bank_bubble_view.cc",
+      "views/context_hub/save_to_memory_bank_bubble_view.h",
       "views/dotted_icon.cc",
       "views/dotted_icon.h",
       "views/extensions/extension_install_dialog_view.cc",
