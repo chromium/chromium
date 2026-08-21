@@ -63,6 +63,11 @@ void SkipTestsForUnsupportedPlatforms() {
 
   // TODO(crbug.com/544212552): Flaky/failing on Android.
   GTEST_SKIP();
+#elif BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    // TODO(crbug.com/523970924): Wayland is flaky.
+    GTEST_SKIP();
+  }
 #endif
 }
 
@@ -601,13 +606,6 @@ class UnboundedElementHighDPIBrowserTest : public UnboundedElementBrowserTest {
 
 IN_PROC_BROWSER_TEST_P(UnboundedElementHighDPIBrowserTest,
                        CompositorPopupAllocationHighDPI) {
-#if BUILDFLAG(IS_OZONE)
-  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
-    // TODO(crbug.com/523970924): Some Wayland compositors (such as Mutter)
-    // configure native popup bounds in physical pixels under high-DPI scaling.
-    GTEST_SKIP();
-  }
-#endif
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
