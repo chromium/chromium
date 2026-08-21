@@ -170,16 +170,8 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
   }));
 }
 
-// TODO(crbug.com/362120461): This test was flaky on Windows bots.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ReleaseFreeDiscardableMemory_ByCriticalPressure \
-  DISABLED_ReleaseFreeDiscardableMemory_ByCriticalPressure
-#else
-#define MAYBE_ReleaseFreeDiscardableMemory_ByCriticalPressure \
-  ReleaseFreeDiscardableMemory_ByCriticalPressure
-#endif
 IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
-                       MAYBE_ReleaseFreeDiscardableMemory_ByCriticalPressure) {
+                       ReleaseFreeDiscardableMemory_ByCriticalPressure) {
   const size_t kSize = 1024 * 1024;  // 1MiB.
 
   std::unique_ptr<base::DiscardableMemory> memory =

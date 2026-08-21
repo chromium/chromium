@@ -1065,13 +1065,6 @@ void SharedContextState::RemoveContextLostObserver(ContextLostObserver* obs) {
 void SharedContextState::PurgeGaneshMemory(int memory_limit) {
   DCHECK(gr_context_);
 
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
-    size_t target_resource_cache_bytes =
-        gpu::UpdateShaderCacheSizeOnMemoryLimit(max_resource_cache_bytes_,
-                                                memory_limit);
-    gr_context_->setResourceCacheLimit(target_resource_cache_bytes);
-  }
-
   if (memory_limit <= base::kCriticalMemoryPressureThreshold) {
     sk_surface_cache_.Clear();
     std::optional<raster::GrShaderCache::ScopedCacheUse> cache_use;
@@ -1080,6 +1073,20 @@ void SharedContextState::PurgeGaneshMemory(int memory_limit) {
     // here does not matter, we are using gpu::kDisplayCompositorClientId.
     UseShaderCache(cache_use, kDisplayCompositorClientId);
     gr_context_->freeGpuResources();
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    size_t target_resource_cache_bytes =
+        gpu::UpdateShaderCacheSizeOnMemoryLimit(max_resource_cache_bytes_,
+                                                memory_limit);
+    size_t current_skia_usage = 0;
+    gr_context_->getResourceCacheUsage(nullptr, &current_skia_usage);
+    if (current_skia_usage > target_resource_cache_bytes) {
+      size_t bytes_to_purge = current_skia_usage - target_resource_cache_bytes;
+      gr_context_->purgeUnlockedResources(bytes_to_purge,
+                                          /*preferScratchResources=*/true);
+    }
   } else if (memory_limit <= base::kModerateMemoryPressureThreshold) {
     sk_surface_cache_.Clear();
     gr_context_->purgeUnlockedResources(
@@ -1118,7 +1125,8 @@ void SharedContextState::PurgeMemory(int memory_limit) {
     PurgeGraphiteMemory(memory_limit);
   }
 
-  if (memory_limit <= base::kModerateMemoryPressureThreshold) {
+  if (memory_limit <= base::kModerateMemoryPressureThreshold ||
+      base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
     UpdateSkiaOwnedMemorySize();
   }
 
@@ -1129,15 +1137,6 @@ void SharedContextState::PurgeMemory(int memory_limit) {
 
 void SharedContextState::OnUpdateMemoryLimit(int memory_limit) {
   if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
-    if (gr_context_) {
-      size_t target_resource_cache_bytes =
-          gpu::UpdateShaderCacheSizeOnMemoryLimit(max_resource_cache_bytes_,
-                                                  memory_limit);
-      size_t current_skia_usage = 0;
-      gr_context_->getResourceCacheUsage(nullptr, &current_skia_usage);
-      gr_context_->setResourceCacheLimit(
-          std::max(current_skia_usage, target_resource_cache_bytes));
-    }
     if (transfer_cache_) {
       transfer_cache_->OnUpdateMemoryLimit(memory_limit);
     }
