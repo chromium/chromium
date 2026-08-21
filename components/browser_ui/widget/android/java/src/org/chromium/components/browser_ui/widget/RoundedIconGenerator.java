@@ -178,15 +178,15 @@ public class RoundedIconGenerator {
     }
 
     /**
-     * Returns a Bitmap representing the icon to be used for |url|. Private registries such
-     * as "appspot.com" will not be considered as effective TLDs.
+     * Returns a Bitmap representing the icon to be used for {@code url}. Private registries such as
+     * "appspot.com" will not be considered as effective TLDs.
      *
-     * @TODO(beverloo) Update all call-sites of rounded icons to be explicit about whether
-     * private registries should be considered, matching the getDomainAndRegistry requirements.
-     * See https://crbug.com/458104.
+     * <p>TODO(beverloo) Update all call-sites of rounded icons to be explicit about whether private
+     * registries should be considered, matching the getDomainAndRegistry requirements. See
+     * https://crbug.com/458104.
      *
      * @param url URL for which the icon should be generated.
-     * @return The generated icon, or NULL if |url| is empty or the domain cannot be resolved.
+     * @return The generated icon, or NULL if {@code url} is empty or the domain cannot be resolved.
      */
     public @Nullable Bitmap generateIconForUrl(GURL url) {
         return generateIconForUrl(url.getSpec(), false);
