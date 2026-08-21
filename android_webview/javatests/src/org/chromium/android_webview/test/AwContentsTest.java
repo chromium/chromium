@@ -65,7 +65,6 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
-
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -1973,6 +1972,7 @@ public class AwContentsTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     @MinAndroidSdkLevel(Build.VERSION_CODES.R)
+    @DisabledTest(message = "crbug.com/546435821")
     public void testBottomInsets() throws Exception {
         mActivityTestRule.startBrowserProcess();
         AwTestContainerView containerView =
