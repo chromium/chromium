@@ -412,7 +412,14 @@ bool IsInitialSetup(const WizardContext& wizard_context) {
 }
 
 void InvalidateTokenAndRequestSignout(const WizardContext& wizard_context) {
-  CHECK(wizard_context.extra_factors_token.has_value());
+  if (!wizard_context.extra_factors_token.has_value()) {
+    // If there is no token, we can just sign out. This can happen when the user
+    // is ephemeral.
+    LOG(WARNING) << "No extra factors token to invalidate, directly requesting "
+                    "sign out.";
+    session_manager::SessionManager::Get()->RequestSignOut();
+    return;
+  }
   ash::AuthSessionStorage::Get()->Invalidate(
       wizard_context.extra_factors_token.value(),
       base::BindOnce(&session_manager::SessionManager::RequestSignOut,
