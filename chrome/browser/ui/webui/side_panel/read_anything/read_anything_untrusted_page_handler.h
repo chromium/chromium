@@ -235,9 +235,6 @@ class ReadAnythingUntrustedPageHandler :
   void OnLineFocusChanged(
       read_anything::mojom::LineFocus current_line_focus,
       read_anything::mojom::LineFocus last_non_disabled_line_focus) override;
-  void OnLineFocusFeatureUsed() override;
-  void ShouldShowLineFocusNewBadge(
-      ShouldShowLineFocusNewBadgeCallback callback) override;
   void GetVoicePackInfo(const std::string& language) override;
   void InstallVoicePack(const std::string& language) override;
   void UninstallVoice(const std::string& language) override;

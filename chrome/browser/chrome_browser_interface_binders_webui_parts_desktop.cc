@@ -722,7 +722,8 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(
         .Add<searchbox::mojom::PageHandlerFactory>();
   }
   registry.ForWebUI<ReadAnythingUntrustedUI>()
-      .Add<help_bubble::mojom::HelpBubbleHandlerFactory>();
+      .Add<help_bubble::mojom::HelpBubbleHandlerFactory>()
+      .Add<user_education::mojom::UserEducationMixedTrustHandlerFactory>();
 
   if (data_sharing::features::IsDataSharingFunctionalityEnabled()) {
     registry.ForWebUI<DataSharingUI>()

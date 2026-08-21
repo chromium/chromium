@@ -46,6 +46,7 @@ source_set("read_anything") {
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/webui:theme_source",
+    "//chrome/browser/ui/webui/user_education",
     "//chrome/browser/user_education",
     "//chrome/common",
     "//components/dom_distiller/content/browser",

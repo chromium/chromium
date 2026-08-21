@@ -16,8 +16,9 @@ source_set("user_education") {
     "user_education_handler.h",
   ]
 
+  public_deps = [ ":mojo_bindings" ]
+
   deps = [
-    ":mojo_bindings",
     "//chrome/browser/feature_engagement",
     "//chrome/browser/user_education",
     "//components/feature_engagement",

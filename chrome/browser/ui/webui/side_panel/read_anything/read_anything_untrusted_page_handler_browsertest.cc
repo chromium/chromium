@@ -979,17 +979,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
-                       ShouldShowLineFocusNewBadge_RunsCallback) {
-  handler_ = CreateHandler();
-
-  base::RunLoop run_loop;
-  handler_->ShouldShowLineFocusNewBadge(
-      base::BindLambdaForTesting([&](bool show) { run_loop.Quit(); }));
-
-  run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        OnVoiceChange_StoresInPrefs) {
   const char kLang1[] = "hi";
   const char kLang2[] = "ja";

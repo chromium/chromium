@@ -177,7 +177,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       lineFocusStyle: {type: Object},
       lineFocusEnabled: {type: Boolean},
       lineFocusMovement: {type: Number},
-      showLineFocusNewBadge: {type: Boolean},
       webuiRoundedIconsEnabled_: {type: Boolean},
       isAiPlaybackActive: {type: Boolean},
       isAiPlaybackUiEnabled_: {type: Boolean},
@@ -210,9 +209,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   accessor lineFocusStyle: LineFocusStyle|null = null;
   accessor lineFocusEnabled: boolean = false;
   accessor lineFocusMovement: LineFocusMovement|null = null;
-  // TODO(crbug.com/543113387): Remove this when the WebUI new badge supports
-  // auto-disappearing logic itself.
-  accessor showLineFocusNewBadge: boolean = false;
   accessor isAiPlaybackActive: boolean = false;
   protected accessor hideSpinner_: boolean = true;
   protected accessor isImmersiveEnabled_: boolean = false;

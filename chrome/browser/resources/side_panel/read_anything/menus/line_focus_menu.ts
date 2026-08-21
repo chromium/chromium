@@ -13,10 +13,13 @@ import {DEFAULT_SETTINGS, LineFocusMovement, LineFocusStyle, ToolbarEvent} from 
 import type {SettingsPrefs, ShowAtConfigPrefs} from '../content/read_anything_types.js';
 import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
+import {browserProxyFactory as userEducationProxyFactory} from '../user_education.mojom-webui.js';
 
 import type {GroupedActionMenuElement} from './grouped_action_menu.js';
 import {getHtml} from './line_focus_menu.html.js';
 import type {MenuGroup, MenuStateItem, ToolbarMenu} from './menu_util.js';
+
+export const LINE_FOCUS_FEATURE_NAME = 'ReadAnythingLineFocus';
 
 export interface LineFocusMenuElement {
   $: {
@@ -153,7 +156,8 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
   close() {
     this.$.menu.close();
     if (this.lineFocusEnabled) {
-      chrome.readingMode.onLineFocusFeatureUsed();
+      userEducationProxyFactory.getInstance().handler.notifyNewBadgeFeatureUsed(
+          LINE_FOCUS_FEATURE_NAME);
     }
   }
 

@@ -22,7 +22,9 @@ import {openMenu} from '../shared/common.js';
 import {isActivationKey, isBackwardArrow, isForwardArrow, isVerticalArrow} from '../shared/keyboard_util.js';
 import {ReadAnythingSettingsAction, ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
+import {browserProxyFactory as userEducationProxyFactory} from '../user_education.mojom-webui.js';
 
+import {LINE_FOCUS_FEATURE_NAME} from './line_focus_menu.js';
 import {SettingsItemType} from './menu_util.js';
 import type {SettingsItem} from './menu_util.js';
 import {getCss} from './settings_menu.css.js';
@@ -204,8 +206,6 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   accessor isImmersiveMode: boolean = false;
   accessor isReadAnythingPinned: boolean = false;
   accessor isSpeechActive: boolean = false;
-  // TODO(crbug.com/543113387): Remove this when the WebUI new badge supports
-  // auto-disappearing logic itself.
   accessor showLineFocusNewBadge: boolean = false;
   accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
 
@@ -583,7 +583,11 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
   open(anchor: HTMLElement) {
     if (chrome.readingMode.isLineFocusEnabled) {
-      chrome.readingMode.requestShouldShowLineFocusNewBadge();
+      userEducationProxyFactory.getInstance()
+          .handler.maybeShowNewBadgeFor(LINE_FOCUS_FEATURE_NAME)
+          .then(({shouldShow}) => {
+            this.showLineFocusNewBadge = shouldShow;
+          });
     }
     openMenu(this.$.lazyMenu.get(), anchor);
     window.addEventListener('keydown', this.keyDownCallback_, {capture: true});

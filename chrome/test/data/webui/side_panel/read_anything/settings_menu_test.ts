@@ -613,16 +613,6 @@ suite('SettingsMenuElement', () => {
         assertFalse(!!badge);
       });
 
-  test('requests line focus new badge on open', () => {
-    let requested = false;
-    chrome.readingMode.requestShouldShowLineFocusNewBadge = () => {
-      requested = true;
-    };
-    const anchor = document.createElement('div');
-    document.body.appendChild(anchor);
-
-    settingsMenu.open(anchor);
-
-    assertTrue(requested);
-  });
+  // TODO(https://crbug.com/361169212): Add in test for querying and showing
+  // "New" badge using a mock UserEducationMixedTrustHandler.
 });

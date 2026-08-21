@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
+#include "chrome/browser/ui/webui/user_education/user_education.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_read_anything_resources.h"
@@ -302,6 +303,14 @@ void ReadAnythingUntrustedUI::BindInterface(
   help_bubble_handler_factory_receiver_.Bind(std::move(receiver));
 }
 
+void ReadAnythingUntrustedUI::BindInterface(
+    mojo::PendingReceiver<
+        user_education::mojom::UserEducationMixedTrustHandlerFactory>
+        receiver) {
+  user_education_handler_factory_receiver_.reset();
+  user_education_handler_factory_receiver_.Bind(std::move(receiver));
+}
+
 void ReadAnythingUntrustedUI::CreateHelpBubbleHandler(
     mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
@@ -309,6 +318,13 @@ void ReadAnythingUntrustedUI::CreateHelpBubbleHandler(
       std::move(handler), std::move(client),
       ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(
           web_ui()->GetRenderFrameHost()));
+}
+
+void ReadAnythingUntrustedUI::CreateUserEducationMixedTrustHandler(
+    mojo::PendingReceiver<user_education::mojom::UserEducationMixedTrustHandler>
+        handler) {
+  user_education_handler_ = std::make_unique<UserEducationMixedTrustHandler>(
+      std::move(handler), *web_ui()->GetWebContents()->GetBrowserContext());
 }
 
 void ReadAnythingUntrustedUI::CreateUntrustedPageHandler(

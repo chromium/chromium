@@ -605,8 +605,4 @@ export class FakeReadingMode {
       Array<{axNodeId: number, start: number, end: number}> {
     return [];
   }
-
-  requestShouldShowLineFocusNewBadge() {}
-  onShouldShowLineFocusNewBadgeResponse() {}
-  onLineFocusFeatureUsed() {}
 }
