@@ -41,7 +41,7 @@ promise_test(async t => {
   assert_true(toolsAreEqual(tool, {
     name: 'parent_tool_default',
     description: 'Parent tool with default exposure',
-    inputSchema: { type: 'object', properties: { query: { type: 'string' } } },
+    inputSchema: JSON.stringify({ type: 'object', properties: { query: { type: 'string' } } }),
     annotations: { readOnlyHint: true, untrustedContentHint: false },
     origin: self.origin
   }), 'Tool details should match');
@@ -90,7 +90,7 @@ promise_test(async t => {
   assert_true(toolsAreEqual(tool, {
     name: 'parent_tool_empty',
     description: 'Parent tool with empty exposedTo',
-    inputSchema: { type: 'object', properties: { query: { type: 'string' } } },
+    inputSchema: JSON.stringify({ type: 'object', properties: { query: { type: 'string' } } }),
     origin: self.origin
   }), 'Tool details should match');
 

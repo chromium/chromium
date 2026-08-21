@@ -20,11 +20,8 @@ function toolsAreEqual(actual, expected) {
   if (actual.description !== expected.description) {
     return `descriptions are unequal: ${actual.description} !== ${expected.description}`;
   }
-  if (JSON.stringify(actual.inputSchema) !==
-      JSON.stringify(expected.inputSchema)) {
-    return `inputSchemas are unequal: ${
-        JSON.stringify(
-            actual.inputSchema)} !== ${JSON.stringify(expected.inputSchema)}`;
+  if (actual.inputSchema !== expected.inputSchema) {
+    return `inputSchemas are unequal: ${actual.inputSchemas} !== ${expected.inputSchemas}`;
   }
   if (actual.origin !== expected.origin) {
     return `origins are unequal: ${actual.origin} !== ${expected.origin}`;

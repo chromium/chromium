@@ -44,7 +44,7 @@ promise_test(async t => {
   assert_true(toolsAreEqual(tool, {
     name: 'parent_tool_exposed',
     description: 'Parent tool exposed to child',
-    inputSchema: { type: 'object', properties: { query: { type: 'string' } } },
+    inputSchema: JSON.stringify({ type: 'object', properties: { query: { type: 'string' } } }),
     origin: self.origin
   }), 'Tool details should match');
 
@@ -104,7 +104,7 @@ promise_test(async t => {
   assert_true(toolsAreEqual(tool, {
     name: 'iframe_tool_exposed',
     description: 'Iframe tool exposed to parent',
-    inputSchema: { type: 'object', properties: { query: { type: 'string' } } },
+    inputSchema: JSON.stringify({ type: 'object', properties: { query: { type: 'string' } } }),
     origin: host_info.HTTPS_REMOTE_ORIGIN
   }), 'Tool details should match');
 

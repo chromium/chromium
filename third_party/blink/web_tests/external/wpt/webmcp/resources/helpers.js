@@ -18,23 +18,17 @@ async function waitForTool(name) {
   });
 }
 
-// Wait for the active WebMCP tool's input schema to match the expected schema.
+// Wait for the active WebMCP tool's input schema to match the expected schema string.
 async function waitForFormToolSchemaToMatch(expected_schema) {
-  const isMatch = (tool) => {
-    if (!tool)
-      return false;
-    return JSON.stringify(tool.inputSchema) === JSON.stringify(expected_schema);
-  };
-
   const [tool] = await document.modelContext.getTools();
-  if (isMatch(tool)) {
+  if (tool && tool.inputSchema === expected_schema) {
     return tool;
   }
   return new Promise(resolve => {
     const ac = new AbortController();
     document.modelContext.addEventListener('toolchange', async e => {
       const [tool] = await document.modelContext.getTools();
-      if (isMatch(tool)) {
+      if (tool && tool.inputSchema === expected_schema) {
         resolve(tool);
         ac.abort();
       }

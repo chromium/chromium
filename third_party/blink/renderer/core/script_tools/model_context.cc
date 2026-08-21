@@ -1043,16 +1043,7 @@ void ModelContext::OnGetScriptToolsCompleted(
     result->setTitle(t->title);
     result->setDescription(t->description);
     if (!t->input_schema.IsNull()) {
-      ScriptState* script_state = resolver->GetScriptState();
-      ScriptState::Scope scope(script_state);
-      v8::TryCatch try_catch(script_state->GetIsolate());
-      auto script_object =
-          JSONStringToScriptObject(script_state, t->input_schema);
-      ScriptValue script_value = script_object;
-      if (try_catch.HasCaught() || script_value.IsEmpty()) {
-        continue;
-      }
-      result->setInputSchema(script_object);
+      result->setInputSchema(t->input_schema);
     }
     if (t->annotations) {
       auto* annotations = ToolAnnotations::Create();
