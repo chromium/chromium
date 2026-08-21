@@ -6,6 +6,7 @@
 
 #include <AppKit/AppKit.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -368,9 +369,13 @@ TEST(NativeWidgetMacNSWindowTest,
 
     NSRect new_frame = NSMakeRect(200, 200, 400, 400);
     [window _setFrameAfterMove:new_frame];
-    // When feature is disabled, _setFrameAfterMove forwards to super and
-    // updates frame.
-    EXPECT_TRUE(NSEqualRects([window frame], new_frame));
+    // When the feature is disabled, _setFrameAfterMove forwards to super on
+    // macOS versions where NSWindow implements this private method (e.g. macOS
+    // 13/14). On macOS 15+, NSWindow no longer implements _setFrameAfterMove,
+    // so it safely no-ops.
+    if ([NSWindow instancesRespondToSelector:@selector(_setFrameAfterMove:)]) {
+      EXPECT_TRUE(NSEqualRects([window frame], new_frame));
+    }
 
     [window close];
   }
@@ -405,8 +410,15 @@ TEST(NativeWidgetMacNSWindowTest,
 
     NSScreen* main_screen = [NSScreen mainScreen];
 
+    // Position the test frame safely within the vertical visible bounds of
+    // main_screen so that top-edge menu bar clamping does not alter its Y
+    // position on low-resolution bot displays.
+    CGFloat visible_top = NSMaxY(main_screen.visibleFrame);
+    CGFloat frame_height = std::min<CGFloat>(200, visible_top / 3);
+    CGFloat frame_y = visible_top - frame_height - 50;
+
     // Simulate window dragging across display boundary line (e.g. x = 1728).
-    NSRect boundary_frame = NSMakeRect(1728, 200, 800, 600);
+    NSRect boundary_frame = NSMakeRect(1728, frame_y, 400, frame_height);
     [window setFrame:boundary_frame display:NO];
 
     // Verify constrainFrameRect returns the unconstrained boundary frame.
@@ -416,7 +428,7 @@ TEST(NativeWidgetMacNSWindowTest,
 
     // Simulate stale AppKit frame adjustment events firing during drag across
     // boundary.
-    NSRect stale_appkit_frame = NSMakeRect(1600, 200, 800, 600);
+    NSRect stale_appkit_frame = NSMakeRect(1600, frame_y, 400, frame_height);
 
     [window _setFrame:stale_appkit_frame
         fromAdjustmentToScreen:main_screen
@@ -430,8 +442,19 @@ TEST(NativeWidgetMacNSWindowTest,
     // End the move loop and verify normal frame updates resume.
     bridge->EndMoveLoop();
 
-    [window _setFrameAfterMove:stale_appkit_frame];
+    // Verify standard window frame updates resume after the move loop ends.
+    [window setFrame:stale_appkit_frame display:NO];
     EXPECT_TRUE(NSEqualRects([window frame], stale_appkit_frame));
+
+    // Calling private AppKit frame adjustment methods outside a move loop must
+    // execute safely without recursion or crashing. On macOS versions where
+    // NSWindow implements _setFrameAfterMove: (e.g. macOS 13/14), it updates
+    // the frame; on newer versions (e.g. macOS 15+) where NSWindow does not
+    // implement this private selector, it safely no-ops.
+    [window _setFrameAfterMove:boundary_frame];
+    if ([NSWindow instancesRespondToSelector:@selector(_setFrameAfterMove:)]) {
+      EXPECT_TRUE(NSEqualRects([window frame], boundary_frame));
+    }
 
     // Verify _setFrame:fromAdjustmentToScreen:anchorIfNeeded:animate: can be
     // invoked safely outside the move loop with a valid or null anchor.
@@ -452,6 +475,57 @@ TEST(NativeWidgetMacNSWindowTest,
         [window respondsToSelector:@selector(_setFrameAfterMove:)],
         [NSWindow instancesRespondToSelector:@selector(_setFrameAfterMove:)]);
 
+    [window close];
+  }
+}
+
+// Tests that during an active move loop, the window's top edge is constrained
+// to the menu bar (screen visibleFrame top), while horizontal position is not
+// clamped.
+TEST(NativeWidgetMacNSWindowTest,
+     SuppressAppKitFrameAdjustmentsConstrainsTopEdgeToMenuBar) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      remote_cocoa::features::kSuppressAppKitFrameAdjustmentsDuringMoveLoop);
+
+  display::ScopedNativeScreen screen;
+  @autoreleasepool {
+    NativeWidgetMacNSWindow* window = [[NativeWidgetMacNSWindow alloc]
+        initWithContentRect:ui::kWindowSizeDeterminedLater
+                  styleMask:NSWindowStyleMaskBorderless
+                    backing:NSBackingStoreBuffered
+                      defer:NO];
+
+    DummyNativeWidgetNSWindowHost dummy_host;
+    DummyNativeWidgetNSWindowHostHelper dummy_helper;
+    auto bridge = std::make_unique<remote_cocoa::NativeWidgetNSWindowBridge>(
+        5, &dummy_host, &dummy_helper, nullptr);
+    bridge->SetWindow(window);
+
+    bridge->SetWindowMoveLoopForTesting(
+        std::make_unique<remote_cocoa::CocoaWindowMoveLoop>(bridge.get(),
+                                                            NSZeroPoint));
+
+    NSScreen* main_screen = [NSScreen mainScreen];
+    CGFloat visible_top = NSMaxY(main_screen.visibleFrame);
+
+    // Frame positioned so its top is 100 points above the menu bar / visible
+    // top.
+    NSRect above_menu_bar_frame =
+        NSMakeRect(100, visible_top - 300 + 100, 500, 300);
+    EXPECT_GT(NSMaxY(above_menu_bar_frame), visible_top);
+
+    NSRect constrained = [window constrainFrameRect:above_menu_bar_frame
+                                           toScreen:main_screen];
+
+    // Verify the top edge is constrained to visible_top and X is preserved.
+    EXPECT_EQ(NSMaxY(constrained), visible_top);
+    EXPECT_EQ(constrained.origin.y, visible_top - 300);
+    EXPECT_EQ(constrained.origin.x, 100);
+    EXPECT_EQ(constrained.size.width, 500);
+    EXPECT_EQ(constrained.size.height, 300);
+
+    bridge->EndMoveLoop();
     [window close];
   }
 }

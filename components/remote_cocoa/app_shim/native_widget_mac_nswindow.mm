@@ -434,18 +434,98 @@ struct NSEdgeAndCornerThicknesses {
   return [super frameViewClassForStyleMask:windowStyle];
 }
 
-// AppKit calls constrainFrameRect:toScreen: to clamp window frames to screen
-// boundaries. In headless mode or when a window move loop is active, suppress
-// this clamping so that the frame is not constrained to the physical display
-// and CocoaWindowMoveLoop can smoothly drag windows across display boundaries
-// without AppKit snapping the window to screen edges.
-- (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen*)screen {
-  if (self.isHeadless || self.parentWindow ||
-      (base::FeatureList::IsEnabled(
-           remote_cocoa::features::
-               kSuppressAppKitFrameAdjustmentsDuringMoveLoop) &&
-       _bridge && _bridge->window_move_loop())) {
+// Constrains the frame rect during an active window move loop so that the top
+// of the window does not exceed the menu bar / visible top of the display,
+// while allowing smooth unrestricted dragging across display boundaries without
+// AppKit snapping the window to screen edges.
+- (NSRect)constrainFrameRectForMoveLoop:(NSRect)frameRect {
+  NSArray<NSScreen*>* screens = [NSScreen screens];
+  if (screens.count == 0) {
     return frameRect;
+  }
+
+  NSPoint mouse_location = [NSEvent mouseLocation];
+  NSScreen* target_screen = nil;
+
+  // First, prefer the screen containing the mouse cursor.
+  for (NSScreen* screen in screens) {
+    if (NSPointInRect(mouse_location, screen.frame)) {
+      target_screen = screen;
+      break;
+    }
+  }
+
+  // If the mouse is not inside any screen, find the screen with the largest
+  // intersection with the window frame.
+  if (!target_screen) {
+    CGFloat max_intersection_area = 0;
+    for (NSScreen* screen in screens) {
+      NSRect intersection = NSIntersectionRect(frameRect, screen.frame);
+      CGFloat area = intersection.size.width * intersection.size.height;
+      if (area > max_intersection_area) {
+        max_intersection_area = area;
+        target_screen = screen;
+      }
+    }
+  }
+
+  // Fallback to mainScreen or the first screen.
+  if (!target_screen) {
+    target_screen = [NSScreen mainScreen] ?: screens.firstObject;
+  }
+
+  if (!target_screen) {
+    return frameRect;
+  }
+
+  // Check if there is another screen positioned directly above target_screen
+  // covering the window's horizontal span, allowing the window to cross upward.
+  BOOL has_screen_above = NO;
+  for (NSScreen* other_screen in screens) {
+    if (other_screen == target_screen) {
+      continue;
+    }
+    if (NSMinY(other_screen.frame) >= NSMaxY(target_screen.frame) - 1.0 &&
+        NSMinX(other_screen.frame) < NSMaxX(frameRect) &&
+        NSMaxX(other_screen.frame) > NSMinX(frameRect)) {
+      has_screen_above = YES;
+      break;
+    }
+  }
+
+  NSRect constrained = frameRect;
+
+  // If there is no screen above, constrain the top of the window to the visible
+  // frame (below the menu bar).
+  if (!has_screen_above) {
+    CGFloat max_top = NSMaxY(target_screen.visibleFrame);
+    if (NSMaxY(constrained) > max_top) {
+      constrained.origin.y = max_top - constrained.size.height;
+    }
+  }
+
+  return constrained;
+}
+
+// AppKit calls constrainFrameRect:toScreen: to clamp window frames to screen
+// boundaries. When a window move loop is active, constrain the top edge to
+// respect the menu bar while avoiding AppKit's horizontal snapping across
+// display boundaries.
+- (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen*)screen {
+  if (self.isHeadless || self.parentWindow) {
+    // AppKit's default implementation moves child windows down to avoid
+    // the menu bar. We don't want that behavior, because widgets like the
+    // Omnibox may have a big shadow that could cause invisible menu bar
+    // collision in fullscreen/maximized state. We override it here to
+    // return the original frameRect before the adjustment.
+    return frameRect;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          remote_cocoa::features::
+              kSuppressAppKitFrameAdjustmentsDuringMoveLoop) &&
+      _bridge && _bridge->window_move_loop()) {
+    return [self constrainFrameRectForMoveLoop:frameRect];
   }
 
   return [super constrainFrameRect:frameRect toScreen:screen];
