@@ -78,7 +78,6 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -638,58 +637,14 @@ public class TabListMediator implements TabListNotificationHandler {
                 public void onUrlUpdated(Tab updatedTab) {
                     assert mShowingTabs;
 
-                    @Nullable PropertyModel model =
-                            mModelList.getModelFromTabId(updatedTab.getId());
-                    @Nullable Tab tab = null;
-                    if (model != null) {
-                        tab = updatedTab;
-                    } else if (mLayoutType != TabListLayoutType.FLAT) {
-                        @Nullable Pair<Integer, Tab> indexAndTab =
-                                getIndexAndTabForTabGroupId(updatedTab.getTabGroupId());
-                        if (indexAndTab != null) {
-                            tab = indexAndTab.second;
-                            model = mModelList.get(indexAndTab.first).model;
-                        }
-                    }
-                    if (TabUtils.isValid(tab) && model != null) {
-                        model.set(TabProperties.URL_DOMAIN, getDomainForTab(tab, model));
-                        // Changing URL will result in a thumbnail invalidation if the on-disk
-                        // thumbnail doesn't match.
-                        updateThumbnailFetcher(model, tab.getId());
-                        // Changing URL should also invalidate the favicon.
-                        updateFaviconForTab(model, tab, null, null);
-                    }
+                    mTabListLayoutDelegate.onUrlUpdated(updatedTab);
                 }
 
                 @Override
                 public void onMediaStateChanged(Tab updatedTab, @MediaState int mediaState) {
                     assert mShowingTabs;
 
-                    @Nullable PropertyModel model;
-                    Tab representativeTab = updatedTab;
-                    boolean isTabGroupTabGrid =
-                            mLayoutType == TabListLayoutType.GROUPED && isTabInTabGroup(updatedTab);
-                    if (isTabGroupTabGrid) {
-                        Token tabGroupId = updatedTab.getTabGroupId();
-                        assumeNonNull(tabGroupId);
-                        @Nullable Pair<Integer, Tab> indexAndTab =
-                                getIndexAndTabForTabGroupId(tabGroupId);
-                        if (indexAndTab == null) return;
-                        model = mModelList.get(indexAndTab.first).model;
-                        representativeTab = indexAndTab.second;
-                    } else {
-                        model = mModelList.getModelFromTabId(updatedTab.getId());
-                    }
-
-                    if (model == null || model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION)) {
-                        return;
-                    }
-                    model.set(
-                            TabProperties.MEDIA_INDICATOR,
-                            getTabGridMediaIndicator(representativeTab, model));
-                    if (isTabGroupTabGrid) {
-                        updateDescriptionString(model);
-                    }
+                    mTabListLayoutDelegate.onMediaStateChanged(updatedTab, mediaState);
                 }
 
                 @Override
@@ -1589,7 +1544,7 @@ public class TabListMediator implements TabListNotificationHandler {
                 TabProperties.TITLE,
                 getLatestTitleForTabOrGroup(tab, model, /* useDefault= */ true));
         model.set(TabProperties.IS_PINNED, tab.getIsPinned());
-        model.set(TabProperties.MEDIA_INDICATOR, getTabGridMediaIndicator(tab, model));
+        model.set(TabProperties.MEDIA_INDICATOR, getTabListMediaIndicator(tab, model));
 
         bindTabActionStateProperties(model.get(TabProperties.TAB_ACTION_STATE), tab, model);
 
@@ -1636,7 +1591,8 @@ public class TabListMediator implements TabListNotificationHandler {
         return tabModel.isTabInTabGroup(tab);
     }
 
-    private @MediaState int getTabGridMediaIndicator(Tab representativeTab, PropertyModel model) {
+    @MediaState
+    int getTabListMediaIndicator(Tab representativeTab, PropertyModel model) {
         if (!TabProperties.isTabOrTabGroup(model)) return MediaState.MAX_VALUE;
 
         return mTabListLayoutDelegate.getMediaIndicatorState(representativeTab, model);
@@ -2105,7 +2061,7 @@ public class TabListMediator implements TabListNotificationHandler {
                 TabProperties.TITLE,
                 getLatestTitleForTabOrGroup(tab, tabInfo, /* useDefault= */ false));
         tabInfo.set(TabProperties.URL_DOMAIN, getDomainForTab(tab, tabInfo));
-        tabInfo.set(TabProperties.MEDIA_INDICATOR, getTabGridMediaIndicator(tab, tabInfo));
+        tabInfo.set(TabProperties.MEDIA_INDICATOR, getTabListMediaIndicator(tab, tabInfo));
         tabInfo.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false);
         tabInfo.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, false);
         tabInfo.set(
@@ -2237,7 +2193,7 @@ public class TabListMediator implements TabListNotificationHandler {
         return children.size();
     }
 
-    private String getDomainForTab(Tab tab, PropertyModel model) {
+    String getDomainForTab(Tab tab, PropertyModel model) {
         if (!TabProperties.isTabGroupHeader(model)) return getDomain(tab);
         List<Tab> relatedTabs = getRelatedTabsForId(tab.getId());
 
@@ -3555,7 +3511,7 @@ public class TabListMediator implements TabListNotificationHandler {
     }
 
     private String getMediaStateAccessibilityString(Tab tab, PropertyModel model, Resources res) {
-        @MediaState int mediaState = getTabGridMediaIndicator(tab, model);
+        @MediaState int mediaState = getTabListMediaIndicator(tab, model);
         switch (mediaState) {
             case MediaState.AUDIBLE:
                 return res.getString(R.string.accessibility_tab_group_audible);

@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -204,6 +205,51 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
             mMediator.updateFaviconForTab(model, representativeTab, icon, iconUrl);
         } else {
             super.onFaviconUpdated(updatedTab, icon, iconUrl);
+        }
+    }
+
+    @Override
+    void onUrlUpdated(Tab updatedTab) {
+        if (mMediator.isTabInTabGroup(updatedTab)) {
+            @Nullable Pair<Integer, Tab> indexAndTab =
+                    mMediator.getIndexAndTabForTabGroupId(updatedTab.getTabGroupId());
+            if (indexAndTab == null) return;
+
+            PropertyModel model = mModelList.get(indexAndTab.first).model;
+            Tab representativeTab = indexAndTab.second;
+            if (!TabUtils.isValid(representativeTab) || model == null) return;
+
+            model.set(
+                    TabProperties.URL_DOMAIN, mMediator.getDomainForTab(representativeTab, model));
+            if (mThumbnailProvider != null) {
+                mMediator.updateThumbnailFetcher(model, representativeTab.getId());
+            }
+            mMediator.updateFaviconForTab(model, representativeTab, null, null);
+        } else {
+            super.onUrlUpdated(updatedTab);
+        }
+    }
+
+    @Override
+    void onMediaStateChanged(Tab updatedTab, @MediaState int mediaState) {
+        if (mMediator.isTabInTabGroup(updatedTab)) {
+            Token tabGroupId = updatedTab.getTabGroupId();
+            assumeNonNull(tabGroupId);
+            @Nullable Pair<Integer, Tab> indexAndTab =
+                    mMediator.getIndexAndTabForTabGroupId(tabGroupId);
+            if (indexAndTab == null) return;
+
+            PropertyModel model = mModelList.get(indexAndTab.first).model;
+            if (model == null || model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION)) {
+                return;
+            }
+            Tab representativeTab = indexAndTab.second;
+            model.set(
+                    TabProperties.MEDIA_INDICATOR,
+                    mMediator.getTabListMediaIndicator(representativeTab, model));
+            mMediator.updateDescriptionString(model);
+        } else {
+            super.onMediaStateChanged(updatedTab, mediaState);
         }
     }
 

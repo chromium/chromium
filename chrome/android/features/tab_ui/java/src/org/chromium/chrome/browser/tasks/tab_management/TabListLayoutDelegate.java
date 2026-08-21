@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -176,6 +177,37 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
         @Nullable PropertyModel model = mModelList.getModelFromTabId(updatedTab.getId());
         if (model == null) return;
         mMediator.updateFaviconForTab(model, updatedTab, icon, iconUrl);
+    }
+
+    /**
+     * Updates the URL domain, thumbnail, and favicon for a tab or its representing card when its
+     * URL changes.
+     *
+     * @param updatedTab The {@link Tab} whose URL changed.
+     */
+    void onUrlUpdated(Tab updatedTab) {
+        @Nullable PropertyModel model = mModelList.getModelFromTabId(updatedTab.getId());
+        if (!TabUtils.isValid(updatedTab) || model == null) return;
+
+        model.set(TabProperties.URL_DOMAIN, mMediator.getDomainForTab(updatedTab, model));
+        mMediator.updateThumbnailFetcher(model, updatedTab.getId());
+        mMediator.updateFaviconForTab(model, updatedTab, null, null);
+    }
+
+    /**
+     * Updates the media indicator for a tab or its representing card when media state changes.
+     *
+     * @param updatedTab The {@link Tab} whose media state changed.
+     * @param mediaState The new {@link MediaState}.
+     */
+    void onMediaStateChanged(Tab updatedTab, @MediaState int mediaState) {
+        @Nullable PropertyModel model = mModelList.getModelFromTabId(updatedTab.getId());
+        if (model == null || model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION)) {
+            return;
+        }
+        model.set(
+                TabProperties.MEDIA_INDICATOR,
+                mMediator.getTabListMediaIndicator(updatedTab, model));
     }
 
     /**

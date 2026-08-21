@@ -72,8 +72,11 @@ public class GroupedLayoutDelegateUnitTest {
         mDelegate = new GroupedLayoutDelegate(mMediator, mModelList, mThumbnailProvider);
         when(mMediator.getCurrentTabModelChecked()).thenReturn(mTabModel);
         when(mTab1.getId()).thenReturn(TAB1_ID);
+        when(mTab1.isInitialized()).thenReturn(true);
         when(mTab2.getId()).thenReturn(TAB2_ID);
+        when(mTab2.isInitialized()).thenReturn(true);
         when(mTab3.getId()).thenReturn(TAB3_ID);
+        when(mTab3.isInitialized()).thenReturn(true);
         when(mMediator.getIndexForTabIdWithRelatedTabs(anyInt()))
                 .thenReturn(TabModel.INVALID_TAB_INDEX);
     }
@@ -329,6 +332,110 @@ public class GroupedLayoutDelegateUnitTest {
         mDelegate.onFaviconUpdated(mTab1, null, null);
 
         verify(mMediator, never()).updateFaviconForTab(any(), any(), any(), any());
+    }
+
+    @Test
+    public void testOnUrlUpdated_InTabGroup() {
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        PropertyModel model = createAndAddPropertyModel(TAB1_ID);
+        when(mMediator.getIndexAndTabForTabGroupId(TAB_GROUP_ID)).thenReturn(new Pair<>(0, mTab1));
+        when(mMediator.getDomainForTab(mTab1, model)).thenReturn("example.com");
+
+        mDelegate.onUrlUpdated(mTab1);
+
+        assertEquals("example.com", model.get(TabProperties.URL_DOMAIN));
+        verify(mMediator).updateThumbnailFetcher(model, TAB1_ID);
+        verify(mMediator).updateFaviconForTab(model, mTab1, null, null);
+    }
+
+    @Test
+    public void testOnUrlUpdated_InTabGroup_NotFound() {
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mMediator.getIndexAndTabForTabGroupId(TAB_GROUP_ID)).thenReturn(null);
+
+        mDelegate.onUrlUpdated(mTab1);
+
+        verify(mMediator, never()).getDomainForTab(any(), any());
+        verify(mMediator, never()).updateThumbnailFetcher(any(), anyInt());
+        verify(mMediator, never()).updateFaviconForTab(any(), any(), any(), any());
+    }
+
+    @Test
+    public void testOnUrlUpdated_NotInTabGroup() {
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(false);
+        PropertyModel model = createAndAddPropertyModel(TAB1_ID);
+        when(mMediator.getDomainForTab(mTab1, model)).thenReturn("example.com");
+
+        mDelegate.onUrlUpdated(mTab1);
+
+        assertEquals("example.com", model.get(TabProperties.URL_DOMAIN));
+        verify(mMediator).updateThumbnailFetcher(model, TAB1_ID);
+        verify(mMediator).updateFaviconForTab(model, mTab1, null, null);
+    }
+
+    @Test
+    public void testOnUrlUpdated_NotInTabGroup_NotFound() {
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(false);
+
+        mDelegate.onUrlUpdated(mTab1);
+
+        verify(mMediator, never()).getDomainForTab(any(), any());
+        verify(mMediator, never()).updateThumbnailFetcher(any(), anyInt());
+        verify(mMediator, never()).updateFaviconForTab(any(), any(), any(), any());
+    }
+
+    @Test
+    public void testOnMediaStateChanged_InTabGroup() {
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        PropertyModel model = createAndAddPropertyModel(TAB1_ID);
+        when(mMediator.getIndexAndTabForTabGroupId(TAB_GROUP_ID)).thenReturn(new Pair<>(0, mTab1));
+        when(mMediator.getTabListMediaIndicator(mTab1, model)).thenReturn(MediaState.AUDIBLE);
+
+        mDelegate.onMediaStateChanged(mTab1, MediaState.AUDIBLE);
+
+        assertEquals(MediaState.AUDIBLE, model.get(TabProperties.MEDIA_INDICATOR));
+        verify(mMediator).updateDescriptionString(model);
+    }
+
+    @Test
+    public void testOnMediaStateChanged_InTabGroup_UseShrinkCloseAnimation() {
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        PropertyModel model = createAndAddPropertyModel(TAB1_ID);
+        model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
+        when(mMediator.getIndexAndTabForTabGroupId(TAB_GROUP_ID)).thenReturn(new Pair<>(0, mTab1));
+
+        mDelegate.onMediaStateChanged(mTab1, MediaState.AUDIBLE);
+
+        verify(mMediator, never()).getTabListMediaIndicator(any(), any());
+        verify(mMediator, never()).updateDescriptionString(any());
+    }
+
+    @Test
+    public void testOnMediaStateChanged_InTabGroup_NotFound() {
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mMediator.getIndexAndTabForTabGroupId(TAB_GROUP_ID)).thenReturn(null);
+
+        mDelegate.onMediaStateChanged(mTab1, MediaState.AUDIBLE);
+
+        verify(mMediator, never()).getTabListMediaIndicator(any(), any());
+        verify(mMediator, never()).updateDescriptionString(any());
+    }
+
+    @Test
+    public void testOnMediaStateChanged_NotInTabGroup() {
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(false);
+        PropertyModel model = createAndAddPropertyModel(TAB1_ID);
+        when(mMediator.getTabListMediaIndicator(mTab1, model)).thenReturn(MediaState.AUDIBLE);
+
+        mDelegate.onMediaStateChanged(mTab1, MediaState.AUDIBLE);
+
+        assertEquals(MediaState.AUDIBLE, model.get(TabProperties.MEDIA_INDICATOR));
+        verify(mMediator, never()).updateDescriptionString(any());
     }
 
     @Test

@@ -65,7 +65,9 @@ public class FlatLayoutDelegateUnitTest {
 
         when(mMediator.getCurrentTabModelChecked()).thenReturn(mTabModel);
         when(mTab1.getId()).thenReturn(TAB1_ID);
+        when(mTab1.isInitialized()).thenReturn(true);
         when(mTab2.getId()).thenReturn(TAB2_ID);
+        when(mTab2.isInitialized()).thenReturn(true);
     }
 
     @Test
@@ -177,6 +179,57 @@ public class FlatLayoutDelegateUnitTest {
         mDelegate.onFaviconUpdated(mTab1, null, null);
 
         verify(mMediator, never()).updateFaviconForTab(any(), any(), any(), any());
+    }
+
+    @Test
+    public void testOnUrlUpdated() {
+        addTabsToModelList(TAB1_ID);
+        PropertyModel model = mModelList.get(0).model;
+        when(mMediator.getDomainForTab(mTab1, model)).thenReturn("example.com");
+
+        mDelegate.onUrlUpdated(mTab1);
+
+        assertEquals("example.com", model.get(TabProperties.URL_DOMAIN));
+        verify(mMediator).updateThumbnailFetcher(model, TAB1_ID);
+        verify(mMediator).updateFaviconForTab(model, mTab1, null, null);
+    }
+
+    @Test
+    public void testOnUrlUpdated_NotFound() {
+        mDelegate.onUrlUpdated(mTab1);
+
+        verify(mMediator, never()).getDomainForTab(any(), any());
+        verify(mMediator, never()).updateThumbnailFetcher(any(), anyInt());
+        verify(mMediator, never()).updateFaviconForTab(any(), any(), any(), any());
+    }
+
+    @Test
+    public void testOnMediaStateChanged() {
+        addTabsToModelList(TAB1_ID);
+        PropertyModel model = mModelList.get(0).model;
+        when(mMediator.getTabListMediaIndicator(mTab1, model)).thenReturn(MediaState.AUDIBLE);
+
+        mDelegate.onMediaStateChanged(mTab1, MediaState.AUDIBLE);
+
+        assertEquals(MediaState.AUDIBLE, model.get(TabProperties.MEDIA_INDICATOR));
+    }
+
+    @Test
+    public void testOnMediaStateChanged_UseShrinkCloseAnimation() {
+        addTabsToModelList(TAB1_ID);
+        PropertyModel model = mModelList.get(0).model;
+        model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
+
+        mDelegate.onMediaStateChanged(mTab1, MediaState.AUDIBLE);
+
+        verify(mMediator, never()).getTabListMediaIndicator(any(), any());
+    }
+
+    @Test
+    public void testOnMediaStateChanged_NotFound() {
+        mDelegate.onMediaStateChanged(mTab1, MediaState.AUDIBLE);
+
+        verify(mMediator, never()).getTabListMediaIndicator(any(), any());
     }
 
     @Test
