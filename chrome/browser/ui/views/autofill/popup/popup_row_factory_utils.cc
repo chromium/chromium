@@ -105,6 +105,12 @@ constexpr int kAutofillPopupPasswordMaxWidth = 108;
 
 // Max width for the Autofill suggestion text.
 constexpr int kAutofillSuggestionMaxWidth = 192;
+
+// Max lines for the AtMemory suggestion text.
+constexpr int kAtMemorySuggestionMaxLines = 2;
+// Max width for the AtMemory suggestion text.
+constexpr int kAtMemorySuggestionWidth = 236;
+
 // Multiline suggestions look crammed without extra vertical margin.
 constexpr int kAutofillMultilineSuggestionAdditionalVerticalMargin = 8;
 
@@ -652,6 +658,50 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
       PopupRowWithButtonView::ButtonSelectBehavior::kUnselectSuggestion);
 }
 
+// Checks if the text of a Label fits in one line.
+// Assumes that a non-empty text has been set on a label before calling this
+// function.
+[[nodiscard]] bool FitsInOneLine(const views::Label& label) {
+  CHECK(!label.GetText().empty());
+  const int line_height = label.GetLineHeight();
+  CHECK(line_height > 0);
+  return label.GetHeightForWidth(kAtMemorySuggestionWidth) == line_height;
+}
+
+std::unique_ptr<PopupRowContentView>
+CreateAtMemorySearchResultPopupRowContentView(
+    const Suggestion& suggestion,
+    std::optional<user_education::DisplayNewBadge> show_new_badge,
+    FillingProduct main_filling_product) {
+  std::unique_ptr<PopupRowContentView> view =
+      std::make_unique<PopupRowContentView>();
+  std::unique_ptr<views::Label> main_text_label =
+      CreateMainTextLabel(suggestion, show_new_badge);
+
+  main_text_label->SetMultiLine(true);
+  main_text_label->SetMaxLines(kAtMemorySuggestionMaxLines);
+  main_text_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+  main_text_label->SetMaximumWidth(kAtMemorySuggestionWidth);
+
+  const bool main_label_fits_in_one_line = FitsInOneLine(*main_text_label);
+
+  popup_cell_utils::AddSuggestionContentToView(
+      suggestion, std::move(main_text_label), CreateMinorTextLabels(suggestion),
+      /*description_label=*/nullptr,
+      CreateSubtextViews(*view, suggestion, main_filling_product),
+      popup_cell_utils::GetIconImageView(suggestion), *view);
+
+  if (!main_label_fits_in_one_line) {
+    view->SetInsideBorderInsets(
+        gfx::Insets(view->GetInsideBorderInsets())
+            .set_top_bottom(
+                kAutofillMultilineSuggestionAdditionalVerticalMargin,
+                kAutofillMultilineSuggestionAdditionalVerticalMargin));
+  }
+
+  return view;
+}
+
 }  // namespace
 
 std::unique_ptr<PopupRowContentView> CreatePopupRowContentView(
@@ -820,6 +870,12 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
       // BNPL suggestion.
       [[fallthrough]];
     }
+    case SuggestionType::kAtMemorySearchResult: {
+      return std::make_unique<PopupRowView>(
+          a11y_selection_delegate, selection_delegate, controller, line_number,
+          CreateAtMemorySearchResultPopupRowContentView(
+              suggestion, show_new_badge, main_filling_product));
+    }
     // AtMemory suggestions do not apply filter match bolding to the main text.
     case SuggestionType::kAtMemoryGenericError:
     case SuggestionType::kAtMemoryFetching:
@@ -827,7 +883,6 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kAtMemoryNoConnection:
     case SuggestionType::kAtMemoryOpenGemini:
     case SuggestionType::kAtMemorySearchAffordance:
-    case SuggestionType::kAtMemorySearchResult:
     case SuggestionType::kAtMemorySourceAttribution: {
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,

@@ -198,9 +198,35 @@ Suggestion CreateAtMemorySearchResultSuggestion() {
   return AtMemoryManager::TransformResultIntoSuggestion(entry, "en-US");
 }
 
+Suggestion CreateAtMemoryAddressSearchResultTwoLinesNoOverflowSuggestion() {
+  MemorySearchResult entry(MemoryDataType::kAddressFull, u"Address",
+                           u"123 Long Street Name, Suite 100, San Francisco");
+  entry.metadata_list.emplace_back(MemoryDataType::kNameFull, u"Name",
+                                   u"John Doe");
+  entry.sources.emplace_back(MemoryEntrySourceType::kGmail);
+  return AtMemoryManager::TransformResultIntoSuggestion(entry, "en-US");
+}
+
+Suggestion CreateAtMemoryAddressSearchResultTwoLinesOverflowSuggestion() {
+  MemorySearchResult entry(
+      MemoryDataType::kAddressFull, u"Address",
+      u"123 Very Long Street Name, Suite 100, Building A, San Francisco, "
+      u"California 94107");
+  entry.metadata_list.emplace_back(MemoryDataType::kNameFull, u"Name",
+                                   u"John Doe");
+  entry.sources.emplace_back(MemoryEntrySourceType::kGmail);
+  return AtMemoryManager::TransformResultIntoSuggestion(entry, "en-US");
+}
+
 const AtMemoryTestParam kAtMemorySuggestions[] = {
     {"AtMemory_search_result",
      base::BindRepeating(&CreateAtMemorySearchResultSuggestion)},
+    {"AtMemory_address_search_result_2lines_no_overflow",
+     base::BindRepeating(
+         &CreateAtMemoryAddressSearchResultTwoLinesNoOverflowSuggestion)},
+    {"AtMemory_address_search_result_2lines_overflow",
+     base::BindRepeating(
+         &CreateAtMemoryAddressSearchResultTwoLinesOverflowSuggestion)},
     {"AtMemory_source_attribution",
      base::BindRepeating(&AtMemoryManager::CreateSourceAttributionSuggestion)},
     {"AtMemory_fetching",
