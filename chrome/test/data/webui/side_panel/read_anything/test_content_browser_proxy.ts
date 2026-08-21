@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ContentBrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AxSegment, ContentBrowserProxy, SkiaImageBitmap} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
 
 export class TestContentBrowserProxy extends TestBrowserProxy implements
@@ -16,10 +16,25 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   isReadabilitySelectTextEnabledFlag: boolean = false;
   textContentMap: {[key: number]: string} = {};
   prefixText: string = '';
+  rootId: number = -1;
+  htmlTitle: string = '';
+  htmlContent: string = '';
+  documentUrl: string = '';
   googleDocs: boolean = false;
+  unexpectedUpdateContentStopSource: number = 0;
+  axMapping: AxSegment[] = [];
+  htmlTagMap: {[key: number]: string} = {};
   leafNodeSet: Set<number> = new Set();
+  url: string = '';
+  htmlId: string = '';
+  textDirection: string = '';
+  altText: string = '';
+  language: string = '';
+  childrenMap: {[key: number]: number[]} = {};
   isOverlineVal: boolean = false;
   shouldBoldVal: boolean = false;
+  imageBitmap: SkiaImageBitmap|null = null;
+  axTreeAnchorsVal: Record<string, AxTreeAnchorMetadata[]> = {};
   activeDistillationMethod: number = 0;
   distillationTypeReadability: number = 1;
   distillationTypeScreen2x: number = 0;
@@ -43,10 +58,25 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
       'onScroll',
       'getTextContent',
       'getPrefixText',
+      'getRootId',
+      'getHtmlTitle',
+      'getHtmlContent',
+      'getDocumentUrl',
       'isGoogleDocs',
+      'getUnexpectedUpdateContentStopSource',
+      'getAxMapping',
+      'getHtmlTag',
       'isLeafNode',
+      'getUrl',
+      'getHtmlId',
+      'getTextDirection',
+      'getAltText',
+      'getLanguage',
+      'getChildren',
       'isOverline',
       'shouldBold',
+      'getImageBitmap',
+      'getAxTreeAnchors',
       'onNoTextContent',
       'updateSelection',
       'onLinkClicked',
@@ -123,14 +153,79 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
     return this.prefixText;
   }
 
+  getRootId(): number {
+    this.methodCalled('getRootId');
+    return this.rootId;
+  }
+
+  getHtmlTitle(): string {
+    this.methodCalled('getHtmlTitle');
+    return this.htmlTitle;
+  }
+
+  getHtmlContent(): string {
+    this.methodCalled('getHtmlContent');
+    return this.htmlContent;
+  }
+
+  getDocumentUrl(): string {
+    this.methodCalled('getDocumentUrl');
+    return this.documentUrl;
+  }
+
   isGoogleDocs(): boolean {
     this.methodCalled('isGoogleDocs');
     return this.googleDocs;
   }
 
+  getUnexpectedUpdateContentStopSource(): number {
+    this.methodCalled('getUnexpectedUpdateContentStopSource');
+    return this.unexpectedUpdateContentStopSource;
+  }
+
+  getAxMapping(index: number): AxSegment[] {
+    this.methodCalled('getAxMapping', index);
+    return this.axMapping;
+  }
+
+  getHtmlTag(nodeId: number): string {
+    this.methodCalled('getHtmlTag', nodeId);
+    return this.htmlTagMap[nodeId] || '';
+  }
+
   isLeafNode(nodeId: number): boolean {
     this.methodCalled('isLeafNode', nodeId);
     return this.leafNodeSet.has(nodeId);
+  }
+
+  getUrl(nodeId: number): string {
+    this.methodCalled('getUrl', nodeId);
+    return this.url;
+  }
+
+  getHtmlId(nodeId: number): string {
+    this.methodCalled('getHtmlId', nodeId);
+    return this.htmlId;
+  }
+
+  getTextDirection(nodeId: number): string {
+    this.methodCalled('getTextDirection', nodeId);
+    return this.textDirection;
+  }
+
+  getAltText(nodeId: number): string {
+    this.methodCalled('getAltText', nodeId);
+    return this.altText;
+  }
+
+  getLanguage(nodeId: number): string {
+    this.methodCalled('getLanguage', nodeId);
+    return this.language;
+  }
+
+  getChildren(nodeId: number): number[] {
+    this.methodCalled('getChildren', nodeId);
+    return this.childrenMap[nodeId] || [];
   }
 
   isOverline(nodeId: number): boolean {
@@ -141,6 +236,16 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   shouldBold(nodeId: number): boolean {
     this.methodCalled('shouldBold', nodeId);
     return this.shouldBoldVal;
+  }
+
+  getImageBitmap(nodeId: number): SkiaImageBitmap|null {
+    this.methodCalled('getImageBitmap', nodeId);
+    return this.imageBitmap;
+  }
+
+  getAxTreeAnchors(): Record<string, AxTreeAnchorMetadata[]> {
+    this.methodCalled('getAxTreeAnchors');
+    return this.axTreeAnchorsVal;
   }
 
   onNoTextContent(): void {

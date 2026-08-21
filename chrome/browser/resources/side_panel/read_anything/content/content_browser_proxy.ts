@@ -2,6 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+export interface AxSegment {
+  axNodeId: number;
+  start: number;
+  end: number;
+  axNodeOffset: number;
+}
+
+export interface SkiaImageBitmap {
+  data: Uint8ClampedArray;
+  width: number;
+  height: number;
+  scale: number;
+}
+
 // Browser proxy for document distillation, AXTree node hierarchy navigation,
 // selection tracking, DOM anchor mapping, and content rendering callbacks.
 export interface ContentBrowserProxy {
@@ -11,6 +25,22 @@ export interface ContentBrowserProxy {
   getEndOffset(): number;
   getTextContent(nodeId: number): string;
   getPrefixText(nodeId: number): string;
+
+  getRootId(): number;
+  getHtmlTitle(): string;
+  getHtmlContent(): string;
+  getDocumentUrl(): string;
+  getUnexpectedUpdateContentStopSource(): number;
+  getAxMapping(index: number): AxSegment[];
+  getHtmlTag(nodeId: number): string;
+  getUrl(nodeId: number): string;
+  getHtmlId(nodeId: number): string;
+  getTextDirection(nodeId: number): string;
+  getAltText(nodeId: number): string;
+  getLanguage(nodeId: number): string;
+  getChildren(nodeId: number): number[];
+  getImageBitmap(nodeId: number): SkiaImageBitmap|null;
+  getAxTreeAnchors(): Record<string, AxTreeAnchorMetadata[]>;
 
   getActiveDistillationMethod(): number;
   getDistillationTypeReadability(): number;
@@ -139,6 +169,66 @@ export class ContentBrowserProxyImpl implements ContentBrowserProxy {
 
   getDistillationTypeScreen2x(): number {
     return chrome.readingMode.distillationTypeScreen2x;
+  }
+
+  getRootId(): number {
+    return chrome.readingMode.rootId;
+  }
+
+  getHtmlTitle(): string {
+    return chrome.readingMode.htmlTitle;
+  }
+
+  getHtmlContent(): string {
+    return chrome.readingMode.htmlContent;
+  }
+
+  getDocumentUrl(): string {
+    return chrome.readingMode.documentUrl;
+  }
+
+  getUnexpectedUpdateContentStopSource(): number {
+    return chrome.readingMode.unexpectedUpdateContentStopSource;
+  }
+
+  getAxMapping(index: number): AxSegment[] {
+    return chrome.readingMode.getAxMapping(index);
+  }
+
+  getHtmlTag(nodeId: number): string {
+    return chrome.readingMode.getHtmlTag(nodeId);
+  }
+
+  getUrl(nodeId: number): string {
+    return chrome.readingMode.getUrl(nodeId);
+  }
+
+  getHtmlId(nodeId: number): string {
+    return chrome.readingMode.getHtmlId(nodeId);
+  }
+
+  getTextDirection(nodeId: number): string {
+    return chrome.readingMode.getTextDirection(nodeId);
+  }
+
+  getAltText(nodeId: number): string {
+    return chrome.readingMode.getAltText(nodeId);
+  }
+
+  getLanguage(nodeId: number): string {
+    return chrome.readingMode.getLanguage(nodeId);
+  }
+
+  getChildren(nodeId: number): number[] {
+    return chrome.readingMode.getChildren(nodeId);
+  }
+
+  getImageBitmap(nodeId: number): SkiaImageBitmap|null {
+    return chrome.readingMode.getImageBitmap(nodeId);
+  }
+
+  getAxTreeAnchors(): Record<string, AxTreeAnchorMetadata[]> {
+    return chrome.readingMode.axTreeAnchors;
   }
 
   static getInstance(): ContentBrowserProxy {

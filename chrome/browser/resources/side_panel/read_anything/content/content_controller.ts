@@ -227,7 +227,8 @@ export class ContentController {
       deletedNode.remove();
       this.listeners_.forEach(l => l.onContentChange());
     }
-    const root = this.nodeStore_.getDomNode(chrome.readingMode.rootId);
+    const root =
+        this.nodeStore_.getDomNode(this.contentBrowserProxy_.getRootId());
     if (this.hasContent() && !root?.textContent?.trim()) {
       this.setState(this.getNoContentType_());
       this.contentBrowserProxy_.onNoTextContent();
@@ -242,7 +243,7 @@ export class ContentController {
           'updateContent called while speech is active. ',
           'There may be a bug.');
       this.logger_.logSpeechStopSource(
-          chrome.readingMode.unexpectedUpdateContentStopSource);
+          this.contentBrowserProxy_.getUnexpectedUpdateContentStopSource());
     }
 
     this.speechController_.saveReadAloudState();
@@ -258,8 +259,8 @@ export class ContentController {
   updateContentForReadability(): Node|null {
     if (isDistilledByReadability()) {
       // Readability Path: Build DOM from the HTML string.
-      const title = chrome.readingMode.htmlTitle;
-      const contentHtml = chrome.readingMode.htmlContent;
+      const title = this.contentBrowserProxy_.getHtmlTitle();
+      const contentHtml = this.contentBrowserProxy_.getHtmlContent();
 
       if (!contentHtml || !contentHtml.trim()) {
         this.setEmpty();
@@ -359,7 +360,7 @@ export class ContentController {
     // shadow node element representing each AXNode, because experimentation
     // (with Polymer) found the shadow node creation to be ~8-10x slower than
     // constructing and appending nodes directly to the container element.
-    const rootId = chrome.readingMode.rootId;
+    const rootId = this.contentBrowserProxy_.getRootId();
     if (!rootId) {
       return null;
     }
@@ -421,7 +422,7 @@ export class ContentController {
       }
 
       // Retrieve the mapping segments for this specific block index.
-      const segments = chrome.readingMode.getAxMapping(i);
+      const segments = this.contentBrowserProxy_.getAxMapping(i);
       if (segments && segments.length > 0) {
         this.mapBlockToAxNodes_(node, segments);
       }
@@ -495,7 +496,7 @@ export class ContentController {
   }
 
   private buildSubtree_(nodeId: number): Node {
-    let htmlTag = chrome.readingMode.getHtmlTag(nodeId);
+    let htmlTag = this.contentBrowserProxy_.getHtmlTag(nodeId);
     const dataAttributes = new Map<string, string>();
 
     // Text nodes do not have an html tag.
@@ -514,14 +515,14 @@ export class ContentController {
       htmlTag = SCREEN2X_TAG_TO_RM_TAG.get(htmlTag)!;
     }
 
-    const url = chrome.readingMode.getUrl(nodeId);
+    const url = this.contentBrowserProxy_.getUrl(nodeId);
     if (!this.shouldShowLinks_() && htmlTag === LINKS_ON_TAG) {
       htmlTag = LINKS_OFF_TAG;
       dataAttributes.set(LINK_DATA_ATTR, url ?? '');
     }
 
     const element = document.createElement(htmlTag);
-    const htmlId = chrome.readingMode.getHtmlId(nodeId);
+    const htmlId = this.contentBrowserProxy_.getHtmlId(nodeId);
     if (htmlId) {
       element.id = htmlId;
     }
@@ -530,7 +531,7 @@ export class ContentController {
       element.dataset[attr] = val;
     }
     this.nodeStore_.setDomNode(element, nodeId);
-    const direction = chrome.readingMode.getTextDirection(nodeId);
+    const direction = this.contentBrowserProxy_.getTextDirection(nodeId);
     if (direction) {
       element.setAttribute('dir', direction);
     }
@@ -538,7 +539,7 @@ export class ContentController {
     const display = this.visualBrowserProxy_.isImagesEnabled() ? '' : 'none';
     if (element.nodeName === 'CANVAS') {
       this.nodeStore_.addImageToFetch(nodeId);
-      const altText = chrome.readingMode.getAltText(nodeId);
+      const altText = this.contentBrowserProxy_.getAltText(nodeId);
       element.setAttribute('alt', altText);
       element.style.display = display;
       element.classList.add('downloaded-image');
@@ -551,7 +552,7 @@ export class ContentController {
     if (url && element.nodeName === 'A') {
       this.setLinkAttributes_(element, url, nodeId);
     }
-    const language = chrome.readingMode.getLanguage(nodeId);
+    const language = this.contentBrowserProxy_.getLanguage(nodeId);
     if (language) {
       element.setAttribute('lang', language);
     }
@@ -561,7 +562,7 @@ export class ContentController {
   }
 
   private appendChildSubtrees_(node: Node, nodeId: number) {
-    for (const childNodeId of chrome.readingMode.getChildren(nodeId)) {
+    for (const childNodeId of this.contentBrowserProxy_.getChildren(nodeId)) {
       const childNode = this.buildSubtree_(childNodeId);
       node.appendChild(childNode);
     }
@@ -581,7 +582,7 @@ export class ContentController {
       return false;
     }
 
-    const pageUrlString = chrome.readingMode.documentUrl;
+    const pageUrlString = this.contentBrowserProxy_.getDocumentUrl();
     if (!pageUrlString) {
       return false;
     }
@@ -647,7 +648,7 @@ export class ContentController {
   }
 
   private createTextNode_(nodeId: number): Node {
-    const textContent = chrome.readingMode.getTextContent(nodeId);
+    const textContent = this.contentBrowserProxy_.getTextContent(nodeId);
     const textNode = document.createTextNode(textContent);
     this.nodeStore_.setDomNode(textNode, nodeId);
     const isOverline = this.contentBrowserProxy_.isOverline(nodeId);
@@ -794,7 +795,7 @@ export class ContentController {
   }
 
   async onImageDownloaded(nodeId: number) {
-    const data = chrome.readingMode.getImageBitmap(nodeId);
+    const data = this.contentBrowserProxy_.getImageBitmap(nodeId);
     const element = this.nodeStore_.getDomNode(nodeId);
     if (data && element && element instanceof HTMLCanvasElement) {
       element.width = data.width;
@@ -869,7 +870,7 @@ export class ContentController {
 
     const anchors = Array.from(root.querySelectorAll<HTMLAnchorElement>('a'));
     const originalAnchors: Record<string, AxTreeAnchorMetadata[]> =
-        chrome.readingMode.axTreeAnchors;
+        this.contentBrowserProxy_.getAxTreeAnchors();
     let successCount = 0;
     let noHrefCount = 0;
     let noMatchCount = 0;

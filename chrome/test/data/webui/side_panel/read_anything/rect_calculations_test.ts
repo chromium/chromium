@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {calculateTextBounds, getMostCommonPitch, isRectMostlyVisible, isRectVisible, MOSTLY_VISIBLE_PERCENT, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {calculateTextBounds, ContentBrowserProxyImpl, getMostCommonPitch, isRectMostlyVisible, isRectVisible, MOSTLY_VISIBLE_PERCENT, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {setWindowSize} from './common.js';
+import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('RectCalculations', () => {
@@ -14,6 +15,7 @@ suite('RectCalculations', () => {
   setup(() => {
     visualBrowserProxy = new TestVisualBrowserProxy();
     VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
+    ContentBrowserProxyImpl.setInstance(new TestContentBrowserProxy());
   });
 
   suite('isRectVisible', () => {
