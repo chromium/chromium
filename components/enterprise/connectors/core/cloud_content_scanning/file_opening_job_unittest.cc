@@ -14,9 +14,11 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_waitable_event.h"
 #include "build/build_config.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/file_analysis_request_base.h"
@@ -33,6 +35,18 @@ class MockFileAnalysisRequestBase : public FileAnalysisRequestBase {
   MOCK_METHOD1(ProcessZipFile, void(Data));
   MOCK_METHOD1(ProcessRarFile, void(Data));
 #endif
+};
+
+class AsyncHashingFileAnalysisRequest : public MockFileAnalysisRequestBase {
+ public:
+  using MockFileAnalysisRequestBase::MockFileAnalysisRequestBase;
+
+  void OpenFile(const std::atomic<bool>* is_cancelled) override {
+    start_hashing_.Wait();
+    FileAnalysisRequestBase::OpenFile(is_cancelled);
+  }
+
+  base::TestWaitableEvent start_hashing_;
 };
 }  // namespace enterprise_connectors
 
@@ -189,6 +203,69 @@ TEST_F(FileOpeningJobTest, MaxThreadsFlag) {
   command_line->RemoveSwitch("wp-max-file-opening-threads");
   command_line->AppendSwitchASCII("wp-max-file-opening-threads", "-1");
   EXPECT_EQ(5u, FileOpeningJob::GetMaxFileOpeningThreads());
+}
+
+TEST_F(FileOpeningJobTest, CancelsWithoutHashOnDestroy) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{enterprise_connectors::kEnableCancelUploadOnContentAnalysis, {}},
+       {enterprise_connectors::kContentHashInFileUploadFinalCall, {}},
+       {enterprise_connectors::kEnableNewUploadSizeLimit,
+        {{"max_file_size_mb", "250"}}}},
+      {});
+
+  const size_t kLargeFileSize = 250 * 1024 * 1024 + 1;
+  base::FilePath path = temp_dir_.GetPath().AppendASCII("large_file.txt");
+  {
+    base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(file.IsValid());
+    ASSERT_TRUE(file.SetLength(kLargeFileSize));
+  }
+
+  auto request =
+      std::make_unique<enterprise_connectors::AsyncHashingFileAnalysisRequest>(
+          enterprise_connectors::AnalysisSettings(), path, path.BaseName(),
+          /*mime_type=*/"",
+          /*delay_opening_file=*/true, base::DoNothing(), base::NullCallback(),
+          base::SingleThreadTaskRunner::GetCurrentDefault(), base::DoNothing(),
+          /*is_obfuscated=*/false,
+          /*force_sync_hash_computation=*/false);
+  enterprise_connectors::AsyncHashingFileAnalysisRequest* request_raw =
+      request.get();
+
+  base::RunLoop request_data_cb_run_loop;
+  base::RunLoop on_got_hash_run_loop;
+  std::string computed_hash = "overwritten_sentinel";
+
+  request_raw->GetRequestData(base::BindLambdaForTesting(
+      [&](enterprise_connectors::ScanRequestUploadResult result,
+          enterprise_connectors::BinaryUploadRequest::Data data) {
+        EXPECT_EQ(
+            result,
+            enterprise_connectors::ScanRequestUploadResult::kFileTooLarge);
+        EXPECT_EQ(data.hash, "");
+        EXPECT_TRUE(request_raw->register_on_got_hash_callback_);
+        request_raw->register_on_got_hash_callback_.Run(
+            false, base::BindLambdaForTesting([&](std::string hash) {
+              computed_hash = std::move(hash);
+              on_got_hash_run_loop.Quit();
+            }));
+        request_data_cb_run_loop.Quit();
+      }));
+
+  std::vector<FileOpeningJob::FileOpeningTask> tasks(1);
+  tasks[0].request = request_raw;
+  auto job = base::MakeRefCounted<FileOpeningJob>(std::move(tasks));
+  request_raw->start_hashing_.Signal();
+
+  request_data_cb_run_loop.Run();
+
+  // Destroy all references to the job.
+  request->set_file_opening_job(nullptr);
+  job.reset();
+
+  on_got_hash_run_loop.Run();
+  EXPECT_EQ(computed_hash, "");
 }
 
 }  // namespace safe_browsing

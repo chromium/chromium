@@ -492,7 +492,7 @@ TEST_F(FileAnalysisRequestBaseTest, DelayedFileOpening) {
       }));
 
   EXPECT_FALSE(run_loop.AnyQuitCalled());
-  request->OpenFile();
+  request->OpenFile(/*is_cancelled=*/nullptr);
   run_loop.Run();
 
   EXPECT_TRUE(run_loop.AnyQuitCalled());
@@ -582,7 +582,7 @@ TEST_F(FileAnalysisRequestBaseTest, FileHashComputesAsyncWhenEnabled) {
             << data.mime_type << " is not an expected mimetype";
       }));
 
-  request->OpenFile();
+  request->OpenFile(/*is_cancelled=*/nullptr);
 
   run_loop.Run();
   EXPECT_TRUE(run_loop.AnyQuitCalled());
@@ -632,7 +632,7 @@ TEST_F(FileAnalysisRequestBaseTest,
         run_loop.Quit();
       }));
 
-  request->OpenFile();
+  request->OpenFile(/*is_cancelled=*/nullptr);
   run_loop.Run();
   EXPECT_TRUE(run_loop.AnyQuitCalled());
 }

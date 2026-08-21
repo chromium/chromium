@@ -53,7 +53,8 @@ class FileAnalysisRequestBase : public BinaryUploadRequest {
 
   // Opens the file, reads it, and then calls OnGotFileData on the UI thread.
   // This should be called on a thread with base::MayBlock().
-  void OpenFile(const std::atomic<bool>* is_cancelled = nullptr);
+  // This function is virtual for testing.
+  virtual void OpenFile(const std::atomic<bool>* is_cancelled);
 
   // Cancels the request if it hasn't been opened yet, triggering callbacks
   // to avoid memory leaks. Resetting data_callback_ destroys the bound
