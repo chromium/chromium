@@ -106,6 +106,9 @@ public class ListMenuItemProperties {
 
     public static final WritableIntPropertyKey ORDER = new WritableIntPropertyKey();
 
+    public static final WritableBooleanPropertyKey CHECKABLE = new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey CHECKED = new WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = {
         TITLE_ID,
         TITLE,
@@ -135,6 +138,8 @@ public class ListMenuItemProperties {
         TOUCH_LISTENER,
         GENERIC_MOTION_LISTENER,
         LONG_CLICK_LISTENER,
-        ORDER
+        ORDER,
+        CHECKABLE,
+        CHECKED
     };
 }

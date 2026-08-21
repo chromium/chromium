@@ -98,6 +98,19 @@ class AppMenuItemViewBinder {
             view.setHovered(model.get(AppMenuItemProperties.HAS_HOVER_BACKGROUND));
         } else if (key == AppMenuItemProperties.KEY_LISTENER) {
             view.setOnKeyListener(model.get(AppMenuItemProperties.KEY_LISTENER));
+        } else if (key == AppMenuItemProperties.CHECKABLE || key == AppMenuItemProperties.CHECKED) {
+            view.setAccessibilityDelegate(
+                    new View.AccessibilityDelegate() {
+                        @Override
+                        public void onInitializeAccessibilityNodeInfo(
+                                View host, AccessibilityNodeInfo info) {
+                            super.onInitializeAccessibilityNodeInfo(host, info);
+                            info.setCheckable(true);
+                            info.setChecked(
+                                    model.containsKey(AppMenuItemProperties.CHECKED)
+                                            && model.get(AppMenuItemProperties.CHECKED));
+                        }
+                    });
         }
     }
 

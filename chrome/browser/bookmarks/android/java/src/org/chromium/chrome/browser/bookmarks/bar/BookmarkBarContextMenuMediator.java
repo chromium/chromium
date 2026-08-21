@@ -581,6 +581,8 @@ class BookmarkBarContextMenuMediator {
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.TITLE, title)
                         .with(ListMenuItemProperties.START_ICON_DRAWABLE, startIcon)
+                        .with(ListMenuItemProperties.CHECKABLE, true)
+                        .with(ListMenuItemProperties.CHECKED, isChecked)
                         .with(
                                 ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
                                 isIncognito

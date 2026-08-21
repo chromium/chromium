@@ -253,6 +253,35 @@ public class AppMenuItemViewBinderTest {
     @Test
     @UiThreadTest
     @MediumTest
+    public void testStandardMenuItem_WithCheckedAndCheckable() {
+        PropertyModel standardModel = createStandardMenuItem(MENU_ID1, TITLE_1);
+
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
+        View view = mModelListAdapter.getView(0, null, parentView);
+
+        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
+        view.onInitializeAccessibilityNodeInfo(info);
+        Assert.assertFalse("Should not be checkable initially", info.isCheckable());
+        Assert.assertFalse("Should not be checked initially", info.isChecked());
+
+        standardModel.set(AppMenuItemProperties.CHECKABLE, true);
+        standardModel.set(AppMenuItemProperties.CHECKED, true);
+
+        AccessibilityNodeInfo checkedInfo = AccessibilityNodeInfo.obtain();
+        view.onInitializeAccessibilityNodeInfo(checkedInfo);
+        Assert.assertTrue("Should be checkable", checkedInfo.isCheckable());
+        Assert.assertTrue("Should be checked", checkedInfo.isChecked());
+
+        standardModel.set(AppMenuItemProperties.CHECKED, false);
+        AccessibilityNodeInfo uncheckedInfo = AccessibilityNodeInfo.obtain();
+        view.onInitializeAccessibilityNodeInfo(uncheckedInfo);
+        Assert.assertTrue("Should be checkable", uncheckedInfo.isCheckable());
+        Assert.assertFalse("Should not be checked", uncheckedInfo.isChecked());
+    }
+
+    @Test
+    @UiThreadTest
+    @MediumTest
     public void testStandardMenuItem_WithClickHandler_OnClickListener() throws TimeoutException {
         PropertyModel standardModel = createStandardMenuItem(MENU_ID1, TITLE_1);
         standardModel.set(AppMenuItemProperties.CLICK_HANDLER, mClickHandler);
