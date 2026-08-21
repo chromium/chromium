@@ -4,7 +4,8 @@
 
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 
-#include "base/compiler_specific.h"
+#include <vector>
+
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/glic/resources/glic_resources.h"
@@ -20,12 +21,11 @@ class VectorIconData {
   explicit VectorIconData(
       std::vector<std::vector<gfx::PathElement>> path_elements)
       : path_elements_(std::move(path_elements)) {
-    reps_size_ = path_elements_.size();
-    reps_ = std::make_unique<gfx::VectorIconRep[]>(reps_size_);
-    for (size_t i = 0; i < reps_size_; ++i) {
-      UNSAFE_TODO(reps_[i]) = gfx::VectorIconRep{path_elements_[i]};
+    reps_.reserve(path_elements_.size());
+    for (const auto& elements : path_elements_) {
+      reps_.push_back(gfx::VectorIconRep{elements});
     }
-    icon_ = std::make_unique<gfx::VectorIcon>(reps_.get(), reps_size_, "");
+    icon_ = std::make_unique<gfx::VectorIcon>(reps_.data(), reps_.size(), "");
   }
 
   VectorIconData& operator=(const VectorIconData&) = delete;
@@ -38,8 +38,7 @@ class VectorIconData {
   // machinery) remain valid, since they do not own the data to which they
   // refer.
   std::vector<std::vector<gfx::PathElement>> path_elements_;
-  std::unique_ptr<gfx::VectorIconRep[]> reps_;
-  size_t reps_size_;
+  std::vector<gfx::VectorIconRep> reps_;
   std::unique_ptr<gfx::VectorIcon> icon_;
 };
 
