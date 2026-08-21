@@ -47,7 +47,6 @@ class AutofillProfileComparatorTest : public testing::Test {
     using Super::CompareTokens;
     using Super::HaveMergeableAddresses;
     using Super::HaveMergeableCompanyNames;
-    using Super::HaveMergeablePhoneNumbers;
     using Super::Super;
     using Super::UniqueTokens;
 
@@ -144,14 +143,20 @@ class AutofillProfileComparatorTest : public testing::Test {
   void MergePhoneNumbersAndExpect(const AutofillProfile& a,
                                   const AutofillProfile& b,
                                   const std::u16string& expected_str) {
-    AutofillProfile dummy(kLegacyHierarchyCountryCode);
+    AutofillProfile profile(kLegacyHierarchyCountryCode);
 
     // Merge the phone numbers.
-    PhoneNumber actual(&dummy);
-    ASSERT_TRUE(comparator_.MergePhoneNumbers(a, b, actual));
+    PhoneNumber actual(&profile);
+    const AutofillProfile::ProfileMergeResult expected_result =
+        b.GetRawInfo(PHONE_HOME_WHOLE_NUMBER) == expected_str
+            ? AutofillProfile::ProfileMergeResult::
+                  kMergeSucceededWithoutModification
+            : AutofillProfile::ProfileMergeResult::
+                  kMergeSucceededWithModification;
+    EXPECT_EQ(comparator_.MergePhoneNumbers(a, b, actual), expected_result);
 
     // Construct the expected value.
-    PhoneNumber expected(&dummy);
+    PhoneNumber expected(&profile);
     expected.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, expected_str);
 
     // Validate that we get what we expect.
@@ -332,23 +337,34 @@ TEST_F(AutofillProfileComparatorTest, HaveMergeableCompanyNames) {
   EXPECT_FALSE(comparator_.HaveMergeableCompanyNames(different, p1));
 }
 
-TEST_F(AutofillProfileComparatorTest, HaveMergeablePhoneNumbers) {
+// Tests that MergePhoneNumbers correctly identifies mergeable and
+// non-mergeable phone numbers.
+TEST_F(AutofillProfileComparatorTest, MergePhoneNumbers_Mergeability) {
   AutofillProfile empty = CreateProfileWithPhoneNumber("");
   AutofillProfile p1 = CreateProfileWithPhoneNumber("+1 (800) 670-8700");
   AutofillProfile p2 = CreateProfileWithPhoneNumber("6708700");
   AutofillProfile different = CreateProfileWithPhoneNumber("1-800-321-4567");
 
-  EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p1, p1));
-  EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p1, p2));
+  PhoneNumber phone(&p1);
+  EXPECT_NE(comparator_.MergePhoneNumbers(p1, p1, phone),
+            AutofillProfile::ProfileMergeResult::kMergeFailed);
+  EXPECT_NE(comparator_.MergePhoneNumbers(p1, p2, phone),
+            AutofillProfile::ProfileMergeResult::kMergeFailed);
 
-  EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p2, p1));
-  EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p2, p2));
+  EXPECT_NE(comparator_.MergePhoneNumbers(p2, p1, phone),
+            AutofillProfile::ProfileMergeResult::kMergeFailed);
+  EXPECT_NE(comparator_.MergePhoneNumbers(p2, p2, phone),
+            AutofillProfile::ProfileMergeResult::kMergeFailed);
 
-  EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p1, empty));
-  EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(empty, p2));
+  EXPECT_NE(comparator_.MergePhoneNumbers(p1, empty, phone),
+            AutofillProfile::ProfileMergeResult::kMergeFailed);
+  EXPECT_NE(comparator_.MergePhoneNumbers(empty, p2, phone),
+            AutofillProfile::ProfileMergeResult::kMergeFailed);
 
-  EXPECT_FALSE(comparator_.HaveMergeablePhoneNumbers(p1, different));
-  EXPECT_FALSE(comparator_.HaveMergeablePhoneNumbers(different, p1));
+  EXPECT_EQ(comparator_.MergePhoneNumbers(p1, different, phone),
+            AutofillProfile::ProfileMergeResult::kMergeFailed);
+  EXPECT_EQ(comparator_.MergePhoneNumbers(different, p1, phone),
+            AutofillProfile::ProfileMergeResult::kMergeFailed);
 }
 
 TEST_F(AutofillProfileComparatorTest, HaveMergeableAddresses) {

@@ -114,8 +114,11 @@ bool PaymentsProfileComparator::IsContactEqualOrSuperset(
         !super.HasInfo(autofill::PHONE_HOME_WHOLE_NUMBER)) {
       return false;
     }
-    if (!HaveMergeablePhoneNumbers(super, sub))
+    autofill::PhoneNumber phone(&super);
+    if (MergePhoneNumbers(super, sub, phone) ==
+        autofill::AutofillProfile::ProfileMergeResult::kMergeFailed) {
       return false;
+    }
   }
   if (options_->request_payer_email()) {
     if (sub.HasInfo(autofill::EMAIL_ADDRESS) &&

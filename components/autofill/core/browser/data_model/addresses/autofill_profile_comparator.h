@@ -126,13 +126,16 @@ class AutofillProfileComparator {
                          CompanyInfo& company_info) const;
 
   // Populates `phone_number` with the result of merging the phone numbers in
-  // `new_profile` and `old_profile`. Returns true if successful. Expects that
-  // `new_profile` and `old_profile` have already been found to be mergeable.
+  // `new_profile` and `old_profile` if the merge succeeds. Returns the merge
+  // result.
   //
   // Heuristic: Populate the missing parts of each number from the other.
-  bool MergePhoneNumbers(const AutofillProfile& new_profile,
-                         const AutofillProfile& old_profile,
-                         PhoneNumber& phone_number) const;
+  // TODO(crbug.com/453945181): Return a newly created `PhoneNumber` instead of
+  // modifying `phone_number`.
+  AutofillProfile::ProfileMergeResult MergePhoneNumbers(
+      const AutofillProfile& new_profile,
+      const AutofillProfile& old_profile,
+      PhoneNumber& phone_number) const;
 
   // Populates `address` with the result of merging the addresses in
   // `new_profile` and `old_profile`. Returns true if successful. Expects that
@@ -197,17 +200,6 @@ class AutofillProfileComparator {
   // Note that this method does not provide any guidance on actually merging
   // the company names.
   bool HaveMergeableCompanyNames(const AutofillProfile& p1,
-                                 const AutofillProfile& p2) const;
-
-  // Returns true if `p1` and `p2` have phone numbers which are equivalent for
-  // the purposes of merging the two profiles. This means one of the phone
-  // numbers is empty, or the phone numbers match modulo formatting differences
-  // or missing information. For example, if the phone numbers are the same but
-  // one has an extension, country code, or area code and the other does not.
-  //
-  // Note that this method does not provide any guidance on actually merging
-  // the phone numbers.
-  bool HaveMergeablePhoneNumbers(const AutofillProfile& p1,
                                  const AutofillProfile& p2) const;
 
   // Returns true if `p1` and `p2` have addresses which are equivalent for the

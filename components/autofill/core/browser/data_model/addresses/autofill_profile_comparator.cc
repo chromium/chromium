@@ -154,7 +154,9 @@ bool AutofillProfileComparator::AreMergeable(const AutofillProfile& p1,
     return false;
   }
 
-  if (!HaveMergeablePhoneNumbers(p1, p2)) {
+  PhoneNumber phone_number(&p1);
+  if (MergePhoneNumbers(p1, p2, phone_number) ==
+      AutofillProfile::ProfileMergeResult::kMergeFailed) {
     DVLOG(1) << "Different phone numbers.";
     return false;
   }
@@ -260,30 +262,58 @@ bool AutofillProfileComparator::MergeCompanyNames(
   return true;
 }
 
-bool AutofillProfileComparator::MergePhoneNumbers(
-    const AutofillProfile& new_profile,
-    const AutofillProfile& old_profile,
-    PhoneNumber& phone_number) const {
+AutofillProfile::ProfileMergeResult
+AutofillProfileComparator::MergePhoneNumbers(const AutofillProfile& new_profile,
+                                             const AutofillProfile& old_profile,
+                                             PhoneNumber& phone_number) const {
+  // We work with the raw phone numbers to avoid losing any helpful information
+  // as we parse.
+  using enum AutofillProfile::ProfileMergeResult;
   const FieldType kWholePhoneNumber = PHONE_HOME_WHOLE_NUMBER;
-  const std::u16string& s1 = new_profile.GetRawInfo(kWholePhoneNumber);
-  const std::u16string& s2 = old_profile.GetRawInfo(kWholePhoneNumber);
+  const std::u16string& new_phone_number =
+      new_profile.GetRawInfo(kWholePhoneNumber);
+  const std::u16string& old_phone_number =
+      old_profile.GetRawInfo(kWholePhoneNumber);
 
-  DCHECK(HaveMergeablePhoneNumbers(new_profile, old_profile))
-      << "Phone numbers are not mergeable: '" << s1 << "' vs '" << s2 << "'";
+  if (new_phone_number == old_phone_number) {
+    phone_number.SetRawInfo(kWholePhoneNumber, new_phone_number);
+    return kMergeSucceededWithoutModification;
+  }
 
-  if (normalization::HasOnlySkippableCharacters(s1) &&
-      normalization::HasOnlySkippableCharacters(s2)) {
+  if (normalization::HasOnlySkippableCharacters(new_phone_number) &&
+      normalization::HasOnlySkippableCharacters(old_phone_number)) {
     phone_number.SetRawInfo(kWholePhoneNumber, std::u16string());
+    return kMergeSucceededWithoutModification;
   }
 
-  if (normalization::HasOnlySkippableCharacters(s1)) {
-    phone_number.SetRawInfo(kWholePhoneNumber, s2);
-    return true;
+  if (normalization::HasOnlySkippableCharacters(new_phone_number)) {
+    phone_number.SetRawInfo(kWholePhoneNumber, old_phone_number);
+    return kMergeSucceededWithoutModification;
   }
 
-  if (normalization::HasOnlySkippableCharacters(s2) || s1 == s2) {
-    phone_number.SetRawInfo(kWholePhoneNumber, s1);
-    return true;
+  if (normalization::HasOnlySkippableCharacters(old_phone_number)) {
+    phone_number.SetRawInfo(kWholePhoneNumber, new_phone_number);
+    return kMergeSucceededWithModification;
+  }
+
+  // TODO(crbug.com/550246835): Modify ::autofill::i18n::PhoneNumbersMatch to
+  // support SHORT_NSN_MATCH and just call that instead of accessing the
+  // underlying utility library directly?
+
+  // Parse and compare the phone numbers.
+  // The phone number util library needs the numbers in utf8.
+  PhoneNumberUtil* phone_util = PhoneNumberUtil::GetInstance();
+  switch (phone_util->IsNumberMatchWithTwoStrings(
+      base::UTF16ToUTF8(new_phone_number),
+      base::UTF16ToUTF8(old_phone_number))) {
+    case PhoneNumberUtil::INVALID_NUMBER:
+    case PhoneNumberUtil::NO_MATCH:
+      return kMergeFailed;
+    case PhoneNumberUtil::SHORT_NSN_MATCH:
+    case PhoneNumberUtil::NSN_MATCH:
+    case PhoneNumberUtil::EXACT_MATCH:
+      // A merge is possible.
+      break;
   }
 
   // Figure out a country code hint.
@@ -299,18 +329,18 @@ bool AutofillProfileComparator::MergePhoneNumbers(
   }
 
   // Parse the phone numbers.
-  PhoneNumberUtil* phone_util = PhoneNumberUtil::GetInstance();
-
   ::i18n::phonenumbers::PhoneNumber n1;
-  if (phone_util->ParseAndKeepRawInput(base::UTF16ToUTF8(s1), region, &n1) !=
+  if (phone_util->ParseAndKeepRawInput(base::UTF16ToUTF8(new_phone_number),
+                                       region, &n1) !=
       PhoneNumberUtil::NO_PARSING_ERROR) {
-    return false;
+    return kMergeFailed;
   }
 
   ::i18n::phonenumbers::PhoneNumber n2;
-  if (phone_util->ParseAndKeepRawInput(base::UTF16ToUTF8(s2), region, &n2) !=
+  if (phone_util->ParseAndKeepRawInput(base::UTF16ToUTF8(old_phone_number),
+                                       region, &n2) !=
       PhoneNumberUtil::NO_PARSING_ERROR) {
-    return false;
+    return kMergeFailed;
   }
 
   // `country_code()` defaults to the provided `region`. But if one of the
@@ -328,8 +358,8 @@ bool AutofillProfileComparator::MergePhoneNumbers(
   // - Both are not in international format, so their country codes both default
   //   to `region`.
   // - One of them is in international format, so we prefer that country code.
-  DCHECK(HasInternationalCountryCode(n1) != HasInternationalCountryCode(n2) ||
-         n1.country_code() == n2.country_code());
+  CHECK(HasInternationalCountryCode(n1) != HasInternationalCountryCode(n2) ||
+        n1.country_code() == n2.country_code());
   merged_number.set_country_code(
       HasInternationalCountryCode(n1) ? n1.country_code() : n2.country_code());
   merged_number.set_national_number(
@@ -370,8 +400,11 @@ bool AutofillProfileComparator::MergePhoneNumbers(
     new_number = new_number.substr(offset);
   }
 
-  phone_number.SetRawInfo(kWholePhoneNumber, base::UTF8ToUTF16(new_number));
-  return true;
+  std::u16string merged_number_u16 = base::UTF8ToUTF16(new_number);
+  phone_number.SetRawInfo(kWholePhoneNumber, merged_number_u16);
+  return merged_number_u16 == old_phone_number
+             ? kMergeSucceededWithoutModification
+             : kMergeSucceededWithModification;
 }
 
 bool AutofillProfileComparator::MergeAddresses(
@@ -432,7 +465,10 @@ AutofillProfileComparator::NonMergeableSettingVisibleTypes(
                        b.GetNameInfo(), b.GetAddressCountryCode()));
   }
   maybe_add_type(COMPANY_NAME, HaveMergeableCompanyNames(a, b));
-  maybe_add_type(PHONE_HOME_WHOLE_NUMBER, HaveMergeablePhoneNumbers(a, b));
+  PhoneNumber phone(&a);
+  maybe_add_type(PHONE_HOME_WHOLE_NUMBER,
+                 MergePhoneNumbers(a, b, phone) !=
+                     AutofillProfile::ProfileMergeResult::kMergeFailed);
   EmailInfo email;
   maybe_add_type(EMAIL_ADDRESS, MergeEmailAddresses(a, b, email) !=
                                     AutofillProfile::ProfileMergeResult::
@@ -533,42 +569,6 @@ bool AutofillProfileComparator::HaveMergeableCompanyNames(
          CompareTokens(normalization::NormalizeForComparison(company_name_1),
                        normalization::NormalizeForComparison(company_name_2)) !=
              DIFFERENT_TOKENS;
-}
-
-bool AutofillProfileComparator::HaveMergeablePhoneNumbers(
-    const AutofillProfile& p1,
-    const AutofillProfile& p2) const {
-  // We work with the raw phone numbers to avoid losing any helpful information
-  // as we parse.
-  const std::u16string& raw_phone_1 = p1.GetRawInfo(PHONE_HOME_WHOLE_NUMBER);
-  const std::u16string& raw_phone_2 = p2.GetRawInfo(PHONE_HOME_WHOLE_NUMBER);
-
-  // Are the two phone numbers trivially mergeable?
-  if (normalization::HasOnlySkippableCharacters(raw_phone_1) ||
-      normalization::HasOnlySkippableCharacters(raw_phone_2) ||
-      raw_phone_1 == raw_phone_2) {
-    return true;
-  }
-
-  // TODO(rogerm): Modify ::autofill::i18n::PhoneNumbersMatch to support
-  // SHORT_NSN_MATCH and just call that instead of accessing the underlying
-  // utility library directly?
-
-  // Parse and compare the phone numbers.
-  // The phone number util library needs the numbers in utf8.
-  PhoneNumberUtil* phone_util = PhoneNumberUtil::GetInstance();
-  switch (phone_util->IsNumberMatchWithTwoStrings(
-      base::UTF16ToUTF8(raw_phone_1), base::UTF16ToUTF8(raw_phone_2))) {
-    case PhoneNumberUtil::SHORT_NSN_MATCH:
-    case PhoneNumberUtil::NSN_MATCH:
-    case PhoneNumberUtil::EXACT_MATCH:
-      return true;
-    case PhoneNumberUtil::INVALID_NUMBER:
-    case PhoneNumberUtil::NO_MATCH:
-      return false;
-    default:
-      NOTREACHED();
-  }
 }
 
 bool AutofillProfileComparator::HaveMergeableAddresses(
