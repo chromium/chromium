@@ -21,7 +21,6 @@ experimental domain Storage
       websql
       service_workers
       cache_storage
-      shared_storage
       storage_buckets
       all
       other
@@ -41,147 +40,6 @@ experimental domain Storage
       string issuerOrigin
       number count
 
-
-  # Enum of shared storage access scopes.
-  type SharedStorageAccessScope extends string
-    enum
-      window
-      sharedStorageWorklet
-      header
-
-  # Enum of shared storage access methods.
-  type SharedStorageAccessMethod extends string
-    enum
-      addModule
-      createWorklet
-      selectURL
-      run
-      batchUpdate
-      set
-      append
-      delete
-      clear
-      get
-      keys
-      values
-      entries
-      length
-      remainingBudget
-
-  # Struct for a single key-value pair in an origin's shared storage.
-  type SharedStorageEntry extends object
-    properties
-      string key
-      string value
-
-  # Details for an origin's shared storage.
-  type SharedStorageMetadata extends object
-    properties
-      # Time when the origin's shared storage was last created.
-      Network.TimeSinceEpoch creationTime
-      # Number of key-value pairs stored in origin's shared storage.
-      integer length
-      # Current amount of bits of entropy remaining in the navigation budget.
-      number remainingBudget
-      # Total number of bytes stored as key-value pairs in origin's shared
-      # storage.
-      integer bytesUsed
-
-  # Represents a dictionary object passed in as privateAggregationConfig to
-  # run or selectURL.
-  type SharedStoragePrivateAggregationConfig extends object
-    properties
-      # The chosen aggregation service deployment.
-      optional string aggregationCoordinatorOrigin
-      # The context ID provided.
-      optional string contextId
-      # Configures the maximum size allowed for filtering IDs.
-      integer filteringIdMaxBytes
-      # The limit on the number of contributions in the final report.
-      optional integer maxContributions
-
-  # Pair of reporting metadata details for a candidate URL for `selectURL()`.
-  type SharedStorageReportingMetadata extends object
-    properties
-      string eventType
-      string reportingUrl
-
-  # Bundles a candidate URL with its reporting metadata.
-  type SharedStorageUrlWithMetadata extends object
-    properties
-      # Spec of candidate URL.
-      string url
-      # Any associated reporting metadata.
-      array of SharedStorageReportingMetadata reportingMetadata
-
-  # Bundles the parameters for shared storage access events whose
-  # presence/absence can vary according to SharedStorageAccessType.
-  type SharedStorageAccessParams extends object
-    properties
-      # Spec of the module script URL.
-      # Present only for SharedStorageAccessMethods: addModule and
-      # createWorklet.
-      optional string scriptSourceUrl
-      # String denoting "context-origin", "script-origin", or a custom
-      # origin to be used as the worklet's data origin.
-      # Present only for SharedStorageAccessMethod: createWorklet.
-      optional string dataOrigin
-      # Name of the registered operation to be run.
-      # Present only for SharedStorageAccessMethods: run and selectURL.
-      optional string operationName
-      # ID of the operation call.
-      # Present only for SharedStorageAccessMethods: run and selectURL.
-      optional string operationId
-      # Whether or not to keep the worket alive for future run or selectURL
-      # calls.
-      # Present only for SharedStorageAccessMethods: run and selectURL.
-      optional boolean keepAlive
-      # Configures the private aggregation options.
-      # Present only for SharedStorageAccessMethods: run and selectURL.
-      optional SharedStoragePrivateAggregationConfig privateAggregationConfig
-      # The operation's serialized data in bytes (converted to a string).
-      # Present only for SharedStorageAccessMethods: run and selectURL.
-      # TODO(crbug.com/401011862): Consider updating this parameter to binary.
-      optional string serializedData
-      # Array of candidate URLs' specs, along with any associated metadata.
-      # Present only for SharedStorageAccessMethod: selectURL.
-      optional array of SharedStorageUrlWithMetadata urlsWithMetadata
-      # Spec of the URN:UUID generated for a selectURL call.
-      # Present only for SharedStorageAccessMethod: selectURL.
-      optional string urnUuid
-      # Key for a specific entry in an origin's shared storage.
-      # Present only for SharedStorageAccessMethods: set, append, delete, and
-      # get.
-      optional string key
-      # Value for a specific entry in an origin's shared storage.
-      # Present only for SharedStorageAccessMethods: set and append.
-      optional string value
-      # Whether or not to set an entry for a key if that key is already present.
-      # Present only for SharedStorageAccessMethod: set.
-      optional boolean ignoreIfPresent
-      # A number denoting the (0-based) order of the worklet's
-      # creation relative to all other shared storage worklets created by
-      # documents using the current storage partition.
-      # Present only for SharedStorageAccessMethods: addModule, createWorklet.
-      optional integer workletOrdinal
-      # Hex representation of the DevTools token used as the TargetID for the
-      # associated shared storage worklet.
-      # Present only for SharedStorageAccessMethods: addModule, createWorklet,
-      # run, selectURL, and any other SharedStorageAccessMethod when the
-      # SharedStorageAccessScope is sharedStorageWorklet.
-      optional Target.TargetID workletTargetId
-      # Name of the lock to be acquired, if present.
-      # Optionally present only for SharedStorageAccessMethods: batchUpdate,
-      # set, append, delete, and clear.
-      optional string withLock
-      # If the method has been called as part of a batchUpdate, then this
-      # number identifies the batch to which it belongs.
-      # Optionally present only for SharedStorageAccessMethods:
-      # batchUpdate (required), set, append, delete, and clear.
-      optional string batchUpdateId
-      # Number of modifier methods sent in batch.
-      # Present only for SharedStorageAccessMethod: batchUpdate.
-      optional integer batchSize
 
   type StorageBucketsDurability extends string
     enum
@@ -351,51 +209,6 @@ experimental domain Storage
       # True if any tokens were deleted, false otherwise.
       boolean didDeleteTokens
 
-  # Gets metadata for an origin's shared storage.
-  experimental command getSharedStorageMetadata
-    parameters
-      string ownerOrigin
-    returns
-      SharedStorageMetadata metadata
-
-  # Gets the entries in an given origin's shared storage.
-  experimental command getSharedStorageEntries
-    parameters
-      string ownerOrigin
-    returns
-      array of SharedStorageEntry entries
-
-  # Sets entry with `key` and `value` for a given origin's shared storage.
-  experimental command setSharedStorageEntry
-    parameters
-      string ownerOrigin
-      string key
-      string value
-      # If `ignoreIfPresent` is included and true, then only sets the entry if
-      # `key` doesn't already exist.
-      optional boolean ignoreIfPresent
-
-  # Deletes entry for `key` (if it exists) for a given origin's shared storage.
-  experimental command deleteSharedStorageEntry
-    parameters
-      string ownerOrigin
-      string key
-
-  # Clears all entries for a given origin's shared storage.
-  experimental command clearSharedStorageEntries
-    parameters
-      string ownerOrigin
-
-  # Resets the budget for `ownerOrigin` by clearing all budget withdrawals.
-  experimental command resetSharedStorageBudget
-    parameters
-      string ownerOrigin
-
-  # Enables/disables issuing of sharedStorageAccessed events.
-  experimental command setSharedStorageTracking
-    parameters
-      boolean enable
-
   # Set tracking for a storage key's buckets.
   experimental command setStorageBucketTracking
     parameters
@@ -457,47 +270,6 @@ experimental domain Storage
       string storageKey
       # Storage bucket to update.
       string bucketId
-
-  # Shared storage was accessed by the associated page.
-  # The following parameters are included in all events.
-  event sharedStorageAccessed
-    parameters
-      # Time of the access.
-      Network.TimeSinceEpoch accessTime
-      # Enum value indicating the access scope.
-      SharedStorageAccessScope scope
-      # Enum value indicating the Shared Storage API method invoked.
-      SharedStorageAccessMethod method
-      # DevTools Frame Token for the primary frame tree's root.
-      Page.FrameId mainFrameId
-      # Serialization of the origin owning the Shared Storage data.
-      string ownerOrigin
-      # Serialization of the site owning the Shared Storage data.
-      string ownerSite
-      # The sub-parameters wrapped by `params` are all optional and their
-      # presence/absence depends on `type`.
-      SharedStorageAccessParams params
-
-  # A shared storage run or selectURL operation finished its execution.
-  # The following parameters are included in all events.
-  event sharedStorageWorkletOperationExecutionFinished
-    parameters
-      # Time that the operation finished.
-      Network.TimeSinceEpoch finishedTime
-      # Time, in microseconds, from start of shared storage JS API call until
-      # end of operation execution in the worklet.
-      integer executionTime
-      # Enum value indicating the Shared Storage API method invoked.
-      SharedStorageAccessMethod method
-      # ID of the operation call.
-      string operationId
-      # Hex representation of the DevTools token used as the TargetID for the
-      # associated shared storage worklet.
-      Target.TargetID workletTargetId
-      # DevTools Frame Token for the primary frame tree's root.
-      Page.FrameId mainFrameId
-      # Serialization of the origin owning the Shared Storage data.
-      string ownerOrigin
 
   event storageBucketCreatedOrUpdated
     parameters

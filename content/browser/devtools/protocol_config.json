@@ -187,7 +187,7 @@
             {
                 "domain": "Storage",
                 "exclude": ["runBounceTrackingMitigations", "getRelatedWebsiteSets"],
-                "async": ["getUsageAndQuota", "clearDataForOrigin", "clearDataForStorageKey", "getCookies", "setCookies", "clearCookies", "overrideQuotaForOrigin", "getTrustTokens", "clearTrustTokens", "getSharedStorageMetadata", "getSharedStorageEntries", "setSharedStorageEntry", "deleteSharedStorageEntry", "clearSharedStorageEntries", "resetSharedStorageBudget", "getStorageBucketList"]
+                "async": ["getUsageAndQuota", "clearDataForOrigin", "clearDataForStorageKey", "getCookies", "setCookies", "clearCookies", "overrideQuotaForOrigin", "getTrustTokens", "clearTrustTokens", "getStorageBucketList"]
             },
             {
                 "domain": "SystemInfo",
