@@ -23,6 +23,7 @@ ScrollJankV4Frame::BeginFrameArgsForScrollJank::From(
     uint64_t result_id) {
   return {.frame_time = args.frame_time,
           .interval = args.interval,
+          .deadline_derived_interval = args.deadline_derived_interval,
           .result_id = result_id};
 }
 
@@ -33,6 +34,7 @@ ScrollJankV4Frame::BeginFrameArgsForScrollJank::From(
     uint64_t result_id) {
   return {.frame_time = args.frame_time,
           .interval = args.interval,
+          .deadline_derived_interval = args.deadline_derived_interval,
           .result_id = result_id};
 }
 

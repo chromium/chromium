@@ -191,6 +191,10 @@ class CC_EXPORT ScrollJankV4Decider {
     //        ```
     std::optional<base::TimeTicks> presentation_ts;
 
+    // VSync interval derived from frame timelines at the start of this frame.
+    // If present, the subsequent frame will be evaluated against this interval.
+    std::optional<base::TimeDelta> deadline_derived_interval;
+
     // The running delivery cut-off. At a high-level, this value represents
     // how quickly Chrome was previously able to present inputs (weighted
     // towards recent frames). If Chrome misses a VSync, the decider will
@@ -268,6 +272,7 @@ class CC_EXPORT ScrollJankV4Decider {
 
   JankReasonArray<int> CalculateMissedVsyncsPerReason(
       int vsyncs_since_previous_frame,
+      base::TimeDelta vsync_interval,
       std::optional<base::TimeTicks> earliest_input_generation_ts,
       const ScrollJankV4Frame::Stage::ScrollUpdates& updates,
       const ScrollJankV4Frame::ScrollDamage& damage,
@@ -278,10 +283,10 @@ class CC_EXPORT ScrollJankV4Decider {
 
   std::optional<base::TimeDelta> CalculateRunningDeliveryCutoff(
       int vsyncs_since_previous_frame,
+      base::TimeDelta vsync_interval,
       bool is_janky,
       const ScrollJankV4Frame::Stage::ScrollUpdates& updates,
       const ScrollJankV4Frame::ScrollDamage& damage,
-      const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
       ScrollJankV4Result& result) const;
 
   void Reset();

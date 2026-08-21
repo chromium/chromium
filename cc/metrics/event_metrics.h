@@ -286,6 +286,9 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
     // See `viz::BeginFrameArgs::interval`.
     base::TimeDelta interval;
 
+    // See `viz::BeginFrameArgs::deadline_derived_interval`.
+    std::optional<base::TimeDelta> deadline_derived_interval;
+
     // See `viz::BeginFrameArgs::frame_id`.
     viz::BeginFrameId frame_id;
 

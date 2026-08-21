@@ -2455,6 +2455,206 @@ TEST_F(ScrollJankV4DeciderTest,
           JankReason::kMissedVsyncDueToDeceleratingInputFrameDelivery, 1));
 }
 
+TEST_F(ScrollJankV4DeciderTest,
+       IntervalDecreaseWithDeadlineDerivedIntervalUnset) {
+  constexpr base::TimeDelta kOldInterval = base::Milliseconds(16);
+  constexpr base::TimeDelta kNewInterval = base::Milliseconds(8);
+
+  ScrollJankV4Result result1 = decider_.DecideJankForFrameWithRealScrollUpdates(
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(95),
+                         .last_input_generation_ts = MillisSinceEpoch(95),
+                         .has_inertial_input = false,
+                         .total_raw_delta_pixels = 5.0f,
+                         .max_abs_inertial_raw_delta_pixels = 0.0f},
+                    /* synthetic= */ std::nullopt, kScrollId),
+      ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(108)}},
+      {.frame_time = MillisSinceEpoch(100), .interval = kOldInterval});
+  EXPECT_THAT(result1, kHasNoMissedVsyncs);
+
+  // Presented 32 ms after frame 1. Should be evaluated against frame 2's
+  // interval (8 ms), resulting in 3 missed VSyncs.
+  ScrollJankV4Result result2 = decider_.DecideJankForFrameWithRealScrollUpdates(
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(127),
+                         .last_input_generation_ts = MillisSinceEpoch(127),
+                         .has_inertial_input = false,
+                         .total_raw_delta_pixels = 5.0f,
+                         .max_abs_inertial_raw_delta_pixels = 0.0f},
+                    /* synthetic= */ std::nullopt, kScrollId),
+      ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(140)}},
+      {.frame_time = MillisSinceEpoch(132), .interval = kNewInterval});
+  EXPECT_THAT(result2,
+              HasMissedVsyncs(JankReason::kMissedVsyncDuringFastScroll, 3));
+  EXPECT_EQ(result2.vsyncs_since_previous_frame, 4);
+
+  // Presented 32 ms after frame 2. Should be evaluated against frame 3's
+  // interval (8 ms), resulting in 3 missed VSyncs.
+  ScrollJankV4Result result3 = decider_.DecideJankForFrameWithRealScrollUpdates(
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(159),
+                         .last_input_generation_ts = MillisSinceEpoch(159),
+                         .has_inertial_input = false,
+                         .total_raw_delta_pixels = 5.0f,
+                         .max_abs_inertial_raw_delta_pixels = 0.0f},
+                    /* synthetic= */ std::nullopt, kScrollId),
+      ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(172)}},
+      {.frame_time = MillisSinceEpoch(164), .interval = kNewInterval});
+  EXPECT_THAT(result3,
+              HasMissedVsyncs(JankReason::kMissedVsyncDuringFastScroll, 3));
+  EXPECT_EQ(result3.vsyncs_since_previous_frame, 4);
+}
+
+TEST_F(ScrollJankV4DeciderTest,
+       IntervalIncreaseWithDeadlineDerivedIntervalUnset) {
+  constexpr base::TimeDelta kOldInterval = base::Milliseconds(8);
+  constexpr base::TimeDelta kNewInterval = base::Milliseconds(16);
+
+  ScrollJankV4Result result1 = decider_.DecideJankForFrameWithRealScrollUpdates(
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(95),
+                         .last_input_generation_ts = MillisSinceEpoch(95),
+                         .has_inertial_input = false,
+                         .total_raw_delta_pixels = 5.0f,
+                         .max_abs_inertial_raw_delta_pixels = 0.0f},
+                    /* synthetic= */ std::nullopt, kScrollId),
+      ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(108)}},
+      {.frame_time = MillisSinceEpoch(100), .interval = kOldInterval});
+  EXPECT_THAT(result1, kHasNoMissedVsyncs);
+
+  // Presented 32 ms after frame 1. Should be evaluated against frame 2's
+  // interval (16 ms), resulting in 1 missed VSync.
+  ScrollJankV4Result result2 = decider_.DecideJankForFrameWithRealScrollUpdates(
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(127),
+                         .last_input_generation_ts = MillisSinceEpoch(127),
+                         .has_inertial_input = false,
+                         .total_raw_delta_pixels = 5.0f,
+                         .max_abs_inertial_raw_delta_pixels = 0.0f},
+                    /* synthetic= */ std::nullopt, kScrollId),
+      ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(140)}},
+      {.frame_time = MillisSinceEpoch(132), .interval = kNewInterval});
+  EXPECT_THAT(result2,
+              HasMissedVsyncs(JankReason::kMissedVsyncDuringFastScroll, 1));
+  EXPECT_EQ(result2.vsyncs_since_previous_frame, 2);
+
+  // Presented 32 ms after frame 2. Should be evaluated against frame 3's
+  // interval (16 ms), resulting in 1 missed VSync.
+  ScrollJankV4Result result3 = decider_.DecideJankForFrameWithRealScrollUpdates(
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(159),
+                         .last_input_generation_ts = MillisSinceEpoch(159),
+                         .has_inertial_input = false,
+                         .total_raw_delta_pixels = 5.0f,
+                         .max_abs_inertial_raw_delta_pixels = 0.0f},
+                    /* synthetic= */ std::nullopt, kScrollId),
+      ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(172)}},
+      {.frame_time = MillisSinceEpoch(164), .interval = kNewInterval});
+  EXPECT_THAT(result3,
+              HasMissedVsyncs(JankReason::kMissedVsyncDuringFastScroll, 1));
+  EXPECT_EQ(result3.vsyncs_since_previous_frame, 2);
+}
+
+TEST_F(ScrollJankV4DeciderTest, DeadlineDerivedIntervalDecrease) {
+  constexpr base::TimeDelta kIrrelevantInterval = base::Milliseconds(4);
+  constexpr base::TimeDelta kOldDerivedInterval = base::Milliseconds(16);
+  constexpr base::TimeDelta kNewDerivedInterval = base::Milliseconds(8);
+
+  ScrollJankV4Result result1 = decider_.DecideJankForFrameWithRealScrollUpdates(
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(95),
+                         .last_input_generation_ts = MillisSinceEpoch(95),
+                         .has_inertial_input = false,
+                         .total_raw_delta_pixels = 5.0f,
+                         .max_abs_inertial_raw_delta_pixels = 0.0f},
+                    /* synthetic= */ std::nullopt, kScrollId),
+      ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(108)}},
+      {.frame_time = MillisSinceEpoch(100),
+       .interval = kIrrelevantInterval,
+       .deadline_derived_interval = kOldDerivedInterval});
+  EXPECT_THAT(result1, kHasNoMissedVsyncs);
+
+  // Presented 32 ms after frame 1. Should be evaluated against frame 1's
+  // deadline_derived_interval (16 ms), resulting in 1 missed VSync.
+  ScrollJankV4Result result2 = decider_.DecideJankForFrameWithRealScrollUpdates(
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(127),
+                         .last_input_generation_ts = MillisSinceEpoch(127),
+                         .has_inertial_input = false,
+                         .total_raw_delta_pixels = 5.0f,
+                         .max_abs_inertial_raw_delta_pixels = 0.0f},
+                    /* synthetic= */ std::nullopt, kScrollId),
+      ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(140)}},
+      {.frame_time = MillisSinceEpoch(132),
+       .interval = kIrrelevantInterval,
+       .deadline_derived_interval = kNewDerivedInterval});
+  EXPECT_THAT(result2,
+              HasMissedVsyncs(JankReason::kMissedVsyncDuringFastScroll, 1));
+  EXPECT_EQ(result2.vsyncs_since_previous_frame, 2);
+
+  // Presented 32 ms after frame 2. Should be evaluated against frame 2's
+  // deadline_derived_interval (8 ms), resulting in 3 missed VSyncs.
+  ScrollJankV4Result result3 = decider_.DecideJankForFrameWithRealScrollUpdates(
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(159),
+                         .last_input_generation_ts = MillisSinceEpoch(159),
+                         .has_inertial_input = false,
+                         .total_raw_delta_pixels = 5.0f,
+                         .max_abs_inertial_raw_delta_pixels = 0.0f},
+                    /* synthetic= */ std::nullopt, kScrollId),
+      ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(172)}},
+      {.frame_time = MillisSinceEpoch(164),
+       .interval = kIrrelevantInterval,
+       .deadline_derived_interval = kNewDerivedInterval});
+  EXPECT_THAT(result3,
+              HasMissedVsyncs(JankReason::kMissedVsyncDuringFastScroll, 3));
+  EXPECT_EQ(result3.vsyncs_since_previous_frame, 4);
+}
+
+TEST_F(ScrollJankV4DeciderTest, DeadlineDerivedIntervalIncrease) {
+  constexpr base::TimeDelta kIrrelevantInterval = base::Milliseconds(4);
+  constexpr base::TimeDelta kOldDerivedInterval = base::Milliseconds(8);
+  constexpr base::TimeDelta kNewDerivedInterval = base::Milliseconds(16);
+
+  ScrollJankV4Result result1 = decider_.DecideJankForFrameWithRealScrollUpdates(
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(95),
+                         .last_input_generation_ts = MillisSinceEpoch(95),
+                         .has_inertial_input = false,
+                         .total_raw_delta_pixels = 5.0f,
+                         .max_abs_inertial_raw_delta_pixels = 0.0f},
+                    /* synthetic= */ std::nullopt, kScrollId),
+      ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(108)}},
+      {.frame_time = MillisSinceEpoch(100),
+       .interval = kIrrelevantInterval,
+       .deadline_derived_interval = kOldDerivedInterval});
+  EXPECT_THAT(result1, kHasNoMissedVsyncs);
+
+  // Presented 32 ms after frame 1. Should be evaluated against frame 1's
+  // deadline_derived_interval (8 ms), resulting in 3 missed VSyncs.
+  ScrollJankV4Result result2 = decider_.DecideJankForFrameWithRealScrollUpdates(
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(127),
+                         .last_input_generation_ts = MillisSinceEpoch(127),
+                         .has_inertial_input = false,
+                         .total_raw_delta_pixels = 5.0f,
+                         .max_abs_inertial_raw_delta_pixels = 0.0f},
+                    /* synthetic= */ std::nullopt, kScrollId),
+      ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(140)}},
+      {.frame_time = MillisSinceEpoch(132),
+       .interval = kIrrelevantInterval,
+       .deadline_derived_interval = kNewDerivedInterval});
+  EXPECT_THAT(result2,
+              HasMissedVsyncs(JankReason::kMissedVsyncDuringFastScroll, 3));
+  EXPECT_EQ(result2.vsyncs_since_previous_frame, 4);
+
+  // Presented 32 ms after frame 2. Should be evaluated against frame 2's
+  // deadline_derived_interval (16 ms), resulting in 1 missed VSync.
+  ScrollJankV4Result result3 = decider_.DecideJankForFrameWithRealScrollUpdates(
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(159),
+                         .last_input_generation_ts = MillisSinceEpoch(159),
+                         .has_inertial_input = false,
+                         .total_raw_delta_pixels = 5.0f,
+                         .max_abs_inertial_raw_delta_pixels = 0.0f},
+                    /* synthetic= */ std::nullopt, kScrollId),
+      ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(172)}},
+      {.frame_time = MillisSinceEpoch(164),
+       .interval = kIrrelevantInterval,
+       .deadline_derived_interval = kNewDerivedInterval});
+  EXPECT_THAT(result3,
+              HasMissedVsyncs(JankReason::kMissedVsyncDuringFastScroll, 1));
+  EXPECT_EQ(result3.vsyncs_since_previous_frame, 2);
+}
+
 TEST_F(ScrollJankV4DeciderTest, IsValidFrame) {
   EXPECT_TRUE(ScrollJankV4Decider::IsValidFrame(
       ScrollUpdates(
@@ -2571,6 +2771,38 @@ TEST_F(ScrollJankV4DeciderTest, IsNotValidFrameWithNegativeInterval) {
           kScrollId),
       DamagingFrame{.presentation_ts = MillisSinceEpoch(100)},
       {.frame_time = MillisSinceEpoch(90), .interval = -kVsyncInterval}));
+}
+
+TEST_F(ScrollJankV4DeciderTest,
+       IsNotValidFrameWithZeroDeadlineDerivedInterval) {
+  EXPECT_FALSE(ScrollJankV4Decider::IsValidFrame(
+      ScrollUpdates(
+          Real{
+              .first_input_generation_ts = MillisSinceEpoch(80),
+              .last_input_generation_ts = MillisSinceEpoch(80),
+          },
+          Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(80)},
+          kScrollId),
+      DamagingFrame{.presentation_ts = MillisSinceEpoch(100)},
+      {.frame_time = MillisSinceEpoch(90),
+       .interval = kVsyncInterval,
+       .deadline_derived_interval = base::TimeDelta()}));
+}
+
+TEST_F(ScrollJankV4DeciderTest,
+       IsNotValidFrameWithNegativeDeadlineDerivedInterval) {
+  EXPECT_FALSE(ScrollJankV4Decider::IsValidFrame(
+      ScrollUpdates(
+          Real{
+              .first_input_generation_ts = MillisSinceEpoch(80),
+              .last_input_generation_ts = MillisSinceEpoch(80),
+          },
+          Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(80)},
+          kScrollId),
+      DamagingFrame{.presentation_ts = MillisSinceEpoch(100)},
+      {.frame_time = MillisSinceEpoch(90),
+       .interval = kVsyncInterval,
+       .deadline_derived_interval = -kVsyncInterval}));
 }
 
 }  // namespace

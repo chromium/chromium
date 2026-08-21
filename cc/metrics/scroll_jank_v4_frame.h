@@ -59,6 +59,9 @@ struct CC_EXPORT ScrollJankV4Frame {
     // See `viz::BeginFrameArgs::interval`.
     base::TimeDelta interval;
 
+    // See `viz::BeginFrameArgs::deadline_derived_interval`.
+    std::optional<base::TimeDelta> deadline_derived_interval;
+
     // The ID of the result of the scroll jank V4 metric for the frame. This ID
     // makes it easy to retrieve the mapping between "EventLatency" and
     // "ScrollJankV4" slices in traces.
@@ -181,11 +184,29 @@ struct CC_EXPORT ScrollJankV4Frame {
   bool operator==(const ScrollJankV4Frame&) const = default;
 };
 
+template <typename T, typename... Ts>
+concept IsOneOf = (std::same_as<T, Ts> || ...);
+
+template <typename T>
+  requires IsOneOf<T,
+                   ScrollJankV4Frame::Stage::ScrollUpdates::Real,
+                   ScrollJankV4Frame::Stage::ScrollUpdates::Synthetic,
+                   EventMetrics::TraceId,
+                   base::TimeDelta>
+inline std::ostream& operator<<(std::ostream& os,
+                                const std::optional<T>& value) {
+  if (value.has_value()) {
+    return os << *value;
+  }
+  return os << "empty";
+}
+
 inline std::ostream& operator<<(
     std::ostream& os,
     const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args) {
   return os << "BeginFrameArgsForScrollJank{frame_time: " << args.frame_time
             << ", interval: " << args.interval
+            << ", deadline_derived_interval: " << args.deadline_derived_interval
             << ", result_id: " << args.result_id << "}";
 }
 
@@ -207,22 +228,6 @@ inline std::ostream& operator<<(std::ostream& os,
   os << "ScrollDamage{";
   std::visit([&os](const auto& value) { os << value; }, damage);
   return os << "}";
-}
-
-template <typename T, typename... Ts>
-concept IsOneOf = (std::same_as<T, Ts> || ...);
-
-template <typename T>
-  requires IsOneOf<T,
-                   ScrollJankV4Frame::Stage::ScrollUpdates::Real,
-                   ScrollJankV4Frame::Stage::ScrollUpdates::Synthetic,
-                   EventMetrics::TraceId>
-inline std::ostream& operator<<(std::ostream& os,
-                                const std::optional<T>& value) {
-  if (value.has_value()) {
-    return os << *value;
-  }
-  return os << "empty";
 }
 
 inline std::ostream& operator<<(

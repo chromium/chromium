@@ -34,26 +34,33 @@ TEST(ScrollJankV4FrameTest, BeginFrameArgsForScrollJankFromBeginFrameArgs) {
       /* deadline= */ MillisecondsTicks(123) + kVsyncInterval / 3,
       /* interval= */ kVsyncInterval,
       viz::BeginFrameArgs::BeginFrameArgsType::NORMAL);
+  args.deadline_derived_interval = base::Milliseconds(8);
   BeginFrameArgsForScrollJank args_for_scroll_jank =
       BeginFrameArgsForScrollJank::From(args, 456);
-  EXPECT_EQ(args_for_scroll_jank, (BeginFrameArgsForScrollJank{
-                                      .frame_time = MillisecondsTicks(123),
-                                      .interval = kVsyncInterval,
-                                      .result_id = 456,
-                                  }));
+  EXPECT_EQ(args_for_scroll_jank,
+            (BeginFrameArgsForScrollJank{
+                .frame_time = MillisecondsTicks(123),
+                .interval = kVsyncInterval,
+                .deadline_derived_interval = base::Milliseconds(8),
+                .result_id = 456,
+            }));
 }
 
 TEST(ScrollJankV4FrameTest,
      BeginFrameArgsForScrollJankFromDispatchBeginFrameArgs) {
   ScrollEventMetrics::DispatchBeginFrameArgs args = {
-      .frame_time = MillisecondsTicks(123), .interval = kVsyncInterval};
+      .frame_time = MillisecondsTicks(123),
+      .interval = kVsyncInterval,
+      .deadline_derived_interval = base::Milliseconds(8)};
   BeginFrameArgsForScrollJank args_for_scroll_jank =
       BeginFrameArgsForScrollJank::From(args, 456);
-  EXPECT_EQ(args_for_scroll_jank, (BeginFrameArgsForScrollJank{
-                                      .frame_time = MillisecondsTicks(123),
-                                      .interval = kVsyncInterval,
-                                      .result_id = 456,
-                                  }));
+  EXPECT_EQ(args_for_scroll_jank,
+            (BeginFrameArgsForScrollJank{
+                .frame_time = MillisecondsTicks(123),
+                .interval = kVsyncInterval,
+                .deadline_derived_interval = base::Milliseconds(8),
+                .result_id = 456,
+            }));
 }
 
 TEST(ScrollJankV4FrameTest, EmptyRealScrollUpdatesToOstream) {

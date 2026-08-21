@@ -465,6 +465,7 @@ ScrollEventMetrics::DispatchBeginFrameArgs::From(
   return {
       .frame_time = args.frame_time,
       .interval = args.interval,
+      .deadline_derived_interval = args.deadline_derived_interval,
       .frame_id = args.frame_id,
   };
 }
