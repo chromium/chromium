@@ -17,11 +17,17 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
   isPhraseHighlightingEnabledFlag: boolean = false;
   defaultLanguageForSpeech: string = '';
   baseLanguageForSpeech: string = '';
-  storedVoice: string = 'abc';
+  storedVoice: string = '';
   languagesEnabledInPref: Set<string> = new Set<string>();
   installedLangs: string[] = [];
   uninstalledLangs: string[] = [];
   requestInfoLangs: string[] = [];
+  keyboardShortcutStopSource: number = 0;
+  engineErrorStopSource: number = 1;
+  engineInterruptStopSource: number = 2;
+  contentFinishedStopSource: number = 3;
+  pauseButtonStopSource: number = 4;
+  unexpectedUpdateContentStopSource: number = 5;
   localeToDisplayName: {[key: string]: string} = {};
 
   constructor() {
@@ -47,6 +53,16 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
       'sendGetVoicePackInfoRequest',
       'sendInstallVoicePackRequest',
       'sendUninstallVoiceRequest',
+      'onIsSpeechActiveChanged',
+      'onIsAudioCurrentlyPlayingChanged',
+      'onSpeechEngineFirstStall',
+      'onSpeechEngineStalled',
+      'getKeyboardShortcutStopSource',
+      'getEngineErrorStopSource',
+      'getEngineInterruptStopSource',
+      'getContentFinishedStopSource',
+      'getPauseButtonStopSource',
+      'getUnexpectedUpdateContentStopSource',
     ]);
   }
 
@@ -156,5 +172,52 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
   sendUninstallVoiceRequest(lang: string): void {
     this.methodCalled('sendUninstallVoiceRequest', lang);
     this.uninstalledLangs.push(lang);
+  }
+
+  onIsSpeechActiveChanged(isSpeechActive: boolean): void {
+    this.methodCalled('onIsSpeechActiveChanged', isSpeechActive);
+  }
+
+  onIsAudioCurrentlyPlayingChanged(isAudioCurrentlyPlaying: boolean): void {
+    this.methodCalled(
+        'onIsAudioCurrentlyPlayingChanged', isAudioCurrentlyPlaying);
+  }
+
+  onSpeechEngineFirstStall(): void {
+    this.methodCalled('onSpeechEngineFirstStall');
+  }
+
+  onSpeechEngineStalled(): void {
+    this.methodCalled('onSpeechEngineStalled');
+  }
+
+  getKeyboardShortcutStopSource(): number {
+    this.methodCalled('getKeyboardShortcutStopSource');
+    return this.keyboardShortcutStopSource;
+  }
+
+  getEngineErrorStopSource(): number {
+    this.methodCalled('getEngineErrorStopSource');
+    return this.engineErrorStopSource;
+  }
+
+  getEngineInterruptStopSource(): number {
+    this.methodCalled('getEngineInterruptStopSource');
+    return this.engineInterruptStopSource;
+  }
+
+  getContentFinishedStopSource(): number {
+    this.methodCalled('getContentFinishedStopSource');
+    return this.contentFinishedStopSource;
+  }
+
+  getPauseButtonStopSource(): number {
+    this.methodCalled('getPauseButtonStopSource');
+    return this.pauseButtonStopSource;
+  }
+
+  getUnexpectedUpdateContentStopSource(): number {
+    this.methodCalled('getUnexpectedUpdateContentStopSource');
+    return this.unexpectedUpdateContentStopSource;
   }
 }

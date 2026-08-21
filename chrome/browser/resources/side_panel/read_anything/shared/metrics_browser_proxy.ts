@@ -185,6 +185,7 @@ export interface MetricsBrowserProxy {
   recordCount(umaName: string, count: number): void;
   recordBoolean(umaName: string, value: boolean): void;
   updateWordsSeen(wordsSeen: number): void;
+  updateWordsHeard(wordsHeard: number): void;
   startLineFocusSession(): void;
   incrementLineFocusKeyboardLines(): void;
   incrementLineFocusSpeechLines(): void;
@@ -318,6 +319,10 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
 
   updateWordsSeen(wordsSeen: number): void {
     chrome.readingMode.updateWordsSeen(wordsSeen);
+  }
+
+  updateWordsHeard(wordsHeard: number): void {
+    chrome.readingMode.updateWordsHeard(wordsHeard);
   }
 
   static getInstance(): MetricsBrowserProxy {

@@ -28,7 +28,8 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   fontSize: number = 10;
   lineSpacing: number = 0;
   activeDistillationMethod: number = 0;
-  distillationTypeReadability: number = 0;
+  distillationTypeScreen2x: number = 0;
+  distillationTypeReadability: number = 1;
   lineFocusEnabled: boolean = false;
   lineFocusOff: number = 50;
   lineFocusSmallStaticWindow: number = 51;

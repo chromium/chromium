@@ -1,18 +1,22 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {BrowserProxy, ContentController, NodeStore, playFromSelectionTimeout, ReadAloudHighlighter, ReadAloudNode, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AudioBrowserProxyImpl, BrowserProxy, ContentController, NodeStore, playFromSelectionTimeout, ReadAloudHighlighter, ReadAloudNode, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, VisualBrowserProxyImpl, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement, Segment} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
 import {createApp, createSpeechSynthesisVoice, setContent, stubAnimationFrame} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
+import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
+import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('SpeechController', () => {
+  let audioBrowserProxy: TestAudioBrowserProxy = null!;
+  let visualBrowserProxy: TestVisualBrowserProxy = null!;
   let speech: TestSpeechBrowserProxy;
   let speechController: SpeechController;
   let wordBoundaries: WordBoundaries;
@@ -70,6 +74,10 @@ suite('SpeechController', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
+    audioBrowserProxy = new TestAudioBrowserProxy();
+    AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
+    visualBrowserProxy = new TestVisualBrowserProxy();
+    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
@@ -157,20 +165,23 @@ suite('SpeechController', () => {
           initialResetCallCount + 2, readAloudModel.getCallCount('resetModel'));
     });
 
-    test('updateContent does not reset the model with phrase highlighting flag', () => {
-      chrome.readingMode.isPhraseHighlightingEnabled = true;
-      const initialResetCallCount = readAloudModel.getCallCount('resetModel');
+    test(
+        'updateContent does not reset the model with phrase highlighting flag',
+        () => {
+          audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
+          const initialResetCallCount =
+              readAloudModel.getCallCount('resetModel');
 
-      setContent('hello', readAloudModel);
-      app.updateContent();
-      assertEquals(
-          initialResetCallCount, readAloudModel.getCallCount('resetModel'));
+          setContent('hello', readAloudModel);
+          app.updateContent();
+          assertEquals(
+              initialResetCallCount, readAloudModel.getCallCount('resetModel'));
 
-      setContent('hello, it\'s me', readAloudModel);
-      app.updateContent();
-      assertEquals(
-          initialResetCallCount, readAloudModel.getCallCount('resetModel'));
-    });
+          setContent('hello, it\'s me', readAloudModel);
+          app.updateContent();
+          assertEquals(
+              initialResetCallCount, readAloudModel.getCallCount('resetModel'));
+        });
 
     test('showLoading resets the read aloud model', () => {
       const initialResetCallCount = readAloudModel.getCallCount('resetModel');
@@ -179,13 +190,16 @@ suite('SpeechController', () => {
           initialResetCallCount + 1, readAloudModel.getCallCount('resetModel'));
     });
 
-    test('showLoading does not reset the model with phrase highlighting flag', () => {
-      chrome.readingMode.isPhraseHighlightingEnabled = true;
-      const initialResetCallCount = readAloudModel.getCallCount('resetModel');
-      app.showLoading();
-      assertEquals(
-          initialResetCallCount, readAloudModel.getCallCount('resetModel'));
-    });
+    test(
+        'showLoading does not reset the model with phrase highlighting flag',
+        () => {
+          audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
+          const initialResetCallCount =
+              readAloudModel.getCallCount('resetModel');
+          app.showLoading();
+          assertEquals(
+              initialResetCallCount, readAloudModel.getCallCount('resetModel'));
+        });
   });
 
   test('clearReadAloudState', () => {
@@ -193,10 +207,10 @@ suite('SpeechController', () => {
     const node: Node = setContent(text, readAloudModel);
     wordBoundaries.updateBoundary(4);
     speechController.setHasSpeechBeenTriggered(true);
-    chrome.readingMode.onHighlightGranularityChanged(
-        chrome.readingMode.sentenceHighlighting);
+    audioBrowserProxy.highlightGranularity =
+        audioBrowserProxy.sentenceHighlighting;
     speechController.onHighlightGranularityChange(
-        chrome.readingMode.sentenceHighlighting);
+        audioBrowserProxy.sentenceHighlighting);
     speechController.onPlayPauseToggle(node as HTMLElement);
     assertTrue(speechController.isSpeechActive());
     assertTrue(wordBoundaries.hasBoundaries());
@@ -469,10 +483,10 @@ suite('SpeechController', () => {
     setContent(text, readAloudModel);
     wordBoundaries.updateBoundary(4);
     speechController.setHasSpeechBeenTriggered(true);
-    chrome.readingMode.onHighlightGranularityChanged(
-        chrome.readingMode.sentenceHighlighting);
+    audioBrowserProxy.highlightGranularity =
+        audioBrowserProxy.sentenceHighlighting;
     speechController.onHighlightGranularityChange(
-        chrome.readingMode.sentenceHighlighting);
+        audioBrowserProxy.sentenceHighlighting);
     onPlayPauseToggle(text);
     onPlayPauseToggle(text);
     assertTrue(speechController.hasSpeechBeenTriggered());
@@ -492,10 +506,10 @@ suite('SpeechController', () => {
     setContent(text, readAloudModel);
     wordBoundaries.updateBoundary(4);
     speechController.setHasSpeechBeenTriggered(true);
-    chrome.readingMode.onHighlightGranularityChanged(
-        chrome.readingMode.sentenceHighlighting);
+    audioBrowserProxy.highlightGranularity =
+        audioBrowserProxy.sentenceHighlighting;
     speechController.onHighlightGranularityChange(
-        chrome.readingMode.sentenceHighlighting);
+        audioBrowserProxy.sentenceHighlighting);
     onPlayPauseToggle(text);
     onPlayPauseToggle(text);
     assertTrue(speechController.hasSpeechBeenTriggered());
@@ -529,5 +543,4 @@ suite('SpeechController', () => {
     spoken = await speech.whenCalled('speak');
     assertEquals(1, spoken.volume);
   });
-
 });

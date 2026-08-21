@@ -30,6 +30,16 @@ export interface AudioBrowserProxy {
   sendGetVoicePackInfoRequest(lang: string): void;
   sendInstallVoicePackRequest(lang: string): void;
   sendUninstallVoiceRequest(lang: string): void;
+  onIsSpeechActiveChanged(isSpeechActive: boolean): void;
+  onIsAudioCurrentlyPlayingChanged(isAudioCurrentlyPlaying: boolean): void;
+  onSpeechEngineFirstStall(): void;
+  onSpeechEngineStalled(): void;
+  getKeyboardShortcutStopSource(): number;
+  getEngineErrorStopSource(): number;
+  getEngineInterruptStopSource(): number;
+  getContentFinishedStopSource(): number;
+  getPauseButtonStopSource(): number;
+  getUnexpectedUpdateContentStopSource(): number;
 }
 
 export class AudioBrowserProxyImpl implements AudioBrowserProxy {
@@ -115,6 +125,47 @@ export class AudioBrowserProxyImpl implements AudioBrowserProxy {
 
   sendUninstallVoiceRequest(lang: string): void {
     chrome.readingMode.sendUninstallVoiceRequest(lang);
+  }
+
+  onIsSpeechActiveChanged(isSpeechActive: boolean): void {
+    chrome.readingMode.onIsSpeechActiveChanged(isSpeechActive);
+  }
+
+  onIsAudioCurrentlyPlayingChanged(isAudioCurrentlyPlaying: boolean): void {
+    chrome.readingMode.onIsAudioCurrentlyPlayingChanged(
+        isAudioCurrentlyPlaying);
+  }
+
+  onSpeechEngineFirstStall(): void {
+    chrome.readingMode.onSpeechEngineFirstStall();
+  }
+
+  onSpeechEngineStalled(): void {
+    chrome.readingMode.onSpeechEngineStalled();
+  }
+
+  getKeyboardShortcutStopSource(): number {
+    return chrome.readingMode.keyboardShortcutStopSource;
+  }
+
+  getEngineErrorStopSource(): number {
+    return chrome.readingMode.engineErrorStopSource;
+  }
+
+  getEngineInterruptStopSource(): number {
+    return chrome.readingMode.engineInterruptStopSource;
+  }
+
+  getContentFinishedStopSource(): number {
+    return chrome.readingMode.contentFinishedStopSource;
+  }
+
+  getPauseButtonStopSource(): number {
+    return chrome.readingMode.pauseButtonStopSource;
+  }
+
+  getUnexpectedUpdateContentStopSource(): number {
+    return chrome.readingMode.unexpectedUpdateContentStopSource;
   }
 
   static getInstance(): AudioBrowserProxy {
