@@ -733,10 +733,7 @@ config("not_fuzzed") {
 # dependant targets using public_config.
 config("alloc_token") {
   if (is_clang) {
-    cflags = [
-      "-fsanitize=alloc-token",
-      "-fsanitize-alloc-token-fast-abi",
-    ]
+    cflags = [ "-fsanitize=alloc-token" ]
     if (is_win) {
       cflags += [
         "-Xclang",
@@ -772,38 +769,22 @@ config("alloc_token") {
     if (is_linux || is_chromeos) {
       ldflags = [
         # go/keep-sorted start
-        "-Wl,--export-dynamic-symbol=__alloc_token_0__Znam",
-        "-Wl,--export-dynamic-symbol=__alloc_token_0__ZnamRKSt9nothrow_t",
-        "-Wl,--export-dynamic-symbol=__alloc_token_0__ZnamSt11align_val_t",
-        "-Wl,--export-dynamic-symbol=__alloc_token_0__ZnamSt11align_val_tRKSt9nothrow_t",
-        "-Wl,--export-dynamic-symbol=__alloc_token_0__Znwm",
-        "-Wl,--export-dynamic-symbol=__alloc_token_0__ZnwmRKSt9nothrow_t",
-        "-Wl,--export-dynamic-symbol=__alloc_token_0__ZnwmSt11align_val_t",
-        "-Wl,--export-dynamic-symbol=__alloc_token_0__ZnwmSt11align_val_tRKSt9nothrow_t",
-        "-Wl,--export-dynamic-symbol=__alloc_token_0_aligned_alloc",
-        "-Wl,--export-dynamic-symbol=__alloc_token_0_calloc",
-        "-Wl,--export-dynamic-symbol=__alloc_token_0_malloc",
-        "-Wl,--export-dynamic-symbol=__alloc_token_0_memalign",
-        "-Wl,--export-dynamic-symbol=__alloc_token_0_posix_memalign",
-        "-Wl,--export-dynamic-symbol=__alloc_token_0_pvalloc",
-        "-Wl,--export-dynamic-symbol=__alloc_token_0_realloc",
-        "-Wl,--export-dynamic-symbol=__alloc_token_0_valloc",
-        "-Wl,--export-dynamic-symbol=__alloc_token_1__Znam",
-        "-Wl,--export-dynamic-symbol=__alloc_token_1__ZnamRKSt9nothrow_t",
-        "-Wl,--export-dynamic-symbol=__alloc_token_1__ZnamSt11align_val_t",
-        "-Wl,--export-dynamic-symbol=__alloc_token_1__ZnamSt11align_val_tRKSt9nothrow_t",
-        "-Wl,--export-dynamic-symbol=__alloc_token_1__Znwm",
-        "-Wl,--export-dynamic-symbol=__alloc_token_1__ZnwmRKSt9nothrow_t",
-        "-Wl,--export-dynamic-symbol=__alloc_token_1__ZnwmSt11align_val_t",
-        "-Wl,--export-dynamic-symbol=__alloc_token_1__ZnwmSt11align_val_tRKSt9nothrow_t",
-        "-Wl,--export-dynamic-symbol=__alloc_token_1_aligned_alloc",
-        "-Wl,--export-dynamic-symbol=__alloc_token_1_calloc",
-        "-Wl,--export-dynamic-symbol=__alloc_token_1_malloc",
-        "-Wl,--export-dynamic-symbol=__alloc_token_1_memalign",
-        "-Wl,--export-dynamic-symbol=__alloc_token_1_posix_memalign",
-        "-Wl,--export-dynamic-symbol=__alloc_token_1_pvalloc",
-        "-Wl,--export-dynamic-symbol=__alloc_token_1_realloc",
-        "-Wl,--export-dynamic-symbol=__alloc_token_1_valloc",
+        "-Wl,--export-dynamic-symbol=__alloc_token__Znam",
+        "-Wl,--export-dynamic-symbol=__alloc_token__ZnamRKSt9nothrow_t",
+        "-Wl,--export-dynamic-symbol=__alloc_token__ZnamSt11align_val_t",
+        "-Wl,--export-dynamic-symbol=__alloc_token__ZnamSt11align_val_tRKSt9nothrow_t",
+        "-Wl,--export-dynamic-symbol=__alloc_token__Znwm",
+        "-Wl,--export-dynamic-symbol=__alloc_token__ZnwmRKSt9nothrow_t",
+        "-Wl,--export-dynamic-symbol=__alloc_token__ZnwmSt11align_val_t",
+        "-Wl,--export-dynamic-symbol=__alloc_token__ZnwmSt11align_val_tRKSt9nothrow_t",
+        "-Wl,--export-dynamic-symbol=__alloc_token_aligned_alloc",
+        "-Wl,--export-dynamic-symbol=__alloc_token_calloc",
+        "-Wl,--export-dynamic-symbol=__alloc_token_malloc",
+        "-Wl,--export-dynamic-symbol=__alloc_token_memalign",
+        "-Wl,--export-dynamic-symbol=__alloc_token_posix_memalign",
+        "-Wl,--export-dynamic-symbol=__alloc_token_pvalloc",
+        "-Wl,--export-dynamic-symbol=__alloc_token_realloc",
+        "-Wl,--export-dynamic-symbol=__alloc_token_valloc",
 
         # go/keep-sorted end
       ]
