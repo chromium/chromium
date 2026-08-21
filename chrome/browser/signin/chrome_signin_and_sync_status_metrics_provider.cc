@@ -15,7 +15,7 @@
 #else
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #endif
 

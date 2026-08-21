@@ -15,7 +15,7 @@
 #include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_metrics_id_allocator.h"
 #include "components/signin/core/browser/account_preview_data_fetcher.h"

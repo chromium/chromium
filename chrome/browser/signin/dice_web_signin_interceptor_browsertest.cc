@@ -40,7 +40,6 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -277,7 +276,7 @@ class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   FakeDiceWebSigninInterceptorDelegate* GetInterceptorDelegate(
@@ -427,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAndLoad) {
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
   content::WebContents* web_contents = AddTab(intercepted_url);
-  int original_tab_count = browser()->tab_strip_model()->count();
+  int original_tab_count = browser()->GetTabStripModel()->count();
 
   // Do the signin interception.
   FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
@@ -509,7 +508,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
   content::WebContents* web_contents = AddTab(intercepted_url);
-  int original_tab_count = browser()->tab_strip_model()->count();
+  int original_tab_count = browser()->GetTabStripModel()->count();
   int other_original_tab_count = other_browser->GetTabStripModel()->count();
 
   // Start the interception.
@@ -532,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
 
   // Wait until the tab is moved to the other browser.
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return browser()->tab_strip_model()->count() == original_tab_count - 1;
+    return browser()->GetTabStripModel()->count() == original_tab_count - 1;
   }));
 
   // The tab was moved to the new browser.
@@ -640,7 +639,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorGaiaBrowserTest,
   GURL intercepted_url =
       gaia_server()->GetURL("accounts.google.com", "/defaultresponse");
   content::WebContents* web_contents = AddTab(intercepted_url);
-  int original_tab_count = browser()->tab_strip_model()->count();
+  int original_tab_count = browser()->GetTabStripModel()->count();
   int other_original_tab_count = other_browser->GetTabStripModel()->count();
 
   // Start the interception.
@@ -663,7 +662,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorGaiaBrowserTest,
 
   // Wait until the tab is moved to the other browser.
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return browser()->tab_strip_model()->count() == original_tab_count - 1;
+    return browser()->GetTabStripModel()->count() == original_tab_count - 1;
   }));
 
   // The tab was moved to the new browser.
@@ -693,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, CloseSourceTab) {
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
   content::WebContents* contents = AddTab(intercepted_url);
-  int original_tab_count = browser()->tab_strip_model()->count();
+  int original_tab_count = browser()->GetTabStripModel()->count();
 
   // Do the signin interception.
   ProfileWaiter profile_waiter;
@@ -2005,7 +2004,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
   content::WebContents* web_contents = AddTab(intercepted_url);
-  int original_tab_count = browser()->tab_strip_model()->count();
+  int original_tab_count = browser()->GetTabStripModel()->count();
 
   // Do the signin interception.
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
@@ -2048,7 +2047,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   ASSERT_TRUE(added_browser);
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   EXPECT_EQ(added_browser->GetProfile(), new_profile);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count - 1);
   EXPECT_EQ(
       added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
       intercepted_url);
@@ -2088,7 +2087,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
   content::WebContents* web_contents = AddTab(intercepted_url);
-  int original_tab_count = browser()->tab_strip_model()->count();
+  int original_tab_count = browser()->GetTabStripModel()->count();
 
   // Do the signin interception.
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
@@ -2119,9 +2118,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
       identity_manager->HasAccountWithRefreshToken(account_info.account_id));
 
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count);
   EXPECT_EQ(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       intercepted_url);
 
   CheckHistograms(histogram_tester,
@@ -2154,7 +2153,7 @@ IN_PROC_BROWSER_TEST_F(
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
   content::WebContents* web_contents = AddTab(intercepted_url);
-  int original_tab_count = browser()->tab_strip_model()->count();
+  int original_tab_count = browser()->GetTabStripModel()->count();
 
   // Start the management disclaimer.
   profile_management_disclaimer_service->EnsureManagedProfileForAccount(
@@ -2200,9 +2199,9 @@ IN_PROC_BROWSER_TEST_F(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count);
   EXPECT_EQ(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       intercepted_url);
 
   CheckHistograms(
@@ -2227,7 +2226,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
   content::WebContents* web_contents = AddTab(intercepted_url);
-  int original_tab_count = browser()->tab_strip_model()->count();
+  int original_tab_count = browser()->GetTabStripModel()->count();
 
   // Do the signin interception.
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
@@ -2266,9 +2265,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count);
   EXPECT_EQ(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       intercepted_url);
 
   CheckHistograms(
@@ -2295,7 +2294,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
   content::WebContents* web_contents = AddTab(intercepted_url);
-  int original_tab_count = browser()->tab_strip_model()->count();
+  int original_tab_count = browser()->GetTabStripModel()->count();
 
   // Do the signin interception.
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
@@ -2338,7 +2337,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   ASSERT_TRUE(added_browser);
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   EXPECT_EQ(added_browser->GetProfile(), new_profile);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count - 1);
   EXPECT_EQ(
       added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
       intercepted_url);
@@ -2428,7 +2427,7 @@ IN_PROC_BROWSER_TEST_F(
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
   content::WebContents* web_contents = AddTab(intercepted_url);
-  int original_tab_count = browser()->tab_strip_model()->count();
+  int original_tab_count = browser()->GetTabStripModel()->count();
 
   // Do the signin interception.
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
@@ -2459,9 +2458,9 @@ IN_PROC_BROWSER_TEST_F(
       identity_manager->HasAccountWithRefreshToken(account_info.account_id));
 
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count);
   EXPECT_EQ(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       intercepted_url);
 
   CheckHistograms(
@@ -2489,7 +2488,7 @@ IN_PROC_BROWSER_TEST_F(
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
   content::WebContents* web_contents = AddTab(intercepted_url);
-  int original_tab_count = browser()->tab_strip_model()->count();
+  int original_tab_count = browser()->GetTabStripModel()->count();
 
   // Do the signin interception.
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
@@ -2520,9 +2519,9 @@ IN_PROC_BROWSER_TEST_F(
       identity_manager->HasAccountWithRefreshToken(account_info.account_id));
 
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count);
   EXPECT_EQ(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       intercepted_url);
 
   CheckHistograms(
@@ -2546,7 +2545,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
   content::WebContents* web_contents = AddTab(intercepted_url);
-  int original_tab_count = browser()->tab_strip_model()->count();
+  int original_tab_count = browser()->GetTabStripModel()->count();
 
   // Do the signin interception.
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
@@ -2589,7 +2588,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   ASSERT_TRUE(added_browser);
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   EXPECT_EQ(added_browser->GetProfile(), new_profile);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count - 1);
   EXPECT_EQ(
       added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
       intercepted_url);
@@ -2629,7 +2628,7 @@ IN_PROC_BROWSER_TEST_F(
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
   content::WebContents* web_contents = AddTab(intercepted_url);
-  int original_tab_count = browser()->tab_strip_model()->count();
+  int original_tab_count = browser()->GetTabStripModel()->count();
 
   // Do the signin interception.
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
@@ -2656,9 +2655,9 @@ IN_PROC_BROWSER_TEST_F(
                   ->HasAccountWithRefreshToken(account_info.account_id));
 
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count);
   EXPECT_EQ(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       intercepted_url);
 
   CheckHistograms(
@@ -2689,7 +2688,7 @@ IN_PROC_BROWSER_TEST_F(
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
   content::WebContents* web_contents = AddTab(intercepted_url);
-  int original_tab_count = browser()->tab_strip_model()->count();
+  int original_tab_count = browser()->GetTabStripModel()->count();
 
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   enterprise_util::SetUserAcceptedAccountManagement(GetProfile(), true);
@@ -2712,9 +2711,9 @@ IN_PROC_BROWSER_TEST_F(
                   ->HasAccountWithRefreshToken(account_info.account_id));
 
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count);
   EXPECT_EQ(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
       intercepted_url);
 
   CheckHistograms(histogram_tester,
@@ -2751,7 +2750,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
   content::WebContents* web_contents = AddTab(intercepted_url);
-  int original_tab_count = browser()->tab_strip_model()->count();
+  int original_tab_count = browser()->GetTabStripModel()->count();
 
   // Do the signin interception.
   FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
@@ -2914,7 +2913,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
   content::WebContents* web_contents = AddTab(intercepted_url);
-  int original_tab_count = browser()->tab_strip_model()->count();
+  int original_tab_count = browser()->GetTabStripModel()->count();
 
   // Do the signin interception.
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
@@ -2962,7 +2961,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
   ASSERT_TRUE(added_browser);
   ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   EXPECT_EQ(added_browser->GetProfile(), new_profile);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count - 1);
   EXPECT_EQ(
       added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
       intercepted_url);
@@ -3072,7 +3071,7 @@ class DiceWebSigninInterceptorLatePolicyCallbackUAFTest
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   CapturingInterceptorDelegate* delegate() { return delegate_.get(); }

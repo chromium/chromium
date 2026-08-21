@@ -22,7 +22,7 @@
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/renderer_configuration.mojom-forward.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "components/signin/core/browser/test_account_reconcilor_observer.h"

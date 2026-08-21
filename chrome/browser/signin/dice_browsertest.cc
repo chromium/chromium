@@ -56,7 +56,6 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
@@ -1369,7 +1368,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignInAfterToken) {
       dice_request_header_);
 
   content::WebContents* tab_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   base::RunLoop ntp_run_loop;
   content::DidFinishNavigationObserver ntp_url_observer(
       tab_contents,
@@ -1981,7 +1980,7 @@ IN_PROC_BROWSER_TEST_F(
   base::test::TestFuture<Profile*, content::WebContents*, const SigninUIError&>
       show_signin_error_future;
   DiceTabHelper::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents())
+      browser()->GetTabStripModel()->GetActiveWebContents())
       ->UpdateSigninErrorCallback(
           show_signin_error_future.GetRepeatingCallback());
 
