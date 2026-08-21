@@ -405,11 +405,10 @@ void OmniboxEverywhereUI::CreatePageHandler(
     mojo::PendingRemote<most_visited::mojom::MostVisitedPage> pending_page,
     mojo::PendingReceiver<most_visited::mojom::MostVisitedPageHandler>
         pending_page_handler) {
-  // TODO(crbug.com/546522545): Update histogram prefix to Omnibox.
   most_visited_handler_ = std::make_unique<MostVisitedHandler>(
       std::move(pending_page_handler), std::move(pending_page), profile_,
       web_ui()->GetWebContents(),
-      std::make_unique<MostVisitedMetricsLogger>("NewTabPage"));
+      std::make_unique<MostVisitedMetricsLogger>("Omnibox"));
   most_visited_pref_observer_ = std::make_unique<MostVisitedPrefObserver>(
       profile_, most_visited_handler_.get());
 }
