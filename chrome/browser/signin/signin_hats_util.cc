@@ -104,6 +104,7 @@ SurveyStringData GetSurveyStringData(const std::string& trigger,
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
+  CHECK(identity_manager);
 
   // For bucketing, report "5+" if the number of accounts is larger than 5.
   const size_t num_google_accounts =
@@ -233,7 +234,8 @@ void LaunchHatsSurveyForProfileInternal(
     bool defer_if_no_browser,
     base::OnceCallback<SurveyStringData()> data_factory) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (!profile || !IsSurveyEnabledForHatsTrigger(trigger)) {
+  if (!profile || profile->IsOffTheRecord() ||
+      !IsSurveyEnabledForHatsTrigger(trigger)) {
     return;
   }
 
@@ -255,7 +257,6 @@ void LaunchHatsSurveyForProfileInternal(
   HatsService* hats_service =
       HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
   if (!hats_service) {
-    // HaTS service is not available for OTR profiles.
     return;
   }
 

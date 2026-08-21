@@ -1255,7 +1255,10 @@ if (!is_android) {
         "profile_list_desktop_browsertest.cc",
         "profile_window_browsertest.cc",
       ]
-      deps += [ "//chrome/browser/profiles/keep_alive:test_support" ]
+      deps += [
+        "//chrome/browser/prefs",
+        "//chrome/browser/profiles/keep_alive:test_support",
+      ]
     }
 
     if (is_mac || is_win || is_linux) {

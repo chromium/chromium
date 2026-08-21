@@ -30,6 +30,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_test_util.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
@@ -42,6 +43,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
@@ -72,6 +74,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/regional_capabilities/enums.h"
@@ -470,6 +473,18 @@ class FirstRunInteractiveUiBaseTest
     } else {
       static const base::NoDestructor<DeepQuery> kQuery(
           {"default-browser-app", "#confirmButton"});
+      return *kQuery;
+    }
+  }
+
+  const DeepQuery& GetSkipDefaultBrowserButtonQuery() const {
+    if (UseRefreshedView()) {
+      static const base::NoDestructor<DeepQuery> kQuery(
+          {"default-browser-app-refresh", "#skip-button"});
+      return *kQuery;
+    } else {
+      static const base::NoDestructor<DeepQuery> kQuery(
+          {"default-browser-app", "#skip-button"});
       return *kQuery;
     }
   }
@@ -1297,6 +1312,71 @@ IN_PROC_BROWSER_TEST_P(FirstRunInteractiveUiTestWithSyncService, MAYBE_SignIn) {
                                       expected_step_shown_duration_count);
   histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepTotalDuration",
                                       expected_step_total_duration_count);
+}
+
+IN_PROC_BROWSER_TEST_P(FirstRunInteractiveUiTestWithSyncService,
+                       SignInForcedIncognitoClosesPicker) {
+  base::test::TestFuture<bool> proceed_future;
+
+  ASSERT_TRUE(IsProfileNameDefault());
+  Profile* test_profile = profile();
+
+  OpenFirstRun(proceed_future.GetCallback());
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      // Wait for the profile picker to show the intro or welcome step.
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      If([this] { return UsePreFirstRunRefreshedView(); },
+         Then(CompleteWelcomeStep())),
+      CompleteIntroStep(/*sign_in=*/true),
+      // Wait for switch to the Gaia sign-in page to complete.
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GetSigninChromeSyncDiceUrl()));
+
+  ConfigureTestSyncService(SyncServiceFactory::GetForProfile(test_profile),
+                           syncer::SyncService::TransportState::ACTIVE);
+  SimulateSignIn(kTestEmail, kTestGivenName);
+
+  // Close the initial test browser window so that finishing FRE opens a new
+  // browser window.
+  CloseBrowserSynchronously(browser());
+
+  IncognitoModePrefs::SetAvailability(
+      test_profile->GetPrefs(), policy::IncognitoModeAvailability::kForced);
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      If([this]() { return UseRevampedView(); },
+         Then(WaitForWebContentsNavigation(
+             kWebContentsId,
+             GURL(chrome::kChromeUIIntroURL)
+                 .Resolve(chrome::kChromeUIIntroSignInCelebrationSubPage)))),
+      DeclineHistorySync(),
+#if BUILDFLAG(IS_WIN)
+      If([this]() { return !UseRevampedView(); },
+         Then(
+             WaitForWebContentsNavigation(
+                 kWebContentsId, GURL(chrome::kChromeUIIntroDefaultBrowserURL)),
+             EnsurePresent(kWebContentsId, GetSkipDefaultBrowserButtonQuery()),
+             PressJsButton(kWebContentsId,
+                           GetSkipDefaultBrowserButtonQuery()))),
+#endif  // BUILDFLAG(IS_WIN)
+      If([this]() { return UseRevampedView(); },
+         Then(CompleteFinishOrContinueStep())));
+
+  WaitForPickerClosed();
+
+  ASSERT_TRUE(proceed_future.Get());
+  BrowserWindowInterface* incognito_browser =
+      ProfileBrowserCollection::GetForProfile(test_profile)
+          ->FindTabbedBrowser(
+              /*match_original_profiles=*/true);
+  ASSERT_TRUE(incognito_browser);
+  EXPECT_TRUE(incognito_browser->GetProfile()->IsOffTheRecord());
+  EXPECT_EQ(test_profile,
+            incognito_browser->GetProfile()->GetOriginalProfile());
 }
 
 INSTANTIATE_TEST_SUITE_P(,

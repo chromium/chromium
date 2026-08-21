@@ -23,6 +23,7 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -44,6 +45,7 @@
 #include "components/account_id/account_id.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -380,4 +382,69 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
   run_loop.Run();
   EXPECT_EQ(num_browsers, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_TRUE(ProfilePicker::IsOpen());
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
+                       OpenBrowserWindowForProfileWithForcedIncognito) {
+  Profile* profile = browser()->GetProfile();
+  ASSERT_NE(profile, nullptr);
+  IncognitoModePrefs::SetAvailability(
+      profile->GetPrefs(), policy::IncognitoModeAvailability::kForced);
+
+  size_t num_browsers = GlobalBrowserCollection::GetInstance()->GetSize();
+  base::test::TestFuture<BrowserWindowInterface*> future;
+  profiles::OpenBrowserWindowForProfile(future.GetCallback(),
+                                        /*always_create=*/true,
+                                        /*is_new_profile=*/false,
+                                        /*open_command_line_urls=*/false,
+                                        profile);
+
+  EXPECT_NE(future.Get(), browser());
+  EXPECT_TRUE(future.Get()->GetProfile()->IsOffTheRecord());
+  EXPECT_EQ(profile, future.Get()->GetProfile()->GetOriginalProfile());
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(),
+            num_browsers + 1);
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
+                       OpenExistingBrowserWindowForProfileWithForcedIncognito) {
+  Profile* profile = browser()->GetProfile();
+  ASSERT_NE(profile, nullptr);
+  IncognitoModePrefs::SetAvailability(
+      profile->GetPrefs(), policy::IncognitoModeAvailability::kForced);
+
+  Browser* incognito_browser = CreateIncognitoBrowser(profile);
+  size_t num_browsers = GlobalBrowserCollection::GetInstance()->GetSize();
+
+  base::test::TestFuture<BrowserWindowInterface*> future;
+  profiles::OpenBrowserWindowForProfile(future.GetCallback(),
+                                        /*always_create=*/false,
+                                        /*is_new_profile=*/false,
+                                        /*open_command_line_urls=*/false,
+                                        profile);
+
+  EXPECT_EQ(future.Get(), incognito_browser);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), num_browsers);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ProfileWindowBrowserTest,
+    OpenBrowserWindowForProfileDoesNotReuseIncognitoWhenUnforced) {
+  Profile* profile = browser()->GetProfile();
+  Browser* incognito_browser = CreateIncognitoBrowser(profile);
+  CloseBrowserSynchronously(browser());
+  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
+
+  base::test::TestFuture<BrowserWindowInterface*> future;
+  profiles::OpenBrowserWindowForProfile(future.GetCallback(),
+                                        /*always_create=*/false,
+                                        /*is_new_profile=*/false,
+                                        /*open_command_line_urls=*/false,
+                                        profile);
+
+  EXPECT_NE(future.Get(), incognito_browser);
+  EXPECT_FALSE(future.Get()->GetProfile()->IsOffTheRecord());
+  EXPECT_EQ(future.Get()->GetProfile(), profile);
+  EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
 }
