@@ -660,8 +660,7 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, SomeShared) {
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   auto* service = glic::GlicKeyedService::Get(profile());
-  service->ToggleUI(browser(), true,
-                    glic::mojom::InvocationSource::kOsButtonMenu);
+  service->ShowUI(browser(), glic::mojom::InvocationSource::kOsButtonMenu);
   auto* instance =
       service->GetInstanceForTab(browser()->GetActiveTabInterface());
   ASSERT_TRUE(instance);
@@ -680,8 +679,7 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, SomeShared) {
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, TooManyShared) {
   auto* service = glic::GlicKeyedService::Get(profile());
-  service->ToggleUI(browser(), true,
-                    glic::mojom::InvocationSource::kOsButtonMenu);
+  service->ShowUI(browser(), glic::mojom::InvocationSource::kOsButtonMenu);
   auto* instance =
       service->GetInstanceForTab(browser()->GetActiveTabInterface());
   ASSERT_TRUE(instance);

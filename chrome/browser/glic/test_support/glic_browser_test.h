@@ -354,9 +354,13 @@ class GlicBrowserTestMixin : public T {
   // closing on deactivation (if applicable).
   void ToggleGlicForActiveTab(bool prevent_close = false) {
     auto* service = GlicKeyedService::Get(T::GetProfile());
-    service->ToggleUI(
-        T::GetTabListInterface()->GetActiveTab()->GetBrowserWindowInterface(),
-        prevent_close, mojom::InvocationSource::kTopChromeButton);
+    auto* bwi =
+        T::GetTabListInterface()->GetActiveTab()->GetBrowserWindowInterface();
+    if (prevent_close) {
+      service->ShowUI(bwi, mojom::InvocationSource::kTopChromeButton);
+    } else {
+      service->ToggleUI(bwi, false, mojom::InvocationSource::kTopChromeButton);
+    }
   }
 
   // Opens the Glic UI on the active tab and returns it.
@@ -369,8 +373,8 @@ class GlicBrowserTestMixin : public T {
   [[nodiscard]] TestResult<GlicInstanceImpl*> OpenGlicForTab(
       tabs::TabInterface* tab) {
     auto* service = GlicKeyedService::Get(T::GetProfile());
-    service->ToggleUI(tab->GetBrowserWindowInterface(), /*prevent_close=*/true,
-                      mojom::InvocationSource::kTopChromeButton);
+    service->ShowUI(tab->GetBrowserWindowInterface(),
+                    mojom::InvocationSource::kTopChromeButton);
     return WaitForGlicOpen(tab);
   }
 
