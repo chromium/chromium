@@ -1174,6 +1174,10 @@ class CORE_EXPORT Element : public ContainerNode {
   bool IsCanvasOrInCanvasSubtree() const;
   // Called when `IsInCanvasSubtree()` changes.
   virtual void DidChangeIsInCanvasSubtree();
+#if DCHECK_IS_ON()
+  void VerifySubtreeIsInCanvas(bool value);
+#endif
+
   HTMLCanvasElement* CanvasForDrawing() const;
 
   DOMMatrix* getCanvasTransform();
