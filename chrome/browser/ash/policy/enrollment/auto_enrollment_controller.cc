@@ -139,6 +139,7 @@ void AutoEnrollmentController::Start() {
   // If Unified State Determination is turned off (e.g. by command line switch),
   // then enrollment will not be forced.
   if (!AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled()) {
+    LOG(WARNING) << "State determination not enabled";
     UpdateState(AutoEnrollmentResult::kNoEnrollment);
     return;
   }
