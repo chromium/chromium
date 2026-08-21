@@ -95,8 +95,7 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardInteractions;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.NotificationsModuleInteractions;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.PermissionsModuleInteractions;
-import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -238,16 +237,16 @@ public final class SafetyHubTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public SettingsActivityTestRule<SafetyHubPermissionsFragment> mPermissionsFragmentTestRule =
-            new SettingsActivityTestRule<>(SafetyHubPermissionsFragment.class);
+    public SettingsTestRule<SafetyHubPermissionsFragment> mPermissionsFragmentTestRule =
+            new SettingsTestRule<>(SafetyHubPermissionsFragment.class);
 
     @Rule
-    public SettingsActivityTestRule<SafetyHubNotificationsFragment> mNotificationsFragmentTestRule =
-            new SettingsActivityTestRule<>(SafetyHubNotificationsFragment.class);
+    public SettingsTestRule<SafetyHubNotificationsFragment> mNotificationsFragmentTestRule =
+            new SettingsTestRule<>(SafetyHubNotificationsFragment.class);
 
     @Rule
-    public SettingsActivityTestRule<SafetyHubFragment> mSafetyHubFragmentTestRule =
-            new SettingsActivityTestRule<>(SafetyHubFragment.class);
+    public SettingsTestRule<SafetyHubFragment> mSafetyHubFragmentTestRule =
+            new SettingsTestRule<>(SafetyHubFragment.class);
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -507,13 +506,13 @@ public final class SafetyHubTest {
     @LargeTest
     @Feature({"SafetyHubPermissions"})
     public void testPermissionsToSiteSettings() {
-        SettingsActivity activity = mPermissionsFragmentTestRule.startSettingsActivity();
+        mPermissionsFragmentTestRule.startSettingsActivity();
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         PERMISSIONS_INTERACTIONS_HISTOGRAM_NAME,
                         PermissionsModuleInteractions.GO_TO_SETTINGS);
 
-        openActionBarOverflowOrOptionsMenu(activity);
+        openActionBarOverflowOrOptionsMenu(mPermissionsFragmentTestRule.getActivity());
         onViewWaiting(withText(R.string.safety_hub_go_to_site_settings_button)).perform(click());
         onViewWaiting(withText(R.string.prefs_site_settings)).check(matches(isDisplayed()));
 
@@ -692,13 +691,13 @@ public final class SafetyHubTest {
     @LargeTest
     @Feature({"SafetyHubNotifications"})
     public void testNotificationsToNotificationSettings() {
-        SettingsActivity activity = mNotificationsFragmentTestRule.startSettingsActivity();
+        mNotificationsFragmentTestRule.startSettingsActivity();
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         NOTIFICATIONS_INTERACTIONS_HISTOGRAM_NAME,
                         NotificationsModuleInteractions.GO_TO_SETTINGS);
 
-        openActionBarOverflowOrOptionsMenu(activity);
+        openActionBarOverflowOrOptionsMenu(mNotificationsFragmentTestRule.getActivity());
         onViewWaiting(withText(R.string.safety_hub_go_to_notification_settings_button))
                 .perform(click());
         onViewWaiting(
