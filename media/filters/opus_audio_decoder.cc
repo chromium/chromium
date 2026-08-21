@@ -46,7 +46,7 @@ void RemapOpusChannelLayout(base::span<const uint8_t> opus_mapping,
   // Reorder the channels to produce the same ordering as FFmpeg, which is
   // what the pipeline expects.
   base::span<const uint8_t> vorbis_layout_offset =
-      base::span(kOpusVorbisChannelMap)[num_channels - 1];
+      GetVorbisToChromiumChannelLayoutOffsets(num_channels);
   for (int channel = 0; channel < num_channels; ++channel) {
     channel_layout[channel] = opus_mapping[vorbis_layout_offset[channel]];
   }
@@ -156,11 +156,11 @@ std::optional<OpusExtraData> ParseOpusExtraData(
 
   if (extra_data.channel_mapping == OPUS_CHANNEL_MAPPING_FAMILY_VORBIS &&
       extra_data.num_streams + extra_data.num_coupled != extra_data.channels) {
-    DLOG(ERROR) << "Inconsistent channel mapping: num_streams="
-                << static_cast<int>(extra_data.num_streams)
-                << ", num_coupled=" << static_cast<int>(extra_data.num_coupled)
-                << ", channels=" << extra_data.channels;
-    return std::nullopt;
+    DLOG(WARNING) << "Inconsistent channel mapping: num_streams="
+                  << static_cast<int>(extra_data.num_streams)
+                  << ", num_coupled="
+                  << static_cast<int>(extra_data.num_coupled)
+                  << ", channels=" << extra_data.channels;
   }
 
   for (int i = 0; i < extra_data.channels; ++i) {
