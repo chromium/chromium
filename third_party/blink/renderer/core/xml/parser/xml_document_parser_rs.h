@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XML_PARSER_XML_DOCUMENT_PARSER_RS_H_
 
 #include "base/notreached.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/parser_content_policy.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/script/xml_parser_script_runner.h"
@@ -28,9 +29,9 @@ class Element;
 class LocalFrameView;
 class Text;
 
-class XMLDocumentParserRs final : public ScriptableDocumentParser,
-                                  public XMLParserScriptRunnerHost,
-                                  public xml_ffi::XmlCallbacks {
+class CORE_EXPORT XMLDocumentParserRs final : public ScriptableDocumentParser,
+                                              public XMLParserScriptRunnerHost,
+                                              public xml_ffi::XmlCallbacks {
  public:
   explicit XMLDocumentParserRs(Document&, LocalFrameView* = nullptr);
   XMLDocumentParserRs(DocumentFragment*, Element*, ParserContentPolicy);
@@ -139,6 +140,18 @@ class XMLDocumentParserRs final : public ScriptableDocumentParser,
   bool added_pending_parser_blocking_stylesheet_ = false;
   bool finish_called_ = false;
 
+  // The xml Rust library lacks a clean API interface for chunked/resumable
+  // parsing, see https://github.com/kornelski/xml-rs/issues/71. After receiving
+  // chunks of XML content that have arrived from the network, the XML parser
+  // runs parsing until the end of the the available data and may run into an
+  // unbalanced root error, in the assumption, we are at the end of the
+  // document. But as we have not received the full document yet, the error is
+  // not final and may be recoverable.
+  // We ask the parser if this is a potentially resumable error. If it is, we
+  // resume and carry the error. At the end of the network transfer, when finish
+  // is called, we determine: a) The document recovered from the error and
+  // finished as well-formed. b) The document is indeed malformed, and we
+  // forward the report the error upwards.
   struct CarryUnbalancedRootElementError {
     String error_message;
     TextPosition position;
