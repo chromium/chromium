@@ -1114,6 +1114,57 @@ suite('OmniboxEverywhereAppTest', () => {
   });
 
   test(
+      'open-voice-search reflects attribute on app and hides MV tiles and ' +
+          'content',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        loadTimeData.overrideValues({
+          omniboxEverywhereMostVisitedEnabled: true,
+        });
+        const appWithMv = document.createElement('omnibox-everywhere-app');
+        document.body.appendChild(appWithMv);
+        await microtasksFinished();
+
+        const searchbox =
+            appWithMv.shadowRoot.querySelector('omnibox-everywhere-omnibox');
+        const mvContainer = appWithMv.shadowRoot.querySelector<HTMLElement>(
+            '#mostVisitedContainer');
+        const content =
+            appWithMv.shadowRoot.querySelector<HTMLElement>('#content');
+        assertTrue(!!searchbox);
+        assertTrue(!!mvContainer);
+        assertTrue(!!content);
+        assertFalse(appWithMv.hasAttribute('show-voice-search-overlay_'));
+
+        searchbox.dispatchEvent(new CustomEvent(
+            'open-voice-search', {bubbles: true, composed: true}));
+        await microtasksFinished();
+
+        assertTrue(appWithMv.hasAttribute('show-voice-search-overlay_'));
+
+        const dialog = appWithMv.shadowRoot.querySelector<HTMLDialogElement>(
+            '#voiceSearchDialog');
+        assertTrue(!!dialog);
+        assertTrue(dialog.open);
+
+        assertEquals('none', window.getComputedStyle(content).display);
+        assertEquals(null, mvContainer.offsetParent);
+
+        const voiceSearch = appWithMv.shadowRoot.querySelector('#voiceSearch');
+        assertTrue(!!voiceSearch);
+        voiceSearch.dispatchEvent(new CustomEvent('voice-search-cancel', {
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        assertFalse(appWithMv.hasAttribute('show-voice-search-overlay_'));
+        assertFalse(!!appWithMv.shadowRoot.querySelector('#voiceSearchDialog'));
+        assertEquals('block', window.getComputedStyle(content).display);
+        assertEquals('flex', window.getComputedStyle(mvContainer).display);
+      });
+
+  test(
       'close-composebox event exits composebox mode and focuses searchbox',
       async () => {
         const searchbox =
@@ -1174,6 +1225,46 @@ suite('OmniboxEverywhereAppTest', () => {
         const restoredSearchbox =
             app.shadowRoot.querySelector('omnibox-everywhere-omnibox');
         assertTrue(!!restoredSearchbox);
+      });
+
+  test(
+      'open-voice-search in composebox reflects attribute on app and ' +
+          'hides content',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox');
+        assertTrue(!!searchbox);
+        searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+          detail: {text: '', files: [], mode: 0, model: 0},
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        const composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox');
+        assertTrue(!!composebox);
+        assertFalse(app.hasAttribute('show-voice-search-overlay_'));
+
+        composebox.dispatchEvent(new CustomEvent(
+            'open-voice-search', {bubbles: true, composed: true}));
+        await microtasksFinished();
+
+        assertTrue(app.hasAttribute('show-voice-search-overlay_'));
+
+        const content = app.shadowRoot.querySelector('#content');
+        assertTrue(!!content);
+        assertEquals('none', window.getComputedStyle(content).display);
+
+        const voiceSearch = app.shadowRoot.querySelector('#voiceSearch');
+        assertTrue(!!voiceSearch);
+        voiceSearch.dispatchEvent(new CustomEvent('voice-search-cancel', {
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        assertFalse(app.hasAttribute('show-voice-search-overlay_'));
       });
 });
 

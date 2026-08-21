@@ -7,6 +7,12 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
+:host {
+  display: block;
+  position: relative;
+  width: 100%;
+}
+
 omnibox-everywhere-omnibox {
   --cr-searchbox-height: 56px;
   --cr-searchbox-icon-left-position: 12px;
@@ -41,6 +47,7 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
   inset-inline-start: 0;
   position: absolute;
   top: 0;
+  width: 100%;
 }
 
 #voiceSearchDialog {
@@ -57,6 +64,7 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
   border-radius: 28px;
   bottom: auto;
   box-shadow: 0 4px 20px 2px rgba(0, 0, 0, 0.25);
+  font-family: inherit;
   height: 128px;
   inset-inline-start: anchor(start);
   margin: 0;
@@ -65,7 +73,7 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
   position: absolute;
   position-anchor: --dialog-anchor;
   top: anchor(top);
-  width: 100%;
+  width: anchor-size(width);
   z-index: 1000;
 }
 
@@ -74,6 +82,7 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
 }
 
 #voiceSearchCardContainer {
+  border-radius: inherit;
   height: 100%;
   position: relative;
   width: 100%;
@@ -100,6 +109,7 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
 }
 
 #voiceSearchGlow {
+  border-radius: inherit;
   inset: 0;
   pointer-events: none;
   position: absolute;
@@ -134,6 +144,14 @@ cr-most-visited {
   display: flex;
   justify-content: center;
   width: max-content;
+}
+
+:host([show-voice-search-overlay_]) {
+  min-height: 128px;
+}
+
+:host([show-voice-search-overlay_]) #content {
+  display: none;
 }
 
 #content:has(omnibox-everywhere-omnibox[dropdown-is-visible]) #mostVisitedContainer,
