@@ -150,6 +150,19 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     }
 
     /**
+     * Opens the context menu for the currently keyboard-focused tab or group header in Vertical
+     * Tabs.
+     *
+     * @return Whether the context menu was successfully opened.
+     */
+    public boolean openKeyboardFocusedContextMenu() {
+        if (!containsKeyboardFocus()) {
+            return false;
+        }
+        return mTabListCoordinator.openKeyboardFocusedContextMenu();
+    }
+
+    /**
      * Returns whether or not Tab layout toggle menu can be activated. Used to grey out the menu
      * item if it cannot be activated due to conditions such as a narrow app Window width.
      */

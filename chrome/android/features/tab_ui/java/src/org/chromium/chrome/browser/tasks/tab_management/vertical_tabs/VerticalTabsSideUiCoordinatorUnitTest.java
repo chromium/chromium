@@ -603,6 +603,25 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         assertFalse(mCoordinator.containsKeyboardFocus());
     }
 
+    @Test
+    @SmallTest
+    public void testOpenKeyboardFocusedContextMenu_DelegatesToTabListCoordinator() {
+        // Without focus, returns false without delegating.
+        assertFalse(mCoordinator.openKeyboardFocusedContextMenu());
+        verify(mMockTabListCoordinator, never()).openKeyboardFocusedContextMenu();
+
+        // With focus, delegates to tab list coordinator.
+        mTabListView.setFocusableInTouchMode(true);
+        mTabListView.requestFocus();
+
+        when(mMockTabListCoordinator.openKeyboardFocusedContextMenu()).thenReturn(true);
+        assertTrue(mCoordinator.openKeyboardFocusedContextMenu());
+        verify(mMockTabListCoordinator).openKeyboardFocusedContextMenu();
+
+        when(mMockTabListCoordinator.openKeyboardFocusedContextMenu()).thenReturn(false);
+        assertFalse(mCoordinator.openKeyboardFocusedContextMenu());
+    }
+
     private void assertShowableWidth(@Px int expectedWidth, @Px int windowWidth) {
         int minWebContentsWidthPx =
                 ViewUtils.dpToPx(mActivity, SideUiCoordinator.MIN_WEB_CONTENTS_WIDTH_DP);

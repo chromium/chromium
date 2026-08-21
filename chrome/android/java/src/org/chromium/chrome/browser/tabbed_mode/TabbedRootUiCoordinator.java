@@ -2980,6 +2980,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mKeyboardFocusRowManager.onKeyboardFocusRowSwitch();
             return true;
         } else if (id == R.id.open_tab_strip_context_menu) {
+            if (mVerticalTabsSideUiCoordinator != null
+                    && mVerticalTabsSideUiCoordinator.openKeyboardFocusedContextMenu()) {
+                return true;
+            }
             assumeNonNull(mLayoutManager);
             @Nullable StripLayoutHelperManager stripLayoutHelperManager =
                     mLayoutManager.getStripLayoutHelperManager();

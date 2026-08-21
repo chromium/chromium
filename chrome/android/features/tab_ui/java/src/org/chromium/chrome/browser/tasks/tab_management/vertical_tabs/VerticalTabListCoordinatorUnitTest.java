@@ -630,7 +630,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testTabGroupHeaderInteraction_LaunchesGroupHeaderContextMenu_Fallback() {
+    public void testTabGroupHeaderInteraction_LaunchesGroupHeaderContextMenu() {
         Token tabGroupId = new Token(1L, 2L);
         TabListRecyclerView recyclerViewSpy = setupMockRecyclerViewWithTab(mMockTab1, TAB_ID_1);
         when(mMockTab1.getTabGroupId()).thenReturn(tabGroupId);
@@ -651,21 +651,6 @@ public class VerticalTabListCoordinatorUnitTest {
                 UiType.TAB_GROUP,
                 adapter.getItemViewType(0));
 
-        // Create a mock View layout box (child of the recycler view) that renders the tab card on
-        // the screen.
-        when(mMockChildView.getWidth()).thenReturn(400);
-        when(mMockChildView.getHeight()).thenReturn(80);
-
-        doAnswer(
-                        invocation -> {
-                            int[] pos = invocation.getArgument(0);
-                            pos[0] = 40;
-                            pos[1] = 120;
-                            return null;
-                        })
-                .when(mMockChildView)
-                .getLocationInWindow(any());
-
         when(recyclerViewSpy.findChildViewUnder(200f, 150f)).thenReturn(mMockChildView);
         when(recyclerViewSpy.getChildAdapterPosition(mMockChildView)).thenReturn(0);
 
@@ -681,15 +666,8 @@ public class VerticalTabListCoordinatorUnitTest {
         verify(mTabGroupContextMenuCoordinator).showMenu(rectCaptor.capture(), eq(tabGroupId));
 
         Rect descriptiveBoundRect = rectCaptor.getValue().getRect();
-        assertEquals(
-                "Anchor bounding box left edge must be mapped.", 40, descriptiveBoundRect.left);
-        assertEquals("Anchor bounding box top edge must be mapped.", 120, descriptiveBoundRect.top);
-        assertEquals(
-                "Anchor bounding box right edge must be mapped.", 440, descriptiveBoundRect.right);
-        assertEquals(
-                "Anchor bounding box bottom edge must be mapped.",
-                200,
-                descriptiveBoundRect.bottom);
+        assertEquals("Width must be exactly 1 pixel.", 1, descriptiveBoundRect.width());
+        assertEquals("Height must be exactly 1 pixel.", 1, descriptiveBoundRect.height());
 
         if (mCoordinator.getTabGroupContextMenuCoordinatorForTesting() != null) {
             // Dismiss/destroy the instantiated context menu tracker to satisfy LifetimeAssert.
@@ -699,7 +677,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testTabItemInteraction_LaunchesTabContextMenu_Fallback() {
+    public void testTabItemInteraction_LaunchesTabContextMenu() {
         TabListRecyclerView recyclerViewSpy = setupMockRecyclerViewWithTab(mMockTab1, TAB_ID_1);
         assertNull(mCoordinator.getTabContextMenuCoordinatorForTesting());
 
@@ -2519,6 +2497,97 @@ public class VerticalTabListCoordinatorUnitTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         assertTrue(collapseButton.isFocused());
+    }
+
+    @Test
+    @SmallTest
+    public void testOpenKeyboardFocusedContextMenu_WithFocusedUnpinnedTab() {
+        Tab unpinnedTab = prepareMockTab(mMockTab1, TAB_ID_1);
+        when(mTabModel.getRepresentativeTabList()).thenReturn(List.of(unpinnedTab));
+        when(mTabModel.iterator()).thenReturn(List.of(unpinnedTab).iterator());
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(unpinnedTab);
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.getTabAt(0)).thenReturn(unpinnedTab);
+
+        assertContextMenuOpenedForFocusedTab(TAB_ID_1);
+    }
+
+    @Test
+    @SmallTest
+    public void testOpenKeyboardFocusedContextMenu_WithFocusedPinnedTab() {
+        prepareMockPinnedTab(mMockTab1, PINNED_TAB_ID, 0);
+        when(mTabModel.getRepresentativeTabList()).thenReturn(List.of(mMockTab1));
+        when(mTabModel.iterator()).thenReturn(List.of(mMockTab1).iterator());
+        when(mTabModel.getCount()).thenReturn(1);
+
+        assertContextMenuOpenedForFocusedTab(PINNED_TAB_ID);
+    }
+
+    @Test
+    @SmallTest
+    public void testOpenKeyboardFocusedContextMenu_WithFocusedTabGroupHeader() {
+        Token tabGroupId = new Token(1L, 2L);
+        Tab unpinnedTab = prepareMockTab(mMockTab1, TAB_ID_1);
+        when(unpinnedTab.getTabGroupId()).thenReturn(tabGroupId);
+        when(mTabModel.getRepresentativeTabList()).thenReturn(List.of(unpinnedTab));
+        when(mTabModel.iterator()).thenReturn(List.of(unpinnedTab).iterator());
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(unpinnedTab);
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.getTabAt(0)).thenReturn(unpinnedTab);
+
+        createCoordinator();
+
+        RecyclerView recyclerView =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recyclerView.getAdapter();
+        PropertyModel groupPropertyModel = new PropertyModel(TabProperties.ALL_KEYS_VERTICAL_TAB);
+        groupPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, tabGroupId);
+        adapter.getModelList()
+                .add(0, new MVCListAdapter.ListItem(UiType.TAB_GROUP, groupPropertyModel));
+        measureAndLayoutContainer();
+
+        mCoordinator.requestKeyboardFocus();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        mCoordinator.setTabGroupContextMenuCoordinatorForTesting(mTabGroupContextMenuCoordinator);
+        assertTrue(mCoordinator.openKeyboardFocusedContextMenu());
+
+        ArgumentCaptor<RectProvider> rectCaptor = ArgumentCaptor.forClass(RectProvider.class);
+        verify(mTabGroupContextMenuCoordinator).showMenu(rectCaptor.capture(), eq(tabGroupId));
+        assertNotNull(rectCaptor.getValue());
+    }
+
+    @Test
+    @SmallTest
+    public void testOpenKeyboardFocusedContextMenu_NoFocus_ReturnsFalse() {
+        createCoordinator();
+        assertFalse(mCoordinator.openKeyboardFocusedContextMenu());
+    }
+
+    private void assertContextMenuOpenedForFocusedTab(int expectedTabId) {
+        createCoordinator();
+        measureAndLayoutContainer();
+
+        mCoordinator.requestKeyboardFocus();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        mCoordinator.setTabContextMenuCoordinatorForTesting(mTabContextMenuCoordinator);
+        assertTrue(mCoordinator.openKeyboardFocusedContextMenu());
+
+        ArgumentCaptor<RectProvider> rectCaptor = ArgumentCaptor.forClass(RectProvider.class);
+        ArgumentCaptor<AnchorInfo> anchorCaptor = ArgumentCaptor.forClass(AnchorInfo.class);
+        verify(mTabContextMenuCoordinator).showMenu(rectCaptor.capture(), anchorCaptor.capture());
+        assertEquals(expectedTabId, anchorCaptor.getValue().getAnchorTabId());
+        assertNotNull(rectCaptor.getValue());
+    }
+
+    private void measureAndLayoutContainer() {
+        View containerView = mCoordinator.getView();
+        containerView.measure(
+                View.MeasureSpec.makeMeasureSpec(TEST_CONTAINER_WIDTH_PX, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(
+                        TEST_CONTAINER_HEIGHT_PX, View.MeasureSpec.EXACTLY));
+        containerView.layout(0, 0, TEST_CONTAINER_WIDTH_PX, TEST_CONTAINER_HEIGHT_PX);
     }
 
     // =============================================================================================

@@ -13,6 +13,7 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.view.GestureDetector;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -256,7 +257,8 @@ public class VerticalTabListCoordinator {
                         @Override
                         public void run(
                                 View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
-                            showTabGroupHeaderContextMenu(view, tabGroupId);
+                            showTabGroupHeaderContextMenu(
+                                    getItemViewAnchorRectProvider(view), tabGroupId);
                         }
 
                         @Override
@@ -876,6 +878,21 @@ public class VerticalTabListCoordinator {
         mCollapseController.setCollapseButtonEnabled(enabled);
     }
 
+    /**
+     * Opens the context menu for the currently keyboard-focused tab item or group header, if any.
+     *
+     * @return Whether the context menu was successfully opened.
+     */
+    boolean openKeyboardFocusedContextMenu() {
+        if (mRecyclerView.hasFocus()) {
+            return openContextMenuForFocusedItem(mRecyclerView);
+        }
+        if (mPinnedTabsRecyclerView.hasFocus()) {
+            return openContextMenuForFocusedItem(mPinnedTabsRecyclerView);
+        }
+        return false;
+    }
+
     private void setActive(boolean isActive) {
         mIsActive = isActive;
         if (mIsActive) {
@@ -1022,7 +1039,12 @@ public class VerticalTabListCoordinator {
                     if (trueChildView == null) return null;
 
                     int position = recyclerView.getChildAdapterPosition(trueChildView);
-                    showMenuForAdapterPosition(activity, recyclerView, trueChildView, position);
+                    showMenuForAdapterPosition(
+                            calculateTouchAnchor(
+                                    recyclerView, mLastTouchPoint.x, mLastTouchPoint.y),
+                            activity,
+                            recyclerView,
+                            position);
 
                     return this::dismissActiveContextMenus;
                 });
@@ -1427,6 +1449,28 @@ public class VerticalTabListCoordinator {
         outRect.right = isRtl ? left : right;
     }
 
+    private boolean openContextMenuForFocusedItem(RecyclerView recyclerView) {
+        View focusedChild = recyclerView.findFocus();
+        if (focusedChild == null) return false;
+
+        View itemView = recyclerView.findContainingItemView(focusedChild);
+        if (itemView == null) return false;
+
+        int position = recyclerView.getChildAdapterPosition(itemView);
+        if (position == RecyclerView.NO_POSITION) return false;
+
+        Activity activity = mWindowAndroid.getActivity().get();
+        if (activity == null) return false;
+
+        boolean menuShown =
+                showMenuForAdapterPosition(
+                        getItemViewAnchorRectProvider(itemView), activity, recyclerView, position);
+        if (menuShown) {
+            itemView.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK);
+        }
+        return menuShown;
+    }
+
     /**
      * Handles any context-trigger gesture (such as right-click or long-press) inside the VT rail.
      * Evaluates if the interaction targeted a specific tab item row or fell on the vertical
@@ -1441,22 +1485,22 @@ public class VerticalTabListCoordinator {
     private boolean handleContextMenuInteraction(
             Activity activity, RecyclerView recyclerView, float localX, float localY) {
         View childView = recyclerView.findChildViewUnder(localX, localY);
+        RectProvider rectProvider = calculateTouchAnchor(recyclerView, localX, localY);
 
         // If childView is null, the coordinates landed on an empty space. Launch empty space menu.
         if (childView == null) {
-            showEmptySpaceContextMenu(activity, recyclerView, localX, localY);
+            showEmptySpaceContextMenu(rectProvider, activity);
             return true;
         }
         int position = recyclerView.getChildAdapterPosition(childView);
-        return showMenuForAdapterPosition(activity, recyclerView, childView, position);
+        return showMenuForAdapterPosition(rectProvider, activity, recyclerView, position);
     }
 
     private boolean showMenuForAdapterPosition(
-            Activity activity, RecyclerView recyclerView, View childView, int position) {
-        if (position == RecyclerView.NO_POSITION) return false;
-
+            RectProvider rectProvider, Activity activity, RecyclerView recyclerView, int position) {
         TabListModel modelList =
                 (recyclerView == mPinnedTabsRecyclerView) ? mPinnedTabsModelList : mModelList;
+        if (!modelList.isValidIndex(position)) return false;
 
         ListItem item = modelList.get(position);
         int resolvedItemViewType =
@@ -1464,20 +1508,34 @@ public class VerticalTabListCoordinator {
         if (resolvedItemViewType == UiType.TAB || resolvedItemViewType == UiType.PINNED_TAB) {
             // The user clicked directly on a tab item (regular tab, pinned tab, or child tab).
             int tabId = TabProperties.getTabId(item.model);
-            showTabItemContextMenu(activity, recyclerView, childView, tabId);
+            showTabItemContextMenu(rectProvider, activity, tabId);
             return true;
         } else if (resolvedItemViewType == UiType.TAB_GROUP) {
             Token tabGroupId = item.model.get(TabProperties.TAB_GROUP_HEADER_ID);
             if (tabGroupId != null) {
-                showTabGroupHeaderContextMenu(childView, tabGroupId);
+                showTabGroupHeaderContextMenu(rectProvider, tabGroupId);
                 return true;
             }
         }
         return false;
     }
 
-    private void showTabGroupHeaderContextMenu(View itemView, Token tabGroupId) {
-        RectProvider rectProvider = getAnchorRectProvider(mRecyclerView, itemView);
+    /**
+     * Shows the context menu for a newly created tab group header by resolving its current view
+     * from the recycler view. This avoids capturing a stale tab item view across the asynchronous
+     * group creation callback.
+     */
+    private void showTabGroupHeaderContextMenuForGroupId(Token tabGroupId) {
+        int index = mModelList.indexFromTabGroupId(tabGroupId);
+        if (index == TabModel.INVALID_TAB_INDEX) return;
+
+        RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(index);
+        if (holder == null) return;
+
+        showTabGroupHeaderContextMenu(getItemViewAnchorRectProvider(holder.itemView), tabGroupId);
+    }
+
+    private void showTabGroupHeaderContextMenu(RectProvider rectProvider, Token tabGroupId) {
         if (mTabGroupContextMenuCoordinator == null) {
             mTabGroupContextMenuCoordinator =
                     TabGroupContextMenuCoordinator.createContextMenuCoordinator(
@@ -1495,10 +1553,7 @@ public class VerticalTabListCoordinator {
         mTabGroupContextMenuCoordinator.showMenu(rectProvider, tabGroupId);
     }
 
-    private void showTabItemContextMenu(
-            Activity activity, RecyclerView recyclerView, View itemView, int tabId) {
-        RectProvider rectProvider = getAnchorRectProvider(recyclerView, itemView);
-
+    private void showTabItemContextMenu(RectProvider rectProvider, Activity activity, int tabId) {
         TabModel tabModel = mTabModelSelector.getCurrentModel();
         List<Integer> allTabIds;
         if (VerticalTabUtils.isMultiSelectEnabled()
@@ -1515,7 +1570,7 @@ public class VerticalTabListCoordinator {
             TabGroupCreationCallback tabGroupCreationCallback =
                     (newTabGroupId) -> {
                         if (newTabGroupId != null) {
-                            showTabGroupHeaderContextMenu(itemView, newTabGroupId);
+                            showTabGroupHeaderContextMenuForGroupId(newTabGroupId);
                         }
                     };
 
@@ -1543,9 +1598,7 @@ public class VerticalTabListCoordinator {
         mTabContextMenuCoordinator.showMenu(rectProvider, anchorInfo);
     }
 
-    private void showEmptySpaceContextMenu(
-            Activity activity, View targetView, float localX, float localY) {
-        RectProvider rectProvider = calculateTouchAnchor(targetView, localX, localY);
+    private void showEmptySpaceContextMenu(RectProvider rectProvider, Activity activity) {
         if (mTabStripContextMenuCoordinator == null) {
             mTabStripContextMenuCoordinator =
                     TabStripContextMenuCoordinator.createContextMenuCoordinator(
@@ -1563,12 +1616,7 @@ public class VerticalTabListCoordinator {
         mTabStripContextMenuCoordinator.showMenu(rectProvider, isIncognito, activity);
     }
 
-    private RectProvider getAnchorRectProvider(RecyclerView recyclerView, View itemView) {
-        if (mLastTouchPoint.x != 0 || mLastTouchPoint.y != 0) {
-            return calculateTouchAnchor(recyclerView, mLastTouchPoint.x, mLastTouchPoint.y);
-        }
-
-        // Fallback: Create a precise bounding box wrapped around the tab item.
+    private RectProvider getItemViewAnchorRectProvider(View itemView) {
         int[] viewPos = new int[2];
         itemView.getLocationInWindow(viewPos);
         Rect anchorRect =
@@ -1683,7 +1731,8 @@ public class VerticalTabListCoordinator {
                     handleContextMenuInteraction(activity, targetRecyclerView, e.getX(), e.getY());
                 } else {
                     // For the header view (or non-lists), directly show the empty space menu.
-                    showEmptySpaceContextMenu(activity, targetView, e.getX(), e.getY());
+                    showEmptySpaceContextMenu(
+                            calculateTouchAnchor(targetView, e.getX(), e.getY()), activity);
                 }
             }
         };
@@ -1703,7 +1752,8 @@ public class VerticalTabListCoordinator {
                         activity, rv, mLastTouchPoint.x, mLastTouchPoint.y);
             } else {
                 showEmptySpaceContextMenu(
-                        activity, targetView, mLastTouchPoint.x, mLastTouchPoint.y);
+                        calculateTouchAnchor(targetView, mLastTouchPoint.x, mLastTouchPoint.y),
+                        activity);
                 return true;
             }
         };
