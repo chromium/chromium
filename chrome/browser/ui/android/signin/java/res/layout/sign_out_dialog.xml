@@ -20,6 +20,13 @@ found in the LICENSE file.
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
     <org.chromium.components.browser_ui.widget.CheckBoxWithDescription
+        android:id="@+id/delete_browsing_data_checkbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:visibility="gone" />
+
+    <org.chromium.components.browser_ui.widget.CheckBoxWithDescription
         android:id="@+id/remove_extensions_checkbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

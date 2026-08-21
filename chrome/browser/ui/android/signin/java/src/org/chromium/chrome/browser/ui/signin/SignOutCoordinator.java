@@ -20,6 +20,9 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
+import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -135,6 +138,7 @@ public class SignOutCoordinator {
         assumeNonNull(signinManager);
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         assumeNonNull(syncService);
+        BrowsingDataBridge browsingDataBridge = BrowsingDataBridge.getForProfile(profile);
         @UserActionableError int userActionableError = syncService.getUserActionableError();
         syncService.getTypesWithUnsyncedData(
                 unsyncedTypes -> {
@@ -160,6 +164,7 @@ public class SignOutCoordinator {
                                         context,
                                         dialogManager,
                                         signinManager,
+                                        browsingDataBridge,
                                         userActionableError,
                                         signOutReason,
                                         onSignOut);
@@ -170,6 +175,7 @@ public class SignOutCoordinator {
                                         snackbarManager,
                                         signinManager,
                                         syncService,
+                                        browsingDataBridge,
                                         signOutReason,
                                         onSignOut);
                     }
@@ -315,6 +321,7 @@ public class SignOutCoordinator {
             Context context,
             ModalDialogManager dialogManager,
             SigninManager signinManager,
+            BrowsingDataBridge browsingDataBridge,
             @UserActionableError int userActionableError,
             @SignoutReason int signOutReason,
             Runnable onSignOut) {
@@ -329,7 +336,12 @@ public class SignOutCoordinator {
         View customView = createCustomView(context, signinManager, message);
         ModalDialogProperties.Controller controller =
                 createController(
-                        dialogManager, customView, signinManager, signOutReason, onSignOut);
+                        dialogManager,
+                        customView,
+                        signinManager,
+                        browsingDataBridge,
+                        signOutReason,
+                        onSignOut);
 
         final PropertyModel model =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -356,6 +368,7 @@ public class SignOutCoordinator {
             SnackbarManager snackbarManager,
             SigninManager signinManager,
             SyncService syncService,
+            BrowsingDataBridge browsingDataBridge,
             @SignoutReason int signOutReason,
             Runnable onSignOut) {
         String message = context.getString(R.string.sign_out_message);
@@ -365,6 +378,7 @@ public class SignOutCoordinator {
                         dialogManager,
                         customView,
                         signinManager,
+                        browsingDataBridge,
                         signOutReason,
                         () -> {
                             onSignOut.run();
@@ -397,10 +411,20 @@ public class SignOutCoordinator {
             Context context, SigninManager signinManager, String message) {
         View customView = LayoutInflater.from(context).inflate(R.layout.sign_out_dialog, null);
         TextView messageView = customView.findViewById(R.id.sign_out_message);
+        CheckBoxWithDescription deleteDataCheckBox =
+                customView.findViewById(R.id.delete_browsing_data_checkbox);
         CheckBoxWithDescription removeExtensionsCheckBox =
                 customView.findViewById(R.id.remove_extensions_checkbox);
 
         messageView.setText(message);
+        if (DeviceInfo.isDesktop()
+                && SigninFeatureMap.isEnabled(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA)) {
+            deleteDataCheckBox.setVisibility(View.VISIBLE);
+            deleteDataCheckBox.setPrimaryText(
+                    context.getString(R.string.sign_out_delete_browsing_data_checkbox_title));
+            deleteDataCheckBox.setDescriptionText(
+                    context.getString(R.string.sign_out_delete_browsing_data_checkbox_subtitle));
+        }
         if (signinManager.hasSignedInAccountExtensions()) {
             removeExtensionsCheckBox.setVisibility(View.VISIBLE);
             removeExtensionsCheckBox.setPrimaryText(
@@ -419,8 +443,12 @@ public class SignOutCoordinator {
             ModalDialogManager dialogManager,
             View customView,
             SigninManager signinManager,
+            BrowsingDataBridge browsingDataBridge,
             @SignoutReason int signOutReason,
             Runnable onSignOut) {
+        CheckBoxWithDescription deleteDataCheckBox =
+                customView.findViewById(R.id.delete_browsing_data_checkbox);
+        assert deleteDataCheckBox != null;
         CheckBoxWithDescription removeExtensionsCheckBox =
                 customView.findViewById(R.id.remove_extensions_checkbox);
         assert removeExtensionsCheckBox != null;
@@ -429,12 +457,18 @@ public class SignOutCoordinator {
             @Override
             public void onClick(PropertyModel model, int buttonType) {
                 if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
+                    boolean clearBrowsingData = deleteDataCheckBox.isChecked();
+                    Runnable onSignOutWithOptionalDataClear =
+                            () -> {
+                                if (clearBrowsingData) {
+                                    clearBrowsingData(browsingDataBridge);
+                                }
+                                onSignOut.run();
+                            };
+
                     signinManager.setUninstallAccountExtensionsOnSignout(
                             removeExtensionsCheckBox.isChecked());
-                    signOut(
-                            signinManager,
-                            signOutReason,
-                            () -> PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, onSignOut));
+                    signOut(signinManager, signOutReason, onSignOutWithOptionalDataClear);
                     dialogManager.dismissDialog(
                             model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                 } else if (buttonType == ModalDialogProperties.ButtonType.NEGATIVE) {
@@ -446,6 +480,21 @@ public class SignOutCoordinator {
             @Override
             public void onDismiss(PropertyModel model, int dismissalCause) {}
         };
+    }
+
+    private static void clearBrowsingData(BrowsingDataBridge browsingDataBridge) {
+        assert DeviceInfo.isDesktop()
+                && SigninFeatureMap.isEnabled(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA);
+        int[] browsingDatatypes = {
+            BrowsingDataType.HISTORY,
+            BrowsingDataType.CACHE,
+            BrowsingDataType.SITE_DATA,
+            BrowsingDataType.PASSWORDS,
+            BrowsingDataType.FORM_DATA,
+            BrowsingDataType.SITE_SETTINGS,
+            BrowsingDataType.TABS
+        };
+        browsingDataBridge.clearBrowsingData(null, browsingDatatypes, TimePeriod.ALL_TIME);
     }
 
     private static void signOutAndShowSnackbar(
@@ -460,14 +509,10 @@ public class SignOutCoordinator {
                 signinManager,
                 signOutReason,
                 () -> {
-                    PostTask.runOrPostTask(
-                            TaskTraits.UI_DEFAULT,
-                            () -> {
-                                if (!supressSnackbar) {
-                                    showSnackbar(context, snackbarManager, syncService);
-                                }
-                                onSignOut.run();
-                            });
+                    if (!supressSnackbar) {
+                        showSnackbar(context, snackbarManager, syncService);
+                    }
+                    onSignOut.run();
                 });
     }
 
@@ -475,6 +520,8 @@ public class SignOutCoordinator {
             SigninManager signinManager,
             @SignoutReason int signOutReason,
             Runnable signOutCallback) {
+        Runnable signOutCallbackOnUiThread =
+                () -> PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, signOutCallback);
         signinManager.runAfterOperationInProgress(
                 () -> {
                     if (!signinManager.isSignOutAllowed()) {
@@ -482,7 +529,7 @@ public class SignOutCoordinator {
                         // asynchronous. In that case return early instead.
                         return;
                     }
-                    signinManager.signOut(signOutReason, signOutCallback);
+                    signinManager.signOut(signOutReason, signOutCallbackOnUiThread);
                 });
     }
 }

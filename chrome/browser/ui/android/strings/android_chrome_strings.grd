@@ -2269,6 +2269,12 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SIGN_OUT_UNSAVED_DATA_PRIMARY_BUTTON" desc="Button title of a dialog shown to users when they sign out of Chrome but Chrome hasn't synced some data yet, which is permanently deleted if the user proceeds by pressing this button">
         Delete and sign out
       </message>
+      <message name="IDS_SIGN_OUT_DELETE_BROWSING_DATA_CHECKBOX_TITLE" desc="Checkbox title in the sign-out dialog allowing users to delete browsing data from this device.">
+        Delete browsing data from this device
+      </message>
+      <message name="IDS_SIGN_OUT_DELETE_BROWSING_DATA_CHECKBOX_SUBTITLE" desc="Checkbox subtitle in the sign-out dialog explaining what browsing data is.">
+        Browsing data includes your browsing history, cookies and other site data, cached images and files, and open tabs
+      </message>
 
       <!-- Sync strings -->
       <message name="IDS_SIGN_IN_MANAGED_ACCOUNT" desc="Title for prompts to sign in to managed accounts">
