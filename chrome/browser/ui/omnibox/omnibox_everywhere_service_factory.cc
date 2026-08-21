@@ -6,10 +6,12 @@
 
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 
 // static
 OmniboxEverywhereServiceFactory*
@@ -33,7 +35,9 @@ OmniboxEverywhereServiceFactory::OmniboxEverywhereServiceFactory()
               .WithGuest(ProfileSelection::kOwnInstance)
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
+  DependsOn(feature_engagement::TrackerFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
+  DependsOn(UserEducationServiceFactory::GetInstance());
 }
 
 OmniboxEverywhereServiceFactory::~OmniboxEverywhereServiceFactory() = default;

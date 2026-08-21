@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -20,15 +21,39 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_feature_promo_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 
 OmniboxEverywhereService::OmniboxEverywhereService(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile) {
+  feature_engagement::Tracker* const tracker_service =
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
+  UserEducationService* const user_education_service =
+      UserEducationServiceFactory::GetForBrowserContext(profile_);
+  if (tracker_service && user_education_service) {
+    feature_promo_controller_ = std::make_unique<
+        omnibox_everywhere::OmniboxEverywhereFeaturePromoController>(
+        tracker_service, user_education_service, this);
+    feature_promo_controller_->Init();
+  }
+}
 
 OmniboxEverywhereService::~OmniboxEverywhereService() {
   Shutdown();
+}
+
+user_education::FeaturePromoController*
+OmniboxEverywhereService::feature_promo_controller() {
+  return feature_promo_controller_.get();
+}
+
+const user_education::FeaturePromoController*
+OmniboxEverywhereService::feature_promo_controller() const {
+  return feature_promo_controller_.get();
 }
 
 omnibox_everywhere::OmniboxEverywhereController*
@@ -60,6 +85,7 @@ void OmniboxEverywhereService::ReleaseProfileKeepAlive() {
 
 void OmniboxEverywhereService::Shutdown() {
   ReleaseProfileKeepAlive();
+  feature_promo_controller_.reset();
   if (controller()) {
     controller()->ShutdownForProfile(profile_);
   }
@@ -73,6 +99,12 @@ void OmniboxEverywhereService::HidePopup() {
 
 bool OmniboxEverywhereService::IsPopupVisible() const {
   return controller() && controller()->IsVisible();
+}
+
+bool OmniboxEverywhereService::IsPopupVisibleForProfile() const {
+  return controller() && controller()->ui_manager() &&
+         controller()->ui_manager()->IsVisible() &&
+         controller()->ui_manager()->profile() == profile_;
 }
 
 void OmniboxEverywhereService::ShowProfilePicker() {

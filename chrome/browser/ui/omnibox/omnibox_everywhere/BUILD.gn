@@ -21,6 +21,7 @@ source_set("prefs") {
 source_set("omnibox_everywhere") {
   public = [
     "omnibox_everywhere_controller.h",
+    "omnibox_everywhere_feature_promo_controller.h",
     "omnibox_everywhere_ui_manager.h",
   ]
   public_deps = [
@@ -29,7 +30,9 @@ source_set("omnibox_everywhere") {
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui/top_chrome",
+    "//components/feature_engagement/public",
     "//components/prefs",
+    "//components/user_education/common",
     "//ui/base/accelerators/global_accelerator_listener",
     "//ui/gfx",
     "//ui/views",
@@ -40,6 +43,7 @@ source_set("omnibox_everywhere") {
 source_set("impl") {
   sources = [
     "omnibox_everywhere_controller.cc",
+    "omnibox_everywhere_feature_promo_controller.cc",
     "omnibox_everywhere_ui_manager.cc",
     "omnibox_everywhere_widget_delegate.cc",
     "omnibox_everywhere_widget_delegate.h",
@@ -49,15 +53,18 @@ source_set("impl") {
     ":prefs",
     "//chrome/browser:file_select_helper",
     "//chrome/browser/background/omnibox_everywhere",
+    "//chrome/browser/feature_engagement",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/new_tab_page/prefs",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/profiles",
+    "//chrome/browser/ui/views/user_education",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/omnibox_everywhere",
     "//chrome/browser/ui/webui/omnibox_popup",
+    "//chrome/browser/user_education",
     "//components/keep_alive_registry",
     "//components/ntp_tiles:pref_names",
     "//components/omnibox/common:features",
