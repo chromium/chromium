@@ -1152,6 +1152,7 @@ source_set("extensions") {
         "//chrome/browser/chromeos/policy/dlp",
         "//chrome/browser/chromeos/upload_office_to_cloud",
         "//chrome/browser/speech",
+        "//chrome/browser/ui/views/extensions/dialogs:request_file_system_dialog",
         "//chromeos/ash/components/browser_context_helper",
         "//chromeos/ash/components/platform_keys",
         "//chromeos/components/kiosk",
@@ -1186,6 +1187,7 @@ source_set("extensions") {
           "//chrome/browser/chromeos/extensions/printing_metrics",
           "//chrome/browser/chromeos/printing",
           "//chrome/browser/pdf:pdf_pref_names",
+          "//chrome/browser/ui/views/extensions/dialogs:print_job_confirmation_dialog",
           "//chromeos/printing",
           "//printing/backend",
         ]

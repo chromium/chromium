@@ -12,6 +12,7 @@ assert(toolkit_views)
 source_set("document_scanner_discovery_confirmation_dialog") {
   sources = [
     "document_scanner_discovery_confirmation_dialog.cc",
+    "document_scanner_discovery_confirmation_dialog.h",
   ]
 
   deps = [
@@ -25,7 +26,10 @@ source_set("document_scanner_discovery_confirmation_dialog") {
 }
 
 source_set("document_scanner_start_scan_confirmation_dialog") {
-  sources = [ "document_scanner_start_scan_confirmation_dialog.cc" ]
+  sources = [
+    "document_scanner_start_scan_confirmation_dialog.cc",
+    "document_scanner_start_scan_confirmation_dialog.h",
+  ]
 
   deps = [
     "//base",
@@ -39,7 +43,10 @@ source_set("document_scanner_start_scan_confirmation_dialog") {
 }
 
 source_set("print_job_confirmation_dialog") {
-  sources = [ "print_job_confirmation_dialog.cc" ]
+  sources = [
+    "print_job_confirmation_dialog.cc",
+    "print_job_confirmation_dialog.h",
+  ]
 
   deps = [
     "//base",
@@ -56,7 +63,10 @@ source_set("print_job_confirmation_dialog") {
 }
 
 source_set("request_file_system_dialog") {
-  sources = [ "request_file_system_dialog.cc" ]
+  sources = [
+    "request_file_system_dialog.cc",
+    "request_file_system_dialog.h",
+  ]
 
   deps = [
     "//base",

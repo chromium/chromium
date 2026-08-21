@@ -26,6 +26,8 @@ source_set("extensions_menu_handler") {
 
 source_set("extensions") {
   sources = [
+    "confirm_protocol_handler_dialog.h",
+    "controlled_home_dialog.h",
     "controlled_home_dialog_controller.h",
     "controlled_home_dialog_controller_interface.h",
     "download_danger_dialog.h",
@@ -41,7 +43,6 @@ source_set("extensions") {
     "extension_post_install_dialog.h",
     "extension_post_install_dialog_model.h",
     "extensions_container.h",
-    "extensions_dialogs.h",
     "extensions_menu_view_model.h",
     "extensions_toolbar_view_model.h",
     "icon_with_badge_image_source.h",

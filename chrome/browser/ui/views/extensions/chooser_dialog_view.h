@@ -45,4 +45,16 @@ class ChooserDialogView : public views::DialogDelegateView,
   raw_ptr<DeviceChooserContentView> device_chooser_content_view_;
 };
 
+namespace content {
+class WebContents;
+}
+
+namespace extensions {
+
+void ShowConstrainedDeviceChooserDialog(
+    content::WebContents* web_contents,
+    std::unique_ptr<permissions::ChooserController> controller);
+
+}  // namespace extensions
+
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_CHOOSER_DIALOG_VIEW_H_

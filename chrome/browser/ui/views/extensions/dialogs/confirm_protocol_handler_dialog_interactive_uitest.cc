@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/extensions/confirm_protocol_handler_dialog.h"
+
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "content/public/test/browser_test.h"

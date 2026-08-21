@@ -4,7 +4,7 @@
 
 #include "chrome/browser/custom_handlers/chrome_protocol_handler_navigation_throttle.h"
 
-#include "chrome/browser/ui/extensions/extensions_dialogs.h"
+#include "chrome/browser/ui/extensions/confirm_protocol_handler_dialog.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "content/public/browser/navigation_handle.h"
 

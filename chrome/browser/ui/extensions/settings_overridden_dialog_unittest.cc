@@ -8,7 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ui/extensions/extensions_dialogs.h"
+#include "chrome/browser/ui/extensions/settings_overridden_dialog.h"
 #include "chrome/browser/ui/extensions/settings_overridden_dialog_controller.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/test/views/chrome_views_test_base.h"

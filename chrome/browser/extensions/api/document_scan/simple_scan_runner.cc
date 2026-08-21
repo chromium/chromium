@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/extensions/extensions_dialogs.h"
+#include "chrome/browser/ui/views/extensions/dialogs/document_scanner_start_scan_confirmation_dialog.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/image_loader.h"

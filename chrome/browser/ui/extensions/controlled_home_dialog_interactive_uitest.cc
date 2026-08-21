@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/extensions/controlled_home_dialog.h"
+
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
@@ -10,7 +12,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
 #include "chrome/browser/ui/extensions/controlled_home_dialog_controller_interface.h"
-#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/disable_reason.h"

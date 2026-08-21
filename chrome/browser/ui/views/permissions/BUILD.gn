@@ -160,6 +160,7 @@ if (toolkit_views) {
       deps += [
         "//chrome/browser/extensions",
         "//chrome/browser/ui/extensions",
+        "//chrome/browser/ui/views/extensions:extensions_views_utils",
         "//chrome/browser/ui/views/frame:toolbar_button_provider",
       ]
     }

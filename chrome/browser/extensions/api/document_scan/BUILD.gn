@@ -45,6 +45,8 @@ source_set("document_scan") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/views/extensions/dialogs:document_scanner_discovery_confirmation_dialog",
+    "//chrome/browser/ui/views/extensions/dialogs:document_scanner_start_scan_confirmation_dialog",
     "//chrome/common:constants",
     "//chromeos/ash/components/dbus/lorgnette_manager:lorgnette_proto",
     "//components/prefs",

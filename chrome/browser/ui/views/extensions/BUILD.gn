@@ -207,6 +207,9 @@ source_set("browser_tests") {
       ":media_gallery_checkbox_view",
       "//chrome/browser/media_galleries:test_support",
       "//chrome/browser/ui:browser_select_file_dialog_controller",
+      "//chrome/browser/ui/views/extensions/dialogs:document_scanner_discovery_confirmation_dialog",
+      "//chrome/browser/ui/views/extensions/dialogs:document_scanner_start_scan_confirmation_dialog",
+      "//chrome/browser/ui/views/extensions/dialogs:request_file_system_dialog",
     ]
   }
 }
