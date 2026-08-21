@@ -449,6 +449,10 @@ inline constexpr unsigned char kQuarantinedByte = 0xEF;
 inline constexpr uint64_t kIntendedLeakQuarantineMarker = 0xEBB0000000000000u;
 inline constexpr uint64_t kIntendedLeakQuarantineMask = 0xFFFFFF0000000000u;
 inline constexpr uint8_t kIntendedLeakQuarantineRemainder = 0xEB;
+// Explicitly reserved sentinel type ID indicating an intended-leak retirement
+// without a specific type ID hint (e.g. untyped RTH retirements). Real type ID
+// tokens must not use 0.
+inline constexpr uint32_t kIntendedLeakUnknownTypeId = 0;
 
 }  // namespace internal
 

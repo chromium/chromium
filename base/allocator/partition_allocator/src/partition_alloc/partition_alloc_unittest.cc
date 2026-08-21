@@ -4190,6 +4190,35 @@ TEST_P(PartitionAllocTest, IntendedLeak) {
             UntagPtr(slot_span->get_freelist_head()));
 }
 
+TEST_P(PartitionAllocTest, IntendedLeakWithoutTypeIdHint) {
+  PartitionOptions opts = GetCommonPartitionOptions();
+  opts.thread_cache = PartitionOptions::kDisabled;
+  opts.backup_ref_ptr = PartitionOptions::kDisabled;
+  std::unique_ptr<PartitionRoot> root = CreateCustomTestRoot(opts, {});
+
+  void* ptr_to_keep_slot_span = root->Alloc(kTestAllocSize, type_name);
+  void* ptr = root->Alloc(kTestAllocSize, type_name);
+
+  constexpr const uint8_t kAnyDummyValue = 0x12u;
+  PA_UNSAFE_TODO(memset(ptr, kAnyDummyValue, kTestAllocSize));
+
+  auto* slot_span =
+      SlotSpan::FromSlotStart(SlotStart::Unchecked(ptr).Untag(), root.get());
+
+  root->Free<FreeFlags::kIntendedLeak>(ptr);
+
+  EXPECT_NE(SlotStart::Unchecked(ptr).Untag().value(),
+            UntagPtr(slot_span->get_freelist_head()));
+
+  uint64_t value_after_intended_leaked = *reinterpret_cast<uint64_t*>(ptr);
+  EXPECT_EQ(value_after_intended_leaked & internal::kIntendedLeakQuarantineMask,
+            internal::kIntendedLeakQuarantineMarker);
+  EXPECT_EQ((value_after_intended_leaked & ~internal::kIntendedLeakQuarantineMask) >> 8u,
+            internal::kIntendedLeakUnknownTypeId);
+
+  root->Free(ptr_to_keep_slot_span);
+}
+
 TEST_P(PartitionAllocTest, ZapOnFree) {
   void* ptr = allocator.root()->Alloc(1, type_name);
   EXPECT_TRUE(ptr);

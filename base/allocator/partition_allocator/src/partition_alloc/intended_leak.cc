@@ -6,6 +6,7 @@
 #include "partition_alloc/internal/partition_root_internal.h"
 // clang-format on
 
+#include <atomic>
 #include <cstdint>
 #include <unordered_map>
 
@@ -18,6 +19,8 @@
 namespace partition_alloc {
 
 namespace {
+
+std::atomic<size_t> g_untyped_intended_leak_size{0};
 
 template <typename T, typename U>
 using InternalUnorderedMap =
@@ -58,6 +61,12 @@ void PartitionRoot::Zap(internal::SlotStart slot_start,
 // static
 void PartitionRoot::RecordLeakSizePerTypeId(uint32_t type_id,
                                             size_t slot_size) {
+  if (type_id == internal::kIntendedLeakUnknownTypeId) {
+    g_untyped_intended_leak_size.fetch_add(slot_size,
+                                           std::memory_order_relaxed);
+    return;
+  }
+
   internal::ScopedGuard guard(PartitionRoot::GetLeakSizeMapLock());
 
   auto& map = GetLeakSizePerTypeIdMap();
@@ -85,6 +94,13 @@ size_t PartitionRoot::GetSlotSizeFromRequestedSizeForTesting(
 
 // static
 void PartitionRoot::DumpIntendedLeakStats(PartitionStatsDumper* dumper) {
+  size_t untyped_size =
+      g_untyped_intended_leak_size.load(std::memory_order_relaxed);
+  if (untyped_size > 0) {
+    dumper->DumpIntendedLeak(internal::kIntendedLeakUnknownTypeId,
+                             untyped_size);
+  }
+
   internal::ScopedGuard guard(PartitionRoot::GetLeakSizeMapLock());
 
   auto& map = GetLeakSizePerTypeIdMap();
@@ -94,6 +110,7 @@ void PartitionRoot::DumpIntendedLeakStats(PartitionStatsDumper* dumper) {
 }
 
 void PartitionRoot::ClearIntendedLeakStatsForTesting() {
+  g_untyped_intended_leak_size.store(0, std::memory_order_relaxed);
   internal::ScopedGuard guard(PartitionRoot::GetLeakSizeMapLock());
   GetLeakSizePerTypeIdMap().clear();
 }

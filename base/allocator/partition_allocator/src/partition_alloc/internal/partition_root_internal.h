@@ -684,10 +684,12 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediateInternal(
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     PA_CHECK(!brp_enabled());
 #endif
+    uint32_t type_id = internal::kIntendedLeakUnknownTypeId;
     if constexpr (ContainsFlags(flags, FreeFlags::kWithTypeIdHint)) {
-      Zap(slot_start, slot_span, hint.type_id);
-      RecordLeakSizePerTypeId(hint.type_id, size_details.slot_size);
+      type_id = hint.type_id;
     }
+    Zap(slot_start, slot_span, type_id);
+    RecordLeakSizePerTypeId(type_id, size_details.slot_size);
     intended_leak_size_.fetch_add(size_details.slot_size);
     return;  // Leak
   }
