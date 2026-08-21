@@ -339,8 +339,12 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
         super.tabClosed(id, nextId, incognito, tabRemoved);
     }
 
+    private boolean isHubEnabled() {
+        return !DeviceInfo.isXr() && !TabSwitcherUtils.isGridTabSwitcherDisabled();
+    }
+
     private boolean shouldShowHubOnTabClosed(boolean showOverview) {
-        if (!showOverview || DeviceInfo.isXr() || TabSwitcherUtils.isGridTabSwitcherDisabled()) {
+        if (!showOverview || !isHubEnabled()) {
             return false;
         }
         // Case 1: Not currently in the Hub and not already navigating to the Hub.
@@ -356,7 +360,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
     @Override
     public void tabsAllClosing(boolean incognito) {
         if (!isActivityFinishingOrDestroyed()) {
-            if (getActiveLayout() == mStaticLayout && !incognito && !DeviceInfo.isXr()) {
+            if (getActiveLayout() == mStaticLayout && !incognito && isHubEnabled()) {
                 showLayout(LayoutType.HUB, /* animate= */ false);
             }
         }

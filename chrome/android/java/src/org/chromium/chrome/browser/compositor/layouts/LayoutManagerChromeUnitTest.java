@@ -360,6 +360,31 @@ public class LayoutManagerChromeUnitTest {
         verify(layoutManagerChrome).showLayout(eq(LayoutType.HUB), anyBoolean());
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
+    public void testTabsAllClosing_disabledOnDesktop_doesNotShowHub() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        LayoutManagerChrome layoutManagerChrome = createLayoutManagerChromeSpy();
+        layoutManagerChrome.mStaticLayout = mStaticLayout;
+        when(layoutManagerChrome.getActiveLayout()).thenReturn(mStaticLayout);
+
+        layoutManagerChrome.tabsAllClosing(false);
+
+        verify(layoutManagerChrome, never()).showLayout(eq(LayoutType.HUB), anyBoolean());
+    }
+
+    @Test
+    public void testTabsAllClosing_enabledOnPhone_showsHub() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        LayoutManagerChrome layoutManagerChrome = createLayoutManagerChromeSpy();
+        layoutManagerChrome.mStaticLayout = mStaticLayout;
+        when(layoutManagerChrome.getActiveLayout()).thenReturn(mStaticLayout);
+
+        layoutManagerChrome.tabsAllClosing(false);
+
+        verify(layoutManagerChrome).showLayout(eq(LayoutType.HUB), anyBoolean());
+    }
+
     private LayoutManagerChrome createLayoutManagerChromeSpy() {
         LayoutManagerChrome layoutManagerChrome =
                 spy(
