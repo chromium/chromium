@@ -11,7 +11,6 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
@@ -184,10 +183,7 @@ public class TabGroupListBottomSheetMediator {
 
     private void populateRegularTabGroups(List<Tab> tabs, @Nullable Token groupToFilter) {
         GroupWindowChecker windowChecker = new GroupWindowChecker(mTabGroupSyncService, mTabModel);
-        List<SavedTabGroup> sortedTabGroups =
-                windowChecker.getSortedGroupList(
-                        this::shouldShowGroupByState,
-                        (a, b) -> Long.compare(b.updateTimeMs, a.updateTimeMs));
+        List<SavedTabGroup> sortedTabGroups = windowChecker.getDefaultSortedGroupList();
 
         for (SavedTabGroup tabGroup : sortedTabGroups) {
             if (tabGroup.localId != null
@@ -253,13 +249,5 @@ public class TabGroupListBottomSheetMediator {
                 numGroups == 1 && (isSingleTabToBeMoved || groupToNotBeIncluded != null);
 
         return (numGroups == 0 || singleGroupPredicate || numGroups > 1) && mShowNewGroup;
-    }
-
-    private boolean shouldShowGroupByState(@GroupWindowState int groupWindowState) {
-        if (ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled()) {
-            return groupWindowState != GroupWindowState.HIDDEN;
-        }
-        return groupWindowState != GroupWindowState.IN_ANOTHER
-                && groupWindowState != GroupWindowState.HIDDEN;
     }
 }

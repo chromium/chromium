@@ -140,9 +140,9 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         when(mTab2.getTabGroupId()).thenReturn(mToken2);
         when(mTab3.getTabGroupId()).thenReturn(mToken3);
 
-        when(mTab1.isClosing()).thenReturn(true);
-        when(mTab2.isClosing()).thenReturn(true);
-        when(mTab3.isClosing()).thenReturn(true);
+        when(mTab1.isClosing()).thenReturn(false);
+        when(mTab2.isClosing()).thenReturn(false);
+        when(mTab3.isClosing()).thenReturn(false);
 
         mSavedTabGroup1.localId = new LocalTabGroupId(mToken1);
         mSavedTabGroup2.localId = new LocalTabGroupId(mToken2);

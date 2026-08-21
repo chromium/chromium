@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -19,6 +21,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -204,5 +207,55 @@ public class GroupWindowCheckerUnitTest {
 
     private boolean tabGroupSelectionPredicate(@GroupWindowState int groupWindowState) {
         return groupWindowState != GroupWindowState.IN_ANOTHER;
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testShouldShowGroupByState() {
+        assertFalse(GroupWindowChecker.shouldShowGroupByState(GroupWindowState.IN_CURRENT_CLOSING));
+        assertFalse(GroupWindowChecker.shouldShowGroupByState(GroupWindowState.HIDDEN));
+        assertTrue(GroupWindowChecker.shouldShowGroupByState(GroupWindowState.IN_CURRENT));
+        assertFalse(GroupWindowChecker.shouldShowGroupByState(GroupWindowState.IN_ANOTHER));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testShouldShowGroupByState_crossWindowEnabled() {
+        assertFalse(GroupWindowChecker.shouldShowGroupByState(GroupWindowState.IN_CURRENT_CLOSING));
+        assertFalse(GroupWindowChecker.shouldShowGroupByState(GroupWindowState.HIDDEN));
+        assertTrue(GroupWindowChecker.shouldShowGroupByState(GroupWindowState.IN_CURRENT));
+        assertTrue(GroupWindowChecker.shouldShowGroupByState(GroupWindowState.IN_ANOTHER));
+    }
+
+    @Test
+    public void testGetDefaultSortedGroupList() {
+        Token token1 = Token.createRandom();
+        Token token2 = Token.createRandom();
+
+        SavedTabGroup group1 = createSavedTabGroup(token1, "title1");
+        group1.updateTimeMs = 100L;
+        SavedTabGroup group2 = createSavedTabGroup(token2, "title2");
+        group2.updateTimeMs = 200L;
+
+        group1.localId = new LocalTabGroupId(token1);
+        group2.localId = new LocalTabGroupId(token2);
+        group1.savedTabs.add(new SavedTabGroupTab());
+        group2.savedTabs.add(new SavedTabGroupTab());
+
+        when(mSyncService.getAllGroupIds()).thenReturn(new String[] {"id1", "id2"});
+        when(mSyncService.getGroup("id1")).thenReturn(group1);
+        when(mSyncService.getGroup("id2")).thenReturn(group2);
+
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getTabGroupId()).thenReturn(token2);
+        List<Tab> tabList = List.of(mTab1, tab2);
+        when(mTabList.iterator()).thenAnswer(invocation -> tabList.iterator());
+        when(mTab1.getTabGroupId()).thenReturn(token1);
+
+        List<SavedTabGroup> sortedList = mSyncUtils.getDefaultSortedGroupList();
+
+        assertEquals(2, sortedList.size());
+        assertEquals("title2", sortedList.get(0).title);
+        assertEquals("title1", sortedList.get(1).title);
     }
 }

@@ -25,6 +25,24 @@ import java.util.List;
 /** For tab group lists to interact with {@link TabGroupSyncService} and multiple windows. */
 @NullMarked
 public class GroupWindowChecker {
+    public static final Comparator<SavedTabGroup> UPDATE_TIME_COMPARATOR =
+            (a, b) -> Long.compare(b.updateTimeMs, a.updateTimeMs);
+
+    /**
+     * Whether a tab group should be shown based on its {@link GroupWindowState}.
+     *
+     * @param state The {@link GroupWindowState} of the group.
+     */
+    public static boolean shouldShowGroupByState(@GroupWindowState int state) {
+        if (state == GroupWindowState.IN_CURRENT_CLOSING || state == GroupWindowState.HIDDEN) {
+            return false;
+        }
+        if (state == GroupWindowState.IN_ANOTHER) {
+            return ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled();
+        }
+        return true;
+    }
+
     /** Used to filter tab groups while processing tab groups. */
     @FunctionalInterface
     public interface TabGroupSelectionPredicate {
@@ -46,6 +64,12 @@ public class GroupWindowChecker {
     public GroupWindowChecker(@Nullable TabGroupSyncService syncService, TabModel tabModel) {
         mSyncService = syncService;
         mTabModel = tabModel;
+    }
+
+    /** Returns a sorted list of {@link SavedTabGroup}s using the default filter and comparator. */
+    public List<SavedTabGroup> getDefaultSortedGroupList() {
+        return getSortedGroupList(
+                GroupWindowChecker::shouldShowGroupByState, UPDATE_TIME_COMPARATOR);
     }
 
     /**
