@@ -963,10 +963,6 @@ class TemplateURLService final : public WebDataServiceConsumer,
   std::unique_ptr<EnterpriseSearchManager> GetEnterpriseSearchManager(
       PrefService* prefs);
 
-  // Calls `EnterpriseSearchManager::AddOverriddenKeyword` and adds the keyword
-  // of the `template_url` to the overridden keyword pref list.
-  void AddOverriddenKeywordForTemplateURL(const TemplateURL* template_url);
-
   const std::optional<regional_capabilities::CountryIdHolder>&
   initial_keywords_database_country() {
     return initial_keywords_database_country_;

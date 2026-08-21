@@ -45,6 +45,7 @@
 #include "components/language/core/browser/language_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -266,6 +267,10 @@ void ProfileResetter::ResetDefaultSearchEngine() {
     template_url_service_->RepairPrepopulatedSearchEngines();
     template_url_service_->RepairStarterPackEngines();
     template_url_service_->RemoveUserAddedTemplateURLs();
+    // Clearing user overrides restores recommended policy-defined site search
+    // engines that were deleted or modified by the user.
+    prefs->ClearPref(
+        EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
 
     MarkAsDone(DEFAULT_SEARCH_ENGINE);
   } else {

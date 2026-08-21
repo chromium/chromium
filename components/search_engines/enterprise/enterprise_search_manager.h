@@ -20,11 +20,50 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
+// Manages search engines and aggregators configured via enterprise policies
+// (specifically `SiteSearchSettings` and `EnterpriseSearchAggregatorSettings`).
+//
+// Key Concepts:
+// - **"In Policy"**: A search engine is considered "in policy" (or "defined by
+//   policy") if its definition is present in the active managed policy
+//   configuration (e.g. `SiteSearchSettings`). If an administrator removes an
+//   engine from the policy list, it is no longer "in policy".
+// - **Enforced vs. Recommended**: Engines defined in policy can be "enforced"
+//   (mandatory; user overrides and deletions are ignored) or "recommended"
+//   (optional; users are allowed to delete or edit them).
+// - **User Overrides**: When a user deletes or modifies a recommended policy
+//   engine, its keyword is recorded in
+//   `kSiteSearchSettingsOverriddenKeywordsPrefName` so that subsequent policy
+//   syncs do not restore or re-add it.
+// - **Pruning**: If an overridden engine is later removed from the enterprise
+//   policy by the administrator (so it is no longer "in policy") or its status
+//   is upgraded to enforced, its override record is obsolete and is pruned on
+//   subsequent writes.
+//
+// Responsibilities:
+// - Observes managed policy preferences and translates them into
+//   TemplateURLData.
+// - Merges policy definitions with user overrides for recommended engines.
+// - Notifies observers (e.g. `TemplateURLService`) whenever the effective set
+//   of enterprise search engines changes.
 class EnterpriseSearchManager {
  public:
+  // Managed preference (List of Dicts) containing enterprise-configured site
+  // search engines.
   static const char kSiteSearchSettingsPrefName[];
+
+  // User preference (List of Strings) tracking keywords of recommended site
+  // search engines that the user has overridden (deleted or modified).
+  // Note: Consumers should not read or modify this preference directly, as
+  // EnterpriseSearchManager automatically merges overrides with policy rules.
   static const char kSiteSearchSettingsOverriddenKeywordsPrefName[];
+
+  // Managed preference (List of Dicts) containing enterprise search aggregator
+  // settings.
   static const char kEnterpriseSearchAggregatorSettingsPrefName[];
+
+  // Managed preference (Boolean) indicating whether a shortcut keyword is
+  // required to query the enterprise search aggregator.
   static const char
       kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName[];
 
@@ -54,14 +93,20 @@ class EnterpriseSearchManager {
   // Registers prefs needed for tracking the site search engines.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // Returns the `require_shortcut` value. If set by policy, the preference
-  // value is returned. Otherwise, if a valid mock search engine is defined, the
-  // mock setting's value is used. Defaults to preference default if neither is
-  // set.
+  // Returns true if invoking the enterprise search aggregator requires typing
+  // its `@shortcut` keyword in the omnibox, and false otherwise.
+  //
+  // Returns the policy preference value if managed, or the mock setting if
+  // feature flags are active, defaulting to false.
   bool GetRequireShortcutValue() const;
 
-  // Adds a keyword to the `kSiteSearchSettingsOverriddenKeywordsPrefName`
-  // pref, indicating that the user has overridden the associated engine.
+  // Records that the user has overridden (deleted or edited) a recommended
+  // policy site search engine with `keyword`.
+  // This prevents the engine from being restored on subsequent policy syncs.
+  //
+  // Also prunes stale entries from storage for keywords that are no longer
+  // "in policy" (i.e. removed from the enterprise policy by the administrator)
+  // or that have been changed to strictly enforced.
   void AddOverriddenKeyword(const std::string& keyword);
 
  private:
@@ -76,10 +121,6 @@ class EnterpriseSearchManager {
 
   LoadingResult LoadSearchAggregator(
       EnterpriseSearchManager::OwnedTemplateURLDataVector* search_engines);
-
-  // Updates the `kSiteSearchSettingsOverriddenKeywordsPrefName` pref based
-  // on the provided list of site search engines.
-  void LoadOverriddenKeywordsPref(const base::ListValue& engine_list);
 
   raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;

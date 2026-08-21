@@ -836,6 +836,8 @@ TemplateURL* TemplateURLService::AddWithOverrides(
 }
 
 void TemplateURLService::Remove(const TemplateURL* template_url) {
+  const std::u16string keyword = template_url->keyword();
+
   // CHECK that we aren't trying to Remove() the default search provider.
   // This has happened before, and causes permanent damage to the user Profile,
   // which can then be Synced to other installations. It's better to crash
@@ -848,8 +850,8 @@ void TemplateURLService::Remove(const TemplateURL* template_url) {
     static base::debug::CrashKeyString* crash_key =
         base::debug::AllocateCrashKeyString("removed_turl_keyword",
                                             base::debug::CrashKeySize::Size256);
-    base::debug::ScopedCrashKeyString auto_clear(
-        crash_key, base::UTF16ToUTF8(template_url->keyword()));
+    base::debug::ScopedCrashKeyString auto_clear(crash_key,
+                                                 base::UTF16ToUTF8(keyword));
 
     CHECK_NE(template_url, default_provider);
 
@@ -869,16 +871,15 @@ void TemplateURLService::Remove(const TemplateURL* template_url) {
     }
   }
 
-  // To ensure that policy engines are not added again on next
-  // policy fetch, mark the keyword as overridden in the pref.
-  if (template_url->CanPolicyBeOverridden()) {
-    AddOverriddenKeywordForTemplateURL(template_url);
-  }
-
   auto i = FindTemplateURL(&template_urls_, template_url);
   if (i == template_urls_.end()) {
     return;
   }
+
+  // Capture `CanPolicyBeOverridden()` before `template_url` is removed and
+  // erased. Recording the overridden keyword is deferred to the end of
+  // `Remove()` to avoid synchronous re-entry while mutating `template_urls_`.
+  const bool can_policy_be_overridden = template_url->CanPolicyBeOverridden();
 
   Scoper scoper(this);
   model_mutated_notification_pending_ = true;
@@ -898,8 +899,13 @@ void TemplateURLService::Remove(const TemplateURL* template_url) {
                              syncer::SyncChange::ACTION_DELETE);
 
     // The default search engine can't be deleted. But the user defined DSE can
-    // be hidden by an extension or policy and then deleted. Clean up the user
-    // prefs then.
+    // be hidden by an extension. When this happens, deleting the user defined
+    // DSE should clear the pref so the extension DSE becomes the default.
+    if (default_search_provider_source_ == DefaultSearchManager::FROM_USER &&
+        default_search_provider_ == template_url) {
+      default_search_manager_.ClearUserSelectedDefaultSearchEngine();
+    }
+
     if (template_url->sync_guid() ==
         prefs_->GetString(prefs::kDefaultSearchProviderGUID)) {
       prefs_->SetString(prefs::kDefaultSearchProviderGUID, std::string());
@@ -911,6 +917,13 @@ void TemplateURLService::Remove(const TemplateURL* template_url) {
 
   if (loaded_ && client_) {
     client_->DeleteAllSearchTermsForKeyword(template_url->id());
+  }
+
+  // To ensure that policy engines are not added again on next
+  // policy fetch, mark the keyword as overridden in the pref.
+  if (can_policy_be_overridden && enterprise_search_manager_) {
+    enterprise_search_manager_->AddOverriddenKeyword(
+        base::UTF16ToUTF8(keyword));
   }
 }
 
@@ -1058,13 +1071,6 @@ void TemplateURLService::ResetTemplateURL(TemplateURL* url,
   DCHECK(!keyword.empty());
   DCHECK(!search_url.empty());
 
-  // Similar to `TemplateURLService::Remove`, mark the keyword as overridden
-  // in the pref to prevent a policy created search engine from overriding this
-  // one.
-  if (url->CanPolicyBeOverridden()) {
-    AddOverriddenKeywordForTemplateURL(url);
-  }
-
   TemplateURLData data(url->data());
   data.SetShortName(title);
   data.SetKeyword(keyword);
@@ -1078,10 +1084,26 @@ void TemplateURLService::ResetTemplateURL(TemplateURL* url,
   data.is_active = TemplateURLData::ActiveStatus::kTrue;
   data.policy_origin = TemplateURLData::PolicyOrigin::kNoPolicy;
 
+  // Capture `CanPolicyBeOverridden()` and the keyword before calling
+  // `Update()`, as updating `policy_origin` to `kNoPolicy` makes
+  // `CanPolicyBeOverridden()` return false. Recording the overridden keyword is
+  // deferred to the end of `ResetTemplateURL()` to avoid synchronous re-entry
+  // during `Update()`.
+  const bool can_policy_be_overridden = url->CanPolicyBeOverridden();
+  const std::u16string old_keyword = url->keyword();
+
   Update(url, base::FeatureList::IsEnabled(
                   syncer::kSeparateLocalAndAccountSearchEngines)
                   ? TemplateURL(data, data)
                   : TemplateURL(data));
+
+  // Similar to `TemplateURLService::Remove()`, mark the keyword as overridden
+  // in the pref to prevent a policy created search engine from overriding this
+  // one.
+  if (can_policy_be_overridden && enterprise_search_manager_) {
+    enterprise_search_manager_->AddOverriddenKeyword(
+        base::UTF16ToUTF8(old_keyword));
+  }
 }
 
 void TemplateURLService::SetIsActiveTemplateURL(TemplateURL* url,
@@ -3830,14 +3852,5 @@ TemplateURLService::GetEnterpriseSearchManager(PrefService* prefs) {
 #else
   return nullptr;
 #endif
-}
-
-void TemplateURLService::AddOverriddenKeywordForTemplateURL(
-    const TemplateURL* template_url) {
-  CHECK(template_url && template_url->CanPolicyBeOverridden());
-  if (enterprise_search_manager_) {
-    enterprise_search_manager_->AddOverriddenKeyword(
-        base::UTF16ToUTF8(template_url->keyword()));
-  }
 }
 

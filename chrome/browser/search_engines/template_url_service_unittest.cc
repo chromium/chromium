@@ -3773,5 +3773,102 @@ TEST_P(TemplateURLServiceEnterpriseSearchForSiteSearch,
   }
 }
 
+TEST_F(TemplateURLServiceTest, ResetOverriddenPolicySiteSearchEngines) {
+  test_util()->ResetModel(/*verify_load=*/true);
+
+  EnterpriseSearchManager::OwnedTemplateURLDataVector enterprise_search_engines;
+  auto data = std::make_unique<TemplateURLData>();
+  data->SetShortName(u"workname");
+  data->SetKeyword(u"work");
+  data->SetURL("https://work.com/q={searchTerms}");
+  data->policy_origin = TemplateURLData::PolicyOrigin::kSiteSearch;
+  data->enforced_by_policy = false;
+  data->is_active = TemplateURLData::ActiveStatus::kTrue;
+  data->favicon_url = GURL("https://work.com/favicon.ico");
+  data->safe_for_autoreplace = false;
+  enterprise_search_engines.push_back(std::move(data));
+
+  SetManagedSearchSettingsPreference(enterprise_search_engines,
+                                     test_util()->profile());
+
+  TemplateURL* turl = model()->GetTemplateURLForKeyword(u"work");
+  ASSERT_TRUE(turl);
+  EXPECT_TRUE(turl->CanPolicyBeOverridden());
+
+  // Remove the engine, which should mark its keyword as overridden.
+  model()->Remove(turl);
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"work"));
+
+  auto* prefs = test_util()->profile()->GetTestingPrefService();
+  ASSERT_TRUE(prefs);
+  const base::ListValue& overridden_keywords = prefs->GetList(
+      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
+  EXPECT_EQ(1u, overridden_keywords.size());
+  EXPECT_EQ("work", overridden_keywords[0].GetString());
+
+  // Clearing the overridden keywords preference should reactively restore the
+  // removed engine directly from the policy ground truth.
+  prefs->ClearPref(
+      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
+
+  EXPECT_TRUE(prefs
+                  ->GetList(EnterpriseSearchManager::
+                                kSiteSearchSettingsOverriddenKeywordsPrefName)
+                  .empty());
+  EXPECT_TRUE(model()->GetTemplateURLForKeyword(u"work"));
+}
+
+TEST_F(TemplateURLServiceTest, ResetOverriddenEditedPolicySiteSearchEngines) {
+  test_util()->ResetModel(/*verify_load=*/true);
+
+  EnterpriseSearchManager::OwnedTemplateURLDataVector enterprise_search_engines;
+  auto data = std::make_unique<TemplateURLData>();
+  data->SetShortName(u"workname");
+  data->SetKeyword(u"work");
+  data->SetURL("https://work.com/q={searchTerms}");
+  data->policy_origin = TemplateURLData::PolicyOrigin::kSiteSearch;
+  data->enforced_by_policy = false;
+  data->is_active = TemplateURLData::ActiveStatus::kTrue;
+  data->favicon_url = GURL("https://work.com/favicon.ico");
+  data->safe_for_autoreplace = false;
+  enterprise_search_engines.push_back(std::move(data));
+
+  SetManagedSearchSettingsPreference(enterprise_search_engines,
+                                     test_util()->profile());
+
+  TemplateURL* turl = model()->GetTemplateURLForKeyword(u"work");
+  ASSERT_TRUE(turl);
+  EXPECT_TRUE(turl->CanPolicyBeOverridden());
+
+  // Edit the engine instead of removing it, which should decouple it from
+  // policy and mark the original keyword as overridden.
+  model()->ResetTemplateURL(turl, u"Custom Work", u"custom_work",
+                            "https://custom.com/q={searchTerms}");
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"work"));
+  TemplateURL* edited_turl = model()->GetTemplateURLForKeyword(u"custom_work");
+  ASSERT_TRUE(edited_turl);
+  EXPECT_EQ(TemplateURLData::PolicyOrigin::kNoPolicy,
+            edited_turl->policy_origin());
+
+  auto* prefs = test_util()->profile()->GetTestingPrefService();
+  ASSERT_TRUE(prefs);
+  const base::ListValue& overridden_keywords = prefs->GetList(
+      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
+  EXPECT_EQ(1u, overridden_keywords.size());
+  EXPECT_EQ("work", overridden_keywords[0].GetString());
+
+  // Clearing the preference should reactively restore the original policy
+  // engine while preserving the user's custom edited engine.
+  prefs->ClearPref(
+      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
+
+  EXPECT_TRUE(prefs
+                  ->GetList(EnterpriseSearchManager::
+                                kSiteSearchSettingsOverriddenKeywordsPrefName)
+                  .empty());
+  EXPECT_TRUE(model()->GetTemplateURLForKeyword(u"work"));
+  EXPECT_TRUE(model()->GetTemplateURLForKeyword(u"custom_work"));
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
