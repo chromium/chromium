@@ -19,6 +19,7 @@
 #include "base/i18n/icu_string_conversions.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -277,6 +278,179 @@ void MaybeUpdateMatchContents(
     match_contents = base::UTF8ToUTF16(entity_info.name());
     return;
   }
+}
+
+// Non-owning view of metadata and per-suggestion attribute arrays extracted
+// from the 5th element (`root_list[4]`) of the JSON suggest server response.
+// This only exists for the lifetime of `root_list`.
+struct SuggestResponseMetadata {
+  // Parallel array of suggestion type strings.
+  raw_ptr<const base::ListValue> suggest_types = nullptr;
+
+  // Parallel array of suggestion subtype lists.
+  raw_ptr<const base::ListValue> suggest_subtypes = nullptr;
+
+  // Parallel array of integer navigational intents.
+  raw_ptr<const base::ListValue> nav_intents = nullptr;
+
+  // Parallel array of server-assigned relevance scores.
+  raw_ptr<const base::ListValue> relevances = nullptr;
+
+  // Parallel array of rich suggestion dictionaries (containing Base64 protos).
+  raw_ptr<const base::ListValue> suggestion_details = nullptr;
+
+  // Legacy parallel array of single subtype integer IDs.
+  raw_ptr<const base::ListValue> subtype_identifiers = nullptr;
+
+  // 0-based index of the suggestion to prefetch, or -1 if none.
+  int prefetch_index = -1;
+
+  // 0-based index of the suggestion to prerender, or -1 if none.
+  int prerender_index = -1;
+
+  // Decoded group configurations used to organize suggestions into UI sections.
+  omnibox::GroupsInfo groups_info;
+};
+
+// Parses "google:experimentstats" into `experiment_stats_v2s`.
+SearchSuggestionParser::ExperimentStatsV2s ParseExperimentStats(
+    const base::DictValue& response_metadata_dict) {
+  SearchSuggestionParser::ExperimentStatsV2s experiment_stats_v2s;
+  const base::ListValue* experiment_stats_v2s_list =
+      response_metadata_dict.FindList("google:experimentstats");
+  if (!experiment_stats_v2s_list) {
+    return experiment_stats_v2s;
+  }
+  for (const auto& experiment_stats_v2_value : *experiment_stats_v2s_list) {
+    const base::DictValue* experiment_stats_v2_dict =
+        experiment_stats_v2_value.GetIfDict();
+    if (!experiment_stats_v2_dict) {
+      continue;
+    }
+    std::optional<int> type_int =
+        experiment_stats_v2_dict->FindInt(kTypeIntFieldNumber);
+    const auto* string_value =
+        experiment_stats_v2_dict->FindString(kStringValueFieldNumber);
+    if (!type_int || !string_value) {
+      continue;
+    }
+    omnibox::metrics::ChromeSearchboxStats::ExperimentStatsV2
+        experiment_stats_v2;
+    experiment_stats_v2.set_type_int(*type_int);
+    experiment_stats_v2.set_string_value(*string_value);
+    experiment_stats_v2s.push_back(std::move(experiment_stats_v2));
+  }
+  return experiment_stats_v2s;
+}
+
+struct ClientData {
+  int prefetch_index = -1;
+  int prerender_index = -1;
+};
+
+// Parses "google:clientdata" to extract prefetch and prerender indices.
+ClientData ParseClientData(const base::DictValue& response_metadata_dict) {
+  ClientData client_data_result;
+  const base::DictValue* client_data =
+      response_metadata_dict.FindDict("google:clientdata");
+  if (client_data) {
+    client_data_result.prefetch_index =
+        client_data->FindInt("phi").value_or(-1);
+    client_data_result.prerender_index =
+        client_data->FindInt("pre").value_or(-1);
+  }
+  return client_data_result;
+}
+
+// Parses "google:smartcompose" to extract the smart compose inline hint.
+std::string ParseSmartCompose(const base::DictValue& response_metadata_dict) {
+  const base::DictValue* smart_compose_data =
+      response_metadata_dict.FindDict("google:smartcompose");
+  if (smart_compose_data) {
+    return FindStringOrEmpty(*smart_compose_data, "c");
+  }
+  return std::string();
+}
+
+// Parses the optional server metadata dictionary (5th element of root_list).
+SuggestResponseMetadata ParseSuggestResponseMetadata(
+    const base::ListValue& root_list,
+    size_t results_count,
+    SearchSuggestionParser::Results* results) {
+  // Reset suggested relevance information.
+  results->verbatim_relevance = -1;
+  results->smart_compose_inline_hint.clear();
+
+  SuggestResponseMetadata metadata;
+
+  if (root_list.size() <= 4u || !root_list[4].is_dict()) {
+    return metadata;
+  }
+
+  const base::DictValue& metadata_dict = root_list[4].GetDict();
+
+  metadata.suggest_types = metadata_dict.FindList("google:suggesttype");
+  metadata.suggest_subtypes = metadata_dict.FindList("google:suggestsubtypes");
+  metadata.nav_intents = metadata_dict.FindList("google:suggestnavintents");
+
+  metadata.relevances = metadata_dict.FindList("google:suggestrelevance");
+  // Discard this list if its size does not match that of the suggestions.
+  if (metadata.relevances && metadata.relevances->size() != results_count) {
+    metadata.relevances = nullptr;
+  }
+
+  if (std::optional<int> relevance =
+          metadata_dict.FindInt("google:verbatimrelevance")) {
+    results->verbatim_relevance = *relevance;
+  }
+
+  if (const std::string* gws_event_id_hash_str =
+          metadata_dict.FindString("google:suggesteventid")) {
+    int64_t gws_event_id_hash;
+    if (base::StringToInt64(*gws_event_id_hash_str, &gws_event_id_hash)) {
+      results->gws_event_id_hashes.push_back(gws_event_id_hash);
+    }
+  }
+
+  // Check if the active suggest field trial (if any) has triggered either
+  // for the default provider or keyword provider.
+  std::optional<bool> field_trial_triggered =
+      metadata_dict.FindBool("google:fieldtrialtriggered");
+  results->field_trial_triggered = field_trial_triggered.value_or(false);
+
+  results->experiment_stats_v2s = ParseExperimentStats(metadata_dict);
+
+  const auto* groups_info_string =
+      metadata_dict.FindString("google:groupsinfo");
+  DecodeProtoFromBase64<omnibox::GroupsInfo>(groups_info_string,
+                                             metadata.groups_info);
+
+  ClientData client_data = ParseClientData(metadata_dict);
+  metadata.prefetch_index = client_data.prefetch_index;
+  metadata.prerender_index = client_data.prerender_index;
+
+  metadata.suggestion_details = metadata_dict.FindList("google:suggestdetail");
+  // Discard this list if its size does not match that of the suggestions.
+  if (metadata.suggestion_details &&
+      metadata.suggestion_details->size() != results_count) {
+    metadata.suggestion_details = nullptr;
+  }
+
+  // Legacy code: Get subtype identifiers.
+  metadata.subtype_identifiers = metadata_dict.FindList("google:subtypeid");
+  // Discard this list if its size does not match that of the suggestions.
+  if (metadata.subtype_identifiers &&
+      metadata.subtype_identifiers->size() != results_count) {
+    metadata.subtype_identifiers = nullptr;
+  }
+
+  results->smart_compose_inline_hint = ParseSmartCompose(metadata_dict);
+
+  // Store the raw metadata JSON in case we need to pass it along with the
+  // prefetch query to Instant.
+  results->metadata = base::WriteJson(metadata_dict).value_or("");
+
+  return metadata;
 }
 }  // namespace
 
@@ -757,6 +931,14 @@ bool SearchSuggestionParser::ParseSuggestResults(
     bool is_keyword_result,
     const SearchSuggestionParser::ParseSuggestResultsOptions& options,
     Results* results) {
+  // The input suggest server response (`root_list`) is structured as a JSON
+  // array:
+  //   [0]: Query string (e.g. "chrom")
+  //   [1]: Suggestions list (e.g. ["chrome", "chromium"])
+  //   [2]: Descriptions list (for navigation suggestion titles)
+  //   [3]: Query URL list (disregarded)
+  //   [4]: Metadata dictionary containing parallel attribute arrays and
+  //        response headers
   const std::u16string input_text = input.IsZeroSuggest() ? u"" : input.text();
 
   // 1st element: query.
@@ -794,128 +976,15 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
   // 3rd element: Ignore the optional description list for now.
   // 4th element: Disregard the query URL list.
-  // 5th element: Disregard the optional key-value pairs from the server for
-  // now.
-
-  // Reset suggested relevance information.
-  results->verbatim_relevance = -1;
-
-  const base::ListValue* suggest_types = nullptr;
-  const base::ListValue* suggest_subtypes = nullptr;
-  const base::ListValue* nav_intents = nullptr;
-  const base::ListValue* relevances = nullptr;
-  const base::ListValue* suggestion_details = nullptr;
-  const base::ListValue* subtype_identifiers = nullptr;
-  int prefetch_index = -1;
-  int prerender_index = -1;
-  omnibox::GroupsInfo groups_info;
-
-  // Parse the optional key-value pairs from the server (5th element).
-  if (root_list.size() > 4u && root_list[4].is_dict()) {
-    const base::DictValue& extras = root_list[4].GetDict();
-
-    suggest_types = extras.FindList("google:suggesttype");
-
-    suggest_subtypes = extras.FindList("google:suggestsubtypes");
-
-    nav_intents = extras.FindList("google:suggestnavintents");
-
-    relevances = extras.FindList("google:suggestrelevance");
-    // Discard this list if its size does not match that of the suggestions.
-    if (relevances && relevances->size() != results_list.size()) {
-      relevances = nullptr;
-    }
-
-    if (std::optional<int> relevance =
-            extras.FindInt("google:verbatimrelevance")) {
-      results->verbatim_relevance = *relevance;
-    }
-
-    if (const std::string* gws_event_id_hash_str =
-            extras.FindString("google:suggesteventid")) {
-      int64_t gws_event_id_hash;
-      if (base::StringToInt64(*gws_event_id_hash_str, &gws_event_id_hash)) {
-        results->gws_event_id_hashes.push_back(gws_event_id_hash);
-      }
-    }
-
-    // Check if the active suggest field trial (if any) has triggered either
-    // for the default provider or keyword provider.
-    std::optional<bool> field_trial_triggered =
-        extras.FindBool("google:fieldtrialtriggered");
-    results->field_trial_triggered = field_trial_triggered.value_or(false);
-
-    results->experiment_stats_v2s.clear();
-    const base::ListValue* experiment_stats_v2s_list =
-        extras.FindList("google:experimentstats");
-    if (experiment_stats_v2s_list) {
-      for (const auto& experiment_stats_v2_value : *experiment_stats_v2s_list) {
-        const base::DictValue* experiment_stats_v2_dict =
-            experiment_stats_v2_value.GetIfDict();
-        if (!experiment_stats_v2_dict) {
-          continue;
-        }
-        std::optional<int> type_int =
-            experiment_stats_v2_dict->FindInt(kTypeIntFieldNumber);
-        const auto* string_value =
-            experiment_stats_v2_dict->FindString(kStringValueFieldNumber);
-        if (!type_int || !string_value) {
-          continue;
-        }
-        omnibox::metrics::ChromeSearchboxStats::ExperimentStatsV2
-            experiment_stats_v2;
-        experiment_stats_v2.set_type_int(*type_int);
-        experiment_stats_v2.set_string_value(*string_value);
-        results->experiment_stats_v2s.push_back(std::move(experiment_stats_v2));
-      }
-    }
-
-    const auto* groups_info_string = extras.FindString("google:groupsinfo");
-    DecodeProtoFromBase64<omnibox::GroupsInfo>(groups_info_string, groups_info);
-
-    const base::DictValue* client_data = extras.FindDict("google:clientdata");
-    if (client_data) {
-      prefetch_index = client_data->FindInt("phi").value_or(-1);
-      prerender_index = client_data->FindInt("pre").value_or(-1);
-    }
-
-    suggestion_details = extras.FindList("google:suggestdetail");
-    // Discard this list if its size does not match that of the suggestions.
-    if (suggestion_details &&
-        suggestion_details->size() != results_list.size()) {
-      suggestion_details = nullptr;
-    }
-
-    // Legacy code: Get subtype identifiers.
-    subtype_identifiers = extras.FindList("google:subtypeid");
-    // Discard this list if its size does not match that of the suggestions.
-    if (subtype_identifiers &&
-        subtype_identifiers->size() != results_list.size()) {
-      subtype_identifiers = nullptr;
-    }
-
-    // Clear old smart compose result. New result may or may not have a smart
-    // compose field.
-    results->smart_compose_inline_hint.clear();
-    // Smart compose response.
-    const base::DictValue* smart_compose_data =
-        extras.FindDict("google:smartcompose");
-    if (smart_compose_data) {
-      // Smart compose completion.
-      results->smart_compose_inline_hint =
-          FindStringOrEmpty(*smart_compose_data, "c");
-    }
-
-    // Store the metadata that came with the response in case we need to pass
-    // it along with the prefetch query to Instant.
-    results->metadata = base::WriteJson(extras).value_or("");
-  }
+  // 5th element: Parse the optional response metadata dictionary.
+  SuggestResponseMetadata response_metadata =
+      ParseSuggestResponseMetadata(root_list, results_list.size(), results);
 
   // Processed list of match subtypes, one vector per match.
   // Note: ParseMatchSubtypes will handle the cases where the key does not
   // exist or contains malformed data.
-  std::vector<std::vector<int>> subtypes =
-      ParseMatchSubtypes(suggest_subtypes, results_list.size());
+  std::vector<std::vector<int>> subtypes = ParseMatchSubtypes(
+      response_metadata.suggest_subtypes, results_list.size());
 
   // Clear the previous results now that new results are available.
   results->suggest_results.clear();
@@ -939,17 +1008,19 @@ bool SearchSuggestionParser::ParseSuggestResults(
     }
 
     omnibox::NavigationalIntent nav_intent = omnibox::NAV_INTENT_NONE;
-    if (nav_intents && index < nav_intents->size() &&
-        (*nav_intents)[index].is_int()) {
-      nav_intent = NavigationalIntentForNumber((*nav_intents)[index].GetInt());
+    if (response_metadata.nav_intents &&
+        index < response_metadata.nav_intents->size() &&
+        (*response_metadata.nav_intents)[index].is_int()) {
+      nav_intent = NavigationalIntentForNumber(
+          (*response_metadata.nav_intents)[index].GetInt());
     }
 
     // Apply valid suggested relevance scores; discard invalid lists.
-    if (relevances) {
-      if (!(*relevances)[index].is_int()) {
-        relevances = nullptr;
+    if (response_metadata.relevances) {
+      if (!(*response_metadata.relevances)[index].is_int()) {
+        response_metadata.relevances = nullptr;
       } else {
-        relevance = (*relevances)[index].GetInt();
+        relevance = (*response_metadata.relevances)[index].GetInt();
       }
     }
 
@@ -959,22 +1030,27 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
     // Legacy code: if the server sends us a single subtype ID, place it beside
     // other subtypes.
-    if (subtype_identifiers && index < subtype_identifiers->size() &&
-        (*subtype_identifiers)[index].is_int()) {
-      subtypes[index].emplace_back((*subtype_identifiers)[index].GetInt());
+    if (response_metadata.subtype_identifiers &&
+        index < response_metadata.subtype_identifiers->size() &&
+        (*response_metadata.subtype_identifiers)[index].is_int()) {
+      subtypes[index].emplace_back(
+          (*response_metadata.subtype_identifiers)[index].GetInt());
     }
 
-    if (suggest_types && index < suggest_types->size() &&
-        (*suggest_types)[index].is_string()) {
-      suggest_type = GetSuggestType((*suggest_types)[index].GetString());
+    if (response_metadata.suggest_types &&
+        index < response_metadata.suggest_types->size() &&
+        (*response_metadata.suggest_types)[index].is_string()) {
+      suggest_type =
+          GetSuggestType((*response_metadata.suggest_types)[index].GetString());
       match_type = GetAutocompleteMatchType(suggest_type);
     }
 
     std::string deletion_url;
-    if (suggestion_details && index < suggestion_details->size() &&
-        (*suggestion_details)[index].is_dict()) {
+    if (response_metadata.suggestion_details &&
+        index < response_metadata.suggestion_details->size() &&
+        (*response_metadata.suggestion_details)[index].is_dict()) {
       const base::DictValue& suggestion_detail =
-          (*suggestion_details)[index].GetDict();
+          (*response_metadata.suggestion_details)[index].GetDict();
       deletion_url = FindStringOrEmpty(suggestion_detail, "du");
     }
 
@@ -994,7 +1070,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
         results->navigation_results.push_back(NavigationResult(
             scheme_classifier, url, match_type, suggest_type, subtypes[index],
             title, deletion_url, is_keyword_result, nav_intent, relevance,
-            relevances != nullptr, input_text));
+            response_metadata.relevances != nullptr, input_text));
       }
     } else {
       std::u16string match_contents = suggestion;
@@ -1026,10 +1102,11 @@ bool SearchSuggestionParser::ParseSuggestResults(
       omnibox::AnswerType answer_type = omnibox::ANSWER_TYPE_UNSPECIFIED;
       bool has_suggest_template = false;
 
-      if (suggestion_details && (*suggestion_details)[index].is_dict() &&
-          !(*suggestion_details)[index].GetDict().empty()) {
+      if (response_metadata.suggestion_details &&
+          (*response_metadata.suggestion_details)[index].is_dict() &&
+          !(*response_metadata.suggestion_details)[index].GetDict().empty()) {
         const base::DictValue& suggestion_detail =
-            (*suggestion_details)[index].GetDict();
+            (*response_metadata.suggestion_details)[index].GetDict();
 
         // Rich Suggest Template.
         const auto* rich_template_str =
@@ -1094,8 +1171,8 @@ bool SearchSuggestionParser::ParseSuggestResults(
       }
 
       int int_index = static_cast<int>(index);
-      bool should_prefetch = int_index == prefetch_index;
-      bool should_prerender = int_index == prerender_index;
+      bool should_prefetch = int_index == response_metadata.prefetch_index;
+      bool should_prerender = int_index == response_metadata.prerender_index;
       const base::optional_ref<const omnibox::SuggestTemplateInfo>
           maybe_suggest_template_info =
               has_suggest_template ? &suggest_template_info : nullptr;
@@ -1107,8 +1184,8 @@ bool SearchSuggestionParser::ParseSuggestResults(
           suggestion, match_type, suggest_type, subtypes[index], match_contents,
           match_contents_prefix, annotation, std::move(entity_info),
           deletion_url, is_keyword_result, nav_intent, relevance,
-          relevances != nullptr, should_prefetch, should_prerender,
-          trimmed_input,
+          response_metadata.relevances != nullptr, should_prefetch,
+          should_prerender, trimmed_input,
           has_suggest_template
               ? std::make_optional(std::move(suggest_template_info))
               : std::nullopt));
@@ -1127,7 +1204,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
     }
   }
 
-  results->relevances_from_server = relevances != nullptr;
+  results->relevances_from_server = response_metadata.relevances != nullptr;
 
   // Keeps track of the position of the server-provided group IDs.
   size_t group_index = 0;
@@ -1166,9 +1243,11 @@ bool SearchSuggestionParser::ParseSuggestResults(
     // Add the group config associated with the suggestion, if the suggestion
     // has a valid group ID and a corresponding group config is found in the
     // response.
-    if (!groups_info.group_configs().contains(suggestion_group_id) ||
-        !add_group_config(suggestion_group_id, groups_info.group_configs().at(
-                                                   suggestion_group_id))) {
+    if (!response_metadata.groups_info.group_configs().contains(
+            suggestion_group_id) ||
+        !add_group_config(suggestion_group_id,
+                          response_metadata.groups_info.group_configs().at(
+                              suggestion_group_id))) {
       continue;
     }
   }
@@ -1177,7 +1256,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
   // The only known use case is the personalized zero-suggest which is also
   // produced by Chrome and relies on the server-provided group config to show
   // with the appropriate header text, where a header text is applicable.
-  for (const auto& entry : groups_info.group_configs()) {
+  for (const auto& entry : response_metadata.groups_info.group_configs()) {
     add_group_config(omnibox::GroupIdForNumber(entry.first), entry.second);
   }
 
