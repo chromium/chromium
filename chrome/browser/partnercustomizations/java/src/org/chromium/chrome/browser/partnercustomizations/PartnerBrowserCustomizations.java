@@ -158,7 +158,7 @@ public class PartnerBrowserCustomizations {
         return homepageUrl != null && !homepageUrl.isEmpty();
     }
 
-    /** {@see #isHomepageProviderAvailableAndEnabled()} but for zero tabs state decisions. */
+    /** {@link #isHomepageProviderAvailableAndEnabled()} but for zero tabs state decisions. */
     public boolean isHomepageProviderAvailableAndEnabledForZeroTabs() {
         // Pretend this capability is not available if the feature is disabled for zero tabs.
         if (isDisablePartnerHomepageAndroidEnabled()

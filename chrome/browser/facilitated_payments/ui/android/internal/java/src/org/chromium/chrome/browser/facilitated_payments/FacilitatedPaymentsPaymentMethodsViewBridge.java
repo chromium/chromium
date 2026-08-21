@@ -87,8 +87,8 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
      * <p>If a Facilitated Payments bottom sheet is being shown, then the FOP selector replaces the
      * screen being shown. If not, opens a new bottom sheet and shows the FOP selector screen.
      *
-     * <p>The bottom sheet may not be shown in some cases. {@see
-     * BottomSheetController#requestShowContent}
+     * <p>The bottom sheet may not be shown in some cases. See {@link
+     * BottomSheetController#requestShowContent}.
      *
      * @param bankAccounts User's bank accounts which passed from facilitated payments client.
      */

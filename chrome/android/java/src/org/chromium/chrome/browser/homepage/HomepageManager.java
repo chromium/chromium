@@ -212,7 +212,7 @@ public class HomepageManager
     }
 
     /**
-     * {@see #getHomepageGurl(boolean)}, but may still return the partner homepage for zero tabs
+     * {@link #getHomepageGurl(boolean)}, but may still return the partner homepage for zero tabs
      * depending on {@link ChromeFeatureList#sDisablePartnerHomepageAndroidForZeroTabs}.
      */
     public GURL getHomepageGurlForZeroTabs(boolean isIncognito) {

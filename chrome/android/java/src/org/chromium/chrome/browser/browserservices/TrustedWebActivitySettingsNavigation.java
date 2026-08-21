@@ -94,7 +94,7 @@ public class TrustedWebActivitySettingsNavigation {
         settingsNavigation.startSettings(context, AllSiteSettings.class, extras);
     }
 
-    /** Creates an intent to launch single website preferences for the specified {@param url}. */
+    /** Creates an intent to launch single website preferences for the specified {@code url}. */
     private static Intent createIntentForSingleWebsitePreferences(Context context, String url) {
         Bundle args = SingleWebsiteSettings.createFragmentArgsForSite(url);
         SettingsNavigation settingsNavigation =

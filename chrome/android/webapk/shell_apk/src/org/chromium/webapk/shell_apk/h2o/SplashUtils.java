@@ -63,7 +63,7 @@ public class SplashUtils {
 
     /**
      * Returns bitmap with screenshot of passed-in view. Downsamples screenshot so that it is no
-     * more than {@maxSizeInBytes}.
+     * more than {@code maxSizeBytes}.
      */
     public static @Nullable Bitmap screenshotView(View view, int maxSizeBytes) {
         // Implementation copied from Android shared element code -

@@ -153,7 +153,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
      * @param params The {@link ContextMenuParams} containing details about the context menu
      *     trigger.
      * @param items A list of {@link ModelList} representing the menu items, grouped into sections.
-     *     Each {@link ModelList} in {@param items} will be separated from the other {@link
+     *     Each {@link ModelList} in {@code items} will be separated from the other {@link
      *     ModelList}s by a horizontal divider.
      * @param onItemClicked A {@link Callback} invoked when a menu item is clicked, passing the
      *     item's ID.

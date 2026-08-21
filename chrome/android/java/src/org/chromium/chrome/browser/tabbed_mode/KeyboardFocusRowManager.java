@@ -204,7 +204,7 @@ import java.util.function.Supplier;
     }
 
     /**
-     * Given {@param oldKeyboardFocusRow}, returns what the new keyboard focus row should be. This
+     * Given {@code oldKeyboardFocusRow}, returns what the new keyboard focus row should be. This
      * method assumes that the toolbar is visible and not obscured by other content.
      *
      * @param oldKeyboardFocusRow The old {@link KeyboardFocusRow}.

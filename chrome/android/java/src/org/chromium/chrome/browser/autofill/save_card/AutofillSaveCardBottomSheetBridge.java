@@ -56,8 +56,8 @@ public class AutofillSaveCardBottomSheetBridge
     /**
      * Requests to show the bottom sheet.
      *
-     * <p>The bottom sheet may not be shown in some cases. {@see
-     * BottomSheetController#requestShowContent}
+     * <p>The bottom sheet may not be shown in some cases. See {@link
+     * BottomSheetController#requestShowContent}.
      *
      * @param uiInfo An object providing text and images to the bottom sheet view.
      * @param skipLoadingForFixFlow When true, loading is skipped due to the fix flow.

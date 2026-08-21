@@ -133,7 +133,7 @@ class ContextualSearchPolicy {
 
     /**
      * Determines whether the current gesture can trigger a resolve request to use page context.
-     * This only checks the gesture, not privacy status -- {@see #shouldPreviousGestureResolve}.
+     * This only checks the gesture, not privacy status. See {@link #shouldPreviousGestureResolve}.
      */
     boolean isResolvingGesture() {
         return mSelectionController.getSelectionType() == SelectionType.TAP

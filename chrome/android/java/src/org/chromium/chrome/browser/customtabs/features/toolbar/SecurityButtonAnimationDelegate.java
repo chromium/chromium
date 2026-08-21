@@ -98,7 +98,9 @@ public class SecurityButtonAnimationDelegate {
         mTranslateLeft.setFloatValues(-mSecurityButtonWidth);
     }
 
-    /** {@see SecurityButtonAnimationDelegate#updateSecurityButton(int, boolean, boolean)} */
+    /**
+     * @see SecurityButtonAnimationDelegate#updateSecurityButton(int, boolean, boolean)
+     */
     public void updateSecurityButton(int securityIconResource, boolean animate) {
         updateSecurityButton(securityIconResource, animate, /* isActualResourceChange= */ true);
     }

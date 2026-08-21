@@ -449,7 +449,7 @@ public class WarmupManager {
 
     /**
      * Transfers all the children in the local view hierarchy {@link #mMainView} to the given
-     * ViewGroup {@param contentView} as child.
+     * ViewGroup {@code contentView} as child.
      *
      * @param contentView The parent ViewGroup to use for the transfer.
      */
