@@ -1128,6 +1128,11 @@ export class OmniboxPopupSearchboxElement extends
       return;
     }
 
+    if (e.key === 'Tab' && this.$.input === this.shadowRoot?.activeElement &&
+        this.acceptInlineAutocomplete(e)) {
+      return;
+    }
+
     if (e.key === 'Enter' && this.selectedMatchIndex === -1) {
       // On an open page where no suggestion match is highlighted, submit the
       // verbatim input text (or reload the permanent URL).

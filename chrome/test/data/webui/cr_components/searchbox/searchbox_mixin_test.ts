@@ -1837,4 +1837,80 @@ suite('SearchboxMixinTest', () => {
     assertEquals('Search Google', element.inputKeywordModel.displayText);
     assertEquals('', mockInput.inputElement.value);
   });
+
+  test(
+      'acceptInlineAutocomplete accepts text and queries autocomplete',
+      async () => {
+        const mockInput = element.getInputElement();
+        mockInput.setInput({
+          text: 'you',
+          inline: 'tube.com',
+        });
+        await microtasksFinished();
+
+        const tabEvent = new KeyboardEvent('keydown', {
+          key: 'Tab',
+          cancelable: true,
+        });
+        const handled = element.acceptInlineAutocomplete(tabEvent);
+        assertTrue(handled);
+        await microtasksFinished();
+
+        assertTrue(tabEvent.defaultPrevented);
+        assertEquals('youtube.com', mockInput.inputElement.value);
+        assertEquals(11, mockInput.inputElement.selectionStart);
+        assertEquals(11, mockInput.inputElement.selectionEnd);
+        assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+        const args = await testProxy.handler.whenCalled('queryAutocomplete');
+        assertEquals('youtube.com', args.input);
+        assertFalse(args.preventInlineAutocomplete);
+        assertEquals(11, args.cursorPosition);
+        assertFalse(args.isOnFocus);
+      });
+
+  test(
+      'acceptInlineAutocomplete with Shift clears inline text without preventDefault',
+      async () => {
+        const mockInput = element.getInputElement();
+        mockInput.setInput({
+          text: 'you',
+          inline: 'tube.com',
+        });
+        await microtasksFinished();
+
+        const shiftTabEvent = new KeyboardEvent('keydown', {
+          key: 'Tab',
+          shiftKey: true,
+          cancelable: true,
+        });
+        const handled = element.acceptInlineAutocomplete(shiftTabEvent);
+        assertTrue(handled);
+        await microtasksFinished();
+
+        assertFalse(shiftTabEvent.defaultPrevented);
+        const lastInput = mockInput.lastInput();
+        assertTrue(!!lastInput);
+        assertEquals('', lastInput.inline);
+        assertEquals('you', lastInput.text);
+      });
+
+  test(
+      'acceptInlineAutocomplete returns false when no inline text exists',
+      async () => {
+        const mockInput = element.getInputElement();
+        mockInput.setInput({
+          text: 'youtube.com',
+          inline: '',
+        });
+        await microtasksFinished();
+
+        const tabEvent = new KeyboardEvent('keydown', {
+          key: 'Tab',
+          cancelable: true,
+        });
+        const handled = element.acceptInlineAutocomplete(tabEvent);
+        assertFalse(handled);
+        assertFalse(tabEvent.defaultPrevented);
+        assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+      });
 });
