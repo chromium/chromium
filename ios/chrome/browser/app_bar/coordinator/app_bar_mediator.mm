@@ -936,10 +936,12 @@ inline LayoutStateAssistantPassKey PassKey() {
       // unless a local enterprise policy explicitly disables it or sign-in is
       // disabled.
       geminiAllowed = _authenticationService->SigninEnabled();
-    } else if (net::NetworkChangeNotifier::IsOffline() && _identityManager) {
-      // Optimistically allow signed-in users when offline, unless their
-      // cached capabilities explicitly mark them as ineligible (e.g. child
-      // account).
+    } else if (_identityManager) {
+      // Optimistically allow signed-in users while eligibility checks
+      // (account capabilities or workspace policy) are pending, or when
+      // offline, unless cached capabilities explicitly mark them as
+      // ineligible (e.g. child account) or the workspace policy check has
+      // already completed and disabled Gemini.
       AccountInfo accountInfo = _identityManager->FindExtendedAccountInfo(
           _identityManager->GetPrimaryAccountInfo(
               signin::ConsentLevel::kSignin));
@@ -949,7 +951,19 @@ inline LayoutStateAssistantPassKey PassKey() {
            signin::Tribool::kFalse) ||
           (capabilities.can_use_model_execution_features() ==
            signin::Tribool::kFalse);
-      geminiAllowed = !explicitlyIneligible;
+
+      bool isOffline = net::NetworkChangeNotifier::IsOffline();
+      bool isWorkspaceCheckPending =
+          _geminiService->IsWorkspacePolicyCheckPending();
+      std::optional<gemini::IneligibilityReasons> ineligibilityReasons =
+          _geminiService->GeminiIneligibilityForProfile();
+      bool disabledByWorkspacePolicy = !isOffline && !isWorkspaceCheckPending &&
+                                       ineligibilityReasons &&
+                                       ineligibilityReasons->workspace;
+
+      if (!explicitlyIneligible && !disabledByWorkspacePolicy) {
+        geminiAllowed = YES;
+      }
     }
   }
 
