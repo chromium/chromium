@@ -34,11 +34,8 @@ class GlicLocalStorageMigrationTest : public testing::Test {
   GlicLocalStorageMigrationTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kGlicNoWebview, features::kGlic}, {});
-    GlicEnabling::SetBypassEnablementChecksForTesting(true);
   }
-  ~GlicLocalStorageMigrationTest() override {
-    GlicEnabling::SetBypassEnablementChecksForTesting(false);
-  }
+  ~GlicLocalStorageMigrationTest() override = default;
 
   content::StoragePartition* GetGlicPartition() {
     return profile_.GetStoragePartition(
@@ -102,6 +99,7 @@ class GlicLocalStorageMigrationTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
   TestingProfile profile_;
+  GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass_;
 };
 
 TEST_F(GlicLocalStorageMigrationTest, MigratesKeysAndSetsPref) {

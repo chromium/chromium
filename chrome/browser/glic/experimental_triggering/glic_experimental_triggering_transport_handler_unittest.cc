@@ -102,8 +102,6 @@ class GlicExperimentalTriggeringTransportHandlerTest : public testing::Test {
     profile_ = profile_manager_.CreateTestingProfile(
         "test_profile", std::move(testing_factories));
 
-    GlicEnabling::SetBypassEnablementChecksForTesting(true);
-
     session_ = std::make_unique<testing::NiceMock<MockTransportSession>>();
     ON_CALL(*session_, GetSessionId())
         .WillByDefault(testing::Return("test_session_id"));
@@ -137,6 +135,7 @@ class GlicExperimentalTriggeringTransportHandlerTest : public testing::Test {
   }
 
  protected:
+  GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
       scoped_platform_management_override_;
