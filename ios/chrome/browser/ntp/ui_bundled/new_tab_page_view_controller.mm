@@ -1140,7 +1140,13 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
 // Whether the quick actions button row is visible.
 - (BOOL)quickActionsVisible {
-  return _isAIMAllowed && IsAimEnabledInNtp();
+  if (!_isAIMAllowed || !IsAimEnabledInNtp()) {
+    return NO;
+  }
+  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+  return arm != AimButtonRefactorArm::kAimAsModule &&
+         arm != AimButtonRefactorArm::kAimAsMvt &&
+         arm != AimButtonRefactorArm::kNoChips;
 }
 
 - (BOOL)shouldSkipScrollToFocusOmnibox {
