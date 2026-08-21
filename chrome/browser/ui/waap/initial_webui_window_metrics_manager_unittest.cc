@@ -133,13 +133,12 @@ TEST_F(InitialWebUIWindowMetricsManagerTest, RecordsShowRequestedToFirstPaint) {
 
   tester.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
-      "ShowRequestedToFirstPaint.FromConstructor2",
+      "ShowRequestedToFirstPaint2",
       expected_delta, 1);
   tester.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.BrowserInitiated.WithoutExistingWindow."
       "BrowserWindow."
-      "ShowRequestedToFirstPaint."
-      "FromConstructor2",
+      "ShowRequestedToFirstPaint2",
       expected_delta, 1);
 }
 
@@ -173,8 +172,7 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
 
   tester.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
-      "ShowRequestedToFirstPaint."
-      "FromConstructor2",
+      "ShowRequestedToFirstPaint2",
       expected_delta, 1);
 }
 
