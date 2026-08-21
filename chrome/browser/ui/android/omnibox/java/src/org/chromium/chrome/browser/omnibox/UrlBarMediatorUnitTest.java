@@ -509,8 +509,9 @@ public class UrlBarMediatorUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_SITE_SEARCH)
-    public void testManageSearchEnginesCallback_featureEnabled() {
+    public void testManageSearchEnginesCallback_tablet_featureEnabled() {
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
 
         Runnable callback = mModel.get(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK);
@@ -521,8 +522,9 @@ public class UrlBarMediatorUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
     @DisableFeatures(OmniboxFeatureList.OMNIBOX_SITE_SEARCH)
-    public void testManageSearchEnginesCallback_featureDisabled() {
+    public void testManageSearchEnginesCallback_tablet_featureDisabled() {
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
 
         Runnable callback = mModel.get(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK);
@@ -530,6 +532,12 @@ public class UrlBarMediatorUnitTest {
 
         callback.run();
         verify(mSettingsNavigation).startSettings(eq(mContext), eq(SearchEngineSettings.class));
+    }
+
+    @Test
+    public void testManageSearchEnginesCallback_phone() {
+        Runnable callback = mModel.get(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK);
+        assertNull(callback);
     }
 
     @Test

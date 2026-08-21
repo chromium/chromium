@@ -35,6 +35,7 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisSpan;
 import org.chromium.components.omnibox.TextSelection;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -86,9 +87,11 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         mModel.set(UrlBarProperties.RICH_TEXT_CHANGE_LISTENER, this::onRichTextChanged);
         mModel.set(UrlBarProperties.KEY_DOWN_LISTENER, keyDownListener);
         mModel.set(UrlBarProperties.SHOW_HINT_TEXT, true);
-        mModel.set(
-                UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK,
-                this::onManageSearchEnginesClicked);
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+            mModel.set(
+                    UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK,
+                    this::onManageSearchEnginesClicked);
+        }
         setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
         pushTextToModel(/* originChanged= */ false);
     }
