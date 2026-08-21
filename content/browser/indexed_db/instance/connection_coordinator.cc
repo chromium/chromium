@@ -289,7 +289,8 @@ class ConnectionCoordinator::OpenRequest
          new_version == IndexedDBDatabaseMetadata::NO_VERSION)) {
       Log(DatabaseConnectionOpenResult::kSuccessDirectOpen,
           bucket_context_->GetHistogramSuffix());
-      if (pending_->request_shared_connection && db_->ConnectionCount() > 0) {
+      if (pending_->request_shared_connection &&
+          db_->HasConnectionForClient(pending_->client_token)) {
         OnOpenSuccess(nullptr);
       } else {
         OnOpenSuccess(db_->CreateConnection(

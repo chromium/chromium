@@ -71,8 +71,15 @@ IDBOpenDBRequest::~IDBOpenDBRequest() {
 void IDBOpenDBRequest::BindToConnection(
     SharedIDBDatabaseConnection* connection) {
   CHECK(connection);
-  CHECK(!shared_connection_target_);
   CHECK_EQ(ready_state_, PENDING);
+  // Release any previously targeted connection (e.g. if this request was
+  // optimistically bound to a cached connection in
+  // `IDBFactory::OpenInternalImpl`, but the browser subsequently triggered
+  // `OnUpgradeNeeded`).
+  if (shared_connection_target_) {
+    shared_connection_target_->DecrementPendingSharingCount();
+    shared_connection_target_ = nullptr;
+  }
   shared_connection_target_ = connection;
   // Increment the pending sharing count to lock the connection and prevent
   // it from closing if all active database frontends are closed before this

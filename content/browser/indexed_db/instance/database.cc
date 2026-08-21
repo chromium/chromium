@@ -258,6 +258,14 @@ bool Database::OnlyHasOneClient() const {
                      });
 }
 
+bool Database::HasConnectionForClient(
+    const base::UnguessableToken& client_token) const {
+  return std::any_of(connections_.begin(), connections_.end(),
+                     [&client_token](Connection* connection) {
+                       return connection->client_token() == client_token;
+                     });
+}
+
 void Database::RequireBlockingTransactionClientsToBeActive(
     Transaction* current_transaction,
     std::vector<PartitionedLockManager::PartitionedLockRequest>&

@@ -2353,4 +2353,145 @@ TEST_F(IDBRequestTestWithDeduplication,
       mojom::blink::IDBFactory::Name_, {});
 }
 
+// Regression test for crbug.com/550240487: When an open request is
+// optimistically bound to a cached connection, but the browser triggers an
+// upgrade, the request must rebind to the new upgrade connection without
+// crashing on CHECK(!shared_connection_target_).
+TEST_F(IDBRequestTestWithDeduplication,
+       UpgradeNeededAfterOptimisticBindToCachedConnection) {
+  V8TestingScope scope(KURL("https://example.com"));
+  MockIDBFactory mock_idb_factory;
+
+  scope.GetExecutionContext()->GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::blink::IDBFactory::Name_,
+      base::BindRepeating(&MockIDBFactory::Bind,
+                          base::Unretained(&mock_idb_factory)));
+
+  MockIDBDatabase mock_database1;
+  EXPECT_CALL(mock_database1, OnDisconnect()).Times(testing::AnyNumber());
+  MockIDBDatabase mock_database2;
+  EXPECT_CALL(mock_database2, OnDisconnect()).Times(testing::AnyNumber());
+
+  mojo::AssociatedRemote<mojom::blink::IDBDatabaseCallbacks>
+      database_callbacks_remote1;
+  mojo::AssociatedRemote<mojom::blink::IDBDatabaseCallbacks>
+      database_callbacks_remote2;
+
+  auto* factory = MakeGarbageCollected<IDBFactory>(scope.GetExecutionContext());
+
+  // 1. First open (v1) -> succeeds and is cached in factory.
+  Persistent<IDBOpenDBRequest> request1;
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_idb_factory, Open(_, _, String("db1"), 1, _, _, _, false))
+        .WillOnce(
+            [&](mojo::PendingAssociatedRemote<mojom::blink::IDBFactoryClient>
+                    client,
+                mojo::PendingAssociatedRemote<
+                    mojom::blink::IDBDatabaseCallbacks> database_callbacks,
+                const String& name, int64_t version,
+                mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction>
+                    transaction_receiver,
+                int64_t transaction_id, int32_t priority,
+                bool request_shared_connection) {
+              mojo::AssociatedRemote<mojom::blink::IDBFactoryClient>
+                  client_remote(std::move(client));
+              database_callbacks_remote1.Bind(std::move(database_callbacks));
+              mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase>
+                  pending_db;
+              mock_database1.Bind(
+                  pending_db.InitWithNewEndpointAndPassReceiver());
+              IDBDatabaseMetadata metadata;
+              metadata.name = name;
+              metadata.version = version;
+              client_remote->OpenSuccess(std::move(pending_db), metadata);
+              client_remote.FlushForTesting();
+              run_loop.Quit();
+            });
+
+    request1 = factory->open(scope.GetScriptState(), "db1", 1,
+                             scope.GetExceptionState());
+    ASSERT_TRUE(!scope.GetExceptionState().HadException());
+    run_loop.Run();
+    EXPECT_EQ(request1->readyState(), V8IDBRequestReadyState::Enum::kDone);
+  }
+
+  // 2. Second open (kNoVersion) -> optimistically binds to cached v1
+  // connection.
+  //    Browser responds with UpgradeNeeded (e.g. database needs upgrade to v2).
+  mojo::AssociatedRemote<mojom::blink::IDBFactoryClient> client2_remote;
+  int64_t version_change_transaction_id = 0;
+  Persistent<IDBOpenDBRequest> request2;
+  {
+    EXPECT_CALL(mock_idb_factory,
+                Open(_, _, String("db1"), IDBDatabaseMetadata::kNoVersion, _, _,
+                     _, true))
+        .WillOnce(
+            [&](mojo::PendingAssociatedRemote<mojom::blink::IDBFactoryClient>
+                    client,
+                mojo::PendingAssociatedRemote<
+                    mojom::blink::IDBDatabaseCallbacks> database_callbacks,
+                const String& name, int64_t version,
+                mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction>
+                    transaction_receiver,
+                int64_t transaction_id, int32_t priority,
+                bool request_shared_connection) {
+              client2_remote.Bind(std::move(client));
+              database_callbacks_remote2.Bind(std::move(database_callbacks));
+              version_change_transaction_id = transaction_id;
+
+              mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase>
+                  pending_db;
+              mock_database2.Bind(
+                  pending_db.InitWithNewEndpointAndPassReceiver());
+              IDBDatabaseMetadata metadata;
+              metadata.name = name;
+              metadata.version = 2;
+              client2_remote->UpgradeNeeded(
+                  std::move(pending_db), /*old_version=*/1,
+                  mojom::blink::IDBDataLoss::None, String(""), metadata);
+            });
+
+    request2 =
+        factory->open(scope.GetScriptState(), "db1", scope.GetExceptionState());
+    ASSERT_TRUE(!scope.GetExceptionState().HadException());
+
+    base::RunLoop run_loop;
+    request2->addEventListener(
+        event_type_names::kUpgradeneeded,
+        MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
+    run_loop.Run();
+    EXPECT_EQ(request2->readyState(), V8IDBRequestReadyState::Enum::kDone);
+    EXPECT_TRUE(request2->transaction());
+  }
+
+  // 3. Complete the versionchange transaction.
+  {
+    base::RunLoop run_loop;
+    request2->transaction()->addEventListener(
+        event_type_names::kComplete,
+        MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
+    database_callbacks_remote2->Complete(version_change_transaction_id);
+    run_loop.Run();
+    EXPECT_EQ(request2->readyState(), V8IDBRequestReadyState::Enum::kPending);
+  }
+
+  // 4. Complete upgrade for request2 with OpenSuccess.
+  {
+    base::RunLoop run_loop;
+    request2->addEventListener(
+        event_type_names::kSuccess,
+        MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
+    IDBDatabaseMetadata metadata;
+    metadata.name = "db1";
+    metadata.version = 2;
+    client2_remote->OpenSuccess(mojo::NullAssociatedRemote(), metadata);
+    run_loop.Run();
+    EXPECT_EQ(request2->readyState(), V8IDBRequestReadyState::Enum::kDone);
+  }
+
+  scope.GetExecutionContext()->GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::blink::IDBFactory::Name_, {});
+}
+
 }  // namespace blink

@@ -268,4 +268,108 @@ TEST_P(DatabaseTest, MojomWithInvalidParameter) {
   // (The SQLite backing store does not have crazy reference counting issues.)
 }
 
+TEST_P(DatabaseTest, SharedConnectionRequiresMatchingClientToken) {
+  const base::UnguessableToken token1 = base::UnguessableToken::Create();
+  const base::UnguessableToken token2 = base::UnguessableToken::Create();
+
+  // 1. Client 1 opens database (v1).
+  MockMojoDatabaseCallbacks database_callbacks1;
+  MockMojoFactoryClient request1;
+  auto non_associated1 = request1.CreateInterfacePtrAndBind();
+  non_associated1.EnableUnassociatedUsage();
+
+  base::RunLoop run_loop1;
+  mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_connection1;
+  EXPECT_CALL(request1, MockedUpgradeNeeded)
+      .WillOnce(
+          testing::DoAll(MoveArgPointee<0>(&pending_connection1),
+                         ::base::test::RunClosure(run_loop1.QuitClosure())));
+
+  mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote1;
+  auto connection1 = std::make_unique<PendingConnection>(
+      mojo::AssociatedRemote<blink::mojom::IDBFactoryClient>(
+          std::move(non_associated1)),
+      std::make_unique<DatabaseCallbacks>(
+          database_callbacks1.BindNewEndpointAndPassDedicatedRemote()),
+      /*transaction_id=*/1, /*version=*/1,
+      transaction_remote1.BindNewEndpointAndPassDedicatedReceiver());
+  connection1->client_token = token1;
+  db_->ScheduleOpenConnection(std::move(connection1),
+                              /*synchronous_duration=*/{});
+  run_loop1.Run();
+
+  // Finish upgrade transaction for client 1 so the connection is established.
+  base::RunLoop commit_loop1;
+  EXPECT_CALL(request1, MockedOpenSuccess)
+      .WillOnce(::base::test::RunClosure(commit_loop1.QuitClosure()));
+  mojo::AssociatedRemote<blink::mojom::IDBDatabase> mojo_connection1(
+      std::move(pending_connection1));
+  transaction_remote1->Commit(0);
+  commit_loop1.Run();
+
+  EXPECT_EQ(db_->ConnectionCount(), 1UL);
+  EXPECT_TRUE(db_->HasConnectionForClient(token1));
+  EXPECT_FALSE(db_->HasConnectionForClient(token2));
+
+  // 2. Client 2 requests a shared connection (v1). Since client 2 has no active
+  // connection, the browser should NOT return null (it creates a new
+  // connection).
+  MockMojoDatabaseCallbacks database_callbacks2;
+  MockMojoFactoryClient request2;
+  auto non_associated2 = request2.CreateInterfacePtrAndBind();
+  non_associated2.EnableUnassociatedUsage();
+
+  base::RunLoop run_loop2;
+  mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_connection2;
+  EXPECT_CALL(request2, MockedOpenSuccess)
+      .WillOnce(
+          testing::DoAll(MoveArgPointee<0>(&pending_connection2),
+                         ::base::test::RunClosure(run_loop2.QuitClosure())));
+
+  auto connection2 = std::make_unique<PendingConnection>(
+      mojo::AssociatedRemote<blink::mojom::IDBFactoryClient>(
+          std::move(non_associated2)),
+      std::make_unique<DatabaseCallbacks>(
+          database_callbacks2.BindNewEndpointAndPassDedicatedRemote()),
+      /*transaction_id=*/2, /*version=*/1, mojo::NullAssociatedReceiver());
+  connection2->client_token = token2;
+  connection2->request_shared_connection = true;
+  db_->ScheduleOpenConnection(std::move(connection2),
+                              /*synchronous_duration=*/{});
+  run_loop2.Run();
+
+  EXPECT_TRUE(pending_connection2.is_valid());
+  EXPECT_EQ(db_->ConnectionCount(), 2UL);
+  EXPECT_TRUE(db_->HasConnectionForClient(token2));
+
+  // 3. Client 1 requests another shared connection (v1). Since client 1 already
+  // has an active connection, the browser returns null to share it.
+  MockMojoDatabaseCallbacks database_callbacks3;
+  MockMojoFactoryClient request3;
+  auto non_associated3 = request3.CreateInterfacePtrAndBind();
+  non_associated3.EnableUnassociatedUsage();
+
+  base::RunLoop run_loop3;
+  mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_connection3;
+  EXPECT_CALL(request3, MockedOpenSuccess)
+      .WillOnce(
+          testing::DoAll(MoveArgPointee<0>(&pending_connection3),
+                         ::base::test::RunClosure(run_loop3.QuitClosure())));
+
+  auto connection3 = std::make_unique<PendingConnection>(
+      mojo::AssociatedRemote<blink::mojom::IDBFactoryClient>(
+          std::move(non_associated3)),
+      std::make_unique<DatabaseCallbacks>(
+          database_callbacks3.BindNewEndpointAndPassDedicatedRemote()),
+      /*transaction_id=*/3, /*version=*/1, mojo::NullAssociatedReceiver());
+  connection3->client_token = token1;
+  connection3->request_shared_connection = true;
+  db_->ScheduleOpenConnection(std::move(connection3),
+                              /*synchronous_duration=*/{});
+  run_loop3.Run();
+
+  EXPECT_FALSE(pending_connection3.is_valid());
+  EXPECT_EQ(db_->ConnectionCount(), 2UL);
+}
+
 }  // namespace content::indexed_db
