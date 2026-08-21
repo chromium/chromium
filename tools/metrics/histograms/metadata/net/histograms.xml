@@ -6517,17 +6517,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.GoogleSearch.EstablishmentReason{Used}"
+<histogram
+    name="Net.QuicSession.GoogleSearch.EstablishmentReason{Initiator}{Used}"
     enum="QuicSessionEstablishmentReason" expires_after="2027-07-01">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     The session establishment reason for a QUIC session to GoogleSearch. This is
-    recorded when closing the session to GoogleSearch, and when {Used}.
+    recorded when closing a session to GoogleSearch, indicating if it was
+    {Used}{Initiator}.
   </summary>
+  <token key="Initiator">
+    <variant name="" summary=""/>
+    <variant name=".NonPreconnect"
+        summary=", and that the connection was not established via preconnect"/>
+    <variant name=".Preconnect"
+        summary=", and that the connection was established via preconnect"/>
+  </token>
   <token key="Used">
-    <variant name=".Unused" summary="session was unused"/>
-    <variant name=".Used" summary="session was used"/>
+    <variant name=".Unused" summary="unused"/>
+    <variant name=".Used" summary="used"/>
   </token>
 </histogram>
 

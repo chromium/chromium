@@ -462,6 +462,10 @@ void LogSessionMetricsToHistogram(
     QuicSessionEstablishmentReason establishment_reason,
     bool is_used) {
   const std::string_view suffix = is_used ? ".Used" : ".Unused";
+  const std::string_view initiator_suffix =
+      session_creation == MultiplexedSessionCreationInitiator::kPreconnect
+          ? ".Preconnect"
+          : ".NonPreconnect";
 
   std::string initiator_histogram_name = base::StrCat(
       {"Net.QuicSession.GoogleSearch.SessionCreationInitiator", suffix});
@@ -470,6 +474,12 @@ void LogSessionMetricsToHistogram(
   std::string reason_histogram_name = base::StrCat(
       {"Net.QuicSession.GoogleSearch.EstablishmentReason", suffix});
   base::UmaHistogramEnumeration(reason_histogram_name, establishment_reason);
+
+  std::string reason_initiator_histogram_name =
+      base::StrCat({"Net.QuicSession.GoogleSearch.EstablishmentReason",
+                    initiator_suffix, suffix});
+  base::UmaHistogramEnumeration(reason_initiator_histogram_name,
+                                establishment_reason);
 }
 
 EchMode GetEchModeForHost(SSLConfigService* ssl_config_service,
