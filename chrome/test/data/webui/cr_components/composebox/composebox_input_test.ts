@@ -611,4 +611,31 @@ suite('ComposeboxCaretGeometry', () => {
     // The mid span should no longer be the anchor.
     assertEquals('', midSpan.style.anchorName);
   });
+
+  test('CaretPlacedAtEndWhenSkillsEnabledAndInputChanges', async () => {
+    inputElement.composeboxSkillsEnabled = true;
+    await inputElement.updateComplete;
+
+    const input = inputElement.$.input;
+    const caret = inputElement.shadowRoot.querySelector<HTMLElement>('#caret');
+    const mirror =
+        inputElement.shadowRoot.querySelector<HTMLElement>('#mirror');
+    assertTrue(!!input);
+    assertTrue(!!caret);
+    assertTrue(!!mirror);
+
+    input.focus();
+    await inputElement.updateComplete;
+
+    inputElement.input = 'hello world';
+    await inputElement.updateComplete;
+    await microtasksFinished();
+
+    assertEquals(11, inputElement.getSelectionEnd());
+
+    const lastSpan = mirror.childNodes[10] as HTMLElement;
+    assertTrue(!!lastSpan);
+    assertEquals('--cursor-char', lastSpan.style.anchorName);
+    assertFalse(caret.classList.contains('at-start'));
+  });
 });
