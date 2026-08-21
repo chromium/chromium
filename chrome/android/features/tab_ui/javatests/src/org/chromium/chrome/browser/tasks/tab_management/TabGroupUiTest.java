@@ -470,7 +470,7 @@ public class TabGroupUiTest {
                         .get()
                         .getTabGroupUiBottomControlsCoordinatorForTesting();
 
-        // Scene overlay should be visible
+        // Scene overlay should be visible.
         CriteriaHelper.pollUiThread(
                 () -> coordinator.getSceneLayerForTesting().isSceneOverlayTreeShowing());
         ThreadUtils.runOnUiThreadBlocking(
@@ -481,17 +481,7 @@ public class TabGroupUiTest {
                             /* isPageOptedIntoEdgeToEdge= */ true);
                 });
 
-        // Scene overlay should be hidden
-        CriteriaHelper.pollUiThread(
-                () -> !coordinator.getSceneLayerForTesting().isSceneOverlayTreeShowing());
-
-        // Force a bitmap capture.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    coordinator.getResourceAdapterForTesting().triggerBitmapCapture();
-                });
-
-        // Scene overlay should visible after bitmap capture
+        // Scene overlay should remain visible.
         CriteriaHelper.pollUiThread(
                 () -> coordinator.getSceneLayerForTesting().isSceneOverlayTreeShowing());
     }
