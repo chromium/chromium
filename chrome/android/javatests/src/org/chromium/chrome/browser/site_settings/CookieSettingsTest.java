@@ -36,7 +36,7 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
@@ -55,8 +55,8 @@ public class CookieSettingsTest {
     private static final int RENDER_TEST_REVISION = 2;
 
     @Rule
-    public SettingsActivityTestRule<SingleCategorySettings> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(SingleCategorySettings.class);
+    public SettingsTestRule<SingleCategorySettings> mSettingsTestRule =
+            new SettingsTestRule<>(SingleCategorySettings.class);
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -73,7 +73,7 @@ public class CookieSettingsTest {
         fragmentArgs.putString(
                 SingleCategorySettings.EXTRA_CATEGORY,
                 SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.THIRD_PARTY_COOKIES));
-        mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
+        mSettingsTestRule.startSettingsActivity(fragmentArgs);
         mUserActionTester = new UserActionTester();
     }
 
