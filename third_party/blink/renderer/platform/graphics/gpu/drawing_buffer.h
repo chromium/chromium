@@ -46,6 +46,7 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/command_buffer/client/shared_image_pool.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -379,6 +380,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   friend class ScopedStateRestorer;
   friend class ColorBuffer;
 
+  gpu::ImageInfo CreateImageInfo(const gfx::Size& size);
+
   // This structure should wrap all public entrypoints that may modify GL state.
   // It will restore all state when it drops out of scope.
   class ScopedStateRestorer {
@@ -414,13 +417,15 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     bool pixel_pack_buffer_binding_dirty_ = false;
   };
 
-  struct ColorBuffer : public ThreadSafeRefCounted<ColorBuffer> {
-    ColorBuffer(base::WeakPtr<DrawingBuffer> drawing_buffer,
-                scoped_refptr<gpu::ClientSharedImage> shared_image,
-                std::unique_ptr<gpu::SharedImageTexture> shared_image_texture);
+  struct ColorBuffer : public gpu::ClientImage {
+    explicit ColorBuffer(scoped_refptr<gpu::ClientSharedImage> shared_image);
     ColorBuffer(const ColorBuffer&) = delete;
     ColorBuffer& operator=(const ColorBuffer&) = delete;
 
+    void Initialize(base::WeakPtr<DrawingBuffer> owner,
+                    gpu::gles2::GLES2Interface* gl);
+
+    bool IsInitialized() const { return is_initialized_; }
     GLuint texture_id() { return scoped_shared_image_access_->texture_id(); }
     void BeginAccess(const gpu::SyncToken& sync_token, bool readonly);
     gpu::SyncToken EndAccess();
@@ -442,13 +447,10 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     // The sync token for when this buffer was sent to the compositor.
     gpu::SyncToken produce_sync_token;
 
-    // The sync token for when this buffer was received back from the
-    // compositor.
-    gpu::SyncToken receive_sync_token;
-
    private:
-    friend class ThreadSafeRefCounted<ColorBuffer>;
-    ~ColorBuffer();
+    ~ColorBuffer() override;
+
+    bool is_initialized_ = false;
 
     std::unique_ptr<gpu::SharedImageTexture> shared_image_texture_;
     std::unique_ptr<gpu::SharedImageTexture::ScopedAccess>
@@ -702,7 +704,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   // Mailboxes that were released by the compositor can be used again by this
   // DrawingBuffer.
-  Deque<scoped_refptr<ColorBuffer>> recycled_color_buffer_queue_;
+  std::unique_ptr<gpu::SharedImagePool<ColorBuffer>> color_buffer_pool_;
   base::flat_set<scoped_refptr<ColorBuffer>> exported_color_buffers_;
 
   bool opengl_flip_y_extension_;

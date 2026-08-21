@@ -379,6 +379,13 @@ TEST_F(
     TransferableResourcesAreOverlayCandidatesWhenUseOverlaysForWebGLIsEnabled) {
   ScopedCanvasUtils scoped_canvas_utils;
   SetUseOverlaysForWebGLForTesting(true);
+
+  // Re-init drawing buffer to reconfigure its SharedImagePool.
+  if (drawing_buffer_) {
+    drawing_buffer_->BeginDestruction();
+  }
+  Init(kDisableMultisampling);
+
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;
 
