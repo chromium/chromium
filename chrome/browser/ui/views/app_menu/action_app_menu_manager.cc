@@ -9,15 +9,20 @@
 #include <string>
 #include <utility>
 
+#include "base/debug/profiler.h"
 #include "base/functional/bind.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
 #include "chrome/browser/ui/views/app_menu/bookmarks_dynamic_menu.h"
 #include "chrome/browser/ui/views/toolbar/recent_tabs_dynamic_menu.h"
@@ -284,6 +289,46 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
         .AddAction(actions::kActionCut)
         .AddAction(actions::kActionCopy)
         .AddAction(actions::kActionPaste);
+  });
+
+  Profile* profile = browser_window_interface_->GetProfile();
+
+  builder.AddSubmenu(
+      kActionSaveAndShareSubmenu, [profile](AppMenuBuilder& sub) {
+        if (media_router::MediaRouterEnabled(profile)) {
+          sub.AddAction(kActionRouteMedia);
+        }
+
+        sub.AddAction(kActionSavePage).AddAction(kActionCreateShortcut);
+
+        if (!sharing_hub::SharingIsDisabledByPolicy(profile)) {
+          sub.AddAction(kActionCopyUrl)
+              .AddAction(kActionSendTabToSelf)
+              .AddAction(kActionQrCodeGenerator);
+        }
+        if (sharing_hub::DesktopScreenshotsFeatureEnabled(profile)) {
+          sub.AddAction(kActionSharingHubScreenshot);
+        }
+      });
+
+  builder.AddSubmenu(kActionDeveloperSubmenu, [](AppMenuBuilder& sub) {
+    sub.AddAction(kActionTabSearch).AddAction(kActionNameWindow);
+
+    if (tabs::IsVerticalTabsFeatureEnabled()) {
+      sub.AddAction(kActionToggleVerticalTabs);
+    }
+
+    sub.AddAction(kActionSidePanelShowCustomizeChrome)
+        .AddAction(kActionShowReadingModeSidePanel)
+        .AddAction(kActionPerformance)
+        .AddAction(kActionTaskManagerAppMenu)
+        .AddAction(kActionDevTools);
+
+    if (base::debug::IsProfilingSupported()) {
+      sub.AddAction(kActionProfilingEnabled);
+    }
+
+    sub.AddAction(kActionShowChromeLabs);
   });
 }
 

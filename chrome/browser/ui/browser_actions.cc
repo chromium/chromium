@@ -1084,6 +1084,11 @@ void BrowserActions::InitializeChromeMenuActions() {
                 bwi))
             .SetActionId(kActionToggleVerticalTabs)
             .SetText(l10n_util::GetStringUTF16(IDS_SWITCH_TO_VERTICAL_TAB))
+            .SetTooltipText(
+                l10n_util::GetStringUTF16(IDS_SWITCH_TO_VERTICAL_TAB))
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                features::IsRoundedIconsEnabled() ? kDockToRightIcon
+                                                  : kDockToLeftOldIcon))
             .Build());
 
     root_action_item_->AddChild(
@@ -1634,6 +1639,8 @@ void BrowserActions::InitializeChromeMenuActions() {
             content::Profiling::Toggle();
           }))
           .SetActionId(kActionProfilingEnabled)
+          .SetText(l10n_util::GetStringUTF16(IDS_PROFILING_ENABLED))
+          .SetTooltipText(l10n_util::GetStringUTF16(IDS_PROFILING_ENABLED))
           .Build());
 
   root_action_item_->AddChild(
@@ -2808,6 +2815,13 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionNameWindow)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_NAME_WINDOW)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_NAME_WINDOW)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kWebAssetIcon
+                                                : kNameWindowOldIcon))
           .Build());
 
   root_action_item_->AddChild(
@@ -3585,6 +3599,15 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionSavePage)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_SAVE_PAGE)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_SAVE_PAGE)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled()
+                  ? kFileSaveIcon
+                  : kFileSaveChromeRefreshOldIcon))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_SAVE_PAGE))
           .Build());
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -3666,6 +3689,14 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionCreateShortcut)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_ADD_TO_OS_LAUNCH_SURFACE)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_ADD_TO_OS_LAUNCH_SURFACE)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled()
+                  ? kDriveShortcutIcon
+                  : kDriveShortcutChromeRefreshOldIcon))
           .Build());
 
   root_action_item_->AddChild(
@@ -4220,6 +4251,13 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionSharingHubScreenshot)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_SHARING_HUB_SCREENSHOT_LABEL)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_SHARING_HUB_SCREENSHOT_LABEL)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kScreenshotRegionIcon
+                                                : kSharingHubScreenshotOldIcon))
           .Build());
 
   root_action_item_->AddChild(
@@ -4501,6 +4539,13 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionPerformance)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_SHOW_PERFORMANCE)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_SHOW_PERFORMANCE)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kSpeedIcon
+                                                : kPerformanceOldIcon))
           .Build());
 
 #if BUILDFLAG(ENABLE_SPELLCHECK) && !BUILDFLAG(IS_MAC)
