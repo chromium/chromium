@@ -297,6 +297,11 @@ class WebUIToolbarInternalWebView : public views::WebView {
     return true;
   }
 
+  void OnBlur() override {
+    views::WebView::OnBlur();
+    webui_toolbar_web_view_->OnBlur();
+  }
+
   std::optional<GURL> ConsumeDroppedUrl(const gfx::PointF& point) {
     std::optional<GURL> url;
     if (GetLocalBounds().Contains(gfx::ToRoundedPoint(point)) &&
@@ -566,6 +571,13 @@ void WebUIToolbarWebView::PreferredSizeChanged() {
   // Overflow state of buttons needs to be recomputed.
   UpdateButtonOverflowState();
   View::PreferredSizeChanged();
+}
+
+void WebUIToolbarWebView::OnBlur() {
+  View::OnBlur();
+  if (location_bar_) {
+    location_bar_->OnBlur();
+  }
 }
 
 void WebUIToolbarWebView::HandleContextMenu(

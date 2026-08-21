@@ -573,6 +573,21 @@ void WebUIReadOnlyOmnibox::ResetBrowserVersion() {
   ui_version_ = 0;
 }
 
+void WebUIReadOnlyOmnibox::OnBlur() {
+  if (!has_focus_) {
+    return;
+  }
+  has_focus_ = false;
+  aim_hint_currently_shown_ = false;
+  controller()->edit_model()->OnWillKillFocus();
+  if (auto* popup_closer = controller()->client()->GetOmniboxPopupCloser()) {
+    popup_closer->CloseWithReason(omnibox::PopupCloseReason::kBlur);
+  }
+  controller()->edit_model()->OnKillFocus();
+  ClearAccessibilityLabel();
+  RequestUpdateWebUI();
+}
+
 base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
 WebUIReadOnlyOmnibox::OnFocusChange(
     const toolbar_ui_api::mojom::OmniboxActionFocusChange& focus_change) {
@@ -593,15 +608,7 @@ WebUIReadOnlyOmnibox::OnFocusChange(
     }
     RequestUpdateWebUI();
   } else {
-    has_focus_ = false;
-    aim_hint_currently_shown_ = false;
-    controller()->edit_model()->OnWillKillFocus();
-    if (auto* popup_closer = controller()->client()->GetOmniboxPopupCloser()) {
-      popup_closer->CloseWithReason(omnibox::PopupCloseReason::kBlur);
-    }
-    controller()->edit_model()->OnKillFocus();
-    ClearAccessibilityLabel();
-    RequestUpdateWebUI();
+    OnBlur();
   }
   return base::ok(std::monostate());
 }

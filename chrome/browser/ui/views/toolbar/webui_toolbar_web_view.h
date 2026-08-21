@@ -273,6 +273,7 @@ class WebUIToolbarWebView
       const views::SizeBounds& available_size) const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void PreferredSizeChanged() override;
+  void OnBlur() override;
 
   // content::WebContentsObserver:
   void DidStartNavigation(

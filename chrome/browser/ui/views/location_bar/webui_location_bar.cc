@@ -249,6 +249,13 @@ void WebUILocationBar::SetFocusWithin(bool focused) {
   NotifyFocusChanged();
 }
 
+void WebUILocationBar::OnBlur() {
+  SetFocusWithin(false);
+  if (omnibox_view_) {
+    omnibox_view_->OnBlur();
+  }
+}
+
 void WebUILocationBar::FocusLocation(bool is_user_initiated,
                                      bool clear_focus_if_failed) {
   omnibox_view_->SetFocus(is_user_initiated);

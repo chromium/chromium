@@ -94,6 +94,7 @@ class WebUIReadOnlyOmnibox
   void SaveStateToTab(content::WebContents* tab);
   void OnTabChanged(content::WebContents* web_contents);
   void ResetTabState(content::WebContents* web_contents);
+  void OnBlur();
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnOmniboxAction(
       toolbar_ui_api::mojom::OmniboxActionPtr action);
 

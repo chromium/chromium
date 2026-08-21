@@ -68,6 +68,7 @@ class WebUILocationBar : public LocationBar,
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnOmniboxAction(
       toolbar_ui_api::mojom::OmniboxActionPtr action);
   void SetFocusWithin(bool focused);
+  void OnBlur();
 
   void HandleContextMenu(views::Widget* widget,
                          const gfx::Point& point,
