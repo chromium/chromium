@@ -129,7 +129,13 @@ IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, KeywordModeManagerTest) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, SearchboxIconTest) {
+// TODO(crbug.com/549885533): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SearchboxIconTest DISABLED_SearchboxIconTest
+#else
+#define MAYBE_SearchboxIconTest SearchboxIconTest
+#endif
+IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, MAYBE_SearchboxIconTest) {
   set_test_loader_host(chrome::kChromeUINewTabPageHost);
   RunTest("cr_components/searchbox/searchbox_icon_test.js", "mocha.run()");
 }
