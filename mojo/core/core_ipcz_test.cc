@@ -12,11 +12,9 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
-#include "build/build_config.h"
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/transport.h"
 #include "mojo/core/test/mojo_test_base.h"
-#include "mojo/public/c/system/invitation.h"
 #include "mojo/public/c/system/thunks.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
@@ -26,26 +24,12 @@
 namespace mojo::core {
 namespace {
 
-struct InvitationDetails {
-  MojoPlatformProcessHandle process;
-  MojoPlatformHandle handle;
-  MojoInvitationTransportEndpoint endpoint;
-};
-
 // Basic smoke tests for the Mojo Core API as implemented over ipcz.
 class CoreIpczTest : public test::MojoTestBase {
  public:
   const MojoSystemThunks2& mojo() const { return *mojo_; }
   const IpczAPI& ipcz() const { return GetIpczAPI(); }
   IpczHandle node() const { return GetIpczNode(); }
-
-  CoreIpczTest() : CoreIpczTest(/*is_broker=*/true) {}
-
-  enum { kForClient };
-  explicit CoreIpczTest(decltype(kForClient))
-      : CoreIpczTest(/*is_broker=*/false) {}
-
-  ~CoreIpczTest() override = default;
 
   MojoMessageHandle CreateMessage(std::string_view contents,
                                   base::span<MojoHandle> handles = {}) {
@@ -85,51 +69,6 @@ class CoreIpczTest : public test::MojoTestBase {
                   platform_handles, num_platform_handles, details.size, &guid,
                   details.mode, nullptr, &buffer));
     return details;
-  }
-
-  static void CreateAndShareInvitationTransport(MojoHandle pipe,
-                                                const base::Process& process,
-                                                InvitationDetails& details) {
-    PlatformChannel channel;
-    MojoHandle handle_for_client =
-        WrapPlatformHandle(channel.TakeRemoteEndpoint().TakePlatformHandle())
-            .release()
-            .value();
-    WriteMessageWithHandles(pipe, "", &handle_for_client, 1);
-
-    details.process.struct_size = sizeof(details.process);
-#if BUILDFLAG(IS_WIN)
-    details.process.value =
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(process.Handle()));
-#else
-    details.process.value = static_cast<uint64_t>(process.Handle());
-#endif
-
-    details.handle.struct_size = sizeof(details.handle);
-    PlatformHandle::ToMojoPlatformHandle(
-        channel.TakeLocalEndpoint().TakePlatformHandle(), &details.handle);
-    details.endpoint = {
-        .struct_size = sizeof(details.endpoint),
-        .type = MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL,
-        .num_platform_handles = 1,
-        .platform_handles = &details.handle,
-    };
-  }
-
-  static void ReceiveInvitationTransport(MojoHandle pipe,
-                                         InvitationDetails& details) {
-    MojoHandle handle;
-    ReadMessageWithHandles(pipe, &handle, 1);
-
-    details.handle.struct_size = sizeof(details.handle);
-    PlatformHandle::ToMojoPlatformHandle(
-        UnwrapPlatformHandle(ScopedHandle(Handle(handle))), &details.handle);
-    details.endpoint = {
-        .struct_size = sizeof(details.endpoint),
-        .type = MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL,
-        .num_platform_handles = 1,
-        .platform_handles = &details.handle,
-    };
   }
 
   void WriteToMessagePipe(MojoHandle pipe, std::string_view contents) {
@@ -196,8 +135,6 @@ class CoreIpczTest : public test::MojoTestBase {
   }
 
  private:
-  explicit CoreIpczTest(bool is_broker) {}
-
   const raw_ptr<const MojoSystemThunks2> mojo_{GetMojoIpczImpl()};
 };
 
@@ -232,11 +169,6 @@ class ChannelPeerClosureListener {
 
   base::WaitableEvent disconnected_;
   scoped_refptr<ipcz_driver::Transport> transport_;
-};
-
-class CoreIpczTestClient : public CoreIpczTest {
- public:
-  CoreIpczTestClient() : CoreIpczTest(kForClient) {}
 };
 
 TEST_F(CoreIpczTest, Close) {

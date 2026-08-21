@@ -113,9 +113,6 @@ class COMPONENT_EXPORT(MOJO_CORE_EMBEDDER) ScopedIPCSupport {
   ScopedIPCSupport& operator=(const ScopedIPCSupport&) = delete;
 
   ~ScopedIPCSupport();
-
- private:
-  const ShutdownPolicy shutdown_policy_;
 };
 
 }  // namespace core

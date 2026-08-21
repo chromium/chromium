@@ -11,15 +11,10 @@ namespace mojo::core {
 
 ScopedIPCSupport::ScopedIPCSupport(
     scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner,
-    ShutdownPolicy shutdown_policy)
-    : shutdown_policy_(shutdown_policy) {
+    ShutdownPolicy) {
   ipcz_driver::Transport::SetIOTaskRunner(io_thread_task_runner);
 }
 
-ScopedIPCSupport::~ScopedIPCSupport() {
-  // No extra shutdown required for mojo-ipcz.
-  // Suppress -Wunused-private-field warning.
-  (void)shutdown_policy_;
-}
+ScopedIPCSupport::~ScopedIPCSupport() = default;
 
 }  // namespace mojo::core

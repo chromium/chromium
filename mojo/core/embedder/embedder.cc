@@ -64,8 +64,6 @@ void InitFeatures() {
 void Init(const Configuration& configuration) {
   internal::g_configuration = configuration;
 
-  CHECK(!configuration.disable_ipcz);
-
   CHECK(InitializeIpczNodeForProcess({
       .is_broker = configuration.is_broker_process,
       .use_local_shared_memory_allocation =

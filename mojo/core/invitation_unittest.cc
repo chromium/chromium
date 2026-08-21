@@ -415,17 +415,10 @@ class TestClientBase : public MAYBE_InvitationTest {
   TestClientBase(const TestClientBase&) = delete;
   TestClientBase& operator=(const TestClientBase&) = delete;
 
-  static MojoHandle AcceptInvitation(MojoAcceptInvitationFlags flags,
-                                     std::string_view switch_name = {}) {
+  static MojoHandle AcceptInvitation(MojoAcceptInvitationFlags flags) {
     const auto& command_line = *base::CommandLine::ForCurrentProcess();
-    PlatformChannelEndpoint channel_endpoint;
-    if (switch_name.empty()) {
-      channel_endpoint =
-          PlatformChannel::RecoverPassedEndpointFromCommandLine(command_line);
-    } else {
-      channel_endpoint = PlatformChannel::RecoverPassedEndpointFromString(
-          command_line.GetSwitchValueASCII(switch_name));
-    }
+    PlatformChannelEndpoint channel_endpoint =
+        PlatformChannel::RecoverPassedEndpointFromCommandLine(command_line);
     MojoPlatformHandle endpoint_handle;
     PlatformHandle::ToMojoPlatformHandle(channel_endpoint.TakePlatformHandle(),
                                          &endpoint_handle);

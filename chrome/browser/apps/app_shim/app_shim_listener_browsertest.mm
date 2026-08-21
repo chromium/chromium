@@ -42,7 +42,6 @@
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/handle.h"
-#include "mojo/public/cpp/system/isolated_connection.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 // A test version of the AppShimController mojo client in chrome_main_app_mode.
@@ -135,7 +134,6 @@ class TestShimClient : public chrome::mojom::AppShim {
     return mojo::ScopedMessagePipeHandle(mojo::MessagePipeHandle(portals[1]));
   }
 
-  mojo::IsolatedConnection mojo_connection_;
   mojo::ScopedHandle secondary_ipcz_broker_;
   mojo::Receiver<chrome::mojom::AppShim> shim_receiver_{this};
   mojo::Remote<chrome::mojom::AppShimHost> host_;
