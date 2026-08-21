@@ -24,6 +24,7 @@
 #include "base/compiler_specific.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/app/llvm_profile_util.h"
 #include "chrome/common/chrome_version.h"
 
 #if defined(HELPER_EXECUTABLE)
@@ -143,6 +144,10 @@ __attribute__((used)) const char kGrossPaddingForCrbug1300598[216 * 1024] = {};
 
 __attribute__((visibility("default"))) int main(int argc, char* argv[]) {
   partition_alloc::EarlyMallocZoneRegistration();
+
+#if defined(RENDERER_HELPER_EXECUTABLE)
+  SetLLVMProfileProcessType(ProfileProcessType::kRenderer);
+#endif
 
   uint32_t exec_path_size = 0;
   int rv = _NSGetExecutablePath(NULL, &exec_path_size);

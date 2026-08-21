@@ -158,6 +158,8 @@ def _get_profile_path(args):
     profile_path = os.path.join(
       _PGO_PROFILE_DIR, _read_profile_name(args.target)
     )
+  if args.profile_type == 'renderer':
+    profile_path = profile_path.replace('.profdata', '_renderer.profdata')
   if not os.path.isfile(profile_path):
     raise RuntimeError(
       'requested profile "%s" doesn\'t exist, please make sure '
@@ -201,6 +203,12 @@ def main():
       'android-desktop-x64',
     ],
     help='Identifier of a specific target platform + architecture.',
+  )
+  parser.add_argument(
+    '--profile-type',
+    choices=['browser', 'renderer'],
+    default='browser',
+    help='Type of profile path to return (browser or renderer).',
   )
   parser.add_argument(
     '--override-filename',

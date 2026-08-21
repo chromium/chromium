@@ -11,7 +11,10 @@ import("//build/toolchain/toolchain.gni")
 
 # Configuration that enables PGO instrumentation.
 config("pgo_instrumentation_flags") {
-  visibility = [ ":default_pgo_flags" ]
+  visibility = [
+    ":default_pgo_flags",
+    ":renderer_pgo_flags",
+  ]
 
   # Only add flags when chrome_pgo_phase == 1, so that variables we would use
   # are not required to be defined when we're not actually using PGO.
@@ -48,7 +51,10 @@ config("pgo_instrumentation_flags") {
 
 # Configuration that enables optimization using profile data.
 config("pgo_optimization_flags") {
-  visibility = [ ":default_pgo_flags" ]
+  visibility = [
+    ":default_pgo_flags",
+    ":pgo_renderer_optimization_flags",
+  ]
 
   # Only add flags when chrome_pgo_phase == 2, so that variables we would use
   # are not required to be defined when we're not actually using PGO.
@@ -201,5 +207,74 @@ config("default_pgo_flags") {
     configs = [ ":pgo_instrumentation_flags" ]
   } else if (chrome_pgo_phase == 2) {
     configs = [ ":pgo_optimization_flags" ]
+  }
+}
+
+# Configuration that enables optimization using renderer profile data.
+config("pgo_renderer_optimization_flags") {
+  visibility = [ ":renderer_pgo_flags" ]
+
+  if (enable_separate_pgo && chrome_pgo_phase == 2 && is_clang &&
+      is_a_target_toolchain) {
+    configs = [ ":pgo_optimization_flags" ]
+
+    _pgo_target = ""
+
+    if (is_win) {
+      if (target_cpu == "arm64") {
+        _pgo_target = "win-arm64"
+      } else if (target_cpu == "x64") {
+        _pgo_target = "win64"
+      } else {
+        _pgo_target = "win32"
+      }
+    } else if (is_mac) {
+      if (target_cpu == "arm64") {
+        _pgo_target = "mac-arm"
+      } else {
+        _pgo_target = "mac"
+      }
+    } else if (is_linux) {
+      _pgo_target = "linux"
+    }
+
+    _renderer_pgo_path = pgo_data_path
+    if (_renderer_pgo_path == "" && _pgo_target != "") {
+      common_args = [
+        "--target",
+        _pgo_target,
+        "--profile-type",
+        "renderer",
+      ]
+      if (pgo_override_filename != "") {
+        common_args += [
+          "--override-filename",
+          pgo_override_filename,
+        ]
+      }
+      _renderer_pgo_path = exec_script("//tools/update_pgo_profiles.py",
+                                       common_args + [ "get_profile_path" ],
+                                       "value")
+    } else {
+      _renderer_pgo_path =
+          string_replace(_renderer_pgo_path, ".profdata", "_renderer.profdata")
+    }
+
+    inputs = [ _renderer_pgo_path ]
+    cflags =
+        [ "-fprofile-use=" + rebase_path(_renderer_pgo_path, root_build_dir) ]
+  }
+}
+
+# Applies target-specific flags for renderer profile-guided optimization.
+config("renderer_pgo_flags") {
+  if (!enable_separate_pgo) {
+    configs = [ ":default_pgo_flags" ]
+  } else if (chrome_pgo_phase == 0) {
+    # Nothing. This config should be a no-op when chrome_pgo_phase == 0.
+  } else if (chrome_pgo_phase == 1) {
+    configs = [ ":pgo_instrumentation_flags" ]
+  } else if (chrome_pgo_phase == 2) {
+    configs = [ ":pgo_renderer_optimization_flags" ]
   }
 }

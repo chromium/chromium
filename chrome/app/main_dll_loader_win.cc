@@ -11,6 +11,7 @@
 #include <userenv.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -38,6 +39,7 @@
 #include "base/win/shlwapi.h"
 #include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
+#include "chrome/app/llvm_profile_util.h"
 #include "chrome/browser/active_use_util.h"
 #include "chrome/chrome_elf/chrome_elf_main.h"
 #include "chrome/common/buildflags.h"
@@ -97,18 +99,22 @@ struct ModuleProperties {
 
   // The name of the main entrypoint of the module (e.g., "ChromeMain").
   base::cstring_view entrypoint_name;
+
+  // The profile type to configure for PGO, if any.
+  std::optional<ProfileProcessType> profile_type;
 };
 
 // Returns the properties for the module to be loaded in `process_type`.
 const ModuleProperties& ModulePropertiesFromProcessType(
     std::string_view process_type) {
   // Most process types load chrome.dll and run `ChromeMain`.
-  static constexpr ModuleProperties kOtherProperties = {installer::kChromeDll,
-                                                        "ChromeMain"};
+  static constexpr ModuleProperties kOtherProperties = {
+      installer::kChromeDll, "ChromeMain", std::nullopt};
 #if BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY)
   // Renderers load chrome_renderer.dll and run `ChromeRendererMain`.
   static constexpr ModuleProperties kRendererProperties = {
-      chrome::kRendererDll, "ChromeRendererMain"};
+      chrome::kRendererDll, "ChromeRendererMain",
+      ProfileProcessType::kRenderer};
   return process_type == "renderer" ? kRendererProperties : kOtherProperties;
 #else
   return kOtherProperties;
@@ -278,6 +284,10 @@ int MainDllLoader::Launch(HINSTANCE instance,
   // Determine the names of the module to load and its main entrypoint.
   const auto& module_properties =
       ModulePropertiesFromProcessType(process_type_);
+
+  if (module_properties.profile_type.has_value()) {
+    SetLLVMProfileProcessType(*module_properties.profile_type);
+  }
 
   base::FilePath file;
   dll_ = Load(&file, module_properties.module_name, cmd_line, is_browser,
