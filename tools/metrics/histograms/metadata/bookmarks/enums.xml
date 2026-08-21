@@ -154,6 +154,8 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Side panel context menu"/>
 </enum>
 
+<!-- LINT.IfChange(BookmarkManagerCommand) -->
+
 <enum name="BookmarkManagerCommand">
   <int value="0" label="Edit"/>
   <int value="1" label="Copy URL (removed)"/>
@@ -179,7 +181,11 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="Open bookmark (via double-click / enter)"/>
   <int value="22" label="Open folder (via double-click / enter)"/>
   <int value="23" label="Open in split view"/>
+  <int value="24" label="Open in new tab group"/>
+  <int value="25" label="Open in isolated window"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/bookmarks/constants.ts:Command) -->
 
 <!-- LINT.IfChange(BookmarkReorderDropTarget) -->
 

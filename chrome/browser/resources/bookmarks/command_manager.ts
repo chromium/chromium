@@ -261,6 +261,9 @@ export class BookmarksCommandManagerElement extends
       case Command.OPEN_NEW_WINDOW:
       case Command.OPEN_SPLIT_VIEW:
         return itemIds.size > 0;
+      case Command.OPEN_ISOLATED:
+        return itemIds.size > 0 &&
+            loadTimeData.getBoolean('isIsolatedModeEnabled');
       case Command.ADD_BOOKMARK:
       case Command.ADD_FOLDER:
       case Command.SORT:
@@ -301,7 +304,13 @@ export class BookmarksCommandManagerElement extends
       case Command.OPEN_INCOGNITO:
         return this.expandIds_(itemIds).length > 0 &&
             state.prefs.incognitoAvailability !==
-            IncognitoAvailability.DISABLED;
+            IncognitoAvailability.DISABLED &&
+            !loadTimeData.getBoolean('isIsolatedModeEnabled');
+      case Command.OPEN_ISOLATED:
+        return this.expandIds_(itemIds).length > 0 &&
+            state.prefs.incognitoAvailability !==
+            IncognitoAvailability.DISABLED &&
+            loadTimeData.getBoolean('isIsolatedModeEnabled');
       case Command.OPEN_SPLIT_VIEW:
         return this.expandIds_(itemIds).length === 1 &&
             !this.isActiveTabInSplit_;
@@ -415,6 +424,7 @@ export class BookmarksCommandManagerElement extends
         chrome.bookmarkManagerPrivate.redo();
         break;
       case Command.OPEN_INCOGNITO:
+      case Command.OPEN_ISOLATED:
       case Command.OPEN_NEW_TAB:
       case Command.OPEN_NEW_WINDOW:
       case Command.OPEN_SPLIT_VIEW:
@@ -547,6 +557,7 @@ export class BookmarksCommandManagerElement extends
         command === Command.OPEN || command === Command.OPEN_NEW_TAB ||
         command === Command.OPEN_NEW_WINDOW ||
         command === Command.OPEN_INCOGNITO ||
+        command === Command.OPEN_ISOLATED ||
         command === Command.OPEN_SPLIT_VIEW ||
         command === Command.OPEN_NEW_GROUP);
 
@@ -559,7 +570,8 @@ export class BookmarksCommandManagerElement extends
     }
 
     const openBookmarkIdsCallback = function() {
-      const incognito = command === Command.OPEN_INCOGNITO;
+      const incognito = command === Command.OPEN_INCOGNITO ||
+          command === Command.OPEN_ISOLATED;
       if (command === Command.OPEN_NEW_WINDOW || incognito) {
         BookmarkManagerApiProxyImpl.getInstance().openInNewWindow(
             ids, incognito);
@@ -711,6 +723,10 @@ export class BookmarksCommandManagerElement extends
         return this.getPluralizedOpenAllString_(
             'menuOpenAllIncognito', 'menuOpenIncognito',
             'menuOpenAllIncognitoWithCount');
+      case Command.OPEN_ISOLATED:
+        return this.getPluralizedOpenAllString_(
+            'menuOpenAllIsolated', 'menuOpenIsolated',
+            'menuOpenAllIsolatedWithCount');
       case Command.OPEN_NEW_GROUP:
         return this.getPluralizedOpenAllString_(
             'menuOpenAllNewTabGroup', 'menuOpenNewTabGroup',
@@ -751,6 +767,7 @@ export class BookmarksCommandManagerElement extends
           Command.COPY,
           Command.PASTE,
           Command.OPEN_INCOGNITO,
+          Command.OPEN_ISOLATED,
           Command.OPEN_NEW_GROUP,
           Command.OPEN_NEW_TAB,
           Command.OPEN_NEW_WINDOW,
@@ -770,6 +787,7 @@ export class BookmarksCommandManagerElement extends
             Command.OPEN_SPLIT_VIEW,
             Command.OPEN_NEW_GROUP,
             Command.OPEN_INCOGNITO,
+            Command.OPEN_ISOLATED,
           ];
         }
         return defaultItemTreeCommands;

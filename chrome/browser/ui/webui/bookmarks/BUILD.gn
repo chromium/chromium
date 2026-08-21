@@ -41,6 +41,7 @@ if (!is_android) {
       "//components/bookmarks/browser",
       "//components/bookmarks/common",
       "//components/bookmarks/managed",
+      "//components/enterprise/isolated_mode",
       "//components/favicon_base",
       "//components/policy/core/common",
       "//components/prefs",

@@ -27,6 +27,7 @@ suite('<bookmarks-command-manager>', function() {
     loadTimeData.overrideValues({
       splitViewEnabled: true,
       menuSimplification: false,
+      isIsolatedModeEnabled: false,
     });
 
     const bulkChildren = [];
@@ -475,6 +476,10 @@ suite('<bookmarks-command-manager>', function() {
         assertTrue(commandItem[Command.OPEN_INCOGNITO].disabled);
         assertFalse(commandItem[Command.OPEN_INCOGNITO].hidden);
 
+        assertTrue(!!commandItem[Command.OPEN_ISOLATED]);
+        assertTrue(commandItem[Command.OPEN_ISOLATED].disabled);
+        assertTrue(commandItem[Command.OPEN_ISOLATED].hidden);
+
         assertTrue(!!commandItem[Command.OPEN_SPLIT_VIEW]);
         assertTrue(commandItem[Command.OPEN_SPLIT_VIEW].disabled);
         assertFalse(commandItem[Command.OPEN_SPLIT_VIEW].hidden);
@@ -482,6 +487,28 @@ suite('<bookmarks-command-manager>', function() {
         assertTrue(!!commandItem[Command.OPEN_NEW_GROUP]);
         assertTrue(commandItem[Command.OPEN_NEW_GROUP].disabled);
         assertFalse(commandItem[Command.OPEN_NEW_GROUP].hidden);
+      });
+
+  test(
+      '"Open in Isolated Window" opens URLs in isolated window when enabled',
+      async function() {
+        loadTimeData.overrideValues({isIsolatedModeEnabled: true});
+        store.data.selection.items = new Set(['12', '13']);
+        store.notifyObservers();
+        await microtasksFinished();
+
+        assertTrue(commandManager.canExecute(
+            Command.OPEN_ISOLATED, new Set(['12', '13'])));
+        assertFalse(commandManager.canExecute(
+            Command.OPEN_INCOGNITO, new Set(['12', '13'])));
+
+        commandManager.handle(Command.OPEN_ISOLATED, new Set(['12', '13']));
+        const [ids, incognito] =
+            await bookmarkManagerProxy.whenCalled('openInNewWindow');
+        testCommandManager.assertLastCommand(
+            Command.OPEN_ISOLATED, ['12', '13']);
+        assertDeepEquals(['121', '13'], ids);
+        assertTrue(incognito);
       });
 
   test('cannot execute editing commands when editing is disabled', async () => {
