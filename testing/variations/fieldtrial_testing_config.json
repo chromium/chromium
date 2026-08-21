@@ -26553,6 +26553,7 @@
                         "WebUIBundledCodeCache",
                         "WebUIInProcessResourceLoadingV2",
                         "WebUIReloadButton",
+                        "WebUIToolbarFrameEvictionOptOut",
                         "WebiumMetricsMapping"
                     ],
                     "disable_features": [
