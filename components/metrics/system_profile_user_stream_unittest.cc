@@ -9,10 +9,13 @@
 #include <string_view>
 
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/crash/core/common/shared_memory_user_stream_reader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
+
+constexpr char kUserStreamOverflow[] = "UMA.SystemProfile.UserStreamOverflow";
 
 class SystemProfileUserStreamTest : public testing::Test {
  public:
@@ -20,6 +23,7 @@ class SystemProfileUserStreamTest : public testing::Test {
       SystemProfileUserStream::kSystemProfileSlotCapacityBytes;
 
  protected:
+  base::HistogramTester histogram_tester_;
   SystemProfileUserStream stream_;
 };
 
@@ -66,6 +70,9 @@ TEST_F(SystemProfileUserStreamTest, WritePayloadSuccess) {
       std::string_view(reinterpret_cast<const char*>(data->payload.data()),
                        data->payload.size()),
       kPayload);
+
+  histogram_tester_.ExpectUniqueSample(kUserStreamOverflow, /*sample=*/0,
+                                       /*expected_bucket_count=*/1);
 }
 
 // Ensures that attempting to write an oversized payload does not crash.
@@ -74,12 +81,17 @@ TEST_F(SystemProfileUserStreamTest, WritePayloadOverflow) {
 
   const std::string kOversizedPayload(kSystemProfileSlotCapacityBytes + 1, 'X');
   stream_.WritePayload(kOversizedPayload);
+
+  histogram_tester_.ExpectUniqueSample(kUserStreamOverflow, /*sample=*/1,
+                                       /*expected_bucket_count=*/1);
 }
 
 // Ensures that attempting to write a payload without initialization does not
 // crash.
 TEST_F(SystemProfileUserStreamTest, WritePayloadWithoutInitialization) {
   stream_.WritePayload("payload");
+
+  histogram_tester_.ExpectTotalCount(kUserStreamOverflow, 0);
 }
 
 }  // namespace

@@ -1034,6 +1034,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.SystemProfile.UserStreamOverflow" units="bytes"
+    expires_after="2027-08-17">
+  <owner>jessemckenna@google.com</owner>
+  <owner>oswierczek@google.com</owner>
+  <summary>
+    The number of bytes by which the SystemProfile size exceeds the hardcoded
+    capacity of the user stream used to share it with Crashpad. A value of zero
+    means it doesn't exceed it. It's expected that the SystemProfile varies in
+    size and might sometimes exceed the capacity, but if this starts happening
+    for a large number of clients, `kSystemProfileSlotCapacityBytes` should be
+    increased.
+  </summary>
+</histogram>
+
 <histogram name="UMA.TPMMetricsProvider.UnknownID" enum="Boolean"
     expires_after="2026-11-29">
   <owner>psarouthakis@google.com</owner>

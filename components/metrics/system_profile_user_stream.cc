@@ -9,7 +9,9 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "components/crash/core/common/shared_memory_user_stream_writer.h"
 
 namespace metrics {
@@ -19,6 +21,16 @@ namespace {
 // The stream type assigned to the minidump stream that holds the serialized
 // system profile proto.
 constexpr uint32_t kSystemProfileStreamType = 0x4B6B0003;
+
+// Records a histogram to monitor how often the system profile is too large to
+// be written to the user stream for Crashpad. If this starts to exceed zero for
+// a large number of clients, `kSystemProfileSlotCapacityBytes` should be
+// increased. See metric `UMA.ProtoSize.SystemProfile` for the actual size of
+// the system profile.
+void RecordUserStreamOverflow(size_t bytes_over) {
+  base::UmaHistogramCounts100000("UMA.SystemProfile.UserStreamOverflow",
+                                 base::saturated_cast<int>(bytes_over));
+}
 
 }  // namespace
 
@@ -62,17 +74,16 @@ void SystemProfileUserStream::WritePayload(std::string_view payload) {
     // source span is larger than the destination span. Furthermore, partially
     // written Protobufs are often considered corrupted by the Crash server and
     // may be discarded anyway.
+    RecordUserStreamOverflow(payload.size() - kSystemProfileSlotCapacityBytes);
     return;
   }
+  RecordUserStreamOverflow(0);
 
   user_stream_writer_->WriteData(
       [&payload](base::span<uint8_t> slot_span) -> std::optional<size_t> {
         slot_span.copy_prefix_from(base::as_byte_span(payload));
         return payload.size();
       });
-
-  // TODO(crbug.com/514425492): Record UMA histograms for write success
-  // and overflow.
 }
 
 }  // namespace metrics
