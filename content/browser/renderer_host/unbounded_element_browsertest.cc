@@ -997,6 +997,14 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, DynamicBoundsSync) {
 #endif
 IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
                        MAYBE_NestedChildBoundsExpansionTriggersRedraw) {
+#if BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    // TODO(crbug.com/523970924): Flaky/failing on
+    // linux-wayland-mutter-rel-tests.
+    GTEST_SKIP();
+  }
+#endif
+
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
