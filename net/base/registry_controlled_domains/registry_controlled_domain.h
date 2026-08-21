@@ -269,16 +269,10 @@ NET_EXPORT bool HostIsRegistryIdentifier(std::string_view canon_host,
 // possibility of bugs with non-canonical hosts.
 //
 // If you have a non-canonical host name, use the "Permissive" version instead.
-//
-// Returns the length of the registry, or std::string::npos if the input was
-// invalid or had no host.
-//
-// TODO(https://crbug.com/548509154): Rewrite this to return the substring, and
-// update callers.
-NET_EXPORT size_t
-GetCanonicalHostRegistryLength(std::string_view canon_host,
-                               UnknownRegistryFilter unknown_filter,
-                               PrivateRegistryFilter private_filter);
+NET_EXPORT std::optional<std::string_view> GetCanonicalHostRegistry(
+    std::string_view canon_host,
+    UnknownRegistryFilter unknown_filter,
+    PrivateRegistryFilter private_filter);
 
 // Like GetRegistry for a potentially non-canonicalized hostname.  This
 // splits the input into substrings at '.' characters, then attempts to

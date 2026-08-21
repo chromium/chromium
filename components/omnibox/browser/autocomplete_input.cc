@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/autocomplete_input.h"
 
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -389,10 +390,12 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
   // Check if the canonicalized host has a known TLD, which we'll want to know
   // below.
   const size_t registry_length =
-      net::registry_controlled_domains::GetCanonicalHostRegistryLength(
+      net::registry_controlled_domains::GetCanonicalHostRegistry(
           canonicalized_url->GetHost(),
           net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
-          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES)
+          .transform(&std::string_view::size)
+          .value_or(std::string_view::npos);
   DCHECK_NE(std::string::npos, registry_length);
   const bool has_known_tld = registry_length != 0;
 

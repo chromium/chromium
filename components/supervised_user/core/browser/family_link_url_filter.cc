@@ -34,7 +34,7 @@
 
 using net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES;
 using net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES;
-using net::registry_controlled_domains::GetCanonicalHostRegistryLength;
+using net::registry_controlled_domains::GetCanonicalHostRegistry;
 
 namespace supervised_user {
 
@@ -334,8 +334,11 @@ bool FamilyLinkUrlFilter::HostMatchesPattern(const std::string& canonical_host,
   }
 
   if (base::EndsWith(pattern, ".*", base::CompareCase::SENSITIVE)) {
-    size_t registry_length = GetCanonicalHostRegistryLength(
-        trimmed_host, EXCLUDE_UNKNOWN_REGISTRIES, EXCLUDE_PRIVATE_REGISTRIES);
+    size_t registry_length =
+        GetCanonicalHostRegistry(trimmed_host, EXCLUDE_UNKNOWN_REGISTRIES,
+                                 EXCLUDE_PRIVATE_REGISTRIES)
+            .transform(&std::string_view::size)
+            .value_or(std::string_view::npos);
     // A host without a known registry part does not match.
     if (registry_length == 0) {
       return false;

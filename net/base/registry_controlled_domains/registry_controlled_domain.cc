@@ -603,17 +603,23 @@ bool HostIsRegistryIdentifier(std::string_view canon_host,
       .is_registry_identifier;
 }
 
-size_t GetCanonicalHostRegistryLength(std::string_view canon_host,
-                                      UnknownRegistryFilter unknown_filter,
-                                      PrivateRegistryFilter private_filter) {
+std::optional<std::string_view> GetCanonicalHostRegistry(
+    std::string_view canon_host,
+    UnknownRegistryFilter unknown_filter,
+    PrivateRegistryFilter private_filter) {
 #ifndef NDEBUG
   // Ensure passed-in host name is canonical.
   url::CanonHostInfo host_info;
   DCHECK_EQ(net::CanonicalizeHost(canon_host, &host_info), canon_host);
 #endif
 
-  return GetRegistryLengthImpl(canon_host, unknown_filter, private_filter)
-      .registry_length;
+  size_t length =
+      GetRegistryLengthImpl(canon_host, unknown_filter, private_filter)
+          .registry_length;
+  if (length == std::string::npos) {
+    return std::nullopt;
+  }
+  return canon_host.substr(canon_host.length() - length);
 }
 
 size_t PermissiveGetHostRegistryLength(std::string_view host,

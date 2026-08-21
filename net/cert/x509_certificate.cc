@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -503,14 +504,14 @@ bool X509Certificate::VerifyHostname(
     // is not registry controlled, this ensures that all reference domains
     // contain at least three domain components when using wildcards.
     size_t registry_length =
-        registry_controlled_domains::GetCanonicalHostRegistryLength(
+        registry_controlled_domains::GetCanonicalHostRegistry(
             reference_name,
             registry_controlled_domains::INCLUDE_UNKNOWN_REGISTRIES,
-            registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
-
-    // Because |reference_name| was already canonicalized, the following
-    // should never happen.
-    CHECK_NE(std::string::npos, registry_length);
+            registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES)
+            .transform(&std::string_view::size)
+            // Because `reference_name` was already canonicalized, `.value()` is
+            // safe.
+            .value();
 
     // Account for the leading dot in |reference_domain|.
     bool is_registry_controlled =

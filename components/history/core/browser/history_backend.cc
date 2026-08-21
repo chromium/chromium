@@ -13,6 +13,7 @@
 #include <optional>
 #include <ranges>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -916,9 +917,11 @@ bool HistoryBackend::IsUntypedIntranetHost(const GURL& url) {
 
   const std::string host = url.GetHost();
   const size_t registry_length =
-      net::registry_controlled_domains::GetCanonicalHostRegistryLength(
+      net::registry_controlled_domains::GetCanonicalHostRegistry(
           host, net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
-          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES)
+          .transform(&std::string_view::size)
+          .value_or(std::string_view::npos);
   return (registry_length == 0) && !db_->IsTypedHost(host, /*scheme=*/nullptr);
 }
 

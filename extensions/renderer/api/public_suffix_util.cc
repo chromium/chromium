@@ -22,7 +22,7 @@ namespace extensions::api::public_suffix {
 namespace {
 
 using net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES;
-using net::registry_controlled_domains::GetCanonicalHostRegistryLength;
+using net::registry_controlled_domains::GetCanonicalHostRegistry;
 using net::registry_controlled_domains::GetDomainAndRegistry;
 using net::registry_controlled_domains::HostIsRegistryIdentifier;
 using net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES;
@@ -84,12 +84,13 @@ std::optional<std::string> GetKnownSuffix(const ParsedHostname& hostname) {
   if (hostname.is_ip_address) {
     return std::nullopt;
   }
-  const size_t registry_length = GetCanonicalHostRegistryLength(
-      hostname.value, EXCLUDE_UNKNOWN_REGISTRIES, INCLUDE_PRIVATE_REGISTRIES);
-  CHECK_NE(registry_length, std::string::npos);
+  const std::string_view registry =
+      GetCanonicalHostRegistry(hostname.value, EXCLUDE_UNKNOWN_REGISTRIES,
+                               INCLUDE_PRIVATE_REGISTRIES)
+          .value();
 
-  if (registry_length > 0) {
-    return hostname.value.substr(hostname.value.size() - registry_length);
+  if (!registry.empty()) {
+    return std::string(registry);
   }
 
   if (HostIsRegistryIdentifier(hostname.value, INCLUDE_PRIVATE_REGISTRIES)) {
