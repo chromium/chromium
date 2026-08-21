@@ -82,3 +82,15 @@ android_library("test_support_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
+
+robolectric_library("junit") {
+  sources = [ "junit/src/org/chromium/components/browser_ui/notifications/BitmapUtilsUnitTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/junit",
+  ]
+}
