@@ -82,7 +82,7 @@ const base::FeatureParam<int> kPrerender2ReuseInitiatorProcessMaxReuseCount{
     &kPrerender2ReuseInitiatorProcess, "max_reuse_count", 2};
 
 const base::FeatureParam<bool> kPrerender2CrossOriginIframesNesting{
-    &blink::features::kPrerender2CrossOriginIframes, "nesting", false};
+    &blink::features::kPrerender2CrossOriginIframes, "nesting", true};
 
 bool UsePrefetchPrerenderIntegration() {
   return base::FeatureList::IsEnabled(
