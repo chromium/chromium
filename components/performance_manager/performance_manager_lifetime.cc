@@ -104,12 +104,6 @@ void AddVoters(GraphImpl* graph, PrefService* pref_service) {
           execution_context_priority::ExtensionServiceWorkerVoter>();
     }
 
-    // Casts a USER_VISIBLE vote for all frames in a loading page.
-    if (base::FeatureList::IsEnabled(features::kPMLoadingPageVoter)) {
-      priority_voting_system
-          ->AddPriorityVoter<execution_context_priority::LoadingPageVoter>();
-    }
-
     // Casts a USER_BLOCKING vote for all the closing pages.
     if (base::FeatureList::IsEnabled(features::kBoostClosingTabs)) {
       priority_voting_system
@@ -118,6 +112,13 @@ void AddVoters(GraphImpl* graph, PrefService* pref_service) {
 
     AddForceForegroundVoter(priority_voting_system, pref_service);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+    // Casts a USER_BLOCKING vote for all frames in an active loading page,
+    // or USER_VISIBLE for background loading pages.
+    if (base::FeatureList::IsEnabled(features::kPMLoadingPageVoter)) {
+      priority_voting_system
+          ->AddPriorityVoter<execution_context_priority::LoadingPageVoter>();
+    }
 
 #if BUILDFLAG(IS_MAC)
     // Casts a vote for each child frame with the parent's priority.
