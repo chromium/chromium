@@ -284,9 +284,9 @@ class EnclaveProtocolUtilsTest : public testing::Test {
   const std::vector<uint8_t> secret_ = {6, 7, 8, 9, 0};
   std::vector<uint8_t> device_id_;
   std::vector<uint8_t> user_id_;
-  base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_{
       device::kWebAuthnEnclaveUseAuthDataFromEnclave};
+  base::test::TaskEnvironment task_environment_;
 };
 
 class EnclaveProtocolUtilsTestStripParameters

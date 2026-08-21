@@ -114,12 +114,12 @@ class WinAuthenticatorTest : public testing::Test,
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<FidoAuthenticator> authenticator_;
   std::unique_ptr<FakeWinWebAuthnApi> fake_webauthn_api_;
   base::test::TaskEnvironment task_environment;
   base::RunLoop signal_unknown_credential_run_loop_;
   base::RunLoop signal_all_accepted_credentials_run_loop_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests getting credential information for an empty allow-list request that has
