@@ -133,9 +133,7 @@ public class LayoutManagerImpl
     private TabModelSelector mTabModelSelector;
 
     private final Callback<TabModel> mCurrentTabModelObserver =
-            (tabModel) -> {
-                tabModelSwitched(tabModel.isIncognitoBranded());
-            };
+            (tabModel) -> tabModelSwitched(tabModel.isIncognitoBranded());
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
 
     // An observer for watching TabModels changes events.

@@ -168,11 +168,7 @@ public class NewTabAnimationLayoutUnitTest {
                         })
                 .when(mStaticTabSceneLayerJni)
                 .init(any());
-        doCallback(
-                        /* index= */ 0,
-                        (Long nativePointer) -> {
-                            mSceneLayer.setNativePtr(0L);
-                        })
+        doCallback(/* index= */ 0, (Long nativePointer) -> mSceneLayer.setNativePtr(0L))
                 .when(mSceneLayerJni)
                 .destroy(anyLong());
 
@@ -213,8 +209,7 @@ public class NewTabAnimationLayoutUnitTest {
         // Mock TopInsetProvider to trigger observer callback when addObserver is called
         doAnswer(
                         invocation -> {
-                            TopInsetProvider.Observer observer =
-                                    (TopInsetProvider.Observer) invocation.getArgument(0);
+                            TopInsetProvider.Observer observer = invocation.getArgument(0);
                             // Trigger the callback immediately with systemTopInset=100
                             observer.onToEdgeChange(100, true, LayoutType.BROWSING);
                             return null;
@@ -256,7 +251,7 @@ public class NewTabAnimationLayoutUnitTest {
         when(mAnimationHostView.getHeight()).thenReturn(40);
         doAnswer(
                         invocation -> {
-                            Rect rect = (Rect) invocation.getArgument(0);
+                            Rect rect = invocation.getArgument(0);
                             rect.set(0, 0, 1080, 1920);
                             return true;
                         })
@@ -482,7 +477,7 @@ public class NewTabAnimationLayoutUnitTest {
         RectF compositorRectF = new RectF(compositorRect);
         doAnswer(
                         invocation -> {
-                            RectF rectF = (RectF) invocation.getArgument(0);
+                            RectF rectF = invocation.getArgument(0);
                             rectF.set(compositorRectF);
                             return null;
                         })
@@ -544,7 +539,7 @@ public class NewTabAnimationLayoutUnitTest {
         RectF compositorRectF = new RectF(compositorRect);
         doAnswer(
                         invocation -> {
-                            RectF rectF = (RectF) invocation.getArgument(0);
+                            RectF rectF = invocation.getArgument(0);
                             rectF.set(compositorRectF);
                             return null;
                         })
@@ -600,7 +595,7 @@ public class NewTabAnimationLayoutUnitTest {
         RectF compositorRectF = new RectF(compositorRect);
         doAnswer(
                         invocation -> {
-                            RectF rectF = (RectF) invocation.getArgument(0);
+                            RectF rectF = invocation.getArgument(0);
                             rectF.set(compositorRectF);
                             return null;
                         })
@@ -659,7 +654,7 @@ public class NewTabAnimationLayoutUnitTest {
         RectF compositorRectF = new RectF(compositorRect);
         doAnswer(
                         invocation -> {
-                            RectF rectF = (RectF) invocation.getArgument(0);
+                            RectF rectF = invocation.getArgument(0);
                             rectF.set(compositorRectF);
                             return null;
                         })
@@ -722,7 +717,7 @@ public class NewTabAnimationLayoutUnitTest {
         RectF compositorRectF = new RectF(compositorRect);
         doAnswer(
                         invocation -> {
-                            RectF rectF = (RectF) invocation.getArgument(0);
+                            RectF rectF = invocation.getArgument(0);
                             rectF.set(compositorRectF);
                             return null;
                         })
@@ -785,7 +780,7 @@ public class NewTabAnimationLayoutUnitTest {
         RectF compositorRectF = new RectF(compositorRect);
         doAnswer(
                         invocation -> {
-                            RectF rectF = (RectF) invocation.getArgument(0);
+                            RectF rectF = invocation.getArgument(0);
                             rectF.set(compositorRectF);
                             return null;
                         })
@@ -857,7 +852,7 @@ public class NewTabAnimationLayoutUnitTest {
         RectF compositorRectF = new RectF(compositorRect);
         doAnswer(
                         invocation -> {
-                            RectF rectF = (RectF) invocation.getArgument(0);
+                            RectF rectF = invocation.getArgument(0);
                             rectF.set(compositorRectF);
                             return null;
                         })
@@ -929,7 +924,7 @@ public class NewTabAnimationLayoutUnitTest {
         RectF compositorRectF = new RectF(compositorRect);
         doAnswer(
                         invocation -> {
-                            RectF rectF = (RectF) invocation.getArgument(0);
+                            RectF rectF = invocation.getArgument(0);
                             rectF.set(compositorRectF);
                             return null;
                         })
@@ -1015,7 +1010,7 @@ public class NewTabAnimationLayoutUnitTest {
         RectF compositorRectF = new RectF(compositorRect);
         doAnswer(
                         invocation -> {
-                            RectF rectF = (RectF) invocation.getArgument(0);
+                            RectF rectF = invocation.getArgument(0);
                             rectF.set(compositorRectF);
                             return null;
                         })

@@ -234,7 +234,7 @@ public class LayoutManagerChromeUnitTest {
     @Test
     public void testWillAddedTabBeSelected() {
         LayoutManagerChrome layoutManagerChrome = createLayoutManagerChromeSpy();
-        doReturn(mTabModelSelector).when(layoutManagerChrome).getTabModelSelector();
+        when(layoutManagerChrome.getTabModelSelector()).thenReturn(mTabModelSelector);
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
 
         LayoutManagerImpl.LayoutManagerTabModelObserver observer =
