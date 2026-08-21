@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<meta name="flags" content="ahem">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+<style>
+#outer {
+  width:160px;
+}
+
+#target {
+  max-content-sizing: shrink-to-fit;
+  font: 20px/1 Ahem;
+  width: fit-content;
+}
+</style>
+
+<div id="outer">
+<div id="target">abc defgh</div>
+</div>
+
+<script>
+promise_test(async () => {
+  await document.fonts.ready;
+  const target = document.querySelector('#target');
+  // Fit to the line "defgh".
+  assert_equals(target.offsetWidth, 20 * 5);
+}, 'The target width should be shrunk');
+</script>
