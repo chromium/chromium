@@ -9368,3 +9368,6 @@ crbug.com/547617167 [ Linux ] external/wpt/webdriver/tests/classic/perform_actio
 crbug.com/547617167 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/pointer_mouse.py [ Failure Timeout ]
 crbug.com/547617167 external/wpt/webdriver/tests/classic/perform_actions/pointer_touch.py [ Failure Timeout ]
 crbug.com/547617167 [ Linux ] external/wpt/webdriver/tests/classic/print/printcmd.py [ Failure Timeout ]
+
+# Gardener 2026-08-21
+crbug.com/550002440 http/tests/devtools/extensions/extensions-sidebar.js [ Failure Pass ]
