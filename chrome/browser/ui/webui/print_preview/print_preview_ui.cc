@@ -722,7 +722,10 @@ void PrintPreviewUI::OnCompositeToPdfDone(
     return;
   }
 
-  if (pages_per_sheet_ == 1) {
+  // For non-modifiable content (PDF), N-up conversion has already been handled
+  // in the renderer by PDFiumPrint. Thus, only modifiable content needs N-up
+  // conversion here.
+  if (pages_per_sheet_ == 1 || !IsSourceModifiable(web_ui())) {
     NotifyUIPreviewDocumentReady(
         request_id,
         base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(region));
