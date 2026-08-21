@@ -38,6 +38,7 @@
 #ifndef NET_THIRD_PARTY_MOZILLA_SECURITY_MANAGER_NSPKCS12BLOB_H_
 #define NET_THIRD_PARTY_MOZILLA_SECURITY_MANAGER_NSPKCS12BLOB_H_
 
+#include <pkcs12t.h>
 #include <stddef.h>
 
 #include <string>
@@ -54,15 +55,18 @@ namespace mozilla_security_manager {
 void EnsurePKCS12Init();
 
 // Import the private key and certificate from a PKCS#12 blob into the slot.
-// If |is_extractable| is false, mark the private key as non-extractable.
-// Returns a net error code.  |imported_certs|, if non-NULL, returns a list of
-// certs that were imported.
-int nsPKCS12Blob_Import(PK11SlotInfo* slot,
-                        const char* pkcs12_data,
-                        size_t pkcs12_len,
-                        const std::u16string& password,
-                        bool is_extractable,
-                        net::ScopedCERTCertificateList* imported_certs);
+// If `is_extractable` is false, mark the private key as non-extractable.
+// Returns a net error code. `token_cas` specifies whether CA certificates are
+// imported to `slot` or the default slot. `imported_certs_with_keys`, if not
+// nullptr, returns a list of imported certs that had keys in the input.
+int nsPKCS12Blob_Import(
+    PK11SlotInfo* slot,
+    SECPKCS12TargetTokenCAs token_cas,
+    const char* pkcs12_data,
+    size_t pkcs12_len,
+    const std::u16string& password,
+    bool is_extractable,
+    net::ScopedCERTCertificateList* imported_certs_with_keys);
 
 // Export the given certificates into a PKCS#12 blob, storing into output.
 // Returns the number of certificates exported.

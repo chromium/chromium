@@ -292,22 +292,22 @@ class ClientCertSourceWritableUnitTest
       return {};
     }
 
-    net::ScopedCERTCertificateList imported_certs;
-    int r = nss_db->ImportFromPKCS12(slot.get(), std::move(p12_file_data),
-                                     base::UTF8ToUTF16(password),
-                                     /*is_extractable=*/true, &imported_certs);
+    net::ScopedCERTCertificateList imported_certs_with_keys;
+    int r = nss_db->ImportFromPKCS12(
+        slot.get(), std::move(p12_file_data), base::UTF8ToUTF16(password),
+        /*is_extractable=*/true, &imported_certs_with_keys);
     if (r != net::OK) {
       ADD_FAILURE() << "NSS import result " << r;
       return {};
     }
-    if (imported_certs.size() != 1) {
-      ADD_FAILURE() << "NSS imported " << imported_certs.size()
-                    << " certs, expected 1";
+    if (imported_certs_with_keys.size() != 1) {
+      ADD_FAILURE() << "NSS imported " << imported_certs_with_keys.size()
+                    << " certs with keys, expected 1";
       return {};
     }
 
-    return HexHash(
-        net::x509_util::CERTCertificateAsSpan(imported_certs[0].get()));
+    return HexHash(net::x509_util::CERTCertificateAsSpan(
+        imported_certs_with_keys[0].get()));
   }
 
   std::string ImportToUserSlotForTesting(base::FilePath file_path,

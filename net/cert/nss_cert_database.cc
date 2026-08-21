@@ -188,10 +188,53 @@ int NSSCertDatabase::ImportFromPKCS12(
     const std::string& data,
     const std::u16string& password,
     bool is_extractable,
-    ScopedCERTCertificateList* imported_certs) {
-  int result =
-      psm::nsPKCS12Blob_Import(slot_info, data.data(), data.size(), password,
-                               is_extractable, imported_certs);
+    ScopedCERTCertificateList* imported_certs_with_keys) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  // A PKCS #12 blob contains any number of keys and certificates. Some
+  // certificates are not associated with a key in the blob. These are typically
+  // meant to be sent by the client as intermediate CA certificates.
+  //
+  // NSS will always import the keys and leaf certificate to `slot_info`, but
+  // the CA certificates may either go to `slot_info` or the hard-coded default
+  // token. The latter would cause unit tests to persist state. They should all
+  // go to `slot_info`.
+  SECPKCS12TargetTokenCAs token_cas = SECPKCS12TargetTokenAllCAs;
+#else
+  // On ChromeOS, several bugs/quirks conspire to make the Linux behavior
+  // undesirable.
+  //
+  // Originally, this code used NSS's defaults, which was
+  // `SECPKCS12TargetTokenNoCAs`. Despite the name, this means that CA
+  // certificates are imported to the default slot, instead of `slot_info`.
+  // However, on ChromeOS, the default slot is read-only and unwritable.
+  // Importing them fails, but then NSS discards the error. Thus the original
+  // behavior was not to import the CA certificates, but discard them.
+  //
+  // While importing would be desirable in principle, ChromeOS is migrating off
+  // of NSS, with client certificate storage migrating to Kcer (see
+  // crbug.com/264392421). Kcer does not store CA certificates either and skips
+  // them when importing PKCS #12 files.
+  //
+  // If we were to import these certificates on ChromeOS, we would need to
+  // import them as untrusted intermediates in the ServerCertificateDatabase.
+  // Despite the name, its intermediates that are consulted by the
+  // ClientCertStore during lookup. See https://crrev.com/c/6023868.
+  // (Alternatively, we could store them somewhere separate, if we do not want
+  // these imports to impact server certificate verification.)
+  //
+  // NSS's PKCS #12 APIs make this difficult, but this is moot because this
+  // codepath should ultimately be removed on ChromeOS. Instead, any importing
+  // should be added to the Kcer codepath. In the meantime, we preserve the
+  // original `SECPKCS12TargetTokenNoCAs` setting, which actually discards the
+  // intermediates, but for very non-obvious reasons.
+  //
+  // TODO(crbug.com/264392421): Remove all calls to this function on Chrome OS,
+  // so this confusing reliance on a read-only default store can be removed.
+  SECPKCS12TargetTokenCAs token_cas = SECPKCS12TargetTokenNoCAs;
+#endif
+  int result = psm::nsPKCS12Blob_Import(slot_info, token_cas, data.data(),
+                                        data.size(), password, is_extractable,
+                                        imported_certs_with_keys);
   if (result == OK) {
     NotifyObserversClientCertStoreChanged();
   }

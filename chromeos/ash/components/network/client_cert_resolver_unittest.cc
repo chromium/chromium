@@ -429,13 +429,14 @@ class ClientCertResolverTest : public testing::Test,
           base::BindOnce(&OnImportCompleted, import_loop.QuitClosure()));
       import_loop.Run();
     } else if (onc_source == ::onc::ONC_SOURCE_DEVICE_POLICY) {
-      net::ScopedCERTCertificateList imported_certs;
+      net::ScopedCERTCertificateList imported_certs_with_keys;
       int import_result = test_system_nsscertdb_->ImportFromPKCS12(
           test_system_nsscertdb_->GetSystemSlot().get(),
           certs->client_certificates().front().pkcs12_data(),
-          /*password=*/u"", /*is_extractable=*/false, &imported_certs);
+          /*password=*/u"", /*is_extractable=*/false,
+          &imported_certs_with_keys);
       EXPECT_EQ(import_result, net::OK);
-      EXPECT_EQ(imported_certs.size(), 1u);
+      EXPECT_EQ(imported_certs_with_keys.size(), 1u);
     } else {
       ADD_FAILURE() << "Unexpected ONC source";
     }

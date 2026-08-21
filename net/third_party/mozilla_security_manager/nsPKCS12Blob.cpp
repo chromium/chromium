@@ -37,9 +37,12 @@
 
 #include "net/third_party/mozilla_security_manager/nsPKCS12Blob.h"
 
+#include <cert.h>
+#include <p12plcy.h>
 #include <pk11pub.h>
 #include <pkcs12.h>
-#include <p12plcy.h>
+#include <prtypes.h>
+#include <seccomon.h>
 #include <secerr.h>
 
 #include "base/lazy_instance.h"
@@ -77,6 +80,43 @@ void unicodeToItem(const char16_t* uni, SECItem* item) {
 void write_export_data(void* arg, const char* buf, unsigned long len) {
   std::string* dest = reinterpret_cast<std::string*>(arg);
   dest->append(buf, len);
+}
+
+// Assigns nicknames to every certificate. `nickname_collision`, below, will
+// only be called for leaf certificates. Without this callback, CA certificates
+// will get imported without a nickname if `token_ca` is
+// `SECPKCS12TargetTokenAllCAs`. (If it is `SECPKCS12TargetTokenNoCAs`, CA
+// certificates get imported through `CERT_ImportCerts` instead of
+// `PK11_ImportCert`, and `CERT_ImportCerts` automatically assigns a default
+// nickname of `CERT_MakeCANickname`.)
+SECStatus PR_CALLBACK assign_nicknames(const CERTCertificate* cert,
+                                       const SECItem* default_nickname,
+                                       SECItem** new_nickname,
+                                       void* /*arg*/) {
+  *new_nickname = nullptr;
+
+  // Don't override the nickname provided in the file.
+  if (default_nickname) {
+    return SECSuccess;
+  }
+
+  VLOG(1) << "no nickname for cert in PKCS12 file.";
+
+  char* nick = CERT_MakeCANickname(const_cast<CERTCertificate*>(cert));
+  if (!nick) {
+    // This should only happen on allocation error inside NSS.
+    return SECFailure;
+  }
+
+  *new_nickname = PORT_ZNew(SECItem);
+  if (!*new_nickname) {
+    PORT_Free(nick);
+    return SECFailure;
+  }
+
+  (*new_nickname)->data = reinterpret_cast<unsigned char*>(nick);
+  (*new_nickname)->len = PORT_Strlen(nick);
+  return SECSuccess;
 }
 
 // nickname_collision
@@ -143,13 +183,15 @@ pip_ucs2_ascii_conversion_fn(PRBool toUnicode,
 }
 
 // Based on nsPKCS12Blob::ImportFromFileHelper.
-int nsPKCS12Blob_ImportHelper(const char* pkcs12_data,
-                              size_t pkcs12_len,
-                              const std::u16string& password,
-                              bool is_extractable,
-                              bool try_zero_length_secitem,
-                              PK11SlotInfo* slot,
-                              net::ScopedCERTCertificateList* imported_certs) {
+int nsPKCS12Blob_ImportHelper(
+    const char* pkcs12_data,
+    size_t pkcs12_len,
+    const std::u16string& password,
+    bool is_extractable,
+    bool try_zero_length_secitem,
+    PK11SlotInfo* slot,
+    SECPKCS12TargetTokenCAs token_cas,
+    net::ScopedCERTCertificateList* imported_certs_with_keys) {
   DCHECK(pkcs12_data);
   DCHECK(slot);
   int import_result = net::ERR_PKCS12_IMPORT_FAILED;
@@ -178,6 +220,7 @@ int nsPKCS12Blob_ImportHelper(const char* pkcs12_data,
     srv = SECFailure;
     goto finish;
   }
+  SEC_PKCS12DecoderSetTargetTokenCAs(dcx, token_cas);
   // feed input to the decoder
   srv = SEC_PKCS12DecoderUpdate(dcx,
                                 (unsigned char*)pkcs12_data,
@@ -186,6 +229,10 @@ int nsPKCS12Blob_ImportHelper(const char* pkcs12_data,
   // verify the blob
   srv = SEC_PKCS12DecoderVerify(dcx);
   if (srv) goto finish;
+  srv = SEC_PKCS12DecoderRenameCertNicknames(dcx, assign_nicknames, nullptr);
+  if (srv) {
+    goto finish;
+  }
   // validate bags
   srv = SEC_PKCS12DecoderValidateBags(dcx, nickname_collision);
   if (srv) goto finish;
@@ -199,8 +246,9 @@ int nsPKCS12Blob_ImportHelper(const char* pkcs12_data,
   srv = SEC_PKCS12DecoderIterateInit(dcx);
   if (srv) goto finish;
 
-  if (imported_certs)
-    imported_certs->clear();
+  if (imported_certs_with_keys) {
+    imported_certs_with_keys->clear();
+  }
 
   // Collect the list of decoded certificates, and mark private keys
   // non-extractable if needed.
@@ -239,8 +287,9 @@ int nsPKCS12Blob_ImportHelper(const char* pkcs12_data,
     }
 
     // Add the cert to the list
-    if (imported_certs)
-      imported_certs->push_back(std::move(cert));
+    if (decoder_item->hasKey && imported_certs_with_keys) {
+      imported_certs_with_keys->push_back(std::move(cert));
+    }
 
     if (srv) goto finish;
   }
@@ -337,15 +386,17 @@ void EnsurePKCS12Init() {
 }
 
 // Based on nsPKCS12Blob::ImportFromFile.
-int nsPKCS12Blob_Import(PK11SlotInfo* slot,
-                        const char* pkcs12_data,
-                        size_t pkcs12_len,
-                        const std::u16string& password,
-                        bool is_extractable,
-                        net::ScopedCERTCertificateList* imported_certs) {
+int nsPKCS12Blob_Import(
+    PK11SlotInfo* slot,
+    SECPKCS12TargetTokenCAs token_cas,
+    const char* pkcs12_data,
+    size_t pkcs12_len,
+    const std::u16string& password,
+    bool is_extractable,
+    net::ScopedCERTCertificateList* imported_certs_with_keys) {
   int rv = nsPKCS12Blob_ImportHelper(pkcs12_data, pkcs12_len, password,
-                                     is_extractable, false, slot,
-                                     imported_certs);
+                                     is_extractable, false, slot, token_cas,
+                                     imported_certs_with_keys);
 
   // When the user entered a zero length password:
   //   An empty password should be represented as an empty
@@ -359,7 +410,8 @@ int nsPKCS12Blob_Import(PK11SlotInfo* slot,
        rv == net::ERR_PKCS12_IMPORT_INVALID_MAC) &&
       password.empty()) {
     rv = nsPKCS12Blob_ImportHelper(pkcs12_data, pkcs12_len, password,
-                                   is_extractable, true, slot, imported_certs);
+                                   is_extractable, true, slot, token_cas,
+                                   imported_certs_with_keys);
   }
   return rv;
 }

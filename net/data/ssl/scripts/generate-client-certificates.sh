@@ -33,7 +33,7 @@ try rm -rf out
 try mkdir out
 
 echo Create the serial number files and indices.
-serial=1000
+serial=2000
 for i in B C E
 do
   try /bin/sh -c "echo $serial > out/$i-serial"

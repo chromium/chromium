@@ -148,13 +148,16 @@ class NET_EXPORT NSSCertDatabase {
   // If |is_extractable| is false, mark the private key as being unextractable
   // from the module.
   // Returns OK or a network error code such as ERR_PKCS12_IMPORT_BAD_PASSWORD
-  // or ERR_PKCS12_IMPORT_ERROR. |imported_certs|, if non-NULL, returns a list
-  // of certs that were imported.
+  // or ERR_PKCS12_IMPORT_ERROR. |imported_certs_with_keys|, if non-NULL,
+  // returns a list of certs with matching keys that were imported. Typically
+  // there will only be one such certificate, though PKCS #12 is a general
+  // format so this is not guaranteed. Note some certificates (e.g. intermediate
+  // CAs) may be imported that do not have keys in the input.
   int ImportFromPKCS12(PK11SlotInfo* slot_info,
                        const std::string& data,
                        const std::u16string& password,
                        bool is_extractable,
-                       ScopedCERTCertificateList* imported_certs);
+                       ScopedCERTCertificateList* imported_certs_with_keys);
 
   // Export the given certificates and private keys into a PKCS #12 blob,
   // storing into |output|.

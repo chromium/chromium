@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "net/base/features.h"
@@ -365,6 +366,40 @@ TEST_F(CertDatabaseNSSTest, ImportFromPKCS12NullPassword) {
                                            true,  // is_extractable
                                            nullptr));
   EXPECT_EQ(1U, ListCerts().size());
+}
+
+TEST_F(CertDatabaseNSSTest, ImportFromPKCS12WithIntermediates) {
+  // client_1.p12 contains a leaf, intermediate, and root certificate.
+  std::string pkcs12_data = ReadTestFile("client_1.p12");
+  EXPECT_EQ(OK,
+            cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data, u"chrome",
+                                       true,  // is_extractable
+                                       nullptr));
+  std::vector<std::string> nicknames;
+  for (const auto& cert : ListCerts()) {
+    nicknames.emplace_back(cert->nickname);
+  }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // All certificates should have been imported and assigned nicknames. Check
+  // for prefixes because NSS will add suffixes like " #2" if other certificates
+  // with these nicknames are already in the store. In particular, dev or CI
+  // machines may have copies of some of these certs either due to
+  // https://crbug.com/546859830, or from local testing.
+  EXPECT_THAT(nicknames, testing::UnorderedElementsAre(
+                             testing::StartsWith("Test DB:Client Cert A"),
+                             testing::StartsWith("Test DB:B CA"),
+                             testing::StartsWith("Test DB:C Root CA")));
+#else
+  // On ChromeOS, only the leaf certificate gets imported. See the comment in
+  // NSSCertDatabase::ImportFromPKCS12.
+  EXPECT_THAT(nicknames, testing::UnorderedElementsAre(
+                             testing::StartsWith("Test DB:Client Cert A")));
+#endif
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, observer_->client_cert_store_changes());
+  EXPECT_EQ(0, observer_->trust_store_changes());
 }
 
 TEST_F(CertDatabaseNSSTest, ImportCACert_SSLTrust) {

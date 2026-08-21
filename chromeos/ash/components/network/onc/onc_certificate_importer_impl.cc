@@ -97,11 +97,10 @@ bool CertificateImporterImpl::StoreClientCertificate(
   if (!private_slot)
     return false;
 
-  net::ScopedCERTCertificateList imported_certs;
-
-  int import_result =
-      nssdb->ImportFromPKCS12(private_slot.get(), certificate.pkcs12_data(),
-                              std::u16string(), false, &imported_certs);
+  net::ScopedCERTCertificateList imported_certs_with_keys;
+  int import_result = nssdb->ImportFromPKCS12(
+      private_slot.get(), certificate.pkcs12_data(), std::u16string(), false,
+      &imported_certs_with_keys);
   if (import_result != net::OK) {
     std::string error_string = net::ErrorToString(import_result);
     NET_LOG(ERROR) << "Unable to import client certificate with guid: "
@@ -109,20 +108,20 @@ bool CertificateImporterImpl::StoreClientCertificate(
     return false;
   }
 
-  if (imported_certs.size() == 0) {
+  if (imported_certs_with_keys.size() == 0) {
     NET_LOG(ERROR)
         << "PKCS12 data contains no importable certificates for guid: "
         << certificate.guid();
     return true;
   }
 
-  if (imported_certs.size() != 1) {
+  if (imported_certs_with_keys.size() != 1) {
     NET_LOG(ERROR) << "PKCS12 data for guid: " << certificate.guid()
-                   << " contains more than one certificate."
+                   << " contains more than one certificate with key."
                    << " Only the first one will be imported.";
   }
 
-  CERTCertificate* cert_result = imported_certs[0].get();
+  CERTCertificate* cert_result = imported_certs_with_keys[0].get();
 
   // Find the private key associated with this certificate, and set the
   // nickname on it. This is used by |ClientCertResolver| as a handle to resolve
