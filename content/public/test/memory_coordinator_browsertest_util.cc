@@ -19,15 +19,9 @@ ScopedMemoryLimitOverride::~ScopedMemoryLimitOverride() {
 }
 
 void ScopedMemoryLimitOverride::SetLimit(int percentage) {
-  if (!limit_.has_value()) {
-    BrowserMemoryCoordinator::Get()
-        .policy_manager_for_testing()
-        .AddMemoryLimitOverrideForTesting(consumer_id_, percentage);
-  } else {
-    BrowserMemoryCoordinator::Get()
-        .policy_manager_for_testing()
-        .UpdateMemoryLimitOverrideForTesting(consumer_id_, percentage);
-  }
+  BrowserMemoryCoordinator::Get()
+      .policy_manager_for_testing()
+      .SetMemoryLimitOverride(consumer_id_, percentage);
   limit_ = percentage;
 }
 
@@ -35,7 +29,7 @@ void ScopedMemoryLimitOverride::ClearLimit() {
   if (limit_.has_value()) {
     BrowserMemoryCoordinator::Get()
         .policy_manager_for_testing()
-        .ClearMemoryLimitOverrideForTesting(consumer_id_);
+        .ClearMemoryLimitOverride(consumer_id_);
     limit_.reset();
   }
 }

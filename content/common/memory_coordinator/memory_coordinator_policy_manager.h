@@ -120,20 +120,15 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
                        std::optional<int> percentage,
                        bool release_memory);
 
-  // Testing utilities ---------------------------------------------------------
+  // Override utilities --------------------------------------------------------
 
-  // Adds a memory limit override for the consumer with the given ID.
+  // Sets or updates a memory limit override for the consumer with the given ID.
   // This override takes precedence over any limits calculated by policies.
-  // Fails a CHECK if an override already exists for this consumer.
-  void AddMemoryLimitOverrideForTesting(uint32_t consumer_id, int percentage);
-
-  // Updates an existing memory limit override for the consumer with the given
-  // ID. Fails a CHECK if an override does not exist for this consumer.
-  void UpdateMemoryLimitOverrideForTesting(uint32_t consumer_id,
-                                           int percentage);
+  void SetMemoryLimitOverride(uint32_t consumer_id, int percentage);
 
   // Clears the memory limit override for the consumer with the given ID.
-  void ClearMemoryLimitOverrideForTesting(uint32_t consumer_id);
+  // Fails a CHECK if an override does not exist for this consumer.
+  void ClearMemoryLimitOverride(uint32_t consumer_id);
 
   // Simulates a memory release request for the consumer with the given ID.
   void NotifyReleaseMemoryForTesting(uint32_t consumer_id);
@@ -155,10 +150,9 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
     base::MemoryConsumerTraits traits() const { return traits_; }
     int current_limit() const { return current_limit_; }
 
-    // Sets a memory limit override for testing. Returns the new effective
-    // limit if it changed.
-    std::optional<int> SetOverrideLimitForTesting(
-        std::optional<int> percentage);
+    // Sets a memory limit override. Returns the new effective limit if it
+    // changed.
+    std::optional<int> SetOverrideLimit(std::optional<int> percentage);
 
    private:
     int RecomputeMemoryLimit() const;
@@ -172,7 +166,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
     // The last memory limit that was applied to this group.
     int current_limit_ = base::MemoryConsumer::kDefaultMemoryLimit;
 
-    // The memory limit override set for testing.
+    // The memory limit override.
     std::optional<int> override_limit_;
   };
 
@@ -194,7 +188,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
 
   // Applies the memory limit override to all registered consumers with the
   // given ID.
-  void ApplyMemoryLimitOverrideForTesting(uint32_t consumer_id, int percentage);
+  void ApplyMemoryLimitOverride(uint32_t consumer_id, int percentage);
 
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
   base::ObserverList<DiagnosticObserver> diagnostic_observers_;

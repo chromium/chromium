@@ -39,6 +39,14 @@ class MockChildCoordinator : public mojom::ChildMemoryCoordinator {
               UpdateConsumers,
               (std::vector<MemoryConsumerUpdate> updates),
               (override));
+  MOCK_METHOD(void,
+              SetOverrideLimit,
+              (uint32_t consumer_id, int32_t percentage),
+              (override));
+  MOCK_METHOD(void,
+              ClearOverrideLimit,
+              (uint32_t consumer_id, int32_t policy_limit),
+              (override));
   MOCK_METHOD(
       void,
       EnableDiagnosticsReporting,

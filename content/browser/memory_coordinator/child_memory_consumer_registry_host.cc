@@ -79,9 +79,6 @@ ChildMemoryConsumerRegistryHost::ChildMemoryConsumerRegistryHost(
       disconnect_handler_(std::move(disconnect_handler)) {
   CHECK(disconnect_handler_);
 
-  controller_->AddMemoryConsumerGroupHost(process_type_, child_process_id_,
-                                          this);
-
   // The use of Unretained is safe here because `this` owns the receiver and
   // will always outlive it.
   receiver_.set_disconnect_handler(
@@ -104,7 +101,9 @@ ChildMemoryConsumerRegistryHost::~ChildMemoryConsumerRegistryHost() {
   for (const auto& consumer_id : consumers_) {
     controller_->OnConsumerGroupRemoved(consumer_id, child_process_id_);
   }
-  controller_->RemoveMemoryConsumerGroupHost(child_process_id_);
+  if (registered_with_controller_) {
+    controller_->RemoveMemoryConsumerGroupHost(child_process_id_);
+  }
 }
 
 void ChildMemoryConsumerRegistryHost::BindCoordinator(
@@ -119,6 +118,14 @@ void ChildMemoryConsumerRegistryHost::BindCoordinator(
   coordinator_remote_.set_disconnect_handler(
       base::BindOnce(&ChildMemoryConsumerRegistryHost::RunDisconnectHandler,
                      base::Unretained(this)));
+
+  // Register with the controller now that the Mojo remote is bound.
+  // This ensures that the manager can immediately propagate any pending
+  // overrides to the child process without racing with Mojo binding.
+  CHECK(!registered_with_controller_);
+  controller_->AddMemoryConsumerGroupHost(process_type_, child_process_id_,
+                                          this);
+  registered_with_controller_ = true;
 
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
   // If diagnostics were enabled before BindCoordinator, now we can bind the
@@ -198,6 +205,16 @@ void ChildMemoryConsumerRegistryHost::Unregister(uint32_t consumer_id) {
 void ChildMemoryConsumerRegistryHost::UpdateConsumers(
     std::vector<MemoryConsumerUpdate> updates) {
   coordinator_remote_->UpdateConsumers(std::move(updates));
+}
+
+void ChildMemoryConsumerRegistryHost::SetOverrideLimit(uint32_t consumer_id,
+                                                       int percentage) {
+  coordinator_remote_->SetOverrideLimit(consumer_id, percentage);
+}
+
+void ChildMemoryConsumerRegistryHost::ClearOverrideLimit(uint32_t consumer_id,
+                                                         int policy_limit) {
+  coordinator_remote_->ClearOverrideLimit(consumer_id, policy_limit);
 }
 
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)

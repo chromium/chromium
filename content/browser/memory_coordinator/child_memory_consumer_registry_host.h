@@ -72,6 +72,8 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistryHost
 
   // MemoryConsumerGroupHost:
   void UpdateConsumers(std::vector<MemoryConsumerUpdate> updates) override;
+  void SetOverrideLimit(uint32_t consumer_id, int percentage) override;
+  void ClearOverrideLimit(uint32_t consumer_id, int policy_limit) override;
 
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
   // mojom::MemoryCoordinatorDiagnosticsHost:
@@ -112,6 +114,13 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistryHost
   mojo::Receiver<mojom::MemoryCoordinatorDiagnosticsHost>
       diagnostics_host_receiver_{this};
 #endif
+
+  // Tracks whether this host has been registered with the controller.
+  // Registration is delayed until BindCoordinator is called to ensure the
+  // Mojo remote is bound before the manager propagates any initial overrides.
+  // We must track this to avoid calling RemoveMemoryConsumerGroupHost in the
+  // destructor if registration never happened.
+  bool registered_with_controller_ = false;
 
   // Handles a disconnection with the child process.
   base::OnceClosure disconnect_handler_;

@@ -20,6 +20,12 @@ interface ChildMemoryCoordinator {
   // Notifies of multiple changes at once.
   UpdateConsumers(array<MemoryConsumerUpdate> updates);
 
+  // Sets an override that bypasses local policies in the child process.
+  SetOverrideLimit(uint32 consumer_id, int32 percentage);
+
+  // Clears an override in the child process.
+  ClearOverrideLimit(uint32 consumer_id, int32 policy_limit);
+
   // Enables diagnostics for this process. The child process should use the host
   // to report state changes.
   [EnableIf=ENABLE_MEMORY_COORDINATOR_INTERNALS]

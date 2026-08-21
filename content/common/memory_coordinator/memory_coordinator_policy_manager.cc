@@ -59,8 +59,7 @@ MemoryCoordinatorPolicyManager::GroupState::SetMemoryLimitForPolicy(
   return new_limit;
 }
 
-std::optional<int>
-MemoryCoordinatorPolicyManager::GroupState::SetOverrideLimitForTesting(
+std::optional<int> MemoryCoordinatorPolicyManager::GroupState::SetOverrideLimit(
     std::optional<int> percentage) {
   if (override_limit_ == percentage) {
     return std::nullopt;
@@ -189,6 +188,10 @@ void MemoryCoordinatorPolicyManager::AddMemoryConsumerGroupHost(
   auto [_, inserted] = hosts_.try_emplace(
       child_process_id, std::make_unique<HostState>(host, process_type));
   CHECK(inserted);
+
+  for (auto const& [consumer_id, percentage] : memory_limit_overrides_) {
+    host->SetOverrideLimit(consumer_id, percentage);
+  }
 }
 
 void MemoryCoordinatorPolicyManager::RemoveMemoryConsumerGroupHost(
@@ -204,7 +207,7 @@ void MemoryCoordinatorPolicyManager::OnConsumerGroupAdded(
     ChildProcessId child_process_id) {
   HostState& host_state = GetHostState(child_process_id);
 
-  auto [_, inserted] = host_state.groups.try_emplace(
+  auto [group_it, inserted] = host_state.groups.try_emplace(
       consumer_id, std::make_unique<GroupState>(consumer_name, traits));
   CHECK(inserted);
 
@@ -212,10 +215,13 @@ void MemoryCoordinatorPolicyManager::OnConsumerGroupAdded(
   // registration.
   auto it = memory_limit_overrides_.find(consumer_id);
   if (it != memory_limit_overrides_.end()) {
-    auto& group_state = host_state.groups[consumer_id];
-    if (std::optional<int> new_limit =
-            group_state->SetOverrideLimitForTesting(it->second)) {
-      host_state.host->UpdateConsumers({{consumer_id, *new_limit, false}});
+    group_it->second->SetOverrideLimit(it->second);
+
+    // Out-of-process child hosts already received the override during
+    // AddMemoryConsumerGroupHost. Only in-process hosts need direct
+    // notification when a new consumer group is created.
+    if (child_process_id.is_null()) {
+      host_state.host->SetOverrideLimit(consumer_id, it->second);
     }
   }
 
@@ -336,53 +342,39 @@ void MemoryCoordinatorPolicyManager::UpdateConsumersForProcess(
   }
 }
 
-void MemoryCoordinatorPolicyManager::ApplyMemoryLimitOverrideForTesting(
+void MemoryCoordinatorPolicyManager::ApplyMemoryLimitOverride(
     uint32_t consumer_id,
     int percentage) {
   for (auto const& [child_id, host_state] : hosts_) {
     auto it = host_state->groups.find(consumer_id);
     if (it != host_state->groups.end()) {
-      if (std::optional<int> new_limit =
-              it->second->SetOverrideLimitForTesting(percentage)) {
-        host_state->host->UpdateConsumers({{consumer_id, *new_limit, false}});
-      }
+      it->second->SetOverrideLimit(percentage);
     }
+    host_state->host->SetOverrideLimit(consumer_id, percentage);
   }
 }
 
-void MemoryCoordinatorPolicyManager::AddMemoryLimitOverrideForTesting(
+void MemoryCoordinatorPolicyManager::SetMemoryLimitOverride(
     uint32_t consumer_id,
     int percentage) {
-  auto [it, inserted] =
-      memory_limit_overrides_.try_emplace(consumer_id, percentage);
-  CHECK(inserted);
+  memory_limit_overrides_[consumer_id] = percentage;
 
-  ApplyMemoryLimitOverrideForTesting(consumer_id, percentage);
+  ApplyMemoryLimitOverride(consumer_id, percentage);
 }
 
-void MemoryCoordinatorPolicyManager::UpdateMemoryLimitOverrideForTesting(
-    uint32_t consumer_id,
-    int percentage) {
-  auto it = memory_limit_overrides_.find(consumer_id);
-  CHECK(it != memory_limit_overrides_.end());
-  it->second = percentage;
-
-  ApplyMemoryLimitOverrideForTesting(consumer_id, percentage);
-}
-
-void MemoryCoordinatorPolicyManager::ClearMemoryLimitOverrideForTesting(
+void MemoryCoordinatorPolicyManager::ClearMemoryLimitOverride(
     uint32_t consumer_id) {
   size_t removed = memory_limit_overrides_.erase(consumer_id);
   CHECK_EQ(removed, 1u);
 
   for (auto const& [child_id, host_state] : hosts_) {
     auto it = host_state->groups.find(consumer_id);
+    int policy_limit = base::MemoryConsumer::kDefaultMemoryLimit;
     if (it != host_state->groups.end()) {
-      if (std::optional<int> new_limit =
-              it->second->SetOverrideLimitForTesting(std::nullopt)) {
-        host_state->host->UpdateConsumers({{consumer_id, *new_limit, false}});
-      }
+      it->second->SetOverrideLimit(std::nullopt);
+      policy_limit = it->second->current_limit();
     }
+    host_state->host->ClearOverrideLimit(consumer_id, policy_limit);
   }
 }
 

@@ -35,6 +35,8 @@ class CONTENT_EXPORT MemoryConsumerRegistry
 
   // MemoryConsumerGroupHost:
   void UpdateConsumers(std::vector<MemoryConsumerUpdate> updates) override;
+  void SetOverrideLimit(uint32_t consumer_id, int percentage) override;
+  void ClearOverrideLimit(uint32_t consumer_id, int policy_limit) override;
 
   // Returns the number of consumers with different IDs.
   size_t size() const { return consumer_groups_.size(); }

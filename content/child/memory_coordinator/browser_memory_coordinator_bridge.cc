@@ -72,6 +72,25 @@ void BrowserMemoryCoordinatorBridge::UpdateConsumers(
   manager().UpdateConsumers(this, std::move(updates));
 }
 
+void BrowserMemoryCoordinatorBridge::SetOverrideLimit(uint32_t consumer_id,
+                                                      int32_t percentage) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  manager().SetMemoryLimitOverride(consumer_id, percentage);
+}
+
+void BrowserMemoryCoordinatorBridge::ClearOverrideLimit(uint32_t consumer_id,
+                                                        int32_t policy_limit) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Update this bridge's policy limit in the child policy manager with the
+  // current browser policy limit before clearing the override. This ensures
+  // that when the override is removed, the manager recomputes the aggregate
+  // limit using the latest browser limit combined with child-local policies.
+  if (groups_.contains(consumer_id)) {
+    manager().UpdateConsumers(this, {{consumer_id, policy_limit, false}});
+  }
+  manager().ClearMemoryLimitOverride(consumer_id);
+}
+
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
 void BrowserMemoryCoordinatorBridge::EnableDiagnosticsReporting(
     mojo::PendingRemote<mojom::MemoryCoordinatorDiagnosticsHost> host) {

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/memory_coordinator/mock_memory_consumer.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -19,6 +20,9 @@
 #include "base/test/test_future.h"
 #include "content/child/memory_coordinator/child_memory_coordinator.h"
 #include "content/common/memory_coordinator/memory_consumer_registry.h"
+#include "content/common/memory_coordinator/predicate_memory_coordinator_policy.h"
+#include "content/public/common/child_process_id.h"
+#include "content/public/common/process_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -253,6 +257,61 @@ TEST_F(BrowserMemoryCoordinatorBridgeTest, BrowserNotification) {
 
   // Wait for the Mojo call to reach the child and trigger the consumer.
   EXPECT_TRUE(release_memory_future.Wait());
+
+  // Cleanup.
+  registry().RemoveMemoryConsumer(kConsumerName, &consumer);
+}
+
+// Tests that setting an override limit from the browser bypasses any
+// child-local policies without multiplying them, and that clearing the override
+// restores the aggregate limit computed from child-local policies.
+TEST_F(BrowserMemoryCoordinatorBridgeTest,
+       TestingOverrideBypassesLocalPolicies) {
+  auto registry_host = CreateRegistryHost();
+
+  base::MockMemoryConsumer consumer;
+  const std::string kConsumerName = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  // 1. Add consumer to the child registry.
+  registry().AddMemoryConsumer(kConsumerName, kTestTraits1, &consumer);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return registry_host->IsRegistered(kConsumerId); }));
+
+  // 2. Add a child-local policy requesting 50%.
+  base::test::TestFuture<void> local_policy_future;
+  EXPECT_CALL(consumer, OnUpdateMemoryLimit()).WillOnce([&]() {
+    local_policy_future.SetValue();
+  });
+  PredicateMemoryCoordinatorPolicy local_policy(
+      coordinator().policy_manager(),
+      base::BindRepeating([](uint32_t, base::MemoryConsumerTraits, ProcessType,
+                             ChildProcessId) { return true; }));
+  MemoryCoordinatorPolicyRegistration local_policy_reg(
+      coordinator().policy_manager(), local_policy);
+  local_policy.SetLimit(50, /*release_memory=*/false);
+  EXPECT_TRUE(local_policy_future.Wait());
+  EXPECT_EQ(consumer.memory_limit(), 50);
+
+  // 3. Browser sets an override to 80%. It must bypass the local policy
+  // (resulting in 80%, NOT 50% * 80% = 40%).
+  base::test::TestFuture<void> override_future;
+  EXPECT_CALL(consumer, OnUpdateMemoryLimit()).WillOnce([&]() {
+    override_future.SetValue();
+  });
+  registry_host->coordinator()->SetOverrideLimit(kConsumerId, 80);
+  EXPECT_TRUE(override_future.Wait());
+  EXPECT_EQ(consumer.memory_limit(), 80);
+
+  // 4. Browser clears override (passing browser policy limit 100%).
+  // Child limit must revert to the local policy limit (50%).
+  base::test::TestFuture<void> clear_override_future;
+  EXPECT_CALL(consumer, OnUpdateMemoryLimit()).WillOnce([&]() {
+    clear_override_future.SetValue();
+  });
+  registry_host->coordinator()->ClearOverrideLimit(kConsumerId, 100);
+  EXPECT_TRUE(clear_override_future.Wait());
+  EXPECT_EQ(consumer.memory_limit(), 50);
 
   // Cleanup.
   registry().RemoveMemoryConsumer(kConsumerName, &consumer);

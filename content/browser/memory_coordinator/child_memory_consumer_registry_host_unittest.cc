@@ -47,6 +47,14 @@ class MockChildMemoryCoordinator : public mojom::ChildMemoryCoordinator {
               UpdateConsumers,
               (std::vector<MemoryConsumerUpdate> updates),
               (override));
+  MOCK_METHOD(void,
+              SetOverrideLimit,
+              (uint32_t consumer_id, int32_t percentage),
+              (override));
+  MOCK_METHOD(void,
+              ClearOverrideLimit,
+              (uint32_t consumer_id, int32_t policy_limit),
+              (override));
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
   MOCK_METHOD(
       void,
@@ -252,6 +260,13 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, RenderProcessExited) {
   mojo::Remote<mojom::ChildMemoryConsumerRegistryHost> remote_host;
   BindHost(PROCESS_TYPE_RENDERER, kChildId,
            remote_host.BindNewPipeAndPassReceiver());
+
+  // Bind the coordinator to trigger registration with the controller.
+  MockChildMemoryCoordinator mock_coordinator;
+  mojo::Receiver<mojom::ChildMemoryCoordinator> coordinator_receiver(
+      &mock_coordinator);
+  remote_host->BindCoordinator(coordinator_receiver.BindNewPipeAndPassRemote());
+  remote_host.FlushForTesting();
 
   EXPECT_CALL(controller_, RemoveMemoryConsumerGroupHost(kChildId))
       .WillOnce(base::test::RunOnceClosure(task_environment_.QuitClosure()));

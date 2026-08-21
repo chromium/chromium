@@ -21,6 +21,10 @@ class CONTENT_EXPORT MemoryConsumerGroupHost {
 
   // Notifies of multiple changes at once.
   virtual void UpdateConsumers(std::vector<MemoryConsumerUpdate> updates) = 0;
+
+  // Sets or clears an override limit on consumers in this host.
+  virtual void SetOverrideLimit(uint32_t consumer_id, int percentage) = 0;
+  virtual void ClearOverrideLimit(uint32_t consumer_id, int policy_limit) = 0;
 };
 
 }  // namespace content

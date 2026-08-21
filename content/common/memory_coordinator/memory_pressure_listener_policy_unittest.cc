@@ -39,6 +39,8 @@ class MockMemoryConsumerGroupHost : public MemoryConsumerGroupHost {
               UpdateConsumers,
               (std::vector<MemoryConsumerUpdate> updates),
               (override));
+  MOCK_METHOD(void, SetOverrideLimit, (uint32_t, int), (override));
+  MOCK_METHOD(void, ClearOverrideLimit, (uint32_t, int), (override));
 };
 
 }  // namespace

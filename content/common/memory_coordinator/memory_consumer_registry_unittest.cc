@@ -258,4 +258,38 @@ TEST_F(MemoryConsumerRegistryTest, ReentrantRemovalDuringLimitUpdateOnly) {
   ASSERT_EQ(registry().size(), 0u);
 }
 
+TEST_F(MemoryConsumerRegistryTest, ReentrantRemovalDuringOverrideLimit) {
+  const std::string kConsumerName = "reentrant_override_consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  ReentrantSelfRemovingOnLimitMemoryConsumer consumer(registry(),
+                                                      kConsumerName);
+
+  registry().AddMemoryConsumer(kConsumerName, kTestTraits1, &consumer);
+  ASSERT_EQ(registry().size(), 1u);
+
+  // Trigger override limit update.
+  entries().front().host->SetOverrideLimit(kConsumerId, 50);
+
+  EXPECT_TRUE(consumer.limit_updated());
+  ASSERT_EQ(registry().size(), 0u);
+}
+
+TEST_F(MemoryConsumerRegistryTest, ReentrantRemovalDuringClearOverrideLimit) {
+  const std::string kConsumerName = "reentrant_clear_override_consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  ReentrantSelfRemovingOnLimitMemoryConsumer consumer(registry(),
+                                                      kConsumerName);
+
+  registry().AddMemoryConsumer(kConsumerName, kTestTraits1, &consumer);
+  ASSERT_EQ(registry().size(), 1u);
+
+  // Trigger clear override limit update.
+  entries().front().host->ClearOverrideLimit(kConsumerId, 100);
+
+  EXPECT_TRUE(consumer.limit_updated());
+  ASSERT_EQ(registry().size(), 0u);
+}
+
 }  // namespace content

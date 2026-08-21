@@ -61,6 +61,14 @@ class MockMemoryConsumerGroupHost : public MemoryConsumerGroupHost {
               UpdateConsumers,
               (std::vector<MemoryConsumerUpdate> updates),
               (override));
+  MOCK_METHOD(void,
+              SetOverrideLimit,
+              (uint32_t consumer_id, int percentage),
+              (override));
+  MOCK_METHOD(void,
+              ClearOverrideLimit,
+              (uint32_t consumer_id, int policy_limit),
+              (override));
 };
 
 }  // namespace
@@ -246,22 +254,19 @@ TEST_F(MemoryCoordinatorPolicyManagerTest, SetMemoryLimitOverride) {
   policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
                                         kTestTraits1, kChildId);
 
-  // Add override.
-  EXPECT_CALL(host, UpdateConsumers(ElementsAre(
-                        MemoryConsumerUpdate{kConsumerId, 42, false})));
-  policy_manager().AddMemoryLimitOverrideForTesting(kConsumerId, 42);
+  // Set override.
+  EXPECT_CALL(host, SetOverrideLimit(kConsumerId, 42));
+  policy_manager().SetMemoryLimitOverride(kConsumerId, 42);
   Mock::VerifyAndClearExpectations(&host);
 
   // Update override.
-  EXPECT_CALL(host, UpdateConsumers(ElementsAre(
-                        MemoryConsumerUpdate{kConsumerId, 24, false})));
-  policy_manager().UpdateMemoryLimitOverrideForTesting(kConsumerId, 24);
+  EXPECT_CALL(host, SetOverrideLimit(kConsumerId, 24));
+  policy_manager().SetMemoryLimitOverride(kConsumerId, 24);
   Mock::VerifyAndClearExpectations(&host);
 
   // Clear override. Reverts to default (100%).
-  EXPECT_CALL(host, UpdateConsumers(ElementsAre(
-                        MemoryConsumerUpdate{kConsumerId, 100, false})));
-  policy_manager().ClearMemoryLimitOverrideForTesting(kConsumerId);
+  EXPECT_CALL(host, ClearOverrideLimit(kConsumerId, 100));
+  policy_manager().ClearMemoryLimitOverride(kConsumerId);
   Mock::VerifyAndClearExpectations(&host);
 
   // Clean up.
@@ -279,19 +284,85 @@ TEST_F(MemoryCoordinatorPolicyManagerTest, SetMemoryLimitOverride_Persistence) {
   const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
 
   // Set override BEFORE adding consumer.
-  policy_manager().AddMemoryLimitOverrideForTesting(kConsumerId, 42);
+  // Since host is already added, it should receive the IPC immediately.
+  EXPECT_CALL(host, SetOverrideLimit(kConsumerId, 42));
+  policy_manager().SetMemoryLimitOverride(kConsumerId, 42);
+  Mock::VerifyAndClearExpectations(&host);
 
-  // Adding consumer should immediately apply override.
-  EXPECT_CALL(host, UpdateConsumers(ElementsAre(
-                        MemoryConsumerUpdate{kConsumerId, 42, false})));
+  // Adding consumer to an out-of-process host should NOT send a duplicate
+  // override IPC since the host was already notified.
+  EXPECT_CALL(host, SetOverrideLimit(_, _)).Times(0);
   policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
                                         kTestTraits1, kChildId);
   Mock::VerifyAndClearExpectations(&host);
 
   // Clean up.
-  policy_manager().ClearMemoryLimitOverrideForTesting(kConsumerId);
+  EXPECT_CALL(host, ClearOverrideLimit(kConsumerId, 100));
+  policy_manager().ClearMemoryLimitOverride(kConsumerId);
   policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
   policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
+TEST_F(MemoryCoordinatorPolicyManagerTest,
+       SetMemoryLimitOverride_HostPersistence) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(1);
+
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  // Set override BEFORE adding host.
+  policy_manager().SetMemoryLimitOverride(kConsumerId, 42);
+
+  // Adding host should immediately send the override.
+  EXPECT_CALL(host, SetOverrideLimit(kConsumerId, 42));
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER, kChildId,
+                                              &host);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Adding consumer to an out-of-process host should NOT send a duplicate
+  // override IPC since the host was already notified.
+  EXPECT_CALL(host, SetOverrideLimit(_, _)).Times(0);
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
+                                        kTestTraits1, kChildId);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clean up.
+  EXPECT_CALL(host, ClearOverrideLimit(kConsumerId, 100));
+  policy_manager().ClearMemoryLimitOverride(kConsumerId);
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
+TEST_F(MemoryCoordinatorPolicyManagerTest,
+       SetMemoryLimitOverride_InProcessPersistence) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kInProcessChildId;
+
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  // Set override BEFORE adding host.
+  policy_manager().SetMemoryLimitOverride(kConsumerId, 42);
+
+  // Adding in-process host.
+  EXPECT_CALL(host, SetOverrideLimit(kConsumerId, 42));
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER,
+                                              kInProcessChildId, &host);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Adding consumer to an in-process host SHOULD notify the host so that
+  // in-process registries (which do not buffer overrides) apply the limit.
+  EXPECT_CALL(host, SetOverrideLimit(kConsumerId, 42));
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
+                                        kTestTraits1, kInProcessChildId);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clean up.
+  EXPECT_CALL(host, ClearOverrideLimit(kConsumerId, 100));
+  policy_manager().ClearMemoryLimitOverride(kConsumerId);
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kInProcessChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kInProcessChildId);
 }
 
 TEST_F(MemoryCoordinatorPolicyManagerTest, NotifyReleaseMemory) {

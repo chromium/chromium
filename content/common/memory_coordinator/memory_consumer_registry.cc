@@ -103,6 +103,20 @@ void MemoryConsumerRegistry::UpdateConsumers(
   pending_removal_groups_.clear();
 }
 
+void MemoryConsumerRegistry::SetOverrideLimit(uint32_t consumer_id,
+                                              int percentage) {
+  if (consumer_groups_.contains(consumer_id)) {
+    UpdateConsumers({{consumer_id, percentage, false}});
+  }
+}
+
+void MemoryConsumerRegistry::ClearOverrideLimit(uint32_t consumer_id,
+                                                int policy_limit) {
+  if (consumer_groups_.contains(consumer_id)) {
+    UpdateConsumers({{consumer_id, policy_limit, false}});
+  }
+}
+
 void MemoryConsumerRegistry::OnMemoryConsumerAdded(
     uint32_t consumer_id,
     std::string_view consumer_name,
