@@ -245,8 +245,8 @@ void It2MeNativeMessagingHost::ProcessConnect(base::DictValue message,
   }
 
 #if BUILDFLAG(IS_WIN)
-  // Requests that the support host is launched with elevation on Windows.
-  // This value, in conjunction with the platform policy, is used to determine
+  // Requests that the support host is launched with UiAccess on Windows.
+  // This value, in conjuction with the platform policy, is used to determine
   // if an elevated host should be used.
   bool use_elevated_host = message.FindBool(kUseElevatedHost).value_or(false);
 
@@ -264,12 +264,13 @@ void It2MeNativeMessagingHost::ProcessConnect(base::DictValue message,
     // Attempt to pass the current message to the elevated process.  This method
     // will spin up the elevated process if it is not already running.  On
     // success, the elevated process will process the message and respond.
-    if (DelegateToElevatedHost(message)) {
-      return;
+    // If the process cannot be started or message passing fails, then return an
+    // error to the message sender.
+    if (!DelegateToElevatedHost(std::move(message))) {
+      LOG(ERROR) << "Failed to send message to elevated host.";
+      SendErrorAndExit(std::move(response), ErrorCode::ELEVATION_ERROR);
     }
-    LOG(WARNING) << "Failed to elevate support host process. Falling back to "
-                 << "unelevated mode.";
-    use_elevated_host_ = false;
+    return;
   }
 
   if (it2me_host_.get()) {
@@ -391,7 +392,7 @@ void It2MeNativeMessagingHost::ProcessDisconnect(base::DictValue message,
     // success, the elevated process will process the message and respond.
     // If the process cannot be started or message passing fails, then return an
     // error to the message sender.
-    if (!DelegateToElevatedHost(message)) {
+    if (!DelegateToElevatedHost(std::move(message))) {
       LOG(ERROR) << "Failed to send message to elevated host.";
       SendErrorAndExit(std::move(response), ErrorCode::ELEVATION_ERROR);
     }
@@ -574,7 +575,7 @@ It2MeNativeMessagingHost::GetAllowElevatedHostPolicyValue() {
   if (platform_policy_value) {
     // Use the platform policy value.
     bool value = platform_policy_value->GetBool();
-    LOG(INFO) << "Allow elevation for remote support policy value: " << value;
+    LOG(INFO) << "Allow UiAccess for remote support policy value: " << value;
     return value;
   }
 #endif  // BUILDFLAG(IS_WIN)
@@ -629,8 +630,7 @@ std::string It2MeNativeMessagingHost::ExtractAccessToken(
 
 #if BUILDFLAG(IS_WIN)
 
-bool It2MeNativeMessagingHost::DelegateToElevatedHost(
-    const base::DictValue& message) {
+bool It2MeNativeMessagingHost::DelegateToElevatedHost(base::DictValue message) {
   DCHECK(task_runner()->BelongsToCurrentThread());
   DCHECK(use_elevated_host_);
 
@@ -639,13 +639,13 @@ bool It2MeNativeMessagingHost::DelegateToElevatedHost(
         base::CommandLine::ForCurrentProcess()->GetProgram();
     CHECK(binary_path.BaseName() == base::FilePath(kBaseHostBinaryName));
 
-    // The new process runs at an elevated level.
+    // The new process runs at an elevated level due to being granted uiAccess.
     // |parent_window_handle| can be used to position dialog windows but is not
     // currently used.
     elevated_host_ = std::make_unique<ElevatedNativeMessagingHost>(
         binary_path.DirName().Append(kElevatedHostBinaryName),
         /*parent_window_handle=*/0,
-        /*elevate_process=*/true,
+        /*elevate_process=*/false,
         /*host_timeout=*/base::TimeDelta(), client_);
   }
 
@@ -655,14 +655,12 @@ bool It2MeNativeMessagingHost::DelegateToElevatedHost(
     return true;
   }
 
-  elevated_host_.reset();
   return false;
 }
 
 #else  // !BUILDFLAG(IS_WIN)
 
-bool It2MeNativeMessagingHost::DelegateToElevatedHost(
-    const base::DictValue& message) {
+bool It2MeNativeMessagingHost::DelegateToElevatedHost(base::DictValue message) {
   NOTREACHED();
 }
 

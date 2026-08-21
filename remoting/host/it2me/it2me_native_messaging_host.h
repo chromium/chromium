@@ -95,7 +95,7 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
   void OnPolicyError();
 
   // Returns whether the request was successfully sent to the elevated host.
-  bool DelegateToElevatedHost(const base::DictValue& message);
+  bool DelegateToElevatedHost(base::DictValue message);
 
   // Extracts OAuth access token from the message passed from the client.
   std::string ExtractAccessToken(const base::DictValue& message);
@@ -111,6 +111,8 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
 
 #if BUILDFLAG(IS_WIN)
   // Controls the lifetime of the elevated native messaging host process.
+  // Note: 'elevated' in this instance means having the UiAccess privilege, not
+  // being run as a higher privilege user.
   std::unique_ptr<ElevatedNativeMessagingHost> elevated_host_;
 #endif  // BUILDFLAG(IS_WIN)
 
