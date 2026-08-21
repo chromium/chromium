@@ -79,10 +79,6 @@ void AddDataSourceConfigs(
                         chrome_config_string, privacy_filtering_enabled,
                         convert_to_legacy_json, json_agent_label_filter,
                         enable_package_name_filter);
-    AddDataSourceConfig(perfetto_config, kNativeHeapProfilerSourceName,
-                        chrome_config_string, privacy_filtering_enabled,
-                        convert_to_legacy_json, json_agent_label_filter,
-                        enable_package_name_filter);
   }
 
   auto* trace_event_data_source =
