@@ -11420,6 +11420,7 @@ from previous Chrome versions.
       label="MaintainShelfStateWhenEnteringOverview:enabled"/>
   <int value="-1015006759" label="ImportantSitesInCBD:disabled"/>
   <int value="-1014936248" label="SyncUSSBookmarks:enabled"/>
+  <int value="-1014713375" label="GlicAndroidTablet:enabled"/>
   <int value="-1014649471" label="committed-interstitials"/>
   <int value="-1014240624" label="DevToolsLiveEdit:disabled"/>
   <int value="-1014147857"
@@ -13105,6 +13106,7 @@ from previous Chrome versions.
   <int value="-491208379" label="ChromeTipsInMainMenuNewBadge:disabled"/>
   <int value="-491131428" label="OmniboxNewAnswerLayout:disabled"/>
   <int value="-490652941" label="WebViewZeroCopyVideo:enabled"/>
+  <int value="-490352282" label="GlicAndroidTablet:disabled"/>
   <int value="-489672760" label="ImeFstDecoderParamsUpdate:disabled"/>
   <int value="-489303384"
       label="AlwaysShowInstallDisambiguationDialog:enabled"/>

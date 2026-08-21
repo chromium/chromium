@@ -259,4 +259,6 @@ BASE_FEATURE(kGlicDisconnectedWebview, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicShakeTrigger,
              "GlicShakeTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicAndroidTablet, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features

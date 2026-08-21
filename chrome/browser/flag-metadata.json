@@ -5642,6 +5642,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "glic-android-tablet",
+    "owners": [
+      "haileywang@google.com",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "glic-bind-pinned-unbound-tab",
     "owners": [
       "basiaz@google.com",

@@ -146,6 +146,8 @@ BASE_DECLARE_FEATURE(kGlicDisconnectedWebview);
 
 BASE_DECLARE_FEATURE(kGlicShakeTrigger);
 
+BASE_DECLARE_FEATURE(kGlicAndroidTablet);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

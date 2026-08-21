@@ -8732,6 +8732,10 @@ inline constexpr char kGlicAndroidSidePanelName[] = "Glic Android Side Panel";
 inline constexpr char kGlicAndroidSidePanelDescription[] =
     "Enables the Glic side panel on Android.";
 
+inline constexpr char kGlicAndroidTabletName[] = "Glic Android Tablet";
+inline constexpr char kGlicAndroidTabletDescription[] =
+    "Enables testing of the Glic feature on Android tablet devices.";
+
 inline constexpr char kGlicSelectionPromptName[] = "Glic Selection Prompt";
 inline constexpr char kGlicSelectionPromptDescription[] =
     "Enables the Glic prompt suggestion when text is selected.";

@@ -747,11 +747,15 @@ bool GlicGlobalEnabling::IsSystemRequirementMet() const {
 #if BUILDFLAG(IS_ANDROID)
     if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kTestType)) {
-      ui::DeviceFormFactor formFactor = ui::GetDeviceFormFactor();
+      ui::DeviceFormFactor form_factor = ui::GetDeviceFormFactor();
 
-      if (formFactor != ui::DEVICE_FORM_FACTOR_PHONE &&
-          formFactor != ui::DEVICE_FORM_FACTOR_FOLDABLE &&
-          formFactor != ui::DEVICE_FORM_FACTOR_DESKTOP) {
+      bool form_factor_allowed =
+          form_factor == ui::DEVICE_FORM_FACTOR_PHONE ||
+          form_factor == ui::DEVICE_FORM_FACTOR_FOLDABLE ||
+          form_factor == ui::DEVICE_FORM_FACTOR_DESKTOP ||
+          (form_factor == ui::DEVICE_FORM_FACTOR_TABLET &&
+           base::FeatureList::IsEnabled(features::kGlicAndroidTablet));
+      if (!form_factor_allowed) {
         return false;
       }
     }
