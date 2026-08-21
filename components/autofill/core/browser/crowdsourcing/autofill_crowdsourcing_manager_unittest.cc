@@ -473,7 +473,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITest) {
   {
     auto buckets =
         histogram.GetAllSamples(AutofillCrowdsourcingManager::kUmaGetUrlLength);
-    ASSERT_EQ(1U, buckets.size());
+    ASSERT_EQ(buckets.size(), 1U);
     EXPECT_GT(buckets[0].count, 0);
   }
 
@@ -522,7 +522,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITest) {
       request, "dummy response");
   // Upon reception of a suggestions query, we expect OnLoadedServerPredictions
   // to be called back from the observer and some histograms be incremented.
-  EXPECT_EQ(1U, responses().size());
+  EXPECT_EQ(responses().size(), 1U);
   EXPECT_EQ(responses().front().type_of_response,
             ResponseType::kQuerySuccessful);
   histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaWasInCache,
@@ -598,7 +598,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITestWhenTooLongUrl) {
       request, "dummy response");
   // Upon reception of a suggestions query, we expect OnLoadedServerPredictions
   // to be called back from the observer and some histograms be incremented.
-  EXPECT_EQ(1U, responses().size());
+  EXPECT_EQ(responses().size(), 1U);
   EXPECT_EQ(responses().front().type_of_response,
             ResponseType::kQuerySuccessful);
   histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaWasInCache,
@@ -713,7 +713,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Query) {
                               net::HTTP_REQUEST_ENTITY_TOO_LARGE, 1);
   auto buckets = histogram.GetAllSamples("Autofill.Query.FailingPayloadSize");
   ASSERT_THAT(buckets, SizeIs(1));
-  EXPECT_EQ(2, buckets[0].count);
+  EXPECT_EQ(buckets[0].count, 2);
 }
 
 TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
@@ -770,7 +770,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
                               net::HTTP_REQUEST_ENTITY_TOO_LARGE, 1);
   auto buckets = histogram.GetAllSamples("Autofill.Upload.FailingPayloadSize");
   ASSERT_THAT(buckets, SizeIs(1));
-  EXPECT_EQ(1, buckets[0].count);
+  EXPECT_EQ(buckets[0].count, 1);
 }
 
 TEST_F(AutofillCrowdsourcingManagerTest, RetryLimit_Query) {
@@ -806,7 +806,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, RetryLimit_Query) {
   }
 
   // There should not be an additional retry.
-  EXPECT_EQ(nullptr, url_loader_factory().GetPendingRequest(max_attempts));
+  EXPECT_EQ(url_loader_factory().GetPendingRequest(max_attempts), nullptr);
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
 
   // Verify metrics.
@@ -856,7 +856,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, RetryLimit_Upload) {
   }
 
   // There should not be an additional retry.
-  EXPECT_EQ(nullptr, url_loader_factory().GetPendingRequest(max_attempts));
+  EXPECT_EQ(url_loader_factory().GetPendingRequest(max_attempts), nullptr);
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
 
   // Verify metrics.
@@ -1298,7 +1298,7 @@ TEST_P(AutofillQueryTest, CacheableResponse) {
     base::HistogramTester histogram;
     ResetCallCount();
     ASSERT_TRUE(SendQueryRequest(forms));
-    EXPECT_EQ(1, call_count());
+    EXPECT_EQ(call_count(), 1);
     histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
                                 AutofillMetrics::QUERY_SENT, 1);
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaMethod,
@@ -1314,7 +1314,7 @@ TEST_P(AutofillQueryTest, CacheableResponse) {
     base::HistogramTester histogram;
     ResetCallCount();
     ASSERT_TRUE(SendQueryRequest(forms));
-    EXPECT_EQ(0, call_count());
+    EXPECT_EQ(call_count(), 0);
     histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
                                 AutofillMetrics::QUERY_SENT, 1);
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaMethod,
@@ -1334,7 +1334,7 @@ TEST_P(AutofillQueryTest, SendsExperiment) {
     base::HistogramTester histogram;
     ResetCallCount();
     ASSERT_TRUE(SendQueryRequest(forms));
-    EXPECT_EQ(1, call_count());
+    EXPECT_EQ(call_count(), 1);
     histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
                                 AutofillMetrics::QUERY_SENT, 1);
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaMethod,
@@ -1359,7 +1359,7 @@ TEST_P(AutofillQueryTest, SendsExperiment) {
     ResetCallCount();
     payloads().clear();
     ASSERT_TRUE(SendQueryRequest(forms));
-    EXPECT_EQ(1, call_count());
+    EXPECT_EQ(call_count(), 1);
     histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
                                 AutofillMetrics::QUERY_SENT, 1);
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaMethod,
@@ -1381,7 +1381,7 @@ TEST_P(AutofillQueryTest, SendsExperiment) {
     base::HistogramTester histogram;
     ResetCallCount();
     ASSERT_TRUE(SendQueryRequest(forms));
-    EXPECT_EQ(0, call_count());
+    EXPECT_EQ(call_count(), 0);
     histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
                                 AutofillMetrics::QUERY_SENT, 1);
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaMethod,
@@ -1403,7 +1403,7 @@ TEST_P(AutofillQueryTest, ExpiredCacheInResponse) {
     base::HistogramTester histogram;
     ResetCallCount();
     ASSERT_TRUE(SendQueryRequest(forms));
-    EXPECT_EQ(1, call_count());
+    EXPECT_EQ(call_count(), 1);
     histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
                                 AutofillMetrics::QUERY_SENT, 1);
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaMethod,
@@ -1425,7 +1425,7 @@ TEST_P(AutofillQueryTest, ExpiredCacheInResponse) {
     base::HistogramTester histogram;
     ResetCallCount();
     ASSERT_TRUE(SendQueryRequest(forms));
-    EXPECT_EQ(1, call_count());
+    EXPECT_EQ(call_count(), 1);
     histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
                                 AutofillMetrics::QUERY_SENT, 1);
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaMethod,
@@ -1488,7 +1488,7 @@ TEST_P(AutofillQueryTest, Metadata) {
 
   // Generate a query request.
   ASSERT_TRUE(SendQueryRequest(forms));
-  EXPECT_EQ(1, call_count());
+  EXPECT_EQ(call_count(), 1);
 
   // We should have intercepted exactly on query request. Parse it.
   ASSERT_THAT(payloads(), SizeIs(1));
@@ -1500,7 +1500,7 @@ TEST_P(AutofillQueryTest, Metadata) {
   const auto& query_form = query.forms(0);
 
   // There should be three fields.
-  EXPECT_EQ(3, query_form.fields_size());
+  EXPECT_EQ(query_form.fields_size(), 3);
 }
 
 // Note that we omit DEFAULT_URL from the test params. We don't actually want
