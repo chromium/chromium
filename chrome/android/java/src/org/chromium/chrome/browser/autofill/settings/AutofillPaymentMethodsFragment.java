@@ -310,15 +310,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                         && personalDataManager.isPaymentCvcStorageEnabled()
                         && !disabledSettings);
 
-        // Add the deletion button for saved CVCs. Note that this button's presence doesn't
-        // depend on the value of the "Save and fill payment methods" toggle, since we would
-        // like to allow the user to delete saved CVCs even when the toggle is disabled.
-        // Conditionally show the deletion button based on whether there are any CVCs stored.
-        for (CreditCard card : personalDataManager.getCreditCardsForSettings()) {
-            if (!card.getCvc().isEmpty()) {
-                createDeleteSavedCvcsButton();
-                break;
-            }
+        if (shouldShowDeleteSavedCvcsPref(personalDataManager)) {
+            createDeleteSavedCvcsButton();
         }
 
         if (shouldShowCardBenefitsPref(personalDataManager, getProfile())) {
@@ -913,6 +906,19 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                 && manager.shouldShowAddIbanButtonOnSettingsPage();
     }
 
+    // Deletion button for saved CVCs. Note that this button's presence doesn't
+    // depend on the value of the "Save and fill payment methods" toggle, since we would
+    // like to allow the user to delete saved CVCs even when the toggle is disabled.
+    // Conditionally show the deletion button based on whether there are any CVCs stored.
+    private static boolean shouldShowDeleteSavedCvcsPref(PersonalDataManager manager) {
+        for (CreditCard card : manager.getCreditCardsForSettings()) {
+            if (!card.getCvc().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(AutofillPaymentMethodsFragment.class.getName(), 0) {
 
@@ -986,11 +992,19 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                                 R.string
                                         .autofill_settings_page_enable_payment_method_mandatory_reauth_sublabel);
                     }
+                    indexData.addEntryForKey(
+                            frag,
+                            PREF_SAVE_CVC,
+                            R.string.autofill_settings_page_enable_cvc_storage_label,
+                            R.string.autofill_settings_page_enable_cvc_storage_sublabel);
+
+                    if (shouldShowDeleteSavedCvcsPref(personalDataManager)) {
                         indexData.addEntryForKey(
                                 frag,
-                                PREF_SAVE_CVC,
-                                R.string.autofill_settings_page_enable_cvc_storage_label,
-                                R.string.autofill_settings_page_enable_cvc_storage_sublabel);
+                                PREF_DELETE_SAVED_CVCS,
+                                R.string.autofill_settings_page_bulk_remove_cvc_label,
+                                0);
+                    }
                     if (shouldShowCardBenefitsPref(personalDataManager, profile)) {
                         indexData.addEntryForKey(
                                 frag,
