@@ -4,6 +4,7 @@
 
 #include "chrome/browser/favicon/favicon_utils.h"
 
+#include "base/hash/sha1.h"
 #include "build/build_config.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,7 +18,6 @@
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
-#include "crypto/hash.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_provider.h"
@@ -53,8 +53,8 @@ SkColor ComputeBackgroundColorForUrl(const GURL& icon_url) {
   if (!icon_url.is_valid())
     return SK_ColorGRAY;
 
-  const auto hash =
-      crypto::hash::Sha256(icon_url.DeprecatedGetOriginAsURL().spec());
+  base::SHA1Digest hash = base::SHA1Hash(
+      base::as_byte_span(icon_url.DeprecatedGetOriginAsURL().spec()));
   return SkColorSetRGB(hash[0u], hash[1u], hash[2u]);
 }
 
