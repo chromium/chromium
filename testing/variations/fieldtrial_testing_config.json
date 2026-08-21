@@ -23178,6 +23178,24 @@
             ]
         }
     ],
+    "StopInBackground": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "DelayForBackgroundTabFreezingMills": "1800000"
+                    },
+                    "enable_features": [
+                        "stop-in-background"
+                    ]
+                }
+            ]
+        }
+    ],
     "StorageBuckets": [
         {
             "platforms": [
