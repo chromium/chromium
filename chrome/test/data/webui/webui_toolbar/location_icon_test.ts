@@ -7,7 +7,7 @@ import 'chrome://webui-toolbar.top-chrome/app.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {hasStyle, microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {BrowserProxyImpl, LhsChipIdentifier, PointerProxyImpl} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {BrowserProxyImpl, IconTable, IconType, LhsChipIdentifier, PointerProxyImpl} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {IconFromTableElement, LocationIconElement, PointerProxy} from 'chrome://webui-toolbar.top-chrome/app.js';
 
 class TestToolbarUiHandler extends TestBrowserProxy {
@@ -64,6 +64,7 @@ suite('LocationIconTest', function() {
       isClickable: true,
       isTextDangerous: false,
       isVisible: true,
+      isContextMenuVisible: false,
       accessibilityState: {
         label: '',
         description: '',
@@ -93,6 +94,7 @@ suite('LocationIconTest', function() {
       isClickable: true,
       isTextDangerous: false,
       isVisible: true,
+      isContextMenuVisible: false,
       accessibilityState: {
         label: '',
         description: '',
@@ -118,6 +120,7 @@ suite('LocationIconTest', function() {
       isClickable: true,
       isTextDangerous: true,
       isVisible: true,
+      isContextMenuVisible: false,
       accessibilityState: {
         label: '',
         description: '',
@@ -145,6 +148,7 @@ suite('LocationIconTest', function() {
       isClickable: true,
       isTextDangerous: false,
       isVisible: true,
+      isContextMenuVisible: false,
       accessibilityState: {
         label: '',
         description: '',
@@ -168,6 +172,7 @@ suite('LocationIconTest', function() {
       isClickable: true,
       isTextDangerous: false,
       isVisible: true,
+      isContextMenuVisible: false,
       accessibilityState: {
         label: '',
         description: '',
@@ -188,6 +193,7 @@ suite('LocationIconTest', function() {
       isClickable: false,
       isTextDangerous: false,
       isVisible: true,
+      isContextMenuVisible: false,
       accessibilityState: {
         label: '',
         description: '',
@@ -214,6 +220,7 @@ suite('LocationIconTest', function() {
       isClickable: true,
       isTextDangerous: false,
       isVisible: true,
+      isContextMenuVisible: false,
       accessibilityState: {
         label: '',
         description: '',
@@ -264,6 +271,7 @@ suite('LocationIconTest', function() {
       isClickable: true,
       isTextDangerous: false,
       isVisible: true,
+      isContextMenuVisible: false,
     };
     await microtasksFinished();
 
@@ -287,5 +295,147 @@ suite('LocationIconTest', function() {
     container.dispatchEvent(
         new PointerEvent('pointerdown', {pointerId: 3, button: 0}));
     assertEquals(2, toolbarUiHandler.getCallCount('onLhsChipMousePressed'));
+  });
+
+  test('GlowUp animation', async function() {
+    IconTable.getInstance().applyUpdates([{
+      handleId: 10n,
+      iconUrlOrName: 'webui-toolbar:page_info_custom',
+      iconType: IconType.kIconSet,
+      color: null,
+    }]);
+    // Disable by default
+    locationIcon.glowUpEnabled = false;
+    locationIcon.state = {
+      icon: {handleId: 10n},
+      securityLevel: 2,  // kSecure
+      text: '',
+      tooltip: '',
+      isClickable: true,
+      isTextDangerous: false,
+      isVisible: true,
+      isContextMenuVisible: false,
+      accessibilityState: {label: '', description: ''},
+    };
+    await microtasksFinished();
+
+    // Should use icon-from-table
+    assertTrue(!!locationIcon.shadowRoot.querySelector('icon-from-table'));
+    assertFalse(!!locationIcon.shadowRoot.querySelector('cr-icon'));
+    assertFalse(locationIcon.hasAttribute('glow-up-active'));
+
+    // Enable GlowUp
+    locationIcon.glowUpEnabled = true;
+
+    // Mock setTimeout to capture the callback
+    const originalSetTimeout = window.setTimeout;
+    let timeoutCallback: (() => void)|null = null;
+    (window as any).setTimeout = (cb: any, ms: number) => {
+      if (ms === 150) {
+        timeoutCallback = cb;
+        return 123;  // Fake timer ID
+      }
+      return originalSetTimeout(cb, ms);
+    };
+
+    // Simulate bubble opening
+    locationIcon.state = {
+      ...locationIcon.state,
+      isContextMenuVisible: true,
+    };
+    await microtasksFinished();
+
+    // Should now use cr-icon with the animated forward icon
+    assertFalse(!!locationIcon.shadowRoot.querySelector('icon-from-table'));
+    let crIcon = locationIcon.shadowRoot.querySelector('cr-icon');
+    assertTrue(!!crIcon);
+    assertEquals(
+        'webui-toolbar:info_glow_up_forward', crIcon.getAttribute('icon'));
+    assertTrue(locationIcon.hasAttribute('glow-up-active'));
+
+    // Trigger the timeout to finish opening animation
+    assertTrue(!!timeoutCallback);
+    (timeoutCallback as any)();
+    timeoutCallback = null;
+    await microtasksFinished();
+
+    // After animation finishes, it should still be active because bubble is
+    // showing
+    assertTrue(locationIcon.hasAttribute('glow-up-active'));
+    crIcon = locationIcon.shadowRoot.querySelector('cr-icon');
+    assertTrue(!!crIcon);
+    assertEquals(
+        'webui-toolbar:info_glow_up_forward', crIcon.getAttribute('icon'));
+
+    // Simulate bubble closing
+    locationIcon.state = {
+      ...locationIcon.state,
+      isContextMenuVisible: false,
+    };
+    await microtasksFinished();
+
+    // During closing animation, it should still be active but use reverse icon
+    assertTrue(locationIcon.hasAttribute('glow-up-active'));
+    crIcon = locationIcon.shadowRoot.querySelector('cr-icon');
+    assertTrue(!!crIcon);
+    assertEquals(
+        'webui-toolbar:info_glow_up_reverse', crIcon.getAttribute('icon'));
+
+    // Trigger the timeout to finish closing animation
+    assertTrue(!!timeoutCallback);
+    (timeoutCallback as any)();
+    await microtasksFinished();
+
+    // After closing animation finishes, it should go back to static icon
+    assertFalse(locationIcon.hasAttribute('glow-up-active'));
+    assertTrue(!!locationIcon.shadowRoot.querySelector('icon-from-table'));
+    assertFalse(!!locationIcon.shadowRoot.querySelector('cr-icon'));
+
+    // Restore
+    (window as any).setTimeout = originalSetTimeout;
+  });
+
+  test('Clear timer on disconnect', async function() {
+    IconTable.getInstance().applyUpdates([{
+      handleId: 10n,
+      iconUrlOrName: 'webui-toolbar:page_info_custom',
+      iconType: IconType.kIconSet,
+      color: null,
+    }]);
+    locationIcon.glowUpEnabled = true;
+    locationIcon.state = {
+      icon: {handleId: 10n},
+      securityLevel: 2,  // kSecure
+      text: '',
+      tooltip: '',
+      isClickable: true,
+      isTextDangerous: false,
+      isVisible: true,
+      isContextMenuVisible: false,
+      accessibilityState: {label: '', description: ''},
+    };
+    await microtasksFinished();
+
+    const originalClearTimeout = window.clearTimeout;
+    let clearTimeoutCalled = false;
+    (window as any).clearTimeout = (id: any) => {
+      clearTimeoutCalled = true;
+      originalClearTimeout(id);
+    };
+
+    // Simulate bubble opening to start timer
+    locationIcon.state = {
+      ...locationIcon.state,
+      isContextMenuVisible: true,
+    };
+    await microtasksFinished();
+
+    // Remove from DOM to trigger disconnectedCallback
+    locationIcon.remove();
+
+    assertTrue(clearTimeoutCalled);
+
+    // Restore
+    (window as any).clearTimeout = originalClearTimeout;
   });
 });

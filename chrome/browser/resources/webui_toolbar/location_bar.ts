@@ -102,6 +102,7 @@ export class LocationBarElement extends CrLitElement implements
         isClickable: false,
         isTextDangerous: false,
         isVisible: true,
+        isContextMenuVisible: false,
       },
       activityIndicators: [],
       permissionDashboard: null,

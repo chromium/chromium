@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 import '/shared/icon_from_table.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 
 import {EventTracker} from '//resources/js/event_tracker.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {DragEventSource} from '//resources/mojo/ui/base/dragdrop/mojom/drag_drop_types.mojom-webui.js';
+import {IconTable} from '/shared/icon_table.js';
 import {LhsChipIdentifier, SecurityLevel} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {SecurityChipState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
@@ -16,6 +19,7 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './location_icon.css.js';
 import {getHtml} from './location_icon.html.js';
 import {PointerProxyImpl} from './pointer_proxy.js';
+import {TimerHelper} from './timer_helper.js';
 
 export interface LocationIconElement {
   $: {
@@ -60,6 +64,12 @@ export class LocationIconElement extends LocationIconElementBase {
         reflect: true,
         attribute: 'is-text-dangerous',
       },
+      glowUpEnabled: {type: Boolean},
+      glowUpActive: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'glow-up-active',
+      },
     };
   }
 
@@ -75,6 +85,7 @@ export class LocationIconElement extends LocationIconElementBase {
     isClickable: false,
     isTextDangerous: false,
     isVisible: true,
+    isContextMenuVisible: false,
   };
 
   accessor clickable: boolean = false;
@@ -91,11 +102,17 @@ export class LocationIconElement extends LocationIconElementBase {
   // This is a higher alert state than just isDangerous.
   accessor isTextDangerous: boolean = false;
 
+  accessor glowUpEnabled: boolean = loadTimeData.getBoolean('enableGlowUp');
+  accessor glowUpActive: boolean = false;
+
   private dragStartX_: number = 0;
   private dragStartY_: number = 0;
   private isDragging_: boolean = false;
   private activePointerId_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
+  private isAnimating_: boolean = false;
+  private animationTimer_: TimerHelper = new TimerHelper();
+  private isSecureIcon_: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -113,6 +130,8 @@ export class LocationIconElement extends LocationIconElementBase {
     super.disconnectedCallback();
     this.unregisterHelpBubble('kLocationIconElementId');
     this.eventTracker_.removeAll();
+    this.animationTimer_.clearTimeout();
+    this.isAnimating_ = false;
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -123,7 +142,55 @@ export class LocationIconElement extends LocationIconElementBase {
       this.isDangerous = this.state.securityLevel === SecurityLevel.kDangerous;
       this.hasText = !!this.state.text;
       this.isTextDangerous = this.state.isTextDangerous;
+
+      const iconInfo = IconTable.getInstance().getIconInfo(this.state.icon);
+      this.isSecureIcon_ =
+          iconInfo?.urlOrName === 'webui-toolbar:page_info_custom';
     }
+
+    this.glowUpActive = this.computeGlowUpActive_(changedProperties);
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('state')) {
+      const oldState = changedProperties.get('state');
+      const oldShowing = oldState ? oldState.isContextMenuVisible : false;
+      const newShowing = this.state ? this.state.isContextMenuVisible : false;
+      if (oldShowing !== newShowing) {
+        this.onContextMenuVisibleChanged_();
+      }
+    }
+  }
+
+  private computeGlowUpActive_(changedProperties: PropertyValues<this>):
+      boolean {
+    if (!this.glowUpEnabled || !this.isSecureIcon_ ||
+        this.state.securityLevel !== SecurityLevel.kSecure) {
+      return false;
+    }
+
+    const oldState = changedProperties.get('state');
+    const wasContextMenuVisible =
+        oldState ? oldState.isContextMenuVisible : false;
+    const isContextMenuClosing =
+        wasContextMenuVisible && !this.state.isContextMenuVisible;
+
+    return this.state.isContextMenuVisible || this.isAnimating_ ||
+        isContextMenuClosing;
+  }
+
+  private onContextMenuVisibleChanged_() {
+    this.isAnimating_ = true;
+    this.requestUpdate();
+
+    const duration = 150;  // 150ms to match the SVG animation duration
+
+    this.animationTimer_.setTimeout(() => {
+      this.isAnimating_ = false;
+      this.requestUpdate();
+    }, duration);
   }
 
   protected onPointerdown_(e: PointerEvent) {

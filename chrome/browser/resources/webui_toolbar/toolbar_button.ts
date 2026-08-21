@@ -423,7 +423,7 @@ export function roundedIconsEnabled() {
  * inadvertently force-started simultaneously.
  */
 export function playIconAnimation(button: CrLitElement) {
-  const crIcon = button.shadowRoot.querySelector('cr-icon');
+  const crIcon = button.shadowRoot.querySelector<CrLitElement>('cr-icon');
   assert(crIcon);
   const animates = crIcon.shadowRoot.querySelectorAll<
       SVGAnimateElement|SVGAnimateTransformElement|SVGAnimateMotionElement>(

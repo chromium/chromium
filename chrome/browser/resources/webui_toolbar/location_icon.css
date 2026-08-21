@@ -128,7 +128,7 @@
 
 /* --- PRESSED LAYER (RIPPLE) ---
    Native Views composites the ripple on top of the hover highlight. */
-:host([clickable]:active) #container::after,
+:host([clickable]:not([glow-up-active]):active) #container::after,
 :host([clickable][anchor-highlighted]) #container::after {
   /* The alpha value is baked directly into the color variable in C++. */
   opacity: 1;
@@ -142,6 +142,11 @@
 
 icon-from-table {
   --icon-size: var(--location-bar-leading-icon-size);
+}
+
+#icon {
+  width: var(--location-bar-leading-icon-size);
+  height: var(--location-bar-leading-icon-size);
 }
 
 :host([is-dangerous]) #container {

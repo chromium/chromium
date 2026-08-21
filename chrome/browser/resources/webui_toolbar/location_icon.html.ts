@@ -17,8 +17,16 @@ export function getHtml(this: LocationIconElement) {
     @pointerdown="${this.onPointerdown_}"
     @click="${this.onClick_}"
     @contextmenu="${this.onContextmenu_}">
-  <icon-from-table .iconHandle="${this.state.icon}">
-  </icon-from-table>
+  ${this.glowUpActive ? html`
+    <cr-icon id="icon"
+        icon="${this.state.isContextMenuVisible ?
+            'webui-toolbar:info_glow_up_forward' :
+            'webui-toolbar:info_glow_up_reverse'}">
+    </cr-icon>
+  ` : html`
+    <icon-from-table .iconHandle="${this.state.icon}">
+    </icon-from-table>
+  `}
   ${this.state.text ? html`<span id="text">${this.state.text}</span>` : ''}
 </button>
 <!--_html_template_end_-->`;

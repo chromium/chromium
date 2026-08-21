@@ -195,28 +195,42 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, BasicOmniboxState) {
 IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, LocationIcon) {
   WaitForInitialWebUIToolbar(browser());
   LocationBar* location_bar = GetLocationBar();
+  location_bar->UpdateWithoutTabRestore();
   auto* omnibox = location_bar->GetOmniboxView();
   ASSERT_TRUE(omnibox);
   EXPECT_EQ("about:blank", base::UTF16ToUTF8(omnibox->GetText()));
 
   const char kGetIcon[] = R"(
-      document.querySelector('toolbar-app')?.
-        shadowRoot?.querySelector('location-bar')?.
-        shadowRoot?.querySelector('location-icon')?.
-        shadowRoot?.querySelector('icon-from-table')?.
-        shadowRoot?.querySelector('cr-icon')?.
-        icon;
+      (() => {
+        const locIcon = document.querySelector('toolbar-app')?.
+          shadowRoot?.querySelector('location-bar')?.
+          shadowRoot?.querySelector('location-icon');
+        if (!locIcon) return "";
+        if (locIcon.hasAttribute('glow-up-active')) {
+          return locIcon.shadowRoot?.querySelector('cr-icon#icon')?.icon || "";
+        }
+        return locIcon.shadowRoot?.querySelector('icon-from-table')?.
+          shadowRoot?.querySelector('cr-icon')?.
+          icon || "";
+      })()
     )";
 
-  EXPECT_EQ("webui-toolbar:info",
-            content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    std::string icon =
+        content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon).ExtractString();
+    return icon == "webui-toolbar:info" ||
+           icon == "webui-toolbar:info_glow_up_forward" ||
+           icon == "webui-toolbar:info_glow_up_reverse";
+  }));
 
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
   EXPECT_EQ("chrome://version", base::UTF16ToUTF8(omnibox->GetText()));
 
-  EXPECT_EQ("webui-toolbar:chrome_product",
-            content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon)
+               .ExtractString() == "webui-toolbar:chrome_product";
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, PageActionNavigation) {

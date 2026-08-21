@@ -204,6 +204,8 @@ class WebUILocationBar : public LocationBar,
   void OnIconFetched(const gfx::Image& image);
 
   void ShowPageInfoBubble();
+  void OnPageInfoBubbleClosed(views::Widget::ClosedReason closed_reason,
+                              bool reload_prompt);
 
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   raw_ptr<LocationBarView::Delegate> delegate_ = nullptr;

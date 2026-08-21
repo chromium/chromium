@@ -720,6 +720,7 @@ struct SecurityChipState {
   // Whether the security chip is visible. It might be hidden if it is
   // overridden by permission chips.
   bool is_visible;
+  bool is_context_menu_visible;
 };
 
 // Note: The security chip and permission chips are visually mutually exclusive.
