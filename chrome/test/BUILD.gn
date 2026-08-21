@@ -2572,6 +2572,7 @@ if (!is_android) {
       "//components/ntp_tiles:pref_names",
       "//components/offline_items_collection/core/test_support",
       "//components/omnibox/browser:vector_icons",
+      "//components/one_time_tokens/core/browser:test_support",
       "//components/optimization_guide/content/browser",
       "//components/optimization_guide/content/browser:test_support",
       "//components/optimization_guide/content/mojom:mojo_interfaces",

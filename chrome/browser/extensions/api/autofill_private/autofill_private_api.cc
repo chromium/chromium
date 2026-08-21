@@ -68,6 +68,8 @@
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/one_time_tokens/core/browser/one_time_token_service.h"
+#include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
@@ -125,6 +127,10 @@ static const char kErrorAutofillAiTypeNameOutOfBounds[] =
 static const char kErrorAutofillAiEntityInstanceNotFound[] =
     "The provided Autofill AI entity instance cannot be found.";
 static const char kErrorDeviceAuthUnavailable[] = "Device auth is unvailable";
+constexpr char kErrorOneTimeTokenServiceUnavailable[] =
+    "One-time token service unavailable.";
+constexpr char kErrorConsentFetchFailed[] =
+    "Failed to fetch user data processing consent.";
 
 // Constant to assign a user-verified verification status to the autofill
 // profile.
@@ -136,6 +142,21 @@ constexpr char kFieldTypeKey[] = "field";
 constexpr char kFieldLengthKey[] = "isLongField";
 constexpr char kFieldNameKey[] = "fieldName";
 constexpr char kFieldRequired[] = "isRequired";
+
+autofill_private::UserDataProcessingConsentState ConvertConsentState(
+    one_time_tokens::ConsentState state) {
+  switch (state) {
+    case one_time_tokens::ConsentState::kUndefined:
+      return autofill_private::UserDataProcessingConsentState::kUndefined;
+    case one_time_tokens::ConsentState::kUnknown:
+      return autofill_private::UserDataProcessingConsentState::kUnknown;
+    case one_time_tokens::ConsentState::kEnabled:
+      return autofill_private::UserDataProcessingConsentState::kEnabled;
+    case one_time_tokens::ConsentState::kDisabled:
+      return autofill_private::UserDataProcessingConsentState::kDisabled;
+  }
+  NOTREACHED();
+}
 
 // Serializes the AddressUiComponent a map from string to base::Value().
 base::DictValue AddressUiComponentAsValueMap(
@@ -1638,19 +1659,33 @@ AutofillPrivateFetchUserDataProcessingConsentFunction::Run() {
                             kErrorAutofillClientUnavailable})));
   }
 
-  autofill_private::UserDataProcessingConsentStates states;
-  if (autofill::prefs::IsAutofillGmailOtpFillingEnabled(client->GetPrefs())) {
-    states.comms_apps =
-        autofill_private::UserDataProcessingConsentState::kEnabled;
-    states.google_apps =
-        autofill_private::UserDataProcessingConsentState::kEnabled;
-  } else {
-    states.comms_apps =
-        autofill_private::UserDataProcessingConsentState::kDisabled;
-    states.google_apps =
-        autofill_private::UserDataProcessingConsentState::kDisabled;
+  one_time_tokens::OneTimeTokenService* otp_service =
+      client->GetOneTimeTokenService();
+  if (!otp_service) {
+    return RespondNow(
+        Error(base::StrCat({"Fetch user data processing consent - ",
+                            kErrorOneTimeTokenServiceUnavailable})));
   }
-  return RespondNow(WithArguments(states.ToValue()));
+
+  otp_service->FetchUserDataProcessingConsent(base::BindOnce(
+      &AutofillPrivateFetchUserDataProcessingConsentFunction::OnConsentFetched,
+      base::RetainedRef(this)));
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void AutofillPrivateFetchUserDataProcessingConsentFunction::OnConsentFetched(
+    std::optional<one_time_tokens::UserDataProcessingConsentStates>
+        consent_states) {
+  if (!consent_states) {
+    Respond(Error(base::StrCat(
+        {"Fetch user data processing consent - ", kErrorConsentFetchFailed})));
+    return;
+  }
+
+  autofill_private::UserDataProcessingConsentStates states;
+  states.comms_apps = ConvertConsentState(consent_states->comms_apps);
+  states.google_apps = ConvertConsentState(consent_states->google_apps);
+  Respond(WithArguments(states.ToValue()));
 }
 
 }  // namespace extensions

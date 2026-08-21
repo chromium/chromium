@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_API_H_
 
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
@@ -735,6 +736,11 @@ class AutofillPrivateFetchUserDataProcessingConsentFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
+
+ private:
+  void OnConsentFetched(
+      std::optional<one_time_tokens::UserDataProcessingConsentStates>
+          consent_states);
 };
 
 }  // namespace extensions

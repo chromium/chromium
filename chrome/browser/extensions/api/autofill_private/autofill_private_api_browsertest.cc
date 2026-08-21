@@ -47,6 +47,8 @@
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/device_reauth/mock_device_authenticator.h"
+#include "components/one_time_tokens/core/browser/mock_one_time_token_service.h"
+#include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -451,9 +453,16 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
-                       FetchUserDataProcessingConsent) {
-  autofill::prefs::SetAutofillGmailOtpFillingEnabled(
-      autofill_client()->GetPrefs(), true);
+                       FetchUserDataProcessingConsent_Success) {
+  auto mock_otp_service = std::make_unique<
+      testing::NiceMock<one_time_tokens::MockOneTimeTokenService>>();
+  EXPECT_CALL(*mock_otp_service, FetchUserDataProcessingConsent)
+      .WillOnce(
+          RunOnceCallback<0>(one_time_tokens::UserDataProcessingConsentStates{
+              .comms_apps = one_time_tokens::ConsentState::kEnabled,
+              .google_apps = one_time_tokens::ConsentState::kEnabled,
+          }));
+  autofill_client()->set_one_time_token_service(std::move(mock_otp_service));
 
   auto function = base::MakeRefCounted<
       extensions::AutofillPrivateFetchUserDataProcessingConsentFunction>();
@@ -469,23 +478,100 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
               Pointee(Eq("ENABLED")));
   EXPECT_THAT(result->GetDict().FindString("googleApps"),
               Pointee(Eq("ENABLED")));
+}
 
-  autofill::prefs::SetAutofillGmailOtpFillingEnabled(
-      autofill_client()->GetPrefs(), false);
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
+                       FetchUserDataProcessingConsent_MixedAndUnknown) {
+  auto mock_otp_service = std::make_unique<
+      testing::NiceMock<one_time_tokens::MockOneTimeTokenService>>();
+  EXPECT_CALL(*mock_otp_service, FetchUserDataProcessingConsent)
+      .WillOnce(
+          RunOnceCallback<0>(one_time_tokens::UserDataProcessingConsentStates{
+              .comms_apps = one_time_tokens::ConsentState::kDisabled,
+              .google_apps = one_time_tokens::ConsentState::kUnknown,
+          }));
+  autofill_client()->set_one_time_token_service(std::move(mock_otp_service));
 
-  function = base::MakeRefCounted<
+  auto function = base::MakeRefCounted<
       extensions::AutofillPrivateFetchUserDataProcessingConsentFunction>();
   function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
 
-  result = extensions::api_test_utils::RunFunctionAndReturnSingleResult(
-      function.get(), "[]", profile());
+  std::optional<base::Value> result =
+      extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(), "[]", profile());
 
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_dict());
   EXPECT_THAT(result->GetDict().FindString("commsApps"),
               Pointee(Eq("DISABLED")));
   EXPECT_THAT(result->GetDict().FindString("googleApps"),
-              Pointee(Eq("DISABLED")));
+              Pointee(Eq("UNKNOWN")));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
+                       FetchUserDataProcessingConsent_Undefined) {
+  auto mock_otp_service = std::make_unique<
+      testing::NiceMock<one_time_tokens::MockOneTimeTokenService>>();
+  EXPECT_CALL(*mock_otp_service, FetchUserDataProcessingConsent)
+      .WillOnce(
+          RunOnceCallback<0>(one_time_tokens::UserDataProcessingConsentStates{
+              .comms_apps = one_time_tokens::ConsentState::kUndefined,
+              .google_apps = one_time_tokens::ConsentState::kUndefined,
+          }));
+  autofill_client()->set_one_time_token_service(std::move(mock_otp_service));
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivateFetchUserDataProcessingConsentFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  std::optional<base::Value> result =
+      extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(), "[]", profile());
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_dict());
+  EXPECT_THAT(result->GetDict().FindString("commsApps"),
+              Pointee(Eq("UNDEFINED")));
+  EXPECT_THAT(result->GetDict().FindString("googleApps"),
+              Pointee(Eq("UNDEFINED")));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
+                       FetchUserDataProcessingConsent_BackendError) {
+  auto mock_otp_service = std::make_unique<
+      testing::NiceMock<one_time_tokens::MockOneTimeTokenService>>();
+  EXPECT_CALL(*mock_otp_service, FetchUserDataProcessingConsent)
+      .WillOnce(RunOnceCallback<0>(std::nullopt));
+  autofill_client()->set_one_time_token_service(std::move(mock_otp_service));
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivateFetchUserDataProcessingConsentFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  std::string error = extensions::api_test_utils::RunFunctionAndReturnError(
+      function.get(), "[]", profile());
+
+  EXPECT_EQ(
+      "Fetch user data processing consent - Failed to fetch user data "
+      "processing consent.",
+      error);
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
+                       FetchUserDataProcessingConsent_NoService) {
+  autofill_client()->set_one_time_token_service(nullptr);
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivateFetchUserDataProcessingConsentFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  std::string error = extensions::api_test_utils::RunFunctionAndReturnError(
+      function.get(), "[]", profile());
+
+  EXPECT_EQ(
+      "Fetch user data processing consent - One-time token service "
+      "unavailable.",
+      error);
 }
 
 IN_PROC_BROWSER_TEST_F(

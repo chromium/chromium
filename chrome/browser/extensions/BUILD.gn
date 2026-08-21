@@ -1030,6 +1030,7 @@ source_set("extensions") {
       "//components/navigation_interception",
       "//components/net_log",
       "//components/onc",
+      "//components/one_time_tokens/core/browser",
       "//components/page_load_metrics/browser",
       "//components/password_manager/content/browser",
       "//components/password_manager/core/browser",
