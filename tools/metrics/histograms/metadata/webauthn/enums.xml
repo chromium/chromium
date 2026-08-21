@@ -261,6 +261,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Private key invalid"/>
   <int value="7" label="Private key unsupported algorithm"/>
   <int value="8" label="Encryption failed"/>
+  <int value="9" label="HMAC secret invalid size"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/webauthn/core/browser/import/imported_passkey_checker.h:ImportedPasskeyStatus) -->

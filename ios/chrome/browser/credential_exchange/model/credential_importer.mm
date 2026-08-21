@@ -27,6 +27,7 @@
 #import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_passkey.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_password.h"
+#import "ios/chrome/browser/credential_exchange/model/features.h"
 #import "ios/chrome/browser/credential_exchange/model/import_stats.h"
 #import "ios/chrome/browser/credential_exchange/model/metrics_util.h"
 #import "ios/chrome/browser/data_import/public/passkey_import_item.h"
@@ -255,6 +256,13 @@ constexpr int kSupportedCredentialTypesCount = 2;
 
   for (CredentialExchangePasskey* passkey : _passkeys) {
     // TODO(crbug.com/458337350): Handle extensions.
+    std::vector<uint8_t> hmacSecret;
+    if (base::FeatureList::IsEnabled(kCredentialExchangeFidoExtensions)) {
+      if (passkey.hmacSecret) {
+        hmacSecret =
+            base::ToVector(base::apple::NSDataToSpan(passkey.hmacSecret));
+      }
+    }
     passkeys.push_back(webauthn::PasskeyImportCandidate{
         .rp_id = base::SysNSStringToUTF8(passkey.rpId),
         .user_name = base::SysNSStringToUTF8(passkey.userName),
@@ -265,6 +273,7 @@ constexpr int kSupportedCredentialTypesCount = 2;
         .private_key =
             base::ToVector(base::apple::NSDataToSpan(passkey.privateKey)),
         .creation_time = timeNow,
+        .hmac_secret = std::move(hmacSecret),
     });
   }
 

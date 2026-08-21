@@ -40,6 +40,9 @@ inline constexpr size_t kCredentialIdMaxLength = 1023u;
 // passkeys created by GPM.
 inline constexpr size_t kGpmCreatedCredentialIdLength = 16u;
 
+// The byte length of the WebauthnCredentialSpecifics `hmac_secret` field.
+inline constexpr size_t kHmacSecretSize = 32u;
+
 // Extension output data for passkey creation and assertion.
 struct ExtensionOutputData {
   ExtensionOutputData();

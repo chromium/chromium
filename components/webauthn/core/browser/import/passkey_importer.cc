@@ -96,6 +96,10 @@ void PasskeyImporter::ProcessPasskeys(
     sync_pb::WebauthnCredentialSpecifics_Encrypted encrypted;
     encrypted.set_private_key(candidate.private_key.data(),
                               candidate.private_key.size());
+    if (!candidate.hmac_secret.empty()) {
+      encrypted.set_hmac_secret(candidate.hmac_secret.data(),
+                                candidate.hmac_secret.size());
+    }
     if (!webauthn::passkey_model_utils::EncryptWebauthnCredentialSpecificsData(
             trusted_vault_key, encrypted, &passkey)) {
       RecordPasskeyImportError(

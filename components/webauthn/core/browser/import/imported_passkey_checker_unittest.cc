@@ -107,5 +107,29 @@ TEST(ImportedPasskeyCheckerTest, ReturnsStatusForUnsupportedAlgorithm) {
   }
 }
 
+TEST(ImportedPasskeyCheckerTest, ReturnsStatusForInvalidHmacSecretSize) {
+  {
+    PasskeyImportCandidate passkey = CreateValidPasskey();
+    passkey.hmac_secret =
+        base::RandBytesAsVector(passkey_model_utils::kHmacSecretSize - 1);
+    EXPECT_EQ(CheckImportedPasskey(passkey),
+              ImportedPasskeyStatus::kHmacSecretInvalidSize);
+  }
+  {
+    PasskeyImportCandidate passkey = CreateValidPasskey();
+    passkey.hmac_secret =
+        base::RandBytesAsVector(passkey_model_utils::kHmacSecretSize + 1);
+    EXPECT_EQ(CheckImportedPasskey(passkey),
+              ImportedPasskeyStatus::kHmacSecretInvalidSize);
+  }
+  {
+    // `kHmacSecretSize`-byte HMAC secret is valid.
+    PasskeyImportCandidate passkey = CreateValidPasskey();
+    passkey.hmac_secret =
+        base::RandBytesAsVector(passkey_model_utils::kHmacSecretSize);
+    EXPECT_EQ(CheckImportedPasskey(passkey), ImportedPasskeyStatus::kOk);
+  }
+}
+
 }  // namespace
 }  // namespace webauthn

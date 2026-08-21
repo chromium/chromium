@@ -38,7 +38,9 @@ enum class ImportedPasskeyStatus {
   kPrivateKeyUnsupportedAlgorithm = 7,
   // Failed to encrypt the passkey data.
   kEncryptionFailed = 8,
-  kMaxValue = kEncryptionFailed,
+  // HMAC secret does not have the required 32-byte length.
+  kHmacSecretInvalidSize = 9,
+  kMaxValue = kHmacSecretInvalidSize,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:ImportedPasskeyStatus)
 

@@ -15,6 +15,7 @@
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/import/import_processing_result.h"
 #include "components/webauthn/core/browser/import/passkey_import_candidate.h"
+#include "components/webauthn/core/browser/passkey_model_utils.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
 #include "crypto/keypair.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -35,6 +36,10 @@ using ::testing::UnorderedElementsAre;
 constexpr char kRpId[] = "example.com";
 constexpr char kUserId[] = "user_id";
 constexpr char kUserId2[] = "user_id2";
+
+std::vector<uint8_t> TestTrustedVaultKey() {
+  return std::vector<uint8_t>(32, 0);
+}
 
 sync_pb::WebauthnCredentialSpecifics CreateSpecifics(
     const std::string& rp_id,
@@ -74,8 +79,8 @@ class PasskeyImporterTest : public testing::Test {
   ImportProcessingResult StartImport(
       std::vector<PasskeyImportCandidate> passkeys) {
     base::test::TestFuture<const ImportProcessingResult&> future;
-    passkey_importer_->StartImport(
-        std::move(passkeys), std::vector<uint8_t>(32, 0), future.GetCallback());
+    passkey_importer_->StartImport(std::move(passkeys), TestTrustedVaultKey(),
+                                   future.GetCallback());
     return future.Get();
   }
 
@@ -214,6 +219,24 @@ TEST_F(PasskeyImporterTest, DoesNotImportInvalidPasskeys) {
       passkey_model_->GetPasskeys(PasskeyModel::AnyRp(),
                                   PasskeyModel::ShadowedCredentials::kInclude),
       IsEmpty());
+}
+
+TEST_F(PasskeyImporterTest, ImportsPasskeyWithHmacSecret) {
+  PasskeyImportCandidate candidate = CreateCandidate(kRpId, kUserId);
+  candidate.hmac_secret =
+      std::vector<uint8_t>(passkey_model_utils::kHmacSecretSize, 'a');
+  std::ignore = StartImport({candidate});
+
+  int passkeys_imported = FinishImport(/*selected_passkey_ids=*/{});
+  EXPECT_EQ(passkeys_imported, 1);
+  auto passkeys = passkey_model_->GetPasskeys(
+      PasskeyModel::AnyRp(), PasskeyModel::ShadowedCredentials::kInclude);
+  ASSERT_THAT(passkeys, SizeIs(1));
+  sync_pb::WebauthnCredentialSpecifics_Encrypted decrypted;
+  EXPECT_TRUE(passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
+      TestTrustedVaultKey(), passkeys[0], &decrypted));
+  EXPECT_EQ(decrypted.hmac_secret(),
+            std::string(passkey_model_utils::kHmacSecretSize, 'a'));
 }
 
 }  // namespace

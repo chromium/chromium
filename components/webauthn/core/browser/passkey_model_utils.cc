@@ -59,8 +59,6 @@ constexpr uint8_t kSignatureCounter[4] = {0};
 
 constexpr size_t kEncryptionSecretSize = 32;
 
-constexpr size_t kHmacSecretSize = 32;
-
 struct PasskeyComparator {
   bool operator()(const sync_pb::WebauthnCredentialSpecifics& a,
                   const sync_pb::WebauthnCredentialSpecifics& b) const {

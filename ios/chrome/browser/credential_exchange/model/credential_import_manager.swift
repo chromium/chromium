@@ -101,6 +101,18 @@ import Foundation
               ))
           case .passkey(let passkey):
             stats.passkeyCount += 1
+            var hmacSecret: Data? = nil
+            #if compiler(>=6.3)
+              if #available(iOS 26.4, *) {
+                if let hmacCred = passkey.fido2Extensions?.hmacCredentials {
+                  if !hmacCred.credentialWithUV.isEmpty {
+                    hmacSecret = hmacCred.credentialWithUV
+                  } else if !hmacCred.credentialWithoutUV.isEmpty {
+                    hmacSecret = hmacCred.credentialWithoutUV
+                  }
+                }
+              }
+            #endif
             passkeys.append(
               CredentialExchangePasskey(
                 credentialId: passkey.credentialID,
@@ -110,8 +122,7 @@ import Foundation
                 userId: passkey.userHandle,
                 privateKey: passkey.key,
                 creationDate: nil,
-                // TODO(crbug.com/458337350): Handle hmac_secret.
-                hmacSecret: nil,
+                hmacSecret: hmacSecret,
                 // TODO(crbug.com/458337350): Handle large_blob.
                 largeBlob: nil,
                 largeBlobUncompressedSize: nil))
