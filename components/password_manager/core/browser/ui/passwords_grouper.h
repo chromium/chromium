@@ -68,8 +68,6 @@ class PasswordsGrouper {
 
   void ClearCache();
 
-  // crbug.com/354398088 Investigate double-free or out-of-bounds writes.
-  void CheckHeapIntegrity() const;
 
  private:
   using SignonRealm = base::StrongAlias<class SignonRealmTag, std::string>;

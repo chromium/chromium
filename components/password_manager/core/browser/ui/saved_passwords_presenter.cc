@@ -555,9 +555,7 @@ SavedPasswordsPresenter::GetCorrespondingStoredCredentials(
       range.first, range.second, std::back_inserter(credentials),
       [](const auto& pair) { return CloneStoredCredential(pair.second); });
 #else
-  passwords_grouper_->CheckHeapIntegrity();
   credentials = passwords_grouper_->GetStoredCredentialsFor(credential);
-  passwords_grouper_->CheckHeapIntegrity();
 #endif
   return credentials;
 }
@@ -750,22 +748,18 @@ void SavedPasswordsPresenter::MaybeGroupCredentials(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Notify observers after grouping is complete.
-  passwords_grouper_->CheckHeapIntegrity();
   passwords_grouper_->GroupCredentials(
       std::move(all_credentials), std::move(passkeys),
       metrics_util::TimeCallback(std::move(completion),
                                  "PasswordManager.PasswordsGrouping.Time"));
-  passwords_grouper_->CheckHeapIntegrity();
 }
 
 SavedPasswordsPresenter::EditResult SavedPasswordsPresenter::EditPasskey(
     const CredentialUIEntry& updated_credential) {
   CHECK(!updated_credential.passkey_credential_id.empty());
   CHECK(passkey_store_);
-  passwords_grouper_->CheckHeapIntegrity();
   std::optional<PasskeyCredential> original_credential =
       passwords_grouper_->GetPasskeyFor(updated_credential);
-  passwords_grouper_->CheckHeapIntegrity();
   if (!original_credential) {
     return EditResult::kNotFound;
   }
