@@ -18,7 +18,10 @@ DEFINE_PROTO_FUZZER(
   std::string serialized;
   CHECK(fuzzable_a11y_event_data.SerializeToString(&serialized));
   proto::AccessibilityEventData a11y_event_data;
-  CHECK(a11y_event_data.ParseFromString(serialized));
+  // Recursion limits can cause parsing to fail.
+  if (!a11y_event_data.ParseFromString(serialized)) {
+    return;
+  }
 
   AccessibilityTreeConverter converter;
   converter.ConvertEventDataProtoToMojom(a11y_event_data);

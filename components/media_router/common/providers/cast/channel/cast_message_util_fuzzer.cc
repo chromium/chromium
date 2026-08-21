@@ -71,7 +71,10 @@ DEFINE_PROTO_FUZZER(const fuzzable::cast_channel::fuzz::CastMessageUtilInputs&
   std::string serialized;
   CHECK(fuzzable_input_union.SerializeToString(&serialized));
   CastMessageUtilInputs input_union;
-  CHECK(input_union.ParseFromString(serialized));
+  // Recursion limits can cause parsing to fail.
+  if (!input_union.ParseFromString(serialized)) {
+    return;
+  }
 
   // TODO(crbug.com/40555657): Add test for CreateAuthChallengeMessage()
   switch (input_union.input_case()) {

@@ -20,7 +20,10 @@ DEFINE_PROTO_FUZZER(
   std::string serialized;
   CHECK(fuzzable_input.SerializeToString(&serialized));
   openscreen::cast::proto::CastMessage input;
-  CHECK(input.ParseFromString(serialized));
+  // Recursion limits can cause parsing to fail.
+  if (!input.ParseFromString(serialized)) {
+    return;
+  }
 
   std::string native_input;
   MessageFramer::Serialize(input, &native_input);

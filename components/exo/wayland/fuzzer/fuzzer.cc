@@ -27,7 +27,10 @@ DEFINE_TEXT_PROTO_FUZZER(
 
   std::string serialized = fuzzable_acts.SerializeAsString();
   exo::wayland_fuzzer::actions::actions acts;
-  CHECK(acts.ParseFromString(serialized));
+  // Recursion limits can cause parsing to fail.
+  if (!acts.ParseFromString(serialized)) {
+    return;
+  }
 
   exo::wayland_fuzzer::Harness().Run(acts);
 }

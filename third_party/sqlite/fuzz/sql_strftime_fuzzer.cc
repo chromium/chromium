@@ -21,7 +21,10 @@ DEFINE_PROTO_FUZZER(
   std::string serialized;
   CHECK(fuzzable_sql_strftime.SerializeToString(&serialized));
   sql_query_grammar::StrftimeFn sql_strftime;
-  CHECK(sql_strftime.ParseFromString(serialized));
+  // Recursion limits can cause parsing to fail.
+  if (!sql_strftime.ParseFromString(serialized)) {
+    return;
+  }
   std::string strftime_str = sql_fuzzer::StrftimeFnToString(sql_strftime);
   // Convert printf command into runnable SQL query.
   strftime_str = "SELECT " + strftime_str + ";";

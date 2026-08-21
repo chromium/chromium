@@ -70,7 +70,10 @@ DEFINE_PROTO_FUZZER(const fuzzable::cast_channel::fuzz::CastAuthUtilInputs&
   std::string serialized;
   CHECK(fuzzable_input_union.SerializeToString(&serialized));
   CastAuthUtilInputs input_union;
-  CHECK(input_union.ParseFromString(serialized));
+  // Recursion limits can cause parsing to fail.
+  if (!input_union.ParseFromString(serialized)) {
+    return;
+  }
 
   if (input_union.input_case() !=
       CastAuthUtilInputs::kAuthenticateChallengeReplyInput) {

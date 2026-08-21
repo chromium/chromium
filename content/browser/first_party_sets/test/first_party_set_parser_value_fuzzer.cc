@@ -118,7 +118,10 @@ DEFINE_PROTO_FUZZER(
   std::string serialized;
   CHECK(fuzzable_input.SerializeToString(&serialized));
   related_website_sets::proto::AllInputs input;
-  CHECK(input.ParseFromString(serialized));
+  // Recursion limits can cause parsing to fail.
+  if (!input.ParseFromString(serialized)) {
+    return;
+  }
 
   NativeInputs native_inputs = ConvertProto(input);
 

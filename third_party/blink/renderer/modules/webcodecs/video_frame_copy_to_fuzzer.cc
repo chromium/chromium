@@ -28,7 +28,10 @@ DEFINE_TEXT_PROTO_FUZZER(
   std::string serialized;
   CHECK(fuzzable_proto.SerializeToString(&serialized));
   wc_fuzzer::VideoFrameCopyToCase proto;
-  CHECK(proto.ParseFromString(serialized));
+  // Recursion limits can cause parsing to fail.
+  if (!proto.ParseFromString(serialized)) {
+    return;
+  }
 
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
 

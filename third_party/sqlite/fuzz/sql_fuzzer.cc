@@ -43,7 +43,10 @@ DEFINE_PROTO_FUZZER(
   std::string serialized;
   CHECK(fuzzable_sql_queries.SerializeToString(&serialized));
   sql_query_grammar::SQLQueries sql_queries;
-  CHECK(sql_queries.ParseFromString(serialized));
+  // Recursion limits can cause parsing to fail.
+  if (!sql_queries.ParseFromString(serialized)) {
+    return;
+  }
   char* skip_queries = ::getenv("SQL_SKIP_QUERIES");
   if (skip_queries) {
     sql_fuzzer::SetDisabledQueries(

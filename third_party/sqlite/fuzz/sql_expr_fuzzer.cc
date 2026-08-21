@@ -20,7 +20,10 @@ DEFINE_PROTO_FUZZER(const fuzzable::sql_query_grammar::Expr& fuzzable_expr) {
   std::string serialized;
   CHECK(fuzzable_expr.SerializeToString(&serialized));
   sql_query_grammar::Expr expr;
-  CHECK(expr.ParseFromString(serialized));
+  // Recursion limits can cause parsing to fail.
+  if (!expr.ParseFromString(serialized)) {
+    return;
+  }
   std::string expr_str = sql_fuzzer::ExprToString(expr);
   // Convert printf command into runnable SQL query.
   expr_str = "SELECT " + expr_str + ";";

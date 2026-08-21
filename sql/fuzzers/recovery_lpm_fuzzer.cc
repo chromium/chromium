@@ -248,7 +248,10 @@ DEFINE_PROTO_FUZZER(const fuzzable::sql_fuzzers::RecoveryFuzzerTestCase&
   std::string serialized;
   CHECK(fuzzable_fuzzer_input.SerializeToString(&serialized));
   sql_fuzzers::RecoveryFuzzerTestCase fuzzer_input;
-  CHECK(fuzzer_input.ParseFromString(serialized));
+  // Recursion limits can cause parsing to fail.
+  if (!fuzzer_input.ParseFromString(serialized)) {
+    return;
+  }
 
   static Environment env;
 

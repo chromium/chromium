@@ -20,7 +20,10 @@ DEFINE_PROTO_FUZZER(const fuzzable::safe_browsing::ClientSidePhishingFuzzerCase&
   std::string serialized;
   CHECK(fuzzable_fuzzing_case.SerializeToString(&serialized));
   safe_browsing::ClientSidePhishingFuzzerCase fuzzing_case;
-  CHECK(fuzzing_case.ParseFromString(serialized));
+  // Recursion limits can cause parsing to fail.
+  if (!fuzzing_case.ParseFromString(serialized)) {
+    return;
+  }
 
   base::CommandLine::Init(0, nullptr);
   const std::string model_str = fuzzing_case.memory_region();

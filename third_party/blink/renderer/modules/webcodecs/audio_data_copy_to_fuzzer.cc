@@ -26,7 +26,10 @@ DEFINE_TEXT_PROTO_FUZZER(
   std::string serialized;
   CHECK(fuzzable_proto.SerializeToString(&serialized));
   wc_fuzzer::AudioDataCopyToCase proto;
-  CHECK(proto.ParseFromString(serialized));
+  // Recursion limits can cause parsing to fail.
+  if (!proto.ParseFromString(serialized)) {
+    return;
+  }
 
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
   test::TaskEnvironment task_environment;
