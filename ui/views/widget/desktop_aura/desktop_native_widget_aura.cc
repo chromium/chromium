@@ -212,6 +212,9 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
     // the Widget::SetBounds function.
     if (top_level_widget_ && window == child_window_) {
       top_level_widget_->SetBounds(window->GetBoundsInScreen());
+    } else if (top_level_widget_ &&
+               window == top_level_widget_->GetNativeView()) {
+      child_window_->SetBounds(gfx::Rect(new_bounds.size()));
     }
   }
 

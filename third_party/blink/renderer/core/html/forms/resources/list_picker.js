@@ -94,18 +94,17 @@ class ListPicker extends Picker {
 
     this.trackingTouchId_ = null;
 
-    this.handleWindowDidHide_();
+    this.applyInitialLayout_();
     this.selectElement_.focus();
     this.selectElement_.value = this.config_.selectedIndex;
   }
 
-  handleWindowDidHide_() {
+  applyInitialLayout_() {
     this.fixWindowSize_();
     const selectedOption =
         this.selectElement_.options[this.selectElement_.selectedIndex];
     if (selectedOption)
       selectedOption.scrollIntoView(false);
-    window.removeEventListener('didHide', this.handleWindowDidHideBound_);
   }
 
   handleWindowMessage_(event) {

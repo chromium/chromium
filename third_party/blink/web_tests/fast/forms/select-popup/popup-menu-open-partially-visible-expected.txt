@@ -1,4 +1,5 @@
-PASS internals.pagePopupWindow.isWindowHidden() is false
+PASS internals.pagePopupWindow.innerWidth is > 1
+PASS internals.pagePopupWindow.innerHeight is > 1
 PASS successfullyParsed is true
 
 TEST COMPLETE

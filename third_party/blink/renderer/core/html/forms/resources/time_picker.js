@@ -229,7 +229,8 @@ class TimePicker extends HTMLElement {
       this.addEventListener('click', this.onClick_);
     }
 
-    window.addEventListener('resize', this.onWindowResize_, {once: true});
+    // scrollColumnsToSelectedCells needs offsetTop, so wait for layout.
+    runOnceWhenLaidOut((event) => this.onWindowResize_(event));
   };
 
   initializeFromConfig_ = (config) => {

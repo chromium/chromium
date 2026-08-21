@@ -259,28 +259,30 @@ function setWindowRect(rect) {
   }
 }
 
-function hideWindow() {
-  setWindowRect(adjustWindowRect(1, 1, 1, 1));
-}
+window.addEventListener('resize', function() {
+  window.dispatchEvent(new CustomEvent('didOpenPicker'));
+  window.didOpenPicker = true;
+}, false);
 
 /**
- * @return {!boolean}
+ * Runs `callback` once, after the popup has been laid out. Resolves on
+ * whichever happens first: the next popup `resize` event, or the next
+ * animation frame. The callback receives the resize Event, or null if the
+ * rAF path ran.
+ * @param {function(?Event):void} callback
  */
-function isWindowHidden() {
-  // window.innerWidth and innerHeight are zoom-adjusted values.  If we call
-  // setWindowRect with width=100 and the zoom-level is 2.0, innerWidth will
-  // return 50.
-  return window.innerWidth <= 1 && window.innerHeight <= 1;
+function runOnceWhenLaidOut(callback) {
+  let finished = false;
+  const runOnce = (event) => {
+    if (finished)
+      return;
+    finished = true;
+    window.removeEventListener('resize', runOnce);
+    callback(event);
+  };
+  window.addEventListener('resize', runOnce);
+  requestAnimationFrame(() => runOnce(null));
 }
-
-window.addEventListener('resize', function() {
-  if (isWindowHidden()) {
-    window.dispatchEvent(new CustomEvent('didHide'));
-  } else {
-    window.dispatchEvent(new CustomEvent('didOpenPicker'));
-    window.didOpenPicker = true;
-  }
-}, false);
 
 /**
  * @return {!number}
