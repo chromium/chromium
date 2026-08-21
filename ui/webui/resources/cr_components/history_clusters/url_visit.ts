@@ -100,7 +100,7 @@ export class UrlVisitElement extends ClusterMenuElementBase {
   protected annotations_: string[] = [];
   protected accessor allowDeletingHistory_: boolean =
       loadTimeData.getBoolean('allowDeletingHistory');
-  private accessor inSidePanel_: boolean =
+  protected accessor inSidePanel_: boolean =
       loadTimeData.getBoolean('inSidePanel');
   protected accessor renderActionMenu_: boolean = false;
 

@@ -16,6 +16,7 @@ build_webui_tests("build") {
     "cluster_test.ts",
     "history_clusters_test.ts",
     "horizontal_carousel_test.ts",
+    "url_visit_test.ts",
   ]
 
   ts_deps = [

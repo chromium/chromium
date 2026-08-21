@@ -21,7 +21,10 @@ export function getHtml(this: UrlVisitElement) {
       this.computeAnnotations_().map(
           item => html`<span class="annotation">${item}</span>`)}
       </div>
-      <span id="url" class="truncate"></span>
+      <span id="url" class="truncate"
+          title="${this.inSidePanel_ && this.visit ?
+              this.visit.urlForDisplay :
+              nothing}"></span>
       <span id="debug-info" ?hidden="${!this.computeDebugInfo_()}">
         ${this.computeDebugInfo_()}
       </span>
