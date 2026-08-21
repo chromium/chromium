@@ -1087,7 +1087,8 @@ const FeatureEntry::FeatureParam
         {"Omnibox_AskGLensSearchHintText", "true"},
         {"Omnibox_AskGComposeboxLensChip", "false"},
         {"Omnibox_AskGBlockAutoTabZeroStateSuggestions", "false"},
-        {"Omnibox_AskGShowFirstDescription", "false"}};
+        {"Omnibox_AskGShowFirstDescription", "false"},
+        {"Omnibox_AskGBypassPrivacyNotice", "true"}};
 const FeatureEntry::FeatureParam
     kWebUiOmniboxAskGAboutThisPageCobrowsePlusVisualSelection[] = {
         {"Omnibox_AskGCoBrowse", "false"},
@@ -1101,7 +1102,8 @@ const FeatureEntry::FeatureParam
         {"Omnibox_AskGLensSearchHintText", "true"},
         {"Omnibox_AskGComposeboxLensChip", "false"},
         {"Omnibox_AskGBlockAutoTabZeroStateSuggestions", "false"},
-        {"Omnibox_AskGShowFirstDescription", "false"}};
+        {"Omnibox_AskGShowFirstDescription", "false"},
+        {"Omnibox_AskGBypassPrivacyNotice", "true"}};
 const FeatureEntry::FeatureParam
     kWebUiOmniboxAskGAboutThisPageOmniboxComposebox[] = {
         {"Omnibox_AskGCoBrowse", "false"},
@@ -1115,7 +1117,8 @@ const FeatureEntry::FeatureParam
         {"Omnibox_AskGLensSearchHintText", "true"},
         {"Omnibox_AskGComposeboxLensChip", "true"},
         {"Omnibox_AskGBlockAutoTabZeroStateSuggestions", "true"},
-        {"Omnibox_AskGShowFirstDescription", "false"}};
+        {"Omnibox_AskGShowFirstDescription", "false"},
+        {"Omnibox_AskGBypassPrivacyNotice", "true"}};
 const FeatureEntry::FeatureParam
     kWebUiOmniboxAskGAboutThisPageOmniboxComposeboxAndLensEntrypoint[] = {
         {"Omnibox_AskGCoBrowse", "false"},
@@ -1129,7 +1132,8 @@ const FeatureEntry::FeatureParam
         {"Omnibox_AskGLensSearchHintText", "true"},
         {"Omnibox_AskGComposeboxLensChip", "false"},
         {"Omnibox_AskGBlockAutoTabZeroStateSuggestions", "true"},
-        {"Omnibox_AskGShowFirstDescription", "false"}};
+        {"Omnibox_AskGShowFirstDescription", "false"},
+        {"Omnibox_AskGBypassPrivacyNotice", "true"}};
 const FeatureEntry::FeatureParam
     kWebUiOmniboxAskGAboutThisPageOmniboxChipComposeboxAndLensEntrypoint[] = {
         {"Omnibox_AskGCoBrowse", "false"},
@@ -1143,7 +1147,8 @@ const FeatureEntry::FeatureParam
         {"Omnibox_AskGLensSearchHintText", "true"},
         {"Omnibox_AskGComposeboxLensChip", "false"},
         {"Omnibox_AskGBlockAutoTabZeroStateSuggestions", "true"},
-        {"Omnibox_AskGShowFirstDescription", "true"}};
+        {"Omnibox_AskGShowFirstDescription", "true"},
+        {"Omnibox_AskGBypassPrivacyNotice", "true"}};
 
 const FeatureEntry::FeatureVariation
     kWebUiOmniboxAskGAboutThisPageVariations[] = {
