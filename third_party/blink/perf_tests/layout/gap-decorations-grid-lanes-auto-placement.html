@@ -1,0 +1,85 @@
+<!doctype html>
+<title>Grid Lanes relayout with gap decorations after resizing an auto-placed item</title>
+<script src="../resources/runner.js"></script>
+<style>
+  body {
+    margin: 0;
+  }
+
+  #grid-lanes {
+    display: grid-lanes;
+    flow-tolerance: 0;
+    gap: 2px;
+    column-rule: 1px solid blue;
+    row-rule: 1px solid red;
+    grid-template-columns: repeat(32, 24px);
+  }
+
+  .item {
+    background: lightblue;
+    box-sizing: border-box;
+    overflow: clip;
+    white-space: nowrap;
+  }
+
+  .short {
+    height: 20px;
+    width: 8px;
+  }
+
+  .medium {
+    height: 36px;
+    padding: 2px;
+    width: 16px;
+  }
+
+  .tall {
+    height: 52px;
+    width: 24px;
+  }
+</style>
+
+<div id="grid-lanes"></div>
+
+<script>
+  'use strict';
+
+  const kItemClasses = ['short', 'medium', 'tall'];
+  const kItemContents = ['', 'x', 'grid lanes'];
+  const kItemCount = 2000;
+
+  function populateContainer(container) {
+    const fragment = document.createDocumentFragment();
+    // Create varied items that auto-place across the 32 lanes.
+    for (let i = 0; i < kItemCount; ++i) {
+      const shapeIndex = i % kItemClasses.length;
+      const item = document.createElement('div');
+      item.className = `item ${kItemClasses[shapeIndex]}`;
+      item.textContent = kItemContents[shapeIndex];
+      fragment.appendChild(item);
+    }
+    container.appendChild(fragment);
+  }
+
+  function startTest() {
+    const container = document.getElementById('grid-lanes');
+    populateContainer(container);
+
+    PerfTestRunner.forceLayout();
+
+    const target = container.firstElementChild;
+    let isTall = true;
+    PerfTestRunner.measureRunsPerSecond({
+      description:
+          'Measures Grid Lanes auto-placement of 2,000 varied items with gap ' +
+          'decorations after resizing the first item.',
+      run() {
+        target.style.height = isTall ? '68px' : '20px';
+        isTall = !isTall;
+        PerfTestRunner.forceLayout();
+      },
+    });
+  }
+
+  window.addEventListener('load', startTest);
+</script>
