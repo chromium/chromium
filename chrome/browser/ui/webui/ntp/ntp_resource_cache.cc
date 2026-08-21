@@ -332,8 +332,11 @@ void NTPResourceCache::CreateNewTabIsolatedHTML(
       l10n_util::GetStringUTF8(IDS_NEW_ISOLATED_TAB_EXTENSIONS_CONTENT);
   replacements["thirdPartyCookiesBoxTitle"] =
       l10n_util::GetStringUTF8(IDS_NEW_ISOLATED_TAB_THIRD_PARTY_COOKIES_TITLE);
-  replacements["thirdPartyCookiesBoxContent"] = l10n_util::GetStringUTF8(
-      IDS_NEW_ISOLATED_TAB_THIRD_PARTY_COOKIES_CONTENT);
+  replacements["thirdPartyCookiesBoxContent"] =
+      base::UTF16ToUTF8(l10n_util::GetStringFUTF16(
+          IDS_NEW_ISOLATED_TAB_THIRD_PARTY_COOKIES_CONTENT,
+          chrome::kUserBypassHelpCenterURL,
+          l10n_util::GetStringUTF16(IDS_NEW_TAB_OPENS_HC_ARTICLE_IN_NEW_TAB)));
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &replacements);

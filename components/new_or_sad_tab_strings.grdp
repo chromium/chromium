@@ -231,7 +231,7 @@
         Third-party cookies
       </message>
       <message name="IDS_NEW_ISOLATED_TAB_THIRD_PARTY_COOKIES_CONTENT" desc="Description for the third-party cookies card in Isolated mode.">
-        Sites are blocked from using third-party cookies. If a site relying on these cookies isn't working, you can <ph name="BEGIN_LINK">&lt;a href="chrome://settings/cookies"&gt;</ph>try giving that site temporary access to third-party cookies<ph name="END_LINK">&lt;/a&gt;</ph>.
+        Sites are blocked from using third-party cookies. If a site relying on these cookies isn't working, you can <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-description="$2"&gt;</ph>try giving that site temporary access to third-party cookies<ph name="END_LINK">&lt;/a&gt;</ph>.
       </message>
 
 </grit-part>
