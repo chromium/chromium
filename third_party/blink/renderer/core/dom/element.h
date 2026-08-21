@@ -1179,6 +1179,10 @@ class CORE_EXPORT Element : public ContainerNode {
   void VerifySubtreeIsInCanvas(bool value);
 #endif
 
+  // Returns the nearest ancestor <canvas layoutsubtree> if this element is
+  // eligible for drawing into it (i.e. is connected, is in a canvas subtree,
+  // is not a pseudo-element, and is an immediate child of the canvas or has
+  // the 'drawable' attribute). Returns nullptr otherwise.
   HTMLCanvasElement* CanvasForDrawing() const;
 
   DOMMatrix* getCanvasTransform();
@@ -1186,11 +1190,11 @@ class CORE_EXPORT Element : public ContainerNode {
                           ExceptionState& exception_state);
   bool HasCanvasTransform() const;
   // Returns the transform that should be used for mapping the border-box,
-  // before CSS transforms, to the canvas coordinate space. When the element is
-  // in a canvas subtree, this affects the geometry of the element (e.g., for
-  // hit-testing, `getBoundingClientRect()`) and can be used to make the
+  // before CSS transforms, to the canvas coordinate space. When the element
+  // has a CanvasForDrawing, this affects the geometry of the element (e.g.,
+  // for hit-testing, `getBoundingClientRect()`) and can be used to make the
   // element's geometry match its drawn position in a canvas. Returns nullptr
-  // if the element is not in a canvas subtree.
+  // if the element does not have a CanvasForDrawing.
   const gfx::Transform* GetUsedCanvasTransform() const;
   const gfx::Transform* GetCanvasTransformInternal() const;
   void SetCanvasTransformInternal(const gfx::Transform& transform);

@@ -8167,7 +8167,12 @@ TEST_P(PaintPropertyTreeBuilderTest, ElementCanvasTransformPropertyTree) {
   ASSERT_TRUE(canvas_transform);
   EXPECT_EQ(gfx::Transform::MakeTranslation(50, 60),
             canvas_transform->Matrix());
-  EXPECT_EQ(properties->PaintOffsetTranslation(), canvas_transform->Parent());
+  auto* canvas_element = GetDocument().getElementById(AtomicString("canvas"));
+  EXPECT_EQ(&canvas_element->GetLayoutObject()
+                 ->FirstFragment()
+                 .ContentsProperties()
+                 .Transform(),
+            canvas_transform->Parent());
   EXPECT_EQ(canvas_transform, properties->Translate()->Parent());
 }
 

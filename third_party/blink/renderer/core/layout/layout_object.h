@@ -2744,6 +2744,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
                                   MapCoordinatesFlags) const;
 
   bool ShouldUseTransformFromContainer(const LayoutObject* container) const;
+  LayoutObject* CanvasForDrawingLayoutObject() const;
 
   // The optional |size| parameter is used if the size of the object isn't
   // correct yet. If |fragment_transform| is provided, we'll use that instead of

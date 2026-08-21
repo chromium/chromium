@@ -3664,6 +3664,19 @@ gfx::QuadF LayoutObject::AncestorToLocalQuad(
   return transform_state.LastPlanarQuad();
 }
 
+LayoutObject* LayoutObject::CanvasForDrawingLayoutObject() const {
+  NOT_DESTROYED();
+  if (!IsBox()) {
+    return nullptr;
+  }
+  if (const auto* element = DynamicTo<Element>(GetNode())) {
+    if (HTMLCanvasElement* canvas = element->CanvasForDrawing()) {
+      return canvas->GetLayoutObject();
+    }
+  }
+  return nullptr;
+}
+
 void LayoutObject::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
                                       TransformState& transform_state,
                                       MapCoordinatesFlags mode) const {
@@ -3672,6 +3685,23 @@ void LayoutObject::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
            TransformState::kApplyTransformDirection);
   if (ancestor == this)
     return;
+
+  if (LayoutObject* canvas_layout_object = CanvasForDrawingLayoutObject()) {
+    bool use_transforms = !mode.Has(MapCoordinatesMode::kIgnoreTransforms);
+    const bool preserve3d = use_transforms && StyleRef().Preserves3D();
+    if (use_transforms &&
+        ShouldUseTransformFromContainer(canvas_layout_object)) {
+      gfx::Transform t;
+      GetTransformFromContainer(canvas_layout_object, PhysicalOffset(), t);
+      transform_state.ApplyTransform(
+          t, preserve3d ? TransformState::kAccumulateTransform
+                        : TransformState::kFlattenTransform);
+    }
+    if (canvas_layout_object != ancestor) {
+      canvas_layout_object->MapLocalToAncestor(ancestor, transform_state, mode);
+    }
+    return;
+  }
 
   AncestorSkipInfo skip_info(ancestor);
   const LayoutObject* container = Container(&skip_info);
@@ -3730,6 +3760,23 @@ void LayoutObject::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
            TransformState::kUnapplyInverseTransformDirection);
   if (this == ancestor)
     return;
+
+  if (LayoutObject* canvas_layout_object = CanvasForDrawingLayoutObject()) {
+    if (canvas_layout_object != ancestor) {
+      canvas_layout_object->MapAncestorToLocal(ancestor, transform_state, mode);
+    }
+    bool use_transforms = !mode.Has(MapCoordinatesMode::kIgnoreTransforms);
+    const bool preserve3d = use_transforms && StyleRef().Preserves3D();
+    if (use_transforms &&
+        ShouldUseTransformFromContainer(canvas_layout_object)) {
+      gfx::Transform t;
+      GetTransformFromContainer(canvas_layout_object, PhysicalOffset(), t);
+      transform_state.ApplyTransform(
+          t, preserve3d ? TransformState::kAccumulateTransform
+                        : TransformState::kFlattenTransform);
+    }
+    return;
+  }
 
   AncestorSkipInfo skip_info(ancestor);
   LayoutObject* container = Container(&skip_info);

@@ -4531,7 +4531,9 @@ const gfx::Transform* Element::GetUsedCanvasTransform() const {
   if (IsInCanvasSubtree() &&
       RuntimeEnabledFeatures::ElementCanvasTransformEnabled(
           GetExecutionContext())) {
-    return GetCanvasTransformInternal();
+    if (HasCanvasTransform() && CanvasForDrawing()) {
+      return GetCanvasTransformInternal();
+    }
   }
   return nullptr;
 }
@@ -10563,7 +10565,7 @@ HTMLCanvasElement* Element::CanvasForDrawing() const {
           GetDocument().GetExecutionContext())) {
     return nullptr;
   }
-  if (!isConnected() || !IsInCanvasSubtree()) {
+  if (!isConnected() || !IsInCanvasSubtree() || IsPseudoElement()) {
     return nullptr;
   }
 

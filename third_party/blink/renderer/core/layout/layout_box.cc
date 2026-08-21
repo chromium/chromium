@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -2974,6 +2975,16 @@ bool LayoutBox::MapToVisualRectInAncestorSpaceInternal(
 
   if (!visual_rect_flags.Has(VisualRectFlag::kIgnoreFilters)) {
     InflateVisualRectForFilter(transform_state);
+  }
+
+  if (LayoutObject* canvas_layout_object = CanvasForDrawingLayoutObject()) {
+    if (!MapVisualRectToContainer(canvas_layout_object, PhysicalOffset(),
+                                  ancestor, visual_rect_flags,
+                                  transform_state)) {
+      return false;
+    }
+    return canvas_layout_object->MapToVisualRectInAncestorSpaceInternal(
+        ancestor, transform_state, visual_rect_flags);
   }
 
   AncestorSkipInfo skip_info(ancestor, true);
