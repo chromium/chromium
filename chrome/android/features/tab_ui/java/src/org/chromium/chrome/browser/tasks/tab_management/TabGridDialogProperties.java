@@ -12,9 +12,11 @@ import android.view.View.OnClickListener;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView.UngroupBarStatus;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -54,7 +56,8 @@ class TabGridDialogProperties {
             new WritableObjectPropertyKey<>(true);
     public static final WritableObjectPropertyKey<View> ANIMATION_SOURCE_VIEW =
             new WritableObjectPropertyKey<>(true);
-    public static final WritableIntPropertyKey UNGROUP_BAR_STATUS = new WritableIntPropertyKey();
+    public static final WritableIntDefPropertyKey<UngroupBarStatus> UNGROUP_BAR_STATUS =
+            new WritableIntDefPropertyKey<>(UngroupBarStatus.HIDE);
     public static final WritableIntPropertyKey DIALOG_UNGROUP_BAR_BACKGROUND_COLOR =
             new WritableIntPropertyKey();
     public static final WritableIntPropertyKey DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR =
