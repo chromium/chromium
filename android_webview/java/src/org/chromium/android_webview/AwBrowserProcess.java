@@ -782,8 +782,7 @@ public final class AwBrowserProcess {
                     == PackageManager.PERMISSION_GRANTED) {
                 NetworkChangeNotifier.init();
                 NetworkChangeNotifier.setAutoDetectConnectivityState(
-                        new AwNetworkChangeNotifierRegistrationPolicy(),
-                        /* forceUpdateNetworkState= */ false);
+                        new AwNetworkChangeNotifierRegistrationPolicy());
             }
         }
     }

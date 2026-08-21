@@ -267,7 +267,7 @@ public class CronetLibraryLoader {
             sHttpFlagsLoaded.open();
             NetworkChangeNotifier.init();
             NetworkChangeNotifier.setAutoDetectConnectivityState(
-                    new RegistrationPolicyAlwaysRegister(), /* forceUpdateNetworkState= */ false);
+                    new RegistrationPolicyAlwaysRegister());
 
             CronetPccAuditLogger.initialize();
             final var traceNetLogCaptureMode = DebugFlags.getTraceNetLogCaptureMode();

@@ -521,7 +521,7 @@ public class ProcessInitializationHandler {
         // Enable auto-detection of network connectivity state changes.
         NetworkChangeNotifier.init();
         NetworkChangeNotifier.setAutoDetectConnectivityState(
-                new RegistrationPolicyApplicationStatus(), /* forceUpdateNetworkState= */ false);
+                new RegistrationPolicyApplicationStatus());
         TraceEvent.end("NetworkChangeNotifier.init");
     }
 
