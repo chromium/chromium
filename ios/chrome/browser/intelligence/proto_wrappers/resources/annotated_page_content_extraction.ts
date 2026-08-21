@@ -1548,18 +1548,39 @@ function getScrollerInfo(
  * @param element The DOM element to check.
  * @param tagName The standard tag name of the element.
  * @param style The computed style of the element.
- * @return True if the element uses a pointer cursor.
+ * @param styleCache The style cache to use for computing parent styles.
+ * @return True if the element uses a pointer cursor and did not inherit it.
  */
 function hasPointerCursor(
-    element: Element, tagName: string, style?: CSSStyleDeclaration): boolean {
-  if (style?.cursor === ATTR_VALUE_CURSOR_POINTER) {
+    element: Element, tagName: string, style?: CSSStyleDeclaration,
+    styleCache?: StyleCache): boolean {
+  // Links with `href` use pointer cursors by default unless explicitly
+  // disabled.
+  const isLink = (tagName === TAG_A || tagName === TAG_AREA) &&
+      safeHasAttribute(element, ATTR_KEY_HREF);
+  if (isLink) {
+    return !style?.cursor || style.cursor === ATTR_VALUE_CURSOR_AUTO ||
+        style.cursor === ATTR_VALUE_CURSOR_POINTER;
+  }
+
+  // Non-link elements only qualify if their computed cursor is `pointer`.
+  if (style?.cursor !== ATTR_VALUE_CURSOR_POINTER) {
+    return false;
+  }
+
+  // Explicit inline style on this element takes precedence over inheritance.
+  const hasInlinePointer = 'style' in element &&
+      (element as HTMLElement).style?.cursor === ATTR_VALUE_CURSOR_POINTER;
+  if (hasInlinePointer) {
     return true;
   }
-  const isDefaultOrUnsetCursor =
-      !style?.cursor || style.cursor === ATTR_VALUE_CURSOR_AUTO;
-  const isAnchorOrArea = tagName === TAG_A || tagName === TAG_AREA;
-  return isDefaultOrUnsetCursor && isAnchorOrArea &&
-      safeHasAttribute(element, ATTR_KEY_HREF);
+
+  // Suppress elements that merely inherit `cursor: pointer` from their parent.
+  const parent = safeParentElement(element);
+  const parentHasPointer = parent &&
+      getComputedStyleForElement(parent, styleCache)?.cursor ===
+          ATTR_VALUE_CURSOR_POINTER;
+  return !parentHasPointer;
 }
 
 /**
@@ -1659,7 +1680,7 @@ function getNodeInteractionInfo(
   }
 
   // Pointer Cursor.
-  if (hasPointerCursor(element, tagName, style)) {
+  if (hasPointerCursor(element, tagName, style, styleCache)) {
     clickabilityReasons.push(PageContentClickabilityReason.CURSOR_POINTER);
   }
 
