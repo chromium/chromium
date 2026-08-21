@@ -358,7 +358,7 @@ public class UrlUtilities {
 
     /**
      * Returns whether the url matches an NTP URL exactly. This is used to support features showing
-     * the omnibox before native is loaded. Prefer using {@see #isNtpUrl(GURL gurl)} when native is
+     * the omnibox before native is loaded. Prefer using {@link #isNtpUrl(GURL gurl)} when native is
      * loaded.
      *
      * @param url The current URL to compare.

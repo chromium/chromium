@@ -38,7 +38,7 @@ public class UserPrefs {
         return UserPrefsJni.get().get(browserContextHandle);
     }
 
-    /** Returns whether we can get and use the PrefService for {@param browserContextHandle}. */
+    /** Returns whether we can get and use the PrefService for {@code browserContextHandle}. */
     public static boolean areNativePrefsLoaded(BrowserContextHandle browserContextHandle) {
         if (sPrefServiceForTesting != null) return true;
         if (!BrowserStartupController.getInstance().isNativeStarted()) return false;

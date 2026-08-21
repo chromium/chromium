@@ -2268,7 +2268,7 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
 
     /**
      * If the given URL is to Google Play, extracts the package name and referrer tracking code from
-     * the {@param url} and returns as a Pair in that order. Otherwise returns null.
+     * the {@code url} and returns as a Pair in that order. Otherwise returns null.
      */
     private @Nullable String maybeGetPlayStoreAppId(GURL url) {
         if (!PLAY_HOSTNAME.equals(url.getHost()) || !url.getPath().startsWith(PLAY_APP_PATH)) {
@@ -2977,8 +2977,9 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
     }
 
     /**
-     * Checks whether {@param intent} is for an Instant App. Considers both package and actions that
+     * Checks whether {@code intent} is for an Instant App. Considers both package and actions that
      * would resolve to Supervisor.
+     *
      * @return Whether the given intent is going to open an Instant App.
      */
     private static boolean isIntentToInstantApp(Intent intent) {

@@ -97,7 +97,7 @@ public final class Fido2Api {
     public interface Calls {
         /**
          * Serialize a browser's or an app's makeCredential request to a {@link Parcel}. Apps should
-         * not set {@param origin}.
+         * not set {@code origin}.
          *
          * @param options the options passed from the renderer.
          * @param origin the origin that the request should act as.
@@ -120,7 +120,7 @@ public final class Fido2Api {
 
         /**
          * Serialize a browser's or an app's getAssertion request to a {@link Parcel}. Apps should
-         * not set {@param origin}.
+         * not set {@code origin}.
          *
          * @param options the options passed from the renderer.
          * @param origin the origin that the request should act as.
