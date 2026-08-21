@@ -4,10 +4,11 @@
 
 #include "content/browser/service_host/utility_process_host.h"
 
+#include <array>
 #include <string_view>
 
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -17,6 +18,7 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -156,8 +158,7 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     DCHECK(mojo::core::IsMojoIpczEnabled());
     auto region = base::WritableSharedMemoryRegion::Create(kTestMessage.size());
     auto mapping = region.Map();
-    UNSAFE_TODO(
-        memcpy(mapping.memory(), kTestMessage.data(), kTestMessage.size()));
+    mapping.GetMemoryAsSpan<char>().copy_from(kTestMessage);
     service_->CloneSharedMemoryContents(
         base::WritableSharedMemoryRegion::ConvertToReadOnly(std::move(region)),
         base::BindOnce(&UtilityProcessHostBrowserTest::OnMemoryCloneReceived,
@@ -174,9 +175,9 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
   void RunFileDescriptorStoreTest(base::ScopedFD read_fd) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     service_->WriteToPreloadedPipe();
-    char buf[4];
+    std::array<char, 4> buf;
     ASSERT_TRUE(base::ReadFromFD(read_fd.get(), buf));
-    std::string_view msg(buf, sizeof(buf));
+    std::string_view msg = base::as_string_view(buf);
     ASSERT_EQ(msg, "test");
     OnSomething();
   }
@@ -224,8 +225,7 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     auto mapping = region.Map();
     ASSERT_EQ(kTestMessage.size(), mapping.size());
     EXPECT_EQ(kTestMessage,
-              std::string_view(static_cast<const char*>(mapping.memory()),
-                               kTestMessage.size()));
+              base::as_string_view(mapping.GetMemoryAsSpan<const char>()));
     ResetService();
     GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(done_closure_));
   }
