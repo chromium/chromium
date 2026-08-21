@@ -626,7 +626,8 @@ TEST_F(VirtualCtap2DeviceTest, GetAssertionNoSignatureCounter) {
 
   static constexpr uint8_t kCredentialId[] = {1, 2, 3, 4};
   device::VirtualFidoDevice::RegistrationData registration(
-      device::VirtualFidoDevice::PrivateKey::FreshP256Key(),
+      std::make_unique<device::VirtualFidoDevice::PrivateKey>(
+          CoseAlgorithmIdentifier::kEs256),
       crypto::hash::Sha256(test_data::kRelyingPartyId), std::nullopt);
   device_->mutable_state()->InjectRegistration(kCredentialId,
                                                std::move(registration));

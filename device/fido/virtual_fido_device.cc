@@ -12,11 +12,13 @@
 #include "base/containers/to_array.h"
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "crypto/cose.h"
 #include "crypto/hash.h"
 #include "crypto/keypair.h"
 #include "crypto/sign.h"
@@ -59,91 +61,98 @@ constexpr std::array<uint8_t, 17> kDefaultLargeBlobArray = {
     0x80, 0x76, 0xbe, 0x8b, 0x52, 0x8d, 0x00, 0x75, 0xf7,
     0xaa, 0xe9, 0x8d, 0x6f, 0xa5, 0x7a, 0x6d, 0x3c};
 
-class P256PrivateKey : public VirtualFidoDevice::PrivateKey {
- public:
-  explicit P256PrivateKey(crypto::keypair::PrivateKey key) : PrivateKey(key) {}
-  ~P256PrivateKey() override = default;
-
-  std::unique_ptr<PublicKey> GetPublicKey() const override {
-    return P256PublicKey::ParseX962Uncompressed(
-        static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256),
-        GetX962PublicKey());
+std::optional<crypto::keypair::PrivateKey> GenerateKeyForAlgorithm(
+    CoseAlgorithmIdentifier algorithm) {
+  switch (algorithm) {
+    case CoseAlgorithmIdentifier::kEs256:
+      return crypto::keypair::PrivateKey::GenerateEcP256();
+    case CoseAlgorithmIdentifier::kRs256:
+      return crypto::keypair::PrivateKey::GenerateRsa2048();
+    case CoseAlgorithmIdentifier::kEdDSA:
+      return crypto::keypair::PrivateKey::GenerateEd25519();
+    case CoseAlgorithmIdentifier::kInvalidForTesting:
+      return std::nullopt;
   }
-};
+  NOTREACHED();
+}
 
-class RSAPrivateKey : public VirtualFidoDevice::PrivateKey {
- public:
-  explicit RSAPrivateKey(crypto::keypair::PrivateKey key) : PrivateKey(key) {}
-  ~RSAPrivateKey() override = default;
+}  // namespace
 
-  std::unique_ptr<PublicKey> GetPublicKey() const override {
-    const RSA* rsa = EVP_PKEY_get0_RSA(key_.key());
-    const BIGNUM* n = RSA_get0_n(rsa);
-    const BIGNUM* e = RSA_get0_e(rsa);
+// VirtualFidoDevice::PrivateKey ----------------------------------------------
 
-    std::vector<uint8_t> modulus(BN_num_bytes(n));
-    BN_bn2bin(n, modulus.data());
-
-    std::vector<uint8_t> public_exponent(BN_num_bytes(e));
-    BN_bn2bin(e, public_exponent.data());
-
-    cbor::Value::MapValue map;
-    map.emplace(static_cast<int64_t>(CoseKeyKey::kAlg),
-                static_cast<int64_t>(CoseAlgorithmIdentifier::kRs256));
-    map.emplace(static_cast<int64_t>(CoseKeyKey::kKty),
-                static_cast<int64_t>(CoseKeyTypes::kRSA));
-    map.emplace(static_cast<int64_t>(CoseKeyKey::kRSAModulus),
-                std::move(modulus));
-    map.emplace(static_cast<int64_t>(CoseKeyKey::kRSAPublicExponent),
-                std::move(public_exponent));
-
-    std::optional<std::vector<uint8_t>> cbor_bytes(
-        cbor::Writer::Write(cbor::Value(std::move(map))));
-
-    return std::make_unique<PublicKey>(
-        static_cast<int32_t>(CoseAlgorithmIdentifier::kRs256), *cbor_bytes,
-        key_.ToSubjectPublicKeyInfo());
+// static
+bool VirtualFidoDevice::PrivateKey::IsAlgorithmSupported(int32_t algorithm) {
+  switch (static_cast<CoseAlgorithmIdentifier>(algorithm)) {
+    case CoseAlgorithmIdentifier::kEs256:
+    case CoseAlgorithmIdentifier::kRs256:
+    case CoseAlgorithmIdentifier::kEdDSA:
+    case CoseAlgorithmIdentifier::kInvalidForTesting:
+      return true;
+    default:
+      return false;
   }
-};
+}
 
-class Ed25519PrivateKey : public VirtualFidoDevice::PrivateKey {
- public:
-  explicit Ed25519PrivateKey(crypto::keypair::PrivateKey key)
-      : PrivateKey(key) {}
-  ~Ed25519PrivateKey() override = default;
-
-  std::unique_ptr<PublicKey> GetPublicKey() const override {
-    cbor::Value::MapValue map;
-    map.emplace(static_cast<int64_t>(CoseKeyKey::kAlg),
-                static_cast<int64_t>(CoseAlgorithmIdentifier::kEdDSA));
-    map.emplace(static_cast<int64_t>(CoseKeyKey::kKty),
-                static_cast<int64_t>(CoseKeyTypes::kOKP));
-    map.emplace(static_cast<int64_t>(CoseKeyKey::kEllipticCurve),
-                static_cast<int64_t>(CoseCurves::kEd25519));
-    map.emplace(static_cast<int64_t>(CoseKeyKey::kEllipticX),
-                key_.ToEd25519PublicKey());
-
-    std::optional<std::vector<uint8_t>> cbor_bytes(
-        cbor::Writer::Write(cbor::Value(std::move(map))));
-
-    return std::make_unique<PublicKey>(
-        static_cast<int32_t>(CoseAlgorithmIdentifier::kEdDSA), *cbor_bytes,
-        key_.ToSubjectPublicKeyInfo());
+// static
+std::optional<std::unique_ptr<VirtualFidoDevice::PrivateKey>>
+VirtualFidoDevice::PrivateKey::FromPKCS8(
+    base::span<const uint8_t> pkcs8_private_key) {
+  auto key = crypto::keypair::PrivateKey::FromPrivateKeyInfo(pkcs8_private_key);
+  if (!key) {
+    return std::nullopt;
   }
-};
-
-class InvalidForTestingPrivateKey : public VirtualFidoDevice::PrivateKey {
- public:
-  // Even though this is an invalid key, the underlying PrivateKey can't be
-  // empty, so fill it with a random P-256 key that won't be used.
-  InvalidForTestingPrivateKey()
-      : PrivateKey(crypto::keypair::PrivateKey::GenerateEcP256()) {}
-
-  std::vector<uint8_t> Sign(base::span<const uint8_t> message) override {
-    return {'s', 'i', 'g'};
+  CoseAlgorithmIdentifier algorithm;
+  if (key->IsEcP256()) {
+    algorithm = CoseAlgorithmIdentifier::kEs256;
+  } else if (key->IsRsa()) {
+    algorithm = CoseAlgorithmIdentifier::kRs256;
+  } else if (key->IsEd25519()) {
+    algorithm = CoseAlgorithmIdentifier::kEdDSA;
+  } else {
+    return std::nullopt;
   }
+  return base::WrapUnique(new PrivateKey(std::move(*key), algorithm));
+}
 
-  std::unique_ptr<PublicKey> GetPublicKey() const override {
+VirtualFidoDevice::PrivateKey::PrivateKey(CoseAlgorithmIdentifier algorithm)
+    : PrivateKey(GenerateKeyForAlgorithm(algorithm), algorithm) {}
+
+VirtualFidoDevice::PrivateKey::PrivateKey(
+    std::optional<crypto::keypair::PrivateKey> key,
+    CoseAlgorithmIdentifier algorithm)
+    : key_(std::move(key)), algorithm_(algorithm) {}
+
+VirtualFidoDevice::PrivateKey::~PrivateKey() = default;
+
+std::vector<uint8_t> VirtualFidoDevice::PrivateKey::Sign(
+    base::span<const uint8_t> message) const {
+  switch (algorithm_) {
+    case CoseAlgorithmIdentifier::kEs256:
+      return crypto::sign::Sign(crypto::sign::ECDSA_SHA256, *key_, message);
+    case CoseAlgorithmIdentifier::kRs256:
+      return crypto::sign::Sign(crypto::sign::RSA_PKCS1_SHA256, *key_, message);
+    case CoseAlgorithmIdentifier::kEdDSA:
+      return crypto::sign::Sign(crypto::sign::ED25519, *key_, message);
+    case CoseAlgorithmIdentifier::kInvalidForTesting:
+      return {'s', 'i', 'g'};
+  }
+  NOTREACHED();
+}
+
+std::vector<uint8_t> VirtualFidoDevice::PrivateKey::GetX962PublicKey() const {
+  CHECK_EQ(algorithm_, CoseAlgorithmIdentifier::kEs256);
+  return key_->ToUncompressedX962Point();
+}
+
+std::vector<uint8_t> VirtualFidoDevice::PrivateKey::GetPKCS8PrivateKey() const {
+  if (algorithm_ == CoseAlgorithmIdentifier::kInvalidForTesting) {
+    return {};
+  }
+  return key_->ToPrivateKeyInfo();
+}
+
+std::unique_ptr<PublicKey> VirtualFidoDevice::PrivateKey::GetPublicKey() const {
+  if (algorithm_ == CoseAlgorithmIdentifier::kInvalidForTesting) {
     cbor::Value::MapValue map;
     map.emplace(
         static_cast<int64_t>(CoseKeyKey::kAlg),
@@ -153,99 +162,18 @@ class InvalidForTestingPrivateKey : public VirtualFidoDevice::PrivateKey {
 
     std::optional<std::vector<uint8_t>> cbor_bytes(
         cbor::Writer::Write(cbor::Value(std::move(map))));
-
     return std::make_unique<PublicKey>(
         static_cast<int32_t>(CoseAlgorithmIdentifier::kInvalidForTesting),
         *cbor_bytes, std::nullopt);
   }
-};
 
-crypto::sign::SignatureKind SignatureKindForKey(
-    const crypto::keypair::PrivateKey& key) {
-  if (key.IsEc()) {
-    return crypto::sign::ECDSA_SHA256;
-  } else if (key.IsRsa()) {
-    return crypto::sign::RSA_PKCS1_SHA256;
-  } else if (key.IsEd25519()) {
-    return crypto::sign::ED25519;
-  } else {
-    NOTREACHED();
-  }
+  auto pub_key = crypto::keypair::PublicKey::FromPrivateKey(*key_);
+  std::vector<uint8_t> cose_key_bytes = crypto::PublicKeyToCoseKey(pub_key);
+  std::vector<uint8_t> der_bytes = pub_key.ToSubjectPublicKeyInfo();
+  return std::make_unique<PublicKey>(static_cast<int32_t>(algorithm_),
+                                     std::move(cose_key_bytes),
+                                     std::move(der_bytes));
 }
-
-}  // namespace
-
-// VirtualFidoDevice::PrivateKey ----------------------------------------------
-
-VirtualFidoDevice::PrivateKey::~PrivateKey() = default;
-
-// static
-std::optional<std::unique_ptr<VirtualFidoDevice::PrivateKey>>
-VirtualFidoDevice::PrivateKey::FromPKCS8(
-    base::span<const uint8_t> pkcs8_private_key) {
-  std::optional<crypto::keypair::PrivateKey> key =
-      crypto::keypair::PrivateKey::FromPrivateKeyInfo(pkcs8_private_key);
-  if (!key) {
-    return std::nullopt;
-  }
-
-  if (key->IsEc()) {
-    return std::make_unique<P256PrivateKey>(*key);
-  } else if (key->IsRsa()) {
-    return std::make_unique<RSAPrivateKey>(*key);
-  } else if (key->IsEd25519()) {
-    return std::make_unique<Ed25519PrivateKey>(*key);
-  } else {
-    NOTREACHED();
-  }
-}
-
-// static
-std::unique_ptr<VirtualFidoDevice::PrivateKey>
-VirtualFidoDevice::PrivateKey::FreshP256Key() {
-  return std::make_unique<P256PrivateKey>(
-      crypto::keypair::PrivateKey::GenerateEcP256());
-}
-
-// static
-std::unique_ptr<VirtualFidoDevice::PrivateKey>
-VirtualFidoDevice::PrivateKey::FreshRSAKey() {
-  return std::make_unique<RSAPrivateKey>(
-      crypto::keypair::PrivateKey::GenerateRsa2048());
-}
-
-// static
-std::unique_ptr<VirtualFidoDevice::PrivateKey>
-VirtualFidoDevice::PrivateKey::FreshEd25519Key() {
-  return std::make_unique<Ed25519PrivateKey>(
-      crypto::keypair::PrivateKey::GenerateEd25519());
-}
-
-// static
-std::unique_ptr<VirtualFidoDevice::PrivateKey>
-VirtualFidoDevice::PrivateKey::FreshInvalidForTestingKey() {
-  return std::make_unique<InvalidForTestingPrivateKey>();
-}
-
-std::vector<uint8_t> VirtualFidoDevice::PrivateKey::Sign(
-    base::span<const uint8_t> message) {
-  return crypto::sign::Sign(SignatureKindForKey(key_), key_, message);
-}
-
-std::vector<uint8_t> VirtualFidoDevice::PrivateKey::GetX962PublicKey() const {
-  if (key_.IsEc()) {
-    return key_.ToUncompressedX962Point();
-  } else {
-    NOTREACHED();
-  }
-}
-
-std::vector<uint8_t> VirtualFidoDevice::PrivateKey::GetPKCS8PrivateKey() const {
-  return key_.ToPrivateKeyInfo();
-}
-
-VirtualFidoDevice::PrivateKey::PrivateKey(crypto::keypair::PrivateKey key)
-    : key_(std::move(key)) {}
 
 // VirtualFidoDevice::RegistrationData ----------------------------------------
 
@@ -366,8 +294,10 @@ bool VirtualFidoDevice::State::InjectResidentKey(
     base::span<const uint8_t> credential_id,
     device::PublicKeyCredentialRpEntity rp,
     device::PublicKeyCredentialUserEntity user) {
-  return InjectResidentKey(credential_id, std::move(rp), std::move(user),
-                           /*signature_counter=*/0, PrivateKey::FreshP256Key());
+  return InjectResidentKey(
+      credential_id, std::move(rp), std::move(user),
+      /*signature_counter=*/0,
+      std::make_unique<PrivateKey>(CoseAlgorithmIdentifier::kEs256));
 }
 
 bool VirtualFidoDevice::State::InjectResidentKey(

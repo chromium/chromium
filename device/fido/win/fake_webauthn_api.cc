@@ -89,18 +89,15 @@ std::unique_ptr<VirtualFidoDevice::PrivateKey> MakePrivateKey(
       // Windows only supports RS256 for platform credentials.
       if (parameter.lAlg ==
           static_cast<LONG>(CoseAlgorithmIdentifier::kRs256)) {
-        return VirtualFidoDevice::PrivateKey::FreshP256Key();
+        return std::make_unique<VirtualFidoDevice::PrivateKey>(
+            CoseAlgorithmIdentifier::kEs256);
       }
       continue;
     }
 
-    switch (parameter.lAlg) {
-      case static_cast<LONG>(CoseAlgorithmIdentifier::kEs256):
-        return VirtualFidoDevice::PrivateKey::FreshP256Key();
-      case static_cast<LONG>(CoseAlgorithmIdentifier::kRs256):
-        return VirtualFidoDevice::PrivateKey::FreshRSAKey();
-      case static_cast<LONG>(CoseAlgorithmIdentifier::kEdDSA):
-        return VirtualFidoDevice::PrivateKey::FreshEd25519Key();
+    if (VirtualFidoDevice::PrivateKey::IsAlgorithmSupported(parameter.lAlg)) {
+      return std::make_unique<VirtualFidoDevice::PrivateKey>(
+          static_cast<CoseAlgorithmIdentifier>(parameter.lAlg));
     }
   }
   return nullptr;
@@ -192,7 +189,8 @@ bool FakeWinWebAuthnApi::InjectNonDiscoverableCredential(
   bool was_inserted;
   std::tie(std::ignore, was_inserted) = registrations_.insert(
       {base::ToVector(credential_id),
-       RegistrationData(VirtualFidoDevice::PrivateKey::FreshP256Key(),
+       RegistrationData(std::make_unique<VirtualFidoDevice::PrivateKey>(
+                            CoseAlgorithmIdentifier::kEs256),
                         crypto::hash::Sha256(rp_id),
                         /*counter=*/0)});
   return was_inserted;
@@ -203,7 +201,8 @@ bool FakeWinWebAuthnApi::InjectDiscoverableCredential(
     device::PublicKeyCredentialRpEntity rp,
     device::PublicKeyCredentialUserEntity user,
     std::optional<std::string> provider_name) {
-  RegistrationData registration(VirtualFidoDevice::PrivateKey::FreshP256Key(),
+  RegistrationData registration(std::make_unique<VirtualFidoDevice::PrivateKey>(
+                                    CoseAlgorithmIdentifier::kEs256),
                                 crypto::hash::Sha256(rp.id),
                                 /*counter=*/0);
   registration.is_resident = true;

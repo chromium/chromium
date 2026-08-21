@@ -139,7 +139,8 @@ std::optional<std::vector<uint8_t>> VirtualU2fDevice::DoRegister(
   // Create key to register.
   // Note: Non-deterministic, you need to mock this out if you rely on
   // deterministic behavior.
-  std::unique_ptr<PrivateKey> private_key(PrivateKey::FreshP256Key());
+  auto private_key =
+      std::make_unique<PrivateKey>(CoseAlgorithmIdentifier::kEs256);
   std::vector<uint8_t> x962 = private_key->GetX962PublicKey();
 
   if (mutable_state()->u2f_invalid_public_key) {
