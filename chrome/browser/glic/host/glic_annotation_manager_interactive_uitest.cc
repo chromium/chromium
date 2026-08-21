@@ -716,8 +716,10 @@ class MAYBE_GlicAnnotationManagerUiTest
       ->method(__VA_ARGS__);                                            \
   GetGlicInstanceImpl()->instance_metrics().method(__VA_ARGS__);
 
-  void OnUserInputSubmitted(mojom::WebClientMode mode) {
-    FORWARD_METRICS_CALL(OnUserInputSubmitted, mode);
+  void OnUserInputSubmitted(
+      mojom::WebClientMode mode,
+      mojom::PromptType prompt_type = mojom::PromptType::kUnspecified) {
+    FORWARD_METRICS_CALL(OnUserInputSubmitted, mode, prompt_type);
   }
 
   void OnResponseStarted() { FORWARD_METRICS_CALL(OnResponseStarted); }

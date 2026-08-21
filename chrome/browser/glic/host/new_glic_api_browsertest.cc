@@ -5324,6 +5324,14 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testMetrics) {
       histogram_tester.WaitForTotalCount("Glic.TabContext.UploadTime", 1));
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testUserInputSubmittedPromptType) {
+  glic::GlicHistogramTester histogram_tester;
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+  ASSERT_OK(histogram_tester.WaitForBucketCount(
+      "Glic.Turn.PromptType", mojom::PromptType::kTypedText, 1));
+}
+
 // TODO(crbug.com/454083080): Fix this, it hangs.
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, DISABLED_testCaptureScreenshot) {
   ASSERT_OK(OpenGlicForActiveTab());

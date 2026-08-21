@@ -11,10 +11,10 @@ import type {BitmapN32} from '//resources/mojo/skia/public/mojom/bitmap.mojom-we
 
 import {ContentSettingsType} from '../../content_settings_types.mojom-webui.js';
 import {enumFromClient, enumToClient} from '../../enum_conversions.js';
-import {CaptureRegionObserverReceiver, ClientErrorDialogType as ClientErrorDialogTypeMojo, PinCandidatesObserverReceiver, ResponseStopCause as ResponseStopCauseMojo, SettingsPageField as SettingsPageFieldMojo, TabDataHandlerReceiver, TabFaviconHandlerReceiver, WebClientReceiver} from '../../glic.mojom-webui.js';
+import {CaptureRegionObserverReceiver, ClientErrorDialogType as ClientErrorDialogTypeMojo, PinCandidatesObserverReceiver, PromptType as PromptTypeMojo, ResponseStopCause as ResponseStopCauseMojo, SettingsPageField as SettingsPageFieldMojo, TabDataHandlerReceiver, TabFaviconHandlerReceiver, WebClientReceiver} from '../../glic.mojom-webui.js';
 import type {CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, TabDataHandlerInterface, TabDataMojoType, TabFaviconHandlerInterface, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
 import {CaptureScreenshotErrorReason, ClientCapabilities, ResponseStopCause} from '../../glic_api/glic_api.js';
-import type {CaptureRegionParams, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, ExperimentalTriggeringUpdate, GetPinCandidatesOptions, MicrophoneStatus, OnResponseStoppedDetails, OpenPinnedTabPickerOptions, OpenSettingsOptions, PinTabsOptions, Screenshot, TabContextOptions, UnpinTabsOptions, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
+import type {CaptureRegionParams, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, ExperimentalTriggeringUpdate, GetPinCandidatesOptions, MicrophoneStatus, OnResponseStoppedDetails, OpenPinnedTabPickerOptions, OpenSettingsOptions, PinTabsOptions, PromptType, Screenshot, TabContextOptions, UnpinTabsOptions, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
 import type {ExperimentalTriggeringClient} from '../experimental_triggering/experimental_triggering_types.js';
 import type {ActorClient, ActorHost, AnnotationHost, GlicException, ImageBytesResultPrivate, RgbaImage, SkillsClient, SkillsHost, TabContextResultPrivate, WebClientHost, WebClientInitialStatePrivate, WebClientPinCandidatesObserver, WebClientRegionCapture, WebClientTabDataObserver, WebClientTabFaviconObserver, ZeroStateSuggestionsHost} from '../request_types.js';
@@ -490,8 +490,10 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
     this.handler.onOptinImpression();
   }
 
-  onUserInputSubmitted(request: {mode: number}): void {
-    this.handler.onUserInputSubmitted(webClientModeToMojo(request.mode));
+  onUserInputSubmitted(request: {mode: number, promptType?: PromptType}): void {
+    this.handler.onUserInputSubmitted(
+        webClientModeToMojo(request.mode),
+        enumFromClient(request.promptType) ?? PromptTypeMojo.kUnspecified);
   }
 
   onContextUploadStarted(): void {

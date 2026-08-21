@@ -271,7 +271,8 @@ class GlicInstanceImpl : public GlicInstance,
 
   void OnWebClientCleared() override;
   void PrepareForOpen() override;
-  void OnUserInputSubmitted(mojom::WebClientMode mode) override;
+  void OnUserInputSubmitted(mojom::WebClientMode mode,
+                            mojom::PromptType prompt_type) override;
   void OnInteractionModeChange(mojom::WebClientMode new_mode) override;
   glic::GlicInstanceMetrics& instance_metrics() override;
   glic::GlicInstanceMetricsBackwardsCompatibility&

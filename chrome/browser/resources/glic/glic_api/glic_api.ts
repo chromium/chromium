@@ -137,6 +137,7 @@ export import PanelStateKind = generated.PanelStateKind;
 export import PerformActionsErrorReason = generated.PerformActionsErrorReason;
 export import PinTrigger = generated.PinTrigger;
 export import Platform = generated.Platform;
+export import PromptType = generated.PromptType;
 export import RegisterConversationErrorReason =
     generated.RegisterConversationErrorReason;
 export import SbThreatType = generated.SbThreatType;
@@ -1421,7 +1422,7 @@ export declare interface GlicBrowserHostMetrics {
   onOptinImpression?(): void;
 
   /** Called when the user has submitted input via the web client. */
-  onUserInputSubmitted?(mode: WebClientMode): void;
+  onUserInputSubmitted?(mode: WebClientMode, promptType?: PromptType): void;
 
   /**
    * Called when the web client sends a browser actuation result over the

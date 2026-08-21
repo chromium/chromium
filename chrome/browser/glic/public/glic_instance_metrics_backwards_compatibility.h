@@ -22,7 +22,8 @@ class GlicInstanceMetricsBackwardsCompatibility {
  public:
   virtual ~GlicInstanceMetricsBackwardsCompatibility() = default;
 
-  virtual void OnUserInputSubmitted(mojom::WebClientMode mode) = 0;
+  virtual void OnUserInputSubmitted(mojom::WebClientMode mode,
+                                    mojom::PromptType prompt_type) = 0;
   virtual void DidRequestContextFromTab(tabs::TabInterface& tab) = 0;
   virtual void OnResponseStarted() = 0;
   virtual void OnResponseStopped(mojom::ResponseStopCause cause) = 0;

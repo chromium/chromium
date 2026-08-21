@@ -454,6 +454,20 @@ export enum WebClientMode {
   AUDIO = 1,
 }
 
+// Prompt submission type.
+export enum PromptType {
+  // Default value when prompt type is unspecified or unknown.
+  UNSPECIFIED = 0,
+  // User typed text in the prompt input field.
+  TYPED_TEXT = 1,
+  // User selected a Zero State Suggestion (ZSS).
+  ZERO_STATE_SUGGESTIONS = 2,
+  // Auto-submitted prompt (e.g. contextual cueing auto-submit).
+  AUTO_PROMPT = 3,
+  // Audio input prompt.
+  AUDIO = 4,
+}
+
 // Microphone status.
 export enum MicrophoneStatus {
   NOT_LISTENING = 0,

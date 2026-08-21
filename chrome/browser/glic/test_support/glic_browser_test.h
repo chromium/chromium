@@ -382,7 +382,8 @@ class GlicBrowserTestMixin : public T {
   // client handler.
   void SimulateUserInputSubmitted(
       GlicInstanceImpl* instance = nullptr,
-      mojom::WebClientMode mode = mojom::WebClientMode::kText) {
+      mojom::WebClientMode mode = mojom::WebClientMode::kText,
+      mojom::PromptType prompt_type = mojom::PromptType::kUnspecified) {
     if (!instance) {
       instance = GetOnlyGlicInstance();
     }
@@ -390,7 +391,7 @@ class GlicBrowserTestMixin : public T {
     ASSERT_OK(WaitForGlicClient(instance));
     GlicWebClientAccess* client = instance->host().GetPrimaryWebClient();
     CHECK(client);
-    client->OnUserInputSubmittedForTesting(mode);
+    client->OnUserInputSubmittedForTesting(mode, prompt_type);
   }
 
   [[nodiscard]] TestResult<> WaitForInstanceDeletion(
@@ -459,7 +460,8 @@ class GlicBrowserTestMixin : public T {
     if (!instance->conversation_id().has_value()) {
       RegisterConversation(instance, conversation_id);
     }
-    instance->OnUserInputSubmitted(mojom::WebClientMode::kText);
+    instance->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                   mojom::PromptType::kUnspecified);
   }
 
   // Keeps a blank instance alive on close without registering a conversation.
@@ -468,7 +470,8 @@ class GlicBrowserTestMixin : public T {
       instance = GetOnlyGlicInstance();
     }
     CHECK(instance);
-    instance->OnUserInputSubmitted(mojom::WebClientMode::kText);
+    instance->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                   mojom::PromptType::kUnspecified);
   }
 
   void CloseAllEmbeddersAndPreventDeletion(

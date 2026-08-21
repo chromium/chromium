@@ -270,7 +270,8 @@ TEST_F(GlicMetricsSessionManagerTest, StartsInactiveIfOnlyVisible) {
 TEST_F(GlicMetricsSessionManagerTest, CapturesEventsWhilePending) {
   metrics_->OnVisibilityChanged(true);
   // Session is pending.
-  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                 mojom::PromptType::kUnspecified);
 
   task_environment_.FastForwardBy(kStartTimeout);
   // Session started.
@@ -331,7 +332,8 @@ TEST_F(GlicMetricsSessionManagerTest, UserInputStartsSessionImmediately) {
             0);
 
   // User input should immediately start the session.
-  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                 mojom::PromptType::kUnspecified);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Instance.Session.Start"),
             1);
 
@@ -443,7 +445,8 @@ TEST_F(GlicMetricsSessionManagerTest,
        SingleTabPinned_WithResponse_RecordsFalse) {
   StartSession();
   metrics_->session_manager().SetPinnedTabCount(1);
-  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                 mojom::PromptType::kUnspecified);
 
   metrics_.reset();  // End session
 
@@ -457,11 +460,14 @@ TEST_F(GlicMetricsSessionManagerTest,
        MultipleResponses_OneWithMultipleTabs_RecordsTrue) {
   StartSession();
   metrics_->session_manager().SetPinnedTabCount(1);
-  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                 mojom::PromptType::kUnspecified);
   metrics_->session_manager().SetPinnedTabCount(3);
-  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                 mojom::PromptType::kUnspecified);
   metrics_->session_manager().SetPinnedTabCount(1);
-  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                 mojom::PromptType::kUnspecified);
 
   metrics_.reset();  // End session
 
@@ -528,7 +534,8 @@ TEST_F(GlicMetricsSessionManagerTest, WasTurnSubmitted_Floaty_True) {
   metrics_->OnOpen(mojom::InvocationSource::kOsButton, show_options);
   metrics_->OnShowInFloaty(show_options);
   metrics_->OnVisibilityChanged(true);
-  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                 mojom::PromptType::kUnspecified);
 
   metrics_.reset();
 
@@ -561,7 +568,8 @@ TEST_F(GlicMetricsSessionManagerTest, WasTurnSubmitted_SidePanel_True) {
   metrics_->OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
   metrics_->OnShowInSidePanel(&mock_tab);
   metrics_->OnVisibilityChanged(true);
-  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                 mojom::PromptType::kUnspecified);
 
   metrics_.reset();
 

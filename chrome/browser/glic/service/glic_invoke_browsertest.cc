@@ -1566,7 +1566,7 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeDefaultToLastActiveBrowserTest,
 
   // Simulate user input to trigger first action metric.
   instance2->instance_metrics().OnUserInputSubmitted(
-      mojom::WebClientMode::kText);
+      mojom::WebClientMode::kText, mojom::PromptType::kUnspecified);
 
   histogram_tester.ExpectUniqueSample(
       "Glic.Instance.AutoOpenedPanel.FirstAction.LastActiveInstance",

@@ -393,7 +393,8 @@ TEST_F(GlicMetricsTest, RecordGlicProfilePreferences) {
 }
 
 TEST_F(GlicMetricsTest, Basic) {
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                  mojom::PromptType::kUnspecified);
   metrics()->OnResponseStarted();
   metrics()->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
   metrics()->OnResponseRated(/*positive=*/true);
@@ -421,7 +422,8 @@ TEST_F(GlicMetricsTest, BasicVisible) {
 
   metrics()->OnGlicWindowStartedOpening(/*attached=*/true,
                                         mojom::InvocationSource::kOsButton);
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                  mojom::PromptType::kUnspecified);
   metrics()->OnResponseStarted();
   metrics()->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
   metrics()->OnResponseRated(/*positive=*/true);
@@ -449,9 +451,11 @@ TEST_F(GlicMetricsTest, FreUserInputEntrypointRecorded) {
                                         mojom::InvocationSource::kOsButton);
   metrics()->OnFreAccepted();
 
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                  mojom::PromptType::kUnspecified);
   // Reset time and submit another input to make sure it's only recorded once.
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                  mojom::PromptType::kUnspecified);
 
   histogram_tester().ExpectBucketCount("Glic.Fre.UserInput.InvocationSource",
                                        mojom::InvocationSource::kOsButton, 1);
@@ -468,7 +472,8 @@ TEST_F(GlicMetricsTest, ResponseStartTime_WithFocusedTab) {
   EXPECT_CALL(mock_tab, GetContents())
       .WillRepeatedly(Return(test_web_contents()));
   metrics()->DidRequestContextFromTab(mock_tab);
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                  mojom::PromptType::kUnspecified);
   metrics()->OnResponseStarted();
 
   EXPECT_THAT(
@@ -491,7 +496,8 @@ TEST_F(GlicMetricsTest, ResponseStartTime_WithPinnedAndSharedTab) {
   EXPECT_CALL(mock_tab, GetContents())
       .WillRepeatedly(Return(test_web_contents()));
   metrics()->DidRequestContextFromTab(mock_tab);
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kAudio,
+                                  mojom::PromptType::kUnspecified);
   metrics()->OnResponseStarted();
 
   EXPECT_THAT(
@@ -509,7 +515,8 @@ TEST_F(GlicMetricsTest, BasicUkm) {
   metrics()->OnGlicWindowStartedOpening(/*attached=*/false,
                                         mojom::InvocationSource::kFre);
   for (int i = 0; i < 2; ++i) {
-    metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
+    metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                    mojom::PromptType::kUnspecified);
     metrics()->OnResponseStarted();
     metrics()->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
   }
@@ -555,7 +562,8 @@ TEST_F(GlicMetricsTest, BasicUkmWithTarget) {
   EXPECT_CALL(mock_tab, GetContents())
       .WillRepeatedly(Return(test_web_contents()));
   metrics()->DidRequestContextFromTab(mock_tab);
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                  mojom::PromptType::kUnspecified);
   metrics()->OnResponseStarted();
   metrics()->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
 
@@ -584,7 +592,8 @@ TEST_F(GlicMetricsTest, BasicStopReasonOther) {
 
   metrics()->OnGlicWindowStartedOpening(/*attached=*/true,
                                         mojom::InvocationSource::kOsButton);
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                  mojom::PromptType::kUnspecified);
   metrics()->OnResponseStarted();
   metrics()->OnResponseStopped(mojom::ResponseStopCause::kOther);
   metrics()->OnSessionTerminated();
@@ -599,7 +608,8 @@ TEST_F(GlicMetricsTest, BasicStopReasonByUser) {
 
   metrics()->OnGlicWindowStartedOpening(/*attached=*/true,
                                         mojom::InvocationSource::kOsButton);
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                  mojom::PromptType::kUnspecified);
   metrics()->OnResponseStarted();
   metrics()->OnResponseStopped(mojom::ResponseStopCause::kUser);
   metrics()->OnSessionTerminated();
@@ -722,7 +732,8 @@ TEST_F(GlicMetricsTest, LogGetContextFromFocusedTabError_ChangingModes) {
   metrics()->SetWebClientMode(mojom::WebClientMode::kText);
   metrics()->LogGetContextFromFocusedTabError(
       GlicGetContextFromTabError::kWebContentsChanged);
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kAudio,
+                                  mojom::PromptType::kUnspecified);
   metrics()->LogGetContextFromFocusedTabError(
       GlicGetContextFromTabError::kPermissionDenied);
 
@@ -932,7 +943,8 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ShortcutStatus) {
 
 TEST_F(GlicMetricsTest, InputModesUsed) {
   // TODO(b/452378389): Unconventional order of metrics calls may be a problem.
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                  mojom::PromptType::kUnspecified);
   metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
   histogram_tester().ExpectTotalCount("Glic.Session.InputModesUsed", 1);
   histogram_tester().ExpectBucketCount("Glic.Session.InputModesUsed",
@@ -943,27 +955,33 @@ TEST_F(GlicMetricsTest, InputModesUsed) {
   histogram_tester().ExpectBucketCount("Glic.Session.InputModesUsed",
                                        InputModesUsed::kNone, 1);
 
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                  mojom::PromptType::kUnspecified);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kAudio,
+                                  mojom::PromptType::kUnspecified);
   metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
   histogram_tester().ExpectTotalCount("Glic.Session.InputModesUsed", 3);
   histogram_tester().ExpectBucketCount("Glic.Session.InputModesUsed",
                                        InputModesUsed::kTextAndAudio, 1);
 
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kAudio,
+                                  mojom::PromptType::kUnspecified);
   metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
   histogram_tester().ExpectTotalCount("Glic.Session.InputModesUsed", 4);
   histogram_tester().ExpectBucketCount("Glic.Session.InputModesUsed",
                                        InputModesUsed::kOnlyAudio, 1);
 
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kUnknown);
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kUnknown,
+                                  mojom::PromptType::kUnspecified);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kAudio,
+                                  mojom::PromptType::kUnspecified);
   metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
   histogram_tester().ExpectTotalCount("Glic.Session.InputModesUsed", 5);
   histogram_tester().ExpectBucketCount("Glic.Session.InputModesUsed",
                                        InputModesUsed::kOnlyAudio, 2);
 
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kUnknown);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kUnknown,
+                                  mojom::PromptType::kUnspecified);
   metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
   histogram_tester().ExpectTotalCount("Glic.Session.InputModesUsed", 6);
   histogram_tester().ExpectBucketCount("Glic.Session.InputModesUsed",
@@ -1034,7 +1052,8 @@ TEST_F(GlicMetricsTest, PositionOnOpenAndClose) {
 TEST_F(GlicMetricsTest, FreToFirstQueryElapsedTimeReportedOnce) {
   metrics()->OnFreAccepted();
   task_environment().FastForwardBy(base::Milliseconds(100));
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                  mojom::PromptType::kUnspecified);
   histogram_tester().ExpectTotalCount("Glic.FreToFirstQueryTime", 1);
   histogram_tester().ExpectUniqueSample("Glic.FreToFirstQueryTime", 100, 1);
   histogram_tester().ExpectUniqueSample("Glic.FreToFirstQueryTimeMax24H", 100,
@@ -1044,9 +1063,11 @@ TEST_F(GlicMetricsTest, FreToFirstQueryElapsedTimeReportedOnce) {
 TEST_F(GlicMetricsTest, FreToFirstQueryElapsedTimeReportedOnlyOnce) {
   metrics()->OnFreAccepted();
   task_environment().FastForwardBy(base::Milliseconds(100));
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                  mojom::PromptType::kUnspecified);
   // Second time should be ignored.
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                  mojom::PromptType::kUnspecified);
   histogram_tester().ExpectTotalCount("Glic.FreToFirstQueryTime", 1);
   histogram_tester().ExpectUniqueSample("Glic.FreToFirstQueryTime", 100, 1);
   histogram_tester().ExpectUniqueSample("Glic.FreToFirstQueryTimeMax24H", 100,
@@ -1152,7 +1173,8 @@ TEST_F(GlicMetricsTrustFirstOnboardingTest, FreToFirstQueryTimeRecorded) {
   metrics()->OnTrustFirstOnboardingAccept();
 
   task_environment().FastForwardBy(base::Seconds(1));
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                  mojom::PromptType::kUnspecified);
 
   histogram_tester().ExpectUniqueSample("Glic.FreToFirstQueryTime", 1000, 1);
   EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.InputSubmitted"), 1);
@@ -1165,7 +1187,8 @@ TEST_F(GlicMetricsTest, FreToFirstQueryElapsedTimeReportedInMultiInstance) {
 
   metrics()->OnFreAccepted();
   task_environment().FastForwardBy(base::Milliseconds(100));
-  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                  mojom::PromptType::kUnspecified);
   histogram_tester().ExpectTotalCount("Glic.FreToFirstQueryTime", 1);
   histogram_tester().ExpectUniqueSample("Glic.FreToFirstQueryTime", 100, 1);
 }

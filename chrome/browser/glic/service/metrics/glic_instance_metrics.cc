@@ -1051,7 +1051,8 @@ int GlicInstanceMetrics::GetEventCount(GlicInstanceEvent event) {
   return it == event_counts_.end() ? 0 : it->second;
 }
 
-void GlicInstanceMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
+void GlicInstanceMetrics::OnUserInputSubmitted(mojom::WebClientMode mode,
+                                               mojom::PromptType prompt_type) {
   if (current_ui_mode_ == EmbedderType::kSidePanel) {
     side_panel_prompt_count_++;
 
@@ -1083,6 +1084,7 @@ void GlicInstanceMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
   cui_trackers_.push_back(std::make_unique<GlicSubmitQueryCuiTracker>());
 
   base::RecordAction(base::UserMetricsAction("GlicResponseInputSubmit"));
+  base::UmaHistogramEnumeration("Glic.Turn.PromptType", prompt_type);
 
   if (sharing_manager_) {
     RecordSelectionOverlayMetrics(sharing_manager_->GetPinnedTabs());

@@ -112,7 +112,8 @@ class Host : public GlicSharingManagerProvider {
 
     virtual void OnWebClientCleared() = 0;
     virtual void PrepareForOpen() = 0;
-    virtual void OnUserInputSubmitted(mojom::WebClientMode mode) = 0;
+    virtual void OnUserInputSubmitted(mojom::WebClientMode mode,
+                                      mojom::PromptType prompt_type) = 0;
 
     virtual void OnInteractionModeChange(mojom::WebClientMode new_mode) = 0;
     virtual GlicInstanceMetrics& instance_metrics() = 0;

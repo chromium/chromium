@@ -59,7 +59,9 @@ class GlicWebClientAccess {
                       base::OnceClosure callback) = 0;
 
   // Simulates a user input submission.
-  virtual void OnUserInputSubmittedForTesting(mojom::WebClientMode mode) = 0;
+  virtual void OnUserInputSubmittedForTesting(
+      mojom::WebClientMode mode,
+      mojom::PromptType prompt_type) = 0;
 };
 
 }  // namespace glic

@@ -1694,7 +1694,8 @@ interface WebClientHandler {
   OnOptinImpression();
 
   // Called when the user submits input.
-  OnUserInputSubmitted(WebClientMode mode);
+  OnUserInputSubmitted(WebClientMode mode,
+                       [MinVersion=1] PromptType prompt_type);
 
   // Called when starting to upload context to the server.
   OnContextUploadStarted();
@@ -2126,6 +2127,25 @@ enum WebClientMode {
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebClientMode)
+
+// @generate glic_api
+// Prompt submission type.
+// LINT.IfChange(PromptType)
+[Stable, Extensible]
+enum PromptType {
+  // Default value when prompt type is unspecified or unknown.
+  [Default] kUnspecified = 0,
+  // User typed text in the prompt input field.
+  kTypedText = 1,
+  // User selected a Zero State Suggestion (ZSS).
+  kZeroStateSuggestions = 2,
+  // Auto-submitted prompt (e.g. contextual cueing auto-submit).
+  kAutoPrompt = 3,
+  // Audio input prompt.
+  kAudio = 4,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicPromptType)
 
 // @generate glic_api
 // Microphone status.

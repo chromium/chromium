@@ -848,7 +848,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingBypassNudgeCapsTest,
         std::move(info), base::DoNothing());
   }
   glic_instance->host().instance_delegate().OnUserInputSubmitted(
-      glic::mojom::WebClientMode::kText);
+      glic::mojom::WebClientMode::kText, glic::mojom::PromptType::kUnspecified);
 
   // Close the Glic side panel.
   ASSERT_OK(CloseGlicForTabAndWait(tab));
@@ -954,7 +954,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingAutoOpenCooldownTest,
         std::move(info), base::DoNothing());
   }
   glic_instance->host().instance_delegate().OnUserInputSubmitted(
-      glic::mojom::WebClientMode::kText);
+      glic::mojom::WebClientMode::kText, glic::mojom::PromptType::kUnspecified);
 
   // 4. Close the Glic side panel.
   ASSERT_OK(CloseGlicForTabAndWait(tab));

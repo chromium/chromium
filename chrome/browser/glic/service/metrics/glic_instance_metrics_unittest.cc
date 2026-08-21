@@ -156,7 +156,8 @@ TEST_F(GlicInstanceMetricsTest,
 
 TEST_F(GlicInstanceMetricsTest, OnResponseStarted_WhileHidden_LogsError) {
   metrics_.OnVisibilityChanged(true);
-  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kUnspecified);
   metrics_.OnVisibilityChanged(false);
   metrics_.OnResponseStarted();
   histogram_tester_.ExpectUniqueSample(
@@ -224,16 +225,19 @@ TEST_F(GlicInstanceMetricsTest, OnSidePanelClosed_WithoutOpening_LogsError) {
 TEST_F(GlicInstanceMetricsTest,
        OnUserInputSubmitted_WhileResponseInProgress_LogsError) {
   metrics_.OnVisibilityChanged(true);
-  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kUnspecified);
   metrics_.OnResponseStarted();
-  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kUnspecified);
   histogram_tester_.ExpectUniqueSample(
       "Glic.Instance.Metrics.Error",
       GlicInstanceMetricsError::kInputSubmittedWhileResponseInProgress, 1);
 }
 
 TEST_F(GlicInstanceMetricsTest, OnUserInputSubmitted_WhileHidden_LogsError) {
-  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kUnspecified);
   histogram_tester_.ExpectUniqueSample(
       "Glic.Instance.Metrics.Error",
       GlicInstanceMetricsError::kInputSubmittedWhileHidden, 1);
@@ -241,7 +245,8 @@ TEST_F(GlicInstanceMetricsTest, OnUserInputSubmitted_WhileHidden_LogsError) {
 
 TEST_F(GlicInstanceMetricsTest, SubmitQueryCuiOutcomeRecorded) {
   metrics_.OnVisibilityChanged(true);
-  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kUnspecified);
   metrics_.OnResponseStarted();
   histogram_tester_.ExpectUniqueSample("Glic.CUI.SubmitQuery.Outcome",
                                        GlicCuiOutcome::kSuccess, 1);
@@ -249,7 +254,8 @@ TEST_F(GlicInstanceMetricsTest, SubmitQueryCuiOutcomeRecorded) {
 
 TEST_F(GlicInstanceMetricsTest, SubmitQueryCuiOutcomeRecorded_Failed) {
   metrics_.OnVisibilityChanged(true);
-  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kUnspecified);
   metrics_.OnWebUiStateChanged(mojom::WebUiState::kError);
   histogram_tester_.ExpectUniqueSample("Glic.CUI.SubmitQuery.Outcome",
                                        GlicCuiOutcome::kFailed, 1);
@@ -257,7 +263,8 @@ TEST_F(GlicInstanceMetricsTest, SubmitQueryCuiOutcomeRecorded_Failed) {
 
 TEST_F(GlicInstanceMetricsTest, SubmitQueryCuiOutcomeRecorded_Abandoned) {
   metrics_.OnVisibilityChanged(true);
-  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kUnspecified);
   metrics_.OnVisibilityChanged(false);
   histogram_tester_.ExpectUniqueSample("Glic.CUI.SubmitQuery.Outcome",
                                        GlicCuiOutcome::kAbandoned, 1);
@@ -704,7 +711,8 @@ TEST_F(GlicInstanceMetricsTest, WebUiLoadTime_Onboarding) {
 
 TEST_F(GlicInstanceMetricsTest, ValidResponseFlow_DoesNotLogError) {
   metrics_.OnVisibilityChanged(true);
-  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kUnspecified);
   metrics_.OnResponseStarted();
   metrics_.OnResponseStopped(mojom::ResponseStopCause::kUser);
   histogram_tester_.ExpectTotalCount("Glic.Instance.Metrics.Error", 0);
@@ -748,8 +756,10 @@ TEST_F(GlicInstanceMetricsTest, InputModesUsed_IgnoresUnknown) {
   {
     GlicInstanceMetrics metrics(&profile_metrics_service_);
     metrics.OnVisibilityChanged(true);
-    metrics.OnUserInputSubmitted(mojom::WebClientMode::kUnknown);
-    metrics.OnUserInputSubmitted(mojom::WebClientMode::kAudio);
+    metrics.OnUserInputSubmitted(mojom::WebClientMode::kUnknown,
+                                 mojom::PromptType::kUnspecified);
+    metrics.OnUserInputSubmitted(mojom::WebClientMode::kAudio,
+                                 mojom::PromptType::kUnspecified);
   }
 
   histogram_tester_.ExpectTotalCount("Glic.Instance.InputModesUsed", 1);
@@ -759,7 +769,8 @@ TEST_F(GlicInstanceMetricsTest, InputModesUsed_IgnoresUnknown) {
   {
     GlicInstanceMetrics metrics(&profile_metrics_service_);
     metrics.OnVisibilityChanged(true);
-    metrics.OnUserInputSubmitted(mojom::WebClientMode::kUnknown);
+    metrics.OnUserInputSubmitted(mojom::WebClientMode::kUnknown,
+                                 mojom::PromptType::kUnspecified);
   }
 
   histogram_tester_.ExpectTotalCount("Glic.Instance.InputModesUsed", 2);
@@ -782,7 +793,8 @@ TEST_F(GlicInstanceMetricsTest, OnTurnCompleted_LogsHistograms) {
 TEST_F(GlicInstanceMetricsTest, ScrollToMetrics) {
   base::test::ScopedFeatureList features(features::kGlicScrollTo);
   metrics_.OnVisibilityChanged(true);
-  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kUnspecified);
   metrics_.OnResponseStarted();
   metrics_.OnGlicScrollAttempt();
   task_environment_.FastForwardBy(base::Milliseconds(400));
@@ -817,7 +829,8 @@ TEST_F(GlicInstanceMetricsTest, SidePanel_OpenCloseClose_LogsError) {
 
 TEST_F(GlicInstanceMetricsTest, Response_InputStopStop_LogsError) {
   metrics_.OnVisibilityChanged(true);
-  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kUnspecified);
   metrics_.OnResponseStarted();
   metrics_.OnResponseStopped(mojom::ResponseStopCause::kUser);
   metrics_.OnResponseStopped(mojom::ResponseStopCause::kUser);
@@ -850,7 +863,8 @@ TEST_F(GlicInstanceMetricsTest, TurnSegmentation_OsButtonAttachedText) {
   metrics_.OnOpen(mojom::InvocationSource::kOsButton, show_options);
   metrics_.OnShowInSidePanel(&mock_tab_);
   metrics_.OnVisibilityChanged(true);
-  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kUnspecified);
   metrics_.OnResponseStarted();
 
   histogram_tester_.ExpectBucketCount(
@@ -863,7 +877,8 @@ TEST_F(GlicInstanceMetricsTest, TurnSegmentation_3DotsMenuDetachedAudio) {
   metrics_.OnOpen(mojom::InvocationSource::kThreeDotsMenu, show_options);
   metrics_.OnShowInFloaty(show_options);
   metrics_.OnVisibilityChanged(true);
-  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kAudio);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kAudio,
+                                mojom::PromptType::kUnspecified);
   metrics_.OnResponseStarted();
 
   histogram_tester_.ExpectBucketCount(
@@ -876,7 +891,8 @@ TEST_F(GlicInstanceMetricsTest, TurnUkm) {
   metrics_.OnOpen(mojom::InvocationSource::kOsButton, show_options);
   metrics_.OnShowInSidePanel(&mock_tab_);
   metrics_.OnVisibilityChanged(true);
-  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kUnspecified);
   metrics_.OnResponseStarted();
 
   auto entries = ukm_tester_.GetEntriesByName("Glic.Response");
@@ -965,7 +981,8 @@ TEST_F(GlicInstanceMetricsTest, SidePanelFirstOpenDuration_WithPrompts) {
   ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
   metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
   metrics_.OnShowInSidePanel(&mock_tab_);
-  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kUnspecified);
 
   task_environment_.FastForwardBy(base::Minutes(5));
   metrics_.OnSidePanelClosed(
@@ -1012,7 +1029,8 @@ TEST_F(GlicInstanceMetricsTest,
   ShowOptions show_options{FloatingShowOptions{}};
   metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
   metrics_.OnShowInFloaty(show_options);
-  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kUnspecified);
   metrics_.OnFloatyClosed();
 
   // SidePanel metrics should not have been recorded.
@@ -1162,6 +1180,36 @@ TEST_F(GlicInstanceMetricsTest,
       "Glic.Instance.PanelPresentationTime.Inactive.SidePanel", 1);
   histogram_tester_.ExpectTotalCount(
       "Glic.Instance.PanelPresentationTime.SidePanel", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest, OnUserInputSubmitted_RecordsPromptType) {
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kTypedText);
+  histogram_tester_.ExpectBucketCount("Glic.Turn.PromptType",
+                                      mojom::PromptType::kTypedText, 1);
+
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kZeroStateSuggestions);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Turn.PromptType", mojom::PromptType::kZeroStateSuggestions, 1);
+
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kAutoPrompt);
+  histogram_tester_.ExpectBucketCount("Glic.Turn.PromptType",
+                                      mojom::PromptType::kAutoPrompt, 1);
+
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kAudio,
+                                mojom::PromptType::kAudio);
+  histogram_tester_.ExpectBucketCount("Glic.Turn.PromptType",
+                                      mojom::PromptType::kAudio, 1);
+
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kUnspecified);
+  histogram_tester_.ExpectBucketCount("Glic.Turn.PromptType",
+                                      mojom::PromptType::kUnspecified, 1);
+
+  histogram_tester_.ExpectTotalCount("Glic.Turn.PromptType", 5);
 }
 
 }  // namespace glic

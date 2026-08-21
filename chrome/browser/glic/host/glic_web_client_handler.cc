@@ -1294,18 +1294,19 @@ class GlicWebClientHandler
     host().instance_metrics().OnOptinImpression();
   }
 
-  void OnUserInputSubmitted(mojom::WebClientMode mode) override {
+  void OnUserInputSubmitted(mojom::WebClientMode mode,
+                            mojom::PromptType prompt_type) override {
     if (base::FeatureList::IsEnabled(
             features::kGlicFixTimeToFirstQueryKillSwitch)) {
-      glic_service_->metrics()->OnUserInputSubmitted(mode);
+      glic_service_->metrics()->OnUserInputSubmitted(mode, prompt_type);
     }
     glic_service_->OnUserInputSubmitted(mode);
     host().instance_metrics_backwards_compatibility().OnUserInputSubmitted(
-        mode);
+        mode, prompt_type);
 
     // TODO(crbug.com/462769104): move this to a non-metrics API.
     GetSharingManagerInternal().OnConversationTurnSubmitted();
-    host().instance_delegate().OnUserInputSubmitted(mode);
+    host().instance_delegate().OnUserInputSubmitted(mode, prompt_type);
   }
 
   void OnContextUploadStarted() override {
@@ -1603,8 +1604,10 @@ class GlicWebClientHandler
     web_client_->Invoke(std::move(options), std::move(callback));
   }
 
-  void OnUserInputSubmittedForTesting(mojom::WebClientMode mode) override {
-    OnUserInputSubmitted(mode);
+  void OnUserInputSubmittedForTesting(  // IN-TEST
+      mojom::WebClientMode mode,
+      mojom::PromptType prompt_type) override {
+    OnUserInputSubmitted(mode, prompt_type);
   }
 
  private:

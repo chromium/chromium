@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FileUploadPolicyState, FormFactor, HostCapability, InvocationSource, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, SbThreatType, ScreenshotEncryptionScheme, ScrollToErrorReason, SkillSource, SkillsWebClientEvent, WebClientMode} from '/glic/glic_api/glic_api.js';
+import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FileUploadPolicyState, FormFactor, HostCapability, InvocationSource, MetricUserInputReactionType, PanelStateKind, Platform, PromptType, ResponseStopCause, SbThreatType, ScreenshotEncryptionScheme, ScrollToErrorReason, SkillSource, SkillsWebClientEvent, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {AdditionalContext, CounterAbuseVerdict, ExperimentalTriggeringUpdate, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, ScrollToError, TabContextResult, TabData, UserConfirmationDialogRequest, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 import {Subject} from '/glic/observable.js';
 
@@ -2741,6 +2741,14 @@ class ApiTests extends ApiTestFixtureBase {
     metrics.onResponseStopped({cause: ResponseStopCause.USER});
     metrics.onSessionTerminated();
     metrics.onClosedCaptionsShown();
+  }
+
+  async testUserInputSubmittedPromptType() {
+    assertDefined(this.host.getMetrics);
+    const metrics = this.host.getMetrics();
+    assertDefined(metrics);
+    assertDefined(metrics.onUserInputSubmitted);
+    metrics.onUserInputSubmitted(WebClientMode.TEXT, PromptType.TYPED_TEXT);
   }
 
   // TODO(crbug.com/454083080): Fix this, it hangs.

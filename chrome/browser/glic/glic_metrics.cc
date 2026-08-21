@@ -412,7 +412,8 @@ void GlicMetrics::OnOptInRejected(OptInFlow flow) {
   base::UmaHistogramEnumeration("Glic.Fre.NoThanks.FlowSource", flow);
 }
 
-void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
+void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode,
+                                       mojom::PromptType /*prompt_type*/) {
   if (!fre_accepted_time_.is_null()) {
     base::TimeDelta delta = base::TimeTicks::Now() - fre_accepted_time_;
     base::RecordAction(base::UserMetricsAction("Glic.Fre.InputSubmitted"));

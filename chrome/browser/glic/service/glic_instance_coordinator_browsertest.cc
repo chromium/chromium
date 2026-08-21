@@ -301,7 +301,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
   EXPECT_EQ(instance1, instance2);
 
   // Simulate user input on tab2.
-  instance2->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  instance2->OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                  mojom::PromptType::kUnspecified);
 
   // Close the side panel for the active tab (tab2).
   ASSERT_OK(CloseGlicForTabAndWait(tab2));

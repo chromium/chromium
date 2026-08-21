@@ -73,7 +73,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   GlicInstanceMetrics& operator=(const GlicInstanceMetrics&) = delete;
 
   // `GlicInstanceMetricsBackwardsCompatibility`:
-  void OnUserInputSubmitted(mojom::WebClientMode mode) override;
+  void OnUserInputSubmitted(mojom::WebClientMode mode,
+                            mojom::PromptType prompt_type) override;
   void DidRequestContextFromTab(tabs::TabInterface& tab) override;
   void OnResponseStarted() override;
   void OnResponseStopped(mojom::ResponseStopCause cause) override;

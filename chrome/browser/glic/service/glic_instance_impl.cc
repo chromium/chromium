@@ -806,7 +806,8 @@ void GlicInstanceImpl::PrepareForOpen() {
   }
 }
 
-void GlicInstanceImpl::OnUserInputSubmitted(mojom::WebClientMode mode) {
+void GlicInstanceImpl::OnUserInputSubmitted(mojom::WebClientMode mode,
+                                            mojom::PromptType /*prompt_type*/) {
   for (auto& [key, entry] : embedders_) {
     entry.user_input_submitted_while_bound = true;
   }

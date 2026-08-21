@@ -3281,6 +3281,17 @@ chromium-metrics-reviews@google.com.
   <token key="AttachedTabCount" variants="AttachedTabCount"/>
 </histogram>
 
+<histogram name="Glic.Turn.PromptType" enum="GlicPromptType"
+    expires_after="2027-03-01">
+  <owner>basiaz@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Recorded when user input is submitted for a turn in a Glic instance.
+    Indicates the submission prompt type (e.g. typed text, zero state
+    suggestions, auto prompt, audio).
+  </summary>
+</histogram>
+
 <histogram name="Glic.Turn.ResponseStartTime" units="ms"
     expires_after="2027-02-14">
   <owner>birnie@google.com</owner>
