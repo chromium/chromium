@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/test/scoped_feature_list.h"
 #include "gpu/command_buffer/service/gpu_persistent_cache.h"
 #include "gpu/command_buffer/service/mocks.h"
@@ -259,7 +260,7 @@ TEST_F(DawnCachingInterfaceTest, TestMemoryPressureCritical) {
     interface->StoreData(kKey1, base::as_byte_span(kData1));
     EXPECT_EQ(kDataSize, interface->FindKey(kKey1));
 
-    factory.PurgeMemory(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    factory.PurgeMemory(base::kCriticalMemoryPressureThreshold);
     EXPECT_EQ(0u, interface->FindKey(kKey1));
   }
 }
@@ -285,11 +286,11 @@ TEST_F(DawnCachingInterfaceTest, TestAggressiveCacheAndMemoryPressure) {
     EXPECT_EQ(kDataSize, interface->FindKey(kKey1));
 
     // Moderate memory pressure is ignored
-    factory.PurgeMemory(base::MEMORY_PRESSURE_LEVEL_MODERATE);
+    factory.PurgeMemory(base::kModerateMemoryPressureThreshold);
     EXPECT_EQ(kDataSize, interface->FindKey(kKey1));
 
     // But not critical, except on Android
-    factory.PurgeMemory(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    factory.PurgeMemory(base::kCriticalMemoryPressureThreshold);
 #if BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(kDataSize, interface->FindKey(kKey1));
 #else

@@ -153,12 +153,11 @@ void DawnCachingInterfaceFactory::ReleaseHandle(
   backends_.erase(handle);
 }
 
-void DawnCachingInterfaceFactory::PurgeMemory(
-    base::MemoryPressureLevel memory_pressure_level) {
+void DawnCachingInterfaceFactory::PurgeMemory(int memory_limit) {
   for (auto& [key, backend] : backends_) {
     CHECK(std::holds_alternative<GpuDiskCacheDawnGraphiteHandle>(key) ||
           std::holds_alternative<GpuDiskCacheDawnWebGPUHandle>(key));
-    backend->PurgeMemory(memory_pressure_level);
+    backend->PurgeMemory(memory_limit);
   }
 }
 

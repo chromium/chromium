@@ -862,6 +862,12 @@ void GpuChannelManager::OnReleaseMemory() {
     shared_context_state_->PurgeMemory(memory_limit());
   }
 
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+  if (dawn_caching_interface_factory()) {
+    dawn_caching_interface_factory()->PurgeMemory(memory_limit());
+  }
+#endif  // BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+
   if (memory_limit() > base::kModerateMemoryPressureThreshold) {
     return;
   }
@@ -870,12 +876,6 @@ void GpuChannelManager::OnReleaseMemory() {
       memory_limit() <= base::kCriticalMemoryPressureThreshold
           ? base::MEMORY_PRESSURE_LEVEL_CRITICAL
           : base::MEMORY_PRESSURE_LEVEL_MODERATE;
-
-#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
-  if (dawn_caching_interface_factory()) {
-    dawn_caching_interface_factory()->PurgeMemory(memory_pressure_level);
-  }
-#endif  // BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
 
   if (persistent_caches_) {
     persistent_caches_->PurgeMemory(memory_pressure_level);

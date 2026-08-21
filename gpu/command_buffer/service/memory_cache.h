@@ -49,6 +49,8 @@ class GPU_GLES2_EXPORT MemoryCache : public base::RefCounted<MemoryCache> {
                                         base::HeapArray<uint8_t> data);
   scoped_refptr<MemoryCacheEntry> Find(std::string_view key);
 
+  void PurgeMemory(int memory_limit);
+  // TODO(crbug.com/489349561): Remove once GpuPersistentCache is migrated.
   void PurgeMemory(base::MemoryPressureLevel memory_pressure_level);
 
   void OnMemoryDump(const std::string& dump_name,

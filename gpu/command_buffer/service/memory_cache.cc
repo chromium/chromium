@@ -127,6 +127,15 @@ scoped_refptr<MemoryCacheEntry> MemoryCache::Store(
   return entry;
 }
 
+void MemoryCache::PurgeMemory(int memory_limit) {
+  base::AutoLock lock(mutex_);
+  size_t new_limit =
+      gpu::UpdateShaderCacheSizeOnMemoryLimit(max_size_, memory_limit);
+  while (current_size_ > new_limit) {
+    EvictEntry(lru_.head()->value());
+  }
+}
+
 void MemoryCache::PurgeMemory(base::MemoryPressureLevel memory_pressure_level) {
   base::AutoLock lock(mutex_);
   size_t new_limit = gpu::UpdateShaderCacheSizeOnMemoryPressure(
