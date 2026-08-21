@@ -2213,6 +2213,12 @@ bool HTMLInputElement::IsSteppable() const {
   return input_type_->IsSteppable();
 }
 
+bool HTMLInputElement::IsSwitch() const {
+  return RuntimeEnabledFeatures::HTMLSwitchAttributeEnabled() &&
+         FormControlType() == FormControlType::kInputCheckbox &&
+         FastHasAttribute(html_names::kSwitchAttr);
+}
+
 bool HTMLInputElement::IsButton() const {
   return input_type_->IsButton();
 }

@@ -64,6 +64,7 @@ enum SelectionMode { "select", "start", "end", "preserve" };
     [CEReactions, RaisesException=Setter] attribute unsigned long size;
     [CEReactions, Reflect, URL] attribute DOMString src;
     [CEReactions, Reflect] attribute DOMString step;
+    [CEReactions, Reflect, RuntimeEnabled=HTMLSwitchAttribute] attribute boolean switch;
     [CEReactions] attribute DOMString type;
     [CEReactions, Reflect=value] attribute DOMString defaultValue;
     [LogActivity=GetterOnly, CEReactions, ImplementedAs=valueForBinding, RaisesException=Setter] attribute [LegacyNullToEmptyString] DOMString value;

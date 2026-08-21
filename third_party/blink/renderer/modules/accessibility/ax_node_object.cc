@@ -2508,6 +2508,10 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
       case FormControlType::kInputSubmit:
         return ButtonRoleType();
       case FormControlType::kInputCheckbox:
+        if (input->IsSwitch()) {
+          CHECK(RuntimeEnabledFeatures::HTMLSwitchAttributeEnabled());
+          return ax::mojom::blink::Role::kSwitch;
+        }
         return ax::mojom::blink::Role::kCheckBox;
       case FormControlType::kInputDate:
         return ax::mojom::blink::Role::kDate;

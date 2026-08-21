@@ -5046,7 +5046,9 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
   }
 
   if (attr_name == html_names::kRoleAttr ||
-      attr_name == html_names::kTypeAttr) {
+      attr_name == html_names::kTypeAttr ||
+      (RuntimeEnabledFeatures::HTMLSwitchAttributeEnabled() &&
+       attr_name == html_names::kSwitchAttr)) {
     DeferTreeUpdate(TreeUpdateReason::kRoleChangeFromRoleOrType, element);
   } else if (attr_name == html_names::kSizeAttr ||
              attr_name == html_names::kMultipleAttr) {

@@ -889,6 +889,7 @@ html element input
     property step
     property stepDown
     property stepUp
+    property switch
     property type
     property useMap
     property validationMessage
