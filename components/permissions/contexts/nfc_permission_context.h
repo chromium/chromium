@@ -35,13 +35,10 @@ class NfcPermissionContext : public ContentSettingPermissionContextBase {
   std::unique_ptr<Delegate> delegate_;
 
  private:
-  // ContentSettingPermissionContextBase:
-#if !BUILDFLAG(IS_ANDROID)
   ContentSetting GetContentSettingStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
-#endif
 
   // PermissionContextBase:
   void DecidePermission(std::unique_ptr<PermissionRequestData> request_data,

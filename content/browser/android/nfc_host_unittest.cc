@@ -119,4 +119,15 @@ TEST_F(NFCHostTest, GetNFCFromDifferentWebContentsMainFrame) {
             bad_message_observer.WaitForBadMessage());
 }
 
+TEST_F(NFCHostTest, GetNFCOnOpaqueOriginBlocked) {
+  NavigateAndCommit(GURL("data:text/html,test"));
+
+  mojo::Remote<device::mojom::NFC> nfc;
+  contents()->GetNFC(static_cast<RenderFrameHostImpl*>(main_rfh()),
+                     nfc.BindNewPipeAndPassReceiver());
+
+  nfc.FlushForTesting();
+  EXPECT_FALSE(nfc.is_connected());
+}
+
 }  // namespace content

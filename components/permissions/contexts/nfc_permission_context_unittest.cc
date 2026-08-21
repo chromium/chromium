@@ -256,6 +256,37 @@ TEST_F(NfcPermissionContextTests, SinglePermissionPromptFailsOnInsecureOrigin) {
   ASSERT_FALSE(HasActivePrompt());
 }
 
+TEST_F(NfcPermissionContextTests, SinglePermissionPromptFailsOnOpaqueOrigin) {
+  GURL requesting_frame("data:text/html,test");
+  NavigateAndCommit(requesting_frame);
+  RequestManagerDocumentLoadCompleted();
+
+  EXPECT_FALSE(HasActivePrompt());
+  RequestNfcPermission(RequestID(0), requesting_frame,
+                       /*user_gesture=*/true);
+  ASSERT_FALSE(HasActivePrompt());
+  CheckPermissionMessageSent(/*request_id=*/0, /*allowed=*/false);
+}
+
+TEST_F(NfcPermissionContextTests, SinglePermissionPromptFailsOnChildFrame) {
+  GURL requesting_frame("https://www.example.com/nfc");
+  NavigateAndCommit(requesting_frame);
+  RequestManagerDocumentLoadCompleted();
+
+  content::RenderFrameHost* child_frame =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("child");
+
+  EXPECT_FALSE(HasActivePrompt());
+  RequestNfcPermission(
+      PermissionRequestID(child_frame->GetGlobalId(),
+                          permissions::PermissionRequestID::RequestLocalId(0)),
+      requesting_frame, /*user_gesture=*/true);
+  ASSERT_FALSE(HasActivePrompt());
+  CheckPermissionMessageSentInternal(
+      static_cast<MockRenderProcessHost*>(child_frame->GetProcess()),
+      /*request_id=*/0, /*allowed=*/false);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // Tests concerning Android NFC setting
 TEST_F(NfcPermissionContextTests,

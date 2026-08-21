@@ -24,14 +24,21 @@ NfcPermissionContext::NfcPermissionContext(
 
 NfcPermissionContext::~NfcPermissionContext() = default;
 
-#if !BUILDFLAG(IS_ANDROID)
 ContentSetting NfcPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
+#if BUILDFLAG(IS_ANDROID)
+  if (!render_frame_host || !render_frame_host->IsInPrimaryMainFrame() ||
+      render_frame_host->GetLastCommittedOrigin().opaque()) {
+    return CONTENT_SETTING_BLOCK;
+  }
+  return ContentSettingPermissionContextBase::GetContentSettingStatusInternal(
+      render_frame_host, requesting_origin, embedding_origin);
+#else
   return CONTENT_SETTING_BLOCK;
-}
 #endif
+}
 
 void NfcPermissionContext::DecidePermission(
     std::unique_ptr<PermissionRequestData> request_data,
@@ -42,6 +49,7 @@ void NfcPermissionContext::DecidePermission(
         content::PermissionStatusSource::UNSPECIFIED));
     return;
   }
+
   permissions::ContentSettingPermissionContextBase::DecidePermission(
       std::move(request_data), std::move(callback));
 }
