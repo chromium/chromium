@@ -36,6 +36,7 @@
 #import "base/uuid.h"
 #import "base/values.h"
 #import "build/branding_buildflags.h"
+#import "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
 #import "components/autofill/core/browser/autofill_field.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -56,6 +57,7 @@
 #import "components/autofill/core/common/form_field_data.h"
 #import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
@@ -74,6 +76,7 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -90,6 +93,7 @@
 #import "ui/gfx/image/image.h"
 #import "url/gurl.h"
 
+using autofill::AtMemoryAction;
 using autofill::AutofillFormFeaturesJavaScriptFeature;
 using autofill::AutofillJavaScriptFeature;
 using autofill::FieldDataManager;
@@ -101,6 +105,7 @@ using autofill::FormFieldData;
 using autofill::FormGlobalId;
 using autofill::FormHandlersJavaScriptFeature;
 using autofill::FormRendererId;
+using autofill::MayPerformAtMemoryAction;
 using autofill::Section;
 using autofill::Suggestion;
 using autofill::SuggestionType;
@@ -632,7 +637,6 @@ bool HasGuid(const Suggestion::Payload& payload) {
         // `suggestionIconType` will be set below.
         break;
 
-      case SuggestionType::kAutocompleteAtMemoryButton:
       case SuggestionType::kFetchingAmbientData:
         value = SysUTF16ToNSString(popup_suggestion.main_text.value);
         break;
@@ -650,6 +654,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
       case SuggestionType::kAtMemorySearchAffordance:
       case SuggestionType::kAtMemorySearchResult:
       case SuggestionType::kAtMemorySourceAttribution:
+      case SuggestionType::kAutocompleteAtMemoryButton:
       case SuggestionType::kAutofillAiOtherOrders:
       case SuggestionType::kAutofillAiOtherShipments:
       case SuggestionType::kAutofillAiPrivateInferenceNotice:
@@ -762,6 +767,31 @@ bool HasGuid(const Suggestion::Payload& payload) {
       [suggestions insertObject:suggestion atIndex:0];
     } else {
       [suggestions addObject:suggestion];
+    }
+  }
+
+  if (suggestions.count > 0 && _webState) {
+    autofill::AutofillClientIOS* client =
+        autofill::AutofillClientIOS::FromWebState(_webState);
+    if (client &&
+        MayPerformAtMemoryAction(AtMemoryAction::kTriggerSearchUI, *client)) {
+      FormSuggestionMetadata metadata;
+      metadata.suggestion_delegate = delegate;
+      FormSuggestion* atMemorySuggestion = [FormSuggestion
+                  suggestionWithValue:
+                      l10n_util::GetNSString(
+                          IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_TITLE)
+                           minorValue:nil
+                   displayDescription:nil
+                                 icon:nil
+                                 type:autofill::SuggestionType::
+                                          kAutocompleteAtMemoryButton
+                              payload:autofill::Suggestion::Payload()
+          fieldByFieldFillingTypeUsed:autofill::FieldType::EMPTY_TYPE
+                       requiresReauth:NO
+           acceptanceA11yAnnouncement:nil
+                             metadata:metadata];
+      [suggestions addObject:atMemorySuggestion];
     }
   }
 

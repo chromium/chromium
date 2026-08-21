@@ -30,6 +30,7 @@
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/browser/ui/mock_autofill_suggestion_delegate.h"
+#import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
@@ -1647,4 +1648,69 @@ TEST_F(AutofillAgentTest,
                        completionHandler:^{
                        }];
   }
+}
+
+// Tests that the AtMemory suggestion chip is appended when AutofillAtMemory is
+// enabled and suggestions are present.
+TEST_F(AutofillAgentTest, ShowAtMemorySuggestion_AppendedWithSuggestions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{autofill::features::kAutofillAtMemory,
+                            autofill::features::debug::
+                                kAtMemorySkipEnablementChecks},
+      /*disabled_features=*/{});
+
+  std::vector<autofill::Suggestion> suggestions = {
+      autofill::Suggestion(u"John Doe",
+                           autofill::SuggestionType::kAddressEntry),
+  };
+
+  __block NSArray<FormSuggestion*>* received_suggestions = nil;
+  auto completionHandler = ^(NSArray<FormSuggestion*>* form_suggestions,
+                             id<FormSuggestionProvider> delegate) {
+    received_suggestions = form_suggestions;
+  };
+
+  testing::NiceMock<autofill::MockAutofillSuggestionDelegate> mock_delegate;
+  [autofill_agent_ showAutofillPopup:suggestions
+                  suggestionDelegate:mock_delegate.GetWeakPtr()];
+  [autofill_agent_ retrieveSuggestionsForForm:nil
+                                     webState:&fake_web_state_
+                            completionHandler:completionHandler];
+
+  ASSERT_EQ(2U, received_suggestions.count);
+  EXPECT_EQ(autofill::SuggestionType::kAddressEntry,
+            received_suggestions[0].type);
+  EXPECT_EQ(autofill::SuggestionType::kAutocompleteAtMemoryButton,
+            received_suggestions[1].type);
+}
+
+// Tests that the AtMemory suggestion chip is not appended when AutofillAtMemory
+// is enabled but suggestions are empty.
+TEST_F(AutofillAgentTest, ShowAtMemorySuggestion_NotAppendedWhenEmpty) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{autofill::features::kAutofillAtMemory,
+                            autofill::features::debug::
+                                kAtMemorySkipEnablementChecks},
+      /*disabled_features=*/{});
+
+  std::vector<autofill::Suggestion> empty_suggestions = {};
+
+  __block BOOL completion_called = NO;
+  __block NSArray<FormSuggestion*>* received_suggestions = nil;
+  auto completionHandler = ^(NSArray<FormSuggestion*>* form_suggestions,
+                             id<FormSuggestionProvider> delegate) {
+    completion_called = YES;
+    received_suggestions = form_suggestions;
+  };
+
+  testing::NiceMock<autofill::MockAutofillSuggestionDelegate> mock_delegate;
+  [autofill_agent_ showAutofillPopup:empty_suggestions
+                  suggestionDelegate:mock_delegate.GetWeakPtr()];
+  [autofill_agent_ retrieveSuggestionsForForm:nil
+                                     webState:&fake_web_state_
+                            completionHandler:completionHandler];
+  EXPECT_TRUE(completion_called);
+  EXPECT_EQ(0U, received_suggestions.count);
 }

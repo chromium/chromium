@@ -58,6 +58,7 @@ source_set("browser") {
     "//components/prefs",
     "//components/prefs/ios",
     "//components/resources:components_resources_grit",
+    "//components/strings:components_strings",
     "//components/ukm/ios:ukm_url_recorder",
     "//google_apis",
     "//ios/web/common",
@@ -67,6 +68,7 @@ source_set("browser") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
+    "//ui/base",
     "//url",
   ]
 

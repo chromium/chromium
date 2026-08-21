@@ -224,17 +224,8 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
 #pragma mark - FormInputAccessoryConsumer
 
 - (void)showAccessorySuggestions:(NSArray<FormSuggestion*>*)suggestions {
-  BOOL hasSuggestions = suggestions.count > 0;
-  if (suggestions.count == 1 &&
-      suggestions.firstObject.type ==
-          autofill::SuggestionType::kAutocompleteAtMemoryButton) {
-    // If the only suggestion is kAutocompleteAtMemoryButton, the manual fill
-    // buttons should be shown.
-    hasSuggestions = NO;
-  }
-
   [self.formInputAccessoryView
-      showGroup:[self hasSingleManualFillButton:hasSuggestions]
+      showGroup:[self hasSingleManualFillButton:suggestions.count > 0]
                     ? FormInputAccessoryViewSubitemGroup::kExpandButton
                     : FormInputAccessoryViewSubitemGroup::kManualFillButtons];
 
