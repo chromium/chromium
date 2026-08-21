@@ -24,7 +24,6 @@ include_rules = [
   "+chrome/browser/metrics",
   "+chrome/browser/nearby_sharing",
   "+chrome/browser/net",
-  "+chrome/browser/notifications",
   "+chrome/browser/pdf",
   "+chrome/browser/picture_in_picture",
   "+chrome/browser/policy",

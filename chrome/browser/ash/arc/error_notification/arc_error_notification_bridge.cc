@@ -6,16 +6,18 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "base/check_deref.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/error_notification/arc_error_notification_item.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/vector_icons/vector_icons.h"
+#include "components/user_manager/user.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -116,10 +118,12 @@ void ArcErrorNotificationBridge::SendErrorDetails(
   }
 
   const std::string& name = details->name;
-  const std::string notification_id =
-      GenerateNotificationId(details->type, name);
+  const user_manager::User& user = CHECK_DEREF(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  const std::string notification_id = ash::CreateUserScopedNotificationId(
+      GenerateNotificationId(details->type, name), user.username_hash());
 
-  message_center::Notification notification = ash::CreateSystemNotification(
+  auto notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE /* type */, notification_id,
       base::UTF8ToUTF16(details->title.c_str()), u"" /* message */,
       base::UTF8ToUTF16(name.c_str()) /* display_source */,
@@ -135,13 +139,13 @@ void ArcErrorNotificationBridge::SendErrorDetails(
   for (const std::string& label : *details->buttonLabels) {
     buttons.push_back(message_center::ButtonInfo(base::UTF8ToUTF16(label)));
   }
-  notification.set_buttons(buttons);
+  notification->set_buttons(buttons);
 
-  notification.set_never_timeout(true);
+  notification->set_never_timeout(true);
+  notification->set_profile_id(user.GetAccountId().GetUserEmail());
 
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
-      NotificationHandler::Type::TRANSIENT, notification,
-      nullptr /* metadata */);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 
   std::move(callback).Run(ArcErrorNotificationItem::Create(
       weak_ptr_factory_.GetWeakPtr(), notification_id));
@@ -149,8 +153,8 @@ void ArcErrorNotificationBridge::SendErrorDetails(
 
 void ArcErrorNotificationBridge::CloseNotification(
     const std::string& notification_id) {
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
-      NotificationHandler::Type::TRANSIENT, notification_id);
+  message_center::MessageCenter::Get()->RemoveNotification(notification_id,
+                                                           /*by_user=*/false);
 }
 
 std::string ArcErrorNotificationBridge::GenerateNotificationId(
