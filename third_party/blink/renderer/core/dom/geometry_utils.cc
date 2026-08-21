@@ -51,13 +51,26 @@ gfx::Vector2dF BoxTopLeftOffset(LayoutObject* layout_object,
     return gfx::Vector2dF();
   }
 
-  Vector<gfx::QuadF> local_quads;
-  layout_object->QuadsInAncestor(local_quads, box_model, {},
-                                 ToBoxQuadType(box_type));
-  if (local_quads.empty()) {
+  auto calculate_offset = [&]() {
+    Vector<gfx::QuadF> local_quads;
+    layout_object->QuadsInAncestor(local_quads, box_model, {},
+                                   ToBoxQuadType(box_type));
+    if (local_quads.empty()) {
+      return gfx::Vector2dF();
+    }
+    return local_quads.front().p1() - gfx::PointF();
+  };
+
+  // A non-SVG LayoutBox's local coordinate system starts at its border box.
+  // Avoid collecting and mapping its fragments for the common relativeTo
+  // case. SVG layout boxes use a separate local SVG coordinate space.
+  if (box_type == V8CSSBoxType::Enum::kBorder && IsA<LayoutBox>(box_model) &&
+      !box_model->IsSVG()) {
+    DCHECK_EQ(gfx::Vector2dF(), calculate_offset());
     return gfx::Vector2dF();
   }
-  return local_quads.front().p1() - gfx::PointF();
+
+  return calculate_offset();
 }
 
 gfx::QuadF ScaleQuadToCSSPixels(const gfx::QuadF& quad,
