@@ -253,6 +253,8 @@ export class TabStripElement extends CrLitElement implements
         width: Math.round(width),
         height: Math.round(height),
       });
+
+      this.dragDelegate_.onRecalculateBounds();
     });
     this.resizeObserver_.observe(this);
     this.resizeObserver_.observe(this.$.tabstrip);

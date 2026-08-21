@@ -55,6 +55,19 @@ export class TabDragDelegate {
         session.draggedTabWidth = dragElement.offsetWidth;
         dragElement.style.transform = prevTransform;
       }
+
+      // Lazy measure the button layout ONLY ONCE when it stabilizes
+      if (!session.trailingElementRect) {
+        const newTabButton =
+            this.host_.shadowRoot?.querySelector<HTMLElement>('#newTabButton');
+        if (newTabButton) {
+          const prevButtonTransform = newTabButton.style.transform;
+          newTabButton.style.transform = '';
+          session.trailingElementRect = newTabButton.getBoundingClientRect();
+          newTabButton.style.transform = prevButtonTransform;
+        }
+      }
+
       this.cacheTabMidpoints_();
 
       this.moveElementToLocalPoint_(session.lastMouseX);
@@ -100,8 +113,6 @@ export class TabDragDelegate {
     this.host_.setTabStripNoDrag(true);
     this.host_.activateTabForDrag(nodeId);
 
-    const newTabButton =
-        this.host_.shadowRoot?.querySelector<HTMLElement>('#newTabButton');
     const dragElement = this.host_.getTabElementForDrag(nodeId);
 
     const session: DragSession = {
@@ -110,8 +121,7 @@ export class TabDragDelegate {
       mouseToTabXRatio: mouseToTabXRatio,
       lastMouseX: localPoint.x,
       containerBounds: this.host_.getDragContainerBounds(),
-      trailingElementRect: newTabButton ? newTabButton.getBoundingClientRect() :
-                                          null,
+      trailingElementRect: null,
       draggedTabWidth: dragElement ? dragElement.offsetWidth : 0,
       draggedTabOriginX:
           dragElement ? dragElement.getBoundingClientRect().left : 0,
@@ -197,6 +207,22 @@ export class TabDragDelegate {
     }
     this.clearDragState_();
     this.host_.requestUpdate();
+  }
+
+  onRecalculateBounds() {
+    if (!this.session_) {
+      return;
+    }
+    const session = this.session_;
+    session.containerBounds = this.host_.getDragContainerBounds();
+    const newTabButton =
+        this.host_.shadowRoot?.querySelector<HTMLElement>('#newTabButton');
+    if (newTabButton) {
+      const prevTransform = newTabButton.style.transform;
+      newTabButton.style.transform = '';
+      session.trailingElementRect = newTabButton.getBoundingClientRect();
+      newTabButton.style.transform = prevTransform;
+    }
   }
 
   private cacheTabMidpoints_() {
