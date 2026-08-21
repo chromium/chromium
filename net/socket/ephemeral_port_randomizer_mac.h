@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -54,6 +55,10 @@ class NET_EXPORT_PRIVATE EphemeralPortRandomizer {
 
   std::optional<uint16_t> PickPort(const IPEndPoint& peer_address);
   void RecordPortUse(const IPEndPoint& peer_address, uint16_t port);
+
+  base::DictValue CreateNetLogTCPBindAttemptStartParams(
+      const IPEndPoint& peer_address,
+      int attempt_number);
 
  private:
   friend class base::NoDestructor<EphemeralPortRandomizer>;

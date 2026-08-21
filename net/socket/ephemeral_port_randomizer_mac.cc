@@ -130,6 +130,21 @@ void EphemeralPortRandomizer::RecordPortUse(const IPEndPoint& peer_address,
   MaybeStartCleanupTimer();
 }
 
+base::DictValue EphemeralPortRandomizer::CreateNetLogTCPBindAttemptStartParams(
+    const IPEndPoint& peer_address,
+    int attempt_number) {
+  const auto& cache_entry = recent_ports_by_peer_.find(peer_address);
+  return base::DictValue()
+      .Set("remote_endpoint", peer_address.ToString())
+      .Set("attempt", attempt_number)
+      .Set("randomizer_range_first", port_range_.first)
+      .Set("randomizer_range_last", port_range_.last)
+      .Set("randomizer_recent_ports_by_remote_endpoint_size",
+           cache_entry == recent_ports_by_peer_.end()
+               ? 0
+               : static_cast<int>(cache_entry->second.size()));
+}
+
 // static
 EphemeralPortRandomizer::PortRange
 EphemeralPortRandomizer::ReadPortRangeFromSysctl() {

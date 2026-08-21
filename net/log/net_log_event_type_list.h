@@ -565,6 +565,47 @@ EVENT_TYPE(TCP_CONNECT)
 //   }
 EVENT_TYPE(TCP_CONNECT_ATTEMPT)
 
+// The bind attempt by the EphemeralPortRandomizer nested within
+// TCP_CONNECT_ATTEMPT. There may be multiple attempts to bind different ports
+// for some failure cases. Currently MacOS only.
+//
+// The START event will describe the settings before a port is picked:
+//
+//   {
+//     "remote_endpoint": <The remote endpoint, as a string>,
+//     "attempt": <The index of the attempt, as an integer>,
+//     "randomizer_range_first": <The lowest possible port, as an integer>,
+//     "randomizer_range_last": <The highest possible port, as an integer>,
+//     "randomizer_recent_ports_by_remote_endpoint_size":
+//       <The number of ports believed to be in use for the remote endpoint,
+//        as an integer>,
+//   }
+//
+// The END event will contain one of the following:
+//
+// On EphemeralPortRandomizer::PickPort exhaustion:
+//   {
+//   }
+//
+// On SockaddrStorage::ToSockAddr failure:
+//   {
+//     "local_address": <The local address, as a string>,
+//     "attempted_port": <The local port attempted for use, as an integer>,
+//   }
+//
+// On bind success:
+//   {
+//     "local_endpoint": <The local endpoint, as a string>,
+//   }
+//
+// On bind failure:
+//   {
+//     "attempted_local_endpoint":
+//       <The local endpoint attempted for use, as a string>,
+//     "os_error": <Integer error code the operating system returned>
+//   }
+EVENT_TYPE(TCP_RANDOMIZER_BIND_ATTEMPT)
+
 // The start/end of a TCP accept(). This corresponds with a call to
 // TCPServerSocket::Accept().
 //

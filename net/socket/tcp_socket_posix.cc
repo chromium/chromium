@@ -23,6 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
 #include "net/base/features.h"
@@ -307,8 +308,14 @@ int TCPSocketPosix::Connect(const IPEndPoint& address,
         EphemeralPortRandomizer::GetInstance();
     constexpr int kMaxBindAttempts = 5;
     for (int attempt = 0; attempt < kMaxBindAttempts; ++attempt) {
+      net_log_.BeginEvent(NetLogEventType::TCP_RANDOMIZER_BIND_ATTEMPT, [&] {
+        return randomizer.CreateNetLogTCPBindAttemptStartParams(target_address,
+                                                                attempt);
+      });
+
       std::optional<uint16_t> port = randomizer.PickPort(target_address);
       if (!port) {
+        net_log_.EndEvent(NetLogEventType::TCP_RANDOMIZER_BIND_ATTEMPT);
         break;
       }
 
@@ -319,6 +326,11 @@ int TCPSocketPosix::Connect(const IPEndPoint& address,
       SockaddrStorage local_storage;
       if (!local_endpoint.ToSockAddr(local_storage.addr(),
                                      &local_storage.addr_len)) {
+        net_log_.EndEvent(NetLogEventType::TCP_RANDOMIZER_BIND_ATTEMPT, [&] {
+          return base::DictValue()
+              .Set("local_address", local_ip.ToString())
+              .Set("attempted_port", *port);
+        });
         break;
       }
 
@@ -326,10 +338,19 @@ int TCPSocketPosix::Connect(const IPEndPoint& address,
           socket_->socket_fd(), local_storage.addr(), local_storage.addr_len));
       if (bind_result == 0) {
         port_randomization_data_ = {target_address, *port};
+        net_log_.EndEvent(NetLogEventType::TCP_RANDOMIZER_BIND_ATTEMPT, [&] {
+          return base::DictValue().Set("local_endpoint",
+                                       local_endpoint.ToString());
+        });
         break;
       }
 
       int bind_error = errno;
+      net_log_.EndEvent(NetLogEventType::TCP_RANDOMIZER_BIND_ATTEMPT, [&] {
+        return base::DictValue()
+            .Set("attempted_local_endpoint", local_endpoint.ToString())
+            .Set("os_error", bind_error);
+      });
       if (bind_error == EADDRINUSE || bind_error == EACCES) {
         // Someone else is using this port. Record it as used so we won't
         // try it again in the near future.
