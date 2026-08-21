@@ -7920,8 +7920,6 @@ void ChromeContentBrowserClient::IsClipboardPasteAllowedByPolicy(
     const ui::ClipboardMetadata& metadata,
     ClipboardPasteData clipboard_paste_data,
     IsClipboardPasteAllowedCallback callback) {
-  // TODO(b/508693696): Add copy and paste support on AL.
-#if !BUILDFLAG(IS_ANDROID)
   if (destination.web_contents() &&
       glic::IsGlicGuest(destination.web_contents())) {
     glic::LogPasteAttempt(source, metadata);
@@ -7930,7 +7928,6 @@ void ChromeContentBrowserClient::IsClipboardPasteAllowedByPolicy(
       return;
     }
   }
-#endif
 
 // TODO(b/352728209): Add Android-specific hook for Data Controls.
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && !BUILDFLAG(IS_ANDROID)
@@ -7954,9 +7951,7 @@ void ChromeContentBrowserClient::IsClipboardCopyAllowedByPolicy(
     const ui::ClipboardMetadata& metadata,
     const ClipboardPasteData& data,
     IsClipboardCopyAllowedCallback callback) {
-#if !BUILDFLAG(IS_ANDROID)
   glic::OnBeforeClipboardCopy(source);
-#endif
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   enterprise_data_protection::IsClipboardCopyAllowedByPolicy(

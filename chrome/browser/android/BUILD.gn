@@ -54,6 +54,7 @@ source_set("tabs_impl") {
     "//chrome/browser/ui/contextual_search",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel/android",
+    "//chrome/browser/ui/tabs:page_context_eligibility_helper",
     "//chrome/browser/ui/webui:webui_util",
 
     # TODO(crbug.com/489548570): Remove "side_panel/internal/android"
@@ -598,6 +599,7 @@ if (is_android) {
       "//chrome/browser/ui/android/webid",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/digital_credentials",
+      "//chrome/browser/ui/tabs:page_context_eligibility_helper",
       "//chrome/browser/ui/tabs/alert:impl",
       "//chrome/browser/ui/tabs/alert:tab_alert",
       "//chrome/browser/ui/webui/notifications_internals",
@@ -970,6 +972,7 @@ source_set("unit_tests") {
     ":android",
     "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser/renderer_host",
+    "//chrome/browser/ui/tabs:page_context_eligibility_helper_unit_tests",
     "//chrome/test:test_support",
     "//components/webapps/browser",
     "//content/test:test_support",

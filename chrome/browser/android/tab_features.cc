@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/side_panel/internal/android/dev/side_panel_tab_scoped_dev_feature.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
@@ -138,6 +139,11 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
   glic_instance_helper_ =
       GetUserDataFactory().CreateInstance<glic::GlicInstanceHelper>(*tab, tab);
+
+  page_context_eligibility_helper_ =
+      GetUserDataFactory().CreateInstance<tabs::PageContextEligibilityHelper>(
+          *tab, *tab);
+
   if (base::FeatureList::IsEnabled(features::kGlicAndroidSidePanel) &&
       AndroidSidePanelEnabledFn::IsEnabled()) {
     glic_side_panel_coordinator_ =

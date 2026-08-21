@@ -942,7 +942,12 @@ base::CallbackListSubscription TabAndroid::RegisterWillDiscardContents(
 
 bool TabAndroid::IsActivated() const {
   JNIEnv* env = AttachCurrentThread();
-  return Java_TabImpl_isActivated(env, GetJavaObject(env));
+  auto j_obj = GetJavaObject(env);
+  // May be null in C++ unit tests.
+  if (!j_obj) {
+    return false;
+  }
+  return Java_TabImpl_isActivated(env, j_obj);
 }
 
 base::CallbackListSubscription TabAndroid::RegisterDidActivate(

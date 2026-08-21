@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(GlicPasteEligibilityBrowserTest,
   // Create a standalone WebContents that is not attached to a Tab.
   std::unique_ptr<content::WebContents> non_tab_contents =
       content::WebContents::Create(
-          content::WebContents::CreateParams(GetBrowser()->GetProfile()));
+          content::WebContents::CreateParams(GetProfile()));
 
   content::ClipboardEndpoint source_non_tab(
       ui::DataTransferEndpoint(GURL("https://example.com")),
@@ -317,14 +317,23 @@ IN_PROC_BROWSER_TEST_F(GlicPasteEligibilityBrowserTest,
   content::WebContents* glic_guest = GetReadyGuest();
   ASSERT_TRUE(glic_guest);
 
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, InProcessBrowserTest::CreateIncognitoBrowser() is unavailable.
+  // Create an off-the-record WebContents directly to provide an incognito
+  // BrowserContext source for cross-profile paste verification.
+  std::unique_ptr<content::WebContents> incognito_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(
+          GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
+  content::WebContents* source_contents = incognito_contents.get();
+#else
   BrowserWindowInterface* incognito_browser =
       InProcessBrowserTest::CreateIncognitoBrowser();
   tabs::TabInterface* incognito_tab =
       incognito_browser->tab_strip_model()->GetActiveTab();
-  const GURL url = embedded_test_server()->GetURL("/title1.html");
-  ASSERT_TRUE(content::NavigateToURL(incognito_tab->GetContents(), url));
-
   content::WebContents* source_contents = incognito_tab->GetContents();
+#endif
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(source_contents, url));
   content::ClipboardEndpoint captured_source(
       ui::DataTransferEndpoint(url), base::BindLambdaForTesting([&]() {
         return source_contents->GetBrowserContext();

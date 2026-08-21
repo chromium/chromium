@@ -87,7 +87,6 @@
 #include "components/guest_view/browser/slim_web_view/slim_web_view_guest.h"  // nogncheck
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/tabs/public/tab_interface.h"
@@ -97,11 +96,9 @@
 #include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
-#endif
 
 namespace glic {
 
-#if !BUILDFLAG(IS_ANDROID)
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class GlicPasteFormat {
@@ -121,7 +118,6 @@ enum class GlicPasteFailedEligibilityReason {
   kCrossProfile = 2,
   kMaxValue = kCrossProfile,
 };
-#endif
 
 namespace {
 
@@ -801,8 +797,6 @@ double GetZoomFactor(PrefService* pref_service) {
   // //chrome/browser/glic/host/glic_page_handler.cc:GlicZoomFactors)
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-
 void LogPasteAttempt(const content::ClipboardEndpoint& source,
                      const ui::ClipboardMetadata& metadata) {
   std::string_view source_suffix = source.web_contents() ? "Web" : "OS";
@@ -971,6 +965,5 @@ bool IsClipboardPasteAllowed(const content::ClipboardEndpoint& source,
       GlicPasteFailedEligibilityReason::kPageContextInvalidated);
   return false;
 }
-#endif
 
 }  // namespace glic

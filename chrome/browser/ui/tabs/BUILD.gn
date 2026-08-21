@@ -46,6 +46,45 @@ source_set("utils") {
   deps = [ "//content/public/browser" ]
 }
 
+source_set("page_context_eligibility_helper") {
+  sources = [
+    "page_context_eligibility_helper.cc",
+    "page_context_eligibility_helper.h",
+  ]
+  public_deps = [
+    ":tabs_public",
+    "//ui/base/unowned_user_data",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//components/optimization_guide/content/browser:page_context_eligibility",
+    "//components/signin/public/identity_manager",
+  ]
+}
+
+source_set("page_context_eligibility_helper_unit_tests") {
+  testonly = true
+  sources = [ "page_context_eligibility_helper_unittest.cc" ]
+  deps = [
+    ":page_context_eligibility_helper",
+    ":tabs_public",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/test:test_support",
+    "//components/optimization_guide/content/browser:page_context_eligibility",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/tabs:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base/unowned_user_data",
+  ]
+}
+
 if (!is_android) {
   source_set("features") {
     sources = [
@@ -367,7 +406,6 @@ if (!is_android) {
       "features.h",
       "hover_tab_selector.h",
       "new_tab_grouping_user_data.h",
-      "page_context_eligibility_helper.h",
       "pinned_tab_codec.h",
       "pinned_tab_service.h",
       "pinned_tab_service_factory.h",
@@ -394,6 +432,7 @@ if (!is_android) {
 
     public_deps = [
       ":features",
+      ":page_context_eligibility_helper",
       ":tab_enums",
       ":tab_group",
       ":tab_strip_model_observer",
@@ -428,13 +467,13 @@ if (!is_android) {
 
   source_set("impl") {
     public_deps = [
+      ":page_context_eligibility_helper",
       "//chrome/browser:browser_public_dependencies",
       "//chrome/browser/loader",
     ]
 
     sources = [
       "hover_tab_selector.cc",
-      "page_context_eligibility_helper.cc",
       "pinned_tab_codec.cc",
       "pinned_tab_service.cc",
       "pinned_tab_service_factory.cc",
@@ -785,7 +824,6 @@ if (!is_android) {
     testonly = true
     sources = [
       "inactive_window_mouse_event_controller_unittest.cc",
-      "page_context_eligibility_helper_unittest.cc",
       "split_view_iph_controller_unittest.cc",
       "tab_collection_storage_unittest.cc",
       "tab_collection_unittest.cc",
@@ -809,6 +847,7 @@ if (!is_android) {
     ]
 
     deps = [
+      ":page_context_eligibility_helper_unit_tests",
       ":tab_enums",
       ":tab_group",
       ":tab_menu",

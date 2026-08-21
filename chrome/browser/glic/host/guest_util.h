@@ -105,8 +105,6 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
 // Returns the Glic zoom factor calculated from the zoom level pref.
 double GetZoomFactor(PrefService* pref_service);
 
-#if !BUILDFLAG(IS_ANDROID)
-
 // Called before the OS clipboard writes the sequence number. Checks and stashes
 // the eligibility for the upcoming copy event.
 void OnBeforeClipboardCopy(const content::ClipboardEndpoint& source);
@@ -126,7 +124,6 @@ bool IsClipboardPasteAllowed(const content::ClipboardEndpoint& source,
 // Logs the format of the clipboard data being pasted into Glic.
 void LogPasteAttempt(const content::ClipboardEndpoint& source,
                      const ui::ClipboardMetadata& metadata);
-#endif
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_HOST_GUEST_UTIL_H_
