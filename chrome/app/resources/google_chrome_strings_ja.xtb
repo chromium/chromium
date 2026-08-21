@@ -158,7 +158,7 @@
 <translation id="259935314519650377">ダウンロードしたインストーラのキャッシュに失敗しました。エラー: <ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
 <translation id="2608461706055011366">Gemini in Chrome でこのドキュメントの概要をすばやく把握し、質問することができます</translation>
 <translation id="2620436844016719705">システム</translation>
-<translation id="263447411082773721">パスワード、ブックマーク、履歴をデバイス間で完全に同期できます。既定のブラウザを Chrome に変更すると、お馴染みの機能を簡単に利用できるようになります。Chrome はタスクバーに固定され、すばやくアクセスできます。</translation>
+<translation id="263447411082773721">パスワード、ブックマーク、履歴をデバイス間で同期できます。既定のブラウザを Chrome に変更して、使い慣れた機能を簡単に利用できるようにしましょう。Chrome はタスクバーに固定され、すばやくアクセスできます。</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome では、ブラウザが安全な設定になっているかどうかを定期的に確認しています。お客様による確認が必要な項目がありましたらお知らせします。</translation>
 <translation id="2652691236519827073">新しい Chrome タブでリンクを開く(&amp;T)</translation>
@@ -262,7 +262,7 @@
 <translation id="3622716124581627104">ものや場所を特定したり、テキストをコピーまたは翻訳したりできます。Google レンズを使用すると、ページのスクリーンショットが Google に送信されます。<ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">共有パソコンの Chrome で Google アカウントが簡単に使用できるようになりました。</translation>
 <translation id="3635073343384702370">パスワードを保存すると、Chrome による確認が可能になります</translation>
-<translation id="3636970668267555808">Chrome を既定のブラウザに設定すると、お馴染みの信頼できる機能を簡単に利用できるようになります。</translation>
+<translation id="3636970668267555808">Chrome を既定のブラウザに設定して、使い慣れた信頼できる機能を簡単に利用できるようにしましょう。</translation>
 <translation id="3667616615096815454">インストールできません。このアプリはサーバーに認識されていません。</translation>
 <translation id="3673813398384385993">Chrome で「<ph name="EXTENSION_NAME" />」に不正なソフトウェアが含まれていることが検出されました</translation>
 <translation id="3697952514309507634">その他の Chrome プロファイル</translation>
@@ -706,8 +706,8 @@
 <translation id="80471789339884597">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはすべてのブラウザを再起動してください。</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064965390968184078">1. 下の [<ph name="BUTTON_LABEL" />] をクリックします
-2.Windows の設定で [<ph name="BUTTON_2" />] をクリックします
-3.Windows の通知で [<ph name="BUTTON_3" />] をクリックすると、Chrome がタスクバーに固定され、すばやくアクセスできるようになります</translation>
+2. Windows の設定で [<ph name="BUTTON_2" />] をクリックします
+3. Windows の通知で [<ph name="BUTTON_3" />] をクリックすると、Chrome がタスクバーに固定され、すばやくアクセスできるようになります</translation>
 <translation id="8069447462453318634">[ツールバーに固定] を選択します</translation>
 <translation id="8074398340364918139">Chrome の特定の機能や拡張機能を検索するには、アドレスバーに該当のショートカットを入力して、選択したキーボードキーを押します</translation>
 <translation id="8077579734294125741">その他の Chrome プロファイル</translation>
