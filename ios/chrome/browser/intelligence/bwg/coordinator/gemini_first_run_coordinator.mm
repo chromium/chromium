@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_page_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_step.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_wrapper_view_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_lightweight_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_promo_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_visual_rich_view_controller.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -318,7 +319,11 @@
       return visualRichVC;
     }
     case GeminiFirstRunStepIdentifier::kLightweight: {
-      return nil;
+      GeminiLightweightViewController* lightweightVC =
+          [[GeminiLightweightViewController alloc]
+              initWithConfiguration:consentConfig];
+      lightweightVC.mutator = _mediator;
+      return lightweightVC;
     }
   }
 }

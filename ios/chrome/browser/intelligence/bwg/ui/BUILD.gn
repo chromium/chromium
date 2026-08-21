@@ -25,6 +25,8 @@ source_set("ui") {
     "gemini_first_run_view_controller_protocol.h",
     "gemini_first_run_wrapper_view_controller.h",
     "gemini_first_run_wrapper_view_controller.mm",
+    "gemini_lightweight_view_controller.h",
+    "gemini_lightweight_view_controller.mm",
     "gemini_promo_view_controller.h",
     "gemini_promo_view_controller.mm",
     "gemini_ui_utils.h",
