@@ -1143,6 +1143,9 @@ class CORE_EXPORT Element : public ContainerNode {
   bool IsCanvasOrInCanvasSubtree() const;
   // Called when `IsInCanvasSubtree()` changes.
   virtual void DidChangeIsInCanvasSubtree();
+#if DCHECK_IS_ON()
+  void VerifySubtreeIsInCanvas(bool value);
+#endif
 
   bool IsDefined() const {
     // An element whose custom element state is "uncustomized" or "custom"

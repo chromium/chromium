@@ -34,7 +34,7 @@ void ObjectPaintInvalidator::InvalidateDisplayItemClient(
   // It's caller's responsibility to ensure PaintingLayer's NeedsRepaint is
   // set. Don't set the flag here because getting PaintLayer has cost and the
   // caller can use various ways (e.g.
-  // PaintInvalidatinContext::painting_layer) to reduce the cost.
+  // PaintInvalidationContext::painting_layer) to reduce the cost.
   CheckPaintLayerNeedsRepaint();
 #endif
   TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("blink.invalidation"),
