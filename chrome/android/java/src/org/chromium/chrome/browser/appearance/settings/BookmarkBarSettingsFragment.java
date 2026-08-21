@@ -30,7 +30,6 @@ import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
 
@@ -224,21 +223,8 @@ public class BookmarkBarSettingsFragment extends ChromeBaseSettingsFragment
 
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
-                    BookmarkBarSettingsFragment.class.getName(), R.xml.bookmark_bar_preferences) {
-                @Override
-                public void updateDynamicPreferences(Context context, SettingsIndexData indexData) {
-                    if (!shouldShowBookmarkPref(context)) {
-                        indexData.removeEntryForKey(
-                                BookmarkBarSettingsFragment.class.getName(), PREF_BOOKMARK_BAR);
-                        return;
-                    }
-
-                    indexData.updateEntrySummaryForKey(
-                            BookmarkBarSettingsFragment.class.getName(),
-                            PREF_BOOKMARK_BAR,
-                            R.string.bookmark_bar_setting_subtitle);
-                }
-            };
+                    BookmarkBarSettingsFragment.class.getName(),
+                    ChromeBaseSearchIndexProvider.INDEX_OPT_OUT);
 
     @Nullable PrefObserver getPrefObserverForTesting() {
         return mPrefObserver;

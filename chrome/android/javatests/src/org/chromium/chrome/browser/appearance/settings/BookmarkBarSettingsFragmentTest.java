@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.appearance.settings;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.appearance.settings.BookmarkBarSettingsFragment.PREF_BOOKMARK_BAR;
@@ -34,10 +32,8 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarSettingChangeOrigin;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -46,7 +42,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
-import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
 import org.chromium.components.prefs.PrefChangeRegistrarJni;
@@ -285,51 +280,6 @@ public class BookmarkBarSettingsFragmentTest {
                                 BookmarkBarVisibilityState.ALWAYS_SHOW,
                                 BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS));
         Assert.assertTrue(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
-    }
-
-    @Test
-    @SmallTest
-    public void testSearchIndex_BookmarkBarCompatible() {
-        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
-        SettingsIndexData indexData = mock(SettingsIndexData.class);
-        var context = mSettingsTestRule.getActivity();
-        String prefFragment = BookmarkBarSettingsFragment.class.getName();
-
-        BookmarkBarSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
-                context, indexData);
-
-        verify(indexData)
-                .updateEntrySummaryForKey(
-                        prefFragment, PREF_BOOKMARK_BAR, R.string.bookmark_bar_setting_subtitle);
-    }
-
-    @Test
-    @SmallTest
-    public void testSearchIndex_BookmarkBarNotCompatible() {
-        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(false);
-        SettingsIndexData indexData = mock(SettingsIndexData.class);
-        var context = mSettingsTestRule.getActivity();
-        String prefFragment = BookmarkBarSettingsFragment.class.getName();
-
-        BookmarkBarSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
-                context, indexData);
-
-        verify(indexData).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR);
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
-    public void testSearchIndex_FlagDisabled() {
-        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
-        SettingsIndexData indexData = mock(SettingsIndexData.class);
-        var context = mSettingsTestRule.getActivity();
-        String prefFragment = BookmarkBarSettingsFragment.class.getName();
-
-        BookmarkBarSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
-                context, indexData);
-
-        verify(indexData).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR);
     }
 
     private RadioButtonGroupBookmarkBarPreference assertRadioButtonGroupExists(String prefKey) {
