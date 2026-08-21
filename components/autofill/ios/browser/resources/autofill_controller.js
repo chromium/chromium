@@ -6,7 +6,7 @@ import * as fill_constants from '//components/autofill/ios/form_util/resources/f
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {fieldWasEditedByUser, unownedFormElementsAndFieldSetsToFormData, wasEditedByUser, webFormElementToFormData} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
-import {getFormControlElements, getFormElementFromIdentifier, getIframeElements} from '//components/autofill/ios/form_util/resources/form_utils.js';
+import {clipRect, getFormControlElements, getFormElementFromIdentifier, getIframeElements, getVisibleRectRespectingClips} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {getElementByUniqueID} from '//components/autofill/ios/form_util/resources/renderer_id.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
@@ -193,6 +193,44 @@ function fillSpecificFormField(data) {
   }
   lastAutoFilledElement = field;
   return fillFormField(data, field);
+}
+
+/**
+ * Scrolls the form field identified by `fieldId` into view.
+ *
+ * @param {number} fieldId The renderer ID of the field to scroll into view.
+ */
+function scrollFieldIntoView(fieldId) {
+  const element = getElementByUniqueID(fieldId);
+  if (!element) {
+    return;
+  }
+
+  // Perform a virtual scroll check first to verify if it is scrollable into
+  // view.
+  let visibleRect = getVisibleRectRespectingClips(
+      element, /*shouldAdjustRectForScroll=*/ true);
+  if (!visibleRect) {
+    return;
+  }
+
+  const viewportWidth =
+      window.innerWidth || document.documentElement.clientWidth;
+  const viewportHeight =
+      window.innerHeight || document.documentElement.clientHeight;
+  const viewportBox = {
+    left: 0,
+    top: 0,
+    right: viewportWidth,
+    bottom: viewportHeight,
+  };
+  visibleRect = clipRect(visibleRect, viewportBox);
+  if (!visibleRect) {
+    return;
+  }
+
+  // Actually scroll the element into view.
+  element.scrollIntoView({block: 'nearest', inline: 'nearest'});
 }
 
 // Remove Autofill styling when control element is edited by the user.
@@ -587,5 +625,6 @@ autofillAPI.addFunction('fillFormField', fillFormField);
 autofillAPI.addFunction('fillPredictionData', fillPredictionData);
 autofillAPI.addFunction('fillSpecificFormField', fillSpecificFormField);
 autofillAPI.addFunction('sanitizedFieldIsEmpty', sanitizedFieldIsEmpty);
+autofillAPI.addFunction('scrollFieldIntoView', scrollFieldIntoView);
 
 gCrWeb.registerApi(autofillAPI);

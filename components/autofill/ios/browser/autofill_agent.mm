@@ -554,6 +554,11 @@ bool HasGuid(const Suggestion::Payload& payload) {
       frame, std::move(predictionData));
 }
 
+- (void)scrollFieldIntoView:(const FieldRendererId&)field
+                    inFrame:(web::WebFrame*)frame {
+  AutofillJavaScriptFeature::GetInstance()->ScrollFieldIntoView(frame, field);
+}
+
 #pragma mark - AutofillClientIOSBridge
 
 - (void)showAutofillPopup:(const std::vector<Suggestion>&)popup_suggestions

@@ -61,6 +61,9 @@ class AutofillJavaScriptFeature : public web::JavaScriptFeature {
   // Marks up the form with autofill field prediction data (diagnostic tool).
   void FillPredictionData(web::WebFrame* frame, base::DictValue data);
 
+  // Scrolls the form field identified by `field` into view in `frame`.
+  void ScrollFieldIntoView(web::WebFrame* frame, FieldRendererId field);
+
   // web::JavaScriptFeature:
   std::optional<std::string> GetScriptMessageHandlerName() const override;
 

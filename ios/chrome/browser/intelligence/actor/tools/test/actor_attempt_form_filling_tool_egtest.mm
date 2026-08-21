@@ -270,12 +270,7 @@ void SetTargetFromNodeResult(optimization_guide::proto::ActionTarget* target,
 
   [self verifyProfileFormFilledInMainFrame];
   [self verifyCreditCardFormFilled];
-
-  // TODO(crbug.com/472287741): After implementing
-  // `AutofillDriverIOS::ScrollFieldIntoView`, uncomment to verify that the page
-  // actually scrolled down to the credit card form.
-  //
-  // [ChromeEarlGrey waitForJavaScriptCondition:@"window.scrollY > 0;"];
+  [ChromeEarlGrey waitForJavaScriptCondition:@"window.scrollY > 0;"];
 }
 
 // TODO(crbug.com/472287741): Add

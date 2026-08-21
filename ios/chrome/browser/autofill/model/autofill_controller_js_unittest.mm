@@ -2050,4 +2050,74 @@ TEST_F(AutofillControllerJsTest, SanitizedFieldIsEmpty) {
   }
 }
 
+// Tests that scrollFieldIntoView scrolls the target field into view.
+TEST_F(AutofillControllerJsTest, ScrollFieldIntoView) {
+  web::test::LoadHtml(@"<html><body>"
+                       "<input type='text' name='first' id='first' />"
+                       "<div style='height: 3000px;'></div>"
+                       "<input type='text' name='second' id='second' />"
+                       "</body></html>",
+                      web_state());
+
+  // Extract forms to assign unique renderer IDs.
+  ExecuteJavaScript(@"__gCrWeb.getRegisteredApi('autofill')."
+                    @"getFunction('extractForms')(false)");
+
+  // Initial scroll position should be at the top.
+  NSNumber* initialY = ExecuteJavaScript(@"window.scrollY");
+  EXPECT_EQ(0, [initialY intValue]);
+
+  // Scroll the second element (renderer ID 2) into view.
+  ExecuteJavaScript(@"__gCrWeb.getRegisteredApi('autofill')."
+                    @"getFunction('scrollFieldIntoView')(2)");
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    NSNumber* scrolledY = ExecuteJavaScript(@"window.scrollY");
+    return [scrolledY intValue] > 0;
+  }));
+}
+
+// Tests that scrollFieldIntoView safely no-ops for a non-existent renderer ID.
+TEST_F(AutofillControllerJsTest, ScrollFieldIntoViewNonExistentRendererId) {
+  web::test::LoadHtml(@"<html><body>"
+                       "<input type='text' name='first' id='first' />"
+                       "<div style='height: 3000px;'></div>"
+                       "<input type='text' name='second' id='second' />"
+                       "</body></html>",
+                      web_state());
+
+  // Extract forms to assign unique renderer IDs.
+  ExecuteJavaScript(@"__gCrWeb.getRegisteredApi('autofill')."
+                    @"getFunction('extractForms')(false)");
+
+  // Attempt to scroll a non-existent element (renderer ID 99999) into view.
+  ExecuteJavaScript(@"__gCrWeb.getRegisteredApi('autofill')."
+                    @"getFunction('scrollFieldIntoView')(99999)");
+
+  NSNumber* scrollY = ExecuteJavaScript(@"window.scrollY");
+  EXPECT_EQ(0, [scrollY intValue]);
+}
+
+// Tests that scrollFieldIntoView does not scroll when the target is in a
+// non-scrollable overflow: hidden container.
+TEST_F(AutofillControllerJsTest, ScrollFieldIntoViewOverflowHidden) {
+  web::test::LoadHtml(
+      @"<html><body>"
+       "<div style='height: 100px; overflow: hidden;'>"
+       "  <div style='height: 3000px;'></div>"
+       "  <input type='text' name='hidden_input' id='hidden_input' />"
+       "</div>"
+       "</body></html>",
+      web_state());
+
+  ExecuteJavaScript(@"__gCrWeb.getRegisteredApi('autofill')."
+                    @"getFunction('extractForms')(false)");
+
+  ExecuteJavaScript(@"__gCrWeb.getRegisteredApi('autofill')."
+                    @"getFunction('scrollFieldIntoView')(1)");
+
+  NSNumber* scrollY = ExecuteJavaScript(@"window.scrollY");
+  EXPECT_EQ(0, [scrollY intValue]);
+}
+
 }  // namespace

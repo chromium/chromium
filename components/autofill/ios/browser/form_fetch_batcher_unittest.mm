@@ -94,6 +94,9 @@ class Section;
 - (void)notifyFormsSeen:(std::vector<autofill::FormData>)updatedForms
                 inFrame:(web::WebFrame*)frame {
 }
+- (void)scrollFieldIntoView:(const autofill::FieldRendererId&)field
+                    inFrame:(web::WebFrame*)frame {
+}
 - (void)fetchFormsFiltered:(std::optional<std::u16string>)formNameFilter
                    inFrame:(web::WebFrame*)frame
          completionHandler:(FormFetchCompletion)completionHandler {

@@ -313,6 +313,20 @@ TEST_F(AutofillAgentTest, FillSpecificFormField) {
       fake_main_frame_->GetLastJavaScriptCall());
 }
 
+// Tests that `scrollFieldIntoView` in `autofill_agent_` dispatches the
+// correct javascript call to the autofill controller.
+TEST_F(AutofillAgentTest, ScrollFieldIntoView) {
+  FieldRendererId field_id(42);
+
+  [autofill_agent_
+      scrollFieldIntoView:field_id
+                  inFrame:fake_web_frames_manager_->GetMainWebFrame()];
+
+  EXPECT_EQ(u"__gCrWeb.callFunctionInGcrWeb('autofill', 'scrollFieldIntoView', "
+            u"[42]);",
+            fake_main_frame_->GetLastJavaScriptCall());
+}
+
 // Test that the updates are applied when filling specific form field is done
 // successfully.
 TEST_F(AutofillAgentTest, FillSpecificFormField_UpdateWithResults_WhenSuccess) {

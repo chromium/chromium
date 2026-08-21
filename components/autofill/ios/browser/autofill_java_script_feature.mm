@@ -113,6 +113,13 @@ void AutofillJavaScriptFeature::FillPredictionData(web::WebFrame* frame,
                          base::ListValue().Append(std::move(data)));
 }
 
+void AutofillJavaScriptFeature::ScrollFieldIntoView(web::WebFrame* frame,
+                                                    FieldRendererId field) {
+  CallJavaScriptFunction(
+      frame, "autofill.scrollFieldIntoView",
+      base::ListValue().Append(static_cast<int>(field.value())));
+}
+
 std::optional<std::string>
 AutofillJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kScriptName;

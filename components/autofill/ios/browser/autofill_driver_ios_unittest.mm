@@ -39,12 +39,15 @@
 - (void)setForms:(std::vector<autofill::FormData>)forms;
 - (void)setFetchFormsCompletionHandler:
     (base::RepeatingCallback<void(FormFetchCompletion)>)handler;
+- (const std::string&)lastScrolledFrameId;
+@property(nonatomic, assign) autofill::FieldRendererId lastScrolledField;
 
 @end
 
 @implementation FakeAutofillDriverIOSBridge {
   std::vector<autofill::FormData> _forms;
   base::RepeatingCallback<void(FormFetchCompletion)> _fetchHandler;
+  std::string _lastScrolledFrameId;
 }
 
 - (instancetype)init {
@@ -85,6 +88,14 @@
 }
 - (void)notifyFormsSeen:(std::vector<autofill::FormData>)updatedForms
                 inFrame:(web::WebFrame*)frame {
+}
+- (void)scrollFieldIntoView:(const autofill::FieldRendererId&)field
+                    inFrame:(web::WebFrame*)frame {
+  _lastScrolledField = field;
+  _lastScrolledFrameId = frame ? frame->GetFrameId() : "";
+}
+- (const std::string&)lastScrolledFrameId {
+  return _lastScrolledFrameId;
 }
 - (void)fetchFormsFiltered:(std::optional<std::u16string>)formNameFilter
                    inFrame:(web::WebFrame*)frame
@@ -308,6 +319,39 @@ TEST_F(AutofillDriverIOSTest, Unregister_InvalidatesWeakPtrs) {
   ASSERT_TRUE(weak_ptr);
   main_frame_driver()->Unregister();
   EXPECT_FALSE(weak_ptr);
+}
+
+// Tests that ScrollFieldIntoView on the main frame driver forwards the field
+// renderer ID and main frame to the bridge.
+TEST_F(AutofillDriverIOSTest, ScrollFieldIntoView_MainFrame) {
+  FormData main_frame_form = MakeForm(/*main_frame=*/true);
+  main_frame_driver()->FormsSeen({main_frame_form}, /*removed_forms=*/{});
+
+  FieldRendererId field_id(123);
+  FieldGlobalId global_id(main_frame_driver()->GetFrameToken(), field_id);
+
+  main_frame_driver()->ScrollFieldIntoView(global_id);
+
+  EXPECT_EQ(bridge().lastScrolledField, field_id);
+  EXPECT_EQ(bridge().lastScrolledFrameId,
+            main_frame_driver()->web_frame()->GetFrameId());
+}
+
+// Tests that ScrollFieldIntoView on a child frame is routed correctly.
+TEST_F(AutofillDriverIOSTest, ScrollFieldIntoView_Iframe) {
+  FormData iframe_form = MakeForm(/*main_frame=*/false);
+  FormData main_frame_form = MakeForm(/*main_frame=*/true);
+  main_frame_driver()->FormsSeen({main_frame_form}, /*removed_forms=*/{});
+  iframe_driver()->FormsSeen({iframe_form}, /*removed_forms=*/{});
+
+  FieldRendererId field_id(456);
+  FieldGlobalId global_id(iframe_driver()->GetFrameToken(), field_id);
+
+  main_frame_driver()->ScrollFieldIntoView(global_id);
+
+  EXPECT_EQ(bridge().lastScrolledField, field_id);
+  EXPECT_EQ(bridge().lastScrolledFrameId,
+            iframe_driver()->web_frame()->GetFrameId());
 }
 
 }  // namespace

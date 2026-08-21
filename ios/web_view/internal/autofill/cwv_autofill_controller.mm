@@ -919,6 +919,11 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
   // Not supported.
 }
 
+- (void)scrollFieldIntoView:(const autofill::FieldRendererId&)field
+                    inFrame:(web::WebFrame*)frame {
+  [_autofillAgent scrollFieldIntoView:field inFrame:frame];
+}
+
 - (void)handleParsedForms:
             (const std::vector<raw_ref<const autofill::FormStructure>>&)forms
                   inFrame:(web::WebFrame*)frame {

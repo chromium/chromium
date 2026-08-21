@@ -60,6 +60,10 @@ using FormFetchCompletion =
 - (void)notifyFormsSeen:(std::vector<autofill::FormData>)updatedForms
                 inFrame:(web::WebFrame*)frame;
 
+// Scrolls the form field identified by `field` into view in `frame`.
+- (void)scrollFieldIntoView:(const autofill::FieldRendererId&)field
+                    inFrame:(web::WebFrame*)frame;
+
 @end
 
 #endif  // COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_DRIVER_IOS_BRIDGE_H_

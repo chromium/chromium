@@ -929,8 +929,17 @@ bool AutofillDriverIOS::IsSafeToFill(const FormFieldData& field,
 }
 
 void AutofillDriverIOS::ScrollFieldIntoView(FieldGlobalId field_id) {
-  // TODO(crbug.com/481379667): Implement scrolling logic on iOS.
-  NOTIMPLEMENTED();
+  auto callback = [](AutofillDriver& driver, FieldRendererId field) {
+    web::WebFrame* frame = cast(&driver)->web_frame();
+    if (frame) {
+      [cast(&driver)->bridge_ scrollFieldIntoView:field inFrame:frame];
+    }
+  };
+  if (IsAcrossIframesEnabled()) {
+    router_->ScrollFieldIntoView(callback, field_id);
+  } else {
+    callback(*this, field_id.renderer_id);
+  }
 }
 
 }  // namespace autofill
