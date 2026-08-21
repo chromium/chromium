@@ -51,7 +51,9 @@ public class PersistentErrorView {
     }
 
     /**
-     * Set and show the main action button. If {@code text} is {@null} the button will be hidden.
+     * Set and show the main action button. If {@code text} is {@code null} the button will be
+     * hidden.
+     *
      * @param text Button text.
      * @param listener the listener to execute when the button is clicked.
      * @return object reference for chaining.
