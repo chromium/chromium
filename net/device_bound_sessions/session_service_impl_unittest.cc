@@ -16,6 +16,7 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -214,12 +215,16 @@ class SessionServiceImplTest : public ::testing::Test,
           GURL(url_str),
           {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
           "challenge", /*authorization=*/std::nullopt);
-      service_->RegisterBoundSession(
+      service().RegisterBoundSession(
           base::DoNothing(), std::move(fetch_param),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
           SiteForCookies(), NetLogWithSource(),
           /*original_request_initiator=*/std::nullopt);
     }
+  }
+
+  void SetService(std::unique_ptr<SessionServiceImpl> service) {
+    service_ = std::move(service);
   }
 
  private:
@@ -4598,6 +4603,375 @@ TEST_F(
   EXPECT_NEAR((future.Get().earliest_next_refresh_time - base::Time::Now())
                   .InSecondsF(),
               180.0, 2.0);
+}
+
+class SessionServiceImplPreProvisionedKeyTest : public SessionServiceImplTest {
+ public:
+  void SetUp() override {
+    SessionServiceImplTest::SetUp();
+    SetService(std::make_unique<SessionServiceImpl>(
+        *key_service(), context(),
+        /*store=*/nullptr,
+        /*restricted_sites=*/std::vector<SchemefulSite>(),
+        /*has_cookie_access_cb=*/
+        base::BindRepeating(
+            [](const CookieAccessCheckParams&) { return true; }),
+        /*client_cert_handler=*/base::DoNothing()));
+  }
+};
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       KeyIsAccessibleByCorrectRelyingPartyWithCorrectKeyDigest) {
+  auto rp_origin = url::Origin::Create(GURL("https://rp.test"));
+  std::string provider_key = "key_digest_123";
+  GURL provider_url("https://provider.test");
+
+  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+      unexportable_keys::UnexportableSigningKeyId>>
+      key_future;
+  key_service()->GenerateSigningKeySlowlyAsync(
+      {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      key_future.GetCallback());
+  unexportable_keys::UnexportableSigningKeyId key_id = *key_future.Take();
+
+  EXPECT_TRUE(service().AddPreProvisionedKey(rp_origin, provider_key,
+                                             provider_url, key_id));
+
+  RegistrationFetcherParam param =
+      RegistrationFetcherParam::CreateInstanceForTesting(
+          provider_url,
+          {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+          "challenge",
+          /*authorization=*/std::nullopt, provider_key, provider_url);
+
+  SessionErrorOr<unexportable_keys::UnexportableSigningKeyId> found_key =
+      service().FindPreProvisionedKey(param, rp_origin);
+
+  EXPECT_THAT(found_key, base::test::ValueIs(key_id));
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       KeyIsNotAccessibleByWrongRelyingParty) {
+  auto rp_origin = url::Origin::Create(GURL("https://rp.test"));
+  std::string provider_key = "key_digest_123";
+  GURL provider_url("https://provider.test");
+
+  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+      unexportable_keys::UnexportableSigningKeyId>>
+      key_future;
+  key_service()->GenerateSigningKeySlowlyAsync(
+      {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      key_future.GetCallback());
+  unexportable_keys::UnexportableSigningKeyId key_id = *key_future.Take();
+
+  EXPECT_TRUE(service().AddPreProvisionedKey(rp_origin, provider_key,
+                                             provider_url, key_id));
+
+  // 1. Wrong RP (relying party mismatch): key is not accessible.
+  RegistrationFetcherParam matching_param =
+      RegistrationFetcherParam::CreateInstanceForTesting(
+          provider_url,
+          {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+          "challenge",
+          /*authorization=*/std::nullopt, provider_key, provider_url);
+  auto wrong_rp_origin = url::Origin::Create(GURL("https://wrong-rp.test"));
+  EXPECT_THAT(service().FindPreProvisionedKey(matching_param, wrong_rp_origin),
+              base::test::ErrorIs(SessionError::kPreProvisionedKeyNotFound));
+
+  // 2. Wrong IdP (identity provider mismatch): key is not accessible.
+  GURL wrong_provider_url("https://wrong-provider.test");
+  RegistrationFetcherParam wrong_idp_param =
+      RegistrationFetcherParam::CreateInstanceForTesting(
+          wrong_provider_url,
+          {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+          "challenge",
+          /*authorization=*/std::nullopt, provider_key, wrong_provider_url);
+  EXPECT_THAT(service().FindPreProvisionedKey(wrong_idp_param, rp_origin),
+              base::test::ErrorIs(SessionError::kPreProvisionedKeyNotFound));
+
+  // 3. Wrong key digest (provider key mismatch): key is not accessible.
+  std::string wrong_provider_key = "wrong_digest_456";
+  RegistrationFetcherParam wrong_digest_param =
+      RegistrationFetcherParam::CreateInstanceForTesting(
+          provider_url,
+          {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+          "challenge",
+          /*authorization=*/std::nullopt, wrong_provider_key, provider_url);
+  EXPECT_THAT(service().FindPreProvisionedKey(wrong_digest_param, rp_origin),
+              base::test::ErrorIs(SessionError::kPreProvisionedKeyNotFound));
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest, NoCookieAccess) {
+  auto rp_origin = url::Origin::Create(GURL("https://example.test"));
+  std::string provider_key = "123";
+  GURL provider_url("https://provider.test");
+
+  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+      unexportable_keys::UnexportableSigningKeyId>>
+      key_future;
+  key_service()->GenerateSigningKeySlowlyAsync(
+      {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      key_future.GetCallback());
+  unexportable_keys::UnexportableSigningKeyId key_id = *key_future.Take();
+
+  SessionServiceImpl local_service(
+      *key_service(), context(),
+      /*store=*/nullptr,
+      /*restricted_sites=*/std::vector<SchemefulSite>(),
+      /*has_cookie_access_cb=*/
+      base::BindRepeating([](const CookieAccessCheckParams&) { return false; }),
+      /*client_cert_handler=*/base::DoNothing());
+
+  EXPECT_FALSE(local_service.AddPreProvisionedKey(rp_origin, provider_key,
+                                                  provider_url, key_id));
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest, MissingInitiator) {
+  auto rp_origin = url::Origin::Create(GURL("https://example.test"));
+  std::string provider_key = "123";
+  GURL provider_url("https://provider.test");
+
+  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+      unexportable_keys::UnexportableSigningKeyId>>
+      key_future;
+  key_service()->GenerateSigningKeySlowlyAsync(
+      {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      key_future.GetCallback());
+  unexportable_keys::UnexportableSigningKeyId key_id = *key_future.Take();
+
+  service().AddPreProvisionedKey(rp_origin, provider_key, provider_url, key_id);
+
+  RegistrationFetcherParam param =
+      RegistrationFetcherParam::CreateInstanceForTesting(
+          provider_url,
+          {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+          "challenge",
+          /*authorization=*/std::nullopt, provider_key, provider_url);
+
+  SessionErrorOr<unexportable_keys::UnexportableSigningKeyId> found_key =
+      service().FindPreProvisionedKey(
+          param, /*original_request_initiator=*/std::nullopt);
+
+  EXPECT_FALSE(found_key.has_value());
+  EXPECT_EQ(found_key.error(),
+            SessionError::kInvalidPreProvisionedKeyInitiatorMissing);
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest, MultipleKeysLimit) {
+  auto rp_origin = url::Origin::Create(GURL("https://example.test"));
+  GURL provider_url("https://provider.test");
+
+  const size_t kNumKeysToGenerate =
+      SessionServiceImpl::kMaxPreProvisionedKeysPerIdentityProvider + 1;
+
+  for (size_t i = 0; i < kNumKeysToGenerate; ++i) {
+    base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+        unexportable_keys::UnexportableSigningKeyId>>
+        key_future;
+    key_service()->GenerateSigningKeySlowlyAsync(
+        {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+        unexportable_keys::BackgroundTaskPriority::kBestEffort,
+        key_future.GetCallback());
+    unexportable_keys::UnexportableSigningKeyId key_id = *key_future.Take();
+
+    std::string provider_key = base::NumberToString(i);
+    bool should_add_key =
+        i < SessionServiceImpl::kMaxPreProvisionedKeysPerIdentityProvider;
+
+    EXPECT_EQ(service().AddPreProvisionedKey(rp_origin, provider_key,
+                                             provider_url, key_id),
+              should_add_key);
+  }
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       MultipleKeysLimitSharedAcrossRps) {
+  // Test that keys created for *different relying parties* but the
+  // *same Identity Provider* share the same IDP limit and will eventually
+  // hit the roof.
+  GURL provider_url("https://company.idp.test/company");
+
+  const size_t kNumKeysToGenerate =
+      SessionServiceImpl::kMaxPreProvisionedKeysPerIdentityProvider + 1;
+
+  for (size_t i = 0; i < kNumKeysToGenerate; ++i) {
+    base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+        unexportable_keys::UnexportableSigningKeyId>>
+        key_future;
+    key_service()->GenerateSigningKeySlowlyAsync(
+        {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+        unexportable_keys::BackgroundTaskPriority::kBestEffort,
+        key_future.GetCallback());
+    unexportable_keys::UnexportableSigningKeyId key_id = *key_future.Take();
+
+    std::string provider_key = base::NumberToString(i);
+    // Vary the RP origin
+    auto iter_rp_origin = url::Origin::Create(GURL(
+        std::string("https://sub") + base::NumberToString(i) + ".rp.test"));
+
+    bool should_add_key =
+        i < SessionServiceImpl::kMaxPreProvisionedKeysPerIdentityProvider;
+    EXPECT_EQ(service().AddPreProvisionedKey(iter_rp_origin, provider_key,
+                                             provider_url, key_id),
+              should_add_key);
+  }
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       MultipleKeysLimitSharedAcrossIdpSubdomains) {
+  // Test that keys created for the *same Relying Party* but Identity
+  // Providers varying subdomains and paths share the same limit.
+  auto rp_origin = url::Origin::Create(GURL("https://rp.test"));
+
+  const size_t kNumKeysToGenerate =
+      SessionServiceImpl::kMaxPreProvisionedKeysPerIdentityProvider + 1;
+
+  for (size_t i = 0; i < kNumKeysToGenerate; ++i) {
+    std::string provider_key = base::NumberToString(i);
+    base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+        unexportable_keys::UnexportableSigningKeyId>>
+        key_future;
+    key_service()->GenerateSigningKeySlowlyAsync(
+        {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+        unexportable_keys::BackgroundTaskPriority::kBestEffort,
+        key_future.GetCallback());
+    unexportable_keys::UnexportableSigningKeyId key_id = *key_future.Take();
+
+    // Vary the IDP URL using subdomains and paths
+    GURL provider_url;
+    if (i % 2 == 0) {
+      provider_url = GURL(absl::StrFormat("https://company%d.idp.test", i));
+    } else {
+      provider_url = GURL(absl::StrFormat("https://idp.test/company%d", i));
+    }
+
+    bool should_add_key =
+        i < SessionServiceImpl::kMaxPreProvisionedKeysPerIdentityProvider;
+    EXPECT_EQ(service().AddPreProvisionedKey(rp_origin, provider_key,
+                                             provider_url, key_id),
+              should_add_key);
+  }
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       DeleteAllSessionsUpdatesCounter) {
+  auto rp_origin = url::Origin::Create(GURL("https://example.test"));
+  GURL provider_url("https://provider.test");
+
+  const size_t kNumKeysToGenerate =
+      SessionServiceImpl::kMaxPreProvisionedKeysPerIdentityProvider;
+
+  std::vector<unexportable_keys::UnexportableSigningKeyId> key_ids;
+  for (size_t i = 0; i < kNumKeysToGenerate; ++i) {
+    base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+        unexportable_keys::UnexportableSigningKeyId>>
+        key_future;
+    key_service()->GenerateSigningKeySlowlyAsync(
+        {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+        unexportable_keys::BackgroundTaskPriority::kBestEffort,
+        key_future.GetCallback());
+    unexportable_keys::UnexportableSigningKeyId key_id = *key_future.Take();
+    key_ids.push_back(key_id);
+
+    std::string provider_key = base::NumberToString(i);
+    // Keys should be added successfully.
+    EXPECT_TRUE(service().AddPreProvisionedKey(rp_origin, provider_key,
+                                               provider_url, key_id));
+    EXPECT_TRUE(key_service()->GetWrappedKey(key_id).has_value());
+  }
+
+  // Delete potential zombie pre-provisioned keys for example.test.
+  base::RunLoop run_loop;
+  service().DeleteAllSessions(DeletionReason::kClearBrowsingData,
+                              /*created_after_time=*/std::nullopt,
+                              /*created_before_time=*/std::nullopt,
+                              /*origin_and_site_matcher=*/base::NullCallback(),
+                              run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Try to add one more key. Since the keys should have been purged and the
+  // counter correctly decremented, this should succeed.
+  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+      unexportable_keys::UnexportableSigningKeyId>>
+      key_future;
+  key_service()->GenerateSigningKeySlowlyAsync(
+      {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      key_future.GetCallback());
+  unexportable_keys::UnexportableSigningKeyId key_id = *key_future.Take();
+
+  EXPECT_TRUE(service().AddPreProvisionedKey(rp_origin, "new_key", provider_url,
+                                             key_id));
+}
+
+TEST_F(SessionServiceImplPreProvisionedKeyTest,
+       DeleteAllSessionsUnmatchedDoesNotDelete) {
+  auto rp_origin = url::Origin::Create(GURL("https://example.test"));
+  GURL provider_url("https://provider.test");
+
+  // Add a bound session to example.test.
+  AddSessionsForTesting(
+      {{kSessionId, "https://example.test/refresh", "https://example.test"}});
+
+  const size_t kNumKeysToGenerate =
+      SessionServiceImpl::kMaxPreProvisionedKeysPerIdentityProvider;
+
+  std::vector<unexportable_keys::UnexportableSigningKeyId> key_ids;
+  for (size_t i = 0; i < kNumKeysToGenerate; ++i) {
+    base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+        unexportable_keys::UnexportableSigningKeyId>>
+        key_future;
+    key_service()->GenerateSigningKeySlowlyAsync(
+        {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+        unexportable_keys::BackgroundTaskPriority::kBestEffort,
+        key_future.GetCallback());
+    unexportable_keys::UnexportableSigningKeyId key_id = *key_future.Take();
+    key_ids.push_back(key_id);
+
+    std::string provider_key = base::NumberToString(i);
+    // Keys should be added successfully.
+    EXPECT_TRUE(service().AddPreProvisionedKey(rp_origin, provider_key,
+                                               provider_url, key_id));
+    EXPECT_TRUE(key_service()->GetWrappedKey(key_id).has_value());
+  }
+
+  // Attempt to delete pre-provisioned keys but provide a matcher that does not
+  // match the current site (example.test).
+  base::RunLoop run_loop;
+  auto origin_and_site_matcher = base::BindRepeating(
+      [](const url::Origin& origin, const net::SchemefulSite& site) {
+        return site.Serialize() == "https://unmatched.test";
+      });
+
+  service().DeleteAllSessions(DeletionReason::kClearBrowsingData,
+                              /*created_after_time=*/std::nullopt,
+                              /*created_before_time=*/std::nullopt,
+                              origin_and_site_matcher, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Verify that none of the pre-provisioned keys were deleted from the key
+  // service.
+  for (const auto& key_id : key_ids) {
+    EXPECT_TRUE(key_service()->GetWrappedKey(key_id).has_value());
+  }
+
+  // Try to add one more key. Since the keys should NOT have been purged and
+  // the counter shouldn't have been decremented, this should fail.
+  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+      unexportable_keys::UnexportableSigningKeyId>>
+      key_future;
+  key_service()->GenerateSigningKeySlowlyAsync(
+      {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      key_future.GetCallback());
+  unexportable_keys::UnexportableSigningKeyId key_id = *key_future.Take();
+
+  EXPECT_FALSE(service().AddPreProvisionedKey(rp_origin, "new_key",
+                                              provider_url, key_id));
 }
 
 }  // namespace net::device_bound_sessions

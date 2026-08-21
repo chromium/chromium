@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/cookie_access_check_params.h"
 #include "net/device_bound_sessions/deletion_reason.h"
@@ -208,6 +209,31 @@ class NET_EXPORT SessionService {
                                    const net::SchemefulSite&)>
           origin_and_site_matcher,
       base::OnceClosure completion_callback) = 0;
+
+  // Adds a pre-provisioned key to an in-memory storage.
+  //
+  // Returns `true` if the key was successfully added, `false` otherwise.
+  //
+  // A key insertion can fail if the key already exists, i.e. same rp_origin,
+  // provider_key, and provider_url.
+  //
+  // A key insertion can fail if there are more than
+  // `kMaxPreProvisionedKeysPerIdentityProvider` keys per Identity Provider
+  // site.
+  //
+  // A key insertion can fail if the Identity Provider site does not have access
+  // to its cookies from a third-party context.
+  virtual bool AddPreProvisionedKey(
+      const url::Origin& rp_origin,
+      std::string_view provider_key,
+      const GURL& provider_url,
+      unexportable_keys::UnexportableSigningKeyId key_id) = 0;
+
+  // Find a pre-provisioned key that matches the parameters.
+  virtual SessionErrorOr<unexportable_keys::UnexportableSigningKeyId>
+  FindPreProvisionedKey(
+      const RegistrationFetcherParam& param,
+      base::optional_ref<const url::Origin> original_request_initiator) = 0;
 
   // Add an observer for session changes that include `url`. `callback`
   // will only be notified until the destruction of the returned

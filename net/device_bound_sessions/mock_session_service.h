@@ -68,6 +68,19 @@ class SessionServiceMock : public SessionService {
                const SessionKey& session_key,
                SessionService::OnAccessCallback per_request_callback),
               (override));
+  MOCK_METHOD(bool,
+              AddPreProvisionedKey,
+              (const url::Origin&,
+               std::string_view,
+               const GURL&,
+               unexportable_keys::UnexportableSigningKeyId),
+              (override));
+  MOCK_METHOD(
+      (SessionErrorOr<unexportable_keys::UnexportableSigningKeyId>),
+      FindPreProvisionedKey,
+      (const RegistrationFetcherParam& param,
+       base::optional_ref<const url::Origin> original_request_initiator),
+      (override));
   MOCK_METHOD(void,
               DeleteAllSessions,
               (DeletionReason reason,
