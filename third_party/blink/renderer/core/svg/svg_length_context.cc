@@ -118,7 +118,7 @@ const ComputedStyle* SVGLengthContext::ComputedStyleForLengthResolving(
   const ContainerNode* current_context = &context;
   do {
     if (current_context->GetLayoutObject()) {
-      return current_context->GetLayoutObject()->Style();
+      return &current_context->GetLayoutObject()->StyleRef();
     }
     current_context = current_context->parentNode();
   } while (current_context);
