@@ -82,8 +82,10 @@ constexpr int kCloseIconSize = 16;
 // Popup items that use a leading icon instead of a trailing one.
 constexpr auto kPopupItemTypesUsingLeadingIcons = DenseSet<SuggestionType>(
     {SuggestionType::kAllLoyaltyCardsEntry,
-     SuggestionType::kAllSavedPasswordsEntry, SuggestionType::kManageAddress,
-     SuggestionType::kManageCreditCard, SuggestionType::kManageAutofillAi,
+     SuggestionType::kAllSavedPasswordsEntry,
+     SuggestionType::kAutofillAiSourceAttribution,
+     SuggestionType::kManageAddress, SuggestionType::kManageCreditCard,
+     SuggestionType::kManageAutofillAi,
      SuggestionType::kManageAutofillAiIdentityDocs,
      SuggestionType::kManageAutofillAiShopping,
      SuggestionType::kManageAutofillAiTravel, SuggestionType::kManageIban,

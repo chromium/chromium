@@ -566,7 +566,7 @@ std::optional<Suggestion> CreatePersonalContextSourceAttributionSuggestion(
 
   Suggestion source_info(base::JoinString(parts, kLabelSeparator),
                          SuggestionType::kAutofillAiSourceAttribution);
-  source_info.trailing_icon = Suggestion::Icon::kOpenInNew;
+  source_info.icon = Suggestion::Icon::kSpark;
   source_info.payload = std::move(source_url);
   return source_info;
 }

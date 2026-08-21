@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, FreeformFooter) {
 IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, AutofillAiSourceAttribution) {
   Suggestion suggestion(u"From Photos · LR1234567 · Sweden",
                         SuggestionType::kAutofillAiSourceAttribution);
-  suggestion.trailing_icon = Suggestion::Icon::kOpenInNew;
+  suggestion.icon = Suggestion::Icon::kSpark;
   CreateRowView(std::move(suggestion), /*selected_cell=*/std::nullopt,
                 /*filter_match=*/std::nullopt);
   ShowAndVerifyUi();

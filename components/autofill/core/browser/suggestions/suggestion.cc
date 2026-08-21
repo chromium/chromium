@@ -145,8 +145,6 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kMagic";
     case Suggestion::Icon::kOfferTag:
       return "kOfferTag";
-    case Suggestion::Icon::kOpenInNew:
-      return "kOpenInNew";
     case Suggestion::Icon::kOrder:
       return "kOrder";
     case Suggestion::Icon::kOrderSpark:

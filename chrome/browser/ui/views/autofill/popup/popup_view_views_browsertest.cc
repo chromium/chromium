@@ -588,7 +588,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_AutofillAi_SubMenu) {
   Suggestion source_attribution(
       u"From Photos · Pippi Långstrump · Sweden · LR1234567",
       SuggestionType::kAutofillAiSourceAttribution);
-  source_attribution.trailing_icon = Suggestion::Icon::kOpenInNew;
+  source_attribution.icon = Suggestion::Icon::kSpark;
 
   Suggestion remove_suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),
@@ -611,7 +611,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   Suggestion source_attribution(
       u"From Photos · Pippi Långstrump · Sweden · LR1234567",
       SuggestionType::kAutofillAiSourceAttribution);
-  source_attribution.trailing_icon = Suggestion::Icon::kOpenInNew;
+  source_attribution.icon = Suggestion::Icon::kSpark;
 
   Suggestion remove_suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),

@@ -625,11 +625,9 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
               SuggestionType::kFillAutofillAi,
               Suggestion::AutofillAiPayload(passport_personal_context.guid())),
           ChildrenAre(
-              AllOf(EqualsSuggestion(
-                        SuggestionType::kAutofillAiSourceAttribution,
-                        expected_source_label, Suggestion::Icon::kNoIcon,
-                        GURL("https://photos.example.com")),
-                    HasTrailingIcon(Suggestion::Icon::kOpenInNew)),
+              EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
+                               expected_source_label, Suggestion::Icon::kSpark,
+                               GURL("https://photos.example.com")),
               EqualsSuggestion(SuggestionType::kSeparator),
               EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                l10n_util::GetStringUTF16(
@@ -665,11 +663,9 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
               SuggestionType::kFillAutofillAi,
               Suggestion::AutofillAiPayload(passport_personal_context.guid())),
           ChildrenAre(
-              AllOf(EqualsSuggestion(
-                        SuggestionType::kAutofillAiSourceAttribution,
-                        expected_source_label, Suggestion::Icon::kNoIcon,
-                        GURL("https://mail.example.com")),
-                    HasTrailingIcon(Suggestion::Icon::kOpenInNew)),
+              EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
+                               expected_source_label, Suggestion::Icon::kSpark,
+                               GURL("https://mail.example.com")),
               EqualsSuggestion(SuggestionType::kSeparator),
               EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                l10n_util::GetStringUTF16(
@@ -706,18 +702,14 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
               SuggestionType::kFillAutofillAi,
               Suggestion::AutofillAiPayload(passport_personal_context.guid())),
           ChildrenAre(
-              AllOf(
-                  EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
-                                   u"From Photos · Pippi Långstrump · Sweden",
-                                   Suggestion::Icon::kNoIcon,
-                                   GURL("https://photos.example.com")),
-                  HasTrailingIcon(Suggestion::Icon::kOpenInNew)),
-              AllOf(
-                  EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
-                                   u"From Gmail · Pippi Långstrump · Sweden",
-                                   Suggestion::Icon::kNoIcon,
-                                   GURL("https://mail.example.com")),
-                  HasTrailingIcon(Suggestion::Icon::kOpenInNew)),
+              EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
+                               u"From Photos · Pippi Långstrump · Sweden",
+                               Suggestion::Icon::kSpark,
+                               GURL("https://photos.example.com")),
+              EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
+                               u"From Gmail · Pippi Långstrump · Sweden",
+                               Suggestion::Icon::kSpark,
+                               GURL("https://mail.example.com")),
               EqualsSuggestion(SuggestionType::kSeparator),
               EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                l10n_util::GetStringUTF16(
@@ -758,12 +750,10 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
               SuggestionType::kFillAutofillAi,
               Suggestion::AutofillAiPayload(passport_personal_context.guid())),
           ChildrenAre(
-              AllOf(
-                  EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
-                                   u"From Photos · Pippi Långstrump · Sweden",
-                                   Suggestion::Icon::kNoIcon,
-                                   GURL("https://photos.example.com")),
-                  HasTrailingIcon(Suggestion::Icon::kOpenInNew)),
+              EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
+                               u"From Photos · Pippi Långstrump · Sweden",
+                               Suggestion::Icon::kSpark,
+                               GURL("https://photos.example.com")),
               EqualsSuggestion(SuggestionType::kSeparator),
               EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                l10n_util::GetStringUTF16(
@@ -802,11 +792,9 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
               SuggestionType::kFillAutofillAi,
               Suggestion::AutofillAiPayload(passport_personal_context.guid())),
           ChildrenAre(
-              AllOf(EqualsSuggestion(
-                        SuggestionType::kAutofillAiSourceAttribution,
-                        expected_source_label, Suggestion::Icon::kNoIcon,
-                        GURL("https://photos.example.com")),
-                    HasTrailingIcon(Suggestion::Icon::kOpenInNew)),
+              EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
+                               expected_source_label, Suggestion::Icon::kSpark,
+                               GURL("https://photos.example.com")),
               EqualsSuggestion(SuggestionType::kSeparator),
               EqualsSuggestion(
                   SuggestionType::kRemoveAutofillAi,
@@ -902,11 +890,9 @@ TEST_F(
               SuggestionType::kFillAutofillAi,
               Suggestion::AutofillAiPayload(passport_personal_context.guid())),
           ChildrenAre(
-              AllOf(EqualsSuggestion(
-                        SuggestionType::kAutofillAiSourceAttribution,
-                        expected_source_label, Suggestion::Icon::kNoIcon,
-                        GURL("https://photos.example.com")),
-                    HasTrailingIcon(Suggestion::Icon::kOpenInNew)),
+              EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
+                               expected_source_label, Suggestion::Icon::kSpark,
+                               GURL("https://photos.example.com")),
               EqualsSuggestion(SuggestionType::kSeparator),
               EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                l10n_util::GetStringUTF16(
