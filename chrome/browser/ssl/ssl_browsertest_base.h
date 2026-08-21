@@ -26,7 +26,6 @@ class SecurityInterstitialControllerClient;
 }  // namespace security_interstitials
 
 class SSLBlockingPage;
-class Browser;
 
 class SSLUITestBase : public InProcessBrowserTest,
                       public network::mojom::SSLConfigClient {

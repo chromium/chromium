@@ -5,6 +5,7 @@
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/command_line.h"
@@ -19,7 +20,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -78,7 +79,7 @@ class StatefulSSLHostStateDelegateTest : public InProcessBrowserTest {};
 IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest, QueryPolicy) {
   scoped_refptr<net::X509Certificate> cert = GetOkCert();
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
   auto* storage_partition = tab->GetPrimaryMainFrame()->GetStoragePartition();
@@ -137,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest,
                        HasAllowExceptionForAnyHost) {
   scoped_refptr<net::X509Certificate> cert = GetOkCert();
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
   auto* storage_partition = tab->GetPrimaryMainFrame()->GetStoragePartition();
@@ -161,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest,
 // Tests the expected behavior of calling IsHttpAllowedForHost on the
 // SSLHostStateDelegate class after various HTTP decisions have been made.
 IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest, HttpAllowlisting) {
-  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* tab = browser()->GetTabStripModel()->GetActiveWebContents();
   auto* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   auto* state = profile->GetSSLHostStateDelegate();
   auto* storage_partition = tab->GetPrimaryMainFrame()->GetStoragePartition();
@@ -197,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest, HttpAllowlisting) {
 IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest, HasPolicyAndRevoke) {
   scoped_refptr<net::X509Certificate> cert = GetOkCert();
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   StatefulSSLHostStateDelegate* state =
       StatefulSSLHostStateDelegateFactory::GetForProfile(profile);
@@ -248,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest, HasPolicyAndRevoke) {
 IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest, Clear) {
   scoped_refptr<net::X509Certificate> cert = GetOkCert();
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   StatefulSSLHostStateDelegate* state =
       StatefulSSLHostStateDelegateFactory::GetForProfile(profile);
@@ -321,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest, Clear) {
 IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest,
                        DidHostRunInsecureContent) {
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
 
@@ -393,7 +394,7 @@ class IncognitoSSLHostStateDelegateTest
 IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest, PRE_AfterRestart) {
   scoped_refptr<net::X509Certificate> cert = GetOkCert();
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
 
@@ -434,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest, PRE_AfterRestart) {
 IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest, AfterRestart) {
   scoped_refptr<net::X509Certificate> cert = GetOkCert();
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
 
@@ -465,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest, AfterRestart) {
 // TODO(crbug.com/40787070): Disabled for brokenness.
 IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest,
                        DISABLED_PRE_AfterRestartHttp) {
-  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* tab = browser()->GetTabStripModel()->GetActiveWebContents();
   auto* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   auto* state = profile->GetSSLHostStateDelegate();
 
@@ -499,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest,
 // TODO(crbug.com/40787070): Disabled for brokenness.
 IN_PROC_BROWSER_TEST_F(IncognitoSSLHostStateDelegateTest,
                        DISABLED_AfterRestartHttp) {
-  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* tab = browser()->GetTabStripModel()->GetActiveWebContents();
   auto* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   auto* state = profile->GetSSLHostStateDelegate();
 
@@ -531,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(DefaultMemorySSLHostStateDelegateTest,
                        PRE_AfterRestart) {
   scoped_refptr<net::X509Certificate> cert = GetOkCert();
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
 
@@ -546,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(DefaultMemorySSLHostStateDelegateTest,
 IN_PROC_BROWSER_TEST_F(DefaultMemorySSLHostStateDelegateTest, AfterRestart) {
   scoped_refptr<net::X509Certificate> cert = GetOkCert();
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
   auto* storage_partition = tab->GetPrimaryMainFrame()->GetStoragePartition();
@@ -589,7 +590,7 @@ IN_PROC_BROWSER_TEST_F(DefaultMemorySSLHostStateDelegateTest, AfterRestart) {
 
 IN_PROC_BROWSER_TEST_F(DefaultMemorySSLHostStateDelegateTest,
                        PRE_AfterRestartHttp) {
-  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* tab = browser()->GetTabStripModel()->GetActiveWebContents();
   auto* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   auto* state = profile->GetSSLHostStateDelegate();
 
@@ -601,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(DefaultMemorySSLHostStateDelegateTest,
 
 IN_PROC_BROWSER_TEST_F(DefaultMemorySSLHostStateDelegateTest,
                        AfterRestartHttp) {
-  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* tab = browser()->GetTabStripModel()->GetActiveWebContents();
   auto* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   auto* state = profile->GetSSLHostStateDelegate();
   auto* storage_partition = tab->GetPrimaryMainFrame()->GetStoragePartition();
@@ -644,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(DefaultMemorySSLHostStateDelegateTest,
                        QueryPolicyExpired) {
   scoped_refptr<net::X509Certificate> cert = GetOkCert();
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
   auto* storage_partition = tab->GetPrimaryMainFrame()->GetStoragePartition();
@@ -687,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(DefaultMemorySSLHostStateDelegateTest,
 // restarting the browser.
 IN_PROC_BROWSER_TEST_F(DefaultMemorySSLHostStateDelegateTest,
                        HttpDecisionExpires) {
-  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* tab = browser()->GetTabStripModel()->GetActiveWebContents();
   auto* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   auto* state = profile->GetSSLHostStateDelegate();
   auto* storage_partition = tab->GetPrimaryMainFrame()->GetStoragePartition();
@@ -739,7 +740,7 @@ IN_PROC_BROWSER_TEST_F(RemoveBrowsingHistorySSLHostStateDelegateTest,
                        DeleteHistory) {
   scoped_refptr<net::X509Certificate> cert = GetOkCert();
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
 
@@ -756,7 +757,7 @@ IN_PROC_BROWSER_TEST_F(RemoveBrowsingHistorySSLHostStateDelegateTest,
 
 IN_PROC_BROWSER_TEST_F(RemoveBrowsingHistorySSLHostStateDelegateTest,
                        DeleteHistoryClearsHttpAllowlistDecision) {
-  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* tab = browser()->GetTabStripModel()->GetActiveWebContents();
   auto* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   auto* state = profile->GetSSLHostStateDelegate();
 
@@ -780,7 +781,7 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest,
   // Serve the Google cert for localhost to generate an error.
   scoped_refptr<net::X509Certificate> cert = GetOkCert();
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
 
@@ -822,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateExtensionTest,
 
   // Launch a Chrome app and store a certificate exception.
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   extensions::ChromeTestExtensionLoader loader(profile);
   const extensions::Extension* app =
@@ -881,7 +882,7 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateExtensionTest,
 
   // Launch a Chrome app.
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   extensions::ChromeTestExtensionLoader loader(profile);
   const extensions::Extension* app =

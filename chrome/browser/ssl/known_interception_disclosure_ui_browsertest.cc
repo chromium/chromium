@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/security_interstitials/content/urls.h"
@@ -24,7 +24,7 @@ IN_PROC_BROWSER_TEST_F(KnownInterceptionDisclosureUITest, PageDisplaysStrings) {
       content::GetWebUIURL(
           security_interstitials::kChromeUIConnectionMonitoringDetectedHost)));
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   EXPECT_EQ(kTabTitle, contents->GetTitle());
   EXPECT_GE(ui_test_utils::FindInPage(contents, kBodyText, true, true, nullptr,

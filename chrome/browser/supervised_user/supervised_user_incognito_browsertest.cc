@@ -5,7 +5,6 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"

@@ -411,6 +411,8 @@ source_set("platform_browser_tests") {
 
   if (is_android) {
     deps += [ "//components/messages/android:test_support" ]
+  } else {
+    deps += [ "//chrome/browser/ui/browser_window" ]
   }
 }
 

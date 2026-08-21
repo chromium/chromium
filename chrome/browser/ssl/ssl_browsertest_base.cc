@@ -12,7 +12,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/ssl_browsertest_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -260,7 +260,7 @@ void SSLUITestBase::SetUpUnsafeContentsWithUserException(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_mismatched_.GetURL("/ssl/blank_page.html")));
   content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ssl_test_util::CheckAuthenticationBrokenState(
       tab, net::CERT_STATUS_COMMON_NAME_INVALID,
       ssl_test_util::AuthState::SHOWING_INTERSTITIAL);

@@ -8,7 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/supervised_user/parent_permission_dialog_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_P(ParentApprovalRequestTest,
       std::make_unique<SupervisedUserExtensionsDelegateImpl>(profile());
 
   supervised_user_extensions_delegate->RequestToAddExtensionOrShowError(
-      *extension.get(), browser()->tab_strip_model()->GetActiveWebContents(),
+      *extension.get(), browser()->GetTabStripModel()->GetActiveWebContents(),
       gfx::ImageSkia::CreateFrom1xBitmap(icon), base::DoNothing());
 
   // The dialog should not have appeared.
@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_P(ParentApprovalRequestTest,
 
   SkBitmap icon;
   supervised_user_extensions_delegate->RequestToAddExtensionOrShowError(
-      *extension.get(), browser()->tab_strip_model()->GetActiveWebContents(),
+      *extension.get(), browser()->GetTabStripModel()->GetActiveWebContents(),
       gfx::ImageSkia::CreateFrom1xBitmap(icon), base::DoNothing());
 
   // Confirm that the parent approval dialog for extensions for each OS is

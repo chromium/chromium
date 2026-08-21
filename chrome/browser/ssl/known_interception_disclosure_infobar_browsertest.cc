@@ -28,7 +28,7 @@
 #include "components/messages/android/message_wrapper.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #else
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_P(KnownInterceptionDisclosurePlatformBrowserTest,
   EXPECT_EQ(1u, GetDisclosureCount(tab1));
 
 #if !BUILDFLAG(IS_ANDROID)
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   // Test that the infobar is shown on new tabs after it has been triggered
   // once.
   ui_test_utils::NavigateToURLWithDisposition(

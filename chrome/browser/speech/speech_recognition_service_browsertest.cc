@@ -22,7 +22,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/chrome_speech_recognition_service.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/services/speech/soda/soda_test_paths.h"
 #include "chrome/services/speech/speech_recognition_recognizer_impl.h"

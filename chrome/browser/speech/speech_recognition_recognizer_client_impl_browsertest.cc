@@ -15,7 +15,7 @@
 #include "chrome/browser/speech/fake_speech_recognition_service.h"
 #include "chrome/browser/speech/fake_speech_recognizer.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/soda/soda_installer.h"
 #include "components/soda/soda_installer_impl_chromeos.h"

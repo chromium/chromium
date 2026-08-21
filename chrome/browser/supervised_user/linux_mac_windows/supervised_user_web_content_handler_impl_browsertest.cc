@@ -21,8 +21,8 @@
 #include "chrome/browser/supervised_user/linux_mac_windows/parent_access_dialog_result_observer.h"
 #include "chrome/browser/supervised_user/linux_mac_windows/parent_access_view.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -70,7 +70,7 @@ class SupervisedUserWebContentHandlerImplTest
   }
 
   content::WebContents* contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   supervised_user::SupervisionMixin& supervision_mixin() {

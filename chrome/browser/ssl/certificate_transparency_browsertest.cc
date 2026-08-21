@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ssl/ssl_browsertest_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyBrowserTest,
       embedded_https_test_server().GetURL("example.com", "/ssl/google.html")));
 
   ssl_test_util::CheckSecurityState(
-      browser()->tab_strip_model()->GetActiveWebContents(),
+      browser()->GetTabStripModel()->GetActiveWebContents(),
       net::CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED,
       security_state::DANGEROUS,
       ssl_test_util::AuthState::SHOWING_INTERSTITIAL);

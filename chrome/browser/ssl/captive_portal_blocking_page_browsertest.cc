@@ -21,8 +21,8 @@
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -155,7 +155,7 @@ void CaptivePortalBlockingPageTest::TestInterstitial(
     ExpectLoginURL expect_login_url,
     const std::string& expected_login_hostname) {
   content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   DCHECK(contents);
 
   throttle_inserter_ =
