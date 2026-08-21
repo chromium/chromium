@@ -56,7 +56,8 @@ namespace {
 void CreateChannel(PlatformHandle* local_endpoint,
                    PlatformHandle* remote_endpoint) {
   std::wstring pipe_name = NamedPlatformChannel::GetPipeNameFromServerName(
-      NamedPlatformChannel::GenerateRandomServerName(), /*is_local_pipe=*/true);
+      NamedPlatformChannel::GenerateRandomServerName(),
+      NamedPlatformChannel::PipeNameType::kLocalPipe);
   DWORD kOpenMode =
       PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED | FILE_FLAG_FIRST_PIPE_INSTANCE;
   const DWORD kPipeMode = PIPE_TYPE_BYTE | PIPE_READMODE_BYTE;
@@ -69,7 +70,10 @@ void CreateChannel(PlatformHandle* local_endpoint,
                          nullptr)));  // Default security descriptor.
   PCHECK(local_endpoint->is_valid());
 
-  const DWORD kDesiredAccess = GENERIC_READ | GENERIC_WRITE;
+  // FILE_APPEND_DATA is FILE_CREATE_PIPE_INSTANCE on a pipe, which this end
+  // never needs; GENERIC_WRITE would expand to include it.
+  const DWORD kDesiredAccess =
+      (FILE_GENERIC_READ | FILE_GENERIC_WRITE) & ~FILE_APPEND_DATA;
   // The SECURITY_ANONYMOUS flag means that the server side cannot impersonate
   // the client.
   DWORD kFlags =
@@ -88,7 +92,7 @@ void CreateChannel(PlatformHandle* local_endpoint,
     // on what has been learned.
     pipe_name = NamedPlatformChannel::GetPipeNameFromServerName(
         NamedPlatformChannel::GenerateRandomServerName(),
-        /*is_local_pipe=*/true);
+        NamedPlatformChannel::PipeNameType::kLocalPipe);
     *local_endpoint = PlatformHandle(base::win::ScopedHandle(
         ::CreateNamedPipeW(pipe_name.c_str(), kOpenMode, kPipeMode,
                            1,           // Max instances.

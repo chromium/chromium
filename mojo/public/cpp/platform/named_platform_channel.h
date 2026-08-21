@@ -35,6 +35,19 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
 
 #if BUILDFLAG(IS_WIN)
   using ServerName = std::wstring;
+
+  enum class PipeNameType {
+    // "\\.\pipe\mojo.<server_name>".
+    kDefault,
+
+    // "\\.\pipe\LOCAL\mojo.<server_name>". Required to create the pipe inside
+    // an AppContainer sandbox.
+    kLocalPipe,
+
+    // "\\.\pipe\ProtectedPrefix\Administrators\mojo.<server_name>". Only
+    // Administrators and LocalSystem may create pipes there.
+    kAdminProtected,
+  };
 #else
   using ServerName = std::string;
 #endif
@@ -73,6 +86,10 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
     // to prevent named pipe squatting attacks, where a lower-privilege
     // process attempts to impersonate a trusted server.
     bool verify_server_privilege = false;
+
+    // Selects the pipe name. The server and the client must both use the same
+    // value, as it changes the pipe name.
+    PipeNameType pipe_name_type = PipeNameType::kDefault;
 #elif BUILDFLAG(IS_POSIX)
     // On POSIX, every new unnamed NamedPlatformChannel creates a server socket
     // with a random name. This controls the directory where that happens.
@@ -99,12 +116,10 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
 #if BUILDFLAG(IS_WIN)
   static ServerName GenerateRandomServerName();
 
-  // Returns an OS name for the pipe based on `server_name`. If `is_local_pipe`
-  // is true, the name will contain "LOCAL", which will allow the pipe to be
-  // created in an AppContainer sandbox but won't be cross-version compatible
-  // with pipes that lack this naming scheme.
-  static std::wstring GetPipeNameFromServerName(const ServerName& server_name,
-                                                bool is_local_pipe = false);
+  // Returns an OS name for the pipe based on `server_name` and `name_type`.
+  static std::wstring GetPipeNameFromServerName(
+      const ServerName& server_name,
+      PipeNameType name_type = PipeNameType::kDefault);
 #endif
 
   // Passes the local server endpoint for the channel. On Windows, this is a

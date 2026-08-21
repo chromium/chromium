@@ -113,6 +113,7 @@ void NamedMojoServerEndpointConnectorWin::Connect() {
   mojo::NamedPlatformChannel::Options options;
   options.server_name = options_.server_name;
   options.security_descriptor = options_.security_descriptor;
+  options.pipe_name_type = options_.pipe_name_type;
 
   // Allow multiple clients to connect.
   options.enforce_uniqueness = false;

@@ -9,6 +9,7 @@
 #include <sddl.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/logging.h"
@@ -21,7 +22,6 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/security_descriptor.h"
 #include "base/win/sid.h"
-#include "base/win/windows_version.h"
 
 namespace mojo {
 
@@ -85,7 +85,7 @@ NamedPlatformChannel::GenerateRandomServerName() {
 // static
 std::wstring NamedPlatformChannel::GetPipeNameFromServerName(
     const NamedPlatformChannel::ServerName& server_name,
-    bool is_local_pipe) {
+    NamedPlatformChannel::PipeNameType name_type) {
   // https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createnamedpipea
   // "Windows 10, version 1709:  Pipes are only supported within an
   // app-container; ie, from one UWP process to another UWP process that's part
@@ -100,8 +100,18 @@ std::wstring NamedPlatformChannel::GetPipeNameFromServerName(
   // exposed to other apps. So AppContainer sandboxes can create PlatformChannel
   // pipes but not NamedPlatformChannel pipes, which must be opened in an
   // unsandboxed broker.
-  return base::StrCat({L"\\\\.\\pipe", is_local_pipe ? L"\\LOCAL" : L"",
-                       L"\\mojo.", server_name});
+  std::wstring_view prefix;
+  switch (name_type) {
+    case PipeNameType::kDefault:
+      break;
+    case PipeNameType::kLocalPipe:
+      prefix = L"\\LOCAL";
+      break;
+    case PipeNameType::kAdminProtected:
+      prefix = L"\\ProtectedPrefix\\Administrators";
+      break;
+  }
+  return base::StrCat({L"\\\\.\\pipe", prefix, L"\\mojo.", server_name});
 }
 
 // static
@@ -132,7 +142,8 @@ PlatformChannelServerEndpoint NamedPlatformChannel::CreateServerEndpoint(
 
   CHECK(options.max_clients > 0 &&
         options.max_clients <= PIPE_UNLIMITED_INSTANCES);
-  std::wstring pipe_name = GetPipeNameFromServerName(name);
+  std::wstring pipe_name =
+      GetPipeNameFromServerName(name, options.pipe_name_type);
   PlatformHandle handle(base::win::ScopedHandle(
       ::CreateNamedPipeW(pipe_name.c_str(), kOpenMode, kPipeMode,
                          options.max_clients,  // Max instances.
@@ -148,14 +159,19 @@ PlatformChannelServerEndpoint NamedPlatformChannel::CreateServerEndpoint(
 // static
 PlatformChannelEndpoint NamedPlatformChannel::CreateClientEndpoint(
     const Options& options) {
-  std::wstring pipe_name = GetPipeNameFromServerName(options.server_name);
+  std::wstring pipe_name =
+      GetPipeNameFromServerName(options.server_name, options.pipe_name_type);
 
   // Note: This may block.
   if (!::WaitNamedPipeW(pipe_name.c_str(), NMPWAIT_USE_DEFAULT_WAIT)) {
     return PlatformChannelEndpoint();
   }
 
-  const DWORD kDesiredAccess = GENERIC_READ | GENERIC_WRITE;
+  // FILE_APPEND_DATA is FILE_CREATE_PIPE_INSTANCE on a pipe and GENERIC_WRITE
+  // expands to include it, so the rights are requested explicitly to let a
+  // server deny clients the right to add instances under its pipe name.
+  const DWORD kDesiredAccess =
+      (FILE_GENERIC_READ | FILE_GENERIC_WRITE) & ~FILE_APPEND_DATA;
   // The SECURITY_ANONYMOUS flag means that the server side cannot impersonate
   // the client.
   const DWORD kFlags = SECURITY_SQOS_PRESENT |
@@ -169,15 +185,16 @@ PlatformChannelEndpoint NamedPlatformChannel::CreateClientEndpoint(
   // The server may have stopped accepting a connection between the
   // WaitNamedPipe() and CreateFile(). If this occurs, an invalid handle is
   // returned.
-  DPLOG_IF(ERROR, !handle.is_valid())
-      << "Named pipe " << pipe_name
-      << " could not be opened after WaitNamedPipe succeeded";
+  if (!handle.is_valid()) {
+    DPLOG(ERROR) << "Named pipe " << pipe_name
+                 << " could not be opened after WaitNamedPipe succeeded";
+    return PlatformChannelEndpoint();
+  }
 
-  if (handle.is_valid() && options.verify_server_privilege) {
-    if (!VerifyServerPrivilege(handle.GetHandle().Get())) {
-      DLOG(ERROR) << "Server privilege check failed.";
-      return PlatformChannelEndpoint();
-    }
+  if (options.verify_server_privilege &&
+      !VerifyServerPrivilege(handle.GetHandle().Get())) {
+    DLOG(ERROR) << "Server privilege check failed.";
+    return PlatformChannelEndpoint();
   }
 
   return PlatformChannelEndpoint(std::move(handle));

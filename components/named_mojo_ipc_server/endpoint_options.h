@@ -76,6 +76,11 @@ struct EndpointOptions {
   // ConnectionInfo. This is useful for pinning the process identity to avoid
   // PID-reuse attacks.
   bool include_peer_process_info = false;
+
+  // Selects the pipe name. Clients must set
+  // `mojo::NamedPlatformChannel::Options::pipe_name_type` to match.
+  mojo::NamedPlatformChannel::PipeNameType pipe_name_type =
+      mojo::NamedPlatformChannel::PipeNameType::kDefault;
 #endif
 };
 
