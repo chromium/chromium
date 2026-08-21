@@ -18,7 +18,6 @@
   --text-input-top-spacing: 10px;
   --text-input-inline-end-spacing: 80px;
   --text-input-max-height: 190px;
-  --cr-composebox-entrypoint-icon-animation-delay: 250ms;
   --cr-composebox-font-size: var(--cr-composebox-custom-font-size, 16px);
   --input-bottom-spacing: 12px;
   --ntp-composebox-carousel-padding-block-end: 2px;
@@ -206,12 +205,4 @@ cr-composebox-submit::part(submit) {
 
 :host-context([energy-effect-enabled_]) search-animated-glow::part(composebox-background) {
   inset: 0;
-}
-
-:host-context([energy-effect-animation-enabled_]) {
-  --cr-composebox-glow-display: contents;
-  --cr-composebox-glow-height: 0;
-  --cr-composebox-glow-margin-left: 0;
-  --cr-composebox-glow-position: static;
-  --cr-composebox-glow-width: 0;
 }

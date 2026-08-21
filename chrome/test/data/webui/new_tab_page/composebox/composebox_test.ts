@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 import {ComposeboxElement, NtpComposeboxElement, SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
-import type {FuseboxAction} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$, InputSource, QueryActionOverride} from 'chrome://new-tab-page/new_tab_page.js';
-import {GlifAnimationState} from 'chrome://resources/cr_components/composebox/common.js';
 import {InputType, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxToolChipElement} from 'chrome://resources/cr_components/composebox/composebox_tool_chip.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
@@ -1197,61 +1195,6 @@ suite(`NewTabPageComposeboxTest`, () => {
         await composebox.getInputElement().updateComplete;
         assertEquals('chip hint', input.getAttribute('placeholder'));
       });
-
-  // TODO(crbug.com/548681676): Verify that actions requesting image generation
-  // trigger the contextual entrypoint energy effect animation only when
-  // animation is enabled. Update to test TutorialId once the server proto
-  // rolls.
-  [false, true].forEach(energyEffectAnimationEnabled => {
-    test(
-        `handleFuseboxAction animation with energyEffectAnimationEnabled=${
-            energyEffectAnimationEnabled}`,
-        async () => {
-          loadTimeData.overrideValues({scaledActionChipsInTestMode: true});
-          const composebox = new NtpComposeboxElement();
-          composebox.energyEffectAnimationEnabled =
-              energyEffectAnimationEnabled;
-          document.body.appendChild(composebox);
-          await microtasksFinished();
-
-          const imageAction: FuseboxAction = {
-            preselectedTool: ToolMode.kImageGen,
-            preferredInventory: null,
-            preselectedModel: null,
-            queryActionOverride: null,
-            preselectedInputSource: null,
-            searchboxOverride: null,
-          };
-
-          // Ineligible tool mode never triggers the animation.
-          await composebox.handleFuseboxAction({
-            suggestion: '',
-            files: [],
-            fuseboxAction: {
-              ...imageAction,
-              preselectedTool: ToolMode.kDeepSearch,
-            },
-          });
-          await new Promise(resolve => requestAnimationFrame(resolve));
-          assertEquals(
-              GlifAnimationState.INELIGIBLE, composebox.glifAnimationState);
-
-          // ToolMode.kImageGen triggers the animation only if
-          // energyEffectAnimationEnabled.
-          const expectedState = energyEffectAnimationEnabled ?
-              GlifAnimationState.STARTED :
-              GlifAnimationState.INELIGIBLE;
-          await composebox.handleFuseboxAction({
-            suggestion: '',
-            files: [],
-            fuseboxAction: imageAction,
-          });
-          assertEquals(
-              GlifAnimationState.INELIGIBLE, composebox.glifAnimationState);
-          await new Promise(resolve => requestAnimationFrame(resolve));
-          assertEquals(expectedState, composebox.glifAnimationState);
-        });
-  });
 });
 
 // ==========================================================

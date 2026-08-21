@@ -15,7 +15,7 @@ import '//resources/cr_components/composebox/composebox_voice_search.js';
 import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_components/localized_link/localized_link.js';
 
-import {getLoadTimeBoolean, GlifAnimationState} from '//resources/cr_components/composebox/common.js';
+import {getLoadTimeBoolean} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxFile, ContextualUpload} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
@@ -74,7 +74,6 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
   static override get properties() {
     return {
       entrypointName: {type: String, reflect: true},
-      glifAnimationState: {type: String},
       /*
       `expanding_` property is used in composebox.css styles. It is added
       so that the imported styles work well. Remove this property once each
@@ -92,8 +91,6 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   accessor entrypointName: string = 'Realbox';
-  accessor glifAnimationState: GlifAnimationState =
-      GlifAnimationState.INELIGIBLE;
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
   private searchboxHandler_: SearchboxPageHandlerRemote;
@@ -209,15 +206,6 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
 
   async handleFuseboxAction(request: FuseboxActionRequest) {
     const action = request.fuseboxAction;
-    // TODO(crbug.com/548681676): Wire to TutorialId once server proto rolls.
-    if (action?.preselectedTool === ToolMode.kImageGen &&
-        this.energyEffectAnimationEnabled &&
-        getLoadTimeBoolean('scaledActionChipsInTestMode', false)) {
-      this.glifAnimationState = GlifAnimationState.INELIGIBLE;
-      requestAnimationFrame(() => {
-        this.glifAnimationState = GlifAnimationState.STARTED;
-      });
-    }
     const isHint = action?.queryActionOverride === QueryActionOverride.kHint;
     if (isHint) {
       this.chipHint_ = request.suggestion;
