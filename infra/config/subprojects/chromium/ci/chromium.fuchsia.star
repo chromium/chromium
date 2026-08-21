@@ -215,7 +215,6 @@ ci.builder(
             "cast_test_lists",
         ],
         mixins = [
-            "fuchsia-orchestrate",
             "isolate_profile_data",
             "linux-jammy",
             targets.mixin(
@@ -319,7 +318,6 @@ ci.builder(
         ],
         mixins = [
             "fuchsia-large-device-spec",
-            "fuchsia-orchestrate",
             "isolate_profile_data",
             "linux-jammy",
             targets.mixin(
