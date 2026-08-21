@@ -1050,6 +1050,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/page_info/PageInfoCookiesSettingsUnitTest.java",
       "src/org/chromium/chrome/browser/page_info/PageInfoPermissionsControllerTest.java",
       "src/org/chromium/chrome/browser/page_info/PageInfoPermissionsControllerUnitTest.java",
+      "src/org/chromium/chrome/browser/page_info/PageInfoPreferenceSubpageControllerTest.java",
       "src/org/chromium/chrome/browser/page_info/PermissionParamsListBuilderUnitTest.java",
     ]
 

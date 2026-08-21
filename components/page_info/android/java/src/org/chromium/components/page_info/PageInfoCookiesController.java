@@ -4,7 +4,6 @@
 
 package org.chromium.components.page_info;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.content_settings.PrefNames.IN_CONTEXT_COOKIE_CONTROLS_OPENED;
 
 import android.view.View;
@@ -230,7 +229,7 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
     }
 
     void destroy() {
-        assumeNonNull(mBridge);
+        if (mBridge == null) return;
         mBridge.onUiClosing();
         mBridge.destroy();
         mBridge = null;

@@ -152,6 +152,7 @@ public class PageInfoConnectionSecurityController implements PageInfoSubpageCont
     }
 
     public void destroy() {
+        if (mNativeConnectionSecurityController == 0) return;
         PageInfoConnectionSecurityControllerJni.get().destroy(mNativeConnectionSecurityController);
         mNativeConnectionSecurityController = 0;
     }
