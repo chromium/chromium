@@ -9,13 +9,12 @@
 #include <cstdint>
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/password_manager/android/unified_password_manager_proto_utils.h"
 #include "chrome/browser/password_manager/protos/list_affiliated_passwords_result.pb.h"
 #include "chrome/browser/password_manager/protos/list_passwords_result.pb.h"
 #include "chrome/browser/password_manager/protos/password_with_local_data.pb.h"
-#include "chrome/browser/password_manager/android/unified_password_manager_proto_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 
@@ -32,13 +31,14 @@ template <typename ProtoType>
 std::vector<StoredCredential> CreateStoredCredentialsVector(
     const base::android::JavaRef<jbyteArray>& passwords,
     password_manager::IsAccountStore is_account_store) {
-  std::vector<uint8_t> serialized_result;
-  base::android::JavaByteArrayToByteVector(base::android::AttachCurrentThread(),
-                                           passwords, &serialized_result);
   ProtoType list_passwords_result;
-  bool parsing_succeeds = list_passwords_result.ParseFromArray(
-      serialized_result.data(), serialized_result.size());
-  DCHECK(parsing_succeeds);
+  {
+    auto view = passwords.CreateViewCritical<uint8_t>(
+        base::android::AttachCurrentThread());
+    bool parsing_succeeds =
+        list_passwords_result.ParseFromArray(view.data(), view.size());
+    DCHECK(parsing_succeeds);
+  }
   return StoredCredentialVectorFromListResult(list_passwords_result,
                                               is_account_store);
 }

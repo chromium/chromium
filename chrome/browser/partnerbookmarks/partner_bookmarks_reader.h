@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/android/jni_weak_ref.h"
-#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/favicon_base/favicon_types.h"
@@ -21,6 +20,7 @@ class LargeIconService;
 
 class PartnerBookmarksShim;
 class Profile;
+class SkBitmap;
 
 // Generates a partner bookmark hierarchy and handles submitting the results to
 // the global PartnerBookmarksShim.
@@ -117,7 +117,7 @@ class PartnerBookmarksReader {
                         FaviconFetchResult result);
   // Putting in class in order to set the friend class access for
   // base::ScopedAllowBaseSyncPrimitives.
-  static void PrepareAndSetFavicon(base::span<uint8_t> icon,
+  static void PrepareAndSetFavicon(const SkBitmap& icon_bitmap,
                                    bookmarks::BookmarkNode* node,
                                    Profile* profile,
                                    favicon_base::IconType icon_type);

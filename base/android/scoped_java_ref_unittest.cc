@@ -309,12 +309,42 @@ TEST_F(JArrayViewTest, ZeroLengthArray) {
   EXPECT_EQ(primitive_view.begin(), primitive_view.end());
 }
 
-TEST_F(JArrayViewTest, GetLength) {
+TEST_F(JArrayViewTest, GetLengthAndSize) {
   JNIEnv* env = AttachCurrentThread();
   EXPECT_EQ(object_array_.GetLength(env), array_len_);
+  EXPECT_EQ(object_array_.GetSize(env), static_cast<size_t>(array_len_));
   EXPECT_EQ(object_array_.CreateView(env).length(), array_len_);
+  EXPECT_EQ(object_array_.CreateView(env).size(),
+            static_cast<size_t>(array_len_));
   EXPECT_EQ(primitive_array_.GetLength(env), array_len_);
+  EXPECT_EQ(primitive_array_.GetSize(env), static_cast<size_t>(array_len_));
   EXPECT_EQ(primitive_array_.CreateViewCritical(env).length(), array_len_);
+  EXPECT_EQ(primitive_array_.CreateViewCritical(env).size(),
+            static_cast<size_t>(array_len_));
+}
+
+TEST_F(JArrayViewTest, UnsignedAndSizeNewArray) {
+  JNIEnv* env = AttachCurrentThread();
+  std::vector<uint8_t> u8_vec = {255, 128, 0, 1};
+  ScopedJavaLocalRef<JArray<uint8_t>> u8_arr = jni_zero::NewArray(env, u8_vec);
+  EXPECT_EQ(u8_arr.GetSize(env), 4u);
+  {
+    jni_zero::JArrayViewCritical<uint8_t> u8_view =
+        u8_arr.CreateViewCritical(env);
+    EXPECT_EQ(u8_view[0], 255u);
+    EXPECT_EQ(u8_view.as_span().size(), 4u);
+    EXPECT_EQ(u8_view.as_span()[0], 255u);
+  }
+
+  ScopedJavaLocalRef<JArray<uint32_t>> u32_arr =
+      jni_zero::NewArray<uint32_t>(env, 5u);
+  EXPECT_EQ(u32_arr.GetSize(env), 5u);
+  {
+    jni_zero::JArrayViewCritical<uint32_t> u32_view =
+        u32_arr.CreateViewCritical(env);
+    EXPECT_EQ(u32_view.size(), 5u);
+    EXPECT_EQ(u32_view.as_span().size(), 5u);
+  }
 }
 
 TEST_F(JArrayViewTest, GetOneElement) {
@@ -344,6 +374,21 @@ TEST_F(JArrayViewTest, GetAllElements) {
   EXPECT_EQ(object_vec.size(), array_len_);
   for (int32_t i = 0; i < array_len_; i++) {
     EXPECT_SAME_OBJECT(object_vec[i], object_array_members_[i]);
+  }
+}
+
+TEST_F(JArrayViewTest, PrimitiveCopyTo) {
+  JNIEnv* env = AttachCurrentThread();
+  std::vector<int32_t> i32_dest(array_len_);
+  primitive_array_.CopyTo(env, i32_dest.data(), array_len_);
+  for (int32_t i = 0; i < array_len_; i++) {
+    EXPECT_EQ(i32_dest[i], primitive_array_members_[i]);
+  }
+
+  std::vector<uint32_t> u32_dest(array_len_);
+  primitive_array_.CopyTo(env, u32_dest.data(), array_len_);
+  for (int32_t i = 0; i < array_len_; i++) {
+    EXPECT_EQ(u32_dest[i], static_cast<uint32_t>(primitive_array_members_[i]));
   }
 }
 

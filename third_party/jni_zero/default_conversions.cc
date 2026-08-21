@@ -39,9 +39,15 @@ PRIMITIVE_ARRAY_CONVERSIONS(int64_t, jlong, Long)
 PRIMITIVE_ARRAY_CONVERSIONS(int32_t, jint, Int)
 PRIMITIVE_ARRAY_CONVERSIONS(int16_t, jshort, Short)
 PRIMITIVE_ARRAY_CONVERSIONS(uint16_t, jchar, Char)
-PRIMITIVE_ARRAY_CONVERSIONS(uint8_t, jbyte, Byte)
+PRIMITIVE_ARRAY_CONVERSIONS(int8_t, jbyte, Byte)
 PRIMITIVE_ARRAY_CONVERSIONS(float, jfloat, Float)
 PRIMITIVE_ARRAY_CONVERSIONS(double, jdouble, Double)
+// Stamp out different-signed versions and rely on ICF to de-dupe them.
+PRIMITIVE_ARRAY_CONVERSIONS(uint64_t, jlong, Long)
+PRIMITIVE_ARRAY_CONVERSIONS(uint32_t, jint, Int)
+PRIMITIVE_ARRAY_CONVERSIONS(char16_t, jchar, Char)
+PRIMITIVE_ARRAY_CONVERSIONS(uint8_t, jbyte, Byte)
+PRIMITIVE_ARRAY_CONVERSIONS(char, jbyte, Byte)
 
 // Specialization for bool, because vector<bool> is a bitmask under-the-hood,
 // not an actual vector of bool values, and thus can't be directly copied.

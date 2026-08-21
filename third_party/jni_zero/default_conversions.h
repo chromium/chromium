@@ -8,14 +8,38 @@
 #define JNI_ZERO_DEFAULT_CONVERSIONS_H_
 
 #include <optional>
-#include <type_traits>
 #include <tuple>
+#include <type_traits>
 #include <vector>
 
 #include "third_party/jni_zero/common_apis.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 namespace jni_zero {
+
+#define DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(T)                                 \
+  template <>                                                                  \
+  JNI_ZERO_COMPONENT_BUILD_EXPORT std::vector<T> FromJniArray<std::vector<T>>( \
+      JNIEnv * env, const JavaRef<jobject>& j_object);                         \
+  template <>                                                                  \
+  JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jarray>                   \
+  ToJniArray<std::vector<T>>(JNIEnv * env, const std::vector<T>& vec);
+
+DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(int64_t)
+DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(uint64_t)
+DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(int32_t)
+DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(uint32_t)
+DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(int16_t)
+DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(uint16_t)
+DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(char16_t)
+DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(int8_t)
+DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(uint8_t)
+DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(char)
+DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(bool)
+DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(float)
+DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(double)
+
+#undef DECLARE_PRIMITIVE_ARRAY_CONVERSIONS
 
 // Conversion from a Java object to a std::optional.
 // A null Java reference results in std::nullopt.
@@ -107,25 +131,6 @@ ToJniArray(JNIEnv* env, const ContainerType& collection, jclass clazz) {
   }
   return jni_zero::AdoptRef(env, j_array);
 }
-
-#define DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(T)                                 \
-  template <>                                                                  \
-  JNI_ZERO_COMPONENT_BUILD_EXPORT std::vector<T> FromJniArray<std::vector<T>>( \
-      JNIEnv * env, const JavaRef<jobject>& j_object);                         \
-  template <>                                                                  \
-  JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jarray>                   \
-  ToJniArray<std::vector<T>>(JNIEnv * env, const std::vector<T>& vec);
-
-DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(int64_t)
-DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(int32_t)
-DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(int16_t)
-DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(uint16_t)
-DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(uint8_t)
-DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(bool)
-DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(float)
-DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(double)
-
-#undef DECLARE_PRIMITIVE_ARRAY_CONVERSIONS
 
 // Enable vectors of enum types.
 template <internal::IsEnumVector ContainerType>

@@ -72,7 +72,6 @@ using base::android::AttachCurrentThread;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
-using base::android::ToJavaIntArray;
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 using bookmarks::BookmarkType;
@@ -897,9 +896,12 @@ void BookmarkBridge::SetPowerBookmarkMeta(JNIEnv* env,
 
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
       std::make_unique<power_bookmarks::PowerBookmarkMeta>();
-  std::vector<uint8_t> byte_vec;
-  base::android::JavaByteArrayToByteVector(env, bytes, &byte_vec);
-  if (meta->ParseFromArray(byte_vec.data(), byte_vec.size())) {
+  bool parsed = false;
+  {
+    auto view = bytes.CreateViewCritical<uint8_t>(env);
+    parsed = meta->ParseFromArray(view.data(), view.size());
+  }
+  if (parsed) {
     power_bookmarks::SetNodePowerBookmarkMeta(bookmark_model_, node,
                                               std::move(meta));
   } else {
@@ -917,12 +919,9 @@ BookmarkBridge::GetPowerBookmarkMeta(JNIEnv* env, int64_t id, int32_t type) {
     return ScopedJavaLocalRef<jbyteArray>(nullptr);
 
   size_t size = meta->ByteSizeLong();
-  std::string proto_bytes;
-  meta->SerializeToString(&proto_bytes);
   std::vector<uint8_t> data(size);
   meta->SerializeToArray(data.data(), size);
-
-  return base::android::ToJavaByteArray(env, data);
+  return jni_zero::NewArray(env, data);
 }
 
 void BookmarkBridge::DeletePowerBookmarkMeta(JNIEnv* env,
@@ -1728,17 +1727,16 @@ void BookmarkBridge::ReorderChildren(
 
   // populate a vector
   std::vector<const BookmarkNode*> ordered_nodes;
-  jsize arraySize = env->GetArrayLength(arr.obj());
-  int64_t* elements = env->GetLongArrayElements(arr.obj(), 0);
+  {
+    auto view = arr.CreateViewCritical(env);
+    CHECK(parent_node->children().size() == view.size());
 
-  // iterate through array, adding the BookmarkNode*s of the objects
-  for (int i = 0; i < arraySize; ++i) {
-    const BookmarkNode* child_node =
-        GetNodeByID(UNSAFE_TODO(elements[i]), bookmark_type);
-    CHECK(child_node->parent() == parent_node);
-    CHECK(base::checked_cast<jsize>(parent_node->children().size()) ==
-          arraySize);
-    ordered_nodes.push_back(GetNodeByID(UNSAFE_TODO(elements[i]), 0));
+    // iterate through array, adding the BookmarkNode*s of the objects
+    for (int64_t id : view) {
+      const BookmarkNode* child_node = GetNodeByID(id, bookmark_type);
+      CHECK(child_node->parent() == parent_node);
+      ordered_nodes.push_back(child_node);
+    }
   }
 
   bookmark_model_->ReorderChildren(parent_node, ordered_nodes);
