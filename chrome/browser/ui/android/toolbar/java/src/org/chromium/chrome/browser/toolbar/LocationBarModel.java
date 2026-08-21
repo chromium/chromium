@@ -839,13 +839,14 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
                     : R.drawable.omnibox_info;
         }
 
-        // Suppress neutral/info icon during page load to avoid transition jank if the toolbar
-        // refactor is enabled, unless it is an internal scheme (e.g. chrome://) which will
-        // never have a SECURE or DANGEROUS security level.
+        // Suppress neutral/info icon during page load to avoid transition jank before
+        // SSL state is resolved for HTTP/HTTPS URLs if the toolbar refactor is enabled.
+        // Non-HTTP(S) schemes (e.g. chrome://, file://) never transition to SECURE and
+        // should show their neutral icon immediately.
         if (ToolbarVariationUtils.isToolbarUiRefactorEnabled(mContext)
                 && securityLevel == ConnectionSecurityLevel.NONE
                 && isLoading()
-                && !UrlUtilities.isInternalScheme(getCurrentGurl())) {
+                && UrlUtilities.isHttpOrHttps(getCurrentGurl())) {
             return Resources.ID_NULL;
         }
 

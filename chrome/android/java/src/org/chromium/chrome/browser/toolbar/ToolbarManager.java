@@ -1504,7 +1504,6 @@ public class ToolbarManager
 
                     @Override
                     public void onPageLoadFinished(Tab tab, GURL url) {
-                        mLocationBarModel.notifySecurityStateChanged();
                         if (tab == mActivityTabProvider.get()) {
                             maybeShowGlicIph(tab);
                         }
