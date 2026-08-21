@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
@@ -21,6 +22,10 @@ namespace base {
 class CommandLine;
 class SingleThreadTaskRunner;
 }  // namespace base
+
+namespace mojo {
+class PlatformChannelServerEndpoint;
+}  // namespace mojo
 
 namespace remoting {
 
@@ -51,14 +56,46 @@ class WtsSessionProcessDelegate : public WindowsProcessDelegate {
   void CrashProcess(const base::Location& location) override;
   void KillProcess() override;
 
-  // Assigns |process| to the job object so that tests can exercise the
-  // job-object shutdown path without launching a process in another session.
-  // Returns true on success. The delegate must have been created with
-  // |launch_elevated| and the job must have been initialized.
-  bool AssignProcessToJobForTesting(base::ProcessHandle process);
+  class TestApi {
+   public:
+    explicit TestApi(WtsSessionProcessDelegate* delegate);
 
-  // Registers |callback| to be run when the internal Core object is destroyed.
-  void SetCoreDeletedCallbackForTesting(base::OnceClosure callback);
+    // Assigns |process| to the job object so that tests can exercise the
+    // job-object shutdown path without launching a process in another session.
+    // Returns true on success. The delegate must have been created with
+    // |launch_elevated| and the job must have been initialized.
+    bool AssignProcessToJob(base::ProcessHandle process);
+
+    // Registers |callback| to be run when the internal Core object is
+    // destroyed.
+    void SetCoreDeletedCallback(base::OnceClosure callback);
+
+    // Simulates an I/O completion event from the job object on the I/O thread.
+    void SimulateJobNotification(DWORD event, base::ProcessId pid);
+
+    // Returns the currently stored worker process ID.
+    base::ProcessId GetWorkerProcessPid() const;
+
+    // Sets the elevated launcher PID.
+    void SetElevatedLauncherPid(base::ProcessId pid);
+
+    // Sets the worker process PID.
+    void SetWorkerProcessPid(base::ProcessId pid);
+
+    // Invokes OnProcessLaunchDetected directly.
+    void OnProcessLaunchDetected(base::ProcessId pid);
+
+    // Sets the elevated server endpoint.
+    void SetElevatedServerEndpoint(
+        mojo::PlatformChannelServerEndpoint endpoint);
+
+    // Registers callbacks for fatal error and process launched events.
+    void SetFatalErrorCallback(base::OnceClosure callback);
+    void SetProcessLaunchedCallback(base::OnceClosure callback);
+
+   private:
+    raw_ptr<WtsSessionProcessDelegate> delegate_;
+  };
 
  private:
   // The actual implementation resides in WtsSessionProcessDelegate::Core class.

@@ -21,6 +21,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "base/win/scoped_handle.h"
+#include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
@@ -79,14 +80,16 @@ TEST_F(WtsSessionProcessDelegateTest, CoreOutlivesJobNotifications) {
       "WtsSessionProcessDelegateTestChild",
       base::GetMultiProcessTestChildBaseCommandLine(), {});
   ASSERT_TRUE(child.IsValid());
-  ASSERT_TRUE(delegate->AssignProcessToJobForTesting(child.Handle()));
+  ASSERT_TRUE(WtsSessionProcessDelegate::TestApi(delegate.get())
+                  .AssignProcessToJob(child.Handle()));
 
   bool core_deleted = false;
   base::RunLoop run_loop;
-  delegate->SetCoreDeletedCallbackForTesting(base::BindLambdaForTesting([&]() {
-    core_deleted = true;
-    run_loop.Quit();
-  }));
+  WtsSessionProcessDelegate::TestApi(delegate.get())
+      .SetCoreDeletedCallback(base::BindLambdaForTesting([&]() {
+        core_deleted = true;
+        run_loop.Quit();
+      }));
 
   // Destroying the delegate calls Stop(), which terminates the job. The Core
   // must remain alive until the I/O thread has delivered the final job
@@ -122,13 +125,15 @@ TEST_F(WtsSessionProcessDelegateTest,
       "WtsSessionProcessDelegateTestChild",
       base::GetMultiProcessTestChildBaseCommandLine(), {});
   ASSERT_TRUE(child1.IsValid());
-  ASSERT_TRUE(delegate->AssignProcessToJobForTesting(child1.Handle()));
+  ASSERT_TRUE(WtsSessionProcessDelegate::TestApi(delegate.get())
+                  .AssignProcessToJob(child1.Handle()));
 
   base::Process child2 = base::SpawnMultiProcessTestChild(
       "WtsSessionProcessDelegateTestChild",
       base::GetMultiProcessTestChildBaseCommandLine(), {});
   ASSERT_TRUE(child2.IsValid());
-  ASSERT_TRUE(delegate->AssignProcessToJobForTesting(child2.Handle()));
+  ASSERT_TRUE(WtsSessionProcessDelegate::TestApi(delegate.get())
+                  .AssignProcessToJob(child2.Handle()));
 
   // Terminate child1 so a JOB_OBJECT_MSG_EXIT_PROCESS / ACTIVE_PROCESS_ZERO is
   // generated, but child2 remains active in the job object.
@@ -137,10 +142,11 @@ TEST_F(WtsSessionProcessDelegateTest,
 
   bool core_deleted = false;
   base::RunLoop run_loop;
-  delegate->SetCoreDeletedCallbackForTesting(base::BindLambdaForTesting([&]() {
-    core_deleted = true;
-    run_loop.Quit();
-  }));
+  WtsSessionProcessDelegate::TestApi(delegate.get())
+      .SetCoreDeletedCallback(base::BindLambdaForTesting([&]() {
+        core_deleted = true;
+        run_loop.Quit();
+      }));
 
   // Destroying delegate stops the job. Since child2 is still in the job, Core
   // must stay alive until child2 is terminated.
@@ -153,6 +159,186 @@ TEST_F(WtsSessionProcessDelegateTest,
   int exit_code = 0;
   EXPECT_TRUE(child2.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
                                             &exit_code));
+}
+
+TEST_F(WtsSessionProcessDelegateTest, AbnormalWorkerExitClearsWorkerPid) {
+  auto target_command =
+      std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
+  auto delegate = std::make_unique<WtsSessionProcessDelegate>(
+      io_thread_.task_runner(), std::move(target_command),
+      /*launch_elevated=*/true,
+      /*channel_security=*/std::string());
+
+  std::ignore = delegate->Initialize(WTSGetActiveConsoleSessionId());
+  FlushIoThread();
+
+  constexpr base::ProcessId kLauncherPid = 1000;
+  constexpr base::ProcessId kWorkerPid = 2000;
+
+  WtsSessionProcessDelegate::TestApi test_api(delegate.get());
+  test_api.SetElevatedLauncherPid(kLauncherPid);
+  test_api.SetWorkerProcessPid(kWorkerPid);
+  EXPECT_EQ(test_api.GetWorkerProcessPid(), kWorkerPid);
+
+  // Simulate JOB_OBJECT_MSG_ABNORMAL_EXIT_PROCESS for the worker process.
+  test_api.SimulateJobNotification(JOB_OBJECT_MSG_ABNORMAL_EXIT_PROCESS,
+                                   kWorkerPid);
+  FlushIoThread();
+
+  EXPECT_EQ(test_api.GetWorkerProcessPid(), base::kNullProcessId);
+}
+
+TEST_F(WtsSessionProcessDelegateTest, NormalWorkerExitClearsWorkerPid) {
+  auto target_command =
+      std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
+  auto delegate = std::make_unique<WtsSessionProcessDelegate>(
+      io_thread_.task_runner(), std::move(target_command),
+      /*launch_elevated=*/true,
+      /*channel_security=*/std::string());
+
+  std::ignore = delegate->Initialize(WTSGetActiveConsoleSessionId());
+  FlushIoThread();
+
+  constexpr base::ProcessId kLauncherPid = 1000;
+  constexpr base::ProcessId kWorkerPid = 2000;
+
+  WtsSessionProcessDelegate::TestApi test_api(delegate.get());
+  test_api.SetElevatedLauncherPid(kLauncherPid);
+  test_api.SetWorkerProcessPid(kWorkerPid);
+  EXPECT_EQ(test_api.GetWorkerProcessPid(), kWorkerPid);
+
+  // Simulate JOB_OBJECT_MSG_EXIT_PROCESS for the worker process.
+  test_api.SimulateJobNotification(JOB_OBJECT_MSG_EXIT_PROCESS, kWorkerPid);
+  FlushIoThread();
+
+  EXPECT_EQ(test_api.GetWorkerProcessPid(), base::kNullProcessId);
+}
+
+TEST_F(WtsSessionProcessDelegateTest,
+       LauncherExitAfterAbnormalWorkerExitDoesNotReportStalePid) {
+  auto target_command =
+      std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
+  auto delegate = std::make_unique<WtsSessionProcessDelegate>(
+      io_thread_.task_runner(), std::move(target_command),
+      /*launch_elevated=*/true,
+      /*channel_security=*/std::string());
+
+  std::ignore = delegate->Initialize(WTSGetActiveConsoleSessionId());
+  FlushIoThread();
+
+  constexpr base::ProcessId kLauncherPid = 1000;
+  constexpr base::ProcessId kWorkerPid = 2000;
+
+  WtsSessionProcessDelegate::TestApi test_api(delegate.get());
+  test_api.SetElevatedLauncherPid(kLauncherPid);
+  test_api.SetWorkerProcessPid(kWorkerPid);
+
+  // 1. Worker process crashes abnormally.
+  test_api.SimulateJobNotification(JOB_OBJECT_MSG_ABNORMAL_EXIT_PROCESS,
+                                   kWorkerPid);
+  FlushIoThread();
+
+  EXPECT_EQ(test_api.GetWorkerProcessPid(), base::kNullProcessId);
+
+  // 2. Intermediate launcher exits without launching a new worker.
+  test_api.SimulateJobNotification(JOB_OBJECT_MSG_EXIT_PROCESS, kLauncherPid);
+  FlushIoThread();
+
+  // The stale worker PID must not be retained or processed.
+  EXPECT_EQ(test_api.GetWorkerProcessPid(), base::kNullProcessId);
+}
+
+TEST_F(WtsSessionProcessDelegateTest,
+       LauncherExitWithActiveWorkerTriggersLaunchDetection) {
+  auto target_command =
+      std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
+  auto delegate = std::make_unique<WtsSessionProcessDelegate>(
+      io_thread_.task_runner(), std::move(target_command),
+      /*launch_elevated=*/true,
+      /*channel_security=*/std::string());
+
+  std::ignore = delegate->Initialize(WTSGetActiveConsoleSessionId());
+  FlushIoThread();
+
+  mojo::NamedPlatformChannel::Options options;
+  mojo::NamedPlatformChannel channel(options);
+  WtsSessionProcessDelegate::TestApi test_api(delegate.get());
+  test_api.SetElevatedServerEndpoint(channel.TakeServerEndpoint());
+
+  constexpr base::ProcessId kLauncherPid = 1000;
+  test_api.SetElevatedLauncherPid(kLauncherPid);
+
+  // Spawn a child process and assign it to the job object.
+  base::Process child = base::SpawnMultiProcessTestChild(
+      "WtsSessionProcessDelegateTestChild",
+      base::GetMultiProcessTestChildBaseCommandLine(), {});
+  ASSERT_TRUE(child.IsValid());
+  ASSERT_TRUE(test_api.AssignProcessToJob(child.Handle()));
+  FlushIoThread();
+  EXPECT_EQ(test_api.GetWorkerProcessPid(), child.Pid());
+
+  bool process_launched = false;
+  base::RunLoop run_loop;
+  test_api.SetProcessLaunchedCallback(base::BindLambdaForTesting([&]() {
+    process_launched = true;
+    run_loop.Quit();
+  }));
+
+  // Launcher exits after spawning worker.
+  test_api.SimulateJobNotification(JOB_OBJECT_MSG_EXIT_PROCESS, kLauncherPid);
+
+  // Wait for OnProcessLaunchDetected to run on main thread.
+  run_loop.Run();
+  EXPECT_TRUE(process_launched);
+
+  // Clean up child process.
+  child.Terminate(0, false);
+  int exit_code = 0;
+  EXPECT_TRUE(
+      child.WaitForExitWithTimeout(TestTimeouts::action_timeout(), &exit_code));
+}
+
+TEST_F(WtsSessionProcessDelegateTest, ProcessNotInJobRejectedInLaunchDetected) {
+  auto target_command =
+      std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
+  auto delegate = std::make_unique<WtsSessionProcessDelegate>(
+      io_thread_.task_runner(), std::move(target_command),
+      /*launch_elevated=*/true,
+      /*channel_security=*/std::string());
+
+  std::ignore = delegate->Initialize(WTSGetActiveConsoleSessionId());
+  FlushIoThread();
+
+  mojo::NamedPlatformChannel::Options options;
+  mojo::NamedPlatformChannel channel(options);
+  WtsSessionProcessDelegate::TestApi test_api(delegate.get());
+  test_api.SetElevatedServerEndpoint(channel.TakeServerEndpoint());
+
+  // Spawn a child process that is NOT assigned to the job object.
+  base::Process unassigned_child = base::SpawnMultiProcessTestChild(
+      "WtsSessionProcessDelegateTestChild",
+      base::GetMultiProcessTestChildBaseCommandLine(), {});
+  ASSERT_TRUE(unassigned_child.IsValid());
+
+  bool fatal_error_reported = false;
+  base::RunLoop run_loop;
+  test_api.SetFatalErrorCallback(base::BindLambdaForTesting([&]() {
+    fatal_error_reported = true;
+    run_loop.Quit();
+  }));
+
+  // Trigger OnProcessLaunchDetected with the unassigned child's PID.
+  test_api.OnProcessLaunchDetected(unassigned_child.Pid());
+
+  // Wait for ReportFatalError to be called.
+  run_loop.Run();
+  EXPECT_TRUE(fatal_error_reported);
+
+  // Clean up child process.
+  unassigned_child.Terminate(0, false);
+  int exit_code = 0;
+  EXPECT_TRUE(unassigned_child.WaitForExitWithTimeout(
+      TestTimeouts::action_timeout(), &exit_code));
 }
 
 MULTIPROCESS_TEST_MAIN(WtsSessionProcessDelegateTestChild) {
