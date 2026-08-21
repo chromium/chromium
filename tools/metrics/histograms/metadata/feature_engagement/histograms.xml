@@ -194,6 +194,12 @@ chromium-metrics-reviews@google.com.
       summary="contextual search for users who use web search"/>
   <variant name="IPH_ContextualTasksEphemeralToolbarButton"
       summary="contextual tasks ephemeral toolbar button"/>
+  <variant name="IPH_CriticalActionAppMenu"
+      summary="educating users on the Chrome app menu where to view Gemini
+               key browsing actions in history."/>
+  <variant name="IPH_CriticalActionFilterChip"
+      summary="educating users on chrome://history about the Gemini filter
+               chip for viewing key browsing actions."/>
   <variant name="IPH_DataSaverDetail" summary="data saver detail"/>
   <variant name="IPH_DataSaverMilestonePromo"
       summary="data saver milestone promo"/>

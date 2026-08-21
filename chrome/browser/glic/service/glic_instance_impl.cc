@@ -68,6 +68,7 @@
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/critical_actions/core/browser/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -1340,6 +1341,7 @@ void GlicInstanceImpl::ClearActiveEmbedderAndNotifyVisibilityChange() {
     host().PanelWasClosed();
 #if !BUILDFLAG(IS_ANDROID)
     MaybeShowShortcutSnoozePromo();
+    MaybeShowCriticalActionFeaturePromo();
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
   return;
@@ -1370,6 +1372,24 @@ void GlicInstanceImpl::MaybeShowShortcutSnoozePromo() {
 
   BrowserUserEducationInterface::From(browser)->MaybeShowFeaturePromo(
       std::move(params));
+#endif
+}
+
+void GlicInstanceImpl::MaybeShowCriticalActionFeaturePromo() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(
+          critical_actions::features::kCriticalActionHistory)) {
+    return;
+  }
+  BrowserWindowInterface* browser =
+      ProfileBrowserCollection::GetForProfile(profile_)->FindTabbedBrowser();
+  if (!browser) {
+    return;
+  }
+  if (auto* user_education = BrowserUserEducationInterface::From(browser)) {
+    user_education->MaybeShowFeaturePromo(
+        feature_engagement::kIPHCriticalActionAppMenuFeature);
+  }
 #endif
 }
 

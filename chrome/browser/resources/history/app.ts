@@ -472,6 +472,26 @@ export class HistoryAppElement extends HistoryAppElementBase {
       searchField.getSearchInput().focus();
     }
 
+    if (loadTimeData.getBoolean('isCriticalActionsEnabled') &&
+        this.showFilterChips_()) {
+      const filterChipsEl =
+          this.shadowRoot.querySelector<CrLitElement>('#historyFilterChips');
+      if (filterChipsEl) {
+        filterChipsEl.updateComplete.then(() => {
+          const chipEl = filterChipsEl.shadowRoot.querySelector<HTMLElement>(
+              '#actorVisitsChip');
+          if (chipEl) {
+            this.registerHelpBubble(
+                'HistoryUI::kHistoryGeminiFilterChipElementId', chipEl);
+            setTimeout(() => {
+              BrowserProxyImpl.getInstance()
+                  .handler.maybeShowCriticalActionFeaturePromo();
+            }, 1000);
+          }
+        });
+      }
+    }
+
     requestIdleCallback(function() {
       document.fonts.load('bold 12px Roboto');
     });

@@ -61,6 +61,8 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
 
   void ShowSidePanelUI() override;
 
+  void MaybeShowCriticalActionFeaturePromo() override;
+
   void QueryHistory(const std::string& query,
                     int max_count,
                     std::optional<double> begin_timestamp,

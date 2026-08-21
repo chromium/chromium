@@ -429,6 +429,7 @@ class GlicInstanceImpl : public GlicInstance,
       mojom::FreOverride fre_override = mojom::FreOverride::kUnspecified);
 
   void MaybeShowShortcutSnoozePromo();
+  void MaybeShowCriticalActionFeaturePromo();
 
   // Updates the floating panel can attach state.
   void UpdateFloatingPanelCanAttach();

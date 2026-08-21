@@ -14,6 +14,7 @@
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
@@ -61,6 +62,8 @@ class HistoryUI : public ui::MojoWebUIController,
                   public history::mojom::ForeignSessionPageHandlerFactory,
                   public history_clusters::mojom::PageHandlerFactory {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHistoryGeminiFilterChipElementId);
+
   explicit HistoryUI(content::WebUI* web_ui);
   HistoryUI(const HistoryUI&) = delete;
   HistoryUI& operator=(const HistoryUI&) = delete;

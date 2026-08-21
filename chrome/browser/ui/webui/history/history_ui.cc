@@ -287,12 +287,17 @@ HistoryUI::HistoryUI(content::WebUI* web_ui)
           &HistoryUI::UpdateDataSource, base::Unretained(this))));
 
   ui::TrackedElementHandlerDocumentSingleton::Register(
-      this, std::vector<ui::ElementIdentifier>{kHistorySearchInputElementId});
+      this,
+      std::vector<ui::ElementIdentifier>{kHistorySearchInputElementId,
+                                         kHistoryGeminiFilterChipElementId});
 }
 
 HistoryUI::~HistoryUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(HistoryUI)
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HistoryUI,
+                                      kHistoryGeminiFilterChipElementId);
 
 // static
 scoped_refptr<base::RefCountedMemory> HistoryUI::GetFaviconResourceBytes(
