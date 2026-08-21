@@ -10,6 +10,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -35,6 +36,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/shortcuts_provider_test_util.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/common/content_features.h"
@@ -564,8 +566,13 @@ class WebUILocationBarInteractiveUiTest : public TestBase {
  private:
   static bool HandleRequest(
       content::URLLoaderInterceptor::RequestParams* params) {
+    const bool use_short_suggest_path = base::FeatureList::IsEnabled(
+        omnibox_feature_configs::SuggestPathClientConfig::
+            kUseShortSuggestPathV1);
+    std::string_view expected_path =
+        use_short_suggest_path ? "/complete/s" : "/complete/search";
     if (params->url_request.url.host() == "www.google.com" &&
-        params->url_request.url.path() == "/complete/search") {
+        params->url_request.url.path() == expected_path) {
       constexpr std::string_view headers =
           "HTTP/1.1 200 OK\nContent-Type: application/json\n\n";
       constexpr std::string_view body =
@@ -604,9 +611,11 @@ class WebUILocationBarInteractiveUiTest : public TestBase {
 };
 
 class WebUILocationBarIMEInteractiveUiTest
-    : public WebUILocationBarInteractiveUiTest {
+    : public WebUILocationBarInteractiveUiTest,
+      public base::test::WithFeatureOverride {
  public:
-  WebUILocationBarIMEInteractiveUiTest() {
+  WebUILocationBarIMEInteractiveUiTest()
+      : base::test::WithFeatureOverride(omnibox_feature_configs::SuggestPathClientConfig::kUseShortSuggestPathV1) {
     auto* ime = new PretendComposeInputMethod();
     ime_ = ime->GetWeakPtr();
     ui::SetUpInputMethodForTesting(ime);
@@ -961,7 +970,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest,
 #else
 #define MAYBE_InlineSuggestionIME InlineSuggestionIME
 #endif
-IN_PROC_BROWSER_TEST_F(WebUILocationBarIMEInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(WebUILocationBarIMEInteractiveUiTest,
                        MAYBE_InlineSuggestionIME) {
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(this->browser()->GetProfile(),
@@ -1526,3 +1535,5 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, PasteSanitizesText) {
       SendAccelerator(kWebUIToolbarId, paste_accel),
       WaitTillOmniboxViewText("alert(1) hello world"));
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(WebUILocationBarIMEInteractiveUiTest);

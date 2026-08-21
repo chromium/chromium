@@ -12,6 +12,7 @@
 
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -19,6 +20,8 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/google/core/common/google_util.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/base/url_util.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -197,7 +200,12 @@ class SearchboxInteractiveTestMixin : public T {
     url_loader_interceptor_ =
         std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
             [](content::URLLoaderInterceptor::RequestParams* params) {
-              if (params->url_request.url.path() != "/complete/search") {
+              const bool use_short_suggest_path = base::FeatureList::IsEnabled(
+                  omnibox_feature_configs::SuggestPathClientConfig::
+                      kUseShortSuggestPathV1);
+              std::string_view expected_path =
+                  use_short_suggest_path ? "/complete/s" : "/complete/search";
+              if (params->url_request.url.path() != expected_path) {
                 return false;
               }
 
