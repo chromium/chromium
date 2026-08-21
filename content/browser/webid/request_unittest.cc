@@ -6972,6 +6972,40 @@ TEST_F(RequestTest, ActiveFlowShowsLoadingUI) {
   EXPECT_TRUE(dialog_controller_state_.did_show_loading_dialog);
 }
 
+// Test that active flow with multiple IDPs shows loading dialog and accounts
+// dialog.
+TEST_F(RequestTest, ActiveFlowMultiIdpShowsLoadingAndAccountsUI) {
+  RequestParameters parameters = kDefaultMultiIdpRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  RequestExpectations expectations = kExpectationSuccess;
+  expectations.selected_idp_config_url = kProviderTwoUrlFull;
+  RunTest(parameters, expectations, kConfigurationMultiIdpValid);
+
+  EXPECT_TRUE(dialog_controller_state_.did_show_loading_dialog);
+  EXPECT_TRUE(did_show_accounts_dialog());
+}
+
+// Test active flow with multiple IDPs requires user activation.
+TEST_F(RequestTest, ActiveFlowMultiIdpRequiresUserActivation) {
+  RequestParameters parameters = kDefaultMultiIdpRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+
+  RequestExpectations error = {
+      RequestTokenStatus::kError,
+      FederatedRequestResult::kMissingTransientUserActivation,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+
+  RunDontWaitForCallback(parameters, kConfigurationMultiIdpValid);
+  CheckExpectations(kConfigurationMultiIdpValid, error);
+
+  EXPECT_FALSE(DidFetchAnyEndpoint());
+}
+
 // Test dismissing a active flow through the loading UI.
 TEST_F(RequestTest, ActiveFlowDismissLoadingUI) {
   static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())

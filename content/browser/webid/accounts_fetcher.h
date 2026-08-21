@@ -216,6 +216,9 @@ class CONTENT_EXPORT AccountsFetcher {
   // pending_requests_. If pending_requests_ reaches 0, runs the callback_.
   void AddResult(Result&& result);
 
+  // Login dialog is only shown in Active Mode with 1 IDP.
+  bool ShouldImmediatelyShowLoginDialog() const;
+
   base::flat_map<
       GURL,
       std::pair<blink::mojom::FederatedRequestResult, RequestIdTokenStatus>>

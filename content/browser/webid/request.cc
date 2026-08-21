@@ -366,7 +366,6 @@ bool Request::RequestToken(
   fedcm_metrics_->RecordHasNonceOutsideParamsOnly(
       idps_with_nonce_outside_params_only);
 
-  // TODO(crbug.com/40218857): handle active mode with multiple IdP.
   if (idp_get_params_ptrs[0]->mode == blink::mojom::RpMode::kActive) {
     rp_mode_ = RpMode::kActive;
     if (!had_transient_user_activation_) {
@@ -503,14 +502,16 @@ bool Request::RequestToken(
   // the config file to get the login_url which may take some time.
   if (rp_mode_ == RpMode::kActive) {
     CHECK_GT(idp_order_.size(), 0u);
-    // TODO(crbug.com/40218857): Handle active mode with multiple IdP.
-    const GURL& idp_config_url = idp_order_[0];
-    auto get_info_it = token_request_get_infos_.find(idp_config_url);
-    CHECK(get_info_it != token_request_get_infos_.end());
+    // If there is more than 1 IDP, do not show the IDP info in the loading
+    // dialog.
+    std::string idp_for_display =
+        idp_order_.size() == 1u
+            ? FormatOriginForDisplay(url::Origin::Create(idp_order_[0]))
+            : "";
+    blink::mojom::RpContext rp_context = idp_get_params_ptrs[0]->context;
     if (!GetDialogController()->ShowLoadingDialog(
-            CreateRpData(/*client_metadata_received=*/false),
-            FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
-            get_info_it->second.rp_context, rp_mode_,
+            CreateRpData(/*client_metadata_received=*/false), idp_for_display,
+            rp_context, rp_mode_,
             base::BindOnce(&Request::OnDialogDismissed,
                            weak_ptr_factory_.GetWeakPtr()))) {
       return false;

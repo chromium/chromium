@@ -333,9 +333,7 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
         ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
             identity_provider_config_url, permission_delegate_);
     if (idp_info->has_failing_idp_signin_status) {
-      // If the user is logged out and we are in a active-mode, allow the
-      // user to sign-in to the IdP and return early.
-      if (params_.rp_mode == blink::mojom::RpMode::kActive) {
+      if (ShouldImmediatelyShowLoginDialog()) {
         result.show_active_mode_modal_dialog = true;
         result.idp_info = std::move(idp_info);
         results_.push_back(std::move(result));
@@ -349,7 +347,7 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
       result.idp_info = std::move(idp_info);
       result.error = FederatedRequestResult::kNotSignedInWithIdp;
       result.token_status = TokenStatus::kNotSignedInWithIdp;
-      result.should_delay_callback = true;
+      result.should_delay_callback = params_.rp_mode == RpMode::kPassive;
       results_.push_back(std::move(result));
       continue;
     }
@@ -759,7 +757,7 @@ void AccountsFetcher::HandleAccountsFetchFailure(
                                   status.response_code);
   }
   if (!old_idp_signin_status.has_value()) {
-    if (params_.rp_mode == blink::mojom::RpMode::kActive) {
+    if (ShouldImmediatelyShowLoginDialog()) {
       // Account parsing failure is not a terminal error for active mode so we
       // only add error details to the console instead of setting res.error.
       MaybeAddAccountParsingErrorToConsole(*render_frame_host_, status, result);
@@ -780,7 +778,7 @@ void AccountsFetcher::HandleAccountsFetchFailure(
     res.idp_info = std::move(idp_info);
     res.error = result;
     res.token_status = token_status;
-    res.should_delay_callback = true;
+    res.should_delay_callback = params_.rp_mode == RpMode::kPassive;
     res.filtered_accounts = std::move(filtered_accounts);
     res.accounts_fetched_time = accounts_fetched_time;
     AddResult(std::move(res));
@@ -873,6 +871,10 @@ void AccountsFetcher::AddResult(Result&& result) {
     std::move(callback_).Run(well_known_and_config_fetched_time_,
                              std::move(results_));
   }
+}
+
+bool AccountsFetcher::ShouldImmediatelyShowLoginDialog() const {
+  return params_.rp_mode == RpMode::kActive && request_get_infos_.size() == 1u;
 }
 
 }  // namespace content::webid
