@@ -48,11 +48,12 @@ template("cpp_api_from_rust") {
   # https://github.com/google/crubit/blob/89417b58802e20a6a11db7fea7c31692fef25276/docs/design/design.md?plain=1#L599-L602
   assert(enable_rust && use_chromium_rust_toolchain)
 
-  # `cpp_api_from_rust`-generated bindings may depend on C++ bindings of Rust
-  # standard library. Currently Chromium is only able to invoke Crubit in
-  # `.rs`-consuming mode (rather than `.rlib`-consuming mode). Together, these
-  # two constraints mean that `cpp_api_from_rust` only works for the target
-  # platform and doesn't yet work for the host platform.
+  # TODO(https://crbug.com/549864599): `cpp_api_from_rust`-generated bindings
+  # may depend on C++ bindings of Rust standard library. Currently Chromium is
+  # only able to invoke Crubit in `.rs`-consuming mode (rather than
+  # `.rlib`-consuming mode). Together, these two constraints mean that
+  # `cpp_api_from_rust` only works for the target platform and doesn't yet work
+  # for the host platform.
   assert(!rust_prebuilt_stdlib)
 
   # PDFium, V8 and other "2nd-party" Chromium projects don't yet have their own

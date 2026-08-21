@@ -63,6 +63,9 @@ Other notes:
       Crubit-generated `source_set`.
     - A workaround is to define and call out-of-line functions.  See for example
       https://crbug.com/545486505#comment2
+* https://crbug.com/549864599:
+  `cpp_api_from_rust` is not supported in the host toolchain (e.g. when
+  generating bindings for host-side build tools).
 
 ## Using `cpp_api_from_rust` in Chromium
 
