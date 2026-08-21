@@ -57,12 +57,14 @@ class COMPOSITOR_EXPORT LayerSolidColor : public LayerWithExternalTexture {
   std::unique_ptr<Layer> Clone() const override;
   bool ShouldSchedulePaint() const override;
 
- private:
-  friend class LayerTestApi;
-
+ protected:
   // Layer:
   void Reset() override;
   void OnPaintScheduled() override;
+  bool ShouldCommitDamage() const override;
+
+ private:
+  friend class LayerTestApi;
 
   // LayerAnimatorDelegate:
   void SetColorFromAnimation(SkColor4f color,

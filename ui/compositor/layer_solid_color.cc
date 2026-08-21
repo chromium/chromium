@@ -47,7 +47,14 @@ bool LayerSolidColor::ShouldSchedulePaint() const {
 }
 
 void LayerSolidColor::OnPaintScheduled() {
+  // Only Schedule draw if LayerSolidColor has external content.
+  CHECK(ShouldSchedulePaint());
   ScheduleDraw();
+}
+
+bool LayerSolidColor::ShouldCommitDamage() const {
+  // Only commit damage if LayerSolidColor has external content.
+  return texture_layer() && LayerWithExternalTexture::ShouldCommitDamage();
 }
 
 void LayerSolidColor::SetShowReflectedLayerSubtree(
