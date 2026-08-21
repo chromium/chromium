@@ -63,6 +63,9 @@ class OmahaWnd : public DialogImpl,
     CR_MESSAGE_HANDLER_EX(WM_CLOSE, OnClose)
     CR_MESSAGE_HANDLER_EX(WM_NCDESTROY, OnNCDestroy)
     CR_MESSAGE_HANDLER_EX(WM_DPICHANGED, OnDpiChanged)
+    CR_MESSAGE_HANDLER_EX(WM_SYSCOLORCHANGE, OnThemeChanged)
+    CR_MESSAGE_HANDLER_EX(WM_SETTINGCHANGE, OnSettingChange)
+    CR_MESSAGE_HANDLER_EX(WM_THEMECHANGED, OnThemeChanged)
     CR_COMMAND_ID_HANDLER_EX(IDCANCEL, OnCancel)
     CR_CHAIN_MSG_MAP(OwnerDrawTitleBar)
     CR_CHAIN_MSG_MAP(CustomDlgColors)
@@ -86,6 +89,8 @@ class OmahaWnd : public DialogImpl,
   LRESULT OnClose(UINT msg, WPARAM wparam, LPARAM lparam);
   LRESULT OnNCDestroy(UINT msg, WPARAM wparam, LPARAM lparam);
   LRESULT OnDpiChanged(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnSettingChange(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnThemeChanged(UINT msg, WPARAM wparam, LPARAM lparam);
   void OnCancel(UINT notify_code, int id, HWND wnd_ctl);
 
   void ApplyDpiScaling(int dpi);

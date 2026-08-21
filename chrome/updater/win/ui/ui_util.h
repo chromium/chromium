@@ -49,8 +49,12 @@ bool GetDlgItemText(HWND dlg, int item_id, std::wstring* text);
 // Returns true if the system is in high contrast mode.
 bool IsHighContrastOn();
 
-// Returns true if the system is in dark mode.
+// Returns true if the system is in dark mode (or in high contrast mode with a
+// dark theme).
 bool IsDarkModeOn();
+
+// Returns true if `color` has low perceived luminance (i.e. is dark).
+bool IsColorDark(COLORREF color);
 
 }  // namespace updater::ui
 

@@ -9,6 +9,7 @@
 #include <uxtheme.h>
 
 #include <cstdint>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/logging.h"
@@ -207,6 +208,30 @@ LRESULT OmahaWnd::OnDpiChanged(UINT, WPARAM wparam, LPARAM lparam) {
   RecalcLayout(hwnd(), ::GetDlgItem(hwnd(), IDC_TITLE_BAR_SPACER));
 
   // Force a full redraw of everything.
+  ::RedrawWindow(hwnd(), nullptr, nullptr,
+                 RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
+  return 0;
+}
+
+LRESULT OmahaWnd::OnSettingChange(UINT msg, WPARAM wparam, LPARAM lparam) {
+  SetMsgHandled(FALSE);
+  if (!lparam || std::wstring_view(reinterpret_cast<LPCWSTR>(lparam)) ==
+                     L"ImmersiveColorSet") {
+    UpdateThemeState();
+    SendMessageToDescendants(hwnd(), msg, wparam, lparam);
+    ::RedrawWindow(
+        hwnd(), nullptr, nullptr,
+        RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
+  }
+  return 0;
+}
+
+LRESULT OmahaWnd::OnThemeChanged(UINT msg, WPARAM wparam, LPARAM lparam) {
+  SetMsgHandled(FALSE);
+  UpdateThemeState();
+  if (msg != WM_THEMECHANGED) {
+    SendMessageToDescendants(hwnd(), msg, wparam, lparam);
+  }
   ::RedrawWindow(hwnd(), nullptr, nullptr,
                  RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
   return 0;

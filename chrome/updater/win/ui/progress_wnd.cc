@@ -40,6 +40,7 @@
 #include "chrome/updater/win/ui/ui_constants.h"
 #include "chrome/updater/win/ui/ui_ctls.h"
 #include "chrome/updater/win/ui/ui_util.h"
+#include "chrome/updater/win/ui/window_impl.h"
 
 namespace updater::ui {
 
@@ -57,8 +58,8 @@ bool AreAllAppsCanceled(const std::vector<AppCompletionInfo>& apps_info) {
 // `SS_BITMAP` controls, so the dialog's dark-mode background brush cannot
 // reach them through the usual mechanism. The defaults from the `STATIC`
 // window class paint `COLOR_3DFACE` for both `WM_ERASEBKGND` and the
-// no-image case in `WM_PAINT`, which shows up as a small light-gray
-// rectangle on dark / high-contrast backgrounds.
+// no-image case in `WM_PAINT`, which shows up as an unwanted rectangle
+// on themed / high-contrast backgrounds.
 //
 // In dark / high-contrast mode this subclass:
 //   * Returns 1 from `WM_ERASEBKGND` so the parent's already-painted
@@ -78,8 +79,16 @@ LRESULT CALLBACK BitmapStaticSubclassProc(HWND hwnd,
                                           WPARAM wparam,
                                           LPARAM lparam,
                                           UINT_PTR id,
-                                          DWORD_PTR /*ref_data*/) {
-  const bool themed_bg = IsHighContrastOn() || IsDarkModeOn();
+                                          DWORD_PTR ref_data) {
+  if (msg == WM_THEMECHANGED || msg == WM_SYSCOLORCHANGE ||
+      msg == WM_SETTINGCHANGE) {
+    const bool themed_bg = IsHighContrastOn() || IsDarkModeOn();
+    ::SetWindowSubclass(hwnd, BitmapStaticSubclassProc, id,
+                        static_cast<DWORD_PTR>(themed_bg));
+    return ::DefSubclassProc(hwnd, msg, wparam, lparam);
+  }
+
+  const bool themed_bg = static_cast<bool>(ref_data);
   if (msg == WM_ERASEBKGND && themed_bg) {
     return 1;
   }
@@ -105,8 +114,10 @@ LRESULT CALLBACK BitmapStaticSubclassProc(HWND hwnd,
 void InstallBitmapStaticSubclass(HWND parent, int control_id) {
   HWND child = ::GetDlgItem(parent, control_id);
   if (child && ::IsWindow(child)) {
+    const bool themed_bg = IsHighContrastOn() || IsDarkModeOn();
     ::SetWindowSubclass(child, BitmapStaticSubclassProc,
-                        kBitmapStaticSubclassId, 0);
+                        kBitmapStaticSubclassId,
+                        static_cast<DWORD_PTR>(themed_bg));
   }
 }
 
@@ -390,7 +401,8 @@ LRESULT ProgressWnd::OnEraseBkgnd(UINT, WPARAM wparam, LPARAM) {
   bool painted = false;
 
   // Background image is not loaded in High Contrast Mode.
-  HBITMAP bg_bmp = IsHighContrastOn() ? nullptr : GetBackgroundBitmap();
+  HBITMAP bg_bmp =
+      is_high_contrast() ? nullptr : GetBackgroundBitmap(is_dark_mode());
   if (bg_bmp) {
     BITMAP bm = {};
     ::GetObject(bg_bmp, sizeof(bm), &bm);
@@ -416,8 +428,8 @@ LRESULT ProgressWnd::OnEraseBkgnd(UINT, WPARAM wparam, LPARAM) {
   if (!painted) {
     // Fallback to safe solid background color if loading fails.
     const COLORREF fallback_color =
-        IsHighContrastOn() ? ::GetSysColor(COLOR_WINDOW)
-                           : (IsDarkModeOn() ? kBgColorDark : kBgColorLight);
+        is_high_contrast() ? ::GetSysColor(COLOR_WINDOW)
+                           : (is_dark_mode() ? kBgColorDark : kBgColorLight);
     base::win::ScopedGDIObject<HBRUSH> fill_brush(
         ::CreateSolidBrush(fallback_color));
     ::FillRect(hdc_mem.get(), &rect, fill_brush.get());
@@ -435,7 +447,7 @@ LRESULT ProgressWnd::OnEraseBkgnd(UINT, WPARAM wparam, LPARAM) {
     base::win::ScopedGDIObject<HRGN> border_rgn(::CreateRoundRectRgn(
         0, 0, width, height, scaled_radius * 2, scaled_radius * 2));
 
-    const COLORREF border_color = IsHighContrastOn()
+    const COLORREF border_color = is_high_contrast()
                                       ? ::GetSysColor(COLOR_WINDOWTEXT)
                                       : kWindowBorderColor;
     base::win::ScopedGDIObject<HBRUSH> border_brush(
@@ -455,7 +467,7 @@ LRESULT ProgressWnd::OnEraseBkgnd(UINT, WPARAM wparam, LPARAM) {
             .BlendOp = AC_SRC_OVER,
             .BlendFlags = 0,
             .SourceConstantAlpha =
-                static_cast<BYTE>(IsHighContrastOn() ? 255 : 77),
+                static_cast<BYTE>(is_high_contrast() ? 255 : 77),
             .AlphaFormat = 0,
         };
 
@@ -472,8 +484,8 @@ LRESULT ProgressWnd::OnEraseBkgnd(UINT, WPARAM wparam, LPARAM) {
   return 1;
 }
 
-HBITMAP ProgressWnd::GetBackgroundBitmap() {
-  if (IsDarkModeOn()) {
+HBITMAP ProgressWnd::GetBackgroundBitmap(bool is_dark_mode) {
+  if (is_dark_mode) {
     if (!dark_bg_bmp_.is_valid()) {
       dark_bg_bmp_.reset(static_cast<HBITMAP>(
           ::LoadImage(CURRENT_MODULE(), MAKEINTRESOURCE(IDB_BACKGROUND_DARK),
@@ -490,36 +502,31 @@ HBITMAP ProgressWnd::GetBackgroundBitmap() {
   }
 }
 
-LRESULT ProgressWnd::OnSysColorChange(UINT, WPARAM, LPARAM) {
-  SetMsgHandled(FALSE);
-  light_bg_bmp_.reset();
-  dark_bg_bmp_.reset();
-  ::RedrawWindow(hwnd(), nullptr, nullptr,
-                 RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
-  return 0;
-}
-
 LRESULT ProgressWnd::OnSettingChange(UINT, WPARAM, LPARAM lparam) {
   SetMsgHandled(FALSE);
-  if (lparam && std::wstring_view(reinterpret_cast<LPCWSTR>(lparam)) ==
-                    L"ImmersiveColorSet") {
+  if (!lparam || std::wstring_view(reinterpret_cast<LPCWSTR>(lparam)) ==
+                     L"ImmersiveColorSet") {
     light_bg_bmp_.reset();
     dark_bg_bmp_.reset();
-    ::RedrawWindow(
-        hwnd(), nullptr, nullptr,
-        RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
   }
   return 0;
 }
 
+LRESULT ProgressWnd::OnThemeChanged(UINT, WPARAM, LPARAM) {
+  SetMsgHandled(FALSE);
+  light_bg_bmp_.reset();
+  dark_bg_bmp_.reset();
+  return 0;
+}
+
 HBRUSH ProgressWnd::OnCtlColorStatic(HDC dc, HWND ctl_hwnd) {
-  if (IsHighContrastOn()) {
+  if (is_high_contrast()) {
     ::SetTextColor(dc, ::GetSysColor(COLOR_WINDOWTEXT));
     ::SetBkColor(dc, ::GetSysColor(COLOR_WINDOW));
     ::SetBkMode(dc, TRANSPARENT);
     return ::GetSysColorBrush(COLOR_WINDOW);
   }
-  if (IsDarkModeOn()) {
+  if (is_dark_mode()) {
     ::SetTextColor(dc, kTextColorDark);
   }
   ::SetBkMode(dc, TRANSPARENT);

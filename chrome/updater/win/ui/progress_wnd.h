@@ -64,8 +64,9 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
     CR_MESSAGE_HANDLER_EX(WM_INITDIALOG, OnInitDialog)
     CR_MESSAGE_HANDLER_EX(WM_SIZE, OnSize)
     CR_MESSAGE_HANDLER_EX(WM_ERASEBKGND, OnEraseBkgnd)
-    CR_MESSAGE_HANDLER_EX(WM_SYSCOLORCHANGE, OnSysColorChange)
+    CR_MESSAGE_HANDLER_EX(WM_SYSCOLORCHANGE, OnThemeChanged)
     CR_MESSAGE_HANDLER_EX(WM_SETTINGCHANGE, OnSettingChange)
+    CR_MESSAGE_HANDLER_EX(WM_THEMECHANGED, OnThemeChanged)
     CR_MSG_WM_CTLCOLORSTATIC(OnCtlColorStatic)
     CR_COMMAND_HANDLER_EX(IDC_BUTTON1, BN_CLICKED, OnClickedButton)
     CR_COMMAND_HANDLER_EX(IDC_BUTTON2, BN_CLICKED, OnClickedButton)
@@ -138,8 +139,8 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   LRESULT OnSize(UINT msg, WPARAM wparam, LPARAM lparam);
   void OnClickedButton(UINT notify_code, int id, HWND wnd_ctl);
   LRESULT OnEraseBkgnd(UINT msg, WPARAM wparam, LPARAM lparam);
-  LRESULT OnSysColorChange(UINT msg, WPARAM wparam, LPARAM lparam);
   LRESULT OnSettingChange(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnThemeChanged(UINT msg, WPARAM wparam, LPARAM lparam);
   HBRUSH OnCtlColorStatic(HDC dc, HWND ctl_hwnd);
 
   void SetControlText(int id, const std::wstring& text);
@@ -198,7 +199,7 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   // normalized for right-to-left (RTL) mirrored layouts.
   RECT GetControlClientRect(HWND control) const;
 
-  HBITMAP GetBackgroundBitmap();
+  HBITMAP GetBackgroundBitmap(bool is_dark_mode);
 
   // The speed by which the progress bar moves in marquee mode.
   static constexpr int kMarqueeModeUpdatesMs = 15;

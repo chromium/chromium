@@ -72,6 +72,9 @@ void SendMessageToDescendants(HWND hwnd,
                               UINT msg,
                               WPARAM wparam,
                               LPARAM lparam) {
+  if (!hwnd || !::IsWindow(hwnd)) {
+    return;
+  }
   SendMessageContext ctx{msg, wparam, lparam};
   ::EnumChildWindows(hwnd, &SendMessageToDescendantsProc,
                      reinterpret_cast<LPARAM>(&ctx));
