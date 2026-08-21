@@ -168,8 +168,8 @@ TEST_F(AddressNormalizerTest, NormalizeAddressAsync_RulesLoaded) {
   // Since the rules are already loaded, the address should be normalized
   // synchronously.
   EXPECT_TRUE(normalization_successful());
-  EXPECT_EQ("CA",
-            base::UTF16ToUTF8(result_profile().GetRawInfo(ADDRESS_HOME_STATE)));
+  EXPECT_EQ(base::UTF16ToUTF8(result_profile().GetRawInfo(ADDRESS_HOME_STATE)),
+            "CA");
 }
 
 // Tests that if the rules are not loaded before the normalization and cannot be
@@ -198,8 +198,8 @@ TEST_F(AddressNormalizerTest,
   // Since the rules are never loaded and the timeout is 0, the callback should
   // get notified that the address could not be normalized.
   EXPECT_FALSE(normalization_successful());
-  EXPECT_EQ("California",
-            base::UTF16ToUTF8(result_profile().GetRawInfo(ADDRESS_HOME_STATE)));
+  EXPECT_EQ(base::UTF16ToUTF8(result_profile().GetRawInfo(ADDRESS_HOME_STATE)),
+            "California");
 }
 
 // Tests that if the rules are not available for a given profile's region,
@@ -210,8 +210,8 @@ TEST_F(AddressNormalizerTest, NormalizeAddressAsync_RulesNotAvailable) {
   // Rules are not available for Canada.
   AutofillProfile profile = test::GetFullCanadianProfile();
   // Verify the pre-condition.
-  EXPECT_EQ("New Brunswick",
-            base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_STATE)));
+  EXPECT_EQ(base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_STATE)),
+            "New Brunswick");
 
   // Do the normalization.
   normalizer()->NormalizeAddressAsync(
@@ -228,10 +228,10 @@ TEST_F(AddressNormalizerTest, NormalizeAddressAsync_RulesNotAvailable) {
 
   // Phone number is formatted, but state (province) is not normalized.
   EXPECT_EQ(
-      "+15068531212",
-      base::UTF16ToUTF8(result_profile().GetRawInfo(PHONE_HOME_WHOLE_NUMBER)));
-  EXPECT_EQ("New Brunswick",
-            base::UTF16ToUTF8(result_profile().GetRawInfo(ADDRESS_HOME_STATE)));
+      base::UTF16ToUTF8(result_profile().GetRawInfo(PHONE_HOME_WHOLE_NUMBER)),
+      "+15068531212");
+  EXPECT_EQ(base::UTF16ToUTF8(result_profile().GetRawInfo(ADDRESS_HOME_STATE)),
+            "New Brunswick");
 }
 
 // Tests that if the rules are not loaded before the call to
@@ -256,8 +256,8 @@ TEST_F(AddressNormalizerTest, NormalizeAddressAsync_RulesNotLoaded_WillLoad) {
       base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
   EXPECT_TRUE(AreRulesLoadedForRegion(kCountryCode));
   EXPECT_TRUE(normalization_successful());
-  EXPECT_EQ("CA",
-            base::UTF16ToUTF8(result_profile().GetRawInfo(ADDRESS_HOME_STATE)));
+  EXPECT_EQ(base::UTF16ToUTF8(result_profile().GetRawInfo(ADDRESS_HOME_STATE)),
+            "CA");
 }
 
 // Tests that the phone number is formatted when the address is normalized.
@@ -283,10 +283,10 @@ TEST_F(AddressNormalizerTest, FormatPhone_AddressNormalizedAsync) {
   // Expect that the phone number was formatted and address normalizer
   EXPECT_TRUE(normalization_successful());
   EXPECT_EQ(
-      "+15152231234",
-      base::UTF16ToUTF8(result_profile().GetRawInfo(PHONE_HOME_WHOLE_NUMBER)));
-  EXPECT_EQ("CA",
-            base::UTF16ToUTF8(result_profile().GetRawInfo(ADDRESS_HOME_STATE)));
+      base::UTF16ToUTF8(result_profile().GetRawInfo(PHONE_HOME_WHOLE_NUMBER)),
+      "+15152231234");
+  EXPECT_EQ(base::UTF16ToUTF8(result_profile().GetRawInfo(ADDRESS_HOME_STATE)),
+            "CA");
 }
 
 // Tests that the invalid but possible phone number is minimumly formatted(not
@@ -315,10 +315,10 @@ TEST_F(AddressNormalizerTest, FormatInvalidPhone_AddressNormalizedAsync) {
   // Expect that the phone number was formatted and address normalizer
   EXPECT_TRUE(normalization_successful());
   EXPECT_EQ(
-      "+15151231234",
-      base::UTF16ToUTF8(result_profile().GetRawInfo(PHONE_HOME_WHOLE_NUMBER)));
-  EXPECT_EQ("CA",
-            base::UTF16ToUTF8(result_profile().GetRawInfo(ADDRESS_HOME_STATE)));
+      base::UTF16ToUTF8(result_profile().GetRawInfo(PHONE_HOME_WHOLE_NUMBER)),
+      "+15151231234");
+  EXPECT_EQ(base::UTF16ToUTF8(result_profile().GetRawInfo(ADDRESS_HOME_STATE)),
+            "CA");
 }
 
 // Tests that the phone number is formatted even when the address is not
@@ -348,10 +348,10 @@ TEST_F(AddressNormalizerTest, FormatPhone_AddressNotNormalizedAsync) {
 
   // Expect that the phone number was formatted.
   EXPECT_EQ(
-      "+15152231234",
-      base::UTF16ToUTF8(result_profile().GetRawInfo(PHONE_HOME_WHOLE_NUMBER)));
-  EXPECT_EQ("California",
-            base::UTF16ToUTF8(result_profile().GetRawInfo(ADDRESS_HOME_STATE)));
+      base::UTF16ToUTF8(result_profile().GetRawInfo(PHONE_HOME_WHOLE_NUMBER)),
+      "+15152231234");
+  EXPECT_EQ(base::UTF16ToUTF8(result_profile().GetRawInfo(ADDRESS_HOME_STATE)),
+            "California");
 }
 
 // Tests that if the rules are not loaded before the call to
@@ -368,11 +368,11 @@ TEST_F(AddressNormalizerTest, NormalizeAddressSync_RulesNotLoaded) {
 
   // The rules are not loaded before the call to NormalizeAddressSync.
   // Normalization fails.
-  EXPECT_EQ("California",
-            base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_STATE)));
+  EXPECT_EQ(base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_STATE)),
+            "California");
   // Phone number is still formatted.
-  EXPECT_EQ("+15152231234",
-            base::UTF16ToUTF8(profile.GetRawInfo(PHONE_HOME_WHOLE_NUMBER)));
+  EXPECT_EQ(base::UTF16ToUTF8(profile.GetRawInfo(PHONE_HOME_WHOLE_NUMBER)),
+            "+15152231234");
 }
 
 // Tests that if the rules are not loaded before the call to
@@ -395,9 +395,9 @@ TEST_F(AddressNormalizerTest, NormalizeAddressSync_RulesLoaded) {
 
   // The rules were loaded before the call to NormalizeAddressSync.
   // Normalization succeeds.
-  EXPECT_EQ("CA", base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_STATE)));
-  EXPECT_EQ("+15152231234",
-            base::UTF16ToUTF8(profile.GetRawInfo(PHONE_HOME_WHOLE_NUMBER)));
+  EXPECT_EQ(base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_STATE)), "CA");
+  EXPECT_EQ(base::UTF16ToUTF8(profile.GetRawInfo(PHONE_HOME_WHOLE_NUMBER)),
+            "+15152231234");
 }
 
 // Tests that if the validator is not initialized before the call to
@@ -419,9 +419,9 @@ TEST_F(AddressNormalizerTest, NormalizeAddressSync_UninitializedValidator) {
 
   // Normalization will succeed the next time.
   EXPECT_TRUE(normalizer()->NormalizeAddressSync(&profile));
-  EXPECT_EQ("CA", base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_STATE)));
-  EXPECT_EQ("+15152231234",
-            base::UTF16ToUTF8(profile.GetRawInfo(PHONE_HOME_WHOLE_NUMBER)));
+  EXPECT_EQ(base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_STATE)), "CA");
+  EXPECT_EQ(base::UTF16ToUTF8(profile.GetRawInfo(PHONE_HOME_WHOLE_NUMBER)),
+            "+15152231234");
 }
 
 // Tests that if the validator is not initialized before the call to
@@ -447,8 +447,8 @@ TEST_F(AddressNormalizerTest, NormalizeAddressAsync_UninitializedValidator) {
       base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
   EXPECT_TRUE(AreRulesLoadedForRegion(kCountryCode));
   EXPECT_TRUE(normalization_successful());
-  EXPECT_EQ("CA",
-            base::UTF16ToUTF8(result_profile().GetRawInfo(ADDRESS_HOME_STATE)));
+  EXPECT_EQ(base::UTF16ToUTF8(result_profile().GetRawInfo(ADDRESS_HOME_STATE)),
+            "CA");
 }
 
 }  // namespace autofill
