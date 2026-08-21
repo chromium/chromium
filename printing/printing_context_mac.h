@@ -85,6 +85,10 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextMac : public PrintingContext {
   // Returns true if the orientation was set.
   bool SetOrientationIsLandscape(bool landscape);
 
+  // Set the page range in native print info object.
+  // Returns true if the range was set.
+  bool SetPrintRangeInPrintSettings(const PageRanges& ranges);
+
   // Sets duplex mode in PMPrintSettings.
   // Returns true if duplex mode is set.
   bool SetDuplexModeInPrintSettings(mojom::DuplexMode mode);

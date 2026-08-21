@@ -313,6 +313,24 @@ void PrintDialogGtk::UpdateSettings(
 #endif
   }
 
+  const auto& print_ranges = settings->ranges();
+  if (!print_ranges.empty()) {
+    // Tell the system that the caller only intends to print a subset of pages.
+    gtk_print_settings_set_print_pages(gtk_settings_, GTK_PRINT_PAGES_RANGES);
+
+    std::vector<GtkPageRange> ranges;
+    ranges.reserve(print_ranges.size());
+    for (const auto& range : print_ranges) {
+      GtkPageRange gtk_range;
+      gtk_range.start = range.from;
+      gtk_range.end = range.to;
+      ranges.push_back(gtk_range);
+    }
+
+    gtk_print_settings_set_page_ranges(gtk_settings_, ranges.data(),
+                                       ranges.size());
+  }
+
 #if BUILDFLAG(USE_CUPS)
   // Set advanced settings first so they can be overridden by user applied
   // settings.

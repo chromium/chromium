@@ -146,6 +146,7 @@ gboolean gtk_print_job_set_source_file(GtkPrintJob* job, const gchar* filename, 
 GtkPrintSettings* gtk_print_settings_copy(GtkPrintSettings* other);
 GtkPageOrientation gtk_print_settings_get_orientation(GtkPrintSettings* settings);
 GtkPageRange* gtk_print_settings_get_page_ranges(GtkPrintSettings* settings, gint *num_ranges);
+void gtk_print_settings_set_page_ranges(GtkPrintSettings* settings, GtkPageRange* page_ranges, gint num_ranges);
 const gchar* gtk_print_settings_get_printer(GtkPrintSettings* settings);
 GtkPrintPages gtk_print_settings_get_print_pages(GtkPrintSettings* settings);
 gint gtk_print_settings_get_resolution(GtkPrintSettings* settings);

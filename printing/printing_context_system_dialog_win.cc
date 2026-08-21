@@ -9,12 +9,14 @@
 
 #include "base/auto_reset.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/win/scoped_hglobal.h"
 #include "printing/backend/win_helper.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
+#include "printing/page_range.h"
 #include "printing/print_settings_initializer_win.h"
 #include "skia/ext/skia_utils_win.h"
 
@@ -76,10 +78,29 @@ void PrintingContextSystemDialogWin::AskUserForSettings(
   PRINTPAGERANGE ranges[32] = {};
   dialog_options.nStartPage = START_PAGE_GENERAL;
   if (max_pages) {
-    // Default initialize to print all the pages.
-    ranges[0].nFromPage = 1;
-    ranges[0].nToPage = max_pages;
-    dialog_options.nPageRanges = 1;
+    // Pre-populate the dialog with any requested page ranges and select its
+    // "Pages" radio button. The dialog uses 1-based, inclusive page numbers
+    // and rejects ranges outside [nMinPage, nMaxPage].
+    base::span<PRINTPAGERANGE> dialog_ranges(ranges);
+    size_t num_ranges = 0;
+    for (const PageRange& range : settings_->ranges()) {
+      if (num_ranges == dialog_ranges.size() ||
+          range.from >= static_cast<uint32_t>(max_pages)) {
+        break;
+      }
+      dialog_ranges[num_ranges++] = {
+          .nFromPage = range.from + 1,
+          .nToPage = std::min(range.to + 1, static_cast<uint32_t>(max_pages))};
+    }
+    if (num_ranges) {
+      dialog_options.nPageRanges = num_ranges;
+      dialog_options.Flags |= PD_PAGENUMS;
+    } else {
+      // Default initialize to print all the pages.
+      ranges[0].nFromPage = 1;
+      ranges[0].nToPage = max_pages;
+      dialog_options.nPageRanges = 1;
+    }
     dialog_options.nMaxPageRanges = std::size(ranges);
     dialog_options.nMinPage = 1;
     dialog_options.nMaxPage = max_pages;
