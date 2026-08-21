@@ -298,9 +298,9 @@ class MemoryReclaimerSupportTest : public ::testing::Test {
   }
 
  protected:
+  test::ScopedFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(MemoryReclaimerSupportTest, StartSeveralTimes) {

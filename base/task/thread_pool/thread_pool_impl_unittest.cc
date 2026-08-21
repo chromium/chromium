@@ -414,6 +414,7 @@ class ThreadPoolImplTestBase : public testing::Test {
     did_tear_down_ = true;
   }
 
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ThreadPoolImpl> thread_pool_;
   Thread service_thread_;
 
@@ -439,7 +440,6 @@ class ThreadPoolImplTestBase : public testing::Test {
     base::internal::JobTaskSource::InitializeFeatures();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<WorkerThreadObserver> worker_thread_observer_;
   bool did_tear_down_ = false;
 };
