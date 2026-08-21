@@ -197,9 +197,9 @@ void PageActionView::OnPageActionModelChanged(
 
   if (visible && model.ShouldShowAnchoredMessage()) {
     CreateAndShowAnchoredMessage(model);
-  } else if (anchored_message_ && anchored_message_widget_) {
-    anchored_message_ = nullptr;
-    anchored_message_widget_ = nullptr;
+  } else if (anchored_message_ && anchored_message_widget_ &&
+             !anchored_message_widget_->IsClosed()) {
+    anchored_message_widget_->Close();
   }
 
   UpdateTooltipText();
