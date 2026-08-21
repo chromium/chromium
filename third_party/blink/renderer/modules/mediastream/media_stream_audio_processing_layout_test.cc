@@ -245,6 +245,42 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
           /*multichannel_processing=*/true);
   EXPECT_TRUE(settings_enabled.voice_isolation);
 }
+
+TEST(MediaStreamAudioProcessingLayoutTest,
+     VoiceIsolationEnabledWithoutAecRequiresAudioServiceApm) {
+  AudioProcessingProperties properties;
+  properties.voice_isolation = VoiceIsolationType::kVoiceIsolationEnabled;
+  properties.echo_cancellation_mode = EchoCancellationMode::kDisabled;
+
+  MediaStreamAudioProcessingLayout layout(
+      properties, /*available_platform_effects=*/0, /*channels=*/1);
+  EXPECT_TRUE(layout.NeedApmInAudioService());
+}
+
+TEST(MediaStreamAudioProcessingLayoutTest,
+     DisabledVoiceIsolationWithoutAecDoesNotRequireAudioServiceApm) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(media::kChromeWideEchoCancellation);
+
+  AudioProcessingProperties properties;
+  properties.voice_isolation = VoiceIsolationType::kVoiceIsolationDisabled;
+  properties.echo_cancellation_mode = EchoCancellationMode::kDisabled;
+
+  MediaStreamAudioProcessingLayout layout(
+      properties, /*available_platform_effects=*/0, /*channels=*/1);
+  EXPECT_FALSE(layout.NeedApmInAudioService());
+}
+
+TEST(MediaStreamAudioProcessingLayoutTest,
+     VoiceIsolationWithDefaultAecRunsInAudioService) {
+  AudioProcessingProperties properties;
+  properties.voice_isolation = VoiceIsolationType::kVoiceIsolationEnabled;
+  properties.echo_cancellation_mode = EchoCancellationMode::kBrowserDecides;
+
+  MediaStreamAudioProcessingLayout layout(
+      properties, /*available_platform_effects=*/0, /*channels=*/1);
+  EXPECT_TRUE(layout.NeedApmInAudioService());
+}
 #endif
 
 TEST(AudioProcessingPropertiesTest, VerifyDefaultProcessingState) {

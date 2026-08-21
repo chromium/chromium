@@ -300,6 +300,12 @@ MediaStreamAudioProcessingLayout::MediaStreamAudioProcessingLayout(
       webrtc_processing_settings_(webrtc_processing_settings) {}
 
 bool MediaStreamAudioProcessingLayout::NeedApmInAudioService() const {
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  if (properties_.voice_isolation ==
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled) {
+    return true;
+  }
+#endif
   return echo_canceller_.GetApmLocation() ==
          EchoCanceller::ApmLocation::kAudioService;
 }
