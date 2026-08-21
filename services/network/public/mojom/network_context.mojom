@@ -590,10 +590,11 @@ struct NetworkContextParams {
   // Whether "Compression dictionary transport" feature should be enabled.
   bool shared_dictionary_enabled = false;
 
-  // Maximum size of the shared dictionary cache. If this value is 0, the max
-  // size will be propagated via SetSharedDictionaryCacheMaxSize message.
-  // Ignored if `shared_dictionary_enabled` field is false.
-  uint64 shared_dictionary_cache_max_size = 0;
+  // Initial maximum size of the shared dictionary cache in bytes. If null,
+  // no byte limit is enforced at initialization time (an automatic limit is
+  // typically calculated and set later via SetSharedDictionaryCacheMaxSize).
+  // Ignored if `shared_dictionary_enabled` is false.
+  uint64? shared_dictionary_cache_max_size;
 
   // Parameters for constructing the FirstPartySetsAccessDelegate.
   // |first_party_sets_access_delegate_params| is the initial configuration to
@@ -1839,8 +1840,11 @@ interface NetworkContext {
       mojo_base.mojom.Time start_time, mojo_base.mojom.Time end_time)
       => (array<url.mojom.Origin> origins);
 
-  // Sets maximum size of the shared dictionary cache.
-  SetSharedDictionaryCacheMaxSize(uint64 cache_max_size);
+  // Sets or updates the maximum size of the shared dictionary cache.
+  // - If null: disables byte limits (unlimited cache size).
+  // - If 0: enforces a 0-byte limit (evicts all cached dictionaries).
+  // - If >0: enforces an explicit byte limit.
+  SetSharedDictionaryCacheMaxSize(uint64? cache_max_size);
 
   // Preloads matching dictionaries for loading documents of the `urls`.
   PreloadSharedDictionaryInfoForDocument(

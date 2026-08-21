@@ -1395,7 +1395,10 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     }
     const int disk_cache_size = local_state->GetInteger(prefs::kDiskCacheSize);
     network_context_params->http_cache_max_size = disk_cache_size;
-    network_context_params->shared_dictionary_cache_max_size = disk_cache_size;
+    if (disk_cache_size > 0) {
+      network_context_params->shared_dictionary_cache_max_size =
+          disk_cache_size;
+    }
 
     network_context_params->file_paths =
         ::network::mojom::NetworkContextFilePaths::New();

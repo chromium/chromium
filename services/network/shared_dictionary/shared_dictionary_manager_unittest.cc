@@ -196,12 +196,12 @@ class SharedDictionaryManagerTest
   std::unique_ptr<SharedDictionaryManager> CreateSharedDictionaryManager() {
     switch (GetManagerType()) {
       case TestManagerType::kInMemory:
-        return SharedDictionaryManager::CreateInMemory(/*cache_max_size=*/0,
-                                                       kCacheMaxCount);
+        return SharedDictionaryManager::CreateInMemory(
+            /*cache_max_size=*/std::nullopt, kCacheMaxCount);
       case TestManagerType::kOnDisk:
         return SharedDictionaryManager::CreateOnDisk(
-            database_path_, cache_directory_path_, /*cache_max_size=*/0,
-            kCacheMaxCount,
+            database_path_, cache_directory_path_,
+            /*cache_max_size=*/std::nullopt, kCacheMaxCount,
 #if BUILDFLAG(IS_ANDROID)
             disk_cache::ApplicationStatusListenerGetter(),
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -1801,7 +1801,42 @@ TEST_P(SharedDictionaryManagerTest,
                                          mojom::RequestDestination::kEmpty));
 }
 
-TEST_P(SharedDictionaryManagerTest, CacheEvictionZeroMaxSizeCountExceeded) {
+TEST_P(SharedDictionaryManagerTest, CacheEvictionZeroMaxSize) {
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                  kSite1);
+
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  WriteDictionary(storage.get(), GURL("https://origin1.test/d1"), "p1*",
+                  {kTestData1});
+  task_environment_.FastForwardBy(base::Seconds(1));
+  WriteDictionary(storage.get(), GURL("https://origin2.test/d2"), "p2*",
+                  {kTestData1});
+
+  if (GetManagerType() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  manager->SetCacheMaxSize(0);
+
+  if (GetManagerType() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin1.test/p1?"),
+                                          mojom::RequestDestination::kEmpty));
+  EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin2.test/p2?"),
+                                          mojom::RequestDestination::kEmpty));
+}
+
+TEST_P(SharedDictionaryManagerTest,
+       CacheEvictionUnlimitedMaxSizeCountExceeded) {
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
 
@@ -2035,7 +2070,7 @@ TEST_P(SharedDictionaryManagerTest, CacheEvictionPerSiteSizeExceeded) {
 }
 
 TEST_P(SharedDictionaryManagerTest,
-       CacheEvictionPerSiteZeroMaxSizeCountExceeded) {
+       CacheEvictionPerSiteUnlimitedMaxSizeCountExceeded) {
   net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
                                                   kSite1);
 
@@ -2086,7 +2121,7 @@ TEST_P(SharedDictionaryManagerTest,
 }
 
 TEST_P(SharedDictionaryManagerTest,
-       CacheEvictionPerSiteNonZeroMaxSizeCountExceeded) {
+       CacheEvictionPerSiteLimitedMaxSizeCountExceeded) {
   net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
                                                   kSite1);
 

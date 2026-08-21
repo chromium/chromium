@@ -3530,7 +3530,7 @@ void StoragePartitionImpl::InitNetworkContext() {
       context_params->file_paths->shared_dictionary_directory =
           partition_path_.Append(FILE_PATH_LITERAL("Shared Dictionary"));
     }
-    if (context_params->shared_dictionary_cache_max_size == 0u) {
+    if (!context_params->shared_dictionary_cache_max_size.has_value()) {
       CalculateAndSetSharedDictionaryCacheMaxSize(
           GetWeakPtr(), is_in_memory() ? base::FilePath() : partition_path_);
     }

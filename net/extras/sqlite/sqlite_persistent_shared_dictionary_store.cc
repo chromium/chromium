@@ -225,24 +225,24 @@ class SQLitePersistentSharedDictionaryStore::Backend
   Backend(const Backend&) = delete;
   Backend& operator=(const Backend&) = delete;
 
-#define DEFINE_CROSS_SEQUENCE_CALL_METHOD(Name)                               \
-  template <typename ResultType, typename... Args>                            \
-  void Name(base::OnceCallback<void(ResultType)> callback, Args&&... args) {  \
-    CHECK(client_task_runner()->RunsTasksInCurrentSequence());                \
-    PostBackgroundTask(                                                       \
-        FROM_HERE,                                                            \
-        base::BindOnce(                                                       \
-            [](scoped_refptr<Backend> backend,                                \
-               base::OnceCallback<void(ResultType)> callback,                 \
-               Args&&... args) {                                              \
-              auto result = backend->Name##Impl(std::forward<Args>(args)...); \
-              RecordErrorHistogram(#Name, result);                            \
-              backend->PostClientTask(                                        \
-                  FROM_HERE,                                                  \
-                  base::BindOnce(std::move(callback), std::move(result)));    \
-            },                                                                \
-            scoped_refptr<Backend>(this), std::move(callback),                \
-            std::forward<Args>(args)...));                                    \
+#define DEFINE_CROSS_SEQUENCE_CALL_METHOD(Name)                              \
+  template <typename ResultType, typename... Args>                           \
+  void Name(base::OnceCallback<void(ResultType)> callback, Args&&... args) { \
+    CHECK(client_task_runner()->RunsTasksInCurrentSequence());               \
+    PostBackgroundTask(                                                      \
+        FROM_HERE,                                                           \
+        base::BindOnce(                                                      \
+            [](scoped_refptr<Backend> backend,                               \
+               base::OnceCallback<void(ResultType)> callback,                \
+               std::decay_t<Args>... args) {                                 \
+              auto result = backend->Name##Impl(std::move(args)...);         \
+              RecordErrorHistogram(#Name, result);                           \
+              backend->PostClientTask(                                       \
+                  FROM_HERE,                                                 \
+                  base::BindOnce(std::move(callback), std::move(result)));   \
+            },                                                               \
+            scoped_refptr<Backend>(this), std::move(callback),               \
+            std::forward<Args>(args)...));                                   \
   }
 
   // The following methods call *Impl() method in the background task runner,
@@ -277,7 +277,7 @@ class SQLitePersistentSharedDictionaryStore::Backend
   RegisterDictionaryResultOrError RegisterDictionaryImpl(
       const SharedDictionaryIsolationKey& isolation_key,
       const SharedDictionaryInfo& dictionary_info,
-      uint64_t max_size_per_site,
+      std::optional<uint64_t> max_size_per_site,
       uint64_t max_count_per_site);
   DictionaryListOrError GetDictionariesImpl(
       const SharedDictionaryIsolationKey& isolation_key);
@@ -293,10 +293,11 @@ class SQLitePersistentSharedDictionaryStore::Backend
   UnguessableTokenSetOrError ClearDictionariesForIsolationKeyImpl(
       const SharedDictionaryIsolationKey& isolation_key);
   UnguessableTokenSetOrError DeleteExpiredDictionariesImpl(base::Time now);
-  UnguessableTokenSetOrError ProcessEvictionImpl(uint64_t cache_max_size,
-                                                 uint64_t size_low_watermark,
-                                                 uint64_t cache_max_count,
-                                                 uint64_t count_low_watermark);
+  UnguessableTokenSetOrError ProcessEvictionImpl(
+      std::optional<uint64_t> cache_max_size,
+      std::optional<uint64_t> size_low_watermark,
+      uint64_t cache_max_count,
+      uint64_t count_low_watermark);
   UnguessableTokenSetOrError GetAllDiskCacheKeyTokensImpl();
   Error DeleteDictionariesByDiskCacheKeyTokensImpl(
       const std::set<base::UnguessableToken>& disk_cache_key_tokens);
@@ -354,14 +355,14 @@ class SQLitePersistentSharedDictionaryStore::Backend
       std::vector<base::UnguessableToken>* tokens_out,
       int64_t* total_size_out);
   // Selects dictionaries in order of `last_used_time` if the total size of all
-  // dictionaries exceeds `cache_max_size` or the total dictionary count exceeds
-  // `cache_max_count` until the total size reaches `size_low_watermark` and the
-  // total count reaches `count_low_watermark`, and fills their primary keys and
-  // tokens and total size. If `cache_max_size` is zero, the size limitation is
-  // ignored.
+  // dictionaries exceeds `cache_max_size` (if set) or the total dictionary
+  // count exceeds `cache_max_count` until the total size reaches
+  // `size_low_watermark` (if set) and the total count reaches
+  // `count_low_watermark`, and fills their primary keys and tokens and total
+  // size.
   Error SelectEvictionCandidates(
-      uint64_t cache_max_size,
-      uint64_t size_low_watermark,
+      std::optional<uint64_t> cache_max_size,
+      std::optional<uint64_t> size_low_watermark,
       uint64_t cache_max_count,
       uint64_t count_low_watermark,
       std::vector<int64_t>* primary_keys_out,
@@ -376,7 +377,7 @@ class SQLitePersistentSharedDictionaryStore::Backend
 
   Error MaybeEvictDictionariesForPerSiteLimit(
       const SchemefulSite& top_frame_site,
-      uint64_t max_size_per_site,
+      std::optional<uint64_t> max_size_per_site,
       uint64_t max_count_per_site,
       std::vector<base::UnguessableToken>* evicted_disk_cache_key_tokens,
       uint64_t* total_dictionary_size_out);
@@ -384,7 +385,7 @@ class SQLitePersistentSharedDictionaryStore::Backend
   SizeOrError GetDictionarySizePerSite(const SchemefulSite& top_frame_site);
   Error SelectCandidatesForPerSiteEviction(
       const SchemefulSite& top_frame_site,
-      uint64_t max_size_per_site,
+      std::optional<uint64_t> max_size_per_site,
       uint64_t max_count_per_site,
       std::vector<int64_t>* primary_keys_out,
       std::vector<base::UnguessableToken>* tokens_out,
@@ -508,11 +509,12 @@ SQLitePersistentSharedDictionaryStore::RegisterDictionaryResultOrError
 SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionaryImpl(
     const SharedDictionaryIsolationKey& isolation_key,
     const SharedDictionaryInfo& dictionary_info,
-    uint64_t max_size_per_site,
+    std::optional<uint64_t> max_size_per_site,
     uint64_t max_count_per_site) {
   CHECK(background_task_runner()->RunsTasksInCurrentSequence());
   CHECK_NE(0u, max_count_per_site);
-  if (max_size_per_site != 0 && dictionary_info.size() > max_size_per_site) {
+  if (max_size_per_site.has_value() &&
+      dictionary_info.size() > *max_size_per_site) {
     return base::unexpected(Error::kTooBigDictionary);
   }
 
@@ -622,7 +624,7 @@ SQLitePersistentSharedDictionaryStore::Error
 SQLitePersistentSharedDictionaryStore::Backend::
     MaybeEvictDictionariesForPerSiteLimit(
         const SchemefulSite& top_frame_site,
-        uint64_t max_size_per_site,
+        std::optional<uint64_t> max_size_per_site,
         uint64_t max_count_per_site,
         std::vector<base::UnguessableToken>* evicted_disk_cache_key_tokens,
         uint64_t* total_dictionary_size_out) {
@@ -656,7 +658,7 @@ SQLitePersistentSharedDictionaryStore::Error
 SQLitePersistentSharedDictionaryStore::Backend::
     SelectCandidatesForPerSiteEviction(
         const SchemefulSite& top_frame_site,
-        uint64_t max_size_per_site,
+        std::optional<uint64_t> max_size_per_site,
         uint64_t max_count_per_site,
         std::vector<int64_t>* primary_keys_out,
         std::vector<base::UnguessableToken>* tokens_out,
@@ -677,7 +679,7 @@ SQLitePersistentSharedDictionaryStore::Backend::
       base::StrCat({kHistogramPrefix, "DictionaryCountPerSiteWhenAdded"}),
       count_per_site);
 
-  if ((max_size_per_site == 0 || size_per_site <= max_size_per_site) &&
+  if ((!max_size_per_site.has_value() || size_per_site <= *max_size_per_site) &&
       count_per_site <= max_count_per_site) {
     return Error::kOk;
   }
@@ -688,8 +690,8 @@ SQLitePersistentSharedDictionaryStore::Backend::
   }
 
   int64_t to_be_removed_size = 0;
-  if (max_size_per_site != 0 && size_per_site > max_size_per_site) {
-    to_be_removed_size = size_per_site - max_size_per_site;
+  if (max_size_per_site.has_value() && size_per_site > *max_size_per_site) {
+    to_be_removed_size = size_per_site - *max_size_per_site;
   }
   static constexpr char kQuery[] =
       // clang-format off
@@ -1337,8 +1339,8 @@ SQLitePersistentSharedDictionaryStore::Backend::DeleteExpiredDictionariesImpl(
 
 SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
 SQLitePersistentSharedDictionaryStore::Backend::ProcessEvictionImpl(
-    uint64_t cache_max_size,
-    uint64_t size_low_watermark,
+    std::optional<uint64_t> cache_max_size,
+    std::optional<uint64_t> size_low_watermark,
     uint64_t cache_max_count,
     uint64_t count_low_watermark) {
   if (!InitializeDatabase()) {
@@ -1383,18 +1385,20 @@ SQLitePersistentSharedDictionaryStore::Backend::ProcessEvictionImpl(
 
 SQLitePersistentSharedDictionaryStore::Error
 SQLitePersistentSharedDictionaryStore::Backend::SelectEvictionCandidates(
-    uint64_t cache_max_size,
-    uint64_t size_low_watermark,
+    std::optional<uint64_t> cache_max_size,
+    std::optional<uint64_t> size_low_watermark,
     uint64_t cache_max_count,
     uint64_t count_low_watermark,
     std::vector<int64_t>* primary_keys_out,
     std::vector<base::UnguessableToken>* tokens_out,
     int64_t* total_size_after_eviction_out) {
+  CHECK_EQ(cache_max_size.has_value(), size_low_watermark.has_value());
   ASSIGN_OR_RETURN(uint64_t total_dictionary_size,
                    GetTotalDictionarySizeImpl());
   ASSIGN_OR_RETURN(uint64_t total_dictionary_count, GetTotalDictionaryCount());
 
-  if ((cache_max_size == 0 || total_dictionary_size <= cache_max_size) &&
+  if ((!cache_max_size.has_value() ||
+       total_dictionary_size <= *cache_max_size) &&
       total_dictionary_count <= cache_max_count) {
     return Error::kOk;
   }
@@ -1445,8 +1449,8 @@ SQLitePersistentSharedDictionaryStore::Backend::SelectEvictionCandidates(
     primary_keys_out->emplace_back(primary_key_in_database);
     tokens_out->emplace_back(*disk_cache_key_token);
 
-    if ((cache_max_size == 0 ||
-         size_low_watermark >= checked_total_dictionary_size.ValueOrDie()) &&
+    if ((!size_low_watermark.has_value() ||
+         checked_total_dictionary_size.ValueOrDie() <= *size_low_watermark) &&
         tokens_out->size() >= to_be_removed_count) {
       break;
     }
@@ -1762,8 +1766,8 @@ void SQLitePersistentSharedDictionaryStore::GetTotalDictionarySize(
 void SQLitePersistentSharedDictionaryStore::RegisterDictionary(
     const SharedDictionaryIsolationKey& isolation_key,
     SharedDictionaryInfo dictionary_info,
-    const uint64_t max_size_per_site,
-    const uint64_t max_count_per_site,
+    std::optional<uint64_t> max_size_per_site,
+    uint64_t max_count_per_site,
     base::OnceCallback<void(RegisterDictionaryResultOrError)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   backend_->RegisterDictionary(
@@ -1841,10 +1845,10 @@ void SQLitePersistentSharedDictionaryStore::DeleteExpiredDictionaries(
 }
 
 void SQLitePersistentSharedDictionaryStore::ProcessEviction(
-    const uint64_t cache_max_size,
-    const uint64_t size_low_watermark,
-    const uint64_t cache_max_count,
-    const uint64_t count_low_watermark,
+    std::optional<uint64_t> cache_max_size,
+    std::optional<uint64_t> size_low_watermark,
+    uint64_t cache_max_count,
+    uint64_t count_low_watermark,
     base::OnceCallback<void(UnguessableTokenSetOrError)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   backend_->ProcessEviction(

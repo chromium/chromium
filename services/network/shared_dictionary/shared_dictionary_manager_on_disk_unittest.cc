@@ -217,7 +217,7 @@ class SharedDictionaryManagerOnDiskTest : public ::testing::Test {
   }
 
   std::unique_ptr<SharedDictionaryManager> CreateSharedDictionaryManager(
-      uint64_t cache_max_size = 0,
+      std::optional<uint64_t> cache_max_size = std::nullopt,
       uint64_t cache_max_count =
           shared_dictionary::kDictionaryMaxCountPerNetworkContext) {
     return SharedDictionaryManager::CreateOnDisk(
@@ -2025,7 +2025,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
       url::Origin::Create(GURL("https://origin2.test")), site2);
 
   std::unique_ptr<SharedDictionaryManager> manager =
-      CreateSharedDictionaryManager(/*cache_max_size=*/0,
+      CreateSharedDictionaryManager(/*cache_max_size=*/std::nullopt,
                                     /*cache_max_count=*/4);
 
   scoped_refptr<SharedDictionaryStorage> storage1 =

@@ -6,6 +6,7 @@
 #define NET_EXTRAS_SQLITE_SQLITE_PERSISTENT_SHARED_DICTIONARY_STORE_H_
 
 #include <map>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -114,8 +115,8 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
   void RegisterDictionary(
       const SharedDictionaryIsolationKey& isolation_key,
       SharedDictionaryInfo dictionary_info,
-      const uint64_t max_size_per_site,
-      const uint64_t max_count_per_site,
+      std::optional<uint64_t> max_size_per_site,
+      uint64_t max_count_per_site,
       base::OnceCallback<void(RegisterDictionaryResultOrError)> callback);
   void GetDictionaries(
       const SharedDictionaryIsolationKey& isolation_key,
@@ -140,15 +141,15 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
       const base::Time now,
       base::OnceCallback<void(UnguessableTokenSetOrError)> callback);
   // Deletes dictionaries in order of `last_used_time` if the total size of all
-  // dictionaries exceeds `cache_max_size` or the total dictionary count exceeds
-  // `cache_max_count` until the total size reaches `size_low_watermark` and the
-  // total count reaches `count_low_watermark`. If `cache_max_size` is zero, the
-  // size limitation is ignored.
+  // dictionaries exceeds `cache_max_size` (if set) or the total dictionary
+  // count exceeds `cache_max_count` until the total size reaches
+  // `size_low_watermark` (if set) and the total count reaches
+  // `count_low_watermark`.
   void ProcessEviction(
-      const uint64_t cache_max_size,
-      const uint64_t size_low_watermark,
-      const uint64_t cache_max_count,
-      const uint64_t count_low_watermark,
+      std::optional<uint64_t> cache_max_size,
+      std::optional<uint64_t> size_low_watermark,
+      uint64_t cache_max_count,
+      uint64_t count_low_watermark,
       base::OnceCallback<void(UnguessableTokenSetOrError)> callback);
   void GetAllDiskCacheKeyTokens(
       base::OnceCallback<void(UnguessableTokenSetOrError)> callback);

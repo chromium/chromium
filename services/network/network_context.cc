@@ -3636,7 +3636,8 @@ void NetworkContext::CreateTrustedUrlLoaderFactoryForNetworkService(
                          std::move(url_loader_factory_params));
 }
 
-void NetworkContext::SetSharedDictionaryCacheMaxSize(uint64_t cache_max_size) {
+void NetworkContext::SetSharedDictionaryCacheMaxSize(
+    std::optional<uint64_t> cache_max_size) {
   if (!shared_dictionary_manager_) {
     return;
   }

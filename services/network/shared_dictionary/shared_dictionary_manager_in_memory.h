@@ -5,6 +5,8 @@
 #ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_MANAGER_IN_MEMORY_H_
 #define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_MANAGER_IN_MEMORY_H_
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 
@@ -19,8 +21,9 @@ class SharedDictionaryStorage;
 // A SharedDictionaryManager which keeps all dictionary information in memory.
 class SharedDictionaryManagerInMemory : public SharedDictionaryManager {
  public:
-  explicit SharedDictionaryManagerInMemory(uint64_t cache_max_size,
-                                           uint64_t cache_max_count);
+  explicit SharedDictionaryManagerInMemory(
+      std::optional<uint64_t> cache_max_size,
+      uint64_t cache_max_count);
   ~SharedDictionaryManagerInMemory() override;
 
   SharedDictionaryManagerInMemory(const SharedDictionaryManagerInMemory&) =
@@ -32,7 +35,7 @@ class SharedDictionaryManagerInMemory : public SharedDictionaryManager {
   scoped_refptr<SharedDictionaryStorage> CreateStorage(
       const net::SharedDictionaryIsolationKey& isolation_key,
       SharedDictionaryStorageEvictionReason previous_eviction_reason) override;
-  void SetCacheMaxSize(uint64_t cache_max_size) override;
+  void SetCacheMaxSize(std::optional<uint64_t> cache_max_size) override;
   void ClearData(base::Time start_time,
                  base::Time end_time,
                  base::RepeatingCallback<bool(const GURL&)> url_matcher,
@@ -53,7 +56,6 @@ class SharedDictionaryManagerInMemory : public SharedDictionaryManager {
       base::Time end_time,
       base::OnceCallback<void(const std::vector<url::Origin>&)> callback)
       override;
-
   void MaybeRunCacheEvictionPerSite(const net::SchemefulSite& top_frame_site);
   void MaybeRunCacheEviction();
 
@@ -62,12 +64,12 @@ class SharedDictionaryManagerInMemory : public SharedDictionaryManager {
   // is nullopt, performs the cache eviction for the all storages. Otherwise,
   // performs the cache eviction for the specified `top_frame_site`'s storages.
   void RunCacheEvictionImpl(std::optional<net::SchemefulSite> top_frame_site,
-                            uint64_t max_size,
-                            uint64_t size_low_watermark,
+                            std::optional<uint64_t> max_size,
+                            std::optional<uint64_t> size_low_watermark,
                             uint64_t max_count,
                             uint64_t count_low_watermark);
 
-  uint64_t cache_max_size_;
+  std::optional<uint64_t> cache_max_size_;
   const uint64_t cache_max_count_;
   base::WeakPtrFactory<SharedDictionaryManagerInMemory> weak_factory_{this};
 };

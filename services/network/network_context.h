@@ -579,7 +579,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const std::string& realm,
       LookupProxyAuthCredentialsCallback callback) override;
 #endif
-  void SetSharedDictionaryCacheMaxSize(uint64_t cache_max_size) override;
+  void SetSharedDictionaryCacheMaxSize(
+      std::optional<uint64_t> cache_max_size) override;
   void ClearSharedDictionaryCache(
       base::Time start_time,
       base::Time end_time,

@@ -45,7 +45,7 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   SharedDictionaryManagerOnDisk(
       const base::FilePath& database_path,
       const base::FilePath& cache_directory_path,
-      uint64_t cache_max_size,
+      std::optional<uint64_t> cache_max_size,
       uint64_t cache_max_count,
 #if BUILDFLAG(IS_ANDROID)
       disk_cache::ApplicationStatusListenerGetter app_status_listener_getter,
@@ -63,7 +63,7 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   scoped_refptr<SharedDictionaryStorage> CreateStorage(
       const net::SharedDictionaryIsolationKey& isolation_key,
       SharedDictionaryStorageEvictionReason previous_eviction_reason) override;
-  void SetCacheMaxSize(uint64_t cache_max_size) override;
+  void SetCacheMaxSize(std::optional<uint64_t> cache_max_size) override;
   void ClearData(base::Time start_time,
                  base::Time end_time,
                  base::RepeatingCallback<bool(const GURL&)> url_matcher,
@@ -178,10 +178,15 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
     return writing_disk_cache_key_tokens_;
   }
 
-  uint64_t cache_max_size() const { return cache_max_size_; }
+  std::optional<uint64_t> cache_max_size() const { return cache_max_size_; }
   uint64_t cache_max_count() const { return cache_max_count_; }
 
-  uint64_t cache_max_size_;
+  std::optional<uint64_t> cache_max_size_per_site() const {
+    return cache_max_size_.transform([](uint64_t size) { return size / 2; });
+  }
+  uint64_t cache_max_count_per_site() const { return cache_max_count_ / 2; }
+
+  std::optional<uint64_t> cache_max_size_;
   const uint64_t cache_max_count_;
   SharedDictionaryDiskCache disk_cache_;
   scoped_refptr<SharedDictionaryCache> dictionary_cache_;
