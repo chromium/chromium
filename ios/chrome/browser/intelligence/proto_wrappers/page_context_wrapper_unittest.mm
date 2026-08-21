@@ -4419,6 +4419,133 @@ TEST_P(PageContextWrapperTest,
             "MY TABLE NAME");
 }
 
+// Tests that elements with CSS table display properties (display: table,
+// display: table-row, display: table-cell, display: table-header-group) are
+// extracted as TABLE, TABLE_ROW, and TABLE_CELL nodes.
+TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_CssTable) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  auto page_structure = HtmlPage(
+      "CssTable",
+      RawHtml("<div style=\"display: table;\">"
+              "  <div style=\"display: table-caption;\">CSS Table Caption</div>"
+              "  <div style=\"display: table-header-group;\">"
+              "    <div style=\"display: table-row;\">"
+              "      <div style=\"display: table-cell;\">Header Cell</div>"
+              "    </div>"
+              "  </div>"
+              "  <div style=\"display: table-row;\">"
+              "    <div style=\"display: table-cell;\">Body Cell</div>"
+              "  </div>"
+              "</div>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfigBuilder builder;
+  builder.SetUseRefactoredExtractor(IsRefactored());
+  builder.SetUseRichExtraction(true);
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), builder.Build(), ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  ASSERT_EQ(root_node.children_nodes_size(), 1);
+  const auto& table_node = root_node.children_nodes(0);
+  EXPECT_EQ(table_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE);
+  EXPECT_TRUE(table_node.content_attributes().has_table_data());
+  EXPECT_EQ(table_node.content_attributes().table_data().table_name(),
+            "CSS Table Caption");
+
+  bool found_caption_text = false;
+  bool found_header_row = false;
+  bool found_body_row = false;
+
+  for (const auto& child : table_node.children_nodes()) {
+    if (child.content_attributes().attribute_type() ==
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT &&
+        child.content_attributes().text_data().text_content() ==
+            "CSS Table Caption") {
+      found_caption_text = true;
+    } else if (child.content_attributes().attribute_type() ==
+               optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE_ROW) {
+      if (child.content_attributes().table_row_data().type() ==
+          optimization_guide::proto::TABLE_ROW_TYPE_HEADER) {
+        found_header_row = true;
+        ASSERT_GE(child.children_nodes_size(), 1);
+        EXPECT_EQ(child.children_nodes(0).content_attributes().attribute_type(),
+                  optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE_CELL);
+      } else if (child.content_attributes().table_row_data().type() ==
+                 optimization_guide::proto::TABLE_ROW_TYPE_BODY) {
+        found_body_row = true;
+        ASSERT_GE(child.children_nodes_size(), 1);
+        EXPECT_EQ(child.children_nodes(0).content_attributes().attribute_type(),
+                  optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE_CELL);
+      }
+    }
+  }
+
+  EXPECT_TRUE(found_caption_text);
+  EXPECT_TRUE(found_header_row);
+  EXPECT_TRUE(found_body_row);
+}
+
+// Tests that elements with ARIA table roles (role="table", role="row",
+// role="cell") are extracted as TABLE structures.
+TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_AriaTable) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  auto page_structure =
+      HtmlPage("AriaTable", RawHtml("<div role=\"table\">"
+                                    "  <div role=\"row\">"
+                                    "    <div role=\"cell\">Aria Cell</div>"
+                                    "  </div>"
+                                    "</div>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfigBuilder builder;
+  builder.SetUseRefactoredExtractor(IsRefactored());
+  builder.SetUseRichExtraction(true);
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), builder.Build(), ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  ASSERT_EQ(root_node.children_nodes_size(), 1);
+  const auto& table_node = root_node.children_nodes(0);
+  EXPECT_EQ(table_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE);
+
+  ASSERT_EQ(table_node.children_nodes_size(), 1);
+  const auto& row_node = table_node.children_nodes(0);
+  EXPECT_EQ(row_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE_ROW);
+
+  ASSERT_EQ(row_node.children_nodes_size(), 1);
+  const auto& cell_node = row_node.children_nodes(0);
+  EXPECT_EQ(cell_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE_CELL);
+}
+
 // Tests the extraction of form control attributes (input, textarea, select,
 // button).
 TEST_P(PageContextWrapperTest,

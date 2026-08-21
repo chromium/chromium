@@ -52,6 +52,8 @@ const tabIndexGetter =
     Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex')?.get;
 const shadowRootGetter =
     Object.getOwnPropertyDescriptor(Element.prototype, 'shadowRoot')?.get;
+const tableCaptionGetter =
+    Object.getOwnPropertyDescriptor(HTMLTableElement.prototype, 'caption')?.get;
 
 const textContentGetter =
     Object.getOwnPropertyDescriptor(Node.prototype, 'textContent')?.get;
@@ -103,6 +105,13 @@ function safeParentElement(node: Node): Element|null {
   }
   const root = getRootNodeMethod.call(node);
   return root instanceof ShadowRoot ? root.host : null;
+}
+
+// Returns the equivalent of `table.caption` but directly calls the
+// `HTMLTableElement` prototype getter to prevent clobbering.
+function safeTableCaption(table: HTMLTableElement): HTMLTableCaptionElement|
+    null {
+  return tableCaptionGetter ? tableCaptionGetter.call(table) : table.caption;
 }
 
 // Returns the equivalent of `element.tagName` but directly calls the `Element`
@@ -346,6 +355,8 @@ const TAG_IFRAME = 'IFRAME';
 const TAG_IMG = 'IMG';
 const TAG_A = 'A';
 const TAG_TABLE = 'TABLE';
+const TAG_THEAD = 'THEAD';
+const TAG_TFOOT = 'TFOOT';
 const TAG_TR = 'TR';
 const TAG_TD = 'TD';
 const TAG_TH = 'TH';
@@ -531,6 +542,14 @@ const ATTR_POSITION_STATIC = 'static';
 const ATTR_POSITION_STICKY = 'sticky';
 const ATTR_DISPLAY_NONE = 'none';
 const ATTR_DISPLAY_INLINE = 'inline';
+const ATTR_DISPLAY_TABLE = 'table';
+const ATTR_DISPLAY_INLINE_TABLE = 'inline-table';
+const ATTR_DISPLAY_TABLE_ROW = 'table-row';
+const ATTR_DISPLAY_TABLE_CELL = 'table-cell';
+const ATTR_DISPLAY_TABLE_HEADER_GROUP = 'table-header-group';
+const ATTR_DISPLAY_TABLE_FOOTER_GROUP = 'table-footer-group';
+const ATTR_DISPLAY_TABLE_ROW_GROUP = 'table-row-group';
+const ATTR_DISPLAY_TABLE_CAPTION = 'table-caption';
 const ATTR_VISIBILITY_HIDDEN = 'hidden';
 const ATTR_VISIBILITY_VISIBLE = 'visible';
 const ATTR_TRANSFORM_UPPERCASE = 'uppercase';
@@ -581,6 +600,20 @@ const ARIA_LABELLEDBY = 'aria-labelledby';
 const ARIA_LABEL = 'aria-label';
 // Regex used to split aria strings.
 const SPACE_SEPARATOR = /\s+/;
+
+// Table extraction constants.
+/**
+ * Maximum ancestor traversal depth when determining table row types to avoid
+ * unbounded loops in pathological DOM trees.
+ */
+const MAX_TABLE_ANCESTOR_LOOKUP_DEPTH = 100;
+
+/**
+ * Maximum number of direct child elements to inspect when searching for a
+ * table-caption element, preventing costly computed style loops on large
+ * tables.
+ */
+const MAX_CAPTION_CHILD_SEARCH_COUNT = 50;
 
 /**
  * Returns true if page context IPC optimization is enabled.
@@ -1388,6 +1421,10 @@ function isGenericContainer(
   }
 
   const style = getComputedStyleForElement(element, styleCache);
+  if (isTableSectionOrCaptionDisplay(style?.display)) {
+    return false;
+  }
+
   const position = style?.position;
   if (position === ATTR_POSITION_FIXED || position === ATTR_POSITION_STICKY) {
     return true;
@@ -2649,24 +2686,91 @@ function getFormControlData(
 }
 
 /**
- * Extracts table name from a given table DOM Node.
+ * Returns true if the display style corresponds to a table section or caption
+ * grouping (header-group, row-group, footer-group, or caption).
+ */
+function isTableSectionOrCaptionDisplay(display: string|undefined): boolean {
+  return display === ATTR_DISPLAY_TABLE_HEADER_GROUP ||
+      display === ATTR_DISPLAY_TABLE_ROW_GROUP ||
+      display === ATTR_DISPLAY_TABLE_FOOTER_GROUP ||
+      display === ATTR_DISPLAY_TABLE_CAPTION;
+}
+
+/**
+ * Determines the TableRowType (Header, Footer, or Body) for a table row element
+ * based on its enclosing section element or CSS display type.
+ *
+ * @param domNode The table row element.
+ * @param styleCache The style cache to use for computing styles.
+ * @return The table row type.
+ */
+function getTableRowType(
+    domNode: Element, styleCache?: StyleCache): PageContentTableRowType {
+  let curr: Element|null = safeParentElement(domNode);
+  let depth = 0;
+  while (curr && depth < MAX_TABLE_ANCESTOR_LOOKUP_DEPTH) {
+    const currTagName = getStandardTagName(curr);
+    if (currTagName === TAG_THEAD) {
+      return PageContentTableRowType.HEADER;
+    }
+    if (currTagName === TAG_TFOOT) {
+      return PageContentTableRowType.FOOTER;
+    }
+    if (currTagName === TAG_TABLE) {
+      break;
+    }
+    const currStyle = getComputedStyleForElement(curr, styleCache);
+    if (currStyle?.display === ATTR_DISPLAY_TABLE_HEADER_GROUP) {
+      return PageContentTableRowType.HEADER;
+    }
+    if (currStyle?.display === ATTR_DISPLAY_TABLE_FOOTER_GROUP) {
+      return PageContentTableRowType.FOOTER;
+    }
+    if (currStyle?.display === ATTR_DISPLAY_TABLE ||
+        currStyle?.display === ATTR_DISPLAY_INLINE_TABLE) {
+      break;
+    }
+    curr = safeParentElement(curr);
+    depth++;
+  }
+  return PageContentTableRowType.BODY;
+}
+
+/**
+ * Extracts table name (caption) for a table node.
  *
  * @param domNode The table element to process.
  * @param styleCache The style cache to use for computing styles.
  * @return The populated PageContentTableData.
  */
 function getTableNameForTableNode(
-    domNode: HTMLElement, styleCache?: StyleCache): PageContentTableData {
+    domNode: Element, styleCache?: StyleCache): PageContentTableData {
   const tableData: PageContentTableData = {};
-  const tableElement = domNode as HTMLTableElement;
-  // NOTE: Table names will appear twice in the APC tree(once as a part of a
+  // NOTE: Table names will appear twice in the APC tree (once as a part of a
   // table node and once as a part of a text node). This matches Blink's
   // behavior.
-  const caption = tableElement.caption;
-  if (caption) {
-    let tableName = caption.innerText?.trim();
+  let captionElement: HTMLElement|null = null;
+
+  if (domNode instanceof HTMLTableElement) {
+    captionElement = safeTableCaption(domNode);
+  } else if (domNode.children) {
+    const searchLimit =
+        Math.min(domNode.children.length, MAX_CAPTION_CHILD_SEARCH_COUNT);
+    for (let i = 0; i < searchLimit; i++) {
+      const child = domNode.children[i] as HTMLElement;
+      if (getStandardTagName(child) === TAG_CAPTION ||
+          getComputedStyleForElement(child, styleCache)?.display ===
+              ATTR_DISPLAY_TABLE_CAPTION) {
+        captionElement = child;
+        break;
+      }
+    }
+  }
+
+  if (captionElement) {
+    let tableName = captionElement.innerText?.trim();
     if (tableName) {
-      const style = getComputedStyleForElement(caption, styleCache);
+      const style = getComputedStyleForElement(captionElement, styleCache);
       if (style) {
         // TODO(crbug.com/513835087): Consider covering nested blocks with
         // similar text protections. Though note that this would appear to go
@@ -2790,25 +2894,13 @@ function getBasicContentForNonGenericElement(
       };
     }
     case TAG_TR: {
-      let rowType = PageContentTableRowType.BODY;
-      // Use closest to find the nearest table section or table ancestor.
-      // This handles cases where TR might be nested in a generic container
-      // within a section. We include 'table' to ensure we stop at the nearest
-      // table boundary and don't match a section from an outer table if this
-      // row is inside a nested table.
-      const section = domNode.closest('thead, tfoot, table');
-      if (section && getStandardTagName(section) === 'THEAD') {
-        rowType = PageContentTableRowType.HEADER;
-      } else if (section && getStandardTagName(section) === 'TFOOT') {
-        rowType = PageContentTableRowType.FOOTER;
-      }
       return {
         childrenNodes: [],
         contentAttributes: {
           ...BASIC_CONTENT_ATTRIBUTES,
           attributeType: PageContentAttributeType.TABLE_ROW,
           tableRowData: {
-            rowType: rowType,
+            rowType: getTableRowType(domNode, styleCache),
           },
         },
       };
@@ -2895,8 +2987,95 @@ function getBasicContentForNonGenericElement(
       };
 
     default:
-      break;
+      return null;
   }
+}
+
+/**
+ * Checks if a non-native-table element is styled or annotated as a table
+ * structure via CSS table display values or ARIA table/grid roles, and returns
+ * the corresponding PageContentNode.
+ */
+function getContentForCustomTableElement(
+    domNode: HTMLElement, styleCache?: StyleCache): PageContentNode|null {
+  // 1. ARIA Table & Grid Roles.
+  const role = safeGetAttribute(domNode, ATTR_KEY_ROLE)?.toLowerCase();
+  if (role === 'table' || role === 'grid') {
+    return {
+      childrenNodes: [],
+      contentAttributes: {
+        ...BASIC_CONTENT_ATTRIBUTES,
+        attributeType: PageContentAttributeType.TABLE,
+        tableData: getTableNameForTableNode(domNode, styleCache),
+      },
+    };
+  }
+  if (role === 'row') {
+    return {
+      childrenNodes: [],
+      contentAttributes: {
+        ...BASIC_CONTENT_ATTRIBUTES,
+        attributeType: PageContentAttributeType.TABLE_ROW,
+        tableRowData: {
+          rowType: getTableRowType(domNode, styleCache),
+        },
+      },
+    };
+  }
+  if (role === 'cell' || role === 'gridcell' || role === 'columnheader' ||
+      role === 'rowheader') {
+    return {
+      childrenNodes: [],
+      contentAttributes: {
+        ...BASIC_CONTENT_ATTRIBUTES,
+        attributeType: PageContentAttributeType.TABLE_CELL,
+      },
+    };
+  }
+
+  // 2. CSS Table Display Values.
+  const style = getComputedStyleForElement(domNode, styleCache);
+  const display = style?.display;
+
+  if (display === ATTR_DISPLAY_TABLE || display === ATTR_DISPLAY_INLINE_TABLE) {
+    return {
+      childrenNodes: [],
+      contentAttributes: {
+        ...BASIC_CONTENT_ATTRIBUTES,
+        attributeType: PageContentAttributeType.TABLE,
+        tableData: getTableNameForTableNode(domNode, styleCache),
+      },
+    };
+  }
+  if (display === ATTR_DISPLAY_TABLE_ROW) {
+    return {
+      childrenNodes: [],
+      contentAttributes: {
+        ...BASIC_CONTENT_ATTRIBUTES,
+        attributeType: PageContentAttributeType.TABLE_ROW,
+        tableRowData: {
+          rowType: getTableRowType(domNode, styleCache),
+        },
+      },
+    };
+  }
+  if (display === ATTR_DISPLAY_TABLE_CELL) {
+    return {
+      childrenNodes: [],
+      contentAttributes: {
+        ...BASIC_CONTENT_ATTRIBUTES,
+        attributeType: PageContentAttributeType.TABLE_CELL,
+      },
+    };
+  }
+
+  // If this element is a table section (table-header-group / table-row-group /
+  // table-footer-group) or caption, it is not a standalone content node; its
+  // rows participate in the enclosing table.
+  if (isTableSectionOrCaptionDisplay(display)) {
+    return null;
+  }
+
   return null;
 }
 
@@ -2989,10 +3168,16 @@ function getContentForElementNode(
       includeSensitivePaymentsForRedaction, extractAutofillOtpRedactions,
       extractPasswordScreenshotRedactions, styleCache);
 
+  // 2. Try to get content for custom table elements (CSS display or ARIA
+  // roles).
+  if (!contentNode) {
+    contentNode = getContentForCustomTableElement(domNode, styleCache);
+  }
+
   const annotatedRoles: PageContentAnnotatedRole[] = [];
   addAnnotatedRoles(domNode, annotatedRoles, paidContentContext, styleCache);
 
-  // 2. Try to get content for ARIA custom form controls.
+  // 3. Try to get content for ARIA custom form controls.
   if (!contentNode) {
     const ariaFormControlData = getAriaFormControlData(domNode);
     if (ariaFormControlData) {
@@ -3007,7 +3192,7 @@ function getContentForElementNode(
     }
   }
 
-  // 3. Fallback: Generic Container.
+  // 4. Fallback: Generic Container.
   if (!contentNode &&
       isGenericContainer(
           domNode, interactiveNodeIds, interactionInfo, annotatedRoles,

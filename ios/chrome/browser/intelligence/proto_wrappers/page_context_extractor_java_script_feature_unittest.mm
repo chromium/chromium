@@ -792,6 +792,90 @@ TEST_P(PageContextExtractorJavaScriptFeatureTest,
   EXPECT_EQ(*table_name, "MY NESTED TABLE NAME");
 }
 
+// Tests that elements styled with CSS table display types (display: table,
+// display: table-row, display: table-cell, display: table-header-group,
+// display: table-caption) are extracted as table structures at the JS layer.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtraction_CssTable) {
+  const std::string html =
+      "<html><body>"
+      "<div style=\"display: table;\">"
+      "  <div style=\"display: table-caption;\">CSS Table Caption</div>"
+      "  <div style=\"display: table-header-group;\">"
+      "    <div style=\"display: table-row;\">"
+      "      <div style=\"display: table-cell;\">Header</div>"
+      "    </div>"
+      "  </div>"
+      "  <div style=\"display: table-row;\">"
+      "    <div style=\"display: table-cell;\">Body</div>"
+      "  </div>"
+      "</div>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/false,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value);
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+  ASSERT_EQ(children->size(), 1u);
+
+  const base::DictValue& table_node = (*children)[0].GetDict();
+  std::optional<double> attribute_type =
+      table_node.FindDoubleByDottedPath("contentAttributes.attributeType");
+  ASSERT_TRUE(attribute_type.has_value());
+  EXPECT_EQ(
+      static_cast<int>(attribute_type.value()),
+      static_cast<int>(optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE));
+
+  const std::string* table_name = table_node.FindStringByDottedPath(
+      "contentAttributes.tableData.tableName");
+  ASSERT_TRUE(table_name);
+  EXPECT_EQ(*table_name, "CSS Table Caption");
+
+  const base::ListValue* rows = table_node.FindList("childrenNodes");
+  ASSERT_TRUE(rows);
+  ASSERT_EQ(rows->size(), 3u);
+
+  const base::DictValue& header_row = (*rows)[1].GetDict();
+  std::optional<double> header_row_type =
+      header_row.FindDoubleByDottedPath("contentAttributes.attributeType");
+  ASSERT_TRUE(header_row_type.has_value());
+  EXPECT_EQ(
+      static_cast<int>(header_row_type.value()),
+      static_cast<int>(optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE_ROW));
+
+  std::optional<double> header_type = header_row.FindDoubleByDottedPath(
+      "contentAttributes.tableRowData.rowType");
+  ASSERT_TRUE(header_type.has_value());
+  EXPECT_EQ(static_cast<int>(header_type.value()),
+            static_cast<int>(optimization_guide::proto::TABLE_ROW_TYPE_HEADER));
+
+  const base::DictValue& body_row = (*rows)[2].GetDict();
+  std::optional<double> body_row_type =
+      body_row.FindDoubleByDottedPath("contentAttributes.attributeType");
+  ASSERT_TRUE(body_row_type.has_value());
+  EXPECT_EQ(
+      static_cast<int>(body_row_type.value()),
+      static_cast<int>(optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE_ROW));
+
+  std::optional<double> body_type =
+      body_row.FindDoubleByDottedPath("contentAttributes.tableRowData.rowType");
+  ASSERT_TRUE(body_type.has_value());
+  EXPECT_EQ(static_cast<int>(body_type.value()),
+            static_cast<int>(optimization_guide::proto::TABLE_ROW_TYPE_BODY));
+}
+
 // Verifies that internal SVG structural and metadata elements (like <title>,
 // <defs>, and <script>) are strictly excluded from extraction to prevent
 // non-visible technical strings from polluting the output.
