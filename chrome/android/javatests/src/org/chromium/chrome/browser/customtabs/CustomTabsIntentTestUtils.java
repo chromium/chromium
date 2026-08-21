@@ -17,6 +17,7 @@ import androidx.browser.customtabs.CustomTabsSession;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.IntentHandler;
@@ -72,7 +73,8 @@ public class CustomTabsIntentTestUtils {
      * the {@link CustomTabActivity}.
      */
     public static Intent createMinimalCustomTabIntent(Context context, String url) {
-        return createCustomTabIntent(context, url, /* launchAsNewTask= */ true, builder -> {});
+        return createCustomTabIntent(
+                context, url, /* launchAsNewTask= */ true, CallbackUtils.emptyCallback());
     }
 
     /** Creates an Intent that launches a CustomTabActivity, allows some customization. */

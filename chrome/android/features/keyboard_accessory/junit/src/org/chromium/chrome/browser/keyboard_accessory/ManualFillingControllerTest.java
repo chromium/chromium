@@ -74,6 +74,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -233,7 +234,7 @@ public class ManualFillingControllerTest {
          * @param actionType The type for the provided generation action.
          */
         void provideAction(@AccessoryAction int actionType) {
-            provideActions(new Action[] {new Action(actionType, action -> {})});
+            provideActions(new Action[] {new Action(actionType, CallbackUtils.emptyCallback())});
         }
 
         /**

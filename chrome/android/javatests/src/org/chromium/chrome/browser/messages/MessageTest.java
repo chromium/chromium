@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -124,7 +125,9 @@ public class MessageTest {
                                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                                         .with(MessageBannerProperties.TITLE, "Test title")
                                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
-                                        .with(MessageBannerProperties.ON_DISMISSED, (v) -> {})
+                                        .with(
+                                                MessageBannerProperties.ON_DISMISSED,
+                                                CallbackUtils.emptyCallback())
                                         .with(
                                                 MessageBannerProperties.ON_PRIMARY_ACTION,
                                                 () -> {
@@ -200,7 +203,9 @@ public class MessageTest {
                                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                                         .with(MessageBannerProperties.TITLE, "Test title")
                                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
-                                        .with(MessageBannerProperties.ON_DISMISSED, (v) -> {})
+                                        .with(
+                                                MessageBannerProperties.ON_DISMISSED,
+                                                CallbackUtils.emptyCallback())
                                         .with(
                                                 MessageBannerProperties.ON_PRIMARY_ACTION,
                                                 () -> {

@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -156,7 +157,7 @@ public class CreditCardAccessorySheetControllerTest {
                                 .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_NAME_FULL)
                                 .setDisplayText("Todd")
                                 .setA11yDescription("Todd")
-                                .setCallback(field -> {})
+                                .setCallback(CallbackUtils.emptyCallback())
                                 .build());
         testData.getUserInfoList()
                 .get(0)
@@ -166,7 +167,7 @@ public class CreditCardAccessorySheetControllerTest {
                                 .setDisplayText("**** 9219")
                                 .setA11yDescription("**** 9219")
                                 .setIsObfuscated(true)
-                                .setCallback(field -> {})
+                                .setCallback(CallbackUtils.emptyCallback())
                                 .build());
         testData.getPromoCodeInfoList().add(new PromoCodeInfo());
         testData.getPromoCodeInfoList()
@@ -176,7 +177,7 @@ public class CreditCardAccessorySheetControllerTest {
                                 .setSuggestionType(AccessorySuggestionType.PROMO_CODE)
                                 .setDisplayText("50$OFF")
                                 .setA11yDescription("Promo Code for Todd Tester")
-                                .setCallback(field -> {})
+                                .setCallback(CallbackUtils.emptyCallback())
                                 .build(),
                         /* detailsText= */ "Get $50 off when you use this code at checkout.");
 
@@ -228,7 +229,7 @@ public class CreditCardAccessorySheetControllerTest {
                                 .setSuggestionType(AccessorySuggestionType.PROMO_CODE)
                                 .setDisplayText("50$OFF")
                                 .setA11yDescription("Promo Code for Todd Tester")
-                                .setCallback(field -> {})
+                                .setCallback(CallbackUtils.emptyCallback())
                                 .build(),
                         /* detailsText= */ "Get $50 off when you use this code at checkout.");
 

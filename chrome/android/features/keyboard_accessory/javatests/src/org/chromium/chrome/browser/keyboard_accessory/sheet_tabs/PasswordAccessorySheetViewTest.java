@@ -37,6 +37,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -284,7 +285,7 @@ public class PasswordAccessorySheetViewTest {
                         .setSuggestionType(AccessorySuggestionType.CREDENTIAL_USERNAME)
                         .setDisplayText("Unused Name")
                         .setA11yDescription("Unused Password")
-                        .setCallback(cb -> {})
+                        .setCallback(CallbackUtils.emptyCallback())
                         .build();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -320,7 +321,7 @@ public class PasswordAccessorySheetViewTest {
                         .setSuggestionType(AccessorySuggestionType.CREDENTIAL_USERNAME)
                         .setDisplayText("Unused Name")
                         .setA11yDescription("Unused Password")
-                        .setCallback(cb -> {})
+                        .setCallback(CallbackUtils.emptyCallback())
                         .build();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -366,7 +367,7 @@ public class PasswordAccessorySheetViewTest {
                                     "Save passwords for this site",
                                     false,
                                     AccessoryAction.TOGGLE_SAVE_PASSWORDS,
-                                    result -> {});
+                                    CallbackUtils.emptyCallback());
                     mModel.add(
                             new AccessorySheetDataPiece(
                                     toggle, AccessorySheetDataPiece.Type.OPTION_TOGGLE));

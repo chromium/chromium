@@ -61,6 +61,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
@@ -366,7 +367,8 @@ public class AddressEditorTest {
         mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.showEditPrompt(
-                new AutofillAddress(mActivity, sProfile, mPersonalDataManager), _ -> {});
+                new AutofillAddress(mActivity, sProfile, mPersonalDataManager),
+                CallbackUtils.emptyCallback());
 
         assertNotNull(mAddressEditor.getEditorModelForTesting());
         ListModel<EditorItem> editorFields =
@@ -440,7 +442,8 @@ public class AddressEditorTest {
         mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.showEditPrompt(
-                new AutofillAddress(mActivity, sProfile, mPersonalDataManager), _ -> {});
+                new AutofillAddress(mActivity, sProfile, mPersonalDataManager),
+                CallbackUtils.emptyCallback());
 
         assertNotNull(mAddressEditor.getEditorModelForTesting());
         ListModel<EditorItem> editorFields =
@@ -485,7 +488,7 @@ public class AddressEditorTest {
 
         mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.showEditPrompt(null, _ -> {});
+        mAddressEditor.showEditPrompt(null, CallbackUtils.emptyCallback());
 
         validateShownFields(
                 mAddressEditor.getEditorModelForTesting(), AutofillProfile.builder().build());
@@ -505,7 +508,8 @@ public class AddressEditorTest {
                 .getRegionSubKeys(anyString(), any());
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.showEditPrompt(
-                new AutofillAddress(mActivity, sProfile, mPersonalDataManager), _ -> {});
+                new AutofillAddress(mActivity, sProfile, mPersonalDataManager),
+                CallbackUtils.emptyCallback());
 
         validateShownFields(mAddressEditor.getEditorModelForTesting(), sProfile);
     }
@@ -538,7 +542,7 @@ public class AddressEditorTest {
                 .getRegionSubKeys(anyString(), any());
         mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.showEditPrompt(null, _ -> {});
+        mAddressEditor.showEditPrompt(null, CallbackUtils.emptyCallback());
 
         assertNotNull(mAddressEditor.getEditorModelForTesting());
         ListModel<EditorItem> editorFields =
@@ -724,7 +728,7 @@ public class AddressEditorTest {
 
         mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.showEditPrompt(null, _ -> {});
+        mAddressEditor.showEditPrompt(null, CallbackUtils.emptyCallback());
 
         validateErrorMessages(
                 mAddressEditor.getEditorModelForTesting(), /* errorsPresent= */ false);
@@ -744,7 +748,7 @@ public class AddressEditorTest {
 
         mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.showEditPrompt(null, _ -> {});
+        mAddressEditor.showEditPrompt(null, CallbackUtils.emptyCallback());
 
         PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         assertNotNull(editorModel);
@@ -775,7 +779,8 @@ public class AddressEditorTest {
         mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.showEditPrompt(
-                new AutofillAddress(mActivity, profile, mPersonalDataManager), _ -> {});
+                new AutofillAddress(mActivity, profile, mPersonalDataManager),
+                CallbackUtils.emptyCallback());
 
         validateErrorMessages(mAddressEditor.getEditorModelForTesting(), /* errorsPresent= */ true);
     }
@@ -802,7 +807,8 @@ public class AddressEditorTest {
         mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.showEditPrompt(
-                new AutofillAddress(mActivity, profile, mPersonalDataManager), _ -> {});
+                new AutofillAddress(mActivity, profile, mPersonalDataManager),
+                CallbackUtils.emptyCallback());
 
         PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         assertNotNull(editorModel);
@@ -827,7 +833,7 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.showEditPrompt(
                 new AutofillAddress(mActivity, new AutofillProfile(sProfile), mPersonalDataManager),
-                _ -> {});
+                CallbackUtils.emptyCallback());
 
         PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         assertNotNull(editorModel);

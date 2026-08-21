@@ -29,6 +29,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -161,7 +162,7 @@ public class AddressAccessorySheetControllerTest {
                                 .setDisplayText("Street")
                                 .setA11yDescription("Street")
                                 .setIsObfuscated(true)
-                                .setCallback(field -> {})
+                                .setCallback(CallbackUtils.emptyCallback())
                                 .build());
 
         mCoordinator.registerDataProvider(testProvider);

@@ -99,6 +99,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.IntentUtils;
@@ -951,7 +952,7 @@ public class CustomTabActivityTest {
                         ApplicationProvider.getApplicationContext(),
                         mTestPage,
                         false,
-                        builder -> {});
+                        CallbackUtils.emptyCallback());
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         connection.newSession(token);
@@ -984,7 +985,10 @@ public class CustomTabActivityTest {
 
         Intent intent =
                 CustomTabsIntentTestUtils.createCustomTabIntent(
-                                context, mTestPage, /* launchAsNewTask= */ false, builder -> {})
+                                context,
+                                mTestPage,
+                                /* launchAsNewTask= */ false,
+                                CallbackUtils.emptyCallback())
                         .putExtra(IntentHandler.EXTRA_ACTIVITY_REFERRER, context.getPackageName());
 
         CustomTabActivity cctActivity =

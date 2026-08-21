@@ -46,6 +46,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -674,7 +675,8 @@ public class ManualFillingTestHelper {
                         generationActionProvider.notifyObservers(
                                 new KeyboardAccessoryData.Action[] {
                                     new KeyboardAccessoryData.Action(
-                                            AccessoryAction.GENERATE_PASSWORD_AUTOMATIC, _ -> {})
+                                            AccessoryAction.GENERATE_PASSWORD_AUTOMATIC,
+                                            CallbackUtils.emptyCallback())
                                 }));
     }
 

@@ -74,6 +74,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -261,7 +262,9 @@ public class KeyboardAccessoryViewTest {
                                                         public void onViewUnbound(View buttons) {}
                                                     }))
                                     .with(DISABLE_ANIMATIONS_FOR_TESTING, true)
-                                    .with(OBFUSCATED_CHILD_AT_CALLBACK, _ -> {})
+                                    .with(
+                                            OBFUSCATED_CHILD_AT_CALLBACK,
+                                            CallbackUtils.emptyCallback())
                                     .with(SHOW_SWIPING_IPH, false)
                                     .with(HAS_STICKY_LAST_ITEM, true)
                                     .build();
@@ -400,7 +403,7 @@ public class KeyboardAccessoryViewTest {
                                                         .build(),
                                                 new Action(
                                                         AUTOFILL_SUGGESTION,
-                                                        result -> {},
+                                                        CallbackUtils.emptyCallback(),
                                                         result -> clickRecorded.set(true)),
                                                 mMockProfile),
                                         createSheetOpener(/* atMemoryEnabled= */ true)
@@ -418,12 +421,12 @@ public class KeyboardAccessoryViewTest {
         BarItem generatePasswordItem =
                 new ActionBarItem(
                         BarItem.Type.ACTION_BUTTON,
-                        new Action(GENERATE_PASSWORD_AUTOMATIC, _ -> {}),
+                        new Action(GENERATE_PASSWORD_AUTOMATIC, CallbackUtils.emptyCallback()),
                         R.string.password_generation_accessory_button);
         BarItem credmanItem =
                 new ActionBarItem(
                         BarItem.Type.ACTION_CHIP,
-                        new Action(CREDMAN_CONDITIONAL_UI_REENTRY, _ -> {}),
+                        new Action(CREDMAN_CONDITIONAL_UI_REENTRY, CallbackUtils.emptyCallback()),
                         R.string.more_passkeys);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -450,12 +453,12 @@ public class KeyboardAccessoryViewTest {
         BarItem generatePasswordsItem =
                 new ActionBarItem(
                         BarItem.Type.ACTION_BUTTON,
-                        new Action(GENERATE_PASSWORD_AUTOMATIC, _ -> {}),
+                        new Action(GENERATE_PASSWORD_AUTOMATIC, CallbackUtils.emptyCallback()),
                         R.string.password_generation_accessory_button);
         BarItem credmanItem =
                 new ActionBarItem(
                         BarItem.Type.ACTION_CHIP,
-                        new Action(CREDMAN_CONDITIONAL_UI_REENTRY, _ -> {}),
+                        new Action(CREDMAN_CONDITIONAL_UI_REENTRY, CallbackUtils.emptyCallback()),
                         R.string.more_passkeys);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -522,7 +525,7 @@ public class KeyboardAccessoryViewTest {
                                 .setIphDescriptionText(descriptionText)
                                 .setApplyDeactivatedStyle(false)
                                 .build(),
-                        new Action(AUTOFILL_SUGGESTION, _ -> {}),
+                        new Action(AUTOFILL_SUGGESTION, CallbackUtils.emptyCallback()),
                         mMockProfile);
         itemWithIph.setFeatureForIph(
                 FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_FEATURE);
@@ -568,7 +571,7 @@ public class KeyboardAccessoryViewTest {
                                 .setFeatureForIph("")
                                 .setApplyDeactivatedStyle(false)
                                 .build(),
-                        new Action(AUTOFILL_SUGGESTION, _ -> {}),
+                        new Action(AUTOFILL_SUGGESTION, CallbackUtils.emptyCallback()),
                         mMockProfile);
         itemWithIph.setFeatureForIph(
                 FeatureConstants.KEYBOARD_ACCESSORY_HOME_WORK_PROFILE_SUGGESTION_FEATURE);
@@ -612,7 +615,7 @@ public class KeyboardAccessoryViewTest {
                                 .setFeatureForIph("")
                                 .setApplyDeactivatedStyle(false)
                                 .build(),
-                        new Action(AUTOFILL_SUGGESTION, _ -> {}),
+                        new Action(AUTOFILL_SUGGESTION, CallbackUtils.emptyCallback()),
                         mMockProfile);
         itemWithIph.setFeatureForIph(FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE);
 
@@ -656,7 +659,7 @@ public class KeyboardAccessoryViewTest {
                                 .setFeatureForIph("")
                                 .setApplyDeactivatedStyle(false)
                                 .build(),
-                        new Action(AUTOFILL_SUGGESTION, _ -> {}),
+                        new Action(AUTOFILL_SUGGESTION, CallbackUtils.emptyCallback()),
                         mMockProfile);
         itemWithIph.setFeatureForIph(FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE);
 
@@ -698,7 +701,7 @@ public class KeyboardAccessoryViewTest {
                                 .setFeatureForIph("")
                                 .setApplyDeactivatedStyle(false)
                                 .build(),
-                        new Action(AUTOFILL_SUGGESTION, _ -> {}),
+                        new Action(AUTOFILL_SUGGESTION, CallbackUtils.emptyCallback()),
                         mMockProfile);
         itemWithIph.setFeatureForIph(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE);
 
@@ -777,7 +780,7 @@ public class KeyboardAccessoryViewTest {
                                 .setFeatureForIph("")
                                 .setApplyDeactivatedStyle(false)
                                 .build(),
-                        new Action(AUTOFILL_SUGGESTION, _ -> {}),
+                        new Action(AUTOFILL_SUGGESTION, CallbackUtils.emptyCallback()),
                         mMockProfile);
         itemWithIph.setFeatureForIph(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE);
 
@@ -916,7 +919,7 @@ public class KeyboardAccessoryViewTest {
                         getDefaultAutofillSuggestionBuilder()
                                 .setCustomIconUrl(customIconUrl)
                                 .build(),
-                        new Action(AUTOFILL_SUGGESTION, _ -> {}),
+                        new Action(AUTOFILL_SUGGESTION, CallbackUtils.emptyCallback()),
                         mMockProfile);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -957,7 +960,7 @@ public class KeyboardAccessoryViewTest {
                         getDefaultAutofillSuggestionBuilder()
                                 .setCustomIconUrl(customIconUrl)
                                 .build(),
-                        new Action(AUTOFILL_SUGGESTION, _ -> {}),
+                        new Action(AUTOFILL_SUGGESTION, CallbackUtils.emptyCallback()),
                         mMockProfile);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -990,7 +993,7 @@ public class KeyboardAccessoryViewTest {
         AutofillBarItem itemWithoutCustomIconUrl =
                 new AutofillBarItem(
                         getDefaultAutofillSuggestionBuilder().build(),
-                        new Action(AUTOFILL_SUGGESTION, _ -> {}),
+                        new Action(AUTOFILL_SUGGESTION, CallbackUtils.emptyCallback()),
                         mMockProfile);
 
         ThreadUtils.runOnUiThreadBlocking(
