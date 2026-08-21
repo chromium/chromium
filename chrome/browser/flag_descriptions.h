@@ -6015,6 +6015,12 @@ inline constexpr char kContextualSearchSuppressShortViewName[] =
 inline constexpr char kContextualSearchSuppressShortViewDescription[] =
     "Contextual Search suppress when the base page view is too short";
 
+inline constexpr char kControlsInBrowserToolbarSwipeMockName[] =
+    "Controls in Browser Toolbar Swipe Mock";
+inline constexpr char kControlsInBrowserToolbarSwipeMockDescription[] =
+    "Mock implementation of moving the android toolbar along with the page "
+    " for the toolbar swipe feature.";
+
 inline constexpr char
     kCredentialManagementThirdPartyWebApiRequestForwardingName[] =
         "Credential Management Third Party Web API Request Forwarding";

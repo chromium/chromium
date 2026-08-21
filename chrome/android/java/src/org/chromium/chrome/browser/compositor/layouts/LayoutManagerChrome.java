@@ -202,6 +202,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
                         toolbarThemeColorProvider,
                         bottomControlsOffsetSupplier,
                         getContentContainer(),
+                        controlContainer,
                         () -> {
                             if (controlContainer != null) {
                                 controlContainer.doSynchronousLayout(

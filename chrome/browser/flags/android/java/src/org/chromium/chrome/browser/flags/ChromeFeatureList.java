@@ -487,6 +487,8 @@ public abstract class ChromeFeatureList {
             "ContextMenuSaveVideoFrameAs";
     public static final String CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID =
             "ContextMenuPictureInPictureAndroid";
+    public static final String CONTROLS_IN_BROWSER_TOOLBAR_SWIPE_MOCK =
+            "ControlsInBrowserToolbarSwipeMock";
     public static final String CONTROLS_VISIBILITY_FROM_NAVIGATIONS =
             "ControlsVisibilityFromNavigations";
     public static final String COPY_LINK_TO_HIGHLIGHT = "CopyLinkToHighlight";
@@ -1081,6 +1083,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sContextualTasks = newCachedFlag(CONTEXTUAL_TASKS, false);
     public static final CachedFlag sContextualTasksSidePanel =
             newCachedFlag(CONTEXTUAL_TASKS_SIDE_PANEL, false);
+    public static final CachedFlag sControlsInBrowserToolbarSwipeMock =
+            newCachedFlag(CONTROLS_IN_BROWSER_TOOLBAR_SWIPE_MOCK, false);
     public static final CachedFlag sCpaTabGroupingButton =
             newCachedFlag(
                     CONTEXTUAL_PAGE_ACTION_TAB_GROUPING,
@@ -1530,6 +1534,7 @@ public abstract class ChromeFeatureList {
                     sContextualPanelCloseButton,
                     sContextualTasks,
                     sContextualTasksSidePanel,
+                    sControlsInBrowserToolbarSwipeMock,
                     sCpaTabGroupingButton,
                     sCrossDeviceTabPaneAndroid,
                     sDefaultBrowserPromoEntryPoint,

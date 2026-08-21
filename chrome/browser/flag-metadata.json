@@ -2253,6 +2253,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "controls-in-browser-toolbar-swipe-mock",
+    "owners": [ "peilinwang@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "cpe-passkey-largeblob-support",
     "owners": ["rgod@google.com", "bling-transactions-eng@google.com"],
     "expiry_milestone": 160

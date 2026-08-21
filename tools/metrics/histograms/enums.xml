@@ -13164,6 +13164,7 @@ from previous Chrome versions.
   <int value="-472783446"
       label="BoundaryEventDispatchTracksNodeRemoval:disabled"/>
   <int value="-472477695" label="AutofillSaveCardImprovedUserConsent:enabled"/>
+  <int value="-472426152" label="ControlsInBrowserToolbarSwipeMock:disabled"/>
   <int value="-472409457" label="ChromeFindsInternals:disabled"/>
   <int value="-472014137" label="HomepageTile:disabled"/>
   <int value="-472013317" label="WebRTC-H264WithOpenH264FFmpeg:disabled"/>
@@ -15131,6 +15132,7 @@ from previous Chrome versions.
   <int value="140852413"
       label="ContextualTasksEnableSpatialModelToolbarLayout:enabled"/>
   <int value="141482401" label="ConsumerAutoUpdateToggleAllowed:disabled"/>
+  <int value="141657574" label="ControlsInBrowserToolbarSwipeMock:enabled"/>
   <int value="141830539" label="MediaAppPdfSignature:enabled"/>
   <int value="143662169" label="AndroidAppRatingPrompt:disabled"/>
   <int value="143725809" label="DownloadProgressInfoBar:enabled"/>
