@@ -12,7 +12,7 @@ import androidx.preference.Preference;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableLongPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -22,10 +22,12 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 class SafetyCheckProperties {
     /** State of the Safe Browsing check, one of the {@link SafeBrowsingState} values. */
-    static final WritableIntPropertyKey SAFE_BROWSING_STATE = new WritableIntPropertyKey();
+    static final WritableIntDefPropertyKey<SafeBrowsingState> SAFE_BROWSING_STATE =
+            new WritableIntDefPropertyKey<>(SafeBrowsingState.UNCHECKED);
 
     /** State of the updates check, one of the {@link UpdatesState} values. */
-    static final WritableIntPropertyKey UPDATES_STATE = new WritableIntPropertyKey();
+    static final WritableIntDefPropertyKey<UpdatesState> UPDATES_STATE =
+            new WritableIntDefPropertyKey<>(UpdatesState.UNCHECKED);
 
     /** Listener for the Safe Browsing element click events. */
     static final WritableObjectPropertyKey<Preference.OnPreferenceClickListener>
