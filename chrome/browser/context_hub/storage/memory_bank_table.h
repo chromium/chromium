@@ -39,6 +39,9 @@ namespace context_hub {
 //                                      associated with the memory bank entry.
 //   selected_text                      TEXT The selected text from the page.
 //   tags                               TEXT (JSON-serialized string of tags)
+//   note                               TEXT User-provided notes for the entry.
+//   collection                         TEXT The collection name the entry
+//                                      belongs to.
 // -----------------------------------------------------------------------------
 class MemoryBankTable {
  public:
@@ -55,6 +58,10 @@ class MemoryBankTable {
   // version 1. Should only be called when initializing or migrating a database
   // from a clean state.
   bool MigrateFromCleanStateToVersion1();
+
+  // Migrates the memory_bank_entries table from version 1 to version 2 by
+  // adding the note and collection columns. Returns true on success.
+  bool MigrateToVersion2AddNoteAndCollectionColumns();
 
   // Inserts or replaces a record in memory_bank_entries. Returns true on
   // success.

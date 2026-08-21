@@ -237,6 +237,8 @@ void ContextHubPageHandler::GetAllMemoryBankEntries(
           mojo_entry->tab_title = entry.tab_title;
           mojo_entry->selected_text = entry.selected_text;
           mojo_entry->tags = entry.tags;
+          mojo_entry->note = entry.note;
+          mojo_entry->collection = entry.collection;
           mojo_entries.push_back(std::move(mojo_entry));
         }
         std::move(callback).Run(std::move(mojo_entries));

@@ -26,7 +26,7 @@ namespace context_hub {
 class ContextHubDatabase {
  public:
   // Current database schema version.
-  static constexpr int kCurrentVersionNumber = 1;
+  static constexpr int kCurrentVersionNumber = 2;
 
   ContextHubDatabase();
   ContextHubDatabase(const ContextHubDatabase&) = delete;
@@ -51,6 +51,9 @@ class ContextHubDatabase {
   // Migrates the database schema from `detected_user_version` to
   // `kCurrentVersionNumber`.
   bool MigrateOldVersionsAsNeeded(int detected_user_version);
+
+  // Migrates the database schema to `version`.
+  bool MigrateToVersion(int version);
 
   std::unique_ptr<sql::Database> db_;
 

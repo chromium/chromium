@@ -25,11 +25,70 @@ class MemoryBankTableTest : public testing::Test {
     ASSERT_TRUE(db_.OpenInMemory());
     ASSERT_TRUE(table_.Init(&db_));
     ASSERT_TRUE(table_.MigrateFromCleanStateToVersion1());
+    ASSERT_TRUE(table_.MigrateToVersion2AddNoteAndCollectionColumns());
   }
 
   sql::Database db_{sql::DatabaseOptions{}, sql::test::kTestTag};
   MemoryBankTable table_;
 };
+
+TEST_F(MemoryBankTableTest, MigrateFromCleanStateToVersion1) {
+  sql::Database db(sql::DatabaseOptions{}, sql::test::kTestTag);
+  ASSERT_TRUE(db.OpenInMemory());
+  MemoryBankTable table;
+  ASSERT_TRUE(table.Init(&db));
+  EXPECT_TRUE(table.MigrateFromCleanStateToVersion1());
+  EXPECT_TRUE(db.DoesTableExist("memory_bank_entries"));
+  EXPECT_TRUE(db.DoesColumnExist("memory_bank_entries", "id"));
+  EXPECT_TRUE(db.DoesColumnExist("memory_bank_entries", "type"));
+  EXPECT_TRUE(db.DoesColumnExist("memory_bank_entries", "timestamp"));
+  EXPECT_TRUE(db.DoesColumnExist("memory_bank_entries", "url"));
+  EXPECT_TRUE(db.DoesColumnExist("memory_bank_entries", "tab_title"));
+  EXPECT_TRUE(db.DoesColumnExist("memory_bank_entries", "selected_text"));
+  EXPECT_TRUE(db.DoesColumnExist("memory_bank_entries", "tags"));
+  EXPECT_FALSE(db.DoesColumnExist("memory_bank_entries", "note"));
+  EXPECT_FALSE(db.DoesColumnExist("memory_bank_entries", "collection"));
+}
+
+TEST_F(MemoryBankTableTest, MigrateToVersion2AddNoteAndCollectionColumns) {
+  sql::Database db(sql::DatabaseOptions{}, sql::test::kTestTag);
+  ASSERT_TRUE(db.OpenInMemory());
+  MemoryBankTable table;
+  ASSERT_TRUE(table.Init(&db));
+  ASSERT_TRUE(table.MigrateFromCleanStateToVersion1());
+
+  // Insert a row in version 1 schema.
+  ASSERT_TRUE(
+      db.Execute("INSERT INTO memory_bank_entries (id, type, timestamp, url, "
+                 "tab_title, selected_text, tags) VALUES (1, 0, 1000, "
+                 "'https://example.com', 'Title', 'Text', '[\"tag1\"]')"));
+
+  // Run migration to version 2.
+  EXPECT_TRUE(table.MigrateToVersion2AddNoteAndCollectionColumns());
+
+  EXPECT_TRUE(db.DoesColumnExist("memory_bank_entries", "note"));
+  EXPECT_TRUE(db.DoesColumnExist("memory_bank_entries", "collection"));
+
+  // Verify the existing row can be fetched and note/collection are nullopt.
+  auto entry = table.GetEntry(1);
+  ASSERT_TRUE(entry.has_value());
+  EXPECT_EQ("Title", entry->tab_title);
+  EXPECT_FALSE(entry->note.has_value());
+  EXPECT_FALSE(entry->collection.has_value());
+
+  // Verify new row with note and collection can be added and fetched.
+  MemoryBankEntry new_entry;
+  new_entry.type = MemoryBankType::kTab;
+  new_entry.timestamp = base::Time::FromSecondsSinceUnixEpoch(2000);
+  new_entry.url = GURL("https://example2.com");
+  new_entry.tab_title = "Title 2";
+  new_entry.note = "Note 2";
+  new_entry.collection = "Collection 2";
+  EXPECT_TRUE(table.AddOrUpdateEntry(new_entry));
+
+  std::vector<MemoryBankEntry> all = table.GetAllEntries();
+  EXPECT_EQ(2u, all.size());
+}
 
 TEST_F(MemoryBankTableTest, AddAndGetEntry) {
   EXPECT_EQ(0u, table_.GetEntryCount());
@@ -41,6 +100,8 @@ TEST_F(MemoryBankTableTest, AddAndGetEntry) {
   entry.tab_title = "Example Title";
   entry.selected_text = "Page content";
   entry.tags = {"tag1", "tag2"};
+  entry.note = "Test Note";
+  entry.collection = "Research";
 
   EXPECT_TRUE(table_.AddOrUpdateEntry(entry));
   EXPECT_EQ(1u, table_.GetEntryCount());
@@ -57,11 +118,17 @@ TEST_F(MemoryBankTableTest, AddAndGetEntry) {
   ASSERT_TRUE(entries[0].selected_text.has_value());
   EXPECT_EQ("Page content", entries[0].selected_text.value());
   EXPECT_EQ((std::vector<std::string>{"tag1", "tag2"}), entries[0].tags);
+  ASSERT_TRUE(entries[0].note.has_value());
+  EXPECT_EQ("Test Note", entries[0].note.value());
+  ASSERT_TRUE(entries[0].collection.has_value());
+  EXPECT_EQ("Research", entries[0].collection.value());
 
   auto fetched_entry = table_.GetEntry(generated_id);
   ASSERT_TRUE(fetched_entry.has_value());
   EXPECT_EQ(generated_id, fetched_entry->id);
   EXPECT_EQ(entry.url, fetched_entry->url);
+  EXPECT_EQ("Test Note", fetched_entry->note.value());
+  EXPECT_EQ("Research", fetched_entry->collection.value());
 }
 
 TEST_F(MemoryBankTableTest, UpdateExistingEntry) {
@@ -81,6 +148,8 @@ TEST_F(MemoryBankTableTest, UpdateExistingEntry) {
   updated_entry.tab_title = "Updated Title";
   updated_entry.selected_text = "New Selection";
   updated_entry.tags = {"updated"};
+  updated_entry.note = "Updated Note";
+  updated_entry.collection = "Updated Collection";
 
   EXPECT_TRUE(table_.AddOrUpdateEntry(updated_entry));
   EXPECT_EQ(1u, table_.GetEntryCount());
@@ -90,6 +159,10 @@ TEST_F(MemoryBankTableTest, UpdateExistingEntry) {
   EXPECT_EQ("Updated Title", fetched_entry->tab_title);
   EXPECT_EQ("New Selection", fetched_entry->selected_text.value());
   EXPECT_EQ((std::vector<std::string>{"updated"}), fetched_entry->tags);
+  ASSERT_TRUE(fetched_entry->note.has_value());
+  EXPECT_EQ("Updated Note", fetched_entry->note.value());
+  ASSERT_TRUE(fetched_entry->collection.has_value());
+  EXPECT_EQ("Updated Collection", fetched_entry->collection.value());
 }
 
 TEST_F(MemoryBankTableTest, GetAllEntriesOrdering) {
@@ -195,21 +268,28 @@ TEST_F(MemoryBankTableTest, NullOptionalFieldsStoredAsSqlNull) {
   entry.tab_title = "Title";
   entry.selected_text = std::nullopt;
   entry.tags = {};
+  entry.note = std::nullopt;
+  entry.collection = std::nullopt;
 
   EXPECT_TRUE(table_.AddOrUpdateEntry(entry));
 
   sql::Statement statement(db_.GetUniqueStatement(
-      "SELECT selected_text, tags FROM memory_bank_entries WHERE id = ?"));
+      "SELECT selected_text, tags, note, collection FROM memory_bank_entries "
+      "WHERE id = ?"));
   statement.BindInt64(0, 12345);
   ASSERT_TRUE(statement.Step());
 
   EXPECT_EQ(sql::ColumnType::kNull, statement.GetColumnType(0));
   EXPECT_EQ(sql::ColumnType::kNull, statement.GetColumnType(1));
+  EXPECT_EQ(sql::ColumnType::kNull, statement.GetColumnType(2));
+  EXPECT_EQ(sql::ColumnType::kNull, statement.GetColumnType(3));
 
   auto fetched = table_.GetEntry(12345);
   ASSERT_TRUE(fetched.has_value());
   EXPECT_FALSE(fetched->selected_text.has_value());
   EXPECT_TRUE(fetched->tags.empty());
+  EXPECT_FALSE(fetched->note.has_value());
+  EXPECT_FALSE(fetched->collection.has_value());
 }
 
 TEST_F(MemoryBankTableTest, GetEntriesByIds) {

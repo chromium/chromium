@@ -45,6 +45,10 @@ struct MemoryBankEntry {
   std::optional<std::string> selected_text;
   // Tags associated with the entry for grouping.
   std::vector<std::string> tags;
+  // User-provided notes for the entry.
+  std::optional<std::string> note;
+  // The collection name the entry belongs to.
+  std::optional<std::string> collection;
 };
 
 }  // namespace context_hub

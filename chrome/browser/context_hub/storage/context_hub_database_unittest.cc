@@ -36,6 +36,8 @@ class ContextHubDatabaseTest : public testing::Test {
     data.tab_title = "Example Title";
     data.selected_text = "Page content";
     data.tags = {"tag1", "tag2"};
+    data.note = "Test Note";
+    data.collection = "Research";
     return data;
   }
 
@@ -67,8 +69,11 @@ TEST_F(ContextHubDatabaseTest, InitializeEmptyToCurrent) {
     int detected_user_version = get_user_version_stm.ColumnInt(0);
     EXPECT_EQ(ContextHubDatabase::kCurrentVersionNumber, detected_user_version);
 
-    // Check that expected tables are present.
+    // Check that expected tables and columns are present.
     EXPECT_TRUE(connection.DoesTableExist("memory_bank_entries"));
+    EXPECT_TRUE(connection.DoesColumnExist("memory_bank_entries", "note"));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("memory_bank_entries", "collection"));
   }
 }
 
@@ -81,6 +86,76 @@ TEST_F(ContextHubDatabaseTest, InitializeWithExistingDatabase) {
   // Re-initialize the database.
   ContextHubDatabase db;
   EXPECT_TRUE(db.Init(GetDbPath()));
+}
+
+// Tests that an older database at version 1 (without note/collection) is
+// cleanly migrated to version 2, preserving existing data and adding the new
+// columns.
+TEST_F(ContextHubDatabaseTest, MigrateVersion1ToVersion2PreservesData) {
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDbPath()));
+
+    ASSERT_TRUE(
+        connection.Execute("CREATE TABLE memory_bank_entries ("
+                           "id INTEGER PRIMARY KEY,"
+                           "type INTEGER NOT NULL,"
+                           "timestamp INTEGER NOT NULL,"
+                           "url TEXT NOT NULL,"
+                           "tab_title TEXT NOT NULL,"
+                           "selected_text TEXT,"
+                           "tags TEXT)"));
+    ASSERT_TRUE(
+        connection.Execute("CREATE INDEX memory_bank_entries_timestamp ON "
+                           "memory_bank_entries(timestamp)"));
+    ASSERT_TRUE(connection.Execute(
+        "CREATE INDEX memory_bank_entries_url ON memory_bank_entries(url)"));
+    ASSERT_TRUE(connection.Execute("PRAGMA user_version=1"));
+
+    // Insert an old version 1 row.
+    sql::Statement statement(connection.GetUniqueStatement(
+        "INSERT INTO memory_bank_entries (id, type, timestamp, url, "
+        "tab_title, selected_text, tags) VALUES (1, 0, 1000, "
+        "'https://example.com', 'Title', 'Text', '[\"tag1\"]')"));
+    ASSERT_TRUE(statement.Run());
+  }
+
+  // Initialize with ContextHubDatabase which detects user_version 1 and
+  // migrates to version 2.
+  ASSERT_TRUE(db_->Init(GetDbPath()));
+
+  // Verify that the pre-existing row survived the migration intact.
+  std::optional<MemoryBankEntry> entry = db_->GetMemoryBankEntry(1);
+  ASSERT_TRUE(entry.has_value());
+  EXPECT_EQ("Title", entry->tab_title);
+  EXPECT_EQ(GURL("https://example.com"), entry->url);
+  EXPECT_FALSE(entry->note.has_value());
+  EXPECT_FALSE(entry->collection.has_value());
+
+  // Verify adding and reading a new entry with the new fields works.
+  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(CreateTestData()));
+  EXPECT_EQ(2u, db_->GetAllMemoryBankEntries().size());
+
+  // Close ContextHubDatabase before opening a direct sql::Database connection
+  // to release the exclusive file lock.
+  db_.reset();
+
+  // Verify the migrated table has the note and collection columns and is at
+  // version 2.
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDbPath()));
+
+    sql::Statement get_user_version_stm(
+        connection.GetUniqueStatement("PRAGMA user_version"));
+    ASSERT_TRUE(get_user_version_stm.is_valid());
+    ASSERT_TRUE(get_user_version_stm.Step());
+    EXPECT_EQ(ContextHubDatabase::kCurrentVersionNumber,
+              get_user_version_stm.ColumnInt(0));
+    EXPECT_TRUE(connection.DoesColumnExist("memory_bank_entries", "note"));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("memory_bank_entries", "collection"));
+  }
 }
 
 // Tests that not a SQLite file is handled by deleting and recreating the
@@ -166,6 +241,8 @@ TEST_F(ContextHubDatabaseTest, AddAndGetMemoryBankEntry) {
   EXPECT_EQ(retrieved->tab_title, data.tab_title);
   EXPECT_EQ(retrieved->selected_text, data.selected_text);
   EXPECT_EQ(retrieved->tags, data.tags);
+  EXPECT_EQ(retrieved->note, data.note);
+  EXPECT_EQ(retrieved->collection, data.collection);
 }
 
 // Tests retrieving a non-existent memory bank entry.

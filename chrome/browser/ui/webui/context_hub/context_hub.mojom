@@ -88,6 +88,9 @@ enum EntryType {
   kTextSelection,
 };
 
+// Represents an entry stored in the memory bank.
+// See chrome/browser/context_hub/memory_bank/memory_bank_entry.h for field
+// descriptions.
 struct MemoryBankEntry {
   int64 id;
   EntryType type;
@@ -96,6 +99,8 @@ struct MemoryBankEntry {
   string tab_title;
   string? selected_text;
   array<string> tags;
+  string? note;
+  string? collection;
 };
 
 struct TabInfo {
@@ -124,16 +129,25 @@ struct ChatMessage {
 
 // Context provided to the WebUI dialog for previewing the item to be saved.
 struct SaveToMemoryBankContext {
+  // The URL of the page where the context originated.
   url.mojom.Url url;
+  // The title of the tab where the context originated.
   string tab_title;
+  // The text selected from the page by the user.
   string? selected_text;
+  // Whether the item being saved is a text selection rather than a tab.
   bool is_text_selection;
 };
 
 // User-specified annotations when saving a context item to the memory bank.
 struct MemoryBankEntryAnnotations {
+  // The collection name the entry should belong to. Null if not assigned to
+  // no collection.
   string? collection;
+  // User-provided note for the entry. Null if no note is provided.
   string? note;
+  // Tags associated with the entry for grouping. Null or empty if no tags
+  // are assigned.
   array<string>? tags;
 };
 

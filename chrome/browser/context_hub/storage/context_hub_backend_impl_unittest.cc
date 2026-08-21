@@ -42,6 +42,8 @@ TEST_F(ContextHubBackendImplTest, SaveTabAndRetrieve) {
   entry.url = GURL("https://example.com");
   entry.tab_title = "Example";
   entry.selected_text = "Page content";
+  entry.note = "Test Note";
+  entry.collection = "Research";
 
   base::test::TestFuture<bool> save_future;
   backend_->AddOrUpdateMemoryBankEntry(entry, save_future.GetCallback());
@@ -56,6 +58,10 @@ TEST_F(ContextHubBackendImplTest, SaveTabAndRetrieve) {
   EXPECT_EQ("Example", entries[0].tab_title);
   ASSERT_TRUE(entries[0].selected_text.has_value());
   EXPECT_EQ("Page content", entries[0].selected_text.value());
+  ASSERT_TRUE(entries[0].note.has_value());
+  EXPECT_EQ("Test Note", entries[0].note.value());
+  ASSERT_TRUE(entries[0].collection.has_value());
+  EXPECT_EQ("Research", entries[0].collection.value());
 }
 
 TEST_F(ContextHubBackendImplTest, SaveTextSelectionAndDelete) {

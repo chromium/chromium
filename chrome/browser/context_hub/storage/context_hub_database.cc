@@ -147,22 +147,37 @@ bool ContextHubDatabase::DeleteMemoryBankEntries(
   return memory_bank_table_.DeleteEntries(ids);
 }
 
-bool ContextHubDatabase::MigrateOldVersionsAsNeeded(int detected_user_version) {
+bool ContextHubDatabase::MigrateOldVersionsAsNeeded(
+    int detected_user_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!db_ || !db_->is_open()) {
     return false;
   }
 
-  if (detected_user_version == 0) {
-    if (!memory_bank_table_.MigrateFromCleanStateToVersion1()) {
+  for (int next_version = detected_user_version + 1;
+       next_version <= kCurrentVersionNumber; ++next_version) {
+    if (!MigrateToVersion(next_version)) {
       return false;
     }
-    detected_user_version++;
   }
 
   return db_->Execute(base::StrCat(
       {"PRAGMA user_version=", base::NumberToString(kCurrentVersionNumber)}));
+}
+
+bool ContextHubDatabase::MigrateToVersion(int version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  switch (version) {
+    case 1:
+      return memory_bank_table_.MigrateFromCleanStateToVersion1();
+    case 2:
+      return memory_bank_table_
+          .MigrateToVersion2AddNoteAndCollectionColumns();
+    default:
+      return false;
+  }
 }
 
 }  // namespace context_hub
