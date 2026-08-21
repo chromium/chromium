@@ -36,6 +36,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -72,7 +73,6 @@ import java.util.Set;
 /** Tests for {@link AppearanceSettingsFragment}. */
 @Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
 public class AppearanceSettingsFragmentTest {
 
     @Rule
@@ -300,7 +300,7 @@ public class AppearanceSettingsFragmentTest {
     public void testSearchIndex_BookmarkBarNotCompatible() {
         BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(false);
         SettingsIndexData indexData = mock(SettingsIndexData.class);
-        var context = mSettingsTestRule.getActivity();
+        var context = ContextUtils.getApplicationContext();
         String prefFragment = AppearanceSettingsFragment.class.getName();
 
         AppearanceSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
@@ -316,7 +316,7 @@ public class AppearanceSettingsFragmentTest {
     public void testSearchIndex_BookmarkBarCompatible_SubpageEnabled() {
         BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
         SettingsIndexData indexData = mock(SettingsIndexData.class);
-        var context = mSettingsTestRule.getActivity();
+        var context = ContextUtils.getApplicationContext();
         String prefFragment = AppearanceSettingsFragment.class.getName();
 
         AppearanceSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
@@ -332,7 +332,7 @@ public class AppearanceSettingsFragmentTest {
     public void testSearchIndex_BookmarkBarCompatible_SubpageDisabled() {
         BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
         SettingsIndexData indexData = mock(SettingsIndexData.class);
-        var context = mSettingsTestRule.getActivity();
+        var context = ContextUtils.getApplicationContext();
         String prefFragment = AppearanceSettingsFragment.class.getName();
 
         AppearanceSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(

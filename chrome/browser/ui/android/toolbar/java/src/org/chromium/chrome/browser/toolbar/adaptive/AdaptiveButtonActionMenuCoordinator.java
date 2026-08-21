@@ -48,8 +48,6 @@ public class AdaptiveButtonActionMenuCoordinator {
      */
     public View.@Nullable OnLongClickListener createOnLongClickListener(
             Callback<Integer> onItemClicked) {
-        if (!AdaptiveToolbarFeatures.isCustomizationEnabled()) return null;
-
         return view -> {
             if (mShowMenu) {
                 displayMenu(

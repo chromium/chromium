@@ -28,10 +28,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
@@ -61,6 +60,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
 
     @Before
     public void setUp() {
+        FeatureOverrides.newBuilder().apply();
         mConfiguration.screenWidthDp = AdaptiveToolbarFeatures.DEFAULT_MIN_WIDTH_DP;
         doReturn(mConfiguration).when(mResources).getConfiguration();
         doReturn(mResources).when(mContext).getResources();
@@ -86,7 +86,6 @@ public final class VoiceToolbarButtonControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     public void testIphCommandHelper() {
         assertNull(
                 mVoiceToolbarButtonController
@@ -106,7 +105,6 @@ public final class VoiceToolbarButtonControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     public void testIphEvent() {
         doReturn(true)
                 .when(mTracker)
@@ -122,7 +120,6 @@ public final class VoiceToolbarButtonControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     public void isToolbarMicEnabled_toolbarMic() {
         assertTrue(VoiceToolbarButtonController.isToolbarMicEnabled());
     }

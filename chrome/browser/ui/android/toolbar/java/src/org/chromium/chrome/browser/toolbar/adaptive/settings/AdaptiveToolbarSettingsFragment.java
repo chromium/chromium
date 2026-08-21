@@ -108,8 +108,6 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
     private void maybeSetUiStateFromBundleArgs() {
         Bundle args = getArguments();
         if (!args.containsKey(ARG_UI_STATE_CAN_SHOW_UI)) return;
-
-        boolean defaultCanShow = AdaptiveToolbarFeatures.isCustomizationEnabled();
         int defaultVariant = AdaptiveToolbarButtonVariant.UNKNOWN;
         @Nullable ArrayList<Integer> rankedToolbarButtonStates =
                 args.getIntegerArrayList(ARG_UI_STATE_RANKED_TOOLBAR_BUTTON_STATES);
@@ -119,7 +117,7 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
         }
         mRadioButtonGroup.initButtonsFromUiState(
                 new UiState(
-                        args.getBoolean(ARG_UI_STATE_CAN_SHOW_UI, defaultCanShow),
+                        args.getBoolean(ARG_UI_STATE_CAN_SHOW_UI, true),
                         rankedToolbarButtonStates,
                         args.getInt(ARG_UI_STATE_PREFERENCE_SELECTION, defaultVariant),
                         args.getInt(ARG_UI_STATE_AUTO_BUTTON_CAPTION, defaultVariant)));

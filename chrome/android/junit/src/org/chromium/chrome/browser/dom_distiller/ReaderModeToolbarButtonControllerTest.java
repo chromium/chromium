@@ -27,7 +27,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -39,7 +38,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.EntryPoint;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
@@ -108,8 +106,6 @@ public class ReaderModeToolbarButtonControllerTest {
         when(mDomDistillerServiceFactoryJni.getForProfile(any())).thenReturn(mDomDistillerService);
         DomDistillerServiceFactoryJni.setInstanceForTesting(mDomDistillerServiceFactoryJni);
         DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
-
-        FeatureOverrides.enable(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2);
     }
 
     private ReaderModeToolbarButtonController createController() {

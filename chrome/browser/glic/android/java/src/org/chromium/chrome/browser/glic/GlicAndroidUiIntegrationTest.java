@@ -73,11 +73,7 @@ import java.util.Set;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction({DeviceFormFactor.PHONE})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({
-    ChromeFeatureList.GLIC,
-    ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
-    ChromeFeatureList.TAB_BOTTOM_SHEET
-})
+@EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.TAB_BOTTOM_SHEET})
 @DisableFeatures({
     ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
     ChromeFeatureList.ANDROID_BOTTOM_BAR

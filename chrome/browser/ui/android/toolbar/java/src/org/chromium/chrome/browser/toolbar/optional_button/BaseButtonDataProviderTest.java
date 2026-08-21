@@ -31,8 +31,6 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -47,7 +45,6 @@ import java.util.function.Supplier;
 /** Unit test for {@link BaseButtonDataProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 public class BaseButtonDataProviderTest {
     private static class TestButtonDataProvider extends BaseButtonDataProvider {
         public TestButtonDataProvider(
@@ -90,6 +87,7 @@ public class BaseButtonDataProviderTest {
 
     @Before
     public void setUp() {
+        FeatureOverrides.newBuilder().apply();
         mMockTabSupplier = ObservableSuppliers.createMonotonic(mMockTab);
         mActivity = Robolectric.setupActivity(Activity.class);
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
@@ -99,7 +97,6 @@ public class BaseButtonDataProviderTest {
 
     @Test
     public void testButtonData_QuietVariation() {
-        FeatureOverrides.enable(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2);
         AdaptiveToolbarFeatures.setActionChipOverrideForTesting(
                 AdaptiveToolbarButtonVariant.READER_MODE, false);
 
@@ -120,7 +117,6 @@ public class BaseButtonDataProviderTest {
 
     @Test
     public void testButtonData_ActionChipVariation() {
-        FeatureOverrides.enable(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2);
         AdaptiveToolbarFeatures.setActionChipOverrideForTesting(
                 AdaptiveToolbarButtonVariant.READER_MODE, true);
 

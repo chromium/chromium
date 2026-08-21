@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -66,6 +67,7 @@ public class TranslateToolbarButtonControllerUnitTest {
         when(mTab.getProfile()).thenReturn(mProfile);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(mTab.getContext()).thenReturn(ContextUtils.getApplicationContext());
     }
 
     @After

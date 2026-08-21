@@ -602,9 +602,6 @@ public class LocationBarTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "disable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
-    })
     @DisableFeatures(SigninFeatures.PROFILE_DISC_ON_ALL_PAGES)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testFocusLogic_buttonVisibilityTablet_ProfileDiscDisabled_DesktopDisabled() {
@@ -617,9 +614,6 @@ public class LocationBarTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "disable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
-    })
     @EnableFeatures({
         SigninFeatures.PROFILE_DISC_ON_ALL_PAGES,
         SigninFeatures.SIGNIN_LEVEL_UP_BUTTON
@@ -635,9 +629,6 @@ public class LocationBarTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "disable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
-    })
     @DisableFeatures(SigninFeatures.PROFILE_DISC_ON_ALL_PAGES)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testFocusLogic_buttonVisibilityTablet_ProfileDiscDisabled_DesktopEnabled() {
@@ -650,9 +641,6 @@ public class LocationBarTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({
-        "disable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
-    })
     @EnableFeatures({
         SigninFeatures.PROFILE_DISC_ON_ALL_PAGES,
         SigninFeatures.SIGNIN_LEVEL_UP_BUTTON

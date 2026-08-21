@@ -74,10 +74,6 @@ constexpr int kAdaptiveToolbarDefaultSelectionTTLDays = 56;
 
 #if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<Config> GetConfigForAdaptiveToolbar() {
-  if (!base::FeatureList::IsEnabled(
-          chrome::android::kAdaptiveButtonInTopToolbarCustomizationV2)) {
-    return nullptr;
-  }
   auto config = std::make_unique<Config>();
   config->segmentation_key = kAdaptiveToolbarSegmentationKey;
   config->segmentation_uma_name = kAdaptiveToolbarUmaName;
@@ -89,13 +85,8 @@ std::unique_ptr<Config> GetConfigForAdaptiveToolbar() {
     config->AddSegmentId(
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR);
   } else {
-    int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
-        chrome::android::kAdaptiveButtonInTopToolbarCustomizationV2,
-        kVariationsParamNameSegmentSelectionTTLDays,
-        kAdaptiveToolbarDefaultSelectionTTLDays);
-    config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
-    // Do not set unknown TTL so that the platform ignores unknown results.
-
+    config->segment_selection_ttl =
+        base::Days(kAdaptiveToolbarDefaultSelectionTTLDays);
     // A hardcoded list of segment IDs known to the segmentation platform.
     config->AddSegmentId(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
     config->AddSegmentId(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
@@ -147,10 +138,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
     home_modules::HomeModulesCardRegistry* home_modules_card_registry) {
   std::vector<std::unique_ptr<Config>> configs;
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          chrome::android::kAdaptiveButtonInTopToolbarCustomizationV2)) {
-    configs.emplace_back(GetConfigForAdaptiveToolbar());
-  }
+  configs.emplace_back(GetConfigForAdaptiveToolbar());
   if (base::FeatureList::IsEnabled(features::kContextualPageActions)) {
     configs.emplace_back(GetConfigForContextualPageActions(context));
   }

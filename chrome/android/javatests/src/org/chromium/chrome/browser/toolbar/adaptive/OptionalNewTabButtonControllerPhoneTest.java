@@ -59,8 +59,6 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Features.DisableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
-@Features.EnableFeatures(
-        ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2 + ":mode/always-new-tab")
 @Restriction({DeviceFormFactor.PHONE})
 public class OptionalNewTabButtonControllerPhoneTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/navigate/simple.html";

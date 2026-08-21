@@ -119,11 +119,6 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
             return;
         }
 
-        // Adaptive toolbar customization is disabled.
-        if (!AdaptiveToolbarFeatures.isCustomizationEnabled()) {
-            return;
-        }
-
         // Do not show IPH if the action chip is shown with a valid label.
         if (AdaptiveToolbarFeatures.shouldShowActionChip(
                         mButtonData.getButtonSpec().getButtonVariant())

@@ -44,7 +44,6 @@ import java.util.List;
 /** Unit tests for the {@code AdaptiveToolbarStatePredictor} */
 @Config(manifest = Config.NONE)
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
 public class AdaptiveToolbarStatePredictorTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -118,25 +117,6 @@ public class AdaptiveToolbarStatePredictorTest {
                         new ArrayList<Integer>(List.of(AdaptiveToolbarButtonVariant.SHARE)),
                         AdaptiveToolbarButtonVariant.AUTO,
                         AdaptiveToolbarButtonVariant.SHARE);
-        statePredictor.recomputeUiState(verifyResultCallback(expected));
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
-    public void testDisableFeature() {
-        AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
-        AdaptiveToolbarStatePredictor statePredictor =
-                buildStatePredictor(
-                        true,
-                        AdaptiveToolbarButtonVariant.VOICE,
-                        List.of(AdaptiveToolbarButtonVariant.SHARE));
-        UiState expected =
-                new UiState(
-                        false,
-                        new ArrayList<Integer>(List.of(AdaptiveToolbarButtonVariant.UNKNOWN)),
-                        AdaptiveToolbarButtonVariant.UNKNOWN,
-                        AdaptiveToolbarButtonVariant.UNKNOWN);
         statePredictor.recomputeUiState(verifyResultCallback(expected));
     }
 

@@ -59,10 +59,7 @@ import java.util.Collections;
 
 /** Unit tests for {@link GlicToolbarButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({
-    ChromeFeatureList.GLIC,
-    ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
-})
+@EnableFeatures({ChromeFeatureList.GLIC})
 @DisableFeatures({
     ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
     ChromeFeatureList.ANDROID_BOTTOM_BAR

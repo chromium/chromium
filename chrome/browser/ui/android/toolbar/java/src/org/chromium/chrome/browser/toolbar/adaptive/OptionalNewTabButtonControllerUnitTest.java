@@ -36,7 +36,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -104,7 +103,6 @@ public final class OptionalNewTabButtonControllerUnitTest {
         TrackerFactory.setTrackerForTests(mTracker);
     }
 
-    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     @Test
     public void testIphCommandHelper() {
         assertNull(
@@ -127,7 +125,6 @@ public final class OptionalNewTabButtonControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
     public void testIphEvent() {
         doReturn(true)
                 .when(mTracker)

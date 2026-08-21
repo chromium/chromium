@@ -393,7 +393,6 @@ public class AdaptiveToolbarButtonController
             mGlicKeyedService.addAllowedChangedObserver(this);
         }
 
-        if (!AdaptiveToolbarFeatures.isCustomizationEnabled()) return;
         mAdaptiveToolbarStatePredictor.recomputeUiState(mUiStateCallback);
         AdaptiveToolbarStats.recordSelectedSegmentFromSegmentationPlatformAsync(
                 mContext, mAdaptiveToolbarStatePredictor);
@@ -434,7 +433,6 @@ public class AdaptiveToolbarButtonController
         assert mAdaptiveToolbarStatePredictor != null;
         if (ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS.equals(key)
                 || ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED.equals(key)) {
-            assert AdaptiveToolbarFeatures.isCustomizationEnabled();
             mAdaptiveToolbarStatePredictor.recomputeUiState(mUiStateCallback);
         }
     }
