@@ -17,6 +17,8 @@ experimental domain WebMCP
       optional boolean readOnly
       # A hint indicating that the tool output may contain untrusted content, ex: UGC, 3rd party data.
       optional boolean untrustedContent
+      # A hint indicating that executing the tool will result in consequential actions, ex: booking a flight, transferring money.
+      optional boolean consequential
       # If the declarative tool was declared with the autosubmit attribute.
       optional boolean autosubmit
 

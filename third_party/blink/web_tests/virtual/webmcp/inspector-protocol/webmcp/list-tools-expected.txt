@@ -23,6 +23,7 @@ Adding {
         }
         [1] : {
             annotations : {
+                consequential : false
                 readOnly : true
                 untrustedContent : false
             }
@@ -48,6 +49,7 @@ Adding {
     tools : [
         [0] : {
             annotations : {
+                consequential : false
                 readOnly : false
                 untrustedContent : false
             }

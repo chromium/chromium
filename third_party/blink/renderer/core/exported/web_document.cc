@@ -444,6 +444,8 @@ bool WebDocument::ExecuteScriptTool(
     web_tool_declaration->read_only = script_tool_declaration->read_only;
     web_tool_declaration->untrusted_content =
         script_tool_declaration->untrusted_content;
+    web_tool_declaration->consequential =
+        script_tool_declaration->consequential;
   }
   return model_context->ExecuteTool(
       invocation_id, name, input_arguments,

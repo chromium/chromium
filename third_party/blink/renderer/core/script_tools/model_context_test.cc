@@ -284,7 +284,8 @@ TEST_F(ModelContextTest, ExecuteToolReturnsObject) {
       },
       annotations: {
         readOnlyHint: true,
-        untrustedContentHint: true
+        untrustedContentHint: true,
+        consequentialHint: false,
       },
     });
     </script>

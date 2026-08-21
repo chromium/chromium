@@ -460,6 +460,9 @@ ScriptPromise<IDLUndefined> ModelContext::registerTool(
     CHECK(tool->annotations()->hasUntrustedContentHint());
     script_tool->annotations->untrusted_content =
         tool->annotations()->untrustedContentHint();
+    CHECK(tool->annotations()->hasConsequentialHint());
+    script_tool->annotations->consequential =
+        tool->annotations()->consequentialHint();
   }
 
   auto* tool_data = MakeGarbageCollected<ToolData>(
@@ -507,6 +510,7 @@ std::optional<ScriptToolDeclaration> ModelContext::GetScriptToolDeclaration(
   if (script_tool.annotations) {
     declaration.read_only = script_tool.annotations->read_only;
     declaration.untrusted_content = script_tool.annotations->untrusted_content;
+    declaration.consequential = script_tool.annotations->consequential;
   }
   return declaration;
 }
@@ -1049,6 +1053,7 @@ void ModelContext::OnGetScriptToolsCompleted(
       auto* annotations = ToolAnnotations::Create();
       annotations->setReadOnlyHint(t->annotations->read_only);
       annotations->setUntrustedContentHint(t->annotations->untrusted_content);
+      annotations->setConsequentialHint(t->annotations->consequential);
       result->setAnnotations(annotations);
     }
 

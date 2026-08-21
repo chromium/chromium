@@ -13,6 +13,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 struct ScriptToolAnnotations {
   bool read_only;
   bool untrusted_content;
+  bool consequential;
 };
 
 // See ModelContextTool in model_context_tool.idl for details of
