@@ -306,10 +306,6 @@ enum class CrashRepHandlingOutcome {
 // The window which we dobounce load info updates in.
 constexpr auto kUpdateLoadStatesInterval = base::Milliseconds(250);
 
-// Kill switch for inner WebContents visibility updates.
-BASE_FEATURE(kUpdateInnerWebContentsVisibility,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 using LifecycleState = RenderFrameHost::LifecycleState;
 using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
 
@@ -1314,6 +1310,18 @@ class WebContentsOfBrowserContext : public base::SupportsUserData::Data {
   // (by calling `Detach`).
   std::set<raw_ptr<WebContentsImpl>> web_contents_set_;
 };
+
+Visibility FrameVisibilityToVisibility(
+    blink::mojom::FrameVisibility visibility) {
+  switch (visibility) {
+    case blink::mojom::FrameVisibility::kRenderedInViewport:
+      return Visibility::VISIBLE;
+    case blink::mojom::FrameVisibility::kRenderedOutOfViewport:
+      return Visibility::OCCLUDED;
+    case blink::mojom::FrameVisibility::kNotRendered:
+      return Visibility::HIDDEN;
+  }
+}
 
 }  // namespace
 
@@ -5181,6 +5189,18 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
     bool is_activity) {
   DCHECK(!IsBeingDestroyed());
 
+  if (GetOuterWebContents()) {
+    new_visibility =
+        std::min(new_visibility, GetOuterWebContents()->GetVisibility());
+    RenderFrameProxyHost* proxy = GetRenderManager()->GetProxyToOuterDelegate();
+    if (proxy && proxy->cross_process_frame_connector()) {
+      new_visibility =
+          std::min(new_visibility,
+                   FrameVisibilityToVisibility(
+                       proxy->cross_process_frame_connector()->visibility()));
+    }
+  }
+
   PageVisibilityState page_visibility =
       CalculatePageVisibilityState(new_visibility);
 
@@ -5260,17 +5280,11 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
   }
   SetVisibilityAndNotifyObservers(new_visibility);
 
-  if (base::FeatureList::IsEnabled(kUpdateInnerWebContentsVisibility)) {
-    // Inner WebContents are skipped in ForEachRenderViewHost() above, which
-    // causes inner WebContents to not be notified of visibility changes.
-    //
-    // Note: An inner WebContents that is hidden within the embedder could
-    // spuriously be set to visible (e.g. if its parent is display:none), but
-    // this is ignored here for now.
-    for (WebContents* inner : GetInnerWebContents()) {
-      static_cast<WebContentsImpl*>(inner)
-          ->UpdateVisibilityAndNotifyPageAndView(new_visibility, is_activity);
-    }
+  // Inner WebContents are skipped in ForEachRenderViewHost() above, which
+  // causes inner WebContents to not be notified of visibility changes.
+  for (WebContents* inner : GetInnerWebContents()) {
+    static_cast<WebContentsImpl*>(inner)->UpdateVisibilityAndNotifyPageAndView(
+        new_visibility, is_activity);
   }
 
   if (!is_never_composited_ && hide_or_reveal &&
@@ -5559,14 +5573,18 @@ bool WebContentsImpl::OnRenderFrameProxyVisibilityChanged(
 
   DCHECK(GetOuterWebContents());
 
-  switch (visibility) {
-    case blink::mojom::FrameVisibility::kRenderedInViewport:
+  Visibility capped_visibility =
+      std::min(FrameVisibilityToVisibility(visibility),
+               GetOuterWebContents()->GetVisibility());
+
+  switch (capped_visibility) {
+    case Visibility::VISIBLE:
       WasShown();
       break;
-    case blink::mojom::FrameVisibility::kNotRendered:
+    case Visibility::HIDDEN:
       WasHidden();
       break;
-    case blink::mojom::FrameVisibility::kRenderedOutOfViewport:
+    case Visibility::OCCLUDED:
       WasOccluded();
       break;
   }

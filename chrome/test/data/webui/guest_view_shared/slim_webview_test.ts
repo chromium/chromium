@@ -102,6 +102,10 @@ function denyPermissionRequest(
 }
 
 suite('Loading', function() {
+  teardown(function() {
+    document.body.replaceChildren();
+  });
+
   test('SuccessfullLoadEvents', async function() {
     const webviewUrl = getTestUrl('/simple.html');
 
@@ -231,6 +235,10 @@ suite('Operations', function() {
         webview, getTestUrl('/webui/guest_view_shared/eval_post_message.html'));
   });
 
+  teardown(function() {
+    document.body.replaceChildren();
+  });
+
   test('NewWindowEvents', async function() {
     const newWindowPromise =
         eventToPromise<NewWindowEvent>('newwindow', webview);
@@ -321,6 +329,10 @@ suite('Operations', function() {
 });
 
 suite('Requests', function() {
+  teardown(function() {
+    document.body.replaceChildren();
+  });
+
   test('NavigateToDisallowedOriginFails', async function() {
     const webview = document.createElement('webview');
     const origin = getOrigin(getTestUrl('/'));
