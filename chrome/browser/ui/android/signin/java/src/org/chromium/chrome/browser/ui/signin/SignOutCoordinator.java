@@ -333,6 +333,7 @@ public class SignOutCoordinator {
             boolean offerDataDeletionChoice,
             @SignoutReason int signOutReason,
             Runnable onSignOut) {
+        View customView = createCustomView(context, signinManager, offerDataDeletionChoice);
         String message = context.getString(R.string.sign_out_unsaved_data_message);
         if (userActionableError == UserActionableError.BOOKMARKS_LIMIT_EXCEEDED) {
             message =
@@ -341,8 +342,11 @@ public class SignOutCoordinator {
                             NumberFormat.getIntegerInstance()
                                     .format(SyncService.SYNC_BOOKMARKS_LIMIT));
         }
-        View customView =
-                createCustomView(context, signinManager, offerDataDeletionChoice, message);
+        if (customViewHasCheckBoxes(customView)) {
+            message += context.getString(R.string.sign_out_unsaved_data_message_with_checkbox);
+        }
+        ((TextView) customView.findViewById(R.id.sign_out_message)).setText(message);
+
         ModalDialogProperties.Controller controller =
                 createController(
                         dialogManager,
@@ -381,9 +385,10 @@ public class SignOutCoordinator {
             boolean offerDataDeletionChoice,
             @SignoutReason int signOutReason,
             Runnable onSignOut) {
+        View customView = createCustomView(context, signinManager, offerDataDeletionChoice);
         String message = context.getString(R.string.sign_out_message);
-        View customView =
-                createCustomView(context, signinManager, offerDataDeletionChoice, message);
+        ((TextView) customView.findViewById(R.id.sign_out_message)).setText(message);
+
         ModalDialogProperties.Controller controller =
                 createController(
                         dialogManager,
@@ -419,18 +424,13 @@ public class SignOutCoordinator {
     }
 
     private static View createCustomView(
-            Context context,
-            SigninManager signinManager,
-            boolean offerDataDeletionChoice,
-            String message) {
+            Context context, SigninManager signinManager, boolean offerDataDeletionChoice) {
         View customView = LayoutInflater.from(context).inflate(R.layout.sign_out_dialog, null);
-        TextView messageView = customView.findViewById(R.id.sign_out_message);
         CheckBoxWithDescription deleteDataCheckBox =
                 customView.findViewById(R.id.delete_browsing_data_checkbox);
         CheckBoxWithDescription removeExtensionsCheckBox =
                 customView.findViewById(R.id.remove_extensions_checkbox);
 
-        messageView.setText(message);
         if (offerDataDeletionChoice) {
             assert DeviceInfo.isDesktop()
                     && SigninFeatureMap.isEnabled(SigninFeatures.SIGN_OUT_DELETES_BROWSING_DATA);
@@ -452,6 +452,13 @@ public class SignOutCoordinator {
         }
 
         return customView;
+    }
+
+    private static boolean customViewHasCheckBoxes(View customView) {
+        return customView.findViewById(R.id.delete_browsing_data_checkbox).getVisibility()
+                        == View.VISIBLE
+                || customView.findViewById(R.id.remove_extensions_checkbox).getVisibility()
+                        == View.VISIBLE;
     }
 
     private static ModalDialogProperties.Controller createController(

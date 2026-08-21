@@ -2252,7 +2252,10 @@ Your Google account may have other forms of browsing history like searches and a
         Some data isn\u2019t saved yet
       </message>
       <message name="IDS_SIGN_OUT_UNSAVED_DATA_MESSAGE" desc="Body of a dialog shown to users when they sign out of Chrome but Chrome hasn't synced some data yet, which is permanently deleted if the user proceeds.">
-        Some of your Chrome data hasn\u2019t been saved in your Google Account yet. Try waiting a few minutes before signing out.\n\nIf you sign out now, this data will be deleted.
+        Some of your Chrome data hasn\u2019t been saved in your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, the unsaved data will be deleted.
+      </message>
+      <message name="IDS_SIGN_OUT_UNSAVED_DATA_MESSAGE_WITH_CHECKBOX" desc="Body of a dialog shown to users when they sign out of Chrome but Chrome hasn't synced some data yet, which is permanently deleted if the user proceeds. Additionally informs users that they can delete other data by selecting the checkboxes that follow this message.">
+        \n\nYou can also remove this data from this device:
       </message>
       <message name="IDS_SIGN_OUT_TITLE" desc="The text is displayed as the title of a dialog to confirm if the user wants to sign out of Chrome. The user can cancel and stay signed in, or confirm and sign out.">
         Sign out of Chrome?
@@ -2264,7 +2267,7 @@ Your Google account may have other forms of browsing history like searches and a
         Remove extensions and delete the data that they saved on this device
       </message>
       <message name="IDS_SIGN_OUT_REMOVE_EXTENSIONS_CHECKBOX_SUBTITLE" desc="Checkbox subtitle text in the sign-out dialog allowing users to remove extensions associated with their signed in account from this device. Explains what data will be deleted.">
-        Your extensions are saved in your Google Account, but any data they\u2019ve saved only on this device may be deleted.
+        Your extensions are saved in your Google Account, but any data they\u2019ve saved only on this device may be deleted
       </message>
       <message name="IDS_SIGN_OUT_UNSAVED_DATA_PRIMARY_BUTTON" desc="Button title of a dialog shown to users when they sign out of Chrome but Chrome hasn't synced some data yet, which is permanently deleted if the user proceeds by pressing this button">
         Delete and sign out

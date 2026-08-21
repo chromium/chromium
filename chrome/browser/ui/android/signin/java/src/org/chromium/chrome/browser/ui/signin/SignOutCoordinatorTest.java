@@ -173,6 +173,35 @@ public class SignOutCoordinatorTest {
 
     @Test
     @MediumTest
+    public void testUnsavedDataDialogWithCheckBoxes() {
+        setUpMocks();
+        mUnsyncedDataTypes.add(DataType.BOOKMARKS);
+        doReturn(true).when(mSigninManagerMock).hasSignedInAccountExtensions();
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.BookmarksLimitExceededOnSignoutPrompt", false);
+
+        startSignOutFlow(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, mOnSignOut, false);
+
+        onView(withText(R.string.sign_out_unsaved_data_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        String expectedMessage =
+                mActivityTestRule.getActivity().getString(R.string.sign_out_unsaved_data_message)
+                        + mActivityTestRule
+                                .getActivity()
+                                .getString(R.string.sign_out_unsaved_data_message_with_checkbox);
+        onView(withText(expectedMessage)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withText(R.string.sign_out_unsaved_data_primary_button))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.cancel)).inRoot(isDialog()).check(matches(isDisplayed()));
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
     public void testUnsavedDataDialogPrimaryButtonClick() {
         setUpMocks();
         mUnsyncedDataTypes.add(DataType.BOOKMARKS);
