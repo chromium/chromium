@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_bubble_dialog.h"
+
 #include <memory>
 #include <utility>
 
@@ -11,9 +13,8 @@
 #include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/default_browser/test_support/fake_default_browser_setter.h"
 #include "chrome/browser/shell_integration.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_bubble_dialog.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_bubble_dialog_manager.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"

@@ -8,7 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "content/public/browser/web_contents.h"
@@ -24,7 +24,7 @@ class ExtensionInstallBlockedDialogTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     extensions::ShowExtensionInstallBlockedDialog(
         "extension_id", "extension_name", message_, CreateExtensionIcon(),
-        browser()->tab_strip_model()->GetWebContentsAt(0), base::DoNothing());
+        browser()->GetTabStripModel()->GetWebContentsAt(0), base::DoNothing());
   }
 
   // Creates a big icon so that dialog will downscale it.

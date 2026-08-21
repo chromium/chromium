@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "url/gurl.h"
 
-class Browser;
 class BrowserWindowInterface;
 class Profile;
 class StartupBrowserCreator;

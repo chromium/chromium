@@ -6,7 +6,7 @@
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/popup_test_base.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -100,7 +100,7 @@ class FullscreenInteractiveBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(FullscreenInteractiveBrowserTest,
                        MAYBE_NotifyFullscreenAcquired) {
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b{allowfullscreen})");
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenInteractiveBrowserTest,
 IN_PROC_BROWSER_TEST_F(FullscreenInteractiveBrowserTest,
                        NotifyFullscreenAcquired_SameOrigin) {
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(a{allowfullscreen})");

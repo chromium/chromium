@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_wait_for_paint_utils.h"
 
 #include "base/test/run_until.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
@@ -22,14 +22,14 @@ constexpr char kPaintWorkaroundFunction[] =
 
 }  // namespace
 
-void WaitForPaint(Browser* browser,
+void WaitForPaint(BrowserWindowInterface* browser,
                   const GURL& url,
                   WindowOpenDisposition disposition,
                   int browser_test_flags) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser, url, disposition, browser_test_flags));
   const bool first_paint_completed =
-      browser->tab_strip_model()
+      browser->GetTabStripModel()
           ->GetActiveTab()
           ->GetContents()
           ->CompletedFirstVisuallyNonEmptyPaint();
@@ -42,7 +42,7 @@ void WaitForPaint(Browser* browser,
   // of cases, but loading non-html files can lead to the workaround failing, so
   // this check is still needed.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return browser->tab_strip_model()
+    return browser->GetTabStripModel()
         ->GetActiveTab()
         ->GetContents()
         ->CompletedFirstVisuallyNonEmptyPaint();
@@ -53,9 +53,9 @@ void WaitForPaint(Browser* browser,
   // the WebContents to allow screenshotting. See crbug.com/334747109 for
   // details on this possible race condition and the workaround used in
   // interactive tests.
-  ASSERT_TRUE(
-      content::ExecJs(browser->tab_strip_model()->GetActiveTab()->GetContents(),
-                      kPaintWorkaroundFunction));
+  ASSERT_TRUE(content::ExecJs(
+      browser->GetTabStripModel()->GetActiveTab()->GetContents(),
+      kPaintWorkaroundFunction));
 }
 
 }  // namespace lens

@@ -6,7 +6,7 @@
 
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_test_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEnableFlowTest,
     ExtensionEnableFlow enable_flow(profile(), extension->id(), &delegate);
 
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     enable_flow.StartForWebContents(web_contents);
     delegate.Wait();
 

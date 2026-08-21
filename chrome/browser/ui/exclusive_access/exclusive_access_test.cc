@@ -13,11 +13,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -136,7 +136,7 @@ bool ExclusiveAccessTest::IsBubbleDownloadNotification(
 }
 
 bool ExclusiveAccessTest::RequestKeyboardLock(bool esc_key_locked) {
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* tab = browser()->GetTabStripModel()->GetActiveWebContents();
 
   // If the caller defines |esc_key_locked| as true then we create a set of
   // locked keys which includes the escape key, this will require the user/test
@@ -169,7 +169,7 @@ bool ExclusiveAccessTest::RequestKeyboardLock(bool esc_key_locked) {
 
 void ExclusiveAccessTest::RequestToLockPointer(bool user_gesture,
                                                bool last_unlocked_by_target) {
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* tab = browser()->GetTabStripModel()->GetActiveWebContents();
   PointerLockController* pointer_lock_controller =
       GetExclusiveAccessManager()->pointer_lock_controller();
   pointer_lock_controller->fake_pointer_lock_for_test_ = true;
@@ -186,11 +186,11 @@ void ExclusiveAccessTest::SetWebContentsGrantedSilentPointerLockPermission() {
   GetExclusiveAccessManager()
       ->pointer_lock_controller()
       ->web_contents_granted_silent_pointer_lock_permission_ =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 }
 
 void ExclusiveAccessTest::CancelKeyboardLock() {
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* tab = browser()->GetTabStripModel()->GetActiveWebContents();
   content::CancelKeyboardLock(tab);
 }
 
@@ -218,20 +218,20 @@ bool ExclusiveAccessTest::IsWindowFullscreenForTabOrPending() {
 
 void ExclusiveAccessTest::GoBack() {
   content::TestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents(), 1);
+      browser()->GetTabStripModel()->GetActiveWebContents(), 1);
   chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
   observer.Wait();
 }
 
 void ExclusiveAccessTest::Reload() {
   content::TestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents(), 1);
+      browser()->GetTabStripModel()->GetActiveWebContents(), 1);
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   observer.Wait();
 }
 
 void ExclusiveAccessTest::EnterActiveTabFullscreen() {
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* tab = browser()->GetTabStripModel()->GetActiveWebContents();
   ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = true});
   BrowserWebContentsDelegate::From(browser())->EnterFullscreenModeForTab(
       tab->GetPrimaryMainFrame(), {});
