@@ -1,0 +1,59 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://organizer-panel.top-chrome/organizer_list_section.js';
+
+import type {OrganizerListItem} from 'chrome://organizer-panel.top-chrome/organizer_list_item.js';
+import type {OrganizerListSectionElement} from 'chrome://organizer-panel.top-chrome/organizer_list_section.js';
+import type {OrganizerListSectionDelegate} from 'chrome://organizer-panel.top-chrome/organizer_list_section_delegate.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+class TestSectionDelegate implements OrganizerListSectionDelegate {
+  private header_: string;
+  private items_: OrganizerListItem[];
+
+  constructor(header: string, items: OrganizerListItem[]) {
+    this.header_ = header;
+    this.items_ = items;
+  }
+
+  getHeader(): string {
+    return this.header_;
+  }
+
+  getItems(): OrganizerListItem[] {
+    return this.items_;
+  }
+}
+
+suite('OrganizerListSectionTest', () => {
+  let listSection: OrganizerListSectionElement;
+
+  setup(async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    listSection = document.createElement('organizer-list-section');
+    document.body.appendChild(listSection);
+    await microtasksFinished();
+  });
+
+  test('renders header and items from delegate', async () => {
+    const items: OrganizerListItem[] = [
+      {title: 'Tab 1', description: 'tab1.com'},
+      {title: 'Tab 2', description: 'tab2.com'},
+    ];
+    listSection.delegate = new TestSectionDelegate('Open Tabs', items);
+    await microtasksFinished();
+
+    const header = listSection.shadowRoot.querySelector('#header');
+    assertTrue(!!header);
+    assertEquals('Open Tabs', header.textContent);
+
+    const listItems =
+        listSection.shadowRoot.querySelectorAll('organizer-list-item');
+    assertEquals(2, listItems.length);
+    assertEquals('Tab 1', listItems[0]!.item.title);
+    assertEquals('Tab 2', listItems[1]!.item.title);
+  });
+});
