@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORT_SCHEDULER_DELEGATE_DESKTOP_H_
-#define CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORT_SCHEDULER_DELEGATE_DESKTOP_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORT_SCHEDULER_DELEGATE_IMPL_H_
+#define CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORT_SCHEDULER_DELEGATE_IMPL_H_
 
 #include "base/functional/callback.h"
 #include "base/scoped_multi_source_observation.h"
@@ -21,17 +21,17 @@ namespace enterprise_reporting {
 // and notifying the SaasUsageReportScheduler when there is at least one
 // profile with a RealtimeReportingClient.
 // This delegate is used only by browser-level scheduler.
-class SaasUsageReportSchedulerDelegateDesktop
+class SaasUsageReportSchedulerDelegateImpl
     : public SaasUsageReportScheduler::Delegate,
       public ProfileManagerObserver,
       public ProfileObserver {
  public:
-  SaasUsageReportSchedulerDelegateDesktop();
-  SaasUsageReportSchedulerDelegateDesktop(
-      const SaasUsageReportSchedulerDelegateDesktop&) = delete;
-  SaasUsageReportSchedulerDelegateDesktop& operator=(
-      const SaasUsageReportSchedulerDelegateDesktop&) = delete;
-  ~SaasUsageReportSchedulerDelegateDesktop() override;
+  SaasUsageReportSchedulerDelegateImpl();
+  SaasUsageReportSchedulerDelegateImpl(
+      const SaasUsageReportSchedulerDelegateImpl&) = delete;
+  SaasUsageReportSchedulerDelegateImpl& operator=(
+      const SaasUsageReportSchedulerDelegateImpl&) = delete;
+  ~SaasUsageReportSchedulerDelegateImpl() override;
 
   // SaasUsageReportScheduler::Delegate:
   void SetReadyStateChangedCallback(base::RepeatingClosure callback) override;
@@ -55,4 +55,4 @@ class SaasUsageReportSchedulerDelegateDesktop
 
 }  // namespace enterprise_reporting
 
-#endif  // CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORT_SCHEDULER_DELEGATE_DESKTOP_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORT_SCHEDULER_DELEGATE_IMPL_H_

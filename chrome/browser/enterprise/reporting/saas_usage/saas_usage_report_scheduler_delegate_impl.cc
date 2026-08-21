@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_report_scheduler_delegate_desktop.h"
+#include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_report_scheduler_delegate_impl.h"
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
@@ -12,8 +12,7 @@
 
 namespace enterprise_reporting {
 
-SaasUsageReportSchedulerDelegateDesktop::
-    SaasUsageReportSchedulerDelegateDesktop() {
+SaasUsageReportSchedulerDelegateImpl::SaasUsageReportSchedulerDelegateImpl() {
   CHECK(g_browser_process->profile_manager());
 
   profile_manager_observation_.Observe(g_browser_process->profile_manager());
@@ -23,19 +22,19 @@ SaasUsageReportSchedulerDelegateDesktop::
   }
 }
 
-SaasUsageReportSchedulerDelegateDesktop::
-    ~SaasUsageReportSchedulerDelegateDesktop() = default;
+SaasUsageReportSchedulerDelegateImpl::~SaasUsageReportSchedulerDelegateImpl() =
+    default;
 
-void SaasUsageReportSchedulerDelegateDesktop::SetReadyStateChangedCallback(
+void SaasUsageReportSchedulerDelegateImpl::SetReadyStateChangedCallback(
     base::RepeatingClosure callback) {
   ready_state_changed_callback_ = callback;
 }
 
-bool SaasUsageReportSchedulerDelegateDesktop::IsReady() {
+bool SaasUsageReportSchedulerDelegateImpl::IsReady() {
   return profile_observation_.IsObservingAnySource();
 }
 
-void SaasUsageReportSchedulerDelegateDesktop::OnProfileAdded(Profile* profile) {
+void SaasUsageReportSchedulerDelegateImpl::OnProfileAdded(Profile* profile) {
   // If browser is managed, any profile with a RealtimeReportingClient will be
   // able to upload reports using browser DM token.
   if (!enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
@@ -53,11 +52,11 @@ void SaasUsageReportSchedulerDelegateDesktop::OnProfileAdded(Profile* profile) {
   }
 }
 
-void SaasUsageReportSchedulerDelegateDesktop::OnProfileManagerDestroying() {
+void SaasUsageReportSchedulerDelegateImpl::OnProfileManagerDestroying() {
   profile_manager_observation_.Reset();
 }
 
-void SaasUsageReportSchedulerDelegateDesktop::OnProfileWillBeDestroyed(
+void SaasUsageReportSchedulerDelegateImpl::OnProfileWillBeDestroyed(
     Profile* profile) {
   if (!profile_observation_.IsObservingSource(profile)) {
     return;

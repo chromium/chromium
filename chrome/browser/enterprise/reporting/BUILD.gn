@@ -53,15 +53,20 @@ source_set("unit_tests") {
     ]
   }
 
+  if (is_win || is_mac || is_linux || is_android) {
+    sources += [
+      "realtime_event_upload_helper_unittest.cc",
+      "saas_usage/navigation_handle_data_delegate_unittest.cc",
+      "saas_usage/saas_usage_navigation_observer_unittest.cc",
+      "saas_usage/saas_usage_report_scheduler_delegate_impl_unittest.cc",
+      "saas_usage/saas_usage_report_uploader_impl_unittest.cc",
+    ]
+  }
+
   if (is_win || is_mac || is_linux) {
     sources += [
       "browser_launch/browser_launch_data_collector_desktop_unittest.cc",
       "browser_launch/browser_launch_event_uploader_desktop_unittest.cc",
-      "realtime_event_upload_helper_desktop_unittest.cc",
-      "saas_usage/navigation_handle_data_delegate_unittest.cc",
-      "saas_usage/saas_usage_navigation_observer_unittest.cc",
-      "saas_usage/saas_usage_report_scheduler_delegate_desktop_unittest.cc",
-      "saas_usage/saas_usage_report_uploader_desktop_unittest.cc",
     ]
     deps += [ "//chrome/browser/enterprise:browser_launch_reporting" ]
   }

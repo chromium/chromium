@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORT_FACTORY_DESKTOP_H_
-#define CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORT_FACTORY_DESKTOP_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORT_FACTORY_DELEGATE_IMPL_H_
+#define CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORT_FACTORY_DELEGATE_IMPL_H_
 
 #include <optional>
 #include <string>
@@ -14,16 +14,17 @@
 
 namespace enterprise_reporting {
 
-// Desktop implementation of SaasUsageReportFactory::Delegate.
-class SaasUsageReportFactoryDesktop final
+// Implementation of SaasUsageReportFactory::Delegate.
+class SaasUsageReportFactoryDelegateImpl final
     : public SaasUsageReportFactory::Delegate {
  public:
-  explicit SaasUsageReportFactoryDesktop(Profile* profile);
-  SaasUsageReportFactoryDesktop(const SaasUsageReportFactoryDesktop&) = delete;
-  SaasUsageReportFactoryDesktop& operator=(
-      const SaasUsageReportFactoryDesktop&) = delete;
+  explicit SaasUsageReportFactoryDelegateImpl(Profile* profile);
+  SaasUsageReportFactoryDelegateImpl(
+      const SaasUsageReportFactoryDelegateImpl&) = delete;
+  SaasUsageReportFactoryDelegateImpl& operator=(
+      const SaasUsageReportFactoryDelegateImpl&) = delete;
 
-  ~SaasUsageReportFactoryDesktop() override = default;
+  ~SaasUsageReportFactoryDelegateImpl() override = default;
 
   // SaasUsageReportFactory::Delegate
   std::optional<std::string> GetProfileId() override;
@@ -37,4 +38,4 @@ class SaasUsageReportFactoryDesktop final
 
 }  // namespace enterprise_reporting
 
-#endif  // CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORT_FACTORY_DESKTOP_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORT_FACTORY_DELEGATE_IMPL_H_

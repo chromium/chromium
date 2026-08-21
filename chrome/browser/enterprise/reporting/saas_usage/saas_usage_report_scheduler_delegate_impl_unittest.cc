@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_report_scheduler_delegate_desktop.h"
+#include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_report_scheduler_delegate_impl.h"
 
 #include "base/test/mock_callback.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
@@ -15,9 +15,9 @@
 
 namespace enterprise_reporting {
 
-class SaasUsageReportSchedulerDelegateDesktopTest : public testing::Test {
+class SaasUsageReportSchedulerDelegateImplTest : public testing::Test {
  public:
-  SaasUsageReportSchedulerDelegateDesktopTest()
+  SaasUsageReportSchedulerDelegateImplTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
   void SetUp() override { ASSERT_TRUE(profile_manager_.SetUp()); }
@@ -40,35 +40,34 @@ class SaasUsageReportSchedulerDelegateDesktopTest : public testing::Test {
   TestingProfileManager profile_manager_;
 };
 
-TEST_F(SaasUsageReportSchedulerDelegateDesktopTest, IsReady_NoProfiles) {
-  SaasUsageReportSchedulerDelegateDesktop delegate;
+TEST_F(SaasUsageReportSchedulerDelegateImplTest, IsReady_NoProfiles) {
+  SaasUsageReportSchedulerDelegateImpl delegate;
   EXPECT_FALSE(delegate.IsReady());
 }
 
-TEST_F(SaasUsageReportSchedulerDelegateDesktopTest,
-       IsReady_ProfileWithoutClient) {
-  SaasUsageReportSchedulerDelegateDesktop delegate;
+TEST_F(SaasUsageReportSchedulerDelegateImplTest, IsReady_ProfileWithoutClient) {
+  SaasUsageReportSchedulerDelegateImpl delegate;
   CreateProfile("p1", /*has_client=*/false);
   EXPECT_FALSE(delegate.IsReady());
 }
 
-TEST_F(SaasUsageReportSchedulerDelegateDesktopTest, IsReady_ProfileWithClient) {
-  SaasUsageReportSchedulerDelegateDesktop delegate;
+TEST_F(SaasUsageReportSchedulerDelegateImplTest, IsReady_ProfileWithClient) {
+  SaasUsageReportSchedulerDelegateImpl delegate;
   CreateProfile("p1", /*has_client=*/true);
   EXPECT_TRUE(delegate.IsReady());
 }
 
-TEST_F(SaasUsageReportSchedulerDelegateDesktopTest, IsReady_MixedProfiles) {
-  SaasUsageReportSchedulerDelegateDesktop delegate;
+TEST_F(SaasUsageReportSchedulerDelegateImplTest, IsReady_MixedProfiles) {
+  SaasUsageReportSchedulerDelegateImpl delegate;
   CreateProfile("p1", /*has_client=*/false);
   EXPECT_FALSE(delegate.IsReady());
   CreateProfile("p2", /*has_client=*/true);
   EXPECT_TRUE(delegate.IsReady());
 }
 
-TEST_F(SaasUsageReportSchedulerDelegateDesktopTest,
+TEST_F(SaasUsageReportSchedulerDelegateImplTest,
        CallbackCalledWhenProfileWithClientAdded) {
-  SaasUsageReportSchedulerDelegateDesktop delegate;
+  SaasUsageReportSchedulerDelegateImpl delegate;
   base::MockCallback<base::RepeatingClosure> callback;
   delegate.SetReadyStateChangedCallback(callback.Get());
 
@@ -76,9 +75,9 @@ TEST_F(SaasUsageReportSchedulerDelegateDesktopTest,
   CreateProfile("p1", /*has_client=*/true);
 }
 
-TEST_F(SaasUsageReportSchedulerDelegateDesktopTest,
+TEST_F(SaasUsageReportSchedulerDelegateImplTest,
        CallbackNotCalledWhenProfileWithoutClientAdded) {
-  SaasUsageReportSchedulerDelegateDesktop delegate;
+  SaasUsageReportSchedulerDelegateImpl delegate;
   base::MockCallback<base::RepeatingClosure> callback;
   delegate.SetReadyStateChangedCallback(callback.Get());
 
@@ -86,9 +85,9 @@ TEST_F(SaasUsageReportSchedulerDelegateDesktopTest,
   CreateProfile("p1", /*has_client=*/false);
 }
 
-TEST_F(SaasUsageReportSchedulerDelegateDesktopTest,
+TEST_F(SaasUsageReportSchedulerDelegateImplTest,
        NotifiesOnlyWhenReadyStateChanges) {
-  SaasUsageReportSchedulerDelegateDesktop delegate;
+  SaasUsageReportSchedulerDelegateImpl delegate;
   base::MockCallback<base::RepeatingClosure> callback;
   delegate.SetReadyStateChangedCallback(callback.Get());
 

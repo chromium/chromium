@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/reporting/realtime_event_upload_helper_desktop.h"
+#include "chrome/browser/enterprise/reporting/realtime_event_upload_helper.h"
 
 #include <memory>
 #include <string>
@@ -56,8 +56,9 @@ TEST_P(RealtimeEventUploadHelperDesktopParamTest, ProfileUploaderSuccess) {
   SetBrowserManaged(true);
   bool is_affiliated = GetParam();
   std::string name = is_affiliated ? "affiliated" : "unaffiliated";
-  TestingProfile* profile = CreateProfile(name, /*is_managed=*/true, is_affiliated,
-                                          /*create_reporting_client=*/true);
+  TestingProfile* profile =
+      CreateProfile(name, /*is_managed=*/true, is_affiliated,
+                    /*create_reporting_client=*/true);
 
   TestRealtimeProfileUploader uploader(profile);
   auto context = uploader.Prepare();

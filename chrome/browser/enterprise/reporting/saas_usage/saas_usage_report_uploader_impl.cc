@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_report_uploader_desktop.h"
+#include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_report_uploader_impl.h"
 
 #include <optional>
 #include <string_view>
@@ -17,18 +17,17 @@
 
 namespace enterprise_reporting {
 
-SaasUsageReportUploaderDesktop::SaasUsageReportUploaderDesktop()
+SaasUsageReportUploaderImpl::SaasUsageReportUploaderImpl()
     : helper_("browser", "SaaS usage", nullptr), profile_(nullptr) {}
 
-SaasUsageReportUploaderDesktop::SaasUsageReportUploaderDesktop(
-    Profile* profile)
+SaasUsageReportUploaderImpl::SaasUsageReportUploaderImpl(Profile* profile)
     : helper_("profile", "SaaS usage", profile), profile_(profile) {
   CHECK(profile);
 }
 
-SaasUsageReportUploaderDesktop::~SaasUsageReportUploaderDesktop() = default;
+SaasUsageReportUploaderImpl::~SaasUsageReportUploaderImpl() = default;
 
-void SaasUsageReportUploaderDesktop::UploadReport(
+void SaasUsageReportUploaderImpl::UploadReport(
     const ::chrome::cros::reporting::proto::SaasUsageReportEvent& report,
     base::OnceCallback<void(policy::CloudPolicyClient::Result)>
         upload_callback) {
@@ -49,7 +48,7 @@ void SaasUsageReportUploaderDesktop::UploadReport(
                                         std::move(upload_callback));
 }
 
-bool SaasUsageReportUploaderDesktop::IsProfileReporting() const {
+bool SaasUsageReportUploaderImpl::IsProfileReporting() const {
 #if BUILDFLAG(IS_CHROMEOS)
   return false;
 #else

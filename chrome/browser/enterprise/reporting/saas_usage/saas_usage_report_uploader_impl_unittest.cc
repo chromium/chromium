@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_report_uploader_desktop.h"
+#include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_report_uploader_impl.h"
 
 #include <memory>
 #include <string>
@@ -20,7 +20,7 @@ namespace {
 
 using ::testing::_;
 
-struct SaasUsageReportUploaderDesktopTestParam {
+struct SaasUsageReportUploaderImplTestParam {
   std::string test_name;
   bool is_browser_managed;
   bool is_profile_managed;
@@ -45,17 +45,14 @@ struct SaasUsageReportUploaderDesktopTestParam {
 
 }  // namespace
 
-class SaasUsageReportUploaderDesktopParamTest
+class SaasUsageReportUploaderImplParamTest
     : public RealtimeEventUploaderTestBase,
-      public testing::WithParamInterface<
-          SaasUsageReportUploaderDesktopTestParam> {
+      public testing::WithParamInterface<SaasUsageReportUploaderImplTestParam> {
  public:
-  void SetUp() override {
-    RealtimeEventUploaderTestBase::SetUp();
-  }
+  void SetUp() override { RealtimeEventUploaderTestBase::SetUp(); }
 };
 
-TEST_P(SaasUsageReportUploaderDesktopParamTest, UploadReport) {
+TEST_P(SaasUsageReportUploaderImplParamTest, UploadReport) {
   const auto& param = GetParam();
   SetBrowserManaged(param.is_browser_managed);
   auto* profile =
@@ -71,20 +68,20 @@ TEST_P(SaasUsageReportUploaderDesktopParamTest, UploadReport) {
         .Times(0);
   }
 
-  std::unique_ptr<SaasUsageReportUploaderDesktop> uploader;
+  std::unique_ptr<SaasUsageReportUploaderImpl> uploader;
   if (param.is_profile_report_uploader) {
-    uploader = std::make_unique<SaasUsageReportUploaderDesktop>(profile);
+    uploader = std::make_unique<SaasUsageReportUploaderImpl>(profile);
   } else {
-    uploader = std::make_unique<SaasUsageReportUploaderDesktop>();
+    uploader = std::make_unique<SaasUsageReportUploaderImpl>();
   }
   uploader->UploadReport(BuildReportEvent(), base::DoNothing());
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    SaasUsageReportUploaderDesktopParamTest,
+    SaasUsageReportUploaderImplParamTest,
     testing::Values(
-        SaasUsageReportUploaderDesktopTestParam{
+        SaasUsageReportUploaderImplTestParam{
             .test_name = "UploadBrowserReport_UnmanagedProfile",
             .is_browser_managed = true,
             .is_profile_managed = false,
@@ -94,7 +91,7 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_dm_token = "browser_dm_token",
             .expected_per_profile = false,
             .expect_report_upload = true},
-        SaasUsageReportUploaderDesktopTestParam{
+        SaasUsageReportUploaderImplTestParam{
             .test_name = "UploadBrowserReport_ManagedProfile",
             .is_browser_managed = true,
             .is_profile_managed = true,
@@ -104,7 +101,7 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_dm_token = "browser_dm_token",
             .expected_per_profile = false,
             .expect_report_upload = true},
-        SaasUsageReportUploaderDesktopTestParam{
+        SaasUsageReportUploaderImplTestParam{
             .test_name = "UploadProfileReport_Unaffiliated",
             .is_browser_managed = true,
             .is_profile_managed = true,
@@ -114,7 +111,7 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_dm_token = "user_dm_token_test_profile",
             .expected_per_profile = true,
             .expect_report_upload = true},
-        SaasUsageReportUploaderDesktopTestParam{
+        SaasUsageReportUploaderImplTestParam{
             .test_name = "UploadProfileReport_Affiliated",
             .is_browser_managed = true,
             .is_profile_managed = true,
@@ -124,7 +121,7 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_dm_token = "browser_dm_token",
             .expected_per_profile = false,
             .expect_report_upload = true},
-        SaasUsageReportUploaderDesktopTestParam{
+        SaasUsageReportUploaderImplTestParam{
             .test_name = "UploadBrowserReport_NoReportingClient",
             .is_browser_managed = true,
             .is_profile_managed = false,
@@ -134,7 +131,7 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_dm_token = "",
             .expected_per_profile = false,
             .expect_report_upload = false},
-        SaasUsageReportUploaderDesktopTestParam{
+        SaasUsageReportUploaderImplTestParam{
             .test_name = "UploadBrowserReport_NoDMToken",
             .is_browser_managed = false,
             .is_profile_managed = false,
@@ -145,14 +142,13 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_per_profile = false,
             .expect_report_upload = false}),
     [](const testing::TestParamInfo<
-        SaasUsageReportUploaderDesktopParamTest::ParamType>& info) {
+        SaasUsageReportUploaderImplParamTest::ParamType>& info) {
       return info.param.test_name;
     });
 
-class SaasUsageReportUploaderDesktopTest
-    : public RealtimeEventUploaderTestBase {};
+class SaasUsageReportUploaderImplTest : public RealtimeEventUploaderTestBase {};
 
-TEST_F(SaasUsageReportUploaderDesktopTest, UploadBrowserReport_MultiProfile) {
+TEST_F(SaasUsageReportUploaderImplTest, UploadBrowserReport_MultiProfile) {
   SetBrowserManaged(true);
 
   CreateProfile("profile1", /*is_managed=*/true,
@@ -181,11 +177,11 @@ TEST_F(SaasUsageReportUploaderDesktopTest, UploadBrowserReport_MultiProfile) {
 
   EXPECT_CALL(*ignored_mock_client, ReportSaasUsageEvent(_, _, _, _)).Times(0);
 
-  auto uploader = std::make_unique<SaasUsageReportUploaderDesktop>();
+  auto uploader = std::make_unique<SaasUsageReportUploaderImpl>();
   uploader->UploadReport(BuildReportEvent(), base::DoNothing());
 }
 
-TEST_F(SaasUsageReportUploaderDesktopTest, UploadProfileReport_MultiProfile) {
+TEST_F(SaasUsageReportUploaderImplTest, UploadProfileReport_MultiProfile) {
   TestingProfile* profile1 = CreateProfile("profile1", /*is_managed=*/true,
                                            /*is_affiliated=*/false,
                                            /*create_reporting_client=*/true);
@@ -203,8 +199,7 @@ TEST_F(SaasUsageReportUploaderDesktopTest, UploadProfileReport_MultiProfile) {
 
   EXPECT_CALL(*mock_client2, ReportSaasUsageEvent(_, _, _, _)).Times(0);
 
-  auto uploader =
-      std::make_unique<SaasUsageReportUploaderDesktop>(profile1);
+  auto uploader = std::make_unique<SaasUsageReportUploaderImpl>(profile1);
   uploader->UploadReport(BuildReportEvent(), base::DoNothing());
 }
 

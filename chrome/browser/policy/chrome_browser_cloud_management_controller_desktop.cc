@@ -76,7 +76,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/device_trust_key_manager_impl.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_rotation_launcher.h"
 #include "chrome/browser/enterprise/reporting/browser_launch/browser_launch_event_controller_factory_desktop.h"
-#include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_reporting_delegate_factory_desktop.h"
+#include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_reporting_delegate_factory_impl.h"
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_reporting_delegate_factory.h"
 #include "components/enterprise/client_certificates/core/browser_cloud_management_delegate.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
@@ -270,7 +270,7 @@ ChromeBrowserCloudManagementControllerDesktop::
 #if BUILDFLAG(IS_CHROMEOS)
   return nullptr;
 #else
-  return enterprise_reporting::SaasUsageReportingDelegateFactoryDesktop::
+  return enterprise_reporting::SaasUsageReportingDelegateFactoryImpl::
       CreateForBrowser();
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }

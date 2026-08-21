@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/reporting/realtime_event_upload_helper_desktop.h"
+#include "chrome/browser/enterprise/reporting/realtime_event_upload_helper.h"
 
 #include <optional>
 #include <string>

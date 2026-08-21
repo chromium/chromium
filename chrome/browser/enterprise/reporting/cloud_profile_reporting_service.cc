@@ -38,7 +38,7 @@
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/enterprise/reporting/browser_launch/browser_launch_event_controller_factory_desktop.h"
-#include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_reporting_delegate_factory_desktop.h"
+#include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_reporting_delegate_factory_impl.h"
 #include "components/enterprise/browser/reporting/reporting_features.h"
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_report_scheduler.h"
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
@@ -122,7 +122,7 @@ void CloudProfileReportingService::CreateReportScheduler() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   if (base::FeatureList::IsEnabled(kSaasUsageReporting)) {
     auto saas_usage_reporting_delegate_factory =
-        SaasUsageReportingDelegateFactoryDesktop::CreateForProfile(profile_);
+        SaasUsageReportingDelegateFactoryImpl::CreateForProfile(profile_);
     saas_usage_report_scheduler_ = SaasUsageReportScheduler::Create(
         "profile", saas_usage_reporting_delegate_factory.get());
   }

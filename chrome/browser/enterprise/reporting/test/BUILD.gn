@@ -30,17 +30,18 @@ source_set("test_support") {
     "//testing/gtest",
   ]
 
-  if (is_mac || is_linux || is_win) {
+  if (is_win || is_mac || is_linux || is_android) {
     public += [ "realtime_event_uploader_test_base.h" ]
-    sources += [
-      "realtime_event_uploader_test_base.cc",
-      "test_utils_desktop.cc",
-    ]
-  } else if (is_android) {
+    sources += [ "realtime_event_uploader_test_base.cc" ]
+  }
+
+  if (is_android) {
     sources += [ "test_utils_android.cc" ]
     deps += [
       "//components/safe_browsing/android:safe_browsing_api_handler",
       "//components/safe_browsing/android:safe_browsing_api_handler_util",
     ]
+  } else {
+    sources += [ "test_utils_desktop.cc" ]
   }
 }

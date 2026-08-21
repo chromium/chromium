@@ -11,7 +11,7 @@
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
-#include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_reporting_delegate_factory_desktop.h"
+#include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_reporting_delegate_factory_impl.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(SaasUsageBrowserLevelTest, RecordsUsage) {
 
   // Force trigger the report upload.
   auto delegate_factory = enterprise_reporting::
-      SaasUsageReportingDelegateFactoryDesktop::CreateForBrowser();
+      SaasUsageReportingDelegateFactoryImpl::CreateForBrowser();
   auto scheduler = enterprise_reporting::SaasUsageReportScheduler::Create(
       "browser", delegate_factory.get());
   ASSERT_TRUE(scheduler);
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(SaasUsageProfileLevelTest, RecordsUsage) {
 
   // Force trigger the report upload.
   auto delegate_factory =
-      enterprise_reporting::SaasUsageReportingDelegateFactoryDesktop::
+      enterprise_reporting::SaasUsageReportingDelegateFactoryImpl::
           CreateForProfile(browser()->GetProfile());
   auto scheduler = enterprise_reporting::SaasUsageReportScheduler::Create(
       "profile", delegate_factory.get());

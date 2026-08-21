@@ -2,32 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORT_UPLOADER_DESKTOP_H_
-#define CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORT_UPLOADER_DESKTOP_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORT_UPLOADER_IMPL_H_
+#define CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORT_UPLOADER_IMPL_H_
 
 #include <string_view>
 
-#include "chrome/browser/enterprise/reporting/realtime_event_upload_helper_desktop.h"
+#include "chrome/browser/enterprise/reporting/realtime_event_upload_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_report_uploader.h"
 
 namespace enterprise_reporting {
 
-// Base class for uploading SaaS usage reports on desktop platforms.
+// Base class for uploading SaaS usage reports.
 // Encapsulates the logic for wrapping the feature proto into a generic event.
-class SaasUsageReportUploaderDesktop final : public SaasUsageReportUploader {
+class SaasUsageReportUploaderImpl final : public SaasUsageReportUploader {
  public:
   // Browser-level uploader constructor.
-  SaasUsageReportUploaderDesktop();
+  SaasUsageReportUploaderImpl();
   // Profile-level uploader constructor.
-  explicit SaasUsageReportUploaderDesktop(Profile* profile);
+  explicit SaasUsageReportUploaderImpl(Profile* profile);
 
-  SaasUsageReportUploaderDesktop(const SaasUsageReportUploaderDesktop&) =
+  SaasUsageReportUploaderImpl(const SaasUsageReportUploaderImpl&) = delete;
+  SaasUsageReportUploaderImpl& operator=(const SaasUsageReportUploaderImpl&) =
       delete;
-  SaasUsageReportUploaderDesktop& operator=(
-      const SaasUsageReportUploaderDesktop&) = delete;
 
-  ~SaasUsageReportUploaderDesktop() override;
+  ~SaasUsageReportUploaderImpl() override;
 
   // SaasUsageReportUploader:
   void UploadReport(
@@ -44,4 +43,4 @@ class SaasUsageReportUploaderDesktop final : public SaasUsageReportUploader {
 
 }  // namespace enterprise_reporting
 
-#endif  // CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORT_UPLOADER_DESKTOP_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORT_UPLOADER_IMPL_H_

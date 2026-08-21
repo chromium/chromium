@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_REALTIME_EVENT_UPLOAD_HELPER_DESKTOP_H_
-#define CHROME_BROWSER_ENTERPRISE_REPORTING_REALTIME_EVENT_UPLOAD_HELPER_DESKTOP_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_REALTIME_EVENT_UPLOAD_HELPER_H_
+#define CHROME_BROWSER_ENTERPRISE_REPORTING_REALTIME_EVENT_UPLOAD_HELPER_H_
 
 #include <optional>
 #include <string>
@@ -17,7 +17,7 @@ class Profile;
 
 namespace enterprise_reporting {
 
-// Helper class for preparing real-time enterprise event uploads on Desktop.
+// Helper class for preparing real-time enterprise event uploads.
 // Manages finding the appropriate client and retrieving the DM token.
 class RealtimeEventUploadHelper {
  public:
@@ -64,4 +64,4 @@ class RealtimeEventUploadHelper {
 
 }  // namespace enterprise_reporting
 
-#endif  // CHROME_BROWSER_ENTERPRISE_REPORTING_REALTIME_EVENT_UPLOAD_HELPER_DESKTOP_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_REPORTING_REALTIME_EVENT_UPLOAD_HELPER_H_

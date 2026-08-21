@@ -35,7 +35,7 @@
 #include "chrome/browser/ash/policy/skyvault/local_files_cleanup.h"
 #include "chrome/browser/enterprise/reporting/report_scheduler_desktop.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
-#include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_reporting_delegate_factory_desktop.h"
+#include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_reporting_delegate_factory_impl.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/cloud/user_fm_registration_token_uploader_factory.h"
@@ -770,7 +770,7 @@ void UserCloudPolicyManagerAsh::StartReportSchedulerIfReady(
 
   if (base::FeatureList::IsEnabled(enterprise_reporting::kSaasUsageReporting)) {
     auto saas_usage_reporting_delegate_factory = enterprise_reporting::
-        SaasUsageReportingDelegateFactoryDesktop::CreateForProfile(profile_);
+        SaasUsageReportingDelegateFactoryImpl::CreateForProfile(profile_);
     saas_usage_report_scheduler_ =
         enterprise_reporting::SaasUsageReportScheduler::Create(
             "profile", saas_usage_reporting_delegate_factory.get());

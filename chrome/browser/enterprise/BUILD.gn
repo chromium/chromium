@@ -149,17 +149,9 @@ source_set("enterprise") {
       "connectors/device_trust/signals/signals_service_factory.h",
       "data_protection/data_protection_ui_controller.h",
       "reporting/browser_report_generator_desktop.h",
-      "reporting/realtime_event_upload_helper_desktop.h",
       "reporting/report_generator_desktop.h",
       "reporting/report_scheduler_desktop.h",
       "reporting/reporting_delegate_factory_desktop.h",
-      "reporting/saas_usage/navigation_handle_data_delegate.h",
-      "reporting/saas_usage/saas_usage_navigation_observer.h",
-      "reporting/saas_usage/saas_usage_report_factory_desktop.h",
-      "reporting/saas_usage/saas_usage_report_scheduler_delegate_desktop.h",
-      "reporting/saas_usage/saas_usage_report_uploader_desktop.h",
-      "reporting/saas_usage/saas_usage_reporting_controller_factory.h",
-      "reporting/saas_usage/saas_usage_reporting_delegate_factory_desktop.h",
       "signals/client_certificate_fetcher.h",
       "signals/context_info_fetcher.h",
       "signals/device_info_fetcher.h",
@@ -278,6 +270,19 @@ source_set("enterprise") {
     ]
     public_deps +=
         [ "//components/enterprise/connectors/core:cloud_content_scanning" ]
+  }
+
+  if (is_linux || is_win || is_mac || is_chromeos || is_android) {
+    public += [
+      "reporting/realtime_event_upload_helper.h",
+      "reporting/saas_usage/navigation_handle_data_delegate.h",
+      "reporting/saas_usage/saas_usage_navigation_observer.h",
+      "reporting/saas_usage/saas_usage_report_factory_delegate_impl.h",
+      "reporting/saas_usage/saas_usage_report_scheduler_delegate_impl.h",
+      "reporting/saas_usage/saas_usage_report_uploader_impl.h",
+      "reporting/saas_usage/saas_usage_reporting_controller_factory.h",
+      "reporting/saas_usage/saas_usage_reporting_delegate_factory_impl.h",
+    ]
   }
 
   if (is_linux || is_win || is_mac) {
@@ -545,17 +550,9 @@ source_set("impl") {
       "connectors/device_trust/signals/signals_service_factory.cc",
       "data_protection/data_protection_ui_controller.cc",
       "reporting/browser_report_generator_desktop.cc",
-      "reporting/realtime_event_upload_helper_desktop.cc",
       "reporting/report_generator_desktop.cc",
       "reporting/report_scheduler_desktop.cc",
       "reporting/reporting_delegate_factory_desktop.cc",
-      "reporting/saas_usage/navigation_handle_data_delegate.cc",
-      "reporting/saas_usage/saas_usage_navigation_observer.cc",
-      "reporting/saas_usage/saas_usage_report_factory_desktop.cc",
-      "reporting/saas_usage/saas_usage_report_scheduler_delegate_desktop.cc",
-      "reporting/saas_usage/saas_usage_report_uploader_desktop.cc",
-      "reporting/saas_usage/saas_usage_reporting_controller_factory.cc",
-      "reporting/saas_usage/saas_usage_reporting_delegate_factory_desktop.cc",
       "signals/client_certificate_fetcher.cc",
       "signals/context_info_fetcher.cc",
       "signals/device_info_fetcher.cc",
@@ -756,6 +753,21 @@ source_set("impl") {
     ]
     public_deps +=
         [ "//chrome/browser/enterprise/connectors/analysis:sdk_manager" ]
+  }
+
+  if (is_linux || is_win || is_mac || is_chromeos || is_android) {
+    sources += [
+      "reporting/realtime_event_upload_helper.cc",
+      "reporting/saas_usage/navigation_handle_data_delegate.cc",
+      "reporting/saas_usage/saas_usage_navigation_observer.cc",
+      "reporting/saas_usage/saas_usage_report_factory_delegate_impl.cc",
+      "reporting/saas_usage/saas_usage_report_scheduler_delegate_impl.cc",
+      "reporting/saas_usage/saas_usage_report_uploader_impl.cc",
+      "reporting/saas_usage/saas_usage_reporting_controller_factory.cc",
+      "reporting/saas_usage/saas_usage_reporting_delegate_factory_impl.cc",
+    ]
+
+    deps += [ "//components/enterprise/device_trust/core:device_trust_service" ]
   }
 
   if (is_linux || is_win || is_mac) {

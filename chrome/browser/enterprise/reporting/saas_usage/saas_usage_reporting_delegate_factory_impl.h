@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORTING_DELEGATE_FACTORY_DESKTOP_H_
-#define CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORTING_DELEGATE_FACTORY_DESKTOP_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORTING_DELEGATE_FACTORY_IMPL_H_
+#define CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORTING_DELEGATE_FACTORY_IMPL_H_
 
 #include <memory>
 
@@ -17,19 +17,19 @@
 
 namespace enterprise_reporting {
 
-class SaasUsageReportingDelegateFactoryDesktop
+class SaasUsageReportingDelegateFactoryImpl
     : public SaasUsageReportingDelegateFactory {
  public:
-  static std::unique_ptr<SaasUsageReportingDelegateFactoryDesktop>
+  static std::unique_ptr<SaasUsageReportingDelegateFactoryImpl>
   CreateForBrowser();
-  static std::unique_ptr<SaasUsageReportingDelegateFactoryDesktop>
+  static std::unique_ptr<SaasUsageReportingDelegateFactoryImpl>
   CreateForProfile(Profile* profile);
 
-  SaasUsageReportingDelegateFactoryDesktop(
-      const SaasUsageReportingDelegateFactoryDesktop&) = delete;
-  SaasUsageReportingDelegateFactoryDesktop& operator=(
-      const SaasUsageReportingDelegateFactoryDesktop&) = delete;
-  ~SaasUsageReportingDelegateFactoryDesktop() override = default;
+  SaasUsageReportingDelegateFactoryImpl(
+      const SaasUsageReportingDelegateFactoryImpl&) = delete;
+  SaasUsageReportingDelegateFactoryImpl& operator=(
+      const SaasUsageReportingDelegateFactoryImpl&) = delete;
+  ~SaasUsageReportingDelegateFactoryImpl() override = default;
 
   // SaasUsageReportingDelegateFactory implementation.
   PrefService* GetPrefService() const override;
@@ -44,7 +44,7 @@ class SaasUsageReportingDelegateFactoryDesktop
   GetSaasUsageReportSchedulerDelegate() const override;
 
  private:
-  explicit SaasUsageReportingDelegateFactoryDesktop(Profile* profile);
+  explicit SaasUsageReportingDelegateFactoryImpl(Profile* profile);
 
   // `profile_` is null for browser-level reporting.
   raw_ptr<Profile> profile_ = nullptr;
@@ -52,4 +52,4 @@ class SaasUsageReportingDelegateFactoryDesktop
 
 }  // namespace enterprise_reporting
 
-#endif  // CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORTING_DELEGATE_FACTORY_DESKTOP_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORTING_DELEGATE_FACTORY_IMPL_H_
