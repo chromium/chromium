@@ -500,7 +500,7 @@ name = "diplomat"
 version = "0.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "diplomat_core 0.16.0",
+ "diplomat_core 0.16.1",
  "proc-macro2",
  "quote",
  "syn 3.0.3",
@@ -526,7 +526,7 @@ dependencies = [
 
 [[package]]
 name = "diplomat_core"
-version = "0.16.0"
+version = "0.16.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "proc-macro2",

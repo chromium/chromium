@@ -140,7 +140,7 @@ pub struct CallbackParam {
     pub name: Option<IdentBuf>,
 }
 
-impl SuccessType {
+impl<P: crate::hir::TyPosition> SuccessType<P> {
     /// Returns whether the variant is `Write`.
     pub fn is_write(&self) -> bool {
         matches!(self, SuccessType::Write)
@@ -150,7 +150,9 @@ impl SuccessType {
     pub fn is_unit(&self) -> bool {
         matches!(self, SuccessType::Unit)
     }
+}
 
+impl SuccessType {
     pub fn as_type(&self) -> Option<&OutType> {
         match self {
             SuccessType::OutType(ty) => Some(ty),
