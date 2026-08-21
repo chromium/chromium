@@ -379,6 +379,12 @@ void HTMLSlotElement::RecalcFlatTreeChildren() {
       if (node->parentNode() == this)
         node->RemovedFromFlatTree();
     }
+    // Inactive fallback elements must not have IsInCanvasSubtree set.
+    if (IsInCanvasSubtree()) {
+      for (auto& child : ElementTraversal::ChildrenOf(*this)) {
+        child.SetIsInCanvasSubtree(false);
+      }
+    }
   }
 
   NotifySlottedNodesOfFlatTreeChange(old_flat_tree_children,

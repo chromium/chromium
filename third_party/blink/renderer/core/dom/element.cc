@@ -4213,7 +4213,14 @@ Node::InsertionNotificationRequest Element::InsertedInto(
   // the checks will be re-run when slot assignment completes.
   auto* parent = ParentOrShadowHostElement();
   if (parent && parent->IsCanvasOrInCanvasSubtree()) {
-    SetIsInCanvasSubtree(true);
+    const bool is_light_dom_child_of_shadow_host =
+        parent->GetShadowRoot() && &insertion_point == parent;
+    const auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(*parent);
+    const bool is_inactive_fallback_content =
+        slot && !slot->AssignedNodesNoRecalc().empty();
+    if (!is_light_dom_child_of_shadow_host && !is_inactive_fallback_content) {
+      SetIsInCanvasSubtree(true);
+    }
   } else if (!parent && insertion_point.IsDocumentNode()) {
     auto* owner = GetDocument().LocalOwner();
     if (owner && owner->IsCanvasOrInCanvasSubtree()) {
@@ -4373,16 +4380,27 @@ void Element::VerifySubtreeIsInCanvas(bool value) {
     // in an iframe or nested), we should set the expected value back to true.
     value = true;
   }
+  // Traverse flat-tree children:
+  // 1. If this element is a shadow host, traverse its shadow root (slotted
+  //    light DOM children will be reached via <slot>).
+  // 2. If this element is a slot with assigned nodes, traverse its assigned
+  //    nodes (skipping inactive fallback content).
+  // 3. Otherwise, traverse DOM children (for a slot with no assigned nodes,
+  //    this visits active fallback content).
   if (ShadowRoot* shadow_root = GetShadowRoot()) {
     for (Element& child : ElementTraversal::ChildrenOf(*shadow_root)) {
       child.VerifySubtreeIsInCanvas(value);
     }
-  }
-  if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(*this)) {
+  } else if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(*this);
+             slot && !slot->AssignedNodesNoRecalc().empty()) {
     for (Node* node : slot->AssignedNodesNoRecalc()) {
       if (auto* child = DynamicTo<Element>(node)) {
         child->VerifySubtreeIsInCanvas(value);
       }
+    }
+  } else {
+    for (Element& child : ElementTraversal::ChildrenOf(*this)) {
+      child.VerifySubtreeIsInCanvas(value);
     }
   }
   if (const auto* frame_owner = DynamicTo<HTMLFrameOwnerElement>(this)) {
@@ -4396,13 +4414,6 @@ void Element::VerifySubtreeIsInCanvas(bool value) {
     for (PseudoElement* pseudo_element : rare_data->GetPseudoElements()) {
       pseudo_element->VerifySubtreeIsInCanvas(value);
     }
-  }
-
-  for (Element& child : ElementTraversal::ChildrenOf(*this)) {
-    if (child.AssignedSlotWithoutRecalc()) {
-      continue;
-    }
-    child.VerifySubtreeIsInCanvas(value);
   }
 }
 #endif
@@ -4425,23 +4436,28 @@ void Element::SetIsInCanvasSubtree(bool value) {
     value = true;
   }
 
+  // Traverse flat-tree children:
+  // 1. If this element is a shadow host, traverse its shadow root (slotted
+  //    light DOM children will be reached via <slot>).
+  // 2. If this element is a slot with assigned nodes, traverse its assigned
+  //    nodes (skipping inactive fallback content).
+  // 3. Otherwise, traverse DOM children (for a slot with no assigned nodes,
+  //    this visits active fallback content).
   if (ShadowRoot* shadow_root = GetShadowRoot()) {
     for (Element& child : ElementTraversal::ChildrenOf(*shadow_root)) {
       child.SetIsInCanvasSubtree(value);
     }
-  }
-  if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(*this)) {
+  } else if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(*this);
+             slot && !slot->AssignedNodesNoRecalc().empty()) {
     for (Node* node : slot->AssignedNodesNoRecalc()) {
       if (auto* child = DynamicTo<Element>(node)) {
         child->SetIsInCanvasSubtree(value);
       }
     }
-  }
-  for (Element& child : ElementTraversal::ChildrenOf(*this)) {
-    if (!child.IsPseudoElement() && child.AssignedSlotWithoutRecalc()) {
-      continue;
+  } else {
+    for (Element& child : ElementTraversal::ChildrenOf(*this)) {
+      child.SetIsInCanvasSubtree(value);
     }
-    child.SetIsInCanvasSubtree(value);
   }
   if (const NodeRareData* rare_data = RareData()) {
     for (PseudoElement* pseudo_element : rare_data->GetPseudoElements()) {
@@ -4455,13 +4471,7 @@ bool Element::ComputeIsInCanvasSubtree() const {
   const Element* parent = nullptr;
   if (document.IsFlatTreeTraversalForbidden() ||
       document.IsInSlotAssignmentRecalc()) {
-    if (IsPseudoElement()) {
-      parent = ParentOrShadowHostElement();
-    } else if (const auto* slot = AssignedSlotWithoutRecalc()) {
-      parent = slot;
-    } else {
-      parent = ParentOrShadowHostElement();
-    }
+    parent = GetStyleRecalcParent();
   } else {
     parent = FlatTreeTraversal::ParentElementSkippingSlots(*this);
   }
@@ -4469,7 +4479,7 @@ bool Element::ComputeIsInCanvasSubtree() const {
     return parent->IsCanvasOrInCanvasSubtree();
   }
 
-  if (!isConnected()) {
+  if (!isConnected() || !IsDocumentElement()) {
     return false;
   }
 

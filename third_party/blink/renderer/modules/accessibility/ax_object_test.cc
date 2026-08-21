@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_selection_test.h"
@@ -2675,6 +2676,37 @@ TEST_F(AccessibilityTest, PopulateAXRelativeBoundsSanitizesNonFiniteValues) {
 
   // null means identity
   EXPECT_FALSE(bounds.transform);
+}
+
+TEST_F(AccessibilityTest, UnslottedIsInCanvasSubtreeWithoutCanvasTransform) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <div id="slotHost">
+      <template shadowrootmode="open">
+        <canvas layoutsubtree>
+          <slot name="slot">
+            <button id="unslotted">fallback</button>
+          </slot>
+        </canvas>
+      </template>
+      <div id="slotted" slot="slot"></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* unslotted = GetDocument()
+                        .getElementById(AtomicString("slotHost"))
+                        ->GetShadowRoot()
+                        ->getElementById(AtomicString("unslotted"));
+  AXObject* ax_unslotted =
+      MakeGarbageCollected<AXNodeObject>(unslotted, GetAXObjectCache());
+  EXPECT_FALSE(ax_unslotted->IsInCanvasSubtreeWithoutCanvasTransform());
+  ax_unslotted->Detach();
+
+  auto* slotted = GetDocument().getElementById(AtomicString("slotted"));
+  AXObject* ax_slotted =
+      MakeGarbageCollected<AXNodeObject>(slotted, GetAXObjectCache());
+  EXPECT_TRUE(ax_slotted->IsInCanvasSubtreeWithoutCanvasTransform());
+  ax_slotted->Detach();
 }
 
 }  // namespace test

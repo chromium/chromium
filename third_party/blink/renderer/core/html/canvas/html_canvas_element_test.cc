@@ -581,6 +581,72 @@ TEST_P(HTMLCanvasElementTest, IsCanvasOrInCanvasSubtreeSlotted) {
   EXPECT_TRUE(slotted_child->IsInCanvasSubtree());
 }
 
+TEST_P(HTMLCanvasElementTest, InCanvasSubtreeUnslotted) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <div id="slotHost">
+      <template shadowrootmode="open">
+        <canvas layoutsubtree>
+          <slot name="slot1">
+            <button id="target">fallback</button>
+          </slot>
+        </canvas>
+      </template>
+      <div id="slotted" slot="slot1">
+        <p id="slotchild">Hello</p>
+      </div>
+      <div id="unassigned">Unassigned</div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* host = GetDocument().getElementById(AtomicString("slotHost"));
+  auto* target = host->GetShadowRoot()->getElementById(AtomicString("target"));
+  auto* slotted = GetDocument().getElementById(AtomicString("slotted"));
+  auto* slotchild = GetDocument().getElementById(AtomicString("slotchild"));
+  auto* unassigned = GetDocument().getElementById(AtomicString("unassigned"));
+
+  EXPECT_FALSE(target->IsInCanvasSubtree());
+  EXPECT_TRUE(slotted->IsInCanvasSubtree());
+  EXPECT_TRUE(slotchild->IsInCanvasSubtree());
+  EXPECT_FALSE(unassigned->IsInCanvasSubtree());
+
+  // Removing the slotted child activates fallback content in the flat tree.
+  slotted->remove();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(target->IsInCanvasSubtree());
+  EXPECT_FALSE(slotted->IsInCanvasSubtree());
+  EXPECT_FALSE(slotchild->IsInCanvasSubtree());
+
+  // Adding the slotted child back deactivates fallback content.
+  host->appendChild(slotted);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(target->IsInCanvasSubtree());
+  EXPECT_TRUE(slotted->IsInCanvasSubtree());
+  EXPECT_TRUE(slotchild->IsInCanvasSubtree());
+}
+
+TEST_P(HTMLCanvasElementTest, InCanvasSubtreeUnslottedInIframe) {
+  SetBodyInnerHTML(R"HTML(
+    <canvas id="canvas">
+      <iframe id="iframe"></iframe>
+    </canvas>
+  )HTML");
+  SetChildFrameHTML(R"HTML(
+    <div id="slotHost">
+      <div id="unassigned">Unassigned</div>
+    </div>
+  )HTML");
+  auto* host = ChildDocument().getElementById(AtomicString("slotHost"));
+  host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* unassigned = ChildDocument().getElementById(AtomicString("unassigned"));
+  EXPECT_FALSE(unassigned->IsInCanvasSubtree());
+  EXPECT_FALSE(unassigned->ComputeIsInCanvasSubtree());
+}
+
 TEST_P(HTMLCanvasElementTest, LayoutsubtreeInvalidation) {
   SetBodyInnerHTML(R"HTML(<canvas id=canvas></canvas>)HTML");
   auto* canvas = GetDocument().getElementById(AtomicString("canvas"));
