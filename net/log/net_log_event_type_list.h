@@ -4325,6 +4325,25 @@ EVENT_TYPE(CERT_VERIFY_PROC_PATH_BUILT)
 // }
 EVENT_TYPE(CERT_VERIFY_PROC_PATH_BUILDER_DEBUG)
 
+// This event is created when cosigner policy is checked for a Merkle Tree
+// Certificate.
+// parameters:
+// {
+//    "is_valid": <True if policy was satisfied for any reason.>
+//    "reason": <String - reason why policy was or was not satisfied.>
+//    "verified_cosigners": <List of cosigner status, only lists
+//                           mirrors that had a valid cosignature.>
+// }
+//
+// Where each cosigner status is an object:
+// {
+//    "id": <String - cosigner ID>,
+//    "status": <Optionally, a string describing the status of considering this
+//               cosigner. Absent if cosigner policy evaluation concluded
+//               before considering this consigner.>
+// }
+EVENT_TYPE(CERT_MTC_COSIGNER_POLICY_CHECKED)
+
 // -----------------------------------------------------------------------------
 // FTP events.
 // -----------------------------------------------------------------------------

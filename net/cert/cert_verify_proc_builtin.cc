@@ -394,9 +394,11 @@ class CertVerifyProcTrustStore {
       const bssl::ParsedCertificate& target_cert,
       base::Time current_time,
       const bssl::MTCAnchor* mtc_anchor,
-      base::span<const std::vector<uint8_t>> valid_additional_cosigners) const {
+      base::span<const std::vector<uint8_t>> valid_additional_cosigners,
+      const NetLogWithSource& net_log) const {
     return system_trust_store_->IsMtcCosignerPolicySatisfied(
-        target_cert, current_time, mtc_anchor, valid_additional_cosigners);
+        target_cert, current_time, mtc_anchor, valid_additional_cosigners,
+        net_log);
   }
 
   bool IsNonChromeRootStoreTrustAnchor(
@@ -524,17 +526,23 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       const bssl::MTCAnchor* mtc_anchor,
       std::vector<std::vector<uint8_t>> valid_additional_cosigners) override {
     CHECK(mtc_anchor);
-    // TODO(crbug.com/452983502): Add netlogs for cosignature verification and
-    // policy evaluation results?
     if (!trust_store_->IsKnownMtcAnchor(mtc_anchor)) {
       // Cosigner policy only applies to publicly trusted MTCs, only a valid CA
       // signature is required for private PKIs.
+      net_log_->AddEvent(net::NetLogEventType::CERT_MTC_COSIGNER_POLICY_CHECKED,
+                         [&] {
+                           base::DictValue dict;
+                           dict.Set("is_valid", true);
+                           dict.Set("reason", "locally trusted anchor");
+                           return dict;
+                         });
       return true;
     }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
     return trust_store_->IsMtcCosignerPolicySatisfied(
-        *target_, current_time_, mtc_anchor, valid_additional_cosigners);
+        *target_, current_time_, mtc_anchor, valid_additional_cosigners,
+        *net_log_);
 #else
     return false;
 #endif

@@ -190,10 +190,11 @@ class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
       const bssl::ParsedCertificate& target_cert,
       base::Time current_time,
       const bssl::MTCAnchor* mtc_anchor,
-      base::span<const std::vector<uint8_t>> valid_additional_cosigners)
-      const override {
+      base::span<const std::vector<uint8_t>> valid_additional_cosigners,
+      const NetLogWithSource& net_log) const override {
     return trust_store_chrome_->IsMtcCosignerPolicySatisfied(
-        target_cert, current_time, mtc_anchor, valid_additional_cosigners);
+        target_cert, current_time, mtc_anchor, valid_additional_cosigners,
+        net_log);
   }
 
   std::optional<int32_t> GetCrsRootIdForCert(

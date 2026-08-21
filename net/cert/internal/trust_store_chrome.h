@@ -33,6 +33,8 @@ class SignerSet;
 
 namespace net {
 
+class NetLogWithSource;
+
 // Represents a ConstraintSet for compiled-in version of the root store.
 // This is a separate struct from ChromeRootCertConstraints since the in-memory
 // representation parses the version constraints into a base::Version.
@@ -501,7 +503,8 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
       const bssl::ParsedCertificate& target_cert,
       base::Time current_time,
       const bssl::MTCAnchor* mtc_anchor,
-      base::span<const std::vector<uint8_t>> valid_additional_cosigners) const;
+      base::span<const std::vector<uint8_t>> valid_additional_cosigners,
+      const NetLogWithSource& net_log) const;
 
   // Parses a string specifying constraint overrides, in the format expected by
   // the `kTestCrsConstraintsSwitch` command line switch.

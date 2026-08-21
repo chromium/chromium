@@ -246,8 +246,8 @@ class DummySystemTrustStore : public net::SystemTrustStore {
       const bssl::ParsedCertificate& target_cert,
       base::Time current_time,
       const bssl::MTCAnchor* mtc_anchor,
-      base::span<const std::vector<uint8_t>> valid_additional_cosigners)
-      const override {
+      base::span<const std::vector<uint8_t>> valid_additional_cosigners,
+      const net::NetLogWithSource& net_log) const override {
     return false;
   }
 

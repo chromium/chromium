@@ -26,6 +26,9 @@
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
+#include "net/log/net_log_event_type.h"
+#include "net/log/net_log_values.h"
+#include "net/log/net_log_with_source.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
@@ -791,6 +794,32 @@ std::string GetOperatorForSignerIfUsableAtTime(const Signer& signer,
   return {};
 }
 
+void NetLogCosignerPolicyResult(
+    bool is_valid,
+    std::string_view reason,
+    base::span<const std::vector<uint8_t>> valid_additional_cosigners,
+    const absl::flat_hash_map<std::vector<uint8_t>, std::string>&
+        cosigner_status,
+    const NetLogWithSource& net_log) {
+  net_log.AddEvent(NetLogEventType::CERT_MTC_COSIGNER_POLICY_CHECKED, [&] {
+    base::DictValue dict;
+    dict.Set("is_valid", is_valid);
+    dict.Set("reason", reason);
+    base::ListValue output_cosigners;
+    for (const auto& cosigner_id : valid_additional_cosigners) {
+      base::DictValue cosigner_dict;
+      cosigner_dict.Set("id", x509_util::RelativeOidToString(cosigner_id));
+      auto it = cosigner_status.find(cosigner_id);
+      if (it != cosigner_status.end()) {
+        cosigner_dict.Set("status", it->second);
+      }
+      output_cosigners.Append(std::move(cosigner_dict));
+    }
+    dict.Set("verified_cosigners", std::move(output_cosigners));
+    return dict;
+  });
+}
+
 // TODO(crbug.com/452983502): max age from CT policy. Is it good here too?
 constexpr base::TimeDelta kMaxSignerSetAge = base::Days(70);
 }  // namespace
@@ -799,8 +828,12 @@ bool TrustStoreChrome::IsMtcCosignerPolicySatisfied(
     const bssl::ParsedCertificate& target_cert,
     base::Time current_time,
     const bssl::MTCAnchor* mtc_anchor,
-    base::span<const std::vector<uint8_t>> valid_additional_cosigners) const {
+    base::span<const std::vector<uint8_t>> valid_additional_cosigners,
+    const NetLogWithSource& net_log) const {
+  absl::flat_hash_map<std::vector<uint8_t>, std::string> cosigner_status;
   if (disable_mtc_mirroring_requirements_) {
+    NetLogCosignerPolicyResult(true, "kill switch", valid_additional_cosigners,
+                               cosigner_status, net_log);
     return true;
   }
 
@@ -808,6 +841,9 @@ bool TrustStoreChrome::IsMtcCosignerPolicySatisfied(
   // initialized.
   CHECK(signer_set_timestamp_.has_value());
   if (current_time - *signer_set_timestamp_ > kMaxSignerSetAge) {
+    NetLogCosignerPolicyResult(true, "old SignerSet",
+                               valid_additional_cosigners, cosigner_status,
+                               net_log);
     // Fail open on old SignerSet data.
     return true;
   }
@@ -823,12 +859,17 @@ bool TrustStoreChrome::IsMtcCosignerPolicySatisfied(
   base::Time cert_not_before;
   if (!GeneralizedTimeToTime(target_cert.tbs().validity_not_before,
                              &cert_not_before)) {
+    NetLogCosignerPolicyResult(false, "cert error", valid_additional_cosigners,
+                               cosigner_status, net_log);
     return false;
   }
 
   const TrustStoreChrome::MtcAnchorExtraData* mtc_anchor_data =
       GetMTCAnchorData(mtc_anchor->ca_id());
   if (!mtc_anchor_data) {
+    NetLogCosignerPolicyResult(false, "CA data missing",
+                               valid_additional_cosigners, cosigner_status,
+                               net_log);
     return false;
   }
   const Signer& ca_signer = mtc_anchor_data->signer_config;
@@ -836,27 +877,40 @@ bool TrustStoreChrome::IsMtcCosignerPolicySatisfied(
   std::string ca_operator =
       GetOperatorForSignerIfUsableAtTime(ca_signer, cert_not_before);
   if (ca_operator.empty()) {
+    NetLogCosignerPolicyResult(false, "CA not usable at cert time",
+                               valid_additional_cosigners, cosigner_status,
+                               net_log);
     return false;
   }
 
   for (const auto& cosigner_id : valid_additional_cosigners) {
     auto it = signer_set_mirrors_.find(cosigner_id);
     if (it == signer_set_mirrors_.end()) {
+      cosigner_status[cosigner_id] = "mirror data missing";
       continue;
     }
     const Signer& mirror = it->second;
     std::string mirror_operator =
         GetOperatorForSignerIfUsableAtTime(mirror, cert_not_before);
     if (mirror_operator.empty()) {
+      cosigner_status[cosigner_id] = "mirror not usable at cert time";
       continue;
     }
 
     if (mirror_operator != ca_operator) {
       // Found a mirror that satisfies the policy requirements.
+      cosigner_status[cosigner_id] = "satisfies policy";
+      NetLogCosignerPolicyResult(true, "mirror policy satisfied",
+                                 valid_additional_cosigners, cosigner_status,
+                                 net_log);
       return true;
     }
+    cosigner_status[cosigner_id] = "same operator as CA";
   }
 
+  NetLogCosignerPolicyResult(false, "policy not satisfied",
+                             valid_additional_cosigners, cosigner_status,
+                             net_log);
   return false;
 }
 

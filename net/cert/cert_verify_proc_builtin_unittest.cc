@@ -23,6 +23,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "components/network_time/time_tracker/time_tracker.h"
@@ -317,8 +318,8 @@ class MockSystemTrustStore : public SystemTrustStore {
       const bssl::ParsedCertificate& target_cert,
       base::Time current_time,
       const bssl::MTCAnchor* mtc_anchor,
-      base::span<const std::vector<uint8_t>> valid_additional_cosigners)
-      const override {
+      base::span<const std::vector<uint8_t>> valid_additional_cosigners,
+      const NetLogWithSource& net_log) const override {
     got_valid_additional_cosigners_ =
         base::ToVector(valid_additional_cosigners);
     return mock_is_mtc_cosigner_policy_satisfied_;
@@ -1000,6 +1001,7 @@ TEST_F(CertVerifyProcBuiltinTest, StandaloneMtcCosignerPolicy) {
     // MTC with only CA signature should validate successfully when mirror
     // policy is not enforced.
     CertVerifyResult verify_result;
+    RecordingNetLogObserver net_log_observer(NetLogCaptureMode::kDefault);
     NetLogSource verify_net_log_source;
     TestCompletionCallback callback;
     Verify(leaf_with_ca_only.get(), "www.example.com", /*flags=*/0,
@@ -1015,6 +1017,17 @@ TEST_F(CertVerifyProcBuiltinTest, StandaloneMtcCosignerPolicy) {
         mtc_anchor->AsCert()->cert_buffer(),
         verify_result.verified_cert->cert_buffers()[1].get()));
     EXPECT_FALSE(verify_result.is_issued_by_known_root);
+
+    // In the case of locally trusted MTC anchors, the netlog is recorded
+    // directly from PathBuilderDelegateImpl without calling the trust store
+    // IsMtcCosignerPolicySatisfied.
+    auto events = net_log_observer.GetEntriesWithType(
+        NetLogEventType::CERT_MTC_COSIGNER_POLICY_CHECKED);
+    ASSERT_EQ(1u, events.size());
+    EXPECT_THAT(events[0].params, base::test::IsJson(R"({
+      "is_valid": true,
+      "reason": "locally trusted anchor",
+    })"));
   }
 
   {
@@ -1022,6 +1035,7 @@ TEST_F(CertVerifyProcBuiltinTest, StandaloneMtcCosignerPolicy) {
     // successfully when mirror policy is not enforced. The mirror signature is
     // not required, but being present does not affect the result.
     CertVerifyResult verify_result;
+    RecordingNetLogObserver net_log_observer(NetLogCaptureMode::kDefault);
     NetLogSource verify_net_log_source;
     TestCompletionCallback callback;
     Verify(leaf_with_ca_and_mirror.get(), "www.example.com", /*flags=*/0,
@@ -1037,11 +1051,23 @@ TEST_F(CertVerifyProcBuiltinTest, StandaloneMtcCosignerPolicy) {
         mtc_anchor->AsCert()->cert_buffer(),
         verify_result.verified_cert->cert_buffers()[1].get()));
     EXPECT_FALSE(verify_result.is_issued_by_known_root);
+
+    // In the case of locally trusted MTC anchors, the netlog is recorded
+    // directly from PathBuilderDelegateImpl without calling the trust store
+    // IsMtcCosignerPolicySatisfied.
+    auto events = net_log_observer.GetEntriesWithType(
+        NetLogEventType::CERT_MTC_COSIGNER_POLICY_CHECKED);
+    ASSERT_EQ(1u, events.size());
+    EXPECT_THAT(events[0].params, base::test::IsJson(R"({
+      "is_valid": true,
+      "reason": "locally trusted anchor",
+    })"));
   }
 
   {
     // MTC with no CA signature should fail regardless.
     CertVerifyResult verify_result;
+    RecordingNetLogObserver net_log_observer(NetLogCaptureMode::kDefault);
     NetLogSource verify_net_log_source;
     TestCompletionCallback callback;
     Verify(leaf_with_mirror_only.get(), "www.example.com", /*flags=*/0,
@@ -1049,6 +1075,10 @@ TEST_F(CertVerifyProcBuiltinTest, StandaloneMtcCosignerPolicy) {
 
     int error = callback.WaitForResult();
     EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+    EXPECT_EQ(0u, net_log_observer
+                      .GetEntriesWithType(
+                          NetLogEventType::CERT_MTC_COSIGNER_POLICY_CHECKED)
+                      .size());
   }
 
   // Second round of tests, with KnownMtcAnchor=true.
@@ -1063,6 +1093,7 @@ TEST_F(CertVerifyProcBuiltinTest, StandaloneMtcCosignerPolicy) {
     SetMockIsMtcCosignerPolicySatisfied(false);
 
     CertVerifyResult verify_result;
+    RecordingNetLogObserver net_log_observer(NetLogCaptureMode::kDefault);
     NetLogSource verify_net_log_source;
     TestCompletionCallback callback;
     Verify(leaf_with_ca_only.get(), "www.example.com", /*flags=*/0,
@@ -1072,6 +1103,13 @@ TEST_F(CertVerifyProcBuiltinTest, StandaloneMtcCosignerPolicy) {
     EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
     EXPECT_EQ(std::vector<std::vector<uint8_t>>{},
               TakeLastValidAdditionalCosigners());
+    // Since the trust store IsMtcCosignerPolicySatisfied is mocked and this is
+    // a known anchor, the CERT_MTC_COSIGNER_POLICY_CHECKED netlog is not
+    // recorded. (Those cases are tested in trust_store_chrome_unittest.cc.)
+    EXPECT_EQ(0u, net_log_observer
+                      .GetEntriesWithType(
+                          NetLogEventType::CERT_MTC_COSIGNER_POLICY_CHECKED)
+                      .size());
   }
   {
     // MTC validation should succeed when mirror policy is enforced and
