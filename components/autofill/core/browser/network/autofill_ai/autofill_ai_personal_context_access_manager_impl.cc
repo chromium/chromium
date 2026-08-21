@@ -80,7 +80,11 @@ CreateAmbientAutofillRequest(base::span<const EntityType> types,
     request.add_requested_types(
         AutofillEntityTypeToPersonalContextEntityType(type));
   }
-  request.set_return_spii_presence(return_spii_presence);
+  // Do not request presence if spii cache is enabled.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillAmbientAutofillSpiiCache)) {
+    request.set_return_spii_presence(return_spii_presence);
+  }
   request.set_client_id(std::move(client_id));
   return request;
 }
@@ -222,6 +226,8 @@ void AutofillAiPersonalContextAccessManagerImpl::PrefetchContext(
 
   // Request 1: collects non-spii entities and asks for spii presence if any of
   // the requested_types contains SPII types.
+  // If `kAutofillAmbientAutofillSpiiCache` is enabled, presence isn't requested
+  // anymore and spii is part of this request instead.
   {
     personal_context::proto::ContextMemoryAmbientAutofillRequest request =
         CreateAmbientAutofillRequest(non_spii_and_presence_to_request,
@@ -240,7 +246,10 @@ void AutofillAiPersonalContextAccessManagerImpl::PrefetchContext(
   }
 
   // Request 2: collects spii entities without asking for spii presence.
-  if (has_spii_types) {
+  // If `kAutofillAmbientAutofillSpiiCache` is enabled, spii is already fetched
+  // in the first request.
+  if (has_spii_types && !base::FeatureList::IsEnabled(
+                            features::kAutofillAmbientAutofillSpiiCache)) {
     personal_context::proto::ContextMemoryAmbientAutofillRequest request =
         CreateAmbientAutofillRequest(spii_to_request,
                                      /*return_spii_presence=*/false, client_id);
@@ -278,9 +287,10 @@ void AutofillAiPersonalContextAccessManagerImpl::
   }
 
   std::vector<EntityType> prefetched_types;
-
   for (const EntityType& type : requested_types) {
-    if (request_type == RequestType::kSpiiMasked ||
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillAmbientAutofillSpiiCache) ||
+        request_type == RequestType::kSpiiMasked ||
         !IsPersonalContextSpiiType(type)) {
       prefetched_types.push_back(type);
     }
@@ -312,6 +322,20 @@ AutofillAiPersonalContextAccessManagerImpl::ExtractEntitiesFromResponse(
       if (std::optional<EntityType> type =
               ToEntityType(entity.sensitive_pii_presence().type())) {
         entities.push_back({*type, entity});
+      }
+    }
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillAmbientAutofillSpiiCache) &&
+        entity.entity_case() ==
+            personal_context::proto::Entity::kEncryptedEntity) {
+      if (std::optional<personal_context::proto::Entity> decrypted_entity =
+              personal_context_service_->DecryptEntity(entity)) {
+        // TODO(crbug.com/548257908): Mask the decrypted entity.
+        if (std::optional<EntityInstance> converted =
+                PersonalContextEntityToEntityInstance(*decrypted_entity)) {
+          // Cache only the encrypted `entity`.
+          entities.push_back({std::move(*converted), entity});
+        }
       }
     } else {
       if (std::optional<EntityInstance> converted =
