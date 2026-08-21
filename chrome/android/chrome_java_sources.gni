@@ -894,6 +894,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/ntp/NewTabPageUma.java",
   "java/src/org/chromium/chrome/browser/ntp/NtpSmoothTransitionDelegate.java",
   "java/src/org/chromium/chrome/browser/ntp/RecentTabCountDrawable.java",
+  "java/src/org/chromium/chrome/browser/ntp/RecentTabsCoordinator.java",
   "java/src/org/chromium/chrome/browser/ntp/RecentTabsExpandableListView.java",
   "java/src/org/chromium/chrome/browser/ntp/RecentTabsGroupView.java",
   "java/src/org/chromium/chrome/browser/ntp/RecentTabsManager.java",
