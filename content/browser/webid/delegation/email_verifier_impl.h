@@ -38,7 +38,11 @@ class CONTENT_EXPORT EmailVerifierImpl : public EmailVerifier {
   EmailVerifierImpl& operator=(const EmailVerifierImpl&) = delete;
 
   // Checks if the given `email` is verifiable.
+  // `on_dns_resolved_callback` is invoked immediately after DNS TXT record
+  // lookup confirms the domain supports EVP, before well-known and account
+  // metadata fetches begin.
   void CheckIfVerifiable(const std::string& email,
+                         base::OnceClosure on_dns_resolved_callback,
                          IsVerifiableCallback callback) override;
 
   // Starts the verification process.

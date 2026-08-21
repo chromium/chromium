@@ -281,6 +281,7 @@ EmailVerificationRequest::~EmailVerificationRequest() {
 
 void EmailVerificationRequest::CheckIfVerifiable(
     const std::string& email,
+    base::OnceClosure on_dns_resolved_callback,
     EmailVerifier::IsVerifiableCallback callback) {
   is_verifiable_start_time_ = base::TimeTicks::Now();
   if (!render_frame_host_) {
@@ -314,13 +315,15 @@ void EmailVerificationRequest::CheckIfVerifiable(
   std::string hostname = "_email-verification." + *domain;
 
   dns_request_->SendRequest(
-      hostname, base::BindOnce(&EmailVerificationRequest::OnDnsRequestComplete,
-                               weak_ptr_factory_.GetWeakPtr(), email,
-                               std::move(callback)));
+      hostname,
+      base::BindOnce(&EmailVerificationRequest::OnDnsRequestComplete,
+                     weak_ptr_factory_.GetWeakPtr(), email,
+                     std::move(on_dns_resolved_callback), std::move(callback)));
 }
 
 void EmailVerificationRequest::OnDnsRequestComplete(
     const std::string& email,
+    base::OnceClosure on_dns_resolved_callback,
     EmailVerifier::IsVerifiableCallback callback,
     const std::optional<std::vector<std::string>>& text_records) {
   if (!render_frame_host_) {
@@ -353,6 +356,10 @@ void EmailVerificationRequest::OnDnsRequestComplete(
         std::move(callback), std::nullopt,
         EmailVerificationRequestResult::kDnsInvalidRecord);
     return;
+  }
+
+  if (on_dns_resolved_callback) {
+    std::move(on_dns_resolved_callback).Run();
   }
 
   GURL issuer("https://" + iss);
