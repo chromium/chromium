@@ -407,7 +407,10 @@ public class SigninButtonCoordinatorTest {
 
         // Clicking the sign-in button should lead to the sign-in bottom sheet.
         onView(withId(R.id.signin_button)).perform(click());
-        ViewUtils.waitForVisibleView(withText(R.string.signin_account_picker_bottom_sheet_title));
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.account_picker_header_title),
+                        withText(R.string.signin_account_picker_bottom_sheet_title)));
     }
 
     @Test

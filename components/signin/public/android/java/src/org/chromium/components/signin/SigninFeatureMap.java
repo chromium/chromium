@@ -69,18 +69,18 @@ public final class SigninFeatureMap extends FeatureMap {
 
     /** Returns the currently enabled sign-in promo type. */
     public @SeamlessSigninPromoType int getSeamlessSigninPromoType() {
+        if (!isEnabledInNative(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
+            return SeamlessSigninPromoType.NON_SEAMLESS;
+        }
         String promoType =
-                SigninFeatureMap.getInstance()
-                        .getFieldTrialParamByFeature(
-                                SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-                                "seamless-signin-promo-type");
+                getFieldTrialParamByFeature(
+                        SigninFeatures.ENABLE_SEAMLESS_SIGNIN, "seamless-signin-promo-type");
         switch (promoType) {
-            case "compact":
-                return SeamlessSigninPromoType.COMPACT;
             case "twoButtons":
                 return SeamlessSigninPromoType.TWO_BUTTONS;
+            case "compact":
             default:
-                return SeamlessSigninPromoType.NON_SEAMLESS;
+                return SeamlessSigninPromoType.COMPACT;
         }
     }
 
@@ -98,18 +98,18 @@ public final class SigninFeatureMap extends FeatureMap {
 
     /** Returns the set of strings that is currently enabled for the seamless sign-in experiment. */
     public @SeamlessSigninStringType int getSeamlessSigninStringType() {
+        if (!isEnabledInNative(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
+            return SeamlessSigninStringType.NON_SEAMLESS;
+        }
         String stringType =
-                SigninFeatureMap.getInstance()
-                        .getFieldTrialParamByFeature(
-                                SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-                                "seamless-signin-string-type");
+                getFieldTrialParamByFeature(
+                        SigninFeatures.ENABLE_SEAMLESS_SIGNIN, "seamless-signin-string-type");
         switch (stringType) {
-            case "continueButton":
-                return SeamlessSigninStringType.CONTINUE_BUTTON;
             case "signinButton":
                 return SeamlessSigninStringType.SIGNIN_BUTTON;
+            case "continueButton":
             default:
-                return SeamlessSigninStringType.NON_SEAMLESS;
+                return SeamlessSigninStringType.CONTINUE_BUTTON;
         }
     }
 
