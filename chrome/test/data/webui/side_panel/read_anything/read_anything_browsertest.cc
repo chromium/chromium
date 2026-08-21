@@ -276,11 +276,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, RateMenu) {
   RunSidePanelTest("side_panel/read_anything/rate_menu_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ToolbarOverflow) {
-  RunSidePanelTest("side_panel/read_anything/toolbar_overflow_test.js",
-                   "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechUsesMaxTextLength) {
   RunSidePanelTest(
       "side_panel/read_anything/speech_uses_max_text_length_test.js",

@@ -8,7 +8,7 @@ import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {IMAGES_DISABLED_ICON, IMAGES_ENABLED_ICON, IMAGES_TOGGLE_BUTTON_ID, LINK_TOGGLE_BUTTON_ID, LINKS_DISABLED_ICON, LINKS_ENABLED_ICON, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -22,6 +22,7 @@ suite('Toolbar', () => {
   let metrics: TestMetricsBrowserProxy;
 
   async function createToolbar(): Promise<void> {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     toolbar = document.createElement('read-anything-toolbar');
     document.body.appendChild(toolbar);
     await microtasksFinished();
@@ -34,127 +35,63 @@ suite('Toolbar', () => {
   }
 
   setup(() => {
-    // Clearing the DOM should always be done first.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
+    chrome.readingMode.isImmersiveEnabled = true;
     metrics = mockMetrics();
+    return createToolbar();
   });
 
-  suite('with read aloud', () => {
+  test('has audio controls', () => {
+    const audioControls = shadowRoot.querySelector('#audio-controls');
+    assertTrue(!!audioControls);
+  });
+
+  test('does not have highlight menu', () => {
+    stubAnimationFrame();
+    const highlightButton = getButton('highlight');
+    assertFalse(!!highlightButton);
+  });
+
+  test('does not have voice menu', () => {
+    stubAnimationFrame();
+    const voiceButton = getButton('voice-selection');
+    assertFalse(!!voiceButton);
+  });
+
+  test('does have settings menu', () => {
+    stubAnimationFrame();
+    const moreButton = getButton('more');
+    assertTrue(!!moreButton);
+  });
+
+  suite('tab index', () => {
     setup(() => {
-      return createToolbar();
+      assertEquals(toolbar.$.toolbarContainer.tabIndex, 0);
     });
 
-    test('has text settings menus', () => {
+    test('is -1 after Tab keydown', () => {
       stubAnimationFrame();
-
-      const colorButton = getButton('color');
-      assertTrue(!!colorButton);
-      colorButton.click();
-      assertTrue(toolbar.$.colorMenu.$.menu.$.lazyMenu.get().open);
-
-      const lineSpacingButton = getButton('line-spacing');
-      assertTrue(!!lineSpacingButton);
-      lineSpacingButton.click();
-      assertTrue(toolbar.$.lineSpacingMenu.$.menu.$.lazyMenu.get().open);
-
-      const letterSpacingButton = getButton('letter-spacing');
-      assertTrue(!!letterSpacingButton);
-      letterSpacingButton.click();
-      assertTrue(toolbar.$.letterSpacingMenu.$.menu.$.lazyMenu.get().open);
+      toolbar.$.toolbarContainer.dispatchEvent(new FocusEvent('blur'));
+      assertEquals(toolbar.$.toolbarContainer.tabIndex, -1);
     });
 
-    test('has highlight menu', () => {
+    test('is reset after closing reading mode', async () => {
       stubAnimationFrame();
-      const highlightButton = getButton('highlight');
-
-      assertTrue(!!highlightButton);
-      highlightButton.click();
-
-      assertTrue(toolbar.$.highlightMenu.$.menu.$.lazyMenu.get().open);
+      toolbar.$.toolbarContainer.dispatchEvent(new FocusEvent('blur'));
+      assertEquals(toolbar.$.toolbarContainer.tabIndex, -1);
+      toolbar.presentationState = 1;
+      await microtasksFinished();
+      assertEquals(toolbar.$.toolbarContainer.tabIndex, 0);
     });
 
-    test('has voice menu', () => {
+    test('is reset after opening reading mode in side panel', async () => {
       stubAnimationFrame();
-      const voiceButton = getButton('voice-selection');
-
-      assertTrue(!!voiceButton);
-      voiceButton.click();
-
-      assertTrue(toolbar.$.voiceSelectionMenu.$.voiceSelectionMenu.get().open);
-    });
-
-    test('has audio controls', () => {
-      const audioControls = shadowRoot.querySelector('#audio-controls');
-      assertTrue(!!audioControls);
-    });
-
-    test('font is dropdown menu from button', () => {
-      stubAnimationFrame();
-      const fontButton = getButton('font');
-
-      assertTrue(!!fontButton);
-      fontButton.click();
-
-      assertTrue(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
-    });
-
-    suite('with immersive reading mode', () => {
-      setup(() => {
-        chrome.readingMode.isImmersiveEnabled = true;
-        return createToolbar();
-      });
-
-      test('does not have highlight menu', () => {
-        stubAnimationFrame();
-        const highlightButton = getButton('highlight');
-        assertFalse(!!highlightButton);
-      });
-
-      test('does not have voice menu', () => {
-        stubAnimationFrame();
-        const voiceButton = getButton('voice-selection');
-        assertFalse(!!voiceButton);
-      });
-
-      test('does have settings menu', () => {
-        stubAnimationFrame();
-        const moreButton = getButton('more');
-        assertTrue(!!moreButton);
-      });
-
-      suite('tab index', () => {
-        setup(() => {
-          toolbar.isImmersiveMode = true;
-          assertEquals(toolbar.$.toolbarContainer.tabIndex, 0);
-        });
-
-        test('is -1 after Tab keydown', () => {
-          stubAnimationFrame();
-          toolbar.$.toolbarContainer.dispatchEvent(new FocusEvent('blur'));
-          assertEquals(toolbar.$.toolbarContainer.tabIndex, -1);
-        });
-
-        test('is reset after closing reading mode', async () => {
-          stubAnimationFrame();
-          toolbar.$.toolbarContainer.dispatchEvent(new FocusEvent('blur'));
-          assertEquals(toolbar.$.toolbarContainer.tabIndex, -1);
-          toolbar.presentationState = 1;
-          await microtasksFinished();
-          assertEquals(toolbar.$.toolbarContainer.tabIndex, 0);
-        });
-
-        test('is reset after opening reading mode in side panel', async () => {
-          toolbar.isImmersiveMode = true;
-          stubAnimationFrame();
-          toolbar.$.toolbarContainer.dispatchEvent(new FocusEvent('blur'));
-          assertEquals(toolbar.$.toolbarContainer.tabIndex, -1);
-          toolbar.presentationState = 2;
-          await microtasksFinished();
-          assertEquals(toolbar.$.toolbarContainer.tabIndex, 0);
-        });
-      });
+      toolbar.$.toolbarContainer.dispatchEvent(new FocusEvent('blur'));
+      assertEquals(toolbar.$.toolbarContainer.tabIndex, -1);
+      toolbar.presentationState = 2;
+      await microtasksFinished();
+      assertEquals(toolbar.$.toolbarContainer.tabIndex, 0);
     });
   });
 
@@ -164,12 +101,10 @@ suite('Toolbar', () => {
     async function changeRate(rate: number) {
       toolbar.$.rateMenu.dispatchEvent(
           new CustomEvent(ToolbarEvent.RATE, {detail: {data: rate}}));
-      return microtasksFinished();
+      await microtasksFinished();
     }
 
-    setup(async () => {
-      await createToolbar();
-
+    setup(() => {
       const rate = shadowRoot.querySelector<CrButtonElement>('#rate');
       assertTrue(!!rate);
       rateButton = rate;
@@ -197,66 +132,12 @@ suite('Toolbar', () => {
     });
   });
 
-  suite('highlight button', () => {
-    let highlightButton: CrIconButtonElement;
-
-    async function changeHighlight(granularity: number) {
-      toolbar.$.highlightMenu.dispatchEvent(new CustomEvent(
-          ToolbarEvent.HIGHLIGHT_CHANGE, {detail: {data: granularity}}));
-      return microtasksFinished();
-    }
-
-    setup(async () => {
-      await createToolbar();
-
-      const highlight = getButton('highlight');
-      assertTrue(!!highlight);
-      highlightButton = highlight;
-    });
-
-    test('shows highlight menu on click', () => {
-      stubAnimationFrame();
-      highlightButton.click();
-      assertTrue(toolbar.$.highlightMenu.$.menu.$.lazyMenu.get().open);
-    });
-
-    test('icon defaults to on', () => {
-      const icon = loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'ink-highlighter-move' :
-          'highlight-on-old';
-      assertStringContains(highlightButton.ironIcon!, icon);
-    });
-
-    test('highlight off updates button icon', async () => {
-      await changeHighlight(chrome.readingMode.noHighlighting);
-      const icon = loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'ink-highlighter' :
-          'highlight-off';
-      assertStringContains(highlightButton.ironIcon!, icon);
-    });
-
-    test('highlight granularities update button icon', async () => {
-      await changeHighlight(chrome.readingMode.noHighlighting);
-      await changeHighlight(chrome.readingMode.wordHighlighting);
-      const icon = loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-          'ink-highlighter-move' :
-          'highlight-on-old';
-      assertStringContains(highlightButton.ironIcon!, icon);
-
-      await changeHighlight(chrome.readingMode.noHighlighting);
-      await changeHighlight(chrome.readingMode.autoHighlighting);
-      assertStringContains(highlightButton.ironIcon!, icon);
-    });
-  });
-
   suite('audio buttons', () => {
     let playPauseButton: CrIconButtonElement;
     let nextButton: CrIconButtonElement;
     let previousButton: CrIconButtonElement;
 
     setup(async () => {
-      await createToolbar();
-
       const playPause = getButton('play-pause');
       assertTrue(!!playPause, 'play');
       playPauseButton = playPause;
@@ -268,7 +149,7 @@ suite('Toolbar', () => {
       previousButton = previous;
 
       toolbar.isReadAloudPlayable = true;
-      return microtasksFinished();
+      await microtasksFinished();
     });
 
     test('all buttons disabled when not playable', async () => {
@@ -280,7 +161,29 @@ suite('Toolbar', () => {
       assertTrue(previousButton.disabled);
     });
 
+    test(
+        'next and previous buttons are disabled if speech is not active',
+        async () => {
+          toolbar.isSpeechActive = false;
+          await microtasksFinished();
+
+          assertTrue(nextButton.disabled);
+          assertTrue(previousButton.disabled);
+        });
+
+    test(
+        'granularity buttons are visible when speech is inactive', async () => {
+          toolbar.isSpeechActive = false;
+          await microtasksFinished();
+
+          assertTrue(isVisible(previousButton));
+          assertTrue(isVisible(nextButton));
+        });
+
     test('next button emits next event', async () => {
+      toolbar.isSpeechActive = true;
+      await microtasksFinished();
+
       let nextEmitted = false;
       document.addEventListener(
           ToolbarEvent.NEXT_GRANULARITY, () => nextEmitted = true);
@@ -292,6 +195,9 @@ suite('Toolbar', () => {
     });
 
     test('next button logs next event', async () => {
+      toolbar.isSpeechActive = true;
+      await microtasksFinished();
+
       nextButton.click();
       await microtasksFinished();
 
@@ -300,19 +206,10 @@ suite('Toolbar', () => {
           await metrics.whenCalled('incrementMetricCount'));
     });
 
-    test('next button hidden when speech is inactive', async () => {
-      toolbar.isSpeechActive = false;
-      await microtasksFinished();
-      assertFalse(isVisible(nextButton));
-    });
-
-    test('next button showing when speech is active', async () => {
+    test('previous button emits previous event', async () => {
       toolbar.isSpeechActive = true;
       await microtasksFinished();
-      assertTrue(isVisible(nextButton));
-    });
 
-    test('previous button emits previous event', async () => {
       let previousEmitted = false;
       document.addEventListener(
           ToolbarEvent.PREVIOUS_GRANULARITY, () => previousEmitted = true);
@@ -324,24 +221,15 @@ suite('Toolbar', () => {
     });
 
     test('previous button logs previous event', async () => {
+      toolbar.isSpeechActive = true;
+      await microtasksFinished();
+
       previousButton.click();
       await microtasksFinished();
 
       assertEquals(
           'Accessibility.ReadAnything.ReadAloudPreviousButtonSessionCount',
           await metrics.whenCalled('incrementMetricCount'));
-    });
-
-    test('previous button hidden when speech is inactive', async () => {
-      toolbar.isSpeechActive = false;
-      await microtasksFinished();
-      assertFalse(isVisible(previousButton));
-    });
-
-    test('previous button showing when speech is active', async () => {
-      toolbar.isSpeechActive = true;
-      await microtasksFinished();
-      assertTrue(isVisible(previousButton));
     });
 
     test('play button emits play pause event', async () => {
@@ -418,227 +306,15 @@ suite('Toolbar', () => {
           'play / pause, keyboard shortcut k',
           playPauseButton.ariaLabel!.toLowerCase());
     });
-
-    suite('with immersive reading mode enabled', () => {
-      setup(async () => {
-        chrome.readingMode.isImmersiveEnabled = true;
-        await createToolbar();
-        const next = getButton('nextGranularity');
-        assertTrue(!!next, 'next');
-        nextButton = next;
-        const previous = getButton('previousGranularity');
-        assertTrue(!!previous, 'previous');
-        previousButton = previous;
-
-        toolbar.isReadAloudPlayable = true;
-        return microtasksFinished();
-      });
-
-      test(
-          'granularity buttons are visible when speech is inactive',
-          async () => {
-            toolbar.isSpeechActive = false;
-            await microtasksFinished();
-            assertTrue(isVisible(previousButton) && isVisible(nextButton));
-          });
-
-      test('next button emits next event if speech is active', async () => {
-        toolbar.isSpeechActive = true;
-        await microtasksFinished();
-
-        let nextEmitted = false;
-        const handler = () => nextEmitted = true;
-
-        toolbar.addEventListener(ToolbarEvent.NEXT_GRANULARITY, handler);
-
-        nextButton.click();
-        await microtasksFinished();
-
-        assertTrue(nextEmitted);
-      });
-
-      test(
-          'previous button emits previous event if speech is active',
-          async () => {
-            toolbar.isSpeechActive = true;
-            await microtasksFinished();
-
-            let previousEmitted = false;
-            document.addEventListener(
-                ToolbarEvent.PREVIOUS_GRANULARITY,
-                () => previousEmitted = true);
-
-            previousButton.click();
-            await microtasksFinished();
-
-            assertTrue(previousEmitted);
-          });
-
-      test(
-          'next and previous buttons are disabled if speech is not activee',
-          async () => {
-            toolbar.isSpeechActive = false;
-            await microtasksFinished();
-
-            assertTrue(nextButton.disabled);
-            assertTrue(previousButton.disabled);
-          });
-    });
-  });
-
-  suite('link button', () => {
-    let menuButton: CrIconButtonElement;
-
-    setup(async () => {
-      await createToolbar();
-      const linkButton = getButton(LINK_TOGGLE_BUTTON_ID);
-      assertTrue(!!linkButton);
-      menuButton = linkButton;
-    });
-
-    test('by default links are on and button is enabled', () => {
-      assertEquals(LINKS_ENABLED_ICON, menuButton.ironIcon);
-      assertTrue(chrome.readingMode.linksEnabled);
-      assertStringContains('disable links', menuButton.title.toLowerCase());
-      assertStringContains(
-          'disable links', menuButton.ariaLabel!.toLowerCase());
-      assertFalse(menuButton.disabled);
-    });
-
-    test('links turn off on click', async () => {
-      menuButton.click();
-      await microtasksFinished();
-
-      assertEquals(LINKS_DISABLED_ICON, menuButton.ironIcon);
-      assertFalse(chrome.readingMode.linksEnabled);
-      assertStringContains('enable links', menuButton.title.toLowerCase());
-      assertStringContains('enable links', menuButton.ariaLabel!.toLowerCase());
-    });
-
-    test('links turn on on second click', async () => {
-      menuButton.click();
-      await microtasksFinished();
-      menuButton.click();
-      await microtasksFinished();
-
-      assertEquals(LINKS_ENABLED_ICON, menuButton.ironIcon);
-      assertTrue(chrome.readingMode.linksEnabled);
-      assertStringContains('disable links', menuButton.title.toLowerCase());
-      assertStringContains(
-          'disable links', menuButton.ariaLabel!.toLowerCase());
-    });
-
-    test('event is propagated on click', () => {
-      let linksToggled = false;
-      document.addEventListener(ToolbarEvent.LINKS, () => linksToggled = true);
-
-      menuButton.click();
-
-      assertTrue(linksToggled);
-    });
-
-    test('when speech active, button is disabled', async () => {
-      toolbar.isSpeechActive = true;
-      await microtasksFinished();
-      assertTrue(menuButton.disabled);
-    });
-
-    test('when speech not active, button is enabled', async () => {
-      toolbar.isSpeechActive = false;
-      await microtasksFinished();
-      assertFalse(menuButton.disabled);
-    });
-  });
-
-  suite('image button', () => {
-    let menuButton: CrIconButtonElement;
-
-    async function getImageButton() {
-      await createToolbar();
-      const imageButton = getButton(IMAGES_TOGGLE_BUTTON_ID);
-      assertTrue(!!imageButton);
-      menuButton = imageButton;
-    }
-
-    test('by default images are off and button is enabled', async () => {
-      await getImageButton();
-
-      assertEquals(IMAGES_DISABLED_ICON, menuButton.ironIcon);
-      assertFalse(chrome.readingMode.imagesEnabled);
-      assertStringContains('enable images', menuButton.title.toLowerCase());
-      assertStringContains(
-          'enable images', menuButton.ariaLabel!.toLowerCase());
-      assertFalse(menuButton.disabled);
-    });
-
-    test('images turn off on click', async () => {
-      await getImageButton();
-
-      menuButton.click();
-      await microtasksFinished();
-
-      assertEquals(IMAGES_ENABLED_ICON, menuButton.ironIcon);
-      assertTrue(chrome.readingMode.imagesEnabled);
-      assertStringContains('disable images', menuButton.title.toLowerCase());
-      assertStringContains(
-          'disable images', menuButton.ariaLabel!.toLowerCase());
-    });
-
-    test('images turn on on second click', async () => {
-      await getImageButton();
-
-      menuButton.click();
-      await microtasksFinished();
-      menuButton.click();
-      await microtasksFinished();
-
-      assertEquals(IMAGES_DISABLED_ICON, menuButton.ironIcon);
-      assertFalse(chrome.readingMode.imagesEnabled);
-      assertStringContains('enable images', menuButton.title.toLowerCase());
-      assertStringContains(
-          'enable images', menuButton.ariaLabel!.toLowerCase());
-    });
-
-    test('event is propagated on click', async () => {
-      let imagesToggled = false;
-      document.addEventListener(
-          ToolbarEvent.IMAGES, () => imagesToggled = true);
-      await getImageButton();
-
-      menuButton.click();
-
-      assertTrue(imagesToggled);
-    });
-
-    test('when speech active, button is disabled', async () => {
-      await getImageButton();
-
-      toolbar.isSpeechActive = true;
-      await microtasksFinished();
-
-      assertTrue(menuButton.disabled);
-    });
-
-    test('when speech not active, button is enabled', async () => {
-      await getImageButton();
-
-      toolbar.isSpeechActive = false;
-      await microtasksFinished();
-
-      assertFalse(menuButton.disabled);
-    });
   });
 
   suite('line focus button', () => {
-    async function getLineFocusButton(): Promise<CrIconButtonElement|null> {
-      await createToolbar();
-      return getButton('line-focus-off');
-    }
-
-    test('shows with line focus on', async () => {
+    setup(async () => {
       chrome.readingMode.isLineFocusEnabled = true;
       await createToolbar();
+    });
 
+    test('shows with line focus on', async () => {
       toolbar.isLineFocusShowing = true;
       await microtasksFinished();
 
@@ -646,8 +322,6 @@ suite('Toolbar', () => {
     });
 
     test('turns line focus off', async () => {
-      chrome.readingMode.isLineFocusEnabled = true;
-      await createToolbar();
       toolbar.isLineFocusShowing = true;
       await microtasksFinished();
       const button = getButton('line-focus-off');
@@ -662,29 +336,17 @@ suite('Toolbar', () => {
     });
 
     test('does not show with line focus off', async () => {
-      chrome.readingMode.isLineFocusEnabled = true;
-      const button = await getLineFocusButton();
-
       toolbar.isLineFocusShowing = false;
       await microtasksFinished();
 
-      assertFalse(!!button);
-    });
-
-    test('does not show with line focus flag disabled', async () => {
-      chrome.readingMode.isLineFocusEnabled = false;
-      const button = await getLineFocusButton();
-
-      toolbar.isLineFocusShowing = true;
-      await microtasksFinished();
-
-      assertFalse(!!button);
+      assertFalse(!!getButton('line-focus-off'));
     });
   });
 
   suite('ai playback button', () => {
     test('does not show with flag disabled', async () => {
-      chrome.readingMode.isReadAnythingReadAloudExperimentalPlaybackUiEnabled = false;
+      chrome.readingMode.isReadAnythingReadAloudExperimentalPlaybackUiEnabled =
+          false;
       await createToolbar();
       assertFalse(!!getButton('ai-playback-toggle'));
     });
@@ -693,7 +355,8 @@ suite('Toolbar', () => {
       let aiPlaybackButton: CrIconButtonElement;
 
       setup(async () => {
-        chrome.readingMode.isReadAnythingReadAloudExperimentalPlaybackUiEnabled = true;
+        chrome.readingMode
+            .isReadAnythingReadAloudExperimentalPlaybackUiEnabled = true;
         await createToolbar();
 
         const button = getButton('ai-playback-toggle');
