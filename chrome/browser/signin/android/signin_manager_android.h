@@ -5,17 +5,18 @@
 #ifndef CHROME_BROWSER_SIGNIN_ANDROID_SIGNIN_MANAGER_ANDROID_H_
 #define CHROME_BROWSER_SIGNIN_ANDROID_SIGNIN_MANAGER_ANDROID_H_
 
-#include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_member.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace policy {

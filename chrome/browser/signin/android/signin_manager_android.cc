@@ -11,40 +11,29 @@
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/bookmarks/android/bookmark_bridge.h"
-#include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_mobile.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/signin/account_id_from_account_info.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/google/core/common/google_util.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
-#include "components/policy/core/common/policy_switches.h"
 #include "components/prefs/android/pref_service_android.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
-#include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/sync/account_extension_tracker.h"
@@ -52,8 +41,6 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/signin/services/android/jni_headers/SigninManagerImpl_jni.h"
-
-using base::android::JavaRef;
 
 namespace {
 
