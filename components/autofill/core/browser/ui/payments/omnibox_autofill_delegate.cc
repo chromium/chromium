@@ -272,6 +272,10 @@ bool OmniboxAutofillDelegate::IsSearching() const {
   return false;
 }
 
+FieldGlobalId OmniboxAutofillDelegate::GetQueriedFieldId() const {
+  return trigger_field_global_id_;
+}
+
 std::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
 OmniboxAutofillDelegate::GetDriver() {
   auto* manager = client_->GetAutofillManagerForPrimaryMainFrame();

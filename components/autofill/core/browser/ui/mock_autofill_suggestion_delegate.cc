@@ -6,7 +6,10 @@
 
 namespace autofill {
 
-MockAutofillSuggestionDelegate::MockAutofillSuggestionDelegate() = default;
+MockAutofillSuggestionDelegate::MockAutofillSuggestionDelegate() {
+  ON_CALL(*this, GetQueriedFieldId)
+      .WillByDefault(testing::Return(FieldGlobalId()));
+}
 
 MockAutofillSuggestionDelegate::~MockAutofillSuggestionDelegate() = default;
 

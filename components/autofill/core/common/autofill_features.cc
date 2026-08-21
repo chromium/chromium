@@ -449,6 +449,13 @@ BASE_FEATURE(kAutofillAtMemoryInactivityNudge,
 BASE_FEATURE(kAutofillBetterLocalHeuristicPlaceholderSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Check that between the time a filling flow is triggered and the popup being
+// displayed, the field id to anchor the popup on did not change.
+// TODO(crbug.com/8233280): This is a kill-switch feature, remove once we are
+// sure no bug was introduced.
+BASE_FEATURE(kAutofillCheckTriggeringFieldDoesNotChangeDuringFilling,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Same as `kAutofillAddressUserPerceptionSurvey` but for credit card forms.
 BASE_FEATURE(kAutofillCreditCardUserPerceptionSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);

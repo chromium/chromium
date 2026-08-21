@@ -2098,7 +2098,7 @@ TEST_F(PasswordAutofillManagerTest, ManualFallback_InvokesFlow) {
   field.bounds = gfx::RectF(1, 1, 2, 2);
   field.text_direction = base::i18n::LEFT_TO_RIGHT;
   EXPECT_CALL(manual_fallback_flow(),
-              RunFlow(kElementId, field.bounds, field.text_direction));
+              RunFlow(field.element_id, field.bounds, field.text_direction));
   password_autofill_manager_->ShowSuggestions(field);
 }
 
