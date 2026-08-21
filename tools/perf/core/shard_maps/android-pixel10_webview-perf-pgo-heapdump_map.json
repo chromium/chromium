@@ -1,0 +1,28 @@
+{
+    "0": {
+        "crossbench": {
+            "shell.embedder.crossbench": {
+                "crossbench_name": "embedder",
+                "arguments": [
+                    "--wpr=crossbench_android_loading_000.wprgo",
+                    "--embedder=webview_embedder",
+                    "--splashscreen=skip",
+                    "--probe-config=../../third_party/crossbench/config/team/woa/wv_shell_memory.probe.config.hjson",
+                    "--cuj-config=../../third_party/crossbench/config/team/woa/staggered_wv_startup_cuj_config.hjson",
+                    "--android-activity=ManuallyTriggeredStartupActivity",
+                    "--repetitions=25",
+                    "--cool-down-threshold=moderate"
+                ]
+            }
+        },
+        "benchmarks": {}
+    },
+    "extra_infos": {
+        "num_stories": 1,
+        "predicted_min_shard_time": 900,
+        "predicted_min_shard_index": 0,
+        "predicted_max_shard_time": 900,
+        "predicted_max_shard_index": 0,
+        "shard #0": 900
+    }
+}

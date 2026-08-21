@@ -18,6 +18,7 @@
  * [android-pixel10-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel10-perf): Android B.
  * [android-pixel10_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel10_webview-perf): Android B.
  * [android-pixel10_webview-perf-pgo](https://ci.chromium.org/p/chrome/builders/ci/android-pixel10_webview-perf-pgo): Android B.
+ * [android-pixel10_webview-perf-pgo-heapdump](https://ci.chromium.org/p/chrome/builders/ci/android-pixel10_webview-perf-pgo-heapdump): Android B.
  * [android-pixel4-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4-perf): Android R.
  * [android-pixel4_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4_webview-perf): Android R.
  * [android-pixel4_webview-perf-pgo](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4_webview-perf-pgo): Android R.

@@ -1204,6 +1204,12 @@ PLATFORM_INFO = {
     'platform_os': 'android',
     'is_fyi': False,
   },
+  'android-pixel10_webview-perf-pgo-heapdump': {
+    'description': 'Android B',
+    'num_shards': 1,
+    'platform_os': 'android',
+    'is_fyi': False,
+  },
   'fuchsia-perf-nsn': {
     'description': '',
     'num_shards': 1,

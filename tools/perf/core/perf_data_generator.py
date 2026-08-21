@@ -159,6 +159,7 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset(
     'android-pixel10-perf',
     'android-pixel10_webview-perf',
     'android-pixel10_webview-perf-pgo',
+    'android-pixel10_webview-perf-pgo-heapdump',
     'android-brya-kano-i5-8gb-perf',
     'android-corsola-steelix-8gb-perf',
     'android-nissa-uldren-8gb-perf',
@@ -211,6 +212,7 @@ PUBLIC_PERF_BUILDERS = [
   'android-pixel10-perf',
   'android-pixel10_webview-perf',
   'android-pixel10_webview-perf-pgo',
+  'android-pixel10_webview-perf-pgo-heapdump',
   'linux-arm-builder-perf',
   'linux-builder-perf',
   'linux-falcon-rak-5070-perf',
@@ -883,6 +885,21 @@ BUILDERS = {
     },
   },
   'android-pixel10_webview-perf-pgo': {
+    'tests': [
+      {
+        'isolate': 'performance_webview_test_suite',
+      }
+    ],
+    'platform': 'android-webview-standalone-google',
+    'dimension': {
+      'pool': 'chrome.tests.perf-webview-pgo',
+      'os': 'Android',
+      'device_type': 'frankel',
+      'device_os': 'BP4A.260105.004.E1',
+      'device_os_flavor': 'google',
+    },
+  },
+  'android-pixel10_webview-perf-pgo-heapdump': {
     'tests': [
       {
         'isolate': 'performance_webview_test_suite',

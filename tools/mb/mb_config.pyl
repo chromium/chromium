@@ -79,6 +79,7 @@
       'android_arm64-builder-perf-pgo': 'official_remoteexec_minimal_symbols_android_arm64_pgo',
       'android_arm64_high_end-builder-perf': 'official_remoteexec_minimal_symbols_android_arm64_high_end',
       'android_arm64_high_end-builder-perf-pgo': 'official_remoteexec_minimal_symbols_android_arm64_high_end_pgo',
+      'android_arm64_high_end-builder-perf-pgo-heapdump': 'official_remoteexec_minimal_symbols_android_arm64_high_end_pgo_heapdump',
       'chromecast-linux-builder-perf': 'cast_binary_size_remoteexec',
       'linux-arm-builder-perf': 'official_linux_perf_arm64',
       'linux-builder-perf': 'official_linux_perf',
@@ -114,6 +115,7 @@
       'android_arm64-builder-perf-pgo': 'official_remoteexec_minimal_symbols_android_arm64_pgo',
       'android_arm64_high_end-builder-perf': 'official_remoteexec_minimal_symbols_android_arm64_high_end',
       'android_arm64_high_end-builder-perf-pgo': 'official_remoteexec_minimal_symbols_android_arm64_high_end_pgo',
+      'android_arm64_high_end-builder-perf-pgo-heapdump': 'official_remoteexec_minimal_symbols_android_arm64_high_end_pgo_heapdump',
       'chromecast-linux-builder-perf': 'cast_binary_size_remoteexec',
       'linux-arm-builder-perf': 'official_linux_perf_arm64',
       'linux-builder-perf': 'official_linux_perf',
@@ -548,6 +550,10 @@
       'official', 'remoteexec', 'minimal_symbols', 'android', 'arm64', 'no_default_afdo',
     ],
 
+    'official_remoteexec_minimal_symbols_android_arm64_high_end_pgo_heapdump': [
+      'official', 'remoteexec', 'minimal_symbols', 'android', 'arm64', 'no_default_afdo', 'no_partition_alloc_as_malloc',
+    ],
+
     'official_remoteexec_minimal_symbols_android_arm64_pgo': [
       'official', 'remoteexec', 'minimal_symbols', 'android', 'arm64', 'android_low_end',
     ],
@@ -951,6 +957,10 @@
 
     'no_default_afdo': {
       'gn_args': 'clang_use_default_sample_profile=false',
+    },
+
+    'no_partition_alloc_as_malloc': {
+      'gn_args': 'use_partition_alloc_as_malloc=false',
     },
 
     'no_proguard_obfuscation': {
