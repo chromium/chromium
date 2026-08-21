@@ -25,8 +25,13 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/url_util.h"
 #include "ui/webui/webui_util.h"
+
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/grit/guest_view_shared_resources_map.h"  // nogncheck
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/theme_source.h"
@@ -100,6 +105,13 @@ GlicExperimentalOptInUI::GlicExperimentalOptInUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, kGlicExperimentalOptInResources,
       IDR_GLIC_EXPERIMENTAL_OPT_IN_EXPERIMENTAL_OPT_IN_HTML);
+
+#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  auto bindings = web_ui->GetBindings();
+  bindings.Put(content::BindingsPolicyValue::kSlimWebView);
+  web_ui->SetBindings(bindings);
+  source->AddResourcePaths(kGuestViewSharedResources);
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(profile);

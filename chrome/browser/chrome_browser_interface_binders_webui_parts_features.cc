@@ -127,11 +127,12 @@ void PopulateChromeWebUIFrameBindersPartsFeatures(
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
     RegisterWebUIControllerInterfaceBinder<
-        guest_view::mojom::PageHandlerFactory, glic::GlicUI, ContextualTasksUI>(
-        map);
+        guest_view::mojom::PageHandlerFactory, glic::GlicUI,
+        glic::GlicExperimentalOptInUI, ContextualTasksUI>(map);
   } else {
     RegisterWebUIControllerInterfaceBinder<
-        guest_view::mojom::PageHandlerFactory, glic::GlicUI>(map);
+        guest_view::mojom::PageHandlerFactory, glic::GlicUI,
+        glic::GlicExperimentalOptInUI>(map);
   }
 #endif
 
