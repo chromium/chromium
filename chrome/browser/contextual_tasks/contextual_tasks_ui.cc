@@ -1803,12 +1803,20 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     bool is_thread_switch =
         webui_thread_id && webui_thread_id.value() != url_thread_id;
 
+    // A same-document navigation with an updated thread ID for the same query
+    // represents an in-place server thread ID resolution (e.g. client mtid to
+    // canonical server mtid) rather than a switch between distinct threads.
+    bool is_in_place_thread_update =
+        is_thread_switch && navigation_handle->IsSameDocument() &&
+        current_title.has_value() && !query_value.empty() &&
+        current_title.value() == query_value;
+
     bool has_reusable_task =
         base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
         task_info_delegate_->GetTaskId().has_value();
 
     bool should_create_new_task =
-        is_thread_switch ||
+        (is_thread_switch && !is_in_place_thread_update) ||
         (!has_reusable_task &&
          (pending_task_title_mismatch || is_new_conversation));
 
@@ -1842,12 +1850,14 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     mstk = url_param_mstk;
   }
 
-  contextual_tasks_service_->UpdateThreadForTask(
-      task_info_delegate_->GetTaskId().value(),
-      contextual_tasks::ThreadType::kAiMode, url_thread_id, mstk,
-      task_info_delegate_->GetThreadTitle());
+  if (task_info_delegate_->GetTaskId().has_value()) {
+    contextual_tasks_service_->UpdateThreadForTask(
+        task_info_delegate_->GetTaskId().value(),
+        contextual_tasks::ThreadType::kAiMode, url_thread_id, mstk,
+        task_info_delegate_->GetThreadTitle());
+  }
 
-  if (task_changed) {
+  if (task_changed && task_info_delegate_->GetTaskId().has_value()) {
     OMNIBOX_LOG("embedded_page_nav")
         << "Task changed: "
         << task_info_delegate_->GetTaskId().value().AsLowercaseString();
