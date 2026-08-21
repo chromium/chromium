@@ -142,6 +142,7 @@ ts_library("build_ts") {
     "//chrome/test/data/webui/extensions:build_ts",
     "//chrome/test/data/webui/history:build_ts",
     "//chrome/test/data/webui/notebooks_internals:build_ts",
+    "//chrome/test/data/webui/organizer_panel:build_ts",
     "//chrome/test/data/webui/print_preview:build_ts",
     "//chrome/test/data/webui/settings:build_ts",
     "//chrome/test/data/webui/signin:build_ts",

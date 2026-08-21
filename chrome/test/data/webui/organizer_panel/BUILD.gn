@@ -6,7 +6,10 @@ import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
   cc_test_files = [ "organizer_panel_browsertest.cc" ]
-  files = [ "app_test.ts" ]
+  files = [
+    "app_test.ts",
+    "organizer_list_item_test.ts",
+  ]
 
   ts_path_mappings =
       [ "chrome://organizer-panel.top-chrome/*|" +
@@ -16,6 +19,7 @@ build_webui_tests("build") {
 
   ts_deps = [
     "//chrome/browser/resources/organizer_panel:build_ts",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]

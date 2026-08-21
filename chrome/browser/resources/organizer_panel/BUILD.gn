@@ -15,8 +15,13 @@ build_webui("build") {
   ts_files = [
     "app.html.ts",
     "app.ts",
+    "organizer_list_item.html.ts",
+    "organizer_list_item.ts",
   ]
-  css_files = [ "app.css" ]
+  css_files = [
+    "app.css",
+    "organizer_list_item.css",
+  ]
 
   webui_context_type = "trusted"
   ts_composite = true
