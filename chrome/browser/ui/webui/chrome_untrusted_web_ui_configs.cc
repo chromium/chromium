@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chrome_untrusted_web_ui_configs.h"
 
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/webui_config_map.h"
@@ -19,8 +20,11 @@
 #include "chrome/browser/glic/selection/selection_overlay_untrusted_ui.h"
 #include "chrome/browser/ui/lens/lens_overlay_untrusted_ui.h"
 #include "chrome/browser/ui/lens/lens_side_panel_untrusted_ui.h"
-#include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_untrusted_ui.h"
 #endif  // defined(TOOLKIT_VIEWS)
+
+#if defined(TOOLKIT_VIEWS) || BUILDFLAG(IS_DESKTOP_ANDROID)
+#include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_untrusted_ui.h"
+#endif  // defined(TOOLKIT_VIEWS) || BUILDFLAG(IS_DESKTOP_ANDROID)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui_untrusted.h"
@@ -58,8 +62,6 @@ void RegisterChromeUntrustedWebUIConfigs() {
   map.AddUntrustedWebUIConfig(
       std::make_unique<lens::LensSidePanelUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(
-      std::make_unique<ttc::AiOverlayDialogUntrustedUIConfig>());
-  map.AddUntrustedWebUIConfig(
       std::make_unique<ReadAnythingUIUntrustedConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<DataSharingUIConfig>());
 
@@ -69,8 +71,12 @@ void RegisterChromeUntrustedWebUIConfigs() {
 
   map.AddUntrustedWebUIConfig(
       std::make_unique<glic::SelectionOverlayUntrustedUIConfig>());
-
 #endif  // defined(TOOLKIT_VIEWS)
+
+#if defined(TOOLKIT_VIEWS) || BUILDFLAG(IS_DESKTOP_ANDROID)
+  map.AddUntrustedWebUIConfig(
+      std::make_unique<ttc::AiOverlayDialogUntrustedUIConfig>());
+#endif  // defined(TOOLKIT_VIEWS) || BUILDFLAG(IS_DESKTOP_ANDROID)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   map.AddUntrustedWebUIConfig(

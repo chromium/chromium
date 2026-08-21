@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/compose/features.gni")
@@ -141,14 +142,12 @@ group("resources") {
     public_deps += [
       "discards:resources",
       "management:resources",
+      "//chrome/browser/ttc/resources",
     ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {
-    public_deps += [
-      "skills:resources",
-      "//chrome/browser/ttc/resources",
-    ]
+    public_deps += [ "skills:resources" ]
   }
 
   if (is_win || is_mac || is_linux) {

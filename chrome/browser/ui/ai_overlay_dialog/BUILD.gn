@@ -2,9 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_win || is_mac || is_linux || is_chromeos)
-
+import("//build/config/chrome_build.gni")
 import("//build/config/ui.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_desktop_android)
 
 source_set("ai_overlay_dialog") {
   sources = [
@@ -17,8 +18,11 @@ source_set("ai_overlay_dialog") {
     "//chrome/browser/ui/browser_window",
     "//content/public/browser",
     "//ui/base/unowned_user_data",
-    "//ui/views",
   ]
+
+  if (toolkit_views) {
+    public_deps += [ "//ui/views" ]
+  }
 
   deps = [
     "//chrome/browser:primitives",
@@ -27,15 +31,22 @@ source_set("ai_overlay_dialog") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/actions:actions_headers",
-    "//chrome/browser/ui/views/interaction",
-    "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//components/content_settings/core/browser",
-    "//extensions/browser",
-    "//extensions/common:mojom",
+    "//components/vector_icons",
     "//ui/gfx/geometry",
-    "//ui/views/controls/webview",
+    "//ui/menus",
     "//url",
   ]
+
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui/views/interaction",
+      "//chrome/browser/ui/views/toolbar",
+      "//extensions/browser",
+      "//extensions/common:mojom",
+      "//ui/views/controls/webview",
+    ]
+  }
 }

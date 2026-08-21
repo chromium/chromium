@@ -2,11 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/android_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/chrome_browser_interface_binders_webui_parts.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_ui.h"
 #include "chrome/browser/glic/host/glic_ui.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/ui/ui_features.h"
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
+#include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog.mojom.h"
+#include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_untrusted_ui.h"
+#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
 #include "chrome/browser/ui/webui/private_ai_internals/private_ai_internals_ui.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
@@ -165,6 +172,13 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsFeatures(
   registry.ForWebUI<ComposeUntrustedUI>()
       .Add<compose::mojom::ComposeSessionUntrustedPageHandlerFactory>();
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
+
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kAiOverlayDialog)) {
+    registry.ForWebUI<ttc::AiOverlayDialogUntrustedUI>()
+        .Add<ai_overlay_dialog::mojom::PageHandlerFactory>();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
 }
 
 }  // namespace chrome::internal
