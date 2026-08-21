@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.Snackbar
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.offlinepages.SavePageResult;
 import org.chromium.net.ConnectionType;
@@ -92,7 +91,6 @@ public class OfflinePageUtilsTest {
     private EmbeddedTestServer mTestServer;
     private String mTestPage;
     private boolean mServerTurnedOn;
-    private WebPageStation mStartingPage;
 
     @Before
     public void setUp() throws Exception {
@@ -126,7 +124,7 @@ public class OfflinePageUtilsTest {
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
         mServerTurnedOn = true;
-        mStartingPage = mActivityTestRule.startOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
     }
 
     @After

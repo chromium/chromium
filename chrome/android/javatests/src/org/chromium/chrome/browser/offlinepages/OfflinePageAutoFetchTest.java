@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -94,7 +93,6 @@ public class OfflinePageAutoFetchTest {
     private Intent mLastInProgressDeleteIntent;
     private Intent mLastCompleteClickIntent;
     private Intent mLastCompleteDeleteIntent;
-    private WebPageStation mStartingPage;
 
     private class NotifierHooks implements AutoFetchNotifier.TestHooks {
         @Override
@@ -162,7 +160,7 @@ public class OfflinePageAutoFetchTest {
 
     @Before
     public void setUp() throws Exception {
-        mStartingPage = mActivityTestRule.startOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
 
         AutoFetchNotifier.setTestHooksForTesting(new NotifierHooks());
 

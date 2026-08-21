@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.offlinepages.DeletePageResult;
 import org.chromium.components.offlinepages.SavePageResult;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -67,7 +66,6 @@ public class OfflinePageBridgeTest {
     private OfflinePageBridge mOfflinePageBridge;
     private String mTestUrl;
     private Profile mProfile;
-    private WebPageStation mStartingPage;
 
     private void initializeBridgeForProfile() throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
@@ -145,7 +143,7 @@ public class OfflinePageBridgeTest {
         deletePages(ids);
 
         mTestUrl = mActivityTestRule.getTestServer().getURL(TEST_PAGE);
-        mStartingPage = mActivityTestRule.startOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
     }
 
     @Test

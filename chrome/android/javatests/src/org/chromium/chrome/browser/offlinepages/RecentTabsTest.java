@@ -25,9 +25,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.net.NetworkChangeNotifier;
-import org.chromium.net.test.EmbeddedTestServer;
 
 /** Integration tests for the Last 1 feature of Offline Pages. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -40,10 +38,7 @@ public class RecentTabsTest {
 
     private static final String TEST_PAGE = "/chrome/test/data/android/about.html";
 
-    private OfflinePageBridge mOfflinePageBridge;
-    private EmbeddedTestServer mTestServer;
     private String mTestPage;
-    private WebPageStation mStartingPage;
 
     @Before
     public void setUp() throws Exception {
@@ -56,9 +51,8 @@ public class RecentTabsTest {
                     }
                 });
 
-        mOfflinePageBridge = OfflineTestUtil.getOfflinePageBridge();
         mTestPage = mActivityTestRule.getTestServer().getURL(TEST_PAGE);
-        mStartingPage = mActivityTestRule.startOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
     }
 
     @Test
