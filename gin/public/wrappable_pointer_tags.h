@@ -29,7 +29,6 @@ enum WrappablePointerTag : uint16_t {
   kAPIBindingJSUtil,                 // extensions::APIBindingJSUtil
   kAutomationPosition,               // ui::AutomationPosition
   kBenchmarkingBindings,             // BenchmarkingBindings
-  kCallbackHolderBase,               // gin::internal::CallbackHolderBase
   kChromePluginPlaceholder,          // ChromePluginPlaceholder
   kChromeSetting,                    // extensions::ChromeSetting
   kContentSetting,                   // extensions::ContentSetting
