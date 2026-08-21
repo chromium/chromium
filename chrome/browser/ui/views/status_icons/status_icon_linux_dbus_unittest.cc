@@ -111,13 +111,15 @@ class StatusIconLinuxDbusTest : public testing::Test {
         bus_.get(), "org.kde.StatusNotifierWatcher",
         dbus::ObjectPath("/StatusNotifierWatcher"));
     exported_item_object_ = base::MakeRefCounted<dbus::MockExportedObject>(
-        bus_.get(), dbus::ObjectPath("/StatusNotifierItem/1"));
+        bus_.get(), dbus::ObjectPath("/StatusNotifierItem"));
     exported_menu_object_ = base::MakeRefCounted<dbus::MockExportedObject>(
-        bus_.get(), dbus::ObjectPath("/org/chromium/DbusMenu/1"));
+        bus_.get(), dbus::ObjectPath("/org/chromium/DbusMenu"));
 
     EXPECT_CALL(*bus_, GetDBusTaskRunner())
         .WillRepeatedly(testing::Return(
             base::SingleThreadTaskRunner::GetCurrentDefault().get()));
+
+    EXPECT_CALL(*bus_, ShutdownAndBlock()).WillRepeatedly(testing::Return());
 
     EXPECT_CALL(*bus_, GetObjectProxy(_, _))
         .WillRepeatedly([this](std::string_view service_name,
@@ -316,9 +318,108 @@ TEST_F(StatusIconLinuxDbusTest, RegisterStatusNotifierItem) {
 
   task_environment_.RunUntilIdle();
 
-  // The service string passed to RegisterStatusNotifierItem should combine
-  // the well-known service name and the unique object path.
+  // The service string passed to RegisterStatusNotifierItem should be
+  // the well-known service name without an object path.
   EXPECT_THAT(registered_service,
               testing::StartsWith("org.freedesktop.StatusNotifierItem-"));
-  EXPECT_THAT(registered_service, testing::HasSubstr("/StatusNotifierItem/"));
+  EXPECT_THAT(registered_service, testing::Not(testing::HasSubstr("/")));
+}
+
+TEST_F(StatusIconLinuxDbusTest, MultipleStatusIcons) {
+  auto bus2 = base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
+  auto bus_proxy2 = base::MakeRefCounted<dbus::MockObjectProxy>(
+      bus2.get(), DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
+  auto watcher_proxy2 = base::MakeRefCounted<dbus::MockObjectProxy>(
+      bus2.get(), "org.kde.StatusNotifierWatcher",
+      dbus::ObjectPath("/StatusNotifierWatcher"));
+  auto exported_item_object2 = base::MakeRefCounted<dbus::MockExportedObject>(
+      bus2.get(), dbus::ObjectPath("/StatusNotifierItem"));
+  auto exported_menu_object2 = base::MakeRefCounted<dbus::MockExportedObject>(
+      bus2.get(), dbus::ObjectPath("/org/chromium/DbusMenu"));
+
+  EXPECT_CALL(*bus2, GetDBusTaskRunner())
+      .WillRepeatedly(testing::Return(
+          base::SingleThreadTaskRunner::GetCurrentDefault().get()));
+  EXPECT_CALL(*bus2, ShutdownAndBlock()).WillRepeatedly(testing::Return());
+  EXPECT_CALL(*bus2, GetObjectProxy(_, _))
+      .WillRepeatedly([&](std::string_view service_name,
+                          const dbus::ObjectPath& object_path) {
+        if (service_name == "org.kde.StatusNotifierWatcher") {
+          return watcher_proxy2.get();
+        }
+        return bus_proxy2.get();
+      });
+  EXPECT_CALL(*bus2, GetExportedObject(_))
+      .WillRepeatedly([&](const dbus::ObjectPath& object_path) {
+        if (object_path.value().starts_with("/org/chromium/DbusMenu")) {
+          return exported_menu_object2.get();
+        }
+        return exported_item_object2.get();
+      });
+  EXPECT_CALL(*exported_menu_object2, ExportMethod(_, _, _, _))
+      .WillRepeatedly(
+          [](const std::string& interface_name, const std::string& method_name,
+             dbus::ExportedObject::MethodCallCallback callback,
+             dbus::ExportedObject::OnExportedCallback on_exported_callback) {
+            std::move(on_exported_callback)
+                .Run(interface_name, method_name, true);
+          });
+  EXPECT_CALL(*bus_proxy2, CallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(&OnBusProxyCall);
+  EXPECT_CALL(*bus2, RequestOwnership(_, _, _))
+      .WillRepeatedly([](const std::string& service_name,
+                         dbus::Bus::ServiceOwnershipOptions options,
+                         dbus::Bus::OnOwnershipCallback callback) {
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), service_name, true));
+      });
+
+  std::string registered_service1;
+  std::string registered_service2;
+
+  EXPECT_CALL(*exported_item_object_, ExportMethod(_, _, _, _))
+      .WillRepeatedly(
+          [](const std::string& interface_name, const std::string& method_name,
+             dbus::ExportedObject::MethodCallCallback callback,
+             dbus::ExportedObject::OnExportedCallback on_exported_callback) {
+            std::move(on_exported_callback)
+                .Run(interface_name, method_name, true);
+          });
+  EXPECT_CALL(*exported_item_object2, ExportMethod(_, _, _, _))
+      .WillRepeatedly(
+          [](const std::string& interface_name, const std::string& method_name,
+             dbus::ExportedObject::MethodCallCallback callback,
+             dbus::ExportedObject::OnExportedCallback on_exported_callback) {
+            std::move(on_exported_callback)
+                .Run(interface_name, method_name, true);
+          });
+
+  EXPECT_CALL(*watcher_proxy_, CallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly([&](dbus::MethodCall* method_call, int timeout_ms,
+                          dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+        OnWatcherProxyCall(&registered_service1, method_call, timeout_ms,
+                           std::move(callback));
+      });
+  EXPECT_CALL(*watcher_proxy2, CallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly([&](dbus::MethodCall* method_call, int timeout_ms,
+                          dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+        OnWatcherProxyCall(&registered_service2, method_call, timeout_ms,
+                           std::move(callback));
+      });
+
+  TestDelegate delegate1;
+  auto status_icon1 = base::MakeRefCounted<StatusIconLinuxDbus>(bus_);
+  status_icon1->SetDelegate(&delegate1);
+
+  TestDelegate delegate2;
+  auto status_icon2 = base::MakeRefCounted<StatusIconLinuxDbus>(bus2);
+  status_icon2->SetDelegate(&delegate2);
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_THAT(registered_service1,
+              testing::StartsWith("org.freedesktop.StatusNotifierItem-"));
+  EXPECT_THAT(registered_service2,
+              testing::StartsWith("org.freedesktop.StatusNotifierItem-"));
+  EXPECT_NE(registered_service1, registered_service2);
 }
