@@ -189,7 +189,7 @@ class URLRequestQuicTest : public TestWithTaskEnvironment,
         quic::QuicCryptoServerConfig::ConfigOptions(),
         quic::ParsedQuicVersionVector{version}, &memory_cache_backend_);
     int rv =
-        server_->Listen(net::IPEndPoint(net::IPAddress::IPv4AllZeros(), 0));
+        server_->Listen(net::IPEndPoint(net::IPAddress::IPv4Localhost(), 0));
     EXPECT_GE(rv, 0) << "Quic server fails to start";
   }
 

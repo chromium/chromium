@@ -16,7 +16,13 @@ std::unique_ptr<UDPServerSocket> CreateQuicSimpleServerSocket(
   auto socket =
       std::make_unique<UDPServerSocket>(/*net_log=*/nullptr, NetLogSource());
 
-  socket->AllowAddressReuse();
+  // When binding to an ephemeral port (port == 0), enabling address reuse
+  // (SO_REUSEADDR) is unnecessary and on macOS/BSD allows multiple sockets
+  // to bind to the exact same ephemeral port across parallel test processes,
+  // causing test flakiness.
+  if (address.port() != 0) {
+    socket->AllowAddressReuse();
+  }
 
   int rc = socket->Listen(address);
   if (rc < 0) {
