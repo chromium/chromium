@@ -488,8 +488,6 @@ void JsSandboxIsolate::NotifyInitComplete() {
 // Called from isolate thread.
 v8::Local<v8::ObjectTemplate> JsSandboxIsolate::CreateAndroidNamespaceTemplate(
     v8::Isolate* isolate) {
-  v8::Local<v8::ObjectTemplate> android_namespace_template =
-      v8::ObjectTemplate::New(isolate);
   v8::Local<v8::ObjectTemplate> android_object_template =
       v8::ObjectTemplate::New(isolate);
   android_object_template->Set(
@@ -503,8 +501,7 @@ v8::Local<v8::ObjectTemplate> JsSandboxIsolate::CreateAndroidNamespaceTemplate(
       gin::CreateFunctionTemplate(
           isolate, base::BindRepeating(&JsSandboxIsolate::GetNamedPort,
                                        base::Unretained(this))));
-  android_namespace_template->Set(isolate, "android", android_object_template);
-  return android_namespace_template;
+  return android_object_template;
 }
 
 // Called from isolate thread.
@@ -621,13 +618,18 @@ void JsSandboxIsolate::InitializeIsolateOnThread() {
   isolate->SetOOMErrorHandler(&OOMErrorCallback, this);
   v8::HandleScope handle_scope(isolate);
 
-  v8::Local<v8::ObjectTemplate> android_template =
-      CreateAndroidNamespaceTemplate(isolate);
-  v8::Local<v8::Context> context =
-      v8::Context::New(isolate, nullptr, android_template);
+  v8::Local<v8::Context> context = v8::Context::New(isolate);
 
   context_holder_ = std::make_unique<gin::ContextHolder>(isolate);
   context_holder_->SetContext(context);
+
+  v8::Context::Scope context_scope(context);
+  v8::Local<v8::ObjectTemplate> android_template =
+      CreateAndroidNamespaceTemplate(isolate);
+  context->Global()
+      ->Set(context, gin::StringToV8(isolate, "android"),
+            android_template->NewInstance(context).ToLocalChecked())
+      .Check();
 
   control_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&JsSandboxIsolate::NotifyInitComplete,

@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "gin/object_template_builder.h"
+#include "gin/per_context_data.h"
 #include "gin/per_isolate_data.h"
 #include "v8/include/cppgc/visitor.h"
 #include "v8/include/v8-cppgc.h"
@@ -43,22 +44,31 @@ v8::MaybeLocal<v8::Object> WrappableBase::GetWrapper(v8::Isolate* isolate) {
     return wrapper_.Get(isolate);
   }
 
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  if (context.IsEmpty()) {
+    return {};
+  }
+
   const WrapperInfo* info = wrapper_info();
 
-  PerIsolateData* data = PerIsolateData::From(isolate);
-  v8::Local<v8::ObjectTemplate> templ = data->GetObjectTemplate(info);
+  PerContextData* data = PerContextData::From(context);
+  v8::Local<v8::ObjectTemplate> templ;
+  if (data) {
+    templ = data->GetObjectTemplate(info);
+  }
   if (templ.IsEmpty()) {
     templ = GetObjectTemplateBuilder(isolate).Build();
     CHECK(!templ.IsEmpty());
-    data->SetObjectTemplate(info, templ);
+    if (data) {
+      data->SetObjectTemplate(info, templ);
+    }
   }
   v8::Local<v8::Object> wrapper;
   // |wrapper| may be empty in some extreme cases, e.g., when
   // Object.prototype.constructor is overwritten.
-  if (!templ->NewInstance(isolate->GetCurrentContext()).ToLocal(&wrapper)) {
+  if (!templ->NewInstance(context).ToLocal(&wrapper)) {
     return {};
   }
-
 
   AssociateWithWrapper(isolate, wrapper);
   return wrapper;
