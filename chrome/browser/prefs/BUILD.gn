@@ -131,7 +131,6 @@ source_set("impl") {
     "//chrome/browser/ui/webui/policy",
     "//chrome/browser/updates/announcement_notification",
     "//chrome/browser/webauthn",
-    "//components/accessibility_annotator/core:prefs",
     "//components/blocked_content",
     "//components/bookmarks/common",
     "//components/breadcrumbs/core:status",

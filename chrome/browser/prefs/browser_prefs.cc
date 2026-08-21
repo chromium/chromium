@@ -108,7 +108,6 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/secure_origin_allowlist.h"
-#include "components/accessibility_annotator/core/prefs.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/blocked_content/safe_browsing_triggered_popup_blocker.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
@@ -860,6 +859,12 @@ constexpr char kLastSeenFeedType[] = "feedv2.last_seen_feed_type";
 constexpr char kShouldShowRemoteAnnotatorFirstRunInfo[] =
     "accessibility_annotator.should_show_remote_annotator_first_run_info";
 
+// Deprecated 08/2026.
+constexpr char kUkmLoggingUserSecret[] =
+    "accessibility_annotator.ukm_logging_user_secret";
+constexpr char kUkmLoggingUserSecretCreationTime[] =
+    "accessibility_annotator.ukm_logging_user_secret_creation_time";
+
 // Deprecated 05/2026.
 constexpr char kHttpCacheFinchExperimentGroups[] =
     "profile_network_context_service.http_cache_finch_experiment_groups";
@@ -1411,6 +1416,10 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kShowRollbackUiModeB, false);
   registry->RegisterBooleanPref(kBlockAll3pcToggleEnabled, false);
   registry->RegisterBooleanPref(kTrackingProtection3pcdEnabled, false);
+
+  // Deprecated 08/2026.
+  registry->RegisterStringPref(kUkmLoggingUserSecret, std::string());
+  registry->RegisterTimePref(kUkmLoggingUserSecretCreationTime, base::Time());
 }
 
 }  // namespace
@@ -1756,7 +1765,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   // User prefs. Please keep this list alphabetized.
   AccessibilityLabelsService::RegisterProfilePrefs(registry);
   AccessibilityUIMessageHandler::RegisterProfilePrefs(registry);
-  accessibility_annotator::prefs::RegisterProfilePrefs(registry);
   AimEligibilityService::RegisterProfilePrefs(registry);
   AnnouncementNotificationService::RegisterProfilePrefs(registry);
   autofill::prefs::RegisterProfilePrefs(registry);
@@ -2749,6 +2757,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kShowRollbackUiModeB);
   profile_prefs->ClearPref(kBlockAll3pcToggleEnabled);
   profile_prefs->ClearPref(kTrackingProtection3pcdEnabled);
+
+  // Added 08/2026.
+  profile_prefs->ClearPref(kUkmLoggingUserSecret);
+  profile_prefs->ClearPref(kUkmLoggingUserSecretCreationTime);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

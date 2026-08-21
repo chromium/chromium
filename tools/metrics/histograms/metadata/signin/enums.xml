@@ -912,7 +912,7 @@ chromium-metrics-reviews@google.com.
   <int value="88" label="Wallet Passes Service"/>
   <int value="89" label="Aim Eligibility Service"/>
   <int value="90" label="DevTools AiCode Client"/>
-  <int value="91" label="Accessibility Annotator"/>
+  <int value="91" label="Accessibility Annotator (deprecated 08/2026)"/>
   <int value="92" label="Actor Login Permission Service"/>
   <int value="93" label="Gapis Service"/>
   <int value="94" label="One Time Token Service"/>

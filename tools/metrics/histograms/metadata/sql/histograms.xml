@@ -30,7 +30,8 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="DatabaseTag">
-  <variant name="AccessibilityAnnotator" summary="AccessibilityAnnotator"/>
+  <variant name="AccessibilityAnnotator"
+      summary="AccessibilityAnnotator (deprecated 08/2026)"/>
   <variant name="Activity" summary="Activity"/>
   <variant name="Affiliation" summary="Affiliation"/>
   <variant name="AnnotationStorage" summary="AnnotationStorage"/>

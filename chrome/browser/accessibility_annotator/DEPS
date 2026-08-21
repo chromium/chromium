@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/accessibility_annotator/core",
-  "+components/autofill/core/browser/at_memory",
-]

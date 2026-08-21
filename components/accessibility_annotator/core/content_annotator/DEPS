@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/history/core/browser",
-  "+components/optimization_guide/proto",
-]

@@ -40,7 +40,6 @@ include_rules = [
   "+chromeos",
   "+components/access_code_cast",
   "+components/private_ai",
-  "+components/accessibility_annotator/core",
   "+components/account_id",
   "+components/account_settings",
   "+components/account_manager_core",

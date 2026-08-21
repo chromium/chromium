@@ -367,6 +367,16 @@ void DeleteMediaHistoryDatabase(const base::FilePath& profile_path) {
   sql::Database::Delete(db_path);
 }
 
+constexpr base::FilePath::CharType kAccessibilityAnnotatorDatabaseFileName[] =
+    FILE_PATH_LITERAL("AccessibilityAnnotatorDB");
+
+void DeleteAccessibilityAnnotatorDatabase(const base::FilePath& profile_path) {
+  auto db_path = profile_path.Append(kAccessibilityAnnotatorDatabaseFileName);
+  if (base::PathExists(db_path)) {
+    sql::Database::Delete(db_path);
+  }
+}
+
 void DeleteDeprecatedPrivacySandboxData(const base::FilePath& profile_path) {
   // Delete the deprecated Privacy Sandbox databases.
   static constexpr struct {
@@ -1617,6 +1627,15 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&DeleteMediaHistoryDatabase, profile->GetPath()));
+
+  // Delete the deprecated AccessibilityAnnotatorDB if it still exists.
+  // TODO(crbug.com/531591319): Remove this in August 2027.
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&DeleteAccessibilityAnnotatorDatabase,
+                     profile->GetPath()));
 
   // Delete the deprecated Privacy Sandbox data if they still exist.
   // TODO(crbug.com/462465887): Remove this in August 2028.

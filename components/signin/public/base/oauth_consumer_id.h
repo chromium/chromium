@@ -118,7 +118,7 @@ enum class OAuthConsumerId {
   kWalletPasses = 88,
   kAimEligibilityService = 89,
   kDevtoolsAiCode = 90,
-  kAccessibilityAnnotator = 91,
+  // kAccessibilityAnnotator = 91, // Removed due to deprecation.
   kActorLoginPermissionService = 92,
   kGapisService = 93,
   kOneTimeTokenService = 94,
