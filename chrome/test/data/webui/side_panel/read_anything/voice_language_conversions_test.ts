@@ -129,6 +129,8 @@ suite('voice and language conversions', () => {
   });
 
   test('convertLangToAnAvailableLangIfPresent', () => {
+    const defaultLanguage = 'en';
+    audioBrowserProxy.defaultLanguageForSpeech = defaultLanguage;
     // Returns direct matches
     assertEquals(
         'en-us',
@@ -155,7 +157,7 @@ suite('voice and language conversions', () => {
 
     // Uses browser language fallback.
     assertEquals(
-        audioBrowserProxy.defaultLanguageForSpeech,
+        defaultLanguage,
         convertLangToAnAvailableLangIfPresent('es', ['en-US', 'en', 'fr']));
 
     // No match

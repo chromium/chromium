@@ -15,8 +15,13 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
   sentenceHighlighting: number = 3;
   noHighlighting: number = 4;
   isPhraseHighlightingEnabledFlag: boolean = false;
-  defaultLanguageForSpeech: string = 'en';
+  defaultLanguageForSpeech: string = '';
   baseLanguageForSpeech: string = '';
+  storedVoice: string = 'abc';
+  languagesEnabledInPref: Set<string> = new Set<string>();
+  installedLangs: string[] = [];
+  uninstalledLangs: string[] = [];
+  requestInfoLangs: string[] = [];
   localeToDisplayName: {[key: string]: string} = {};
 
   constructor() {
@@ -32,9 +37,16 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
       'getDisplayNameForLocale',
       'getDefaultLanguageForSpeech',
       'getBaseLanguageForSpeech',
+      'getStoredVoice',
+      'getLanguagesEnabledInPref',
       'isHighlightOn',
       'onSpeechRateChange',
       'onHighlightGranularityChanged',
+      'onVoiceChange',
+      'onLanguagePrefChange',
+      'sendGetVoicePackInfoRequest',
+      'sendInstallVoicePackRequest',
+      'sendUninstallVoiceRequest',
     ]);
   }
 
@@ -93,6 +105,16 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
     return this.baseLanguageForSpeech;
   }
 
+  getStoredVoice(): string {
+    this.methodCalled('getStoredVoice');
+    return this.storedVoice;
+  }
+
+  getLanguagesEnabledInPref(): string[] {
+    this.methodCalled('getLanguagesEnabledInPref');
+    return Array.from(this.languagesEnabledInPref);
+  }
+
   isHighlightOn(): boolean {
     this.methodCalled('isHighlightOn');
     return this.highlightGranularity !== this.noHighlighting;
@@ -106,5 +128,33 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
   onHighlightGranularityChanged(granularity: number): void {
     this.methodCalled('onHighlightGranularityChanged', granularity);
     this.highlightGranularity = granularity;
+  }
+
+  onVoiceChange(voice: string, lang: string): void {
+    this.methodCalled('onVoiceChange', voice, lang);
+  }
+
+  onLanguagePrefChange(lang: string, enabled: boolean): void {
+    this.methodCalled('onLanguagePrefChange', lang, enabled);
+    if (enabled) {
+      this.languagesEnabledInPref.add(lang);
+    } else {
+      this.languagesEnabledInPref.delete(lang);
+    }
+  }
+
+  sendGetVoicePackInfoRequest(lang: string): void {
+    this.methodCalled('sendGetVoicePackInfoRequest', lang);
+    this.requestInfoLangs.push(lang);
+  }
+
+  sendInstallVoicePackRequest(lang: string): void {
+    this.methodCalled('sendInstallVoicePackRequest', lang);
+    this.installedLangs.push(lang);
+  }
+
+  sendUninstallVoiceRequest(lang: string): void {
+    this.methodCalled('sendUninstallVoiceRequest', lang);
+    this.uninstalledLangs.push(lang);
   }
 }

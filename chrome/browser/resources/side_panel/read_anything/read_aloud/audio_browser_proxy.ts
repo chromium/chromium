@@ -20,9 +20,16 @@ export interface AudioBrowserProxy {
   getDisplayNameForLocale(locale: string, displayLocale: string): string;
   getDefaultLanguageForSpeech(): string;
   getBaseLanguageForSpeech(): string;
+  getStoredVoice(): string;
+  getLanguagesEnabledInPref(): string[];
   isHighlightOn(): boolean;
   onSpeechRateChange(rate: number): void;
   onHighlightGranularityChanged(granularity: number): void;
+  onVoiceChange(voice: string, lang: string): void;
+  onLanguagePrefChange(lang: string, enabled: boolean): void;
+  sendGetVoicePackInfoRequest(lang: string): void;
+  sendInstallVoicePackRequest(lang: string): void;
+  sendUninstallVoiceRequest(lang: string): void;
 }
 
 export class AudioBrowserProxyImpl implements AudioBrowserProxy {
@@ -70,6 +77,14 @@ export class AudioBrowserProxyImpl implements AudioBrowserProxy {
     return chrome.readingMode.baseLanguageForSpeech;
   }
 
+  getStoredVoice(): string {
+    return chrome.readingMode.getStoredVoice();
+  }
+
+  getLanguagesEnabledInPref(): string[] {
+    return chrome.readingMode.getLanguagesEnabledInPref();
+  }
+
   isHighlightOn(): boolean {
     return chrome.readingMode.isHighlightOn();
   }
@@ -80,6 +95,26 @@ export class AudioBrowserProxyImpl implements AudioBrowserProxy {
 
   onHighlightGranularityChanged(granularity: number): void {
     chrome.readingMode.onHighlightGranularityChanged(granularity);
+  }
+
+  onVoiceChange(voice: string, lang: string): void {
+    chrome.readingMode.onVoiceChange(voice, lang);
+  }
+
+  onLanguagePrefChange(lang: string, enabled: boolean): void {
+    chrome.readingMode.onLanguagePrefChange(lang, enabled);
+  }
+
+  sendGetVoicePackInfoRequest(lang: string): void {
+    chrome.readingMode.sendGetVoicePackInfoRequest(lang);
+  }
+
+  sendInstallVoicePackRequest(lang: string): void {
+    chrome.readingMode.sendInstallVoicePackRequest(lang);
+  }
+
+  sendUninstallVoiceRequest(lang: string): void {
+    chrome.readingMode.sendUninstallVoiceRequest(lang);
   }
 
   static getInstance(): AudioBrowserProxy {
