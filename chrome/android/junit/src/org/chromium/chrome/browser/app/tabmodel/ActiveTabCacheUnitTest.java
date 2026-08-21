@@ -60,6 +60,7 @@ public class ActiveTabCacheUnitTest {
     @Before
     public void setUp() throws Exception {
         PostTask.setPrenativeThreadPoolExecutorForTesting(mExecutor);
+        TabCacheManager.resetForTesting();
         // Clear global state to ensure a clean start.
         ActiveTabCache.clearGlobalState();
         // Run the clear global state task.
@@ -69,6 +70,7 @@ public class ActiveTabCacheUnitTest {
 
     @After
     public void tearDown() {
+        TabCacheManager.resetForTesting();
         ActiveTabCache.clearGlobalState();
         mExecutor.runAll();
         TabStateExtractor.resetTabStatesForTesting();

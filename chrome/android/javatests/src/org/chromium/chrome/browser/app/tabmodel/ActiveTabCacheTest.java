@@ -333,6 +333,7 @@ public class ActiveTabCacheTest {
         clearActiveTabAndWait(/* incognito= */ false);
 
         page.selectTabFast(tab2, RegularNewTabPageStation::newBuilder);
+        waitForActiveTabFileCreation(/* incognito= */ false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     LoadedTabState tabState =
@@ -386,6 +387,7 @@ public class ActiveTabCacheTest {
         clearActiveTabAndWait(/* incognito= */ true);
 
         ntp = page.selectTabFast(tab2, IncognitoNewTabPageStation::newBuilder);
+        waitForActiveTabFileCreation(/* incognito= */ true);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     LoadedTabState tabState =

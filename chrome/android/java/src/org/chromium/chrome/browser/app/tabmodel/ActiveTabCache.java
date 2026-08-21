@@ -27,6 +27,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
  */
 @NullMarked
 public class ActiveTabCache {
+    public static final String CACHE_TAG = "active_tabs";
+
     /** Creates an instance of {@link ActiveTabCache}. */
     @FunctionalInterface
     public interface Factory {
@@ -63,7 +65,7 @@ public class ActiveTabCache {
         mCipherFactory = cipherFactory;
         mRegularTabCacheKey = new TabCacheKey(windowTag, /* isIncognito= */ false);
         mIncognitoTabCacheKey = new TabCacheKey(windowTag, /* isIncognito= */ true);
-        mTabCache = new TabCache(cipherFactory);
+        mTabCache = TabCacheManager.create(CACHE_TAG, cipherFactory);
 
         if (cipherFactory == null) {
             clearActiveTab(/* incognito= */ true);
@@ -144,14 +146,14 @@ public class ActiveTabCache {
      * @param windowTag The window tag to clean up.
      */
     public static void cleanupWindow(String windowTag) {
-        TabCache.cleanup(new TabCacheKey(windowTag, false));
-        TabCache.cleanup(new TabCacheKey(windowTag, true));
+        TabCache.cleanup(CACHE_TAG, new TabCacheKey(windowTag, /* isIncognito= */ false));
+        TabCache.cleanup(CACHE_TAG, new TabCacheKey(windowTag, /* isIncognito= */ true));
     }
 
     /** Clears all active tab cache global state. */
     public static void clearGlobalState() {
         assertOnUiThread();
-        TabCache.clearGlobalState();
+        TabCache.clearGlobalState(CACHE_TAG);
     }
 
     private void onActiveTabChanged(boolean isModelOtr, @Nullable Tab tab) {

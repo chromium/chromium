@@ -7,15 +7,9 @@ package org.chromium.chrome.browser.app.tabmodel;
 import static org.chromium.base.ThreadUtils.assertOnUiThread;
 import static org.chromium.chrome.browser.tab.Tab.INVALID_TAB_ID;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.util.ArrayMap;
 
-import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.SequencedTaskRunner;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -27,54 +21,65 @@ import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Pure multi-tab FlatBuffer storage engine. Manages asynchronous FlatBuffer serialization,
  * zero-copy mmap deserialization, CipherFactory incognito encryption, and multi-key preloading. Has
  * zero dependency on TabModelSelector or UI observables.
  *
- * <p>Note: TabCache cannot be profile-scoped since it is meant to be available pre-native. Storage
- * is logically partitioned per arbitrary tag and regular/incognito state via {@link TabCacheKey}
- * and {@link CipherFactory} rather than native {@code Profile} objects. Do NOT introduce
- * dependencies on {@code Profile}.
+ * <p>Storage is logically partitioned per arbitrary string tag (managed by {@link
+ * TabCacheDirScope}) and regular/incognito state via {@link TabCacheKey} and {@link CipherFactory}.
  */
 @NullMarked
 public class TabCache {
-    private static final String TAG = "tab_cache";
-
-    /** The name of the base directory where the state is saved. */
-    private static final String CACHE_DIR_NAME = "active_tabs";
-
-    private static @Nullable File sCacheDirectory;
-    private static @Nullable SequencedTaskRunner sTaskRunner;
-    private static final Object sCacheDirLock = new Object();
-
-    // Global counter used to invalidate outdated tasks.
-    private static final AtomicInteger sClearCounter = new AtomicInteger(0);
-
+    private final TabCacheDirScope mDirScope;
     private final @Nullable CipherFactory mCipherFactory;
-    private final Map<TabCacheKey, FutureTask<@Nullable LoadedTabState>> mPreloadTasks =
-            new HashMap<>();
+    private final ArrayMap<TabCacheKey, FutureTask<@Nullable LoadedTabState>> mPreloadTasks =
+            new ArrayMap<>();
 
     /**
+     * Package-private constructor. Use {@link TabCacheManager#create(String, CipherFactory)} to
+     * instantiate.
+     *
+     * @param dirScope The directory scope managing storage and tasks for this cache.
      * @param cipherFactory The {@link CipherFactory} used to encrypt incognito tab state files.
      */
-    public TabCache(@Nullable CipherFactory cipherFactory) {
+    /* package */ TabCache(TabCacheDirScope dirScope, @Nullable CipherFactory cipherFactory) {
+        assertOnUiThread();
+        mDirScope = dirScope;
         mCipherFactory = cipherFactory;
+    }
+
+    /** Returns the tag used for this cache instance. */
+    public String getTag() {
+        return mDirScope.getTag();
+    }
+
+    /** Returns the directory scope associated with this cache instance. */
+    /* package */ TabCacheDirScope getDirScope() {
+        return mDirScope;
     }
 
     /**
      * Saves the tab state for a given cache key.
      *
-     * @param key The cache key to save into.
-     * @param tabId The ID of the tab.
-     * @param tabState The tab state to save.
+     * @param key The {@link TabCacheKey} to save the tab state for.
+     * @param tab The tab whose state is being saved.
+     */
+    public void saveTab(TabCacheKey key, Tab tab) {
+        assertOnUiThread();
+        saveTabState(key, tab.getId(), TabStateExtractor.from(tab));
+    }
+
+    /**
+     * Saves the tab state for a given cache key.
+     *
+     * @param key The {@link TabCacheKey} to save the tab state for.
+     * @param tabId The ID of the tab whose state is being saved.
+     * @param tabState The state of the tab being saved.
      */
     public void saveTabState(TabCacheKey key, @TabId int tabId, @Nullable TabState tabState) {
         assertOnUiThread();
@@ -85,39 +90,28 @@ public class TabCache {
 
         String fileName = key.getFileName();
         if (tabState == null || tabState.contentsState == null) {
-            deleteFileAndPref(fileName);
+            mDirScope.deleteFileAndPref(fileName);
             return;
         }
 
-        getSharedPreferences().edit().putInt(fileName, tabId).apply();
-        int currClearCount = sClearCounter.get();
-        getTaskRunner()
+        mDirScope.getSharedPreferences().edit().putInt(fileName, tabId).apply();
+        int currClearCount = mDirScope.getClearCounter().get();
+        mDirScope
+                .getTaskRunner()
                 .execute(
                         () -> {
-                            if (currClearCount != sClearCounter.get()) return;
+                            if (currClearCount != mDirScope.getClearCounter().get()) return;
 
-                            File file = new File(getOrCreateCacheDirectory(), fileName);
+                            File file = new File(mDirScope.getOrCreateCacheDirectory(), fileName);
                             TabStateFileManager.saveStateInternal(
                                     file, tabState, isOffTheRecord, mCipherFactory);
                         });
     }
 
     /**
-     * Saves the tab into the given cache key.
+     * Preloads the tab state for a given key on a background thread.
      *
-     * @param key The cache key to save into.
-     * @param tab The tab to save.
-     */
-    public void saveTab(TabCacheKey key, Tab tab) {
-        assertOnUiThread();
-        TabState tabState = TabStateExtractor.from(tab);
-        saveTabState(key, tab.getId(), tabState);
-    }
-
-    /**
-     * Initiates asynchronous preloading of the tab associated with the given cache key.
-     *
-     * @param key The cache key to preload.
+     * @param key The key to preload.
      */
     public void preloadTab(TabCacheKey key) {
         assertOnUiThread();
@@ -127,16 +121,18 @@ public class TabCache {
         if (mPreloadTasks.containsKey(key)) {
             return;
         }
+
         Callable<@Nullable LoadedTabState> callable = () -> restoreTab(key);
         FutureTask<@Nullable LoadedTabState> task = new FutureTask<>(callable);
         mPreloadTasks.put(key, task);
-        getTaskRunner().execute(task);
+        mDirScope.getTaskRunner().execute(task);
     }
 
     /**
-     * Restores the tab for the given cache key from cache or preloaded task.
+     * Gets the preloaded tab state for a given key, or loads it immediately if not preloaded.
      *
-     * @param key The cache key to restore.
+     * @param key The key to get or load.
+     * @return The loaded tab state, or null if loading failed.
      */
     public @Nullable LoadedTabState getPreLoadedTabOrLoad(TabCacheKey key) {
         assertOnUiThread();
@@ -158,35 +154,36 @@ public class TabCache {
         assert !incognito || mCipherFactory != null;
 
         String fileName = key.getFileName();
-        File file = new File(getOrCreateCacheDirectory(), fileName);
+        File file = new File(mDirScope.getOrCreateCacheDirectory(), fileName);
         if (!file.exists()) return null;
 
-        @TabId int tabId = getSharedPreferences().getInt(fileName, INVALID_TAB_ID);
+        @TabId int tabId = mDirScope.getSharedPreferences().getInt(fileName, INVALID_TAB_ID);
         if (tabId == INVALID_TAB_ID) return null;
 
         TabState tabState =
-                TabStateFileManager.restoreTabStateInternal(file, incognito, mCipherFactory);
+                TabStateFileManager.restoreTabStateInternal(
+                        file, /* isEncrypted= */ incognito, mCipherFactory);
         if (tabState == null) return null;
 
         return new LoadedTabState(tabId, tabState);
     }
 
     /**
-     * Clears the cache for the given cache key.
+     * Clears the tab cache for the given key.
      *
-     * @param key The cache key to clear.
+     * @param key The key to clear.
      */
     public void clear(TabCacheKey key) {
         assertOnUiThread();
         cancelTask(key);
-        deleteFileAndPref(key.getFileName());
+        mDirScope.deleteFileAndPref(key.getFileName());
     }
 
     /** Clears all pending preloading tasks. */
     public void cancelAllTasks() {
         assertOnUiThread();
         for (FutureTask<@Nullable LoadedTabState> task : mPreloadTasks.values()) {
-            task.cancel(false);
+            task.cancel(/* mayInterruptIfRunning= */ false);
         }
         mPreloadTasks.clear();
     }
@@ -194,90 +191,35 @@ public class TabCache {
     private void cancelTask(TabCacheKey key) {
         FutureTask<@Nullable LoadedTabState> task = mPreloadTasks.remove(key);
         if (task != null) {
-            task.cancel(false);
+            task.cancel(/* mayInterruptIfRunning= */ false);
         }
+    }
+
+    /** Clears all cached tabs and files for this TabCache instance. */
+    public void clearAll() {
+        assertOnUiThread();
+        cancelAllTasks();
+        mDirScope.clearAll();
     }
 
     /**
      * Static cleanup for a specific cache key.
      *
+     * @param tag The tag used as the cache directory and SharedPreferences name.
      * @param key The cache key to clean up.
      */
-    public static void cleanup(TabCacheKey key) {
-        deleteFileAndPref(key.getFileName());
-    }
-
-    /** Clears all tab cache global state. */
-    public static void clearGlobalState() {
+    public static void cleanup(String tag, TabCacheKey key) {
         assertOnUiThread();
-
-        sClearCounter.incrementAndGet();
-        synchronized (sCacheDirLock) {
-            sCacheDirectory = null;
-        }
-        getSharedPreferences().edit().clear().apply();
-        getTaskRunner().execute(TabCache::clearGlobalStateInternal);
+        TabCacheManager.getOrCreateDirScope(tag).deleteFileAndPref(key.getFileName());
     }
 
-    private static void clearGlobalStateInternal() {
-        File directory = getCacheDirectory();
-        if (directory.exists()) {
-            File[] files = directory.listFiles();
-            if (files != null) {
-                for (File f : files) {
-                    if (!f.delete()) {
-                        Log.e(TAG, "Failed to delete file: " + f);
-                    }
-                }
-            }
-            if (!directory.delete()) {
-                Log.e(TAG, "Failed to delete directory: " + directory);
-            }
-        }
-    }
-
-    private static SequencedTaskRunner getTaskRunner() {
+    /**
+     * Clears all tab cache state for the given tag.
+     *
+     * @param tag The tag used as the cache directory and SharedPreferences name.
+     */
+    public static void clearGlobalState(String tag) {
         assertOnUiThread();
-        if (sTaskRunner == null) {
-            sTaskRunner = PostTask.createSequencedTaskRunner(TaskTraits.USER_VISIBLE_MAY_BLOCK);
-        }
-        return sTaskRunner;
-    }
-
-    private static File getOrCreateCacheDirectory() {
-        synchronized (sCacheDirLock) {
-            if (sCacheDirectory == null) {
-                sCacheDirectory = getCacheDirectory();
-                if (!sCacheDirectory.exists() && !sCacheDirectory.mkdirs()) {
-                    Log.e(TAG, "Failed to create tab cache directory: " + sCacheDirectory);
-                }
-            }
-            return sCacheDirectory;
-        }
-    }
-
-    private static File getCacheDirectory() {
-        return ContextUtils.getApplicationContext().getDir(CACHE_DIR_NAME, Context.MODE_PRIVATE);
-    }
-
-    private static void deleteFileAndPref(String fileName) {
-        getSharedPreferences().edit().remove(fileName).apply();
-
-        int currClearCount = sClearCounter.get();
-        getTaskRunner()
-                .execute(
-                        () -> {
-                            if (currClearCount != sClearCounter.get()) return;
-
-                            File file = new File(getCacheDirectory(), fileName);
-                            if (file.exists() && !file.delete()) {
-                                Log.e(TAG, "Failed to delete cache file: " + file);
-                            }
-                        });
-    }
-
-    private static SharedPreferences getSharedPreferences() {
-        return ContextUtils.getApplicationContext()
-                .getSharedPreferences(CACHE_DIR_NAME, Context.MODE_PRIVATE);
+        TabCacheManager.getOrCreateDirScope(tag).clearAll();
     }
 }

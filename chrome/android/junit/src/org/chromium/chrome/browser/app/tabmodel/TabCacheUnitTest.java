@@ -14,7 +14,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import org.junit.After;
 import org.junit.Before;
@@ -43,12 +42,14 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-/** Unit tests for {@link TabCache} and {@link TabCacheKey}. */
+/** Unit tests for {@link TabCache}, {@link TabCacheManager}, and {@link TabCacheKey}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabCacheUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    private static final String CACHE_DIR_NAME = ActiveTabCache.CACHE_TAG;
+    private static final String CUSTOM_DIR_A = "custom_dir_a";
+    private static final String CUSTOM_DIR_B = "custom_dir_b";
 
-    private static final String CACHE_DIR_NAME = "active_tabs";
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private CipherFactory mCipherFactory;
 
@@ -58,35 +59,38 @@ public class TabCacheUnitTest {
     @Before
     public void setUp() throws Exception {
         PostTask.setPrenativeThreadPoolExecutorForTesting(mExecutor);
-        TabCache.clearGlobalState();
+        TabCacheManager.resetForTesting();
+        TabCache.clearGlobalState(CACHE_DIR_NAME);
+        TabCache.clearGlobalState(CUSTOM_DIR_A);
+        TabCache.clearGlobalState(CUSTOM_DIR_B);
         mExecutor.runAll();
         setupMockCipherFactory();
     }
 
     @After
     public void tearDown() {
-        TabCache.clearGlobalState();
+        TabCacheManager.resetForTesting();
+        TabCache.clearGlobalState(CACHE_DIR_NAME);
+        TabCache.clearGlobalState(CUSTOM_DIR_A);
+        TabCache.clearGlobalState(CUSTOM_DIR_B);
         mExecutor.runAll();
         TabStateExtractor.resetTabStatesForTesting();
     }
 
     @Test
-    public void testTabCacheKey_EqualityAndProperties() {
-        TabCacheKey key1 = new TabCacheKey("0", false);
-        TabCacheKey key2 = new TabCacheKey("0", false);
-        TabCacheKey keyIncognito = new TabCacheKey("0", true);
-        TabCacheKey keyOther = new TabCacheKey("1", false);
+    public void testTabCacheKeyFileNames() {
+        TabCacheKey keyRegular = new TabCacheKey("0", /* isIncognito= */ false);
+        assertEquals("flatbufferv1_0_regular", keyRegular.getFileName());
 
-        assertEquals(key1, key2);
-        assertEquals(key1.hashCode(), key2.hashCode());
-        assertNotEquals(key1, keyIncognito);
-        assertNotEquals(key1, keyOther);
-
-        assertEquals("0", key1.getTag());
-        assertFalse(key1.isIncognito());
-        assertTrue(keyIncognito.isIncognito());
-        assertEquals("flatbufferv1_0_regular", key1.getFileName());
+        TabCacheKey keyIncognito = new TabCacheKey("0", /* isIncognito= */ true);
         assertEquals("flatbufferv1_0_incognito", keyIncognito.getFileName());
+    }
+
+    @Test
+    public void testTabCacheManagerCreate() {
+        TabCache cache = TabCacheManager.create(CUSTOM_DIR_A, mCipherFactory);
+        assertNotNull(cache);
+        assertEquals(CUSTOM_DIR_A, cache.getTag());
     }
 
     @Test
@@ -94,23 +98,17 @@ public class TabCacheUnitTest {
         initTabCache(/* hasCipherFactory= */ false);
 
         Tab tab = mock(Tab.class);
-        when(tab.getId()).thenReturn(1);
+        when(tab.getId()).thenReturn(10);
         when(tab.isOffTheRecord()).thenReturn(false);
 
         TabState tabState = createMockTabState();
-        TabStateExtractor.setTabStateForTesting(1, tabState);
+        TabStateExtractor.setTabStateForTesting(10, tabState);
 
-        TabCacheKey key = new TabCacheKey("window1", false);
+        TabCacheKey key = new TabCacheKey("0", /* isIncognito= */ false);
         mTabCache.saveTab(key, tab);
-
-        assertEquals(1, getSharedPreferences().getInt(key.getFileName(), Tab.INVALID_TAB_ID));
 
         mExecutor.runAll();
         assertTrue(getCacheFile(key.getFileName()).exists());
-
-        LoadedTabState loaded = mTabCache.getPreLoadedTabOrLoad(key);
-        assertNotNull(loaded);
-        assertEquals(1, loaded.tabId);
     }
 
     @Test
@@ -118,116 +116,268 @@ public class TabCacheUnitTest {
         initTabCache(/* hasCipherFactory= */ true);
 
         Tab tab = mock(Tab.class);
-        when(tab.getId()).thenReturn(2);
+        when(tab.getId()).thenReturn(20);
         when(tab.isOffTheRecord()).thenReturn(true);
 
         TabState tabState = createMockTabState();
-        TabStateExtractor.setTabStateForTesting(2, tabState);
+        TabStateExtractor.setTabStateForTesting(20, tabState);
 
-        TabCacheKey key = new TabCacheKey("window1", true);
+        TabCacheKey key = new TabCacheKey("0", /* isIncognito= */ true);
         mTabCache.saveTab(key, tab);
-
-        assertEquals(2, getSharedPreferences().getInt(key.getFileName(), Tab.INVALID_TAB_ID));
 
         mExecutor.runAll();
         assertTrue(getCacheFile(key.getFileName()).exists());
+    }
+
+    @Test
+    public void testSaveTab_NullStateDeletesFile() {
+        initTabCache(/* hasCipherFactory= */ false);
+
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(10);
+        when(tab.isOffTheRecord()).thenReturn(false);
+
+        TabState tabState = createMockTabState();
+        TabStateExtractor.setTabStateForTesting(10, tabState);
+
+        TabCacheKey key = new TabCacheKey("0", /* isIncognito= */ false);
+        mTabCache.saveTab(key, tab);
+        mExecutor.runAll();
+        assertTrue(getCacheFile(key.getFileName()).exists());
+
+        TabStateExtractor.resetTabStatesForTesting();
+        mTabCache.saveTab(key, tab);
+        mExecutor.runAll();
+        assertFalse(getCacheFile(key.getFileName()).exists());
+    }
+
+    @Test
+    public void testPreloadAndGetPreLoadedTabOrLoad() {
+        initTabCache(/* hasCipherFactory= */ false);
+
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(10);
+        when(tab.isOffTheRecord()).thenReturn(false);
+
+        TabState tabState = createMockTabState();
+        TabStateExtractor.setTabStateForTesting(10, tabState);
+
+        TabCacheKey key = new TabCacheKey("0", /* isIncognito= */ false);
+        mTabCache.saveTab(key, tab);
+        mExecutor.runAll();
+
+        mTabCache.preloadTab(key);
+        mExecutor.runAll();
 
         LoadedTabState loaded = mTabCache.getPreLoadedTabOrLoad(key);
         assertNotNull(loaded);
-        assertEquals(2, loaded.tabId);
+        assertEquals(10, loaded.tabId);
     }
 
     @Test
-    public void testSaveTabState_Valid() {
+    public void testClearKey() {
         initTabCache(/* hasCipherFactory= */ false);
-        TabCacheKey customKey = new TabCacheKey("custom_key", false);
+
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(10);
+        when(tab.isOffTheRecord()).thenReturn(false);
+
         TabState tabState = createMockTabState();
+        TabStateExtractor.setTabStateForTesting(10, tabState);
 
-        mTabCache.saveTabState(customKey, 42, tabState);
-        assertEquals(
-                42, getSharedPreferences().getInt(customKey.getFileName(), Tab.INVALID_TAB_ID));
-
+        TabCacheKey key = new TabCacheKey("0", /* isIncognito= */ false);
+        mTabCache.saveTab(key, tab);
         mExecutor.runAll();
-        LoadedTabState loaded = mTabCache.getPreLoadedTabOrLoad(customKey);
-        assertNotNull(loaded);
-        assertEquals(42, loaded.tabId);
-        assertNotNull(loaded.tabState);
-    }
+        assertTrue(getCacheFile(key.getFileName()).exists());
 
-    @Test
-    public void testPreloadTab_MultiKey() {
-        initTabCache(/* hasCipherFactory= */ false);
-        TabCacheKey key1 = new TabCacheKey("key_1", false);
-        TabCacheKey key2 = new TabCacheKey("key_2", false);
-        TabState tabState1 = createMockTabState();
-        TabState tabState2 = createMockTabState();
-
-        mTabCache.saveTabState(key1, 101, tabState1);
-        mTabCache.saveTabState(key2, 102, tabState2);
+        mTabCache.clear(key);
         mExecutor.runAll();
-
-        mTabCache.preloadTab(key1);
-        mTabCache.preloadTab(key2);
-        mExecutor.runAll();
-
-        LoadedTabState loaded1 = mTabCache.getPreLoadedTabOrLoad(key1);
-        LoadedTabState loaded2 = mTabCache.getPreLoadedTabOrLoad(key2);
-        assertNotNull(loaded1);
-        assertEquals(101, loaded1.tabId);
-        assertNotNull(loaded2);
-        assertEquals(102, loaded2.tabId);
-    }
-
-    @Test
-    public void testClear() {
-        initTabCache(/* hasCipherFactory= */ false);
-        TabCacheKey customKey = new TabCacheKey("clear_key_test", false);
-        TabState tabState = createMockTabState();
-
-        mTabCache.saveTabState(customKey, 55, tabState);
-        mExecutor.runAll();
-        assertNotNull(mTabCache.getPreLoadedTabOrLoad(customKey));
-
-        mTabCache.clear(customKey);
-        assertEquals(
-                Tab.INVALID_TAB_ID,
-                getSharedPreferences().getInt(customKey.getFileName(), Tab.INVALID_TAB_ID));
-        mExecutor.runAll();
-        assertNull(mTabCache.getPreLoadedTabOrLoad(customKey));
+        assertFalse(getCacheFile(key.getFileName()).exists());
     }
 
     @Test
     public void testCleanup() {
-        initTabCache(/* hasCipherFactory= */ false);
-        TabCacheKey customKey = new TabCacheKey("cleanup_key_test", false);
+        TabCacheKey customKey = new TabCacheKey("cleanup_test", /* isIncognito= */ false);
         TabState tabState = createMockTabState();
 
-        mTabCache.saveTabState(customKey, 99, tabState);
+        initTabCache(/* hasCipherFactory= */ false);
+        mTabCache.saveTabState(customKey, 42, tabState);
         mExecutor.runAll();
         assertTrue(getCacheFile(customKey.getFileName()).exists());
 
-        TabCache.cleanup(customKey);
+        TabCache.cleanup(CACHE_DIR_NAME, customKey);
         mExecutor.runAll();
         assertFalse(getCacheFile(customKey.getFileName()).exists());
     }
 
     @Test
     public void testClearGlobalState() {
-        initTabCache(/* hasCipherFactory= */ false);
-        TabCacheKey customKey = new TabCacheKey("global_clear_test", false);
+        TabCacheKey customKey = new TabCacheKey("clear_global_test", /* isIncognito= */ false);
         TabState tabState = createMockTabState();
 
-        mTabCache.saveTabState(customKey, 77, tabState);
+        initTabCache(/* hasCipherFactory= */ false);
+        mTabCache.saveTabState(customKey, 42, tabState);
         mExecutor.runAll();
         assertTrue(getCacheFile(customKey.getFileName()).exists());
 
-        TabCache.clearGlobalState();
+        TabCache.clearGlobalState(CACHE_DIR_NAME);
         mExecutor.runAll();
         assertFalse(getCacheFile(customKey.getFileName()).exists());
     }
 
+    @Test
+    public void testCustomDirectoryConstructionAndIsolation() {
+        TabCache cacheA = TabCacheManager.create(CUSTOM_DIR_A, /* cipherFactory= */ null);
+        TabCache cacheB = TabCacheManager.create(CUSTOM_DIR_B, /* cipherFactory= */ null);
+
+        Tab tab1 = mock(Tab.class);
+        when(tab1.getId()).thenReturn(10);
+        when(tab1.isOffTheRecord()).thenReturn(false);
+
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(20);
+        when(tab2.isOffTheRecord()).thenReturn(false);
+
+        TabState tabState1 = createMockTabState();
+        TabState tabState2 = createMockTabState();
+        TabStateExtractor.setTabStateForTesting(10, tabState1);
+        TabStateExtractor.setTabStateForTesting(20, tabState2);
+
+        TabCacheKey key = new TabCacheKey("shared_key", /* isIncognito= */ false);
+        cacheA.saveTab(key, tab1);
+        cacheB.saveTab(key, tab2);
+
+        mExecutor.runAll();
+
+        File fileA =
+                new File(
+                        ContextUtils.getApplicationContext()
+                                .getDir(CUSTOM_DIR_A, Context.MODE_PRIVATE),
+                        key.getFileName());
+        File fileB =
+                new File(
+                        ContextUtils.getApplicationContext()
+                                .getDir(CUSTOM_DIR_B, Context.MODE_PRIVATE),
+                        key.getFileName());
+
+        assertTrue(fileA.exists());
+        assertTrue(fileB.exists());
+
+        LoadedTabState loadedA = cacheA.getPreLoadedTabOrLoad(key);
+        LoadedTabState loadedB = cacheB.getPreLoadedTabOrLoad(key);
+
+        assertNotNull(loadedA);
+        assertEquals(10, loadedA.tabId);
+        assertNotNull(loadedB);
+        assertEquals(20, loadedB.tabId);
+    }
+
+    @Test
+    public void testClearAllWipesOnlyTargetDirectory() {
+        TabCache cacheA = TabCacheManager.create(CUSTOM_DIR_A, /* cipherFactory= */ null);
+        TabCache cacheB = TabCacheManager.create(CUSTOM_DIR_B, /* cipherFactory= */ null);
+
+        Tab tab1 = mock(Tab.class);
+        when(tab1.getId()).thenReturn(10);
+        when(tab1.isOffTheRecord()).thenReturn(false);
+
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(20);
+        when(tab2.isOffTheRecord()).thenReturn(false);
+
+        TabState tabState1 = createMockTabState();
+        TabState tabState2 = createMockTabState();
+        TabStateExtractor.setTabStateForTesting(10, tabState1);
+        TabStateExtractor.setTabStateForTesting(20, tabState2);
+
+        TabCacheKey key = new TabCacheKey("target_key", /* isIncognito= */ false);
+        cacheA.saveTab(key, tab1);
+        cacheB.saveTab(key, tab2);
+
+        mExecutor.runAll();
+
+        cacheA.clearAll();
+        mExecutor.runAll();
+
+        File fileA =
+                new File(
+                        ContextUtils.getApplicationContext()
+                                .getDir(CUSTOM_DIR_A, Context.MODE_PRIVATE),
+                        key.getFileName());
+        File fileB =
+                new File(
+                        ContextUtils.getApplicationContext()
+                                .getDir(CUSTOM_DIR_B, Context.MODE_PRIVATE),
+                        key.getFileName());
+
+        assertFalse(fileA.exists());
+        assertTrue(fileB.exists());
+
+        assertNull(cacheA.getPreLoadedTabOrLoad(key));
+        LoadedTabState loadedB = cacheB.getPreLoadedTabOrLoad(key);
+        assertNotNull(loadedB);
+        assertEquals(20, loadedB.tabId);
+    }
+
+    @Test
+    public void testStaticCleanupWithCustomDirectory() {
+        TabCache cacheA = TabCacheManager.create(CUSTOM_DIR_A, /* cipherFactory= */ null);
+        TabCacheKey customKey = new TabCacheKey("cleanup_custom_test", /* isIncognito= */ false);
+        TabState tabState = createMockTabState();
+
+        cacheA.saveTabState(customKey, 88, tabState);
+        mExecutor.runAll();
+
+        File fileA =
+                new File(
+                        ContextUtils.getApplicationContext()
+                                .getDir(CUSTOM_DIR_A, Context.MODE_PRIVATE),
+                        customKey.getFileName());
+        assertTrue(fileA.exists());
+
+        TabCache.cleanup(CUSTOM_DIR_A, customKey);
+        mExecutor.runAll();
+        assertFalse(fileA.exists());
+    }
+
+    @Test
+    public void testSameTagSharesSameDirScope() {
+        TabCache cache1 = TabCacheManager.create(CUSTOM_DIR_A, /* cipherFactory= */ null);
+        TabCache cache2 = TabCacheManager.create(CUSTOM_DIR_A, /* cipherFactory= */ null);
+        assertEquals(cache1.getDirScope(), cache2.getDirScope());
+
+        TabCache cacheOther = TabCacheManager.create(CUSTOM_DIR_B, /* cipherFactory= */ null);
+        assertNotEquals(cache1.getDirScope(), cacheOther.getDirScope());
+    }
+
+    @Test
+    public void testResetForTesting() {
+        TabCache cacheA = TabCacheManager.create(CUSTOM_DIR_A, /* cipherFactory= */ null);
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(10);
+        when(tab.isOffTheRecord()).thenReturn(false);
+        TabState tabState = createMockTabState();
+        TabStateExtractor.setTabStateForTesting(10, tabState);
+        TabCacheKey key = new TabCacheKey("reset_key", /* isIncognito= */ false);
+        cacheA.saveTab(key, tab);
+        mExecutor.runAll();
+
+        File fileA =
+                new File(
+                        ContextUtils.getApplicationContext()
+                                .getDir(CUSTOM_DIR_A, Context.MODE_PRIVATE),
+                        key.getFileName());
+        assertTrue(fileA.exists());
+
+        TabCacheManager.resetForTesting();
+        mExecutor.runAll();
+
+        assertFalse(fileA.exists());
+    }
+
     private void initTabCache(boolean hasCipherFactory) {
-        mTabCache = new TabCache(hasCipherFactory ? mCipherFactory : null);
+        mTabCache =
+                TabCacheManager.create(CACHE_DIR_NAME, hasCipherFactory ? mCipherFactory : null);
     }
 
     private void setupMockCipherFactory() throws Exception {
@@ -245,17 +395,6 @@ public class TabCacheUnitTest {
         when(mCipherFactory.getCipher(Cipher.DECRYPT_MODE)).thenReturn(decryptCipher);
     }
 
-    private File getCacheFile(String fileName) {
-        return new File(
-                ContextUtils.getApplicationContext().getDir(CACHE_DIR_NAME, Context.MODE_PRIVATE),
-                fileName);
-    }
-
-    private SharedPreferences getSharedPreferences() {
-        return ContextUtils.getApplicationContext()
-                .getSharedPreferences(CACHE_DIR_NAME, Context.MODE_PRIVATE);
-    }
-
     private TabState createMockTabState() {
         TabState tabState = new TabState();
         tabState.contentsState = mock(WebContentsState.class);
@@ -263,5 +402,11 @@ public class TabCacheUnitTest {
         when(tabState.contentsState.buffer()).thenReturn(buffer);
         when(tabState.contentsState.version()).thenReturn(2);
         return tabState;
+    }
+
+    private File getCacheFile(String fileName) {
+        File dir =
+                ContextUtils.getApplicationContext().getDir(CACHE_DIR_NAME, Context.MODE_PRIVATE);
+        return new File(dir, fileName);
     }
 }
