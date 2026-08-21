@@ -19,6 +19,7 @@
 
 static_assert(BUILDFLAG(ENTERPRISE_DATA_CONTROLS));
 
+class GURL;
 class Profile;
 
 namespace content {
@@ -242,6 +243,12 @@ bool IsClipboardCopyAllowedByPolicyForUI(content::WebContents* web_contents);
 // ensure the copy is allowed.
 void CopyTextToClipboard(content::RenderFrameHost* rfh,
                          const std::u16string& text);
+
+// Returns the initiator main frame's last committed URL if the `original_url`
+// is a Print Preview URL. Returns std::nullopt otherwise.
+std::optional<GURL> MaybeOverrideSourceURLForClipboardAccess(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& original_url);
 
 }  // namespace enterprise_data_protection
 

@@ -5,6 +5,7 @@
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//printing/buildflags/buildflags.gni")
 
 source_set("enterprise") {
   public = [
@@ -690,6 +691,9 @@ source_set("impl") {
         "//chrome/browser/ui/toasts",
         "//chrome/browser/ui/toasts/api:toasts",
       ]
+    }
+    if (enable_print_preview) {
+      deps += [ "//chrome/browser/printing" ]
     }
   }
 
