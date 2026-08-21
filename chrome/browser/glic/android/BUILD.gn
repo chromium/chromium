@@ -17,6 +17,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/glic/GlicNavigationUtils.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSidePanelComponentProvider.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSplitButtonDelegateBridge.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicTabPickerBridge.java",
   ]
 }
 
@@ -139,6 +140,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/glic/GlicPromoCoordinator.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSettings.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSidePanelComponentProvider.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicTabPickerBridge.java",
     "java/src/org/chromium/chrome/browser/glic/GlicToolbarButtonController.java",
     "java/src/org/chromium/chrome/browser/glic/GlicUiCoordinator.java",
     "java/src/org/chromium/chrome/browser/glic/GlicUiUtils.java",
@@ -188,6 +190,7 @@ android_library("java") {
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//components/favicon/android:java",
@@ -221,6 +224,8 @@ source_set("android") {
     "glic_keyed_service_factory_android.cc",
     "glic_navigation_utils_android.cc",
     "glic_navigation_utils_android.h",
+    "glic_tab_picker_bridge.cc",
+    "glic_tab_picker_bridge.h",
   ]
   public_deps = [ ":jni_headers" ]
   deps = [
@@ -251,6 +256,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/glic/GlicNavigationUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicPromoCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSettingsUnitTest.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicTabPickerBridgeUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicTaskMenuCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicToolbarButtonControllerTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicUiHelperUnitTest.java",

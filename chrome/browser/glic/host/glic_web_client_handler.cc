@@ -15,6 +15,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
@@ -105,6 +106,9 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#else
+#include "base/android/device_info.h"
+#include "chrome/browser/glic/android/glic_tab_picker_bridge.h"
 #endif
 
 namespace mojo {
@@ -870,9 +874,30 @@ class GlicWebClientHandler
     GetSharingManagerInternal().UnpinAllTabs(trigger);
   }
 
-  void OpenPinnedTabPicker(mojom::OpenPinnedTabPickerOptionsPtr options,
-                           OpenPinnedTabPickerCallback callback) override {
+  void OpenPinnedTabPicker(
+      mojom::OpenPinnedTabPickerOptionsPtr options,
+      mojom::WebClientHandler::OpenPinnedTabPickerCallback callback) override {
+#if BUILDFLAG(IS_ANDROID)
+    if (base::android::device_info::is_desktop()) {
+      std::move(callback).Run();
+      return;
+    }
+
+    content::WebContents* web_contents = host().webui_contents();
+    ui::WindowAndroid* window_android =
+        web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
+    if (!window_android) {
+      DUMP_WILL_BE_NOTREACHED();
+      std::move(callback).Run();
+      return;
+    }
+
+    GlicTabPickerBridge::OpenTabPicker(window_android,
+                                       GetSharingManagerInternal().GetWeakPtr(),
+                                       std::move(callback));
+#else
     std::move(callback).Run();
+#endif
   }
 
   void CreateActorHandler(

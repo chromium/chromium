@@ -988,9 +988,11 @@ source_set("browser_tests") {
   if (is_android) {
     sources += [
       "android/glic_android_browsertest.cc",
+      "android/glic_tab_picker_bridge_browsertest.cc",
       "browser_ui/glic_nudge_controller_android_browsertest.cc",
     ]
     deps += [
+      "//chrome/browser/glic/android",
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/browser_ui:impl",
       "//chrome/browser/ui/omnibox",
