@@ -27,10 +27,6 @@ namespace tabs {
 
 namespace {
 
-TabCanonicalizer GetTabCanonicalizer() {
-  return base::BindRepeating([](const TabInterface* tab) { return tab; });
-}
-
 RestoreEntityTrackerFactory GetRestoreEntityTrackerFactory() {
 #if BUILDFLAG(IS_ANDROID)
   return base::BindRepeating(
@@ -102,7 +98,7 @@ TabStateStorageServiceFactory::BuildServiceInstanceForBrowserContext(
 #endif
   return std::make_unique<TabStateStorageService>(
       profile->GetPath(), support_off_the_record_data, std::move(packager),
-      GetTabCanonicalizer(), GetRestoreEntityTrackerFactory());
+      GetRestoreEntityTrackerFactory());
 }
 
 }  // namespace tabs
