@@ -128,6 +128,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/storage_partition.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/views/widget/widget.h"
@@ -2634,54 +2635,40 @@ void ContextualSearchboxHandler::CaptureAndUploadScreenshot(
     content::DesktopMediaID source,
     StartScreenshareCallback callback) {
   is_capturing_ = true;
-  auto captured_callback = BindToUIThread(
-      &ContextualSearchboxHandler::OnScreenshotCaptured, std::move(callback));
-
-#if BUILDFLAG(IS_MAC)
-  if (source.id_type == content::DesktopMediaID::IdType::kNativePickerSession) {
-    active_screenshot_request_ = content::desktop_capture::CaptureScreenshot(
-        source, std::move(captured_callback));
-    return;
+  auto safe_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), std::nullopt);
+  active_screenshot_request_ = content::desktop_capture::CaptureScreenshot(
+      source,
+      base::BindOnce(&ContextualSearchboxHandler::OnScreenshotCaptured,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(safe_callback)));
+  if (!active_screenshot_request_) {
+    NotifyScreensharePickerClosed();
+    is_capturing_ = false;
   }
-#endif
-
-  content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&content::desktop_capture::CaptureScreenshot, source,
-                     std::move(captured_callback)),
-      base::BindOnce(&ContextualSearchboxHandler::OnScreenshotRequestCreated,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ContextualSearchboxHandler::OnScreenshotCaptured(
     StartScreenshareCallback callback,
     const SkBitmap& bitmap) {
-  is_capturing_ = false;
   active_screenshot_request_.reset();
   NotifyScreensharePickerClosed();
   if (bitmap.empty()) {
+    is_capturing_ = false;
     std::move(callback).Run(std::nullopt);
     return;
   }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&ProcessScreenshotInBackground, bitmap),
       base::BindOnce(&ContextualSearchboxHandler::OnScreenshotProcessed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ContextualSearchboxHandler::OnScreenshotRequestCreated(
-    std::unique_ptr<content::desktop_capture::ScreenshotCaptureRequest>
-        request) {
-  if (is_capturing_) {
-    active_screenshot_request_ = std::move(request);
-  }
-}
-
 void ContextualSearchboxHandler::OnScreenshotProcessed(
     StartScreenshareCallback callback,
     ProcessedScreenshot result) {
+  is_capturing_ = false;
   if (result.png_bytes.empty()) {
     std::move(callback).Run(std::nullopt);
     return;

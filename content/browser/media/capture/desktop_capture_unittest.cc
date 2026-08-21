@@ -30,14 +30,13 @@ namespace content::desktop_capture {
 class FakeDesktopCapturer : public webrtc::DesktopCapturer {
  public:
   FakeDesktopCapturer() = default;
-  ~FakeDesktopCapturer() override = default;
-
-  void Start(Callback* callback) override {
-    callback_ = callback;
-    if (!callback && on_stopped_closure_) {
+  ~FakeDesktopCapturer() override {
+    if (on_stopped_closure_) {
       std::move(on_stopped_closure_).Run();
     }
   }
+
+  void Start(Callback* callback) override { callback_ = callback; }
 
   void set_on_stopped_closure(base::OnceClosure on_stopped_closure) {
     on_stopped_closure_ = std::move(on_stopped_closure);

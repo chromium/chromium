@@ -139,10 +139,7 @@ class ScreenshotCaptureRequestImpl : public ScreenshotCaptureRequest {
 
     void StopOnBackgroundThread() {
       DCHECK(capturer_task_runner_->RunsTasksInCurrentSequence());
-      if (capturer_) {
-        capturer_->Start(nullptr);
-        capturer_.reset();
-      }
+      capturer_.reset();
     }
 
     void RunCallbackOnCallerThread(SkBitmap bitmap) {

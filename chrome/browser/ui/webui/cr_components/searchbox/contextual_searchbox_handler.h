@@ -573,9 +573,6 @@ class ContextualSearchboxHandler
                                   StartScreenshareCallback callback);
   void OnScreenshotCaptured(StartScreenshareCallback callback,
                             const SkBitmap& bitmap);
-  void OnScreenshotRequestCreated(
-      std::unique_ptr<content::desktop_capture::ScreenshotCaptureRequest>
-          request);
   void OnScreenshotProcessed(StartScreenshareCallback callback,
                              ProcessedScreenshot result);
   void NotifyScreensharePickerOpened();
