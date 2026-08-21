@@ -410,13 +410,22 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     protected void onRestoreInstanceState(@Nullable Bundle state) {
         if (state != null) {
             // Ensure that classes from previously loaded splits can be read from the bundle.
-            // https://crbug.com/40877199
+            // https://crbug.com/40877199, https://crbug.com/549795122
             ClassLoader splitClassLoader = BundleUtils.getSplitCompatClassLoader();
             state.setClassLoader(splitClassLoader);
             // See: https://cs.android.com/search?q=Activity.java%20symbol:onRestoreInstanceState
-            Bundle windowState = state.getBundle("android:viewHierarchyState");
-            if (windowState != null) {
-                windowState.setClassLoader(splitClassLoader);
+            // And: https://cs.android.com/search?q=restoreHierarchyState%20f:phonewindow
+            for (String key :
+                    new String[] {
+                        "android:ActionBar",
+                        "android:Panels",
+                        "android:viewHierarchyState",
+                        "android:views"
+                    }) {
+                Bundle nestedBundle = state.getBundle(key);
+                if (nestedBundle != null) {
+                    nestedBundle.setClassLoader(splitClassLoader);
+                }
             }
         }
         super.onRestoreInstanceState(state);
