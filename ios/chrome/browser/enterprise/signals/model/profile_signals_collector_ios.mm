@@ -43,10 +43,6 @@ void ProfileSignalsCollectorIOS::PopulateProfileSignals(
     base::OnceClosure done_closure) {
   device_signals::ProfileSignalsResponse signal_response;
 
-  // Initialize all fields to avoid undefined behavior.
-  signal_response.built_in_dns_client_enabled = false;
-  signal_response.chrome_remote_desktop_app_blocked = false;
-
   // 1. Collect signals from Preferences using shared helpers.
   signal_response.password_protection_warning_trigger =
       device_signals::GetPasswordProtectionWarningTrigger(profile_prefs_);
@@ -64,9 +60,6 @@ void ProfileSignalsCollectorIOS::PopulateProfileSignals(
   }
 
   // 4. Collect Connectors signals if service is available.
-  signal_response.realtime_url_check_mode =
-      enterprise_connectors::REAL_TIME_CHECK_DISABLED;
-
   if (connectors_service_) {
     signal_response.realtime_url_check_mode =
         connectors_service_->GetAppliedRealTimeUrlCheck();
