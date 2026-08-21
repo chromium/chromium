@@ -585,6 +585,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/bookmarks/BookmarkAllTabsHandlerUnitTest.java",
       "src/org/chromium/chrome/browser/bookmarks/BookmarkOpenerImplUnitTest.java",
       "src/org/chromium/chrome/browser/bookmarks/BookmarkPageUnitTest.java",
+      "src/org/chromium/chrome/browser/bookmarkswidget/BookmarkWidgetProxyTest.java",
     ]
     deps = [
       ":chrome_junit_tests_helper",
