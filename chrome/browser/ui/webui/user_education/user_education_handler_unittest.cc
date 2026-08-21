@@ -9,8 +9,13 @@
 
 #include "base/feature.h"
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/webui/user_education/user_education.mojom.h"
+#include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/mock_tracker.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
@@ -21,6 +26,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace {
 
@@ -67,6 +73,11 @@ class TestUserEducationMixedTrustHandler
 
   void set_tracker(feature_engagement::Tracker* tracker) { tracker_ = tracker; }
 
+  void set_user_education_interface(
+      BrowserUserEducationInterface* user_education_interface) {
+    user_education_interface_ = user_education_interface;
+  }
+
   const user_education::NewBadgeRegistry* GetNewBadgeRegistry() const override {
     return new_badge_registry_;
   }
@@ -83,6 +94,9 @@ class TestUserEducationMixedTrustHandler
   feature_engagement::Tracker* GetFeatureEngagementTracker() override {
     return tracker_;
   }
+  BrowserUserEducationInterface* GetBrowserUserEducationInterface() override {
+    return user_education_interface_;
+  }
 
   MOCK_METHOD(void, ReportBadMessage, (std::string_view), (override));
 
@@ -92,6 +106,7 @@ class TestUserEducationMixedTrustHandler
   raw_ptr<user_education::FeaturePromoRegistry> feature_promo_registry_;
   raw_ptr<user_education::FeaturePromoController> feature_promo_controller_;
   raw_ptr<feature_engagement::Tracker> tracker_;
+  raw_ptr<BrowserUserEducationInterface> user_education_interface_;
 };
 
 }  // namespace
@@ -122,12 +137,20 @@ class UserEducationMixedTrustHandlerTest : public testing::Test {
   ~UserEducationMixedTrustHandlerTest() override = default;
 
   void SetUp() override {
+    data_host_ = std::make_unique<ui::UnownedUserDataHost>();
+    browser_window_ = std::make_unique<MockBrowserWindowInterface>();
+    EXPECT_CALL(*browser_window_, GetUnownedUserDataHost)
+        .WillRepeatedly(testing::ReturnRef(*data_host_));
+    user_education_interface_ = std::make_unique<
+        testing::StrictMock<MockBrowserUserEducationInterface>>(
+        browser_window_.get());
     handler_ = std::make_unique<TestUserEducationMixedTrustHandler>();
     handler_->set_new_badge_registry(&new_badge_registry_);
     handler_->set_new_badge_controller(&new_badge_controller_);
     handler_->set_feature_promo_registry(&feature_promo_registry_);
     handler_->set_feature_promo_controller(&feature_promo_controller_);
     handler_->set_tracker(&tracker_);
+    handler_->set_user_education_interface(user_education_interface_.get());
   }
 
   void TearDown() override { handler_.reset(); }
@@ -137,6 +160,11 @@ class UserEducationMixedTrustHandlerTest : public testing::Test {
     handler_->set_new_badge_controller(nullptr);
     handler_->set_feature_promo_registry(nullptr);
     handler_->set_feature_promo_controller(nullptr);
+    handler_->set_tracker(nullptr);
+    handler_->set_user_education_interface(nullptr);
+    user_education_interface_.reset();
+    browser_window_.reset();
+    data_host_.reset();
   }
 
  protected:
@@ -147,8 +175,27 @@ class UserEducationMixedTrustHandlerTest : public testing::Test {
   testing::StrictMock<user_education::test::MockFeaturePromoController>
       feature_promo_controller_;
   testing::StrictMock<feature_engagement::test::MockTracker> tracker_;
+  std::unique_ptr<ui::UnownedUserDataHost> data_host_;
+  std::unique_ptr<MockBrowserWindowInterface> browser_window_;
+  std::unique_ptr<testing::StrictMock<MockBrowserUserEducationInterface>>
+      user_education_interface_;
   std::unique_ptr<TestUserEducationMixedTrustHandler> handler_;
 };
+
+TEST_F(UserEducationMixedTrustHandlerTest, MaybeShowFeaturePromo) {
+  constexpr std::string kKey = "key";
+  EXPECT_CALL(
+      *user_education_interface_,
+      MaybeShowFeaturePromo(testing::AllOf(
+          testing::ResultOf(
+              [](const user_education::FeaturePromoParams& params)
+                  -> const base::Feature& { return *params.feature; },
+              testing::Ref(kUserEducationMixedTrustHandlerTestPromoFeature1)),
+          testing::Field(&user_education::FeaturePromoParams::key, kKey))));
+  handler_->MaybeShowFeaturePromo(
+      user_education::mojom::FeaturePromoParams::New(
+          kUserEducationMixedTrustHandlerTestPromoFeature1.name, kKey));
+}
 
 TEST_F(UserEducationMixedTrustHandlerTest,
        NotifyFeaturePromoFeatureUsed_IgnoreFeatureIfPresent) {

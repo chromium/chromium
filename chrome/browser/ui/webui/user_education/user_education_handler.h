@@ -6,13 +6,20 @@
 #define CHROME_BROWSER_UI_WEBUI_USER_EDUCATION_USER_EDUCATION_HANDLER_H_
 
 #include "base/feature.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/user_education/user_education.mojom.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_registry.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
-#include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+
+class BrowserUserEducationInterface;
+
+namespace content {
+class BrowserContext;
+class WebContents;
+}  // namespace content
 
 // Provides a subset of the functionality of `BrowserUserEducationInterface`
 // for WebUI that is appropriate for use in both trusted and untrusted WebUI.
@@ -29,6 +36,8 @@ class UserEducationMixedTrustHandlerBase
   ~UserEducationMixedTrustHandlerBase() override;
 
   // UserEducationMixedTrustHandler:
+  void MaybeShowFeaturePromo(
+      user_education::mojom::FeaturePromoParamsPtr params) override;
   void NotifyFeaturePromoFeatureUsed(
       const std::string& feature_name,
       user_education::mojom::FeaturePromoFeatureUsedAction action) override;
@@ -50,6 +59,9 @@ class UserEducationMixedTrustHandlerBase
   GetFeaturePromoController() = 0;
   virtual feature_engagement::Tracker* GetFeatureEngagementTracker() = 0;
 
+  // This is potentially more expensive than the other operations.
+  virtual BrowserUserEducationInterface* GetBrowserUserEducationInterface() = 0;
+
  private:
   const base::Feature* FeaturePromoFeatureFromName(
       const std::string& feature_name) const;
@@ -65,7 +77,7 @@ class UserEducationMixedTrustHandler
       mojo::PendingReceiver<
           user_education::mojom::UserEducationMixedTrustHandler>
           pending_handler,
-      content::BrowserContext& context);
+      content::WebContents* contents);
   ~UserEducationMixedTrustHandler() override;
 
  protected:
@@ -76,11 +88,14 @@ class UserEducationMixedTrustHandler
       const override;
   user_education::FeaturePromoController* GetFeaturePromoController() override;
   feature_engagement::Tracker* GetFeatureEngagementTracker() override;
+  BrowserUserEducationInterface* GetBrowserUserEducationInterface() override;
 
  private:
+  content::BrowserContext* GetBrowserContext() const;
+
   mojo::Receiver<user_education::mojom::UserEducationMixedTrustHandler>
       receiver_;
-  const raw_ref<content::BrowserContext> context_;
+  const raw_ptr<content::WebContents> web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_USER_EDUCATION_USER_EDUCATION_HANDLER_H_

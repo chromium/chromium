@@ -87,4 +87,4 @@ export {MetricsBrowserProxyImpl, ReadAloudSettingsChange, ReadAnythingNewPage, R
 export {LinkStatus, PageType, ReadAnythingLogger, SpeechControls, TimeFrom, ViewMode} from './shared/read_anything_logger.js';
 export {calculateTextBounds, getMostCommonPitch, isRectMostlyVisible, isRectVisible, MOSTLY_VISIBLE_PERCENT} from './shared/rect_calculations.js';
 export {browserProxyFactory as userEducationProxyFactory, FeaturePromoFeatureUsedAction} from './user_education.mojom-webui.js';
-export type {BrowserProxy as UserEducationBrowserProxy, UserEducationMixedTrustHandlerInterface} from './user_education.mojom-webui.js';
+export type {BrowserProxy as UserEducationBrowserProxy, FeaturePromoParams, UserEducationMixedTrustHandlerInterface} from './user_education.mojom-webui.js';

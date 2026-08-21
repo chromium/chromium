@@ -6,15 +6,37 @@
 
 #include "base/notreached.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_registry.h"
+#include "content/public/browser/web_contents.h"
 
 UserEducationMixedTrustHandlerBase::UserEducationMixedTrustHandlerBase() =
     default;
 UserEducationMixedTrustHandlerBase::~UserEducationMixedTrustHandlerBase() =
     default;
+
+void UserEducationMixedTrustHandlerBase::MaybeShowFeaturePromo(
+    user_education::mojom::FeaturePromoParamsPtr params) {
+  auto* const interface = GetBrowserUserEducationInterface();
+  if (!interface) {
+    return;
+  }
+
+  auto* const feature = FeaturePromoFeatureFromName(params->feature_name);
+  if (!feature) {
+    ReportBadMessage("Unrecognized feature promo feature: " +
+                     params->feature_name);
+    return;
+  }
+
+  user_education::FeaturePromoParams iph_params(*feature);
+  iph_params.key = params->key.value_or(std::string());
+  interface->MaybeShowFeaturePromo(std::move(iph_params));
+}
 
 void UserEducationMixedTrustHandlerBase::NotifyFeaturePromoFeatureUsed(
     const std::string& feature_name,
@@ -105,8 +127,8 @@ void UserEducationMixedTrustHandlerBase::ReportBadMessage(
 UserEducationMixedTrustHandler::UserEducationMixedTrustHandler(
     mojo::PendingReceiver<user_education::mojom::UserEducationMixedTrustHandler>
         pending_handler,
-    content::BrowserContext& context)
-    : receiver_(this, std::move(pending_handler)), context_(context) {}
+    content::WebContents* contents)
+    : receiver_(this, std::move(pending_handler)), web_contents_(contents) {}
 
 UserEducationMixedTrustHandler::~UserEducationMixedTrustHandler() = default;
 
@@ -116,30 +138,47 @@ void UserEducationMixedTrustHandler::ReportBadMessage(std::string_view error) {
 
 const user_education::NewBadgeRegistry*
 UserEducationMixedTrustHandler::GetNewBadgeRegistry() const {
-  return UserEducationServiceFactory::GetForBrowserContext(&*context_)
+  return UserEducationServiceFactory::GetForBrowserContext(GetBrowserContext())
       ->new_badge_registry();
 }
 
 user_education::NewBadgeController*
 UserEducationMixedTrustHandler::GetNewBadgeController() {
-  return UserEducationServiceFactory::GetForBrowserContext(&*context_)
+  return UserEducationServiceFactory::GetForBrowserContext(GetBrowserContext())
       ->new_badge_controller();
 }
 
 const user_education::FeaturePromoRegistry*
 UserEducationMixedTrustHandler::GetFeaturePromoRegistry() const {
-  return &UserEducationServiceFactory::GetForBrowserContext(&*context_)
+  return &UserEducationServiceFactory::GetForBrowserContext(GetBrowserContext())
               ->feature_promo_registry();
 }
 
 user_education::FeaturePromoController*
 UserEducationMixedTrustHandler::GetFeaturePromoController() {
-  return UserEducationServiceFactory::GetForBrowserContext(&*context_)
+  return UserEducationServiceFactory::GetForBrowserContext(GetBrowserContext())
       ->GetFeaturePromoController(
           base::PassKey<UserEducationMixedTrustHandler>());
 }
 
 feature_engagement::Tracker*
 UserEducationMixedTrustHandler::GetFeatureEngagementTracker() {
-  return feature_engagement::TrackerFactory::GetForBrowserContext(&*context_);
+  return feature_engagement::TrackerFactory::GetForBrowserContext(
+      GetBrowserContext());
+}
+
+BrowserUserEducationInterface*
+UserEducationMixedTrustHandler::GetBrowserUserEducationInterface() {
+  auto* interface =
+      BrowserUserEducationInterface::MaybeGetForWebContentsInTab(web_contents_);
+  if (!interface) {
+    interface =
+        BrowserUserEducationInterface::MaybeGetForWebUiContents(web_contents_);
+  }
+  return interface;
+}
+
+content::BrowserContext* UserEducationMixedTrustHandler::GetBrowserContext()
+    const {
+  return web_contents_->GetBrowserContext();
 }

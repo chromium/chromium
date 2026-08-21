@@ -20,6 +20,7 @@ source_set("user_education") {
 
   deps = [
     "//chrome/browser/feature_engagement",
+    "//chrome/browser/ui/user_education",
     "//chrome/browser/user_education",
     "//components/feature_engagement",
     "//components/user_education/common",
@@ -33,6 +34,9 @@ source_set("unit_tests") {
   deps = [
     ":user_education",
     "//base/test:test_support",
+    "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui/user_education",
+    "//chrome/test/user_education",
     "//components/feature_engagement",
     "//components/feature_engagement/test:test_support",
     "//components/user_education/common",

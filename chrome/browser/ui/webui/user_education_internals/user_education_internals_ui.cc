@@ -107,7 +107,7 @@ void UserEducationInternalsUI::CreateUserEducationMixedTrustHandler(
     mojo::PendingReceiver<user_education::mojom::UserEducationMixedTrustHandler>
         pending_handler) {
   user_education_handler_ = std::make_unique<UserEducationMixedTrustHandler>(
-      std::move(pending_handler), *Profile::FromWebUI(web_ui()));
+      std::move(pending_handler), web_ui()->GetWebContents());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(UserEducationInternalsUI)

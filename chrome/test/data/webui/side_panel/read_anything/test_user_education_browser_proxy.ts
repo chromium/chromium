@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {FeaturePromoFeatureUsedAction, UserEducationBrowserProxy, UserEducationMixedTrustHandlerInterface} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {FeaturePromoFeatureUsedAction, FeaturePromoParams, UserEducationBrowserProxy, UserEducationMixedTrustHandlerInterface} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
 
 export class TestUserEducationBrowserProxy extends TestBrowserProxy implements
@@ -18,6 +18,10 @@ export class TestUserEducationBrowserProxy extends TestBrowserProxy implements
       'maybeShowNewBadgeFor',
     ]);
     this.handler = this;
+  }
+
+  maybeShowFeaturePromo(params: FeaturePromoParams) {
+    this.methodCalled('maybeShowFeaturePromo', params);
   }
 
   notifyFeaturePromoFeatureUsed(

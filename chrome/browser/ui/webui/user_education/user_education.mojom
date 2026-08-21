@@ -16,6 +16,15 @@ enum FeaturePromoFeatureUsedAction {
   kIgnorePromoIfPresent,
 };
 
+// A subset of the properties supported by `user_education::FeaturePromoParams`.
+struct FeaturePromoParams {
+  // The promo feature to show.
+  string feature_name;
+
+  // The key for keyed promos. Do not specify otherwise.
+  string? key;
+};
+
 // Used by the controller to bootstrap IPC. Any WebUIController can implement
 // this interface to access user education features.
 interface UserEducationMixedTrustHandlerFactory {
@@ -32,6 +41,11 @@ interface UserEducationMixedTrustHandlerFactory {
 // Please do not add methods to this interface without contacting the Frizzle
 // (Desktop User Education) and IPC Security teams.
 interface UserEducationMixedTrustHandler {
+  // Tries to show the given promo. The bubble will be created by the User
+  // Education system; no further action is required. The ability to directly
+  // observe results is not yet supported.
+  MaybeShowFeaturePromo(FeaturePromoParams params);
+
   // Records that the user has engaged the specific `feature` associated with an
   // IPH promo; this information is used to determine whether to show the promo
   // in the future. Also specifies which `action` should be taken regarding

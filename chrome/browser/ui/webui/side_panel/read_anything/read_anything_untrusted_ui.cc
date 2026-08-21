@@ -324,7 +324,7 @@ void ReadAnythingUntrustedUI::CreateUserEducationMixedTrustHandler(
     mojo::PendingReceiver<user_education::mojom::UserEducationMixedTrustHandler>
         handler) {
   user_education_handler_ = std::make_unique<UserEducationMixedTrustHandler>(
-      std::move(handler), *web_ui()->GetWebContents()->GetBrowserContext());
+      std::move(handler), web_ui()->GetWebContents());
 }
 
 void ReadAnythingUntrustedUI::CreateUntrustedPageHandler(
