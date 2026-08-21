@@ -140,6 +140,13 @@ VIEWS_EXPORT std::unique_ptr<Background> CreateBackgroundFromPainter(
 VIEWS_EXPORT std::unique_ptr<Background> CreateThemedVectorIconBackground(
     const ui::ThemedVectorIcon& icon);
 
+// Creates a background that fills the canvas in a pill/capsule shape,
+// where the corner radius is dynamically computed as half of the minimum
+// of the view's height and width.
+VIEWS_EXPORT std::unique_ptr<Background> CreatePillBackground(
+    ui::ColorVariant color,
+    int for_border_thickness = 0);
+
 }  // namespace views
 
 #endif  // UI_VIEWS_BACKGROUND_H_

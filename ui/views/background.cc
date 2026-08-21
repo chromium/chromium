@@ -4,6 +4,7 @@
 
 #include "ui/views/background.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -76,10 +77,10 @@ class RoundedRectBackground : public Background {
   void Paint(gfx::Canvas* canvas, View* view) const override {
     gfx::Rect rect(view->GetLocalBounds());
     rect.Inset(insets_);
-    const SkVector radii[4] = {{radii_.upper_left(),  radii_.upper_left()},
+    const SkVector radii[4] = {{radii_.upper_left(), radii_.upper_left()},
                                {radii_.upper_right(), radii_.upper_right()},
                                {radii_.lower_right(), radii_.lower_right()},
-                               {radii_.lower_left(),  radii_.lower_left()}};
+                               {radii_.lower_left(), radii_.lower_left()}};
     const SkPath path =
         SkPath::RRect(SkRRect::MakeRectRadii(gfx::RectToSkRect(rect), radii));
 
@@ -205,6 +206,40 @@ class BackgroundPainter : public Background {
   std::unique_ptr<Painter> painter_;
 };
 
+class PillBackground : public Background {
+ public:
+  PillBackground(ui::ColorVariant color, int for_border_thickness)
+      : for_border_thickness_(for_border_thickness) {
+    SetColor(color);
+  }
+
+  PillBackground(const PillBackground&) = delete;
+  PillBackground& operator=(const PillBackground&) = delete;
+  ~PillBackground() override = default;
+
+  // Background:
+  void Paint(gfx::Canvas* canvas, View* view) const override {
+    const float radius = std::min(view->height(), view->width()) / 2.0f;
+    cc::PaintFlags flags;
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setColor(color().ResolveToSkColor(view->GetColorProvider()));
+    flags.setAntiAlias(true);
+
+    gfx::RectF fill_bounds(view->GetLocalBounds());
+    fill_bounds.Inset(for_border_thickness_ / 2.0f);
+    canvas->DrawRoundRect(fill_bounds, radius, flags);
+  }
+
+  void OnViewThemeChanged(View* view) override {
+    if (color().IsLogical()) {
+      view->SchedulePaint();
+    }
+  }
+
+ private:
+  const int for_border_thickness_;
+};
+
 Background::Background() = default;
 
 Background::~Background() = default;
@@ -278,6 +313,11 @@ std::unique_ptr<Background> CreateRoundedRectBackground(
     return CreateSolidBackground(color);
   }
   return std::make_unique<RoundedRectBackground>(color, radii, insets);
+}
+
+std::unique_ptr<Background> CreatePillBackground(ui::ColorVariant color,
+                                                 int for_border_thickness) {
+  return std::make_unique<PillBackground>(color, for_border_thickness);
 }
 
 std::unique_ptr<Background> CreateThemedVectorIconBackground(

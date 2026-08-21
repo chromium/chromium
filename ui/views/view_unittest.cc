@@ -7885,4 +7885,20 @@ TEST_F(ViewTest, GetViewByElementId) {
   EXPECT_EQ(child1, const_root->GetViewByElementId(kDuplicateElementId));
 }
 
+// Verifies that PillBackground dynamically computes corner radii to render
+// pill/capsule shapes without crashing.
+TEST_F(ViewTest, PillBackground) {
+  auto view = std::make_unique<View>();
+  view->SetSize(gfx::Size(100, 30));
+  view->SetBackground(CreatePillBackground(SK_ColorBLUE));
+  EXPECT_NE(nullptr, view->GetBackground());
+
+  gfx::Canvas canvas(gfx::Size(100, 30), 1.0f, /*is_opaque=*/false);
+  EXPECT_NO_FATAL_FAILURE(view->GetBackground()->Paint(&canvas, view.get()));
+
+  // Test with logical theme ColorId.
+  view->SetBackground(CreatePillBackground(ui::kColorSysBaseContainerElevated));
+  EXPECT_NE(nullptr, view->GetBackground());
+}
+
 }  // namespace views
