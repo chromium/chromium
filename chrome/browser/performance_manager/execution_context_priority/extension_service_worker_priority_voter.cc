@@ -108,13 +108,13 @@ void ExtensionServiceWorkerPriorityVoter::OnBeforeWorkerNodeAdded(
       IsBlockingExtensionServiceWorker(worker_node, pending_process_node)
           ? base::Process::Priority::kUserBlocking
           : base::Process::Priority::kMinValue;
-  voting_channel_.SubmitVote(GetExecutionContext(worker_node),
-                             Vote(priority, kPriorityReason));
+  voting_channel_.SetVote(GetExecutionContext(worker_node),
+                          Vote(priority, kPriorityReason));
 }
 
 void ExtensionServiceWorkerPriorityVoter::OnBeforeWorkerNodeRemoved(
     const WorkerNode* worker_node) {
-  voting_channel_.InvalidateVote(GetExecutionContext(worker_node));
+  voting_channel_.SetVote(GetExecutionContext(worker_node), std::nullopt);
 }
 
 }  // namespace performance_manager::execution_context_priority

@@ -58,13 +58,13 @@ void ExtensionServiceWorkerVoter::TearDownOnGraph(Graph* graph) {
 void ExtensionServiceWorkerVoter::OnBeforeWorkerNodeAdded(
     const WorkerNode* worker_node,
     const ProcessNode* pending_process_node) {
-  voting_channel_.SubmitVote(GetExecutionContext(worker_node),
-                             GetVote(worker_node));
+  voting_channel_.SetVote(GetExecutionContext(worker_node),
+                          GetVote(worker_node));
 }
 
 void ExtensionServiceWorkerVoter::OnBeforeWorkerNodeRemoved(
     const WorkerNode* worker_node) {
-  voting_channel_.InvalidateVote(GetExecutionContext(worker_node));
+  voting_channel_.SetVote(GetExecutionContext(worker_node), std::nullopt);
 }
 
 }  // namespace performance_manager::execution_context_priority

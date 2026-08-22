@@ -51,6 +51,7 @@ class FrameVisibilityVoter : public PriorityVoter, public FrameNodeObserver {
 
  private:
   bool ShouldVoteForFrame(const FrameNode* frame_node) const;
+  void SetVoteForFrame(const FrameNode* frame_node);
 
   VotingChannel voting_channel_;
   const bool ignore_main_frame_visibility_;

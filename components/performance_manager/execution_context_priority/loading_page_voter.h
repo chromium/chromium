@@ -79,9 +79,9 @@ class LoadingPageVoter : public PriorityVoter,
   void ChangeVotesForPageAndSubpages(const PageNode* page_node,
                                      bool is_root_page_active_tab);
 
-  // Submits/Invalidates/Changes a vote for `frame_node` and its subtree.
-  void SubmitVoteForSubtree(const FrameNode* frame_node);
-  void InvalidateVoteForSubtree(const FrameNode* frame_node);
+  // Sets or removes a vote for `frame_node` and its subtree.
+  void SetVoteForSubtree(const FrameNode* frame_node,
+                         const std::optional<Vote>& vote);
   void ChangeVotesForFrameSubtree(const FrameNode* frame_node,
                                   bool is_root_page_active_tab);
 

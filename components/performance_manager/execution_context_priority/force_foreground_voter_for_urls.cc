@@ -154,20 +154,14 @@ void ForceForegroundVoterForUrls::ReleaseForeground(
 
 void ForceForegroundVoterForUrls::RequestForeground(
     const execution_context::ExecutionContext* execution_context) {
-  auto [_, inserted] = foregrounded_contexts_.insert(execution_context);
-  if (inserted) {
-    voting_channel_.SubmitVote(
-        execution_context,
-        Vote(base::Process::Priority::kUserBlocking, kForceForegroundReason));
-  }
+  voting_channel_.SetVote(
+      execution_context,
+      Vote(base::Process::Priority::kUserBlocking, kForceForegroundReason));
 }
 
 void ForceForegroundVoterForUrls::ReleaseForeground(
     const execution_context::ExecutionContext* execution_context) {
-  size_t removed = foregrounded_contexts_.erase(execution_context);
-  if (removed) {
-    voting_channel_.InvalidateVote(execution_context);
-  }
+  voting_channel_.SetVote(execution_context, std::nullopt);
 }
 
 bool ForceForegroundVoterForUrls::ShouldBoost(

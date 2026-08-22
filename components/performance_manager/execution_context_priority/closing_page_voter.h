@@ -51,9 +51,9 @@ class ClosingPageVoter : public PriorityVoter,
   VoterId voter_id() const { return voting_channel_.voter_id(); }
 
  private:
-  // Adjust votes for the subtree rooted at `frame_node`. `is_closing` is the
-  // new closing state of the parent page.
-  void AdjustVotesForSubtree(const FrameNode* frame_node, bool is_closing);
+  // Sets or removes a vote for `frame_node` and its subtree.
+  void SetVoteForSubtree(const FrameNode* frame_node,
+                         const std::optional<Vote>& vote);
 
   VotingChannel voting_channel_;
 

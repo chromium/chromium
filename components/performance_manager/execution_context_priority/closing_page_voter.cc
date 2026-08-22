@@ -43,8 +43,13 @@ void ClosingPageVoter::SetPageIsClosing(const PageNode* page_node,
     CHECK_EQ(num_removed, 1U, base::NotFatalUntil::M145);
   }
 
+  const std::optional<Vote> vote =
+      is_closing
+          ? std::make_optional<Vote>(base::Process::Priority::kUserBlocking,
+                                     kPageIsClosingReason)
+          : std::nullopt;
   for (const FrameNode* main_frame_node : page_node->GetMainFrameNodes()) {
-    AdjustVotesForSubtree(main_frame_node, is_closing);
+    SetVoteForSubtree(main_frame_node, vote);
   }
 }
 
@@ -76,31 +81,25 @@ void ClosingPageVoter::OnBeforeFrameNodeAdded(
     const ProcessNode* pending_process_node,
     const FrameNode* pending_parent_or_outer_document_or_embedder) {
   if (closing_pages_.contains(pending_page_node)) {
-    // A frame is added to a closing page. Adjust the vote.
-    AdjustVotesForSubtree(frame_node, /*is_closing=*/true);
+    voting_channel_.SetVote(
+        GetExecutionContext(frame_node),
+        Vote(base::Process::Priority::kUserBlocking, kPageIsClosingReason));
   }
 }
 
 void ClosingPageVoter::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
-  // Invalidate vote on frame removal.
   if (closing_pages_.contains(frame_node->GetPageNode())) {
-    AdjustVotesForSubtree(frame_node, /*is_closing=*/false);
+    voting_channel_.SetVote(GetExecutionContext(frame_node), std::nullopt);
   }
 }
 
-void ClosingPageVoter::AdjustVotesForSubtree(const FrameNode* frame_node,
-                                             bool is_closing) {
-  if (is_closing) {
-    voting_channel_.SubmitVote(
-        GetExecutionContext(frame_node),
-        Vote(base::Process::Priority::kUserBlocking, kPageIsClosingReason));
-  } else {
-    voting_channel_.InvalidateVote(GetExecutionContext(frame_node));
-  }
+void ClosingPageVoter::SetVoteForSubtree(const FrameNode* frame_node,
+                                         const std::optional<Vote>& vote) {
+  voting_channel_.SetVote(GetExecutionContext(frame_node), vote);
 
   // Recurse through subtree.
   for (const FrameNode* child_frame_node : frame_node->GetChildFrameNodes()) {
-    AdjustVotesForSubtree(child_frame_node, is_closing);
+    SetVoteForSubtree(child_frame_node, vote);
   }
 }
 

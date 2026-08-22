@@ -62,8 +62,7 @@ class GlicActuationPriorityVoter
   VotingChannel voting_channel_;
 
   void UpdateFrameNodeVote(const FrameNode* frame_node,
-                           GlicActuationState previous_state,
-                           GlicActuationState new_state);
+                           GlicActuationState state);
 };
 
 }  // namespace performance_manager::execution_context_priority

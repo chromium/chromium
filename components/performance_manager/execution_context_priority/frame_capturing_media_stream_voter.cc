@@ -58,19 +58,23 @@ void FrameCapturingMediaStreamVoter::OnBeforeFrameNodeAdded(
     const PageNode* pending_page_node,
     const ProcessNode* pending_process_node,
     const FrameNode* pending_parent_or_outer_document_or_embedder) {
-  const Vote vote = GetVote(frame_node->IsCapturingMediaStream());
-  voting_channel_.SubmitVote(GetExecutionContext(frame_node), vote);
+  SetVoteForFrame(frame_node);
 }
 
 void FrameCapturingMediaStreamVoter::OnBeforeFrameNodeRemoved(
     const FrameNode* frame_node) {
-  voting_channel_.InvalidateVote(GetExecutionContext(frame_node));
+  voting_channel_.SetVote(GetExecutionContext(frame_node), std::nullopt);
 }
 
 void FrameCapturingMediaStreamVoter::OnIsCapturingMediaStreamChanged(
     const FrameNode* frame_node) {
-  const Vote new_vote = GetVote(frame_node->IsCapturingMediaStream());
-  voting_channel_.ChangeVote(GetExecutionContext(frame_node), new_vote);
+  SetVoteForFrame(frame_node);
+}
+
+void FrameCapturingMediaStreamVoter::SetVoteForFrame(
+    const FrameNode* frame_node) {
+  const Vote vote = GetVote(frame_node->IsCapturingMediaStream());
+  voting_channel_.SetVote(GetExecutionContext(frame_node), vote);
 }
 
 }  // namespace performance_manager::execution_context_priority

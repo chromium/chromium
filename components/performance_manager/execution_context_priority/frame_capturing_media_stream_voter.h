@@ -46,6 +46,8 @@ class FrameCapturingMediaStreamVoter : public PriorityVoter,
   VoterId voter_id() const { return voting_channel_.voter_id(); }
 
  private:
+  void SetVoteForFrame(const FrameNode* frame_node);
+
   VotingChannel voting_channel_;
 };
 

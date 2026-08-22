@@ -64,14 +64,14 @@ void ForceForegroundVoter::OnBeforeWorkerNodeRemoved(
 
 void ForceForegroundVoter::AddVoteForExecutionContext(
     const execution_context::ExecutionContext* execution_context) {
-  voting_channel_.SubmitVote(
+  voting_channel_.SetVote(
       execution_context,
       Vote(base::Process::Priority::kUserBlocking, kForceForegroundReason));
 }
 
 void ForceForegroundVoter::RemoveVoteForExecutionContext(
     const execution_context::ExecutionContext* execution_context) {
-  voting_channel_.InvalidateVote(execution_context);
+  voting_channel_.SetVote(execution_context, std::nullopt);
 }
 
 }  // namespace performance_manager::execution_context_priority
