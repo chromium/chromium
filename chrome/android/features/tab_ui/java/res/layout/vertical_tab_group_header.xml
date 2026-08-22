@@ -16,6 +16,7 @@ found in the LICENSE file.
     android:paddingBottom="@dimen/vertical_tab_item_padding_vertical"
     android:layout_marginBottom="@dimen/vertical_tab_item_margin_bottom"
     android:background="@drawable/vertical_tab_item_background"
+    android:foreground="@drawable/vertical_tab_focus_ring"
     android:clickable="true"
     android:focusable="true">
 
