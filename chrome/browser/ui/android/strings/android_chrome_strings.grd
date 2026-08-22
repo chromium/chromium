@@ -961,19 +961,19 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_APPEARANCE_SETTINGS" desc="Title for Appearance settings.">
         Appearance
       </message>
-      <message name="IDS_BOOKMARK_BAR_SETTINGS_TITLE" desc="Title for the bookmarks bar settings page." translateable="false">
-        Bookmarks Bar
+      <message name="IDS_BOOKMARK_BAR_SETTINGS_TITLE" desc="Title for the bookmarks bar settings page.">
+        Bookmarks bar
       </message>
       <message name="IDS_BOOKMARK_BAR_SETTING" desc="Title for the bookmark bar setting.">
         Show bookmarks bar
       </message>
-      <message name="IDS_BOOKMARK_BAR_SETTING_ALWAYS_SHOW" desc="Title for option to always show the bookmark bar." translateable="false">
+      <message name="IDS_BOOKMARK_BAR_SETTING_ALWAYS_SHOW" desc="Title for option to always show the bookmark bar.">
         Always show
       </message>
-      <message name="IDS_BOOKMARK_BAR_SETTING_ONLY_SHOW_BOOKMARKS_BAR_ON_NTP" desc="Title for option to only show the bookmark bar on the new tab page." translateable="false">
-        Only Show on New Tab Page
+      <message name="IDS_BOOKMARK_BAR_SETTING_ONLY_SHOW_BOOKMARKS_BAR_ON_NTP" desc="Title for option to only show the bookmark bar on the new tab page.">
+        Only show on New Tab Page
       </message>
-      <message name="IDS_BOOKMARK_BAR_SETTING_ALWAYS_HIDE" desc="Title for option to always hide the bookmark bar." translateable="false">
+      <message name="IDS_BOOKMARK_BAR_SETTING_ALWAYS_HIDE" desc="Title for option to always hide the bookmark bar.">
         Always hide
       </message>
       <message name="IDS_BOOKMARK_BAR_SETTING_SUBTITLE" desc="Subtitle hint for the bookmark bar setting.">
@@ -2737,6 +2737,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_BACK_BUTTON_IPH_TEXT" desc="Message on the generic text buble to educate users on the menu back button">
         Open the menu to go back
       </message>
+      <message name="IDS_MENU_BOOKMARK_BAR_SETTING_ALWAYS_SHOW" desc="App menu flyout option to always show the bookmark bar.">
+        Always show
+      </message>
+      <message name="IDS_MENU_BOOKMARK_BAR_SETTING_ONLY_SHOW_BOOKMARKS_BAR_ON_NTP" desc="App menu flyout option to only show the bookmark bar on the new tab page.">
+        Only show on New Tab Page
+      </message>
+      <message name="IDS_MENU_BOOKMARK_BAR_SETTING_ALWAYS_HIDE" desc="App menu flyout option to always hide the bookmark bar.">
+        Always hide
+      </message>
       <message name="IDS_ACCESSIBILITY_MENU_SHARE_VIA" desc="Content description share current page via the most recently used application menu item">
         Share via <ph name="APPLICATION">%s<ex>Gmail</ex></ph>
       </message>
@@ -4322,13 +4331,13 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CONTEXTMENU_SHOW_BOOKMARKS_BAR" desc="Menu item for showing the bookmarks bar. [CHAR_LIMIT=27]">
         Show bookmarks bar
       </message>
-      <message name="IDS_CONTEXTMENU_ALWAYS_HIDE_BOOKMARKS_BAR" desc="Menu item for always hiding the bookmarks bar. [CHAR_LIMIT=27]" translateable="false">
+      <message name="IDS_CONTEXTMENU_ALWAYS_HIDE_BOOKMARKS_BAR" desc="Menu item for always hiding the bookmarks bar. [CHAR_LIMIT=27]">
         Always hide
       </message>
-      <message name="IDS_CONTEXTMENU_ALWAYS_SHOW_BOOKMARKS_BAR" desc="Menu item for always showing the bookmarks bar. [CHAR_LIMIT=27]" translateable="false">
+      <message name="IDS_CONTEXTMENU_ALWAYS_SHOW_BOOKMARKS_BAR" desc="Menu item for always showing the bookmarks bar. [CHAR_LIMIT=27]">
         Always show
       </message>
-      <message name="IDS_CONTEXTMENU_ONLY_SHOW_BOOKMARKS_BAR_ON_NTP" desc="Menu item for only showing the bookmarks bar on the new tab page. [CHAR_LIMIT=27]" translateable="false">
+      <message name="IDS_CONTEXTMENU_ONLY_SHOW_BOOKMARKS_BAR_ON_NTP" desc="Menu item for only showing the bookmarks bar on the new tab page. [CHAR_LIMIT=27]">
         Only show on New Tab Page
       </message>
       <message name="IDS_CONTEXTMENU_EDIT_BOOKMARK_ELLIPSIS" desc="Menu item for editing a bookmark from the context menu. [CHAR_LIMIT=27]">

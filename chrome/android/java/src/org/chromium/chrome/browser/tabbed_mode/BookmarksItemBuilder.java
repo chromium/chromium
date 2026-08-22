@@ -428,17 +428,18 @@ public class BookmarksItemBuilder implements Destroyable {
                     items.add(
                             buildBookmarkBarStateItem(
                                     R.id.bookmark_bar_state_always_hide_menu_id,
-                                    R.string.bookmark_bar_setting_always_hide,
+                                    R.string.menu_bookmark_bar_setting_always_hide,
                                     visibilityState == BookmarkBarVisibilityState.ALWAYS_HIDE));
                     items.add(
                             buildBookmarkBarStateItem(
                                     R.id.bookmark_bar_state_always_show_menu_id,
-                                    R.string.bookmark_bar_setting_always_show,
+                                    R.string.menu_bookmark_bar_setting_always_show,
                                     visibilityState == BookmarkBarVisibilityState.ALWAYS_SHOW));
                     items.add(
                             buildBookmarkBarStateItem(
                                     R.id.bookmark_bar_state_only_ntp_menu_id,
-                                    R.string.bookmark_bar_setting_only_show_bookmarks_bar_on_ntp,
+                                    R.string
+                                            .menu_bookmark_bar_setting_only_show_bookmarks_bar_on_ntp,
                                     visibilityState
                                             == BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP));
                     return items;
