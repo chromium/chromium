@@ -48,26 +48,46 @@ do
   touch out/$i-index.txt.attr
 done
 
-echo Generate the keys.
-for i in A B C D E F
-do
-  try openssl genrsa -out out/$i.key 2048
-done
+keygen() {
+  local out_path=$1; shift
+  local final_path=$1; shift
+  if [ -f "$final_path" ]; then
+    echo "Reusing $final_path to generate $out_path"
+    cp "$final_path" "$out_path"
+  else
+    # OpenSSL defaults to the less common (and technically unsound) "both"
+    # format for ML-DSA. Override the bad defaults, needed to interoperate with
+    # other libraries like BoringSSL.
+    try openssl genpkey  -provparam ml-dsa.output_formats=seed-only \
+      -outform pem -out "$out_path" "$@"
+  fi
+}
 
-try openssl ecparam -name prime256v1 -genkey -noout -out out/G.key
-try openssl ecparam -name secp384r1 -genkey -noout -out out/H.key
-try openssl ecparam -name secp521r1 -genkey -noout -out out/I.key
-try openssl genrsa -out out/J.key 1024
-try openssl genpkey -algorithm ed25519 -outform pem -out out/K.key
-# OpenSSL defaults to the less common (and technically unsound) "both" format
-# for ML-DSA. Override the bad defaults, needed to interoperate with other
-# libraries like BoringSSL.
-try openssl genpkey -provparam ml-dsa.output_formats=seed-only \
-  -algorithm ML-DSA-44 -outform pem -out out/L.key
-try openssl genpkey -provparam ml-dsa.output_formats=seed-only \
-  -algorithm ML-DSA-65 -outform pem -out out/M.key
-try openssl genpkey -provparam ml-dsa.output_formats=seed-only \
-  -algorithm ML-DSA-87 -outform pem -out out/N.key
+echo Generate the keys.
+keygen out/A.key ../certificates/client_1.key \
+  -algorithm RSA -pkeyopt rsa_keygen_bits:2048
+keygen out/B.key ../certificates/client_1_ca.key \
+  -algorithm RSA -pkeyopt rsa_keygen_bits:2048
+keygen out/C.key ../certificates/client_root_ca.key \
+  -algorithm RSA -pkeyopt rsa_keygen_bits:2048
+keygen out/D.key ../certificates/client_2.key \
+  -algorithm RSA -pkeyopt rsa_keygen_bits:2048
+keygen out/E.key ../certificates/client_2_ca.key \
+  -algorithm RSA -pkeyopt rsa_keygen_bits:2048
+keygen out/F.key ../certificates/client_3.key \
+  -algorithm RSA -pkeyopt rsa_keygen_bits:2048
+keygen out/G.key ../certificates/client_p256.key \
+  -algorithm EC -pkeyopt ec_paramgen_curve:prime256v1
+keygen out/H.key ../certificates/client_p384.key \
+  -algorithm EC -pkeyopt ec_paramgen_curve:secp384r1
+keygen out/I.key ../certificates/client_p521.key \
+  -algorithm EC -pkeyopt ec_paramgen_curve:secp521r1
+keygen out/J.key ../certificates/client_rsa1024.key \
+  -algorithm RSA -pkeyopt rsa_keygen_bits:1024
+keygen out/K.key ../certificates/client_ed25519.key -algorithm ed25519
+keygen out/L.key ../certificates/client_mldsa44.key -algorithm ML-DSA-44
+keygen out/M.key ../certificates/client_mldsa65.key -algorithm ML-DSA-65
+keygen out/N.key ../certificates/client_mldsa87.key -algorithm ML-DSA-87
 
 echo Generate the C CSR
 COMMON_NAME="C Root CA" \
@@ -286,11 +306,13 @@ try cp out/A.pem ../certificates/client_1.pem
 try cp out/A.key ../certificates/client_1.key
 try cp out/A.pk8 ../certificates/client_1.pk8
 try cp out/B.pem ../certificates/client_1_ca.pem
+try cp out/B.key ../certificates/client_1_ca.key
 
 try cp out/D.pem ../certificates/client_2.pem
 try cp out/D.key ../certificates/client_2.key
 try cp out/D.pk8 ../certificates/client_2.pk8
 try cp out/E.pem ../certificates/client_2_ca.pem
+try cp out/E.key ../certificates/client_2_ca.key
 
 try cp out/F.pem ../certificates/client_3.pem
 try cp out/F.key ../certificates/client_3.key
@@ -343,3 +365,4 @@ do
 done
 
 try cp out/C.pem ../certificates/client_root_ca.pem
+try cp out/C.key ../certificates/client_root_ca.key
