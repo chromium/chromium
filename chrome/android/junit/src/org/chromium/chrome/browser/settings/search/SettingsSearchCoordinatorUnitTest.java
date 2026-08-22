@@ -375,4 +375,45 @@ public class SettingsSearchCoordinatorUnitTest {
         assertNotNull(searchBox);
         assertFalse(searchBox.isFocusableInTouchMode());
     }
+
+    @Test
+    public void testOnSlideStateUpdated_singleColumn_updatesSearchBoxVisibility() {
+        setUpMultiColumnSettings();
+        mUseMultiColumn = false;
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        assertNotNull(searchBox);
+        assertEquals(View.VISIBLE, searchBox.getVisibility());
+
+        // Detail pane opens.
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(true);
+        mCoordinator.onSlideStateUpdated(MultiColumnSettings.SlideState.OPENED);
+        assertEquals(View.GONE, searchBox.getVisibility());
+
+        // Detail pane closes.
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
+        mCoordinator.onSlideStateUpdated(MultiColumnSettings.SlideState.CLOSED);
+        assertEquals(View.VISIBLE, searchBox.getVisibility());
+    }
+
+    @Test
+    public void testOnHeaderLayoutUpdated_singleColumn_updatesSearchBoxVisibility() {
+        setUpMultiColumnSettings();
+        mUseMultiColumn = false;
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(true);
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        assertNotNull(searchBox);
+        assertEquals(View.GONE, searchBox.getVisibility());
+
+        // Header layout updated when showing main settings.
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
+        mCoordinator.onHeaderLayoutUpdated();
+        assertEquals(View.VISIBLE, searchBox.getVisibility());
+    }
 }

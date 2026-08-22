@@ -24,6 +24,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SupplierUtils;
@@ -62,6 +63,8 @@ public class SettingsHostFragment extends Fragment
     private @Nullable WideDisplayPaddingApplier mWideDisplayPaddingApplier;
     private @Nullable SettingsNavigation mSettingsNavigation;
     private @Nullable String mInitialUrl;
+    private @Nullable Bundle mSavedInstanceState;
+    private @Nullable Callback<Bundle> mSaveInstanceStateCallback;
     private int mPendingPopBackCount;
 
     /** Public constructor needed for Fragment re-instantiation. */
@@ -247,6 +250,33 @@ public class SettingsHostFragment extends Fragment
         LayoutInflater inflater = super.onGetLayoutInflater(savedInstanceState);
         // Ensure we use the themed context if available.
         return inflater.cloneInContext(getContext());
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mSavedInstanceState = savedInstanceState;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Save per-tab settings state (e.g. search coordinator, title updater, breadcrumbs) in
+        // this host fragment's bundle so multiple settings tabs don't collide in the Activity's
+        // shared saved instance state during Activity recreation (such as theme changes).
+        if (mSaveInstanceStateCallback != null) {
+            mSaveInstanceStateCallback.onResult(outState);
+        }
+    }
+
+    /** Returns the saved instance state bundle for this fragment. */
+    public @Nullable Bundle getSavedInstanceState() {
+        return mSavedInstanceState;
+    }
+
+    /** Sets the callback invoked when this host fragment saves its instance state. */
+    public void setSaveInstanceStateCallback(@Nullable Callback<Bundle> callback) {
+        mSaveInstanceStateCallback = callback;
     }
 
     @Override

@@ -455,6 +455,21 @@ public class SettingsSearchCoordinator
         // When SlidingPaneLayout finishes its initial layout or switches between single and
         // two-column mode, re-evaluate whether search should be in single or multi-column layout.
         onConfigurationChangedInternal();
+        updateSingleColumnSearchBoxVisibility();
+    }
+
+    @Override
+    public void onSlideStateUpdated(@MultiColumnSettings.SlideState int state) {
+        updateSingleColumnSearchBoxVisibility();
+    }
+
+    private void updateSingleColumnSearchBoxVisibility() {
+        if (mUseMultiColumn || mFragmentState != FS_SETTINGS) return;
+
+        View searchBox = findViewById(R.id.search_box);
+        if (searchBox == null) return;
+
+        searchBox.setVisibility(isShowingMainSettings() ? View.VISIBLE : View.GONE);
     }
 
     @Override

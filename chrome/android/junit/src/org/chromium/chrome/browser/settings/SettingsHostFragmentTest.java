@@ -610,6 +610,34 @@ public class SettingsHostFragmentTest {
                         extras);
     }
 
+    @Test
+    public void testSaveAndRestoreInstanceState_invokesCallbackAndStoresBundle() {
+        attachHostFragment();
+        mSettingsHostFragment.setSaveInstanceStateCallback(
+                bundle -> bundle.putString("test_key", "test_value"));
+
+        Bundle savedState = new Bundle();
+        mSettingsHostFragment.onSaveInstanceState(savedState);
+        assertEquals("test_value", savedState.getString("test_key"));
+
+        // Simulate activity recreation with saved state.
+        mActivityScenarios.getScenario().recreate();
+        mActivityScenarios
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            var manager = activity.getSupportFragmentManager();
+                            SettingsHostFragment restoredHost =
+                                    (SettingsHostFragment)
+                                            manager.findFragmentByTag(
+                                                    SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG);
+                            assertNotNull(restoredHost);
+                            Bundle restoredState = restoredHost.getSavedInstanceState();
+                            assertNotNull(restoredState);
+                            assertEquals("test_value", restoredState.getString("test_key"));
+                        });
+    }
+
     /** A test PreferenceFragmentCompat subclass. */
     public static class TestPreferenceFragment extends PreferenceFragmentCompat {
         @Override

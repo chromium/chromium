@@ -243,6 +243,7 @@ public class SettingsPageFragmentDelegateImpl
         } else {
             mSettingsHostFragment.setDependencyProvider(dependencyProvider);
         }
+        mSettingsHostFragment.setSaveInstanceStateCallback(this::onSaveInstanceState);
 
         // If the host fragment view was attached to a different tab's container, attach it to this
         // tab's container instead.
@@ -355,6 +356,7 @@ public class SettingsPageFragmentDelegateImpl
         }
 
         if (mSettingsHostFragment != null) {
+            mSettingsHostFragment.setSaveInstanceStateCallback(null);
             fragmentManager
                     .beginTransaction()
                     .remove(mSettingsHostFragment)
@@ -379,6 +381,14 @@ public class SettingsPageFragmentDelegateImpl
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {}
 
     private @Nullable Bundle getSavedInstanceState() {
+        // Restore per-tab settings state (e.g. search coordinator, title updater, breadcrumbs)
+        // from this host fragment's bundle so multiple settings tabs don't collide in the
+        // Activity's shared saved instance state during Activity recreation (such as theme
+        // changes).
+        if (mSettingsHostFragment != null
+                && mSettingsHostFragment.getSavedInstanceState() != null) {
+            return mSettingsHostFragment.getSavedInstanceState();
+        }
         return mActivity instanceof AsyncInitializationActivity asyncActivity
                 ? asyncActivity.getSavedInstanceState()
                 : null;

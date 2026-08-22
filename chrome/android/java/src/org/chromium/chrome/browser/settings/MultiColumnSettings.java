@@ -80,7 +80,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
     /** Represents the current state of sliding pane. */
     @IntDef({SlideState.CLOSING, SlideState.CLOSED, SlideState.OPENING, SlideState.OPENED})
     @Retention(RetentionPolicy.SOURCE)
-    @interface SlideState {
+    public @interface SlideState {
         int CLOSING = 0;
         int CLOSED = 1;
         int OPENING = 2;
@@ -264,9 +264,25 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         getSlidingPaneLayout().openPane();
     }
 
-    /** Whether the detail panel is open. */
+    /**
+     * Whether the detail panel is visible (slid in) or not (slid out). Always returns true when the
+     * layout is in two column mode.
+     */
     public boolean isLayoutOpen() {
-        return getSlidingPaneLayout().isOpen();
+        if (isTwoColumn()) {
+            return true;
+        }
+        SlidingPaneLayout slidingPane = getSlidingPaneLayout();
+        // In single-column mode, once laid out, SlidingPaneLayout determines whether the detail
+        // pane is open (slid in) or closed.
+        if (ViewCompat.isLaidOut(slidingPane)) {
+            return slidingPane.isOpen();
+        }
+        // Before the initial layout pass in single-column mode, SlidingPaneLayout.isOpen() defaults
+        // to true because isSlideable() is initially false (!mCanSlide). In that pre-layout state,
+        // check if a detail fragment is actually present and added in the detail container.
+        Fragment detail = getChildFragmentManager().findFragmentById(R.id.preferences_detail);
+        return detail != null && detail.isAdded();
     }
 
     @Override
@@ -345,6 +361,9 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
             transaction.addToBackStack(tag);
         }
         transaction.commit();
+        // Execute the transaction synchronously so the detail fragment is attached to
+        // R.id.preferences_detail before updateHeaderPaneFocusability() evaluates isLayoutOpen().
+        fragmentManager.executePendingTransactions();
         getSlidingPaneLayout().open();
         updateHeaderPaneFocusability();
 

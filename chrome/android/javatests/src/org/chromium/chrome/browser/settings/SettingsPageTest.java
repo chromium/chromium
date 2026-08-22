@@ -397,6 +397,28 @@ public class SettingsPageTest {
         onView(withId(R.id.search_box)).check(matches(isFocused()));
     }
 
+    /** Regression test for https://crbug.com/549509308. */
+    @Test
+    @MediumTest
+    public void testTwoSettingsTabs_themeChange_searchBoxRemainsVisibleOnFirstTab() {
+        // Open Tab 0 with Settings.
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+        onView(withId(R.id.search_box)).check(matches(isDisplayed()));
+
+        // Open Tab 1 with Settings.
+        mActivityTestRule.loadUrlInNewTab("chrome-native://settings/");
+        onView(withId(R.id.search_box)).check(matches(isDisplayed()));
+
+        // Recreate activity (simulating theme change or OS configuration change).
+        mActivityTestRule.recreateActivity();
+
+        // Switch back to Tab 0.
+        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 0);
+
+        // Verify the search box is displayed on Tab 0.
+        onView(withId(R.id.search_box)).check(matches(isDisplayed()));
+    }
+
     /**
      * Matches whether a TextView (such as a preference title in the settings main menu) has the
      * selected text color applied by {@link SelectionDecoration}.

@@ -851,4 +851,13 @@ public class SettingsPageFragmentDelegateImplTest {
         mDelegate.onHeaderLayoutUpdated();
         verify(mMockSettingsHostFragment).updateContainmentForAttachedFragments();
     }
+
+    @Test
+    public void testSaveInstanceStateCallback_registeredOnHostFragmentAndClearedOnDestroy() {
+        mDelegate.initSettings(mContainerView, "");
+        verify(mMockSettingsHostFragment).setSaveInstanceStateCallback(any());
+
+        mDelegate.destroySettings();
+        verify(mMockSettingsHostFragment).setSaveInstanceStateCallback(null);
+    }
 }
