@@ -1849,6 +1849,28 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
 }
 
+// Tests that `GetProfileSuggestions()` does not return AddressOnTyping
+// suggestions.
+TEST_F(BrowserAutofillManagerTest,
+       GetProfileSuggestions_DoesNotReturnAddressOnTypingSuggestions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillAddressSuggestionsOnTyping},
+      /*disabled_features=*/{features::kAutofillNewSuggestionGeneration});
+
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+  profile.SetInfo(ADDRESS_HOME_LINE1, u"sherman wallaby 42 sidney", "en-US");
+  personal_data().test_address_data_manager().AddProfile(profile);
+
+  FormData form =
+      test::GetFormData({.fields = {{.role = UNKNOWN_TYPE, .value = u"she"}}});
+  FormsSeen({form});
+
+  EXPECT_THAT(test_api(autofill_manager())
+                  .GetProfileSuggestions(form, form.fields()[0]),
+              IsEmpty());
+}
+
 // Tests that when `features::kAutofillTrackSelectFieldEdits` is enabled,
 // changing the selection of a <select> control is correctly recorded as a
 // user modification in the UKM metrics.
