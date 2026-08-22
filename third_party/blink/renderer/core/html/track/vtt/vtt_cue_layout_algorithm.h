@@ -17,6 +17,7 @@ namespace blink {
 
 class LayoutBox;
 class VTTCueBox;
+struct PhysicalRect;
 struct PhysicalSize;
 
 // VttCueLayoutAlgorithm is responsible to do step 10 of
@@ -42,8 +43,8 @@ class VttCueLayoutAlgorithm {
   static PhysicalSize FirstInlineBoxSize(const LayoutBox& cue_box);
   LayoutUnit ComputeInitialPositionAdjustment(LayoutUnit max_dimension,
                                               const gfx::Rect& controls_rect);
-  static gfx::Rect CueBoundingBox(const LayoutBox& cue_box);
-  bool IsOutside(const gfx::Rect& title_area) const;
+  static PhysicalRect CueBoundingBox(const LayoutBox& cue_box);
+  bool IsOutside(const PhysicalRect& title_area) const;
   bool IsOverlapping(const gfx::Rect& controls_rect) const;
   bool ShouldSwitchDirection(LayoutUnit cue_block_position,
                              LayoutUnit cue_block_size,

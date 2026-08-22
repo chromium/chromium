@@ -6,11 +6,14 @@
 
 #include <math.h>
 
+#include <algorithm>
+
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/media_controls.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue_box.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 
@@ -75,10 +78,10 @@ void VttCueLayoutAlgorithm::Layout() {
   // 10. Adjust the positions of boxes according to the appropriate steps
   // from the following list:
   if (isfinite(snap_to_lines_position_)) {
-    // ↪ If cue’s WebVTT cue snap-to-lines flag is true
+    // ↪ If cue's WebVTT cue snap-to-lines flag is true
     AdjustPositionWithSnapToLines();
   } else {
-    // ↪ If cue’s WebVTT cue snap-to-lines flag is false
+    // ↪ If cue's WebVTT cue snap-to-lines flag is false
     AdjustPositionWithoutSnapToLines();
   }
 }
@@ -94,16 +97,26 @@ PhysicalSize VttCueLayoutAlgorithm::FirstInlineBoxSize(
   cursor.MoveToFirstLine();
   if (cursor.IsNull())
     return {};
-  // We refer to the block size of a kBox item for VTTCueBackgroundBox rather
-  // than the block size of a line box. The kBox item is taller than the line
-  // box due to paddings.
+  const PhysicalSize line_size = cursor.CurrentItem()->Size();
+  // The kBox item for VTTCueBackgroundBox may be taller than the line box,
+  // e.g. if an author style sheet adds padding to the cue background. Use the
+  // larger of the two so that stepping by `step_` always advances by at least
+  // a whole cue box; a step smaller than the cue box height would make
+  // adjacent cues overlap and trigger the overlap-avoidance loop.
+  //
+  // The kBox item is absent when VTTCueBackgroundBox is a culled inline box
+  // (e.g. author styles removed the default cue background and it has no
+  // other box decorations), in which case the line box size is used as-is.
   cursor.MoveToNext();
   if (cursor.IsNull())
-    return {};
+    return line_size;
   const FragmentItem& first_item = *cursor.CurrentItem();
   DCHECK(first_item.GetLayoutObject());
-  DCHECK(IsA<VTTCueBackgroundBox>(first_item.GetLayoutObject()->GetNode()));
-  return first_item.Size();
+  if (!IsA<VTTCueBackgroundBox>(first_item.GetLayoutObject()->GetNode()))
+    return line_size;
+  const PhysicalSize box_size = first_item.Size();
+  return {std::max(line_size.width, box_size.width),
+          std::max(line_size.height, box_size.height)};
 }
 
 LayoutUnit VttCueLayoutAlgorithm::ComputeInitialPositionAdjustment(
@@ -151,8 +164,14 @@ LayoutUnit VttCueLayoutAlgorithm::ComputeInitialPositionAdjustment(
 // - Based on the initial position without adjustment if the function is
 //   called just after style-recalc.
 //
+// The exact (LayoutUnit) geometry is returned rather than an enclosing pixel
+// rectangle. Pixel-enclosing rounding would inflate the boxes so that cues
+// which are exactly adjacent (which is the common case: cues are placed at
+// whole multiples of `step_`, the cue line height) would be reported as
+// overlapping, incorrectly triggering the overlap-avoidance loop.
+//
 // static
-gfx::Rect VttCueLayoutAlgorithm::CueBoundingBox(const LayoutBox& cue_box) {
+PhysicalRect VttCueLayoutAlgorithm::CueBoundingBox(const LayoutBox& cue_box) {
   const LayoutBlock* container = cue_box.ContainingBlock();
   PhysicalRect border_box =
       cue_box.LocalToAncestorRect(cue_box.PhysicalBorderBoxRect(), container);
@@ -162,16 +181,16 @@ gfx::Rect VttCueLayoutAlgorithm::CueBoundingBox(const LayoutBox& cue_box) {
     border_box.SetY(cue_dom->AdjustedPosition(size.height, PassKey()));
   else
     border_box.SetX(cue_dom->AdjustedPosition(size.width, PassKey()));
-  return ToEnclosingRect(border_box);
+  return border_box;
 }
 
-bool VttCueLayoutAlgorithm::IsOutside(const gfx::Rect& title_area) const {
+bool VttCueLayoutAlgorithm::IsOutside(const PhysicalRect& title_area) const {
   return !title_area.Contains(CueBoundingBox(*cue_.GetLayoutBox()));
 }
 
 bool VttCueLayoutAlgorithm::IsOverlapping(
     const gfx::Rect& controls_rect) const {
-  gfx::Rect cue_box_rect = CueBoundingBox(*cue_.GetLayoutBox());
+  PhysicalRect cue_box_rect = CueBoundingBox(*cue_.GetLayoutBox());
   for (const LayoutObject* object = cue_.GetLayoutBox()->PreviousSibling();
        object; object = object->PreviousSibling()) {
     if (const auto* cue = DynamicTo<VTTCueBox>(object->GetNode())) {
@@ -180,7 +199,7 @@ bool VttCueLayoutAlgorithm::IsOverlapping(
       }
     }
   }
-  return cue_box_rect.Intersects(controls_rect);
+  return cue_box_rect.Intersects(PhysicalRect(controls_rect));
 }
 
 bool VttCueLayoutAlgorithm::ShouldSwitchDirection(
@@ -211,8 +230,8 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
   const bool is_horizontal = cue_box.IsHorizontalWritingMode();
   const LayoutBlock& container = *cue_box.ContainingBlock();
 
-  // 1. Horizontal: Let full dimension be the height of video’s rendering area.
-  //    Vertical: Let full dimension be the width of video’s rendering area.
+  // 1. Horizontal: Let full dimension be the height of video's rendering area.
+  //    Vertical: Let full dimension be the width of video's rendering area.
   PhysicalSize container_size = container.StitchedSize();
   const LayoutUnit full_dimension =
       is_horizontal ? container_size.height : container_size.width;
@@ -227,7 +246,7 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
   // can be ugly).
   //       Vertical: Let margin be a user-agent-defined horizontal length ...
   //
-  // 11.3. Let max dimension be full dimension - (2 × margin).
+  // 11.3. Let max dimension be full dimension - (2 * margin).
   //
   // TODO(crbug.com/1012242): Remove this. The latest specification does not
   // have these steps.
@@ -265,20 +284,20 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
 
   bool switched = false;
 
-  // 12. Let title area be a box that covers all of the video’s rendering area.
-  gfx::Rect title_area = ToEnclosingRect(container.PhysicalBorderBoxRect());
+  // 12. Let title area be a box that covers all of the video's rendering area.
+  PhysicalRect title_area = container.PhysicalBorderBoxRect();
   // https://www.w3.org/TR/2017/WD-webvtt1-20170808/#apply-webvtt-cue-settings
-  // 11.14. Horizontal: Let title area be a box that covers all of the video’s
+  // 11.14. Horizontal: Let title area be a box that covers all of the video's
   // rendering area except for a height of margin at the top of the rendering
   // area and a height of margin at the bottom of the rendering area.
-  //        Vertical: Let title area be a box that covers all of the video’s
+  //        Vertical: Let title area be a box that covers all of the video's
   // rendering area except for a width of margin at the left ...
   // TODO(crbug.com/1012242): Remove this. The latest specification does not
   // have margins.
   if (is_horizontal) {
-    title_area.Inset(gfx::Insets::VH(margin_.ToInt(), 0));
+    title_area.ContractEdges(margin_, LayoutUnit(), margin_, LayoutUnit());
   } else {
-    title_area.Inset(gfx::Insets::VH(0, margin_.ToInt()));
+    title_area.ContractEdges(LayoutUnit(), margin_, LayoutUnit(), margin_);
   }
 
   // 13. Step loop: If none of the boxes in boxes would overlap any of the
