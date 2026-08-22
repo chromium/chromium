@@ -91,14 +91,6 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="onLowMemory()"/>
 </enum>
 
-<enum name="AndroidAutoDarkModeSettingsChangeSource">
-  <summary>See Android.DarkTheme.AutoDarkMode.SettingsChangeSource.*</summary>
-  <int value="0" label="Theme settings"/>
-  <int value="1" label="Site settings global"/>
-  <int value="2" label="App menu"/>
-  <int value="3" label="Site settings exception list"/>
-</enum>
-
 <!-- LINT.IfChange(AndroidBookmarkAllTabsResult) -->
 
 <enum name="AndroidBookmarkAllTabsResult">

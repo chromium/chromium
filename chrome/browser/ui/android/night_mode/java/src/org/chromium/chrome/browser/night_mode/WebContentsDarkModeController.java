@@ -8,8 +8,6 @@ import android.content.Context;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.browser_ui.site_settings.AutoDarkMetrics;
-import org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -56,18 +54,12 @@ public class WebContentsDarkModeController {
                     url,
                     url,
                     contentSettingValue);
-            AutoDarkMetrics.recordAutoDarkSettingsChangeSource(
-                    AutoDarkSettingsChangeSource.APP_MENU, enabled);
         }
 
         public void setGlobalUserSettings(
                 BrowserContextHandle browserContextHandle, boolean enabled) {
-            // This function is only used by Theme Settings so far. If this function has additional
-            // call sites, change the AutoDarkSettingsChangeSource as well.
             WebsitePreferenceBridge.setContentSettingEnabled(
                     browserContextHandle, ContentSettingsType.AUTO_DARK_WEB_CONTENT, enabled);
-            AutoDarkMetrics.recordAutoDarkSettingsChangeSource(
-                    AutoDarkSettingsChangeSource.THEME_SETTINGS, enabled);
         }
 
         public boolean isGlobalUserSettingsEnabled(BrowserContextHandle browserContextHandle) {

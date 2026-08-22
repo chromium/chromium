@@ -62,7 +62,6 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/components/browser_ui/site_settings/AddExceptionPreference.java",
     "java/src/org/chromium/components/browser_ui/site_settings/AllSiteSettings.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/AutoDarkMetrics.java",
     "java/src/org/chromium/components/browser_ui/site_settings/BaseSiteSettingsFragment.java",
     "java/src/org/chromium/components/browser_ui/site_settings/BinaryStatePermissionPreference.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ChosenObjectInfo.java",

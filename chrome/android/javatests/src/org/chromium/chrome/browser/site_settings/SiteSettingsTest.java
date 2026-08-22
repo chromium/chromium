@@ -16,7 +16,6 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import static org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL;
 import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_WINDOW_SETTING_ENABLED;
 
 import android.content.Context;
@@ -43,7 +42,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -905,10 +903,6 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testAllowAutoDark() {
-        final String histogramName = "Android.DarkTheme.AutoDarkMode.SettingsChangeSource.Enabled";
-        final int preTestCount =
-                RecordHistogram.getHistogramValueCountForTesting(
-                        histogramName, SITE_SETTINGS_GLOBAL);
         new SiteSettingsTestHelper.TwoStatePermissionTestCaseWithRadioButton(
                         "AutoDarkWebContent",
                         SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT,
@@ -916,32 +910,18 @@ public class SiteSettingsTest {
                         true)
                 .withExpectedPrefKeys(SingleCategorySettings.ADD_EXCEPTION_KEY)
                 .run();
-        Assert.assertEquals(
-                "<" + histogramName + "> should be recorded for SITE_SETTINGS_GLOBAL.",
-                preTestCount + 1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        histogramName, SITE_SETTINGS_GLOBAL));
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testBlockAutoDark() {
-        final String histogramName = "Android.DarkTheme.AutoDarkMode.SettingsChangeSource.Disabled";
-        final int preTestCount =
-                RecordHistogram.getHistogramValueCountForTesting(
-                        histogramName, SITE_SETTINGS_GLOBAL);
         new SiteSettingsTestHelper.TwoStatePermissionTestCaseWithRadioButton(
                         "AutoDarkWebContent",
                         SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT,
                         ContentSettingsType.AUTO_DARK_WEB_CONTENT,
                         false)
                 .run();
-        Assert.assertEquals(
-                "<" + histogramName + "> should be recorded for SITE_SETTINGS_GLOBAL.",
-                preTestCount + 1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        histogramName, SITE_SETTINGS_GLOBAL));
     }
 
     @Test

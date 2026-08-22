@@ -1885,29 +1885,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.DarkTheme.AutoDarkMode.SettingsChangeSource{NewState}"
-    enum="AndroidAutoDarkModeSettingsChangeSource" expires_after="2023-04-01">
-  <owner>nemco@google.com</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Source that changed the auto dark web content settings. This includes both
-    changes to global theme settings as well as individual site exceptions. This
-    histogram does not take into account whether the browser UI theme is dark or
-    not (e.g. browser theme could be &quot;light&quot; and user could still
-    change auto dark mode state in site settings). Recorded when the auto dark
-    web content settings changes including {NewState}
-  </summary>
-  <token key="NewState">
-    <variant name=".Disabled"
-        summary="default value change to Blocked, or a site exception is
-                 added."/>
-    <variant name=".Enabled"
-        summary="default value change to Allowed, or a site exception is
-                 removed."/>
-  </token>
-</histogram>
-
 <histogram name="Android.DarkTheme.EnabledState" enum="BooleanEnabled"
     expires_after="2027-01-17">
   <owner>twellington@chromium.org</owner>
