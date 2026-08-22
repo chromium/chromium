@@ -309,6 +309,9 @@ void ContextHubService::MaybeTriggerFirstPartyAutoTodosGeneration() {
 }
 
 void ContextHubService::OnFirstPartyAutoTodosTimerTriggered() {
+  if (auto_todos_store_) {
+    auto_todos_store_->DeleteExpiredEntries(base::DoNothing());
+  }
   MaybeTriggerFirstPartyAutoTodosGeneration();
 }
 

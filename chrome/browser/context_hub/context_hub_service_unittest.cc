@@ -251,6 +251,33 @@ TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ServiceSuccess) {
 }
 
 TEST_F(ContextHubServiceTest,
+       TimerTriggerDeletesExpiredTodosEvenWhenNotSignedIn) {
+  AutoTodoEntry valid_todo;
+  valid_todo.id = "todo_1";
+  valid_todo.title = "Valid Todo";
+  base::test::TestFuture<bool> add_future;
+  service_.UpdateAutoTodo(std::move(valid_todo), add_future.GetCallback());
+  EXPECT_TRUE(add_future.Get());
+
+  // Fast forward close to expiration (29 days).
+  task_environment_.FastForwardBy(base::Days(29));
+
+  MockServiceObserver observer;
+  base::ScopedObservation<ContextHubService, ContextHubService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
+
+  // Crossing expiration threshold and triggering the daily background timer
+  // should delete the expired item and notify observers.
+  EXPECT_CALL(observer, OnAutoTodosChanged(IsEmpty()));
+  task_environment_.FastForwardBy(base::Days(2));
+
+  base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
+  service_.GetAutoTodos(get_future.GetCallback());
+  EXPECT_TRUE(get_future.Get().empty());
+}
+
+TEST_F(ContextHubServiceTest,
        GenerateFirstPartyAutoTodos_ConcurrentRequestsQueueAndResolve) {
   personal_context::proto::AutoTodosResponse expected_response;
   auto* todo = expected_response.add_todos();

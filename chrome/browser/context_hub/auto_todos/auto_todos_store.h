@@ -55,6 +55,9 @@ class AutoTodosStore {
   // Clears all items from the store.
   virtual void Clear(base::OnceClosure callback) = 0;
 
+  // Deletes any expired items from the store based on TTL.
+  virtual void DeleteExpiredEntries(OperationCallback callback) = 0;
+
   // Retrieves all items currently stored in the store.
   virtual void GetAllItems(GetAllItemsCallback callback) const = 0;
 };

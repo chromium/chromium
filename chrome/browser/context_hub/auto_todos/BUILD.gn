@@ -24,6 +24,8 @@ source_set("impl") {
     ":auto_todos",
     "//base",
   ]
+
+  deps = [ "//chrome/browser/context_hub:features" ]
 }
 
 source_set("unit_tests") {
@@ -35,6 +37,7 @@ source_set("unit_tests") {
     ":impl",
     "//base",
     "//base/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
     "//url",
   ]

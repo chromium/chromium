@@ -26,6 +26,9 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kFirstPartyAutoTodosInterval);
 // The maximum number of items stored in the todo feedback cache.
 BASE_DECLARE_FEATURE_PARAM(size_t, kMaxTodoFeedbackCacheSize);
 
+// The time-to-live (TTL) for auto todos stored in the cache.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kAutoTodosCacheTTL);
+
 // The feature flag for the Memory Banks feature in Context Hub.
 BASE_DECLARE_FEATURE(kMemoryBanks);
 

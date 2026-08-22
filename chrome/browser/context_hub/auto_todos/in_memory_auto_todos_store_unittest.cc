@@ -7,7 +7,9 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,6 +31,8 @@ class MockStoreObserver : public AutoTodosStore::Observer {
 
 class InMemoryAutoTodosStoreTest : public ::testing::Test {
  protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   InMemoryAutoTodosStore store_;
 };
 
@@ -306,6 +310,85 @@ TEST_F(InMemoryAutoTodosStoreTest, ObserverNotNotifiedAfterRemoval) {
 
   EXPECT_CALL(observer, OnAutoTodosChanged(_)).Times(0);
   store_.AddOrUpdateItem(item, base::DoNothing());
+}
+
+TEST_F(InMemoryAutoTodosStoreTest,
+       DeleteExpiredEntriesRemovesOldItemsAndNotifiesObserver) {
+  AutoTodoEntry expired_item;
+  expired_item.id = "expired";
+  expired_item.title = "Expired Todo";
+
+  base::test::TestFuture<bool> add_future1;
+  store_.AddOrUpdateItem(expired_item, add_future1.GetCallback());
+  EXPECT_TRUE(add_future1.Get());
+
+  // Fast forward by 5 days before adding the valid item.
+  task_environment_.FastForwardBy(base::Days(5));
+
+  MockStoreObserver observer;
+  store_.AddObserver(&observer);
+
+  AutoTodoEntry valid_item;
+  valid_item.id = "valid";
+  valid_item.title = "Valid Todo";
+
+  EXPECT_CALL(observer, OnAutoTodosChanged(SizeIs(2)));
+  base::test::TestFuture<bool> add_future2;
+  store_.AddOrUpdateItem(valid_item, add_future2.GetCallback());
+  EXPECT_TRUE(add_future2.Get());
+
+  // Fast forward by 26 days. `expired_item` is now 31 days old (expired, TTL=30
+  // days), while `valid_item` is 26 days old (valid).
+  task_environment_.FastForwardBy(base::Days(26));
+
+  // Delete expired item and verify observer is notified.
+  EXPECT_CALL(observer, OnAutoTodosChanged(SizeIs(1)));
+  base::test::TestFuture<bool> delete_future;
+  store_.DeleteExpiredEntries(delete_future.GetCallback());
+  EXPECT_TRUE(delete_future.Get());
+
+  // Verify that only the valid item is still in the store.
+  base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
+  store_.GetAllItems(get_future.GetCallback());
+  auto items = get_future.Get();
+  ASSERT_EQ(items.size(), 1u);
+  EXPECT_EQ(items[0].id, "valid");
+}
+
+TEST_F(InMemoryAutoTodosStoreTest,
+       UpdateExistingItemUpdatesLastModifiedTimestamp) {
+  AutoTodoEntry initial_item;
+  initial_item.id = "item_1";
+  initial_item.title = "Initial Title";
+
+  base::test::TestFuture<bool> add_future;
+  store_.AddOrUpdateItem(initial_item, add_future.GetCallback());
+  EXPECT_TRUE(add_future.Get());
+
+  base::test::TestFuture<std::vector<AutoTodoEntry>> get_future1;
+  store_.GetAllItems(get_future1.GetCallback());
+  auto items1 = get_future1.Get();
+  ASSERT_EQ(items1.size(), 1u);
+  base::Time initial_timestamp = items1[0].last_modified_timestamp;
+
+  task_environment_.FastForwardBy(base::Days(5));
+
+  // Update item with an updated title, passing the existing item struct (which
+  // has the previous last_modified_timestamp populated).
+  AutoTodoEntry update_item = items1[0];
+  update_item.title = "Updated Title";
+
+  base::test::TestFuture<bool> update_future;
+  store_.AddOrUpdateItem(update_item, update_future.GetCallback());
+  EXPECT_TRUE(update_future.Get());
+
+  base::test::TestFuture<std::vector<AutoTodoEntry>> get_future2;
+  store_.GetAllItems(get_future2.GetCallback());
+  auto items2 = get_future2.Get();
+  ASSERT_EQ(items2.size(), 1u);
+  EXPECT_EQ(items2[0].title, "Updated Title");
+  EXPECT_EQ(items2[0].last_modified_timestamp, base::Time::Now());
+  EXPECT_GT(items2[0].last_modified_timestamp, initial_timestamp);
 }
 
 }  // namespace context_hub

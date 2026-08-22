@@ -10,6 +10,7 @@
 
 #include "base/containers/lru_cache.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todos_store.h"
 
@@ -32,15 +33,18 @@ class InMemoryAutoTodosStore : public AutoTodosStore {
   void DeleteItem(const std::string& id, OperationCallback callback) override;
   void DeleteItemByTabId(int64_t tab_id, OperationCallback callback) override;
   void Clear(base::OnceClosure callback) override;
+  void DeleteExpiredEntries(OperationCallback callback) override;
   void GetAllItems(GetAllItemsCallback callback) const override;
 
  private:
   void NotifyAutoTodosChanged();
+  bool DeleteExpiredEntriesInternal();
 
   base::ObserverList<Observer> observers_;
 
   base::LRUCache<std::string, AutoTodoEntry> entries_;
   int64_t next_item_id_ = 1;
+  base::TimeDelta ttl_;
 };
 
 }  // namespace context_hub

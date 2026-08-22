@@ -74,6 +74,9 @@ struct AutoTodoEntry {
   // Type specific payload.
   std::variant<FirstPartyData, ThirdPartyData> data;
 
+  // Timestamp when the todo was last modified, used for TTL.
+  base::Time last_modified_timestamp;
+
   // Helper methods to inspect variant data.
   bool is_third_party() const {
     return std::holds_alternative<ThirdPartyData>(data);
