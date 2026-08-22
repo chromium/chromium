@@ -238,6 +238,19 @@ source_set("chrome_test_scoped_utils") {
   deps = [ "//chrome/browser:browser_process" ]
 }
 
+source_set("menu_model_test") {
+  testonly = true
+  sources = [
+    "menu_model_test.cc",
+    "menu_model_test.h",
+  ]
+  public_deps = [
+    "//ui/base",
+    "//ui/menus",
+  ]
+  deps = [ "//testing/gtest" ]
+}
+
 # Thin header-only target exposing testing_profile.h and friends. No ash or
 # extensions deps — those live in testing_profile_impl. This allows
 # ash/settings:test_support and extensions:test_support to dep on this target
