@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
@@ -321,6 +322,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         Context context =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
+        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
 
         mShadowPackageManager = Shadows.shadowOf(context.getPackageManager());
 

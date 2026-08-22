@@ -163,10 +163,12 @@ public class BookmarksItemBuilder implements Destroyable {
                                     AppMenuHandler.AppMenuItemType.DIVIDER,
                                     AppMenuItemUtils.buildModelForDivider(R.id.divider_line_id)));
 
-                    if (ChromeFeatureList.sBookmarksBarNTP.isEnabled()) {
-                        submenuItems.add(buildBookmarkBarVisibilityParentItem());
-                    } else {
-                        submenuItems.add(buildToggleBookmarksBarItem());
+                    if (BookmarkBarUtils.isDeviceBookmarkBarCompatible(mContext)) {
+                        if (ChromeFeatureList.sBookmarksBarNTP.isEnabled()) {
+                            submenuItems.add(buildBookmarkBarVisibilityParentItem());
+                        } else {
+                            submenuItems.add(buildToggleBookmarksBarItem());
+                        }
                     }
 
                     // TODO(crbug.com/521223427): Implement dynamic updates so that we don't
