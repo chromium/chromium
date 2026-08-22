@@ -649,6 +649,10 @@ gfx::Vector2d PaintLayerScrollableArea::MaximumScrollOffsetInt() const {
 
 void PaintLayerScrollableArea::VisibleSizeChanged() {
   ShowNonMacOverlayScrollbars();
+  if (AXObjectCache* cache =
+          GetLayoutBox()->GetDocument().ExistingAXObjectCache()) {
+    cache->HandleScrollDimensionsChanged(GetLayoutBox());
+  }
 }
 
 PhysicalRect PaintLayerScrollableArea::LayoutContentRect(
@@ -729,6 +733,10 @@ void PaintLayerScrollableArea::ContentsResized() {
   Layer()->SetNeedsCompositingInputsUpdate();
   GetLayoutBox()->GetFrameView()->SetIntersectionObservationState(
       LocalFrameView::kDesired);
+  if (AXObjectCache* cache =
+          GetLayoutBox()->GetDocument().ExistingAXObjectCache()) {
+    cache->HandleScrollDimensionsChanged(GetLayoutBox());
+  }
 }
 
 gfx::Point PaintLayerScrollableArea::LastKnownMousePosition() const {

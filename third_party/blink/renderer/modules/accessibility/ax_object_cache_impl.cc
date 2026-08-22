@@ -6874,6 +6874,23 @@ void AXObjectCacheImpl::HandleScrollPositionChanged(
   }
 }
 
+void AXObjectCacheImpl::HandleScrollDimensionsChanged(
+    LayoutObject* layout_object) {
+  if (!layout_object || layout_object->GetDocument() != document_) {
+    return;
+  }
+
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+
+  if (AXObject* obj = Get(layout_object)) {
+    if (lifecycle_.StateAllowsImmediateTreeUpdates()) {
+      MarkAXObjectDirtyWithCleanLayout(obj);
+    } else {
+      MarkAXObjectDirty(obj);
+    }
+  }
+}
+
 void AXObjectCacheImpl::HandleScrollMarkerTabSelectionChanged(
     Element& scroller) {
   // Traverse all nodes in the scroller's subtree and mark each one dirty.

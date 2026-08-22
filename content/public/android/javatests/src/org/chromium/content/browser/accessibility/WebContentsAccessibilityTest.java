@@ -165,6 +165,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
+import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.accessibility.AccessibilityFeatures;
@@ -6335,5 +6336,42 @@ public class WebContentsAccessibilityTest {
         rootNodeInfo = createAccessibilityNodeInfo(rootVvid);
         Assert.assertFalse(FOCUSING_ERROR, rootNodeInfo.isAccessibilityFocused());
         Assert.assertTrue(FOCUSING_ERROR, btnNodeInfo.isAccessibilityFocused());
+    }
+
+    /**
+     * Test that when content height dynamically expands via JavaScript,
+     * the updated scroll dimensions cause ACTION_SCROLL_FORWARD and ACTION_SCROLL_DOWN
+     * to be added to the AccessibilityNodeInfo.
+     */
+    @Test
+    @SmallTest
+    public void testNodeInfo_Actions_DynamicScrollHeight() throws Throwable {
+        setupTestWithHTML(
+                """
+                <div id="container" style="overflow: scroll; width: 200px; height: 50px;">
+                  <div id="inner" style="height: 30px;">Initial Short Content</div>
+                </div>
+                """);
+
+        int vvId = waitForNodeMatching(sViewIdResourceNameMatcher, "container");
+        AccessibilityNodeInfoCompat nodeInfo = createAccessibilityNodeInfo(vvId);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo);
+        Assert.assertFalse(nodeInfo.getActionList().contains(ACTION_SCROLL_FORWARD));
+        Assert.assertFalse(nodeInfo.getActionList().contains(ACTION_SCROLL_DOWN));
+
+        // Dynamically expand inner content height via JavaScript.
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                mActivityTestRule.getWebContents(),
+                "document.getElementById('inner').style.height = '1000px';");
+
+        // Verify that the container node's scroll actions are updated to include scroll forward and down.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    AccessibilityNodeInfoCompat updated = createAccessibilityNodeInfo(vvId);
+                    return updated != null
+                            && updated.getActionList().contains(ACTION_SCROLL_FORWARD)
+                            && updated.getActionList().contains(ACTION_SCROLL_DOWN);
+                },
+                "Scroll forward action was not added after expanding content height");
     }
 }

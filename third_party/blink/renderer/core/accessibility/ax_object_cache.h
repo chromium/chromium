@@ -190,6 +190,9 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // Called when the scroll offset changes.
   virtual void HandleScrollPositionChanged(LayoutObject*) = 0;
 
+  // Called when the scroll extent or dimensions of a scrollable area change.
+  virtual void HandleScrollDimensionsChanged(LayoutObject*) = 0;
+
   // Called when a scroll marker tab selection changes, affecting which
   // content is visible/accessible in a CSS scroll-marker-group tabs mode.
   virtual void HandleScrollMarkerTabSelectionChanged(Element& scroller) = 0;
