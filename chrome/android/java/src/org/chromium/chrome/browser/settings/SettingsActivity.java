@@ -125,6 +125,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 PreferenceUpdateObserver,
                 SettingsMenuHelper.Delegate,
                 SettingsContainmentHelper.Delegate,
+                MultiColumnSettings.Observer,
                 SettingsActivityInterface {
     private static final String TAG = "SettingsActivity";
 
@@ -177,7 +178,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private static final String MAIN_FRAGMENT_TAG = "settings_main";
     public static final String MULTI_COLUMN_FRAGMENT_TAG = "multi_column_settings";
 
-    private final SettingsContainmentHelper mContainmentHelper =
+    private SettingsContainmentHelper mContainmentHelper =
             new SettingsContainmentHelper(this, this);
 
     private @Nullable SettingsSearchCoordinator mSearchCoordinator;
@@ -303,6 +304,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (!mStandalone) {
             if (isMultiColumnSettingEnabled()) {
                 assert mMultiColumnSettings != null;
+                mMultiColumnSettings.addObserver(this);
                 createMultiColumnTitleUpdater(savedInstanceState);
                 createSearchCoordinator(savedInstanceState);
             } else {
@@ -404,6 +406,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             mContainmentHelper.updateContainmentForAttachedFragments(getSupportFragmentManager());
         }
         if (mSearchCoordinator != null) mSearchCoordinator.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onHeaderLayoutUpdated() {
+        mContainmentHelper.updateContainmentForAttachedFragments(getSupportFragmentManager());
     }
 
     @Override
@@ -764,6 +771,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             }
             mSearchCoordinator.destroy();
         }
+        if (mMultiColumnSettings != null) {
+            mMultiColumnSettings.removeObserver(this);
+        }
 
         WindowAndroid windowAndroid = mWindowAndroidSupplier.get();
         if (windowAndroid != null) {
@@ -1093,5 +1103,13 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     public @Nullable SettingsSearchCoordinator getSearchCoordinatorForTesting() {
         return mSearchCoordinator;
+    }
+
+    void setContainmentHelperForTesting(SettingsContainmentHelper containmentHelper) {
+        mContainmentHelper = containmentHelper;
+    }
+
+    void setMultiColumnSettingsForTesting(@Nullable MultiColumnSettings multiColumnSettings) {
+        mMultiColumnSettings = multiColumnSettings;
     }
 }

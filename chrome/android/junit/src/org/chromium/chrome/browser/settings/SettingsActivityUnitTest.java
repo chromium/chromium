@@ -10,8 +10,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -357,6 +361,33 @@ public class SettingsActivityUnitTest {
                 "Finishing the activity should not have been triggered with a handler ready to act"
                     + " on the event.",
                 mSettingsActivity.isFinishing());
+    }
+
+    @Test
+    public void testOnConfigurationChanged_updatesContainment() {
+        startSettings(TestEmbeddableFragment.class.getName());
+        mActivityScenario.moveToState(State.CREATED);
+
+        SettingsContainmentHelper mockHelper = mock(SettingsContainmentHelper.class);
+        mSettingsActivity.setContainmentHelperForTesting(mockHelper);
+        mSettingsActivity.setMultiColumnSettingsForTesting(mock(MultiColumnSettings.class));
+
+        mSettingsActivity.onConfigurationChanged(new Configuration());
+
+        verify(mockHelper).updateContainmentForAttachedFragments(any());
+    }
+
+    @Test
+    public void testOnHeaderLayoutUpdated_updatesContainment() {
+        startSettings(TestEmbeddableFragment.class.getName());
+        mActivityScenario.moveToState(State.CREATED);
+
+        SettingsContainmentHelper mockHelper = mock(SettingsContainmentHelper.class);
+        mSettingsActivity.setContainmentHelperForTesting(mockHelper);
+
+        mSettingsActivity.onHeaderLayoutUpdated();
+
+        verify(mockHelper).updateContainmentForAttachedFragments(any());
     }
 
     private void startSettings(String fragmentName) {
