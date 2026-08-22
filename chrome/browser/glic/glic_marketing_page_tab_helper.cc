@@ -112,6 +112,7 @@ void GlicMarketingPageTabHelper::DidFinishNavigation(
 
     GlicInvokeOptions options(std::move(target),
                               glic::mojom::InvocationSource::kPromotionPage);
+    options.fre_override = glic::mojom::FreOverride::kTrustFirstInline;
     options.fre_completion_wait_mode = FreCompletionWaitMode::kDefault;
     options.feature_mode = glic::mojom::FeatureMode::kPromotionPage;
 
