@@ -17,10 +17,6 @@
 namespace optimization_guide {
 namespace switches {
 
-// TODO(crbug.com/514743962): Move to components/optimization_guide/core/model_execution/model_execution_fetcher_impl.h.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kModelExecutionEnableRemoteDebugLogging[];
-
 // TODO(crbug.com/514743962): Move to components/optimization_guide/core/model_execution/on_device_model_component.h.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDeviceModelExecutionOverride[];

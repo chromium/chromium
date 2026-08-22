@@ -6,22 +6,23 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
-#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
-#include "components/optimization_guide/proto/model_execution.pb.h"
 #include "url/gurl.h"
 
 class OptimizationGuideLogger;
+
+namespace google::protobuf {
+class MessageLite;
+}  // namespace google::protobuf
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -33,6 +34,11 @@ class IdentityManager;
 }  // namespace signin
 
 namespace optimization_guide {
+
+// Adds header to indicate to return debug logging data from the model execution
+// service via response header.
+inline constexpr char kModelExecutionEnableRemoteDebugLoggingSwitch[] =
+    "optimization-guide-model-execution-enable-remote-debug-logging";
 
 class ModelExecutionFetcherImpl : public ModelExecutionFetcher {
  public:

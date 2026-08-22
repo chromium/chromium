@@ -23,11 +23,6 @@ const char kOnDeviceModelExecutionOverride[] =
 const char kOnDeviceModelAdaptationsOverride[] =
     "optimization-guide-ondevice-model-adaptations-override";
 
-// Adds header to indicate to return debug logging data from the model execution
-// service via response header.
-const char kModelExecutionEnableRemoteDebugLogging[] =
-    "optimization-guide-model-execution-enable-remote-debug-logging";
-
 // Overrides the model quality service URL.
 const char kModelQualityServiceURL[] = "model-quality-service-url";
 

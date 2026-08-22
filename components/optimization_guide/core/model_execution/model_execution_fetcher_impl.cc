@@ -10,12 +10,14 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/types/expected.h"
 #include "components/optimization_guide/core/access_token_helper.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/url_util.h"
@@ -34,7 +36,6 @@ namespace {
 // The name of the model execution debug logs header.
 constexpr char kOptimizationGuideModelExecutionDebugLogsHeaderKey[] =
     "X-Model-Execution-Debug-Logs";
-
 
 net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
     ModelBasedCapabilityKey feature) {
@@ -583,13 +584,12 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
 // Appends headers as specified by the command line arguments.
 void AppendHeadersIfNeeded(network::ResourceRequest& request) {
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kModelExecutionEnableRemoteDebugLogging)) {
+          kModelExecutionEnableRemoteDebugLoggingSwitch)) {
     return;
   }
   request.headers.SetHeaderIfMissing(
       kOptimizationGuideModelExecutionDebugLogsHeaderKey, "");
 }
-
 
 // Returns whether model executions for the `feature` require an access token.
 bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
