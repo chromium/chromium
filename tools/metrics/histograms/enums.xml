@@ -9222,6 +9222,7 @@ from previous Chrome versions.
   <int value="-1692639418" label="AndroidAppearanceSettings:disabled"/>
   <int value="-1692384483" label="disambiguate-autofill-server-name-types"/>
   <int value="-1692107333" label="AccessibilityCursorColor:disabled"/>
+  <int value="-1691913260" label="PrivilegedWebContents:enabled"/>
   <int value="-1691892152" label="SafeSearchUrlReporting:disabled"/>
   <int value="-1691712937" label="OmniboxKeywordModeRefresh:disabled"/>
   <int value="-1691668194" label="enable-new-bookmark-apps"/>
@@ -16035,6 +16036,7 @@ from previous Chrome versions.
   <int value="422670720" label="ContextualSearchLongpressPanelHelp:disabled"/>
   <int value="423615350" label="enable-tab-audio-muting"/>
   <int value="423855924" label="enable-tab-switcher-theme-colors"/>
+  <int value="424334835" label="PrivilegedWebContents:disabled"/>
   <int value="425026866"
       label="PageInfoAboutThisSiteImprovedBottomSheet:disabled"/>
   <int value="425072496" label="GridLayoutForNtpShortcuts:enabled"/>

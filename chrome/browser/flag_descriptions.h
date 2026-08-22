@@ -4274,6 +4274,10 @@ inline constexpr char kNtpComposeboxUsesChromeComposeClientDescription[] =
     "Composebox will use chrome-compose client when querying suggest for "
     "unimodal typed inputs instead of chrome-omni.";
 
+inline constexpr char kPrivilegedWebContentsName[] = "Privileged WebContents";
+inline constexpr char kPrivilegedWebContentsDescription[] =
+    "Enables Privileged WebContents capability infrastructure.";
+
 inline constexpr char kProfileDiscOnAllPagesName[] =
     "Profile Disc on All Pages";
 inline constexpr char kProfileDiscOnAllPagesDescription[] =

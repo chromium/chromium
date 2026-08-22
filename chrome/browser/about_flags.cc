@@ -63,6 +63,7 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/preloading/search_preload/search_preload_features.h"
+#include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/site_isolation/about_flags.h"
 #include "chrome/browser/task_manager/common/task_manager_features.h"
@@ -11138,6 +11139,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnterprisePublishedSkillsPolicyEnabledDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kEnterprisePublishedSkillsPolicyEnabled)},
+    {"privileged-web-contents", flag_descriptions::kPrivilegedWebContentsName,
+     flag_descriptions::kPrivilegedWebContentsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(pwc::mojom::features::kPrivilegedWebContents)},
     {"skills", flag_descriptions::kSkillsEnabledName,
      flag_descriptions::kSkillsEnabledDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSkillsEnabled)},
