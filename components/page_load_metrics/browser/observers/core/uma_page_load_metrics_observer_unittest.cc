@@ -549,7 +549,7 @@ TEST_P(UmaPageLoadMetricsObserverTest, Reload) {
   tester()->SimulateTimingUpdate(timing);
 
   auto resources =
-      GetSampleResourceDataUpdateForTesting(/*resource_size=*/base::KiBU(10));
+      GetSampleResourceDataUpdateForTesting(/*resource_size=*/base::KiB(10));
   tester()->SimulateResourceDataUseUpdate(resources);
 
   tester()->NavigateToUntrackedUrl();
@@ -593,7 +593,7 @@ TEST_P(UmaPageLoadMetricsObserverTest, ForwardBack) {
   tester()->SimulateTimingUpdate(timing);
 
   auto resources =
-      GetSampleResourceDataUpdateForTesting(/*resource_size=*/base::KiBU(10));
+      GetSampleResourceDataUpdateForTesting(/*resource_size=*/base::KiB(10));
   tester()->SimulateResourceDataUseUpdate(resources);
 
   tester()->NavigateToUntrackedUrl();
@@ -659,7 +659,7 @@ TEST_P(UmaPageLoadMetricsObserverTest, NewNavigation) {
   tester()->SimulateTimingUpdate(timing);
 
   auto resources =
-      GetSampleResourceDataUpdateForTesting(/*resource_size=*/base::KiBU(10));
+      GetSampleResourceDataUpdateForTesting(/*resource_size=*/base::KiB(10));
   tester()->SimulateResourceDataUseUpdate(resources);
 
   tester()->NavigateToUntrackedUrl();
