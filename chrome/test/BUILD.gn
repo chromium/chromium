@@ -1765,35 +1765,18 @@ if (is_android) {
     ]
   }
 
-  static_library("test_support_ui_android") {
-    configs += [ "//build/config:precompiled_headers" ]
+  group("test_support_ui_android") {
     testonly = true
-
-    sources = [
-      "base/android/android_browser_test.cc",
-      "base/android/android_browser_test.h",
-      "base/interactive_test_utils.cc",
-      "base/interactive_test_utils.h",
-      "base/mixin_based_in_process_browser_test.cc",
-      "base/mixin_based_in_process_browser_test.h",
-      "base/platform_browser_test.h",
-    ]
     public_deps = [
+      "//chrome/test/base:android_browser_test",
       "//chrome/test/base:chrome_test_path_utils",
       "//chrome/test/base:in_process_browser_test_mixin",
+      "//chrome/test/base:interactive_test_utils",
+      "//chrome/test/base:mixin_based_in_process_browser_test",
+      "//chrome/test/base:platform_browser_test",
       "//chrome/test/base:test_launcher_utils",
       "//components/feed:feature_list",
       "//content/test:test_support",
-    ]
-    deps = [
-      "//chrome/browser",
-      "//chrome/browser/ui",
-      "//chrome/browser/ui:view_ids",
-      "//chrome/browser/ui/android/tab_model",
-      "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/select_file_policy",
-      "//content/public/browser",
-      "//ui/base:test_support",
     ]
   }
 

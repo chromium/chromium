@@ -1037,6 +1037,72 @@ if (is_android) {
       "//content/test:test_support",
     ]
   }
+
+  source_set("android_browser_test") {
+    testonly = true
+    sources = [
+      "android/android_browser_test.cc",
+      "android/android_browser_test.h",
+    ]
+    public_deps = [
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/profiles:profile",
+      "//content/test:test_support",
+    ]
+    deps = [
+      ":chrome_test_path_utils",
+      ":test_launcher_utils",
+      "//chrome/browser/ui/android/tab_model",
+      "//chrome/browser/ui/browser_window",
+      "//components/keyed_service/content",
+      "//extensions/buildflags",
+    ]
+    if (enable_extensions_core) {
+      deps += [ "//extensions/common:extension_features" ]
+    }
+  }
+
+  source_set("interactive_test_utils") {
+    testonly = true
+    sources = [
+      "interactive_test_utils.cc",
+      "interactive_test_utils.h",
+    ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui:view_ids",
+      "//ui/base:test_support",
+      "//ui/display",
+      "//ui/gfx",
+    ]
+    deps = [
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/base",
+      "//ui/events",
+    ]
+  }
+
+  source_set("mixin_based_in_process_browser_test") {
+    testonly = true
+    sources = [
+      "mixin_based_in_process_browser_test.cc",
+      "mixin_based_in_process_browser_test.h",
+    ]
+    public_deps = [
+      ":android_browser_test",
+      ":in_process_browser_test_mixin",
+    ]
+  }
+
+  source_set("platform_browser_test") {
+    testonly = true
+    sources = [ "platform_browser_test.h" ]
+    public_deps = [ ":android_browser_test" ]
+  }
 }
 
 if (is_chromeos) {
