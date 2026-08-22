@@ -894,7 +894,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         if (mActive == active) return;
         mActive = active;
         for (TabModelObserver obs : mTabModelObservers) {
-            obs.onActiveChanged(active);
+            obs.onActiveChanged(/* tabModel= */ this, active);
         }
     }
 

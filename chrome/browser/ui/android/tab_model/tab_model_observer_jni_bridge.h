@@ -101,7 +101,7 @@ class TabModelObserverJniBridge {
 
   void OnTabGroupVisualsChanged(JNIEnv* env, base::Token group_id);
 
-  void OnActiveChanged(JNIEnv* env, bool active);
+  void OnActiveChanged(JNIEnv* env, TabModel* tab_model, bool active);
 
   void AddObserver(TabModelObserver* observer);
   void AddTabListInterfaceObserver(TabListInterfaceObserver* observer);

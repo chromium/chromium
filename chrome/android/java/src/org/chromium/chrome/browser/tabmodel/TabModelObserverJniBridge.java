@@ -199,10 +199,10 @@ class TabModelObserverJniBridge implements TabModelObserver {
     }
 
     @Override
-    public void onActiveChanged(boolean active) {
+    public void onActiveChanged(TabModel tabModel, boolean active) {
         assert mNativeTabModelObserverJniBridge != 0;
         TabModelObserverJniBridgeJni.get()
-                .onActiveChanged(mNativeTabModelObserverJniBridge, active);
+                .onActiveChanged(mNativeTabModelObserverJniBridge, tabModel, active);
     }
 
     @Override
@@ -379,6 +379,9 @@ class TabModelObserverJniBridge implements TabModelObserver {
         void onTabGroupVisualsChanged(
                 long nativeTabModelObserverJniBridge, @JniType("base::Token") Token groupId);
 
-        void onActiveChanged(long nativeTabModelObserverJniBridge, boolean active);
+        void onActiveChanged(
+                long nativeTabModelObserverJniBridge,
+                @JniType("TabModel*") TabModel tabModel,
+                boolean active);
     }
 }

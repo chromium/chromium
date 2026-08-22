@@ -68,9 +68,10 @@ public interface TabModelObserver {
      * Called when the active status of the {@link TabModel} changes (e.g. when switching between
      * standard and incognito tab models).
      *
+     * @param tabModel The tab model observed by this observer.
      * @param active Whether the tab model is now active.
      */
-    default void onActiveChanged(boolean active) {}
+    default void onActiveChanged(TabModel tabModel, boolean active) {}
 
     // Tab Movement and Attributes
 
