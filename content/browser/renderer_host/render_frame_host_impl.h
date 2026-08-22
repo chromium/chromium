@@ -1091,7 +1091,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Mojo.bindInterface. This method should be called in
   // ReadyToCommitNavigation.
   void EnableMojoJsBindingsWithBroker(
-      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker);
+      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker)
+      override;
 
   // Frame trees may be nested so it can be the case that is_main_frame() is
   // true, but is not the outermost RenderFrameHost (it only checks for nullity

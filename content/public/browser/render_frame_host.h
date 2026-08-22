@@ -37,6 +37,7 @@
 #include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/browser_interface_broker.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
@@ -90,6 +91,8 @@ class Size;
 namespace mojo {
 template <typename T>
 class PendingReceiver;
+template <typename T>
+class PendingRemote;
 }  // namespace mojo
 
 namespace net {
@@ -1157,6 +1160,16 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // enables a set of additional features that can be used with MojoJs. For
   // example, helper methods for MojoJs to better work with Web API objects.
   virtual void EnableMojoJsBindings(mojom::ExtraMojoJsFeaturesPtr features) = 0;
+
+  // Like EnableMojoJsBindings(), but JavaScript calls to Mojo.bindInterface
+  // are routed to |broker| instead of the frame's BrowserInterfaceBroker, so
+  // the page can only reach the interfaces |broker| chooses to serve. Should
+  // be called in ReadyToCommitNavigation. The caller retains ownership of the
+  // broker implementation and must keep it alive for as long as the document
+  // may use it. Callers for frames without an associated WebUI must be
+  // sanctioned by ContentBrowserClient::ShouldAllowMojoJsBindingsForFrame().
+  virtual void EnableMojoJsBindingsWithBroker(
+      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker) = 0;
 
   // Indicates that this frame wants stack traces included in console error
   // notifications (`untrusted_stack_trace` in `DidAddMessageToConsole`).

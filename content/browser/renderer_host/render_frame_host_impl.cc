@@ -19143,11 +19143,14 @@ void RenderFrameHostImpl::EnableMojoJsBindings(
 
 void RenderFrameHostImpl::EnableMojoJsBindingsWithBroker(
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker) {
-  // This method should only be called on RenderFrameHost that has an associated
-  // WebUI, because it needs to transfer the broker's ownership to its
-  // WebUIController. EnableMojoJsBindings does this differently and can be
-  // called before the WebUI object is created.
-  CHECK(GetWebUI());
+  // For a frame with an associated WebUI, the broker implementation is owned
+  // by its WebUIController. Any other frame must be allowlisted by the
+  // embedder, exactly like EnableMojoJsBindings; the (embedder-side) caller
+  // owns the broker implementation and must keep it alive for as long as the
+  // document may use it.
+  CHECK(
+      GetWebUI() ||
+      GetContentClient()->browser()->ShouldAllowMojoJsBindingsForFrame(*this));
   GetFrameBindingsControl()->EnableMojoJsBindingsWithBroker(std::move(broker));
 }
 

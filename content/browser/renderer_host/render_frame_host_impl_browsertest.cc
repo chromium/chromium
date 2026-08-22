@@ -11060,4 +11060,96 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_FALSE(root_frame_host()->has_navigate_event_handler());
 }
 
+namespace {
+
+// Allows MojoJS enablement for every frame, standing in for an embedder that
+// sanctions a specific frame via ShouldAllowMojoJsBindingsForFrame().
+class AllowMojoJsContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  bool ShouldAllowMojoJsBindingsForFrame(
+      RenderFrameHost& render_frame_host) override {
+    return true;
+  }
+};
+
+// A BrowserInterfaceBroker that records the interface names requested through
+// it instead of binding anything.
+class RecordingInterfaceBroker : public blink::mojom::BrowserInterfaceBroker {
+ public:
+  mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> Bind() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void GetInterface(mojo::GenericPendingReceiver receiver) override {
+    requested_names_.push_back(receiver.interface_name().value_or(""));
+    if (quit_) {
+      std::move(quit_).Run();
+    }
+  }
+
+  void WaitForRequest() {
+    if (!requested_names_.empty()) {
+      return;
+    }
+    base::RunLoop loop;
+    quit_ = loop.QuitClosure();
+    loop.Run();
+  }
+
+  const std::vector<std::string>& requested_names() const {
+    return requested_names_;
+  }
+
+ private:
+  std::vector<std::string> requested_names_;
+  base::OnceClosure quit_;
+  mojo::Receiver<blink::mojom::BrowserInterfaceBroker> receiver_{this};
+};
+
+// Enables MojoJS with the given broker for the next committing document.
+class EnableMojoJsWithBrokerOnCommit : public WebContentsObserver {
+ public:
+  EnableMojoJsWithBrokerOnCommit(WebContents* web_contents,
+                                 RecordingInterfaceBroker* broker)
+      : WebContentsObserver(web_contents), broker_(broker) {}
+
+  void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
+    navigation_handle->GetRenderFrameHost()->EnableMojoJsBindingsWithBroker(
+        broker_->Bind());
+  }
+
+ private:
+  raw_ptr<RecordingInterfaceBroker> broker_;
+};
+
+}  // namespace
+
+// EnableMojoJsBindingsWithBroker() works for a non-WebUI frame sanctioned by
+// the embedder: the document gets the MojoJS API, and Mojo.bindInterface
+// requests are routed to the caller-supplied broker rather than the frame's
+// BrowserInterfaceBroker.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       MojoJsBindingsWithEmbedderOwnedBroker) {
+  AllowMojoJsContentBrowserClient client;
+  RecordingInterfaceBroker broker;
+  EnableMojoJsWithBrokerOnCommit enabler(web_contents(), &broker);
+
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  // The document has MojoJS enabled.
+  EXPECT_EQ(true, EvalJs(web_contents(), "typeof Mojo !== 'undefined'"));
+
+  // A bindInterface call reaches the supplied broker, which chose not to bind
+  // it -- proving requests are scoped to the embedder's broker.
+  ASSERT_TRUE(ExecJs(web_contents(), R"(
+    const pipe = Mojo.createMessagePipe();
+    Mojo.bindInterface('test.mojom.NotServed', pipe.handle0);
+  )"));
+  broker.WaitForRequest();
+  ASSERT_EQ(1u, broker.requested_names().size());
+  EXPECT_EQ("test.mojom.NotServed", broker.requested_names()[0]);
+}
+
 }  // namespace content
