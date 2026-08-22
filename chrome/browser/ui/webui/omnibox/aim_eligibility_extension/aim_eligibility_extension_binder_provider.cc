@@ -46,7 +46,7 @@ void BindFactoryReceiverForWorker(
 // static
 void AimEligibilityExtensionBinderProvider::Register(
     content::BrowserContext* browser_context) {
-  extensions::ExtensionMojoBinderRegistryFactory::GetForBrowserContext(
+  extensions::ExtensionMojoBinderRegistryFactory::GetOrCreateForBrowserContext(
       browser_context)
       ->RegisterProvider(
           base::PassKey<AimEligibilityExtensionBinderProvider>(),

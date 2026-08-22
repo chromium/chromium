@@ -17,6 +17,14 @@ ExtensionMojoBinderRegistry*
 ExtensionMojoBinderRegistryFactory::GetForBrowserContext(
     content::BrowserContext* context) {
   return static_cast<ExtensionMojoBinderRegistry*>(
+      GetInstance()->GetServiceForBrowserContext(context, /*create=*/false));
+}
+
+// static
+ExtensionMojoBinderRegistry*
+ExtensionMojoBinderRegistryFactory::GetOrCreateForBrowserContext(
+    content::BrowserContext* context) {
+  return static_cast<ExtensionMojoBinderRegistry*>(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
 

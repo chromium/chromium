@@ -111,7 +111,7 @@ class ExtensionMojoBinderRegistryTest : public ExtensionsTest {
   }
 
   ExtensionMojoBinderRegistry* registry() {
-    return ExtensionMojoBinderRegistryFactory::GetForBrowserContext(
+    return ExtensionMojoBinderRegistryFactory::GetOrCreateForBrowserContext(
         browser_context());
   }
 

@@ -28,7 +28,7 @@ namespace contextual_tasks {
 // static
 void ContextualTasksExtensionBinderProvider::Register(
     content::BrowserContext* browser_context) {
-  extensions::ExtensionMojoBinderRegistryFactory::GetForBrowserContext(
+  extensions::ExtensionMojoBinderRegistryFactory::GetOrCreateForBrowserContext(
       browser_context)
       ->RegisterProvider(
           base::PassKey<ContextualTasksExtensionBinderProvider>(),

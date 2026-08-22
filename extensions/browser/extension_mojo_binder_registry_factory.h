@@ -29,7 +29,13 @@ class ExtensionMojoBinderRegistryFactory
       const ExtensionMojoBinderRegistryFactory&) = delete;
   ~ExtensionMojoBinderRegistryFactory() override;
 
+  // Returns the ExtensionMojoBinderRegistry associated with `context` if one
+  // already exists, or nullptr.
   static ExtensionMojoBinderRegistry* GetForBrowserContext(
+      content::BrowserContext* context);
+  // Returns the ExtensionMojoBinderRegistry associated with `context`, creating
+  // it if it does not already exist.
+  static ExtensionMojoBinderRegistry* GetOrCreateForBrowserContext(
       content::BrowserContext* context);
   static ExtensionMojoBinderRegistryFactory* GetInstance();
 
