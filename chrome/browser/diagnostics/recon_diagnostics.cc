@@ -72,7 +72,7 @@ class DiskSpaceTest : public DiagnosticsTest {
     }
     std::string printable_size =
         base::NumberToString(disk_space->available.InBytes());
-    if (disk_space->available < base::MiBU(80)) {
+    if (disk_space->available < base::MiB(80)) {
       RecordFailure(DIAG_RECON_LOW_DISK_SPACE,
                     "Low disk space: " + printable_size);
       return true;
@@ -211,11 +211,11 @@ const TestPathInfo kPathsToTest[] = {
     {DIAGNOSTICS_PATH_DICTIONARIES_TEST, chrome::DIR_APP_DICTIONARIES, true,
      true, false, base::ByteSize(0)},
     {DIAGNOSTICS_PATH_LOCAL_STATE_TEST, chrome::FILE_LOCAL_STATE, false, false,
-     true, base::KiBU(500)},
+     true, base::KiB(500)},
     {DIAGNOSTICS_PATH_RESOURCES_TEST, chrome::FILE_RESOURCES_PACK, false, false,
      false, base::ByteSize(0)},
     {DIAGNOSTICS_PATH_USER_DATA_TEST, chrome::DIR_USER_DATA, true, false, true,
-     base::MiBU(850)},
+     base::MiB(850)},
 };
 
 // Check that the user's data directory exists and the paths are writable.
@@ -328,14 +328,14 @@ std::unique_ptr<DiagnosticsTest> MakeLocalOrSyncableBookmarksTest() {
   base::FilePath path = DiagnosticsTest::GetUserDefaultProfileDir();
   path = path.Append(bookmarks::kLocalOrSyncableBookmarksFileName);
   return std::make_unique<JSONTest>(path, DIAGNOSTICS_JSON_BOOKMARKS_TEST,
-                                    base::MiBU(2), JSONTest::NON_CRITICAL);
+                                    base::MiB(2), JSONTest::NON_CRITICAL);
 }
 
 std::unique_ptr<DiagnosticsTest> MakeAccountBookmarksTest() {
   base::FilePath path = DiagnosticsTest::GetUserDefaultProfileDir();
   path = path.Append(bookmarks::kAccountBookmarksFileName);
   return std::make_unique<JSONTest>(path, DIAGNOSTICS_JSON_BOOKMARKS_TEST,
-                                    base::MiBU(2), JSONTest::NON_CRITICAL);
+                                    base::MiB(2), JSONTest::NON_CRITICAL);
 }
 
 std::unique_ptr<DiagnosticsTest> MakeLocalStateTest() {
@@ -343,14 +343,14 @@ std::unique_ptr<DiagnosticsTest> MakeLocalStateTest() {
   base::PathService::Get(chrome::DIR_USER_DATA, &path);
   path = path.Append(chrome::kLocalStateFilename);
   return std::make_unique<JSONTest>(path, DIAGNOSTICS_JSON_LOCAL_STATE_TEST,
-                                    base::KiBU(50), JSONTest::CRITICAL);
+                                    base::KiB(50), JSONTest::CRITICAL);
 }
 
 std::unique_ptr<DiagnosticsTest> MakePreferencesTest() {
   base::FilePath path = DiagnosticsTest::GetUserDefaultProfileDir();
   path = path.Append(chrome::kPreferencesFilename);
   return std::make_unique<JSONTest>(path, DIAGNOSTICS_JSON_PREFERENCES_TEST,
-                                    base::KiBU(100), JSONTest::CRITICAL);
+                                    base::KiB(100), JSONTest::CRITICAL);
 }
 
 std::unique_ptr<DiagnosticsTest> MakeOperatingSystemTest() {
