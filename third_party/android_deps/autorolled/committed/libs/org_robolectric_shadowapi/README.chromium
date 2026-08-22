@@ -1,7 +1,7 @@
 Name: shadowapi
 Short Name: shadowapi
-URL: https://repo.maven.apache.org/maven2/org/robolectric/shadowapi/4.17-beta-2/shadowapi-4.17-beta-2.jar
-Version: 4.17-beta-2
+URL: https://repo.maven.apache.org/maven2/org/robolectric/shadowapi/4.17-beta-3/shadowapi-4.17-beta-3.jar
+Version: 4.17-beta-3
 Update Mechanism: Autoroll
 License: Apache-2.0, MIT
 License File: LICENSE

@@ -1967,7 +1967,7 @@
     {
         "name": "conscrypt-openjdk-uber",
         "group": "org.conscrypt",
-        "version": "2.6.0"
+        "version": "2.6.2"
     },
     {
         "name": "hamcrest",
@@ -2162,17 +2162,17 @@
     {
         "name": "annotations",
         "group": "org.robolectric",
-        "version": "4.17-beta-2"
+        "version": "4.17-beta-3"
     },
     {
         "name": "junit",
         "group": "org.robolectric",
-        "version": "4.17-beta-2"
+        "version": "4.17-beta-3"
     },
     {
         "name": "nativeruntime",
         "group": "org.robolectric",
-        "version": "4.17-beta-2"
+        "version": "4.17-beta-3"
     },
     {
         "name": "nativeruntime-dist-compat",
@@ -2182,47 +2182,47 @@
     {
         "name": "pluginapi",
         "group": "org.robolectric",
-        "version": "4.17-beta-2"
+        "version": "4.17-beta-3"
     },
     {
         "name": "plugins-maven-dependency-resolver",
         "group": "org.robolectric",
-        "version": "4.17-beta-2"
+        "version": "4.17-beta-3"
     },
     {
         "name": "resources",
         "group": "org.robolectric",
-        "version": "4.17-beta-2"
+        "version": "4.17-beta-3"
     },
     {
         "name": "robolectric",
         "group": "org.robolectric",
-        "version": "4.17-beta-2"
+        "version": "4.17-beta-3"
     },
     {
         "name": "sandbox",
         "group": "org.robolectric",
-        "version": "4.17-beta-2"
+        "version": "4.17-beta-3"
     },
     {
         "name": "shadowapi",
         "group": "org.robolectric",
-        "version": "4.17-beta-2"
+        "version": "4.17-beta-3"
     },
     {
         "name": "shadows-framework",
         "group": "org.robolectric",
-        "version": "4.17-beta-2"
+        "version": "4.17-beta-3"
     },
     {
         "name": "utils",
         "group": "org.robolectric",
-        "version": "4.17-beta-2"
+        "version": "4.17-beta-3"
     },
     {
         "name": "utils-reflector",
         "group": "org.robolectric",
-        "version": "4.17-beta-2"
+        "version": "4.17-beta-3"
     },
     {
         "name": "snakeyaml",
