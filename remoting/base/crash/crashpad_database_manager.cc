@@ -25,15 +25,11 @@
 #include "base/base_paths.h"
 #include "base/strings/utf_string_conversions.h"
 #elif BUILDFLAG(IS_LINUX)
-#include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 
 #include "base/environment.h"
-#include "base/posix/eintr_wrapper.h"
 #include "remoting/base/file_path_util_linux.h"
-#include "remoting/base/passwd_utils.h"
-#include "remoting/base/username.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
@@ -57,76 +53,8 @@ const size_t kMaxReportsToRetain = 20;
 const size_t kMaxReportAgeDays = 7;
 
 #if BUILDFLAG(IS_LINUX)
-
-inline base::FilePath GetDaemonProcessCrashpadDatabasePath() {
-  return GetVarLibDir().Append("crashpad.daemon");
-}
-
-inline base::FilePath GetNetworkProcessCrashpadDatabasePath() {
-  return GetVarLibDir().Append("crashpad.network");
-}
-
-inline base::FilePath GetPeerConnectionProcessCrashpadDatabasePath() {
-  return GetVarLibDir().Append("crashpad.peer_connection");
-}
-
-void SetupCrashpadSubdirectory(const base::FilePath& path,
-                               base::cstring_view new_owner = {}) {
-  auto delete_path = [&path]() {
-    if (!base::DeletePathRecursively(path)) {
-      PLOG(FATAL) << "Failed to delete insecure directory " << path;
-    }
-  };
-
-  if (base::PathExists(path) && !base::DirectoryExists(path)) {
-    delete_path();
-  }
-
-  base::File::Error error;
-  // This is no-op if the directory already exists.
-  if (!base::CreateDirectoryAndGetError(path, &error)) {
-    LOG(ERROR) << "Failed to create " << path << ": "
-               << base::File::ErrorToString(error);
-    return;
-  }
-
-  if (!new_owner.empty()) {
-    auto user_info = GetPasswdUserInfo(new_owner);
-    if (!user_info.has_value()) {
-      LOG(ERROR) << "Failed to find user " << new_owner << ": "
-                 << user_info.error();
-      delete_path();
-      return;
-    }
-
-    if (HANDLE_EINTR(
-            chown(path.value().c_str(), user_info->uid, user_info->gid)) != 0) {
-      PLOG(ERROR) << "Failed to chown " << path << " to " << new_owner;
-      delete_path();
-      return;
-    }
-  }
-
-  // Make sure the directory is only accessible by the owner.
-  if (HANDLE_EINTR(chmod(path.value().c_str(), 0700)) != 0) {
-    PLOG(ERROR) << "Failed to chmod " << path;
-    delete_path();
-    return;
-  }
-}
-
-void SetupCrashpadDirectories() {
-  if (getuid() != 0) {
-    // Only the daemon process, which is always run as root, is able to set up
-    // these directories.
-    return;
-  }
-
-  SetupCrashpadSubdirectory(GetDaemonProcessCrashpadDatabasePath());
-  SetupCrashpadSubdirectory(GetNetworkProcessCrashpadDatabasePath(),
-                            GetNetworkProcessUsername());
-  SetupCrashpadSubdirectory(GetPeerConnectionProcessCrashpadDatabasePath(),
-                            GetPeerConnectionProcessUsername());
+inline base::FilePath GetUnifiedCrashpadDatabasePath() {
+  return GetVarLibDir().Append("crashpad");
 }
 #endif  // BUILDFLAG(IS_LINUX)
 
@@ -140,15 +68,11 @@ base::FilePath GetCrashpadDatabasePath() {
     return path.Append(kChromotingCrashpadDatabasePath);
 #elif BUILDFLAG(IS_LINUX)
     if (getuid() == 0) {
-      return GetDaemonProcessCrashpadDatabasePath();
+      // Used by the daemon process or the elevated start-host process.
+      return GetUnifiedCrashpadDatabasePath();
     }
-    std::string username = GetUsername();
-    if (username == GetNetworkProcessUsername()) {
-      return GetNetworkProcessCrashpadDatabasePath();
-    }
-    if (username == GetPeerConnectionProcessUsername()) {
-      return GetPeerConnectionProcessCrashpadDatabasePath();
-    }
+    // 4-tier cascading resolution for non-root processes (e.g. single-process
+    // ME2ME host, IT2ME Native Messaging Host).
     std::optional<std::string> xdg_runtime_dir =
         base::Environment::Create()->GetVar("XDG_RUNTIME_DIR");
     if (!xdg_runtime_dir.has_value() || xdg_runtime_dir->empty()) {
@@ -162,6 +86,11 @@ base::FilePath GetCrashpadDatabasePath() {
     base::FilePath xdg_runtime_dir_path(*xdg_runtime_dir);
     if (base::DirectoryExists(xdg_runtime_dir_path)) {
       return xdg_runtime_dir_path.Append("crd_crashpad");
+    }
+
+    base::FilePath config_dir = GetConfigDir();
+    if (!config_dir.empty()) {
+      return config_dir.Append("crashpad");
     }
 
     // Fallback to a unique secure temporary directory if XDG_RUNTIME_DIR is
@@ -196,10 +125,6 @@ CrashpadDatabaseManager::CrashpadDatabaseManager(Logger& logger)
 CrashpadDatabaseManager::~CrashpadDatabaseManager() = default;
 
 bool CrashpadDatabaseManager::InitializeCrashpadDatabase() {
-#if BUILDFLAG(IS_LINUX)
-  SetupCrashpadDirectories();
-#endif
-
   base::FilePath database_path = GetCrashpadDatabasePath();
   base::File::Error error;
   if (!base::CreateDirectoryAndGetError(database_path, &error)) {

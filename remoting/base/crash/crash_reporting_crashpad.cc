@@ -32,4 +32,16 @@ void InitializeCrashpadReporting() {
 #endif  // BUILDFLAG(IS_LINUX)
 }
 
+#if BUILDFLAG(IS_LINUX)
+bool InitializeCrashpadClient(base::ScopedFD handler_socket,
+                              pid_t handler_pid) {
+  return CrashpadLinux::InitializeClient(std::move(handler_socket),
+                                         handler_pid);
+}
+
+bool GetCrashpadHandlerSocket(base::ScopedFD& socket, pid_t& pid) {
+  return CrashpadLinux::GetHandlerSocket(socket, pid);
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
 }  // namespace remoting

@@ -2450,8 +2450,9 @@ int HostProcessMain(bool multi_process) {
   // Log and cleanup the crash database. We do this after a short delay so that
   // the crash database has a chance to be updated properly if we just got
   // relaunched after a crash.
-  // TODO(garykac): When Crashpad is enabled for the network process on Windows
-  // we will need to enable this code on Windows as well.
+  // TODO(crbug.com/545897508): Fix this for Windows and Linux multi-process
+  // hosts. On multi-process Linux, the database is owned by `_crd_crashpad`, so
+  // this code is currently a no-op.
   if (IsUsageStatsAllowed()) {
     scoped_refptr<base::SequencedTaskRunner> task_runner_crashdb =
         base::ThreadPool::CreateSequencedTaskRunner(

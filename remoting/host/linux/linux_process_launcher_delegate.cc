@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
+#include "base/posix/global_descriptors.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/rand_util.h"
@@ -36,12 +37,23 @@
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "remoting/base/crash/crash_reporting_crashpad.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/switches.h"
 
 namespace remoting {
 
 namespace {
+
+bool IsTargetDescriptorUsed(const base::FileHandleMappingVector& mapping,
+                            int target_fd) {
+  for (const auto& [src, dest] : mapping) {
+    if (dest == target_fd) {
+      return true;
+    }
+  }
+  return false;
+}
 
 // An interval to wait for process exit. This allows
 // LinuxWorkerProcessLauncherDelegate to stop and destroy ProcessExitWatcher
@@ -214,6 +226,24 @@ void LinuxWorkerProcessLauncherDelegate::LaunchProcess(
   command_line.AppendSwitchASCII(kMojoPipeToken, message_pipe_token);
   mojo::PlatformChannel channel;
   channel.PrepareToPassRemoteEndpoint(&launch_options, &command_line);
+
+#if BUILDFLAG(IS_LINUX)
+  base::ScopedFD crashpad_socket;
+  pid_t crashpad_pid = -1;
+  if (GetCrashpadHandlerSocket(crashpad_socket, crashpad_pid)) {
+    int target_fd = base::GlobalDescriptors::kBaseDescriptor;
+    while (IsTargetDescriptorUsed(launch_options.fds_to_remap, target_fd)) {
+      ++target_fd;
+    }
+    command_line.AppendSwitchASCII(kCrashpadHandlerSocketFd,
+                                   base::NumberToString(target_fd));
+    if (crashpad_pid > 0) {
+      command_line.AppendSwitchASCII(kCrashpadHandlerPid,
+                                     base::NumberToString(crashpad_pid));
+    }
+    launch_options.fds_to_remap.emplace_back(crashpad_socket.get(), target_fd);
+  }
+#endif  // BUILDFLAG(IS_LINUX)
 
   base::Process process = base::LaunchProcess(command_line, launch_options);
 

@@ -33,6 +33,8 @@ const char kEvaluateCapabilitySwitchName[] = "evaluate-type";
 
 #if BUILDFLAG(IS_LINUX)
 const char kEnableWtmpdb[] = "enable-wtmpdb";
+const char kCrashpadHandlerSocketFd[] = "crashpad-handler-socket-fd";
+const char kCrashpadHandlerPid[] = "crashpad-handler-pid";
 #endif
 
 const char kEnableCorpMessaging[] = "enable-corp-messaging";

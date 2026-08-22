@@ -1,4 +1,5 @@
 include_rules = [
   "+components/stability_report",
+  "+third_party/crashpad/crashpad/client",
   "+third_party/crashpad/crashpad/handler",
 ]

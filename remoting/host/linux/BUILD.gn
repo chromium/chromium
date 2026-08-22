@@ -337,6 +337,7 @@ source_set("platform_impls") {
     "//remoting/base",
     "//remoting/base:errors",
     "//remoting/base:logging",
+    "//remoting/base/crash:crashpad",
     "//remoting/host:client_session_control",
     "//remoting/host:clipboard",
     "//remoting/host:common_headers",

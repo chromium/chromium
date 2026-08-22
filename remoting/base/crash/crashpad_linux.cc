@@ -4,37 +4,100 @@
 
 #include "remoting/base/crash/crashpad_linux.h"
 
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/time/time.h"
 #include "remoting/base/crash/crashpad_database_manager.h"
 #include "remoting/base/file_path_util_linux.h"
 #include "remoting/base/logging.h"
+#include "remoting/base/passwd_utils.h"
+#include "remoting/base/username.h"
 #include "remoting/base/version.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 
 namespace remoting {
 
+namespace {
+
 constexpr char kChromotingCrashpadHandler[] = "crashpad-handler";
 constexpr char kDefaultCrashpadUploadUrl[] =
     "https://clients2.google.com/cr/report";
 
-CrashpadLinux::CrashpadLinux() : database_(*this) {}
+bool SetupCrashpadDirectory() {
+  if (getuid() != 0) {
+    // Non-root ME2ME worker processes connect to the Crashpad handler via an
+    // inherited socket and do not initialize the database directory.
+    // Standalone user-mode processes (e.g. IT2Me native messaging host) write
+    // to a user-owned directory (e.g. `$XDG_RUNTIME_DIR/crd_crashpad` or
+    // `~/.config/...`), which is created on demand by Crashpad during database
+    // initialization. Elevated setup is only required for root daemons to
+    // pre-create the unified directory
+    // `/var/lib/chrome-remote-desktop/crashpad` and chown it to
+    // `_crd_crashpad`.
+    return true;
+  }
+  base::FilePath path = GetCrashpadDatabasePath();
+  auto delete_path = [&path](std::string_view reason) {
+    if (!base::DeletePathRecursively(path)) {
+      PLOG(ERROR) << "Failed to delete insecure directory " << path
+                  << " after failure: " << reason;
+    } else {
+      LOG(ERROR) << "Insecure directory " << path
+                 << " deleted due to setup failure: " << reason;
+    }
+  };
 
-bool CrashpadLinux::Initialize() {
-  if (!database_.InitializeCrashpadDatabase()) {
-    LOG(ERROR) << "Failed to initialize database for Crashpad";
+  if (base::PathExists(path) && !base::DirectoryExists(path)) {
+    delete_path("Path exists but is not a directory");
+  }
+
+  base::File::Error error;
+  if (!base::CreateDirectoryAndGetError(path, &error)) {
+    LOG(ERROR) << "Failed to create " << path << ": "
+               << base::File::ErrorToString(error);
     return false;
   }
 
-  // We only initialize crash handling if the user has consented to record and
-  // upload reports, so we can simply enable it here.
-  if (!database_.EnableReportUploads()) {
-    LOG(WARNING) << "Unable to enable Crashpad uploads.";
+  auto user_info = GetPasswdUserInfo(GetCrashpadProcessUsername());
+  if (!user_info.has_value()) {
+    delete_path(user_info.error().ToString());
+    return false;
+  }
+
+  if (HANDLE_EINTR(
+          chown(path.value().c_str(), user_info->uid, user_info->gid)) != 0) {
+    delete_path("chown failed");
+    return false;
+  }
+
+  // Make sure the directory is only accessible by the owner.
+  if (HANDLE_EINTR(chmod(path.value().c_str(), 0700)) != 0) {
+    delete_path("chmod failed");
+    return false;
+  }
+  return true;
+}
+
+}  // namespace
+
+CrashpadLinux::CrashpadLinux() : database_(*this) {}
+
+CrashpadLinux::~CrashpadLinux() = default;
+
+bool CrashpadLinux::Initialize() {
+  if (getuid() == 0 && !SetupCrashpadDirectory()) {
+    LOG(ERROR) << "Failed to setup Crashpad directory.";
+    return false;
   }
 
   // Leave metrics_path empty because this option is not used (or supported) on
@@ -69,10 +132,52 @@ bool CrashpadLinux::Initialize() {
   return true;
 }
 
+// static
+bool CrashpadLinux::InitializeClient(base::ScopedFD handler_socket,
+                                     pid_t handler_pid) {
+  if (!handler_socket.is_valid()) {
+    LOG(ERROR) << "Invalid Crashpad handler socket.";
+    return false;
+  }
+
+  crashpad::CrashpadClient client;
+  if (!client.SetHandlerSocket(std::move(handler_socket), handler_pid)) {
+    LOG(ERROR) << "Failed to set Crashpad handler socket.";
+    return false;
+  }
+
+  HOST_LOG << "Crashpad client initialized with handler PID: " << handler_pid;
+  return true;
+}
+
+// static
+bool CrashpadLinux::GetHandlerSocket(base::ScopedFD& socket, pid_t& pid) {
+  int raw_sock = -1;
+  pid_t raw_pid = -1;
+  if (!crashpad::CrashpadClient::GetHandlerSocket(&raw_sock, &raw_pid) ||
+      raw_sock < 0) {
+    VLOG(1) << "Crashpad handler socket is not available.";
+    return false;
+  }
+
+  socket = base::ScopedFD(HANDLE_EINTR(fcntl(raw_sock, F_DUPFD_CLOEXEC, 0)));
+  if (!socket.is_valid()) {
+    PLOG(ERROR) << "Failed to dup Crashpad handler socket";
+    return false;
+  }
+
+  pid = raw_pid;
+  return true;
+}
+
 void CrashpadLinux::LogAndCleanupCrashpadDatabase() {
-  database_.LogCompletedCrashpadReports();
-  database_.LogPendingCrashpadReports();
-  database_.CleanupCompletedCrashpadReports();
+  // TODO(crbug.com/545897508): Move database logging and cleanup to the
+  // Crashpad handler process so that it is properly executed on both
+  // single-process and multi-process hosts. This is currently a no-op
+  // because database_ is uninitialized. Commented out to prevent log spam.
+  // database_.LogCompletedCrashpadReports();
+  // database_.LogPendingCrashpadReports();
+  // database_.CleanupCompletedCrashpadReports();
 }
 
 // static

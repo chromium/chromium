@@ -19,7 +19,12 @@ if (is_linux || is_win) {
   executable("remoting_crashpad_handler") {
     sources = [ "crashpad_handler.cc" ]
 
-    deps = [ "//third_party/crashpad/crashpad/handler" ]
+    deps = [
+      "//base",
+      "//remoting/base",
+      "//third_party/crashpad/crashpad/client",
+      "//third_party/crashpad/crashpad/handler",
+    ]
 
     if (is_win) {
       sources += [ "$root_gen_dir/remoting/version.rc" ]

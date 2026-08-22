@@ -508,6 +508,14 @@ source_set("unit_tests") {
     sources += [ "passwd_utils_unittest.cc" ]
   }
 
+  if (is_linux) {
+    sources += [ "crash/crashpad_linux_unittest.cc" ]
+    deps += [
+      "//remoting/base/crash",
+      "//third_party/crashpad/crashpad/client",
+    ]
+  }
+
   if (is_win || is_chromeos) {
     deps += [ "//third_party/breakpad:client" ]
   }

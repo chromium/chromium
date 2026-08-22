@@ -8,6 +8,12 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include <sys/types.h>
+
+#include "base/files/scoped_file.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 namespace remoting {
 
 // Query and log the entries in the crash database.
@@ -24,7 +30,24 @@ void LogAndCleanupCrashDatabase();
 // be caught and reported. This should not be a problem as static non-POD
 // objects are not allowed by the style guide and exceptions to this rule are
 // rare.
+//
+// For Linux multi-process host, the daemon process should first call this
+// method, then call GetCrashpadHandlerSocket() and pass the socket and PID to
+// worker processes. Worker processes should then call
+// InitializeCrashpadClient() instead of this method to initialize crashpad.
 void InitializeCrashpadReporting();
+
+#if BUILDFLAG(IS_LINUX)
+// Initializes Crashpad in a client process using an inherited or received
+// socket.
+// You should not call this function on the process where
+// InitializeCrashpadReporting() is called.
+bool InitializeCrashpadClient(base::ScopedFD handler_socket, pid_t handler_pid);
+
+// Gets a duplicated ScopedFD connected to the Crashpad handler and the handler
+// PID. Returns true if the handler socket was retrieved successfully.
+bool GetCrashpadHandlerSocket(base::ScopedFD& socket, pid_t& pid);
+#endif  // BUILDFLAG(IS_LINUX)
 
 }  // namespace remoting
 

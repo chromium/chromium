@@ -46,6 +46,10 @@ extern const char kEvaluateCapabilitySwitchName[];
 #if BUILDFLAG(IS_LINUX)
 // Used to record client sessions to wtmpd.
 extern const char kEnableWtmpdb[];
+
+// Used to pass inherited Crashpad handler socket descriptor and PID.
+extern const char kCrashpadHandlerSocketFd[];
+extern const char kCrashpadHandlerPid[];
 #endif
 
 // Indicates whether Corp Messaging should be enabled for signaling.
