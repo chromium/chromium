@@ -1780,6 +1780,159 @@ TEST_F(OmniboxViewViewsTest, SetUserTextForTab) {
   EXPECT_TRUE(state2->model_state.user_input_in_progress);
 }
 
+TEST_F(OmniboxViewViewsTest, SetUserTextForTab_NoExistingState) {
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+
+  // Calling SetUserTextForTab on a WebContents without existing OmniboxState
+  // should create a new state with expected default metadata.
+  const std::u16string text = u"brand new query";
+  OmniboxViewViews::SetUserTextForTab(web_contents.get(), text);
+
+  auto* state = static_cast<OmniboxState*>(
+      web_contents->GetUserData(OmniboxTabHelper::kOmniboxStateKey));
+  ASSERT_TRUE(state);
+  EXPECT_EQ(text, state->model_state.user_text);
+  EXPECT_TRUE(state->model_state.user_input_in_progress);
+  EXPECT_EQ(text, state->model_state.autocomplete_input.text());
+  EXPECT_EQ(text.length(),
+            state->model_state.autocomplete_input.cursor_position());
+  EXPECT_EQ(gfx::Range(text.length(), text.length()), state->selection);
+  EXPECT_EQ(gfx::Range::InvalidRange(),
+            state->saved_selection_for_focus_change);
+  EXPECT_FALSE(state->show_full_url);
+  EXPECT_EQ(OmniboxFocusState::OMNIBOX_FOCUS_NONE,
+            state->model_state.focus_state);
+  EXPECT_EQ(KeywordState::kNone, state->model_state.keyword_state);
+}
+
+TEST_F(OmniboxViewViewsTest, SetUserTextForTab_CustomCursorPosition) {
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+
+  const std::u16string text = u"hello world";
+  const size_t custom_cursor = 5;
+  OmniboxViewViews::SetUserTextForTab(web_contents.get(), text, custom_cursor);
+
+  auto* state = static_cast<OmniboxState*>(
+      web_contents->GetUserData(OmniboxTabHelper::kOmniboxStateKey));
+  ASSERT_TRUE(state);
+  EXPECT_EQ(text, state->model_state.user_text);
+  EXPECT_EQ(custom_cursor,
+            state->model_state.autocomplete_input.cursor_position());
+  EXPECT_EQ(gfx::Range(custom_cursor, custom_cursor), state->selection);
+}
+
+TEST_F(OmniboxViewViewsTest, SetUserTextForTab_ClampsCursorPosition) {
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+
+  const std::u16string text = u"hello";
+  const size_t out_of_bounds_cursor = 100;
+  OmniboxViewViews::SetUserTextForTab(web_contents.get(), text,
+                                      out_of_bounds_cursor);
+
+  auto* state = static_cast<OmniboxState*>(
+      web_contents->GetUserData(OmniboxTabHelper::kOmniboxStateKey));
+  ASSERT_TRUE(state);
+  EXPECT_EQ(text, state->model_state.user_text);
+  EXPECT_EQ(text.length(),
+            state->model_state.autocomplete_input.cursor_position());
+  EXPECT_EQ(gfx::Range(text.length(), text.length()), state->selection);
+}
+
+TEST_F(OmniboxViewViewsTest, SetUserTextForTab_PreservesExistingStateMetadata) {
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+
+  // Set up an initial state with non-default metadata.
+  AutocompleteInput initial_input;
+  url::Parsed parts;
+  initial_input.UpdateText(u"initial", 7, parts);
+  OmniboxEditModel::State initial_model_state(
+      /*user_input_in_progress=*/true,
+      /*user_text=*/u"initial",
+      /*keyword=*/u"google.com",
+      /*keyword_placeholder=*/u"Search Google",
+      /*keyword_state=*/KeywordState::kKeyword,
+      /*keyword_mode_entry_method=*/
+      metrics::OmniboxEventProto::KEYBOARD_SHORTCUT,
+      /*focus_state=*/OmniboxFocusState::OMNIBOX_FOCUS_VISIBLE, initial_input);
+
+  const gfx::Range saved_selection(1, 3);
+  web_contents->SetUserData(
+      OmniboxTabHelper::kOmniboxStateKey,
+      std::make_unique<OmniboxState>(initial_model_state, gfx::Range(2, 2),
+                                     saved_selection,
+                                     /*show_full_url=*/true));
+
+  // Act: Update user text in the background tab.
+  const std::u16string new_text = u"updated query";
+  OmniboxViewViews::SetUserTextForTab(web_contents.get(), new_text);
+
+  // Verify: New text & autocomplete input are updated, while keyword,
+  // focus state, full URL flag, and saved selection are preserved.
+  auto* state = static_cast<OmniboxState*>(
+      web_contents->GetUserData(OmniboxTabHelper::kOmniboxStateKey));
+  ASSERT_TRUE(state);
+  EXPECT_EQ(new_text, state->model_state.user_text);
+  EXPECT_TRUE(state->model_state.user_input_in_progress);
+  EXPECT_EQ(u"google.com", state->model_state.keyword);
+  EXPECT_EQ(u"Search Google", state->model_state.keyword_placeholder);
+  EXPECT_EQ(KeywordState::kKeyword, state->model_state.keyword_state);
+  EXPECT_EQ(metrics::OmniboxEventProto::KEYBOARD_SHORTCUT,
+            state->model_state.keyword_mode_entry_method);
+  EXPECT_EQ(OmniboxFocusState::OMNIBOX_FOCUS_VISIBLE,
+            state->model_state.focus_state);
+  EXPECT_TRUE(state->show_full_url);
+  EXPECT_EQ(metrics::OmniboxInputType::EMPTY,
+            state->model_state.autocomplete_input.type());
+  EXPECT_EQ(saved_selection, state->saved_selection_for_focus_change);
+}
+
+TEST_F(OmniboxViewViewsTest,
+       SetUserTextForTab_UnchangedTextPreservesAutocompleteInput) {
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+
+  // Set up an initial state with a non-empty AutocompleteInput and custom
+  // selection.
+  const std::u16string text = u"https://google.com";
+  url::Parsed parts;
+  parts.scheme = url::Component(0, 5);
+  parts.host = url::Component(8, 10);
+  AutocompleteInput initial_input;
+  initial_input.UpdateText(text, text.length(), parts);
+
+  OmniboxEditModel::State initial_model_state(
+      /*user_input_in_progress=*/true, text, /*keyword=*/u"",
+      /*keyword_placeholder=*/u"", KeywordState::kNone,
+      metrics::OmniboxEventProto_KeywordModeEntryMethod_INVALID,
+      OmniboxFocusState::OMNIBOX_FOCUS_NONE, initial_input);
+
+  const gfx::Range initial_selection(0, 5);
+  web_contents->SetUserData(
+      OmniboxTabHelper::kOmniboxStateKey,
+      std::make_unique<OmniboxState>(
+          initial_model_state, initial_selection,
+          /*saved_selection_for_focus_change=*/gfx::Range::InvalidRange()));
+
+  // Call SetUserTextForTab with the identical text and no cursor specified.
+  OmniboxViewViews::SetUserTextForTab(web_contents.get(), text);
+
+  // Verify the existing selection and parsed AutocompleteInput (including
+  // parts) are preserved.
+  auto* state = static_cast<OmniboxState*>(
+      web_contents->GetUserData(OmniboxTabHelper::kOmniboxStateKey));
+  ASSERT_TRUE(state);
+  EXPECT_EQ(text, state->model_state.user_text);
+  EXPECT_EQ(initial_selection, state->selection);
+  EXPECT_EQ(parts.host.begin,
+            state->model_state.autocomplete_input.parts().host.begin);
+  EXPECT_EQ(parts.host.len,
+            state->model_state.autocomplete_input.parts().host.len);
+}
+
 TEST_F(OmniboxViewViewsTest, DragAndDropTextWithinOmnibox) {
   // Setup: Set text to "abcdef" and select "bcd".
   omnibox_view()->SetText(u"abcdef");

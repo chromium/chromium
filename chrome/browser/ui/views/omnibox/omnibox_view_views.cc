@@ -369,24 +369,64 @@ void OmniboxViewViews::ResetTabState(content::WebContents* web_contents) {
 
 // static
 void OmniboxViewViews::SetUserTextForTab(content::WebContents* web_contents,
-                                         const std::u16string& text) {
+                                         const std::u16string& text,
+                                         size_t cursor_position) {
+  DCHECK(web_contents);
   auto* existing_state = static_cast<OmniboxState*>(
       web_contents->GetUserData(OmniboxTabHelper::kOmniboxStateKey));
-  if (existing_state) {
-    OmniboxEditModel::State model_state(
-        /*user_input_in_progress=*/true,
-        /*user_text=*/text, existing_state->model_state.keyword,
-        existing_state->model_state.keyword_placeholder,
-        existing_state->model_state.keyword_state,
-        existing_state->model_state.keyword_mode_entry_method,
-        existing_state->model_state.focus_state,
-        existing_state->model_state.autocomplete_input);
-    web_contents->SetUserData(
-        OmniboxTabHelper::kOmniboxStateKey,
-        std::make_unique<OmniboxState>(
-            model_state, existing_state->selection,
-            existing_state->saved_selection_for_focus_change));
+  // Default to the end of the text if no position is specified.
+  size_t cursor = (cursor_position != std::u16string::npos)
+                      ? std::min(cursor_position, text.length())
+                      : text.length();
+  const bool text_unchanged =
+      existing_state && existing_state->model_state.user_text == text;
+  // Preserve existing selection if text is unchanged and
+  // no custom cursor position was explicitly provided. Otherwise, set the
+  // cursor to the specified position.
+  gfx::Range selection =
+      (text_unchanged && cursor_position == std::u16string::npos &&
+       existing_state->selection.IsValid())
+          ? existing_state->selection
+          : gfx::Range(cursor, cursor);
+  // If text is unchanged, preserve the existing parsed `AutocompleteInput`.
+  // Otherwise, start with a clean `AutocompleteInput` so it does not retain
+  // stale parsed URL components or types that mismatch the new draft text.
+  AutocompleteInput autocomplete_input =
+      text_unchanged ? existing_state->model_state.autocomplete_input
+                     : AutocompleteInput();
+  if (!text_unchanged) {
+    autocomplete_input.UpdateText(text, cursor, /*parts=*/url::Parsed());
   }
+
+  // Restore any existing state from the tab, setting defaults if none exists.
+  std::u16string keyword =
+      existing_state ? existing_state->model_state.keyword : std::u16string();
+  std::u16string keyword_placeholder =
+      existing_state ? existing_state->model_state.keyword_placeholder
+                     : std::u16string();
+  KeywordState keyword_state = existing_state
+                                   ? existing_state->model_state.keyword_state
+                                   : KeywordState::kNone;
+  metrics::OmniboxEventProto::KeywordModeEntryMethod keyword_mode_entry_method =
+      existing_state
+          ? existing_state->model_state.keyword_mode_entry_method
+          : metrics::OmniboxEventProto_KeywordModeEntryMethod_INVALID;
+  OmniboxFocusState focus_state = existing_state
+                                      ? existing_state->model_state.focus_state
+                                      : OmniboxFocusState::OMNIBOX_FOCUS_NONE;
+
+  OmniboxEditModel::State model_state(
+      /*user_input_in_progress=*/true,
+      /*user_text=*/text, keyword, keyword_placeholder, keyword_state,
+      keyword_mode_entry_method, focus_state, autocomplete_input);
+
+  web_contents->SetUserData(
+      OmniboxTabHelper::kOmniboxStateKey,
+      std::make_unique<OmniboxState>(
+          model_state, selection,
+          existing_state ? existing_state->saved_selection_for_focus_change
+                         : gfx::Range::InvalidRange(),
+          existing_state ? existing_state->show_full_url : false));
 }
 
 void OmniboxViewViews::InstallPlaceholderText() {
