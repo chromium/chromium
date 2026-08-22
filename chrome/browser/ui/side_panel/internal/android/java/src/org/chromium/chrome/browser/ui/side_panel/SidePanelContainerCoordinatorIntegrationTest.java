@@ -63,7 +63,8 @@ import java.util.concurrent.atomic.AtomicReference;
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @EnableFeatures({
     ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
-    ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE + ":scope/tab"
+    ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE + ":scope/tab",
+    ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL_LOGS
 })
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
 @NullMarked
@@ -550,6 +551,42 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         showPanel(incognitoTab);
         waitForContainerViewOpen(coordinator);
         closePanel(incognitoTab);
+        waitForContainerViewClose(coordinator);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testMixedProfileMode_openPanelInRegularPane_switchToIncognitoPane_closesPanel() {
+        // Arrange: Open the side panel in the regular pane.
+        var coordinator = getSidePanelContainerCoordinator();
+        var regularTab = mResponsivePageStation.getTab();
+        showPanel(regularTab);
+        waitForContainerViewOpen(coordinator);
+
+        // Act: Switch to the incognito pane.
+        mResponsivePageStation.openNewIncognitoTabFast();
+
+        // Assert:
+        waitForContainerViewClose(coordinator);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testMixedProfileMode_openPanelInIncognitoPane_switchToRegularPane_closesPanel() {
+        // Arrange: Open the side panel in the incognito pane.
+        var coordinator = getSidePanelContainerCoordinator();
+        var regularTab = mResponsivePageStation.getTab();
+        var incognitoTabPageStation = mResponsivePageStation.openNewIncognitoTabFast();
+        var incognitoTab = incognitoTabPageStation.getTab();
+        showPanel(incognitoTab);
+        waitForContainerViewOpen(coordinator);
+
+        // Act: Switch back to the regular pane.
+        incognitoTabPageStation.selectTabFast(regularTab, WebPageStation::newBuilder);
+
+        // Assert:
         waitForContainerViewClose(coordinator);
     }
 

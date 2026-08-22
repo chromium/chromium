@@ -100,9 +100,9 @@ void SidePanelCoordinatorAndroid::Destroy() {
   delete this;
 }
 
-void SidePanelCoordinatorAndroid::ClosePanel() {
+void SidePanelCoordinatorAndroid::ClosePanel(bool suppress_animations) {
   SPLOG("ClosePanel");
-  SidePanelUI::Close();
+  Close(SidePanelEntryHideReason::kSidePanelClosed, suppress_animations);
 }
 
 bool SidePanelCoordinatorAndroid::HasContentToShow() {

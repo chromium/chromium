@@ -599,7 +599,7 @@ final class SidePanelContainerCoordinatorImpl
                                     assertNonNull(
                                                     mNativeBridgeSelector
                                                             .getCurrentCoordinatorBridge())
-                                            .closePanel());
+                                            .closePanel(/* suppressAnimations= */ false));
         }
         View headerView = mContainerView.findViewById(R.id.side_panel_header);
         headerView.setVisibility(vis);

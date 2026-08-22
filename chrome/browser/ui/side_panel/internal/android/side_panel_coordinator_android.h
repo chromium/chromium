@@ -53,7 +53,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // are called from Java via JNI, see `SidePanelCoordinatorAndroidBridge.java`.
   void Init();
   void Destroy();
-  void ClosePanel();
+  void ClosePanel(bool suppress_animations);
   bool HasContentToShow();
   void OnPanelContainerUpdated(int old_width, int new_width);
   void OnPanelContentReplaced();

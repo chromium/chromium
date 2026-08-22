@@ -96,11 +96,11 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
     }
 
     /** Requests to close the side panel. */
-    void closePanel() {
+    void closePanel(boolean suppressAnimations) {
         log(TAG, "closePanel");
         if (mNativeSidePanelCoordinatorAndroid != 0) {
             SidePanelCoordinatorAndroidBridgeJni.get()
-                    .closePanel(mNativeSidePanelCoordinatorAndroid);
+                    .closePanel(mNativeSidePanelCoordinatorAndroid, suppressAnimations);
         }
     }
 
@@ -269,7 +269,7 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
         void destroy(long nativeSidePanelCoordinatorAndroid);
 
         /** See {@link SidePanelCoordinatorAndroidBridge#closePanel}. */
-        void closePanel(long nativeSidePanelCoordinatorAndroid);
+        void closePanel(long nativeSidePanelCoordinatorAndroid, boolean suppressAnimations);
 
         /** See {@link SidePanelCoordinatorAndroidBridge#init}. */
         void init(long nativeSidePanelCoordinatorAndroid);
