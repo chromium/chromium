@@ -91,22 +91,27 @@ size_t VTTScanner::ScanDigits(unsigned& number) {
 
 bool VTTScanner::ScanDouble(double& number) {
   const State start_state = state_;
+  // Per the WebVTT spec "WebVTT number" grammar ([0-9]+ ("." [0-9]+)?):
+  // at least one digit is required before the dot, and at least one after it
+  // if a dot is present. This rejects ".5", "5.", and ".".
+  // https://w3c.github.io/webvtt/#webvtt-percentage
+  // https://w3c.github.io/webvtt/#cue-timings-and-settings-parsing
   const size_t num_integer_digits = CountWhile<IsAsciiDigit>();
+  if (num_integer_digits == 0) {
+    return false;
+  }
   AdvanceIfNonZero(num_integer_digits);
   size_t length_of_double = num_integer_digits;
-  size_t num_decimal_digits = 0;
   if (Scan('.')) {
     length_of_double++;
-    num_decimal_digits = CountWhile<IsAsciiDigit>();
+    const size_t num_decimal_digits = CountWhile<IsAsciiDigit>();
+    if (num_decimal_digits == 0) {
+      // Restore to starting position.
+      state_ = start_state;
+      return false;
+    }
     AdvanceIfNonZero(num_decimal_digits);
     length_of_double += num_decimal_digits;
-  }
-
-  // At least one digit required.
-  if (num_integer_digits == 0 && num_decimal_digits == 0) {
-    // Restore to starting position.
-    state_ = start_state;
-    return false;
   }
 
   number = Invoke(

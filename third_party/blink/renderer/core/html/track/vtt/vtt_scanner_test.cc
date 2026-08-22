@@ -305,22 +305,17 @@ TEST(VTTScannerTest, ScanDigits) {
 void ScanDoubleValue(const String& input) {
   VTTScanner scanner(input);
   double value;
-  // "1."
-  EXPECT_TRUE(scanner.ScanDouble(value));
-  EXPECT_EQ(value, 1.0);
-  EXPECT_TRUE(scanner.Scan(' '));
-
   // "1.0"
   EXPECT_TRUE(scanner.ScanDouble(value));
   EXPECT_EQ(value, 1.0);
   EXPECT_TRUE(scanner.Scan(' '));
 
-  // ".0"
+  // "5.5"
   EXPECT_TRUE(scanner.ScanDouble(value));
-  EXPECT_EQ(value, 0.0);
+  EXPECT_EQ(value, 5.5);
   EXPECT_TRUE(scanner.Scan(' '));
 
-  // "." (invalid)
+  // "." (invalid - no digits on either side)
   EXPECT_FALSE(scanner.ScanDouble(value));
   EXPECT_TRUE(scanner.Match('.'));
   EXPECT_TRUE(scanner.Scan('.'));
@@ -341,7 +336,37 @@ void ScanDoubleValue(const String& input) {
 // Tests ScanDouble().
 TEST(VTTScannerTest, ScanDouble) {
   test::TaskEnvironment task_environment;
-  TEST_WITH(ScanDoubleValue, "1. 1.0 .0 . 1.0000 01.000");
+  TEST_WITH(ScanDoubleValue, "1.0 5.5 . 1.0000 01.000");
+}
+
+// Verifies that ".5" and "5." are rejected per the WebVTT number grammar
+// ([0-9]+ ("." [0-9]+)?), which requires digits on both sides of any dot.
+TEST(VTTScannerTest, ScanDoubleRejectsBareDotForms) {
+  test::TaskEnvironment task_environment;
+  double x;
+  // ".5" - no integer digits before the dot: must be rejected and scanner
+  // must not consume any input.
+  {
+    String str(".5");
+    VTTScanner s(str);
+    EXPECT_FALSE(s.ScanDouble(x));
+    EXPECT_TRUE(s.Match('.'));
+  }
+  // "5." - no decimal digits after the dot: must be rejected and scanner
+  // must not consume any input.
+  {
+    String str("5.");
+    VTTScanner s(str);
+    EXPECT_FALSE(s.ScanDouble(x));
+    EXPECT_TRUE(s.Match('5'));
+  }
+  // "5.5" - digits on both sides: must still be accepted.
+  {
+    String str("5.5");
+    VTTScanner s(str);
+    EXPECT_TRUE(s.ScanDouble(x));
+    EXPECT_EQ(5.5, x);
+  }
 }
 
 #undef TEST_WITH
