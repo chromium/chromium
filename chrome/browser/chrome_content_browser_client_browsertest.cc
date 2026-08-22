@@ -63,6 +63,7 @@
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -1780,6 +1781,12 @@ class ChromeContentBrowserClientClipboardTest : public InProcessBrowserTest {
  public:
   ChromeContentBrowserClientClipboardTest() = default;
 
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+  }
+
   void SetPermission(const GURL& url,
                      ContentSettingsType type,
                      ContentSetting setting) {
@@ -1792,7 +1799,138 @@ class ChromeContentBrowserClientClipboardTest : public InProcessBrowserTest {
         ->browser()
         ->IsClipboardPasteAllowed(rfh);
   }
+
+  void NavigateToPageWithCrossOriginIframe(
+      content::RenderFrameHost** parent_rfh,
+      content::RenderFrameHost** child_rfh) {
+    NavigateToCrossOriginFrameTree("a(b)");
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    *parent_rfh = web_contents->GetPrimaryMainFrame();
+    *child_rfh = content::ChildFrameAt(*parent_rfh, 0);
+    ASSERT_TRUE(*child_rfh);
+  }
+
+  void NavigateToCrossOriginFrameTree(std::string_view frame_tree) {
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(),
+        embedded_test_server()->GetURL(
+            "a.com",
+            base::StrCat({"/cross_site_iframe_factory.html?", frame_tree}))));
+  }
+
+  // This method sets both frame-scope and tab-wide UA states to mimic prod
+  // browser behavior.
+  // TODO(https://crbug.com/550284226): Update this when the browser-level
+  // state is fixed.
+  void SimulateUserInteraction(content::RenderFrameHost* rfh) {
+    input::NativeWebKeyboardEvent event{blink::WebInputEvent::Type::kKeyDown,
+                                        /*modifiers=*/0, base::TimeTicks()};
+    rfh->GetRenderWidgetHost()->SimulateUserInteraction(event);
+    ASSERT_TRUE(content::ExecJs(rfh, "// no-op"));
+  }
 };
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeContentBrowserClientClipboardTest,
+    PasteAllowedByActivation_DoesNotInheritTopFrameInteraction) {
+  content::RenderFrameHost* parent_rfh = nullptr;
+  content::RenderFrameHost* child_rfh = nullptr;
+  ASSERT_NO_FATAL_FAILURE(
+      NavigateToPageWithCrossOriginIframe(&parent_rfh, &child_rfh));
+
+  ASSERT_NE(parent_rfh->GetRenderWidgetHost(),
+            child_rfh->GetRenderWidgetHost());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(web_contents->HasRecentInteraction());
+  EXPECT_FALSE(child_rfh->HasTransientUserActivation());
+  EXPECT_FALSE(IsClipboardPasteAllowed(child_rfh));
+
+  ASSERT_NO_FATAL_FAILURE(SimulateUserInteraction(parent_rfh));
+
+  EXPECT_TRUE(web_contents->HasRecentInteraction());
+  EXPECT_FALSE(child_rfh->HasTransientUserActivation());
+  EXPECT_FALSE(IsClipboardPasteAllowed(child_rfh));
+  EXPECT_TRUE(IsClipboardPasteAllowed(parent_rfh));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientClipboardTest,
+                       PasteAllowedByActivation_RequestingFrameActivated) {
+  content::RenderFrameHost* parent_rfh = nullptr;
+  content::RenderFrameHost* child_rfh = nullptr;
+  ASSERT_NO_FATAL_FAILURE(
+      NavigateToPageWithCrossOriginIframe(&parent_rfh, &child_rfh));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(web_contents->HasRecentInteraction());
+  EXPECT_FALSE(child_rfh->HasTransientUserActivation());
+  EXPECT_FALSE(IsClipboardPasteAllowed(child_rfh));
+
+  // Run a no-op with ExecJs's synthetic user gesture to activate the requesting
+  // frame without setting WebContents::HasRecentInteraction().
+  ASSERT_TRUE(content::ExecJs(child_rfh, "// no-op"));
+
+  EXPECT_FALSE(web_contents->HasRecentInteraction());
+  EXPECT_TRUE(child_rfh->HasTransientUserActivation());
+  EXPECT_TRUE(IsClipboardPasteAllowed(child_rfh));
+  EXPECT_TRUE(IsClipboardPasteAllowed(parent_rfh));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeContentBrowserClientClipboardTest,
+    PasteAllowedByActivation_DoesNotPropagateToSiblingFrame) {
+  ASSERT_NO_FATAL_FAILURE(NavigateToCrossOriginFrameTree("a(b,c)"));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* activated_child =
+      content::ChildFrameAt(main_rfh, 0);
+  content::RenderFrameHost* sibling_child = content::ChildFrameAt(main_rfh, 1);
+  ASSERT_TRUE(activated_child);
+  ASSERT_TRUE(sibling_child);
+  ASSERT_NE(activated_child->GetRenderWidgetHost(),
+            sibling_child->GetRenderWidgetHost());
+
+  ASSERT_NO_FATAL_FAILURE(SimulateUserInteraction(activated_child));
+
+  EXPECT_TRUE(web_contents->HasRecentInteraction());
+  EXPECT_TRUE(main_rfh->HasTransientUserActivation());
+  EXPECT_TRUE(activated_child->HasTransientUserActivation());
+  EXPECT_FALSE(sibling_child->HasTransientUserActivation());
+  EXPECT_TRUE(IsClipboardPasteAllowed(main_rfh));
+  EXPECT_TRUE(IsClipboardPasteAllowed(activated_child));
+  EXPECT_FALSE(IsClipboardPasteAllowed(sibling_child));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeContentBrowserClientClipboardTest,
+    PasteAllowedByActivation_DoesNotPropagateToNestedChildFrame) {
+  ASSERT_NO_FATAL_FAILURE(NavigateToCrossOriginFrameTree("a(b(c))"));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* activated_child =
+      content::ChildFrameAt(main_rfh, 0);
+  ASSERT_TRUE(activated_child);
+  content::RenderFrameHost* nested_child =
+      content::ChildFrameAt(activated_child, 0);
+  ASSERT_TRUE(nested_child);
+  ASSERT_NE(activated_child->GetRenderWidgetHost(),
+            nested_child->GetRenderWidgetHost());
+
+  ASSERT_NO_FATAL_FAILURE(SimulateUserInteraction(activated_child));
+
+  EXPECT_TRUE(web_contents->HasRecentInteraction());
+  EXPECT_TRUE(main_rfh->HasTransientUserActivation());
+  EXPECT_TRUE(activated_child->HasTransientUserActivation());
+  EXPECT_FALSE(nested_child->HasTransientUserActivation());
+  EXPECT_TRUE(IsClipboardPasteAllowed(main_rfh));
+  EXPECT_TRUE(IsClipboardPasteAllowed(activated_child));
+  EXPECT_FALSE(IsClipboardPasteAllowed(nested_child));
+}
 
 // Verifies that even when persistent clipboard permission is granted,
 // IsClipboardPasteAllowed requires the requesting frame to be focused.
@@ -1854,9 +1992,11 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientClipboardTest,
   EXPECT_FALSE(IsClipboardPasteAllowed(child_rfh));
 
   // Focusing the child iframe in the frame tree allows clipboard access.
-  ASSERT_TRUE(
-      content::ExecJs(parent_rfh, "document.getElementById('test').focus();"));
-  ASSERT_TRUE(content::ExecJs(child_rfh, "window.focus();"));
+  ASSERT_TRUE(content::ExecJs(parent_rfh,
+                              "document.getElementById('test').focus();",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  ASSERT_TRUE(content::ExecJs(child_rfh, "window.focus();",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_TRUE(child_rfh->IsFocused());
   EXPECT_TRUE(IsClipboardPasteAllowed(child_rfh));
 

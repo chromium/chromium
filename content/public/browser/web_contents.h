@@ -1678,6 +1678,8 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // browser process, rather than relying on the untrustworthy renderer. This
   // should be merged with the trusted user activation states tracked at frame
   // granularity: crbug.com/40091540
+  //
+  // This is a page-wide signal and must not be used for frame-scoped actions.
   virtual bool HasRecentInteraction() = 0;
 
   // Returns the time ticks of the last user interaction.
