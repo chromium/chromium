@@ -198,7 +198,7 @@
   <message name="IDS_SETTINGS_GLIC_SELECTION_SHORTCUT_LEARN_MORE_ARIA_LABEL" desc="Aria label for the 'Learn more' link for the selection shortcut setting in Gemini in Chrome settings.">
     Learn more about the selection shortcut
   </message>
-  <message name="IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT" desc="Title for the navigation shortcut setting to leave and return to Gemini in Chrome." formatter_data="android_java">
+  <message name="IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT" desc="Title for the navigation shortcut setting to navigate between Gemini in Chrome and your open tab." formatter_data="android_java">
     Navigation shortcut
   </message>
   <message name="IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT_EDIT_LABEL" desc="Label of the edit navigation shortcut setting button.">
