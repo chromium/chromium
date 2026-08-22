@@ -98,6 +98,7 @@
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/webui/buildflags.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
@@ -751,6 +752,9 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
   dict.Set(
       "enableContextManagementInComposebox",
       base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox));
+
+  dict.Set("webuiRoundedIconsAttribute",
+           features::IsWebUIRoundedIconsEnabled() ? "webui-rounded-icons" : "");
 
   AddZeroStateStrings(dict, profile);
 
