@@ -80,7 +80,9 @@ std::vector<UrlResource> ConvertAiModeContextToUrlResources(
              file_info->mime_type == lens::MimeType::kHtml)) {
           url_resource->resource_type = ResourceType::kWebpage;
         }
-        if (!url_resource->title.has_value()) {
+        if (file_info->tab_title.has_value() &&
+            (!url_resource->title.has_value() ||
+             file_info->tab_session_id.has_value())) {
           url_resource->title = file_info->tab_title;
         }
         if (file_info->request_id.has_value() &&
