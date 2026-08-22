@@ -150,6 +150,11 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   MOCK_METHOD(void, DiscardText, (InkTextId), (override));
 
+  MOCK_METHOD(DocumentInkTextBoxesMap,
+              LoadTextAnnotationsFromPdf,
+              (),
+              (override));
+
   MOCK_METHOD(InkIdentifiers,
               ScanForInkAnnotations,
               (base::TimeDelta),

@@ -172,6 +172,16 @@ void RecordPdfLoadedWithInkTextAnnotations(
 void RecordPdfLoadedWithV2InkAnnotations(
     PDFLoadedWithV2InkAnnotations loaded_with_annotations);
 
+// Reports the number of text annotations added when saving.
+// Note that only one of `RecordTextAnnotationAddedCountOnSave()` or
+// `RecordTextAnnotationRemovedCountOnSave()` should be called for any given
+// save operation.
+void RecordTextAnnotationAddedCountOnSave(size_t count);
+
+// Reports the number of text annotations removed when saving. See comments
+// above for `RecordTextAnnotationAddedCountOnSave()`.
+void RecordTextAnnotationRemovedCountOnSave(size_t count);
+
 void ReportTextAnnotationMetrics(const InkTextBoxAttributes& attributes);
 
 }  // namespace chrome_pdf

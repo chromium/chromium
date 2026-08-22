@@ -82,6 +82,10 @@ class PdfInkModule {
   // Informs PdfInkModule that the plugin geometry changed.
   void OnGeometryChanged();
 
+  // Reports session metrics (e.g. net text annotation count change) when the
+  // PDF is being saved.
+  void RecordMetricsOnSave();
+
   // For testing only. Returns the current `PdfInkBrush` used to draw strokes,
   // or nullptr if there is no brush because `PdfInkModule` is not in the
   // drawing state.
@@ -534,6 +538,11 @@ class PdfInkModule {
   // Key: Frontend text annotation ID.
   // Value: Backend text annotation ID.
   std::map<int, TextId> text_id_map_;
+
+  // The baseline `text_id_map_` size, initially based on the text annotations
+  // loaded from the PDF, or std::nullopt if text annotations never got loaded.
+  // Updated after each save operation.
+  std::optional<size_t> baseline_text_annotation_count_;
 
   base::WeakPtrFactory<PdfInkModule> weak_factory_{this};
 };

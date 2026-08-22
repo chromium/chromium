@@ -9,6 +9,7 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "pdf/mojom/pdf.mojom.h"
@@ -64,7 +65,7 @@ struct InkTextBoxAttributes {
                        PageOrientation viewport_orientation,
                        bool is_bold,
                        bool is_italic,
-                       const std::string& text);
+                       std::string_view text);
   InkTextBoxAttributes(const InkTextBoxAttributes&) = delete;
   InkTextBoxAttributes& operator=(const InkTextBoxAttributes&) = delete;
   InkTextBoxAttributes(InkTextBoxAttributes&&) noexcept;
