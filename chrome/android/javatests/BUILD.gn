@@ -1655,6 +1655,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.webapps") {
     "src/org/chromium/chrome/browser/webapps/AddToHomescreenAddShortcutTest.java",
     "src/org/chromium/chrome/browser/webapps/AddToHomescreenCurrentPageVerifierTest.java",
     "src/org/chromium/chrome/browser/webapps/AddToHomescreenInstallTest.java",
+    "src/org/chromium/chrome/browser/webapps/PwaInstallBottomSheetIntegrationTest.java",
     "src/org/chromium/chrome/browser/webapps/PwaRestoreBottomSheetIntegrationTest.java",
     "src/org/chromium/chrome/browser/webapps/PwaUniversalInstallBottomSheetIntegrationTest.java",
     "src/org/chromium/chrome/browser/webapps/WebApkActivityTest.java",
@@ -1681,6 +1682,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.webapps") {
   deps = [
     ":chrome_test_java_helper",
     "//chrome/browser/open_in_app/android:java",
+    "//components/webapps/browser/android:webapps_jni_headers_java",
   ]
 }
 

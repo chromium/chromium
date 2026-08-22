@@ -356,7 +356,7 @@ public class PwaBottomSheetController implements View.OnClickListener {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         boolean requestOrExpandBottomSheetInstaller(
                 WebContents webContents, @InstallTrigger int trigger);
 
