@@ -18,10 +18,16 @@
 #include "content/public/browser/editable_level.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/global_dom_node_id.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 
 using ::testing::_;
 using ::testing::Pointee;
@@ -54,6 +60,13 @@ class DictationSessionControllerTest : public ChromeRenderViewHostTestHarness {
   content::GlobalDOMNodeId MockTargetInMainFrame(int dom_node_id) {
     return content::GlobalDOMNodeId{main_rfh()->GetWeakDocumentPtr(),
                                     blink::DOMNodeIdType(dom_node_id)};
+  }
+
+  void SimulateElementInFrameFocused(content::RenderFrameHost* rfh) {
+    content::FocusWebContentsOnFrame(
+        content::WebContents::FromRenderFrameHost(rfh), rfh);
+    content::RenderFrameHostTester::For(rfh)->SimulateFocusedElementChanged(
+        /*is_editable_element=*/true, /*is_richly_editable_element=*/false);
   }
 
   void WaitForPostedTasks() {
@@ -752,6 +765,68 @@ TEST_F(DictationSessionControllerTest,
 
   EXPECT_NE(controller_, nullptr);
   EXPECT_EQ(controller_->attached_stream_provider(), stream_provider2);
+}
+
+TEST_F(DictationSessionControllerTest, EndStreamOnTextInputInEditable) {
+  SimulateElementInFrameFocused(main_rfh());
+
+  controller_->StartDictationStream(TargetDetails(MockTargetInMainFrame(1)),
+                                    DictationStreamStartTrigger::kSessionStart);
+  EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
+  EXPECT_NE(controller_->attached_stream_provider(), nullptr);
+
+  blink::WebKeyboardEvent key_event(blink::WebInputEvent::Type::kRawKeyDown,
+                                    blink::WebInputEvent::kNoModifiers,
+                                    base::TimeTicks::Now());
+  key_event.windows_key_code = ui::VKEY_A;
+  key_event.text[0] = 'a';
+  controller_->DidGetUserInteraction(key_event);
+
+  EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
+  EXPECT_EQ(controller_->attached_stream_provider(), nullptr);
+}
+
+TEST_F(DictationSessionControllerTest, DoNotEndStreamOnModifiersOrNonText) {
+  SimulateElementInFrameFocused(main_rfh());
+
+  controller_->StartDictationStream(TargetDetails(MockTargetInMainFrame(1)),
+                                    DictationStreamStartTrigger::kSessionStart);
+  EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
+  EXPECT_NE(controller_->attached_stream_provider(), nullptr);
+
+  blink::WebKeyboardEvent mod_event(blink::WebInputEvent::Type::kRawKeyDown,
+                                    blink::WebInputEvent::kControlKey,
+                                    base::TimeTicks::Now());
+  mod_event.windows_key_code = ui::VKEY_CONTROL;
+  controller_->DidGetUserInteraction(mod_event);
+  EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
+  EXPECT_NE(controller_->attached_stream_provider(), nullptr);
+
+  blink::WebKeyboardEvent shortcut_event(
+      blink::WebInputEvent::Type::kRawKeyDown,
+      blink::WebInputEvent::kControlKey, base::TimeTicks::Now());
+  shortcut_event.windows_key_code = ui::VKEY_A;
+  shortcut_event.text[0] = 1;  // Ctrl+A produces a control character.
+  controller_->DidGetUserInteraction(shortcut_event);
+  EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
+  EXPECT_NE(controller_->attached_stream_provider(), nullptr);
+
+  blink::WebKeyboardEvent arrow_event(blink::WebInputEvent::Type::kRawKeyDown,
+                                      blink::WebInputEvent::kNoModifiers,
+                                      base::TimeTicks::Now());
+  arrow_event.windows_key_code = ui::VKEY_RIGHT;
+  controller_->DidGetUserInteraction(arrow_event);
+  EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
+  EXPECT_NE(controller_->attached_stream_provider(), nullptr);
+
+  blink::WebKeyboardEvent tab_event(blink::WebInputEvent::Type::kRawKeyDown,
+                                    blink::WebInputEvent::kNoModifiers,
+                                    base::TimeTicks::Now());
+  tab_event.windows_key_code = ui::VKEY_TAB;
+  tab_event.text[0] = 9;  // Tab control character.
+  controller_->DidGetUserInteraction(tab_event);
+  EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
+  EXPECT_NE(controller_->attached_stream_provider(), nullptr);
 }
 
 }  // namespace

@@ -32,6 +32,9 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -607,6 +610,69 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   }
 
   EXPECT_EDITABLE_TEXT_EQ("#text_id", "Hello World");
+}
+
+IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
+                       TypeIntoEditableEndsStream) {
+  const GURL url =
+      embedded_test_server()->GetURL("/textinput/simple_textarea.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
+  content::MainThreadFrameObserver frame_observer(
+      web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+  frame_observer.Wait();
+
+  // Focus the textarea so that keyboard input and dictation target it.
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "text_id");
+
+  // Type an initial character into the textarea.
+  content::SimulateKeyPress(web_contents(), ui::DomKey::FromCharacter('a'),
+                            ui::DomCode::US_A, ui::VKEY_A, false, false, false,
+                            false);
+  EXPECT_EDITABLE_TEXT_EQ("#text_id", "a");
+
+  std::optional<int> dom_node_id =
+      content::GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#text_id");
+  ASSERT_TRUE(dom_node_id.has_value());
+
+  // Start a dictation session for the textarea.
+  StartSession(TargetDetails(content::GlobalDOMNodeId{
+      web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
+      blink::DOMNodeIdType(dom_node_id.value())}));
+
+  SessionController* controller = session_controller();
+  ASSERT_NE(controller, nullptr);
+  ListenerStreamProvider* provider = static_cast<ListenerStreamProvider*>(
+      controller->attached_stream_provider());
+  ASSERT_NE(provider, nullptr);
+  auto stream_id = provider->stream_id_for_testing();
+
+  ExtensionWaitForStreamStart(profile(), stream_id);
+  ExtensionSendStreamStateUpdate(profile(), stream_id,
+                                 ExtensionStreamState::kTranscribing);
+  ASSERT_EQ(controller->GetState(), SessionState::kTranscribing);
+
+  // While transcribing, type an additional character.
+  content::SimulateKeyPress(web_contents(), ui::DomKey::FromCharacter('b'),
+                            ui::DomCode::US_B, ui::VKEY_B, false, false, false,
+                            false);
+
+  // Verify that the user typing in the textarea causes the stream to finalize.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return controller->GetState() == SessionState::kFinalizing; }));
+  EXPECT_EQ(controller->attached_stream_provider(), nullptr);
+
+  ExtensionWaitForStreamEnd(profile(), stream_id);
+  SimulateSpeechRecognition(provider, ExtensionTranscriptionType::kFinal, "c");
+  ExtensionSendStreamStateUpdate(profile(), stream_id,
+                                 ExtensionStreamState::kComplete);
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return controller->GetState() == SessionState::kInactive; }));
+
+  // Verify the resulting text in the textarea is the initial character,
+  // followed by the additional typed character, followed by the transcription.
+  EXPECT_EDITABLE_TEXT_EQ("#text_id", "abc");
 }
 
 // TODO(b/533465625): Ideally we could also make this a child of

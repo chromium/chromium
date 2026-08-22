@@ -59,6 +59,7 @@ class SessionController : public SessionUiDelegate,
       StreamProvider::StreamState old_state) override;
 
   // content::WebContentsObserver:
+  void DidGetUserInteraction(const blink::WebInputEvent& event) override;
   void OnFocusChangedInPage(
       const content::FocusedNodeDetails& details) override;
   void PrimaryPageChanged(content::Page& page) override;
