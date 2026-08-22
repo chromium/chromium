@@ -268,3 +268,98 @@ source_set("wallet_reminder_notice_bubble_view") {
     "//ui/base/mojom:ui_base_types",
   ]
 }
+
+source_set("card_unmask_authentication_selection_dialog_view") {
+  public = [ "card_unmask_authentication_selection_dialog_view.h" ]
+  sources = [ "card_unmask_authentication_selection_dialog_view.cc" ]
+  public_deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//ui/views",
+  ]
+  deps = [
+    ":payments_view_util",
+    "//chrome/browser/ui/autofill/payments",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/constrained_window",
+    "//components/strings:components_strings",
+    "//components/tabs:public",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("card_unmask_otp_input_dialog_views") {
+  public = [ "card_unmask_otp_input_dialog_views.h" ]
+  sources = [ "card_unmask_otp_input_dialog_views.cc" ]
+  public_deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//ui/views",
+  ]
+  deps = [
+    ":payments_view_util",
+    "//chrome/browser/ui/autofill/payments",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/constrained_window",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("card_unmask_prompt_views") {
+  public = [ "card_unmask_prompt_views.h" ]
+  sources = [ "card_unmask_prompt_views.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/autofill/payments",
+    "//components/autofill/core/browser",
+    "//ui/views",
+  ]
+  deps = [
+    ":payments_view_util",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/constrained_window",
+    "//components/strings:components_strings",
+    "//components/vector_icons",
+    "//components/web_modal",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/base/metadata",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/color",
+    "//ui/events",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+}
+
+source_set("save_and_fill_dialog") {
+  public = [ "save_and_fill_dialog.h" ]
+  sources = [ "save_and_fill_dialog.cc" ]
+  public_deps = [
+    ":payments_view_util",
+    "//base",
+    "//components/autofill/core/browser",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/autofill/core/common:credit_card_number_validation",
+    "//components/resources:components_scaled_resources",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+}
