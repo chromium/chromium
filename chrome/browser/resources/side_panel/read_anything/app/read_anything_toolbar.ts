@@ -247,7 +247,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private isSetupComplete_: boolean = false;
 
   protected isFontSizeDefault_(): boolean {
-    return this.visualBrowserProxy_.getFontSize() === 2.0;
+    return this.visualBrowserProxy_.getFontSize() ===
+        this.visualBrowserProxy_.getDefaultFontSize();
   }
 
   isReadingModeInactive(): boolean {

@@ -27,6 +27,7 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   highContrastTheme: number = 5;
   lowContrastLightTheme: number = 6;
   lowContrastDarkTheme: number = 7;
+  defaultFontSize: number = 10;
   fontSize: number = 10;
   lineSpacing: number = 0;
   activeDistillationMethod: number = 0;
@@ -42,6 +43,8 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   lineFocusLargeCursorWindow: number = 56;
   lineFocusStaticLine: number = 57;
   lineFocusCursorLine: number = 58;
+  lineFocusValue: number = 50;
+  lineFocusLastNonDisabledValue: number = 50;
   immersiveEnabled: boolean = true;
   activePresentationState: number = 1;
   pdf: boolean = false;
@@ -71,6 +74,7 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
       'getVeryLooseLineSpacing',
       'getLineSpacing',
       'getLineSpacingValue',
+      'getDefaultFontSize',
       'getFontSize',
       'getStandardLetterSpacing',
       'getWideLetterSpacing',
@@ -164,6 +168,11 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   getLineSpacingValue(lineSpacing: number): number {
     this.methodCalled('getLineSpacingValue', lineSpacing);
     return lineSpacing + 1;
+  }
+
+  getDefaultFontSize(): number {
+    this.methodCalled('getDefaultFontSize');
+    return this.defaultFontSize;
   }
 
   getFontSize(): number {
@@ -386,10 +395,16 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
 
   onFontSizeChanged(increase: boolean): void {
     this.methodCalled('onFontSizeChanged', increase);
+    if (increase) {
+      this.fontSize++;
+    } else {
+      this.fontSize--;
+    }
   }
 
   onFontSizeReset(): void {
     this.methodCalled('onFontSizeReset');
+    this.fontSize = this.defaultFontSize;
   }
 
   isReadAnythingTranslateEntryPointEnabled(): boolean {

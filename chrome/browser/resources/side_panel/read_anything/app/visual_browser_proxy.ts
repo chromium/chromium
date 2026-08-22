@@ -29,6 +29,7 @@ export interface VisualBrowserProxy {
   getVeryLooseLineSpacing(): number;
   getLineSpacing(): number;
   getLineSpacingValue(lineSpacing: number): number;
+  getDefaultFontSize(): number;
   getFontSize(): number;
 
   getStandardLetterSpacing(): number;
@@ -154,6 +155,10 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
 
   getLineSpacingValue(lineSpacing: number): number {
     return chrome.readingMode.getLineSpacingValue(lineSpacing);
+  }
+
+  getDefaultFontSize(): number {
+    return 2.0;
   }
 
   getFontSize(): number {
