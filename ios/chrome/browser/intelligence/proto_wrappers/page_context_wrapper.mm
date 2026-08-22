@@ -1214,6 +1214,10 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
   // Pick the destinations for the APC node content and frame data.
   if (isMainFrame) {
     // Main frame: Use the root node as the destination.
+    if (!_rootAPCNode) {
+      _rootAPCNode =
+          std::make_unique<optimization_guide::proto::AnnotatedPageContent>();
+    }
     destinationContentNode = _rootAPCNode->mutable_root_node();
     destinationFrameData = _rootAPCNode->mutable_main_frame_data();
 
@@ -1241,16 +1245,9 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
     destinationContentNode = &content->content;
     destinationFrameData = &content->frame_data;
   } else {
-    // Grafting not possible: Add new child to the root node as the default
-    // location for the iframe node. Set that node to be an iframe node.
-    destinationContentNode =
-        _rootAPCNode->mutable_root_node()->add_children_nodes();
-    destinationContentNode->mutable_content_attributes()->set_attribute_type(
-        optimization_guide::proto::ContentAttributeType::
-            CONTENT_ATTRIBUTE_IFRAME);
-    destinationFrameData = destinationContentNode->mutable_content_attributes()
-                               ->mutable_iframe_data()
-                               ->mutable_frame_data();
+    // Grafting not possible: Drop the frame content to avoid duplicate
+    // node_id collisions and untranslated local coordinate distortion.
+    return;
   }
 
   // Destination placeholders must be set to something even if their content
@@ -1364,7 +1361,10 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
   optimization_guide::proto::ContentNode* destinationContentNode;
 
   // Pick a destination ContentNode to fill with the iframe content.
-  if (_config->graft_cross_origin_frame_content() && localFrameToken) {
+  if (_config->graft_cross_origin_frame_content()) {
+    if (!localFrameToken) {
+      return;
+    }
     // Grafting possible: Populate iframe content by respecting the DOM
     // structure.
 
@@ -1809,7 +1809,22 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
 }
 
 - (optimization_guide::proto::PageContext*)pageContextForTesting {
+  if (_rootAPCNode) {
+    _pageContext->mutable_annotated_page_content()->CopyFrom(*_rootAPCNode);
+  }
   return _pageContext.get();
+}
+
+- (optimization_guide::proto::AnnotatedPageContent*)rootAPCNodeForTesting {
+  if (!_rootAPCNode) {
+    _rootAPCNode =
+        std::make_unique<optimization_guide::proto::AnnotatedPageContent>();
+  }
+  return _rootAPCNode.get();
+}
+
+- (FrameGrafter&)grafterForTesting {
+  return _grafter;
 }
 
 @end

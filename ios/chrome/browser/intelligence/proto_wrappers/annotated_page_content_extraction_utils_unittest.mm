@@ -369,3 +369,60 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest,
                 .height(),
             500);
 }
+
+// Tests that un-grafted / orphan subframes (frames extracted in the background
+// that do not correspond to any placeholder in the main DOM tree) are dropped
+// without being appended to the root node.
+TEST_F(AnnotatedPageContentExtractionUtilsTest,
+       ResolveCrossSiteFrameContent_UnregisteredOrphanFramesDropped) {
+  web::FakeWebState web_state;
+  web_state.SetWebFramesManager(web::ContentWorld::kPageContentWorld,
+                                std::make_unique<web::FakeWebFramesManager>());
+  web_state.SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
+                                std::make_unique<web::FakeWebFramesManager>());
+  autofill::ChildFrameRegistrar::CreateForWebState(&web_state);
+  autofill::ChildFrameRegistrar* registrar =
+      autofill::ChildFrameRegistrar::FromWebState(&web_state);
+  FrameGrafter grafter;
+
+  // Declare an orphan subframe (e.g. invisible tracking iframe) in the grafter.
+  autofill::LocalFrameToken orphan_token =
+      autofill::LocalFrameToken(base::UnguessableToken::Create());
+  FrameGrafter::FrameContent* orphan_content =
+      grafter.DeclareContent(orphan_token);
+  orphan_content->content.mutable_content_attributes()->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+  orphan_content->content.mutable_content_attributes()
+      ->mutable_text_data()
+      ->set_text_content("Orphan Frame Content");
+  orphan_content->frame_data.set_url("https://tracker.example.com/sync");
+
+  // Setup the main APC tree with a root node and 1 child paragraph.
+  optimization_guide::proto::AnnotatedPageContent apc;
+  apc.mutable_main_frame_data()->set_url("https://example.com");
+  optimization_guide::proto::ContentNode* root_node = apc.mutable_root_node();
+  root_node->mutable_content_attributes()->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+
+  optimization_guide::proto::ContentNode* child_node =
+      root_node->add_children_nodes();
+  child_node->mutable_content_attributes()->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+  child_node->mutable_content_attributes()
+      ->mutable_text_data()
+      ->set_text_content("Main Frame Paragraph");
+
+  ASSERT_EQ(root_node->children_nodes_size(), 1);
+
+  // Run resolution.
+  ResolveCrossSiteFrameContent(grafter, registrar,
+                               /*include_same_site_only=*/false, &apc);
+
+  // The orphan frame should NOT be appended to root_node.
+  EXPECT_EQ(root_node->children_nodes_size(), 1);
+  EXPECT_EQ(root_node->children_nodes(0)
+                .content_attributes()
+                .text_data()
+                .text_content(),
+            "Main Frame Paragraph");
+}
