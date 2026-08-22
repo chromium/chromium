@@ -42,6 +42,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
+#include "chrome/browser/ssl/connection_help_tab_helper.h"
 #include "chrome/browser/ssl/security_state_event_observer.h"
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
@@ -514,6 +515,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       GetUserDataFactory().CreateInstance<FramebustBlockTabHelper>(
           tab, tab, tab.GetContents());
 
+  connection_help_tab_helper_ =
+      GetUserDataFactory().CreateInstance<ConnectionHelpTabHelper>(
+          tab, tab, tab.GetContents());
+
   zero_suggest_prefetch_tab_helper_ =
       std::make_unique<ZeroSuggestPrefetchTabHelper>(tab.GetContents());
 
@@ -736,6 +741,14 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   framebust_block_tab_helper_.reset();
   framebust_block_tab_helper_ =
       GetUserDataFactory().CreateInstance<FramebustBlockTabHelper>(
+          *tab, *tab, new_contents);
+
+  // The reset() must happen first so that the old instance deregisters
+  // itself from the UnownedUserDataHost before the new instance registers
+  // itself.
+  connection_help_tab_helper_.reset();
+  connection_help_tab_helper_ =
+      GetUserDataFactory().CreateInstance<ConnectionHelpTabHelper>(
           *tab, *tab, new_contents);
 
   zero_suggest_prefetch_tab_helper_ =

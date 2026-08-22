@@ -53,6 +53,7 @@ namespace lens {
 class TabContextualizationController;
 }  // namespace lens
 
+class ConnectionHelpTabHelper;
 class HttpAuthCacheStatus;
 class SecurityStateEventObserver;
 
@@ -110,6 +111,7 @@ class TabFeatures {
 
   std::unique_ptr<sync_sessions::SyncSessionsRouterTabHelper>
       sync_sessions_router_;
+  std::unique_ptr<ConnectionHelpTabHelper> connection_help_tab_helper_;
   std::unique_ptr<HttpAuthCacheStatus> http_auth_cache_status_;
   std::unique_ptr<SecurityStateEventObserver> security_state_event_observer_;
   std::unique_ptr<QwacWebContentsObserver> qwac_web_contents_observer_;

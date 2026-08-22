@@ -39,6 +39,7 @@ class BookmarkBarPreloadPipelineManager;
 class BookmarkPageActionController;
 class CollaborationMessagingPageActionController;
 class CommitLimitOOMRecoveryTracker;
+class ConnectionHelpTabHelper;
 class CookieControlsPageActionController;
 class FileSystemAccessPageActionController;
 class FocusTabAfterNavigationHelper;
@@ -557,6 +558,9 @@ class TabFeatures {
 
   // Tracks blocked framebusts on the current page for the omnibox UI.
   std::unique_ptr<FramebustBlockTabHelper> framebust_block_tab_helper_;
+
+  // Redirects cert-error loads of the help center to bundled help content.
+  std::unique_ptr<ConnectionHelpTabHelper> connection_help_tab_helper_;
 
   std::unique_ptr<FromGWSNavigationAndKeepAliveRequestObserver>
       from_gws_navigation_and_keep_alive_request_observer_;

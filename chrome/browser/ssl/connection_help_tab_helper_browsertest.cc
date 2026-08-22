@@ -41,8 +41,7 @@ class ConnectionHelpTabHelperTest : public InProcessBrowserTest {
 
  protected:
   void SetHelpCenterUrl(BrowserWindowInterface* browser, const GURL& url) {
-    ConnectionHelpTabHelper::FromWebContents(
-        browser->GetTabStripModel()->GetActiveWebContents())
+    ConnectionHelpTabHelper::From(browser->GetTabStripModel()->GetActiveTab())
         ->SetHelpCenterUrlForTesting(url);
   }
 

@@ -72,7 +72,6 @@
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/site_protection/site_protection_metrics_observer.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
-#include "chrome/browser/ssl/connection_help_tab_helper.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/browser/storage_access_api/storage_access_api_service_factory.h"
 #include "chrome/browser/storage_access_api/storage_access_api_service_impl.h"
@@ -440,7 +439,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
       web_contents, profile->IsOffTheRecord(),
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
       ISOLATED_WORLD_ID_CHROME_INTERNAL);
-  ConnectionHelpTabHelper::CreateForWebContents(web_contents);
   content_settings::PageSpecificContentSettings::CreateForWebContents(
       web_contents,
       std::make_unique<PageSpecificContentSettingsDelegate>(web_contents));

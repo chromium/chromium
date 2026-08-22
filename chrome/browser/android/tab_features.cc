@@ -25,6 +25,7 @@
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
+#include "chrome/browser/ssl/connection_help_tab_helper.h"
 #include "chrome/browser/ssl/security_state_event_observer.h"
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
@@ -72,6 +73,10 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
   security_state_event_observer_ =
       std::make_unique<SecurityStateEventObserver>(web_contents);
+
+  connection_help_tab_helper_ =
+      GetUserDataFactory().CreateInstance<ConnectionHelpTabHelper>(
+          *tab, *tab, web_contents);
 
   if (base::FeatureList::IsEnabled(net::features::kVerifyQWACs)) {
     qwac_web_contents_observer_ =
