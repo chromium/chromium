@@ -189,6 +189,10 @@ export class OmniboxPopupSearchboxElement extends
       permanentDisplayText_: {
         type: String,
       },
+      aimButtonIconOnly_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -250,6 +254,7 @@ export class OmniboxPopupSearchboxElement extends
   protected accessor userInputInProgress_: boolean = false;
   protected accessor fullUrl_: string = '';
   protected accessor permanentDisplayText_: string = '';
+  protected accessor aimButtonIconOnly_: boolean = false;
   // True during an active IME (Input Method Editor) text composition session.
   // Used to suppress intermediate selection updates until composition finishes.
   private isComposing_: boolean = false;
@@ -275,7 +280,18 @@ export class OmniboxPopupSearchboxElement extends
   // executing. Used to suppress recording spurious history edits when input
   // text updates programmatically during undo/redo execution.
   private isUndoRedo_: boolean = false;
-
+  // Observes resize events on input element to evaluate AIM button
+  // expanded/collapsed state.
+  private inputResizeObserver_: ResizeObserver|null = null;
+  // Cached width of the AIM button in its expanded state (when rendered as
+  // on-screen pixels).
+  private expandedAimButtonWidth_: number = 0;
+  // Cached Canvas 2D context used to measure text width.
+  private canvasContext_: CanvasRenderingContext2D|null = null;
+  // Cached font style string of input element for text width measurement.
+  // NOTE: This is used to avoid repeated calls to `window.getComputedStyle()`
+  // which normally triggers layout flushes.
+  private inputFontStyle_: string = '';
 
   constructor() {
     super();
@@ -297,6 +313,7 @@ export class OmniboxPopupSearchboxElement extends
       this.searchboxCallbackRouter_.setAimButtonVisible.addListener(
           (visible: boolean) => {
             this.aimButtonVisible_ = visible;
+            this.updateAimButtonCollapse_();
           }),
       this.searchboxCallbackRouter_.setAimButtonConfig.addListener(
           (text: string, tooltip: string, a11yLabel: string, iconUrl: Url) => {
@@ -335,6 +352,11 @@ export class OmniboxPopupSearchboxElement extends
       this.onSelectionChanged_();
     });
 
+    this.inputResizeObserver_ = new ResizeObserver(() => {
+      this.updateAimButtonCollapse_();
+    });
+    this.inputResizeObserver_.observe(this.$.input.inputElement);
+
     // When `selectAllOnMouseRelease_` is true (set during `onInputMousedown_`
     // when the input is focused and the selection is collapsed), prevent the
     // default `mouseup` behavior. This stops the text from being unselected
@@ -359,6 +381,7 @@ export class OmniboxPopupSearchboxElement extends
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.inputResizeObserver_?.disconnect();
     this.listenerIds_.forEach(
         id => this.searchboxCallbackRouter_.removeListener(id));
     this.listenerIds_ = [];
@@ -1011,6 +1034,8 @@ export class OmniboxPopupSearchboxElement extends
     this.updateTextfieldModel_(e.detail.value, e.detail.isComposing);
     this.lastInputText_ = e.detail.value;
 
+    this.updateAimButtonCollapse_();
+
     if (!e.detail.value.trim()) {
       // Notify the backend when the user clears all input (`onInputCleared`) so
       // it knows the draft was manually cleared and can revert empty drafts on
@@ -1247,6 +1272,78 @@ export class OmniboxPopupSearchboxElement extends
     this.popupPageHandler_.closeUI();
     this.popupPageHandler_.logEscapeAction(OmniboxEscapeAction.kBlur);
     return;
+  }
+
+  /**
+   * Helper function to measure the rendered pixel width of a text string,
+   * using a cached off-screen Canvas 2D context to avoid layout flushes during
+   * resize.
+   */
+  private getTextWidth_(text: string, element: HTMLElement): number {
+    if (!text) {
+      return 0;
+    }
+
+    if (!this.canvasContext_) {
+      const canvas = document.createElement('canvas');
+      this.canvasContext_ = canvas.getContext('2d');
+    }
+
+    if (!this.inputFontStyle_) {
+      const computedStyle = window.getComputedStyle(element);
+      this.inputFontStyle_ = `${computedStyle.fontWeight} ${
+          computedStyle.fontSize} ${computedStyle.fontFamily}`;
+    }
+
+    this.canvasContext_!.font = this.inputFontStyle_;
+    return this.canvasContext_!.measureText(text).width;
+  }
+
+  private updateAimButtonCollapse_() {
+    if (!this.aimButtonVisible_) {
+      this.aimButtonIconOnly_ = false;
+      return;
+    }
+
+    const composeButton =
+        this.shadowRoot?.querySelector<HTMLElement>('#composeButton');
+    if (!composeButton) {
+      return;
+    }
+
+    // Capture the latest "expanded" AIM button width.
+    if (!this.aimButtonIconOnly_) {
+      this.expandedAimButtonWidth_ = composeButton.offsetWidth;
+    }
+
+    const input = this.$.input.inputElement;
+
+    // Collapse AIM button to icon-only variant when input text overflows
+    // visible bounds.
+    if (input.scrollWidth > input.clientWidth) {
+      this.aimButtonIconOnly_ = true;
+      return;
+    }
+
+    if (this.aimButtonIconOnly_) {
+      const text = input.value;
+      // If input text is empty, always render the "expanded" variant.
+      if (!text) {
+        this.aimButtonIconOnly_ = false;
+        return;
+      }
+      const textWidth = this.getTextWidth_(text, input);
+      const expandedWidth = this.expandedAimButtonWidth_ || 104;
+      const collapsedWidth = composeButton.offsetWidth || 24;
+      // If non-empty input text can fit comfortably alongside the "expanded"
+      // AIM button, then render the "expanded" variant.
+      // NOTE: `threshold` uses a 4px safety margin in order to limit any
+      // potential layout thrashing (i.e. infinite expand/collapse loop).
+      const threshold = (expandedWidth - collapsedWidth) + 4;
+      if (textWidth < input.clientWidth - threshold) {
+        this.aimButtonIconOnly_ = false;
+      }
+    }
   }
 }
 
