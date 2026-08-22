@@ -31,10 +31,14 @@
 
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
 
+#include <cmath>
+#include <limits>
+
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue_list.h"
+#include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
@@ -89,7 +93,17 @@ void TextTrackCue::setStartTime(double value) {
   CueDidChange(kCueMutationAffectsOrder);
 }
 
-void TextTrackCue::setEndTime(double value) {
+void TextTrackCue::setEndTime(double value, ExceptionState& exception_state) {
+  // https://html.spec.whatwg.org/C/#dom-texttrackcue-endtime
+  // "On setting, if the new value is negative Infinity or a Not-a-Number
+  // (NaN) value, then throw a TypeError exception." Positive Infinity is
+  // valid and represents an unbounded cue.
+  if (std::isnan(value) ||
+      value == -std::numeric_limits<double>::infinity()) {
+    exception_state.ThrowTypeError(
+        ExceptionMessages::NotAFiniteNumber(value, "endTime"));
+    return;
+  }
   if (end_time_ == value)
     return;
 

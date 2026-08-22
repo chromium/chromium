@@ -29,6 +29,8 @@
 
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 
+#include <cmath>
+
 #include "third_party/blink/renderer/bindings/core/v8/v8_direction_setting.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_autokeyword_double.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -134,6 +136,26 @@ void VTTCueBackgroundBox::DidRecalcStyle(const StyleRecalcChange change) {
 
 void VTTCueBackgroundBox::SetTrack(TextTrack* track) {
   track_ = track;
+}
+
+// static
+VTTCue* VTTCue::Create(Document& document,
+                        double start_time,
+                        double end_time,
+                        const String& text,
+                        ExceptionState& exception_state) {
+  // https://w3c.github.io/webvtt/#dom-vttcue-vttcue
+  // endTime: NaN and -Infinity are invalid; +Infinity is valid (unbounded cue).
+  // startTime needs no check here: unlike endTime it is not declared
+  // `unrestricted double` in the IDL, so the bindings layer already rejects
+  // non-finite values with a TypeError.
+  if (std::isnan(end_time) ||
+      end_time == -std::numeric_limits<double>::infinity()) {
+    exception_state.ThrowTypeError(
+        ExceptionMessages::NotAFiniteNumber(end_time, "endTime"));
+    return nullptr;
+  }
+  return VTTCue::Create(document, start_time, end_time, text);
 }
 
 VTTCue::VTTCue(Document& document,
