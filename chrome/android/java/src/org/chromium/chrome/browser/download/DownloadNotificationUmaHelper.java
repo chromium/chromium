@@ -44,14 +44,6 @@ public final class DownloadNotificationUmaHelper {
                     ACTION_DOWNLOAD_PAUSE,
                     ACTION_DOWNLOAD_RESUME);
 
-    @IntDef({LaunchType.LAUNCH, LaunchType.RELAUNCH})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface LaunchType {
-        int LAUNCH = 0; // "Denominator" for expected launched notifications.
-        int RELAUNCH = 1;
-        int NUM_ENTRIES = 2;
-    }
-
     @IntDef({
         ServiceStopped.STOPPED,
         ServiceStopped.DESTROYED,

@@ -406,8 +406,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                 new AsyncTask<>() {
                     @Override
                     public Boolean doInBackground() {
-                        boolean canResolve = canResolveDownloadItem(item, isSupportedMimeType);
-                        return canResolve;
+                        return canResolveDownloadItem(item, isSupportedMimeType);
                     }
 
                     @Override
@@ -554,10 +553,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         request.userAgent = item.getDownloadInfo().getUserAgent();
         request.notifyCompleted = notifyCompleted;
         DownloadManagerBridge.enqueueNewDownload(
-                request,
-                response -> {
-                    onDownloadEnqueued(item, response);
-                });
+                request, response -> onDownloadEnqueued(item, response));
     }
 
     public void onDownloadEnqueued(DownloadItem downloadItem, DownloadEnqueueResponse response) {
@@ -1230,11 +1226,8 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                                         externalStorageDir,
                                         dirs);
                         if (!isUnresumableOrCancelled(item) && missingOnSDCard) {
-                            mHandler.post(
-                                    () -> {
-                                        // TODO(shaktisahu): Show it on infobar in the right way.
-                                        mDownloadSnackbarController.onDownloadDirectoryNotFound();
-                                    });
+                            // TODO(shaktisahu): Show it on infobar in the right way.
+                            mHandler.post(mDownloadSnackbarController::onDownloadDirectoryNotFound);
                             prefService.setBoolean(Pref.SHOW_MISSING_SD_CARD_ERROR_ANDROID, false);
                             break;
                         }

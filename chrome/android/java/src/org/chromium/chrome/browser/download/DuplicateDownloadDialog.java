@@ -155,12 +155,12 @@ public class DuplicateDownloadDialog {
             DuplicateDownloadClickableSpan span =
                     new DuplicateDownloadClickableSpan(
                             filePath,
-                            () -> this.closeDialog(),
+                            this::closeDialog,
                             otrProfileId,
                             DownloadOpenSource.DUPLICATE_DOWNLOAD_DIALOG);
             String template = context.getString(R.string.duplicate_download_dialog_text);
             return DownloadUtils.getDownloadMessageText(
-                    context, template, filePath, true, totalBytes, (ClickableSpan) span);
+                    context, template, filePath, true, totalBytes, span);
         }
         return DownloadUtils.getOfflinePageMessageText(
                 context,

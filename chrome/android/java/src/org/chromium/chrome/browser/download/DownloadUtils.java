@@ -148,8 +148,7 @@ public class DownloadUtils {
         Context appContext = ContextUtils.getApplicationContext();
         boolean isTablet;
 
-        if (tab == null && activity instanceof ChromeTabbedActivity) {
-            ChromeTabbedActivity chromeActivity = ((ChromeTabbedActivity) activity);
+        if (tab == null && activity instanceof ChromeTabbedActivity chromeActivity) {
             tab = chromeActivity.getActivityTab();
             isTablet = chromeActivity.isTablet();
         } else {
@@ -771,8 +770,6 @@ public class DownloadUtils {
                     intent.getType(),
                     assumeNonNull(intent.getData()).getScheme(),
                     ex);
-        } catch (SecurityException ex) {
-            Log.d(TAG, "cannot open intent: %s", intent, ex);
         } catch (Exception ex) {
             Log.d(TAG, "cannot open intent: %s", intent, ex);
         }

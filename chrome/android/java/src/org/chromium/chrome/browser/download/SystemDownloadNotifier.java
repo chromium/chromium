@@ -178,9 +178,7 @@ public class SystemDownloadNotifier implements DownloadNotifier {
                         new PendingNotificationTask(
                                 notificationInfo.mInfo.getContentId(),
                                 notificationInfo.mPriority,
-                                () -> {
-                                    updateNotification(notificationInfo);
-                                }));
+                                () -> updateNotification(notificationInfo)));
     }
 
     /**

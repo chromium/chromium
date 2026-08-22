@@ -52,7 +52,7 @@ public class OpenDownloadDialogBridge {
     @CalledByNative
     public void showDialog(Profile profile, @JniType("std::string") String guid) {
         List<ResolveInfo> result = MimeUtils.getPdfIntentHandlers();
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             onCancel(guid);
             return;
         }

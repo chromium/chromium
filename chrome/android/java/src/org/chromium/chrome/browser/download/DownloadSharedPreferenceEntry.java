@@ -473,10 +473,9 @@ public class DownloadSharedPreferenceEntry {
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof DownloadSharedPreferenceEntry)) {
+        if (!(object instanceof DownloadSharedPreferenceEntry other)) {
             return false;
         }
-        final DownloadSharedPreferenceEntry other = (DownloadSharedPreferenceEntry) object;
         return id.equals(other.id)
                 && TextUtils.equals(fileName, other.fileName)
                 && notificationId == other.notificationId
