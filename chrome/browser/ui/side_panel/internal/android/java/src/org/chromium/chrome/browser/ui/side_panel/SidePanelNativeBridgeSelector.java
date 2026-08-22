@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.side_panel;
 
 import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.chrome.browser.ui.side_panel.SidePanelUtils.log;
 
 import android.graphics.Rect;
 import android.util.ArrayMap;
@@ -15,6 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.browser_window.AndroidBrowserWindowObserver;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeatureKey;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTrackerFactory;
@@ -48,6 +50,8 @@ import java.util.Map;
 @NullMarked
 final class SidePanelNativeBridgeSelector {
 
+    private static final String TAG = "SPBridgeSelector";
+
     /**
      * Contains native bridges whose underlying native objects are scoped to a {@code
      * BrowserWindowInterface}.
@@ -67,10 +71,67 @@ final class SidePanelNativeBridgeSelector {
         }
     }
 
+    /**
+     * Observes the native {@code AndroidBrowserWindow} changes in the {@code ChromeActivity}
+     * hosting the side panel container.
+     *
+     * <p>The host {@code ChromeActivity} is represented by the {@link #mWindowAndroid} field.
+     */
+    private final class AndroidBrowserWindowObserverImpl implements AndroidBrowserWindowObserver {
+        @Override
+        public void onBrowserWindowAdded(AndroidBrowserWindowInfo windowInfo) {
+            if (windowInfo.mActivityWindowAndroid != mWindowAndroid) {
+                return;
+            }
+
+            logWindowAndTabModelState(
+                    "AndroidBrowserWindowObserver.onBrowserWindowAdded",
+                    windowInfo,
+                    mTabModelSelector);
+            createNativeBridges(windowInfo.mProfile);
+        }
+
+        @Override
+        public void onBrowserWindowRemoved(AndroidBrowserWindowInfo windowInfo) {
+            if (windowInfo.mActivityWindowAndroid != mWindowAndroid) {
+                return;
+            }
+
+            logWindowAndTabModelState(
+                    "AndroidBrowserWindowObserver.onBrowserWindowRemoved",
+                    windowInfo,
+                    mTabModelSelector);
+
+            // We don't need to explicitly destroy the native objects as they should already be
+            // destroyed by ChromeAndroidTask.
+            // We only need to remove the Java bridges from the map.
+            mNativeBridges.remove(windowInfo.mProfile);
+        }
+
+        private static void logWindowAndTabModelState(
+                String event,
+                AndroidBrowserWindowInfo windowInfo,
+                TabModelSelector tabModelSelector) {
+            boolean isBrowserWindowIncognito = windowInfo.mProfile.isOffTheRecord();
+            boolean isCurrentTabModelIncognito =
+                    tabModelSelector.getCurrentModel().isOffTheRecord();
+            log(
+                    TAG,
+                    event,
+                    "isBrowserWindowIncognito="
+                            + isBrowserWindowIncognito
+                            + ", isCurrentTabModelIncognito="
+                            + isCurrentTabModelIncognito);
+        }
+    }
+
     private final ActivityWindowAndroid mWindowAndroid;
+    private final ChromeAndroidTask mChromeAndroidTask;
     private final SidePanelContainerCoordinatorImpl mSidePanelContainerCoordinator;
     private final TabModelSelector mTabModelSelector;
     private final Map<Profile, NativeBridges> mNativeBridges = new ArrayMap<>();
+    private final AndroidBrowserWindowObserverImpl mBrowserWindowObserver =
+            new AndroidBrowserWindowObserverImpl();
 
     SidePanelNativeBridgeSelector(
             ActivityWindowAndroid windowAndroid,
@@ -79,45 +140,15 @@ final class SidePanelNativeBridgeSelector {
         mWindowAndroid = windowAndroid;
         mSidePanelContainerCoordinator = sidePanelContainerCoordinator;
         mTabModelSelector = tabModelSelector;
+
+        mChromeAndroidTask = getChromeAndroidTask(windowAndroid);
+        mChromeAndroidTask.addAndroidBrowserWindowObserver(mBrowserWindowObserver);
     }
 
     /** Initializes native objects. */
     void init() {
-        var activity = assertNonNull(mWindowAndroid.getActivity().get());
-        int taskId = ApplicationStatus.getTaskId(activity);
-        ChromeAndroidTask chromeAndroidTask =
-                assertNonNull(ChromeAndroidTaskTrackerFactory.getInstance().get(taskId));
         var currentProfile = assertNonNull(mTabModelSelector.getCurrentModel().getProfile());
-
-        // Instantiate native objects.
-        //
-        // Note: The lifecycles of SidePanelCoordinatorAndroid and the window-scoped
-        // SidePanelRegistry are in sync with a native BrowserWindowInterface, but
-        // SidePanelCoordinatorAndroid doesn't own the SidePanelRegistry, or vice versa.
-        // This matches the WML implementation.
-        var windowScopedRegistryBridge =
-                (WindowScopedSidePanelRegistryBridge)
-                        assertNonNull(
-                                chromeAndroidTask.addFeature(
-                                        new ChromeAndroidTaskFeatureKey(
-                                                WindowScopedSidePanelRegistryBridge.class,
-                                                currentProfile,
-                                                mWindowAndroid),
-                                        WindowScopedSidePanelRegistryBridge::new));
-        var coordinatorBridge =
-                (SidePanelCoordinatorAndroidBridge)
-                        assertNonNull(
-                                chromeAndroidTask.addFeature(
-                                        new ChromeAndroidTaskFeatureKey(
-                                                SidePanelCoordinatorAndroidBridge.class,
-                                                currentProfile,
-                                                mWindowAndroid),
-                                        () -> new SidePanelCoordinatorAndroidBridge(this)));
-        mNativeBridges.put(
-                currentProfile, new NativeBridges(coordinatorBridge, windowScopedRegistryBridge));
-
-        // Do initialization work for the current profile.
-        coordinatorBridge.init();
+        createNativeBridges(currentProfile);
     }
 
     /** Returns the {@link SidePanelCoordinatorAndroidBridge} for the current {@link Profile}. */
@@ -230,13 +261,66 @@ final class SidePanelNativeBridgeSelector {
     }
 
     void destroy() {
+        mChromeAndroidTask.removeAndroidBrowserWindowObserver(mBrowserWindowObserver);
+
         // We don't need to explicitly destroy the native objects as they are managed by
         // ChromeAndroidTask.
         // We only need to remove the Java bridges from the map.
         mNativeBridges.clear();
     }
 
+    private static ChromeAndroidTask getChromeAndroidTask(ActivityWindowAndroid windowAndroid) {
+        var activity = assertNonNull(windowAndroid.getActivity().get());
+        int taskId = ApplicationStatus.getTaskId(activity);
+        return assertNonNull(ChromeAndroidTaskTrackerFactory.getInstance().get(taskId));
+    }
+
+    private void createNativeBridges(Profile profile) {
+        boolean isIncognito = profile.isOffTheRecord();
+        assert !mNativeBridges.containsKey(profile)
+                : "Native bridges already exist for profile [isIncognito=" + isIncognito + "]";
+
+        // Instantiate native objects.
+        //
+        // Note: The lifecycles of SidePanelCoordinatorAndroid and the window-scoped
+        // SidePanelRegistry are in sync with a native BrowserWindowInterface, but
+        // SidePanelCoordinatorAndroid doesn't own the SidePanelRegistry, or vice versa.
+        // This matches the WML implementation.
+        var windowScopedRegistryBridgeKey =
+                new ChromeAndroidTaskFeatureKey(
+                        WindowScopedSidePanelRegistryBridge.class,
+                        profile,
+                        mWindowAndroid,
+                        mTabModelSelector.getModel(isIncognito));
+        var windowScopedRegistryBridge =
+                (WindowScopedSidePanelRegistryBridge)
+                        assertNonNull(
+                                mChromeAndroidTask.addFeature(
+                                        windowScopedRegistryBridgeKey,
+                                        WindowScopedSidePanelRegistryBridge::new));
+
+        var coordinatorBridgeKey =
+                new ChromeAndroidTaskFeatureKey(
+                        SidePanelCoordinatorAndroidBridge.class,
+                        profile,
+                        mWindowAndroid,
+                        mTabModelSelector.getModel(isIncognito));
+        var coordinatorBridge =
+                (SidePanelCoordinatorAndroidBridge)
+                        assertNonNull(
+                                mChromeAndroidTask.addFeature(
+                                        coordinatorBridgeKey,
+                                        () -> new SidePanelCoordinatorAndroidBridge(this)));
+
+        mNativeBridges.put(
+                profile, new NativeBridges(coordinatorBridge, windowScopedRegistryBridge));
+
+        // Do initialization work for the current profile.
+        coordinatorBridge.init();
+    }
+
     private void assertCurrentProfile(Profile profile) {
-        assert profile.equals(mTabModelSelector.getCurrentModel().getProfile());
+        assert profile.equals(mTabModelSelector.getCurrentModel().getProfile())
+                : "The given profile isn't the current profile.";
     }
 }

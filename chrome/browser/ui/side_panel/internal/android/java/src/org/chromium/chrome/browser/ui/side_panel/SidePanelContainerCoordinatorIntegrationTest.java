@@ -32,6 +32,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.build.annotations.NullMarked;
@@ -533,6 +534,22 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         mResponsivePageStation = newTabPageStation.selectTabFast(tab1, WebPageStation::newBuilder);
 
         // Assert: The panel remains closed on tab1 and does not reopen.
+        waitForContainerViewClose(coordinator);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testMixedProfileMode_openAndClosePanelInIncognitoPane() {
+        // Arrange.
+        var coordinator = getSidePanelContainerCoordinator();
+        var incognitoTabPageStation = mResponsivePageStation.openNewIncognitoTabFast();
+        var incognitoTab = incognitoTabPageStation.getTab();
+
+        // Act & Assert.
+        showPanel(incognitoTab);
+        waitForContainerViewOpen(coordinator);
+        closePanel(incognitoTab);
         waitForContainerViewClose(coordinator);
     }
 
