@@ -86,6 +86,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherBackPressHand
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler.DragHandlerDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalExternalViewDragDropReorderStrategy.DropTargetResult;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardController.TabHoverCardListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -151,6 +152,8 @@ public class VerticalTabListCoordinator {
     private final MonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     private final DataSharingTabManager mDataSharingTabManager;
     private final VerticalTabGroupSpineDecoration mSpineDecoration;
+    private final VerticalTabDropIndicatorDecoration mDropIndicatorDecoration;
+    private final VerticalTabPinnedDropIndicatorDecoration mPinnedDropIndicatorDecoration;
     private final TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private final NonNullObservableSupplier<Boolean> mVerticalTabsActiveSupplier;
     private final VerticalTabRailCollapseController mCollapseController;
@@ -497,6 +500,9 @@ public class VerticalTabListCoordinator {
                         activity, recyclerView::postInvalidate, mModelList, tabModelSelector);
         recyclerView.addItemDecoration(mSpineDecoration);
 
+        mDropIndicatorDecoration = new VerticalTabDropIndicatorDecoration(activity);
+        recyclerView.addItemDecoration(mDropIndicatorDecoration);
+
         TabListConfig tabListConfig =
                 new TabListConfig.Builder(TabListLayoutType.NESTED)
                         .setSupportsModifierMultiSelect(VerticalTabUtils.isMultiSelectEnabled())
@@ -616,6 +622,9 @@ public class VerticalTabListCoordinator {
                         calculatePinnedTabItemOffsets(outRect, view, parent);
                     }
                 });
+
+        mPinnedDropIndicatorDecoration = new VerticalTabPinnedDropIndicatorDecoration(activity);
+        pinnedTabsRecyclerView.addItemDecoration(mPinnedDropIndicatorDecoration);
 
         mPinnedTabsLayoutChangeListener =
                 (_, left, _, right, _, oldLeft, _, oldRight, _) -> {
@@ -894,11 +903,21 @@ public class VerticalTabListCoordinator {
         }
         mTouchHelperCallbacks.clear();
         mReorderStrategy.clear();
+        mDropIndicatorDecoration.clear();
+        mPinnedDropIndicatorDecoration.clear();
         mLastDraggedGroupId = null;
     }
 
     public VerticalExternalViewDragDropReorderStrategy getReorderStrategyForTesting() {
         return mReorderStrategy;
+    }
+
+    public VerticalTabDropIndicatorDecoration getDropIndicatorDecorationForTesting() {
+        return mDropIndicatorDecoration;
+    }
+
+    public VerticalTabPinnedDropIndicatorDecoration getPinnedDropIndicatorDecorationForTesting() {
+        return mPinnedDropIndicatorDecoration;
     }
 
     /** Returns the {@link VerticalTabRailCollapseController} for managing rail collapse state. */
@@ -1286,6 +1305,16 @@ public class VerticalTabListCoordinator {
         return dragHandler;
     }
 
+    private void clearDropIndicators() {
+        mReorderStrategy.clear();
+        mDropIndicatorDecoration.clear();
+        mPinnedDropIndicatorDecoration.clear();
+        mRecyclerView.invalidate();
+        if (mPinnedTabsRecyclerView != null) {
+            mPinnedTabsRecyclerView.invalidate();
+        }
+    }
+
     private DragHandlerDelegate createNonOriginatingDragHandlerDelegate(
             RecyclerView recyclerView, TabSwitcherDragHandler dragHandler) {
         return new DragHandlerDelegate() {
@@ -1305,13 +1334,21 @@ public class VerticalTabListCoordinator {
 
             @Override
             public boolean handleDragLocation(View view, float xPx, float yPx) {
-                mReorderStrategy.calculateDropTarget(view, xPx, yPx);
+                if (!dragHandler.isDragSourceInstance()) {
+                    DropTargetResult result = mReorderStrategy.calculateDropTarget(view, xPx, yPx);
+                    mDropIndicatorDecoration.setDropTargetResult(result);
+                    mPinnedDropIndicatorDecoration.setDropTargetResult(result);
+                    mRecyclerView.invalidate();
+                    if (mPinnedTabsRecyclerView != null) {
+                        mPinnedTabsRecyclerView.invalidate();
+                    }
+                }
                 return true;
             }
 
             @Override
             public boolean handleDragExit() {
-                mReorderStrategy.clear();
+                clearDropIndicators();
                 if (!dragHandler.isDragSourceInstance()) {
                     dragHandler.showDragShadow(recyclerView, true);
                 }
@@ -1321,13 +1358,13 @@ public class VerticalTabListCoordinator {
             @Override
             public boolean handleExternalDragEnd(
                     View view, float xPx, float yPx, boolean isOSNewWindowDrop) {
-                mReorderStrategy.clear();
+                clearDropIndicators();
                 return true;
             }
 
             @Override
             public boolean handleDrop(View view, float xPx, float yPx) {
-                mReorderStrategy.clear();
+                clearDropIndicators();
                 return true;
             }
         };

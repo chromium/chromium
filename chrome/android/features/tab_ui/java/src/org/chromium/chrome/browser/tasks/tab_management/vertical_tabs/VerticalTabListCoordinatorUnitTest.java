@@ -2929,6 +2929,7 @@ public class VerticalTabListCoordinatorUnitTest {
     }
 
     @Test
+    @SmallTest
     public void testDragOut_AlreadyInProgress_DoesNotStartDrag() {
         createCoordinator();
         when(mMainTabSwitcherDragHandler.isViewDraggingInProgress()).thenReturn(true);
@@ -2939,6 +2940,191 @@ public class VerticalTabListCoordinatorUnitTest {
         getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
 
         verify(mMainTabSwitcherDragHandler, never()).startTabDragAction(any(), any(), any(), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testDropIndicatorDecorations_AttachedToRecyclerViews() {
+        createCoordinator();
+        TabListRecyclerView recyclerView =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        TabListRecyclerView pinnedRecyclerView =
+                mCoordinator.getView().findViewById(R.id.pinned_tabs_recycler_view);
+
+        boolean hasMainDropDecorator = false;
+        for (int i = 0; i < recyclerView.getItemDecorationCount(); i++) {
+            if (recyclerView.getItemDecorationAt(i) instanceof VerticalTabDropIndicatorDecoration) {
+                hasMainDropDecorator = true;
+                break;
+            }
+        }
+        assertTrue(
+                "VerticalTabDropIndicatorDecoration must be attached to main RecyclerView.",
+                hasMainDropDecorator);
+
+        boolean hasPinnedDropDecorator = false;
+        for (int i = 0; i < pinnedRecyclerView.getItemDecorationCount(); i++) {
+            if (pinnedRecyclerView.getItemDecorationAt(i)
+                    instanceof VerticalTabPinnedDropIndicatorDecoration) {
+                hasPinnedDropDecorator = true;
+                break;
+            }
+        }
+        assertTrue(
+                "VerticalTabPinnedDropIndicatorDecoration must be attached to pinned RecyclerView.",
+                hasPinnedDropDecorator);
+    }
+
+    @Test
+    @SmallTest
+    public void testNonOriginatingDrag_DragLocation_UpdatesDecorators() {
+        Tab tab1 = prepareMockTab(mMockTab1, TAB_ID_1);
+        when(mTabModel.getTabById(TAB_ID_1)).thenReturn(tab1);
+        when(mTabModel.indexOf(tab1)).thenReturn(0);
+        when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
+        when(mTabModel.isIncognitoBranded()).thenReturn(false);
+
+        createCoordinator();
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+        TabSwitcherDragHandler.DragHandlerDelegate nonOriginatingDelegate =
+                delegateCaptor.getValue();
+
+        when(mMainTabSwitcherDragHandler.isDragSourceInstance()).thenReturn(false);
+
+        TabListRecyclerView recyclerView =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        nonOriginatingDelegate.handleDragLocation(recyclerView, 50f, 50f);
+
+        assertNotNull(
+                "Non-originating drag location must update drop target result on decorator.",
+                mCoordinator.getDropIndicatorDecorationForTesting().getDropTargetResult());
+    }
+
+    @Test
+    @SmallTest
+    public void testNonOriginatingDrag_DragExit_ClearsDecorators() {
+        createCoordinator();
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+        TabSwitcherDragHandler.DragHandlerDelegate nonOriginatingDelegate =
+                delegateCaptor.getValue();
+
+        when(mMainTabSwitcherDragHandler.isDragSourceInstance()).thenReturn(false);
+
+        TabListRecyclerView recyclerView =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        nonOriginatingDelegate.handleDragLocation(recyclerView, 50f, 50f);
+
+        nonOriginatingDelegate.handleDragExit();
+        assertNull(
+                "Drag exit must clear drop indicator decorator.",
+                mCoordinator.getDropIndicatorDecorationForTesting().getDropTargetResult());
+        assertNull(
+                "Drag exit must clear pinned drop indicator decorator.",
+                mCoordinator.getPinnedDropIndicatorDecorationForTesting().getDropTargetResult());
+    }
+
+    @Test
+    @SmallTest
+    public void testNonOriginatingDrag_ExternalDragEnd_ClearsDecorators() {
+        createCoordinator();
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+        TabSwitcherDragHandler.DragHandlerDelegate nonOriginatingDelegate =
+                delegateCaptor.getValue();
+
+        when(mMainTabSwitcherDragHandler.isDragSourceInstance()).thenReturn(false);
+
+        TabListRecyclerView recyclerView =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        nonOriginatingDelegate.handleDragLocation(recyclerView, 50f, 50f);
+
+        nonOriginatingDelegate.handleExternalDragEnd(recyclerView, 50f, 50f, false);
+        assertNull(
+                "External drag end must clear drop indicator decorator.",
+                mCoordinator.getDropIndicatorDecorationForTesting().getDropTargetResult());
+        assertNull(
+                "External drag end must clear pinned drop indicator decorator.",
+                mCoordinator.getPinnedDropIndicatorDecorationForTesting().getDropTargetResult());
+    }
+
+    @Test
+    @SmallTest
+    public void testNonOriginatingDrag_Drop_ClearsDecorators() {
+        createCoordinator();
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+        TabSwitcherDragHandler.DragHandlerDelegate nonOriginatingDelegate =
+                delegateCaptor.getValue();
+
+        when(mMainTabSwitcherDragHandler.isDragSourceInstance()).thenReturn(false);
+
+        TabListRecyclerView recyclerView =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        nonOriginatingDelegate.handleDragLocation(recyclerView, 50f, 50f);
+
+        nonOriginatingDelegate.handleDrop(recyclerView, 50f, 50f);
+        assertNull(
+                "Drop must clear drop indicator decorator.",
+                mCoordinator.getDropIndicatorDecorationForTesting().getDropTargetResult());
+        assertNull(
+                "Drop must clear pinned drop indicator decorator.",
+                mCoordinator.getPinnedDropIndicatorDecorationForTesting().getDropTargetResult());
+    }
+
+    @Test
+    @SmallTest
+    public void testOriginatingDrag_NeverUpdatesDecorators() {
+        createCoordinator();
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+        TabSwitcherDragHandler.DragHandlerDelegate nonOriginatingDelegate =
+                delegateCaptor.getValue();
+
+        when(mMainTabSwitcherDragHandler.isDragSourceInstance()).thenReturn(true);
+
+        TabListRecyclerView recyclerView =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        nonOriginatingDelegate.handleDragLocation(recyclerView, 50f, 50f);
+
+        assertNull(
+                "Originating window drag must never set drop target result on decorator.",
+                mCoordinator.getDropIndicatorDecorationForTesting().getDropTargetResult());
+        assertNull(
+                "Originating window drag must never set drop target result on pinned decorator.",
+                mCoordinator.getPinnedDropIndicatorDecorationForTesting().getDropTargetResult());
+    }
+
+    @Test
+    @SmallTest
+    public void testDestroy_ClearsDecorators() {
+        createCoordinator();
+        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
+                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
+        verify(mMainTabSwitcherDragHandler).setDragHandlerDelegate(delegateCaptor.capture());
+        TabSwitcherDragHandler.DragHandlerDelegate nonOriginatingDelegate =
+                delegateCaptor.getValue();
+
+        when(mMainTabSwitcherDragHandler.isDragSourceInstance()).thenReturn(false);
+
+        TabListRecyclerView recyclerView =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        nonOriginatingDelegate.handleDragLocation(recyclerView, 50f, 50f);
+
+        mCoordinator.destroy();
+
+        assertNull(
+                "Coordinator destroy must clear drop indicator decorator.",
+                mCoordinator.getDropIndicatorDecorationForTesting().getDropTargetResult());
+        assertNull(
+                "Coordinator destroy must clear pinned drop indicator decorator.",
+                mCoordinator.getPinnedDropIndicatorDecorationForTesting().getDropTargetResult());
     }
 
     // =============================================================================================
