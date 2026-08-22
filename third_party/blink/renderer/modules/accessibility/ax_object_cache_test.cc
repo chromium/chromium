@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_relation_cache.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -175,6 +176,124 @@ TEST_F(AccessibilityTest, RemoveReferencesToAXID) {
   // fixed_or_sticky_node_ids_.
   cache.RemoveReferencesToAXID(GetAXObjectByElementId("f")->AXObjectID());
   EXPECT_EQ(0u, cache.fixed_or_sticky_node_ids_.size());
+}
+
+TEST_F(AccessibilityTest, RegisteredIdAttributesAreRemovedOnDisconnection) {
+  SetBodyInnerHTML(R"HTML(<div id="persistent"></div>)HTML");
+
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+  AXRelationCache* relation_cache = cache.RelationCache();
+  ASSERT_NE(nullptr, relation_cache);
+  const wtf_size_t initial_count =
+      relation_cache->registered_id_attributes_.size();
+
+  // HTML ids are registered before AXObject creation, so removing an element
+  // must clear its registration even when no AXObject exists.
+  Element* element_without_ax_object =
+      GetDocument().CreateRawElement(html_names::kDivTag);
+  element_without_ax_object->setAttribute(html_names::kIdAttr,
+                                          AtomicString("without-ax-object"));
+  GetDocument().body()->AppendChild(element_without_ax_object);
+
+  ASSERT_EQ(nullptr, cache.Get(element_without_ax_object));
+  ASSERT_EQ(initial_count + 1,
+            relation_cache->registered_id_attributes_.size());
+
+  element_without_ax_object->remove();
+
+  EXPECT_EQ(initial_count, relation_cache->registered_id_attributes_.size());
+
+  // Cleanup must also work after lifecycle processing creates an AXObject.
+  Element* element_with_ax_object =
+      GetDocument().CreateRawElement(html_names::kDivTag);
+  element_with_ax_object->setAttribute(html_names::kIdAttr,
+                                       AtomicString("with-ax-object"));
+  GetDocument().body()->AppendChild(element_with_ax_object);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  ASSERT_NE(nullptr, cache.Get(element_with_ax_object));
+  ASSERT_EQ(initial_count + 1,
+            relation_cache->registered_id_attributes_.size());
+
+  element_with_ax_object->remove();
+
+  EXPECT_EQ(initial_count, relation_cache->registered_id_attributes_.size());
+}
+
+TEST_F(AccessibilityTest, DetachedElementsDoNotRegisterIdAttributes) {
+  SetBodyInnerHTML(R"HTML(<div id="label">Accessible label</div>)HTML");
+
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+  AXRelationCache* relation_cache = cache.RelationCache();
+  ASSERT_NE(nullptr, relation_cache);
+  const wtf_size_t initial_count =
+      relation_cache->registered_id_attributes_.size();
+
+  Element* label = GetElementById("label");
+  ASSERT_NE(nullptr, label);
+  ASSERT_FALSE(cache.IsLabelOrDescription(*label));
+
+  // Detached elements must not register HTML ids, but their reverse relations
+  // to connected elements must still be cached.
+  Element* detached_parent =
+      GetDocument().CreateRawElement(html_names::kDivTag);
+  Element* detached_button =
+      GetDocument().CreateRawElement(html_names::kButtonTag);
+  detached_button->setAttribute(html_names::kIdAttr,
+                                AtomicString("detached-button"));
+  auto* labels = MakeGarbageCollected<GCedHeapVector<Member<Element>>>();
+  labels->push_back(label);
+  detached_button->setAriaLabelledByElements(labels);
+  detached_parent->AppendChild(detached_button);
+
+  EXPECT_FALSE(detached_button->isConnected());
+  EXPECT_TRUE(cache.IsLabelOrDescription(*label));
+  EXPECT_EQ(initial_count, relation_cache->registered_id_attributes_.size());
+
+  GetDocument().body()->AppendChild(detached_parent);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  AXObject* button = cache.Get(detached_button);
+  ASSERT_NE(nullptr, button);
+  EXPECT_EQ("Accessible label", button->ComputedName());
+}
+
+TEST_F(AccessibilityTest,
+       RegisteredIdAttributesSurviveConnectedAXObjectRecreation) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="owner" aria-owns="target"></div>
+      <div id="target"></div>
+  )HTML");
+
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+  AXRelationCache* relation_cache = cache.RelationCache();
+  ASSERT_NE(nullptr, relation_cache);
+
+  Element* owner = GetElementById("owner");
+  ASSERT_NE(nullptr, owner);
+  ASSERT_NE(nullptr, cache.Get(owner));
+  AXObject* target = GetAXObjectByElementId("target");
+  ASSERT_NE(nullptr, target);
+  ASSERT_TRUE(cache.IsAriaOwned(target));
+  ASSERT_TRUE(relation_cache->registered_id_attributes_.Contains(
+      owner->GetDomNodeId()));
+
+  cache.Remove(owner, /*notify_parent=*/false);
+
+  EXPECT_TRUE(owner->isConnected());
+  EXPECT_EQ(nullptr, cache.Get(owner));
+  EXPECT_TRUE(relation_cache->registered_id_attributes_.Contains(
+      owner->GetDomNodeId()));
+
+  cache.ChildrenChanged(owner->parentNode());
+  cache.UpdateAXForAllDocuments();
+
+  AXObject* recreated_owner = cache.Get(owner);
+  ASSERT_NE(nullptr, recreated_owner);
+  AXObject* recreated_target = GetAXObjectByElementId("target");
+  ASSERT_NE(nullptr, recreated_target);
+  EXPECT_TRUE(cache.IsAriaOwned(recreated_target));
+  EXPECT_EQ(recreated_owner, recreated_target->ParentObject());
 }
 
 class MockAXObject : public AXObject {

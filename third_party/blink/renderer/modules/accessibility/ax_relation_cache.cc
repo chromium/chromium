@@ -1272,11 +1272,15 @@ void AXRelationCache::UpdateRelatedTreeAfterChange(Element& element) {
 void AXRelationCache::UpdateRegisteredIdAttribute(Element& element,
                                                   DOMNodeId node_id) {
   const auto& id_attr = element.GetIdAttribute();
-  if (id_attr == g_null_atom) {
+  if (!element.isConnected() || id_attr == g_null_atom) {
     registered_id_attributes_.erase(node_id);
   } else {
     registered_id_attributes_.Set(node_id, id_attr);
   }
+}
+
+void AXRelationCache::RemoveRegisteredIdAttribute(DOMNodeId node_id) {
+  registered_id_attributes_.erase(node_id);
 }
 
 void AXRelationCache::UpdateRelatedText(Node* node) {
@@ -1421,7 +1425,6 @@ void AXRelationCache::RemoveAXID(AXID obj_id) {
         MaybeRestoreParentOfOwnedChild(child_axid);
       }
     }
-    registered_id_attributes_.erase(obj_id);
   }
 
   // Another id owned |obj_id|:

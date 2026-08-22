@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
@@ -95,6 +96,9 @@ class AXRelationCache {
 
   // Remove given AXID from cache.
   void RemoveAXID(AXID);
+
+  // Forget an element's registered HTML id after it leaves the document.
+  void RemoveRegisteredIdAttribute(DOMNodeId node_id);
 
   // The child cannot be owned, either because the child was removed or the
   // relation was invalid, so remove from all relevant mappings.
@@ -370,6 +374,14 @@ class AXRelationCache {
 
   // For each DOM node, the most recent id attribute value processed.
   HashMap<DOMNodeId, AtomicString> registered_id_attributes_;
+
+  FRIEND_TEST_ALL_PREFIXES(AccessibilityTest,
+                           RegisteredIdAttributesAreRemovedOnDisconnection);
+  FRIEND_TEST_ALL_PREFIXES(AccessibilityTest,
+                           DetachedElementsDoNotRegisterIdAttributes);
+  FRIEND_TEST_ALL_PREFIXES(
+      AccessibilityTest,
+      RegisteredIdAttributesSurviveConnectedAXObjectRecreation);
 
   // Helpers that call back into object cache
   AXObject* ObjectFromAXID(AXID) const;
