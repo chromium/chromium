@@ -31,6 +31,11 @@ IN_PROC_BROWSER_TEST_F(WebThemeEngineImplDefaultBrowserTest, GetSystemColor) {
       base::win::VersionType::SUITE_SERVER) {
     return;
   }
+  // TODO(crbug.com/550092588): Disabled on Win11 due to highlighter color
+  // difference.
+  if (base::win::GetVersion() >= base::win::Version::WIN11) {
+    GTEST_SKIP() << "Skipping on Win11 due to highlighter color difference.";
+  }
   GURL url(
       "data:text/html,"
       "<!doctype html><html>"
