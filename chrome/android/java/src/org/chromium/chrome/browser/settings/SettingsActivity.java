@@ -741,6 +741,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     protected void onStop() {
         super.onStop();
         if (sResumedInstance == this) sResumedInstance = null;
+        if (mSearchCoordinator != null) mSearchCoordinator.onStop();
     }
 
     @Override

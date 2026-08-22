@@ -978,6 +978,7 @@ public class SettingsSearchCoordinator
         updateHelpMenuVisibility();
         adjustTalkbackTraversalOrder(searchBox);
         logExitReason();
+        RecentSearchQueue.getInstance().flushIfDirty();
     }
 
     private void logExitReason() {
@@ -1138,7 +1139,7 @@ public class SettingsSearchCoordinator
     }
 
     public void deleteRecentSearches() {
-        RecentSearchQueue.getInstance().clear();
+        RecentSearchQueue.getInstance().clearAndPersist();
         clearFragment(R.drawable.settings_zero_state, /* addToBackStack= */ false, emptyRunnable());
     }
 
@@ -1847,6 +1848,10 @@ public class SettingsSearchCoordinator
             params.setBottomCornerRadius((int) style.getBottomRadius());
             return defaultRes;
         }
+    }
+
+    public void onStop() {
+        RecentSearchQueue.getInstance().flushIfDirty();
     }
 
     public void onSaveInstanceState(Bundle outState) {

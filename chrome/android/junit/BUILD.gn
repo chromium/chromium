@@ -1591,6 +1591,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/settings/SettingsPageUnitTest.java",
       "src/org/chromium/chrome/browser/settings/TestChromeBaseAppCompatActivity.java",
       "src/org/chromium/chrome/browser/settings/WideDisplayPaddingApplierTest.java",
+      "src/org/chromium/chrome/browser/settings/search/RecentSearchQueueTest.java",
       "src/org/chromium/chrome/browser/settings/search/SettingsSearchCoordinatorUnitTest.java",
     ]
 
@@ -1598,6 +1599,7 @@ if (is_android) {
       ":chrome_junit_tests_helper",
       "//chrome/android:chrome_app_java_resources",
       "//chrome/browser/actor/android:java",
+      "//chrome/browser/preferences:java",
       "//chrome/browser/prefetch/android:java",
       "//chrome/browser/safe_browsing/android:java",
       "//chrome/browser/settings:java",
