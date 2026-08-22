@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -38,89 +39,16 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.LoadListener;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
 
-import java.util.Arrays;
 import java.util.function.Consumer;
 
 /** Facilitates access to and updates of the cached SearchActivityPreferences. */
 @NullMarked
 public class SearchActivityPreferencesManager implements LoadListener, TemplateUrlServiceObserver {
-    /** Data-only class representiing current SearchActivity preferences. */
-    public static final class SearchActivityPreferences {
-        /** Signed-in account email. */
-        public final @Nullable String accountEmail;
-
-        /** Name of the Default Search Engine. */
-        public final @Nullable String searchEngineName;
-
-        /** URL of the Default Search Engine. */
-        public final GURL searchEngineUrl;
-
-        /** Whether Voice Search functionality is available. */
-        public final boolean voiceSearchAvailable;
-
-        /** Whether Google Lens functionality is available. */
-        public final boolean googleLensAvailable;
-
-        /** Whether Incognito browsing functionality is available. */
-        public final boolean incognitoAvailable;
-
-        @VisibleForTesting
-        public SearchActivityPreferences(
-                @Nullable String accountEmail,
-                @Nullable String searchEngineName,
-                @Nullable GURL searchEngineUrl,
-                boolean voiceSearchAvailable,
-                boolean googleLensAvailable,
-                boolean incognitoAvailable) {
-            this.accountEmail = accountEmail;
-            this.searchEngineName = searchEngineName;
-            this.searchEngineUrl = searchEngineUrl != null ? searchEngineUrl : GURL.emptyGURL();
-            this.voiceSearchAvailable = voiceSearchAvailable;
-            this.googleLensAvailable = googleLensAvailable;
-            this.incognitoAvailable = incognitoAvailable;
-        }
-
-        @Override
-        public boolean equals(Object otherObj) {
-            if (otherObj == this) return true;
-            if (!(otherObj instanceof SearchActivityPreferences)) return false;
-
-            SearchActivityPreferences other = (SearchActivityPreferences) otherObj;
-            return voiceSearchAvailable == other.voiceSearchAvailable
-                    && googleLensAvailable == other.googleLensAvailable
-                    && incognitoAvailable == other.incognitoAvailable
-                    && TextUtils.equals(searchEngineName, other.searchEngineName)
-                    && searchEngineUrl.equals(other.searchEngineUrl)
-                    && TextUtils.equals(accountEmail, other.accountEmail);
-        }
-
-        @Override
-        public int hashCode() {
-            return Arrays.hashCode(
-                    new Object[] {
-                        searchEngineName,
-                        searchEngineUrl,
-                        voiceSearchAvailable,
-                        googleLensAvailable,
-                        incognitoAvailable,
-                        accountEmail
-                    });
-        }
-    }
-
-    /** The default/fallback value describing Voice Search availability. */
-    private static final boolean DEFAULT_VOICE_SEARCH_AVAILABILITY = true;
-
-    /** The default/fallback value describing Gooogle Lens availability. */
-    private static final boolean DEFAULT_GOOGLE_LENS_AVAILABILITY = false;
-
-    /** The default/fallback value describing Incognito browsing availability. */
-    private static final boolean DEFAULT_INCOGNITO_AVAILABILITY = true;
-
     private static @Nullable SearchActivityPreferencesManager sInstance;
     private final ObserverList<Consumer<SearchActivityPreferences>> mObservers =
             new ObserverList<>();
@@ -175,21 +103,27 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
             }
         }
 
-        setCurrentlyLoadedPreferences(
-                new SearchActivityPreferences(
-                        manager.readString(SEARCH_WIDGET_ACCOUNT_EMAIL, null),
-                        manager.readString(SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME, null),
-                        url,
-                        manager.readBoolean(
-                                SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE,
-                                DEFAULT_VOICE_SEARCH_AVAILABILITY),
-                        manager.readBoolean(
-                                SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE,
-                                DEFAULT_GOOGLE_LENS_AVAILABILITY),
-                        manager.readBoolean(
-                                SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE,
-                                DEFAULT_INCOGNITO_AVAILABILITY)),
-                shouldUpdateStorageToSaveSerializedGurl);
+        SearchActivityPreferences preferences =
+                new SearchActivityPreferences.Builder()
+                        .setAccountEmail(manager.readString(SEARCH_WIDGET_ACCOUNT_EMAIL, null))
+                        .setSearchEngineName(
+                                manager.readString(SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME, null))
+                        .setSearchEngineUrl(url)
+                        .setVoiceSearchAvailable(
+                                manager.readBoolean(
+                                        SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE,
+                                        SearchActivityPreferences
+                                                .DEFAULT_VOICE_SEARCH_AVAILABILITY))
+                        .setGoogleLensAvailable(
+                                manager.readBoolean(
+                                        SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE,
+                                        SearchActivityPreferences.DEFAULT_GOOGLE_LENS_AVAILABILITY))
+                        .setIncognitoAvailable(
+                                manager.readBoolean(
+                                        SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE,
+                                        SearchActivityPreferences.DEFAULT_INCOGNITO_AVAILABILITY))
+                        .build();
+        setCurrentlyLoadedPreferences(preferences, shouldUpdateStorageToSaveSerializedGurl);
     }
 
     /**
@@ -290,38 +224,38 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
      */
     public static void updateFeatureAvailability(
             Context context, AndroidPermissionDelegate permissionDelegate) {
-        var profile = ProfileManager.getLastUsedRegularProfile();
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
 
-        String email = null;
-        var identityManager = IdentityServicesProvider.get().getIdentityManager(profile);
-        if (identityManager != null) {
-            @Nullable AccountInfo accountInfo = identityManager.getPrimaryAccountInfo();
-            if (accountInfo != null) {
-                email = accountInfo.getEmail();
-                if (TextUtils.isEmpty(email)) {
-                    email = null;
-                }
-            }
-        }
+        SearchActivityPreferences currentPreferences =
+                getCurrent().toBuilder()
+                        .setAccountEmail(getPrimaryAccountEmail(profile))
+                        .setVoiceSearchAvailable(
+                                VoiceRecognitionUtil.isVoiceSearchEnabled(permissionDelegate))
+                        .setGoogleLensAvailable(isLensEnabled(context))
+                        .setIncognitoAvailable(IncognitoUtils.isIncognitoModeEnabled(profile))
+                        .build();
+        setCurrentlyLoadedPreferences(currentPreferences, true);
+    }
 
-        SearchActivityPreferences prefs = getCurrent();
-        setCurrentlyLoadedPreferences(
-                new SearchActivityPreferences(
-                        email,
-                        prefs.searchEngineName,
-                        prefs.searchEngineUrl,
-                        VoiceRecognitionUtil.isVoiceSearchEnabled(permissionDelegate),
-                        LensController.getInstance()
-                                .isLensEnabled(
-                                        new LensQueryParams.Builder(
-                                                        LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET,
-                                                        false,
-                                                        DeviceFormFactor
-                                                                .isNonMultiDisplayContextOnTablet(
-                                                                        context))
-                                                .build()),
-                        IncognitoUtils.isIncognitoModeEnabled(profile)),
-                true);
+    private static @Nullable String getPrimaryAccountEmail(Profile profile) {
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        if (identityManager == null) return null;
+
+        AccountInfo accountInfo = identityManager.getPrimaryAccountInfo();
+        return (accountInfo != null && !TextUtils.isEmpty(accountInfo.getEmail()))
+                ? accountInfo.getEmail()
+                : null;
+    }
+
+    private static boolean isLensEnabled(Context context) {
+        LensQueryParams params =
+                new LensQueryParams.Builder(
+                                LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET,
+                                /* isIncognito= */ false,
+                                DeviceFormFactor.isNonMultiDisplayContextOnTablet(context))
+                        .build();
+        return LensController.getInstance().isLensEnabled(params);
     }
 
     /**
@@ -342,13 +276,10 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
 
         assumeNonNull(mCurrentlyLoadedPreferences);
         setCurrentlyLoadedPreferences(
-                new SearchActivityPreferences(
-                        mCurrentlyLoadedPreferences.accountEmail,
-                        dseTemplateUrl.getShortName(),
-                        url.getOrigin(),
-                        mCurrentlyLoadedPreferences.voiceSearchAvailable,
-                        mCurrentlyLoadedPreferences.googleLensAvailable,
-                        mCurrentlyLoadedPreferences.incognitoAvailable),
+                mCurrentlyLoadedPreferences.toBuilder()
+                        .setSearchEngineName(dseTemplateUrl.getShortName())
+                        .setSearchEngineUrl(url.getOrigin())
+                        .build(),
                 true);
     }
 

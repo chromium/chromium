@@ -33,8 +33,8 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferences;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 
 import java.util.function.Consumer;
 

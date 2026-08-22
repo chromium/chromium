@@ -35,7 +35,7 @@ import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider.QuickActionSearchWidgetProviderDino;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferences;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -68,13 +68,11 @@ public class QuickActionSearchWidgetProviderTest {
         mOptionsWidgetA = new Bundle();
         mOptionsWidgetB = new Bundle();
         mPreferences =
-                new SearchActivityPreferences(
-                        null,
-                        "Search Engine",
-                        new GURL("https://search.engine.com"),
-                        true,
-                        true,
-                        true);
+                new SearchActivityPreferences.Builder()
+                        .setSearchEngineName("Search Engine")
+                        .setSearchEngineUrl(new GURL("https://search.engine.com"))
+                        .setGoogleLensAvailable(true)
+                        .build();
 
         // Inflate an actual RemoteViews to avoid stubbing internal methods or making
         // any other assumptions about the class.

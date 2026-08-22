@@ -20,7 +20,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferences;
 
 /**
  * This class serves as the delegate for the {@link QuickActionSearchWidgetProvider}. This class

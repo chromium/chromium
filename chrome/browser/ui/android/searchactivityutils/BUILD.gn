@@ -8,6 +8,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/searchactivityutils/SearchActivityClient.java",
     "java/src/org/chromium/chrome/browser/ui/searchactivityutils/SearchActivityExtras.java",
+    "java/src/org/chromium/chrome/browser/ui/searchactivityutils/SearchActivityPreferences.java",
     "java/src/org/chromium/chrome/browser/ui/searchactivityutils/SearchActivityPreferencesManager.java",
   ]
   deps = [
@@ -30,7 +31,10 @@ android_library("java") {
 }
 
 robolectric_library("junit") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/searchactivityutils/SearchActivityPreferencesManagerTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/searchactivityutils/SearchActivityPreferencesManagerTest.java",
+    "java/src/org/chromium/chrome/browser/ui/searchactivityutils/SearchActivityPreferencesUnitTest.java",
+  ]
 
   deps = [
     ":java",

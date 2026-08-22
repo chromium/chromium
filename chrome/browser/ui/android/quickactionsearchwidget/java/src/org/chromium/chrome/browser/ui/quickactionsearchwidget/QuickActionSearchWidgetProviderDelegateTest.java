@@ -51,7 +51,7 @@ import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchW
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate.WidgetVariant;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferences;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
@@ -207,8 +207,11 @@ public class QuickActionSearchWidgetProviderDelegateTest {
 
     private void setUpViews() {
         SearchActivityPreferences prefs =
-                new SearchActivityPreferences(
-                        null, "EngineName", new GURL("http://engine"), true, true, true);
+                new SearchActivityPreferences.Builder()
+                        .setSearchEngineName("EngineName")
+                        .setSearchEngineUrl(new GURL("http://engine"))
+                        .setGoogleLensAvailable(true)
+                        .build();
 
         mWidgetView =
                 mDelegate
