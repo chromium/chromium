@@ -182,7 +182,7 @@ class WebnnGraphLPMFuzzer {
       // would be able to exercise larger graphs but the tradeoff is that the
       // fuzzer will not explore as many graphs when it spends too much time
       // with these large examples.
-      constexpr size_t kMaxTensorBytes = base::GiBU(1).InBytes();
+      constexpr size_t kMaxTensorBytes = base::GiB(1).InBytes();
       const size_t tensor_length = operand->descriptor.PackedByteLength();
       if (kMaxTensorBytes - total_tensor_length < tensor_length) {
         return;

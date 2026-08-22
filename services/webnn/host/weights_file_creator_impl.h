@@ -28,7 +28,7 @@ class COMPONENT_EXPORT(WEBNN_HOST) WeightsFileCreatorImpl
   // Maximum total bytes of weights files this browser process will grant to a
   // single origin at any one time. Per-context cap is enforced in
   // WeightsFileSessionImpl::kMaxWeightsBytesPerContext.
-  static constexpr base::ByteSize kMaxBytesPerOrigin = base::GiBU(8);
+  static constexpr base::ByteSize kMaxBytesPerOrigin = base::GiB(8);
 
   static void Create(
       mojo::PendingReceiver<mojom::WebNNWeightsFileCreator> receiver,

@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(WEBNN_HOST) WeightsFileSessionImpl
  public:
   // Maximum total bytes of weights a single context (= single session) may
   // write.
-  static constexpr base::ByteSize kMaxWeightsBytesPerContext = base::GiBU(4);
+  static constexpr base::ByteSize kMaxWeightsBytesPerContext = base::GiB(4);
 
   // Creates a self-owned session bound to `receiver`. Takes ownership of
   // `tempfile` (the writable browser-side fd) and `tempfile_path` (the on-disk

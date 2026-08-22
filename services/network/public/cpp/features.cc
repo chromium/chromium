@@ -527,7 +527,7 @@ BASE_FEATURE_PARAM(int,
                    kDurableMessagesGlobalBufferSize,
                    &kDurableMessages,
                    /*name=*/"max_global_buffer_size",
-                   /*default_value=*/base::MiBU(350).InBytes());
+                   /*default_value=*/base::MiB(350).InBytes());
 
 BASE_FEATURE(kReportingApiEnableVariationsHeaders,
              base::FEATURE_ENABLED_BY_DEFAULT);

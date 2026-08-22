@@ -87,7 +87,7 @@ struct TensorDataPipes {
 TensorDataPipes CreateTensorDataPipes() {
   TensorDataPipes pipes;
   if (base::FeatureList::IsEnabled(kWebNNUseDataPipe)) {
-    constexpr base::ByteSize kDataPipeSize = base::MiBU(16);
+    constexpr base::ByteSize kDataPipeSize = base::MiB(16);
     MojoResult result = mojo::CreateDataPipe(
         kDataPipeSize.InBytes(), pipes.write_producer, pipes.write_consumer);
     if (result != MOJO_RESULT_OK) {
