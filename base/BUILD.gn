@@ -1299,6 +1299,8 @@ component("base") {
       "android/scoped_input_event.h",
       "android/scoped_service_binding_batch.cc",
       "android/scoped_service_binding_batch.h",
+      "android/screen_state_receiver.cc",
+      "android/screen_state_receiver.h",
       "android/self_compaction_manager.cc",
       "android/self_compaction_manager.h",
       "android/shared_preferences/shared_preferences_manager.cc",
@@ -1364,6 +1366,7 @@ component("base") {
       ":memory_jni",
       ":path_utils_jni",
       ":process_launcher_jni",
+      ":screen_state_receiver_jni",
       ":sys_utils_jni",
       ":system_jni($default_toolchain)",
       ":tasks_jni",
@@ -5510,11 +5513,17 @@ if (is_android) {
     ]
   }
 
+  generate_jni("screen_state_receiver_jni") {
+    sources = [ "android/java/src/org/chromium/base/ScreenStateReceiver.java" ]
+  }
+
   android_library("screen_state_receiver_java") {
     sources = [ "android/java/src/org/chromium/base/ScreenStateReceiver.java" ]
+    srcjar_deps = [ ":screen_state_receiver_jni" ]
     deps = [
       ":tasks_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 

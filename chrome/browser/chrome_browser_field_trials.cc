@@ -146,6 +146,11 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(
       media::kAndroidEnableBackgroundMediaCapturing);
 
+  // Enable WebRTC suspend on screen off for desktop devices.
+  // TODO(crbug.com/533876870): Remove once Android provides a dedicated API to
+  // notify WebRTC of system suspend or lid close events.
+  feature_overrides.EnableFeature(media::kAndroidSuspendWebRtcOnScreenOff);
+
   // TODO(crbug.com/422903297): Remove when tablet rollout is complete.
   feature_overrides.EnableFeature(features::kRendererProcessLimitOnAndroid);
   // Enable V8 optimizations for high-end Android Desktop devices.

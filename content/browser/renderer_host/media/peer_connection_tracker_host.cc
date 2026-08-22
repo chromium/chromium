@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
@@ -18,6 +19,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "media/base/media_switches.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
 namespace content {
@@ -78,6 +80,11 @@ PeerConnectionTrackerHost::PeerConnectionTrackerHost(RenderFrameHost* frame)
       peer_pid_(frame->GetProcess()->GetProcess().Pid()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RegisterHost(this);
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(media::kAndroidSuspendWebRtcOnScreenOff)) {
+    base::android::ScreenStateReceiver::AddObserver(this);
+  }
+#endif
   auto* power_monitor = base::PowerMonitor::GetInstance();
   power_monitor->AddPowerSuspendObserver(this);
   // Ensure that the initial thermal state is known by the |tracker_|.
@@ -99,6 +106,11 @@ PeerConnectionTrackerHost::~PeerConnectionTrackerHost() {
       observer.OnPeerConnectionRemoved(frame_id_, lid);
     }
   }
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(media::kAndroidSuspendWebRtcOnScreenOff)) {
+    base::android::ScreenStateReceiver::RemoveObserver(this);
+  }
+#endif
   RemoveHost(this);
   auto* power_monitor = base::PowerMonitor::GetInstance();
   power_monitor->RemovePowerSuspendObserver(this);
@@ -318,4 +330,15 @@ void PeerConnectionTrackerHost::BindReceiver(
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(PeerConnectionTrackerHost);
+
+#if BUILDFLAG(IS_ANDROID)
+// Android does not provide an API for apps to be notified of system suspend.
+// Therefore, base::PowerSuspendObserver::OnSuspend is never triggered on
+// Android. As a workaround, we use the SCREEN_OFF event as a proxy to trigger
+// WebRTC suspend, ensuring hardware resources are released.
+void PeerConnectionTrackerHost::OnScreenOff() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  OnSuspend();
+}
+#endif
 }  // namespace content

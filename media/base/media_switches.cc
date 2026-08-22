@@ -1274,6 +1274,12 @@ BASE_FEATURE(kAllowMediaCodecSoftwareDecoder,
 BASE_FEATURE(kAndroidEnableBackgroundMediaCapturing,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables WebRTC to suspend when the screen is turned off on Android.
+// Owner: seannli@google.com
+// Expiry: When Android provides a dedicated API for system suspend.
+BASE_FEATURE(kAndroidSuspendWebRtcOnScreenOff,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables zero-copy video capture on Android.
 BASE_FEATURE(kAndroidZeroCopyVideoCapture, base::FEATURE_DISABLED_BY_DEFAULT);
 
