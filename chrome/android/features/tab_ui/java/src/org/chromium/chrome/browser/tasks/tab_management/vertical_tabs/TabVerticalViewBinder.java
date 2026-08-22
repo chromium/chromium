@@ -58,7 +58,6 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.TextResolver;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -370,9 +369,7 @@ class TabVerticalViewBinder {
                     /* marginStartDimenId= */ 0,
                     /* marginEndDimenId= */ 0);
             actionButton.setVisibility(actionWanted ? View.VISIBLE : View.GONE);
-            if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(view.getContext())) {
-                setActionButtonTouchDelegate(view, actionButton, actionWanted);
-            }
+            setActionButtonTouchDelegate(view, actionButton, actionWanted);
         }
 
         // Actor Actuation Indicator Icons
@@ -453,11 +450,19 @@ class TabVerticalViewBinder {
                     Rect rect = new Rect();
                     actionButton.getHitRect(rect);
                     Resources res = view.getResources();
+                    boolean isTablet = isTablet(view.getContext());
                     int minTouchTargetWidthPx =
-                            res.getDimensionPixelSize(R.dimen.min_touch_target_size);
+                            res.getDimensionPixelSize(
+                                    isTablet
+                                            ? R.dimen
+                                                    .vertical_tab_action_button_touch_target_width_tablet
+                                            : R.dimen.vertical_tab_action_button_touch_target_size);
                     int minTouchTargetHeightPx =
                             res.getDimensionPixelSize(
-                                    R.dimen.vertical_tab_action_button_touch_target_height);
+                                    isTablet
+                                            ? R.dimen
+                                                    .vertical_tab_action_button_touch_target_height_tablet
+                                            : R.dimen.vertical_tab_action_button_touch_target_size);
 
                     if (rect.width() < minTouchTargetWidthPx) {
                         int deltaX = (minTouchTargetWidthPx - rect.width()) / 2;
