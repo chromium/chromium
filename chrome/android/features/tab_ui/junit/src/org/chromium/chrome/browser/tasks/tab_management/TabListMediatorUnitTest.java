@@ -57,8 +57,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Pair;
 import android.util.Size;
@@ -629,15 +627,6 @@ public class TabListMediatorUnitTest {
                 .getTabGroupActionButtonData(any(), any(), any());
         doNothing().when(mActivity).registerComponentCallbacks(mComponentCallbacksCaptor.capture());
         when(mRecyclerView.getLayoutManager()).thenReturn(mGridLayoutManager);
-        Handler handler = new Handler(Looper.getMainLooper());
-        doAnswer(
-                        invocation -> {
-                            Runnable runnable = invocation.getArgument(0);
-                            handler.post(runnable);
-                            return true;
-                        })
-                .when(mRecyclerView)
-                .post(any());
         when(mGridLayoutManager.getSpanCount())
                 .thenReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT);
         when(mGridLayoutManager.getSpanSizeLookup()).thenReturn(mSpanSizeLookup);
@@ -1445,7 +1434,6 @@ public class TabListMediatorUnitTest {
         // Simulate the drop action.
         itemTouchHelperCallback.onSelectedChanged(
                 mFakeViewHolder2, ItemTouchHelper.ACTION_STATE_IDLE);
-        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mTabModel).mergeTabsToGroup(eq(TAB2_ID), eq(TAB1_ID));
         verify(mGridLayoutManager).removeView(mItemView2);
@@ -1479,7 +1467,6 @@ public class TabListMediatorUnitTest {
 
         itemTouchHelperCallback.onSelectedChanged(
                 mFakeViewHolder2, ItemTouchHelper.ACTION_STATE_IDLE);
-        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mTabModel).mergeTabsToGroup(eq(TAB2_ID), eq(TAB1_ID));
         verify(mGridLayoutManager).removeView(mItemView2);
@@ -1503,7 +1490,6 @@ public class TabListMediatorUnitTest {
 
         itemTouchHelperCallback.onSelectedChanged(
                 fakeViewHolder4, ItemTouchHelper.ACTION_STATE_IDLE);
-        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mTabModel).mergeTabsToGroup(eq(TAB4_ID), eq(TAB3_ID));
         verify(mGridLayoutManager).removeView(mItemView4);
@@ -1527,7 +1513,6 @@ public class TabListMediatorUnitTest {
 
         itemTouchHelperCallback.onSelectedChanged(
                 fakeViewHolder3, ItemTouchHelper.ACTION_STATE_IDLE);
-        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mTabModel).mergeTabsToGroup(eq(TAB3_ID), eq(TAB1_ID));
         verify(mGridLayoutManager).removeView(mItemView3);
@@ -1552,7 +1537,6 @@ public class TabListMediatorUnitTest {
         // Simulate the ungroup action.
         itemTouchHelperCallback.onSelectedChanged(
                 mFakeViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
-        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mTabUngrouper)
                 .ungroupTabs(List.of(mTab1), /* trailing= */ true, /* allowDialog= */ true);

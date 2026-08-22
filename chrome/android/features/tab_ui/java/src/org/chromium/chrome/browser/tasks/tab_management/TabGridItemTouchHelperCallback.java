@@ -660,13 +660,9 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
         // TODO(crbug.com/443948545): We should not be removing views directly off of
         //  the RecyclerView, and should fix what is preventing it from reflecting
         //  model updates instead.
-        recyclerView.post(
-                () -> {
-                    if (!view.isAttachedToWindow()) return;
-                    var layoutManager = recyclerView.getLayoutManager();
-                    if (layoutManager == null) return;
-                    layoutManager.removeView(view);
-                });
+        if (view.isAttachedToWindow()) {
+            assumeNonNull(recyclerView.getLayoutManager()).removeView(view);
+        }
     }
 
     private void onTabMergeToGroup(int selectedCardIndex, int hoveredCardIndex) {

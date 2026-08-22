@@ -321,7 +321,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         mItemTouchHelperCallback.onSelectedChanged(
                 mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
-        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mTabModel).mergeTabsToGroup(TAB1_ID, TAB2_ID);
         verify(mGridLayoutManager).removeView(mItemView1);
@@ -376,7 +375,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         mItemTouchHelperCallback.onSelectedChanged(
                 mMockViewHolder2, ItemTouchHelper.ACTION_STATE_IDLE);
-        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mGridLayoutManager).removeView(mItemView2);
         verify(mTabModel).mergeTabsToGroup(TAB2_ID, TAB1_ID);
@@ -442,7 +440,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         mItemTouchHelperCallback.onSelectedChanged(
                 mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
-        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mTabUngrouper)
                 .ungroupTabs(
