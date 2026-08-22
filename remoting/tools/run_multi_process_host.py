@@ -179,10 +179,7 @@ def ensure_permissions(abs_out_dir, user_home, force=False):
         print("ACLs updated but permissions still failing.", file=sys.stderr)
 
 
-def user_main(out_dir,
-              keep_sessions=False,
-              set_permissions=False,
-              enable_peer_connection_process=False):
+def user_main(out_dir, keep_sessions=False, set_permissions=False):
     try:
         run_command(["systemctl", "is-active", "--quiet", "gdm3"])
     except subprocess.CalledProcessError:
@@ -204,16 +201,13 @@ def user_main(out_dir,
         cmd.append("--keep-sessions")
     if set_permissions:
         cmd.append("--set-permissions")
-    if enable_peer_connection_process:
-        cmd.append("--enable-peer-connection-process")
     run_command(cmd)
 
 
 def root_main(out_dir,
               user_home,
               keep_sessions=False,
-              set_permissions=False,
-              enable_peer_connection_process=False):
+              set_permissions=False):
     abs_out_dir = os.path.abspath(out_dir)
     host_config_path = "/etc/chrome-remote-desktop/host.json"
 
@@ -241,8 +235,6 @@ def root_main(out_dir,
     remoting_core_path = os.path.join(abs_out_dir, "libremoting_core.so")
 
     daemon_command = [remoting_host_path, "--type=daemon"]
-    if enable_peer_connection_process:
-        daemon_command.append("--enable-peer-connection-process")
 
     # Initial state for monitoring
     host_state = get_file_trigger_state(remoting_host_path)
@@ -330,11 +322,6 @@ def main():
                         help="Build output directory (e.g., out/debug)")
 
     parser.add_argument(
-        "--enable-peer-connection-process",
-        action="store_true",
-        help="Enables launching the WebRTC stack in a dedicated Peer "
-        "Connection process.")
-    parser.add_argument(
         "--keep-sessions",
         action="store_true",
         help=
@@ -357,8 +344,8 @@ def main():
 
     # These should be set by the script itself.
     parser.add_argument("--elevated",
-                        action="store_true",
-                        help=argparse.SUPPRESS)
+        action="store_true",
+        help=argparse.SUPPRESS)
     parser.add_argument("--user-home", help=argparse.SUPPRESS)
 
     args = parser.parse_args()
@@ -385,14 +372,13 @@ def main():
             print("Error: --user-home is required in elevated mode.")
             sys.exit(1)
         root_main(args.out_dir, args.user_home, args.keep_sessions,
-                  args.set_permissions, args.enable_peer_connection_process)
+                  args.set_permissions)
     else:
         if os.geteuid() == 0:
             print("Error: Do not run this script directly with sudo. "
                   "It will re-invoke itself.")
             sys.exit(1)
-        user_main(args.out_dir, args.keep_sessions, args.set_permissions,
-                  args.enable_peer_connection_process)
+        user_main(args.out_dir, args.keep_sessions, args.set_permissions)
 
 
 if __name__ == "__main__":

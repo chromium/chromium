@@ -665,9 +665,13 @@ HostProcess::HostProcess(std::unique_ptr<ChromotingHostContext> context,
       exit_code_out_(exit_code_out),
       shutdown_watchdog_(shutdown_watchdog) {
 #if BUILDFLAG(REMOTING_MULTI_PROCESS)
+#if BUILDFLAG(IS_LINUX)
+  enable_peer_connection_process_ = multi_process_;
+#else
   enable_peer_connection_process_ =
       multi_process_ && base::CommandLine::ForCurrentProcess()->HasSwitch(
                             kEnablePeerConnectionProcessSwitch);
+#endif  // BUILDFLAG(IS_LINUX)
 #endif
 
   // TODO(zijiehe):
