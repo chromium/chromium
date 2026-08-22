@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement, LanguageToastElement, SpEmptyStateElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AppStyleUpdater, BrowserProxy, ContentController, ContentType, LineFocusController, LineFocusMovement, LineFocusStyle, NodeStore, ReadAloudNode, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceClientSideStatusCode, VoiceLanguageController, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AppStyleUpdater, BrowserProxy, ContentController, ContentType, LineFocusController, LineFocusMovement, LineFocusStyle, NodeStore, ReadAloudNode, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VisualBrowserProxyImpl, VoiceClientSideStatusCode, VoiceLanguageController, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertLT, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
@@ -14,6 +14,7 @@ import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
+import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('AppContent', () => {
   let app: AppElement;
@@ -27,6 +28,7 @@ suite('AppContent', () => {
   let readAloudModel: TestReadAloudModelBrowserProxy;
   let speech: TestSpeechBrowserProxy;
   let lineFocusController: LineFocusController;
+  let visualBrowserProxy: TestVisualBrowserProxy;
 
   function getLineFocusPadding(): number {
     const val = app.style.getPropertyValue('--line-focus-padding');
@@ -37,6 +39,8 @@ suite('AppContent', () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
+    visualBrowserProxy = new TestVisualBrowserProxy();
+    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
     readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
 
@@ -76,7 +80,7 @@ suite('AppContent', () => {
   test(
       'connected callback adds line focus mouse listener in toolbar',
       async () => {
-        chrome.readingMode.isLineFocusEnabled = true;
+        visualBrowserProxy.lineFocusEnabled = true;
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
             {detail: {data: LineFocusMovement.CURSOR}});
@@ -102,7 +106,7 @@ suite('AppContent', () => {
       });
 
   test('connected callback adds line focus mouse listener', async () => {
-    chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
         {detail: {data: LineFocusMovement.CURSOR}});
@@ -129,7 +133,7 @@ suite('AppContent', () => {
   });
 
   test('new content updates padding for line focus', async () => {
-    chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
     app.connectedCallback();
     emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
     emitEvent(
@@ -150,7 +154,7 @@ suite('AppContent', () => {
   test(
       'new content does not update padding for line focus with flag disabled',
       async () => {
-        chrome.readingMode.isLineFocusEnabled = false;
+        visualBrowserProxy.lineFocusEnabled = false;
         app.connectedCallback();
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
@@ -170,7 +174,7 @@ suite('AppContent', () => {
   test(
       'new content does not update padding for line focus with line focus off',
       async () => {
-        chrome.readingMode.isLineFocusEnabled = true;
+        visualBrowserProxy.lineFocusEnabled = true;
         app.connectedCallback();
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
@@ -186,7 +190,7 @@ suite('AppContent', () => {
       });
 
   test('line focus shortcut toggles line focus', async () => {
-    chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
     assertFalse(lineFocusController.isEnabled());
 
     // Alt+'l' toggle
@@ -230,7 +234,7 @@ suite('AppContent', () => {
   });
 
   test('line focus shortcut updates padding', async () => {
-    chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
     // Ensure app is registered as a line focus listener.
     app.connectedCallback();
     await microtasksFinished();
@@ -261,7 +265,7 @@ suite('AppContent', () => {
   });
 
   test('line focus only shows on content', async () => {
-    chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
 
     contentController.setState(ContentType.NO_CONTENT);
     await microtasksFinished();
@@ -280,7 +284,7 @@ suite('AppContent', () => {
       'onContentStateChange updates line focus style when enabled and ' +
           'has content',
       async () => {
-        chrome.readingMode.isLineFocusEnabled = true;
+        visualBrowserProxy.lineFocusEnabled = true;
         emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_STYLE,
@@ -297,7 +301,7 @@ suite('AppContent', () => {
   test(
       'onContentStateChange disables line focus style when no content',
       async () => {
-        chrome.readingMode.isLineFocusEnabled = true;
+        visualBrowserProxy.lineFocusEnabled = true;
         emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_STYLE,
@@ -312,7 +316,7 @@ suite('AppContent', () => {
       });
 
   test('onContentStateChange line focus showing if has content', async () => {
-    chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
     emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_STYLE,
@@ -328,7 +332,7 @@ suite('AppContent', () => {
   test(
       'onContentStateChange line focus not showing if off but has content',
       async () => {
-        chrome.readingMode.isLineFocusEnabled = true;
+        visualBrowserProxy.lineFocusEnabled = true;
         emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: false}});
         await microtasksFinished();
 
@@ -340,7 +344,7 @@ suite('AppContent', () => {
 
   test(
       'onContentStateChange line focus not showing if no content', async () => {
-        chrome.readingMode.isLineFocusEnabled = true;
+        visualBrowserProxy.lineFocusEnabled = true;
         emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_STYLE,
@@ -364,7 +368,7 @@ suite('AppContent', () => {
   });
 
   test('showLoading marks line focus showing if enabled', async () => {
-    chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
     emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_STYLE,
@@ -378,7 +382,7 @@ suite('AppContent', () => {
   });
 
   test('showLoading does not mark line focus showing if disabled', async () => {
-    chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
     emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: false}});
     await microtasksFinished();
 
@@ -641,7 +645,7 @@ suite('AppContent', () => {
       await microtasksFinished();
       assertTrue(contentController.hasContent());
 
-      readingMode.linksEnabled = true;
+      visualBrowserProxy.linksEnabled = true;
       emitEvent(app, ToolbarEvent.LINKS);
       await microtasksFinished();
 
@@ -656,7 +660,7 @@ suite('AppContent', () => {
       await microtasksFinished();
       assertTrue(contentController.hasContent());
 
-      readingMode.linksEnabled = false;
+      visualBrowserProxy.linksEnabled = false;
       emitEvent(app, ToolbarEvent.LINKS);
       await microtasksFinished();
 
@@ -723,7 +727,7 @@ suite('AppContent', () => {
       });
 
       test('hides links when speech active and links disabled', async () => {
-        readingMode.linksEnabled = false;
+        visualBrowserProxy.linksEnabled = false;
         emitEvent(app, ToolbarEvent.LINKS);
         await microtasksFinished();
 
@@ -733,7 +737,7 @@ suite('AppContent', () => {
       });
 
       test('hides links when speech paused and links disabled', async () => {
-        readingMode.linksEnabled = false;
+        visualBrowserProxy.linksEnabled = false;
         emitEvent(app, ToolbarEvent.LINKS);
         await microtasksFinished();
         emitEvent(app, ToolbarEvent.PLAY_PAUSE);
@@ -777,10 +781,10 @@ suite('AppContent', () => {
       await microtasksFinished();
       assertTrue(contentController.hasContent());
 
-      readingMode.imagesEnabled = true;
+      visualBrowserProxy.imagesEnabled = true;
       const expectedHtmlWithImage =
           '<div dir="ltr" lang="en-us"><canvas dir="ltr" alt="' + altText +
-          '" class="downloaded-image" lang="en-us" style=""></canvas>' +
+          '" class="downloaded-image" lang="en-us"></canvas>' +
           textNodeContent + '</div>';
       emitEvent(app, ToolbarEvent.IMAGES);
       await microtasksFinished();
@@ -797,7 +801,7 @@ suite('AppContent', () => {
       await microtasksFinished();
       assertTrue(contentController.hasContent());
 
-      readingMode.imagesEnabled = false;
+      visualBrowserProxy.imagesEnabled = false;
       emitEvent(app, ToolbarEvent.IMAGES);
       await microtasksFinished();
 
@@ -838,16 +842,15 @@ suite('AppContent', () => {
       });
 
       test('shows figures and captions when enabled', async () => {
-        const expectedHtml =
-            '<figure dir="ltr" lang="en-us" style=""><canvas dir=' +
-            '"ltr" alt="" class="downloaded-image" lang="en-us" style="">' +
+        const expectedHtml = '<figure dir="ltr" lang="en-us"><canvas dir=' +
+            '"ltr" alt="" class="downloaded-image" lang="en-us">' +
             '</canvas><figcaption dir="ltr" lang="en-us">' + caption +
             '</figcaption></figure>';
         app.updateContent();
         await microtasksFinished();
         assertTrue(contentController.hasContent());
 
-        readingMode.imagesEnabled = true;
+        visualBrowserProxy.imagesEnabled = true;
         emitEvent(app, ToolbarEvent.IMAGES);
         await microtasksFinished();
 
@@ -863,7 +866,7 @@ suite('AppContent', () => {
         await microtasksFinished();
         assertTrue(contentController.hasContent());
 
-        readingMode.imagesEnabled = false;
+        visualBrowserProxy.imagesEnabled = false;
         emitEvent(app, ToolbarEvent.IMAGES);
         await microtasksFinished();
 
@@ -888,7 +891,7 @@ suite('AppContent', () => {
 
       const img = app.$.container.querySelector('img')!;
 
-      readingMode.imagesEnabled = true;
+      visualBrowserProxy.imagesEnabled = true;
       emitEvent(app, ToolbarEvent.IMAGES);
       await microtasksFinished();
 
@@ -896,7 +899,7 @@ suite('AppContent', () => {
       assertEquals('', img.style.display);  // Visible
 
       // Verify toggle off.
-      readingMode.imagesEnabled = false;
+      visualBrowserProxy.imagesEnabled = false;
       emitEvent(app, ToolbarEvent.IMAGES);
       await microtasksFinished();
       assertEquals('none', img.style.display);
@@ -916,7 +919,7 @@ suite('AppContent', () => {
         const figure = app.$.container.querySelector('figure')!;
         const figcaption = app.$.container.querySelector('figcaption')!;
 
-        readingMode.imagesEnabled = true;
+        visualBrowserProxy.imagesEnabled = true;
         emitEvent(app, ToolbarEvent.IMAGES);
         await microtasksFinished();
 
@@ -925,7 +928,7 @@ suite('AppContent', () => {
             caption, figcaption.textContent);  // Caption text should be there
 
         // Verify toggle off.
-        readingMode.imagesEnabled = false;
+        visualBrowserProxy.imagesEnabled = false;
         emitEvent(app, ToolbarEvent.IMAGES);
         await microtasksFinished();
         assertEquals(
@@ -980,7 +983,7 @@ suite('AppContent', () => {
       await microtasksFinished();
 
       // By default, links are enabled.
-      chrome.readingMode.linksEnabled = true;
+      visualBrowserProxy.linksEnabled = true;
 
       let link = app.$.container.querySelector('a');
       assertTrue(!!link, '<a> should be present before speech');
@@ -1138,7 +1141,7 @@ suite('AppContent', () => {
   });
 
   test('onNeedScrollForLineFocus scrolls', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
     const startingScrollTop = app.$.containerScroller.scrollTop;
     let scrollTo = 0;
     app.$.containerScroller.scrollTo = (options) => {
@@ -1211,7 +1214,7 @@ suite('AppContent', () => {
         scroller = app.$.containerScroller;
         assertTrue(!!scroller);
         chrome.readingMode.onPresentationStateReceived(
-            chrome.readingMode.inImmersiveOverlayPresentationState);
+            visualBrowserProxy.inImmersiveOverlayPresentationState);
       });
 
       test('mousemove toggles hover class', () => {
@@ -1253,7 +1256,7 @@ suite('AppContent', () => {
 
       test('mousemove does nothing if not in full page immersive mode', () => {
         chrome.readingMode.onPresentationStateReceived(
-            chrome.readingMode.inSidePanelPresentationState);
+            visualBrowserProxy.inSidePanelPresentationState);
         scroller.getBoundingClientRect = () => {
           return {
             left: 0,
@@ -1852,7 +1855,7 @@ suite('AppContent', () => {
     // Set a custom Reading Mode font and emit the font change event to update
     // styles
     const expectedFont = 'Andika';
-    chrome.readingMode.fontName = expectedFont;
+    visualBrowserProxy.fontName = expectedFont;
     emitEvent(app, ToolbarEvent.FONT);
 
     const computedStyle = window.getComputedStyle(preElement);

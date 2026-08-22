@@ -317,22 +317,28 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
 
   onFontChange(font: string): void {
     this.methodCalled('onFontChange', font);
+    this.fontName = font;
   }
 
   onLineSpacingChange(value: number): void {
     this.methodCalled('onLineSpacingChange', value);
+    this.lineSpacing = value;
   }
 
   onLetterSpacingChange(value: number): void {
     this.methodCalled('onLetterSpacingChange', value);
+    this.letterSpacing = value;
   }
 
   onThemeChange(theme: number): void {
     this.methodCalled('onThemeChange', theme);
+    this.colorTheme = theme;
   }
 
   onLineFocusChanged(value: number, lastNonDisabledValue: number): void {
     this.methodCalled('onLineFocusChanged', value, lastNonDisabledValue);
+    this.lineFocusValue = value;
+    this.lineFocusLastNonDisabledValue = lastNonDisabledValue;
   }
 
   togglePresentation(): void {
