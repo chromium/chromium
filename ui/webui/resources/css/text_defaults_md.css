@@ -18,6 +18,23 @@
 <if expr="is_linux">
 @import url(//resources/css/roboto.css);
 </if>
+<if expr="is_android">
+@font-face {
+  font-family: 'Google Sans Text';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Google Sans Text Regular'), local('GoogleSansText-Regular'),
+       local('Google Sans Text'), local('google-sans-text');
+}
+
+@font-face {
+  font-family: 'Google Sans Text';
+  font-style: normal;
+  font-weight: 500;
+  src: local('Google Sans Text Medium'), local('GoogleSansText-Medium'),
+       local('google-sans-text-medium');
+}
+</if>
 
 body {
   font-family: $i18nRaw{fontfamilyMd};
