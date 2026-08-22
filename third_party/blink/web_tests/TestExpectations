@@ -9377,3 +9377,4 @@ crbug.com/547617167 [ Linux ] external/wpt/webdriver/tests/classic/print/printcm
 
 # Gardener 2026-08-21
 crbug.com/550002440 http/tests/devtools/extensions/extensions-sidebar.js [ Failure Pass ]
+crbug.com/549621645 [ Win11-arm64 ] fast/css3-text/css3-text-decoration/text-underline-position/text-underline-position-cjk.html [ Failure Pass ]
