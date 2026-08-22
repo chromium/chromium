@@ -545,7 +545,12 @@ if (!is_android && !is_chromeos_device) {
         "delete_address_profile_dialog_controller_impl_interactive_uitest.cc",
         "edit_address_profile_dialog_controller_impl_interactive_uitest.cc",
       ]
-      deps += [ "//chrome/browser/ui/views/autofill:address_editor_view" ]
+      deps += [
+        "//chrome/browser/ui/views/autofill:address_editor_view",
+        "//chrome/browser/ui/views/autofill:edit_address_profile_view",
+        "//chrome/browser/ui/views/autofill:save_address_profile_view",
+        "//chrome/browser/ui/views/autofill:update_address_profile_view",
+      ]
     }
   }
 }

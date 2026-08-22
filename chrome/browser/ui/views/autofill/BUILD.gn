@@ -59,12 +59,100 @@ source_set("autofill_bubble_utils") {
   ]
 }
 
+source_set("address_bubble_base_view") {
+  public = [ "address_bubble_base_view.h" ]
+  sources = [ "address_bubble_base_view.cc" ]
+  public_deps = [
+    ":autofill_location_bar_bubble",
+    "//chrome/browser/ui/autofill",
+    "//ui/base/metadata",
+  ]
+}
+
+source_set("edit_address_profile_view") {
+  public = [ "edit_address_profile_view.h" ]
+  sources = [ "edit_address_profile_view.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/autofill",
+    "//components/autofill/core/browser",
+    "//ui/views",
+  ]
+  deps = [
+    ":address_editor_view",
+    "//chrome/browser/autofill",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/constrained_window",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/base/mojom",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/views",
+  ]
+}
+
+source_set("save_address_profile_view") {
+  public = [ "save_address_profile_view.h" ]
+  sources = [ "save_address_profile_view.cc" ]
+  public_deps = [
+    ":address_bubble_base_view",
+    "//base",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/views/location_bar",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    ":autofill_bubble_utils",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/hats",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/accessibility",
+    "//components/strings:components_strings",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/color",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
+source_set("update_address_profile_view") {
+  public = [ "update_address_profile_view.h" ]
+  sources = [ "update_address_profile_view.cc" ]
+  public_deps = [
+    ":address_bubble_base_view",
+    "//base",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/views/location_bar",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    ":autofill_bubble_utils",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ui/views:layout_provider",
+    "//components/autofill/core/browser",
+    "//components/strings:components_strings",
+    "//components/vector_icons",
+    "//ui/base",
+    "//ui/color",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
 if (enable_dice_support) {
   source_set("address_sign_in_promo_view") {
     public = [ "address_sign_in_promo_view.h" ]
     sources = [ "address_sign_in_promo_view.cc" ]
     public_deps = [
-      ":autofill_location_bar_bubble",
+      ":address_bubble_base_view",
       "//chrome/browser/ui/autofill",
       "//ui/base/metadata",
     ]
