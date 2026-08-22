@@ -123,13 +123,40 @@ class MouseCursorOverlayControllerMacTest
     return position_in_parent - target_bounds.OffsetFromOrigin();
   }
 
- private:
+ protected:
   MockKeyWindow* __strong window_;
   id __strong tracker_;
 };
 
 TEST_F(MouseCursorOverlayControllerMacTest, RestrictsToWebContents) {
   RunRestrictsToWebContentsTest();
+}
+
+TEST_F(MouseCursorOverlayControllerMacTest, HandlesEventsAfterStopTracking) {
+  MouseCursorOverlayController controller;
+  auto target_web_contents =
+      TestWebContents::Create(browser_context(), nullptr);
+  const gfx::Rect target_bounds(0, 0, 100, 100);
+  SetupCaptureTarget(target_web_contents.get(), target_bounds);
+
+  controller.SetTargetView(GetTargetView(), target_web_contents.get());
+  InitializeEventGenerator();
+
+  // Resetting the target view invokes `stopTracking:` on the tracker,
+  // which resets `_callback`.
+  controller.SetTargetView(gfx::NativeView(), nullptr);
+
+  // Dispatch events to the tracker after tracking stopped and callback was
+  // reset.
+  MockEvent* event = [[MockEvent alloc] init];
+  event.locationInWindow = NSMakePoint(50, 50);
+
+  // None of these should crash when _callback is null.
+  EXPECT_NO_FATAL_FAILURE({
+    [tracker_ mouseMoved:(NSEvent*)event];
+    [tracker_ mouseEntered:(NSEvent*)event];
+    [tracker_ mouseExited:(NSEvent*)event];
+  });
 }
 
 }  // namespace content
