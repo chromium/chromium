@@ -667,14 +667,13 @@ static_library("test_support") {
     sources += [
       "base/ash/extension_js_browser_test.cc",
       "base/ash/extension_js_browser_test.h",
-      "base/ash/scoped_test_system_nss_key_slot_mixin.cc",
-      "base/ash/scoped_test_system_nss_key_slot_mixin.h",
     ]
 
     public_deps += [
       "//chrome/test/base:aura_window_title_observer",
       "//chrome/test/base:browser_process_platform_part_test_api_chromeos",
       "//chrome/test/base:js_test_api",
+      "//chrome/test/base:scoped_test_system_nss_key_slot_mixin",
     ]
 
     deps += [
@@ -8329,8 +8328,6 @@ if (!is_android) {
 
     if (is_chromeos) {
       sources += [
-        "base/ash/javascript_browser_test.cc",
-        "base/ash/javascript_browser_test.h",
         "base/ash/mojo_web_ui_browser_test.cc",
         "base/ash/mojo_web_ui_browser_test.h",
         "base/ash/web_ui_browser_test.cc",
@@ -8338,6 +8335,7 @@ if (!is_android) {
       ]
 
       public_deps += [
+        "//chrome/test/base:javascript_browser_test",
         "//chrome/test/base:js_test_api",
         "//chrome/test/base:web_ui_test_handler",
       ]
