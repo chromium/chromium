@@ -41,8 +41,10 @@ namespace {
 std::u16string FormatUsbDeviceName(
     const device::mojom::UsbDeviceInfo& device_info) {
   std::u16string device_name;
-  if (device_info.product_name)
-    device_name = *device_info.product_name;
+  if (device_info.product_name) {
+    // Explicitly reconstruct to trim trailing NUL bytes.
+    device_name = std::u16string(device_info.product_name->c_str());
+  }
 
   if (device_name.empty()) {
     uint16_t vendor_id = device_info.vendor_id;

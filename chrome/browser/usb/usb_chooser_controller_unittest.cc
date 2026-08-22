@@ -111,6 +111,19 @@ TEST_F(UsbChooserControllerTest, AddDevice) {
   EXPECT_EQ(u"c", usb_chooser_controller->GetOption(2));
 }
 
+TEST_F(UsbChooserControllerTest, TrimsTrailingNullsFromDeviceName) {
+  auto usb_chooser_controller = CreateUsbChooserController();
+  base::RunLoop run_loop;
+  EXPECT_CALL(view(), OnOptionAdded(0)).WillOnce([&run_loop](size_t) {
+    run_loop.Quit();
+  });
+  CreateAndAddFakeUsbDevice(std::string("Product\0\0", 9), "001");
+  run_loop.Run();
+
+  ASSERT_EQ(1u, usb_chooser_controller->NumOptions());
+  EXPECT_EQ(u"Product", usb_chooser_controller->GetOption(0));
+}
+
 TEST_F(UsbChooserControllerTest, RemoveDevice) {
   auto usb_chooser_controller = CreateUsbChooserController();
   auto device_a = CreateAndAddFakeUsbDevice("a", "001");
