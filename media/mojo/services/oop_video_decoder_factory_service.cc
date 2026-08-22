@@ -16,7 +16,6 @@
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/gpu/buildflags.h"
-#include "media/gpu/chromeos/dmabuf_video_frame_converter.h"
 #include "media/gpu/chromeos/frame_registry.h"
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
@@ -94,9 +93,7 @@ class MojoMediaClientImpl : public MojoMediaClient {
     auto sii = shared_image_interface_ && !shared_image_interface_->IsLost()
                    ? shared_image_interface_
                    : nullptr;
-    auto converter = base::FeatureList::IsEnabled(kUseSharedImageInOOPVDProcess)
-                         ? MailboxVideoFrameConverter::Create(std::move(sii))
-                         : DmabufVideoFrameConverter::Create();
+    auto converter = MailboxVideoFrameConverter::Create(std::move(sii));
     return VideoDecoderPipeline::Create(
         gpu_driver_bug_workarounds_,
         /*client_task_runner=*/std::move(task_runner),

@@ -2540,17 +2540,15 @@ void RenderProcessHostImpl::CreateOOPVideoDecoder(
     auto creation_cb = GetVideoDecoderFactoryCreationCB();
     if (creation_cb.is_null()) {
       mojo::PendingRemote<viz::mojom::Gpu> gpu_remote;
-      if (base::FeatureList::IsEnabled(media::kUseSharedImageInOOPVDProcess)) {
-        if (!oop_video_decoder_gpu_client_) {
-          mojo::PendingReceiver<viz::mojom::Gpu> gpu_receiver =
-              gpu_remote.InitWithNewPipeAndPassReceiver();
-          oop_video_decoder_gpu_client_ = content::CreateGpuClient(
-              std::move(gpu_receiver),
-              /*enable_extra_handles_validation=*/true);
-        } else {
-          oop_video_decoder_gpu_client_->Add(
-              gpu_remote.InitWithNewPipeAndPassReceiver());
-        }
+      if (!oop_video_decoder_gpu_client_) {
+        mojo::PendingReceiver<viz::mojom::Gpu> gpu_receiver =
+            gpu_remote.InitWithNewPipeAndPassReceiver();
+        oop_video_decoder_gpu_client_ =
+            content::CreateGpuClient(std::move(gpu_receiver),
+                                     /*enable_extra_handles_validation=*/true);
+      } else {
+        oop_video_decoder_gpu_client_->Add(
+            gpu_remote.InitWithNewPipeAndPassReceiver());
       }
       LaunchOOPVideoDecoderFactory(
           video_decoder_factory_remote_.BindNewPipeAndPassReceiver(),

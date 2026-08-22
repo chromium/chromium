@@ -8585,12 +8585,6 @@ inline constexpr char kUseOutOfProcessVideoDecodingName[] =
 inline constexpr char kUseOutOfProcessVideoDecodingDescription[] =
     "Start utility processes to do hardware video decoding.";
 
-inline constexpr char kUseSharedImageInOOPVDName[] =
-    "Use Shared Image in OOP-VD";
-inline constexpr char kUseSharedImageInOOPVDDescription[] =
-    "Use shared image interface to transport video frame resources in out of "
-    "process video decoding.";
-
 inline constexpr char kWebBluetoothConfirmPairingSupportName[] =
     "Web Bluetooth confirm pairing support";
 inline constexpr char kWebBluetoothConfirmPairingSupportDescription[] =
