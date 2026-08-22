@@ -1202,7 +1202,7 @@ class CONTENT_EXPORT WebContentsImpl
                                         bool show_selection_menu) override;
   const std::optional<gfx::Rect> GetTextSelectionBounds(
       RenderFrameHost* render_frame_host) const override;
-  const std::optional<gfx::Point> GetFocusSelectionPoint(
+  const std::optional<gfx::Rect> GetFocusSelectionBounds(
       RenderFrameHost* render_frame_host) const override;
   base::CallbackListSubscription RegisterFocusSelectionBoundsChanged(
       FocusSelectionBoundsChangedCallback callback) override;
