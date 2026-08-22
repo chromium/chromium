@@ -8,6 +8,7 @@
 #include <cmath>
 #include <numbers>
 
+#include "base/check_op.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
@@ -24,21 +25,26 @@ constexpr size_t kFullSizeBarCount = 9;
 
 constexpr int kNonFullSizeViewWidth = 20;
 constexpr int kNonFullSizeViewHeight = 20;
-constexpr size_t kNonFullSizeBarCount = 4;
+constexpr size_t kNonFullSizeBarCount = 3;
 
 constexpr float kFullSizeBarSpacing = 6.0f;
 constexpr float kNonFullSizeBarSpacing = 5.0f;
 constexpr float kBarWidth = 2.0f;
-constexpr float kBarCornerRadius = 1.5f;
+constexpr float kBarCornerRadius = 0.5f;
 
 // Height limits.
-constexpr float kMinBarHeight = 3.0f;
+constexpr float kMinBarHeight = 4.0f;
 constexpr float kFullSizeMaxBarHeight = 20.0f;
 constexpr float kNonFullSizeMaxBarHeight = 14.0f;
 
-// Physics parameters.
-constexpr float kSpringConstant = 600.0f;
-constexpr float kDampingCoefficient = 35.0f;
+// Lerp animation parameters.
+constexpr float kBubblingSpeed = 0.40f;
+
+// Audio sensitivity & response curve parameters.
+constexpr float kSilenceThreshold = 0.005f;
+constexpr float kAudioSensitivity = 8.0f;
+constexpr float kInflectionInput = 0.75f;
+constexpr float kInflectionOutputPercent = 0.75f;
 
 // Finalizing wave animation parameters.
 constexpr base::TimeDelta kFinalizingWaveTravelDuration =
@@ -48,6 +54,38 @@ constexpr float kFinalizingWaveAmplitude = 5.0f;
 constexpr float kFinalizingBaseDotSize = 2.0f;
 constexpr float kFinalizingHighlightDotSize = 3.5f;
 constexpr double kFinalizingPacketHalfWidth = 2.5;
+
+float MapRange(float value,
+               float from_min,
+               float from_max,
+               float to_min,
+               float to_max) {
+  CHECK_LT(from_min, from_max);
+  CHECK_LT(to_min, to_max);
+  const float input_range = from_max - from_min;
+  const float progress = (value - from_min) / input_range;
+  return to_min + progress * (to_max - to_min);
+}
+
+float CalculateBarHeight(float min_bar_height,
+                         float max_bar_height,
+                         float raw_level) {
+  if (raw_level <= 0.0f) {
+    return min_bar_height;
+  }
+  const float normalized_level =
+      std::sqrt(std::clamp(raw_level * kAudioSensitivity, 0.0f, 1.0f));
+  if (normalized_level <= kSilenceThreshold) {
+    return min_bar_height;
+  }
+  const float inflection_output = max_bar_height * kInflectionOutputPercent;
+  if (normalized_level < kInflectionInput) {
+    return MapRange(normalized_level, kSilenceThreshold, kInflectionInput,
+                    min_bar_height, inflection_output);
+  }
+  return MapRange(normalized_level, kInflectionInput, 1.0f, inflection_output,
+                  max_bar_height);
+}
 
 }  // namespace
 
@@ -77,17 +115,17 @@ void WaveformView::SetState(UiState state) {
   }
   if (state_ == UiState::kInactive) {
     std::fill(audio_history_.begin(), audio_history_.end(), 0.0f);
+    active_volume_ = std::nullopt;
+    last_volume_ = 0.0f;
+    previous_read_empty_ = false;
   }
   InvalidateLayout();
   SchedulePaint();
 }
 
 void WaveformView::SetAudioLevel(float level) {
-  // An experimentally determined factor to boost the input audio level (0.0 to
-  // 1.0) into a range that works well for visualization. This ensures the
-  // waveform is lively and responsive even at lower input volumes.
-  constexpr float kBoostFactor = 10.0f;
-  audio_level_ = std::clamp(level * kBoostFactor, 0.0f, 1.0f);
+  audio_level_ = std::clamp(level, 0.0f, 1.0f);
+  active_volume_ = audio_level_;
 }
 
 WaveformView::AnimationState WaveformView::GetFinalizingAnimationState(
@@ -201,17 +239,27 @@ void WaveformView::UpdatePhysics(base::TimeDelta delta) {
     return;
   }
 
-  const double dt = std::min(delta.InSecondsF(), 0.05);
-
   if (state_ == UiState::kTranscribing) {
     // Propagate the audio level from the center outwards.
     history_timer_ += delta;
-    if (history_timer_ >= base::Milliseconds(30)) {
+    if (history_timer_ >= base::Milliseconds(45)) {
       history_timer_ = base::TimeDelta();
       for (size_t i = audio_history_.size() - 1; i > 0; --i) {
         audio_history_[i] = audio_history_[i - 1];
       }
-      audio_history_[0] = audio_level_;
+      if (active_volume_.has_value()) {
+        previous_read_empty_ = false;
+        last_volume_ = active_volume_.value();
+        audio_history_[0] = active_volume_.value();
+        active_volume_ = std::nullopt;
+      } else {
+        if (!previous_read_empty_) {
+          audio_history_[0] = last_volume_;
+          previous_read_empty_ = true;
+        } else {
+          audio_history_[0] = 0.0f;
+        }
+      }
     }
   }
 
@@ -221,26 +269,10 @@ void WaveformView::UpdatePhysics(base::TimeDelta delta) {
   for (size_t i = 0; i < bars_.size(); ++i) {
     bars_[i].target_height =
         GetTargetHeightForBar(i, kMinBarHeight, max_bar_height);
-  }
-
-  // Run the spring-damper integration loop.
-  for (size_t i = 0; i < bars_.size(); ++i) {
-    const float diff = bars_[i].target_height - bars_[i].height;
-    const float spring_force = diff * kSpringConstant;
-    const float damping_force = -bars_[i].velocity * kDampingCoefficient;
-    const float accel = spring_force + damping_force;
-
-    bars_[i].velocity += accel * dt;
-    bars_[i].height += bars_[i].velocity * dt;
-
-    // Clamp heights and zero velocities at the boundaries.
-    if (bars_[i].height < kMinBarHeight) {
-      bars_[i].height = kMinBarHeight;
-      bars_[i].velocity = 0.0f;
-    } else if (bars_[i].height > max_bar_height) {
-      bars_[i].height = max_bar_height;
-      bars_[i].velocity = 0.0f;
-    }
+    bars_[i].height +=
+        (bars_[i].target_height - bars_[i].height) * kBubblingSpeed;
+    bars_[i].height =
+        std::clamp(bars_[i].height, kMinBarHeight, max_bar_height);
   }
 }
 
@@ -251,11 +283,14 @@ float WaveformView::GetTargetHeightForBar(size_t index,
     case UiState::kInitializing:
     case UiState::kTranscribing: {
       const size_t center_bar_index = GetCenterBarIndex();
-      const int dist = std::abs(static_cast<int>(index) -
-                                static_cast<int>(center_bar_index));
-      const float sensitivity = 1.0f - (dist * 0.1f);
-      return min_height +
-             audio_history_[dist] * (max_height - min_height) * sensitivity;
+      const size_t dist = index > center_bar_index ? index - center_bar_index
+                                                   : center_bar_index - index;
+      const float raw_level = audio_history_[dist];
+      const float raw_height =
+          CalculateBarHeight(min_height, max_height, raw_level);
+      const float taper =
+          1.0f - (static_cast<float>(dist) / (center_bar_index + 1.0f));
+      return std::max(min_height, raw_height * taper);
     }
     case UiState::kInactive:
     case UiState::kFinalizing:

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DICTATION_WAVEFORM_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_DICTATION_WAVEFORM_VIEW_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -56,6 +57,7 @@ class WaveformView : public views::View, public gfx::AnimationDelegate {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DictationBubbleUiTest, FinalizingWaveAnimation);
+  FRIEND_TEST_ALL_PREFIXES(DictationBubbleUiTest, AudioLevelMath);
 
   struct AnimationState {
     float center_y = 0.0f;
@@ -82,14 +84,16 @@ class WaveformView : public views::View, public gfx::AnimationDelegate {
 
   // Audio level and ripple history.
   float audio_level_ = 0.0f;
+  std::optional<float> active_volume_;
+  float last_volume_ = 0.0f;
+  bool previous_read_empty_ = false;
   std::vector<float> audio_history_;
   base::TimeDelta history_timer_;
 
   // Physics state for the bars.
   struct BarState {
-    float height = 3.0f;
-    float target_height = 3.0f;
-    float velocity = 0.0f;
+    float height = 4.0f;
+    float target_height = 4.0f;
   };
   std::vector<BarState> bars_;
 
