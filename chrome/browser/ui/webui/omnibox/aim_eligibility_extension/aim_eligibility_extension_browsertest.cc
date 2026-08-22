@@ -21,6 +21,8 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/omnibox/aim_eligibility_extension/aim_eligibility_extension_bridge.h"
+#include "chrome/browser/ui/webui/omnibox/aim_eligibility_extension/aim_eligibility_extension_frame_page_handler_factory.h"
+#include "chrome/browser/ui/webui/omnibox/aim_eligibility_extension/aim_eligibility_extension_service_worker_page_handler_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
@@ -130,14 +132,15 @@ IN_PROC_BROWSER_TEST_F(AimEligibilityExtensionBrowserTest,
 
   auto* bridge = AimEligibilityExtensionBridge::Get(profile());
   ASSERT_TRUE(bridge);
-  EXPECT_EQ(0u, bridge->page_handlers_size_for_testing());
+  auto& factory = bridge->service_worker_page_handler_factory();
+  EXPECT_EQ(0u, factory.page_handlers_size_for_testing());
 
   // Create a first page handler.
   mojo::Remote<aim_eligibility::mojom::PageHandler> page_handler_remote_1;
   mojo::PendingReceiver<aim_eligibility::mojom::Page> page_receiver_1;
-  bridge->CreatePageHandler(page_receiver_1.InitWithNewPipeAndPassRemote(),
+  factory.CreatePageHandler(page_receiver_1.InitWithNewPipeAndPassRemote(),
                             page_handler_remote_1.BindNewPipeAndPassReceiver());
-  EXPECT_EQ(1u, bridge->page_handlers_size_for_testing());
+  EXPECT_EQ(1u, factory.page_handlers_size_for_testing());
 
   // Verify it works.
   base::test::TestFuture<aim_eligibility::mojom::EligibilityStatePtr> future_1;
@@ -147,9 +150,9 @@ IN_PROC_BROWSER_TEST_F(AimEligibilityExtensionBrowserTest,
   // Create a second page handler.
   mojo::Remote<aim_eligibility::mojom::PageHandler> page_handler_remote_2;
   mojo::PendingReceiver<aim_eligibility::mojom::Page> page_receiver_2;
-  bridge->CreatePageHandler(page_receiver_2.InitWithNewPipeAndPassRemote(),
+  factory.CreatePageHandler(page_receiver_2.InitWithNewPipeAndPassRemote(),
                             page_handler_remote_2.BindNewPipeAndPassReceiver());
-  EXPECT_EQ(2u, bridge->page_handlers_size_for_testing());
+  EXPECT_EQ(2u, factory.page_handlers_size_for_testing());
 
   // Verify it also works.
   base::test::TestFuture<aim_eligibility::mojom::EligibilityStatePtr> future_2;
@@ -161,12 +164,12 @@ IN_PROC_BROWSER_TEST_F(AimEligibilityExtensionBrowserTest,
 
   // Wait for the disconnect handler callback to execute.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return bridge->page_handlers_size_for_testing() == 1u; }));
+      [&]() { return factory.page_handlers_size_for_testing() == 1u; }));
 
   // Disconnect the second page handler.
   page_handler_remote_2.reset();
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return bridge->page_handlers_size_for_testing() == 0u; }));
+      [&]() { return factory.page_handlers_size_for_testing() == 0u; }));
 }
 
 // Tests that the component extension's UI loads, resolves Mojo JS, and updates
