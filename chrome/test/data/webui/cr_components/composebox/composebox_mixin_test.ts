@@ -348,6 +348,27 @@ suite('ComposeboxMixinTest', () => {
       });
 
   test(
+      'onDeleteTabContext() does not call deleteTabContext if tab is not in ' +
+          'tabSuggestions',
+      () => {
+        element.tabSuggestions = [];
+        element.aimThreadRestoredTabs = [{
+          tabId: 20,
+          title: 'Historical Tab',
+          url: 'about:blank?hist',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        }];
+
+        element.onDeleteTabContext(
+            new CustomEvent('delete-tab-context', {detail: {tabId: 20}}));
+
+        assertEquals(0, searchboxHandler.getCallCount('deleteTabContext'));
+        assertEquals(0, element.aimThreadRestoredTabs.length);
+      });
+
+  test(
       'refreshTabSuggestions() filters navigated tabs when tabDeselectionEnabled true',
       async () => {
         const tab1 = {
