@@ -153,10 +153,10 @@ class CanvasHibernationHandlerTest
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 namespace {

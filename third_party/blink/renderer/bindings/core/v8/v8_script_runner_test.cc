@@ -203,8 +203,8 @@ class V8ScriptRunnerTest : public testing::Test {
  protected:
   static int counter_;
   String url_ = "http://bla.com/bla";
-  test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
+  test::TaskEnvironment task_environment_;
   base::RunLoop run_loop_;
 };
 

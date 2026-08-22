@@ -394,6 +394,8 @@ class CanvasRenderingContext2DTestBase : public ::testing::Test,
     }
   }
 
+ protected:
+  base::test::ScopedFeatureList feature_list_;
   test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
@@ -432,9 +434,6 @@ class CanvasRenderingContext2DTestBase : public ::testing::Test,
   Member<CanvasGradient>& AlphaGradient() {
     return wrap_gradients_->alpha_gradient_;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class CanvasRenderingContext2DTest : public CanvasRenderingContext2DTestBase {

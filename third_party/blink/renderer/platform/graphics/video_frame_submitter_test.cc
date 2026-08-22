@@ -298,6 +298,7 @@ class VideoFrameSubmitterTest : public testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::SimpleTestTickClock> now_src_;
   std::unique_ptr<viz::FakeExternalBeginFrameSource> begin_frame_source_;
@@ -308,9 +309,6 @@ class VideoFrameSubmitterTest : public testing::Test {
   scoped_refptr<TestClientSharedImageInterface> client_shared_image_interface_;
   std::unique_ptr<VideoFrameSubmitter> submitter_;
   raw_ptr<StrictMock<MockVideoFrameResourceProvider>> resource_provider_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 enum class SubmissionType {

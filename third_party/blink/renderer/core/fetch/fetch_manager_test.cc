@@ -149,8 +149,8 @@ class FetchLaterTestBase : public testing::Test {
   const base::HistogramTester& Histogram() const { return histogram_; }
 
  private:
-  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList feature_list_;
+  test::TaskEnvironment task_environment;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   Persistent<FakeLocalFrameClient> frame_client_;
   MockFetchLaterLoaderFactory factory_;

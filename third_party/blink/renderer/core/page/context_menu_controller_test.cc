@@ -246,8 +246,8 @@ class ContextMenuControllerTest : public testing::Test {
   }
 
  protected:
-  test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
+  test::TaskEnvironment task_environment_;
   TestWebFrameClientImpl web_frame_client_;
   frame_test_helpers::WebViewHelper web_view_helper_;
 };
@@ -2132,8 +2132,8 @@ class ContextMenuControllerRemoteParentFrameTest : public testing::Test {
   }
 
  protected:
-  test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
+  test::TaskEnvironment task_environment_;
   TestWebFrameClientImpl child_web_frame_client_;
   frame_test_helpers::WebViewHelper web_view_helper_;
   Persistent<WebLocalFrameImpl> child_frame_;
