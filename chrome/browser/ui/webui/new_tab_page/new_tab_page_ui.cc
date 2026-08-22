@@ -805,6 +805,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   source->AddBoolean(
       "ntpSmallActionChipsEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpScaledActionChipsSmall));
+  // TODO(crbug.com/548681676): Remove once TutorialId proto rolls from server.
+  source->AddBoolean("scaledActionChipsInTestMode",
+                     ntp_features::kNtpScaledActionChipsSmallInTestMode.Get());
 
   // User education browser promos.
   int browser_promo_limit = 0;
