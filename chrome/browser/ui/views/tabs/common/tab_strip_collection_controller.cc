@@ -559,12 +559,19 @@ void TabStripCollectionController::OnTabContextMenuClosed() {
 void TabStripCollectionController::TabGroupFocusChanged(
     std::optional<tab_groups::TabGroupId> new_focused_group_id,
     std::optional<tab_groups::TabGroupId> old_focused_group_id) {
-  browser_view_->tab_strip_view()->OnTabGroupFocusChanged(new_focused_group_id,
-                                                          old_focused_group_id);
+  CHECK(browser_view_);
 
-  UpdateFocusModeTheme(new_focused_group_id);
-  browser_view_->browser_widget()->ThemeChanged();
-  browser_view_->GetWidget()->non_client_view()->frame_view()->SchedulePaint();
+  if (auto* tab_strip_view = browser_view_->tab_strip_view()) {
+    tab_strip_view->OnTabGroupFocusChanged(new_focused_group_id,
+                                           old_focused_group_id);
+  }
+  if (auto* browser_widget = browser_view_->browser_widget()) {
+    UpdateFocusModeTheme(new_focused_group_id);
+    browser_widget->ThemeChanged();
+    if (auto* frame_view = browser_widget->GetFrameView()) {
+      frame_view->SchedulePaint();
+    }
+  }
 
   UpdateAllTabsFocusFreezing();
 }

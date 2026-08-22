@@ -492,20 +492,6 @@ void VerticalTabStripRegionView::HandleMouseExited() {
   UpdateExpandOnHoverState(false);
 }
 
-void VerticalTabStripRegionView::OnTabGroupFocusChanged(
-    std::optional<tab_groups::TabGroupId> new_focused_group_id,
-    std::optional<tab_groups::TabGroupId> old_focused_group_id) {
-  top_button_container_->GetUnfocusButton()->SetVisible(
-      new_focused_group_id.has_value());
-  // Temporarily, we are updating the visibility of the collapse action to be
-  // inverse to the unfocus button because of horizontal space constraints in
-  // the top container.
-  actions::ActionItem* collapse_action =
-      actions::ActionManager::Get().FindAction(kActionToggleCollapseVertical,
-                                               root_action_item());
-  collapse_action->SetVisible(!new_focused_group_id.has_value());
-}
-
 std::unique_ptr<ExpandOnHoverLock>
 VerticalTabStripRegionView::GetExpandOnHoverLock(
     ExpandOnHoverLockType lock_type) {

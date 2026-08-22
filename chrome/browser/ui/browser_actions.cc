@@ -2199,6 +2199,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                     ? vector_icons::kArrowBackIcon
                     : vector_icons::kArrowBackOldIcon,
                 ui::kColorIcon))
+            .SetVisible(false)
             .Build());
   }
 

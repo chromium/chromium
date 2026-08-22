@@ -55,7 +55,6 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
     unfocus_button_ = AddChildButtonFor(kActionUnfocusTabGroup);
     unfocus_button_->SetProperty(views::kElementIdentifierKey,
                                  kUnfocusTabGroupButtonElementId);
-    unfocus_button_->SetVisible(false);
   }
 
   combo_button_ = AddChildView(std::make_unique<TabStripComboButton>(

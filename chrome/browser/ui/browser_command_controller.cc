@@ -1674,6 +1674,12 @@ void BrowserCommandController::OnTabPinnedStateChanged(tabs::TabInterface* tab,
   UpdateCommandsForTabStripStateChanged();
 }
 
+void BrowserCommandController::OnTabGroupFocusChanged(
+    std::optional<tab_groups::TabGroupId> new_focused_group,
+    std::optional<tab_groups::TabGroupId> old_focused_group) {
+  UpdateCommandsForTabGroupFocusChanged();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserCommandController, TabRestoreServiceObserver implementation:
 
@@ -2036,6 +2042,7 @@ void BrowserCommandController::InitCommandState() {
   UpdateCommandsForExtensionsMenu();
   UpdateCommandsForTabKeyboardFocus(GetKeyboardFocusedTabIndex(browser_));
   UpdateCommandsForWebContentsFocus();
+  UpdateCommandsForTabGroupFocusChanged();
 }
 
 // static
@@ -2761,6 +2768,20 @@ void BrowserCommandController::UpdateCommandsForEnableGlicChanged() {
               kActionSidePanelShowGlic, root_action_item)) {
         action->SetVisible(glic::GlicEnabling::ShouldShowGlicButton(profile()));
       }
+    }
+  }
+}
+
+void BrowserCommandController::UpdateCommandsForTabGroupFocusChanged() {
+  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+    const bool is_focused =
+        browser_->tab_strip_model()->GetFocusedGroup().has_value();
+    if (auto* const action = FindAction(kActionUnfocusTabGroup, browser_)) {
+      action->SetVisible(is_focused);
+    }
+    if (auto* const action =
+            FindAction(kActionToggleCollapseVertical, browser_)) {
+      action->SetVisible(!is_focused);
     }
   }
 }

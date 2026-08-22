@@ -51,8 +51,6 @@ void RootTabCollectionNode::Init() {
   tab_strip_model_->Root()->AddObserver(this);
   tab_strip_model_->SetTabStripUI(this);
   add_node_view_to_parent_.Run(Initialize());
-
-  PostInit();
 }
 
 void RootTabCollectionNode::Reset() {
@@ -253,13 +251,6 @@ void RootTabCollectionNode::OnTabGroupFocusChanged(
 
   if (view()) {
     view()->InvalidateLayout();
-  }
-}
-
-void RootTabCollectionNode::PostInit() {
-  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
-    tab_strip_controller_->TabGroupFocusChanged(
-        tab_strip_model_->GetFocusedGroup(), std::nullopt);
   }
 }
 

@@ -202,7 +202,6 @@ void BrowserTabStripController::InitFromModel(TabStrip* tabstrip) {
 
   if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
     UpdateAllTabsFocusFreezing();
-    OnTabGroupFocusChanged(model_->GetFocusedGroup(), std::nullopt);
   }
 }
 
@@ -800,12 +799,18 @@ void BrowserTabStripController::OnSplitTabChanged(
 void BrowserTabStripController::OnTabGroupFocusChanged(
     std::optional<tab_groups::TabGroupId> new_group_id,
     std::optional<tab_groups::TabGroupId> old_group_id) {
-  browser_view_->tab_strip_view()->OnTabGroupFocusChanged(new_group_id,
-                                                          old_group_id);
+  CHECK(browser_view_);
 
-  UpdateFocusModeTheme(new_group_id);
-  browser_view_->browser_widget()->ThemeChanged();
-  browser_view_->GetWidget()->non_client_view()->frame_view()->SchedulePaint();
+  if (auto* tab_strip_view = browser_view_->tab_strip_view()) {
+    tab_strip_view->OnTabGroupFocusChanged(new_group_id, old_group_id);
+  }
+  if (auto* browser_widget = browser_view_->browser_widget()) {
+    UpdateFocusModeTheme(new_group_id);
+    browser_widget->ThemeChanged();
+    if (auto* frame_view = browser_widget->GetFrameView()) {
+      frame_view->SchedulePaint();
+    }
+  }
 
   UpdateAllTabsFocusFreezing();
 }
@@ -836,7 +841,7 @@ void BrowserTabStripController::UpdateTabFocusFreezing(int model_index) {
   if (!features::IsTabGroupsFocusFreezingEnabled()) {
     return;
   }
-  if (!model_->ContainsIndex(model_index)) {
+  if (!tabstrip_ || !model_->ContainsIndex(model_index)) {
     return;
   }
   Tab* tab = tabstrip_->tab_at(model_index);
@@ -852,7 +857,7 @@ void BrowserTabStripController::UpdateTabFocusFreezing(int model_index) {
 }
 
 void BrowserTabStripController::UpdateAllTabsFocusFreezing() {
-  if (!features::IsTabGroupsFocusFreezingEnabled()) {
+  if (!features::IsTabGroupsFocusFreezingEnabled() || !tabstrip_) {
     return;
   }
   for (int i = 0; i < tabstrip_->GetTabCount(); ++i) {

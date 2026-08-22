@@ -200,7 +200,11 @@ HorizontalTabStripRegionViewOld::HorizontalTabStripRegionViewOld(
     action_view_controller_->CreateActionViewRelationship(
         unfocus_button_.get(), unfocus_action->GetAsWeakPtr());
 
-    unfocus_button_->SetVisible(false);
+    unfocus_button_subscription_ =
+        unfocus_button_->AddVisibleChangedCallback(base::BindRepeating(
+            &HorizontalTabStripRegionViewOld::OnUnfocusButtonVisibilityChanged,
+            base::Unretained(this)));
+
     unfocus_button_->SetProperty(views::kCrossAxisAlignmentKey,
                                  views::LayoutAlignment::kCenter);
   }
@@ -547,13 +551,12 @@ views::View* HorizontalTabStripRegionViewOld::GetTabGroupAnchorView(
 void HorizontalTabStripRegionViewOld::OnTabGroupFocusChanged(
     std::optional<tab_groups::TabGroupId> new_focused_group_id,
     std::optional<tab_groups::TabGroupId> old_focused_group_id) {
-  CHECK(unfocus_button_);
-  unfocus_button_->SetVisible(new_focused_group_id.has_value());
-  if (old_focused_group_id.has_value() != new_focused_group_id.has_value()) {
-    UpdateTabStripMargin();
-  }
   tab_strip_->OnTabGroupFocusChanged(new_focused_group_id,
                                      old_focused_group_id);
+}
+
+void HorizontalTabStripRegionViewOld::OnUnfocusButtonVisibilityChanged() {
+  UpdateTabStripMargin();
   InvalidateLayout();
 }
 
