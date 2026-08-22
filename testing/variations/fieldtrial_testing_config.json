@@ -12196,6 +12196,21 @@
             ]
         }
     ],
+    "GlicMarketingAutoOpen": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicMarketingAutoOpen"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicMediaData": [
         {
             "platforms": [
