@@ -391,6 +391,7 @@ source_set("impl") {
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/search_engines",
       "//chrome/browser/sharing_hub",
+      "//chrome/browser/speech",
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/omnibox/omnibox_everywhere:prefs",

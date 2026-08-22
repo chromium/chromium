@@ -27,6 +27,7 @@ source_set("speech") {
       "speech_recognition_client_browser_interface_factory.h",
       "speech_recognition_service.h",
       "speech_recognition_service_factory.h",
+      "speech_recognition_small_expert_model_installer.h",
     ]
 
     public_deps += [
@@ -37,6 +38,7 @@ source_set("speech") {
       "//components/soda:constants",
       "//media/mojo/mojom",
       "//media/mojo/mojom:speech_recognition",
+      "//services/on_device_model/public/mojom",
     ]
   }
 
@@ -112,6 +114,7 @@ source_set("impl") {
       "speech_recognition_client_browser_interface.cc",
       "speech_recognition_client_browser_interface_factory.cc",
       "speech_recognition_service_factory.cc",
+      "speech_recognition_small_expert_model_installer.cc",
     ]
 
     deps += [
@@ -123,10 +126,13 @@ source_set("impl") {
       "//components/keyed_service/core",
       "//components/live_caption:constants",
       "//components/live_caption:utils",
+      "//components/optimization_guide/public/mojom",
       "//components/prefs",
       "//components/soda",
       "//components/soda:constants",
       "//components/soda:utils",
+      "//media",
+      "//services/on_device_model/public/mojom",
     ]
   }
 
@@ -222,11 +228,15 @@ if (!is_android) {
 
   source_set("unit_tests") {
     testonly = true
-    sources = [ "speech_recognition_service_factory_unittest.cc" ]
+    sources = [
+      "speech_recognition_service_factory_unittest.cc",
+      "speech_recognition_small_expert_model_installer_unittest.cc",
+    ]
     deps = [
       ":speech",
       "//base",
       "//chrome/test:test_support",
+      "//components/live_caption:constants",
       "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",

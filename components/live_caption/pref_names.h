@@ -48,6 +48,10 @@ inline constexpr char kLiveCaptionMediaFoundationRendererErrorSilenced[] =
 inline constexpr char kHeadlessCaptionEnabled[] =
     "accessibility.captions.headless_caption_enabled";
 
+// The file path of the Speech Recognition Small Expert Model.
+inline constexpr char kSpeechRecognitionSmallExpertModelPath[] =
+    "accessibility.captions.speech_recognition_small_expert_model_path";
+
 const std::string GetLiveCaptionLanguageCode(PrefService* profile_prefs);
 bool IsLanguageCodeForLiveCaption(speech::LanguageCode language_code,
                                   PrefService* profile_prefs);

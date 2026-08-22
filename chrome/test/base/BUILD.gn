@@ -430,6 +430,7 @@ source_set("testing_browser_process") {
     public_deps += [ "//chrome/browser/upgrade_detector" ]
     deps += [
       "//chrome/browser/hid",
+      "//chrome/browser/speech",
       "//chrome/browser/usb",
       "//chrome/browser/web_applications/isolated_web_apps",
       "//components/component_updater",

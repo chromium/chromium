@@ -96,6 +96,10 @@ namespace component_updater {
 class ComponentUpdateService;
 }
 
+namespace speech {
+class SpeechRecognitionSmallExpertModelInstaller;
+}
+
 namespace gcm {
 class GCMDriver;
 }
@@ -328,6 +332,9 @@ class BrowserProcess {
   virtual UsbSystemTrayIcon* usb_system_tray_icon() = 0;
   virtual void set_usb_system_tray_icon_for_test(
       std::unique_ptr<UsbSystemTrayIcon> icon) = 0;
+
+  virtual speech::SpeechRecognitionSmallExpertModelInstaller*
+  speech_recognition_small_expert_model_installer() = 0;
 #endif
 
   // Obtain the browser instance of OSCryptAsync, which should be used for data

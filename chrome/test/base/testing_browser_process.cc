@@ -89,6 +89,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/speech/speech_recognition_small_expert_model_installer.h"
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/hid/hid_pinned_notification.h"
 #include "chrome/browser/usb/usb_pinned_notification.h"
@@ -818,10 +819,21 @@ void TestingBrowserProcess::SetStatusTray(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+speech::SpeechRecognitionSmallExpertModelInstaller*
+TestingBrowserProcess::speech_recognition_small_expert_model_installer() {
+  return speech_recognition_small_expert_model_installer_.get();
+}
+
 void TestingBrowserProcess::SetComponentUpdater(
     std::unique_ptr<component_updater::ComponentUpdateService>
         component_updater) {
   component_updater_ = std::move(component_updater);
+}
+
+void TestingBrowserProcess::SetSpeechRecognitionSmallExpertModelInstaller(
+    std::unique_ptr<speech::SpeechRecognitionSmallExpertModelInstaller>
+        installer) {
+  speech_recognition_small_expert_model_installer_ = std::move(installer);
 }
 #endif
 

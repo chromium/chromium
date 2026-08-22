@@ -57,6 +57,10 @@ class SiteIsolationPrefsObserver;
 class SystemNotificationHelper;
 class StartupData;
 
+namespace speech {
+class SpeechRecognitionSmallExpertModelInstaller;
+}  // namespace speech
+
 namespace breadcrumbs {
 class ApplicationBreadcrumbsLogger;
 }  // namespace breadcrumbs
@@ -243,6 +247,8 @@ class BrowserProcessImpl : public BrowserProcess,
   UsbSystemTrayIcon* usb_system_tray_icon() override;
   void set_usb_system_tray_icon_for_test(
       std::unique_ptr<UsbSystemTrayIcon> icon) override;
+  speech::SpeechRecognitionSmallExpertModelInstaller*
+  speech_recognition_small_expert_model_installer() override;
 #endif
 
   os_crypt_async::OSCryptAsync* os_crypt_async() override;
@@ -463,6 +469,9 @@ class BrowserProcessImpl : public BrowserProcess,
   // Used to download Screen AI on demand and keep track of the library
   // availability.
   std::unique_ptr<screen_ai::ScreenAIInstallState> screen_ai_download_;
+
+  std::unique_ptr<speech::SpeechRecognitionSmallExpertModelInstaller>
+      speech_recognition_small_expert_model_installer_;
 #endif
 
   std::unique_ptr<BrowserProcessPlatformPart> platform_part_;

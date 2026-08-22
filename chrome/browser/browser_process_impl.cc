@@ -85,6 +85,7 @@
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/site_isolation/prefs_observer.h"
+#include "chrome/browser/speech/speech_recognition_small_expert_model_installer.h"
 #include "chrome/browser/ssl/secure_origin_prefs_observer.h"
 #include "chrome/browser/startup_data.h"
 #include "chrome/browser/status_icons/status_tray.h"
@@ -1347,6 +1348,13 @@ GlobalFeatures* BrowserProcessImpl::GetFeatures() {
   return features_.get();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+speech::SpeechRecognitionSmallExpertModelInstaller*
+BrowserProcessImpl::speech_recognition_small_expert_model_installer() {
+  return speech_recognition_small_expert_model_installer_.get();
+}
+#endif
+
 DownloadRequestLimiter* BrowserProcessImpl::download_request_limiter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!download_request_limiter_.get()) {
@@ -1689,6 +1697,8 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
 
 #if !BUILDFLAG(IS_ANDROID)
   screen_ai_download_ = screen_ai::ScreenAIInstallState::Create();
+  speech_recognition_small_expert_model_installer_ =
+      std::make_unique<speech::SpeechRecognitionSmallExpertModelInstaller>();
 #endif
 
   base::FilePath user_data_dir;
