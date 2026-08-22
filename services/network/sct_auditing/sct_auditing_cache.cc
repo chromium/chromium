@@ -12,8 +12,6 @@
 #include "base/time/time.h"
 #include "components/version_info/version_info.h"
 #include "crypto/hash.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
 #include "net/base/hash_value.h"
 #include "net/cert/ct_serialization.h"
 #include "net/cert/sct_status_flags.h"

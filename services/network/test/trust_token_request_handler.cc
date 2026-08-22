@@ -19,7 +19,6 @@
 #include "base/test/bind.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
-#include "crypto/sha2.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/trust_token_http_headers.h"

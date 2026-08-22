@@ -8,7 +8,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/cbor/reader.h"
-#include "crypto/sha2.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"

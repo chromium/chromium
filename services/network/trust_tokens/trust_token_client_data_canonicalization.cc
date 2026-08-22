@@ -5,7 +5,6 @@
 #include "services/network/trust_tokens/trust_token_client_data_canonicalization.h"
 
 #include "components/cbor/writer.h"
-#include "crypto/sha2.h"
 
 namespace network {
 

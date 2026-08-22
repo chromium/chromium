@@ -66,7 +66,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
-#include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "mojo/public/cpp/system/functions.h"

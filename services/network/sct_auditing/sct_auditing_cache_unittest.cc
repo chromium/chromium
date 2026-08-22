@@ -11,8 +11,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "crypto/hash.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
 #include "net/base/hash_value.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/ct_serialization.h"
