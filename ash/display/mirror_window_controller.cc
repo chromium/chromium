@@ -359,6 +359,7 @@ void MirrorWindowController::CloseIfNotNecessary() {
 }
 
 void MirrorWindowController::Close(bool delay_host_deletion) {
+  current_event_targeter_src_host_ = nullptr;
   for (auto& info : mirroring_host_info_map_)
     CloseAndDeleteHost(info.second, delay_host_deletion);
   mirroring_host_info_map_.clear();
