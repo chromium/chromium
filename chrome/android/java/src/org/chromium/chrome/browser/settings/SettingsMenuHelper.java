@@ -87,8 +87,8 @@ public class SettingsMenuHelper {
      * @param menu The Menu to prepare.
      */
     public static void onPrepareOptionsMenu(Menu menu) {
-        if (menu.size() == 1) {
-            MenuItem item = menu.getItem(0);
+        for (int i = 0; i < menu.size(); i++) {
+            MenuItem item = menu.getItem(i);
             if (item.getIcon() != null) {
                 item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
             }

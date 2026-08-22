@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -18,6 +19,7 @@ import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -100,7 +102,7 @@ public class SettingsMenuHelperUnitTest {
         MenuItem menuItem = mock(MenuItem.class);
         when(menu.size()).thenReturn(1);
         when(menu.getItem(0)).thenReturn(menuItem);
-        when(menuItem.getIcon()).thenReturn(mock(android.graphics.drawable.Drawable.class));
+        when(menuItem.getIcon()).thenReturn(mock(Drawable.class));
 
         SettingsMenuHelper.onPrepareOptionsMenu(menu);
 
@@ -184,6 +186,24 @@ public class SettingsMenuHelperUnitTest {
         SettingsMenuHelper.updateOptionsMenu(mToolbar, mActivity, mDelegate);
 
         assertFalse(fragment.mCreateOptionsMenuCalled);
+    }
+
+    @Test
+    public void testPrepareOptionsMenu_MultipleItems() {
+        Menu menu = mock(Menu.class);
+        MenuItem itemWithIcon = mock(MenuItem.class);
+        MenuItem itemWithoutIcon = mock(MenuItem.class);
+
+        when(menu.size()).thenReturn(2);
+        when(menu.getItem(0)).thenReturn(itemWithIcon);
+        when(menu.getItem(1)).thenReturn(itemWithoutIcon);
+        when(itemWithIcon.getIcon()).thenReturn(mock(Drawable.class));
+        when(itemWithoutIcon.getIcon()).thenReturn(null);
+
+        SettingsMenuHelper.onPrepareOptionsMenu(menu);
+
+        verify(itemWithIcon).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        verify(itemWithoutIcon, never()).setShowAsAction(anyInt());
     }
 
     @Test
