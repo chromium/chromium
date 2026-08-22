@@ -19,6 +19,19 @@ if (toolkit_views) {
     ]
   }
 
+  source_set("web_app_frame_toolbar_utils") {
+    public = [ "web_app_frame_toolbar_utils.h" ]
+    sources = [ "web_app_frame_toolbar_utils.cc" ]
+    public_deps = [
+      "//build:buildflag_header_h",
+      "//ui/views",
+    ]
+    deps = [
+      "//chrome/browser/ui/views/frame:toolbar_button_provider",
+      "//chrome/browser/ui/views/toolbar",
+    ]
+  }
+
   source_set("test_support") {
     testonly = true
 
