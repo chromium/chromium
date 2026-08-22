@@ -3069,6 +3069,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/datareduction/DataSaverOSSetting.java",
       "java/src/org/chromium/chrome/browser/device_dialog/ChromeBluetoothChooserAndroidDelegate.java",
       "java/src/org/chromium/chrome/browser/device_dialog/ChromeBluetoothScanningPromptAndroidDelegate.java",
+      "java/src/org/chromium/chrome/browser/device_dialog/HidChooserDialog.java",
       "java/src/org/chromium/chrome/browser/device_dialog/SerialChooserDialog.java",
       "java/src/org/chromium/chrome/browser/device_dialog/UsbChooserDialog.java",
       "java/src/org/chromium/chrome/browser/devtools/DevToolsActivity.java",

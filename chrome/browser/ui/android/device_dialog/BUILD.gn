@@ -8,6 +8,8 @@ source_set("device_dialog") {
     "chrome_bluetooth_chooser_android_delegate.h",
     "chrome_bluetooth_scanning_prompt_android_delegate.cc",
     "chrome_bluetooth_scanning_prompt_android_delegate.h",
+    "hid_chooser_dialog_android.cc",
+    "hid_chooser_dialog_android.h",
     "serial_chooser_dialog_android.cc",
     "serial_chooser_dialog_android.h",
     "usb_chooser_dialog_android.cc",
@@ -34,6 +36,7 @@ source_set("device_dialog") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "hid_chooser_dialog_android_unittest.cc",
     "serial_chooser_dialog_android_unittest.cc",
     "usb_chooser_dialog_android_unittest.cc",
   ]
@@ -43,6 +46,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/ssl",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/hid",
     "//chrome/browser/ui/serial",
     "//chrome/browser/ui/serial:test_support",
     "//chrome/browser/usb",

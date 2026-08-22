@@ -90,6 +90,10 @@ source_set("impl") {
     "//url",
   ]
 
+  if (is_android) {
+    deps += [ "//chrome/browser/ui/android/device_dialog" ]
+  }
+
   if (!is_android) {
     sources += [
       "hid_connection_tracker.cc",
