@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
@@ -35,6 +36,7 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.AnchorInfo;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.TabStripLayoutType;
@@ -44,10 +46,15 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TabUnderlineManager
 import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
+import org.chromium.chrome.browser.dragdrop.ChromeDragDropUtils;
+import org.chromium.chrome.browser.dragdrop.ChromeMultiTabDropDataAndroid;
+import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
+import org.chromium.chrome.browser.dragdrop.ChromeTabGroupDropDataAndroid;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -60,17 +67,22 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabListMode;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.StaticPinnedTabsMediator;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabComponentId;
+import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridViewBinder;
 import org.chromium.chrome.browser.tasks.tab_management.TabListConfig;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator;
@@ -104,6 +116,9 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragAndDropDelegateImpl;
+import org.chromium.ui.dragdrop.DragDropGlobalState;
+import org.chromium.ui.dragdrop.DragDropMetricUtils;
+import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -114,6 +129,7 @@ import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
 import org.chromium.ui.widget.RectProvider;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -1364,8 +1380,149 @@ public class VerticalTabListCoordinator {
 
             @Override
             public boolean handleDrop(View view, float xPx, float yPx) {
+                boolean result = handleDropInternal(view, xPx, yPx);
                 clearDropIndicators();
-                return true;
+                return result;
+            }
+
+            private boolean handleDropInternal(View view, float xPx, float yPx) {
+                if (dragHandler.isDragSourceInstance()) {
+                    return true;
+                }
+
+                DragDropGlobalState globalState = TabDragHandlerBase.getDragDropGlobalState(null);
+                if (globalState == null) {
+                    return false;
+                }
+
+                TabModel tabModel = mTabModelSelector.getCurrentModel();
+                if (tabModel == null) {
+                    return false;
+                }
+
+                DropTargetResult dropTarget = mReorderStrategy.getLastDropTargetResult();
+                if (dropTarget == null) {
+                    dropTarget = mReorderStrategy.calculateDropTarget(view, xPx, yPx);
+                }
+                if (dropTarget == null) {
+                    return false;
+                }
+
+                int destWindowId = mMultiInstanceManager.getCurrentInstanceId();
+
+                if (globalState.getData() instanceof ChromeTabGroupDropDataAndroid) {
+                    TabGroupMetadata tabGroupMetadata =
+                            ChromeDragDropUtils.getTabGroupMetadataFromGlobalState(globalState);
+                    if (tabGroupMetadata == null) {
+                        return false;
+                    }
+                    if (tabGroupMetadata.isIncognito != tabModel.isIncognitoBranded()) {
+                        return false;
+                    }
+
+                    MultiInstanceOrchestratorFactory.getInstance()
+                            .moveTabGroupToWindowByIdChecked(
+                                    destWindowId,
+                                    tabGroupMetadata,
+                                    dropTarget.destTabIndex,
+                                    /* bringToFront= */ true);
+                    DragDropMetricUtils.recordDragDropType(
+                            DragDropType.TAB_STRIP_TO_TAB_STRIP,
+                            /* isTabGroup= */ true,
+                            /* isMultiTab= */ false);
+                    return true;
+                } else if (globalState.getData() instanceof ChromeMultiTabDropDataAndroid) {
+                    // TODO(crbug.com/550564967): Support multi-tab drop reparenting in Vertical
+                    // Tabs.
+                    return false;
+                } else if (globalState.getData() instanceof ChromeTabDropDataAndroid) {
+                    Tab tab = ChromeDragDropUtils.getTabFromGlobalState(globalState);
+                    if (tab == null) {
+                        return false;
+                    }
+                    if (tab.isIncognitoBranded() != tabModel.isIncognitoBranded()) {
+                        return false;
+                    }
+
+                    maybeUngroupTab(tab, (ChromeTabDropDataAndroid) globalState.getData());
+
+                    int destGroupTabId = dropTarget.destGroupTabId;
+                    int destTabIndex = dropTarget.destTabIndex;
+                    int indexInGroup = TabList.INVALID_TAB_INDEX;
+
+                    if (destGroupTabId != TabList.INVALID_TAB_INDEX) {
+                        Tab destGroupTab = tabModel.getTabById(destGroupTabId);
+                        if (destGroupTab != null) {
+                            Token groupId = destGroupTab.getTabGroupId();
+                            List<Tab> groupTabs =
+                                    groupId != null
+                                            ? tabModel.getTabsInGroup(groupId)
+                                            : Collections.emptyList();
+                            int firstGroupModelIndex =
+                                    !groupTabs.isEmpty()
+                                            ? tabModel.indexOf(groupTabs.get(0))
+                                            : destTabIndex;
+                            indexInGroup =
+                                    MathUtils.clamp(
+                                            destTabIndex - firstGroupModelIndex,
+                                            0,
+                                            groupTabs.size());
+                        }
+                    }
+
+                    MultiInstanceOrchestratorFactory.getInstance()
+                            .moveTabsToWindowByIdChecked(
+                                    destWindowId,
+                                    Collections.singletonList(tab),
+                                    destTabIndex,
+                                    /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                                    /* bringToFront= */ true);
+
+                    if (destGroupTabId != TabList.INVALID_TAB_INDEX) {
+                        Tab destGroupTab = tabModel.getTabById(destGroupTabId);
+                        if (destGroupTab != null && indexInGroup != TabList.INVALID_TAB_INDEX) {
+                            tabModel.mergeListOfTabsToGroup(
+                                    Collections.singletonList(tab),
+                                    destGroupTab,
+                                    indexInGroup,
+                                    TabGroupMergeNotificationType.DONT_NOTIFY);
+                        }
+                    }
+
+                    DragDropMetricUtils.recordDragDropType(
+                            DragDropType.TAB_STRIP_TO_TAB_STRIP,
+                            /* isTabGroup= */ false,
+                            /* isMultiTab= */ false);
+                    return true;
+                }
+
+                return false;
+            }
+
+            private void maybeUngroupTab(Tab tab, ChromeTabDropDataAndroid dropData) {
+                if (tab.getTabGroupId() == null && !dropData.isTabInGroup) {
+                    return;
+                }
+                TabModel sourceTabModel = null;
+                if (dropData.windowId != TabWindowManager.INVALID_WINDOW_ID) {
+                    TabModelSelector sourceSelector =
+                            TabWindowManagerSingleton.getInstance()
+                                    .getTabModelSelectorById(dropData.windowId);
+                    if (sourceSelector != null) {
+                        sourceTabModel = sourceSelector.getModel(tab.isIncognitoBranded());
+                    }
+                }
+                if (sourceTabModel == null) {
+                    sourceTabModel = TabWindowManagerSingleton.getInstance().getTabModelForTab(tab);
+                }
+                if (sourceTabModel != null && sourceTabModel.isTabInTabGroup(tab)) {
+                    sourceTabModel
+                            .getTabUngrouper()
+                            .ungroupTabs(
+                                    Collections.singletonList(tab),
+                                    /* trailing= */ true,
+                                    /* allowDialog= */ false);
+                }
             }
         };
     }

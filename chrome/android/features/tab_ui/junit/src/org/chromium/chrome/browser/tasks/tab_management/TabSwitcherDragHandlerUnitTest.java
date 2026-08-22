@@ -499,4 +499,23 @@ public class TabSwitcherDragHandlerUnitTest {
 
         DragDropGlobalState.clear(token);
     }
+
+    @Test
+    public void testOnDrag_DragEnded_WithNullGlobalState_DoesNotCrash() {
+        View targetView = new View(ContextUtils.getApplicationContext());
+
+        // Set mDragSourceView on the handler to simulate state before drag end, but with null
+        // global state.
+        mDragHandler.mDragSourceView = targetView;
+
+        DragEvent dragEndEvent = mock(DragEvent.class);
+        when(dragEndEvent.getAction()).thenReturn(DragEvent.ACTION_DRAG_ENDED);
+        when(dragEndEvent.getResult()).thenReturn(true);
+        when(dragEndEvent.getX()).thenReturn(50f);
+        when(dragEndEvent.getY()).thenReturn(50f);
+
+        // onDrag must complete without throwing AssertionError.
+        mDragHandler.onDrag(targetView, dragEndEvent);
+        verify(mDragHandlerDelegate).handleExternalDragEnd(targetView, 50f, 50f, false);
+    }
 }

@@ -346,6 +346,7 @@ public abstract class TabDragHandlerBase
         if (!res) {
             // The drag failed to start reset the token.
             clearDragDropGlobalState();
+            mDragSourceView = null;
         } else {
             // The drag succeed we can begin the drag.
             setTabDraggingState(dropData, true);
