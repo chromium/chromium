@@ -3685,16 +3685,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private VerticalTabsActionDelegate createVerticalTabsActionDelegate() {
         return new VerticalTabsActionDelegate() {
             @Override
-            public void openHubPane(int paneId) {
-                if (mLayoutManager == null) return;
-
-                // Opens the tab switcher and displays a specific pane.
-                HubShowPaneHelper hubShowPaneHelper = mHubProvider.getHubShowPaneHelper();
-                hubShowPaneHelper.setPaneToShow(paneId);
-                mLayoutManager.showLayout(LayoutType.HUB, true);
-            }
-
-            @Override
             public void openTabSearch() {
                 if (mRootUiCoordinator != null) {
                     ((TabbedRootUiCoordinator) mRootUiCoordinator)
@@ -3704,7 +3694,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             @Override
             public void openHubSearch() {
-                openHubPane(PaneId.TAB_SWITCHER);
                 onMenuOrKeyboardAction(R.id.tab_search, /* fromMenu= */ false);
             }
         };

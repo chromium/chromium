@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
-import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -431,13 +430,6 @@ public class VerticalTabListCoordinator {
                     });
         }
 
-        View gridButton = mContainerView.findViewById(R.id.grid_button);
-        if (gridButton != null) {
-            gridButton.setOnTouchListener(createLocalCoordinateTrackingTouchListener());
-            gridButton.setOnContextClickListener(
-                    createEmptySpaceContextClickListener(activity, gridButton));
-        }
-
         View tabSearchButton = mContainerView.findViewById(R.id.tab_search_button);
         if (tabSearchButton != null) {
             tabSearchButton.setOnTouchListener(createLocalCoordinateTrackingTouchListener());
@@ -503,9 +495,6 @@ public class VerticalTabListCoordinator {
 
         mContainerModel =
                 new PropertyModel.Builder(VerticalTabListProperties.ALL_KEYS)
-                        .with(
-                                VerticalTabListProperties.ON_GRID_CLICK_LISTENER,
-                                v -> verticalTabsActionDelegate.openHubPane(PaneId.TAB_GROUPS))
                         .with(
                                 VerticalTabListProperties.ON_SEARCH_CLICK_LISTENER,
                                 v -> {

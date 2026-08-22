@@ -25,7 +25,6 @@ import android.view.InputDevice;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -53,7 +52,6 @@ import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTa
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link VerticalTabRailLayout} and {@link VerticalTabListViewBinder}. */
@@ -62,7 +60,6 @@ public class VerticalTabRailLayoutUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Callback<Integer> mMockHoverListener;
-    @Mock private View.OnClickListener mGridClickListener;
     @Mock private View.OnClickListener mSearchClickListener;
     @Mock private View.OnClickListener mNewTabClickListener;
     @Mock private View.OnClickListener mCollapseClickListener;
@@ -93,7 +90,6 @@ public class VerticalTabRailLayoutUnitTest {
                         .with(
                                 VerticalTabListProperties.EXPAND_OR_COLLAPSE_ON_HOVER_LISTENER,
                                 mMockHoverListener)
-                        .with(VerticalTabListProperties.ON_GRID_CLICK_LISTENER, mGridClickListener)
                         .with(
                                 VerticalTabListProperties.ON_SEARCH_CLICK_LISTENER,
                                 mSearchClickListener)
@@ -114,7 +110,6 @@ public class VerticalTabRailLayoutUnitTest {
     public void tearDown() {
         DeviceInfo.resetIsDesktopForTesting();
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(null);
-        LocalizationUtils.setRtlForTesting(false);
     }
 
     @Test
@@ -123,7 +118,6 @@ public class VerticalTabRailLayoutUnitTest {
         assertNotNull(mRailLayout.getRecyclerView());
         assertNotNull(mRailLayout.getPinnedTabsRecyclerView());
         assertNotNull(mRailLayout.getHeaderContainer());
-        assertNotNull(mRailLayout.getTabActionButtonsContainer());
         assertNotNull(mRailLayout.getFooterContainer());
         assertNotNull(mRailLayout.getIncognitoButton());
     }
@@ -131,12 +125,6 @@ public class VerticalTabRailLayoutUnitTest {
     @Test
     @SmallTest
     public void testHeaderAndNewTabButtonTooltips() {
-        View gridButton = mRailLayout.findViewById(R.id.grid_button);
-        assertNotNull(gridButton);
-        assertEquals(
-                mRailLayout.getContext().getString(R.string.accessibility_tab_groups),
-                gridButton.getTooltipText());
-
         View searchButton = mRailLayout.findViewById(R.id.tab_search_button);
         assertNotNull(searchButton);
         assertEquals(
@@ -162,46 +150,22 @@ public class VerticalTabRailLayoutUnitTest {
 
     @Test
     @SmallTest
-    public void testSetCollapseState_ExpandedWideAndNarrowAndCollapsed() {
+    public void testSetCollapseState_ExpandedAndCollapsed() {
         int minSingleRowRailWidthPx = mRailLayout.getMinSingleButtonRowWidthPxForTesting();
-        int twoRowButtonRailWidthPx = minSingleRowRailWidthPx - 1;
 
-        View gridButton = mRailLayout.findViewById(R.id.grid_button);
-        View searchButton = mRailLayout.findViewById(R.id.tab_search_button);
         LinearLayout header = mRailLayout.getHeaderContainer();
         View spacer = mRailLayout.findViewById(R.id.header_spacer);
-        LinearLayout tabActionContainer = mRailLayout.getTabActionButtonsContainer();
 
         // 1. Expanded Wide (single row)
         mRailLayout.setCollapseState(RailCollapseState.EXPANDED);
         measureAndLayout(mRailLayout, minSingleRowRailWidthPx, 500);
         assertEquals(LinearLayout.HORIZONTAL, header.getOrientation());
         assertEquals(View.VISIBLE, spacer.getVisibility());
-        assertEquals(LinearLayout.HORIZONTAL, tabActionContainer.getOrientation());
-        assertEquals(
-                0.0f, ((LinearLayout.LayoutParams) gridButton.getLayoutParams()).weight, 0.01f);
-        assertEquals(
-                0.0f, ((LinearLayout.LayoutParams) searchButton.getLayoutParams()).weight, 0.01f);
 
-        // 2. Expanded Narrow (two rows, filling space)
-        measureAndLayout(mRailLayout, twoRowButtonRailWidthPx, 500);
-        assertEquals(LinearLayout.VERTICAL, header.getOrientation());
-        assertEquals(View.GONE, spacer.getVisibility());
-        assertEquals(LinearLayout.HORIZONTAL, tabActionContainer.getOrientation());
-        assertEquals(
-                1.0f, ((LinearLayout.LayoutParams) gridButton.getLayoutParams()).weight, 0.01f);
-        assertEquals(
-                1.0f, ((LinearLayout.LayoutParams) searchButton.getLayoutParams()).weight, 0.01f);
-        assertEquals(
-                ViewGroup.LayoutParams.MATCH_PARENT, tabActionContainer.getLayoutParams().width);
-
-        // 3. Explicit Collapsed State (single column / three rows)
+        // 2. Explicit Collapsed State (single column)
         mRailLayout.setCollapseState(RailCollapseState.COLLAPSED);
         assertEquals(LinearLayout.VERTICAL, header.getOrientation());
         assertEquals(View.GONE, spacer.getVisibility());
-        assertEquals(LinearLayout.VERTICAL, tabActionContainer.getOrientation());
-        assertEquals(
-                0.0f, ((LinearLayout.LayoutParams) gridButton.getLayoutParams()).weight, 0.01f);
 
         View newTabButton = mRailLayout.findViewById(R.id.new_tab_button);
         assertEquals(
@@ -232,62 +196,54 @@ public class VerticalTabRailLayoutUnitTest {
                                         ? R.dimen.vertical_tabs_header_button_size_tablet
                                         : R.dimen.vertical_tabs_header_button_size);
 
-        View gridButton = mRailLayout.findViewById(R.id.grid_button);
+        View searchButton = mRailLayout.findViewById(R.id.tab_search_button);
 
         // 1. Initial size in single row mode.
         mRailLayout.setCollapseState(RailCollapseState.EXPANDED);
         measureAndLayout(mRailLayout, minSingleRowRailWidthPx + 100, 500);
-        assertEquals(buttonSize, gridButton.getLayoutParams().width);
+        assertEquals(buttonSize, searchButton.getLayoutParams().width);
 
         // 2. Mutate a layout param to a custom value to verify it is not overwritten.
-        var params = gridButton.getLayoutParams();
+        var params = searchButton.getLayoutParams();
         params.width = 999;
-        gridButton.setLayoutParams(params);
+        searchButton.setLayoutParams(params);
 
         // 3. Size change with a different wide width (still single row).
         measureAndLayout(mRailLayout, minSingleRowRailWidthPx + 50, 500);
         // Action is skipped because mode hasn't changed; width remains custom value 999.
-        assertEquals(999, gridButton.getLayoutParams().width);
+        assertEquals(999, searchButton.getLayoutParams().width);
 
-        // 4. Size change with narrow width (transitions to two-row mode).
+        // 4. Size change with narrow width (transitions to a vertical layout).
         measureAndLayout(mRailLayout, narrowRailWidthPx, 500);
-        // Action is performed; width is reset to 0 with weight 1.0.
-        assertEquals(0, gridButton.getLayoutParams().width);
-        assertEquals(
-                1.0f, ((LinearLayout.LayoutParams) gridButton.getLayoutParams()).weight, 0.01f);
+        // Action is performed; width is reset.
+        assertEquals(buttonSize, searchButton.getLayoutParams().width);
     }
 
     @Test
     @SmallTest
-    public void testColdStart_UnmeasuredToNarrowLayout_TransitionsToTwoRows() {
+    public void testColdStart_UnmeasuredToNarrowLayout_TransitionsToVertical() {
         int minSingleRowRailWidthPx = mRailLayout.getMinSingleButtonRowWidthPxForTesting();
         int narrowRailWidthPx = minSingleRowRailWidthPx - 1;
 
-        View gridButton = mRailLayout.findViewById(R.id.grid_button);
         LinearLayout header = mRailLayout.getHeaderContainer();
 
         // Initial cold start inflate has width 0 (unmeasured), defaults to single row.
         assertEquals(LinearLayout.HORIZONTAL, header.getOrientation());
 
-        // Measure with narrow width must configure two rows before layout.
+        // Measure with narrow width must configure vertical layout before layout.
         int widthSpec =
                 View.MeasureSpec.makeMeasureSpec(narrowRailWidthPx, View.MeasureSpec.EXACTLY);
         int heightSpec = View.MeasureSpec.makeMeasureSpec(500, View.MeasureSpec.EXACTLY);
         mRailLayout.measure(widthSpec, heightSpec);
         assertEquals(LinearLayout.VERTICAL, header.getOrientation());
 
-        // Layout pass at narrow width preserves two rows.
+        // Layout pass at narrow width preserves vertical layout.
         measureAndLayout(mRailLayout, narrowRailWidthPx, 500);
         assertEquals(LinearLayout.VERTICAL, header.getOrientation());
-        assertEquals(0, gridButton.getLayoutParams().width);
-        assertEquals(
-                1.0f, ((LinearLayout.LayoutParams) gridButton.getLayoutParams()).weight, 0.01f);
 
-        // Subsequent PropertyModel bind must not overwrite the two-row layout params.
+        // Subsequent PropertyModel bind must not overwrite the vertical layout params.
         VerticalTabListViewBinder.bind(mModel, mRailLayout, VerticalTabListProperties.IS_INCOGNITO);
-        assertEquals(0, gridButton.getLayoutParams().width);
-        assertEquals(
-                1.0f, ((LinearLayout.LayoutParams) gridButton.getLayoutParams()).weight, 0.01f);
+        assertEquals(LinearLayout.VERTICAL, header.getOrientation());
     }
 
     @Test
@@ -368,12 +324,6 @@ public class VerticalTabRailLayoutUnitTest {
     @SmallTest
     public void testBindClickListeners() {
         VerticalTabListViewBinder.bind(
-                mModel, mRailLayout, VerticalTabListProperties.ON_GRID_CLICK_LISTENER);
-        View gridButton = mRailLayout.findViewById(R.id.grid_button);
-        gridButton.performClick();
-        verify(mGridClickListener).onClick(gridButton);
-
-        VerticalTabListViewBinder.bind(
                 mModel, mRailLayout, VerticalTabListProperties.ON_SEARCH_CLICK_LISTENER);
         View searchButton = mRailLayout.findViewById(R.id.tab_search_button);
         searchButton.performClick();
@@ -426,6 +376,15 @@ public class VerticalTabRailLayoutUnitTest {
 
     @Test
     @SmallTest
+    public void testSearchButtonBackground() {
+        View searchButton = mRailLayout.findViewById(R.id.tab_search_button);
+        assertEquals(
+                R.drawable.vertical_tabs_button_background,
+                shadowOf(searchButton.getBackground()).getCreatedFromResId());
+    }
+
+    @Test
+    @SmallTest
     public void testBindIncognitoColors_Regular() {
         mModel.set(VerticalTabListProperties.IS_INCOGNITO, false);
         VerticalTabListViewBinder.bind(mModel, mRailLayout, VerticalTabListProperties.IS_INCOGNITO);
@@ -441,8 +400,8 @@ public class VerticalTabRailLayoutUnitTest {
         assertNotNull(iconTint);
         assertEquals(SemanticColorUtils.getDefaultIconColor(mActivity), iconTint.getDefaultColor());
 
-        View gridButton = mRailLayout.findViewById(R.id.grid_button);
-        assertNull(gridButton.getBackgroundTintList());
+        View searchButton = mRailLayout.findViewById(R.id.tab_search_button);
+        assertNull(searchButton.getBackgroundTintList());
     }
 
     @Test
@@ -464,20 +423,12 @@ public class VerticalTabRailLayoutUnitTest {
                 mActivity.getColor(R.color.incognito_tab_action_button_color),
                 iconTint.getDefaultColor());
 
-        View gridButton = mRailLayout.findViewById(R.id.grid_button);
-        ColorStateList buttonBgTint = gridButton.getBackgroundTintList();
+        View searchButton = mRailLayout.findViewById(R.id.tab_search_button);
+        ColorStateList buttonBgTint = searchButton.getBackgroundTintList();
         assertNotNull(buttonBgTint);
         assertEquals(
-                mActivity.getColor(R.color.gm3_baseline_surface_container_dark),
+                mActivity.getColor(R.color.incognito_vertical_tabs_button_background_color),
                 buttonBgTint.getDefaultColor());
-        assertEquals(
-                mActivity.getColor(R.color.gm3_baseline_surface_container_high_dark),
-                buttonBgTint.getColorForState(
-                        new int[] {android.R.attr.state_hovered}, buttonBgTint.getDefaultColor()));
-        assertEquals(
-                mActivity.getColor(R.color.gm3_baseline_surface_container_high_dark),
-                buttonBgTint.getColorForState(
-                        new int[] {android.R.attr.state_pressed}, buttonBgTint.getDefaultColor()));
     }
 
     @Test
@@ -535,61 +486,6 @@ public class VerticalTabRailLayoutUnitTest {
 
         assertEquals(32, expectedDefaultButtonSize);
         assertEquals(32, expectedDefaultNewTabHeight);
-    }
-
-    @Test
-    @SmallTest
-    public void testHeaderButtonBackgrounds_Ltr() {
-        View gridButton = mRailLayout.findViewById(R.id.grid_button);
-        View searchButton = mRailLayout.findViewById(R.id.tab_search_button);
-
-        // Expanded
-        mRailLayout.setCollapseState(RailCollapseState.EXPANDED);
-        assertEquals(
-                R.drawable.vertical_tabs_left_rounded_button_background,
-                shadowOf(gridButton.getBackground()).getCreatedFromResId());
-        assertEquals(
-                R.drawable.vertical_tabs_right_rounded_button_background,
-                shadowOf(searchButton.getBackground()).getCreatedFromResId());
-
-        // Collapsed
-        mRailLayout.setCollapseState(RailCollapseState.COLLAPSED);
-        assertEquals(
-                R.drawable.vertical_tabs_top_rounded_button_background,
-                shadowOf(gridButton.getBackground()).getCreatedFromResId());
-        assertEquals(
-                R.drawable.vertical_tabs_bottom_rounded_button_background,
-                shadowOf(searchButton.getBackground()).getCreatedFromResId());
-    }
-
-    @Test
-    @SmallTest
-    public void testHeaderButtonBackgrounds_Rtl() {
-        LocalizationUtils.setRtlForTesting(true);
-
-        VerticalTabRailLayout rtlLayout =
-                (VerticalTabRailLayout)
-                        LayoutInflater.from(mActivity)
-                                .inflate(R.layout.vertical_tab_layout, null, false);
-        View gridButton = rtlLayout.findViewById(R.id.grid_button);
-        View searchButton = rtlLayout.findViewById(R.id.tab_search_button);
-
-        // Expanded (swapped corners in RTL)
-        assertEquals(
-                R.drawable.vertical_tabs_right_rounded_button_background,
-                shadowOf(gridButton.getBackground()).getCreatedFromResId());
-        assertEquals(
-                R.drawable.vertical_tabs_left_rounded_button_background,
-                shadowOf(searchButton.getBackground()).getCreatedFromResId());
-
-        // Collapsed
-        rtlLayout.setCollapseState(RailCollapseState.COLLAPSED);
-        assertEquals(
-                R.drawable.vertical_tabs_top_rounded_button_background,
-                shadowOf(gridButton.getBackground()).getCreatedFromResId());
-        assertEquals(
-                R.drawable.vertical_tabs_bottom_rounded_button_background,
-                shadowOf(searchButton.getBackground()).getCreatedFromResId());
     }
 
     @Test

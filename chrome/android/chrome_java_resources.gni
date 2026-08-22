@@ -322,7 +322,6 @@ chrome_java_resources = [
   "java/res/drawable/ic_google_services_24dp.xml",
   "java/res/drawable/ic_google_services_48dp.xml",
   "java/res/drawable/ic_google_services_48dp_with_bg.xml",
-  "java/res/drawable/ic_grid_view_16dp.xml",
   "java/res/drawable/ic_grid_view_24dp.xml",
   "java/res/drawable/ic_group_24dp.xml",
   "java/res/drawable/ic_image_descriptions.xml",
