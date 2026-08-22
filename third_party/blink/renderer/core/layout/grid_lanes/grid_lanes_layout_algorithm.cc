@@ -1544,9 +1544,12 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
           item_index, child_layout_subtree, out_grid_lanes);
 
       // Update auto-placement cursor after we have determined the item's final
-      // placement.
-      running_positions.UpdateAutoPlacementCursor(
-          grid_lanes_item.resolved_position, grid_axis_direction);
+      // placement; the cursor should only move after an auto-placed item is
+      // placed.
+      if (grid_lanes_item.is_auto_placed) {
+        running_positions.UpdateAutoPlacementCursor(
+            grid_lanes_item.resolved_position, grid_axis_direction);
+      }
     }
 
     if (placement_phase == PlacementPhase::kCalculateBaselines) {
