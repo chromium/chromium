@@ -108,7 +108,6 @@ public class NoDynamicStringsInTraceEventCheck extends BugChecker
                 return this;
             }
         }
-        ;
 
         @Override
         protected Result defaultAction(Tree tree, Void p) {
@@ -150,5 +149,4 @@ public class NoDynamicStringsInTraceEventCheck extends BugChecker
             return Result.createError("Unhandled identifier kind: " + node.getKind() + '.');
         }
     }
-    ;
 }
