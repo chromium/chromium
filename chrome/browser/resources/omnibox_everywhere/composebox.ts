@@ -68,6 +68,7 @@ export class OmniboxEverywhereComposeboxElement extends ComposeboxEmbedderMixin
       disableComposeboxAnimation: {type: Boolean},
       energyEffectAnimationEnabled: {type: Boolean},
       submitButtonIconType: {type: String},
+      clearAllInputsWhenSubmittingQuery: {type: Boolean},
       screenshotMenuOpen: {
         type: Boolean,
         reflect: true,
@@ -85,6 +86,10 @@ export class OmniboxEverywhereComposeboxElement extends ComposeboxEmbedderMixin
   override accessor energyEffectAnimationEnabled: boolean =
       getLoadTimeBoolean('composeboxEnergyEffectAnimationEnabled', true);
   override accessor submitButtonIconType = SubmitButtonIconType.FORWARD;
+  // Because Omnibox Everywhere keeps its WebContents alive in the background
+  // across hide/show cycles, clear all inputs and attachments upon query
+  // submission so subsequent invocations start fresh.
+  override accessor clearAllInputsWhenSubmittingQuery: boolean = true;
   protected accessor screenshotMenuOpen: boolean = false;
 
   override onVoiceSearchButtonClick() {
@@ -274,6 +279,7 @@ export class OmniboxEverywhereComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   setInputText(text: string) {
+    this.input = text;
     const inputElem = this.getInputElement();
     if (inputElem) {
       inputElem.input = text;

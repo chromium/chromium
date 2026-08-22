@@ -219,6 +219,7 @@ export class OmniboxEverywhereOmniboxElement extends
 
   setInputText(text: string) {
     this.$.input.setInputText(text);
+    this.hasUserInput_ = !!text.trim();
   }
 
   getDropTarget() {
@@ -247,6 +248,24 @@ export class OmniboxEverywhereOmniboxElement extends
 
   override pageHandler(): PageHandlerInterface {
     return this.pageHandler_;
+  }
+
+  // Because Omnibox Everywhere keeps its WebContents alive in the background
+  // across hide/show cycles, input text must be explicitly cleared on match
+  // navigation/submission so subsequent invocations start with a clean input.
+  override navigateToMatch(matchIndex: number, e: KeyboardEvent|MouseEvent) {
+    super.navigateToMatch(matchIndex, e);
+    this.setInputText('');
+  }
+
+  override openCtrlEnterMatch(matchIndex: number) {
+    super.openCtrlEnterMatch(matchIndex);
+    this.setInputText('');
+  }
+
+  override onMatchClick() {
+    super.onMatchClick();
+    this.setInputText('');
   }
 
   //========================================================================
@@ -426,6 +445,8 @@ export class OmniboxEverywhereOmniboxElement extends
       error: error,
       smartTabSharingActive: false,
     });
+    // Clear searchbox input so stale text does not linger behind composebox.
+    this.setInputText('');
   }
 
   protected async openComposeboxWithMode_(mode?: ToolMode, model?: ModelMode) {
@@ -455,6 +476,7 @@ export class OmniboxEverywhereOmniboxElement extends
           e.detail.ctrlKey, e.detail.metaKey, e.detail.shiftKey,
           /* isVoiceSearch */ false);
       this.clearAutocompleteMatches();
+      this.setInputText('');
     } else {
       this.openComposeboxWithMode_();
     }

@@ -14,6 +14,7 @@ export function getHtml(this: OmniboxEverywhereAppElement) {
     <omnibox-everywhere-composebox id="composebox" searchbox-next-enabled
         searchbox-layout-mode="${this.searchboxLayoutMode_}"
         .state="${this.composeboxState_}"
+        .clearAllInputsWhenSubmittingQuery="${true}"
         @close-composebox="${this.onCloseComposebox_}"
         @composebox-submit="${this.onComposeboxSubmit_}"
         @open-voice-search="${this.onOpenVoiceSearch_}"
