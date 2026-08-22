@@ -1402,6 +1402,7 @@ Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" 
         |TIME_LIMITS| áp dụng giới hạn mức sử dụng hằng ngày và khiến người dùng không thể sử dụng ứng dụng sau khi đạt đến giới hạn đó vào ngày cụ thể. Giới hạn mức sử dụng được chỉ định theo |daily_limit_mins|. Hằng ngày, hệ thống sẽ đặt lại giới hạn mức sử dụng vào thời gian (theo giờ UTC) đã chỉ định trong |reset_at|.
         Chính sách này chỉ dùng cho người dùng là trẻ em.
         Chính sách này sẽ bổ sung cho 'UsageTimeLimit'. Các giới hạn đã chỉ định trong 'UsageTimeLimit' như thời gian sử dụng thiết bị và giờ đi ngủ sẽ được thực thi bất kể 'PerAppTimeLimits' là như thế nào.</translation>
+<translation id="1911003883066847257">Kiểm soát các chế độ cài đặt chạy lại và khởi động lại trình duyệt.</translation>
 <translation id="19133869326547269">Chính sách này không được dùng nữa và không có hiệu lực vì tính năng Nhấp để gọi đã bị loại bỏ khỏi Chrome.
 
 Nội dung mô tả gốc:

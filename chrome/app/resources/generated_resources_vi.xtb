@@ -354,6 +354,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1251993298181157401">{BOOKMARK_COUNT,plural, =1{Có 1 dấu trang và một số mục khác chỉ được lưu trên thiết bị này. Để sử dụng những dữ liệu này trên các thiết bị khác, hãy lưu dữ liệu vào Tài khoản Google của bạn. Thao tác này cũng sẽ dọn dẹp các mục trùng lặp.}other{Có {BOOKMARK_COUNT} dấu trang và một số mục khác chỉ được lưu trên thiết bị này. Để sử dụng những dữ liệu này trên các thiết bị khác, hãy lưu dữ liệu vào Tài khoản Google của bạn. Thao tác này cũng sẽ dọn dẹp các mục trùng lặp.}}</translation>
 <translation id="125220115284141797">Mặc định</translation>
 <translation id="1252219782845132919">Ẩn nhóm</translation>
+<translation id="1252597096488926946">Bỏ ghim nút cuộn</translation>
 <translation id="1252987234827889034">Đã xảy ra lỗi hồ sơ</translation>
 <translation id="1254034280040157728">Hẻm núi Grand Canyon</translation>
 <translation id="1254593899333212300">Kết nối Internet trực tiếp</translation>
@@ -985,6 +986,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1755601632425835748">Cỡ chữ</translation>
 <translation id="1756963401828337401">Chọn một màn hình để chụp</translation>
 <translation id="17584710573359123">Xem trong Cửa hàng Chrome trực tuyến</translation>
+<translation id="176013700366797492">Truy cập Google Wallet để kiểm soát <ph name="BEGIN_LINK1" />các lựa chọn ưu tiên về dữ liệu và quyền riêng tư<ph name="END_LINK1" /> hoặc quản lý <ph name="BEGIN_LINK2" />phương thức thanh toán<ph name="END_LINK2" /> và <ph name="BEGIN_LINK3" />thẻ/vé<ph name="END_LINK3" /> như thẻ khách hàng thân thiết và giấy tờ tuỳ thân</translation>
 <translation id="1761402971842586829">Đã liên kết lại <ph name="BUTTON_NAME" /> với <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Tài khoản của <ph name="NAME" /></translation>
 <translation id="176272781006230109">các đề xuất mua sắm</translation>
@@ -1971,6 +1973,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2508747373511408451">Ứng dụng <ph name="APPLICATION_NAME" /> cần có Google Drive thì mới hoạt động được.</translation>
 <translation id="2509495747794740764">Số tỷ lệ phải là một số giữa 10 và 200.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2509918030571808322"><ph name="TASK_TITLE" />: <ph name="STEP_PROGRESS" /></translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (đã chọn)</translation>
 <translation id="2513904627589542105">Tự kiểm tra</translation>
 <translation id="251425554130284360">Bạn đang xem danh sách các trang bạn từng truy cập và cụm từ tìm kiếm đề xuất. Danh sách này sẽ giúp bạn dễ dàng quay lại hoạt động gần đây nhất của mình.
@@ -5011,6 +5014,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4831226137013573603">tắt micrô</translation>
 <translation id="483262387981411190">Tạm dừng hoặc tiếp tục điều khiển bằng khuôn mặt</translation>
 <translation id="4833683849865011483">Tìm thấy 1 máy in trên máy chủ máy in</translation>
+<translation id="4834388789911023644">Viết bài đánh giá</translation>
 <translation id="4835598628985424375">Ngập môi lại bằng cách mím chặt môi</translation>
 <translation id="4835677468087803981">Ẩn mã PIN</translation>
 <translation id="4836504898754963407">Quản lý vân tay số</translation>
@@ -8576,6 +8580,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7625823789272218216">Thẻ mới ở bên Trái</translation>
 <translation id="762730429396410864">Thiết lập thủ công cấp hiệu suất của CPU được báo cáo cho các trang web</translation>
 <translation id="7627749368210392160">Trang web có thể sử dụng tính năng này để truy cập vào các thiết bị khác trên mạng cục bộ của bạn</translation>
+<translation id="7628068697012244394">Viết bài đánh giá</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Lớp <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Chọn một thao tác cho mỗi phím</translation>
 <translation id="7629206210984165492">Trầm lặng</translation>
@@ -9002,6 +9007,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7949038991703929816">Không tải được nhật ký. Đảm bảo các tệp chứa nhật ký trình cập nhật hợp lệ.</translation>
 <translation id="7950629216186736592">Lý do: Chế độ hỗ trợ trình duyệt cũ (LBS) chỉ hỗ trợ http://, https:// và file:// URL.</translation>
 <translation id="7950814699499457511">Đang bật • Tiện ích này chưa công bố các phương thức bảo vệ quyền riêng tư, chẳng hạn như cách tiện ích thu thập và sử dụng dữ liệu</translation>
+<translation id="7951159420392892566">Bỏ ghim nút cuộn</translation>
 <translation id="795130320946928025">Tắt thẻ ảo</translation>
 <translation id="7952708427581814389">Các trang web có thể yêu cầu xem văn bản và hình ảnh trên bảng nhớ tạm</translation>
 <translation id="7953236668995583915">Tải lại trang để áp dụng chế độ cài đặt đã cập nhật trên trang web này</translation>

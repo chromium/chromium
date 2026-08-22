@@ -695,6 +695,7 @@
 <translation id="325717987950204592">Ketik "Privasi dan Keselamatan"</translation>
 <translation id="3259451381796379533">Akaun ini tidak akan berfungsi dengan Gemini. Log masuk dengan Google Account yang lain.</translation>
 <translation id="3265736395246760288">Log masuk dengan lebih pantas daripada mana-mana peranti anda yang disegerakkan.</translation>
+<translation id="3268166994745151153">Hal ini bermakna anda akan kehilangan kemajuan semasa anda</translation>
 <translation id="3272527697863656322">Batal</translation>
 <translation id="3272955648592358996">Data anda meningkatkan Google AI</translation>
 <translation id="3273510436356991673">Sesuaikan skrin utama</translation>
@@ -1098,6 +1099,7 @@
 <translation id="4652817563047461855">Pastikan kata laluan anda selamat, pastikan jika kata laluan anda telah terjejas dan dapatkan nasihat untuk melindungi diri anda dalam talian. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Hidupkan perkongsian tab</translation>
 <translation id="4658335131052370646">Simpan</translation>
+<translation id="465947902531722727">Tukar Profil</translation>
 <translation id="466307903888586355">Penyimpanan fail disekat oleh organisasi anda</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Organisasi anda menghendaki anda menyemak imbas secara peribadi. Kumpulan tab tidak disegerakkan dalam mod Inkognito.
@@ -1208,6 +1210,7 @@
 <translation id="4979397965658815378">Log masuk dengan Google Account anda untuk mendapatkan penanda halaman, kata laluan, sejarah dan tetapan anda yang lain pada semua peranti anda</translation>
 <translation id="4985921635659180565">Setelah fail dijadualkan untuk dipadamkan, tindakan tersebut tidak boleh dibatalkan.</translation>
 <translation id="498624032394115435">Sesiapa sahaja yang mempunyai pautan boleh mengedit semua tab.</translation>
+<translation id="498768198683310172">Mula menggunakan Gemini</translation>
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, diurus oleh organisasi anda.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Kumpulan tab berwarna <ph name="COLOR" /></translation>
@@ -2153,6 +2156,7 @@ Untuk meneruskan proses daripada komputer anda, beralih kepada <ph name="OTHER_E
 <translation id="8011489434346330032">Pemeriksa Web</translation>
 <translation id="8014007212279733632">Sahkan identiti anda untuk membuat autolengkap maklumat sensitif</translation>
 <translation id="8015826420689927262">Padamkan lampiran</translation>
+<translation id="8016869623424294549">Anda akan menukar profil</translation>
 <translation id="8017015647846870183">Daripada Google Password Manager, termasuk kata laluan dan kunci laluan</translation>
 <translation id="802154636333426148">Muat turun gagal</translation>
 <translation id="8023170444051056234">Anda akan kehilangan akses kepada kumpulan tab “<ph name="GROUP_NAME" />" dengan serta-merta dan kumpulan tab ini akan dipadamkan daripada semua peranti anda</translation>
