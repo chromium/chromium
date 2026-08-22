@@ -20,7 +20,7 @@ struct SharedMemoryLimits {
     // Do not use more than 5% of extra shared memory, and do not use any extra
     // for memory contrained devices (<=1GB).
     max_mapped_memory_for_texture_upload =
-        base::SysInfo::AmountOfTotalPhysicalMemory() > base::GiBU(1)
+        base::SysInfo::AmountOfTotalPhysicalMemory() > base::GiB(1)
             ? base::saturated_cast<uint32_t>(
                   base::SysInfo::AmountOfTotalPhysicalMemory().InBytes() / 20)
             : 0;

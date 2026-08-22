@@ -843,7 +843,7 @@ bool IncreaseBufferCountForHighFrameRate() {
   // of buffers. So these checks, espeically the RAM one, is to limit the impact
   // of more buffers to devices that can handle them.
   // 8GB of ram with large margin for error.
-  constexpr base::ByteSize RAM_8GB_CUTOFF = base::MiBU(7200);
+  constexpr base::ByteSize RAM_8GB_CUTOFF = base::MiB(7200);
   static bool increase =
       base::android::android_info::sdk_int() >=
           base::android::android_info::SDK_VERSION_R &&

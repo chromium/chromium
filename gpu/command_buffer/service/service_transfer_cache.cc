@@ -52,7 +52,7 @@ size_t DiscardableCacheSizeLimit() {
   // Device ram threshold at which we move from a normal cache to a large cache.
   // While this is a GPU memory cache, we can't read GPU memory reliably, so we
   // use system ram as a proxy.
-  constexpr base::ByteSize kLargeCacheSizeMemoryThreshold = base::GiBU(4);
+  constexpr base::ByteSize kLargeCacheSizeMemoryThreshold = base::GiB(4);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
