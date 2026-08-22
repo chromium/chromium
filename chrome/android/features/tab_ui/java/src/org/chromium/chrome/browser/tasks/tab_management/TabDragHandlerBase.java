@@ -411,8 +411,14 @@ public abstract class TabDragHandlerBase
         }
     }
 
+    /**
+     * Retrieves the {@link DragDropGlobalState} for the active drag session.
+     *
+     * @param dragEvent The current {@link DragEvent}, or null to look up via the stored drag token.
+     * @return The active {@link DragDropGlobalState}, or null if no drag state exists.
+     */
     @Nullable
-    protected static DragDropGlobalState getDragDropGlobalState(@Nullable DragEvent dragEvent) {
+    public static DragDropGlobalState getDragDropGlobalState(@Nullable DragEvent dragEvent) {
         if (dragEvent != null) {
             return DragDropGlobalState.getState(dragEvent);
         }

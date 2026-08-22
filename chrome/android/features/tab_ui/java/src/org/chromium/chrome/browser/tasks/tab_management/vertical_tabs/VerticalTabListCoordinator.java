@@ -156,6 +156,7 @@ public class VerticalTabListCoordinator {
     private final VerticalTabRailCollapseController mCollapseController;
     private final Callback<Boolean> mActiveObserver = this::setActive;
     private final PropertyModel mContainerModel;
+    private final VerticalExternalViewDragDropReorderStrategy mReorderStrategy;
     private final List<TabSwitcherDragHandler> mTabSwitcherDragHandlers = new ArrayList<>();
     private final View.OnLayoutChangeListener mContainerLayoutChangeListener;
     private final View.OnLayoutChangeListener mPinnedTabsLayoutChangeListener;
@@ -668,6 +669,12 @@ public class VerticalTabListCoordinator {
                     public void onItemMoved(ListObservable source, int curIndex, int newIndex) {}
                 };
         pinnedTabsModelList.addObserver(mPinnedTabsListObserver);
+        mReorderStrategy =
+                new VerticalExternalViewDragDropReorderStrategy(
+                        mTabModelSelector::getCurrentModel,
+                        mModelList,
+                        mRecyclerView,
+                        pinnedTabsRecyclerView);
 
         mPinnedTabsMediator =
                 new StaticPinnedTabsMediator(
@@ -886,7 +893,12 @@ public class VerticalTabListCoordinator {
             callback.cancelDelayedExternalItemRestoration();
         }
         mTouchHelperCallbacks.clear();
+        mReorderStrategy.clear();
         mLastDraggedGroupId = null;
+    }
+
+    public VerticalExternalViewDragDropReorderStrategy getReorderStrategyForTesting() {
+        return mReorderStrategy;
     }
 
     /** Returns the {@link VerticalTabRailCollapseController} for managing rail collapse state. */
@@ -1292,12 +1304,14 @@ public class VerticalTabListCoordinator {
             }
 
             @Override
-            public boolean handleDragLocation(float xPx, float yPx) {
+            public boolean handleDragLocation(View view, float xPx, float yPx) {
+                mReorderStrategy.calculateDropTarget(view, xPx, yPx);
                 return true;
             }
 
             @Override
             public boolean handleDragExit() {
+                mReorderStrategy.clear();
                 if (!dragHandler.isDragSourceInstance()) {
                     dragHandler.showDragShadow(recyclerView, true);
                 }
@@ -1305,12 +1319,15 @@ public class VerticalTabListCoordinator {
             }
 
             @Override
-            public boolean handleExternalDragEnd(float xPx, float yPx, boolean isOSNewWindowDrop) {
+            public boolean handleExternalDragEnd(
+                    View view, float xPx, float yPx, boolean isOSNewWindowDrop) {
+                mReorderStrategy.clear();
                 return true;
             }
 
             @Override
-            public boolean handleDrop(float xPx, float yPx) {
+            public boolean handleDrop(View view, float xPx, float yPx) {
+                mReorderStrategy.clear();
                 return true;
             }
         };
