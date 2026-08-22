@@ -6,15 +6,53 @@ import("//build/config/ui.gni")
 
 assert(toolkit_views)
 
+source_set("custom_cursor_suppressor") {
+  public = [ "custom_cursor_suppressor.h" ]
+  sources = [ "custom_cursor_suppressor.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//content/public/browser",
+    "//extensions/browser",
+  ]
+  deps = [ "//chrome/browser/profiles:profile" ]
+}
+
+source_set("popup_interactive_row_view") {
+  public = [ "popup_interactive_row_view.h" ]
+  sources = [ "popup_interactive_row_view.cc" ]
+  public_deps = [
+    "//components/input",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+}
+
+source_set("popup_row_content_view") {
+  public = [ "popup_row_content_view.h" ]
+  sources = [ "popup_row_content_view.cc" ]
+  public_deps = [
+    "//base",
+    "//ui/views",
+  ]
+  deps = [
+    ":popup",
+    "//chrome/browser/ui/views:layout_provider",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+}
+
 source_set("popup") {
   public = [
-    "custom_cursor_suppressor.h",
     "popup_base_view.h",
-    "popup_interactive_row_view.h",
     "popup_row_view.h",
     "popup_view_utils.h",
   ]
   public_deps = [
+    ":custom_cursor_suppressor",
+    ":popup_interactive_row_view",
     "//base",
     "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/autofill",
