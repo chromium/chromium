@@ -36,9 +36,9 @@ class GrShaderCacheTest : public GrShaderCache::Client, public testing::Test {
     disk_cache_[key] = shader;
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
   base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   GrShaderCache cache_;
   std::unordered_map<std::string, std::string> disk_cache_;
