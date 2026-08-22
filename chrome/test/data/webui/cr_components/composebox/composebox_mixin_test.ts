@@ -5,7 +5,7 @@
 import 'chrome://contextual-tasks/strings.m.js';
 import './test_composebox_mixin.js';
 
-import {ComposeboxFile, ContextType, ContextualSearchInputStateDeletionType, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
+import {ComposeboxFile, ComposeboxInputModel, ContextType, ContextualSearchInputStateDeletionType, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxInputElement} from 'chrome://resources/cr_components/composebox/composebox_input.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
@@ -2086,4 +2086,106 @@ suite('ComposeboxMixinTest', () => {
         assertFalse(element.hasTabs());
       });
   // </if>
+
+  test(
+      'ComposeboxInputModel correctly computes tabs, files, and query state',
+      () => {
+        const tabFile = ComposeboxFile.createFromTab(
+            'tab-uuid', 1, 'Tab 1', 'https://example.com');
+        const imageFile = ComposeboxFile.createFromFile(
+            'img-uuid', {name: 'image.png', type: 'image/png'});
+        const unimodalFile = ComposeboxFile.createFromFile(
+            'uni-uuid', {name: 'unimodal.png', type: 'image/png'},
+            ContextUploadStatus.kUploadSuccessful, {supportsUnimodal: true});
+
+        const emptyModel = new ComposeboxInputModel();
+        assertFalse(emptyModel.hasTabs());
+        assertFalse(emptyModel.hasNonTabFiles());
+        assertFalse(emptyModel.hasFiles());
+        assertEquals(0, emptyModel.getNonTabFileNum());
+        assertEquals(0, emptyModel.getSharedTabs().length);
+        assertFalse(emptyModel.hasValidQuery());
+        assertFalse(emptyModel.hasContent());
+        assertFalse(emptyModel.canSubmit());
+
+        const tabModel = new ComposeboxInputModel({
+          files: new Map([[tabFile.uuid, tabFile]]),
+          tabFaviconChipsToCoinsEnabled: true,
+        });
+        assertTrue(tabModel.hasTabs());
+        assertFalse(tabModel.hasNonTabFiles());
+        assertTrue(tabModel.hasFiles());
+        assertEquals(0, tabModel.getNonTabFileNum());
+        assertEquals(1, tabModel.getSharedTabs().length);
+        assertEquals('Tab 1', tabModel.getSharedTabs()[0]!.title);
+        assertTrue(tabModel.canSubmit());
+
+        const mixedModel = new ComposeboxInputModel({
+          files:
+              new Map([[tabFile.uuid, tabFile], [imageFile.uuid, imageFile]]),
+          tabFaviconChipsToCoinsEnabled: true,
+        });
+        assertTrue(mixedModel.hasTabs());
+        assertTrue(mixedModel.hasNonTabFiles());
+        assertTrue(mixedModel.hasFiles());
+        assertEquals(1, mixedModel.getNonTabFileNum());
+
+        const stsModel = new ComposeboxInputModel({
+          smartTabSharingActive: true,
+        });
+        assertTrue(stsModel.hasTabs());
+
+        const unimodalModel = new ComposeboxInputModel({
+          files: new Map([[unimodalFile.uuid, unimodalFile]]),
+        });
+        assertTrue(unimodalModel.hasUnimodalFile());
+        assertTrue(unimodalModel.hasValidQuery());
+
+        const textModel = new ComposeboxInputModel({
+          input: 'hello world',
+        });
+        assertTrue(textModel.hasValidQuery());
+        assertTrue(textModel.hasContent());
+
+        const toolModel = new ComposeboxInputModel({
+          activeTool: ToolMode.kDeepSearch,
+        });
+        assertTrue(toolModel.hasContent());
+      });
+
+  test(
+      'element inputModel reflects element state and delegates getters', () => {
+        element.tabFaviconChipsToCoinsEnabled = true;
+        element.smartTabSharingActive = false;
+        element.input = '';
+        element.files = new Map();
+
+        assertFalse(element.hasTabs());
+        assertFalse(element.hasNonTabFiles());
+        assertFalse(element.hasFiles());
+        assertEquals(element.inputModel.hasTabs(), element.hasTabs());
+        assertEquals(
+            element.inputModel.hasNonTabFiles(), element.hasNonTabFiles());
+        assertEquals(element.inputModel.hasFiles(), element.hasFiles());
+        assertEquals(
+            element.inputModel.canSubmit(), element.computeSubmitEnabled());
+
+        const tabFile = ComposeboxFile.createFromTab(
+            'tab-uuid', 10, 'Tab Title', 'https://example.com/tab');
+        const imgFile = ComposeboxFile.createFromFile(
+            'img-uuid', {name: 'photo.jpg', type: 'image/jpeg'});
+        element.files =
+            new Map([[tabFile.uuid, tabFile], [imgFile.uuid, imgFile]]);
+
+        assertTrue(element.hasTabs());
+        assertTrue(element.hasNonTabFiles());
+        assertTrue(element.hasFiles());
+        assertTrue(element.computeSubmitEnabled());
+        assertEquals(element.inputModel.hasTabs(), element.hasTabs());
+        assertEquals(
+            element.inputModel.hasNonTabFiles(), element.hasNonTabFiles());
+        assertEquals(element.inputModel.hasFiles(), element.hasFiles());
+        assertEquals(
+            element.inputModel.canSubmit(), element.computeSubmitEnabled());
+      });
 });

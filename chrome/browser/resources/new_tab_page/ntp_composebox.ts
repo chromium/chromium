@@ -165,7 +165,7 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
     if (this.errorMessage) {
       return false;
     }
-    if ((this.files?.size ?? 0) > 0) {
+    if (this.hasFiles()) {
       return false;
     }
     if (this.inToolMode) {
@@ -181,8 +181,7 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   override shouldShowDivider(): boolean {
-    const hasNonTabFiles = Array.from(this.files.values()).some(f => !f.url);
-    if (this.hasTabs() && !hasNonTabFiles) {
+    if (this.hasTabs() && !this.hasNonTabFiles()) {
       return this.showDropdown;
     }
     return super.shouldShowDivider();

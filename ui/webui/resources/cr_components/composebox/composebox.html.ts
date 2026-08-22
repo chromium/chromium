@@ -69,7 +69,7 @@ export function getHtml(this: ComposeboxElement) {
   ${this.errorMessage ?
       html`<ntp-error-scrim id="errorScrim" part="error-scrim"
           ?compact-mode="${this.searchboxLayoutMode === 'Compact' &&
-                          this.files.size === 0}"
+                          !this.hasFiles()}"
           .errorMessage="${this.errorMessage}"
           @dismiss-error-scrim="${this.onDismissErrorScrim}">
       </ntp-error-scrim>`

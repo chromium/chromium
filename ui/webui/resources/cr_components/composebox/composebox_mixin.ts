@@ -20,7 +20,7 @@ import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, hasOnlyAutoAddedTabs, isContextUploadStatusTerminal, mapOriginToMojoSource, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction, TabSuggestionsState, TabUploadOrigin} from './common.js';
+import {ComposeboxFile, ComposeboxFileValidationError, ComposeboxInputModel, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, mapOriginToMojoSource, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction, TabSuggestionsState, TabUploadOrigin} from './common.js';
 import type {ComposeboxState, DriveUpload, TabUpload} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
@@ -346,6 +346,18 @@ export const ComposeboxEmbedderMixin =
             loadTimeData.getBoolean('lensSendRawFileMediaTypesEnabled');
 
         private smartComposeAnnounceTimeout_: number|null = null;
+
+        get inputModel(): ComposeboxInputModel {
+          return new ComposeboxInputModel({
+            files: this.files,
+            smartTabSharingActive: this.smartTabSharingActive,
+            tabFaviconChipsToCoinsEnabled: this.tabFaviconChipsToCoinsEnabled,
+            input: this.input,
+            selectedMatchIndex: this.selectedMatchIndex,
+            hasResult: !!this.result,
+            activeTool: this.inputState?.activeTool,
+          });
+        }
 
         // =====================================================================
         // Lifecycle Hooks
@@ -1678,10 +1690,7 @@ export const ComposeboxEmbedderMixin =
         }
 
         hasContent(ignoreAutoAddedTabs: boolean = false): boolean {
-          const hasFiles = this.files.size > 0 &&
-              !(ignoreAutoAddedTabs && hasOnlyAutoAddedTabs(this.files));
-          return this.inputState?.activeTool !== ToolMode.kUnspecified ||
-              this.input.trim().length > 0 || hasFiles;
+          return this.inputModel.hasContent(ignoreAutoAddedTabs);
         }
 
         clearInput() {
@@ -2017,7 +2026,7 @@ export const ComposeboxEmbedderMixin =
         }
 
         hasFiles(): boolean {
-          return this.files.size > 0;
+          return this.inputModel.hasFiles();
         }
 
         resetSmartComposeStats() {
@@ -2085,28 +2094,11 @@ export const ComposeboxEmbedderMixin =
           // injected inputs), this needs to check if any files are present to
           // show the submit button. The button will still appear disabled
           // because that is controlled by `canSubmitFilesAndInput`.
-          return this.hasValidQuery() || this.files.size > 0;
+          return this.inputModel.canSubmit();
         }
 
         hasValidQuery(): boolean {
-          // If there is at least one file that supports unimodal search, the
-          // query is valid.
-          if (Array.from(this.files.values())
-                  .some((file: ComposeboxFile) => file.supportsUnimodal)) {
-            return true;
-          }
-
-          // If an autocomplete match is selected, it's a valid query.
-          if (this.selectedMatchIndex >= 0 && !!this.result) {
-            return true;
-          }
-
-          // If there is non-empty text input.
-          if (this.input.trim().length > 0) {
-            return true;
-          }
-
-          return false;
+          return this.inputModel.hasValidQuery();
         }
 
         recordFileValidationMetric(enumValue: ComposeboxFileValidationError) {
@@ -2632,33 +2624,25 @@ export const ComposeboxEmbedderMixin =
         }
 
         getNonTabFileNum(): number {
-          return Array.from(this.files.values())
-              .filter(file => file.inputType !== InputType.kBrowserTab)
-              .length;
+          return this.inputModel.getNonTabFileNum();
         }
 
         // Returns all attached tabs in composebox.
         getSharedTabs(): TabInfo[] {
-          return Array.from(this.files.values())
-              .filter(file => !!file.url)
-              .map(file => ({
-                     tabId: file.tabId!,
-                     title: file.name,
-                     url: file.url!,
-                   } as TabInfo));
+          return this.inputModel.getSharedTabs();
         }
 
         hasTabs(): boolean {
-          return (this.tabFaviconChipsToCoinsEnabled &&
-                  Array.from(this.files.values()).some(f => !!f.url)) ||
-              this.smartTabSharingActive;
+          return this.inputModel.hasTabs();
+        }
+
+        hasNonTabFiles(): boolean {
+          return this.inputModel.hasNonTabFiles();
         }
 
         shouldShowDivider(): boolean {
           if (this.tabFaviconChipsToCoinsEnabled && this.hasTabs()) {
-            const hasNonTabFiles =
-                Array.from(this.files.values()).some(f => !f.url);
-            if (!hasNonTabFiles) {
+            if (!this.hasNonTabFiles()) {
               return false;
             }
           }
@@ -2676,7 +2660,7 @@ export const ComposeboxEmbedderMixin =
         }
 
         computeCancelButtonTitle(): string {
-          return this.input.trim().length > 0 || this.files.size > 0 ?
+          return this.input.trim().length > 0 || this.hasFiles() ?
               this.i18n('composeboxCancelButtonTitleInput') :
               this.i18n('composeboxCancelButtonTitle');
         }
@@ -2946,8 +2930,10 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   hasImageFiles(): boolean;
   hasMatches(): boolean;
   selectFirstMatch(): void;
+  readonly inputModel: ComposeboxInputModel;
   hasFiles(): boolean;
   hasTabs(): boolean;
+  hasNonTabFiles(): boolean;
   resetSmartComposeStats(): void;
   resetSession(): void;
   queryAutocomplete(clearMatches: boolean, inputMethod?: InputMethod): void;
