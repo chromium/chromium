@@ -22,6 +22,7 @@
 #include "chrome/browser/devtools/devtools_infobar_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/global_confirm_info_bar.h"
+#include "chrome/browser/devtools/process_sharing_infobar_delegate.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
@@ -44,6 +45,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
+#include "components/infobars/core/infobar_manager.h"
 #include "components/infobars/core/simple_alert_infobar_delegate.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/prefs/pref_service.h"
@@ -153,6 +155,14 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
       /*description=*/
       "The DevTools infobar is used to confirm that the user wants to "
       "allow DevTools to be used. This trigger shows the infobar."));
+
+  infobar_list.emplace_back(InfoBarEntry::New(
+      /*type=*/InfoBarType::kDevToolsSharedProcess,
+      /*name=*/"DevTools Shared Process",
+      /*description=*/
+      "The DevTools shared process infobar warns that the inspected tab "
+      "shares a renderer process and offers a restart with process-per-site "
+      "disabled. This trigger shows the infobar on the active tab."));
 
   infobar_list.emplace_back(InfoBarEntry::New(
       /*type=*/InfoBarType::kExtensionDevTools, /*name=*/"Extension DevTools",
@@ -358,6 +368,22 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
               },
               bwi->GetActiveTabInterface()->GetContents()));
       return true;
+    }
+
+    case InfoBarType::kDevToolsSharedProcess: {
+      if (!bwi || !bwi->GetActiveTabInterface()) {
+        return false;
+      }
+      tabs::TabInterface* tab = bwi->GetActiveTabInterface();
+
+      auto* infobar_manager =
+          infobars::ContentInfoBarManager::FromWebContents(tab->GetContents());
+      if (!infobar_manager) {
+        return false;
+      }
+      return infobar_manager->AddInfoBar(CreateConfirmInfoBar(
+                 std::make_unique<ProcessSharingInfobarDelegate>(
+                     tab->GetContents()))) != nullptr;
     }
     case InfoBarType::kExtensionDevTools: {
 #if BUILDFLAG(ENABLE_EXTENSIONS)

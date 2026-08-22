@@ -25,6 +25,9 @@ enum InfoBarType {
   // DevTools infobar.
   kDevTools,
 
+  // DevTools process sharing infobar.
+  kDevToolsSharedProcess,
+
   // Extension DevTools infobar.
   kExtensionDevTools,
 
