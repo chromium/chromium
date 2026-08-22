@@ -144,6 +144,7 @@
 <translation id="2424440923901031101">此扩展程序违反了 Chrome 应用商店政策，可能不安全。请将其从 Chrome 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括您的个人信息。</translation>
 <translation id="2467438592969358367">Google Chrome 想导出您的密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="2472092250898121027">此扩展程序包含恶意软件，所以不安全。请将其从 Chrome 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括您的个人信息。</translation>
+<translation id="2482846200327569645"><ph name="EXISTING_USER" />已登录。若要区分您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chrome。登录后，您还可以获取<ph name="DEVICE" />中的书签等信息。</translation>
 <translation id="2485422356828889247">卸载</translation>
 <translation id="2513154137948333830">需要重新启动：<ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2523492931736391680">保障您在 Chrome 上的工作安全</translation>
@@ -161,7 +162,7 @@
 <translation id="259935314519650377">未能缓存所下载的安装程序。错误：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
 <translation id="2608461706055011366">使用 Chrome 中的 Gemini 快速了解此文档的概要信息并提出问题</translation>
 <translation id="2620436844016719705">系统</translation>
-<translation id="263447411082773721">让您的密码、书签和历史记录在所有设备上完美同步。将默认浏览器更新为 Chrome，即可轻松使用您熟悉和喜爱的功能。Chrome 将固定到任务栏，以便您快速访问。</translation>
+<translation id="263447411082773721">让您的密码、书签和历史记录在所有设备上完美同步。将默认浏览器更新为 Chrome，轻松使用您熟悉并喜爱的各项功能。Chrome 将固定到任务栏，以便您快速访问。</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome 会定期检查，确保您的浏览器采用了最优安全设置。如需审核任何事项，我们会通知您。</translation>
 <translation id="2652691236519827073">在 Chrome 新标签页中打开链接(&amp;T)</translation>
@@ -195,6 +196,7 @@
 <translation id="2916983411556218750">立即开始设置您的 Chrome</translation>
 <translation id="2926952073016206995">Chrome 需要为此网站授予摄像头权限</translation>
 <translation id="2945997411976714835">安装时出错：安装程序进程未能启动。</translation>
+<translation id="2959224682348913614"><ph name="EXISTING_USER" />已登录。若要区分您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chrome。登录后，您还可以获取<ph name="DEVICE" />中的密码等信息。</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 网络登录 - Chrome</translation>
 <translation id="2970681950995291301">若要从 Chrome 中移除您的 Google 账号，请在“设置”页面中退出 Chrome</translation>
 <translation id="2976869732253036751">在手机上使用 Chrome 接收价格跟踪提醒</translation>
@@ -214,6 +216,7 @@
 <translation id="3073571714401714450">在 Chrome 开发者版中开启/关闭 Gemini</translation>
 <translation id="3080151273017101988">关闭 Google Chrome 后继续运行后台应用</translation>
 <translation id="308397506772922478">如果您忘记了口令或想更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chrome 数据<ph name="END_LINK" /></translation>
+<translation id="3089427491314610412"><ph name="EXISTING_USER" />已登录。若要区分您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chrome。登录后，您还可以获取<ph name="DEVICE" />中保存的信息等内容。</translation>
 <translation id="3100998948628680988">请为您的 Chrome 个人资料命名</translation>
 <translation id="310459126943037700">未能结束任务。</translation>
 <translation id="3104828284009500087">搜索页面上的任何内容</translation>
@@ -226,6 +229,7 @@
 <translation id="3140883423282498090">您所做的更改会在下次重新启动 Google Chrome 时生效。</translation>
 <translation id="3149510190863420837">Chrome 应用</translation>
 <translation id="3161522574479303604">所有语言</translation>
+<translation id="318555301233810762"><ph name="EXISTING_USER" />已登录。若要区分您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chrome。登录后，您还可在自己的所有设备上获取书签等信息。</translation>
 <translation id="319199214552513804">若要在您的所有计算机上使用此扩展程序等，请登录 Chrome</translation>
 <translation id="3196187562065225381">由于该文件具有危险性，Chrome 阻止了这次下载</translation>
 <translation id="3222857603094643834">使用 Google 智能镜头搜索此页面中的任何内容</translation>
@@ -264,6 +268,7 @@
 <translation id="3598673391539778844">在系统任务栏中显示 Chrome 中的 Gemini</translation>
 <translation id="3622716124581627104">识别事物或地点，并复制或翻译文本。当您使用 Google 智能镜头时，系统会将相关页面的屏幕截图发送给 Google。<ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">现在，无论是通过Google账号还是在共用的计算机上，您都可以更轻松地使用Chrome。</translation>
+<translation id="3628103251823745322"><ph name="EXISTING_USER" />已登录。若要区分您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chrome。登录后，您还可在自己的所有设备上获取保存的信息等内容。</translation>
 <translation id="3635073343384702370">您需要先保存密码，然后才能使用 Chrome 的密码检查功能</translation>
 <translation id="3636970668267555808">将 Chrome 设为默认浏览器，即可轻松使用您熟悉、喜爱和信赖的功能。</translation>
 <translation id="3667616615096815454">无法安装，服务器无法识别该应用。</translation>
@@ -383,7 +388,7 @@
 <translation id="4918844574251943176">已复制图片</translation>
 <translation id="4926882258455737990">如需通过其他 Google 账号使用 Chrome 中的 Gemini，请<ph name="BEGIN_LINK" />新建资料<ph name="END_LINK" />并使用所需的账号登录</translation>
 <translation id="492720062778050435">Chrome 建议您检查此扩展程序</translation>
-<translation id="4953650215774548573">将Google Chrome设为默认浏览器</translation>
+<translation id="4953650215774548573">将 Google Chrome 设为默认浏览器</translation>
 <translation id="495931528404527476">在 Chrome 中</translation>
 <translation id="4969674060580488087">您的账号登录详细信息已过期，ChromeOS Flex 无法同步您的数据。</translation>
 <translation id="4970761609246024540">欢迎使用 Chrome 个人资料</translation>
@@ -586,6 +591,7 @@
 <translation id="6933858244219479645">ChromeOS 系统</translation>
 <translation id="6938166777909186039">若要接收后续 Google Chrome 更新，您需使用 Windows 10 或更高版本。该计算机目前使用的是 Windows 8.1。</translation>
 <translation id="6943584222992551122">系统将会从此设备上删除该用户的浏览数据。要想恢复这些数据，请以“<ph name="USER_EMAIL" />”的身份登录 Chrome。</translation>
+<translation id="6962628299694876291"><ph name="EXISTING_USER" />已登录。若要区分您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chrome。登录后，您还可在自己的所有设备上获取密码等信息。</translation>
 <translation id="6965382102122355670">确定</translation>
 <translation id="6967962315388095737">Google Chrome 测试版的入站规则，允许 mDNS 流量。</translation>
 <translation id="6979589607440534284">了解 Chrome 为何屏蔽某些文件（在新标签页中打开）</translation>

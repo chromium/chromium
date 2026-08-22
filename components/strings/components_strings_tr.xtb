@@ -70,6 +70,7 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> için izin seçin</translation>
 <translation id="1113000785583998331">IBAN kaydedilsin mi?</translation>
 <translation id="1113869188872983271">Sıralama değişikliğini &amp;geri al</translation>
+<translation id="1117709830616495622">Kişisel Zeka özellikli Gemini tarafından desteklenir.</translation>
 <translation id="111897705806685148">Başka Bir Cihazdaki Geçiş Anahtarını Kullan</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Hesabınıza hangi Chrome bilgilerini kaydettiğinizi yönetmek için Sekme'ye, ardından Enter tuşuna basın</translation>
 <translation id="1121990216147052230">Benim için yapılacaklar listesi oluştur</translation>
@@ -1170,6 +1171,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3005723025932146533">Kaydedilen kopyayı göster</translation>
 <translation id="300580149047131921">Son kullanılan</translation>
 <translation id="3006864083554020786">Ev adresi</translation>
+<translation id="3008410317623852235">Artık Gmail ve diğer uygulamalardaki bilgileri bulup doldurabilirsiniz.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, kullanılabilir işlemlere göz atmak için Sekme tuşuna, ardından seçilen işlemi yürütmek için Enter tuşuna basın.</translation>
 <translation id="3010991137650052245">Bu sitede <ph name="PERMISSION" /> kullanabilmesi amacıyla <ph name="SHORT_PRODUCT_NAME" /> için erişim izni verin</translation>
 <translation id="3014726756341138577">Gelişmiş yazıcı özellikleri</translation>
@@ -2319,6 +2321,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4941627891654116707">Yazı tipi boyutu</translation>
 <translation id="4943620199112228840">Mikrofonlarınızı kullanma</translation>
 <translation id="4943872375798546930">Sonuç yok</translation>
+<translation id="494701040141924538">Anladım, bildirimi kapat</translation>
 <translation id="495170559598752135">İşlemler</translation>
 <translation id="4953689047182316270">Erişilebilirlikle İlgili Etkinliklere Yanıt Verme</translation>
 <translation id="4954505713046251871">Sayfanın URL'si ve içerikleri, size öneri göstermek ve bu özelliği geliştirmek için Google ile paylaşılır.</translation>
@@ -4296,6 +4299,7 @@ Ek ayrıntılar:
 <translation id="8350416046273606058">Kısayol, boşluk içeremez: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Not oluştur</translation>
 <translation id="8352849934814541340">Bu cihazın yöneticisi diğer işlevler için uygulamalar yüklemiş. Söz konusu uygulamaların bazı verilerinize erişimi bulunuyor.</translation>
+<translation id="8353273112634584260">Kişisel Zeka özellikli Gemini tarafından desteklenir. İstekleriniz, sayfa başlıklarınız ve URL'leriniz gelişmiş otomatik doldurma özelliğini daha iyi hale getirmek için incelenebilir.</translation>
 <translation id="8355270400102541638">Yerel Kilitlenme Bağlamı:</translation>
 <translation id="8362914115861174987">Şu dile çevir:</translation>
 <translation id="8363502534493474904">Uçak modunu kapatın</translation>

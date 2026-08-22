@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Wybierz uprawnienia dla: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Zapisać numer IBAN?</translation>
 <translation id="1113869188872983271">&amp;Cofnij zmianę kolejności</translation>
+<translation id="1117709830616495622">Technologia spersonalizowanej inteligencji w Gemini</translation>
 <translation id="111897705806685148">Użyj klucza dostępu z innego urządzenia</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, aby zarządzać informacjami z Chrome, które zapisujesz na koncie Google, naciśnij Tab, a potem Enter</translation>
 <translation id="1121990216147052230">Zrób dla mnie listę zadań do wykonania</translation>
@@ -631,7 +632,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2090451897496479509">Aby uzyskać więcej informacji, skontaktuj się z usługodawcą</translation>
 <translation id="2090686487550343086">Numery IBAN</translation>
 <translation id="2091887806945687916">Dźwięk</translation>
-<translation id="2093184051799735948">Wyszukaj w <ph name="ENGINE_NAME" /> lub wpisz adres URL</translation>
+<translation id="2093184051799735948">Wyszukaj w <ph name="ENGINE_NAME" /> lub wpisz URL</translation>
 <translation id="2093982008204312032">Google Chrome próbuje wyłączyć używanie Windows Hello do wypełniania haseł.</translation>
 <translation id="2094505752054353250">Niewłaściwa domena</translation>
 <translation id="2094704029599359040">Informacje o wersji</translation>
@@ -1170,6 +1171,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3005723025932146533">Pokaż zapisaną kopię</translation>
 <translation id="300580149047131921">Ostatnio używane</translation>
 <translation id="3006864083554020786">adres domowy</translation>
+<translation id="3008410317623852235">Teraz możesz znajdować i wypełniać informacje z Gmaila oraz innych źródeł</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, aby przejrzeć dostępne działania, a potem Enter, aby wykonać wybraną czynność.</translation>
 <translation id="3010991137650052245">Aby używać tego uprawnienia (<ph name="PERMISSION" />) w tej witrynie, pozwól <ph name="SHORT_PRODUCT_NAME" /> na dostęp</translation>
 <translation id="3014726756341138577">Zaawansowane funkcje drukarek</translation>
@@ -2319,6 +2321,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4941627891654116707">Rozmiar czcionki</translation>
 <translation id="4943620199112228840">Korzystać z mikrofonów</translation>
 <translation id="4943872375798546930">Brak wyników</translation>
+<translation id="494701040141924538">OK, zamknij powiadomienie</translation>
 <translation id="495170559598752135">Czynności</translation>
 <translation id="4953689047182316270">Odpowiadanie na zdarzenia dotyczące ułatwień dostępu</translation>
 <translation id="4954505713046251871">Firmie Google udostępniane są adres URL i zawartość strony – pozwala to na wyświetlanie sugestii i ulepszanie tej funkcji.</translation>
@@ -4296,6 +4299,7 @@ Dodatkowe informacje:
 <translation id="8350416046273606058">Skrót nie może zawierać spacji: „<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="8351131234907093545">Utwórz notatkę</translation>
 <translation id="8352849934814541340">Administrator urządzenia zainstalował aplikacje obsługujące dodatkowe funkcje. Aplikacje mają dostęp do niektórych Twoich danych.</translation>
+<translation id="8353273112634584260">Technologia spersonalizowanej inteligencji w Gemini Twoje prośby, tytuły stron i adresy URL mogą być weryfikowane w celu doskonalenia funkcji ulepszonego autouzupełniania.</translation>
 <translation id="8355270400102541638">Lokalny kontekst awarii:</translation>
 <translation id="8362914115861174987">Tłumacz na</translation>
 <translation id="8363502534493474904">Wyłącz tryb samolotowy</translation>

@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">取得其他應用程式中儲存的密碼</translation>
 <translation id="4431224949908513835">揀要填入嘅付款方法。</translation>
 <translation id="4432122368769493392">設定：</translation>
+<translation id="4439968635693513370">想規劃週末行程，就用</translation>
 <translation id="4442550905108052454">開啟「設定」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">「<ph name="CELL_ACCESSIBILITY_LABEL" />」嘅其他選項</translation>
 <translation id="4455710003856931944">滑動邊緣即可前往上一個或下一個畫面。</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">你可以在「最近開啟的分頁」或「分頁群組」部分重新開啟已關閉的項目。固定分頁不會關閉。</translation>
 <translation id="4547181496285029457">返回最近分頁</translation>
 <translation id="4552042254369397518">正在複製…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">更多密鑰</translation>
 <translation id="4564893319561643483">隱藏「<ph name="TITLE" />」</translation>
 <translation id="456502772933839252">正在分享「<ph name="PAGE_TITLE" />」</translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">，</translation>
 <translation id="4669618761237477717">你的機構要求你私密瀏覽內容。在無痕模式下，系統不會同步分頁群組。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">想安心購物，就用</translation>
 <translation id="467189612236587057">撥打電話聯絡商家</translation>
 <translation id="4673565891421389203">登入受管帳戶後，就能將機構相關的瀏覽資料 (包括分頁、記錄和密碼) 與其他瀏覽資料分開。
 
@@ -1307,6 +1310,7 @@
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5311061401280561833">已允許存取攝錄機和麥克風</translation>
 <translation id="5313967007315987356">新增網站</translation>
+<translation id="5315029634103634221">Gemini 是 AI，可能會出錯。<ph name="BEGIN_LINK" />進一步瞭解傳送到 Google 的相關資料<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">沒有可匯入的資料</translation>
 <translation id="5316356981864168850">第 <ph name="INDEX" /> 項，總共有 <ph name="NUM_SUGGESTIONS" /> 項</translation>
 <translation id="5317780077021120954">儲存</translation>
@@ -1389,6 +1393,7 @@
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="560322036295180549">已由您的機構停用</translation>
 <translation id="5611398002774823980">儲存在帳戶中</translation>
+<translation id="5612225021788368236">閂埋預設瀏覽器宣傳</translation>
 <translation id="561269594905823128">輕按 [選取檔案]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">按最新項目排序</translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
@@ -2472,6 +2477,7 @@
 <translation id="9029650858822697271">系統已將你登出</translation>
 <translation id="9032405509996909363">確認刪除瀏覽資料</translation>
 <translation id="9035699147763101514">採用 Gemini「個人化智能」技術。你可以在設定中管理選擇。</translation>
+<translation id="9038526468059454274">想總結內容，就用</translation>
 <translation id="9039373489628511875">頻寬</translation>
 <translation id="9042893549633094279">私隱權和安全性</translation>
 <translation id="9055291197094969722">建立分頁群組可整理已開啟的分頁，從而提升效率</translation>

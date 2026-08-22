@@ -70,6 +70,7 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> ची परवानगी निवडा</translation>
 <translation id="1113000785583998331">IBAN सेव्ह करायचा आहे का?</translation>
 <translation id="1113869188872983271">&amp;पुनर्क्रमित करा पूर्ववत करा</translation>
+<translation id="1117709830616495622">Gemini सह पर्सनल इंटेलिजन्स द्वारे सक्षम केलेले.</translation>
 <translation id="111897705806685148">दुसऱ्या डिव्हाइसमधील पासकी वापरा</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुम्ही तुमच्या Google खाते मध्ये कोणती Chrome माहिती सेव्ह करता हे व्यवस्थापित करण्यासाठी टॅब प्रेस करा आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="1121990216147052230">माझ्यासाठी कामांची सूची तयार कर</translation>
@@ -1170,6 +1171,7 @@
 <translation id="3005723025932146533">सेव्ह केलेली प्रत दर्शवा</translation>
 <translation id="300580149047131921">अलीकडे वापरले आहे</translation>
 <translation id="3006864083554020786">घराचा पत्ता</translation>
+<translation id="3008410317623852235">आता तुम्ही Gmail आणि इतर ठिकाणांहून माहिती शोधू शकता आणि ती आपोआप भरू शकता.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, उपलब्ध असलेल्या कृती ब्राउझ करण्यासाठी टॅब प्रेस करा, त्यानंतर निवडलेली कृती अमलात आणण्यासाठी एंटर प्रेस करा.</translation>
 <translation id="3010991137650052245">या साइटवर तुमच्या <ph name="PERMISSION" /> चा वापर करण्यासाठी, <ph name="SHORT_PRODUCT_NAME" /> ला ॲक्सेस द्या</translation>
 <translation id="3014726756341138577">प्रगत प्रिंटर वैशिष्ट्ये</translation>
@@ -2318,6 +2320,7 @@
 <translation id="4941627891654116707">फॉंट आकार</translation>
 <translation id="4943620199112228840">तुमचे मायक्रोफोन वापरा</translation>
 <translation id="4943872375798546930">परिणाम नाहीत</translation>
+<translation id="494701040141924538">समजले, नोटिस बंद करा</translation>
 <translation id="495170559598752135">क्रिया</translation>
 <translation id="4953689047182316270">ॲक्सेसिबिलिटी कामक्रमांना प्रतिसाद द्या</translation>
 <translation id="4954505713046251871">सूचना देऊन या वैशिष्ट्यामध्ये सुधारणा करण्यासाठी, पेजची URL आणि आशय या गोष्टी Google सोबत शेअर केल्या जातात</translation>
@@ -4296,6 +4299,7 @@
 <translation id="8350416046273606058">शॉर्टकटमध्ये स्पेस असू शकत नाहीत: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">टीप तयार करा</translation>
 <translation id="8352849934814541340">या डिव्हाइसच्या अ‍ॅडमिनिस्ट्रेटरने अतिरिक्त फंक्शनसाठी अ‍ॅप्लिकेशन इंस्टॉल केली आहेत. अ‍ॅप्लिकेशनकडे तुमच्या काही डेटाचा अ‍ॅक्सेस आहे.</translation>
+<translation id="8353273112634584260">Gemini सह पर्सनल इंटेलिजन्स द्वारे सक्षम केलेले. वर्धित ऑटोफिलमध्ये सुधारणा करण्यासाठी तुमच्या विनंत्या, पेजची शीर्षके आणि URLs यांचे पुनरावलोकन केले जाऊ शकते.</translation>
 <translation id="8355270400102541638">स्थानिक क्रॅश संदर्भ:</translation>
 <translation id="8362914115861174987">यामध्ये भाषांतर करा</translation>
 <translation id="8363502534493474904">विमान मोड बंद करा</translation>

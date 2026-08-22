@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Atlasiet atļauju: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Vai saglabāt IBAN?</translation>
 <translation id="1113869188872983271">&amp;Atsaukt pārkārtošanu</translation>
+<translation id="1117709830616495622">Nodrošina funkcija “Personīgais intelekts” ar Gemini.</translation>
 <translation id="111897705806685148">Izmantot piekļuves atslēgu no citas ierīces</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai pārvaldītu, kāda Chrome informācija tiek saglabāta jūsu Google kontā, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="1121990216147052230">Izveido man uzdevumu sarakstu</translation>
@@ -1170,6 +1171,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3005723025932146533">Rādīt saglabāto versiju</translation>
 <translation id="300580149047131921">Nesen lietota</translation>
 <translation id="3006864083554020786">mājas adrese</translation>
+<translation id="3008410317623852235">Tagad varat atrast un aizpildīt informāciju no pakalpojuma Gmail un citiem avotiem.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai pārlūkotu pieejamās darbības, nospiediet tabulēšanas taustiņu. Pēc tam, lai izpildītu atlasīto darbību, nospiediet Enter.</translation>
 <translation id="3010991137650052245">Lai šajā vietnē varētu tikt izmantota <ph name="PERMISSION" />, piešķiriet pārlūkam <ph name="SHORT_PRODUCT_NAME" /> piekļuvi.</translation>
 <translation id="3014726756341138577">Printera papildu funkcijas</translation>
@@ -2317,6 +2319,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4941627891654116707">Fonta lielums</translation>
 <translation id="4943620199112228840">Izmantot jūsu mikrofonus</translation>
 <translation id="4943872375798546930">Nav rezultātu</translation>
+<translation id="494701040141924538">Labi, aizvērt paziņojumu</translation>
 <translation id="495170559598752135">Darbības</translation>
 <translation id="4953689047182316270">Atbildēt uz pieejamības notikumiem</translation>
 <translation id="4954505713046251871">Lai sniegtu ieteikumus un uzlabotu šo funkciju, ar uzņēmumu Google tiek kopīgots lapas URL un saturs.</translation>
@@ -4294,6 +4297,7 @@ Papildu informācija:
 <translation id="8350416046273606058">Saīsnē nedrīkst būt atstarpes: “<ph name="SHORTCUT_NAME" />”.</translation>
 <translation id="8351131234907093545">Izveidot piezīmi</translation>
 <translation id="8352849934814541340">Šīs ierīces administrators ir instalējis lietojumprogrammas papildu funkcijām. Lietojumprogrammām ir piekļuve dažiem jūsu datiem.</translation>
+<translation id="8353273112634584260">Nodrošina funkcija “Personīgais intelekts” ar Gemini. Jūsu pieprasījumi, lapu nosaukumi un vietrāži URL var tikt pārskatīti, lai padarītu precīzāku uzlaboto automātisko aizpildi.</translation>
 <translation id="8355270400102541638">Lokālais avārijas konteksts:</translation>
 <translation id="8362914115861174987">Tulkot šādā valodā:</translation>
 <translation id="8363502534493474904">Izslēdziet lidojuma režīmu.</translation>

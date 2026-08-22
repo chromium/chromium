@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">选择对<ph name="PERMISSION_NAME" />的权限</translation>
 <translation id="1113000785583998331">保存 IBAN？</translation>
 <translation id="1113869188872983271">撤消顺序调整(&amp;U)</translation>
+<translation id="1117709830616495622">由 Gemini 中的个性化智能服务提供支持</translation>
 <translation id="111897705806685148">使用另一部设备中的通行密钥</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键，即可管理要将哪些 Chrome 信息保存到 Google 账号中</translation>
 <translation id="1121990216147052230">为我列一个待办事项清单</translation>
@@ -1170,6 +1171,7 @@
 <translation id="3005723025932146533">显示已保存的版本</translation>
 <translation id="300580149047131921">最近使用过</translation>
 <translation id="3006864083554020786">住址</translation>
+<translation id="3008410317623852235">现在，您可以查找和填充 Gmail 等来源的信息。</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />，按 Tab 键浏览可执行的操作，然后按 Enter 键执行选定的操作。</translation>
 <translation id="3010991137650052245">如要在此网站上使用您的<ph name="PERMISSION" />，请授予 <ph name="SHORT_PRODUCT_NAME" /> 访问权限</translation>
 <translation id="3014726756341138577">高级打印机功能</translation>
@@ -2315,6 +2317,7 @@
 <translation id="4941627891654116707">字号</translation>
 <translation id="4943620199112228840">使用麦克风</translation>
 <translation id="4943872375798546930">找不到结果</translation>
+<translation id="494701040141924538">知道了，关闭通知</translation>
 <translation id="495170559598752135">操作</translation>
 <translation id="4953689047182316270">对无障碍事件做出响应</translation>
 <translation id="4954505713046251871">为了提供建议和改进此功能，系统会将网页的网址和内容分享给 Google</translation>
@@ -4291,6 +4294,7 @@
 <translation id="8350416046273606058">快捷字词不得包含空格：“<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="8351131234907093545">创建记事</translation>
 <translation id="8352849934814541340">此设备的管理员已安装了一些应用来提供更多功能。这些应用有权访问您的部分数据。</translation>
+<translation id="8353273112634584260">由 Gemini 中的个性化智能服务提供支持。为改进增强型自动填充功能，我们可能会对您的请求、网页标题和网址进行审核。</translation>
 <translation id="8355270400102541638">本机崩溃上下文：</translation>
 <translation id="8362914115861174987">目标语言</translation>
 <translation id="8363502534493474904">关闭飞行模式</translation>

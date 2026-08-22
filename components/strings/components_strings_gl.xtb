@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Seleccionar permiso para <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Queres gardar o IBAN?</translation>
 <translation id="1113869188872983271">&amp;Desfacer o cambio de orde</translation>
+<translation id="1117709830616495622">Con tecnoloxía de Intelixencia personalizada de Gemini.</translation>
 <translation id="111897705806685148">Usar clave de acceso doutro dispositivo</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, preme Tabulador e, a continuación, Introducir para xestionar a información de Chrome que gardas na túa Conta de Google</translation>
 <translation id="1121990216147052230">Crea unha lista de tarefas pendentes</translation>
@@ -1170,6 +1171,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3005723025932146533">Mostrar copia gardada</translation>
 <translation id="300580149047131921">Usada recentemente</translation>
 <translation id="3006864083554020786">enderezo da casa</translation>
+<translation id="3008410317623852235">Agora podes atopar e completar información de Gmail e outros servizos.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, preme o tabulador para explorar as accións dispoñibles e despois Introducir para executar a acción seleccionada.</translation>
 <translation id="3010991137650052245">Concédelle permiso de <ph name="PERMISSION" /> a <ph name="SHORT_PRODUCT_NAME" /> para que poida usar ese recurso neste sitio</translation>
 <translation id="3014726756341138577">Funcións avanzadas da impresora</translation>
@@ -2319,6 +2321,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4941627891654116707">Tamaño do tipo de letra</translation>
 <translation id="4943620199112228840">Usar os micrófonos</translation>
 <translation id="4943872375798546930">Non hai resultados</translation>
+<translation id="494701040141924538">Entendido, pechar aviso</translation>
 <translation id="495170559598752135">Accións</translation>
 <translation id="4953689047182316270">Responder a eventos de accesibilidade</translation>
 <translation id="4954505713046251871">Para ofrecer suxestións e mellorar esta función, o URL e o contido da páxina compártense con Google</translation>
@@ -4295,6 +4298,7 @@ Detalles adicionais:
 <translation id="8350416046273606058">O atallo non pode conter espazos: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Crear nota</translation>
 <translation id="8352849934814541340">O administrador deste dispositivo instalou aplicacións que ofrecen funcións adicionais. As aplicacións teñen acceso a algúns dos teus datos.</translation>
+<translation id="8353273112634584260">Con tecnoloxía de Intelixencia personalizada de Gemini. As túas solicitudes, os títulos das páxinas e os URL poden revisarse para mellorar a función de autocompletar mellorada.</translation>
 <translation id="8355270400102541638">Contexto do fallo local:</translation>
 <translation id="8362914115861174987">Traducir ao</translation>
 <translation id="8363502534493474904">Desactivar o modo avión</translation>

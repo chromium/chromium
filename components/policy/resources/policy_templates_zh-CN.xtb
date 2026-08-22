@@ -172,6 +172,16 @@
 <translation id="1100840127293327071">默认不勾选用于保留现有浏览数据的选项</translation>
 <translation id="1105572260329131950">使用默认图标表示安全连接</translation>
 <translation id="1105711894873068933"><ph name="LACROS_NAME" /> 停用后，系统会在用户下次登录时移除所有用户数据。</translation>
+<translation id="1106279506320506502">指定是否启用隔离模式。
+
+隔离模式是一种仅供企业使用的临时浏览模式。
+它支持与数据泄露防护相关的企业政策和强制安装的扩展程序。
+
+如果设为“1 - 已启用”，系统会启用隔离模式并停用无痕模式。
+
+如果设为“0 - 已停用”或未设置，则会停用隔离模式。
+
+此政策需要“<ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />”许可才能生效。</translation>
 <translation id="1106342730891876476">共享设置</translation>
 <translation id="1107538157073168076">停用数据洞见扩展程序</translation>
 <translation id="1110426799149444997">停用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索。</translation>
@@ -1623,6 +1633,17 @@ Chrome 政策的优先级高于此政策，例如：如果某个扩展程序已�
 <translation id="2057317273526988987">允许访问指定的一系列网址</translation>
 <translation id="205807990145127714">要针对信号强度事件报告的遥测数据。</translation>
 <translation id="2060153898336610735">根据当前语言自动设置</translation>
+<translation id="2060316966423154087">指定用户能否让 <ph name="PRODUCT_NAME" /> 使用生成式 AI 更好地了解表单并帮助他们填写更多字段。
+
+0 = 效果与 1 相同。在 M153 之前，此设置允许 Google 使用相关数据改进其 AI 模型。相关数据可能包括提示、输入、输出、素材和书面反馈，具体取决于相应功能。除非下文另有说明，否则默认值是 0。
+
+1 表示允许使用相应功能，但不允许 Google 使用相关数据（包括提示、输入、输出、素材和书面反馈）改进模型。对于受 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企业用户和受 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，默认值是 1。
+
+2 表示不允许使用此功能。
+
+如果此政策未设置，其行为将由 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策决定。
+
+如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="2061123930713023976">允许调试网络数据包捕获流程</translation>
 <translation id="2061810934846663491">为远程访问主机配置所需的域名</translation>
 <translation id="2062632109797189011">重新启用已弃用的 window.webkitStorageInfo API</translation>
@@ -5850,6 +5871,7 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
 如果此政策已停用，系统不会向用户显示弹出式提醒“Credential Provider 扩展程序”。</translation>
 <translation id="4768446404233019970">在传输层安全协议 (TLS) 中启用 3DES 加密套件</translation>
 <translation id="4770334626033858263">用于生成和验证家长访问码的配置。</translation>
+<translation id="477383002672213319">允许使用增强型自动填充功能，但不改进 AI 模型（在 M153 之前会改进 AI 模型）。</translation>
 <translation id="4773997835955617342">旨在为手动创建的新票据更改建议的 <ph name="KRB5_CONFIG" /> 配置。
 
       如果此政策已启用，系统会使用“KerberosCustomPrefilledConfig”政策的值作为建议的配置，并会将其显示在 Kerberos 身份验证对话框内的“高级”部分中。
@@ -7104,6 +7126,13 @@ Microsoft SharePoint 和 OneDrive 卡片需要由管理员进行额外配置。�
 <translation id="5537400155400537818">已停用：CSS 缩放将保留标准化之前的旧行为。</translation>
 <translation id="5537587542872235553">允许强制安装的独立式 Web 应用 (IWA) 和自助服务终端应用使用 Device Attributes API</translation>
 <translation id="553806128266843748">一个布尔值标记，用于表明是否启用节流功能。</translation>
+<translation id="5540415024237352600">此政策将在 M153 中弃用，并将在未来版本中不再受支持（不再有效）。在 <ph name="MAC_OS_NAME" /> 上，系统现已永久启用为安装渐进式 Web 应用 (PWA) 时创建的原生应用使用临时签名的功能。这可确保每个已安装的应用都有一个对于 <ph name="MAC_OS_NAME" /> 系统组件唯一的身份。
+
+如果已启用或未设置此政策，系统会允许为在安装 PWA 时创建的原生应用使用临时签名。这可确保每个已安装的应用都有一个对于 <ph name="MAC_OS_NAME" /> 系统组件唯一的身份。
+
+如果已停用此政策，安装 PWA 时创建的每个原生应用都将具有相同的身份。这可能会干扰 <ph name="MAC_OS_NAME" /> 功能。
+
+仅当使用的端点安全解决方案会阻止使用临时签名的应用时，才应停用此政策。</translation>
 <translation id="5540885720415375851">允许使用“本地设备发现”功能</translation>
 <translation id="5542235730745104308">如果此政策设为 True，<ph name="PRODUCT_NAME" /> 会使用内置的备用错误页面（例如“找不到网页”）。如果此政策设为 False，<ph name="PRODUCT_NAME" /> 将一律不使用备用错误页面。
 

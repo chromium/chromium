@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Velg tillatelse for <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Vil du lagre IBAN-nummeret?</translation>
 <translation id="1113869188872983271">&amp;Angre omorganiseringen</translation>
+<translation id="1117709830616495622">Basert på personlig tilpasset intelligens med Gemini.</translation>
 <translation id="111897705806685148">Bruk passnøkkel fra en annen enhet</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere hvilken Chrome-informasjon du lagrer i Google-kontoen din</translation>
 <translation id="1121990216147052230">Lag en gjøremålsliste til meg</translation>
@@ -1170,6 +1171,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3005723025932146533">Vis lagret kopi</translation>
 <translation id="300580149047131921">Nylig brukt</translation>
 <translation id="3006864083554020786">hjemmeadresse</translation>
+<translation id="3008410317623852235">Nå kan du finne og fylle ut informasjon fra Gmail med mer.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab for å bla gjennom tilgjengelige handlinger, og trykk deretter på Enter for å utføre den valgte handlingen.</translation>
 <translation id="3010991137650052245">For å bruke <ph name="PERMISSION" /> på dette nettstedet, gi <ph name="SHORT_PRODUCT_NAME" /> tilgang</translation>
 <translation id="3014726756341138577">Avanserte skriverfunksjoner</translation>
@@ -2319,6 +2321,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4941627891654116707">Skriftstørrelse</translation>
 <translation id="4943620199112228840">Bruk mikrofonene dine</translation>
 <translation id="4943872375798546930">Ingen resultater</translation>
+<translation id="494701040141924538">Greit, lukk varselet</translation>
 <translation id="495170559598752135">Handlinger</translation>
 <translation id="4953689047182316270">Svar på tilgjengelighetshendelser</translation>
 <translation id="4954505713046251871">For å kunne gi deg forslag og forbedre denne funksjonen deler nettleseren sidens nettadresse og innhold med Google</translation>
@@ -4295,6 +4298,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="8350416046273606058">Snarveien kan ikke inneholde mellomrom: «<ph name="SHORTCUT_NAME" />»</translation>
 <translation id="8351131234907093545">Opprett et notat</translation>
 <translation id="8352849934814541340">Enhetsadministratoren har installert programmer for tilleggsfunksjoner. Programmene har tilgang til noen av dataene dine.</translation>
+<translation id="8353273112634584260">Basert på personlig tilpasset intelligens med Gemini. Forespørslene, sidetitlene og nettadressene dine kan bli gjennomgått for å bidra til å gjøre forbedret autofyll bedre.</translation>
 <translation id="8355270400102541638">Lokal krasjkontekst:</translation>
 <translation id="8362914115861174987">Oversett til</translation>
 <translation id="8363502534493474904">Slå av flymodus</translation>

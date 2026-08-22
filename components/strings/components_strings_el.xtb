@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Επιλέξτε άδεια για <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Αποθήκευση IBAN;</translation>
 <translation id="1113869188872983271">&amp;Αναίρεση αναδιάταξης</translation>
+<translation id="1117709830616495622">Με την υποστήριξη της Προσωπικής νοημοσύνης με το Gemini.</translation>
 <translation id="111897705806685148">Χρήση κλειδιού πρόσβασης από άλλη συσκευή</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και μετά Enter, για να διαχειριστείτε τις πληροφορίες του Chrome που αποθηκεύετε στον Λογαριασμό σας Google</translation>
 <translation id="1121990216147052230">Φτιάξε μια λίστα με τις εκκρεμότητές μου</translation>
@@ -1170,6 +1171,7 @@
 <translation id="3005723025932146533">Εμφάνιση αποθηκευμένου αντιγράφου</translation>
 <translation id="300580149047131921">Χρησιμοποιήθηκε πρόσφατα</translation>
 <translation id="3006864083554020786">διεύθυνση σπιτιού</translation>
+<translation id="3008410317623852235">Μπορείτε πλέον να βρίσκετε και να συμπληρώνετε πληροφορίες από το Gmail και άλλα.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab για να περιηγηθείτε στις διαθέσιμες ενέργειες και έπειτα πατήστε Enter για να εκτελέσετε την επιλεγμένη ενέργεια.</translation>
 <translation id="3010991137650052245">Για να χρησιμοποιήσετε την άδεια <ph name="PERMISSION" /> σε αυτόν τον ιστότοπο, παραχωρήστε πρόσβαση στο <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3014726756341138577">Σύνθετες λειτουργίες εκτυπωτή</translation>
@@ -2320,6 +2322,7 @@
 <translation id="4941627891654116707">Μέγεθος γραμματοσειράς</translation>
 <translation id="4943620199112228840">Χρήση των μικροφώνων σας</translation>
 <translation id="4943872375798546930">Δεν υπάρχουν αποτελέσματα</translation>
+<translation id="494701040141924538">Το κατάλαβα, κλείσιμο ειδοποίησης</translation>
 <translation id="495170559598752135">Ενέργειες</translation>
 <translation id="4953689047182316270">Απάντηση σε συμβάντα προσβασιμότητας</translation>
 <translation id="4954505713046251871">Για την παροχή προτάσεων και τη βελτίωση αυτής της λειτουργίας, το URL και το περιεχόμενο της σελίδας κοινοποιούνται στην Google.</translation>
@@ -4298,6 +4301,7 @@
 <translation id="8350416046273606058">Η συντόμευση δεν μπορεί να περιέχει κενά: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Δημιουργία σημείωσης</translation>
 <translation id="8352849934814541340">Ο διαχειριστής αυτής της συσκευής εγκατέστησε εφαρμογές για επιπλέον λειτουργίες. Οι εφαρμογές έχουν πρόσβαση σε κάποια από τα δεδομένα σας.</translation>
+<translation id="8353273112634584260">Με την υποστήριξη της Προσωπικής νοημοσύνης με το Gemini. Τα αιτήματα, οι τίτλοι σελίδων και τα URL σας ενδέχεται να ελεγχθούν για τη βελτίωση της βελτιωμένης αυτόματης συμπλήρωσης.</translation>
 <translation id="8355270400102541638">Περιβάλλον τοπικού σφάλματος:</translation>
 <translation id="8362914115861174987">Μετάφραση στα</translation>
 <translation id="8363502534493474904">Απενεργοποιήστε τη λειτουργία πτήσης.</translation>

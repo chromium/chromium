@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Selecciona el permiso para <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">¿Quieres guardar el IBAN?</translation>
 <translation id="1113869188872983271">&amp;Deshacer Reorganizar</translation>
+<translation id="1117709830616495622">Con la tecnología de Inteligencia personalizada con Gemini.</translation>
 <translation id="111897705806685148">Usar una llave de acceso de otro dispositivo</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para administrar qué información de Chrome guardas en tu Cuenta de Google</translation>
 <translation id="1121990216147052230">Crea una lista de tareas pendientes para mí</translation>
@@ -1170,6 +1171,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3005723025932146533">Mostrar copia guardada</translation>
 <translation id="300580149047131921">Se usó recientemente</translation>
 <translation id="3006864083554020786">dirección de casa</translation>
+<translation id="3008410317623852235">Ahora puedes encontrar y completar información de Gmail y mucho más.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab para explorar las acciones disponibles y, luego, presiona Intro para ejecutar la acción seleccionada.</translation>
 <translation id="3010991137650052245">Para usar tu <ph name="PERMISSION" /> en este sitio, otorga acceso a <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3014726756341138577">Funciones avanzadas de la impresora</translation>
@@ -2320,6 +2322,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="4941627891654116707">Tamaño de fuente</translation>
 <translation id="4943620199112228840">Usar los micrófonos</translation>
 <translation id="4943872375798546930">Sin resultados</translation>
+<translation id="494701040141924538">Entendido, cerrar aviso</translation>
 <translation id="495170559598752135">Acciones</translation>
 <translation id="4953689047182316270">Responder a los eventos de accesibilidad</translation>
 <translation id="4954505713046251871">Para ofrecer sugerencias y mejorar esta función, la URL y el contenido de la página se comparten con Google</translation>
@@ -4297,6 +4300,7 @@ Detalles adicionales:
 <translation id="8350416046273606058">El atajo no puede contener espacios: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Crear nota</translation>
 <translation id="8352849934814541340">El administrador de este dispositivo instaló aplicaciones para funciones adicionales. Las aplicaciones tienen acceso a algunos de tus datos.</translation>
+<translation id="8353273112634584260">Con la tecnología de Inteligencia personalizada con Gemini. Es posible que se revisen tus solicitudes, títulos de páginas y URLs para mejorar la función Autocompletar mejorado.</translation>
 <translation id="8355270400102541638">Contexto de falla local:</translation>
 <translation id="8362914115861174987">Traducir al</translation>
 <translation id="8363502534493474904">Desactivar el modo avión</translation>

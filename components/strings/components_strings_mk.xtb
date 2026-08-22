@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Изберете дозвола за <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Да се зачува IBAN?</translation>
 <translation id="1113869188872983271">&amp;Врати преуредување</translation>
+<translation id="1117709830616495622">Овозможено од „Лична интелигенција“ со Gemini.</translation>
 <translation id="111897705806685148">Користете криптографски клуч од друг уред</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, па Enter за да управувате со податоците од Chrome што ги зачувувате во вашата сметка на Google</translation>
 <translation id="1121990216147052230">Состави ми список со задачи</translation>
@@ -1170,6 +1171,7 @@
 <translation id="3005723025932146533">Прикажи зачувана копија</translation>
 <translation id="300580149047131921">Неодамна користено</translation>
 <translation id="3006864083554020786">домашна адреса</translation>
+<translation id="3008410317623852235">Отсега може да наоѓате и да пополнувате податоци од Gmail и друго.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете на Tab за прелистување на достапните дејства, а потоа притиснете на Enter за извршување на избраното дејство.</translation>
 <translation id="3010991137650052245">За да користите <ph name="PERMISSION" /> на сајтов, треба да му доделите пристап на <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3014726756341138577">напредни функции за печатачи</translation>
@@ -2319,6 +2321,7 @@
 <translation id="4941627891654116707">Големина на фонтот</translation>
 <translation id="4943620199112228840">да ги користи вашите микрофони</translation>
 <translation id="4943872375798546930">Нема резултати</translation>
+<translation id="494701040141924538">Сфатив, затвори го известувањето</translation>
 <translation id="495170559598752135">Дејства</translation>
 <translation id="4953689047182316270">Одговори на настани за пристапност</translation>
 <translation id="4954505713046251871">За да се нудат предлози и да се подобрува функцијава, URL-адресата и содржините на страницата се споделуваат со Google</translation>
@@ -4295,6 +4298,7 @@
 <translation id="8350416046273606058">Кратенката не може да содржи празни места: „<ph name="SHORTCUT_NAME" />“</translation>
 <translation id="8351131234907093545">Создајте белешка</translation>
 <translation id="8352849934814541340">Администраторот на уредов инсталирал апликации за дополнителни функции. Апликациите имаат пристап до некои од податоците.</translation>
+<translation id="8353273112634584260">Овозможено од „Лична интелигенција“ со Gemini. Вашите барања, наслови на страници и URL-адреси може да се прегледуваат за да се подобри „Подобрено автоматско пополнување“.</translation>
 <translation id="8355270400102541638">Контекст на локален пад:</translation>
 <translation id="8362914115861174987">Преведи на</translation>
 <translation id="8363502534493474904">Да го исклучите авионскиот режим</translation>

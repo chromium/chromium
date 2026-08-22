@@ -520,7 +520,7 @@
 <translation id="2640733327287333451">Sem nome de usuário ••••••</translation>
 <translation id="264215785133931186">Verificadas agora mesmo</translation>
 <translation id="2647434099613338025">Adicionar idioma</translation>
-<translation id="2648812801228676606">A conta <ph name="NAME_OR_EMAIL" /> continua conectada.</translation>
+<translation id="2648812801228676606">A conta <ph name="NAME_OR_EMAIL" /> continua conectada</translation>
 <translation id="2649592894792404568">Você está prestes a excluir seus dados do Gerenciador de senhas do Google</translation>
 <translation id="2652129567809778422">Selecionar senha</translation>
 <translation id="2658056020748144467">Não foi possível abrir arquivo</translation>
@@ -971,7 +971,7 @@
 <translation id="4237377247299956313">Toque em <ph name="BEGIN_BOLD" />App de navegação padrão<ph name="END_BOLD" />.</translation>
 <translation id="424063167283213501">Salvar número de viajante conhecido (KTN)</translation>
 <translation id="4241893428331130998">Nenhuma senha ou chave de acesso salva</translation>
-<translation id="4242533952199664413">Abrir configurações.</translation>
+<translation id="4242533952199664413">Abrir configurações</translation>
 <translation id="4250432749243022864">{count,plural, =0{Abrir {count} guia}=1{Abrir {count} guia}one{Abrir {count} guia}other{Abrir {count} guias}}</translation>
 <translation id="4250680216510889253">Não</translation>
 <translation id="4253168017788158739">Observação</translation>
@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">Acesse as senhas salvas em outros apps</translation>
 <translation id="4431224949908513835">Selecione uma forma de pagamento para preencher.</translation>
 <translation id="4432122368769493392">Configurações…</translation>
+<translation id="4439968635693513370">Planeje seu fim de semana com o</translation>
 <translation id="4442550905108052454">Abra as <ph name="BEGIN_BOLD" />Configurações<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Mais opções de <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Deslize a borda da tela para voltar ou avançar.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">Você pode reabrir itens fechados nas seções de guias recentes ou de grupos de guias. As guias fixadas não serão fechadas.</translation>
 <translation id="4547181496285029457">Voltar à guia recente</translation>
 <translation id="4552042254369397518">Copiando…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">Mais chaves de acesso</translation>
 <translation id="4564893319561643483">Ocultar "<ph name="TITLE" />"</translation>
 <translation id="456502772933839252">Compartilhando <ph name="PAGE_TITLE" /></translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Sua organização requer o uso do modo de navegação particular. Os grupos de guias não são sincronizados no modo de navegação anônima.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">Compre com confiança usando o</translation>
 <translation id="467189612236587057">Ligue para uma empresa para mais informações</translation>
 <translation id="4673565891421389203">Fazer login com a conta gerenciada ajuda a separar sua navegação relacionada à organização (incluindo guias, histórico e senhas) da sua outra navegação.
 
@@ -1307,6 +1310,7 @@
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5311061401280561833">Acesso à câmera e ao microfone permitido</translation>
 <translation id="5313967007315987356">Adicionar site</translation>
+<translation id="5315029634103634221">O Gemini é uma IA e pode cometer erros. <ph name="BEGIN_LINK" />Mais informações sobre os dados relevantes enviados ao Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Nada para importar</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Salvar</translation>
@@ -1389,6 +1393,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="560322036295180549">Desativado pela organização</translation>
 <translation id="5611398002774823980">Salvar na conta</translation>
+<translation id="5612225021788368236">Fechar promoção do navegador padrão</translation>
 <translation id="561269594905823128">Toque em <ph name="BEGIN_BOLD" />Selecionar o arquivo<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Ordenar por mais recentes</translation>
 <translation id="5614553682702429503">Salvar senha?</translation>
@@ -2474,6 +2479,7 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="9029650858822697271">Sua conta foi desconectada</translation>
 <translation id="9032405509996909363">Confirmar exclusão dos dados de navegação</translation>
 <translation id="9035699147763101514">Com a tecnologia da Inteligência Personalizada do Gemini. Gerencie suas escolhas nas configurações.</translation>
+<translation id="9038526468059454274">Resuma com o</translation>
 <translation id="9039373489628511875">Largura de banda</translation>
 <translation id="9042893549633094279">Privacidade e segurança</translation>
 <translation id="9055291197094969722">Crie grupos de guias para organizar as guias abertas e manter a produtividade</translation>
@@ -2518,7 +2524,7 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="9162432979321511934">Ative a opção "Preenchimento automático de senhas"</translation>
 <translation id="9165320910061267720">Para receber notificações de alertas de redução no preço, ative as notificações nas configurações do iOS.</translation>
 <translation id="9179151630575358778">Oculta este item</translation>
-<translation id="9183563643084679152">Você leu um QR code para fazer login no Chrome. Você vai receber as senhas, os favoritos e outros itens desta conta.</translation>
+<translation id="9183563643084679152">Você leu um QR code para fazer login no Chrome, então vai receber as senhas, os favoritos e outros itens desta conta.</translation>
 <translation id="9183733013282108610">Pesquisa anônima</translation>
 <translation id="9186762474139509529">Iniciar registro</translation>
 <translation id="9191031968346938109">Adicionar a…</translation>

@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Pilih izin untuk <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Simpan IBAN?</translation>
 <translation id="1113869188872983271">&amp;Urungkan pengaturan ulang</translation>
+<translation id="1117709830616495622">Didukung oleh Kecerdasan Personal dengan Gemini.</translation>
 <translation id="111897705806685148">Gunakan Kunci Sandi dari Perangkat Lain</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola info Chrome yang Anda simpan di Akun Google Anda</translation>
 <translation id="1121990216147052230">Buatkan daftar tugas</translation>
@@ -1171,6 +1172,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3005723025932146533">Tampilkan salinan yang disimpan</translation>
 <translation id="300580149047131921">Baru saja digunakan</translation>
 <translation id="3006864083554020786">alamat rumah</translation>
+<translation id="3008410317623852235">Anda kini dapat menemukan dan mengisi info dari Gmail dan lainnya.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab untuk menjelajahi tindakan yang tersedia, lalu tekan Enter untuk menjalankan tindakan yang dipilih.</translation>
 <translation id="3010991137650052245">Untuk menggunakan <ph name="PERMISSION" /> Anda di situs ini, berikan akses ke <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3014726756341138577">Fitur printer lanjutan</translation>
@@ -2319,6 +2321,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4941627891654116707">Ukuran font</translation>
 <translation id="4943620199112228840">Menggunakan mikrofon Anda</translation>
 <translation id="4943872375798546930">Tidak ada hasil</translation>
+<translation id="494701040141924538">Oke, tutup pemberitahuan</translation>
 <translation id="495170559598752135">Tindakan</translation>
 <translation id="4953689047182316270">Merespons Acara Aksesibilitas</translation>
 <translation id="4954505713046251871">Untuk memberikan saran dan meningkatkan kualitas fitur ini, URL dan konten halaman dibagikan ke Google</translation>
@@ -3039,7 +3042,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6159908896951210943">Formal</translation>
 <translation id="6162403104168428984">Perbarui alamat?</translation>
 <translation id="6164605812717770913">Orang tua atau wali mengatakan bahwa kamu tidak boleh membuka situs ini. Kamu bisa meminta mereka berhenti memblokir situs ini.</translation>
-<translation id="6165508094623778733">Pelajari selengkapnya</translation>
+<translation id="6165508094623778733">Pelajari lebih lanjut</translation>
 <translation id="6167577165590485365">Upaya pengambilan terakhir:</translation>
 <translation id="6171968084616623939">"<ph name="PROXY_INVALID_SCHEME_HOST_PORT" />" bukan nilai yang valid.</translation>
 <translation id="617256461084925519">Google Chrome mencoba memverifikasi diri Anda agar dapat mengisi info pembayaran.</translation>
@@ -4294,6 +4297,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8350416046273606058">Pintasan tidak boleh berisi spasi: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Buat catatan</translation>
 <translation id="8352849934814541340">Administrator perangkat ini telah menginstal aplikasi untuk fungsi tambahan. Aplikasi memiliki akses ke sebagian data Anda.</translation>
+<translation id="8353273112634584260">Didukung oleh Kecerdasan Personal dengan Gemini. Permintaan, judul halaman, dan URL Anda dapat ditinjau untuk meningkatkan kualitas isi otomatis yang ditingkatkan.</translation>
 <translation id="8355270400102541638">Konteks Error Lokal:</translation>
 <translation id="8362914115861174987">Terjemahkan ke</translation>
 <translation id="8363502534493474904">Nonaktifkan mode pesawat</translation>

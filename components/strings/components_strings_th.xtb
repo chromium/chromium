@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">เลือกสิทธิ์สำหรับ<ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">บันทึก IBAN ไหม</translation>
 <translation id="1113869188872983271">&amp;เลิกทำการจัดลำดับใหม่</translation>
+<translation id="1117709830616495622">ขับเคลื่อนโดย Personal Intelligence จาก Gemini</translation>
 <translation id="111897705806685148">ใช้พาสคีย์จากอุปกรณ์อื่น</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการข้อมูล Chrome ที่คุณบันทึกไว้ในบัญชี Google</translation>
 <translation id="1121990216147052230">สร้างรายการสิ่งที่ต้องทำให้ฉันหน่อย</translation>
@@ -1170,6 +1171,7 @@
 <translation id="3005723025932146533">แสดงสำเนาที่บันทึกไว้</translation>
 <translation id="300580149047131921">ใช้ล่าสุด</translation>
 <translation id="3006864083554020786">ที่อยู่บ้าน</translation>
+<translation id="3008410317623852235">ตอนนี้คุณสามารถค้นหาและป้อนข้อมูลจาก Gmail และอื่นๆ ได้แล้ว</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab เพื่อเรียกดูการดำเนินการที่ใช้ได้ จากนั้นกด Enter เพื่อเรียกใช้การดำเนินการที่เลือก</translation>
 <translation id="3010991137650052245">ให้สิทธิ์เข้าถึงแก่ <ph name="SHORT_PRODUCT_NAME" /> หากต้องการใช้<ph name="PERMISSION" />ในเว็บไซต์นี้</translation>
 <translation id="3014726756341138577">ฟีเจอร์เครื่องพิมพ์ขั้นสูง</translation>
@@ -2318,6 +2320,7 @@
 <translation id="4941627891654116707">ขนาดแบบอักษร</translation>
 <translation id="4943620199112228840">ใช้ไมโครโฟน</translation>
 <translation id="4943872375798546930">ไม่มีผลการค้นหา</translation>
+<translation id="494701040141924538">รับทราบ ปิดการแจ้งเตือน</translation>
 <translation id="495170559598752135">การทำงาน</translation>
 <translation id="4953689047182316270">ตอบสนองต่อเหตุการณ์การเข้าถึงพิเศษ</translation>
 <translation id="4954505713046251871">ระบบจะแชร์ URL และเนื้อหาของหน้าเว็บกับ Google เพื่อแสดงคำแนะนำและปรับปรุงฟีเจอร์นี้</translation>
@@ -4295,6 +4298,7 @@
 <translation id="8350416046273606058">ทางลัดจะมีเว้นวรรคไม่ได้: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">สร้างโน้ต</translation>
 <translation id="8352849934814541340">ผู้ดูแลระบบของอุปกรณ์นี้ได้ติดตั้งแอปพลิเคชันสำหรับฟังก์ชันเพิ่มเติม แอปพลิเคชันมีสิทธิ์เข้าถึงข้อมูลบางส่วนของคุณได้</translation>
+<translation id="8353273112634584260">ขับเคลื่อนโดย Personal Intelligence จาก Gemini ระบบอาจตรวจสอบคำขอ ชื่อหน้า และ URL เพื่อปรับปรุงการป้อนข้อความอัตโนมัติที่ดียิ่งขึ้น</translation>
 <translation id="8355270400102541638">บริบทของการขัดข้องในเครื่อง:</translation>
 <translation id="8362914115861174987">แปลเป็นภาษา</translation>
 <translation id="8363502534493474904">ปิดโหมดบนเครื่องบิน</translation>

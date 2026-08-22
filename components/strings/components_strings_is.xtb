@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Velja heimild fyrir <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Vista IBAN-númer?</translation>
 <translation id="1113869188872983271">Aft&amp;urkalla nýja röðun</translation>
+<translation id="1117709830616495622">Knúið af persónulegri greind með Gemini.</translation>
 <translation id="111897705806685148">Nota aðgangslykil úr öðru tæki</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að stjórna því hvaða Chrome-upplýsingar þú vistar á Google-reikningnum þínum</translation>
 <translation id="1121990216147052230">Búðu til verkefnalista fyrir mig</translation>
@@ -1170,6 +1171,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3005723025932146533">Sýna vistað afrit</translation>
 <translation id="300580149047131921">Notað nýlega</translation>
 <translation id="3006864083554020786">heimilisfang</translation>
+<translation id="3008410317623852235">Nú geturðu fundið og fyllt út upplýsingar úr Gmail og fleiru.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn til að skoða hvaða aðgerðir eru í boði og síðan á Enter til að framkvæma valda aðgerð.</translation>
 <translation id="3010991137650052245">Til að nota <ph name="PERMISSION" /> á þessu vefsvæði þarftu að veita <ph name="SHORT_PRODUCT_NAME" /> aðgang</translation>
 <translation id="3014726756341138577">Ítareiginleikar prentara</translation>
@@ -2319,6 +2321,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4941627891654116707">Leturstærð</translation>
 <translation id="4943620199112228840">Notaðu hljóðnemana</translation>
 <translation id="4943872375798546930">Engar niðurstöður</translation>
+<translation id="494701040141924538">Skilið, loka tilkynningu</translation>
 <translation id="495170559598752135">Aðgerðir</translation>
 <translation id="4953689047182316270">Svara aðgengisatburði</translation>
 <translation id="4954505713046251871">Vefslóð og innihaldi þessarar síðu er deilt með Google í því skyni að birta þér tillögur og bæta eiginleikann</translation>
@@ -4295,6 +4298,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8350416046273606058">Flýtileið má ekki innihalda bil: „<ph name="SHORTCUT_NAME" />“</translation>
 <translation id="8351131234907093545">Búa til glósu</translation>
 <translation id="8352849934814541340">Kerfisstjóri þessa tækis hefur sett upp forrit fyrir fleiri aðgerðir. Forrit hafa aðgang að einhverjum gögnum í þinni eigu.</translation>
+<translation id="8353273112634584260">Knúið af persónulegri greind með Gemini. Farið verður yfir beiðnirnar þínar, titla síðna og vefslóðir til að bæta ítarlega sjálfvirka útfyllingu.</translation>
 <translation id="8355270400102541638">Samhengi staðbundins hruns:</translation>
 <translation id="8362914115861174987">Þýða yfir á</translation>
 <translation id="8363502534493474904">Slökkva á flugstillingu</translation>

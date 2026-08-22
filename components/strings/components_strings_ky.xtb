@@ -70,6 +70,7 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> уруксатын тандоо</translation>
 <translation id="1113000785583998331">IBAN кодун сактайсызбы?</translation>
 <translation id="1113869188872983271">Иреттештирүүнү &amp;жасабоо</translation>
+<translation id="1117709830616495622">Gemini'дын негизинде иштеген жеке ЖИ сунуштайт.</translation>
 <translation id="111897705806685148">Башка түзмөктөгү киргизүүчү ачкычты колдонуу</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome Google аккаунтуңузда сактай турган маалыматты тескеш үчүн Tab, андан соң Enter баскычын басыңыз</translation>
 <translation id="1121990216147052230">Жасала турчу иштердин тизмесин түз</translation>
@@ -1170,6 +1171,7 @@
 <translation id="3005723025932146533">Сакталган көчүрмөнү көрсөтүү</translation>
 <translation id="300580149047131921">Жакында колдонулду</translation>
 <translation id="3006864083554020786">үй дареги</translation>
+<translation id="3008410317623852235">Эми Gmail жана башка кызматтардан маалыматты таап, толтура аласыз.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, жеткиликтүү аракеттерди карап чыгуу үчүн Tab баскычын басып, тандалган аракетти аткаруу үчүн Enter баскычын басыңыз.</translation>
 <translation id="3010991137650052245">Бул сайтта <ph name="PERMISSION" /> колдонуу үчүн <ph name="SHORT_PRODUCT_NAME" /> аны колдонууга уруксат беришиңиз керек</translation>
 <translation id="3014726756341138577">Принтердин өркүндөтүлгөн функциялары</translation>
@@ -2318,6 +2320,7 @@
 <translation id="4941627891654116707">Арип өлчөмү</translation>
 <translation id="4943620199112228840">Микрофондоруңузду колдонуу</translation>
 <translation id="4943872375798546930">Натыйжалар жок</translation>
+<translation id="494701040141924538">Түшүнүктүү, билдирмени жабуу</translation>
 <translation id="495170559598752135">Аракеттер</translation>
 <translation id="4953689047182316270">Атайын мүмкүнчүлүктөрдү иштетүү</translation>
 <translation id="4954505713046251871">Атайын сунуштарды сунуштоо жана бул функцияны жакшыртуу үчүн барактын URL дареги жана андагы материалдар Google менен бөлүшүлөт.</translation>
@@ -4294,6 +4297,7 @@
 <translation id="8350416046273606058">Ыкчам баскыч боштуктарды камтыбашы керек: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Эскертүү түзүү</translation>
 <translation id="8352849934814541340">Бул түзмөктүн администратору кошумча функцияларды иштетүү үчүн колдонмолорду орнотту. Алар айрым нерселериңизге кире алат.</translation>
+<translation id="8353273112634584260">Gemini'дын негизинде иштеген жеке ЖИ сунуштайт. Өркүндөтүлгөн автотолтурууну жакшыртуу үчүн сурамдарыңызды, беттердин аталыштарын жана URL даректерин текшерип турабыз.</translation>
 <translation id="8355270400102541638">Компьютердин бузулуу идентификатору:</translation>
 <translation id="8362914115861174987">Кайсы тилге:</translation>
 <translation id="8363502534493474904">Учак режимин өчүрүп көрүңүз</translation>

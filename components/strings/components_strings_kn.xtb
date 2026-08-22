@@ -70,6 +70,7 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> ಗಾಗಿ ಅನುಮತಿಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="1113000785583998331">IBAN ಅನ್ನು ಸೇವ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="1113869188872983271">&amp;ಮರುಕ್ರಮಗೊಳಿಸುವುದನ್ನು ರದ್ದುಗೊಳಿಸಿ</translation>
+<translation id="1117709830616495622">Gemini ಮೂಲಕ ಪರ್ಸನಲ್ ಇಂಟೆಲಿಜೆನ್ಸ್‌ನಿಂದ ಚಾಲಿತವಾಗಿದೆ.</translation>
 <translation id="111897705806685148">ಇನ್ನೊಂದು ಸಾಧನದ ಪಾಸ್‌ಕೀ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ನೀವು ಯಾವ Chrome ಮಾಹಿತಿಯನ್ನು ಸೇವ್ ಮಾಡುತ್ತೀರಿ ಎಂಬುದನ್ನು ನಿರ್ವಹಿಸಲು ಟ್ಯಾಬ್ ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="1121990216147052230">ನನಗಾಗಿ ಮಾಡಬೇಕಾದವುಗಳ ಪಟ್ಟಿಯನ್ನು ರಚಿಸು</translation>
@@ -1169,6 +1170,7 @@
 <translation id="3005723025932146533">ಸೇವ್ ಮಾಡಿದ ಕಾಪಿಯನ್ನು ತೋರಿಸು</translation>
 <translation id="300580149047131921">ಇತ್ತೀಚೆಗೆ ಬಳಸಿರುವುದು</translation>
 <translation id="3006864083554020786">ಮನೆ ವಿಳಾಸ</translation>
+<translation id="3008410317623852235">ಈಗ ನೀವು Gmail ಮತ್ತು ಇತ್ಯಾದಿಗಳಿಂದ ಮಾಹಿತಿಯನ್ನು ಹುಡುಕಬಹುದು ಮತ್ತು ಭರ್ತಿ ಮಾಡಬಹುದು.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಲಭ್ಯವಿರುವ ಕ್ರಿಯೆಗಳನ್ನು ಬ್ರೌಸ್ ಮಾಡಲು ಟ್ಯಾಬ್ ಕೀ ಒತ್ತಿರಿ, ನಂತರ ಆಯ್ಕೆಮಾಡಿದ ಕ್ರಿಯೆಯನ್ನು ಕಾರ್ಯಗತಗೊಳಿಸಲು Enter ಕೀ ಒತ್ತಿರಿ.</translation>
 <translation id="3010991137650052245">ಈ ಸೈಟ್‌ನಲ್ಲಿ ನಿಮ್ಮ <ph name="PERMISSION" /> ಅನ್ನು ಬಳಸಲು, <ph name="SHORT_PRODUCT_NAME" /> ಗೆ ಆ್ಯಕ್ಸೆಸ್ ನೀಡಿ</translation>
 <translation id="3014726756341138577">ಸುಧಾರಿತ ಪ್ರಿಂಟರ್ ಫೀಚರ್‌ಗಳು</translation>
@@ -2315,6 +2317,7 @@
 <translation id="4941627891654116707">ಫಾಂಟ್ ಗಾತ್ರ</translation>
 <translation id="4943620199112228840">ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್‌ಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="4943872375798546930">ಯಾವುದೇ ಫಲಿತಾಂಶಗಳಿಲ್ಲ</translation>
+<translation id="494701040141924538">ಅರ್ಥವಾಯಿತು, ಸೂಚನೆಯನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="495170559598752135">ಕ್ರಿಯೆಗಳು</translation>
 <translation id="4953689047182316270">ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಈವೆಂಟ್‌ಗಳಿಗೆ ಪ್ರತಿಕ್ರಿಯಿಸಿ</translation>
 <translation id="4954505713046251871">ಸಲಹೆಗಳನ್ನು ಒದಗಿಸಲು ಮತ್ತು ಈ ಫೀಚರ್ ಅನ್ನು ಸುಧಾರಿಸಲು, ಪುಟದ URL ಮತ್ತು ಕಂಟೆಂಟ್ ಅನ್ನು Google ನೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತದೆ</translation>
@@ -4291,6 +4294,7 @@
 <translation id="8350416046273606058">ಶಾರ್ಟ್‌ಕಟ್ ಸ್ಪೇಸ್‌ಗಳನ್ನು ಒಳಗೊಂಡಿರಬಾರದು: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">ಟಿಪ್ಪಣಿ ರಚಿಸಿ</translation>
 <translation id="8352849934814541340">ಈ ಸಾಧನದ ನಿರ್ವಾಹಕರು ಹೆಚ್ಚುವರಿ ಕಾರ್ಯವಿಧಾನಗಳಿಗಾಗಿ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ್ದಾರೆ. ಅಪ್ಲಿಕೇಶನ್‌ಗಳು ನಿಮ್ಮ ಕೆಲವೊಂದು ಡೇಟಾಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಹೊಂದಿವೆ.</translation>
+<translation id="8353273112634584260">Gemini ಮೂಲಕ ಪರ್ಸನಲ್ ಇಂಟೆಲಿಜೆನ್ಸ್‌ನಿಂದ ಚಾಲಿತವಾಗಿದೆ. ವರ್ಧಿಸಿದ ಆಟೋಫಿಲ್ ಅನ್ನು ಸುಧಾರಿಸಲು ನಿಮ್ಮ ವಿನಂತಿಗಳು, ಪುಟದ ಶೀರ್ಷಿಕೆಗಳು ಮತ್ತು URL ಗಳನ್ನು ಪರಿಶೀಲಿಸಬಹುದು.</translation>
 <translation id="8355270400102541638">ಸ್ಥಳೀಯ ಕ್ರ್ಯಾಶ್‌ನ ಸಂದರ್ಭ:</translation>
 <translation id="8362914115861174987">ಈ ಭಾಷೆಗೆ ಅನುವಾದಿಸಿ</translation>
 <translation id="8363502534493474904">ಏರ್‌ಪ್ಲೇನ್ ಮೋಡ್ ಆಫ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>

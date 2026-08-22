@@ -173,6 +173,16 @@ https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세
 <translation id="1100840127293327071">기본적으로 기존 인터넷 사용 기록을 유지하는 옵션 선택 안함</translation>
 <translation id="1105572260329131950">보안 연결일 경우 기본 아이콘 표시</translation>
 <translation id="1105711894873068933"><ph name="LACROS_NAME" />가 사용 중지되면 다음 로그인 시 모든 사용자 데이터가 삭제됩니다.</translation>
+<translation id="1106279506320506502">분리 모드의 사용 설정 여부를 지정합니다.
+
+분리 모드는 엔터프라이즈 전용 임시 탐색 모드이며,
+DLP 관련 엔터프라이즈 정책 및 강제 설치된 확장 프로그램을 지원합니다.
+
+1 - 사용 설정됨으로 설정하면 분리 모드가 사용 설정되고 시크릿 모드가 사용 중지됩니다.
+
+0 - 사용 안함으로 설정하거나 아무런 설정도 하지 않으면 분리 모드가 사용 중지됩니다.
+
+이 정책을 적용하려면 `<ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />` 라이선스가 필요합니다.</translation>
 <translation id="1106342730891876476">공유 설정</translation>
 <translation id="1107538157073168076">통계 확장 프로그램 사용 안함</translation>
 <translation id="1110426799149444997"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> 영역 검색을 사용 중지합니다.</translation>
@@ -1657,6 +1667,17 @@ URL로 입력된 측정항목 수집이 허용되거나 사용자가 이를 사�
 <translation id="2057317273526988987">URL 목록 액세스 허용</translation>
 <translation id="205807990145127714">신호 강도 이벤트를 보고하기 위한 텔레메트리 데이터</translation>
 <translation id="2060153898336610735">현재 언어를 기준으로 자동 설정됨</translation>
+<translation id="2060316966423154087">사용자가 <ph name="PRODUCT_NAME" />에서 생성형 AI를 사용하여 양식을 더 잘 이해하고 더 많은 입력란을 채울 수 있도록 허용할지 설정합니다.
+
+0 = 1과 동일한 효과를 가집니다. M153 이전에는 이 설정을 통해 Google에서 관련 데이터를 사용하여 AI 모델을 개선할 수 있었습니다. 관련 데이터에는 기능에 따라 프롬프트나 입력, 출력, 소스 자료, 서면 의견이 포함될 수 있습니다. 아래에 명시된 경우를 제외하고 0이 기본값입니다.
+
+1 = 기능을 사용하도록 허용하되 Google에서 관련 데이터(프롬프트, 입력, 출력, 소스 자료, 서면 의견 등)를 사용하여 모델을 개선하도록 허용하지 않습니다. 1은 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />에서 관리되는 기업 사용자 및 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />에서 관리되는 Education 계정의 기본값입니다.
+
+2 = 기능을 허용하지 않습니다.
+
+정책을 설정하지 않으면 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 정책에 따라 동작이 결정됩니다.
+
+생성형 AI 기능의 데이터 처리에 관한 자세한 내용은 https://support.google.com/chrome/a?p=generative_ai_settings 페이지를 참고하세요.</translation>
 <translation id="2061123930713023976">네트워크 패킷 캡처 디버깅 허용</translation>
 <translation id="2061810934846663491">원격 액세스 호스트에 필요한 도메인 이름을 설정합니다.</translation>
 <translation id="2062632109797189011">지원 중단된 window.mydomainStorageInfo API를 다시 사용 설정합니다.</translation>
@@ -5966,6 +5987,7 @@ JavaScript 최적화 정책 예외는 사이트 세부사항에서만 시행됩�
 정책을 사용 안함으로 설정하면 Credential Provider Extension Promo가 사용자에게 표시되지 않습니다.</translation>
 <translation id="4768446404233019970">TLS에서 3DES 암호화 스위트 사용 설정</translation>
 <translation id="4770334626033858263">부모 액세스 코드를 생성하고 확인하는 데 사용되는 설정입니다.</translation>
+<translation id="477383002672213319">AI 모델을 개선하지 않고 향상된 자동 완성을 허용합니다(M153 이전의 AI 모델 개선).</translation>
 <translation id="4773997835955617342">수동으로 생성된 새 티켓의 <ph name="KRB5_CONFIG" /> 추천 구성을 변경합니다.
 
       정책을 사용 설정하면 'KerberosCustomPrefillConfig' 정책 값에 추천 구성이 적용되고 정책 값이 Kerberos 인증 대화상자의 '고급' 섹션에 표시됩니다.
@@ -7266,6 +7288,13 @@ Microsoft SharePoint 및 OneDrive 카드에는 추가 관리자 구성이 필요
 <translation id="5537400155400537818">사용 중지됨: CSS 확대/축소가 표준 이전의 기존 동작을 유지합니다.</translation>
 <translation id="5537587542872235553">강제 설치된 분리형 웹 앱 및 키오스크 애플리케이션에서 Device Attributes API를 사용하도록 허용</translation>
 <translation id="553806128266843748">제한을 사용 설정할지 나타내는 부울 플래그입니다.</translation>
+<translation id="5540415024237352600">이 정책은 M153에서 지원 중단될 예정이며 향후 버전에서는 지원되지 않습니다(영향을 미치지 않음). 프로그레시브 웹 애플리케이션(PWA)을 설치할 때 생성되는 네이티브 애플리케이션의 임시 서명이 이제 <ph name="MAC_OS_NAME" />에서 영구적으로 사용 설정됩니다. 이렇게 하면 설치되어 있는 각 애플리케이션이 <ph name="MAC_OS_NAME" /> 시스템 구성요소에 대한 고유한 ID를 갖게 됩니다.
+
+이 정책을 사용 설정하거나 설정하지 않은 상태로 두면 프로그레시브 웹 애플리케이션(PWA)을 설치할 때 생성되는 네이티브 애플리케이션에 임시 서명을 사용할 수 있습니다. 이렇게 하면 설치되어 있는 각 애플리케이션이 <ph name="MAC_OS_NAME" /> 시스템 구성요소에 대한 고유한 ID를 갖게 됩니다.
+
+이 정책을 사용 안함으로 설정하면 프로그레시브 웹 애플리케이션을 설치할 때 생성되는 모든 네이티브 애플리케이션이 동일한 ID를 갖게 됩니다. 이에 따라 <ph name="MAC_OS_NAME" /> 기능이 방해될 수 있습니다.
+
+임시 서명으로 애플리케이션을 차단하는 엔드포인트 보안 솔루션을 사용하는 경우에만 정책을 사용 중지하세요.</translation>
 <translation id="5540885720415375851">로컬 기기 검색 허용</translation>
 <translation id="5542235730745104308">정책을 True로 설정하면 <ph name="PRODUCT_NAME" />에서 브라우저에 내장된 대체 오류 페이지(예: '페이지를 찾을 수 없습니다')를 사용합니다. 정책을 False로 설정하면 <ph name="PRODUCT_NAME" />에서 대체 오류 페이지를 사용하지 않습니다.
 

@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">აირჩიეთ ნებართვა: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">გსურთ IBAN-ის შენახვა?</translation>
 <translation id="1113869188872983271">გადალაგების &amp;მოქმედების გაუქმება</translation>
+<translation id="1117709830616495622">მუშაობს პერსონალური ინტელექტით Gemini-ს მეშვეობით.</translation>
 <translation id="111897705806685148">წვდომის გასაღების გამოყენება სხვა მოწყობილობიდან</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, დააჭირეთ Tab-ს, შემდეგ — Enter-ს, რათა მართოთ, თუ რა ინფორმაციას შეინახავთ Chrome-იდან თქვენს Google ანგარიშში</translation>
 <translation id="1121990216147052230">შემიქმენი დავალებების სია</translation>
@@ -1170,6 +1171,7 @@
 <translation id="3005723025932146533">შენახული ასლის ჩვენება</translation>
 <translation id="300580149047131921">გამოყენებულია ახლახან</translation>
 <translation id="3006864083554020786">სახლის მისამართი</translation>
+<translation id="3008410317623852235">ახლა უკვე შეგიძლიათ, მოიძიოთ და შეავსოთ ინფორმაცია Gmail-იდან და სხვა წყაროებიდან</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, ხელმისაწვდომი ქმედებების გასაცნობად დააჭირეთ კლავიშს „Tab“, არჩეული ქმედების შესასრულებლად დააჭირეთ Enter-ს.</translation>
 <translation id="3010991137650052245">თქვენი <ph name="PERMISSION" /> რომ გამოიყენოთ ამ ვებსაიტზე, დაუშვით <ph name="SHORT_PRODUCT_NAME" />-ის წვდომა</translation>
 <translation id="3014726756341138577">პრინტერების გაფართოებული ფუნქციები</translation>
@@ -2319,6 +2321,7 @@
 <translation id="4941627891654116707">შრიფტის ზომა</translation>
 <translation id="4943620199112228840">თქვენი მიკროფონების გამოყენება</translation>
 <translation id="4943872375798546930">შედეგები არ არის</translation>
+<translation id="494701040141924538">გასაგებია, დაიხუროს შეტყობინება</translation>
 <translation id="495170559598752135">ქმედებები</translation>
 <translation id="4953689047182316270">მარტივ წვდომასთან დაკავშირებულ მოვლენებზე რეაგირება</translation>
 <translation id="4954505713046251871">შემოთავაზებების მისაღებად და ამ ფუნქციის გასაუმჯობესებლად გვერდის URL და კონტენტი უზიარდება Google-ს</translation>
@@ -4295,6 +4298,7 @@
 <translation id="8350416046273606058">დაუშვებელია მალსახმობში შორისების გამოყენება: „<ph name="SHORTCUT_NAME" />“</translation>
 <translation id="8351131234907093545">ჩანიშვნის შექმნა</translation>
 <translation id="8352849934814541340">ამ მოწყობილობის ადმინისტრატორმა დააინსტალირა აპლიკაციები დამატებითი ფუნქციების უზრუნველსაყოფად. აღნიშნულ აპლიკაციებს აქვს წვდომა თქვენს ზოგიერთ მონაცემზე.</translation>
+<translation id="8353273112634584260">მუშაობს პერსონალური ინტელექტით Gemini-ს მეშვეობით. თქვენი მოთხოვნები, გვერდის სათაურები და URL-ები შეიძლება გადამოწმდეს გაუმჯობესებული ავტომატური შევსების ფუნქციის დასახვეწად.</translation>
 <translation id="8355270400102541638">ავარიულად გათიშვის ადგილობრივი კონტექსტი:</translation>
 <translation id="8362914115861174987">თარგმნა შემდეგ ენაზე:</translation>
 <translation id="8363502534493474904">თვითმფრინავის რეჟიმის გამორთვა</translation>

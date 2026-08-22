@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Izbira dovoljenja za: <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Želite shraniti številko IBAN?</translation>
 <translation id="1113869188872983271">&amp;Razveljavi razvrstitev</translation>
+<translation id="1117709830616495622">Uporablja osebno inteligenco z Geminijem.</translation>
 <translation id="111897705806685148">Uporabi ključ za dostop iz druge naprave</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite upravljati, katere podatke v Chromu shranjujete v računu Google</translation>
 <translation id="1121990216147052230">Ustvari mi seznam opravil</translation>
@@ -1170,6 +1171,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3005723025932146533">Pokaži shranjeno kopijo</translation>
 <translation id="300580149047131921">Nedavno uporabljeno</translation>
 <translation id="3006864083554020786">domači naslov</translation>
+<translation id="3008410317623852235">Zdaj lahko poiščete ter izpolnite podatke iz Gmaila in drugod.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, če želite prebrskati razpoložljiva dejanja, nato pritisnite Enter, če želite izvesti izbrano dejanje.</translation>
 <translation id="3010991137650052245">Če želite, da se na tem spletnem mestu uporablja <ph name="PERMISSION" />, odobrite dostop za <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3014726756341138577">Dodatne funkcije tiskalnika</translation>
@@ -2319,6 +2321,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4941627891654116707">Velikost pisave</translation>
 <translation id="4943620199112228840">Uporaba mikrofonov</translation>
 <translation id="4943872375798546930">Ni rezultatov</translation>
+<translation id="494701040141924538">Razumem, zapri obvestilo</translation>
 <translation id="495170559598752135">Dejanja</translation>
 <translation id="4953689047182316270">Odzivanje na dogodke funkcij za ljudi s posebnimi potrebami</translation>
 <translation id="4954505713046251871">Zaradi zagotavljanja predlogov in izboljšanja te funkcije se URL in vsebina strani delita z Googlom</translation>
@@ -4296,6 +4299,7 @@ Dodatne podrobnosti:
 <translation id="8350416046273606058">Bližnjica ne sme vsebovati presledkov: »<ph name="SHORTCUT_NAME" />«</translation>
 <translation id="8351131234907093545">Ustvarjanje zapiska</translation>
 <translation id="8352849934814541340">Skrbnik te naprave je namestil aplikacije zaradi dodatnih funkcij. Aplikacije imajo dostop do nekaterih vaših podatkov.</translation>
+<translation id="8353273112634584260">Uporablja osebno inteligenco z Geminijem. Vaše zahteve, naslovi strani in URL-ji bodo morda pregledani za izboljšanje funkcije izboljšanega samodejnega izpolnjevanja.</translation>
 <translation id="8355270400102541638">Lokalni kontekst zrušitve:</translation>
 <translation id="8362914115861174987">Prevedi v jezik</translation>
 <translation id="8363502534493474904">izklopiti način za letalo</translation>

@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">გამოიყენეთ შენახული პაროლები სხვა აპებში</translation>
 <translation id="4431224949908513835">აირჩიეთ შესავსები გადახდის მეთოდი.</translation>
 <translation id="4432122368769493392">პარამეტრები…</translation>
+<translation id="4439968635693513370">უქმეების დასაგეგმად გამოიყენეთ</translation>
 <translation id="4442550905108052454">გახსენით <ph name="BEGIN_BOLD" />პარამეტრები<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">სხვა ვარიანტები — <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">უკან ან წინ გადასასვლელად გაფურცლეთ კიდიდან.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="454217142158335225">დახურული ერთეულების ხელახლა გახსნა შეგიძლიათ ბოლოს გამოყენებული ჩანართებიდან ან ჩანართების ჯგუფების სექციებიდან. თქვენი ჩამაგრებული ჩანართები არ დაიხურება.</translation>
 <translation id="4547181496285029457">ბოლოდროინდელ ჩანართზე დაბრუნება</translation>
 <translation id="4552042254369397518">მიმდინარეობს კოპირება…</translation>
+<translation id="4552089082226364758">Flash</translation>
 <translation id="4553044860350038560">წვდომის სხვა გასაღებები</translation>
 <translation id="4564893319561643483">დაიმალოს „<ph name="TITLE" />“</translation>
 <translation id="456502772933839252">ზიარდება <ph name="PAGE_TITLE" /></translation>
@@ -1100,6 +1102,7 @@
 <translation id="4668929960204016307">.</translation>
 <translation id="4669618761237477717">თქვენი ორგანიზაცია მოითხოვს, რომ ვები კონფიდენციალურ რეჟიმში დაათვალიეროთ. ჩანართების ჯგუფები არ სინქრონიზდება ინკოგნიტო რეჟიმში.
 <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">თავდაჯერებულად შესაძენად გამოიყენეთ</translation>
 <translation id="467189612236587057">წამოიწყეთ სატელეფონო ზარი და დაუკავშირდით კომპანიას</translation>
 <translation id="4673565891421389203">თქვენი მართული ანგარიშით შესვლა საშუალებას მოგცემთ, გამიჯნოთ დათვალიერება თქვენი ორგანიზაციისთვის, კერძოდ, ჩანართები, ისტორია და პაროლები.
 
@@ -1307,6 +1310,7 @@
 <translation id="5300589172476337783">ჩვენება</translation>
 <translation id="5311061401280561833">კამერასა და მიკროფონზე წვდომა დაშვებულია</translation>
 <translation id="5313967007315987356">საიტის დამატება</translation>
+<translation id="5315029634103634221">Gemini ხელოვნური ინტელექტია და შეიძლება შეცდეს. <ph name="BEGIN_LINK" />ვრცლად Google-ისთვის გაგზავნილი შესაბამისი მონაცემების შესახებ<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">იმპორტისთვის არაფერია</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" />-დან</translation>
 <translation id="5317780077021120954">შენახვა</translation>
@@ -1389,6 +1393,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="5596627076506792578">დამატებითი ვარიანტები</translation>
 <translation id="560322036295180549">გამორთულია თქვენი ორგანიზაციის მიერ</translation>
 <translation id="5611398002774823980">ანგარიშში შენახვა</translation>
+<translation id="5612225021788368236">ნაგულისხმევი ბრაუზერის პრომოს დახურვა</translation>
 <translation id="561269594905823128">შეეხეთ: <ph name="BEGIN_BOLD" />თქვენი ფაილის არჩევა<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">დალაგება უახლესის მიხედვით</translation>
 <translation id="5614553682702429503">გსურთ პაროლის შენახვა?</translation>
@@ -2474,6 +2479,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="9029650858822697271">სისტემიდან გახვედით</translation>
 <translation id="9032405509996909363">დაადასტურეთ დათვალიერების მონაცემების წაშლა</translation>
 <translation id="9035699147763101514">მუშაობს პერსონალური ინტელექტით Gemini-ს მეშვეობით. მართეთ თქვენი არჩევანი პარამეტრებიდან.</translation>
+<translation id="9038526468059454274">შესაჯამებლად გამოიყენეთ</translation>
 <translation id="9039373489628511875">გამტარუნარიანობა</translation>
 <translation id="9042893549633094279">კონფიდენციალურობა და უსაფრთხოება</translation>
 <translation id="9055291197094969722">შექმენით ჩანართების ჯგუფები და მოახდინეთ თქვენი გახსნილი ჩანართების ორგანიზება და იყავით პროდუქტიული</translation>

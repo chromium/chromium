@@ -181,6 +181,16 @@ L'etichetta è personalizzabile tramite la policy <ph name="ENTERPRISE_CUSTOM_LA
 <translation id="1100840127293327071">Non selezionare l'opzione per mantenere i dati di navigazione esistenti per impostazione predefinita</translation>
 <translation id="1105572260329131950">Vengono usate icone predefinite per le connessioni sicure</translation>
 <translation id="1105711894873068933">Dopo la disattivazione di <ph name="LACROS_NAME" />, tutti i dati utente vengono rimossi all'accesso successivo.</translation>
+<translation id="1106279506320506502">Specifica se la modalità Isolata è attivata.
+
+La modalità Isolata è una modalità di navigazione temporanea disponibile solo per le aziende.
+Supporta le policy aziendali relative a DLP e le estensioni con installazione forzata.
+
+Se la policy è impostata su 1 (Attivata), la modalità Isolata viene attivata e la modalità Incognito viene disattivata.
+
+Se la policy è impostata su 0 (Disattivata) o se non viene configurata, la modalità Isolata viene disattivata.
+
+Per essere applicata, questa policy richiede una licenza "<ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />".</translation>
 <translation id="1106342730891876476">Impostazioni di condivisione</translation>
 <translation id="1107538157073168076">Disattiva estensione Insights</translation>
 <translation id="1110426799149444997">Disattiva la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
@@ -1673,6 +1683,17 @@ In genere, questa policy è disattivata per difendere gli utenti da tentativi di
 <translation id="2057317273526988987">Consenti l'accesso a un elenco di URL</translation>
 <translation id="205807990145127714">Dati di telemetria da segnalare per gli eventi di intensità del segnale</translation>
 <translation id="2060153898336610735">Automatico, in base alla lingua corrente</translation>
+<translation id="2060316966423154087">Specifica se gli utenti possono consentire a <ph name="PRODUCT_NAME" /> di utilizzare l'AI generativa per comprendere meglio i moduli e offrire aiuto nella compilazione di più campi.
+
+0 = ha lo stesso effetto di 1. Prima della versione M153, l'impostazione consentiva a Google di utilizzare i dati pertinenti per migliorare i propri modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output, contenuti originali e feedback scritto. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Consente di utilizzare la funzionalità, ma non consente a Google di migliorare i modelli utilizzando i dati pertinenti degli utenti (inclusi prompt, input, output, contenuti originali e feedback scritto). 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Non consente di utilizzare la funzionalità.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2061123930713023976">Consenti acquisizioni di pacchetti di rete di debug</translation>
 <translation id="2061810934846663491">Configura i nomi di dominio richiesti per gli host di accesso remoto</translation>
 <translation id="2062632109797189011">Riattiva l'API window.webkitStorageInfo</translation>
@@ -5984,6 +6005,7 @@ In caso contrario, verranno attivati solo i servizi selezionati.</translation>
 Se viene disattivata, all'utente non viene mostrata la promozione dell'estensione fornitore di credenziali.</translation>
 <translation id="4768446404233019970">Attiva le suite di crittografia 3DES in TLS</translation>
 <translation id="4770334626033858263">La configurazione usata per generare e verificare il codice accesso genitori.</translation>
+<translation id="477383002672213319">Consenti la compilazione automatica avanzata senza migliorare i modelli di AI (migliora i modelli di AI prima della versione M153).</translation>
 <translation id="4773997835955617342">Consente di modificare la configurazione <ph name="KRB5_CONFIG" /> suggerita per i nuovi ticket creati manualmente.
 
       Se questa policy viene attivata, il valore della policy "KerberosCustomPrefilledConfig" viene applicato come configurazione suggerita e viene mostrato nella sezione "Avanzate" della finestra di dialogo dell'autenticazione Kerberos.
@@ -7258,6 +7280,13 @@ Esistono più policy che elencano le origini che influiscono sulle richieste agl
 <translation id="5537400155400537818">Disattivato: lo zoom CSS mantiene il comportamento pre-standard precedente.</translation>
 <translation id="5537587542872235553">Consenti alle app web isolate e alle applicazioni kiosk con installazione forzata di utilizzare l'API Device Attributes</translation>
 <translation id="553806128266843748">Un flag booleano che indica se la limitazione è attiva o meno.</translation>
+<translation id="5540415024237352600">Questa policy verrà ritirata nella versione M153 e non sarà più supportata (non avrà alcun effetto) in una release futura. Le firme ad hoc per le applicazioni native create durante l'installazione di un'applicazione web progressiva (PWA) sono ora attivate in modo permanente su <ph name="MAC_OS_NAME" />. in questo modo, ogni applicazione installata ha un'identità univoca per i componenti di sistema di <ph name="MAC_OS_NAME" />.
+
+Se la policy è impostata su Attivata o se non viene configurata, è possibile utilizzare firme ad hoc per l'applicazione nativa creata durante l'installazione di un'applicazione web progressiva (PWA). In questo modo, ogni applicazione installata ha un'identità univoca per i componenti di sistema di <ph name="MAC_OS_NAME" />.
+
+Se la policy è impostata su Disattivata, tutte le applicazioni native create durante l'installazione di applicazioni web progressive (PWA) avranno la stessa identità. Questo può interferire con la funzionalità di <ph name="MAC_OS_NAME" />.
+
+Disattiva la policy solo se utilizzi una soluzione di sicurezza degli endpoint che blocca le applicazioni con una firma ad hoc.</translation>
 <translation id="5540885720415375851">Consenti rilevamento dei dispositivi locali</translation>
 <translation id="5542235730745104308">Se la policy viene impostata su true, <ph name="PRODUCT_NAME" /> consente l'utilizzo di pagine di errore alternative integrate nel browser (come "pagina non trovata"). Se la policy viene impostata su false, <ph name="PRODUCT_NAME" /> non consente mai l'utilizzo di pagine di errore alternative.
 

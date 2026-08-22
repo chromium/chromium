@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Выберыце дазвол для <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Захаваць нумар IBAN?</translation>
 <translation id="1113869188872983271">&amp;Адрабіць змяненне парадку</translation>
+<translation id="1117709830616495622">На платформе персаналізаванага інтэлекту з Gemini.</translation>
 <translation id="111897705806685148">Выкарыстаць ключ доступу з іншай прылады</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб выбраць, якія даныя Chrome будуць захоўвацца ва Уліковым запісе Google, націсніце Tab, затым Увод.</translation>
 <translation id="1121990216147052230">Складзі спіс задач для мяне</translation>
@@ -1171,6 +1172,7 @@
 <translation id="3005723025932146533">Паказаць захаваную копію</translation>
 <translation id="300580149047131921">Выкарыстоўвалася нядаўна</translation>
 <translation id="3006864083554020786">хатні адрас</translation>
+<translation id="3008410317623852235">Зараз вы можаце знаходзіць і ўводзіць інфармацыю з Gmail і іншых сэрвісаў.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, націсніце Tab, каб праглядзець даступныя дзеянні, а затым Enter, каб выканаць выбранае дзеянне.</translation>
 <translation id="3010991137650052245">Каб выкарыстоўваць інструмент "<ph name="PERMISSION" />" на гэтым сайце, дайце браўзеру <ph name="SHORT_PRODUCT_NAME" /> адпаведны доступ</translation>
 <translation id="3014726756341138577">Пашыраныя функцыі прынтараў</translation>
@@ -2319,6 +2321,7 @@
 <translation id="4941627891654116707">Памер шрыфту</translation>
 <translation id="4943620199112228840">Выкарыстоўваць мікрафоны</translation>
 <translation id="4943872375798546930">Няма вынікаў</translation>
+<translation id="494701040141924538">Зразумела, закрыць апавяшчэнне</translation>
 <translation id="495170559598752135">Дзеянні</translation>
 <translation id="4953689047182316270">Адказваць на падзеі функцый спецыяльных магчымасцей</translation>
 <translation id="4954505713046251871">У мэтах паляпшэння функцыі і падбору адпаведных прапаноў URL-адрас старонкі і яе змесціва абагульваюцца з Google</translation>
@@ -4295,6 +4298,7 @@
 <translation id="8350416046273606058">У хуткай камандзе "<ph name="SHORTCUT_NAME" />" не павінна быць прабелаў</translation>
 <translation id="8351131234907093545">Стварыць нататку</translation>
 <translation id="8352849934814541340">Адміністратар гэтай прылады ўсталяваў праграмы для дадатковых функцый. Праграмы маюць доступ да некаторых вашых даных.</translation>
+<translation id="8353273112634584260">На платформе персаналізаванага інтэлекту з Gemini. Вашы запыты, загалоўкі старонак і URL-адрасы могуць разглядацца спецыялістамі для ўдасканалення палепшанага аўтазапаўнення.</translation>
 <translation id="8355270400102541638">Лакальны ідэнтыфікатар збою:</translation>
 <translation id="8362914115861174987">Мова перакладу:</translation>
 <translation id="8363502534493474904">Выключыць рэжым палёту</translation>

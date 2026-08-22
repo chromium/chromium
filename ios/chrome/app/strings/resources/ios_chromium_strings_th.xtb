@@ -253,6 +253,7 @@
 <translation id="6154098560469640583">ใช้ Chromium ทุกครั้งที่คุณแตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
 <translation id="6157162508956739031">ลงชื่อเข้าใช้แอปและเว็บไซต์ได้อย่างรวดเร็วด้วยการป้อนรหัสผ่านและพาสคีย์อัตโนมัติจาก Chromium</translation>
 <translation id="6170619162539716595">อนุญาตให้ Chromium ใช้ Google Maps เพื่อแสดงเส้นทางและข้อมูลในพื้นที่ของที่อยู่ที่ตรวจพบ</translation>
+<translation id="6170834619568075230">คุณสามารถใช้ Google Lens ใน Chromium เพื่อค้นหาสิ่งต่างๆ ที่เห็นได้</translation>
 <translation id="6244277266078678766">ระบบจะบันทึกรหัสผ่านไว้ในเครื่องมือจัดการรหัสผ่านสำหรับ <ph name="USER_EMAIL" /></translation>
 <translation id="6268381023930128611">ต้องการออกจาก Chromium ใช่ไหม</translation>
 <translation id="6301717043141881464">หากต้องการเรียกข้อมูลรหัสผ่านที่บันทึกไว้ในแอปอื่นๆ ได้อย่างง่ายดาย ให้เลือก Chromium สำหรับการป้อนข้อความอัตโนมัติ</translation>
@@ -332,6 +333,7 @@
 <translation id="8014091604604659473">ออกจากระบบ Chromium แล้ว</translation>
 <translation id="8104697640054703121">รับการรักษาความปลอดภัยที่เข้มงวดที่สุดของ Chromium ที่จะปกป้องคุณจากเว็บไซต์ที่เป็นอันตราย</translation>
 <translation id="8119542592987737574">เข้าถึง Chromium ได้เร็วขึ้นจากแถบแอปในหน้าจอหลักของ iPhone</translation>
+<translation id="8119553494985516751">เปิดลิงก์ได้เร็วขึ้นเมื่อตั้ง Chromium เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="8164086860209325020">ไปที่การตั้งค่า Chromium</translation>
 <translation id="8197822717502700527">ตอนนี้คุณจะได้รับประโยชน์สูงสุดจาก Chromium ในอุปกรณ์แล้ว</translation>
 <translation id="8236210361418193126">นำเข้าไปยังเครื่องมือจัดการรหัสผ่าน</translation>
@@ -378,6 +380,7 @@
 <translation id="9177628952266852500"><ph name="EMAIL" /> Chromium ได้รับการจัดการ</translation>
 <translation id="921174536258924340">Chromium ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้หรือ<ph name="BEGIN_LINK" />ตรวจสอบรหัสผ่านในบัญชี Google<ph name="END_LINK" /></translation>
 <translation id="924957577793602335">ปรับเปลี่ยน Chromium ในแบบของคุณ</translation>
+<translation id="925642420047255224">คุณจะใช้ Chromium ทุกครั้งที่แตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
 <translation id="981812233959540767">เล่นเกมไดโนเสาร์ของ Chromium</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 <translation id="986520777495807752">ตั้งค่า Chromium เป็นค่าเริ่มต้น</translation>

@@ -70,6 +70,7 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> үшін рұқсатты таңдаңыз</translation>
 <translation id="1113000785583998331">IBAN нөмірін сақтау керек пе?</translation>
 <translation id="1113869188872983271">&amp;Қайта ретке келтіру әрекетін болдырмау</translation>
+<translation id="1117709830616495622">Gemini-дағы Personal Intelligence арқылы істейді.</translation>
 <translation id="111897705806685148">Басқа құрылғыдағы кіру кілтін пайдалану</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Google аккаунтыңызда сақталатын Chrome ақпаратын басқару үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="1121990216147052230">Маған тапсырмалар тізімін жасап бер</translation>
@@ -1110,7 +1111,7 @@
 <translation id="2905107382358353958">Жаңа төлем параметрі туралы хабарландыру</translation>
 <translation id="2909946352844186028">Желі өзгерісі анықталды.</translation>
 <translation id="2910062169995917863">Сеанс уақыты өтіп кетті.</translation>
-<translation id="2911224142899421774">Google Wallet параметрлері Chrome-нан сақталған ақпаратқа қолданылады.</translation>
+<translation id="2911224142899421774">Google Wallet параметрлері Chrome-нан сақталған ақпаратқа қолданылады</translation>
 <translation id="2911973620368911614">Тапсырма орындалатын аккаунт пайдаланушысының идентификаторы</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> әдетте ақпаратыңызды қорғау үшін шифрлауды қолданады. Chrome осы жолы <ph name="SITE" /> сайтына қосылуға әрекет еткенде, веб-сайт әдеттен тыс және теріс тіркелу деректерін кері жіберді. Бұл жағдай қаскүнем <ph name="SITE" /> болып көрінгісі келгенде немесе Wi-Fi кіру экраны байланысқа кедергі келтірген кезде пайда болуы мүмкін. Дерегіңіз әлі де қауіпсіз күйде, себебі Chrome байланысты ешқандай дерек алмасу болмай тұрып үзді.</translation>
 <translation id="2915068235268646559">Бұзылу уақыты: <ph name="CRASH_TIME" /></translation>
@@ -1170,6 +1171,7 @@
 <translation id="3005723025932146533">Сақталған көшірмені көрсету</translation>
 <translation id="300580149047131921">Соңғы қолданылған</translation>
 <translation id="3006864083554020786">үй мекенжайы</translation>
+<translation id="3008410317623852235">Енді Gmail-дегі және басқа жерлердегі ақпаратты тауып, толтыра аласыз.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, қолжетімді әрекеттерді шолу үшін Tab пернесін басып, таңдалған әрекетті орындау үшін Enter пернесін басыңыз.</translation>
 <translation id="3010991137650052245">Бұл сайтта <ph name="PERMISSION" /> пайдалану үшін <ph name="SHORT_PRODUCT_NAME" /> қызметіне рұқсат беріңіз.</translation>
 <translation id="3014726756341138577">Озық принтер функциялары</translation>
@@ -2318,6 +2320,7 @@
 <translation id="4941627891654116707">Қаріп өлшемі</translation>
 <translation id="4943620199112228840">Микрофондарды пайдалану</translation>
 <translation id="4943872375798546930">Нәтижесіз</translation>
+<translation id="494701040141924538">Хабарландыруды жабу</translation>
 <translation id="495170559598752135">Әрекеттер</translation>
 <translation id="4953689047182316270">Арнайы мүмкіндіктер оқиғаларына жауап беру</translation>
 <translation id="4954505713046251871">Ұсыныстарды қалыптастыру және бұл функцияны жақсарту үшін беттің URL мекенжайы мен контенті Google-ға жіберіледі.</translation>
@@ -4294,6 +4297,7 @@
 <translation id="8350416046273606058">Жылдам пәрменде бос орындар болмауы керек: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Ескертпе жасау</translation>
 <translation id="8352849934814541340">Бұл құрылғының әкімшісі қосымша функциялар үшін қолданбалар орнатты. Қолданбалар кейбір деректерді пайдалана алады.</translation>
+<translation id="8353273112634584260">Gemini-дағы Personal Intelligence арқылы істейді. Сұрауларыңыз, бет атаулары мен URL мекенжайлары дұрысталған автотолтыру функциясын жақсарту үшін тексерілуі мүмкін.</translation>
 <translation id="8355270400102541638">Пайдаланушы компьютеріндегі жаңылыс мәнмәтіні:</translation>
 <translation id="8362914115861174987">Аударма тілі:</translation>
 <translation id="8363502534493474904">Ұшақ режимін сөндіру</translation>

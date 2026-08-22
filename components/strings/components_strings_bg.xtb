@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Избиране на разрешението за <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Да се запази ли IBAN?</translation>
 <translation id="1113869188872983271">&amp;Отмяна на пренареждането</translation>
+<translation id="1117709830616495622">Функцията е базирана на Personal Intelligence с Gemini.</translation>
 <translation id="111897705806685148">Използване на ключ за достъп от друго устройство</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да управлявате каква информация от Chrome да се запазва в профила ви в Google</translation>
 <translation id="1121990216147052230">Създай ми списък със задачи</translation>
@@ -1170,6 +1171,7 @@
 <translation id="3005723025932146533">Показване на запазено копие</translation>
 <translation id="300580149047131921">Наскоро използвано</translation>
 <translation id="3006864083554020786">домашен адрес</translation>
+<translation id="3008410317623852235">Вече можете да намирате и попълвате информация от Gmail и др.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab, за да видите наличните действия, и след това Enter, за да изпълните избраното.</translation>
 <translation id="3010991137650052245">За да използвате <ph name="PERMISSION" /> на този сайт, дайте достъп на <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3014726756341138577">Разширени функции на принтера</translation>
@@ -2319,6 +2321,7 @@
 <translation id="4941627891654116707">Размер на шрифта</translation>
 <translation id="4943620199112228840">Използване на микрофоните ви</translation>
 <translation id="4943872375798546930">Няма резултати</translation>
+<translation id="494701040141924538">Разбрах, затваряне на известието</translation>
 <translation id="495170559598752135">Действия</translation>
 <translation id="4953689047182316270">Реагиране на събития за достъпност</translation>
 <translation id="4954505713046251871">За да ви показваме предложения и да подобрим тази функция, URL адресът и съдържанието на страницата се споделят с Google</translation>
@@ -4296,6 +4299,7 @@
 <translation id="8350416046273606058">Прекият път „<ph name="SHORTCUT_NAME" />“ не може да съдържа интервали</translation>
 <translation id="8351131234907093545">Създаване на бележка</translation>
 <translation id="8352849934814541340">Администраторът на това устройство е инсталирал приложения за допълнителни функции. Приложенията имат достъп до част от данните ви.</translation>
+<translation id="8353273112634584260">Функцията е базирана на Personal Intelligence с Gemini. Заявките, заглавията и URL адресите на страниците ви може да бъдат прегледани с цел усъвършенстване на подобреното автоматично попълване.</translation>
 <translation id="8355270400102541638">Локален контекст за срива:</translation>
 <translation id="8362914115861174987">Превод на</translation>
 <translation id="8363502534493474904">Изключете самолетния режим.</translation>
