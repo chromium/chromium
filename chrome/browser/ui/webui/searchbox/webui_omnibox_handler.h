@@ -59,7 +59,18 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
                      bool delay_upload,
                      searchbox::mojom::TabAttachmentSource source,
                      AddTabContextCallback) override;
+  // Queries autocomplete matches from the browser:
+  // - When the WebUI Omnibox full popup is enabled:
+  //   - If targeting the active tab (or if `tab_id` is nullopt), triggers
+  //     autocomplete and syncs the active native view text/caret.
+  //   - If targeting a background tab (e.g., an in-flight IPC arriving after a
+  //     tab switch), updates that background tab's saved draft state via
+  //     `SetUserTextForTab` without running autocomplete or mutating the active
+  //     view.
+  // - When the full popup is disabled, requires `!tab_id.has_value()` and
+  //   forwards directly to `SearchboxHandler::QueryAutocomplete`.
   void QueryAutocomplete(int32_t query_id,
+                         std::optional<int32_t> tab_id,
                          const std::u16string& input,
                          bool prevent_inline_autocomplete,
                          uint32_t cursor_position,

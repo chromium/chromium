@@ -1949,6 +1949,7 @@ void ContextualSearchboxHandler::OnDriveDisclaimerAccepted() {
 
 void ContextualSearchboxHandler::QueryAutocomplete(
     int32_t query_id,
+    std::optional<int32_t> tab_id,
     const std::u16string& input,
     bool prevent_inline_autocomplete,
     uint32_t cursor_position,
@@ -1964,7 +1965,7 @@ void ContextualSearchboxHandler::QueryAutocomplete(
   }
 
   SearchboxHandler::QueryAutocomplete(
-      query_id, input, prevent_inline_autocomplete, cursor_position,
+      query_id, tab_id, input, prevent_inline_autocomplete, cursor_position,
       suggest_inventory, is_on_focus, keyword, input_method);
 }
 

@@ -2059,7 +2059,7 @@ export const ComposeboxEmbedderMixin =
               this.input.length :
               this.getInputElement().getSelectionEnd();
           this.getSearchboxHandler().queryAutocomplete(
-              this.activeQueryId, this.input,
+              this.activeQueryId, /*tabId=*/ null, this.input,
               /*preventInlineAutocomplete=*/ false, cursorPosition,
               this.suggestInventory ?? SuggestInventory.kDefault,
               /*isOnFocus=*/ !this.input, /*keyword=*/ '', inputMethod);

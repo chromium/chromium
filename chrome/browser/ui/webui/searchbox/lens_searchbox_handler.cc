@@ -145,6 +145,7 @@ void LensSearchboxHandler::OnFocusChanged(bool focused) {
 
 void LensSearchboxHandler::QueryAutocomplete(
     int32_t query_id,
+    std::optional<int32_t> tab_id,
     const std::u16string& input,
     bool prevent_inline_autocomplete,
     uint32_t cursor_position,
@@ -155,7 +156,7 @@ void LensSearchboxHandler::QueryAutocomplete(
   lens_searchbox_client_->OnTextModified();
 
   SearchboxHandler::QueryAutocomplete(
-      query_id, input, prevent_inline_autocomplete, cursor_position,
+      query_id, tab_id, input, prevent_inline_autocomplete, cursor_position,
       suggest_inventory, is_on_focus, keyword, input_method);
 }
 

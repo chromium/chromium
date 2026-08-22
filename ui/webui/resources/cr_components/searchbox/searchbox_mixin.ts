@@ -211,6 +211,10 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       assertNotReached();
     }
 
+    getTabId(): number|null {
+      return null;
+    }
+
     pageHandler(): PageHandlerInterface {
       assertNotReached();
     }
@@ -248,8 +252,9 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           input.length;
       const keyword = this.keywordModeManager_.activeKeyword;
       this.pageHandler().queryAutocomplete(
-          this.activeQueryId, input, preventInlineAutocomplete, cursorPosition,
-          SuggestInventory.kDefault, isOnFocus, keyword, InputMethod.kKeyboard);
+          this.activeQueryId, this.getTabId(), input, preventInlineAutocomplete,
+          cursorPosition, SuggestInventory.kDefault, isOnFocus, keyword,
+          InputMethod.kKeyboard);
 
       this.dispatchEvent(new CustomEvent('query-autocomplete', {
         bubbles: true,
@@ -771,5 +776,6 @@ export interface SearchboxMixinInterface {
   queryAutocomplete(
       input: string, preventInlineAutocomplete: boolean,
       isOnFocus: boolean): void;
+  getTabId(): number|null;
   shouldAppendDotComOnCtrlEnter(): boolean;
 }

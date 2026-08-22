@@ -643,8 +643,8 @@ suite('ContextualTasksComposeboxTest', () => {
     await mockSearchboxPageHandler.whenCalled('queryAutocomplete');
     const calls = mockSearchboxPageHandler.getArgs('queryAutocomplete');
     const lastCall = calls[calls.length - 1];
-    assertEquals('new query', lastCall[1]);
-    assertEquals(SuggestInventory.kDefault, lastCall[4]);
+    assertEquals('new query', lastCall[2]);
+    assertEquals(SuggestInventory.kDefault, lastCall[5]);
   });
 
   test('inputEnabled attribute reflected on composebox', async () => {
@@ -3521,7 +3521,7 @@ function createVoiceResults(transcripts: string[]): SpeechRecognitionEvent {
                             'queryAutocomplete'));
                     const queryArgs = mockSearchboxPageHandler.getArgs(
                         'queryAutocomplete')[0];
-                    assertEquals('helloworld', queryArgs[1]);
+                    assertEquals('helloworld', queryArgs[2]);
                     assertEquals(
                         0,
                         mockSearchboxPageHandler.getCallCount('submitQuery'));

@@ -123,7 +123,6 @@ source_set("searchbox_test_utils") {
     "//components/contextual_search/internal:test_support",
     "//components/lens",
     "//components/omnibox/browser",
-    "//components/omnibox/browser:test_support",
     "//mojo/public/cpp/bindings",
     "//services/network:test_support",
     "//testing/gmock",
@@ -139,6 +138,11 @@ source_set("searchbox_test_utils") {
     "//components/search",
   ]
   if (!is_android) {
+    public_deps += [
+      "//chrome/browser/tab_list:test_support",
+      "//chrome/browser/ui/browser_window/test:test_support",
+      "//components/tabs:test_support",
+    ]
     deps += [ "//chrome/browser/ui/webui/omnibox_popup/mojom" ]
   }
 }

@@ -15,6 +15,59 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/tabs/public/tab_interface.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/tab_list/mock_tab_list_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/webui/webui_embedding_context.h"  // nogncheck crbug.com/40147906
+
+void SetupMockBrowserWindowInterface(
+    MockBrowserWindowInterface& window_interface,
+    Profile* profile,
+    BrowserWindowFeatures& features,
+    ui::UnownedUserDataHost& user_data_host,
+    tabs::MockTabInterface* active_tab,
+    content::WebContents* web_contents) {
+  ON_CALL(window_interface, GetFeatures())
+      .WillByDefault(testing::ReturnRef(features));
+  ON_CALL(window_interface, GetProfile())
+      .WillByDefault(testing::Return(profile));
+  ON_CALL(window_interface, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(user_data_host));
+  if (active_tab) {
+    ON_CALL(window_interface, GetActiveTabInterface())
+        .WillByDefault(testing::Return(active_tab));
+  }
+  if (web_contents) {
+    webui::SetBrowserWindowInterface(web_contents, &window_interface);
+  }
+}
+
+void SetupMockTabListInterface(MockTabListInterface& tab_list,
+                               tabs::MockTabInterface* active_tab) {
+  if (active_tab) {
+    ON_CALL(tab_list, GetActiveTab())
+        .WillByDefault(testing::Return(active_tab));
+  }
+}
+
+void SetupMockTabInterface(tabs::MockTabInterface& mock_tab,
+                           content::WebContents* contents,
+                           Profile* profile,
+                           BrowserWindowInterface* window_interface,
+                           ui::UnownedUserDataHost* user_data_host) {
+  ON_CALL(mock_tab, GetContents()).WillByDefault(testing::Return(contents));
+  ON_CALL(mock_tab, GetProfile()).WillByDefault(testing::Return(profile));
+  if (window_interface) {
+    ON_CALL(mock_tab, GetBrowserWindowInterface())
+        .WillByDefault(testing::Return(window_interface));
+  }
+  if (user_data_host) {
+    ON_CALL(mock_tab, GetUnownedUserDataHost())
+        .WillByDefault(testing::ReturnRef(*user_data_host));
+  }
+}
+#endif
+
 MockSearchboxPage::MockSearchboxPage() = default;
 MockSearchboxPage::~MockSearchboxPage() = default;
 

@@ -14,6 +14,8 @@ struct OmniboxInputState {
   // selection changes sent back from WebUI during asynchronous state
   // restoration.
   uint32 sequence_number;
+  // The tab ID associated with this input state.
+  int32 tab_id;
   // The text that should be displayed in the Omnibox input field.
   string text;
   // The selection range (or cursor position if start == end) in the input

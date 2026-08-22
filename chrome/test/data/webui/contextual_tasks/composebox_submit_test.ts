@@ -1582,7 +1582,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
               'The non-submit injection should query autocomplete once');
           const queryArgs =
               mockSearchboxPageHandler.getArgs(QUERY_AUTOCOMPLETE_FN);
-          assertEquals(TEST_QUERY, queryArgs[queryArgs.length - 1][1]);
+          assertEquals(TEST_QUERY, queryArgs[queryArgs.length - 1][2]);
           const activeQueryId = innerComposebox.activeQueryId;
           assertTrue(activeQueryId >= 0, 'A live query id should be active');
 
@@ -1697,7 +1697,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
                   'The empty injection should issue one ZPS query');
               const queryArgs =
                   mockSearchboxPageHandler.getArgs(QUERY_AUTOCOMPLETE_FN);
-              assertEquals('', queryArgs[queryArgs.length - 1][1]);
+              assertEquals('', queryArgs[queryArgs.length - 1][2]);
               const staleQueryId = innerComposebox.activeQueryId;
               assertTrue(staleQueryId >= 0, 'The ZPS query should be live');
 

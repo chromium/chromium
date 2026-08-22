@@ -29,6 +29,7 @@ function createDefaultOmniboxInputState(overrides?: Partial<OmniboxInputState>):
     OmniboxInputState {
   return {
     sequenceNumber: 1,
+    tabId: 0,
     text: '',
     selection: {start: 0, end: 0},
     userInputInProgress: false,
@@ -1394,8 +1395,15 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals(0, sequenceNum);
 
    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
-   const [_queryId, queryText, preventInline, _cursorPos, _inventory, isOnFocus] =
-       testProxy.handler.getArgs('queryAutocomplete')[0];
+   const [
+     _queryId,
+     _tabId,
+     queryText,
+     preventInline,
+     _cursorPos,
+     _inventory,
+     isOnFocus,
+   ] = testProxy.handler.getArgs('queryAutocomplete')[0];
    assertEquals('https://example.com', queryText);
    assertTrue(preventInline);
    assertFalse(isOnFocus);
@@ -2052,8 +2060,15 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals(11, searchbox.getInputElement().inputElement.selectionStart);
    assertEquals(11, searchbox.getInputElement().inputElement.selectionEnd);
    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
-   const [_queryId, queryText, preventInline, cursorPos, _inventory, isOnFocus] =
-       testProxy.handler.getArgs('queryAutocomplete')[0];
+   const [
+     _queryId,
+     _tabId,
+     queryText,
+     preventInline,
+     cursorPos,
+     _inventory,
+     isOnFocus,
+   ] = testProxy.handler.getArgs('queryAutocomplete')[0];
    assertEquals('youtube.com', queryText);
    assertFalse(preventInline);
    assertEquals(11, cursorPos);

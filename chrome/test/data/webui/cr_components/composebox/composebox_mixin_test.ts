@@ -556,6 +556,7 @@ suite('ComposeboxMixinTest', () => {
     const args = await searchboxHandler.whenCalled('queryAutocomplete');
     assertDeepEquals(args, [
       0,
+      null,
       'hello',
       false,
       3,
@@ -588,6 +589,7 @@ suite('ComposeboxMixinTest', () => {
         const args = await searchboxHandler.whenCalled('queryAutocomplete');
         assertDeepEquals(args, [
           0,
+          null,
           'hello world',
           false,
           11,

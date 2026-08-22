@@ -249,6 +249,8 @@ export class OmniboxPopupSearchboxElement extends
   private popupListenerIds_: number[] = [];
   // Sequence number of the current content state received from C++.
   private currentSequenceNum_: number = 0;
+  // Tab ID associated with the current input state.
+  private tabId_: number = 0;
   // True if the user has modified the text in the input field (e.g., typed or
   // deleted characters), as opposed to displaying permanent text set from C++.
   protected accessor userInputInProgress_: boolean = false;
@@ -466,6 +468,10 @@ export class OmniboxPopupSearchboxElement extends
 
   override getWrapperElement(): HTMLElement {
     return this.$.inputWrapper;
+  }
+
+  override getTabId(): number|null {
+    return this.tabId_ || null;
   }
 
   override pageHandler(): SearchboxPageHandlerInterface {
@@ -781,6 +787,7 @@ export class OmniboxPopupSearchboxElement extends
     this.userInputInProgress_ = state.userInputInProgress;
     this.hasUserInput_ = !!state.text.trim();
     this.currentSequenceNum_ = state.sequenceNumber;
+    this.tabId_ = state.tabId;
     this.fullUrl_ = state.fullUrl;
     this.lastQueriedInput = state.text;
     this.permanentDisplayText_ = state.permanentDisplayText;

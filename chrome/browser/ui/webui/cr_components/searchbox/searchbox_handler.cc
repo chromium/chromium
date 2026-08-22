@@ -1139,6 +1139,7 @@ void SearchboxHandler::OnFocusChanged(bool focused) {
 
 void SearchboxHandler::QueryAutocomplete(
     int32_t query_id,
+    std::optional<int32_t> tab_id,
     const std::u16string& input,
     bool prevent_inline_autocomplete,
     uint32_t cursor_position,
@@ -1146,6 +1147,10 @@ void SearchboxHandler::QueryAutocomplete(
     bool is_on_focus,
     const std::string& keyword,
     searchbox::mojom::InputMethod input_method) {
+  DCHECK(!tab_id.has_value())
+      << "QueryAutocomplete with tab_id is only supported for the full WebUI "
+         "Omnibox.";
+
   current_query_id_ = query_id;
 
   std::u16string input_with_keyword = input;

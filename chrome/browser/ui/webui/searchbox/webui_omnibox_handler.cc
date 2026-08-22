@@ -15,7 +15,9 @@
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
@@ -26,6 +28,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
+#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
@@ -98,6 +101,29 @@ searchbox::mojom::SelectionLineState ConvertLineState(
       // WebUI omnibox doesn't support the other UIs and their focus states.
       NOTREACHED() << state;
   }
+}
+
+bool IsActiveTab(content::WebContents* web_contents,
+                 std::optional<int32_t> tab_id) {
+  if (!tab_id.has_value()) {
+    // If no `tab_id` is specified (e.g. unit tests, transient window/tab
+    // lifecycle states, or untagged searchbox contexts), fallback to treating
+    // as active.
+    return true;
+  }
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents);
+  if (!browser_window_interface) {
+    return false;
+  }
+  tabs::TabInterface* active_tab =
+      browser_window_interface->GetActiveTabInterface();
+  if (!active_tab) {
+    if (auto* tab_list = TabListInterface::From(browser_window_interface)) {
+      active_tab = tab_list->GetActiveTab();
+    }
+  }
+  return active_tab && tab_id.value() == active_tab->GetHandle().raw_value();
 }
 
 }  // namespace
@@ -207,6 +233,7 @@ void WebuiOmniboxHandler::ActivateKeyword(
 
 void WebuiOmniboxHandler::QueryAutocomplete(
     int32_t query_id,
+    std::optional<int32_t> tab_id,
     const std::u16string& input,
     bool prevent_inline_autocomplete,
     uint32_t cursor_position,
@@ -214,10 +241,42 @@ void WebuiOmniboxHandler::QueryAutocomplete(
     bool is_on_focus,
     const std::string& keyword,
     searchbox::mojom::InputMethod input_method) {
-  SearchboxHandler::QueryAutocomplete(
-      query_id, input, prevent_inline_autocomplete, cursor_position,
-      suggest_inventory, is_on_focus, keyword, input_method);
+  if (!omnibox::IsWebUIOmniboxFullPopupEnabled()) {
+    DCHECK(!tab_id.has_value())
+        << "QueryAutocomplete with tab_id is only supported when WebUI Omnibox "
+           "full popup is enabled.";
+    SearchboxHandler::QueryAutocomplete(
+        query_id, /*tab_id=*/std::nullopt, input, prevent_inline_autocomplete,
+        cursor_position, suggest_inventory, is_on_focus, keyword, input_method);
+    return;
+  }
 
+  if (!IsActiveTab(web_contents_.get(), tab_id)) {
+    // Query IPC arrived for a background tab (e.g., user switched tabs while
+    // IPC was in flight). Update that tab's saved draft text without querying
+    // autocomplete.
+    tabs::TabInterface* const target_tab =
+        tab_id.has_value() ? tabs::TabHandle(tab_id.value()).Get() : nullptr;
+    auto* const current_window =
+        webui::GetBrowserWindowInterface(web_contents_.get());
+    // Ensure `target_tab` exists, belongs to the same window/profile,
+    // and has a valid WebContents before mutating draft text.
+    const bool belongs_to_same_window =
+        target_tab &&
+        (!current_window ||
+         target_tab->GetBrowserWindowInterface() == current_window);
+    if (belongs_to_same_window && target_tab->GetContents()) {
+      OmniboxViewViews::SetUserTextForTab(target_tab->GetContents(), input,
+                                          cursor_position);
+    }
+    return;
+  }
+
+  SearchboxHandler::QueryAutocomplete(
+      query_id, /*tab_id=*/std::nullopt, input, prevent_inline_autocomplete,
+      cursor_position, suggest_inventory, is_on_focus, keyword, input_method);
+
+  // Ensure the `OmniboxEditModel` reflects the current input state.
   if (auto* view = edit_model()->view()) {
     view->SetWindowTextAndCaretPos(input, cursor_position,
                                    /*update_popup=*/false,

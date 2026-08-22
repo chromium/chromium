@@ -164,13 +164,18 @@ void ContextualTasksExtensionHandler::OnContextMenuOpened() {}
 void ContextualTasksExtensionHandler::OnFocusChanged(bool focused) {}
 void ContextualTasksExtensionHandler::QueryAutocomplete(
     int32_t query_id,
+    std::optional<int32_t> tab_id,
     const std::u16string& input,
     bool prevent_inline_autocomplete,
     uint32_t cursor_position,
     omnibox::SuggestInventory suggest_inventory,
     bool is_on_focus,
     const std::string& keyword,
-    searchbox::mojom::InputMethod input_method) {}
+    searchbox::mojom::InputMethod input_method) {
+  DCHECK(!tab_id.has_value())
+      << "QueryAutocomplete with tab_id is only supported for the full WebUI "
+         "Omnibox.";
+}
 void ContextualTasksExtensionHandler::StopAutocomplete(bool clear_result) {}
 void ContextualTasksExtensionHandler::OpenAutocompleteMatch(
     uint8_t line,

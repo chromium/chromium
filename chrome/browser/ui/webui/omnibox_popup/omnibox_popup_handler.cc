@@ -8,12 +8,16 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -202,6 +206,17 @@ void OmniboxPopupHandler::SetInputState(
   state->show_full_url = show_full_url;
   state->query_zps = query_zps;
   state->keyword_model = std::move(keyword_model);
+  // Extract active tab ID if in a Chrome browser window context.
+  if (controller_ && controller_->client()->IsChromeOmniboxClient()) {
+    auto* chrome_client =
+        static_cast<ChromeOmniboxClient*>(controller_->client());
+    auto* browser = chrome_client->browser();
+    auto* tab_strip = browser ? browser->GetTabStripModel() : nullptr;
+    auto* tab = tab_strip ? tab_strip->GetActiveTab() : nullptr;
+    if (tab) {
+      state->tab_id = tab->GetHandle().raw_value();
+    }
+  }
   page_->SetInputState(std::move(state));
 }
 

@@ -2386,7 +2386,8 @@ TEST_F(ContextualSearchboxHandlerTest, QueryAutocomplete_SetsLensInputs) {
       std::move(autocomplete_controller));
 
   handler().QueryAutocomplete(
-      0, u"test", /*prevent_inline_autocomplete=*/false, 0,
+      0, /*tab_id=*/std::nullopt, u"test",
+      /*prevent_inline_autocomplete=*/false, 0,
       omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
       /*is_on_focus=*/false, /*keyword=*/"",
       searchbox::mojom::InputMethod::kKeyboard);
@@ -2411,7 +2412,8 @@ TEST_F(ContextualSearchboxHandlerTest,
   // Should execute cleanly without crashing even when BrowserWindowInterface
   // is null.
   handler().QueryAutocomplete(
-      0, u"test", /*prevent_inline_autocomplete=*/false, 0,
+      0, /*tab_id=*/std::nullopt, u"test",
+      /*prevent_inline_autocomplete=*/false, 0,
       omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
       /*is_on_focus=*/false, /*keyword=*/"",
       searchbox::mojom::InputMethod::kKeyboard);
@@ -2443,7 +2445,8 @@ TEST_F(ContextualSearchboxHandlerTest,
         std::move(autocomplete_controller));
 
     handler().QueryAutocomplete(
-        0, u"test", /*prevent_inline_autocomplete=*/false, 0,
+        0, /*tab_id=*/std::nullopt, u"test",
+        /*prevent_inline_autocomplete=*/false, 0,
         omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
         /*is_on_focus=*/false, /*keyword=*/"",
         searchbox::mojom::InputMethod::kKeyboard);
@@ -2470,7 +2473,8 @@ TEST_F(ContextualSearchboxHandlerTest,
         std::move(autocomplete_controller));
 
     handler().QueryAutocomplete(
-        0, u"test", /*prevent_inline_autocomplete=*/false, 0,
+        0, /*tab_id=*/std::nullopt, u"test",
+        /*prevent_inline_autocomplete=*/false, 0,
         omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
         /*is_on_focus=*/false, /*keyword=*/"",
         searchbox::mojom::InputMethod::kKeyboard);
