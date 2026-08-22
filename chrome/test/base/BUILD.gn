@@ -100,7 +100,7 @@ source_set("chrome_test_utils") {
   testonly = true
   sources = [ "chrome_test_utils.h" ]
   public_deps = [
-    "//chrome/test/base:chrome_test_path_utils",
+    ":chrome_test_path_utils",
     "//components/tabs:public",
     "//content/public/browser",
   ]
@@ -111,7 +111,7 @@ source_set("chrome_test_utils") {
     allow_circular_includes_from = [ "//chrome/test:test_support_ui_android" ]
     public_deps += [ "//chrome/test:test_support_ui_android" ]
   } else {
-    public_deps += [ "//chrome/test/base:platform_browser_test" ]
+    public_deps += [ ":platform_browser_test" ]
   }
 }
 
@@ -122,7 +122,7 @@ source_set("chrome_render_view_host_test_harness") {
     "chrome_render_view_host_test_harness.h",
   ]
   public_deps = [
-    "//chrome/test/base:testing_profile",
+    ":testing_profile",
     "//content/test:test_support",
   ]
   deps = [
@@ -142,9 +142,9 @@ source_set("scoped_metrics_service_for_synthetic_trials") {
     "scoped_metrics_service_for_synthetic_trials.h",
   ]
   public_deps = [
+    ":testing_browser_process",
+    ":testing_profile",
     "//base",
-    "//chrome/test/base:testing_browser_process",
-    "//chrome/test/base:testing_profile",
     "//components/metrics",
     "//components/metrics:test_support",
     "//components/prefs",
@@ -299,7 +299,7 @@ source_set("testing_profile_impl") {
     "testing_profile_key.cc",
     "testing_profile_manager.cc",
   ]
-  public_deps = [ "//chrome/test/base:testing_profile" ]
+  public_deps = [ ":testing_profile" ]
   deps = [
     "//chrome/browser:browser_features",
     "//chrome/browser:chrome_content_browser_client",
@@ -381,12 +381,12 @@ source_set("testing_browser_process") {
     "testing_browser_process_platform_part.h",
   ]
   public_deps = [
+    ":testing_profile_impl",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process_platform_part",
     "//chrome/common:buildflags",
-    "//chrome/test/base:testing_profile_impl",
     "//components/activity_reporter",
     "//components/signin/core/browser",
     "//extensions/buildflags",
@@ -401,7 +401,7 @@ source_set("testing_browser_process") {
   # testing_profile's sources (testing_profile_manager.cc) include TBP.h;
   # allow_circular_includes_from permits that reverse include while keeping
   # the dep graph one-directional (TBP → testing_profile).
-  allow_circular_includes_from = [ "//chrome/test/base:testing_profile_impl" ]
+  allow_circular_includes_from = [ ":testing_profile_impl" ]
   deps = [
     "//chrome/browser:browser_process_impl",
     "//chrome/browser:global_features",
@@ -555,11 +555,11 @@ source_set("web_ui_mocha_browser_test") {
     "//testing/gtest",
   ]
   deps = [
+    ":chrome_test_utils",
+    ":test_switches",
+    ":web_ui_test_data_source",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
-    "//chrome/test/base:chrome_test_utils",
-    "//chrome/test/base:test_switches",
-    "//chrome/test/base:web_ui_test_data_source",
     "//content/public/browser",
     "//content/test:test_support",
     "//ui/base",
@@ -571,16 +571,16 @@ source_set("web_ui_mocha_browser_test") {
       "//chrome/test:test_support_ui_android",
       "//content/public/common",
     ]
-    deps += [ "//chrome/test/base:android_ui_test_utils" ]
+    deps += [ ":android_ui_test_utils" ]
   } else {
     public_deps += [
-      "//chrome/test/base:devtools_coverage",
-      "//chrome/test/base:platform_browser_test",
+      ":devtools_coverage",
+      ":platform_browser_test",
     ]
     deps += [
+      ":ui_test_utils",
       "//base/test:test_support",
       "//chrome/browser/ui",
-      "//chrome/test/base:ui_test_utils",
       "//content/public/common",
     ]
   }
@@ -610,7 +610,7 @@ if (!is_android) {
   source_set("platform_browser_test") {
     testonly = true
     sources = [ "platform_browser_test.h" ]
-    public_deps = [ "//chrome/test/base:in_process_browser_test" ]
+    public_deps = [ ":in_process_browser_test" ]
   }
 
   source_set("in_process_browser_test") {
@@ -628,6 +628,10 @@ if (!is_android) {
       "//ui/base",
     ]
     deps = [
+      ":chrome_test_path_utils",
+      ":chrome_test_suite",
+      ":test_launcher_utils",
+      ":ui_test_utils",
       "//chrome/browser",
       "//chrome/browser:after_startup_task_utils",
       "//chrome/browser:browser_features",
@@ -652,10 +656,6 @@ if (!is_android) {
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/common",
       "//chrome/renderer",
-      "//chrome/test/base:chrome_test_path_utils",
-      "//chrome/test/base:chrome_test_suite",
-      "//chrome/test/base:test_launcher_utils",
-      "//chrome/test/base:ui_test_utils",
       "//components/captive_portal/content",
       "//components/captive_portal/core:buildflags",
       "//components/feature_engagement",
@@ -689,7 +689,7 @@ if (!is_android) {
     }
     if (is_mac) {
       public_deps += [ "//ui/base:test_support" ]
-      deps += [ "//chrome/test/base:scoped_bundle_swizzler_mac" ]
+      deps += [ ":scoped_bundle_swizzler_mac" ]
     }
     if (is_win) {
       deps += [ "//components/version_info" ]
@@ -732,6 +732,7 @@ if (!is_android) {
       "//url",
     ]
     deps = [
+      ":browser_feature_test_waiters",
       "//chrome/browser",
       "//chrome/browser/bookmarks",
       "//chrome/browser/history",
@@ -743,7 +744,6 @@ if (!is_android) {
       "//chrome/browser/ui/navigator",
       "//chrome/browser/ui/omnibox",
       "//chrome/common",
-      "//chrome/test/base:browser_feature_test_waiters",
       "//components/bookmarks/browser",
       "//components/download/public/common:public",
       "//components/find_in_page",
@@ -804,16 +804,16 @@ if (!is_android) {
         "interactive_test_utils_aura.h",
       ]
       public_deps += [
-        "//chrome/test/base:ui_test_utils",
+        ":ui_test_utils",
         "//ui/aura",
       ]
     }
     if (is_win) {
       sources += [ "interactive_test_utils_win.cc" ]
       deps += [
-        "//chrome/test/base:process_lineage_win",
-        "//chrome/test/base:save_desktop_snapshot",
-        "//chrome/test/base:window_contents_as_string_win",
+        ":process_lineage_win",
+        ":save_desktop_snapshot",
+        ":window_contents_as_string_win",
       ]
     }
   }
@@ -825,8 +825,8 @@ if (!is_android) {
       "mixin_based_in_process_browser_test.h",
     ]
     public_deps = [
-      "//chrome/test/base:in_process_browser_test",
-      "//chrome/test/base:in_process_browser_test_mixin",
+      ":in_process_browser_test",
+      ":in_process_browser_test_mixin",
     ]
   }
 
@@ -837,7 +837,7 @@ if (!is_android) {
       "fake_gaia_mixin.h",
     ]
     public_deps = [
-      "//chrome/test/base:mixin_based_in_process_browser_test",
+      ":mixin_based_in_process_browser_test",
       "//google_apis:test_support",
     ]
     deps = [
@@ -859,7 +859,7 @@ if (!is_android) {
       "//ui/views",
     ]
     deps = [
-      "//chrome/test/base:interactive_test_utils",
+      ":interactive_test_utils",
       "//testing/gtest",
       "//ui/views/controls/webview",
     ]
@@ -947,9 +947,9 @@ if (!is_android) {
       "//content/public/browser",
     ]
     deps = [
+      ":web_ui_test_data_source",
       "//chrome/browser/profiles:profile",
       "//chrome/common",
-      "//chrome/test/base:web_ui_test_data_source",
     ]
   }
 }
@@ -992,8 +992,8 @@ if (is_win) {
       "process_lineage_win.h",
     ]
     deps = [
+      ":process_inspector_win",
       "//base",
-      "//chrome/test/base:process_inspector_win",
     ]
   }
 
@@ -1004,10 +1004,10 @@ if (is_win) {
       "always_on_top_window_killer_win.h",
     ]
     deps = [
+      ":process_lineage_win",
+      ":save_desktop_snapshot",
       "//base",
       "//base/test:test_support",
-      "//chrome/test/base:process_lineage_win",
-      "//chrome/test/base:save_desktop_snapshot",
       "//ui/display",
     ]
   }
@@ -1168,14 +1168,14 @@ if (is_chromeos) {
       "ash/javascript_browser_test.h",
     ]
     public_deps = [
+      ":in_process_browser_test",
       "//base",
-      "//chrome/test/base:in_process_browser_test",
     ]
     deps = [
+      ":js_test_api",
       "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/ui",
       "//chrome/common",
-      "//chrome/test/base:js_test_api",
       "//components/privacy_sandbox:features",
       "//content/public/browser",
       "//net",
@@ -1189,7 +1189,7 @@ if (is_chromeos) {
       "ash/scoped_test_system_nss_key_slot_mixin.h",
     ]
     public_deps = [
-      "//chrome/test/base:mixin_based_in_process_browser_test",
+      ":mixin_based_in_process_browser_test",
       "//crypto",
     ]
     deps = [
@@ -1211,23 +1211,23 @@ if (is_chromeos) {
     # enable the diagnostic by removing this line.
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
     public_deps = [
+      ":devtools_coverage",
+      ":javascript_browser_test",
+      ":web_ui_test_handler",
       "//base",
-      "//chrome/test/base:devtools_coverage",
-      "//chrome/test/base:javascript_browser_test",
-      "//chrome/test/base:web_ui_test_handler",
       "//content/public/browser",
     ]
     deps = [
+      ":js_test_api",
+      ":test_chrome_web_ui_controller_factory",
+      ":test_switches",
+      ":web_ui_test_data_source",
       "//base/test:test_support",
       "//chrome/browser",
       "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/ui/navigator",
       "//chrome/browser/ui/tabs",
       "//chrome/common",
-      "//chrome/test/base:js_test_api",
-      "//chrome/test/base:test_chrome_web_ui_controller_factory",
-      "//chrome/test/base:test_switches",
-      "//chrome/test/base:web_ui_test_data_source",
       "//content/public/common",
       "//content/test:test_support",
       "//net",
@@ -1247,16 +1247,16 @@ if (is_chromeos) {
     # enable the diagnostic by removing this line.
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
     public_deps = [
+      ":devtools_coverage",
+      ":javascript_browser_test",
       "//base",
-      "//chrome/test/base:devtools_coverage",
-      "//chrome/test/base:javascript_browser_test",
     ]
     deps = [
+      ":test_switches",
       "//ash/constants",
       "//base/test:test_support",
       "//chrome/browser",
       "//chrome/browser/extensions",
-      "//chrome/test/base:test_switches",
       "//content/public/browser",
       "//content/test:test_support",
       "//extensions/browser",
@@ -1272,14 +1272,14 @@ if (is_chromeos) {
       "ash/mojo_web_ui_browser_test.cc",
       "ash/mojo_web_ui_browser_test.h",
     ]
-    public_deps = [ "//chrome/test/base:cros_web_ui_browser_test" ]
+    public_deps = [ ":cros_web_ui_browser_test" ]
     deps = [
+      ":web_ui_test_handler",
       "//base",
       "//base/test:test_support",
       "//chrome/browser",
       "//chrome/browser:chrome_content_browser_client",
       "//chrome/common",
-      "//chrome/test/base:web_ui_test_handler",
       "//chrome/test/data/webui:resources",
       "//chrome/test/data/webui/chromeos:web_ui_test_bindings",
       "//content/public/browser",
@@ -1298,7 +1298,7 @@ if (use_aura) {
       "test_browser_window_aura.h",
     ]
     public_deps = [
-      "//chrome/test/base:test_browser_window",
+      ":test_browser_window",
       "//ui/aura:test_support",
     ]
     deps = [
