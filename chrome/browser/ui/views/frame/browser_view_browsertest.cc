@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/byte_size.h"
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -15,6 +16,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -45,10 +47,13 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
+#include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
@@ -104,6 +109,7 @@
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/scoped_pip_exclusion_override.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -347,6 +353,10 @@ class BrowserViewTest : public InProcessBrowserTest {
 
   void SetDevToolsBounds(const gfx::Rect& bounds) {
     DevToolsWindowTesting::Get(devtools_)->SetInspectedPageBounds(bounds);
+  }
+
+  void AddTab(Browser* browser, const GURL& url) {
+    chrome::AddTabAt(browser, url, /*index=*/-1, /*foreground=*/true);
   }
 
   raw_ptr<DevToolsWindow> devtools_;
@@ -825,6 +835,268 @@ IN_PROC_BROWSER_TEST_F(BrowserViewHostedAppTest, Layout) {
   EXPECT_EQ(top_inset, app_browser_view->GetFindBarBoundingBox().y());
 
   CloseBrowserSynchronously(app_browser);
+}
+
+// Tests that a browser window is correctly associated to a WebContents that
+// belongs to that window's UI hierarchy.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, FindBrowserWindowWithWebContents) {
+  auto web_view = std::make_unique<views::WebView>(browser()->GetProfile());
+  ASSERT_NE(nullptr, web_view->GetWebContents());
+
+  // If the web contents does not belong browser's UI hierarchy there should not
+  // be any associated browser window.
+  EXPECT_EQ(nullptr, BrowserWindow::FindBrowserWindowWithWebContents(
+                         web_view->GetWebContents()));
+
+  // After adding the web contents to the browser's UI hierarchy the browser
+  // window should be correctly associated with the contents.
+  auto* web_view_ptr = browser_view()->AddChildView(std::move(web_view));
+  EXPECT_EQ(browser_view(), BrowserWindow::FindBrowserWindowWithWebContents(
+                                web_view_ptr->GetWebContents()));
+
+  // Removing the web contents from the browser's UI hierarchy should
+  // disassociate it with the browser window.
+  web_view = browser_view()->RemoveChildViewT(web_view_ptr);
+  EXPECT_EQ(nullptr, BrowserWindow::FindBrowserWindowWithWebContents(
+                         web_view->GetWebContents()));
+}
+
+// Tests that tab contents are correctly associated with their browser window,
+// even when non-active.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest,
+                       FindBrowserWindowWithWebContentsTabSwitch) {
+  content::WebContents* original_active_contents =
+      browser_view()->GetActiveWebContents();
+  EXPECT_EQ(browser_view(), BrowserWindow::FindBrowserWindowWithWebContents(
+                                original_active_contents));
+
+  // Inactive tabs (aka tabs with their web contents not currently embedded in
+  // the browser's ContentWebView) should still be associated with their hosting
+  // browser window.
+  AddTab(browser(), GURL("about:blank"));
+  content::WebContents* new_active_contents =
+      browser_view()->GetActiveWebContents();
+  EXPECT_NE(original_active_contents, browser_view()->GetActiveWebContents());
+  EXPECT_EQ(new_active_contents, browser_view()->GetActiveWebContents());
+  EXPECT_EQ(browser_view(), BrowserWindow::FindBrowserWindowWithWebContents(
+                                original_active_contents));
+  EXPECT_EQ(browser_view(), BrowserWindow::FindBrowserWindowWithWebContents(
+                                new_active_contents));
+}
+
+// Tests that BrowserWindow::FromBrowser() resolves to the BrowserView-backed
+// BrowserWindow, and handles edge cases.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, FromBrowser) {
+  // For a fully-constructed BrowserView-backed Browser the result must match
+  // the BrowserView-specific lookup.
+  EXPECT_EQ(browser_view(), BrowserWindow::FromBrowser(browser()));
+
+  // Null input is tolerated and yields null output, mirroring the behavior
+  // callers previously got from a defensive 'browser ? browser->window() :
+  // nullptr' pattern. Cast disambiguates between the const/non-const overloads.
+  EXPECT_EQ(nullptr, BrowserWindow::FromBrowser(
+                         static_cast<BrowserWindowInterface*>(nullptr)));
+}
+
+#if !BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, RecordShortcutMetrics) {
+  base::HistogramTester histogram_tester;
+
+  const ui::Accelerator kLocationAccel(ui::VKEY_L, ui::EF_PLATFORM_ACCELERATOR);
+  EXPECT_TRUE(browser_view()->AcceleratorPressed(kLocationAccel));
+  histogram_tester.ExpectUniqueSample("Browser.Shortcuts.TriggeredCommandId",
+                                      IDC_FOCUS_LOCATION, 1);
+
+  // Repeated key events should be excluded from telemetry.
+  const ui::Accelerator kLocationRepeatAccel(
+      ui::VKEY_L, ui::EF_PLATFORM_ACCELERATOR | ui::EF_IS_REPEAT);
+  browser_view()->AcceleratorPressed(kLocationRepeatAccel);
+  histogram_tester.ExpectUniqueSample("Browser.Shortcuts.TriggeredCommandId",
+                                      IDC_FOCUS_LOCATION, 1);
+}
+#endif  // !BUILDFLAG(IS_MAC)
+
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, UpdateWindowTitle) {
+  AddTab(browser(), GURL("about:blank"));
+  AddTab(browser(), GURL("about:blank"));
+
+  // Set and verify the first window user title.
+  std::string user_title1 = "Test Title";
+  WindowMetadataController::From(browser())->SetWindowUserTitle(user_title1);
+  auto window_title = browser_view()->GetAccessibleWindowTitle();
+  EXPECT_EQ(base::UTF8ToUTF16(user_title1),
+            window_title.substr(0, user_title1.size()));
+
+  // Set and verify the second window user title.
+  std::string user_title2 = "Test Title 2";
+  WindowMetadataController::From(browser())->SetWindowUserTitle(user_title2);
+  window_title = browser_view()->GetAccessibleWindowTitle();
+  EXPECT_EQ(base::UTF8ToUTF16(user_title2),
+            window_title.substr(0, user_title2.size()));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, WindowTitleOmitsLowMemoryUsage) {
+  scoped_refptr<TabResourceUsage> tab_resource_usage =
+      base::MakeRefCounted<TabResourceUsage>();
+  tab_resource_usage->SetMemoryUsage(base::ByteSize(100));
+
+  tabs::TabData memory_usage;
+  memory_usage.tab_resource_usage = tab_resource_usage;
+
+  Tab* const tab =
+      browser_view()->horizontal_tab_strip_for_testing()->tab_at(0);
+  tab->SetDataForTesting(std::move(memory_usage));
+
+  // Expect that low memory usage isn't in the accessible window title.
+  EXPECT_FALSE(browser_view()->GetAccessibleWindowTitle().contains(
+      u"High memory usage"));
+
+  base::ByteSize memory_used =
+      TabResourceUsage::kHighMemoryUsageThreshold + base::ByteSize(1);
+  tab_resource_usage->SetMemoryUsage(memory_used);
+
+  // Expect that high memory usage is in the accessible window title.
+  EXPECT_TRUE(browser_view()->GetAccessibleWindowTitle().contains(
+      u"High memory usage"));
+}
+
+#if BUILDFLAG(IS_MAC)
+// Tests that audio playing state is reflected in the "Window" menu on Mac.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, TitleAudioIndicators) {
+  std::u16string playing_icon = u"🔊";
+  std::u16string muted_icon = u"🔇";
+
+  AddTab(browser(), GURL("about:blank"));
+  content::WebContents* contents = browser_view()->GetActiveWebContents();
+  RecentlyAudibleHelper* audible_helper =
+      RecentlyAudibleHelper::FromWebContents(contents);
+
+  audible_helper->SetNotRecentlyAudibleForTesting();
+  EXPECT_FALSE(browser_view()->GetWindowTitle().contains(playing_icon));
+  EXPECT_FALSE(browser_view()->GetWindowTitle().contains(muted_icon));
+
+  audible_helper->SetCurrentlyAudibleForTesting();
+  EXPECT_TRUE(browser_view()->GetWindowTitle().contains(playing_icon));
+  EXPECT_FALSE(browser_view()->GetWindowTitle().contains(muted_icon));
+
+  audible_helper->SetRecentlyAudibleForTesting();
+  contents->SetAudioMuted(true);
+  EXPECT_FALSE(browser_view()->GetWindowTitle().contains(playing_icon));
+  EXPECT_TRUE(browser_view()->GetWindowTitle().contains(muted_icon));
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, AccessibleProperties) {
+  ui::AXNodeData data;
+
+  browser_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kClient);
+
+  ui::AXNodeData root_view_data;
+  browser_view()
+      ->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&root_view_data);
+  EXPECT_EQ(
+      root_view_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      browser_view()->GetAccessibleWindowTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, UpdateAccessibleURL) {
+  const GURL before_url("data:text/html,before");
+  AddTab(browser(), before_url);
+
+  ui::AXNodeData node_data;
+  browser_view()
+      ->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kUrl),
+            before_url.spec());
+
+  const GURL after_url("data:text/html,after");
+  AddTab(browser(), after_url);
+  browser_view()
+      ->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kUrl),
+            after_url.spec());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, UpdateAccessibleURLOnTabSelection) {
+  // Create two tabs with different URLs
+  const GURL url1("data:text/html,tab1");
+  const GURL url2("data:text/html,tab2");
+
+  AddTab(browser(), url1);
+  AddTab(browser(), url2);
+
+  // Initially, the second tab should be active (most recently added)
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
+            url2);
+
+  ui::AXNodeData node_data;
+  browser_view()
+      ->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kUrl),
+            url2.spec());
+
+  // Switch to the first tab (tab1 at index 1) by changing selection
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
+            url1);
+
+  // Verify that the accessible URL was updated due to tab selection change
+  browser_view()
+      ->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kUrl),
+            url1.spec());
+
+  // Switch back to the second tab (tab2 at index 2)
+  browser()->tab_strip_model()->ActivateTabAt(2);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
+            url2);
+
+  // Verify that the accessible URL was updated again
+  browser_view()
+      ->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kUrl),
+            url2.spec());
+}
+
+// Tests Feature to ensure that the loading animation is not rendered after the
+// window changes to hidden.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest,
+                       LoadingAnimationNotRenderedWhenWindowHidden) {
+  AddTab(browser(), GURL("about:blank"));
+  content::WebContents* web_contents = browser_view()->GetActiveWebContents();
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("about:blank"), web_contents);
+  navigation->SetKeepLoading(true);
+
+  browser_view()->browser_widget()->Show();
+
+  EXPECT_TRUE(browser()->tab_strip_model()->TabsNeedLoadingUI());
+  EXPECT_TRUE(browser_view()->IsLoadingAnimationRunning());
+
+  browser_view()->browser_widget()->Hide();
+
+  EXPECT_TRUE(browser()->tab_strip_model()->TabsNeedLoadingUI());
+  EXPECT_FALSE(browser_view()->IsLoadingAnimationRunning());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsWindowDefaultSize) {
