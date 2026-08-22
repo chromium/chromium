@@ -57,6 +57,7 @@ source_set("unit_tests") {
   deps = [
     ":dictation",
     "//base",
+    "//base:i18n",
     "//chrome/browser/dictation:test_support",
     "//chrome/test:test_support",
     "//testing/gtest",
