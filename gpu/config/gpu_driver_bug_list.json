@@ -3843,6 +3843,15 @@
       "features": [
         "flush_queries_before_deleting_or_unbinding_fbo"
       ]
+    },
+    {
+      "id": 489,
+      "cr_bugs": [530045332],
+      "description": "Lose context when 3D texture depth increases on Qualcomm GPUs",
+      "gl_vendor": "Qualcomm.*",
+      "features": [
+        "lose_gl_context_when_increase_texture_3d_depth"
+      ]
     }
   ]
 }

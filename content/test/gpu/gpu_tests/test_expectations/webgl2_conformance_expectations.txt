@@ -755,6 +755,11 @@ crbug.com/40167875 [ android android-pixel-4 angle-opengles passthrough ] confor
 
 crbug.com/angleproject/3684 [ android angle-opengles graphite-disabled qualcomm target-cpu-32 ] conformance2/renderbuffers/multisample-with-full-sample-counts.html [ Failure ]
 
+# Lose context when glTexImage3D is called again with increased depth on
+# Qualcomm GPUs.
+crbug.com/530045332 [ android qualcomm no-passthrough ] conformance2/textures/misc/tex-3d-size-limit.html [ Skip ]
+crbug.com/530045332 [ android qualcomm no-passthrough ] conformance2/textures/misc/tex-unpack-params-imagedata.html [ Skip ]
+
 ## DrDc being re-enabled ##
 
 # On Adreno GPUs, flushes (which may happen inadvertently when the command

@@ -13372,6 +13372,19 @@ error::Error GLES2DecoderImpl::HandleTexImage3D(uint32_t immediate_data_size,
     return error::kNoError;
   }
 
+  if (target == GL_TEXTURE_3D &&
+      workarounds().lose_gl_context_when_increase_texture_3d_depth &&
+      texture_ref && texture_ref->texture()) {
+    GLsizei current_weight = 0, current_height = 0, current_depth = 0;
+    if (texture_ref->texture()->GetLevelSize(target, level, &current_weight,
+                                             &current_height, &current_depth) &&
+        depth > current_depth) {
+      MarkContextLost(error::kUnknown);
+      group_->LoseContexts(error::kUnknown);
+      return error::kLostContext;
+    }
+  }
+
   PixelStoreParams params;
   Buffer* buffer = state_.bound_pixel_unpack_buffer.get();
   if (buffer) {
