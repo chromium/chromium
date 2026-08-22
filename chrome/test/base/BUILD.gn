@@ -1186,6 +1186,29 @@ if (is_chromeos) {
       "//ui/base",
     ]
   }
+
+  source_set("mojo_web_ui_browser_test") {
+    testonly = true
+    sources = [
+      "ash/mojo_web_ui_browser_test.cc",
+      "ash/mojo_web_ui_browser_test.h",
+    ]
+    public_deps = [ "//chrome/test/base:cros_web_ui_browser_test" ]
+    deps = [
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser:chrome_content_browser_client",
+      "//chrome/common",
+      "//chrome/test/base:web_ui_test_handler",
+      "//chrome/test/data/webui:resources",
+      "//chrome/test/data/webui/chromeos:web_ui_test_bindings",
+      "//content/public/browser",
+      "//content/public/common",
+      "//mojo/public/cpp/bindings",
+      "//ui/base",
+    ]
+  }
 }
 
 if (use_aura) {

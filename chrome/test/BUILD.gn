@@ -8323,15 +8323,11 @@ if (!is_android) {
     }
 
     if (is_chromeos) {
-      sources += [
-        "base/ash/mojo_web_ui_browser_test.cc",
-        "base/ash/mojo_web_ui_browser_test.h",
-      ]
-
       public_deps += [
         "//chrome/test/base:cros_web_ui_browser_test",
         "//chrome/test/base:javascript_browser_test",
         "//chrome/test/base:js_test_api",
+        "//chrome/test/base:mojo_web_ui_browser_test",
         "//chrome/test/base:web_ui_test_handler",
       ]
 
