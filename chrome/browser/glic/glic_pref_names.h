@@ -189,6 +189,11 @@ inline constexpr char kGlicLocalStorageCopiedToMainPartition[] =
 inline constexpr char kGlicPreviouslyNotAllowed[] =
     "glic.previously_not_allowed";
 
+// Integer pref that tracks the number of times the marketing promotion has
+// auto-opened.
+inline constexpr char kGlicMarketingAutoOpenCount[] =
+    "glic.marketing_auto_open_count";
+
 #if BUILDFLAG(IS_MAC)
 inline constexpr char kGlicUseAltOSIcon[] = "glic.use_alt_os_icon";
 #endif

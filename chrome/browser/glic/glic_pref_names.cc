@@ -145,6 +145,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
       prefs::kGlicLastProfileReadyState,
       static_cast<int>(glic::mojom::ProfileReadyState::kReady));
+  registry->RegisterIntegerPref(prefs::kGlicMarketingAutoOpenCount, 0);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
