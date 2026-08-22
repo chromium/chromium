@@ -14,6 +14,9 @@
 #include "base/time/time.h"
 #include "chrome/common/readaloud/read_aloud.mojom.h"
 #include "chrome/common/readaloud/read_aloud_constants.h"
+#include "chrome/services/readaloud/decoded_audio_segment.h"
+#include "chrome/services/readaloud/decoder/opus_decoder_helper.h"
+#include "chrome/services/readaloud/decoder/read_aloud_decoder_sequencer.h"
 #include "chrome/services/readaloud/prefetch/prefetch_manager.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
@@ -109,6 +112,14 @@ class ReadAloudPlaybackController
 
   // Manages document-bound speech synthesis caching and sentence timeline.
   PrefetchManager prefetch_manager_;
+
+  // Asynchronous Opus decoder helper for background demuxing and decoding.
+  OpusDecoderHelper decoder_helper_;
+
+  // Coordinates demand-driven in-order decoding from prefetch_manager_ to
+  // audio_segment_queue.
+  ReadAloudDecoderSequencer decoder_sequencer_{&prefetch_manager_,
+                                               &decoder_helper_};
 
   struct AudioResources {
     AudioResources();

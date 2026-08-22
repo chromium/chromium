@@ -26,7 +26,7 @@ class OpusDecoderHelper {
       base::OnceCallback<void(std::vector<scoped_refptr<DecodedAudioSegment>>)>;
 
   OpusDecoderHelper();
-  ~OpusDecoderHelper();
+  virtual ~OpusDecoderHelper();
 
   OpusDecoderHelper(const OpusDecoderHelper&) = delete;
   OpusDecoderHelper& operator=(const OpusDecoderHelper&) = delete;
@@ -40,7 +40,7 @@ class OpusDecoderHelper {
   //
   // The `callback` is guaranteed to be invoked on the same sequence that
   // `DecodeAndSlice` was called on.
-  void DecodeAndSlice(
+  virtual void DecodeAndSlice(
       scoped_refptr<media::DecoderBuffer> container_buffer,
       const std::vector<DecodedAudioSegment::WordTiming>& timings,
       const std::vector<int32_t>& sentence_chunk_indices,

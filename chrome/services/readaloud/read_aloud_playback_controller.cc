@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/types/pass_key.h"
 #include "chrome/services/readaloud/audio_renderer/read_aloud_audio_renderer.h"
 #include "chrome/services/readaloud/audio_segment_queue.h"
 #include "media/audio/audio_device_thread.h"
@@ -43,6 +44,7 @@ ReadAloudPlaybackController::ReadAloudPlaybackController(
 
 ReadAloudPlaybackController::~ReadAloudPlaybackController() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  decoder_sequencer_.SetAudioQueue(nullptr);
 }
 
 void ReadAloudPlaybackController::CreateController(
@@ -76,6 +78,7 @@ void ReadAloudPlaybackController::InitializeAudio(
 
   // Immediately tear down any active audio resources and threads before
   // initializing new ones or validating parameters.
+  decoder_sequencer_.SetAudioQueue(nullptr);
   audio_resources_.reset();
 
   if (!stream.is_valid()) {
@@ -135,6 +138,7 @@ void ReadAloudPlaybackController::InitializeAudio(
       "ReadAloudAudioPlayback", base::ThreadType::kRealtimeAudio);
 
   audio_resources_ = std::move(resources);
+  decoder_sequencer_.SetAudioQueue(audio_resources_->audio_segment_queue.get());
 }
 
 void ReadAloudPlaybackController::SetTextContent(
@@ -198,6 +202,7 @@ void ReadAloudPlaybackController::Play() {
   if (audio_resources_ && audio_resources_->audio_output_stream.is_bound()) {
     audio_resources_->audio_output_stream->Play();
   }
+  decoder_sequencer_.StartPumping();
 }
 
 void ReadAloudPlaybackController::Pause() {
@@ -205,6 +210,7 @@ void ReadAloudPlaybackController::Pause() {
   if (audio_resources_ && audio_resources_->audio_output_stream.is_bound()) {
     audio_resources_->audio_output_stream->Pause();
   }
+  decoder_sequencer_.StopPumping();
 }
 
 void ReadAloudPlaybackController::SeekToWord(uint32_t segment_index,
@@ -226,7 +232,7 @@ void ReadAloudPlaybackController::SeekToWord(uint32_t segment_index,
         "ReadAloudPlaybackController: Invalid character_offset in SeekToWord");
     return;
   }
-  // TODO(b/527526634): Update current segment and character pointer in chunker.
+  decoder_sequencer_.SetNextChunkToDecode(segment_index);
 }
 
 void ReadAloudPlaybackController::SeekToTime(base::TimeDelta position) {
@@ -236,10 +242,6 @@ void ReadAloudPlaybackController::SeekToTime(base::TimeDelta position) {
         "ReadAloudPlaybackController: Invalid position in SeekToTime");
     return;
   }
-  // TODO(b/527525845): Once total audio duration is known, add upper bounds
-  // check against total_duration_ (or base::TimeDelta::Max()) before seeking.
-  // TODO(b/527525845): Map TimeDelta position to approximate text offset and
-  // seek.
 }
 
 void ReadAloudPlaybackController::SetVoice(const std::string& voice_id) {
@@ -249,7 +251,6 @@ void ReadAloudPlaybackController::SetVoice(const std::string& voice_id) {
         "ReadAloudPlaybackController: Voice ID exceeds maximum allowed length");
     return;
   }
-  // TODO(b/527526634): Validate voice_id and configure synthesis engine voice.
 }
 
 void ReadAloudPlaybackController::SetPlaybackRate(float rate) {
@@ -268,7 +269,12 @@ void ReadAloudPlaybackController::SetPlaybackRate(float rate) {
 
 void ReadAloudPlaybackController::FlushBuffers() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(b/527525940): Flush pending data in data_pipe and reset chunker state.
+  if (audio_resources_ && audio_resources_->audio_segment_queue) {
+    audio_resources_->audio_segment_queue->Clear(
+        base::PassKey<ReadAloudPlaybackController>());
+  }
+  prefetch_manager_.ClearCache();
+  decoder_sequencer_.Reset();
 }
 
 void ReadAloudPlaybackController::OnReceiverDisconnected() {
@@ -292,6 +298,8 @@ void ReadAloudPlaybackController::ResetSession() {
   controller_receiver_.reset();
   client_.reset();
   prefetch_manager_.ResetSession();
+  decoder_sequencer_.Reset();
+  decoder_sequencer_.SetAudioQueue(nullptr);
   audio_resources_.reset();
   segments_.clear();
   playback_rate_ = 1.0f;
@@ -330,6 +338,8 @@ void ReadAloudPlaybackController::OnSpeechSynthesisResponse(
       media::DecoderBuffer::CopyFrom(base::span(response_bytes));
   prefetch_manager_.OnSynthesisResponse(sequence_id, chunk_index,
                                         std::move(opus_buffer), {});
+
+  decoder_sequencer_.ReplenishBuffer();
 }
 
 }  // namespace readaloud
