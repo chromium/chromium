@@ -6,8 +6,9 @@
 #define CHROME_BROWSER_PRINTING_PRINT_PREVIEW_TEST_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "printing/buildflags/buildflags.h"
+#include "ui/base/idle/scoped_set_idle_state.h"
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 #include <memory>
@@ -21,7 +22,7 @@ class PrintBackendServiceTestImpl;
 class TestPrintBackend;
 }  // namespace printing
 
-class PrintPreviewTest : public BrowserWithTestWindowTest {
+class PrintPreviewTest : public ChromeRenderViewHostTestHarness {
  public:
   PrintPreviewTest();
 
@@ -33,11 +34,8 @@ class PrintPreviewTest : public BrowserWithTestWindowTest {
   void SetUp() override;
   void TearDown() override;
 
- protected:
-  // Create a browser window to provide parenting for web contents modal dialog.
-  std::unique_ptr<BrowserWindow> CreateBrowserWindow() override;
-
  private:
+  ui::ScopedSetIdleState scoped_idle_state_{ui::IDLE_STATE_ACTIVE};
   scoped_refptr<printing::TestPrintBackend> test_print_backend_;
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   mojo::Remote<printing::mojom::PrintBackendService> test_remote_;

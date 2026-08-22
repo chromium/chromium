@@ -16,18 +16,10 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/printing/print_preview_data_service.h"
-#include "chrome/browser/printing/print_preview_test.h"
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/print_preview/parse_data_path.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_ui.h"
 #include "printing/print_job_constants.h"
-
-using content::WebContents;
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace printing {
 
@@ -41,7 +33,7 @@ scoped_refptr<base::RefCountedStaticMemory> CreateTestData() {
 
 }  // namespace
 
-class PrintPreviewUIUntrustedUnitTest : public PrintPreviewTest {
+class PrintPreviewUIUntrustedUnitTest : public testing::Test {
  public:
   PrintPreviewUIUntrustedUnitTest() = default;
 

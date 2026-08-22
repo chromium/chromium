@@ -18,14 +18,16 @@
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/printing/print_preview_test.h"
-#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/web_contents_tester.h"
 #include "printing/printing_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -170,15 +172,17 @@ class PrintContentAnalysisUtilsTest
     : public PrintPreviewTest,
       public testing::WithParamInterface<const char*> {
  public:
-  PrintContentAnalysisUtilsTest() {
+  PrintContentAnalysisUtilsTest()
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
     ContentAnalysisDelegate::DisableUIForTesting();
   }
 
   const char* policy_value() const { return GetParam(); }
 
   void SetUp() override {
+    ASSERT_TRUE(profile_manager_.SetUp());
     PrintPreviewTest::SetUp();
-    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+    content::WebContentsTester::For(web_contents())->SetTitle(u"New Tab");
 
     SetDMTokenForTesting(policy::DMToken::CreateValidToken(kDmToken));
 
@@ -212,13 +216,13 @@ class PrintContentAnalysisUtilsTest
     dbus_thread_linux::ShutdownOnDBusThreadAndBlock();
 #endif
     PrintPreviewTest::TearDown();
+    profile_manager_.DeleteAllTestingProfiles();
   }
 
-  content::WebContents* contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
+  content::WebContents* contents() { return web_contents(); }
 
  protected:
+  TestingProfileManager profile_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
   signin::IdentityTestEnvironment identity_test_environment_;

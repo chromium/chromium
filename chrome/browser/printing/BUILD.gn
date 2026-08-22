@@ -277,7 +277,6 @@ if (enable_printing) {
       ]
       deps += [
         ":test_support",
-        "//chrome/browser/ui",
         "//chrome/browser/ui/webui/print_preview:unit_tests",
         "//chrome/test:test_support",
         "//components/printing/common",
@@ -421,6 +420,7 @@ if (enable_print_preview) {
     public_deps = [
       "//chrome/browser/ui/webui/print_preview",
       "//chrome/test:test_support",
+      "//ui/base/idle:test_support",
     ]
 
     deps = [
@@ -428,7 +428,6 @@ if (enable_print_preview) {
       "//base",
       "//chrome/browser",
       "//chrome/browser:test_support",
-      "//chrome/browser/ui",
       "//chrome/services/printing/public/mojom",
       "//content/public/browser",
       "//content/test:test_support",

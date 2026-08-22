@@ -14,8 +14,6 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/printing/print_preview_test.h"
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -375,17 +373,17 @@ class TestPrintViewManagerWin : public PrintViewManagerBase {
 #endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(PrintViewManagerTest, PrintSubFrameAndDestroy) {
-  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-
+  content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+      ->InitializeRenderFrameIfNeeded();
   content::RenderFrameHost* sub_frame =
-      content::RenderFrameHostTester::For(web_contents->GetPrimaryMainFrame())
+      content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
           ->AppendChild("child");
+  content::RenderFrameHostTester::For(sub_frame)
+      ->InitializeRenderFrameIfNeeded();
 
+  PrintViewManager::CreateForWebContents(web_contents());
   PrintViewManager* print_view_manager =
-      PrintViewManager::FromWebContents(web_contents);
+      PrintViewManager::FromWebContents(web_contents());
   ASSERT_TRUE(print_view_manager);
   EXPECT_FALSE(print_view_manager->print_preview_rfh());
 
@@ -397,16 +395,14 @@ TEST_F(PrintViewManagerTest, PrintSubFrameAndDestroy) {
 }
 
 TEST_F(PrintViewManagerTest, PrintForSystemDialog) {
-  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-
+  content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+      ->InitializeRenderFrameIfNeeded();
   auto print_view_manager =
-      std::make_unique<TestPrintViewManagerForSystemDialogPrint>(web_contents);
+      std::make_unique<TestPrintViewManagerForSystemDialogPrint>(
+          web_contents());
 
   ASSERT_TRUE(print_view_manager->PrintPreviewNow(
-      web_contents->GetPrimaryMainFrame(), /*has_selection=*/false));
+      web_contents()->GetPrimaryMainFrame(), /*has_selection=*/false));
 
   base::RunLoop run_loop;
   bool dialog_shown = false;
@@ -435,16 +431,11 @@ TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
   queue->SetupPrinterOffsets(offset_in_pixels, offset_in_pixels);
   g_browser_process->print_job_manager()->SetQueueForTest(queue);
 
-  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-
   auto print_view_manager =
-      std::make_unique<TestPrintViewManagerWin>(web_contents);
+      std::make_unique<TestPrintViewManagerWin>(web_contents());
   PrintViewManager::SetReceiverImplForTesting(print_view_manager.get());
 
-  print_view_manager->PrintPreviewNow(web_contents->GetPrimaryMainFrame(),
+  print_view_manager->PrintPreviewNow(web_contents()->GetPrimaryMainFrame(),
                                       false);
 
   base::DictValue print_ticket =
@@ -455,9 +446,9 @@ TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
   PrinterHandler::PrintCallback callback =
       base::BindOnce(&TestPrintViewManagerWin::FakePrintCallback,
                      base::Unretained(print_view_manager.get()));
-  print_view_manager->PrintForPrintPreview(std::move(print_ticket), print_data,
-                                           web_contents->GetPrimaryMainFrame(),
-                                           std::move(callback));
+  print_view_manager->PrintForPrintPreview(
+      std::move(print_ticket), print_data,
+      web_contents()->GetPrimaryMainFrame(), std::move(callback));
   print_view_manager->WaitForCallback();
 
   EXPECT_EQ(gfx::Point(60, 60), print_view_manager->physical_offsets());
