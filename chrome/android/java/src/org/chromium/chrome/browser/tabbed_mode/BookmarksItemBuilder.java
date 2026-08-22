@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import static org.chromium.chrome.browser.bookmarks.R.dimen.bookmarks_bar_context_menu_end_icon_padding;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -459,20 +461,29 @@ public class BookmarksItemBuilder implements Destroyable {
 
     private ListItem buildBookmarkBarStateItem(
             @IdRes int id, @StringRes int titleRes, boolean isSelected) {
+        int iconMarginStartPx =
+                mContext.getResources()
+                        .getDimensionPixelSize(bookmarks_bar_context_menu_end_icon_padding);
         PropertyModel model =
                 AppMenuItemUtils.buildModelForStandardMenuItem(
                         mContext,
                         mAppMenuItemTheme,
                         id,
                         titleRes,
-                        isSelected ? R.drawable.material_ic_check_24dp : Resources.ID_NULL,
+                        Resources.ID_NULL,
                         mIsMenuIconAtStart);
-        if (!isSelected) {
-            model.set(AppMenuItemProperties.ICON, new ColorDrawable(Color.TRANSPARENT));
+        model.set(AppMenuItemProperties.END_ICON_MARGIN_START, iconMarginStartPx);
+        model.set(AppMenuItemProperties.TITLE_MAX_LINES, 2);
+        if (isSelected) {
+            model.set(
+                    AppMenuItemProperties.END_ICON,
+                    AppCompatResources.getDrawable(mContext, R.drawable.material_ic_check_24dp));
+        } else {
+            model.set(AppMenuItemProperties.END_ICON, new ColorDrawable(Color.TRANSPARENT));
         }
         model.set(AppMenuItemProperties.CHECKABLE, true);
         model.set(AppMenuItemProperties.CHECKED, isSelected);
-        return AppMenuItemUtils.createStandardListItem(model, /* showIcon= */ true);
+        return AppMenuItemUtils.createStandardListItem(model, /* showIcon= */ false);
     }
 
     private ListItem buildBookmarkThisPageItem() {

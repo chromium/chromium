@@ -624,7 +624,7 @@ class AppMenu implements OnKeyListener {
 
         final int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
         int maxWidth =
-                mContext.getResources().getDimensionPixelSize(R.dimen.flyout_menu_max_width)
+                mContext.getResources().getDimensionPixelSize(R.dimen.menu_width_max)
                         + lateralPadding;
         int menuWidth =
                 UiUtils.computeListAdapterContentDimensions(adapter, listView)[0] + lateralPadding;

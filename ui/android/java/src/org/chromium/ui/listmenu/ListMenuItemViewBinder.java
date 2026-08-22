@@ -10,6 +10,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -140,6 +141,13 @@ public class ListMenuItemViewBinder {
                 int width = model.get(ListMenuItemProperties.END_ICON_WIDTH);
                 var layoutParams = endIcon.getLayoutParams();
                 layoutParams.width = width;
+                endIcon.setLayoutParams(layoutParams);
+            }
+        } else if (propertyKey == ListMenuItemProperties.END_ICON_MARGIN_START) {
+            if (endIcon != null) {
+                int marginStart = model.get(ListMenuItemProperties.END_ICON_MARGIN_START);
+                var layoutParams = (MarginLayoutParams) endIcon.getLayoutParams();
+                layoutParams.setMarginStart(marginStart);
                 endIcon.setLayoutParams(layoutParams);
             }
         } else if (propertyKey == ListMenuItemProperties.GROUP_ID) {

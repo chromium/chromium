@@ -32,4 +32,16 @@ found in the LICENSE file.
         android:tint="@macro/default_icon_color_secondary"
         android:duplicateParentState="true"
         android:importantForAccessibility="no" />
+
+    <ImageView
+        android:id="@+id/menu_item_end_icon"
+        android:layout_weight="0"
+        android:layout_width="?attr/listItemIconSize"
+        android:layout_height="?attr/listItemIconSize"
+        android:layout_gravity="end|center_vertical"
+        android:gravity="center_vertical"
+        android:tint="@macro/default_icon_color_secondary"
+        android:duplicateParentState="true"
+        android:importantForAccessibility="no"
+        android:visibility="gone" />
 </LinearLayout>

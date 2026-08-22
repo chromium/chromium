@@ -27,7 +27,8 @@ found in the LICENSE file.
     <TextView
         android:id="@+id/menu_item_text"
         android:textAppearance="@style/TextAppearance.DensityAdaptive.TextLarge.Primary"
-        android:layout_width="wrap_content"
+        android:layout_weight="1"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center_vertical|start"
         android:maxLines="1"
@@ -36,4 +37,15 @@ found in the LICENSE file.
         android:paddingStart="@dimen/menu_item_text_padding_start"
         android:minHeight="?attr/listItemHeight"
         android:duplicateParentState="true" />
+
+    <ImageView
+        android:id="@+id/menu_item_end_icon"
+        android:layout_width="?attr/listItemIconSize"
+        android:layout_height="?attr/listItemIconSize"
+        android:gravity="center_vertical"
+        android:tint="@color/default_icon_color_secondary_tint_list"
+        android:tintMode="src_in"
+        android:duplicateParentState="true"
+        android:importantForAccessibility="no"
+        android:visibility="gone" />
 </LinearLayout>
