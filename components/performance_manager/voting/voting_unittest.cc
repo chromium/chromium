@@ -158,9 +158,8 @@ TEST(VotingTest, MoveVotingChannel) {
   EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1));
 }
 
-// Tests that submitting 2 votes for the same context using a VotingChannel
-// results in a DCHECK.
-TEST(VotingTest, SubmitDuplicateVote) {
+// Tests that VotingChannel::SetVote can submit, change, and remove votes.
+TEST(VotingTest, SetVote) {
   DummyVoteObserver observer;
 
   TestVotingChannel voting_channel = observer.BuildVotingChannel();
@@ -168,43 +167,25 @@ TEST(VotingTest, SubmitDuplicateVote) {
 
   EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1));
 
-  voting_channel.SubmitVote(kDummyContext1, TestVote(5, kReason));
+  // Setting a vote on a context without a vote.
+  voting_channel.SetVote(kDummyContext1, TestVote(5, kReason));
   EXPECT_TRUE(observer.HasVote(voter_id, kDummyContext1, 5, kReason));
 
-  EXPECT_DCHECK_DEATH(
-      voting_channel.SubmitVote(kDummyContext1, TestVote(10, kReason)));
+  // Setting the exact same vote again is a safe no-op.
+  voting_channel.SetVote(kDummyContext1, TestVote(5, kReason));
+  EXPECT_TRUE(observer.HasVote(voter_id, kDummyContext1, 5, kReason));
 
-  // Clean up.
-  voting_channel.InvalidateVote(kDummyContext1);
-}
+  // Updating the vote for an existing context.
+  voting_channel.SetVote(kDummyContext1, TestVote(10, kReason));
+  EXPECT_TRUE(observer.HasVote(voter_id, kDummyContext1, 10, kReason));
 
-// Tests that calling ChangeVote() for a context before a vote was submitted for
-// that context results in a DCHECK.
-TEST(VotingTest, ChangeNonExisting) {
-  DummyVoteObserver observer;
-
-  TestVotingChannel voting_channel = observer.BuildVotingChannel();
-  voting::VoterId<TestVote> voter_id = voting_channel.voter_id();
-
+  // Removing the vote with std::nullopt.
+  voting_channel.SetVote(kDummyContext1, std::nullopt);
   EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1));
-  // TODO(pbos): This is a DCHECK-build-only CHECK, see voting.h. This should
-  // probably be either a DCHECK or a CHECK outside DCHECK builds.
-  if (DCHECK_IS_ON()) {
-    EXPECT_CHECK_DEATH(
-        voting_channel.ChangeVote(kDummyContext1, TestVote(5, kReason)));
-  }
-}
 
-// Tests that calling InvalidateVote() for a context before a vote was submitted
-// for that context results in a DCHECK.
-TEST(VotingTest, InvalidateNonExisting) {
-  DummyVoteObserver observer;
-
-  TestVotingChannel voting_channel = observer.BuildVotingChannel();
-  voting::VoterId<TestVote> voter_id = voting_channel.voter_id();
-
+  // Setting std::nullopt for a non-existing vote is a safe no-op.
+  voting_channel.SetVote(kDummyContext1, std::nullopt);
   EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1));
-  EXPECT_DCHECK_DEATH(voting_channel.InvalidateVote(kDummyContext1));
 }
 
 // Tests that destroying a VotingChannelFactory before all of its VotingChannels

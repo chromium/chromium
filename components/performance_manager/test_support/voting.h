@@ -43,14 +43,9 @@ class DummyVoteObserver : public VoteObserver<VoteImpl> {
 
  protected:
   // VoteObserver:
-  void OnVoteSubmitted(voting::VoterId<VoteImpl> voter_id,
-                       const ContextType* context,
-                       const VoteImpl& vote) override;
-  void OnVoteChanged(voting::VoterId<VoteImpl> voter_id,
-                     const ContextType* context,
-                     const VoteImpl& new_vote) override;
-  void OnVoteInvalidated(voting::VoterId<VoteImpl> voter_id,
-                         const ContextType* context) override;
+  void OnVoteSet(voting::VoterId<VoteImpl> voter_id,
+                 const ContextType* context,
+                 const std::optional<VoteImpl>& vote) override;
 
  private:
   VotingChannelFactory<VoteImpl> voting_channel_factory_{this};
@@ -141,35 +136,21 @@ bool DummyVoteObserver<VoteImpl>::HasVote(
 }
 
 template <class VoteImpl>
-void DummyVoteObserver<VoteImpl>::OnVoteSubmitted(VoterId<VoteImpl> voter_id,
-                                                  const ContextType* context,
-                                                  const VoteImpl& vote) {
-  bool inserted = votes_by_voter_id_[voter_id].emplace(context, vote).second;
-  DCHECK(inserted);
-}
-
-template <class VoteImpl>
-void DummyVoteObserver<VoteImpl>::OnVoteChanged(VoterId<VoteImpl> voter_id,
-                                                const ContextType* context,
-                                                const VoteImpl& new_vote) {
-  auto it = votes_by_voter_id_[voter_id].find(context);
-  CHECK(it != votes_by_voter_id_[voter_id].end());
-  it->second = new_vote;
-}
-
-template <class VoteImpl>
-void DummyVoteObserver<VoteImpl>::OnVoteInvalidated(
+void DummyVoteObserver<VoteImpl>::OnVoteSet(
     VoterId<VoteImpl> voter_id,
-    const ContextType* context) {
-  auto it = votes_by_voter_id_.find(voter_id);
-  CHECK(it != votes_by_voter_id_.end());
-
-  base::flat_map<const ContextType*, VoteImpl>& votes = it->second;
-  size_t removed = votes.erase(context);
-  DCHECK_EQ(removed, 1u);
-
-  if (votes.empty())
-    votes_by_voter_id_.erase(it);
+    const ContextType* context,
+    const std::optional<VoteImpl>& vote) {
+  if (vote.has_value()) {
+    votes_by_voter_id_[voter_id][context] = *vote;
+  } else {
+    auto it = votes_by_voter_id_.find(voter_id);
+    if (it != votes_by_voter_id_.end()) {
+      it->second.erase(context);
+      if (it->second.empty()) {
+        votes_by_voter_id_.erase(it);
+      }
+    }
+  }
 }
 
 }  // namespace test

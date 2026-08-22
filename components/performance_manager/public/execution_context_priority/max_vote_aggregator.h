@@ -36,14 +36,9 @@ class MaxVoteAggregator : public VoteObserver {
 
  protected:
   // VoteObserver implementation:
-  void OnVoteSubmitted(VoterId voter_id,
-                       const ExecutionContext* execution_context,
-                       const Vote& vote) override;
-  void OnVoteChanged(VoterId voter_id,
-                     const ExecutionContext* execution_context,
-                     const Vote& new_vote) override;
-  void OnVoteInvalidated(VoterId voter_id,
-                         const ExecutionContext* execution_context) override;
+  void OnVoteSet(VoterId voter_id,
+                 const ExecutionContext* execution_context,
+                 const std::optional<Vote>& vote) override;
 
  private:
   friend class MaxVoteAggregatorTestAccess;
@@ -93,20 +88,19 @@ class MaxVoteAggregator : public VoteObserver {
     VoteData& operator=(VoteData&& rhs);
     ~VoteData();
 
-    // Adds a vote.
-    void AddVote(VoterId voter_id, const Vote& vote, uint32_t vote_id);
+    // Adds or updates a vote cast by |voter_id|. Returns true if the vote was
+    // added or modified, or false if the vote was already present with the
+    // exact same value.
+    bool SetVote(VoterId voter_id, const Vote& vote, uint32_t vote_id);
 
-    // Updates an existing vote casted by |voter_id|.
-    void UpdateVote(VoterId voter_id, const Vote& new_vote);
-
-    // Removes an existing vote casted by |voter_id|.
+    // Removes an existing vote cast by |voter_id|.
     void RemoveVote(VoterId voter_id);
 
-    // Returns true if this VoteData is empty.
-    bool IsEmpty() const { return votes_.empty(); }
+    // Checks if a vote cast by |voter_id| exists.
+    bool HasVote(VoterId voter_id) const;
 
-    // Returns the top vote. Invalid to call if IsEmpty() returns true.
-    const Vote& GetTopVote() const;
+    // Returns the top vote, or nullopt if empty.
+    std::optional<Vote> GetTopVote() const;
 
    private:
     base::IntrusiveHeap<StampedVote> votes_;
@@ -117,10 +111,6 @@ class MaxVoteAggregator : public VoteObserver {
   };
 
   using VoteDataMap = std::map<const ExecutionContext*, VoteData>;
-
-  // Looks up the VoteData associated with the provided |execution_context|. The
-  // data is expected to already exist (enforced by a DCHECK).
-  VoteDataMap::iterator GetVoteData(const ExecutionContext* execution_context);
 
   // Our channel for upstreaming our votes.
   VotingChannel channel_;

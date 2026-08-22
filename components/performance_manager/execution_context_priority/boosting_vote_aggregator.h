@@ -73,21 +73,6 @@ class BoostingVote {
 // class must outlive all boosting votes registered with it.
 class BoostingVoteAggregator : public VoteObserver {
  public:
-  BoostingVoteAggregator();
-  BoostingVoteAggregator(const BoostingVoteAggregator&) = delete;
-  BoostingVoteAggregator& operator=(const BoostingVoteAggregator&) = delete;
-  ~BoostingVoteAggregator() override;
-
-  // Both of these must be called in order for the aggregator to be setup
-  // ("IsSetup" will return true). Both of these should be called exactly once.
-  VotingChannel GetVotingChannel();
-  void SetUpstreamVotingChannel(VotingChannel channel);
-
-  bool IsSetup() const;
-
- protected:
-  friend class BoostingVote;
-
   // We currently require that base::Process::Priority be zero-based, and
   // consecutive. These static asserts ensure that we revisit this code if the
   // base::Process::Priority enum ever changes.
@@ -133,47 +118,18 @@ class BoostingVoteAggregator : public VoteObserver {
 
     const Vote& incoming_vote() const { return incoming_vote_.value(); }
 
-    // Sets/Cancels the incoming vote.
-    void SetIncomingVote(const Vote& incoming_vote) {
-      DCHECK(!incoming_vote_.has_value());
-      incoming_vote_ = incoming_vote;
-    }
-    void RemoveIncomingVote() {
-      DCHECK(incoming_vote_.has_value());
-      incoming_vote_ = std::nullopt;
-    }
-    // Updates the incoming vote.
-    void UpdateIncomingVote(const Vote& incoming_vote) {
-      DCHECK(incoming_vote_.has_value());
+    void SetIncomingVote(const std::optional<Vote>& incoming_vote) {
       incoming_vote_ = incoming_vote;
     }
 
-    // Sets/Cancels the outgoing vote.
-    void SetOutgoingVote(const Vote& outgoing_vote) {
-      DCHECK(!outgoing_vote_.has_value());
+    const std::optional<Vote>& outgoing_vote() const { return outgoing_vote_; }
+    void SetOutgoingVote(const std::optional<Vote>& outgoing_vote) {
       outgoing_vote_ = outgoing_vote;
-    }
-    void CancelOutgoingVote() {
-      DCHECK(outgoing_vote_.has_value());
-      outgoing_vote_ = std::nullopt;
-    }
-    // Updates the outgoing vote. Returns true if it changed.
-    bool UpdateOutgoingVote(const Vote& outgoing_vote) {
-      DCHECK(outgoing_vote_.has_value());
-      if (outgoing_vote == outgoing_vote_.value())
-        return false;
-
-      outgoing_vote_ = outgoing_vote;
-      return true;
     }
 
     // Returns true if this node has an active |incoming| vote. If false that
     // means this node exists only because it is referenced by a BoostedVote.
-    // Same as |incoming_vote_.has_value()|, but more readable.
     bool HasIncomingVote() const { return incoming_vote_.has_value(); }
-
-    // Returns true if this node has an active outgoing vote.
-    bool HasOutgoingVote() const { return outgoing_vote_.has_value(); }
 
     // Returns true if this node is involved in any edges.
     bool HasEdges() const { return edge_count_ > 0; }
@@ -280,19 +236,41 @@ class BoostingVoteAggregator : public VoteObserver {
   using ForwardEdges = std::map<ForwardEdge, EdgeData>;
   using ReverseEdges = std::map<ReverseEdge, EdgeData*>;
 
+  BoostingVoteAggregator();
+  BoostingVoteAggregator(const BoostingVoteAggregator&) = delete;
+  BoostingVoteAggregator& operator=(const BoostingVoteAggregator&) = delete;
+  ~BoostingVoteAggregator() override;
+
+  // Both of these must be called in order for the aggregator to be setup
+  // ("IsSetup" will return true). Both of these should be called exactly once.
+  VotingChannel GetVotingChannel();
+  void SetUpstreamVotingChannel(VotingChannel channel);
+
+  bool IsSetup() const;
+
+  const NodeDataMap& nodes_for_testing() const { return nodes_; }
+  const ForwardEdges& forward_edges_for_testing() const {
+    return forward_edges_;
+  }
+  const ReverseEdges& reverse_edges_for_testing() const {
+    return reverse_edges_;
+  }
+
+ private:
+  friend class BoostingVote;
+
   // To be called by BoostingVote.
   void SubmitBoostingVote(const BoostingVote* boosting_vote);
   void CancelBoostingVote(const BoostingVote* boosting_vote);
 
   // VoteObserver implementation:
-  void OnVoteSubmitted(VoterId voter_id,
-                       const ExecutionContext* execution_context,
-                       const Vote& vote) override;
-  void OnVoteChanged(VoterId voter_id,
-                     const ExecutionContext* execution_context,
-                     const Vote& new_vote) override;
-  void OnVoteInvalidated(VoterId voter_id,
-                         const ExecutionContext* execution_context) override;
+  void OnVoteSet(VoterId voter_id,
+                 const ExecutionContext* execution_context,
+                 const std::optional<Vote>& vote) override;
+
+  // Helpers for OnVoteSet to handle setting vs removing votes.
+  void SetVote(const ExecutionContext* execution_context, const Vote& vote);
+  void RemoveVote(const ExecutionContext* execution_context);
 
   // Helper functions for enumerating over incoming and outgoing edges.
   // |function| should accept a single input parameter that is a

@@ -37,144 +37,71 @@ bool OverrideVoteAggregator::IsSetup() const {
   return override_voter_id_ && default_voter_id_ && channel_.IsValid();
 }
 
-void OverrideVoteAggregator::OnVoteSubmitted(
+void OverrideVoteAggregator::OnVoteSet(
     VoterId voter_id,
     const ExecutionContext* execution_context,
-    const Vote& vote) {
+    const std::optional<Vote>& vote) {
   DCHECK(IsSetup());
-  // Create the VoteData for this execution context, if necessary.
-  VoteData& vote_data = vote_data_map_[execution_context];
+  VoteData::VoterType voter_type = GetVoterType(voter_id);
 
-  // Remember the previous chosen vote before adding the new vote. There could
-  // be none if the this the first vote submitted for |execution_context|.
-  std::optional<Vote> old_chosen_vote;
-  if (vote_data.HasChosenVote())
-    old_chosen_vote = vote_data.GetChosenVote();
+  if (!vote.has_value()) {
+    // Vote removal.
+    auto it = vote_data_map_.find(execution_context);
+    if (it == vote_data_map_.end()) {
+      return;
+    }
 
-  vote_data.AddVote(GetVoterType(voter_id), vote);
+    VoteData& vote_data = it->second;
 
-  // If there was no previous chosen vote, the vote must be submitted.
-  if (!old_chosen_vote) {
-    channel_.SubmitVote(execution_context, vote);
+    const std::optional<Vote> old_chosen_vote = vote_data.GetChosenVote();
+    vote_data.SetVote(voter_type, std::nullopt);
+    const std::optional<Vote> new_chosen_vote = vote_data.GetChosenVote();
+
+    if (old_chosen_vote != new_chosen_vote) {
+      channel_.SetVote(execution_context, new_chosen_vote);
+    }
+    if (!new_chosen_vote.has_value()) {
+      vote_data_map_.erase(it);
+    }
     return;
   }
 
-  // Since there is a previous chosen vote, it must be modified if the chosen
-  // vote changed.
-  const Vote new_chosen_vote = vote_data.GetChosenVote();
-  if (old_chosen_vote.value() != new_chosen_vote)
-    channel_.ChangeVote(execution_context, new_chosen_vote);
-}
-
-void OverrideVoteAggregator::OnVoteChanged(
-    VoterId voter_id,
-    const ExecutionContext* execution_context,
-    const Vote& new_vote) {
-  // The VoteData for this execution context is guaranteed to exist.
-  VoteData& vote_data = GetVoteData(execution_context)->second;
-
-  // Remember the previous chosen vote before updating the vote for this
-  // |voter_id|.
-  const Vote old_chosen_vote = vote_data.GetChosenVote();
-
-  vote_data.ChangeVote(GetVoterType(voter_id), new_vote);
-
-  // If the chosen vote changed, the upstream vote must also be changed.
-  const Vote new_chosen_vote = vote_data.GetChosenVote();
-  if (old_chosen_vote != new_chosen_vote)
-    channel_.ChangeVote(execution_context, new_chosen_vote);
-}
-
-void OverrideVoteAggregator::OnVoteInvalidated(
-    VoterId voter_id,
-    const ExecutionContext* execution_context) {
-  // The VoteData for this execution context is guaranteed to exist.
-  auto it = GetVoteData(execution_context);
+  // Vote addition or modification.
+  auto [it, _] = vote_data_map_.try_emplace(execution_context);
   VoteData& vote_data = it->second;
 
-  // Remember the previous chosen vote before removing the vote for this
-  // |voter_id|.
-  const Vote old_chosen_vote = vote_data.GetChosenVote();
+  const std::optional<Vote> old_chosen_vote = vote_data.GetChosenVote();
+  vote_data.SetVote(voter_type, vote);
+  const std::optional<Vote> new_chosen_vote = vote_data.GetChosenVote();
 
-  vote_data.RemoveVote(GetVoterType(voter_id));
-
-  // In case the last vote for |execution_context| was invalidated, the upstream
-  // vote must also be invalidated.
-  if (!vote_data.HasChosenVote()) {
-    channel_.InvalidateVote(execution_context);
-
-    // Clean up the VoteData for |execution_context| since it is empty.
-    vote_data_map_.erase(it);
-    return;
+  if (old_chosen_vote != new_chosen_vote) {
+    channel_.SetVote(execution_context, new_chosen_vote);
   }
-
-  // If the top vote changed, the upstream vote must also be changed.
-  const Vote new_chosen_vote = vote_data.GetChosenVote();
-  if (old_chosen_vote != new_chosen_vote)
-    channel_.ChangeVote(execution_context, new_chosen_vote);
 }
 
 OverrideVoteAggregator::VoteData::VoteData() = default;
 OverrideVoteAggregator::VoteData::VoteData(VoteData&& rhs) = default;
 OverrideVoteAggregator::VoteData::~VoteData() = default;
 
-void OverrideVoteAggregator::VoteData::AddVote(VoterType voter_type,
-                                               const Vote& vote) {
+void OverrideVoteAggregator::VoteData::SetVote(
+    VoterType voter_type,
+    const std::optional<Vote>& vote) {
   switch (voter_type) {
     case VoterType::kDefault:
-      DCHECK(!default_vote_.has_value());
       default_vote_ = vote;
       break;
     case VoterType::kOverride:
-      DCHECK(!override_vote_.has_value());
       override_vote_ = vote;
       break;
   }
 }
 
-void OverrideVoteAggregator::VoteData::ChangeVote(VoterType voter_type,
-                                                  const Vote& new_vote) {
-  switch (voter_type) {
-    case VoterType::kDefault:
-      DCHECK(default_vote_.has_value());
-      default_vote_ = new_vote;
-      break;
-    case VoterType::kOverride:
-      DCHECK(override_vote_.has_value());
-      override_vote_ = new_vote;
-      break;
-  }
-}
-
-void OverrideVoteAggregator::VoteData::RemoveVote(VoterType voter_type) {
-  switch (voter_type) {
-    case VoterType::kDefault:
-      DCHECK(default_vote_.has_value());
-      default_vote_ = std::nullopt;
-      break;
-    case VoterType::kOverride:
-      DCHECK(override_vote_.has_value());
-      override_vote_ = std::nullopt;
-      break;
-  }
-}
-
-bool OverrideVoteAggregator::VoteData::HasChosenVote() const {
-  return default_vote_.has_value() || override_vote_.has_value();
-}
-
-const Vote& OverrideVoteAggregator::VoteData::GetChosenVote() const {
+std::optional<Vote> OverrideVoteAggregator::VoteData::GetChosenVote() const {
   // The |override_vote| is always chosen first.
-  if (override_vote_.has_value())
-    return override_vote_.value();
-  return default_vote_.value();
-}
-
-OverrideVoteAggregator::VoteDataMap::iterator
-OverrideVoteAggregator::GetVoteData(const ExecutionContext* execution_context) {
-  auto it = vote_data_map_.find(execution_context);
-  CHECK(it != vote_data_map_.end());
-  return it;
+  if (override_vote_.has_value()) {
+    return override_vote_;
+  }
+  return default_vote_;
 }
 
 OverrideVoteAggregator::VoteData::VoterType
