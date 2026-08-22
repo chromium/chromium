@@ -17,15 +17,11 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils.isHighlighted;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
-
-import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,7 +49,6 @@ import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /** Tests for searching autofill settings. */
@@ -573,20 +568,6 @@ public class AutofillSettingsSearchTest {
                 .check(matches(isDisplayed()));
 
         mSettingsSearchHistogramWatcher.assertExpected();
-    }
-
-    private static Matcher<View> isHighlighted() {
-        return new TypeSafeMatcher<View>() {
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("is highlighted by ViewHighlighter");
-            }
-
-            @Override
-            protected boolean matchesSafely(View view) {
-                return ViewHighlighterTestUtils.checkHighlightOn(view);
-            }
-        };
     }
 
     private static void signInPromoDismissed(boolean value) {
