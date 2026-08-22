@@ -27,12 +27,19 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "remoting/base/crash/crashpad_database_manager.h"
 #include "remoting/base/passwd_utils.h"
 #include "remoting/base/username.h"
-#include "third_party/crashpad/crashpad/client/crash_report_database.h"
-#include "third_party/crashpad/crashpad/client/settings.h"
 
 namespace {
+
+class CrashpadHandlerLogger : public remoting::CrashpadDatabaseManager::Logger {
+ public:
+  void Log(std::string_view message) const override { LOG(INFO) << message; }
+  void LogError(std::string_view message) const override {
+    LOG(ERROR) << message;
+  }
+};
 
 void DropPrivilegesToCrashpadUser() {
   if (getuid() != 0) {
@@ -112,9 +119,16 @@ int main(int argc, char* argv[]) {
       base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch("database")) {
     base::FilePath database_path = command_line->GetSwitchValuePath("database");
-    auto database = crashpad::CrashReportDatabase::Initialize(database_path);
-    if (database) {
-      database->GetSettings()->SetUploadsEnabled(true);
+    CrashpadHandlerLogger logger;
+    remoting::CrashpadDatabaseManager database_manager(logger);
+    if (database_manager.InitializeCrashpadDatabase(database_path)) {
+      database_manager.EnableReportUploads();
+      database_manager.LogCompletedCrashpadReports();
+      database_manager.LogPendingCrashpadReports();
+      database_manager.CleanupCompletedCrashpadReports();
+    } else {
+      LOG(ERROR) << "Failed to initialize Crashpad database at "
+                 << database_path;
     }
   }
 

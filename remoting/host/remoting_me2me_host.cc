@@ -185,7 +185,6 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX)
-#include "remoting/base/crash/crash_reporting_crashpad.h"
 #include "remoting/host/host_wtmpdb_logger.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
@@ -2446,22 +2445,6 @@ int HostProcessMain(bool multi_process) {
     return kInitializationFailed;
   }
 
-#if BUILDFLAG(IS_LINUX)
-  // Log and cleanup the crash database. We do this after a short delay so that
-  // the crash database has a chance to be updated properly if we just got
-  // relaunched after a crash.
-  // TODO(crbug.com/545897508): Fix this for Windows and Linux multi-process
-  // hosts. On multi-process Linux, the database is owned by `_crd_crashpad`, so
-  // this code is currently a no-op.
-  if (IsUsageStatsAllowed()) {
-    scoped_refptr<base::SequencedTaskRunner> task_runner_crashdb =
-        base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-    task_runner_crashdb->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&LogAndCleanupCrashDatabase),
-        base::Seconds(3));
-  }
-#endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
 
   // NetworkChangeNotifier must be initialized after SingleThreadTaskExecutor.
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier(

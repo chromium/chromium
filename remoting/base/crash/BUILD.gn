@@ -25,11 +25,10 @@ if (is_linux || is_win) {
     ]
     deps = [
       "//base",
-      "//base:i18n",
       "//remoting/base",
-      "//third_party/crashpad/crashpad/client",
       "//third_party/crashpad/crashpad/util",
     ]
+    public_deps = [ "//third_party/crashpad/crashpad/client" ]
   }
 
   source_set("crashpad") {

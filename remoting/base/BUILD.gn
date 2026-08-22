@@ -508,6 +508,11 @@ source_set("unit_tests") {
     sources += [ "passwd_utils_unittest.cc" ]
   }
 
+  if (is_linux || is_win) {
+    sources += [ "crash/crashpad_database_manager_unittest.cc" ]
+    deps += [ "//remoting/base/crash:crashpad_db_mgr" ]
+  }
+
   if (is_linux) {
     sources += [ "crash/crashpad_linux_unittest.cc" ]
     deps += [

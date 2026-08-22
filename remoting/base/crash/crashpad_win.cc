@@ -84,11 +84,11 @@ CrashpadWin& CrashpadWin::GetInstance() {
 // private
 
 // CrashpadDatabaseManager::Logger overrides
-void CrashpadWin::Log(const std::string message) const {
+void CrashpadWin::Log(std::string_view message) const {
   HOST_LOG << message;
 }
 
-void CrashpadWin::LogError(const std::string message) const {
+void CrashpadWin::LogError(std::string_view message) const {
   LOG(ERROR) << message;
 }
 

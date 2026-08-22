@@ -19,8 +19,8 @@ class RemotingCrashpadDatabaseTool : CrashpadDatabaseManager::Logger {
 
  private:
   // CrashpadDatabaseManager::Logger overrides
-  void Log(std::string message) const override;
-  void LogError(std::string message) const override;
+  void Log(std::string_view message) const override;
+  void LogError(std::string_view message) const override;
 
   remoting::CrashpadDatabaseManager database_;
 };
@@ -29,11 +29,11 @@ RemotingCrashpadDatabaseTool::RemotingCrashpadDatabaseTool()
     : database_(*this) {}
 
 // CrashpadDatabaseManager::Logger overrides
-void RemotingCrashpadDatabaseTool::Log(const std::string message) const {
+void RemotingCrashpadDatabaseTool::Log(std::string_view message) const {
   std::cout << message << '\n';
 }
 
-void RemotingCrashpadDatabaseTool::LogError(const std::string message) const {
+void RemotingCrashpadDatabaseTool::LogError(std::string_view message) const {
   std::cerr << message << '\n';
 }
 

@@ -22,6 +22,7 @@ if (is_linux || is_win) {
     deps = [
       "//base",
       "//remoting/base",
+      "//remoting/base/crash:crashpad_db_mgr",
       "//third_party/crashpad/crashpad/client",
       "//third_party/crashpad/crashpad/handler",
     ]

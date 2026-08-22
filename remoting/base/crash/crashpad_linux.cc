@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/time/time.h"
@@ -22,7 +21,6 @@
 #include "remoting/base/passwd_utils.h"
 #include "remoting/base/username.h"
 #include "remoting/base/version.h"
-#include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 
 namespace remoting {
@@ -90,10 +88,7 @@ bool SetupCrashpadDirectory() {
 
 }  // namespace
 
-CrashpadLinux::CrashpadLinux() : database_(*this) {}
-
-CrashpadLinux::~CrashpadLinux() = default;
-
+// static
 bool CrashpadLinux::Initialize() {
   if (getuid() == 0 && !SetupCrashpadDirectory()) {
     LOG(ERROR) << "Failed to setup Crashpad directory.";
@@ -170,33 +165,7 @@ bool CrashpadLinux::GetHandlerSocket(base::ScopedFD& socket, pid_t& pid) {
   return true;
 }
 
-void CrashpadLinux::LogAndCleanupCrashpadDatabase() {
-  // TODO(crbug.com/545897508): Move database logging and cleanup to the
-  // Crashpad handler process so that it is properly executed on both
-  // single-process and multi-process hosts. This is currently a no-op
-  // because database_ is uninitialized. Commented out to prevent log spam.
-  // database_.LogCompletedCrashpadReports();
-  // database_.LogPendingCrashpadReports();
-  // database_.CleanupCompletedCrashpadReports();
-}
-
 // static
-CrashpadLinux& CrashpadLinux::GetInstance() {
-  static base::NoDestructor<CrashpadLinux> instance;
-  return *instance;
-}
-
-// private
-
-// CrashpadDatabaseManager::Logger overrides
-void CrashpadLinux::Log(const std::string message) const {
-  HOST_LOG << message;
-}
-
-void CrashpadLinux::LogError(const std::string message) const {
-  LOG(ERROR) << message;
-}
-
 bool CrashpadLinux::GetCrashpadHandlerPath(base::FilePath* handler_path) {
   if (!base::PathService::Get(base::DIR_EXE, handler_path)) {
     LOG(ERROR) << "Unable to get exe dir for crashpad handler";

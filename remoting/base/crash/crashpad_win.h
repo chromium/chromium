@@ -26,8 +26,8 @@ class CrashpadWin : CrashpadDatabaseManager::Logger {
   bool GetCrashpadHandlerPath(base::FilePath* handler_path);
 
   // CrashpadDatabaseManager::Logger overrides
-  void Log(std::string message) const override;
-  void LogError(std::string message) const override;
+  void Log(std::string_view message) const override;
+  void LogError(std::string_view message) const override;
 
   remoting::CrashpadDatabaseManager database_;
 };
