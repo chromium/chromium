@@ -8,18 +8,21 @@ import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AudioBrowserProxyImpl, ToolbarEvent, VisualBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {mockMetrics, stubAnimationFrame} from './common.js';
-import {FakeReadingMode} from './fake_reading_mode.js';
+import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('Toolbar', () => {
   let toolbar: ReadAnythingToolbarElement;
   let shadowRoot: ShadowRoot;
   let metrics: TestMetricsBrowserProxy;
+  let visualBrowserProxy: TestVisualBrowserProxy;
+  let audioBrowserProxy: TestAudioBrowserProxy;
 
   async function createToolbar(): Promise<void> {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -35,9 +38,10 @@ suite('Toolbar', () => {
   }
 
   setup(() => {
-    const readingMode = new FakeReadingMode();
-    chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
-    chrome.readingMode.isImmersiveEnabled = true;
+    visualBrowserProxy = new TestVisualBrowserProxy();
+    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
+    audioBrowserProxy = new TestAudioBrowserProxy();
+    AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
     metrics = mockMetrics();
     return createToolbar();
   });
@@ -80,7 +84,7 @@ suite('Toolbar', () => {
       stubAnimationFrame();
       toolbar.$.toolbarContainer.dispatchEvent(new FocusEvent('blur'));
       assertEquals(toolbar.$.toolbarContainer.tabIndex, -1);
-      toolbar.presentationState = 1;
+      toolbar.presentationState = visualBrowserProxy.inHiddenPresentationState;
       await microtasksFinished();
       assertEquals(toolbar.$.toolbarContainer.tabIndex, 0);
     });
@@ -89,7 +93,8 @@ suite('Toolbar', () => {
       stubAnimationFrame();
       toolbar.$.toolbarContainer.dispatchEvent(new FocusEvent('blur'));
       assertEquals(toolbar.$.toolbarContainer.tabIndex, -1);
-      toolbar.presentationState = 2;
+      toolbar.presentationState =
+          visualBrowserProxy.inSidePanelPresentationState;
       await microtasksFinished();
       assertEquals(toolbar.$.toolbarContainer.tabIndex, 0);
     });
@@ -149,7 +154,8 @@ suite('Toolbar', () => {
       previousButton = previous;
 
       toolbar.isReadAloudPlayable = true;
-      await microtasksFinished();
+      toolbar.isSpeechActive = true;
+      return microtasksFinished();
     });
 
     test('all buttons disabled when not playable', async () => {
@@ -181,17 +187,12 @@ suite('Toolbar', () => {
         });
 
     test('next button emits next event', async () => {
-      toolbar.isSpeechActive = true;
       await microtasksFinished();
 
-      let nextEmitted = false;
-      document.addEventListener(
-          ToolbarEvent.NEXT_GRANULARITY, () => nextEmitted = true);
+      const whenFired = eventToPromise(ToolbarEvent.NEXT_GRANULARITY, toolbar);
 
       nextButton.click();
-      await microtasksFinished();
-
-      assertTrue(nextEmitted);
+      await whenFired;
     });
 
     test('next button logs next event', async () => {
@@ -210,14 +211,11 @@ suite('Toolbar', () => {
       toolbar.isSpeechActive = true;
       await microtasksFinished();
 
-      let previousEmitted = false;
-      document.addEventListener(
-          ToolbarEvent.PREVIOUS_GRANULARITY, () => previousEmitted = true);
+      const whenFired =
+          eventToPromise(ToolbarEvent.PREVIOUS_GRANULARITY, toolbar);
 
       previousButton.click();
-      await microtasksFinished();
-
-      assertTrue(previousEmitted);
+      await whenFired;
     });
 
     test('previous button logs previous event', async () => {
@@ -233,15 +231,15 @@ suite('Toolbar', () => {
     });
 
     test('play button emits play pause event', async () => {
-      let clicksEmitted = 0;
-      document.addEventListener(ToolbarEvent.PLAY_PAUSE, () => clicksEmitted++);
+      const whenFired1 = eventToPromise(ToolbarEvent.PLAY_PAUSE, toolbar);
 
       playPauseButton.click();
-      await microtasksFinished();
-      playPauseButton.click();
-      await microtasksFinished();
+      await whenFired1;
 
-      assertEquals(2, clicksEmitted);
+      const whenFired2 = eventToPromise(ToolbarEvent.PLAY_PAUSE, toolbar);
+
+      playPauseButton.click();
+      await whenFired2;
     });
 
     test('play button logs play event when speech inactive', async () => {
@@ -273,7 +271,7 @@ suite('Toolbar', () => {
       await microtasksFinished();
 
       assertEquals(
-          chrome.readingMode.pauseButtonStopSource,
+          audioBrowserProxy.pauseButtonStopSource,
           await metrics.whenCalled('recordSpeechStopSource'));
     });
 
@@ -310,7 +308,7 @@ suite('Toolbar', () => {
 
   suite('line focus button', () => {
     setup(async () => {
-      chrome.readingMode.isLineFocusEnabled = true;
+      visualBrowserProxy.lineFocusEnabled = true;
       await createToolbar();
     });
 
@@ -345,8 +343,7 @@ suite('Toolbar', () => {
 
   suite('ai playback button', () => {
     test('does not show with flag disabled', async () => {
-      chrome.readingMode.isReadAnythingReadAloudExperimentalPlaybackUiEnabled =
-          false;
+      visualBrowserProxy.experimentalPlaybackUiEnabled = false;
       await createToolbar();
       assertFalse(!!getButton('ai-playback-toggle'));
     });
@@ -355,8 +352,7 @@ suite('Toolbar', () => {
       let aiPlaybackButton: CrIconButtonElement;
 
       setup(async () => {
-        chrome.readingMode
-            .isReadAnythingReadAloudExperimentalPlaybackUiEnabled = true;
+        visualBrowserProxy.experimentalPlaybackUiEnabled = true;
         await createToolbar();
 
         const button = getButton('ai-playback-toggle');

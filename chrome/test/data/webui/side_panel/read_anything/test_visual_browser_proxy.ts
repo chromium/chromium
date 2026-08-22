@@ -9,8 +9,10 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
     VisualBrowserProxy {
   inSidePanelPresentationState: number = 1;
   inImmersiveOverlayPresentationState: number = 2;
+  inHiddenPresentationState: number = 3;
   fontName: string = 'Poppins';
   supportedFonts: string[] = [];
+  allFonts: string[] = ['Poppins', 'Sans-serif', 'Serif'];
   standardLineSpacing: number = 0;
   looseLineSpacing: number = 1;
   veryLooseLineSpacing: number = 2;
@@ -48,6 +50,8 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   maxLineWidth: number = 60;
   letterSpacing: number = 0;
   colorTheme: number = 0;
+  translateEntryPointEnabled: boolean = false;
+  experimentalPlaybackUiEnabled: boolean = false;
   imagesEnabled: boolean = true;
   linksEnabled: boolean = true;
   fetchedImages: number[] = [];
@@ -56,8 +60,11 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
     super([
       'getInSidePanelPresentationState',
       'getInImmersiveOverlayPresentationState',
+      'getInHiddenPresentationState',
+      'isReadAnythingReadAloudExperimentalPlaybackUiEnabled',
       'getFontName',
       'getSupportedFonts',
+      'getAllFonts',
       'getValidatedFontName',
       'getStandardLineSpacing',
       'getLooseLineSpacing',
@@ -95,7 +102,12 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
       'onLetterSpacingChange',
       'onThemeChange',
       'onLineFocusChanged',
+      'onFontSizeChanged',
+      'onFontSizeReset',
+      'isReadAnythingTranslateEntryPointEnabled',
+      'onTranslationRequested',
       'togglePresentation',
+      'close',
       'isImmersiveEnabled',
       'isImagesEnabled',
       'isLinksEnabled',
@@ -351,6 +363,42 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   getKeyPointsRegex(): string {
     this.methodCalled('getKeyPointsRegex');
     return this.keyPointsRegex;
+  }
+
+  getInHiddenPresentationState(): number {
+    this.methodCalled('getInHiddenPresentationState');
+    return this.inHiddenPresentationState;
+  }
+
+  isReadAnythingReadAloudExperimentalPlaybackUiEnabled(): boolean {
+    this.methodCalled('isReadAnythingReadAloudExperimentalPlaybackUiEnabled');
+    return this.experimentalPlaybackUiEnabled;
+  }
+
+  close(): void {
+    this.methodCalled('close');
+  }
+
+  getAllFonts(): string[] {
+    this.methodCalled('getAllFonts');
+    return this.allFonts;
+  }
+
+  onFontSizeChanged(increase: boolean): void {
+    this.methodCalled('onFontSizeChanged', increase);
+  }
+
+  onFontSizeReset(): void {
+    this.methodCalled('onFontSizeReset');
+  }
+
+  isReadAnythingTranslateEntryPointEnabled(): boolean {
+    this.methodCalled('isReadAnythingTranslateEntryPointEnabled');
+    return this.translateEntryPointEnabled;
+  }
+
+  onTranslationRequested(): void {
+    this.methodCalled('onTranslationRequested');
   }
 
   onLinksEnabledToggled(): void {

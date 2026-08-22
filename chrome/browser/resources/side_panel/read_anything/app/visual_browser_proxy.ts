@@ -8,8 +8,11 @@
 export interface VisualBrowserProxy {
   getInSidePanelPresentationState(): number;
   getInImmersiveOverlayPresentationState(): number;
+  getInHiddenPresentationState(): number;
   getActivePresentationState(): number;
   isImmersiveEnabled(): boolean;
+  isReadAnythingReadAloudExperimentalPlaybackUiEnabled(): boolean;
+  isReadAnythingTranslateEntryPointEnabled(): boolean;
   isImagesEnabled(): boolean;
   isLinksEnabled(): boolean;
   isPdf(): boolean;
@@ -18,6 +21,7 @@ export interface VisualBrowserProxy {
 
   getFontName(): string;
   getSupportedFonts(): string[];
+  getAllFonts(): string[];
   getValidatedFontName(font: string): string;
 
   getStandardLineSpacing(): number;
@@ -66,7 +70,12 @@ export interface VisualBrowserProxy {
   onLineFocusChanged(value: number, lastNonDisabledValue: number): void;
   onLinksEnabledToggled(): void;
   onImagesEnabledToggled(): void;
+  onFontSizeChanged(increase: boolean): void;
+  onFontSizeReset(): void;
+  onTranslationRequested(): void;
+
   togglePresentation(): void;
+  close(): void;
 }
 
 export class VisualBrowserProxyImpl implements VisualBrowserProxy {
@@ -78,12 +87,21 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
     return chrome.readingMode.inImmersiveOverlayPresentationState;
   }
 
+  getInHiddenPresentationState(): number {
+    return chrome.readingMode.inHiddenPresentationState;
+  }
+
   getActivePresentationState(): number {
     return chrome.readingMode.activePresentationState;
   }
 
   isImmersiveEnabled(): boolean {
     return chrome.readingMode.isImmersiveEnabled;
+  }
+
+  isReadAnythingReadAloudExperimentalPlaybackUiEnabled(): boolean {
+    return chrome.readingMode
+        .isReadAnythingReadAloudExperimentalPlaybackUiEnabled;
   }
 
   isImagesEnabled(): boolean {
@@ -108,6 +126,10 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
 
   getSupportedFonts(): string[] {
     return chrome.readingMode.supportedFonts;
+  }
+
+  getAllFonts(): string[] {
+    return chrome.readingMode.allFonts;
   }
 
   getValidatedFontName(font: string): string {
@@ -266,8 +288,28 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
     chrome.readingMode.onLineFocusChanged(value, lastNonDisabledValue);
   }
 
+  onFontSizeChanged(increase: boolean): void {
+    chrome.readingMode.onFontSizeChanged(increase);
+  }
+
+  onFontSizeReset(): void {
+    chrome.readingMode.onFontSizeReset();
+  }
+
+  isReadAnythingTranslateEntryPointEnabled(): boolean {
+    return chrome.readingMode.isReadAnythingTranslateEntryPointEnabled;
+  }
+
+  onTranslationRequested(): void {
+    chrome.readingMode.onTranslationRequested();
+  }
+
   togglePresentation(): void {
     chrome.readingMode.togglePresentation();
+  }
+
+  close(): void {
+    chrome.readingMode.close();
   }
 
   onLinksEnabledToggled(): void {
