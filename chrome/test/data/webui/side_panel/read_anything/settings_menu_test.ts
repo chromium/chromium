@@ -124,7 +124,6 @@ suite('SettingsMenuElement', () => {
 
   test('with improved ui flag enabled', async () => {
     chrome.readingMode.isReadAnythingImprovedUiEnabled = true;
-    chrome.readingMode.isImmersiveEnabled = true;
     settingsMenu.isImmersiveMode = true;
     await microtasksFinished();
 
@@ -486,34 +485,20 @@ suite('SettingsMenuElement', () => {
   });
 
   test(
-      'improved ui menu requires both isReadAnythingImprovedUiEnabled and ' +
-          'isImmersiveEnabled',
-      async () => {
+      'improved ui menu requires isReadAnythingImprovedUiEnabled', async () => {
         chrome.readingMode.isReadAnythingImprovedUiEnabled = true;
-        chrome.readingMode.isImmersiveEnabled = false;
         settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
         await microtasksFinished();
 
         const actionMenu = settingsMenu.$.lazyMenu.get();
         let menuItems = Array.from(
             actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
-        assertTrue(
-            !menuItems.find(item => item.id === SettingsOption.APPEARANCE));
-        assertTrue(!!menuItems.find(item => item.id === SettingsOption.COLOR));
 
-        chrome.readingMode.isReadAnythingImprovedUiEnabled = true;
-        chrome.readingMode.isImmersiveEnabled = true;
-        settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
-        await microtasksFinished();
-
-        menuItems = Array.from(
-            actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
         assertTrue(
             !!menuItems.find(item => item.id === SettingsOption.APPEARANCE));
         assertTrue(!menuItems.find(item => item.id === SettingsOption.COLOR));
 
         chrome.readingMode.isReadAnythingImprovedUiEnabled = false;
-        chrome.readingMode.isImmersiveEnabled = true;
         settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
         await microtasksFinished();
 
@@ -528,7 +513,6 @@ suite('SettingsMenuElement', () => {
       'LINE_FOCUS is not in top level menu when isReadAnythingImprovedUiEnabled is true',
       async () => {
         chrome.readingMode.isReadAnythingImprovedUiEnabled = true;
-        chrome.readingMode.isImmersiveEnabled = true;
         chrome.readingMode.isLineFocusEnabled = true;
         settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
         await microtasksFinished();

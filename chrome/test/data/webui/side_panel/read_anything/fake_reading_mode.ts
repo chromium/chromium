@@ -99,7 +99,7 @@ export class FakeReadingMode {
   htmlIds: Map<number, string> = new Map();
 
   // Whether the Immersive Read Anything feature flag is enabled.
-  isImmersiveEnabled: boolean = false;
+  isImmersiveEnabled: boolean = true;
 
   // Whether the Read Anything Translate Entry Point feature flag is enabled.
   isReadAnythingTranslateEntryPointEnabled: boolean = false;

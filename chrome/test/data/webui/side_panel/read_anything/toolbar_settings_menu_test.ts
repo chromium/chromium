@@ -52,7 +52,6 @@ suite('Toolbar Settings Menu', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
-    chrome.readingMode.isImmersiveEnabled = true;
     stubAnimationFrame();
     await createToolbar();
 
@@ -108,7 +107,7 @@ suite('Toolbar Settings Menu', () => {
       'settings menu opens appearance submenu on click when flag enabled',
       async () => {
         chrome.readingMode.isReadAnythingImprovedUiEnabled = true;
-        toolbar.$.settingsMenu.isImmersiveMode = true;
+        settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
         await microtasksFinished();
         const targetItem = getMenuItem(SettingsOption.APPEARANCE);
         assertTrue(!!targetItem);

@@ -1159,7 +1159,6 @@ suite('AppContent', () => {
 
     setup(async () => {
       app.remove();
-      chrome.readingMode.isImmersiveEnabled = true;
       app = await createApp();
       appStyleUpdater = new AppStyleUpdater(app);
     });

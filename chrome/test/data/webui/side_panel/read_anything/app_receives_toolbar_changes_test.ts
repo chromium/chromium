@@ -320,7 +320,6 @@ suite('AppReceivesToolbarChanges', () => {
 
   test('immersive view updates line focus padding', async () => {
     chrome.readingMode.isLineFocusEnabled = true;
-    chrome.readingMode.isImmersiveEnabled = true;
     app = await createApp();
     app.isImmersiveMode = () => true;
     app.updateContent();
@@ -427,7 +426,6 @@ suite('AppReceivesToolbarChanges', () => {
   suite('line focus on empty page', () => {
     setup(() => {
       chrome.readingMode.isLineFocusEnabled = true;
-      chrome.readingMode.isImmersiveEnabled = true;
     });
 
     test('line focus is not shown on empty page', async () => {
