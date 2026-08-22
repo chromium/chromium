@@ -41,10 +41,13 @@ const defaultHeight =
     loadTimeData.getInteger('glicExperimentalOptInDefaultHeight');
 const defaultWidth =
     loadTimeData.getInteger('glicExperimentalOptInDefaultWidth');
+const targetWidth = window.innerWidth > 0 ?
+    Math.min(defaultWidth, window.innerWidth) :
+    defaultWidth;
 document.documentElement.style.setProperty(
     '--glic-experimental-opt-in-height', `${defaultHeight}px`);
 document.documentElement.style.setProperty(
-    '--glic-experimental-opt-in-width', `${defaultWidth}px`);
+    '--glic-experimental-opt-in-width', `${targetWidth}px`);
 document.documentElement.style.setProperty(
     '--glic-transition-duration', `${TRANSITION_DURATION_MS}ms`);
 
@@ -73,8 +76,8 @@ export class ExperimentalOptInApp {
     // Allow a small margin of error (±2px) around the target width to prevent
     // subpixel rounding or zoom differences from failing the webview's internal
     // size-changed checks and collapsing the layout.
-    this.webview_.setAttribute('minwidth', String(defaultWidth - 2));
-    this.webview_.setAttribute('maxwidth', String(defaultWidth + 2));
+    this.webview_.setAttribute('minwidth', String(targetWidth - 2));
+    this.webview_.setAttribute('maxwidth', String(targetWidth + 2));
 
     this.errorPanel_ = getRequiredElement('errorPanel');
     this.errorIcon_ = getRequiredElement('errorIcon');

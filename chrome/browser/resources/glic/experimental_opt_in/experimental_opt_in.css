@@ -27,7 +27,7 @@ html {
   background-color: var(--color-glic-background);
   box-sizing: border-box;
   flex-direction: column;
-  width: var(--glic-experimental-opt-in-width, 512px);
+  width: min(100%, var(--glic-experimental-opt-in-width, 512px));
 }
 
 .panel.dialog {
@@ -101,7 +101,7 @@ webview {
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--glic-transition-duration, 250ms) ease-in-out;
-  width: var(--glic-experimental-opt-in-width);
+  width: min(100%, var(--glic-experimental-opt-in-width, 512px));
 }
 
 webview.visible {
