@@ -122,7 +122,7 @@ void InheritClientPriorityVoter::OnPriorityAndReasonChanged(
        frame_node->GetChildWorkerNodes()) {
     const ExecutionContext* child_execution_context =
         GetExecutionContext(child_worker_node);
-    voting_channel.ChangeVote(child_execution_context, inherited_vote);
+    voting_channel.SetVote(child_execution_context, inherited_vote);
   }
 }
 
@@ -154,7 +154,7 @@ void InheritClientPriorityVoter::OnClientFrameAdded(
   auto& voting_channel = it->second;
 
   const std::optional<Vote> vote = GetVoteFromClient(client_frame_node);
-  voting_channel.SubmitVote(GetExecutionContext(worker_node), vote);
+  voting_channel.SetVote(GetExecutionContext(worker_node), vote);
 }
 
 void InheritClientPriorityVoter::OnBeforeClientFrameRemoved(
@@ -168,7 +168,7 @@ void InheritClientPriorityVoter::OnBeforeClientFrameRemoved(
   CHECK(it != voting_channels_.end());
   auto& voting_channel = it->second;
 
-  voting_channel.InvalidateVote(GetExecutionContext(worker_node));
+  voting_channel.SetVote(GetExecutionContext(worker_node), std::nullopt);
 }
 
 void InheritClientPriorityVoter::OnClientWorkerAdded(
@@ -184,7 +184,7 @@ void InheritClientPriorityVoter::OnClientWorkerAdded(
 
   const std::optional<Vote> inherited_vote =
       GetVoteFromClient(client_worker_node);
-  voting_channel.SubmitVote(GetExecutionContext(worker_node), inherited_vote);
+  voting_channel.SetVote(GetExecutionContext(worker_node), inherited_vote);
 }
 
 void InheritClientPriorityVoter::OnBeforeClientWorkerRemoved(
@@ -198,7 +198,7 @@ void InheritClientPriorityVoter::OnBeforeClientWorkerRemoved(
   CHECK(it != voting_channels_.end());
   auto& voting_channel = it->second;
 
-  voting_channel.InvalidateVote(GetExecutionContext(worker_node));
+  voting_channel.SetVote(GetExecutionContext(worker_node), std::nullopt);
 }
 
 void InheritClientPriorityVoter::OnPriorityAndReasonChanged(
@@ -221,7 +221,7 @@ void InheritClientPriorityVoter::OnPriorityAndReasonChanged(
   for (const WorkerNode* child_worker_node : worker_node->GetChildWorkers()) {
     const ExecutionContext* child_execution_context =
         GetExecutionContext(child_worker_node);
-    voting_channel.ChangeVote(child_execution_context, inherited_vote);
+    voting_channel.SetVote(child_execution_context, inherited_vote);
   }
 }
 

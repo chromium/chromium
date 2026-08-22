@@ -7,7 +7,6 @@
 
 #include "base/process/process.h"
 #include "base/task/task_traits.h"
-#include "components/performance_manager/public/voting/optional_voting_channel.h"
 #include "components/performance_manager/public/voting/voting.h"
 
 // Specialization of a voting system used to get votes related to the
@@ -66,7 +65,6 @@ using VoterId = voting::VoterId<Vote>;
 using VoteObserver = voting::VoteObserver<Vote>;
 using VotingChannel = voting::VotingChannel<Vote>;
 using VotingChannelFactory = voting::VotingChannelFactory<Vote>;
-using OptionalVotingChannel = voting::OptionalVotingChannel<Vote>;
 
 // Sets whether the given `contents` is closing.
 // Must be called from the PM sequence.

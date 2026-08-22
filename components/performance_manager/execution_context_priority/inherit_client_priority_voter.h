@@ -71,8 +71,7 @@ class InheritClientPriorityVoter : public PriorityVoter,
   VoterId voter_id_;
 
   // Each frame or worker gets a voting channel to cast votes for its children.
-  base::flat_map<const ExecutionContext*, OptionalVotingChannel>
-      voting_channels_;
+  base::flat_map<const ExecutionContext*, VotingChannel> voting_channels_;
 };
 
 }  // namespace execution_context_priority

@@ -77,7 +77,7 @@ InheritParentPriorityVoter::~InheritParentPriorityVoter() = default;
 void InheritParentPriorityVoter::InitializeOnGraph(
     Graph* graph,
     VotingChannel voting_channel) {
-  voting_channel_ = OptionalVotingChannel(std::move(voting_channel));
+  voting_channel_ = std::move(voting_channel);
 
   graph->AddFrameNodeObserver(this);
 }
@@ -94,18 +94,18 @@ void InheritParentPriorityVoter::OnBeforeFrameNodeAdded(
     const PageNode* pending_page_node,
     const ProcessNode* pending_process_node,
     const FrameNode* pending_parent_or_outer_document_or_embedder) {
-  voting_channel_.SubmitVote(GetExecutionContext(frame_node),
-                             GetVote(frame_node, pending_parent_frame_node));
+  voting_channel_.SetVote(GetExecutionContext(frame_node),
+                          GetVote(frame_node, pending_parent_frame_node));
 }
 
 void InheritParentPriorityVoter::OnBeforeFrameNodeRemoved(
     const FrameNode* frame_node) {
-  voting_channel_.InvalidateVote(GetExecutionContext(frame_node));
+  voting_channel_.SetVote(GetExecutionContext(frame_node), std::nullopt);
 }
 
 void InheritParentPriorityVoter::OnIsAdFrameChanged(
     const FrameNode* frame_node) {
-  voting_channel_.ChangeVote(
+  voting_channel_.SetVote(
       GetExecutionContext(frame_node),
       GetVote(frame_node, frame_node->GetParentFrameNode()));
 }
@@ -121,8 +121,8 @@ void InheritParentPriorityVoter::OnPriorityAndReasonChanged(
 
   // Maybe change the vote for every children.
   for (const FrameNode* child_frame_node : frame_node->GetChildFrameNodes()) {
-    voting_channel_.ChangeVote(GetExecutionContext(child_frame_node),
-                               GetVote(child_frame_node, frame_node));
+    voting_channel_.SetVote(GetExecutionContext(child_frame_node),
+                            GetVote(child_frame_node, frame_node));
   }
 }
 

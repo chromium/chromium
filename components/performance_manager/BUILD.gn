@@ -243,7 +243,6 @@ static_library("performance_manager") {
     "public/v8_memory/v8_detailed_memory.h",
     "public/v8_memory/web_memory.h",
     "public/viewport_intersection.h",
-    "public/voting/optional_voting_channel.h",
     "public/voting/voting.h",
     "registered_objects.h",
     "render_frame_host_proxy.cc",
@@ -446,7 +445,6 @@ source_set("unit_tests") {
     "v8_memory/v8_memory_test_helpers.h",
     "v8_memory/web_memory_aggregator_unittest.cc",
     "v8_memory/web_memory_impl_unittest.cc",
-    "voting/optional_voting_channel_unittest.cc",
     "voting/voting_unittest.cc",
     "worker_watcher_unittest.cc",
   ]

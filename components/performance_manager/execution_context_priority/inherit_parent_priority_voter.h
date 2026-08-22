@@ -54,7 +54,7 @@ class InheritParentPriorityVoter : public PriorityVoter,
   VoterId voter_id() const { return voting_channel_.voter_id(); }
 
  private:
-  OptionalVotingChannel voting_channel_;
+  VotingChannel voting_channel_;
 };
 
 }  // namespace performance_manager::execution_context_priority
