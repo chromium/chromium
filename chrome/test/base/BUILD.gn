@@ -1120,6 +1120,72 @@ if (is_chromeos) {
       "//crypto:test_support",
     ]
   }
+
+  source_set("cros_web_ui_browser_test") {
+    testonly = true
+    sources = [
+      "ash/web_ui_browser_test.cc",
+      "ash/web_ui_browser_test.h",
+    ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+    public_deps = [
+      "//base",
+      "//chrome/test/base:devtools_coverage",
+      "//chrome/test/base:javascript_browser_test",
+      "//chrome/test/base:web_ui_test_handler",
+      "//content/public/browser",
+    ]
+    deps = [
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser:chrome_content_browser_client",
+      "//chrome/browser/ui/navigator",
+      "//chrome/browser/ui/tabs",
+      "//chrome/common",
+      "//chrome/test/base:js_test_api",
+      "//chrome/test/base:test_chrome_web_ui_controller_factory",
+      "//chrome/test/base:test_switches",
+      "//chrome/test/base:web_ui_test_data_source",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//net",
+      "//services/network/public/mojom",
+      "//ui/base",
+    ]
+  }
+
+  source_set("cros_extension_js_browser_test") {
+    testonly = true
+    sources = [
+      "ash/extension_js_browser_test.cc",
+      "ash/extension_js_browser_test.h",
+    ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+    public_deps = [
+      "//base",
+      "//chrome/test/base:devtools_coverage",
+      "//chrome/test/base:javascript_browser_test",
+    ]
+    deps = [
+      "//ash/constants",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/extensions",
+      "//chrome/test/base:test_switches",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//extensions/browser",
+      "//extensions/browser:test_support",
+      "//extensions/common",
+      "//ui/base",
+    ]
+  }
 }
 
 if (use_aura) {
