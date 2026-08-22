@@ -36,30 +36,30 @@ namespace internal {
 // Medium audio memory limit: 5MB.
 // Low audio memory limit: 2MB (1 minute of 256Kbps content).
 inline constexpr base::ByteSize kDemuxerStreamAudioMemoryLimitDefault =
-    base::MiBU(12);
+    base::MiB(12);
 inline constexpr base::ByteSize kDemuxerStreamAudioMemoryLimitMedium =
-    base::MiBU(5);
+    base::MiB(5);
 inline constexpr base::ByteSize kDemuxerStreamAudioMemoryLimitLow =
-    base::MiBU(2);
+    base::MiB(2);
 
 // Default video memory limit: 150MB (5 minutes of 4Mbps content).
 // Medium video memory limit: 80MB.
 // Low video memory limit: 30MB (1 minute of 4Mbps content).
 inline constexpr base::ByteSize kDemuxerStreamVideoMemoryLimitDefault =
-    base::MiBU(150);
+    base::MiB(150);
 inline constexpr base::ByteSize kDemuxerStreamVideoMemoryLimitMedium =
-    base::MiBU(80);
+    base::MiB(80);
 inline constexpr base::ByteSize kDemuxerStreamVideoMemoryLimitLow =
-    base::MiBU(30);
+    base::MiB(30);
 
 #if BUILDFLAG(IS_ANDROID)
 // Special "very low" settings for 512MiB Android Go devices:
 // * audio memory limit: 1MB (30 seconds of 256Kbps content).
 // * video memory limit: 15MB (30 seconds of 4Mbps content).
 inline constexpr base::ByteSize kDemuxerStreamAudioMemoryLimitVeryLow =
-    base::MiBU(1);
+    base::MiB(1);
 inline constexpr base::ByteSize kDemuxerStreamVideoMemoryLimitVeryLow =
-    base::MiBU(15);
+    base::MiB(15);
 #endif
 
 }  // namespace internal
