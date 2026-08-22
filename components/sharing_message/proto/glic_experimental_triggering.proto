@@ -142,6 +142,10 @@ message GlicExperimentalTriggering {
         ERROR_CAPTURE = 2;
         // Transient failure.
         ERROR_SERVER = 3;
+        // Feature is disabled.
+        ERROR_DISABLED = 4;
+        // Malformed or invalid request parameters.
+        ERROR_INVALID_REQUEST = 5;
       }
 
       // The status of the screenshot capture operation.
