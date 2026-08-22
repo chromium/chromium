@@ -33,5 +33,6 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:gravity="end"
         android:paddingTop="12dp"
-        android:paddingBottom="12dp"/>
+        android:paddingBottom="12dp"
+        android:popupBackground="@drawable/menu_bg_tinted"/>
 </LinearLayout>

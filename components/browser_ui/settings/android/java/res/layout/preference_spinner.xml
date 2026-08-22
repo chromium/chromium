@@ -26,7 +26,8 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:paddingStart="0dp"
         android:paddingTop="6dp"
-        android:paddingBottom="4dp" />
+        android:paddingBottom="4dp"
+        android:popupBackground="@drawable/menu_bg_tinted" />
 
     <View style="@style/PreferenceSpinnerUnderlineView" />
 

@@ -59,7 +59,11 @@ found in the LICENSE file.
         <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
     </style>
     <style name="Widget.BrowserUI.SpinnerDropDownItemStyle" parent="Widget.AppCompat.DropDownItem.Spinner">
-        <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
+        <item name="android:textAppearance">@style/TextAppearance.DensityAdaptive.TextLarge.Primary</item>
+        <item name="android:minHeight">?attr/listItemHeight</item>
+        <item name="android:paddingStart">@dimen/overflow_menu_item_lateral_padding</item>
+        <item name="android:paddingEnd">@dimen/overflow_menu_item_lateral_padding</item>
+        <item name="android:gravity">center_vertical</item>
     </style>
 
     <!-- Theme overlay that hides elevation shadows. -->
