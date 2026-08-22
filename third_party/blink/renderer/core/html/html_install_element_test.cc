@@ -312,6 +312,54 @@ TEST_F(HTMLInstallElementTestBase, RenderedText) {
   }
 }
 
+TEST_F(HTMLInstallElementTestBase, InstalledStateHiddenInCanvasSubtree) {
+  ScopedCanvasDrawElementForTest canvas_draw_element_enabled(true);
+
+  auto* canvas = GetDocument().CreateRawElement(html_names::kCanvasTag);
+  canvas->setAttribute(html_names::kLayoutsubtreeAttr, g_empty_atom);
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  canvas->AppendChild(element);
+  GetDocument().body()->AppendChild(canvas);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  WaitForPermissionElementRegistration(element);
+  ASSERT_TRUE(element->IsInCanvasSubtree());
+  CheckInnerText(element, kInstallString);
+
+  element->OnIsInstalledResult(true);
+
+  CheckInnerText(element, kInstallString);
+  EXPECT_FALSE(element->show_as_launch());
+
+  // A queued appearance task may have captured the installed state before the
+  // element entered the canvas subtree.
+  element->UpdateAppearanceTask(true);
+  CheckInnerText(element, kInstallString);
+  EXPECT_FALSE(element->show_as_launch());
+}
+
+TEST_F(HTMLInstallElementTestBase,
+       InstalledStateClearedWhenMovedIntoCanvasSubtree) {
+  ScopedCanvasDrawElementForTest canvas_draw_element_enabled(true);
+
+  HTMLInstallElement* element =
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  WaitForElementRegistration(element);
+  element->OnIsInstalledResult(true);
+  CheckInnerText(element, kLaunchString);
+  ASSERT_TRUE(element->show_as_launch());
+
+  auto* canvas = GetDocument().CreateRawElement(html_names::kCanvasTag);
+  canvas->setAttribute(html_names::kLayoutsubtreeAttr, g_empty_atom);
+  GetDocument().body()->AppendChild(canvas);
+  canvas->AppendChild(element);
+
+  ASSERT_TRUE(element->IsInCanvasSubtree());
+  CheckInnerText(element, kInstallString);
+  EXPECT_FALSE(element->show_as_launch());
+}
+
 TEST_F(HTMLInstallElementTestBase, RenderedTextWhenInstalled) {
   web_install_service_.SetInstalledState(true);
 

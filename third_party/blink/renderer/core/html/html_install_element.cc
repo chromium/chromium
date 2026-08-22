@@ -90,6 +90,11 @@ void HTMLInstallElement::Trace(Visitor* visitor) const {
 }
 
 void HTMLInstallElement::UpdateAppearance() {
+  if (IsInCanvasSubtree()) {
+    OnIsInstalledResult(false);
+    return;
+  }
+
   // If no attributes provided, check if current document is already installed.
   if (InstallUrl().empty() && ManifestId().empty() && Manifest().empty()) {
     // TODO(crbug.com/485281836): For now, always return false while we discuss
@@ -123,7 +128,7 @@ HTMLInstallElement::CreateEmbeddedPermissionRequestDescriptor() {
 void HTMLInstallElement::OnIsInstalledResult(bool is_installed) {
   // If this element points to an app that is already installed in the browser
   // process, the element will present itself as a launch button.
-  show_as_launch_ = is_installed;
+  show_as_launch_ = is_installed && !IsInCanvasSubtree();
 
   // This is posted as a task, as similar code in
   // `HTMLGeolocationElement::UpdateAppearance` would crash due to DCHECKs being
@@ -133,11 +138,15 @@ void HTMLInstallElement::OnIsInstalledResult(bool is_installed) {
   // <geolocation> too.
   GetDocument()
       .GetTaskRunner(TaskType::kInternalDefault)
-      ->PostTask(FROM_HERE, BindOnce(&HTMLInstallElement::UpdateAppearanceTask,
-                                     WrapWeakPersistent(this), is_installed));
+      ->PostTask(FROM_HERE,
+                 BindOnce(&HTMLInstallElement::UpdateAppearanceTask,
+                          WrapWeakPersistent(this), show_as_launch_));
 }
 
 void HTMLInstallElement::UpdateAppearanceTask(bool is_installed) {
+  is_installed = is_installed && !IsInCanvasSubtree();
+  show_as_launch_ = is_installed;
+
   // TODO(crbug.com/467103133): Render site-specific information.
   uint16_t message_id =
       GetTranslatedMessageID(is_installed ? IDS_PERMISSION_REQUEST_LAUNCH
@@ -160,6 +169,11 @@ bool HTMLInstallElement::IsURLAttribute(const Attribute& attr) const {
          attr.GetName() == html_names::kInstallurlAttr ||
          attr.GetName() == html_names::kManifestAttr ||
          HTMLElement::IsURLAttribute(attr);
+}
+
+void HTMLInstallElement::DidChangeIsInCanvasSubtree() {
+  HTMLCapabilityElementBase::DidChangeIsInCanvasSubtree();
+  UpdateAppearance();
 }
 
 void HTMLInstallElement::DefaultEventHandler(Event& event) {

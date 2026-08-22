@@ -57,8 +57,14 @@ class CORE_EXPORT HTMLInstallElement : public HTMLCapabilityElementBase {
   bool show_as_launch() const { return show_as_launch_; }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(HTMLInstallElementTestBase,
+                           InstalledStateHiddenInCanvasSubtree);
+  FRIEND_TEST_ALL_PREFIXES(HTMLInstallElementTestBase,
+                           InstalledStateClearedWhenMovedIntoCanvasSubtree);
+
   // HTMLElement:
   bool IsURLAttribute(const Attribute&) const override;
+  void DidChangeIsInCanvasSubtree() override;
 
   // HTMLCapabilityElementBase:
   void UpdateAppearance() override;
