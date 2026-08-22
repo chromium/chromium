@@ -688,8 +688,13 @@ if (!is_android) {
       deps += [ "//chrome/test/views" ]
     }
     if (is_mac) {
+      sources += [ "in_process_browser_test_mac.mm" ]
       public_deps += [ "//ui/base:test_support" ]
-      deps += [ ":scoped_bundle_swizzler_mac" ]
+      deps += [
+        ":scoped_bundle_swizzler_mac",
+        "//chrome/browser/ui/cocoa",
+        "//chrome/browser/ui/tabs:tab_strip",
+      ]
     }
     if (is_win) {
       deps += [ "//components/version_info" ]
@@ -814,6 +819,13 @@ if (!is_android) {
         ":process_lineage_win",
         ":save_desktop_snapshot",
         ":window_contents_as_string_win",
+      ]
+    }
+    if (is_mac) {
+      sources += [ "interactive_test_utils_mac.mm" ]
+      deps += [
+        "//chrome/app:command_ids",
+        "//chrome/browser:chrome_browser_application_mac",
       ]
     }
   }

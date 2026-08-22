@@ -8276,10 +8276,6 @@ if (!is_android) {
     }
 
     if (is_mac) {
-      sources += [
-        "base/in_process_browser_test_mac.mm",
-        "base/interactive_test_utils_mac.mm",
-      ]
       public_deps += [
         "//chrome/test/base:launchservices_utils_mac",
         "//chrome/test/base:scoped_bundle_swizzler_mac",
