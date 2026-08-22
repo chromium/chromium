@@ -238,6 +238,7 @@ class BookmarkBarPopup implements FlyoutHandler<AnchoredPopupWindow> {
         mPopupWindow.setHorizontalOverlapAnchor(true);
         mPopupWindow.setPreferredHorizontalOrientation(
                 AnchoredPopupWindow.HorizontalOrientation.LAYOUT_DIRECTION);
+        mPopupWindow.setAnimateFromAnchor(true);
 
         mModelList = menuModel;
         mSizeObserver =
