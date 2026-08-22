@@ -480,6 +480,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   void ConnectionReady() override;
   void SetOpenNewWindowForPopups(bool value) override;
   infobars::ContentInfoBarManager* GetInfoBarManager() override;
+  void RemoveSharingInfoBar();
   void RenderProcessGone(bool crashed) override;
   void ShowCertificateViewer(const std::string& cert_viewer) override;
   int GetDockStateForLogging() override;

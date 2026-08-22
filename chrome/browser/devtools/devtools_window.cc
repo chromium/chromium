@@ -31,9 +31,12 @@
 #include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/devtools/devtools_eye_dropper.h"
 #include "chrome/browser/devtools/features.h"
+#include "chrome/browser/devtools/process_sharing_infobar.h"
 #include "chrome/browser/devtools/process_sharing_infobar_delegate.h"
 #include "chrome/browser/file_select_helper.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/policy/developer_tools_policy_checker.h"
 #include "chrome/browser/policy/developer_tools_policy_checker_factory.h"
@@ -515,9 +518,7 @@ DevToolsWindow::~DevToolsWindow() {
   UpdateBrowserWindow();
   UpdateBrowserToolbar();
 
-  if (sharing_infobar_) {
-    sharing_infobar_->RemoveSelf();
-  }
+  RemoveSharingInfoBar();
 
   capture_handle_.RunAndReset();
   owned_toolbox_web_contents_.reset();
@@ -1736,7 +1737,7 @@ void DevToolsWindow::Close(DevToolsClosedByAction closed_by) {
   closed_by_ = closed_by;
 
   if (sharing_infobar_) {
-    sharing_infobar_->RemoveSelf();
+    RemoveSharingInfoBar();
     checked_sharing_process_id_ = content::ChildProcessHost::kInvalidUniqueID;
   }
 }
@@ -2216,21 +2217,52 @@ void DevToolsWindow::MaybeShowSharedProcessInfobar() {
           });
 
   // Dismiss old infobar.
-  if (sharing_infobar_) {
-    sharing_infobar_->RemoveSelf();
-  }
+  RemoveSharingInfoBar();
 
   if (primary_main_frame_count > 1) {
 #if !BUILDFLAG(IS_ANDROID)
-    auto* info_bar_manager = GetInfoBarManager();
-    sharing_infobar_ = info_bar_manager->AddInfoBar(
-        CreateConfirmInfoBar(std::make_unique<ProcessSharingInfobarDelegate>(
-            inspected_web_contents)));
-    info_bar_manager->AddObserver(this);
+    tabs::TabInterface* tab = nullptr;
+    auto* browser_infobar_manager =
+        infobars::BrowserInfoBarManager::From(g_browser_process);
+    if (browser_infobar_manager &&
+        infobars::IsInfoBarMigrated(
+            infobars::InfoBarDelegate::DEV_TOOLS_SHARED_PROCESS_DELEGATE)) {
+      tab = tabs::TabInterface::MaybeGetFromContents(
+          is_docked_ ? inspected_web_contents : main_web_contents_.get());
+    }
+
+    if (tab) {
+      RegisterProcessSharingInfoBarSpec(*browser_infobar_manager);
+      sharing_infobar_ = browser_infobar_manager->Show(
+          tab, infobars::InfoBarDelegate::DEV_TOOLS_SHARED_PROCESS_DELEGATE);
+    } else {
+      sharing_infobar_ = GetInfoBarManager()->AddInfoBar(
+          CreateConfirmInfoBar(std::make_unique<ProcessSharingInfobarDelegate>(
+              inspected_web_contents)));
+    }
+    GetInfoBarManager()->AddObserver(this);
 #else
     NOTIMPLEMENTED();
 #endif
   }
+}
+
+void DevToolsWindow::RemoveSharingInfoBar() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!sharing_infobar_) {
+    return;
+  }
+
+  auto* browser_infobar_manager =
+      infobars::BrowserInfoBarManager::From(g_browser_process);
+  if (browser_infobar_manager &&
+      infobars::IsInfoBarMigrated(
+          infobars::InfoBarDelegate::DEV_TOOLS_SHARED_PROCESS_DELEGATE)) {
+    browser_infobar_manager->Hide(sharing_infobar_.get());
+  } else {
+    sharing_infobar_->RemoveSelf();
+  }
+#endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)

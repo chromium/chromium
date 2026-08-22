@@ -19,6 +19,11 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE_PARAM(bool,
+                   kMigratedDevToolsSharedProcess,
+                   &kCentralizedInfoBarFramework,
+                   false);
+
+BASE_FEATURE_PARAM(bool,
                    kMigratedGoogleApiKeys,
                    &kCentralizedInfoBarFramework,
                    false);
@@ -69,6 +74,8 @@ const base::FeatureParam<bool>* GetInfoBarMigrationParam(
   switch (infobar_id) {
     case InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE:
       return &kMigratedCollectedCookies;
+    case InfoBarDelegate::DEV_TOOLS_SHARED_PROCESS_DELEGATE:
+      return &kMigratedDevToolsSharedProcess;
     case InfoBarDelegate::GOOGLE_API_KEYS_INFOBAR_DELEGATE:
       return &kMigratedGoogleApiKeys;
     case InfoBarDelegate::INSTALLER_DOWNLOADER_INFOBAR_DELEGATE:

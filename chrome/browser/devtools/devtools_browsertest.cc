@@ -47,6 +47,7 @@
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
 #include "chrome/browser/devtools/remote_debugging_server.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
@@ -4675,10 +4676,24 @@ IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteUpToMainFrameThresholdTest,
             webcontents2->GetPrimaryMainFrame()->GetProcess());
 }
 
+// Runs against the legacy and the centralized infobar; behavior must match.
 class DevToolsProcessPerSiteTest
-    : public DevToolsProcessPerSiteUpToMainFrameThresholdTest {
+    : public DevToolsProcessPerSiteUpToMainFrameThresholdTest,
+      public testing::WithParamInterface<bool> {
  public:
-  DevToolsProcessPerSiteTest() = default;
+  DevToolsProcessPerSiteTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          {{::features::kDevToolsSharedProcessInfobar, {}},
+           {infobars::kCentralizedInfoBarFramework,
+            {{"MigratedDevToolsSharedProcess", "true"}}}},
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {::features::kDevToolsSharedProcessInfobar},
+          {infobars::kCentralizedInfoBarFramework});
+    }
+  }
 
   ~DevToolsProcessPerSiteTest() override = default;
 
@@ -4687,9 +4702,16 @@ class DevToolsProcessPerSiteTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ::features::kDevToolsSharedProcessInfobar};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DevToolsProcessPerSiteTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "MigratedInfobar"
+                                             : "LegacyInfobar";
+                         });
 
 // TODO(https://crbug.com/328693031): Flaky on Linux dbg.
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
@@ -4697,7 +4719,7 @@ class DevToolsProcessPerSiteTest
 #else
 #define MAYBE_DevToolsSharedProcessInfobar DevToolsSharedProcessInfobar
 #endif
-IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteTest,
+IN_PROC_BROWSER_TEST_P(DevToolsProcessPerSiteTest,
                        MAYBE_DevToolsSharedProcessInfobar) {
   const GURL url = embedded_test_server()->GetURL("foo.test", "/hello.html");
 
@@ -4772,7 +4794,7 @@ class ActiveTabChangedObserver : public TabStripModelObserver {
 #else
 #define MAYBE_PausedDebuggerFocus PausedDebuggerFocus
 #endif
-IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteTest, MAYBE_PausedDebuggerFocus) {
+IN_PROC_BROWSER_TEST_P(DevToolsProcessPerSiteTest, MAYBE_PausedDebuggerFocus) {
   const GURL url = embedded_test_server()->GetURL("foo.test", "/hello.html");
 
   auto* tab_strip_model = browser()->tab_strip_model();
