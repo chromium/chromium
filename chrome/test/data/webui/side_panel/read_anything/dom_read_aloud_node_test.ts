@@ -10,7 +10,6 @@ suite('DomReadAloudNode', () => {
   setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    chrome.readingMode.onConnected = () => {};
   });
 
   function ancestorNotEquals(

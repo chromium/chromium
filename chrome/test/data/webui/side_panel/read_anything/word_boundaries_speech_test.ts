@@ -4,67 +4,35 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement, WordBoundaryState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ContentController, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AudioBrowserProxyImpl, ContentBrowserProxyImpl, ContentController, ContentType, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VisualBrowserProxyImpl, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, createSpeechSynthesisVoice, emitEvent, setupBasicSpeech} from './common.js';
+import {createApp, createSpeechSynthesisVoice, emitEvent, setContent, setupBasicSpeech} from './common.js';
+import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
+import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
+import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
+import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('WordBoundariesUsedForSpeech', () => {
   let app: AppElement;
   let wordBoundaries: WordBoundaries;
   let speechController: SpeechController;
   let voiceLanguageController: VoiceLanguageController;
-
-  // root htmlTag='#document' id=1
-  // ++link htmlTag='a' url='http://www.google.com' id=2
-  // ++++staticText name='This is a link.' id=3
-  // ++link htmlTag='a' url='http://www.youtube.com' id=4
-  // ++++staticText name='This is another link.' id=5
-  const axTree = {
-    rootId: 1,
-    nodes: [
-      {
-        id: 1,
-        role: 'rootWebArea',
-        htmlTag: '#document',
-        childIds: [2, 4],
-      },
-      {
-        id: 2,
-        role: 'link',
-        htmlTag: 'a',
-        url: 'http://www.google.com',
-        childIds: [3],
-      },
-      {
-        id: 3,
-        role: 'staticText',
-        name: 'This is a link.',
-      },
-      {
-        id: 4,
-        role: 'link',
-        htmlTag: 'a',
-        url: 'http://www.youtube.com',
-        childIds: [5],
-      },
-      {
-        id: 5,
-        role: 'staticText',
-        name: 'This is another link.',
-      },
-    ],
-  };
+  let readAloudModel: TestReadAloudModelBrowserProxy;
 
   setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    // Do not call the real `onConnected()`. As defined in
-    // ReadAnythingAppController, onConnected creates mojo pipes to connect to
-    // the rest of the Read Anything feature, which we are not testing here.
-    chrome.readingMode.onConnected = () => {};
+    ContentBrowserProxyImpl.setInstance(new TestContentBrowserProxy());
+    AudioBrowserProxyImpl.setInstance(new TestAudioBrowserProxy());
+    VisualBrowserProxyImpl.setInstance(new TestVisualBrowserProxy());
+
+    readAloudModel = new TestReadAloudModelBrowserProxy();
+    setInstance(readAloudModel);
+    readAloudModel.setInitialized(true);
+
     const speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
     voiceLanguageController = new VoiceLanguageController();
@@ -73,11 +41,16 @@ suite('WordBoundariesUsedForSpeech', () => {
     WordBoundaries.setInstance(wordBoundaries);
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
-    ContentController.setInstance(new ContentController());
+    const contentController = new ContentController();
+    ContentController.setInstance(contentController);
 
     app = await createApp();
     setupBasicSpeech(speech);
-    chrome.readingMode.setContentForTesting(axTree, [2, 4]);
+
+    const node =
+        setContent('This is a link. This is another link.', readAloudModel);
+    app.$.container.appendChild(node);
+    contentController.setState(ContentType.HAS_CONTENT);
   });
 
   test(

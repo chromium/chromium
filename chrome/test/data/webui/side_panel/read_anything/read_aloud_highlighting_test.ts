@@ -4,53 +4,49 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ContentController, playFromSelectionTimeout, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {AudioBrowserProxyImpl, ContentBrowserProxyImpl, ContentController, ContentType, NodeStore, playFromSelectionTimeout, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VisualBrowserProxyImpl, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
 import {createApp, emitEvent} from './common.js';
+import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
+import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
+import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('ReadAloudHighlight', () => {
   let app: AppElement;
   let speechController: SpeechController;
   let selectionController: SelectionController;
+  let visualBrowserProxy: TestVisualBrowserProxy;
+  let contentController: ContentController;
+  let nodeStore: NodeStore;
   const sentence1 = 'Only need the light when it\'s burning low.\n';
   const sentence2 = 'Only miss the sun when it starts to snow.\n';
   const sentenceSegment1 = 'Only know you love her when you let her go';
   const sentenceSegment2 = ', and you let her go.';
-  const leafIds = [2, 3, 4, 5];
-  const axTree = {
-    rootId: 1,
-    nodes: [
-      {
-        id: 1,
-        role: 'rootWebArea',
-        htmlTag: '#document',
-        childIds: leafIds,
-      },
-      {
-        id: 2,
-        role: 'staticText',
-        name: sentence1,
-      },
-      {
-        id: 3,
-        role: 'staticText',
-        name: sentence2,
-      },
-      {
-        id: 4,
-        role: 'staticText',
-        name: sentenceSegment1,
-      },
-      {
-        id: 5,
-        role: 'staticText',
-        name: sentenceSegment2,
-      },
-    ],
-  };
+
+  function buildDOMTree() {
+    app.$.container.replaceChildren();
+
+    const node2 = document.createTextNode(sentence1);
+    nodeStore.setDomNode(node2, 2);
+    app.$.container.appendChild(node2);
+
+    const node3 = document.createTextNode(sentence2);
+    nodeStore.setDomNode(node3, 3);
+    app.$.container.appendChild(node3);
+
+    const node4 = document.createTextNode(sentenceSegment1);
+    nodeStore.setDomNode(node4, 4);
+    app.$.container.appendChild(node4);
+
+    const node5 = document.createTextNode(sentenceSegment2);
+    nodeStore.setDomNode(node5, 5);
+    app.$.container.appendChild(node5);
+
+    contentController.setState(ContentType.HAS_CONTENT);
+  }
 
   function emitNextGranularity() {
     emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
@@ -63,22 +59,26 @@ suite('ReadAloudHighlight', () => {
   setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    // Do not call the real `onConnected()`. As defined in
-    // ReadAnythingAppController, onConnected creates mojo pipes to connect to
-    // the rest of the Read Anything feature, which we are not testing here.
-    chrome.readingMode.onConnected = () => {};
+    nodeStore = new NodeStore();
+    NodeStore.setInstance(nodeStore);
+    ContentBrowserProxyImpl.setInstance(new TestContentBrowserProxy());
+    AudioBrowserProxyImpl.setInstance(new TestAudioBrowserProxy());
+    visualBrowserProxy = new TestVisualBrowserProxy();
+    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
+
     SpeechBrowserProxyImpl.setInstance(new TestSpeechBrowserProxy());
     selectionController = new SelectionController();
     SelectionController.setInstance(selectionController);
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
     VoiceLanguageController.setInstance(new VoiceLanguageController());
-    ContentController.setInstance(new ContentController());
+    contentController = new ContentController();
+    ContentController.setInstance(contentController);
     // Ensure the ReadAloudModel is not shared between tests.
     setInstance(null);
 
     app = await createApp();
-    chrome.readingMode.setContentForTesting(axTree, leafIds);
+    buildDOMTree();
     selectionController.onSelectionChange(app.getSelection());
   });
 
@@ -245,19 +245,20 @@ suite('ReadAloudHighlight', () => {
         anchorId: number, anchorOffset: number, focusId: number,
         focusOffset: number): void {
       mockTimer.install();
-      const selectedTree = Object.assign(
-          {
-            selection: {
-              anchor_object_id: anchorId,
-              focus_object_id: focusId,
-              anchor_offset: anchorOffset,
-              focus_offset: focusOffset,
-              is_backward: false,
-            },
-          },
-          axTree);
+      buildDOMTree();
 
-      chrome.readingMode.setContentForTesting(selectedTree, leafIds);
+      const anchorNode = nodeStore.getDomNode(anchorId);
+      const focusNode = nodeStore.getDomNode(focusId);
+      if (anchorNode && focusNode) {
+        const range = document.createRange();
+        range.setStart(anchorNode, anchorOffset);
+        range.setEnd(focusNode, focusOffset);
+        const selection = app.getSelection();
+        assertTrue(!!selection);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+
       selectionController.updateSelection(app.getSelection(), app.$.container);
       selectionController.onSelectionChange(app.getSelection());
       speechController.onSelectionChange(
@@ -270,24 +271,16 @@ suite('ReadAloudHighlight', () => {
 
     setup(() => {
       mockTimer = new MockTimer();
-      initialLineFocusEnabled = chrome.readingMode.isLineFocusEnabled;
+      initialLineFocusEnabled = visualBrowserProxy.lineFocusEnabled;
     });
 
     teardown(() => {
-      Object.defineProperty(chrome.readingMode, 'isLineFocusEnabled', {
-        value: initialLineFocusEnabled,
-        configurable: true,
-      });
+      visualBrowserProxy.lineFocusEnabled = initialLineFocusEnabled;
     });
 
-    // TODO(b/497896810): Clean up Object.defineProperty when line focus
-    // flag is removed or when test hook is added to ReadAnythingAppController.
     suite('with line focus disabled', () => {
       setup(() => {
-        Object.defineProperty(chrome.readingMode, 'isLineFocusEnabled', {
-          value: false,
-          configurable: true,
-        });
+        visualBrowserProxy.lineFocusEnabled = false;
         selectAndPlay(3, 1, 3, 5);
       });
 
@@ -327,14 +320,9 @@ suite('ReadAloudHighlight', () => {
       });
     });
 
-    // TODO(b/497896810): Clean up Object.defineProperty when line focus
-    // flag is removed or when test hook is added to ReadAnythingAppController.
     suite('with line focus enabled', () => {
       setup(() => {
-        Object.defineProperty(chrome.readingMode, 'isLineFocusEnabled', {
-          value: true,
-          configurable: true,
-        });
+        visualBrowserProxy.lineFocusEnabled = true;
         selectAndPlay(3, 1, 3, 5);
       });
 
