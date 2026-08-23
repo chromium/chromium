@@ -18,11 +18,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/invalidate_type.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_user_script_loader.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/icon_util.h"
 #include "extensions/browser/script_injection_tracker.h"
@@ -381,27 +383,27 @@ void RequestContentScript::InstructRenderProcessToInject(
   // `extensions::mojom::LocalFrameHost::WatchedPageChange` IPC bypassing the
   // check we have for an invalid selector and getting here).
   std::string error;
+  content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
+  const GURL& url = util::GetURLForExtensionPermissionCheck(main_frame);
   if (!extension->permissions_data()->CanAccessPage(
-          contents->GetLastCommittedURL(), ExtensionTabUtil::GetTabId(contents),
-          &error)) {
+          url, ExtensionTabUtil::GetTabId(contents), &error)) {
     return;
   }
 
-  ScriptInjectionTracker::WillExecuteCode(base::PassKey<RequestContentScript>(),
-                                          contents->GetPrimaryMainFrame(),
-                                          *extension);
-
   mojom::LocalFrame* local_frame =
       ExtensionWebContentsObserver::GetForWebContents(contents)->GetLocalFrame(
-          contents->GetPrimaryMainFrame());
+          main_frame);
   if (!local_frame) {
     // TODO(crbug.com/40763607): Need to review when this method is
     // called with non-live frame.
     return;
   }
+
+  ScriptInjectionTracker::WillExecuteCode(base::PassKey<RequestContentScript>(),
+                                          main_frame, *extension);
   local_frame->ExecuteDeclarativeScript(
       sessions::SessionTabHelper::IdForTab(contents).id(), extension->id(),
-      script_.id(), contents->GetLastCommittedURL());
+      script_.id(), url);
 }
 
 void RequestContentScript::OnScriptsLoaded(
