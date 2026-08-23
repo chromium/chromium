@@ -260,7 +260,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   void CountDeprecation(WebFeature feature) override;
 
   bool IsContextPaused() const;
-  bool IsContextFrozen() const;
   LoaderFreezeMode GetLoaderFreezeMode() const;
   mojom::FrameLifecycleState ContextPauseState() const {
     return lifecycle_state_;
