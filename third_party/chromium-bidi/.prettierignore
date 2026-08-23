@@ -1,0 +1,24 @@
+.mypy_cache/
+.pytest_cache/
+__pycache__
+.build
+.cache
+.idea
+chromium-bidi-*
+chromium-bidi.iml
+*.py.ini
+lib/
+logs/
+node_modules/
+wptreport*.json
+/tests/
+/wpt/
+/third_party/
+/wpt-metadata/*/
+
+# Prettier Specific
+CHANGELOG.md
+coverage/
+examples/*.html
+!.vscode/extensions.json
+!.vscode/*.template.json

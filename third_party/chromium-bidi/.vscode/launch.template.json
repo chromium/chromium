@@ -1,0 +1,23 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Run Server",
+      "skipFiles": ["<node_internals>/**"],
+      "cwd": "${workspaceFolder}",
+      "console": "externalTerminal",
+      "program": "${workspaceFolder}/lib/bidiServer/index.js",
+      "outFiles": ["${workspaceFolder}/lib/bidiServer/**/*.js"],
+      "args": ["--headless=false"],
+      "env": {
+        "DEBUG": "*",
+        "PORT": "8080"
+      }
+    }
+  ]
+}

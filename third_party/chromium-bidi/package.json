@@ -1,0 +1,88 @@
+{
+  "name": "chromium-bidi",
+  "version": "17.0.2",
+  "description": "An implementation of the WebDriver BiDi protocol for Chromium implemented as a JavaScript layer translating between BiDi and CDP, running inside a Chrome tab.",
+  "engines": {
+    "node": ">=20.19.0 <22.0.0 || >=22.12.0"
+  },
+  "scripts": {
+    "build": "third_party/ninja/ninja -C out/Default",
+    "clean": "third_party/ninja/ninja -C out/Default -t clean",
+    "gn:gen": "gn gen out/Default && rm -f out/Default/.gitignore",
+    "e2e:headful": "HEADLESS=false npm run e2e --",
+    "e2e:headless": "npm run e2e:new-headless --",
+    "e2e:new-headless": "HEADLESS=new npm run e2e --",
+    "e2e:old-headless": "HEADLESS=old npm run e2e --",
+    "e2e": "npm run build && ./tools/node.py tools/run-e2e.mjs",
+    "flake8": "flake8 examples/ tests/",
+    "format": "npm run format:eslint && npm run format:prettier && npm run format:py && npm run format:keep-sorted",
+    "format:eslint": "eslint --cache --fix .",
+    "format:keep-sorted": "keep-sorted --mode=fix $(git ls-files | grep -vE '^(wpt|third_party|playwright|puppeteer)(/|$)')",
+    "format:prettier": "prettier --cache --write .",
+    "format:py": "(command -v ruff >/dev/null && ruff check --fix . && ruff format .) || (python3 -m ruff check --fix . && python3 -m ruff format .)",
+    "prepare": "npm run build",
+    "rdb-e2e": "rdb stream -new -realm chromium:public -- npm run e2e",
+    "rdb-unit": "rdb stream -new -realm chromium:public -- npm run unit",
+    "server": "npm run build && ./tools/node.py tools/run-bidi-server.mjs",
+    "test": "npm run unit && npm run e2e && npm run wpt",
+    "unit": "npm run build && ./tools/node.py --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=./tools/unit-resultsink-reporter.mjs --test-reporter-destination=stdout 'out/Default/gen/src/**/*.test.js'",
+    "wpt": "npm run build && ./tools/node.py tools/run-wpt.mjs",
+    "wpt:all": "npm run build && ./tools/node.py tools/run-wpt-all.mjs",
+    "yapf": "yapf -i --parallel --recursive --exclude=wpt examples/ tests/"
+  },
+  "type": "module",
+  "main": "./out/Default/gen/src/index.js",
+  "files": [
+    "out/Default/gen",
+    "!out/Default/gen/**/*.test.*",
+    "!*.tsbuildinfo",
+    ".browser"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GoogleChromeLabs/chromium-bidi.git"
+  },
+  "author": "The Chromium Authors",
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "devtools-protocol": "*"
+  },
+  "devDependencies": {
+    "@actions/core": "3.0.1",
+    "@eslint/js": "10.0.1",
+    "@puppeteer/browsers": "3.2.1",
+    "@rollup/plugin-node-resolve": "16.0.3",
+    "@rollup/wasm-node": "4.62.4",
+    "@types/chai": "5.2.3",
+    "@types/node": "20.19.43",
+    "@types/sinon": "22.0.0",
+    "@types/websocket": "1.0.10",
+    "chai": "6.2.2",
+    "devtools-protocol": "0.0.1681094",
+    "eslint": "10.8.1",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-import-resolver-typescript": "4.4.5",
+    "eslint-plugin-import": "2.32.0",
+    "eslint-plugin-prettier": "5.5.6",
+    "eslint-plugin-promise": "7.3.0",
+    "globals": "17.11.0",
+    "prettier": "3.9.6",
+    "rollup": "4.62.4",
+    "rollup-plugin-cleanup": "3.2.1",
+    "rollup-plugin-license": "3.7.1",
+    "semver": "7.8.5",
+    "sinon": "22.1.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.67.0",
+    "websocket": "1.0.35"
+  },
+  "overrides": {
+    "eslint-plugin-import": {
+      "eslint": "$eslint"
+    }
+  },
+  "dependencies": {
+    "mitt": "^3.0.1",
+    "zod": "^3.24.1"
+  }
+}

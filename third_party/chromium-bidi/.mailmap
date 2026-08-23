@@ -1,0 +1,8 @@
+# Docs:
+#   https://git-scm.com/docs/gitmailmap
+#
+# List all contributors:
+#   git shortlog -se
+Maksim Sadym <sadym@chromium.org> <69349599+sadym-chromium@users.noreply.github.com>
+Maksim Sadym <sadym@chromium.org> <sadym@google.com>
+Brandon Walderman <brwalder@microsoft.com> <bwalderman@outlook.com>

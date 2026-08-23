@@ -1,0 +1,81 @@
+# serializer version: 1
+# name: test_serialization_internal_id
+  dict({
+    'handle': 'stable_0',
+    'internalId': 'stable_1',
+    'type': 'object',
+    'value': list([
+      list([
+        '1',
+        dict({
+          'internalId': 'stable_2',
+          'type': 'object',
+          'value': list([
+            list([
+              'a',
+              dict({
+                'type': 'array',
+                'value': list([
+                ]),
+              }),
+            ]),
+            list([
+              'document',
+              dict({
+                'internalId': 'stable_3',
+                'sharedId': 'stable_4',
+                'type': 'node',
+                'value': dict({
+                  'childNodeCount': 1,
+                  'nodeType': 9,
+                }),
+              }),
+            ]),
+          ]),
+        }),
+      ]),
+      list([
+        '2',
+        dict({
+          'internalId': 'stable_2',
+          'type': 'object',
+        }),
+      ]),
+      list([
+        '3',
+        dict({
+          'internalId': 'stable_5',
+          'type': 'array',
+          'value': list([
+            dict({
+              'type': 'number',
+              'value': 1,
+            }),
+            dict({
+              'type': 'number',
+              'value': 2,
+            }),
+            dict({
+              'internalId': 'stable_3',
+              'type': 'node',
+            }),
+          ]),
+        }),
+      ]),
+      list([
+        '4',
+        dict({
+          'internalId': 'stable_5',
+          'type': 'array',
+        }),
+      ]),
+      list([
+        'self',
+        dict({
+          'internalId': 'stable_1',
+          'type': 'object',
+        }),
+      ]),
+    ]),
+  })
+# ---

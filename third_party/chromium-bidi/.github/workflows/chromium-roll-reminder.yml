@@ -1,0 +1,33 @@
+name: Chromium roll reminder
+
+# Declare default permissions as read only.
+permissions: read-all
+
+on:
+  pull_request:
+    types: [labeled]
+
+jobs:
+  post-message:
+    name: Post Chromium roll reminder
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    if: contains(github.event.label.name, 'autorelease') && contains(github.event.label.name, 'tagged')
+    steps:
+      - name: Find Comment Id
+        uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # v4.0.0
+        id: find-comment-id
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+      - name: Upsert comment
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
+        with:
+          comment-id: ${{ steps.find-comment-id.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          edit-mode: replace
+          body: |
+            Please make the following steps:
+            1. Create a Chromium CL to roll latest version of Mapper. Follow the instructions in [Roll into Chromium](https://github.com/GoogleChromeLabs/chromium-bidi#roll-into-chromium).
+            1. Update the implementation status in [WebDriver BiDi Implementation Status doc](https://docs.google.com/spreadsheets/d/1bkiPU5eDBCqFkx5p_VSBx_OK8gy9TeHRKQVPHKMATGQ/edit?usp=sharing).

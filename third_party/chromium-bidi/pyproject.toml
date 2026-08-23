@@ -1,0 +1,19 @@
+[tool.ruff]
+# Exclude directories that should not be linted or formatted
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    "lib",
+    "node_modules",
+    "wpt",
+    "third_party",
+    "playwright",
+    "puppeteer",
+]
+
+[tool.ruff.lint]
+select = ["F", "E", "W", "I", "UP"]
+ignore = ["E501"]
+

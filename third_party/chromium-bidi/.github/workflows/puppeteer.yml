@@ -1,0 +1,110 @@
+name: Puppeteer CI
+
+# Declare default permissions as read only.
+permissions: read-all
+
+on:
+  merge_group:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      # These are the defaults. See
+      # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request
+      - opened
+      - reopened
+      - synchronize
+
+      # Used for `puppeteer`
+      - labeled
+  workflow_dispatch:
+
+concurrency:
+  group: puppeteer-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  puppeteer-test:
+    name: Run Puppeteer tests (${{ matrix.shard }})
+    runs-on: ubuntu-latest
+    # Run on manual dispatch, push to main, merge_group, or if the PR has the 'puppeteer' label.
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || github.event_name == 'merge_group' || contains(github.event.pull_request.labels.*.name, 'puppeteer') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1-4
+          - 2-4
+          - 3-4
+          - 4-4
+    steps:
+      - name: Checkout Chromium-BiDi
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          path: 'bidi'
+      - name: Checkout Puppeteer
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: 'puppeteer/puppeteer'
+          path: 'puppeteer'
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version-file: './puppeteer/.nvmrc'
+          cache-dependency-path: 'puppeteer/package-lock.json,bidi/package-lock.json'
+      - name: Disable AppArmor
+        # https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md
+        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
+      - name: Sync dependencies
+        working-directory: bidi
+        run: bash tools/gclient-sync.sh
+      - name: Generate Ninja config
+        working-directory: bidi
+        run: npm run gn:gen
+      - name: Build Chromium-BiDi
+        working-directory: bidi
+        run: |
+          npm run build
+      - name: Link Chromium-BiDi
+        working-directory: bidi
+        run: npm link
+      - name: Install Puppeteer dependencies
+        working-directory: puppeteer
+        run: npm ci
+      # We need to build Puppeteer first to not hit devtools protocol dep issue
+      - name: Build Puppeteer
+        working-directory: puppeteer
+        run: npm run build
+      - name: Install Chromium-BiDi
+        working-directory: puppeteer
+        run: |
+          npm link chromium-bidi -w puppeteer-core
+      - name: Delete the downloaded version (https://github.com/npm/cli/issues/7315)
+        working-directory: puppeteer
+        run: |
+          rm packages/puppeteer-core/node_modules/chromium-bidi -r
+      # Install chrome, chromedriver and headless shell is required to keep them cached.
+      - name: Install all chrome binaries if needed
+        uses: ./bidi/.github/actions/setup-chrome-binaries
+        with:
+          working-directory: bidi
+      - name: Install pinned browser
+        id: browser
+        working-directory: bidi
+        run: ./tools/node.py tools/install-browser.mjs --github
+      - name: Run tests
+        working-directory: puppeteer
+        env:
+          PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
+        run: xvfb-run --auto-servernum npm run test:chrome:bidi -- --ignore-unexpectedly-passing --shard '${{ matrix.shard }}'
+
+  puppeteer-test-required:
+    name: '[Required] Puppeteer tests'
+    needs: [puppeteer-test]
+    runs-on: ubuntu-latest
+    if: ${{ !cancelled() }}
+    steps:
+      - if: ${{ needs.puppeteer-test.result != 'success' && contains(github.event.pull_request.labels.*.name, 'puppeteer-required') }}
+        run: 'exit 1'
+      - run: 'exit 0'
