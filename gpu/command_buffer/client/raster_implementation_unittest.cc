@@ -16,6 +16,7 @@
 #include <array>
 #include <memory>
 
+#include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
@@ -254,7 +255,8 @@ class RasterImplementationTest : public testing::Test {
     ExpectedMemoryInfo mem;
 
     // Temporarily allocate memory and expect that memory block to be reused.
-    mem.ptr = gl_->mapped_memory_->Alloc(size, &mem.id, &mem.offset).data();
+    mem.span = gl_->mapped_memory_->Alloc(size, &mem.id, &mem.offset);
+    mem.ptr = mem.span.data();
     gl_->mapped_memory_->Free(mem.ptr);
 
     return mem;
@@ -273,6 +275,19 @@ class RasterImplementationTest : public testing::Test {
 
   bool GetBucketContents(uint32_t bucket_id, std::vector<int8_t>* data) {
     return gl_->GetBucketContents(bucket_id, data);
+  }
+
+  bool ReadbackImagePixelsINTERNAL(const gpu::Mailbox& source_mailbox,
+                                   const SkImageInfo& dst_info,
+                                   GLuint dst_row_bytes,
+                                   int src_x,
+                                   int src_y,
+                                   int plane_index,
+                                   base::OnceCallback<void(bool)> readback_done,
+                                   void* dst_pixels) {
+    return gl_->ReadbackImagePixelsINTERNAL(
+        source_mailbox, dst_info, dst_row_bytes, src_x, src_y, plane_index,
+        std::move(readback_done), dst_pixels);
   }
 
   static SharedMemoryLimits SharedMemoryLimitsForTesting() {
@@ -877,6 +892,275 @@ TEST_F(RasterImplementationTest, SetActiveURLCHROMIUM) {
   ClearCommands();
   gl_->SetActiveURLCHROMIUM(url.c_str());
   EXPECT_TRUE(NoCommandsWritten());
+}
+
+// https://crbug.com/543707066
+TEST_F(RasterImplementationTest, ReadbackImagePixelsSyncPadding) {
+  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
+  SkImageInfo dst_info = SkImageInfo::MakeN32Premul(2, 2);
+  GLuint dst_row_bytes =
+      12;  // 2 pixels * 4 bytes/pixel = 8 bytes. Row padding = 4 bytes.
+
+  GLuint color_space_offset = base::bits::AlignUp(
+      sizeof(cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result),
+      sizeof(uint64_t));
+  GLuint pixels_offset = color_space_offset;
+  GLuint dst_size = dst_info.computeByteSize(dst_row_bytes);
+  GLuint total_size =
+      pixels_offset +
+      base::bits::AlignUp(dst_size, static_cast<GLuint>(sizeof(uint64_t)));
+
+  ExpectedMemoryInfo mem = GetExpectedMappedMemory(total_size);
+
+  std::vector<uint8_t> dst_pixels(dst_row_bytes * dst_info.height(), 0xAA);
+
+  EXPECT_CALL(*command_buffer(), OnFlush())
+      .WillOnce([mem, pixels_offset, dst_size]() {
+        // Write 1 to readback_result (at the beginning of shm).
+        auto* result = reinterpret_cast<
+            cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result*>(mem.ptr);
+        *result = 1;
+
+        // Write test data to the pixel portion of the shared memory.
+        auto src_pixels = mem.span.subspan(pixels_offset, dst_size);
+        // Fill src_pixels with distinct values, e.g. 1 to dst_size
+        for (size_t i = 0; i < dst_size; ++i) {
+          src_pixels[i] = static_cast<uint8_t>(i + 1);
+        }
+      })
+      .RetiresOnSaturation();
+
+  bool success = gl_->ReadbackImagePixels(mailbox, dst_info, dst_row_bytes,
+                                          /*src_x=*/0, /*src_y=*/0,
+                                          /*plane_index=*/0, dst_pixels.data());
+
+  EXPECT_TRUE(success);
+
+  // Expected output:
+  // Row 1 (pixels: 0 to 7) copied from src_pixels (0 to 7): 1, 2, 3, 4, 5, 6,
+  // 7, 8. Row 1 (padding: 8 to 11) untouched: 0xAA, 0xAA, 0xAA, 0xAA. Row 2
+  // (pixels: 12 to 19) copied from src_pixels (12 to 19): 13, 14, 15, 16, 17,
+  // 18, 19, 20. Row 2 (padding: 20 to 23) untouched: 0xAA, 0xAA, 0xAA, 0xAA.
+
+  std::vector<uint8_t> expected_pixels(dst_row_bytes * dst_info.height(), 0xAA);
+  for (int y = 0; y < dst_info.height(); ++y) {
+    for (size_t x = 0; x < dst_info.minRowBytes(); ++x) {
+      size_t dst_idx = y * dst_row_bytes + x;
+      size_t src_idx = y * dst_row_bytes + x;
+      expected_pixels[dst_idx] = static_cast<uint8_t>(src_idx + 1);
+    }
+  }
+
+  EXPECT_EQ(dst_pixels, expected_pixels);
+}
+
+// https://crbug.com/543707066
+TEST_F(RasterImplementationTest, ReadbackImagePixelsAsyncPadding) {
+  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
+  SkImageInfo dst_info = SkImageInfo::MakeN32Premul(2, 2);
+  GLuint dst_row_bytes =
+      12;  // 2 pixels * 4 bytes/pixel = 8 bytes. Row padding = 4 bytes.
+
+  GLuint color_space_offset = base::bits::AlignUp(
+      sizeof(cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result),
+      sizeof(uint64_t));
+  GLuint pixels_offset = color_space_offset;
+  GLuint dst_size = dst_info.computeByteSize(dst_row_bytes);
+  GLuint total_size =
+      pixels_offset +
+      base::bits::AlignUp(dst_size, static_cast<GLuint>(sizeof(uint64_t)));
+
+  ExpectedMemoryInfo mem = GetExpectedMappedMemory(total_size);
+
+  std::vector<uint8_t> dst_pixels(dst_row_bytes * dst_info.height(), 0xAA);
+
+  base::OnceClosure signal_closure;
+  EXPECT_CALL(*gpu_control_, DoSignalQuery(_, _))
+      .WillOnce([&signal_closure](uint32_t query, base::OnceClosure* callback) {
+        signal_closure = std::move(*callback);
+      })
+      .RetiresOnSaturation();
+
+  bool callback_run = false;
+  bool callback_success = false;
+  base::OnceCallback<void(bool)> readback_done = base::BindOnce(
+      [](bool* run, bool* success, bool val) {
+        *run = true;
+        *success = val;
+      },
+      &callback_run, &callback_success);
+
+  bool success = ReadbackImagePixelsINTERNAL(
+      mailbox, dst_info, dst_row_bytes, /*src_x=*/0, /*src_y=*/0,
+      /*plane_index=*/0, std::move(readback_done), dst_pixels.data());
+
+  EXPECT_TRUE(success);
+  EXPECT_FALSE(callback_run);
+
+  // Now simulate the GPU process completing the operation by writing to shared
+  // memory.
+  auto* result =
+      reinterpret_cast<cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result*>(
+          mem.ptr);
+  *result = 1;
+
+  auto src_pixels = mem.span.subspan(pixels_offset, dst_size);
+  for (size_t i = 0; i < dst_size; ++i) {
+    src_pixels[i] = static_cast<uint8_t>(i + 1);
+  }
+
+  EXPECT_CALL(*command_buffer(), OnFlush()).Times(AnyNumber());
+
+  // Run the signal query callback.
+  ASSERT_TRUE(signal_closure);
+  std::move(signal_closure).Run();
+
+  EXPECT_TRUE(callback_run);
+  EXPECT_TRUE(callback_success);
+
+  // Verify pixels and padding.
+  std::vector<uint8_t> expected_pixels(dst_row_bytes * dst_info.height(), 0xAA);
+  for (int y = 0; y < dst_info.height(); ++y) {
+    for (size_t x = 0; x < dst_info.minRowBytes(); ++x) {
+      size_t dst_idx = y * dst_row_bytes + x;
+      size_t src_idx = y * dst_row_bytes + x;
+      expected_pixels[dst_idx] = static_cast<uint8_t>(src_idx + 1);
+    }
+  }
+
+  EXPECT_EQ(dst_pixels, expected_pixels);
+}
+
+// https://crbug.com/543707066
+TEST_F(RasterImplementationTest, ReadbackYUVPixelsAsyncPadding) {
+  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
+  gfx::Rect source_rect(0, 0, 4, 4);
+  gfx::Rect output_rect(0, 0, 4, 4);
+  int y_plane_stride = 8;
+  int u_plane_stride = 4;
+  int v_plane_stride = 4;
+
+  auto y_offset = static_cast<GLuint>(base::bits::AlignUp(
+      sizeof(cmds::ReadbackYUVImagePixelsINTERNALImmediate::Result),
+      sizeof(uint64_t)));
+  GLuint y_padded_size = output_rect.height() * y_plane_stride;
+
+  constexpr auto kSizeofUint64 = static_cast<GLuint>(sizeof(uint64_t));
+  GLuint u_offset =
+      base::bits::AlignUp(y_offset + y_padded_size, kSizeofUint64);
+  GLuint u_padded_size = (output_rect.height() / 2) * u_plane_stride;
+
+  GLuint v_offset =
+      base::bits::AlignUp(u_offset + u_padded_size, kSizeofUint64);
+  GLuint v_padded_size = (output_rect.height() / 2) * v_plane_stride;
+
+  size_t total_size =
+      base::bits::AlignUp(v_offset + v_padded_size, kSizeofUint64);
+
+  ExpectedMemoryInfo mem = GetExpectedMappedMemory(total_size);
+
+  std::vector<uint8_t> y_plane_data(y_plane_stride * output_rect.height(),
+                                    0xAA);
+  std::vector<uint8_t> u_plane_data(u_plane_stride * (output_rect.height() / 2),
+                                    0xAA);
+  std::vector<uint8_t> v_plane_data(v_plane_stride * (output_rect.height() / 2),
+                                    0xAA);
+
+  base::OnceClosure signal_closure;
+  EXPECT_CALL(*gpu_control_, DoSignalQuery(_, _))
+      .WillOnce([&signal_closure](uint32_t query, base::OnceClosure* callback) {
+        signal_closure = std::move(*callback);
+      })
+      .RetiresOnSaturation();
+
+  bool release_mailbox_called = false;
+  base::OnceClosure release_mailbox = base::BindOnce(
+      [](bool* called) { *called = true; }, &release_mailbox_called);
+
+  bool callback_run = false;
+  bool callback_success = false;
+  base::OnceCallback<void(bool)> readback_done = base::BindOnce(
+      [](bool* run, bool* success, bool val) {
+        *run = true;
+        *success = val;
+      },
+      &callback_run, &callback_success);
+
+  gl_->ReadbackYUVPixelsAsync(
+      mailbox, GL_TEXTURE_2D, source_rect, output_rect,
+      /*vertically_flip_texture=*/false, y_plane_stride,
+      base::span(y_plane_data), u_plane_stride, base::span(u_plane_data),
+      v_plane_stride, base::span(v_plane_data), std::move(release_mailbox),
+      std::move(readback_done));
+
+  EXPECT_FALSE(callback_run);
+
+  // Simulate GPU process completion.
+  auto* result =
+      reinterpret_cast<cmds::ReadbackYUVImagePixelsINTERNALImmediate::Result*>(
+          mem.ptr);
+  *result = 1;
+
+  // Fill in mock source data for each plane in the shared memory.
+  auto y_src_pixels = mem.span.subspan(y_offset, y_padded_size);
+  for (size_t i = 0; i < y_padded_size; ++i) {
+    y_src_pixels[i] = static_cast<uint8_t>(i + 1);
+  }
+
+  auto u_src_pixels = mem.span.subspan(u_offset, u_padded_size);
+  for (size_t i = 0; i < u_padded_size; ++i) {
+    u_src_pixels[i] = static_cast<uint8_t>(i + 41);
+  }
+
+  auto v_src_pixels = mem.span.subspan(v_offset, v_padded_size);
+  for (size_t i = 0; i < v_padded_size; ++i) {
+    v_src_pixels[i] = static_cast<uint8_t>(i + 51);
+  }
+
+  EXPECT_CALL(*command_buffer(), OnFlush()).Times(AnyNumber());
+
+  // Run the signal query callback.
+  ASSERT_TRUE(signal_closure);
+  std::move(signal_closure).Run();
+
+  EXPECT_TRUE(callback_run);
+  EXPECT_TRUE(callback_success);
+  EXPECT_TRUE(release_mailbox_called);
+
+  // Verify Y plane. Width = 4, Stride = 8, Height = 4.
+  std::vector<uint8_t> expected_y(y_plane_stride * output_rect.height(), 0xAA);
+  for (int y = 0; y < output_rect.height(); ++y) {
+    for (int x = 0; x < output_rect.width(); ++x) {
+      size_t dst_idx = y * y_plane_stride + x;
+      size_t src_idx = y * y_plane_stride + x;
+      expected_y[dst_idx] = static_cast<uint8_t>(src_idx + 1);
+    }
+  }
+  EXPECT_EQ(y_plane_data, expected_y);
+
+  // Verify U plane. Width = 2, Stride = 4, Height = 2.
+  std::vector<uint8_t> expected_u(u_plane_stride * (output_rect.height() / 2),
+                                  0xAA);
+  for (int y = 0; y < output_rect.height() / 2; ++y) {
+    for (int x = 0; x < output_rect.width() / 2; ++x) {
+      size_t dst_idx = y * u_plane_stride + x;
+      size_t src_idx = y * u_plane_stride + x;
+      expected_u[dst_idx] = static_cast<uint8_t>(src_idx + 41);
+    }
+  }
+  EXPECT_EQ(u_plane_data, expected_u);
+
+  // Verify V plane. Width = 2, Stride = 4, Height = 2.
+  std::vector<uint8_t> expected_v(v_plane_stride * (output_rect.height() / 2),
+                                  0xAA);
+  for (int y = 0; y < output_rect.height() / 2; ++y) {
+    for (int x = 0; x < output_rect.width() / 2; ++x) {
+      size_t dst_idx = y * v_plane_stride + x;
+      size_t src_idx = y * v_plane_stride + x;
+      expected_v[dst_idx] = static_cast<uint8_t>(src_idx + 51);
+    }
+  }
+  EXPECT_EQ(v_plane_data, expected_v);
 }
 
 #include "gpu/command_buffer/client/raster_implementation_unittest_autogen.h"
