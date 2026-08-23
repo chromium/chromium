@@ -92,6 +92,7 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
   autofill::FillingProduct GetMainFillingProduct() const override;
   void OnTabSelected(autofill::TabbedPaneTabType tab_type) override;
   bool IsSearching() const override;
+  autofill::FieldGlobalId GetQueriedFieldId() const override;
 
   // Invoked when a password mapping is added.
   void OnAddPasswordFillData(const autofill::PasswordFormFillData& fill_data);
@@ -265,6 +266,7 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
   // The arguments of the last ShowPopup() call and UpdatePopup(), to be re-used
   // by OnUnlockReauthCompleted().
   autofill::AutofillClient::PopupOpenArgs last_popup_open_args_;
+  autofill::FieldGlobalId last_field_id_;
 
   // Used to track a requested favicon.
   base::CancelableTaskTracker favicon_tracker_;

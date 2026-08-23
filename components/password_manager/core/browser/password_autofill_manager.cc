@@ -503,6 +503,10 @@ bool PasswordAutofillManager::IsSearching() const {
   return false;
 }
 
+autofill::FieldGlobalId PasswordAutofillManager::GetQueriedFieldId() const {
+  return last_field_id_;
+}
+
 void PasswordAutofillManager::OnAddPasswordFillData(
     const autofill::PasswordFormFillData& fill_data) {
   if (!autofill::IsValidPasswordFormFillData(fill_data)) {
@@ -576,7 +580,7 @@ void PasswordAutofillManager::ShowSuggestions(
               password_client_->GetProfilePasswordStore(),
               password_client_->GetAccountPasswordStore()));
     }
-    manual_fallback_flow_->RunFlow(field.element_id.renderer_id, field.bounds,
+    manual_fallback_flow_->RunFlow(field.element_id, field.bounds,
                                    field.text_direction);
     return;
   }
@@ -656,6 +660,7 @@ void PasswordAutofillManager::OnPasskeysReady(
 
 void PasswordAutofillManager::ContinueShowingSuggestions(
     const autofill::TriggeringField& field) {
+  last_field_id_ = field.element_id;
   bool autofill_available = ShowPopup(
       field.bounds, field.text_direction,
       GetSuggestions(field.typed_username, OffersGeneration(false),
