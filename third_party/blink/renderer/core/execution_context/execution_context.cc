@@ -324,10 +324,6 @@ bool ExecutionContext::IsContextPaused() const {
   return lifecycle_state_ == mojom::blink::FrameLifecycleState::kPaused;
 }
 
-bool ExecutionContext::IsContextFrozen() const {
-  return lifecycle_state_ == mojom::blink::FrameLifecycleState::kFrozen;
-}
-
 LoaderFreezeMode ExecutionContext::GetLoaderFreezeMode() const {
   if (is_in_back_forward_cache_) {
     DCHECK_EQ(lifecycle_state_, mojom::blink::FrameLifecycleState::kFrozen);
