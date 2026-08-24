@@ -2744,6 +2744,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               features::IsRoundedIconsEnabled() ? kExitToAppIcon
                                                 : kExitMenuOldIcon,
               ui::kColorIcon))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_EXIT))
           .Build());
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
@@ -3837,6 +3838,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               features::IsRoundedIconsEnabled() ? kSettingsIcon
                                                 : kSettingsMenuOldIcon,
               ui::kColorIcon))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_OPTIONS))
           .Build());
 
   root_action_item_->AddChild(

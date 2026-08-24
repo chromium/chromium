@@ -92,6 +92,8 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
       return gfx::Insets::VH(16, 16);
     case INSETS_ACTION_APP_MENU_ITEM:
       return gfx::Insets::TLBR(0, 16, 0, 12);
+    case INSETS_ACTION_APP_MENU_FOOTER:
+      return gfx::Insets::TLBR(8, 12, 8, 12);
     case INSETS_PROFILE_SIGNIN_STATUS_CHIP:
       // Relies on the parent menu's margins for vertical alignment
       // with other items.
@@ -275,6 +277,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 56;
     case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_ICON_SIZE:
       return 20;
+    case DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_SPACING:
+      return 12;
   }
   NOTREACHED();
 }

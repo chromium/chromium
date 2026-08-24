@@ -32,6 +32,9 @@
   E_CPONLY(kColorAppMenuBlockButtonBackgroundHovered) \
   E_CPONLY(kColorAppMenuBlockButtonBorder) \
   E_CPONLY(kColorAppMenuBlockButtonForeground) \
+  E_CPONLY(kColorAppMenuFooterButtonForeground) \
+  E_CPONLY(kColorAppMenuFooterButtonForegroundHovered) \
+  E_CPONLY(kColorAppMenuFooterButtonBackgroundHovered) \
   /* Actor UI colors.*/ \
   E_CPONLY(kColorActorUiHandoffButtonBackground) \
   E_CPONLY(kColorActorUiHandoffButtonBorder) \
