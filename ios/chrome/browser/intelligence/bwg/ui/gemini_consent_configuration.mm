@@ -108,10 +108,11 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
                 ];
       NSAttributedString* footnote = [self footnoteForCountry:country
                                                     useStrict:useStrict];
+      BOOL collapsible = useStrict || IsGeminiVisualRichFREEnabled();
       return [[GeminiConsentConfiguration alloc] initWithRows:rows
                                                      footnote:footnote
                                                        header:nil
-                                                  collapsible:useStrict
+                                                  collapsible:collapsible
                                                     useStrict:useStrict];
     }
   }
@@ -212,11 +213,14 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 
 #pragma mark Share tab
 
-// Builds the share tab row, with a configurable initial collapsed state based
-// on strict mode.
+// Builds the share tab row, with a configurable initial collapsed state
+// based on strict mode.
 + (GeminiConsentRow*)shareTabRowWithStrict:(BOOL)useStrict {
-  UIImage* icon = SymbolWithConfiguration(SymbolPhoneSparkle,
-                                          [self defaultSymbolConfiguration]);
+  UIImage* icon =
+      IsGeminiVisualRichFREEnabled()
+          ? nil
+          : SymbolWithConfiguration(SymbolPhoneSparkle,
+                                    [self defaultSymbolConfiguration]);
   NSString* title = l10n_util::GetNSString(
       useStrict ? IDS_IOS_GEMINI_CONSENT_SHARE_TAB_TITLE_STRICT
                 : IDS_IOS_GEMINI_CONSENT_SHARE_TAB_TITLE);
@@ -229,7 +233,7 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
   GeminiConsentRow* row = [[GeminiConsentRow alloc] initWithIcon:icon
                                                            title:title
                                                             body:body];
-  row.collapsed = !useStrict;
+  row.collapsed = !useStrict && !IsGeminiVisualRichFREEnabled();
   return row;
 }
 
@@ -250,8 +254,10 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 
 // Builds the enterprise row for managed accounts.
 + (GeminiConsentRow*)dataGovernanceRowForManaged {
-  UIImage* icon = SymbolWithConfiguration(SymbolBuilding2,
-                                          [self defaultSymbolConfiguration]);
+  UIImage* icon = IsGeminiVisualRichFREEnabled()
+                      ? nil
+                      : SymbolWithConfiguration(
+                            SymbolBuilding2, [self defaultSymbolConfiguration]);
   NSString* title = l10n_util::GetNSString(
       IDS_IOS_GEMINI_CONSENT_DATA_GORVERNANCE_MANAGED_TITLE);
   NSString* text = l10n_util::GetNSString(
@@ -262,14 +268,17 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
   GeminiConsentRow* row = [[GeminiConsentRow alloc] initWithIcon:icon
                                                            title:title
                                                             body:body];
-  row.collapsed = NO;
+  row.collapsed = IsGeminiVisualRichFREEnabled();
   return row;
 }
 
 // Builds the data governance row for non managed layout.
 + (GeminiConsentRow*)dataGovernanceRowForNormal {
-  UIImage* icon = SymbolWithConfiguration([self secondSymbolForManaged:NO],
-                                          [self defaultSymbolConfiguration]);
+  UIImage* icon =
+      IsGeminiVisualRichFREEnabled()
+          ? nil
+          : SymbolWithConfiguration([self secondSymbolForManaged:NO],
+                                    [self defaultSymbolConfiguration]);
   NSString* title = l10n_util::GetNSString(
       IDS_IOS_GEMINI_CONSENT_DATA_GORVERNANCE_NON_MANAGED_TITLE);
   NSString* text = l10n_util::GetNSString(
@@ -282,14 +291,16 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
   GeminiConsentRow* row = [[GeminiConsentRow alloc] initWithIcon:icon
                                                            title:title
                                                             body:body];
-  row.collapsed = NO;
+  row.collapsed = IsGeminiVisualRichFREEnabled();
   return row;
 }
 
 // Builds the data governance row for non managed strict layout.
 + (GeminiConsentRow*)dataGovernanceRowForStrict {
-  UIImage* icon =
-      SymbolWithConfiguration(SymbolHistory, [self defaultSymbolConfiguration]);
+  UIImage* icon = IsGeminiVisualRichFREEnabled()
+                      ? nil
+                      : SymbolWithConfiguration(
+                            SymbolHistory, [self defaultSymbolConfiguration]);
   NSString* title = l10n_util::GetNSString(
       IDS_IOS_GEMINI_CONSENT_STRICT_DATA_GOVERNANCE_TITLE);
 
@@ -347,8 +358,11 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 
 //  Builds the connected services row used for the strict layout.
 + (GeminiConsentRow*)connectedServicesRow {
-  UIImage* icon = SymbolWithConfiguration(SymbolPuzzlePieceExtension,
-                                          [self defaultSymbolConfiguration]);
+  UIImage* icon =
+      IsGeminiVisualRichFREEnabled()
+          ? nil
+          : SymbolWithConfiguration(SymbolPuzzlePieceExtension,
+                                    [self defaultSymbolConfiguration]);
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_GEMINI_CONSENT_CONNECTED_SERVICES_TITLE);
   NSString* text =
@@ -367,8 +381,11 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 
 // Builds the first standard FRE consent row.
 + (GeminiConsentRow*)standardFirstRowForManaged:(BOOL)isManaged {
-  UIImage* icon = SymbolWithConfiguration(SymbolPhoneSparkle,
-                                          [self defaultSymbolConfiguration]);
+  UIImage* icon =
+      IsGeminiVisualRichFREEnabled()
+          ? nil
+          : SymbolWithConfiguration(SymbolPhoneSparkle,
+                                    [self defaultSymbolConfiguration]);
   NSString* title = l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FIRST_BOX_TITLE);
   NSString* bodyText = l10n_util::GetNSString(
       isManaged ? IDS_IOS_BWG_CONSENT_MANAGED_FIRST_BOX_BODY
@@ -376,14 +393,20 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
   NSAttributedString* body =
       [[NSAttributedString alloc] initWithString:bodyText
                                       attributes:[self defaultTextAttributes]];
-  return [[GeminiConsentRow alloc] initWithIcon:icon title:title body:body];
+  GeminiConsentRow* row = [[GeminiConsentRow alloc] initWithIcon:icon
+                                                           title:title
+                                                            body:body];
+  row.collapsed = NO;
+  return row;
 }
 
 // Builds the second standard FRE consent row.
 + (GeminiConsentRow*)standardSecondRowForManaged:(BOOL)isManaged {
   UIImage* icon =
-      SymbolWithConfiguration([self secondSymbolForManaged:isManaged],
-                              [self defaultSymbolConfiguration]);
+      IsGeminiVisualRichFREEnabled()
+          ? nil
+          : SymbolWithConfiguration([self secondSymbolForManaged:isManaged],
+                                    [self defaultSymbolConfiguration]);
   NSString* title = l10n_util::GetNSString(
       isManaged ? IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_TITLE
                 : IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_TITLE);
@@ -405,7 +428,11 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
                                ]];
   }
 
-  return [[GeminiConsentRow alloc] initWithIcon:icon title:title body:body];
+  GeminiConsentRow* row = [[GeminiConsentRow alloc] initWithIcon:icon
+                                                           title:title
+                                                            body:body];
+  row.collapsed = IsGeminiVisualRichFREEnabled();
+  return row;
 }
 
 // Builds the footnote attributed string.

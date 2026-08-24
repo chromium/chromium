@@ -257,6 +257,22 @@ extern NSString* const kGeminiPromoConsentFullDetentIdentifier;
 // Gemini UI Lottie Animation name for First Run Banner.
 extern NSString* const kLottieAnimationFirstRunBannerName;
 
+// Lottie animation names for Gemini Visual Rich First Run carousel slides.
+extern NSString* const kLottieAnimationFRESummarizeSlideName;
+extern NSString* const kLottieAnimationFRESummarizeSlideDarkName;
+extern NSString* const kLottieAnimationFRESummarizeSlideRTLName;
+extern NSString* const kLottieAnimationFRESummarizeSlideDarkRTLName;
+
+extern NSString* const kLottieAnimationFREShoppingSlideName;
+extern NSString* const kLottieAnimationFREShoppingSlideDarkName;
+extern NSString* const kLottieAnimationFREShoppingSlideRTLName;
+extern NSString* const kLottieAnimationFREShoppingSlideDarkRTLName;
+
+extern NSString* const kLottieAnimationFREPlanningSlideName;
+extern NSString* const kLottieAnimationFREPlanningSlideDarkName;
+extern NSString* const kLottieAnimationFREPlanningSlideRTLName;
+extern NSString* const kLottieAnimationFREPlanningSlideDarkRTLName;
+
 // Session map dictionary key for the last interaction timestamp.
 extern const char kLastInteractionTimestampDictKey[];
 // Session map dictionary key for the visible URL during the last BWG
