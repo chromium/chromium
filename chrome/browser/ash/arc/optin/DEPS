@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/extensions/api/settings_private",
   "+chrome/browser/metrics",
   "+chrome/browser/profiles",
-  "+chrome/browser/signin",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/webui/ash/login",
   "+chrome/test/base",
