@@ -775,7 +775,6 @@ def create_bindgen_module(
 
     if "--wrap-static-fns" in target.common.args:
         module.handle_static_inline = True
-        module.relative_include = True
 
     module.bindgen_flags = get_bindgen_flags(target.common.args)
     # This ensures that any CC file that is being processed through the
