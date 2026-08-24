@@ -4,9 +4,11 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
+import {ContentBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createApp} from './common.js';
+import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 
 suite('ReadabilityAxTreeAnchorsIntegration', () => {
   interface SimpleNode {
@@ -38,7 +40,7 @@ suite('ReadabilityAxTreeAnchorsIntegration', () => {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    chrome.readingMode.onConnected = () => {};
+    ContentBrowserProxyImpl.setInstance(new TestContentBrowserProxy());
     await createApp();
   });
 

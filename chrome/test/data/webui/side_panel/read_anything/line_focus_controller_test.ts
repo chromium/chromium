@@ -9,7 +9,6 @@ import type {LineFocusListener} from 'chrome-untrusted://read-anything-side-pane
 import {assertEquals, assertFalse, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {mockMetrics} from './common.js';
-import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
@@ -71,8 +70,6 @@ suite('LineFocusController', () => {
   setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const readingMode = new FakeReadingMode();
-    chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     visualBrowserProxy = new TestVisualBrowserProxy();
     VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
     ContentBrowserProxyImpl.setInstance(new TestContentBrowserProxy());
@@ -281,7 +278,7 @@ suite('LineFocusController', () => {
 
   test('restoreFromPrefs extracts style and movement', () => {
     lineFocusController.restoreFromPrefs(
-        chrome.readingMode.lineFocusMediumCursorWindow, /*isOn=*/ true,
+        visualBrowserProxy.lineFocusMediumCursorWindow, /*isOn=*/ true,
         defaultContainer, defaultHeight);
     assertEquals(
         LineFocusStyle.MEDIUM_WINDOW,
@@ -291,7 +288,7 @@ suite('LineFocusController', () => {
         lineFocusController.getCurrentLineFocusMovement());
 
     lineFocusController.restoreFromPrefs(
-        chrome.readingMode.lineFocusSmallStaticWindow, /*isOn=*/ true,
+        visualBrowserProxy.lineFocusSmallStaticWindow, /*isOn=*/ true,
         defaultContainer, defaultHeight);
     assertEquals(
         LineFocusStyle.SMALL_WINDOW,
@@ -301,7 +298,7 @@ suite('LineFocusController', () => {
         lineFocusController.getCurrentLineFocusMovement());
 
     lineFocusController.restoreFromPrefs(
-        chrome.readingMode.lineFocusCursorLine, /*isOn=*/ true,
+        visualBrowserProxy.lineFocusCursorLine, /*isOn=*/ true,
         defaultContainer, defaultHeight);
     assertEquals(
         LineFocusStyle.UNDERLINE,
@@ -313,19 +310,19 @@ suite('LineFocusController', () => {
 
   test('restoreFromPrefs sets enabled', () => {
     lineFocusController.restoreFromPrefs(
-        chrome.readingMode.lineFocusCursorLine, /*isOn=*/ true,
+        visualBrowserProxy.lineFocusCursorLine, /*isOn=*/ true,
         defaultContainer, defaultHeight);
     assertTrue(lineFocusController.isEnabled());
 
     lineFocusController.restoreFromPrefs(
-        chrome.readingMode.lineFocusCursorLine, /*isOn=*/ false,
+        visualBrowserProxy.lineFocusCursorLine, /*isOn=*/ false,
         defaultContainer, defaultHeight);
     assertFalse(lineFocusController.isEnabled());
   });
 
   test('restoreFromPrefs sets last used line focus mode', () => {
     lineFocusController.restoreFromPrefs(
-        chrome.readingMode.lineFocusLargeCursorWindow, /*isOn=*/ false,
+        visualBrowserProxy.lineFocusLargeCursorWindow, /*isOn=*/ false,
         defaultContainer, defaultHeight);
     lineFocusController.onKeyDown(toggleKey(), defaultContainer, defaultHeight);
 
@@ -339,7 +336,7 @@ suite('LineFocusController', () => {
 
   test('restoreFromPrefs notifies of mode change', () => {
     lineFocusController.restoreFromPrefs(
-        chrome.readingMode.lineFocusLargeCursorWindow, /*isOn=*/ false,
+        visualBrowserProxy.lineFocusLargeCursorWindow, /*isOn=*/ false,
         defaultContainer, defaultHeight);
 
     assertTrue(lineFocusModesChanged);

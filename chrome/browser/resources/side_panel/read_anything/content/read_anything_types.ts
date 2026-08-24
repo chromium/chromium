@@ -4,6 +4,8 @@
 
 import type {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
+import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
+
 export enum ContentPositionSource {
   SELECTION = 0,
   LINE_FOCUS = 1,
@@ -63,44 +65,45 @@ interface LineFocusValue {
 }
 
 export const getLineFocusValues = (): Record<number, LineFocusValue> => {
+  const visualBrowserProxy = VisualBrowserProxyImpl.getInstance();
   return {
-    [chrome.readingMode.lineFocusSmallCursorWindow]: {
-      value: chrome.readingMode.lineFocusSmallCursorWindow,
+    [visualBrowserProxy.getLineFocusSmallCursorWindow()]: {
+      value: visualBrowserProxy.getLineFocusSmallCursorWindow(),
       style: LineFocusStyle.SMALL_WINDOW,
       movement: LineFocusMovement.CURSOR,
     },
-    [chrome.readingMode.lineFocusSmallStaticWindow]: {
-      value: chrome.readingMode.lineFocusSmallStaticWindow,
+    [visualBrowserProxy.getLineFocusSmallStaticWindow()]: {
+      value: visualBrowserProxy.getLineFocusSmallStaticWindow(),
       style: LineFocusStyle.SMALL_WINDOW,
       movement: LineFocusMovement.STATIC,
     },
-    [chrome.readingMode.lineFocusMediumCursorWindow]: {
-      value: chrome.readingMode.lineFocusMediumCursorWindow,
+    [visualBrowserProxy.getLineFocusMediumCursorWindow()]: {
+      value: visualBrowserProxy.getLineFocusMediumCursorWindow(),
       style: LineFocusStyle.MEDIUM_WINDOW,
       movement: LineFocusMovement.CURSOR,
     },
-    [chrome.readingMode.lineFocusMediumStaticWindow]: {
-      value: chrome.readingMode.lineFocusMediumStaticWindow,
+    [visualBrowserProxy.getLineFocusMediumStaticWindow()]: {
+      value: visualBrowserProxy.getLineFocusMediumStaticWindow(),
       style: LineFocusStyle.MEDIUM_WINDOW,
       movement: LineFocusMovement.STATIC,
     },
-    [chrome.readingMode.lineFocusLargeCursorWindow]: {
-      value: chrome.readingMode.lineFocusLargeCursorWindow,
+    [visualBrowserProxy.getLineFocusLargeCursorWindow()]: {
+      value: visualBrowserProxy.getLineFocusLargeCursorWindow(),
       style: LineFocusStyle.LARGE_WINDOW,
       movement: LineFocusMovement.CURSOR,
     },
-    [chrome.readingMode.lineFocusLargeStaticWindow]: {
-      value: chrome.readingMode.lineFocusLargeStaticWindow,
+    [visualBrowserProxy.getLineFocusLargeStaticWindow()]: {
+      value: visualBrowserProxy.getLineFocusLargeStaticWindow(),
       style: LineFocusStyle.LARGE_WINDOW,
       movement: LineFocusMovement.STATIC,
     },
-    [chrome.readingMode.lineFocusCursorLine]: {
-      value: chrome.readingMode.lineFocusCursorLine,
+    [visualBrowserProxy.getLineFocusCursorLine()]: {
+      value: visualBrowserProxy.getLineFocusCursorLine(),
       style: LineFocusStyle.UNDERLINE,
       movement: LineFocusMovement.CURSOR,
     },
-    [chrome.readingMode.lineFocusStaticLine]: {
-      value: chrome.readingMode.lineFocusStaticLine,
+    [visualBrowserProxy.getLineFocusStaticLine()]: {
+      value: visualBrowserProxy.getLineFocusStaticLine(),
       style: LineFocusStyle.UNDERLINE,
       movement: LineFocusMovement.STATIC,
     },

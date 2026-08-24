@@ -8,7 +8,6 @@ import {currentReadHighlightClass, MovementGranularity, NodeStore, PARENT_OF_HIG
 import {assertEquals, assertFalse, assertGT, assertNotEquals, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {setWindowSize} from './common.js';
-import {FakeReadingMode} from './fake_reading_mode.js';
 
 suite('Movement', () => {
   let nodeStore: NodeStore;
@@ -21,8 +20,6 @@ suite('Movement', () => {
     // considered visible and don't wrap unexpectedly in tests.
     setWindowSize(1000, 1000);
 
-    const readingMode = new FakeReadingMode();
-    chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     nodeStore = NodeStore.getInstance();
     nodeStore.clear();
   });

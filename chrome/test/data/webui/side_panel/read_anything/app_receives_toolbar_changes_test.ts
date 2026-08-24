@@ -5,14 +5,14 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AudioBrowserProxyImpl, BrowserProxy, LineFocusController, LineFocusMovement, LineFocusStyle, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VisualBrowserProxyImpl, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AudioBrowserProxyImpl, BrowserProxy, ContentBrowserProxyImpl, ContentController, LineFocusController, LineFocusMovement, LineFocusStyle, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VisualBrowserProxyImpl, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {hasStyle, microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createApp, createSpeechSynthesisVoice, emitEvent, mockMetrics, setContent, setupBasicSpeech} from './common.js';
-import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
@@ -97,8 +97,8 @@ suite('AppReceivesToolbarChanges', () => {
     VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
     audioBrowserProxy = new TestAudioBrowserProxy();
     AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
-    const readingMode = new FakeReadingMode();
-    chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
+    ContentBrowserProxyImpl.setInstance(new TestContentBrowserProxy());
+    ContentController.setInstance(new ContentController());
     metrics = mockMetrics();
     readAloudModel = new TestReadAloudModelBrowserProxy();
     setInstance(readAloudModel);
@@ -327,7 +327,6 @@ suite('AppReceivesToolbarChanges', () => {
   });
 
   test('immersive view updates line focus padding', async () => {
-    chrome.readingMode.isLineFocusEnabled = true;
     visualBrowserProxy.lineFocusEnabled = true;
     app = await createApp();
     app.isImmersiveMode = () => true;
@@ -434,9 +433,7 @@ suite('AppReceivesToolbarChanges', () => {
 
   suite('line focus on empty page', () => {
     setup(() => {
-      chrome.readingMode.isLineFocusEnabled = true;
       visualBrowserProxy.lineFocusEnabled = true;
-      visualBrowserProxy.immersiveEnabled = true;
     });
 
     test('line focus is not shown on empty page', async () => {

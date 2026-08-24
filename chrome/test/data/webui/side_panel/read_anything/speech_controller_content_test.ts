@@ -1,15 +1,15 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {AudioBrowserProxyImpl, BrowserProxy, ContentController, NodeStore, playFromSelectionTimeout, ReadAloudHighlighter, ReadAloudNode, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, VisualBrowserProxyImpl, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AudioBrowserProxyImpl, BrowserProxy, ContentBrowserProxyImpl, ContentController, NodeStore, playFromSelectionTimeout, ReadAloudHighlighter, ReadAloudNode, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, VisualBrowserProxyImpl, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement, Segment} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
 import {createApp, createSpeechSynthesisVoice, setContent, stubAnimationFrame} from './common.js';
-import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
@@ -72,8 +72,7 @@ suite('SpeechController', () => {
   setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const readingMode = new FakeReadingMode();
-    chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
+    ContentBrowserProxyImpl.setInstance(new TestContentBrowserProxy());
     audioBrowserProxy = new TestAudioBrowserProxy();
     AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
     visualBrowserProxy = new TestVisualBrowserProxy();
