@@ -27,7 +27,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.AdvancedProtectionTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
-import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 import org.chromium.components.policy.test.annotations.Policies;
 
 /** Tests for {@link HttpsFirstModeSettingsFragment}. */
@@ -58,9 +57,6 @@ public class HttpsFirstModeSettingsFragmentTest {
     private HttpsFirstModeSettingsFragment mHttpsFirstModeSettingsFragment;
     private ChromeSwitchPreference mHttpsFirstModeTogglePref;
     private HttpsFirstModeVariantPreference mHttpsFirstModeVariantPref;
-    private RadioButtonWithDescriptionLayout mHttpsFirstModeVariantGroup;
-    private RadioButtonWithDescription mHttpsFirstModeVariantStrict;
-    private RadioButtonWithDescription mHttpsFirstModeVariantBalanced;
     private Preference mEnforcedByAdvancedProtectionWarning;
 
     private void startSettings() {

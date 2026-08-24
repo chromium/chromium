@@ -95,9 +95,6 @@ public class AppBannerManagerTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    // The ID of the last event received.
-    private String mLastNotifyEvent;
-
     private static final String NATIVE_APP_MANIFEST_WITH_ID =
             "/chrome/test/data/banners/play_app_manifest.json";
 
@@ -122,8 +119,6 @@ public class AppBannerManagerTest {
     private static final String NATIVE_APP_REFERRER = "chrome_inline&playinline=chrome_inline";
 
     private static final String NATIVE_APP_BLANK_REFERRER = "playinline=chrome_inline";
-
-    private static final String NATIVE_APP_PACKAGE_NAME = "com.example.app";
 
     private static final String INSTALL_ACTION = "INSTALL_ACTION";
 

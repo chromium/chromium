@@ -97,9 +97,6 @@ public class AmbientBadgeManagerTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    // The ID of the last event received.
-    private String mLastNotifyEvent;
-
     private static final String NATIVE_APP_MANIFEST_WITH_ID =
             "/chrome/test/data/banners/play_app_manifest.json";
 
@@ -120,8 +117,6 @@ public class AmbientBadgeManagerTest {
     private static final String NATIVE_APP_TITLE = "Mock app title";
 
     private static final String NATIVE_APP_INSTALL_TEXT = "Install this";
-
-    private static final String NATIVE_APP_REFERRER = "chrome_inline&playinline=chrome_inline";
 
     private static final String NATIVE_APP_BLANK_REFERRER = "playinline=chrome_inline";
 

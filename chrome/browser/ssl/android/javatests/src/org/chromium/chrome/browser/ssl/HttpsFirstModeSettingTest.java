@@ -44,8 +44,6 @@ public class HttpsFirstModeSettingTest {
             new SettingsTestRule<>(PrivacySettings.class);
 
     private static final String PREF_HTTPS_FIRST_MODE = "https_first_mode";
-    private static final String PREF_HTTPS_FIRST_MODE_SWITCH = "https_first_mode_switch";
-    private static final String PREF_HTTPS_FIRST_MODE_VARIANT = "https_first_mode_variant";
 
     private static Preference waitForPreference(
             final PreferenceFragmentCompat prefFragment, final String preferenceKey)
