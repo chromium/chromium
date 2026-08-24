@@ -19,6 +19,12 @@ source_set("ode") {
   ]
 
   deps = [ "//components/sync/base" ]
+
+  if (!is_android) {
+    public += [ "passkey_on_device_encryption_state_tracker.h" ]
+    sources += [ "passkey_on_device_encryption_state_tracker.cc" ]
+    public_deps += [ "//chrome/browser/webauthn" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -36,4 +42,12 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (!is_android) {
+    sources += [ "passkey_on_device_encryption_state_tracker_unittest.cc" ]
+    deps += [
+      "//chrome/browser/webauthn:test_support",
+      "//components/webauthn/core/browser:test_support",
+    ]
+  }
 }
