@@ -34,9 +34,6 @@ constexpr CGFloat kQuickActionsHeightUICleanup = 50.0;
 // The border radius for a quick action button.
 const CGFloat kButtonCornerRadius = 24.0;
 
-// The opacity of the quick action button background.
-const CGFloat kButtonBackgroundOpacity = 0.08;
-
 // The size of the quick actions symbols.
 constexpr CGFloat kSymbolPointSize = 18.0;
 constexpr CGFloat kSymbolPointSizeUICleanup = 14.0;
@@ -54,8 +51,7 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* color_palette) {
     return color_palette.omniboxColor;
   }
   if (IsNewTabPageUICleanupEnabled()) {
-    return [[UIColor colorNamed:kPrimaryColor]
-        colorWithAlphaComponent:kButtonBackgroundOpacity];
+    return [UIColor colorNamed:kNTPQuickActionChipColor];
   }
   return [UIColor colorNamed:kFakeboxMatchingBackgroundColor];
 }

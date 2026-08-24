@@ -38,8 +38,8 @@ extern NSString* const kPlaceholderImageTintColor;
 extern NSString* const kNewTabPageBackgroundColor;
 // Surface container low background color.
 extern NSString* const kSurfaceContainerLowColor;
-// Primary blue color. Used for quick action buttons on the NTP.
-extern NSString* const kPrimaryColor;
+// Color used for quick action buttons on the NTP.
+extern NSString* const kNTPQuickActionChipColor;
 // Primary background color.
 extern NSString* const kPrimaryBackgroundColor;
 extern NSString* const kInvertedPrimaryBackgroundColor;
