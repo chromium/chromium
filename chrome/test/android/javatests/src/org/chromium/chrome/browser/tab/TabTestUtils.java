@@ -129,8 +129,7 @@ public class TabTestUtils {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         SadTab.initForTesting(tab, sadTab);
-                        sadTab.show(
-                                ((TabImpl) tab).getThemedApplicationContext(), () -> {}, () -> {});
+                        sadTab.show(TabImpl.getThemedApplicationContext(), () -> {}, () -> {});
                     });
         }
     }

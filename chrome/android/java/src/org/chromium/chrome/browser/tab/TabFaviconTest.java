@@ -79,7 +79,6 @@ public class TabFaviconTest {
 
         mUserDataHost = new UserDataHost();
         doReturn(mUserDataHost).when(mTab).getUserDataHost();
-        doReturn(mContext).when(mTab).getThemedApplicationContext();
         doReturn(mContext).when(mTab).getContext();
         doReturn(mResources).when(mContext).getResources();
         doReturn(IDEAL_SIZE).when(mResources).getDimensionPixelSize(anyInt());

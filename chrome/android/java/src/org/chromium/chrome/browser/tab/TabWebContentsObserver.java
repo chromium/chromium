@@ -135,7 +135,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
     private void showSadTab(SadTab sadTab) {
         sadTab.show(
-                mTab.getThemedApplicationContext(),
+                TabImpl.getThemedApplicationContext(),
                 /* suggestionAction= */ () -> {
                     Activity activity = mTab.getWindowAndroidChecked().getActivity().get();
                     assert activity != null;

@@ -164,6 +164,12 @@ class TabImpl implements Tab, TabInternal {
 
     private static final String PRODUCT_VERSION = VersionInfo.getProductVersion();
 
+    /**
+     * An Application {@link Context} configured with night mode disabled to avoid leaking an {@link
+     * Activity}.
+     */
+    private static @Nullable Context sThemedApplicationContext;
+
     // LINT.IfChange(DiscardReason)
 
     @IntDef({DiscardReason.ON_DEMAND, DiscardReason.APPEND_NAVIGATION, DiscardReason.COUNT})
@@ -196,12 +202,6 @@ class TabImpl implements Tab, TabInternal {
 
     /** Whether or not this tab is a part of multi selection. */
     private @Nullable SelectionStateSupplier mSelectionStateSupplier;
-
-    /**
-     * An Application {@link Context}. Unlike {@link #mActivity}, this is the only one that is
-     * publicly exposed to help prevent leaking the {@link Activity}.
-     */
-    private final Context mThemedApplicationContext;
 
     /** Gives {@link Tab} a way to interact with the Android window. */
     private @Nullable WindowAndroid mWindowAndroid;
@@ -430,19 +430,6 @@ class TabImpl implements Tab, TabInternal {
         mProfile = profile;
         mRootId = mId;
         mIsArchived = isArchived;
-
-        // Override the configuration for night mode to always stay in light mode until all UIs in
-        // Tab are inflated from activity context instead of application context. This is to
-        // avoid getting the wrong night mode state when application context inherits a system UI
-        // mode different from the UI mode we need.
-        // TODO(crbug.com/41445155): Remove this once Tab UIs are all inflated from
-        // activity.
-        mThemedApplicationContext =
-                NightModeUtils.wrapContextWithNightModeConfig(
-                        ContextUtils.getApplicationContext(),
-                        ActivityUtils.getThemeId(),
-                        /* nightMode= */ false);
-
         mLaunchType = launchType;
 
         mAttachStateChangeListener =
@@ -514,10 +501,12 @@ class TabImpl implements Tab, TabInternal {
 
     @Override
     public Context getContext() {
-        if (getWindowAndroid() == null) return mThemedApplicationContext;
+        if (getWindowAndroid() == null) {
+            return getThemedApplicationContext();
+        }
         Context context = getWindowAndroid().getContext().get();
         assumeNonNull(context);
-        return context == context.getApplicationContext() ? mThemedApplicationContext : context;
+        return context == context.getApplicationContext() ? getThemedApplicationContext() : context;
     }
 
     @Override
@@ -650,8 +639,27 @@ class TabImpl implements Tab, TabInternal {
         return mTitle;
     }
 
-    Context getThemedApplicationContext() {
-        return mThemedApplicationContext;
+    /** Returns an Application {@link Context} configured with night mode disabled. */
+    static Context getThemedApplicationContext() {
+        if (sThemedApplicationContext == null) {
+            // Override the configuration for night mode to always stay in light mode until all UIs
+            // in Tab are inflated from activity context instead of application context. This is to
+            // avoid getting the wrong night mode state when application context inherits a system
+            // UI mode different from the UI mode we need.
+            // TODO(crbug.com/41445155): Remove this once Tab UIs are all inflated from activity.
+            sThemedApplicationContext =
+                    NightModeUtils.wrapContextWithNightModeConfig(
+                            ContextUtils.getApplicationContext(),
+                            ActivityUtils.getThemeId(),
+                            /* nightMode= */ false);
+        }
+        return sThemedApplicationContext;
+    }
+
+    /** Sets the themed application context for testing. */
+    static void setThemedApplicationContextForTesting(@Nullable Context context) {
+        sThemedApplicationContext = context;
+        ResettersForTesting.register(() -> sThemedApplicationContext = null);
     }
 
     @Override
@@ -2274,9 +2282,9 @@ class TabImpl implements Tab, TabInternal {
     }
 
     private void setupContentView(WebContents webContents) {
-        ContentView cv = ContentView.createContentView(mThemedApplicationContext, webContents);
-        cv.setContentDescription(
-                mThemedApplicationContext.getString(R.string.accessibility_content_view));
+        Context context = getThemedApplicationContext();
+        ContentView cv = ContentView.createContentView(context, webContents);
+        cv.setContentDescription(context.getString(R.string.accessibility_content_view));
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.ANNOTATED_PAGE_CONTENTS_VIRTUAL_STRUCTURE)) {
             cv.setVirtualStructureProvider(new PageContentProtoViewStructureBuilder());
@@ -2321,7 +2329,7 @@ class TabImpl implements Tab, TabInternal {
 
             if (mIsContentViewDeferred) {
                 DeferredContentViewStub stub =
-                        new DeferredContentViewStub(mThemedApplicationContext, webContents);
+                        new DeferredContentViewStub(getThemedApplicationContext(), webContents);
                 mContentView = stub;
                 webContents.setDelegates(
                         PRODUCT_VERSION,
