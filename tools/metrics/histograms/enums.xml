@@ -4893,6 +4893,8 @@ shown properly on the user-facing crash UI.
   <int value="-2147221164" label="REGDB_E_CLASSNOTREG"/>
   <int value="-2147221163" label="REGDB_E_IIDNOTREG"/>
   <int value="-2147221005" label="CO_E_CLASSSTRING"/>
+  <int value="-2147220997" label="CO_E_OBJNOTREG"/>
+  <int value="-2147220995" label="CO_E_OBJNOTCONNECTED"/>
   <int value="-2147220480"
       label="custom error for abort setting badge for non app window"/>
   <int value="-2147220479"
@@ -5037,6 +5039,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147024888" label="E_NOT_ENOUGH_MEMORY"/>
   <int value="-2147024882" label="E_OUTOFMEMORY"/>
   <int value="-2147024877" label="ERROR_WRITE_PROTECT"/>
+  <int value="-2147024875" label="ERROR_NOT_READY"/>
   <int value="-2147024874" label="ERROR_BAD_COMMAND"/>
   <int value="-2147024865" label="ERROR_GEN_FAILURE"/>
   <int value="-2147024846" label="E_NOT_SUPPORTED / ERROR_NOT_SUPPORTED"/>
@@ -5045,12 +5048,18 @@ shown properly on the user-facing crash UI.
   <int value="-2147024784" label="ERROR_DISK_FULL"/>
   <int value="-2147024775" label="ERROR_SEM_TIMEOUT"/>
   <int value="-2147024770" label="E_MOD_NOT_FOUND / ERROR_MOD_NOT_FOUND"/>
+  <int value="-2147024769" label="ERROR_PROC_NOT_FOUND"/>
+  <int value="-2147024738" label="ERROR_NOT_LOCKED"/>
   <int value="-2147024726" label="ERROR_BUSY"/>
   <int value="-2147024713" label="ERROR_ALREADY_EXISTS"/>
   <int value="-2147024703" label="ERROR_BAD_EXE_FORMAT"/>
   <int value="-2147024671" label="ERROR_VIRUS_INFECTED"/>
+  <int value="-2147024663" label="ERROR_PIPE_NOT_CONNECTED"/>
+  <int value="-2147024641" label="ERROR_EA_LIST_INCONSISTENT"/>
   <int value="-2147024638" label="WAIT_TIMEOUT"/>
   <int value="-2147024637" label="DRM_E_NOMORE_DATA"/>
+  <int value="-2147024463" label="ERROR_NO_SUCH_DEVICE"/>
+  <int value="-2147024413" label="ERROR_DEVICE_HARDWARE_ERROR"/>
   <int value="-2147024362" label="DRM_E_ARITHMETIC_OVERFLOW (0x80070216)"/>
   <int value="-2147024319" label="ERROR_INVALID_IMAGE_HASH (0x80070241)"/>
   <int value="-2147024110" label="ERROR_ACCESS_DISABLED_NO_SAFER_UI_BY_POLICY"/>
@@ -5061,6 +5070,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147023812" label="ERROR_NOT_SAFEBOOT_SERVICE"/>
   <int value="-2147023781" label="ERROR_SHUTDOWN_IN_PROGRESS"/>
   <int value="-2147023779" label="ERROR_IO_DEVICE"/>
+  <int value="-2147023729" label="ERROR_DEVICE_NOT_CONNECTED"/>
   <int value="-2147023728" label="ERROR_NOT_FOUND"/>
   <int value="-2147023673" label="ERROR_CANCELLED"/>
   <int value="-2147023671" label="ERROR_CONNECTION_REFUSED"/>
@@ -5074,14 +5084,18 @@ shown properly on the user-facing crash UI.
   <int value="-2147023441" label="ERROR_COMMITMENT_LIMIT"/>
   <int value="-2147023436" label="ERROR_TIMEOUT"/>
   <int value="-2147023279" label="ERROR_DEVICE_REMOVED"/>
+  <int value="-2147023266" label="ERROR_UNSUPPORTED_TYPE"/>
   <int value="-2147023179" label="RPC_S_UNKNOWN_IF"/>
   <int value="-2147023174" label="RPC_S_SERVER_UNAVAILABLE"/>
   <int value="-2147023170" label="RPC_S_CALL_FAILED"/>
+  <int value="-2147023169" label="RPC_S_CALL_FAILED_DNE"/>
   <int value="-2147023164" label="RPC_S_UNSUPPORTED_TYPE"/>
   <int value="-2147023156" label="RPC_S_DUPLICATE_ENDPOINT"/>
   <int value="-2147023143" label="EPT_S_NOT_REGISTERED"/>
   <int value="-2147023113" label="RPC_X_BAD_STUB_DATA"/>
+  <int value="-2147023078" label="RPC_S_CALL_CANCELLED"/>
   <int value="-2147022646" label="ERROR_NOT_CONNECTED"/>
+  <int value="-2147022492" label="ERROR_DEVICE_IN_USE"/>
   <int value="-2147019873" label="E_NOT_VALID_STATE (0x8007139F)"/>
   <int value="-2147012894" label="WININET_E_TIMEOUT"/>
   <int value="-2147012889" label="WININET_E_NAME_NOT_RESOLVED"/>
@@ -5124,6 +5138,7 @@ shown properly on the user-facing crash UI.
   <int value="-2089418750" label="E_INVALID_PROTOCOL_FORMAT"/>
   <int value="-2018574335"
       label="SQLITE_E_ERROR (Windows Audio DB Corruption)"/>
+  <int value="-2018574323" label="SQLITE_E_FULL"/>
   <int value="-2005532292" label="D3DERR_OUTOFVIDEOMEMORY"/>
   <int value="-2005270527" label="DXGI_ERROR_INVALID_CALL"/>
   <int value="-2005270526" label="DXGI_ERROR_NOT_FOUND"/>
@@ -5148,8 +5163,11 @@ shown properly on the user-facing crash UI.
   <int value="-2005270485" label="DXGI_ERROR_ACCESS_DENIED"/>
   <int value="-2005270484" label="DXGI_ERROR_NAME_ALREADY_EXISTS"/>
   <int value="-2005270483" label="DXGI_ERROR_SDK_COMPONENT_MISSING"/>
-  <int value="-2005139430" label="0x887C001A (D3D11 / Graphics Interop Error)"/>
+  <int value="-2005139430" label="AEERR_ITEM_NOT_FOUND"/>
+  <int value="-2005139426" label="AEERR_INVALID_CONNECTION_FORMAT"/>
+  <int value="-2005139410" label="AEERR_ADG_ALREADY_CONNECTED"/>
   <int value="-2005139398" label="AEERR_APO_NOT_REGISTERED"/>
+  <int value="-2005139372" label="AEERR_BUFFER_SIZE_MISMATCH"/>
   <int value="-2004287487" label="AUDCLNT_E_NOT_INITIALIZED"/>
   <int value="-2004287486" label="AUDCLNT_E_ALREADY_INITIALIZED"/>
   <int value="-2004287485" label="AUDCLNT_E_WRONG_ENDPOINT_TYPE"/>
@@ -5208,7 +5226,9 @@ shown properly on the user-facing crash UI.
   <int value="-1073741811" label="STATUS_INVALID_PARAMETER"/>
   <int value="-1073741801" label="STATUS_INVALID_PARAMETER_2"/>
   <int value="-1073741790" label="STATUS_ACCESS_DENIED"/>
+  <int value="-1073741670" label="STATUS_INSUFFICIENT_RESOURCES"/>
   <int value="-1073741523" label="STATUS_CANT_WAIT"/>
+  <int value="-1073741515" label="STATUS_DLL_NOT_FOUND"/>
   <int value="-1073741502" label="STATUS_DLL_INIT_FAILED"/>
   <int value="-1072875856" label="MF_E_PLATFORM_NOT_INITIALIZED"/>
   <int value="-1072875855" label="MF_E_BUFFERTOOSMALL"/>
@@ -5568,6 +5588,7 @@ shown properly on the user-facing crash UI.
   <int value="-1071241965"
       label="ERROR_GRAPHICS_OPM_OUTPUT_DOES_NOT_SUPPORT_HDCP (0xC0262513)"/>
   <int value="-805306212" label="STATUS_DEVICE_DATA_ERROR"/>
+  <int value="-805306207" label="STATUS_WORKING_SET_QUOTA"/>
   <int value="-805306067" label="STATUS_COMMITMENT_LIMIT"/>
   <int value="-805305979" label="STATUS_IO_DEVICE_ERROR"/>
   <int value="-536870363" label="ERROR_NO_SUCH_DEVICE_INTERFACE"/>
