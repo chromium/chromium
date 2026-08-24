@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
 #include "chrome/browser/devtools/device/tcp_device_provider.h"
 #include "chrome/browser/devtools/remote_debugging_server.h"
@@ -80,7 +81,13 @@ class PortForwardingTest: public InProcessBrowserTest {
   };
 };
 
-IN_PROC_BROWSER_TEST_F(PortForwardingTest, LoadPageWithStyleAnsScript) {
+// TODO(crbug.com/551691454): Re-enable on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_LoadPageWithStyleAnsScript DISABLED_LoadPageWithStyleAnsScript
+#else
+#define MAYBE_LoadPageWithStyleAnsScript LoadPageWithStyleAnsScript
+#endif
+IN_PROC_BROWSER_TEST_F(PortForwardingTest, MAYBE_LoadPageWithStyleAnsScript) {
   Profile* profile = browser()->GetProfile();
   AndroidDeviceManager::DeviceProviders device_providers;
 
