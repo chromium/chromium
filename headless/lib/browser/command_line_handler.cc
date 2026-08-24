@@ -4,13 +4,12 @@
 
 #include "headless/lib/browser/command_line_handler.h"
 
-#include <cstdio>
 #include <string_view>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "components/headless/screen_info/headless_screen_info.h"
@@ -95,11 +94,17 @@ bool HandleWindowSize(base::CommandLine& command_line,
   const std::string switch_value =
       command_line.GetSwitchValueASCII(switches::kWindowSize);
 
+  const std::vector<std::string_view> parts = base::SplitStringPiece(
+      switch_value, "x,", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (parts.size() != 2) {
+    LOG(ERROR) << "Malformed window size: " << switch_value;
+    return false;
+  }
+
   int width = 0;
   int height = 0;
-  int n =
-      UNSAFE_TODO(sscanf(switch_value.c_str(), "%d%*[x,]%d", &width, &height));
-  if (n != 2 || width < 0 || height < 0) {
+  if (!base::StringToInt(parts[0], &width) ||
+      !base::StringToInt(parts[1], &height) || width < 0 || height < 0) {
     LOG(ERROR) << "Malformed window size: " << switch_value;
     return false;
   }
