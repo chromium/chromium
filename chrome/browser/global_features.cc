@@ -140,7 +140,7 @@ void GlobalFeatures::PostBrowserProcessInit() {
         std::make_unique<glic::GlicSyntheticTrialManager>();
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere)) {
     omnibox_everywhere_controller_ =
         std::make_unique<omnibox_everywhere::OmniboxEverywhereController>();

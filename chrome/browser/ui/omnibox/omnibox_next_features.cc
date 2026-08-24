@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -278,6 +279,7 @@ bool IsAimPopupEnabled(Profile* profile) {
 }
 
 bool IsOmniboxEverywhereEligible(Profile* profile) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (!profile || profile->IsOffTheRecord()) {
     return false;
   }
@@ -288,6 +290,9 @@ bool IsOmniboxEverywhereEligible(Profile* profile) {
 
   return search::DefaultSearchProviderIsGoogle(
       TemplateURLServiceFactory::GetForProfile(profile));
+#else
+  return false;
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 }
 
 bool IsOmniboxEverywhereEnabled(Profile* profile) {

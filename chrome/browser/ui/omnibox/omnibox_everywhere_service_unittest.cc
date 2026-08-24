@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -26,6 +27,10 @@ TEST_F(OmniboxEverywhereServiceTest, GetForProfile) {
   TestingProfile profile;
   OmniboxEverywhereService* service =
       OmniboxEverywhereServiceFactory::GetForProfile(&profile);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   ASSERT_TRUE(service);
   EXPECT_FALSE(service->IsPopupVisible());
+#else
+  EXPECT_FALSE(service);
+#endif
 }

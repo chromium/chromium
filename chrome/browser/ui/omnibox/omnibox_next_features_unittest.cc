@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 #include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
@@ -412,7 +413,8 @@ TEST_F(OmniboxNextAimEligibilityTest, IsOmniboxEverywhereEligibleAndEnabled) {
   EXPECT_FALSE(omnibox::IsOmniboxEverywhereEligible(nullptr));
   EXPECT_FALSE(omnibox::IsOmniboxEverywhereEnabled(nullptr));
 
-  // Test with Google DSE and feature enabled.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // Test with Google DSE and feature enabled on macOS / Windows.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(omnibox::kOmniboxEverywhere);
@@ -432,6 +434,17 @@ TEST_F(OmniboxNextAimEligibilityTest, IsOmniboxEverywhereEligibleAndEnabled) {
       EXPECT_TRUE(omnibox::IsOmniboxEverywhereEnabled(profile()));
     }
   }
+#else
+  // On unsupported platforms (non-Mac / non-Windows), Omnibox Everywhere is
+  // never eligible or enabled even when the feature is enabled and Google is
+  // DSE.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(omnibox::kOmniboxEverywhere);
+    EXPECT_FALSE(omnibox::IsOmniboxEverywhereEligible(profile()));
+    EXPECT_FALSE(omnibox::IsOmniboxEverywhereEnabled(profile()));
+  }
+#endif
 
   // Test with Google DSE and feature disabled.
   {
@@ -467,6 +480,24 @@ TEST_F(OmniboxNextAimEligibilityTest, IsOmniboxEverywhereEligibleAndEnabled) {
     EXPECT_FALSE(omnibox::IsOmniboxEverywhereEligible(profile()));
     EXPECT_FALSE(omnibox::IsOmniboxEverywhereEnabled(profile()));
   }
+}
+
+TEST_F(OmniboxNextAimEligibilityTest,
+       OmniboxEverywherePlatformEligibilityRestriction) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kOmniboxEverywhere);
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // On macOS and Windows, Omnibox Everywhere is eligible and enabled when
+  // Google is the default search provider.
+  EXPECT_TRUE(omnibox::IsOmniboxEverywhereEligible(profile()));
+  EXPECT_TRUE(omnibox::IsOmniboxEverywhereEnabled(profile()));
+#else
+  // On other platforms (e.g. Linux, ChromeOS, Android), Omnibox Everywhere is
+  // always ineligible and disabled.
+  EXPECT_FALSE(omnibox::IsOmniboxEverywhereEligible(profile()));
+  EXPECT_FALSE(omnibox::IsOmniboxEverywhereEnabled(profile()));
+#endif
 }
 
 }  // namespace omnibox

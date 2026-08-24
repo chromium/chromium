@@ -5930,9 +5930,9 @@ test("unit_tests") {
   }
 
   if (is_win || is_mac) {
-    sources += []
     deps += [
       "//chrome/browser/enterprise/platform_auth:test_utils",
+      "//chrome/browser/ui/omnibox/omnibox_everywhere:unit_tests",
       "//chrome/browser/ui/pdf/infobar:unit_tests",
       "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar:unit_tests",
     ]
@@ -6743,7 +6743,6 @@ test("unit_tests") {
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/omnibox:test_support",
       "//chrome/browser/ui/omnibox:unit_tests",
-      "//chrome/browser/ui/omnibox/omnibox_everywhere:unit_tests",
       "//chrome/browser/ui/qrcode_generator:unit_tests",
       "//chrome/browser/ui/safety_hub:unit_tests",
       "//chrome/browser/ui/signin",
@@ -8647,7 +8646,6 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/lens:interactive_ui_tests",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/omnibox:interactive_ui_tests",
-      "//chrome/browser/ui/omnibox/omnibox_everywhere:interactive_ui_tests",
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/passwords:impl",
       "//chrome/browser/ui/profiles",
@@ -8905,7 +8903,10 @@ if (!is_android && !is_chromeos_device) {
 
       if (is_mac || is_win) {
         sources += [ "../browser/ui/extensions/settings_overridden_dialog_interactive_uitest.cc" ]
-        deps += [ "//chrome/browser/ui/views/extensions:settings_overridden_dialog_view_utils" ]
+        deps += [
+          "//chrome/browser/ui/omnibox/omnibox_everywhere:interactive_ui_tests",
+          "//chrome/browser/ui/views/extensions:settings_overridden_dialog_view_utils",
+        ]
       }
     }
 

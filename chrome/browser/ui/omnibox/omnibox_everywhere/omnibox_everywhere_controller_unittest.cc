@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
@@ -138,7 +139,11 @@ TEST_F(OmniboxEverywhereGlobalFeaturesTest,
 
   GlobalFeatures* features = TestingBrowserProcess::GetGlobal()->GetFeatures();
   ASSERT_TRUE(features);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   EXPECT_TRUE(features->omnibox_everywhere_controller());
+#else
+  EXPECT_FALSE(features->omnibox_everywhere_controller());
+#endif
 
   TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
 }
