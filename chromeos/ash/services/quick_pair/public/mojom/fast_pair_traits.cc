@@ -18,14 +18,13 @@ namespace mojo {
 bool StructTraits<DecryptedResponseDataView, DecryptedResponse>::Read(
     DecryptedResponseDataView data,
     DecryptedResponse* out) {
-  std::vector<uint8_t> address_bytes;
-  if (!data.ReadAddressBytes(&address_bytes) ||
-      address_bytes.size() != out->address_bytes.size())
+  if (!data.ReadAddressBytes(&out->address_bytes)) {
     return false;
+  }
 
-  std::vector<uint8_t> salt_bytes;
-  if (!data.ReadSalt(&salt_bytes) || salt_bytes.size() != out->salt.size())
+  if (!data.ReadSalt(&out->salt)) {
     return false;
+  }
 
   out->message_type = EnumTraits<MessageType, FastPairMessageType>::FromMojom(
       data.message_type());
@@ -34,11 +33,8 @@ bool StructTraits<DecryptedResponseDataView, DecryptedResponse>::Read(
     return false;
   }
 
-  std::ranges::copy(address_bytes, out->address_bytes.begin());
-  std::ranges::copy(salt_bytes, out->salt.begin());
   out->flags = data.flags();
   out->num_addresses = data.num_addresses();
-
   return true;
 }
 
