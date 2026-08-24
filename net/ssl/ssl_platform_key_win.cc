@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "crypto/evp.h"
@@ -281,11 +282,20 @@ class SSLPlatformKeyCNG : public ThreadedSSLPrivateKey::Delegate {
     crypto::OpenSSLErrStackTracer tracer(FROM_HERE);
 
     const EVP_MD* md = SSL_get_signature_algorithm_digest(algorithm);
-    uint8_t digest[EVP_MAX_MD_SIZE];
-    unsigned digest_len;
-    if (!md || !EVP_Digest(input.data(), input.size(), digest, &digest_len, md,
-                           nullptr)) {
-      return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
+    uint8_t digest_buf[EVP_MAX_MD_SIZE];
+    base::span<const uint8_t> digest;
+    if (type_ == EVP_PKEY_ML_DSA_44 || type_ == EVP_PKEY_ML_DSA_65 ||
+        type_ == EVP_PKEY_ML_DSA_87) {
+      // Although `NCryptSignHash` normally signs a hash, the Windows APIs for
+      // ML-DSA take the unhashed input as the "hash value".
+      digest = input;
+    } else {
+      unsigned digest_len;
+      if (!md || !EVP_Digest(input.data(), input.size(), digest_buf,
+                             &digest_len, md, nullptr)) {
+        return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
+      }
+      digest = base::span(digest_buf).first(digest_len);
     }
 
     BCRYPT_PKCS1_PADDING_INFO pkcs1_padding_info = {nullptr};
@@ -326,17 +336,17 @@ class SSLPlatformKeyCNG : public ThreadedSSLPrivateKey::Delegate {
     }
 
     DWORD signature_len;
-    SECURITY_STATUS status =
-        NCryptSignHash(key_.get(), padding_info, const_cast<BYTE*>(digest),
-                       digest_len, nullptr, 0, &signature_len, flags);
+    SECURITY_STATUS status = NCryptSignHash(
+        key_.get(), padding_info, const_cast<BYTE*>(digest.data()),
+        digest.size(), nullptr, 0, &signature_len, flags);
     if (FAILED(status)) {
       LOG(ERROR) << "NCryptSignHash failed: " << status;
       return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
     }
     signature->resize(signature_len);
-    status = NCryptSignHash(key_.get(), padding_info, const_cast<BYTE*>(digest),
-                            digest_len, signature->data(), signature_len,
-                            &signature_len, flags);
+    status = NCryptSignHash(
+        key_.get(), padding_info, const_cast<BYTE*>(digest.data()),
+        digest.size(), signature->data(), signature_len, &signature_len, flags);
     if (FAILED(status)) {
       LOG(ERROR) << "NCryptSignHash failed: " << status;
       return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
@@ -385,7 +395,9 @@ class SSLPlatformKeyCNG : public ThreadedSSLPrivateKey::Delegate {
 scoped_refptr<SSLPrivateKey> WrapCNGPrivateKey(const EVP_PKEY* pubkey,
                                                crypto::ScopedNCryptKey key) {
   int key_type = EVP_PKEY_id(pubkey);
-  if (key_type != EVP_PKEY_RSA && key_type != EVP_PKEY_EC) {
+  if (key_type != EVP_PKEY_RSA && key_type != EVP_PKEY_EC &&
+      key_type != EVP_PKEY_ML_DSA_44 && key_type != EVP_PKEY_ML_DSA_65 &&
+      key_type != EVP_PKEY_ML_DSA_87) {
     return nullptr;
   }
 

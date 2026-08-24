@@ -4,13 +4,18 @@
 
 #include "net/ssl/ssl_platform_key_win.h"
 
+#include <array>
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/notreached.h"
+#include "base/strings/cstring_view.h"
 #include "base/test/task_environment.h"
 #include "crypto/evp.h"
 #include "crypto/openssl_util.h"
@@ -65,6 +70,18 @@ const TestKey kTestKeys[] = {
      .cert_file = "client_rsa1024.pem",
      .key_file = "client_rsa1024.pk8",
      .type = EVP_PKEY_RSA},
+    {.name = "MLDSA44",
+     .cert_file = "client_mldsa44.pem",
+     .key_file = "client_mldsa44.pk8",
+     .type = EVP_PKEY_ML_DSA_44},
+    {.name = "MLDSA65",
+     .cert_file = "client_mldsa65.pem",
+     .key_file = "client_mldsa65.pk8",
+     .type = EVP_PKEY_ML_DSA_65},
+    {.name = "MLDSA87",
+     .cert_file = "client_mldsa87.pem",
+     .key_file = "client_mldsa87.pk8",
+     .type = EVP_PKEY_ML_DSA_87},
 };
 
 std::string TestParamsToString(const testing::TestParamInfo<TestKey>& params) {
@@ -148,7 +165,8 @@ bool PKCS8ToBLOBForCNG(base::span<const uint8_t> pkcs8,
     return false;
   }
 
-  if (EVP_PKEY_id(key.get()) == EVP_PKEY_RSA) {
+  const int key_type = EVP_PKEY_id(key.get());
+  if (key_type == EVP_PKEY_RSA) {
     // See
     // https://msdn.microsoft.com/en-us/library/windows/desktop/aa375531(v=vs.85).aspx.
     const RSA* rsa = EVP_PKEY_get0_RSA(key.get());
@@ -160,10 +178,10 @@ bool PKCS8ToBLOBForCNG(base::span<const uint8_t> pkcs8,
     header.cbPrime1 = BN_num_bytes(RSA_get0_p(rsa));
     header.cbPrime2 = BN_num_bytes(RSA_get0_q(rsa));
 
+    base::span<const uint8_t> header_bytes = base::byte_span_from_ref(header);
     bssl::ScopedCBB cbb;
-    if (!CBB_init(cbb.get(), sizeof(header) + pkcs8.size()) ||
-        !CBB_add_bytes(cbb.get(), reinterpret_cast<const uint8_t*>(&header),
-                       sizeof(header)) ||
+    if (!CBB_init(cbb.get(), header_bytes.size() + pkcs8.size()) ||
+        !CBB_add_bytes(cbb.get(), header_bytes.data(), header_bytes.size()) ||
         !AddBIGNUMBigEndian(cbb.get(), RSA_get0_e(rsa), header.cbPublicExp) ||
         !AddBIGNUMBigEndian(cbb.get(), RSA_get0_n(rsa), header.cbModulus) ||
         !AddBIGNUMBigEndian(cbb.get(), RSA_get0_p(rsa), header.cbPrime1) ||
@@ -180,7 +198,7 @@ bool PKCS8ToBLOBForCNG(base::span<const uint8_t> pkcs8,
     return true;
   }
 
-  if (EVP_PKEY_id(key.get()) == EVP_PKEY_EC) {
+  if (key_type == EVP_PKEY_EC) {
     // See
     // https://msdn.microsoft.com/en-us/library/windows/desktop/aa375520(v=vs.85).aspx.
     const EC_KEY* ec_key = EVP_PKEY_get0_EC_KEY(key.get());
@@ -206,12 +224,12 @@ bool PKCS8ToBLOBForCNG(base::span<const uint8_t> pkcs8,
       default:
         return false;
     }
-    header.cbKey = BN_num_bytes(EC_GROUP_get0_order(group));
+    header.cbKey = (EC_GROUP_get_degree(group) + 7) / 8;
 
+    base::span<const uint8_t> header_bytes = base::byte_span_from_ref(header);
     bssl::ScopedCBB cbb;
-    if (!CBB_init(cbb.get(), sizeof(header) + header.cbKey * 3) ||
-        !CBB_add_bytes(cbb.get(), reinterpret_cast<const uint8_t*>(&header),
-                       sizeof(header)) ||
+    if (!CBB_init(cbb.get(), header_bytes.size() + header.cbKey * 3) ||
+        !CBB_add_bytes(cbb.get(), header_bytes.data(), header_bytes.size()) ||
         !AddBIGNUMBigEndian(cbb.get(), x.get(), header.cbKey) ||
         !AddBIGNUMBigEndian(cbb.get(), y.get(), header.cbKey) ||
         !AddBIGNUMBigEndian(cbb.get(), EC_KEY_get0_private_key(ec_key),
@@ -221,6 +239,48 @@ bool PKCS8ToBLOBForCNG(base::span<const uint8_t> pkcs8,
 
     *blob_type = BCRYPT_ECCPRIVATE_BLOB;
     *blob = base::ToVector(crypto::CbbAsSpan(cbb.get()));
+    return true;
+  }
+
+  if (key_type == EVP_PKEY_ML_DSA_44 || key_type == EVP_PKEY_ML_DSA_65 ||
+      key_type == EVP_PKEY_ML_DSA_87) {
+    // See
+    // https://learn.microsoft.com/en-us/windows/win32/seccng/bcrypt/ns-bcrypt-bcrypt_pqdsa_key_blob
+    base::wcstring_view parameter_set;
+    switch (key_type) {
+      case EVP_PKEY_ML_DSA_44:
+        parameter_set = BCRYPT_MLDSA_PARAMETER_SET_44;
+        break;
+      case EVP_PKEY_ML_DSA_65:
+        parameter_set = BCRYPT_MLDSA_PARAMETER_SET_65;
+        break;
+      case EVP_PKEY_ML_DSA_87:
+        parameter_set = BCRYPT_MLDSA_PARAMETER_SET_87;
+        break;
+      default:
+        NOTREACHED();
+    }
+
+    std::array<uint8_t, 32> seed;  // ML-DSA seeds are always 32 bytes.
+    size_t seed_len = seed.size();
+    CHECK(EVP_PKEY_get_private_seed(key.get(), seed.data(), &seed_len));
+    CHECK(seed_len == seed.size());
+
+    base::span<const uint8_t> parameter_set_bytes =
+        base::byte_span_with_nul_from_cstring_view(parameter_set);
+    BCRYPT_PQDSA_KEY_BLOB header = {};
+    header.dwMagic = BCRYPT_MLDSA_PRIVATE_SEED_MAGIC;
+    header.cbParameterSet = parameter_set_bytes.size();
+    header.cbKey = seed.size();
+
+    *blob_type = BCRYPT_PQDSA_PRIVATE_SEED_BLOB;
+    blob->clear();
+    base::span<const uint8_t> header_bytes = base::byte_span_from_ref(header);
+    blob->reserve(header_bytes.size() + parameter_set_bytes.size() +
+                  seed.size());
+    blob->append_range(header_bytes);
+    blob->append_range(parameter_set_bytes);
+    blob->append_range(seed);
     return true;
   }
 
@@ -259,6 +319,19 @@ TEST_P(SSLPlatformKeyWinTest, KeyMatchesCNG) {
       crypto::ScopedNCryptProvider::Receiver(prov).get(),
       MS_KEY_STORAGE_PROVIDER, 0);
   ASSERT_FALSE(FAILED(status)) << status;
+
+  // ML-DSA support was only added to Windows 11 in the October 2025 update.
+  // Check for ML-DSA support and skip the test if we cannot run it.
+  if (test_key.type == EVP_PKEY_ML_DSA_44 ||
+      test_key.type == EVP_PKEY_ML_DSA_65 ||
+      test_key.type == EVP_PKEY_ML_DSA_87) {
+    status = NCryptIsAlgSupported(prov.get(), BCRYPT_MLDSA_ALGORITHM,
+                                  NCRYPT_SILENT_FLAG);
+    if (status == NTE_NOT_SUPPORTED) {
+      GTEST_SKIP() << "Software storage provider does not support ML-DSA";
+    }
+    ASSERT_FALSE(FAILED(status)) << status;
+  }
 
   LPCWSTR blob_type;
   std::vector<uint8_t> blob;
