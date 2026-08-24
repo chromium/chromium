@@ -10105,6 +10105,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.UDPSocketPosix.RecvMmsgPacketsRead" units="packets"
+    expires_after="2027-07-17">
+  <owner>aymanm@google.com</owner>
+  <owner>ricea@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records the number of UDP datagrams read in a single batch read (recvmmsg)
+    operation on a UDPSocketPosix. This metric is sampled at 1% of successful
+    recvmmsg read operations. This metric is only emitted if `ReadMultiple()` is
+    called and recvmmsg is used.
+  </summary>
+</histogram>
+
 <histogram name="Net.UDPSocketPosix.SetSocketOptionGroResult"
     enum="SetSocketOptionGroResult" expires_after="2027-07-17">
   <owner>aymanm@google.com</owner>

@@ -306,6 +306,13 @@ void RecordGroPacketsRead(size_t packet_count) {
   }
 }
 
+void RecordRecvMmsgPacketsRead(size_t packet_count) {
+  if (base::ShouldRecordSubsampledMetric(0.01)) {
+    base::UmaHistogramCounts100("Net.UDPSocketPosix.RecvMmsgPacketsRead",
+                                base::checked_cast<int>(packet_count));
+  }
+}
+
 }  // namespace
 #endif
 
@@ -1266,6 +1273,7 @@ base::expected<DatagramsMetadata, Error> UDPSocketPosix::ProcessRecvMmsgResults(
     datagrams.push_back(DatagramMetadata{
         .offset = i * maximum_packet_size, .length = msg_len, .tos = msg_tos});
   }
+  RecordRecvMmsgPacketsRead(datagrams.size());
   return datagrams;
 }
 
