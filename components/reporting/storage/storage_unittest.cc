@@ -219,7 +219,8 @@ class SingleDecryptionContext {
 };
 
 class StorageTest
-    : public ::testing::TestWithParam<::testing::tuple<bool, size_t, bool>> {
+    : public ::testing::TestWithParam<
+          ::testing::tuple<bool, size_t, bool, bool>> {
  protected:
   void SetUp() override {
     ASSERT_TRUE(location_.CreateUniqueTempDir());
@@ -246,6 +247,11 @@ class StorageTest
     if (is_degradation_enabled()) {
       // Enable storage degradation
       enabled_features.push_back(kReportingStorageDegradationFeature);
+    }
+    if (is_erase_legacy_queue_enabled()) {
+      enabled_features.push_back(kEraseLegacyQueueOnDataLoss);
+    } else {
+      disabled_features.push_back(kEraseLegacyQueueOnDataLoss);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     test_compression_module_ =
@@ -1028,6 +1034,9 @@ class StorageTest
 
   bool is_encryption_enabled() const { return ::testing::get<0>(GetParam()); }
   bool is_degradation_enabled() const { return ::testing::get<2>(GetParam()); }
+  bool is_erase_legacy_queue_enabled() const {
+    return ::testing::get<3>(GetParam());
+  }
   size_t single_file_size_limit() const {
     return ::testing::get<1>(GetParam());
   }
@@ -2259,7 +2268,8 @@ INSTANTIATE_TEST_SUITE_P(
                        ::testing::Values(128 * 1024LL * 1024LL,
                                          256 /* two records in file */,
                                          1 /* single record in file */),
-                       ::testing::Bool() /* true - degradation enabled */));
+                       ::testing::Bool() /* true - degradation enabled */,
+                       ::testing::Bool() /* true - erase legacy queue on data loss */));
 
 }  // namespace
 }  // namespace reporting
