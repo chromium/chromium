@@ -379,6 +379,11 @@ If you want to run the exporter before your CL is ready to submit, you can add
 the tag `Force-WPT-Export: true` to your CL description. This might be useful in
 order to check WPT results on GitHub before sending the CL for review.
 
+Conversely, if you want to prevent your WPT changes from being exported to
+upstream WPT, you can add the `No-Export: true` footer to your CL description.
+This footer should be used sparingly, but is useful to avoid reexporting
+imported changes that will conflict upstream.
+
 Additional things to note:
 
 -   CLs that change over 1000 files will not be exported.
