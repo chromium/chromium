@@ -309,6 +309,13 @@ ResultType ResultTypeForInput(const AutocompleteInput& input) {
     }
   }
 
+  // Omnibox Everywhere / Loomnibox.
+  if (page_class == OEP::OMNIBOX_EVERYWHERE) {
+    if (input.type() == OIT::EMPTY) {
+      return ResultType::kRemoteNoURL;
+    }
+  }
+
   // Composebox
   if (omnibox::IsComposebox(page_class)) {
     if (input.type() == OIT::EMPTY) {
