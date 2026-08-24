@@ -318,6 +318,9 @@ class PDFiumEngine : public DocumentLoader::Client,
   // Gets metadata about the document.
   virtual const DocumentMetadata& GetDocumentMetadata() const;
 
+  // Gets the filename from the response Content-Disposition header, if any.
+  virtual std::string GetFileNameFromContentDisposition() const;
+
   // Gets the number of pages in the document.
   virtual int GetNumberOfPages() const;
 

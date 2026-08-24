@@ -3009,8 +3009,12 @@ void PdfViewWebPlugin::SendMetadata() {
 
   metadata.Set("linearized", document_metadata.linearized);
 
-  if (!document_metadata.title.empty()) {
-    metadata.Set("title", document_metadata.title);
+  std::string title = document_metadata.title;
+  if (title.empty()) {
+    title = engine_->GetFileNameFromContentDisposition();
+  }
+  if (!title.empty()) {
+    metadata.Set("title", std::move(title));
   }
 
   if (!document_metadata.author.empty()) {

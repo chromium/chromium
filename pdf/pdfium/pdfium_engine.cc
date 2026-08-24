@@ -3030,6 +3030,11 @@ const DocumentMetadata& PDFiumEngine::GetDocumentMetadata() const {
   return doc_metadata_;
 }
 
+std::string PDFiumEngine::GetFileNameFromContentDisposition() const {
+  return doc_loader_ ? doc_loader_->GetFileNameFromContentDisposition()
+                     : std::string();
+}
+
 int PDFiumEngine::GetNumberOfPages() const {
   return pages_.size();
 }

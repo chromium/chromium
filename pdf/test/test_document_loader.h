@@ -40,10 +40,16 @@ class TestDocumentLoader : public DocumentLoader {
   uint32_t GetDocumentSize() const override;
   uint32_t BytesReceived() const override;
   void ClearPendingRequests() override;
+  std::string GetFileNameFromContentDisposition() const override;
+
+  void set_content_disposition_file_name(const std::string& file_name) {
+    content_disposition_file_name_ = file_name;
+  }
 
  private:
   const raw_ptr<Client> client_;
   const std::vector<uint8_t> pdf_data_;
+  std::string content_disposition_file_name_;
 
   // Not using ChunkStream, for more fine-grained control over request size.
   uint32_t received_bytes_ = 0;

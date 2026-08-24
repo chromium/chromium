@@ -27,6 +27,7 @@ class DataDocumentLoader : public DocumentLoader {
   uint32_t GetDocumentSize() const override;
   uint32_t BytesReceived() const override;
   void ClearPendingRequests() override;
+  std::string GetFileNameFromContentDisposition() const override;
 
  private:
   const base::raw_span<const uint8_t> pdf_data_;

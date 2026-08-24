@@ -91,6 +91,11 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   const DocumentMetadata& GetDocumentMetadata() const override;
 
+  MOCK_METHOD(std::string,
+              GetFileNameFromContentDisposition,
+              (),
+              (const override));
+
   int GetNumberOfPages() const override;
 
   MOCK_METHOD(bool, IsPageVisible, (int), (const override));

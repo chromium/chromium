@@ -263,6 +263,33 @@ class DocumentLoaderImplTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+TEST_F(DocumentLoaderImplTest, ContentDisposition) {
+  {
+    TestDocumentLoaderClient client;
+    client.full_page_loader_data()->set_content_disposition(
+        "inline; filename=foo.pdf");
+    DocumentLoaderImpl loader(&client);
+    EXPECT_TRUE(loader.Init(client.CreateFullPageLoader(), "http://url.com"));
+    EXPECT_EQ("foo.pdf", loader.GetFileNameFromContentDisposition());
+  }
+  {
+    TestDocumentLoaderClient client;
+    client.full_page_loader_data()->set_content_disposition(
+        "inline; filename*=UTF-8''foo%20bar.pdf");
+    DocumentLoaderImpl loader(&client);
+    EXPECT_TRUE(loader.Init(client.CreateFullPageLoader(), "http://url.com"));
+    EXPECT_EQ("foo bar.pdf", loader.GetFileNameFromContentDisposition());
+  }
+  {
+    TestDocumentLoaderClient client;
+    client.full_page_loader_data()->set_content_disposition(
+        "attachment; filename=foo.pdf");
+    DocumentLoaderImpl loader(&client);
+    EXPECT_FALSE(loader.Init(client.CreateFullPageLoader(), "http://url.com"));
+    EXPECT_EQ("", loader.GetFileNameFromContentDisposition());
+  }
+}
+
 TEST_F(DocumentLoaderImplTest, PartialLoadingFeatureDefault) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.Init();

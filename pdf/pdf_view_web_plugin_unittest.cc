@@ -1946,13 +1946,32 @@ TEST_F(PdfViewWebPluginTest, NotifyNumberOfFindResultsChanged) {
 }
 
 TEST_F(PdfViewWebPluginTest, OnDocumentLoadComplete) {
-  auto message =
+  const auto message =
       base::DictValue()
           .Set("type", "metadata")
           .Set("metadataData", base::DictValue()
                                    .Set("fileSize", "0 B")
                                    .Set("linearized", false)
                                    .Set("pageSize", "Varies")
+                                   .Set("canSerializeDocument", true));
+
+  EXPECT_CALL(*client_ptr_, PostMessage);
+  EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message))));
+  plugin_->DocumentLoadComplete();
+}
+
+TEST_F(PdfViewWebPluginTest, OnDocumentLoadCompleteWithContentDisposition) {
+  EXPECT_CALL(*engine_ptr_, GetFileNameFromContentDisposition)
+      .WillOnce(Return("custom.pdf"));
+
+  const auto message =
+      base::DictValue()
+          .Set("type", "metadata")
+          .Set("metadataData", base::DictValue()
+                                   .Set("fileSize", "0 B")
+                                   .Set("linearized", false)
+                                   .Set("pageSize", "Varies")
+                                   .Set("title", "custom.pdf")
                                    .Set("canSerializeDocument", true));
 
   EXPECT_CALL(*client_ptr_, PostMessage);

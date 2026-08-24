@@ -53,4 +53,8 @@ uint32_t DataDocumentLoader::BytesReceived() const {
 
 void DataDocumentLoader::ClearPendingRequests() {}
 
+std::string DataDocumentLoader::GetFileNameFromContentDisposition() const {
+  return std::string();
+}
+
 }  // namespace chrome_pdf

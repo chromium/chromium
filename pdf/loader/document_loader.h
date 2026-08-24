@@ -56,6 +56,9 @@ class DocumentLoader {
 
   // Clear pending requests from the queue.
   virtual void ClearPendingRequests() = 0;
+
+  // Returns the filename from the response Content-Disposition header, if any.
+  virtual std::string GetFileNameFromContentDisposition() const = 0;
 };
 
 }  // namespace chrome_pdf
