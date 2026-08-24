@@ -29,6 +29,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -399,6 +400,33 @@ void PermissionServiceImpl::RequestPermissions(
         permissions, [this](const PermissionDescriptorPtr& permission) {
           return PermissionUtil::ToPermissionStatusWithDetails(
               permission->name, GetPermissionResult(permission));
+        }));
+    return;
+  }
+
+  // Browser-side enforcement of the kStorageAccessByUserActivation sandbox
+  // flag. Blink rejects document.requestStorageAccess() in
+  // DocumentStorageAccess::RequestStorageAccessImpl(), but a compromised
+  // renderer can bind blink::mojom::PermissionService directly against the
+  // sandboxed frame and reach StorageAccessGrantPermissionContext, which does
+  // not consult sandbox flags. No legitimate renderer sends a STORAGE_ACCESS
+  // request from a frame lacking allow-storage-access-by-user-activation.
+  // Note: crbug.com/530541273
+  if (context_->render_frame_host()->IsSandboxed(
+          network::mojom::WebSandboxFlags::kStorageAccessByUserActivation) &&
+      std::ranges::any_of(permissions, [](const auto& permission) {
+        return permission->name == PermissionName::STORAGE_ACCESS;
+      })) {
+    bad_message::ReceivedBadMessage(
+        context_->render_frame_host()->GetProcess(),
+        bad_message::PSI_STORAGE_ACCESS_FROM_SANDBOXED_FRAME);
+    // Reply rather than dropping `callback`. Mojo DCHECKs when a response
+    // callback is destroyed while its pipe is still open, and the kill above
+    // is not guaranteed to have torn the pipe down by the time this returns.
+    std::move(callback).Run(base::ToVector(
+        permissions, [](const auto& permission) {
+          return PermissionUtil::ToPermissionStatusWithDetails(
+              permission->name, PermissionResult(PermissionStatus::DENIED));
         }));
     return;
   }
