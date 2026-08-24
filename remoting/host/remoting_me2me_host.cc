@@ -115,7 +115,6 @@
 #include "remoting/host/security_key/security_key_auth_handler.h"
 #include "remoting/host/session_policies_from_dict.h"
 #include "remoting/host/shutdown_watchdog.h"
-#include "remoting/host/test_echo_extension.h"
 #include "remoting/host/usage_stats_consent.h"
 #include "remoting/host/zombie_host_detector.h"
 #include "remoting/proto/control.pb.h"
@@ -2199,8 +2198,6 @@ void HostProcess::StartHost() {
       base::BindRepeating(&HostProcess::OnSessionPoliciesReceived,
                           base::Unretained(this)),
       &local_session_policies_provider_);
-
-  host_->AddExtension(std::make_unique<TestEchoExtension>());
 
 #if BUILDFLAG(IS_LINUX)
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();

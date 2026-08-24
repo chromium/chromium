@@ -31,7 +31,7 @@ struct TransportRoute;
 }  // namespace protocol
 
 class DesktopEnvironmentOptions;
-class HostExtension;
+
 struct SessionOptions;
 struct SessionPolicies;
 
@@ -76,14 +76,12 @@ class PeerSession {
   virtual ~PeerSession() = default;
 
   // Starts the session with the specified `event_handler`, `client_jid`,
-  // `desktop_environment_options`, `extensions`, `session_policies`, and
-  // `session_options`.
-  // `event_handler` and all elements of `extensions` must outlive this object.
+  // `desktop_environment_options`, `session_policies`, and `session_options`.
+  // `event_handler` must outlive this object.
   virtual void Start(
       EventHandler* event_handler,
       std::string_view client_jid,
       const DesktopEnvironmentOptions& desktop_environment_options,
-      const std::vector<HostExtension*>& extensions,
       const SessionPolicies& session_policies,
       const SessionOptions& session_options) = 0;
 

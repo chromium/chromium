@@ -54,9 +54,6 @@
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/file_transfer/file_transfer_message_handler.h"
 #include "remoting/host/file_transfer/rtc_log_file_operations.h"
-#include "remoting/host/host_extension.h"
-#include "remoting/host/host_extension_session.h"
-#include "remoting/host/host_extension_session_manager.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
@@ -70,8 +67,6 @@
 #include "remoting/host/remote_open_url/url_forwarder_control_message_handler.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
 #include "remoting/host/security_key/security_key_data_channel_handler.h"
-#include "remoting/host/security_key/security_key_extension.h"
-#include "remoting/host/security_key/security_key_extension_session.h"
 #include "remoting/host/terminal_session_manager.h"
 #include "remoting/host/webauthn/remote_webauthn_constants.h"
 #include "remoting/host/webauthn/remote_webauthn_message_handler.h"
@@ -166,7 +161,6 @@ void PeerSessionImpl::Start(
     PeerSession::EventHandler* event_handler,
     std::string_view client_jid,
     const DesktopEnvironmentOptions& desktop_environment_options,
-    const std::vector<HostExtension*>& extensions,
     const SessionPolicies& session_policies,
     const SessionOptions& session_options) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -176,7 +170,6 @@ void PeerSessionImpl::Start(
   event_handler_ = event_handler;
   client_jid_ = std::string(client_jid);
   desktop_environment_options_ = desktop_environment_options;
-  extensions_.assign(extensions.begin(), extensions.end());
   effective_policies_ = session_policies;
 
   base::TimeDelta max_duration =
@@ -213,24 +206,12 @@ void PeerSessionImpl::Start(
         *effective_policies_.allow_gnubby_forwarding);
   }
 
-  HostExtensionSessionManager::HostExtensions all_extensions = extensions_;
   bool allow_gnubby =
       desktop_environment_options_.enable_security_key() &&
       effective_policies_.allow_gnubby_forwarding.value_or(true);
   if (allow_gnubby) {
-    // TODO(b/517007701): Create SecurityKeyAuthHandler after authentication
-    // once we have completed the data channel migration.
     security_key_auth_handler_ = SecurityKeyAuthHandler::Create();
-    if (security_key_auth_handler_) {
-      security_key_extension_ = std::make_unique<SecurityKeyExtension>(
-          security_key_auth_handler_->GetWeakPtr());
-      all_extensions.push_back(security_key_extension_.get());
-    }
   }
-
-  // Create a manager for the configured extensions, if any.
-  extension_manager_ =
-      std::make_unique<HostExtensionSessionManager>(all_extensions);
 
   // Create the desktop environment.
   // Note: The handlers for various other events use the created desktop
@@ -316,7 +297,7 @@ void PeerSessionImpl::ControlVideo(
     const protocol::VideoControl& video_control) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Note that |video_stream_| may be null, depending upon whether
+  // Note that `video_stream_` may be null, depending upon whether
   // extensions choose to wrap or "steal" the video capturer or encoder.
   if (video_control.has_enable()) {
     VLOG(1) << "Received VideoControl (enable=" << video_control.enable()
@@ -409,8 +390,6 @@ void PeerSessionImpl::SetCapabilities(
   }
   capabilities_ =
       IntersectCapabilities(*client_capabilities_, host_capabilities_);
-  extension_manager_->OnNegotiatedCapabilities(connection_->client_stub(),
-                                               capabilities_);
 
   if (HasCapability(capabilities_, protocol::kMicrophoneRemotingCapability) &&
       !audio_injector_) {
@@ -592,9 +571,6 @@ void PeerSessionImpl::DeliverClientMessage(
     const protocol::ExtensionMessage& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (message.has_type()) {
-    if (extension_manager_ && extension_manager_->OnExtensionMessage(message)) {
-      return;
-    }
     DLOG(INFO) << "Unexpected message received: " << message.type() << ": "
                << message.data();
   }
@@ -1184,14 +1160,6 @@ void PeerSessionImpl::OnDesktopEnvironmentCreated(
   host_capabilities_.append(" ");
   host_capabilities_.append(protocol::kTerminalModeCapability);
 
-  if (extension_manager_) {
-    std::string extension_capabilities = extension_manager_->GetCapabilities();
-    if (!extension_capabilities.empty()) {
-      host_capabilities_.append(" ");
-      host_capabilities_.append(extension_capabilities);
-    }
-  }
-
   // Create the object that controls the screen resolution.
   screen_controls_ = desktop_environment_->CreateScreenControls();
 
@@ -1540,29 +1508,10 @@ void PeerSessionImpl::CreateSecurityKeyDataChannelHandler(
     return;
   }
 
-  // Create a callback to destroy the legacy signaling extension session.
-  // This will be invoked by the data channel handler once it has successfully
-  // connected and registered its own callback, avoiding a race condition
-  // where requests are dropped.
-  base::OnceClosure takeover_callback =
-      base::BindOnce(&PeerSessionImpl::DestroySecurityKeyExtensionSession,
-                     weak_factory_.GetWeakPtr());
-
   // Instantiate the data channel handler.
-  // It binds directly to the handler and registers its own callback, cleanly
-  // taking over.
+  // It binds directly to the handler and registers its own callback.
   new SecurityKeyDataChannelHandler(std::move(pipe),
-                                    security_key_auth_handler_->GetWeakPtr(),
-                                    std::move(takeover_callback));
-}
-
-void PeerSessionImpl::DestroySecurityKeyExtensionSession() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  HOST_LOG << "Destroying legacy security key extension session (takeover).";
-  if (extension_manager_) {
-    extension_manager_->RemoveExtensionSession(
-        SecurityKeyExtension::kCapability);
-  }
+                                    security_key_auth_handler_->GetWeakPtr());
 }
 
 void PeerSessionImpl::BoostFramerateOnInput(

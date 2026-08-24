@@ -300,7 +300,7 @@ TEST_F(IpcPeerSessionTest, CallingStubbedMethodsDoesNotCrash) {
       std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()),
       base::NullCallback());
   MockEventHandler event_handler;
-  session->Start(&event_handler, "", DesktopEnvironmentOptions(), {},
+  session->Start(&event_handler, "", DesktopEnvironmentOptions(),
                  SessionPolicies(), SessionOptions());
   session->DisconnectSession(protocol::ErrorCode::OK, "", FROM_HERE);
   EXPECT_EQ(session->transport(), session.get());
@@ -316,7 +316,7 @@ TEST_F(IpcPeerSessionTest, TransportStartPropagatesAuthKey) {
       std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()),
       base::NullCallback());
   MockEventHandler event_handler;
-  session->Start(&event_handler, "", DesktopEnvironmentOptions(), {},
+  session->Start(&event_handler, "", DesktopEnvironmentOptions(),
                  SessionPolicies(), SessionOptions());
 
   base::RunLoop run_loop;
@@ -340,7 +340,7 @@ TEST_F(IpcPeerSessionTest, TransportProcessTransportInfoCallsRemote) {
       std::make_unique<FakeIceConfigFetcher>(protocol::IceConfig()),
       base::NullCallback());
   MockEventHandler event_handler;
-  session->Start(&event_handler, "", DesktopEnvironmentOptions(), {},
+  session->Start(&event_handler, "", DesktopEnvironmentOptions(),
                  SessionPolicies(), SessionOptions());
 
   base::RunLoop run_loop;
@@ -373,7 +373,7 @@ TEST_F(IpcPeerSessionTest, SendTransportInfoDispatchesToCallback) {
 
   base::RunLoop start_loop;
   receiver.set_start_closure(start_loop.QuitClosure());
-  session->Start(&event_handler, "", DesktopEnvironmentOptions(), {},
+  session->Start(&event_handler, "", DesktopEnvironmentOptions(),
                  SessionPolicies(), SessionOptions());
   start_loop.Run();
 
@@ -454,7 +454,7 @@ TEST_F(IpcPeerSessionTest, CreateInvokesLaunchPeerSession) {
   EXPECT_NE(session, nullptr);
 
   MockEventHandler event_handler;
-  session->Start(&event_handler, "", DesktopEnvironmentOptions(), {},
+  session->Start(&event_handler, "", DesktopEnvironmentOptions(),
                  SessionPolicies(), SessionOptions());
 
   run_loop.Run();
@@ -495,7 +495,7 @@ TEST_F(IpcPeerSessionTest,
   EXPECT_NE(session, nullptr);
 
   MockEventHandler event_handler;
-  session->Start(&event_handler, "", DesktopEnvironmentOptions(), {},
+  session->Start(&event_handler, "", DesktopEnvironmentOptions(),
                  SessionPolicies(), SessionOptions());
 
   run_loop.Run();
@@ -531,7 +531,7 @@ TEST_F(IpcPeerSessionTest, StartPropagatesSessionPoliciesAndOptions) {
 
   MockEventHandler event_handler;
   session.Start(&event_handler, "test_client_jid", DesktopEnvironmentOptions(),
-                {}, policies, options);
+                policies, options);
 
   run_loop.Run();
   EXPECT_TRUE(receiver.start_called());
@@ -576,7 +576,7 @@ TEST_F(IpcPeerSessionTest, IceConfigFetcherFetchesConfigOverMojo) {
   base::RunLoop start_loop;
   receiver.set_start_closure(start_loop.QuitClosure());
   session->Start(&event_handler, "client@example.com/test",
-                 DesktopEnvironmentOptions(), {}, SessionPolicies(),
+                 DesktopEnvironmentOptions(), SessionPolicies(),
                  SessionOptions());
   start_loop.Run();
 
@@ -628,7 +628,7 @@ TEST_F(IpcPeerSessionTest, PairingRequesterRequestsPairingOverMojo) {
   base::RunLoop start_loop;
   receiver.set_start_closure(start_loop.QuitClosure());
   session->Start(&event_handler, "client@example.com/test",
-                 DesktopEnvironmentOptions(), {}, SessionPolicies(),
+                 DesktopEnvironmentOptions(), SessionPolicies(),
                  SessionOptions());
   start_loop.Run();
 
@@ -666,7 +666,7 @@ TEST_F(IpcPeerSessionTest, PairingRequesterReturnsNullWhenNoCallback) {
   base::RunLoop start_loop;
   receiver.set_start_closure(start_loop.QuitClosure());
   session->Start(&event_handler, "client@example.com/test",
-                 DesktopEnvironmentOptions(), {}, SessionPolicies(),
+                 DesktopEnvironmentOptions(), SessionPolicies(),
                  SessionOptions());
   start_loop.Run();
 
@@ -709,7 +709,7 @@ TEST_F(IpcPeerSessionTest, PairingRequesterRejectsSubsequentRequests) {
   base::RunLoop start_loop;
   receiver.set_start_closure(start_loop.QuitClosure());
   session->Start(&event_handler, "client@example.com/test",
-                 DesktopEnvironmentOptions(), {}, SessionPolicies(),
+                 DesktopEnvironmentOptions(), SessionPolicies(),
                  SessionOptions());
   start_loop.Run();
 

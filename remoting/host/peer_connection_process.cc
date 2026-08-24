@@ -186,8 +186,8 @@ void PeerConnectionProcess::Start(
 
   event_handler_.Bind(std::move(event_handler));
   peer_session_->Start(event_handler_.get(), client_jid,
-                       desktop_environment_options, /*extensions=*/{},
-                       session_policies, session_options);
+                       desktop_environment_options, session_policies,
+                       session_options);
 
   if (pending_start_transport_) {
     auto pending = std::move(*pending_start_transport_);

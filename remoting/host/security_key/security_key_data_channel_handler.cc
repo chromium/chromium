@@ -25,11 +25,9 @@ constexpr size_t kMaxMessageSize = kMaxPayloadSize + 1024;
 
 SecurityKeyDataChannelHandler::SecurityKeyDataChannelHandler(
     std::unique_ptr<protocol::MessagePipe> pipe,
-    base::WeakPtr<SecurityKeyAuthHandler> auth_handler,
-    base::OnceClosure takeover_callback)
+    base::WeakPtr<SecurityKeyAuthHandler> auth_handler)
     : protocol::NamedMessagePipeHandler(kChannelName, std::move(pipe)),
-      auth_handler_(auth_handler),
-      takeover_callback_(std::move(takeover_callback)) {
+      auth_handler_(auth_handler) {
   DCHECK(auth_handler_);
 }
 
@@ -50,10 +48,6 @@ void SecurityKeyDataChannelHandler::OnConnected() {
                             weak_factory_.GetWeakPtr()),
         this);
     auth_handler_->CreateSecurityKeyConnection();
-  }
-
-  if (takeover_callback_) {
-    std::move(takeover_callback_).Run();
   }
 }
 

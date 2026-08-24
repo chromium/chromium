@@ -33,8 +33,6 @@
 
 namespace remoting {
 
-class HostExtension;
-
 // A ClientSession keeps a reference to a connection to a client, and maintains
 // per-client state.
 class ClientSession : public protocol::Session::EventHandler,
@@ -78,13 +76,11 @@ class ClientSession : public protocol::Session::EventHandler,
   };
 
   // `event_handler` and `peer_session_factory` must outlive `this`.
-  // All `HostExtension`s in `extensions` must outlive `this`.
   ClientSession(
       EventHandler* event_handler,
       std::unique_ptr<protocol::Session> session,
       PeerSessionFactory* peer_session_factory,
       const DesktopEnvironmentOptions& desktop_environment_options,
-      const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions,
       const LocalSessionPoliciesProvider* local_session_policies_provider);
 
   ClientSession(const ClientSession&) = delete;
@@ -134,9 +130,6 @@ class ClientSession : public protocol::Session::EventHandler,
 
   // The DesktopEnvironmentOptions used to initialize DesktopEnvironment.
   DesktopEnvironmentOptions desktop_environment_options_;
-
-  // HostExtensions passed when creating the session.
-  std::vector<raw_ptr<HostExtension, VectorExperimental>> extensions_;
 
   // Set to true if the client was authenticated successfully.
   bool is_authenticated_ = false;

@@ -23,7 +23,6 @@
 #include "remoting/base/logging.h"
 #include "remoting/base/session_policies.h"
 #include "remoting/host/base/desktop_environment_options.h"
-#include "remoting/host/host_extension.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/errors.h"
@@ -37,11 +36,9 @@ ClientSession::ClientSession(
     std::unique_ptr<protocol::Session> session,
     PeerSessionFactory* peer_session_factory,
     const DesktopEnvironmentOptions& desktop_environment_options,
-    const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions,
     const LocalSessionPoliciesProvider* local_session_policies_provider)
     : event_handler_(event_handler),
       desktop_environment_options_(desktop_environment_options),
-      extensions_(extensions),
       peer_session_factory_(peer_session_factory),
       session_(std::move(session)),
       client_jid_(session_->jid()),
@@ -150,11 +147,8 @@ void ClientSession::OnConnectionAuthenticated(
 
   session_->SetTransport(peer_session_->transport());
 
-  std::vector<HostExtension*> extension_ptrs;
-  extension_ptrs.assign(extensions_.begin(), extensions_.end());
-
   peer_session_->Start(this, client_jid_, desktop_environment_options,
-                       extension_ptrs, effective_policies_, session_options);
+                       effective_policies_, session_options);
 
   for (auto& receiver : pending_session_services_receivers_) {
     peer_session_->OnSessionServicesClientConnected(std::move(receiver));

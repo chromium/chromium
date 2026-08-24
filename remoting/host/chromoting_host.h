@@ -27,7 +27,6 @@
 #include "remoting/base/local_session_policies_provider.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/client_session.h"
-#include "remoting/host/host_extension.h"
 #include "remoting/host/host_status_monitor.h"
 #include "remoting/host/host_status_observer.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
@@ -140,9 +139,6 @@ class ChromotingHost :
     return desktop_environment_options_;
   }
 
-  // Registers a host extension.
-  void AddExtension(std::unique_ptr<HostExtension> extension);
-
   // Disconnects all connected client sessions.
   void DisconnectAllClients(ErrorCode error);
 
@@ -222,9 +218,6 @@ class ChromotingHost :
   raw_ptr<const LocalSessionPoliciesProvider> local_session_policies_provider_;
 
   SessionPoliciesValidator per_session_policies_validator_;
-
-  // List of host extensions.
-  std::vector<std::unique_ptr<HostExtension>> extensions_;
 
 #if BUILDFLAG(IS_LINUX)
   // IPC server that runs the CRD host service API. Non-null if the server name

@@ -76,10 +76,6 @@ class ClientSessionTest : public testing::Test {
   // that require it.
   base::RunLoop run_loop_;
 
-  // HostExtensions to pass when creating the ClientSession. Caller retains
-  // ownership of the HostExtensions themselves.
-  std::vector<raw_ptr<HostExtension, VectorExperimental>> extensions_;
-
   SessionPolicies initial_local_policies_;
   LocalSessionPoliciesProvider local_session_policies_provider_;
 
@@ -150,8 +146,7 @@ void ClientSessionTest::CreateClientSession(
 
   client_session_ = std::make_unique<ClientSession>(
       &session_event_handler_, std::move(session), &mock_peer_session_factory_,
-      desktop_environment_options_, extensions_,
-      &local_session_policies_provider_);
+      desktop_environment_options_, &local_session_policies_provider_);
 }
 
 void ClientSessionTest::CreateClientSession() {
@@ -185,7 +180,7 @@ TEST_F(ClientSessionTest,
 
   EXPECT_CALL(
       *mock_peer_session_,
-      Start(_, _, _, _,
+      Start(_, _, _,
             testing::Field(&SessionPolicies::allow_file_transfer, std::nullopt),
             _));
 
@@ -200,7 +195,7 @@ TEST_F(ClientSessionTest,
   CreateClientSession();
 
   EXPECT_CALL(*mock_peer_session_,
-              Start(_, _, _, _,
+              Start(_, _, _,
                     testing::Field(&SessionPolicies::allow_file_transfer,
                                    std::optional<bool>(true)),
                     _));
@@ -216,7 +211,7 @@ TEST_F(ClientSessionTest,
   CreateClientSession();
 
   EXPECT_CALL(*mock_peer_session_,
-              Start(_, _, _, _,
+              Start(_, _, _,
                     testing::Field(&SessionPolicies::allow_file_transfer,
                                    std::optional<bool>(false)),
                     _));
@@ -236,7 +231,7 @@ TEST_F(ClientSessionTest, ApplyPoliciesFromRemotePolicies) {
   CreateClientSession();
 
   EXPECT_CALL(*mock_peer_session_,
-              Start(_, _, _, _,
+              Start(_, _, _,
                     testing::AllOf(
                         testing::Field(&SessionPolicies::allow_file_transfer,
                                        std::optional<bool>(false)),
@@ -257,8 +252,8 @@ TEST_F(ClientSessionTest, ForwardHostSessionOptions1) {
   CreateClientSession(std::move(session));
 
   SessionOptions options;
-  EXPECT_CALL(*mock_peer_session_, Start(_, _, _, _, _, _))
-      .WillOnce(testing::SaveArg<5>(&options));
+  EXPECT_CALL(*mock_peer_session_, Start(_, _, _, _, _))
+      .WillOnce(testing::SaveArg<4>(&options));
 
   ConnectClientSession();
   EXPECT_EQ(options.detect_updated_region, true);
@@ -274,8 +269,8 @@ TEST_F(ClientSessionTest, ForwardHostSessionOptions2) {
   CreateClientSession(std::move(session));
 
   SessionOptions options;
-  EXPECT_CALL(*mock_peer_session_, Start(_, _, _, _, _, _))
-      .WillOnce(testing::SaveArg<5>(&options));
+  EXPECT_CALL(*mock_peer_session_, Start(_, _, _, _, _))
+      .WillOnce(testing::SaveArg<4>(&options));
 
   ConnectClientSession();
   EXPECT_EQ(options.detect_updated_region, false);
@@ -297,8 +292,8 @@ TEST_F(ClientSessionTest, ForwardHostSessionOptionsAllFields) {
   CreateClientSession(std::move(session));
 
   SessionOptions options;
-  EXPECT_CALL(*mock_peer_session_, Start(_, _, _, _, _, _))
-      .WillOnce(testing::SaveArg<5>(&options));
+  EXPECT_CALL(*mock_peer_session_, Start(_, _, _, _, _))
+      .WillOnce(testing::SaveArg<4>(&options));
 
   ConnectClientSession();
   EXPECT_EQ(options.detect_updated_region, true);
@@ -320,8 +315,8 @@ TEST_F(ClientSessionTest, ForwardHostSessionOptionsIgnoresUnsupportedKey) {
   CreateClientSession(std::move(session));
 
   SessionOptions options;
-  EXPECT_CALL(*mock_peer_session_, Start(_, _, _, _, _, _))
-      .WillOnce(testing::SaveArg<5>(&options));
+  EXPECT_CALL(*mock_peer_session_, Start(_, _, _, _, _))
+      .WillOnce(testing::SaveArg<4>(&options));
 
   ConnectClientSession();
   EXPECT_EQ(options.detect_updated_region, true);

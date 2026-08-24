@@ -35,15 +35,11 @@
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/desktop_display_info.h"
 #include "remoting/host/fake_desktop_environment.h"
-#include "remoting/host/fake_host_extension.h"
 #include "remoting/host/fake_terminal_session.h"
-#include "remoting/host/host_extension.h"
-#include "remoting/host/host_extension_session.h"
 #include "remoting/host/host_mock_objects.h"
 #include "remoting/host/peer_session.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
 #include "remoting/host/security_key/security_key_data_channel_handler.h"
-#include "remoting/host/security_key/security_key_extension.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "remoting/host/security_key/security_key_auth_handler_posix.h"
@@ -241,10 +237,6 @@ class PeerSessionImplTest : public testing::Test {
   // that require it.
   base::RunLoop run_loop_;
 
-  // HostExtensions to pass when creating the PeerSession. Caller retains
-  // ownership of the HostExtensions themselves.
-  std::vector<raw_ptr<HostExtension, VectorExperimental>> extensions_;
-
   // Vectors of events to bind to `peer_session_`, must outlive it.
   std::vector<protocol::KeyEvent> key_events_;
   std::vector<protocol::MouseEvent> mouse_events_;
@@ -327,14 +319,9 @@ void PeerSessionImplTest::StartPeerSession(
   if (!peer_session_) {
     CreatePeerSession();
   }
-  std::vector<HostExtension*> extension_ptrs;
-  extension_ptrs.reserve(extensions_.size());
-  for (HostExtension* ext : extensions_) {
-    extension_ptrs.push_back(ext);
-  }
   peer_session_->Start(&session_event_handler_, kTestClientJid,
-                       desktop_environment_options_, extension_ptrs,
-                       session_policies, session_options);
+                       desktop_environment_options_, session_policies,
+                       session_options);
 }
 
 void PeerSessionImplTest::ConnectPeerSession(
@@ -664,57 +651,7 @@ TEST_F(PeerSessionImplTest, ClampMouseEvents) {
               EqualsMouseMoveEvent(kDisplay1Width - 1, kDisplay1Height - 1));
 }
 
-// Verifies that clients can have extensions registered, resulting in the
-// correct capabilities being reported, and messages delivered correctly.
-// The extension system is tested more extensively in the
-// HostExtensionSessionManager unit-tests.
-TEST_F(PeerSessionImplTest, Extensions) {
-  // Configure fake extensions for testing.
-  FakeExtension extension1("ext1", "cap1");
-  extensions_.push_back(&extension1);
-  FakeExtension extension2("ext2", "");
-  extensions_.push_back(&extension2);
-  FakeExtension extension3("ext3", "cap3");
-  extensions_.push_back(&extension3);
 
-  // Verify that the PeerSession reports the correct capabilities.
-  EXPECT_CALL(client_stub_, SetCapabilities(IncludesCapabilities("cap1 cap3")));
-
-  ConnectPeerSession();
-
-  testing::Mock::VerifyAndClearExpectations(&client_stub_);
-
-  // Mimic the client reporting an overlapping set of capabilities.
-  protocol::Capabilities capabilities_message;
-  capabilities_message.set_capabilities("cap1 cap4 default");
-  peer_session_->SetCapabilities(capabilities_message);
-
-  // Verify that the correct extension messages are delivered, and dropped.
-  protocol::ExtensionMessage message1;
-  message1.set_type("ext1");
-  message1.set_data("data");
-  peer_session_->DeliverClientMessage(message1);
-
-  protocol::ExtensionMessage message3;
-  message3.set_type("ext3");
-  message3.set_data("data");
-  peer_session_->DeliverClientMessage(message3);
-
-  // ext1 was instantiated and sent a message, and did not wrap anything.
-  EXPECT_TRUE(extension1.was_instantiated());
-  EXPECT_TRUE(extension1.has_handled_message());
-
-  // ext2 was instantiated but not sent a message, and wrapped video encoder.
-  EXPECT_TRUE(extension2.was_instantiated());
-  EXPECT_FALSE(extension2.has_handled_message());
-
-  // ext3 was sent a message but not instantiated.
-  EXPECT_FALSE(extension3.was_instantiated());
-  EXPECT_FALSE(extension3.has_handled_message());
-
-  // Drop references to locals before they go out of scope.
-  extensions_.clear();
-}
 
 TEST_F(PeerSessionImplTest, DataChannelCallbackIsCalled) {
   ConnectPeerSession();
@@ -1250,61 +1187,35 @@ class PeerSessionSecurityKeyTest : public PeerSessionImplTest {
       nullptr;
 };
 
-// Verifies that the security key extension is created and its capabilities
-// advertised.
+// Verifies that the security key capability is advertised.
 TEST_F(PeerSessionSecurityKeyTest, AdvertisesCapabilities) {
-  // Expect that the client stub gets both legacy and V2 capabilities
-  // advertised.
+  // Expect that the client stub gets the V2 capability advertised.
   EXPECT_CALL(client_stub_, SetCapabilities(IncludesCapabilities(
-                                std::string(SecurityKeyExtension::kCapability) +
-                                " " + protocol::kSecurityKeyV2Capability)));
+                                protocol::kSecurityKeyV2Capability)));
 
   CreatePeerSession();
   ConnectPeerSession();
 }
 
-// Verifies that when the WebRTC data channel connects, the legacy extension
-// session is destroyed.
-TEST_F(PeerSessionSecurityKeyTest, DataChannelTakeoverDestroysLegacySession) {
+// Verifies that when the WebRTC data channel connects, the handler binds
+// to the auth handler.
+TEST_F(PeerSessionSecurityKeyTest, DataChannelConnects) {
   CreatePeerSession();
   ConnectPeerSession();
 
-  // Negotiate capabilities. The client supports both.
+  // Negotiate capabilities.
   protocol::Capabilities capabilities_message;
-  capabilities_message.set_capabilities(
-      std::string(SecurityKeyExtension::kCapability) + " " +
-      protocol::kSecurityKeyV2Capability);
+  capabilities_message.set_capabilities(protocol::kSecurityKeyV2Capability);
   peer_session_->SetCapabilities(capabilities_message);
 
-  // The signaling session should have been created.
-  HostExtensionSession* extension_session =
-      peer_session_->extension_manager_for_tests()->FindExtensionSession(
-          SecurityKeyExtension::kCapability);
-  ASSERT_TRUE(extension_session);
+  EXPECT_CALL(*mock_handler_, CreateSecurityKeyConnection()).Times(1);
 
-  // Now mimic WebRTC data channel connection.
-  // The data channel manager will invoke our callback.
-  // In the real flow, the connection will trigger this. We can trigger it by
-  // creating the channel.
   auto pipe = std::make_unique<protocol::FakeMessagePipe>(true);
-
-  // Expect that when the data channel connects:
-  // 1. The legacy extension session is destroyed.
-  // 2. The data channel handler binds to the handler.
-
-  // We can verify that the extension session is destroyed by checking the
-  // manager.
   peer_session_->OnIncomingDataChannel(
       SecurityKeyDataChannelHandler::kChannelName, pipe->Wrap());
 
-  // Open the pipe to trigger OnConnected() and the takeover.
+  // Open the pipe to trigger OnConnected().
   pipe->OpenPipe();
-
-  // Wait until the legacy extension session is destroyed.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !peer_session_->extension_manager_for_tests()->FindExtensionSession(
-        SecurityKeyExtension::kCapability);
-  }));
 
   // Close the pipe to clean up the handler and avoid dangling pointers.
   pipe->ClosePipe();

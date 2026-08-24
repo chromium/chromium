@@ -418,7 +418,6 @@ class MockPeerSession : public PeerSession {
               (EventHandler * event_handler,
                std::string_view client_jid,
                const DesktopEnvironmentOptions& desktop_environment_options,
-               const std::vector<HostExtension*>& extensions,
                const SessionPolicies& session_policies,
                const SessionOptions& session_options),
               (override));

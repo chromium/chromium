@@ -12,10 +12,6 @@ source_set("security_key") {
     "security_key_auth_handler_mojo.h",
     "security_key_data_channel_handler.cc",
     "security_key_data_channel_handler.h",
-    "security_key_extension.cc",
-    "security_key_extension.h",
-    "security_key_extension_session.cc",
-    "security_key_extension_session.h",
     "security_key_ipc_constants.cc",
     "security_key_ipc_constants.h",
     "security_key_message.cc",
@@ -37,7 +33,6 @@ source_set("security_key") {
     "//net/traffic_annotation",
     "//remoting/base",
     "//remoting/base:logging",
-    "//remoting/host:host_extension",
     "//remoting/host/mojom",
     "//remoting/proto",
     "//remoting/protocol",
@@ -114,7 +109,6 @@ source_set("unit_tests") {
   sources = [
     "security_key_auth_handler_mojo_unittest.cc",
     "security_key_data_channel_handler_unittest.cc",
-    "security_key_extension_session_unittest.cc",
     "security_key_message_reader_impl_unittest.cc",
     "security_key_message_writer_impl_unittest.cc",
   ]
