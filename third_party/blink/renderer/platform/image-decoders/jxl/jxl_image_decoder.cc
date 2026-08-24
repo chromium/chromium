@@ -187,6 +187,13 @@ void JXLImageDecoder::ScanFrames() {
     scanner_input_offset_ += result.bytes_consumed;
     CHECK_LE(scanner_input_offset_, data_size);
 
+    // Extract basic info from scanner as soon as it is available.
+    if ((*scanner_)->has_basic_info()) {
+      if (!SetBasicInfo()) {
+        return;
+      }
+    }
+
     if (result.status == JxlRsStatus::NeedMoreInput) {
       // If more data is available in the buffer, continue feeding.
       if (result.bytes_consumed > 0 && scanner_input_offset_ < data_size) {
@@ -203,9 +210,6 @@ void JXLImageDecoder::ScanFrames() {
         SetFailed();
         return;
       }
-      if (!SetBasicInfo()) {
-        return;
-      }
       if (basic_info_->have_animation) {
         SetFailed();
         return;
@@ -216,13 +220,6 @@ void JXLImageDecoder::ScanFrames() {
 
     if (!(*scanner_)->has_more_frames()) {
       scanner_done_ = true;
-    }
-  }
-
-  // Extract basic info from scanner if not yet available.
-  if ((*scanner_)->has_basic_info()) {
-    if (!SetBasicInfo()) {
-      return;
     }
   }
 
