@@ -466,6 +466,18 @@ inline LayoutStateAssistantPassKey PassKey() {
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
+  if (change.type() == WebStateListChange::Type::kGroupDelete) {
+    const WebStateListChangeGroupDelete& deletion =
+        change.As<WebStateListChangeGroupDelete>();
+    if (deletion.deleted_group() == self.currentTabGroup) {
+      self.currentTabGroup = nullptr;
+    }
+  }
+
+  if (webStateList->IsBatchInProgress()) {
+    return;
+  }
+
   if (status.active_web_state_change() && !_tabGridState.tabGridVisible) {
     self.currentTabGroup = GetGroupForActiveWebState(webStateList);
   }
@@ -492,14 +504,15 @@ inline LayoutStateAssistantPassKey PassKey() {
       }
       break;
     }
-    case WebStateListChange::Type::kGroupDelete: {
-      const WebStateListChangeGroupDelete& deletion =
-          change.As<WebStateListChangeGroupDelete>();
-      if (deletion.deleted_group() == self.currentTabGroup) {
-        self.currentTabGroup = nullptr;
-      }
+    case WebStateListChange::Type::kGroupDelete:
       break;
-    }
+  }
+  [self updateConsumer];
+}
+
+- (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
+  if (!_tabGridState.tabGridVisible) {
+    self.currentTabGroup = GetGroupForActiveWebState(webStateList);
   }
   [self updateConsumer];
 }

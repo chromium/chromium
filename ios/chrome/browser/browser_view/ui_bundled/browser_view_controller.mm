@@ -2283,7 +2283,7 @@ bool IsFullscreenNextIAEnabled() {
 // Updates the bottom constraint of the secondary toolbar depending on the
 // AppBar's position.
 - (void)updateSecondaryToolbarBottomConstraint {
-  if (!self.view.window) {
+  if (!self.isViewLoaded || !self.view.window) {
     return;
   }
 
