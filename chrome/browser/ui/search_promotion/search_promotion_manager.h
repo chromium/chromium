@@ -61,20 +61,22 @@ class SearchPromotionManager : public KeyedService {
   // Called when the IPH promo is accepted.
   void OnPromoAccepted();
 
-  // Returns true if the promo is allowed by feature flags.
+  // Returns true if a promotional UI is allowed to be shown (i.e. for
+  // treatment arms kOpen or kInstall, not kControl or kDisabled).
   bool IsPromoAllowedForTesting() const;
 
   std::string_view GetEngagementLabelForTesting() const;
 
  private:
   // Checks whether the user's engagement matches the requirements of the
-  // configured experiment arm.
-  bool IsEngagementEligibleForArm() const;
+  // configured experiment cohort.
+  bool IsEngagementEligible() const;
 
   void QueryEngagementLevel();
   void OnEngagementResultRetrieved(
       const segmentation_platform::ClassificationResult& result);
 
+  void ExecuteAction();
   void PerformOpen();
   void PerformInstall();
 
@@ -85,11 +87,12 @@ class SearchPromotionManager : public KeyedService {
       shell_integration::DefaultWebClientState state);
   void OnPromoClosed();
   void OnDefaultBrowserNameRetrieved(bool accepted,
-                                     std::string_view arm,
                                      const std::u16string& name);
 
-  bool is_promo_allowed_ = false;
-  std::string_view arm_ = feature_engagement::kSearchPromotionArmDefault;
+  feature_engagement::SearchPromotionAction action_ =
+      feature_engagement::SearchPromotionAction::kDisabled;
+  feature_engagement::SearchPromotionCohort cohort_ =
+      feature_engagement::SearchPromotionCohort::kAll;
   std::string engagement_label_;
   bool was_accepted_ = false;
 
