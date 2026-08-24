@@ -230,9 +230,11 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
   if (largeIconResult.bitmap.is_valid()) {
     scoped_refptr<base::RefCountedMemory> data =
         largeIconResult.bitmap.bitmap_data;
-    favicon = [UIImage imageWithData:[NSData dataWithBytes:data->front()
-                                                    length:data->size()]
-                               scale:[UIScreen mainScreen].scale];
+    if (data && data->size() && data->front()) {
+      favicon = [UIImage imageWithData:[NSData dataWithBytes:data->front()
+                                                      length:data->size()]
+                                 scale:[UIScreen mainScreen].scale];
+    }
   }
 
   if (!favicon) {
