@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -284,8 +285,16 @@ IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
 
 // Calling abortAndFallbackToNativeHandler from the built-in PDF
 // extension must reject with an error and not navigate.
+// TODO(crbug.com/551592354): Flaky on Linux MSAN.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_BuiltInExtensionRejectsAbortAndFallback \
+  DISABLED_BuiltInExtensionRejectsAbortAndFallback
+#else
+#define MAYBE_BuiltInExtensionRejectsAbortAndFallback \
+  BuiltInExtensionRejectsAbortAndFallback
+#endif
 IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
-                       BuiltInExtensionRejectsAbortAndFallback) {
+                       MAYBE_BuiltInExtensionRejectsAbortAndFallback) {
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
   const GURL pdf_url = embedded_test_server()->GetURL(kFallbackPdfPath);
