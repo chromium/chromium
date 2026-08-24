@@ -8,7 +8,7 @@ import {getNodeId, getOrCreateNodeId, safeOwnerDocument} from '//ios/chrome/brow
 import {AxRole, FormControlType, PageContentAnchorRel, PageContentAnnotatedRole, PageContentAttributeType, PageContentClickabilityReason, PageContentInteractionDisabledReason, PageContentMediaType, PageContentRedactionDecision, PageContentTableRowType, PageContentTextSize} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
 import type {PageContent, PageContentAttributes, PageContentFormControlData, PageContentFormData, PageContentFrameData, PageContentFrameInteractionInfo, PageContentGeometry, PageContentMediaData, PageContentNode, PageContentNodeInteractionInfo, PageContentPageInteractionInfo, PageContentScrollerInfo, PageContentTableData, Point, Rect as BasicRect} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
 
-// TODO(crbug.com/504261632): Report metrics from here down to the the native
+// TODO(crbug.com/504261632): Report metrics from here down to the native
 // browser side so they can be uma-reported.
 
 // Set of DOM Node IDs that are considered interactive (focused, selection
