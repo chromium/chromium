@@ -29,13 +29,18 @@
 // The title text displayed below the animation.
 @property(nonatomic, copy, readonly) NSString* title;
 
+// The accessibility label for the Lottie animation artwork.
+@property(nonatomic, copy, readonly) NSString* animationAccessibilityLabel;
+
 // Initializer with the Lottie animations for light and dark mode, in both LTR
-// and RTL layout directions, along with the title.
+// and RTL layout directions, along with the title and accessibility label for
+// the animation artwork.
 - (instancetype)initWithAnimationName:(NSString*)animationName
                     darkAnimationName:(NSString*)darkAnimationName
                      animationNameRTL:(NSString*)animationNameRTL
                  darkAnimationNameRTL:(NSString*)darkAnimationNameRTL
                                 title:(NSString*)title
+          animationAccessibilityLabel:(NSString*)animationAccessibilityLabel
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
