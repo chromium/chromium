@@ -105,7 +105,6 @@ public class ToolbarPositionControllerTest {
 
     private static final int TOOLBAR_HEIGHT = 56;
     private static final int CONTROL_CONTAINER_ID = 12356;
-    private static final int STATUS_BAR_HEIGHT = 10;
 
     private BrowserControlsStateProvider.Observer mBrowserControlsObserver;
 

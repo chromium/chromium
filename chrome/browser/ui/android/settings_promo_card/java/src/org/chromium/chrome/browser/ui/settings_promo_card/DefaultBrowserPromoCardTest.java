@@ -50,8 +50,6 @@ public class DefaultBrowserPromoCardTest {
 
     private Activity mActivity;
 
-    private DefaultBrowserPromoCard mPromoCard;
-
     @Before
     public void setup() {
         mActivity = spy(Robolectric.buildActivity(TestActivity.class).setup().get());

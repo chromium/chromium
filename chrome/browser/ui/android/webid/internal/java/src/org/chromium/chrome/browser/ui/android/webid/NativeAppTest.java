@@ -71,7 +71,6 @@ public class NativeAppTest {
     private static final String IDP_PACKAGE = "com.idp.app";
     private static final GURL CONTINUE_URL = new GURL("https://idp.com/continue");
     private static final GURL LOGIN_URL = new GURL("https://idp.com/login");
-    private static final Origin IDP_ORIGIN = Origin.create(CONTINUE_URL.getSpec());
 
     @Mock private Tab mTab;
     @Mock private WindowAndroid mWindowAndroid;

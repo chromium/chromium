@@ -83,8 +83,6 @@ public class ExtensionsMenuMediatorTest {
     private static final Bitmap ICON_RED = ExtensionTestUtils.createSimpleIcon(Color.RED);
     private static final Bitmap ICON_BLUE = ExtensionTestUtils.createSimpleIcon(Color.BLUE);
     private static final Bitmap ICON_GREEN = ExtensionTestUtils.createSimpleIcon(Color.GREEN);
-    private static final int ICON_MORE = R.drawable.ic_more_vert;
-    private static final int ICON_KEEP = R.drawable.ic_keep_24dp;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
