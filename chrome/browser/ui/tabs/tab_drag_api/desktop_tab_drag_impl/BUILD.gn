@@ -43,7 +43,36 @@ source_set("desktop_tab_drag_impl") {
       "tab_drag_session_input_adapter_aura.h",
     ]
     deps += [ "//ui/aura" ]
+    deps += [ "//ui/gfx" ]
   }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tab_drag_window_adapter_impl_unittest.cc" ]
+  deps = [
+    ":desktop_tab_drag_impl",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser:global_features",
+    "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui/browser_window/test:test_support",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs:test_support",
+    "//chrome/test:test_support",
+    "//chrome/test/views",
+    "//components/browser_apis/tab_drag",
+    "//components/browser_apis/tab_drag/adapters",
+    "//components/browser_apis/tab_drag/sessions",
+    "//components/browser_apis/tab_strip/types",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/base:test_support",
+    "//ui/gfx",
+    "//ui/views",
+  ]
 }
 
 source_set("browser_tests") {
