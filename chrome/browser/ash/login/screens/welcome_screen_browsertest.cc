@@ -536,18 +536,15 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest,
 class WelcomeScreenInsetModeBrowserTest
     : public WelcomeScreenBrowserTest,
       public testing::WithParamInterface<std::tuple</*BootAnimation*/ bool,
-                                                    /*OobeJelly*/ bool,
-                                                    /*OobeJellyModal*/ bool>> {
+                                                    /*OobeJelly*/ bool>> {
  public:
   WelcomeScreenInsetModeBrowserTest() {
     const bool boot_animation = std::get<0>(GetParam());
     const bool oobe_jelly = std::get<1>(GetParam());
-    const bool oobe_jelly_modal = std::get<2>(GetParam());
 
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kFeatureManagementOobeSimon, boot_animation},
-         {features::kOobeJelly, oobe_jelly},
-         {features::kOobeJellyModal, oobe_jelly_modal}});
+         {features::kOobeJelly, oobe_jelly}});
   }
   ~WelcomeScreenInsetModeBrowserTest() override = default;
 
@@ -556,8 +553,7 @@ class WelcomeScreenInsetModeBrowserTest
     std::string operator()(
         const testing::TestParamInfo<ParamType>& info) const {
       std::stringstream ss;
-      ss << std::get<0>(info.param) << "_AND_" << std::get<1>(info.param)
-         << "_AND_" << std::get<2>(info.param);
+      ss << std::get<0>(info.param) << "_AND_" << std::get<1>(info.param);
       return ss.str();
     }
   };
@@ -574,7 +570,7 @@ class WelcomeScreenInsetModeBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     WelcomeScreenInsetModeBrowserTest,
-    ::testing::Combine(::testing::Bool(), ::testing::Bool(), ::testing::Bool()),
+    ::testing::Combine(::testing::Bool(), ::testing::Bool()),
     WelcomeScreenInsetModeBrowserTest::PrintToStringParamName());
 
 IN_PROC_BROWSER_TEST_P(WelcomeScreenInsetModeBrowserTest,
@@ -592,7 +588,7 @@ IN_PROC_BROWSER_TEST_P(WelcomeScreenInsetModeBrowserTest,
   // Use inset mode if one screen dimension is >=1040px (and tablet mode is off)
   display_manager.UpdateDisplay(std::string("600x1040"));
   if (ash::features::IsBootAnimationEnabled() ||
-      ash::features::IsOobeJellyModalEnabled()) {
+      ash::features::IsOobeJellyEnabled()) {
     test::OobeJS().ExpectEQ(kGetCalculatedBackgroundColor, kRgbaTransparent);
   } else {
     test::OobeJS().ExpectNE(kGetCalculatedBackgroundColor, kRgbaTransparent);
@@ -600,7 +596,7 @@ IN_PROC_BROWSER_TEST_P(WelcomeScreenInsetModeBrowserTest,
 
   display_manager.UpdateDisplay(std::string("1040x600"));
   if (ash::features::IsBootAnimationEnabled() ||
-      ash::features::IsOobeJellyModalEnabled()) {
+      ash::features::IsOobeJellyEnabled()) {
     test::OobeJS().ExpectEQ(kGetCalculatedBackgroundColor, kRgbaTransparent);
   } else {
     test::OobeJS().ExpectNE(kGetCalculatedBackgroundColor, kRgbaTransparent);
@@ -621,7 +617,7 @@ IN_PROC_BROWSER_TEST_P(WelcomeScreenInsetModeBrowserTest,
 
   ShellTestApi().SetTabletModeEnabledForTest(false);
   if (ash::features::IsBootAnimationEnabled() ||
-      ash::features::IsOobeJellyModalEnabled()) {
+      ash::features::IsOobeJellyEnabled()) {
     test::OobeJS().ExpectEQ(kGetCalculatedBackgroundColor, kRgbaTransparent);
   } else {
     test::OobeJS().ExpectNE(kGetCalculatedBackgroundColor, kRgbaTransparent);

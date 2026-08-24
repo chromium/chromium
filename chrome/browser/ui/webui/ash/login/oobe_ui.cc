@@ -319,8 +319,6 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeAiIntroEnabled", features::IsOobeAiIntroEnabled());
   source->AddBoolean("isJellyEnabled", features::IsOobeJellyEnabled());
   source->AddBoolean("isOobeJellyEnabled", features::IsOobeJellyEnabled());
-  source->AddBoolean("isOobeJellyModalEnabled",
-                     features::IsOobeJellyModalEnabled());
   source->AddBoolean("isBootAnimationEnabled",
                      features::IsBootAnimationEnabled());
   source->AddBoolean("isChoobeEnabled", features::IsOobeChoobeEnabled());
@@ -844,9 +842,6 @@ base::DictValue OobeUI::GetLocalizedStrings() {
   // TODO (b/268463435) Cleanup OobeJelly
   if (features::IsOobeJellyEnabled()) {
     oobeClasses += "jelly-enabled ";
-  }
-  if (features::IsOobeJellyModalEnabled()) {
-    oobeClasses += "jelly-modal-enabled ";
   }
   if (features::IsBootAnimationEnabled()) {
     oobeClasses += "boot-animation-enabled ";

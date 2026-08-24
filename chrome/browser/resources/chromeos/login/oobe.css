@@ -25,7 +25,7 @@
 }
 @media screen and (min-height: 1040px),
         screen and (min-width: 1040px) {
-  :root.jelly-modal-enabled:not([tablet]),
+  :root.jelly-enabled:not([tablet]),
   :root.boot-animation-enabled:not([tablet]) {
     --oobe-container-elevation: var(--cros-sys-app-elevation-3-shadow);
   }
@@ -39,9 +39,9 @@ body {
 }
 @media screen and (min-height: 1040px),
         screen and (min-width: 1040px) {
-  html.jelly-modal-enabled:not([tablet]),
+  html.jelly-enabled:not([tablet]),
   html.boot-animation-enabled:not([tablet]),
-  :root.jelly-modal-enabled:not([tablet]) body,
+  :root.jelly-enabled:not([tablet]) body,
   :root.boot-animation-enabled:not([tablet]) body {
     background-color: transparent;
   }
