@@ -1019,6 +1019,7 @@ source_set("core") {
     "//chrome/browser/preloading/search_preload:feature",
     "//chrome/browser/privacy_sandbox:headers",
     "//chrome/browser/private_ai",
+    "//chrome/browser/private_verification_tokens",
     "//chrome/browser/profiles:misc",
     "//chrome/browser/profiles:profile_io_data",
     "//chrome/browser/profiles:profiles_extra_parts",

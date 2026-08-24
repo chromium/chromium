@@ -828,6 +828,13 @@ void URLLoader::FollowRedirect(
 
   deferred_redirect_url_.reset();
   new_redirect_url_ = new_url;
+  pvt_token_removed_due_to_cookies_ = false;
+
+  if (base::FeatureList::IsEnabled(
+          net::features::kEnablePrivateVerificationTokens)) {
+    url_request_->RemoveRequestHeaderByName(
+        net::HttpRequestHeaders::kSecPrivateVerificationToken);
+  }
 
   net::HttpRequestHeaders merged_modified_headers =
       std::move(headers_update_params.modified_headers);
@@ -945,6 +952,8 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
       include_load_timing_internal_info_with_response_,
       /*response_start=*/base::TimeTicks::Now(), devtools_observer_.get(),
       devtools_request_id().value_or(""));
+  response->pvt_token_removed_due_to_cookies =
+      pvt_token_removed_due_to_cookies_;
   if (response->load_timing_internal_info) {
     response->load_timing_internal_info->accept_ch_frame_received =
         accept_ch_frame_received_;
@@ -1793,9 +1802,27 @@ int URLLoader::OnBeforeStartTransaction(
     net::NetworkDelegate::OnBeforeStartTransactionCallback callback) {
   const net::HttpRequestHeaders* used_headers = &headers;
   net::HttpRequestHeaders headers_with_bonus_cookies;
+  bool headers_modified = false;
   if (!cookies_from_browser_.empty()) {
     headers_with_bonus_cookies = AttachCookies(headers, cookies_from_browser_);
     used_headers = &headers_with_bonus_cookies;
+    headers_modified = true;
+  }
+
+  net::HttpRequestHeaders modified_headers_removed_pvt;
+
+  if (base::FeatureList::IsEnabled(
+          net::features::kEnablePrivateVerificationTokens)) {
+    if (used_headers->HasHeader(
+            net::HttpRequestHeaders::kSecPrivateVerificationToken) &&
+        used_headers->HasHeader(net::HttpRequestHeaders::kCookie)) {
+      modified_headers_removed_pvt = *used_headers;
+      modified_headers_removed_pvt.RemoveHeader(
+          net::HttpRequestHeaders::kSecPrivateVerificationToken);
+      used_headers = &modified_headers_removed_pvt;
+      pvt_token_removed_due_to_cookies_ = true;
+      headers_modified = true;
+    }
   }
 
   if (include_request_cookies_with_response_) {
@@ -1816,14 +1843,13 @@ int URLLoader::OnBeforeStartTransaction(
     return net::ERR_IO_PENDING;
   }
 
-  // Additional cookies were added to the existing headers, so `callback` must
-  // be invoked to ensure that the cookies are included in the request.
-  if (!cookies_from_browser_.empty()) {
-    CHECK_EQ(used_headers, &headers_with_bonus_cookies);
+  // If headers were modified (e.g. bonus cookies added or PVT token stripped
+  // due to cookies), `callback` must be invoked to ensure that the updated
+  // headers are used for the transaction.
+  if (headers_modified) {
     TaskRunner(url_request_->priority())
         ->PostTask(FROM_HERE,
-                   base::BindOnce(std::move(callback), net::OK,
-                                  std::move(headers_with_bonus_cookies)));
+                   base::BindOnce(std::move(callback), net::OK, *used_headers));
     return net::ERR_IO_PENDING;
   }
 

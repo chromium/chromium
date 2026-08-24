@@ -817,6 +817,25 @@ class SyntheticResponseFallbackInterceptor : public net::URLRequestInterceptor {
   std::string response_data_;
 };
 
+class URLLoaderTestNetworkDelegate : public net::TestNetworkDelegate {
+ public:
+  int OnBeforeStartTransaction(
+      net::URLRequest* request,
+      const net::HttpRequestHeaders& headers,
+      OnBeforeStartTransactionCallback callback) override {
+    int rv = net::TestNetworkDelegate::OnBeforeStartTransaction(
+        request, headers, base::DoNothing());
+    if (rv != net::OK) {
+      return rv;
+    }
+    URLLoader* url_loader = URLLoader::ForRequest(*request);
+    if (url_loader) {
+      return url_loader->OnBeforeStartTransaction(headers, std::move(callback));
+    }
+    return net::OK;
+  }
+};
+
 class URLLoaderTest : public testing::Test {
  public:
   URLLoaderTest()
@@ -848,7 +867,8 @@ class URLLoaderTest : public testing::Test {
     context_builder.set_quic_context(std::move(quic_context));
     context_builder.set_proxy_resolution_service(
         net::ConfiguredProxyResolutionService::CreateDirect());
-    auto test_network_delegate = std::make_unique<net::TestNetworkDelegate>();
+    auto test_network_delegate =
+        std::make_unique<URLLoaderTestNetworkDelegate>();
     unowned_test_network_delegate_ = test_network_delegate.get();
     context_builder.set_network_delegate(std::move(test_network_delegate));
     context_builder.set_client_socket_factory_for_testing(GetSocketFactory());
@@ -8940,6 +8960,282 @@ TEST_F(URLLoaderTest, DoesNotLogRequestedUrlLengthForShortUrls) {
   EXPECT_EQ(LoadRequest(request), net::OK);
 
   histogram_tester.ExpectTotalCount("Net.RequestedUrlLength", 0);
+}
+
+TEST_F(URLLoaderTest,
+       PrivateVerificationTokens_TokenRemovedWhenCookiesPresent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnablePrivateVerificationTokens);
+
+  GURL cookie_url = test_server()->GetURL("/");
+  auto cookie = net::CanonicalCookie::CreateForTesting(
+      cookie_url, "foo=bar", base::Time::Now(), net::CookieSourceType::kOther);
+  base::RunLoop run_loop;
+  url_request_context()->cookie_store()->SetCanonicalCookieAsync(
+      std::move(cookie), cookie_url, net::CookieOptions::MakeAllInclusive(),
+      base::BindLambdaForTesting([&](net::CookieAccessResult result) {
+        EXPECT_TRUE(result.status.IsInclude());
+        run_loop.Quit();
+      }),
+      /*cookie_access_result=*/std::nullopt);
+  run_loop.Run();
+
+  ResourceRequest request = CreateResourceRequest(
+      "GET",
+      test_server()->GetURL("/echoheader?Sec-Private-Verification-Token"));
+  request.headers.SetHeader(
+      net::HttpRequestHeaders::kSecPrivateVerificationToken, "test_token");
+
+  std::string body;
+  EXPECT_EQ(LoadRequest(request, &body), net::OK);
+  EXPECT_EQ("None", body);
+  ASSERT_TRUE(client_.response_head());
+  EXPECT_TRUE(client_.response_head()->pvt_token_removed_due_to_cookies);
+}
+
+TEST_F(URLLoaderTest,
+       PrivateVerificationTokens_TokenRetainedWhenNoCookiesPresent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnablePrivateVerificationTokens);
+
+  ResourceRequest request = CreateResourceRequest(
+      "GET",
+      test_server()->GetURL("/echoheader?Sec-Private-Verification-Token"));
+  request.headers.SetHeader(
+      net::HttpRequestHeaders::kSecPrivateVerificationToken, "test_token");
+
+  std::string body;
+  EXPECT_EQ(LoadRequest(request, &body), net::OK);
+  EXPECT_EQ("test_token", body);
+  ASSERT_TRUE(client_.response_head());
+  EXPECT_FALSE(client_.response_head()->pvt_token_removed_due_to_cookies);
+}
+
+TEST_F(URLLoaderTest,
+       PrivateVerificationTokens_FeatureDisabled_TokenNotRemoved) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      net::features::kEnablePrivateVerificationTokens);
+
+  GURL cookie_url = test_server()->GetURL("/");
+  auto cookie = net::CanonicalCookie::CreateForTesting(
+      cookie_url, "foo=bar", base::Time::Now(), net::CookieSourceType::kOther);
+  base::RunLoop run_loop;
+  url_request_context()->cookie_store()->SetCanonicalCookieAsync(
+      std::move(cookie), cookie_url, net::CookieOptions::MakeAllInclusive(),
+      base::BindLambdaForTesting([&](net::CookieAccessResult result) {
+        EXPECT_TRUE(result.status.IsInclude());
+        run_loop.Quit();
+      }),
+      /*cookie_access_result=*/std::nullopt);
+  run_loop.Run();
+
+  ResourceRequest request = CreateResourceRequest(
+      "GET",
+      test_server()->GetURL("/echoheader?Sec-Private-Verification-Token"));
+  request.headers.SetHeader(
+      net::HttpRequestHeaders::kSecPrivateVerificationToken, "test_token");
+
+  std::string body;
+  EXPECT_EQ(LoadRequest(request, &body), net::OK);
+  EXPECT_EQ("test_token", body);
+  ASSERT_TRUE(client_.response_head());
+  EXPECT_FALSE(client_.response_head()->pvt_token_removed_due_to_cookies);
+}
+
+TEST_F(URLLoaderTest,
+       PrivateVerificationTokens_TokenRemovedWhenCookiesFromBrowserPresent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnablePrivateVerificationTokens);
+
+  ResourceRequest request = CreateResourceRequest(
+      "GET",
+      test_server()->GetURL("/echoheader?Sec-Private-Verification-Token"));
+  request.trusted_params.emplace();
+  request.trusted_params->allow_cookies_from_browser = true;
+  request.headers.SetHeader(net::HttpRequestHeaders::kCookie,
+                            "browser_cookie=val");
+  request.headers.SetHeader(
+      net::HttpRequestHeaders::kSecPrivateVerificationToken, "test_token");
+
+  std::string body;
+  EXPECT_EQ(LoadRequest(request, &body), net::OK);
+  EXPECT_EQ("None", body);
+  ASSERT_TRUE(client_.response_head());
+  EXPECT_TRUE(client_.response_head()->pvt_token_removed_due_to_cookies);
+}
+
+TEST_F(URLLoaderTest,
+       PrivateVerificationTokens_Redirect_TokenRemovedOnFirstLegOnly) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnablePrivateVerificationTokens);
+
+  GURL cookie_url = test_server()->GetURL("/server-redirect");
+  auto cookie = net::CanonicalCookie::CreateForTesting(
+      cookie_url, "foo=bar", base::Time::Now(), net::CookieSourceType::kOther);
+  base::RunLoop run_loop;
+  url_request_context()->cookie_store()->SetCanonicalCookieAsync(
+      std::move(cookie), cookie_url, net::CookieOptions::MakeAllInclusive(),
+      base::BindLambdaForTesting([&](net::CookieAccessResult result) {
+        EXPECT_TRUE(result.status.IsInclude());
+        run_loop.Quit();
+      }),
+      /*cookie_access_result=*/std::nullopt);
+  run_loop.Run();
+
+  ResourceRequest request = CreateResourceRequest(
+      "GET",
+      test_server()->GetURL(
+          "/server-redirect?/echoheader?Sec-Private-Verification-Token"));
+  request.headers.SetHeader(
+      net::HttpRequestHeaders::kSecPrivateVerificationToken, "test_token");
+
+  base::RunLoop delete_run_loop;
+  mojo::Remote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id =
+      OriginatingProcessId::browser();
+  context().mutable_factory_params().is_orb_enabled = false;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.BindNewPipeAndPassReceiver(), request, client()->CreateRemote());
+
+  client()->RunUntilRedirectReceived();
+  ASSERT_TRUE(client()->response_head());
+  // The token was removed on leg 1 due to cookies being present on
+  // /server-redirect.
+  EXPECT_TRUE(client()->response_head()->pvt_token_removed_due_to_cookies);
+
+  loader->FollowRedirect(/*headers_update_params=*/{},
+                         /*new_url=*/std::nullopt);
+  client()->ClearHasReceivedRedirect();
+  client()->RunUntilResponseBodyArrived();
+  std::string body = ReadBody();
+  client()->RunUntilComplete();
+
+  EXPECT_EQ("None", body);
+  ASSERT_TRUE(client()->response_head());
+  // The redirect hop reset the flag, and leg 2 did not remove the token due to
+  // cookies.
+  EXPECT_FALSE(client()->response_head()->pvt_token_removed_due_to_cookies);
+}
+
+TEST_F(
+    URLLoaderTest,
+    PrivateVerificationTokens_AuthChallenge_TokenRemovedPersistedAcrossRestarts) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnablePrivateVerificationTokens);
+
+  net::test_server::EmbeddedTestServer auth_server;
+  auth_server.AddDefaultHandlers();
+
+  // Monitor all requests to ensure the token is never sent on the wire.
+  // We expect no token on either the first attempt or the post-auth retry,
+  // because cookies are present on the domain, causing the token to be stripped
+  // proactively.
+  bool auth_request_received = false;
+  auth_server.RegisterRequestMonitor(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request) {
+        if (request.relative_url.find("/auth-basic") == 0) {
+          auth_request_received = true;
+          EXPECT_FALSE(request.headers.contains(
+              net::HttpRequestHeaders::kSecPrivateVerificationToken));
+        }
+      }));
+
+  ASSERT_TRUE(auth_server.Start());
+
+  GURL cookie_url = auth_server.GetURL("/");
+  auto cookie = net::CanonicalCookie::CreateForTesting(
+      cookie_url, "foo=bar", base::Time::Now(), net::CookieSourceType::kOther);
+  base::RunLoop run_loop;
+  url_request_context()->cookie_store()->SetCanonicalCookieAsync(
+      std::move(cookie), cookie_url, net::CookieOptions::MakeAllInclusive(),
+      base::BindLambdaForTesting([&](net::CookieAccessResult result) {
+        EXPECT_TRUE(result.status.IsInclude());
+        run_loop.Quit();
+      }),
+      /*cookie_access_result=*/std::nullopt);
+  run_loop.Run();
+
+  ClientCertAndHttpAuthObserver client_auth_observer;
+  client_auth_observer.set_credentials_response(
+      ClientCertAndHttpAuthObserver::CredentialsResponse::CORRECT_CREDENTIALS);
+
+  ResourceRequest request =
+      CreateResourceRequest("GET", auth_server.GetURL(kTestAuthURL));
+  request.headers.SetHeader(
+      net::HttpRequestHeaders::kSecPrivateVerificationToken, "test_token");
+
+  base::RunLoop delete_run_loop;
+  mojo::Remote<mojom::URLLoader> loader;
+  context().mutable_factory_params().process_id = kProcessId;
+  context().mutable_factory_params().is_orb_enabled = false;
+  URLLoaderOptions url_loader_options;
+  url_loader_options.url_loader_network_observer = client_auth_observer.Bind();
+  std::unique_ptr<URLLoader> url_loader = url_loader_options.MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.BindNewPipeAndPassReceiver(), request, client()->CreateRemote());
+
+  client()->RunUntilComplete();
+  EXPECT_TRUE(client()->has_received_completion());
+  // Verify that an authentication challenge was encountered and resolved.
+  EXPECT_TRUE(auth_request_received);
+  EXPECT_EQ(1, client_auth_observer.on_auth_required_call_counter());
+  ASSERT_TRUE(client()->response_head());
+  // The token removal flag persisted across the internal auth retry restart.
+  EXPECT_TRUE(client()->response_head()->pvt_token_removed_due_to_cookies);
+}
+
+TEST_F(URLLoaderTest,
+       PrivateVerificationTokens_Redirect_NoCookies_TokenStrippedOnRedirect) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnablePrivateVerificationTokens);
+
+  ResourceRequest request = CreateResourceRequest(
+      "GET",
+      test_server()->GetURL(
+          "/server-redirect?/echoheader?Sec-Private-Verification-Token"));
+  request.headers.SetHeader(
+      net::HttpRequestHeaders::kSecPrivateVerificationToken, "test_token");
+
+  base::RunLoop delete_run_loop;
+  mojo::Remote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id =
+      OriginatingProcessId::browser();
+  context().mutable_factory_params().is_orb_enabled = false;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.BindNewPipeAndPassReceiver(), request, client()->CreateRemote());
+
+  client()->RunUntilRedirectReceived();
+  ASSERT_TRUE(client()->response_head());
+  // On leg 1, no cookies were present, so the token was not removed due to
+  // cookies.
+  EXPECT_FALSE(client()->response_head()->pvt_token_removed_due_to_cookies);
+
+  // Follow redirect without providing any removed_headers in parameters.
+  loader->FollowRedirect(/*headers_update_params=*/{},
+                         /*new_url=*/std::nullopt);
+  client()->ClearHasReceivedRedirect();
+  client()->RunUntilResponseBodyArrived();
+  std::string body = ReadBody();
+  client()->RunUntilComplete();
+
+  // The server receives no token header on leg 2 because
+  // URLLoader::FollowRedirect() automatically stripped the single-hop
+  // Sec-Private-Verification-Token header.
+  EXPECT_EQ("None", body);
+  ASSERT_TRUE(client()->response_head());
+  // The token was not removed due to cookies on leg 2.
+  EXPECT_FALSE(client()->response_head()->pvt_token_removed_due_to_cookies);
 }
 
 }  // namespace network

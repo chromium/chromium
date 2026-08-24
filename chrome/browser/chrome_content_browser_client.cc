@@ -152,6 +152,8 @@
 #include "chrome/browser/preloading/prerender/prerender_web_contents_delegate.h"
 #include "chrome/browser/preloading/search_preload/search_preload_features.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
+#include "chrome/browser/private_verification_tokens/private_verification_tokens_service_factory.h"
+#include "chrome/browser/private_verification_tokens/private_verification_tokens_url_loader_throttle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -404,6 +406,7 @@
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/data_url.h"
+#include "net/base/features.h"
 #include "net/base/url_util.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
@@ -6025,6 +6028,22 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
       signin::URLLoaderThrottle::MaybeCreate(std::move(delegate), wc_getter);
   if (signin_throttle) {
     result.push_back(std::move(signin_throttle));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          net::features::kEnablePrivateVerificationTokens) &&
+      request.is_outermost_main_frame) {
+    if (auto* pvt_service =
+            PrivateVerificationTokensServiceFactory::GetForProfile(profile)) {
+      auto url_loader_factory = profile->GetDefaultStoragePartition()
+                                    ->GetURLLoaderFactoryForBrowserProcess();
+      if (auto pvt_throttle =
+              PrivateVerificationTokensURLLoaderThrottle::Create(
+                  pvt_service, profile->IsOffTheRecord(),
+                  std::move(url_loader_factory))) {
+        result.push_back(std::move(pvt_throttle));
+      }
+    }
   }
 
   return result;

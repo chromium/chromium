@@ -16,6 +16,8 @@ static_library("private_verification_tokens") {
     "private_verification_tokens_service.h",
     "private_verification_tokens_service_factory.cc",
     "private_verification_tokens_service_factory.h",
+    "private_verification_tokens_url_loader_throttle.cc",
+    "private_verification_tokens_url_loader_throttle.h",
   ]
 
   deps = [
@@ -32,6 +34,7 @@ static_library("private_verification_tokens") {
     "//content/public/browser",
     "//net",
     "//services/network/public/cpp",
+    "//third_party/blink/public/common",
     "//url",
   ]
 }
@@ -46,8 +49,10 @@ source_set("browser_tests") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/test:test_support",
     "//components/content_settings/core/common",
+    "//components/private_verification_tokens/common:athm_test_issuer",
     "//components/private_verification_tokens/common:private_verification_tokens_database",
     "//components/private_verification_tokens/common:private_verification_tokens_issuer_config",
+    "//net:test_support",
     "//services/network:test_support",
     "//url",
   ]
@@ -55,7 +60,10 @@ source_set("browser_tests") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "private_verification_tokens_service_unittest.cc" ]
+  sources = [
+    "private_verification_tokens_service_unittest.cc",
+    "private_verification_tokens_url_loader_throttle_unittest.cc",
+  ]
   deps = [
     ":private_verification_tokens",
     "//base",

@@ -716,6 +716,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // DevTools Durable Message instances, if enabled.
   std::unique_ptr<DevtoolsDurableMessageWriter> durable_message_writer_;
 
+  // Whether Sec-Private-Verification-Token was removed from this request
+  // because cookies were included.
+  bool pvt_token_removed_due_to_cookies_ = false;
+
   base::WeakPtrFactory<URLLoader> weak_ptr_factory_{this};
 };
 
