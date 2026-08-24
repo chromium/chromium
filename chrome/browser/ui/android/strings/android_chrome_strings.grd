@@ -2356,7 +2356,7 @@ Your Google account may have other forms of browsing history like searches and a
         Open new Incognito window
       </message>
       <message name="IDS_ACCOUNT_SETTINGS_SWITCH_TO_INCOGNITO_SUMMARY" desc="Summary description for the Switch to Incognito preference in settings. Informs the user that it will open a new incognito window and offers a 'Learn more' link.">
-        Others who use this device won't see your activity, so you can browse more privately. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
+        When you're browsing in Incognito, others who use this device won't see your activity, so you can browse more privately. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <message name="IDS_SYNC_ENCRYPTION" desc="Preference category name for sync encryption. [CHAR_LIMIT=32]">
         Encryption
