@@ -4,6 +4,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
@@ -471,8 +472,14 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
   histogram_tester.ExpectTotalCount("Navigation.InitiatorType.SRP", 0);
 }
 
+// TODO(crbug.com/551914466): Flaky on Windows. Re-enable when fixed.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PrerenderSRPActivation DISABLED_PrerenderSRPActivation
+#else
+#define MAYBE_PrerenderSRPActivation PrerenderSRPActivation
+#endif
 IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
-                       PrerenderSRPActivation) {
+                       MAYBE_PrerenderSRPActivation) {
   auto* model =
       TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
   search_test_utils::WaitForTemplateURLServiceToLoad(model);
