@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/composebox/ui/composebox_ui_config.h"
 
+#import "base/check.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -90,6 +92,18 @@
     return config.chipLabel;
   }
   return [self localFallbackForTool:tool isHint:NO];
+}
+
+- (NSString*)removeToolAccessibilityLabelForTool:(ComposeboxMode)tool {
+  NSString* chipLabel = [self chipLabelForTool:tool];
+
+  DCHECK(chipLabel.length);
+  if (!chipLabel.length) {
+    return @"";
+  }
+  return l10n_util::GetNSStringF(
+      IDS_IOS_COMPOSEBOX_REMOVE_TOOL_ACCESSIBILITY_LABEL,
+      base::SysNSStringToUTF16(chipLabel));
 }
 
 - (NSString*)hintTextForTool:(ComposeboxMode)tool {

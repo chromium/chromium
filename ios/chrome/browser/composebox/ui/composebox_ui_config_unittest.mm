@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/composebox/ui/composebox_ui_config.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -14,6 +15,53 @@ class ComposeboxUIConfigTest : public PlatformTest {
  protected:
   ComposeboxUIConfigTest() {}
 };
+
+// Tests that removeToolAccessibilityLabelForTool returns the correct localized
+// string with placeholder replaced for fallback and server-configured tools.
+TEST_F(ComposeboxUIConfigTest, TestRemoveToolAccessibilityLabel) {
+  ComposeboxUIConfig* uiConfig = [ComposeboxUIConfig localFallbackUIConfig];
+
+  EXPECT_NSEQ(
+      [uiConfig removeToolAccessibilityLabelForTool:ComposeboxMode::kCanvas],
+      l10n_util::GetNSStringF(
+          IDS_IOS_COMPOSEBOX_REMOVE_TOOL_ACCESSIBILITY_LABEL,
+          base::SysNSStringToUTF16(
+              l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CANVAS_ACTION))));
+
+  EXPECT_NSEQ(
+      [uiConfig
+          removeToolAccessibilityLabelForTool:ComposeboxMode::kImageGeneration],
+      l10n_util::GetNSStringF(
+          IDS_IOS_COMPOSEBOX_REMOVE_TOOL_ACCESSIBILITY_LABEL,
+          base::SysNSStringToUTF16(
+              l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CREATE_IMAGE_ACTION))));
+
+  EXPECT_NSEQ(
+      [uiConfig
+          removeToolAccessibilityLabelForTool:ComposeboxMode::kDeepSearch],
+      l10n_util::GetNSStringF(
+          IDS_IOS_COMPOSEBOX_REMOVE_TOOL_ACCESSIBILITY_LABEL,
+          base::SysNSStringToUTF16(
+              l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_DEEP_SEARCH_ACTION))));
+
+  std::unordered_map<ComposeboxMode, ComposeboxItemUIConfig*> tool_mapping;
+  tool_mapping[ComposeboxMode::kCanvas] =
+      [[ComposeboxItemUIConfig alloc] initWithMenuLabel:@"Server Menu Canvas"
+                                              chipLabel:@"Server Canvas"
+                                               hintText:@"Server Hint"
+                                                   icon:nil];
+  ComposeboxUIConfig* serverConfig =
+      [[ComposeboxUIConfig alloc] initWithToolMapping:tool_mapping
+                                         modelMapping:{}
+                                   modelSectionHeader:nil
+                                   toolsSectionHeader:nil];
+
+  EXPECT_NSEQ([serverConfig
+                  removeToolAccessibilityLabelForTool:ComposeboxMode::kCanvas],
+              l10n_util::GetNSStringF(
+                  IDS_IOS_COMPOSEBOX_REMOVE_TOOL_ACCESSIBILITY_LABEL,
+                  base::SysNSStringToUTF16(@"Server Canvas")));
+}
 
 TEST_F(ComposeboxUIConfigTest, TestLocalFallbackForTool) {
   ComposeboxUIConfig* uiConfig = [ComposeboxUIConfig localFallbackUIConfig];

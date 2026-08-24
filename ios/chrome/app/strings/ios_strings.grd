@@ -1849,6 +1849,9 @@
       <message name="IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_TITLE" desc="Title for the contextual menu section for selecting the AI model to us. [iOS only].">
         Gemini <ph name="VERSION_NUMBER">$1<ex>3</ex></ph> models
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_REMOVE_TOOL_ACCESSIBILITY_LABEL" desc="The accessibility announcement read by VoiceOver for the button that removes or deselects an active AI tool or feature chip (such as Canvas, Create, or Deep Search) from the composebox query when tapped. [iOS only].">
+        Remove <ph name="TOOL_NAME">$1<ex>Canvas</ex></ph>
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_SELECT_TAB_ACTION" desc="The contextual menu option for opening the tab picker for selection. [iOS only].">
         Tabs
       </message>

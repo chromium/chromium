@@ -71,6 +71,9 @@
 // Returns the chip label for the given tool.
 - (NSString*)chipLabelForTool:(ComposeboxMode)tool;
 
+// Returns the accessibility label for removing the given active tool.
+- (NSString*)removeToolAccessibilityLabelForTool:(ComposeboxMode)tool;
+
 // Returns the hint text for the given tool.
 - (NSString*)hintTextForTool:(ComposeboxMode)tool;
 

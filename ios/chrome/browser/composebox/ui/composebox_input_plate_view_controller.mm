@@ -2139,6 +2139,9 @@ UIImage* SendButtonImage(BOOL highlighted,
   config.baseForegroundColor = [_theme toolButtonTextColorWithActiveState:YES];
   button.tintColor = [_theme toolButtonTextColorWithActiveState:YES];
 
+  button.accessibilityLabel = [_state.uiConfig
+      removeToolAccessibilityLabelForTool:ComposeboxMode::kImageGeneration];
+
   button.configuration = config;
   [self setupXMarkInButton:button];
 
@@ -2160,6 +2163,8 @@ UIImage* SendButtonImage(BOOL highlighted,
                                       attributes:attributes];
 
   _imageGenerationButton.configuration = config;
+  _imageGenerationButton.accessibilityLabel = [_state.uiConfig
+      removeToolAccessibilityLabelForTool:ComposeboxMode::kImageGeneration];
 }
 
 
@@ -2189,6 +2194,9 @@ UIImage* SendButtonImage(BOOL highlighted,
       [_theme toolButtonBackgroundColorWithActiveState:YES];
   config.baseForegroundColor = [_theme toolButtonTextColorWithActiveState:YES];
   button.tintColor = [_theme toolButtonTextColorWithActiveState:YES];
+
+  button.accessibilityLabel = [_state.uiConfig
+      removeToolAccessibilityLabelForTool:ComposeboxMode::kCanvas];
 
   button.configuration = config;
 
@@ -2229,6 +2237,9 @@ UIImage* SendButtonImage(BOOL highlighted,
       [_theme toolButtonBackgroundColorWithActiveState:YES];
   config.baseForegroundColor = [_theme toolButtonTextColorWithActiveState:YES];
   button.tintColor = [_theme toolButtonTextColorWithActiveState:YES];
+
+  button.accessibilityLabel = [_state.uiConfig
+      removeToolAccessibilityLabelForTool:ComposeboxMode::kDeepSearch];
 
   button.configuration = config;
 
