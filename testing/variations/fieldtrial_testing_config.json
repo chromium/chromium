@@ -12581,21 +12581,6 @@
             ]
         }
     ],
-    "MacAccessibilityAPIMigration": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MacAccessibilityAPIMigration"
-                    ]
-                }
-            ]
-        }
-    ],
     "MacOptimizeCachedFirstRect": [
         {
             "platforms": [

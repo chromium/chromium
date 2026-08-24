@@ -1,2 +1,2 @@
-tablist.accessibilityTabs=[:3]
-tab.accessibilityTabs=[:3]
+tablist.accessibilityTabs=ERROR:FAILED_TO_PARSE
+tab.accessibilityTabs=ERROR:FAILED_TO_PARSE

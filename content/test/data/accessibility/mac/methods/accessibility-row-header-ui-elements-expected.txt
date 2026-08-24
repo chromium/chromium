@@ -1,5 +1,5 @@
-table.accessibilityRowHeaderUIElements=[:9]
-rowheader.accessibilityRowHeaderUIElements=[:9]
-cell.accessibilityRowHeaderUIElements=[:9]
-columnheader1.accessibilityRowHeaderUIElements=NULL
-columnheader2.accessibilityRowHeaderUIElements=NULL
+table.accessibilityRowHeaderUIElements=ERROR:FAILED_TO_PARSE
+rowheader.accessibilityRowHeaderUIElements=ERROR:FAILED_TO_PARSE
+cell.accessibilityRowHeaderUIElements=ERROR:FAILED_TO_PARSE
+columnheader1.accessibilityRowHeaderUIElements=ERROR:FAILED_TO_PARSE
+columnheader2.accessibilityRowHeaderUIElements=ERROR:FAILED_TO_PARSE

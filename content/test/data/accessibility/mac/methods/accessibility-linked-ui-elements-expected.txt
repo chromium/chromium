@@ -1,1 +1,1 @@
-tab.accessibilityLinkedUIElements=[:4]
+tab.accessibilityLinkedUIElements=ERROR:FAILED_TO_PARSE

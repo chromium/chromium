@@ -1,2 +1,2 @@
-table.accessibilityHeader=:23
-row.accessibilityHeader=:9
+table.accessibilityHeader=ERROR:FAILED_TO_PARSE
+row.accessibilityHeader=ERROR:FAILED_TO_PARSE
