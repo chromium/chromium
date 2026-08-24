@@ -244,6 +244,12 @@ void TouchEventAckQueue::UpdateQueueAfterTargetDestroyed(
 RenderWidgetHostInputEventRouter::TouchscreenPinchState::TouchscreenPinchState()
     : state_(PinchState::NONE) {}
 
+bool RenderWidgetHostInputEventRouter::TouchscreenPinchState::IsBubblingToRoot()
+    const {
+  return state_ == PinchState::EXISTING_BUBBLING_TO_ROOT ||
+         state_ == PinchState::PINCH_WHILE_BUBBLING_TO_ROOT;
+}
+
 bool RenderWidgetHostInputEventRouter::TouchscreenPinchState::IsInPinch()
     const {
   switch (state_) {
@@ -413,8 +419,7 @@ void RenderWidgetHostInputEventRouter::OnRenderWidgetHostViewInputDestroyed(
     touchpad_gesture_target_ = nullptr;
 
   if (view == bubbling_gesture_scroll_target_) {
-    bubbling_gesture_scroll_target_ = nullptr;
-    bubbling_gesture_scroll_origin_ = nullptr;
+    CancelScrollBubbling(/*bubbling_view_is_being_destroyed=*/true);
   } else if (view == bubbling_gesture_scroll_origin_) {
     bubbling_gesture_scroll_origin_ = nullptr;
   }
@@ -1409,17 +1414,25 @@ void RenderWidgetHostInputEventRouter::WillDetachChildView(
   }
 }
 
-void RenderWidgetHostInputEventRouter::CancelScrollBubbling() {
+void RenderWidgetHostInputEventRouter::CancelScrollBubbling(
+    bool bubbling_view_is_being_destroyed) {
   DCHECK(bubbling_gesture_scroll_target_);
-  SendGestureScrollEnd(bubbling_gesture_scroll_target_,
-                       bubbling_gesture_scroll_source_device_);
+  if (!bubbling_view_is_being_destroyed) {
+    SendGestureScrollEnd(bubbling_gesture_scroll_target_,
+                         bubbling_gesture_scroll_source_device_);
+  }
 
   const bool touchscreen_bubble_to_root =
       bubbling_gesture_scroll_source_device_ ==
           blink::WebGestureDevice::kTouchscreen &&
-      !bubbling_gesture_scroll_target_->GetParentViewInput();
-  if (touchscreen_bubble_to_root)
+      touchscreen_pinch_state_.IsBubblingToRoot();
+  if (touchscreen_bubble_to_root) {
+    if (bubbling_view_is_being_destroyed &&
+        touchscreen_pinch_state_.IsInPinch()) {
+      touchscreen_pinch_state_.DidStopPinch();
+    }
     touchscreen_pinch_state_.DidStopBubblingToRoot();
+  }
 
   // TODO(mcnee): We should also inform |bubbling_gesture_scroll_origin_| that
   // we are no longer bubbling its events, otherwise it could continue to send
