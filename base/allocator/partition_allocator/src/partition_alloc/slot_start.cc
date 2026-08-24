@@ -4,6 +4,7 @@
 
 #include "partition_alloc/slot_start.h"
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/internal/partition_root_internal.h"
 #include "partition_alloc/partition_page.h"
 

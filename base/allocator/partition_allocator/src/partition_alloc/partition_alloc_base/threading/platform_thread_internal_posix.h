@@ -6,6 +6,7 @@
 #define PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREADING_PLATFORM_THREAD_INTERNAL_POSIX_H_
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 
 namespace partition_alloc::internal::base::internal {

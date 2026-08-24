@@ -8,6 +8,7 @@
 
 #include "partition_alloc/allocator_config.h"
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/internal/partition_page_internal.h"
 #include "partition_alloc/internal/partition_root_internal.h"
 #include "partition_alloc/internal/reservation_offset_table_internal.h"

@@ -14,6 +14,7 @@
 #include <string>
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/threading/platform_thread_ref.h"
 #include "partition_alloc/partition_alloc_base/time/time.h"

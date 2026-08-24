@@ -51,6 +51,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/internal_allocator_forward.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/export_template.h"

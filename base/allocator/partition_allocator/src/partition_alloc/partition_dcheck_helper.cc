@@ -6,6 +6,7 @@
 
 #include <cstdint>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/internal/partition_root_internal.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_bucket.h"

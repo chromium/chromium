@@ -15,6 +15,7 @@
 #include <type_traits>
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
 
 #if PA_BUILDFLAG(IS_ASMJS)

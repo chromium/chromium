@@ -4,6 +4,8 @@
 
 #include "partition_alloc/thread_isolation/pkey.h"
 
+#include "partition_alloc/buildflags.h"
+
 #if PA_BUILDFLAG(ENABLE_PKEYS)
 
 #include <sys/mman.h>

@@ -5,6 +5,7 @@
 #ifndef PARTITION_ALLOC_PARTITION_DCHECK_HELPER_H_
 #define PARTITION_ALLOC_PARTITION_DCHECK_HELPER_H_
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_forward.h"

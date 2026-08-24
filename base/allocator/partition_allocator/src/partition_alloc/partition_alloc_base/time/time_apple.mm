@@ -15,6 +15,7 @@
 #include <cstdint>
 #include <ctime>
 
+#include "partition_alloc/buildflags.h"
 #if PA_BUILDFLAG(IS_IOS)
 #include <cerrno>
 #endif

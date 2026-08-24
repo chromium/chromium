@@ -11,6 +11,7 @@
 #include <tuple>
 #include <utility>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/time/time_override.h"
 
 namespace partition_alloc::internal::base {

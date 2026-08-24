@@ -7,6 +7,7 @@
 #include <cstdarg>
 #include <cstdio>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/scoped_clear_last_error.h"
 

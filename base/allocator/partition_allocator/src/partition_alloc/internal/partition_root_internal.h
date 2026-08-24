@@ -11,6 +11,7 @@
 #include "partition_alloc/address_pool_manager_types.h"
 #include "partition_alloc/allocation_guard.h"
 #include "partition_alloc/bucket_lookup.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/in_slot_metadata.h"
 #include "partition_alloc/internal/partition_page_internal.h"
 #include "partition_alloc/internal/reservation_offset_table_internal.h"

@@ -6,6 +6,7 @@
 
 #include <atomic>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/internal/partition_root_internal.h"
 #include "partition_alloc/internal/thread_cache_internal.h"
 #include "partition_alloc/internal_allocator.h"

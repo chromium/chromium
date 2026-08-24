@@ -13,6 +13,7 @@
 #include <cstdio>
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 
 #if PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)

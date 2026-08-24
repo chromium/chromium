@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <type_traits>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_check.h"
 
 #if PA_BUILDFLAG(USE_PARTITION_COOKIE)

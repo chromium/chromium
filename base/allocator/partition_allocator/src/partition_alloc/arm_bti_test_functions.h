@@ -6,6 +6,7 @@
 #define PARTITION_ALLOC_ARM_BTI_TEST_FUNCTIONS_H_
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
 extern "C" {

@@ -9,6 +9,7 @@
 
 #include <cstring>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 #include "partition_alloc/partition_alloc_base/posix/eintr_wrapper.h"

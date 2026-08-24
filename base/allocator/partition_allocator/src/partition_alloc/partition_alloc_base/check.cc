@@ -4,6 +4,7 @@
 
 #include "partition_alloc/partition_alloc_base/check.h"
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 
 namespace partition_alloc::internal::logging {

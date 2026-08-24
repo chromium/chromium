@@ -13,6 +13,7 @@
 #include "base/debug/debugging_buildflags.h"
 #include "base/timer/lap_timer.h"
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/extended_api.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 #include "partition_alloc/partition_alloc_base/strings/stringprintf.h"

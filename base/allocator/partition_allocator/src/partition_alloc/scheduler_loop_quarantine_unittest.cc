@@ -6,6 +6,7 @@
 
 #include <thread>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/extended_api.h"
 #include "partition_alloc/internal/partition_root_internal.h"
 #include "partition_alloc/partition_alloc_base/check.h"

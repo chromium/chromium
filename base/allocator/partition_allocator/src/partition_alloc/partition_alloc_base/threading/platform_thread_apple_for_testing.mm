@@ -14,6 +14,7 @@
 #include <cstddef>
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h"
 

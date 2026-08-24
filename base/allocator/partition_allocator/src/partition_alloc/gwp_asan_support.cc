@@ -4,6 +4,7 @@
 
 #include "partition_alloc/gwp_asan_support.h"
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 
 #if PA_BUILDFLAG(ENABLE_GWP_ASAN_SUPPORT)

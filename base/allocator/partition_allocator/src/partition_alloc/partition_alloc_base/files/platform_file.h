@@ -6,6 +6,7 @@
 #define PARTITION_ALLOC_PARTITION_ALLOC_BASE_FILES_PLATFORM_FILE_H_
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(IS_WIN)
 #include "partition_alloc/partition_alloc_base/win/windows_types.h"

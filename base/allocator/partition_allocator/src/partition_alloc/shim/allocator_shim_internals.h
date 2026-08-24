@@ -6,6 +6,7 @@
 #define PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_INTERNALS_H_
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 
 #if defined(__GNUC__)
 
