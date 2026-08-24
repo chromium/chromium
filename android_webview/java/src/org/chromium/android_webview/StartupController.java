@@ -11,11 +11,16 @@ import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.metrics.TrackExitReasons;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.SelectionActionMenuClientWrapper;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ResourceBundle;
 
 import java.util.concurrent.CountDownLatch;
@@ -39,6 +44,21 @@ public class StartupController {
 
         /** Returns the function table pointer for software drawing. */
         long getDrawSWFunctionTable();
+
+        // TODO(elabadysayed): Centralize target SDK gated features in a single place and
+        // allow overriding them for testing instead of checking them across glue and Aw layers.
+        /** Returns whether simplified dark mode is enabled. */
+        boolean isSimplifiedDarkModeEnabled();
+
+        /** Initializes thread-unsafe singletons in the glue layer. */
+        void initThreadUnsafeSingletons();
+
+        // TODO: Inline SelectionActionMenuClient call once aconfig flag is cleaned up.
+        /** Returns the framework-level selection action menu client, if available. */
+        @Nullable SelectionActionMenuClientWrapper getSelectionActionMenuClient();
+
+        /** Callback for the glue layer to complete post-startup tasks. */
+        void onStartupComplete();
     }
 
     private final Delegate mDelegate;
@@ -125,5 +145,44 @@ public class StartupController {
         // the seed is available when AwFeatureListCreator::SetUpFieldTrials()
         // runs.
         AwBrowserProcess.finishVariationsInit();
+    }
+
+    /**
+     * Runs post-browser-process startup tasks that need to run on the UI thread before and after
+     * Chromium initialization is complete.
+     */
+    public void postBrowserProcessStartTask() {
+        ThreadUtils.assertOnUiThread();
+
+        AwBrowserProcess.initializeMetricsLogUploader();
+
+        int targetSdkVersion =
+                ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion;
+        RecordHistogram.recordSparseHistogram("Android.WebView.TargetSdkVersion", targetSdkVersion);
+
+        mDelegate.initThreadUnsafeSingletons();
+
+        if (ApkInfo.isDebugAndroidOrApp()) {
+            AwDevToolsServer.setRemoteDebuggingEnabled(true);
+        }
+
+        if (mDelegate.isSimplifiedDarkModeEnabled()) {
+            AwDarkMode.enableSimplifiedDarkMode();
+        }
+
+        AwBrowserProcess.maybeEnableSafeBrowsingFromGms();
+        AwBrowserProcess.setupSupervisedUser();
+        AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(/* updateMetricsConsent= */ true);
+
+        AwBrowserProcess.postBackgroundTasks();
+
+        AwContentsStatics.setSelectionActionMenuClient(mDelegate.getSelectionActionMenuClient());
+
+        AwCrashyClassUtils.maybeCrashIfEnabled();
+
+        mDelegate.onStartupComplete();
+
+        PostTask.disablePreNativeUiTasks(false);
+        AwBrowserProcess.onStartupComplete();
     }
 }

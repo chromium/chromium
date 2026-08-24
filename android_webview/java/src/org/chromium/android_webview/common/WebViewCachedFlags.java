@@ -70,6 +70,7 @@ public class WebViewCachedFlags {
     private static @Nullable WebViewCachedFlags sInstance;
     private static final Object sLock = new Object();
 
+    private final SharedPreferences mPrefs;
     private final Map<String, @DefaultState Integer> mDefaults;
     private final Set<String> mOverrideEnabled;
     private final Set<String> mOverrideDisabled;
@@ -296,12 +297,8 @@ public class WebViewCachedFlags {
         return getRegisteredParamValue(feature, paramName);
     }
 
-    /**
-     * Writes new finch values to prefs. This method should be called from a background thread.
-     *
-     * @param prefs the SharedPreferences to write new feature values to.
-     */
-    public void onStartupCompleted(SharedPreferences prefs) {
+    /** Writes new finch values to prefs. This method should be called from a background thread. */
+    public void onStartupCompleted() {
         mIsStartupComplete = true;
 
         // Process feature flags
@@ -332,7 +329,7 @@ public class WebViewCachedFlags {
                     }
                 });
 
-        prefs.edit()
+        mPrefs.edit()
                 .putStringSet(CACHED_ENABLED_FLAGS_PREF, newEnabledSet)
                 .putStringSet(CACHED_DISABLED_FLAGS_PREF, newDisabledSet)
                 .putStringSet(CACHED_PARAMS_PREF, newParamsSet)
@@ -345,6 +342,7 @@ public class WebViewCachedFlags {
             Map<String, @DefaultState Integer> defaults,
             Map<String, String> params,
             boolean forceDefaults) {
+        mPrefs = prefs;
         boolean flagsExist =
                 prefs.contains(CACHED_ENABLED_FLAGS_PREF)
                         && prefs.contains(CACHED_DISABLED_FLAGS_PREF);

@@ -43,7 +43,6 @@ import java.util.List;
  */
 @Lifetime.Singleton
 public class SharedStatics {
-    private AwDevToolsServer mDevToolsServer;
     private final WebViewChromiumAwInit mAwInit;
 
     public SharedStatics(WebViewChromiumAwInit awInit) {
@@ -175,11 +174,7 @@ public class SharedStatics {
             throw new RuntimeException(
                     "Toggling of Web Contents Debugging must be done on the UI thread");
         }
-        if (mDevToolsServer == null) {
-            if (!enable) return;
-            mDevToolsServer = new AwDevToolsServer();
-        }
-        mDevToolsServer.setRemoteDebuggingEnabled(enable);
+        AwDevToolsServer.setRemoteDebuggingEnabled(enable);
     }
 
     public void clearClientCertPreferences(Runnable onCleared) {

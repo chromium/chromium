@@ -126,7 +126,7 @@ public class WebViewCachedFlagsTest {
                         Map.of(),
                         false);
 
-        cachedFlags.onStartupCompleted(sharedPrefs);
+        cachedFlags.onStartupCompleted();
         Assert.assertEquals(
                 Set.of("Baz"), sharedPrefs.getStringSet(CACHED_ENABLED_FLAGS_PREF, Set.of()));
         Assert.assertEquals(
@@ -173,7 +173,7 @@ public class WebViewCachedFlagsTest {
                         Map.of(),
                         false);
 
-        cachedFlags.onStartupCompleted(sharedPrefs);
+        cachedFlags.onStartupCompleted();
         Assert.assertEquals(
                 Set.of("Baz"), sharedPrefs.getStringSet(CACHED_ENABLED_FLAGS_PREF, Set.of()));
         Assert.assertEquals(
@@ -226,7 +226,7 @@ public class WebViewCachedFlagsTest {
         }
 
         // After startup is completed, only Variations.FeatureAccess is logged for Bar.
-        cachedFlags.onStartupCompleted(sharedPrefs);
+        cachedFlags.onStartupCompleted();
         try (HistogramWatcher ignoredLate =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord("Variations.FeatureAccess", barHash)
@@ -369,7 +369,7 @@ public class WebViewCachedFlagsTest {
                         Map.of(),
                         Map.ofEntries(param("TestFeature", "active_param", "world")),
                         false);
-        cachedFlags.onStartupCompleted(sharedPrefs);
+        cachedFlags.onStartupCompleted();
 
         Set<String> cachedParams = sharedPrefs.getStringSet(CACHED_PARAMS_PREF, Set.of());
         Assert.assertEquals(Set.of("TestFeature:active_param:override_hello"), cachedParams);
@@ -393,7 +393,7 @@ public class WebViewCachedFlagsTest {
                                 param("TestFeature", "paramB", "defaultB"),
                                 param("UnrelatedFeature", "paramC", "defaultC")),
                         false);
-        cachedFlags.onStartupCompleted(sharedPrefs);
+        cachedFlags.onStartupCompleted();
 
         Set<String> cachedParams = sharedPrefs.getStringSet(CACHED_PARAMS_PREF, Set.of());
         Assert.assertEquals(

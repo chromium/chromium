@@ -16,9 +16,9 @@ import org.chromium.build.annotations.NullMarked;
 @Lifetime.Singleton
 @JNINamespace("android_webview")
 @NullMarked
-public class AwDevToolsServer {
+public abstract class AwDevToolsServer {
 
-    public void setRemoteDebuggingEnabled(boolean enabled) {
+    public static void setRemoteDebuggingEnabled(boolean enabled) {
         if (CommandLine.getInstance().hasSwitch(AwSwitches.NET_LOG)) {
             if (enabled) {
                 AwNetLogsConnection.startConnectNetLogService();

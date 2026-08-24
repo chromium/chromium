@@ -10,7 +10,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -790,7 +789,7 @@ public final class AwBrowserProcess {
     /**
      * Post tasks that need to run in the background thread after the browser process has started.
      */
-    public static void postBackgroundTasks(boolean isSafeModeEnabled, SharedPreferences prefs) {
+    public static void postBackgroundTasks() {
         if (CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_VERBOSE_LOGGING)) {
             // Log extra information, for debugging purposes.
             PostTask.postTask(
@@ -803,18 +802,13 @@ public final class AwBrowserProcess {
                         // Field trials can be activated at any time. We'll continue logging them as
                         // they're activated.
                         FieldTrialList.logActiveTrials();
-                        // SafeMode was already determined earlier during the startup sequence, this
-                        // just fetches the cached boolean state. If SafeMode was enabled, we
-                        // already
-                        // logged detailed information about the SafeMode config.
-                        Log.i(TAG, "SafeMode enabled: " + isSafeModeEnabled);
                     });
         }
 
         PostTask.postTask(
                 TaskTraits.BEST_EFFORT,
                 () -> {
-                    WebViewCachedFlags.get().onStartupCompleted(prefs);
+                    WebViewCachedFlags.get().onStartupCompleted();
                 });
 
         if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_PREFETCH_NATIVE_LIBRARY)

@@ -638,6 +638,9 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             }
 
             // Here is where we can actually execute the safe mode actions.
+            if (CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_VERBOSE_LOGGING)) {
+                Log.i(TAG, "SafeMode enabled: " + mIsSafeModeEnabled);
+            }
             if (mIsSafeModeEnabled) {
                 try {
                     long safeModeQueryExecuteStart = SystemClock.elapsedRealtime();
