@@ -1122,16 +1122,6 @@ const AutofillAblationStudy& ChromeAutofillClient::GetAblationStudy() const {
   return ablation_study_;
 }
 
-bool ChromeAutofillClient::IsAndroidLargeFormFactor() const {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::WeakPtr<ManualFillingController> controller =
-          ManualFillingController::Get(web_contents())) {
-    return controller->IsLargeFormFactor();
-  }
-#endif
-  return false;
-}
-
 #if BUILDFLAG(IS_ANDROID)
 AutofillSnackbarControllerImpl*
 ChromeAutofillClient::GetAutofillSnackbarController() {

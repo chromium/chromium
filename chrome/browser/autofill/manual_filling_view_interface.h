@@ -69,9 +69,6 @@ class ManualFillingViewInterface {
   virtual void ShowAccessorySheetTab(
       const autofill::AccessoryTabType& tab_type) = 0;
 
-  // Returns true if the device is a large form factor.
-  virtual bool IsLargeFormFactor() const = 0;
-
  private:
   friend class ManualFillingControllerImpl;
   // Factory function used to create a concrete instance of this view.

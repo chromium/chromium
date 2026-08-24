@@ -47,7 +47,6 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
   void Hide() override;
   void ShowAccessorySheetTab(
       const autofill::AccessoryTabType& tab_type) override;
-  bool IsLargeFormFactor() const override;
 
   // Called from Java via JNI:
   void OnFillingTriggered(

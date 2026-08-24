@@ -543,10 +543,6 @@ class TestAutofillClientTemplate : public T {
     return format_for_large_keyboard_accessory_;
   }
 
-  bool IsAndroidLargeFormFactor() const override {
-    return is_device_large_form_factor_;
-  }
-
   bool SupportsDeviceReauth() const override { return supports_device_reauth_; }
 
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(
@@ -766,10 +762,6 @@ class TestAutofillClientTemplate : public T {
     format_for_large_keyboard_accessory_ = format_for_large_keyboard_accessory;
   }
 
-  void set_is_device_large_form_factor(bool is_device_large_form_factor) {
-    is_device_large_form_factor_ = is_device_large_form_factor;
-  }
-
   void set_app_locale(std::string app_locale) {
     app_locale_ = std::move(app_locale);
   }
@@ -958,8 +950,6 @@ class TestAutofillClientTemplate : public T {
   bool should_save_autofill_profiles_ = true;
 
   bool format_for_large_keyboard_accessory_ = false;
-
-  bool is_device_large_form_factor_ = false;
 
   std::string app_locale_ = "en-US";
 

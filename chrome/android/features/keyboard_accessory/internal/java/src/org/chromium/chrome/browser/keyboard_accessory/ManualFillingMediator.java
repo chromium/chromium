@@ -33,6 +33,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -646,7 +647,7 @@ class ManualFillingMediator
                     mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
                     return false;
                 }
-                if (shouldHideKeyboardAccessoryForLargeFormFactor()) {
+                if (shouldHideKeyboardAccessoryForDesktop()) {
                     mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
                     return false;
                 }
@@ -674,11 +675,11 @@ class ManualFillingMediator
                 "Unhandled transition into state: " + mModel.get(KEYBOARD_EXTENSION_STATE));
     }
 
-    private boolean shouldHideKeyboardAccessoryForLargeFormFactor() {
-        // Hides keyboard accessory if it is large form factor and the field is not eligible to show
-        // the accessory on large form factor. The check for feature flag needs to happen before
+    private boolean shouldHideKeyboardAccessoryForDesktop() {
+        // Hides keyboard accessory on desktop if the field is not eligible to show the
+        // accessory on large form factor. The check for feature flag needs to happen before
         // `SHOULD_SHOW_ON_LARGE_FORM_FACTOR` check to ensure we get the unbiased metrics.
-        return isLargeFormFactor()
+        return DeviceInfo.isDesktop()
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_SUPPRESS_ACCESSORY_ON_EMPTY)
                 && !mModel.get(SHOULD_SHOW_ON_LARGE_FORM_FACTOR);
@@ -686,21 +687,21 @@ class ManualFillingMediator
 
     /**
      * @return Whether the last item in the Keyboard Accessory Bar should be sticky (aligned to the
-     *     end of the bar). The last item should not be sticky on large form factor devices as the
-     *     UI for these devices is different.
+     *     end of the bar). The last item should not be sticky on Android desktop devices as the UI
+     *     for these devices is different.
      */
     private boolean shouldHaveStickyLastItem() {
-        return !(isLargeFormFactor()
+        return !(DeviceInfo.isDesktop()
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP));
     }
 
     /**
      * @return Whether suggestions should animate from the top instead of horizontally. This
-     *     vertical animation is specific to the revamped UI on large form factor devices.
+     *     vertical animation is specific to the revamped UI on Android desktop devices.
      */
     private boolean shouldAnimateSuggestionsFromTop() {
-        return isLargeFormFactor()
+        return DeviceInfo.isDesktop()
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP);
     }
@@ -709,14 +710,9 @@ class ManualFillingMediator
      * @return Whether Keyboard Accessory should hide on page scroll.
      */
     private boolean shouldHideOnScroll() {
-        return isLargeFormFactor()
+        return DeviceInfo.isDesktop()
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING);
-    }
-
-    public boolean isLargeFormFactor() {
-        return KeyboardAccessoryUtils.isLargeFormFactor(
-                mActivity, mWindowAndroid.getKeyboardDelegate());
     }
 
     private void enforceStateProperties(@KeyboardExtensionState int extensionState) {
@@ -965,7 +961,7 @@ class ManualFillingMediator
         if (extensionState == WAITING_TO_REPLACE) return; // Don't change yet.
 
         boolean useUndockedLayout =
-                isLargeFormFactor()
+                DeviceInfo.isDesktop()
                         && ChromeFeatureList.isEnabled(
                                 ChromeFeatureList
                                         .AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP);
@@ -1109,7 +1105,7 @@ class ManualFillingMediator
      */
     private int calculateAccessorySheetHeight() {
         // When the dynamic positioning the height is adjusted based on the content.
-        if (isLargeFormFactor()
+        if (DeviceInfo.isDesktop()
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList
                                 .AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
@@ -1169,7 +1165,7 @@ class ManualFillingMediator
         // Adjust the height such that the new visible height will be exactly
         // MINIMAL_AVAILABLE_VERTICAL_SPACE.
         // When the dynamic positioning the height is adjusted based on the content.
-        if (isLargeFormFactor()
+        if (DeviceInfo.isDesktop()
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList
                                 .AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {

@@ -24,6 +24,7 @@ import android.content.Context;
 
 import androidx.annotation.StringRes;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.TriState;
@@ -99,7 +100,6 @@ class KeyboardAccessoryMediator
     private final AccessorySheetCoordinator.SheetVisibilityDelegate mSheetVisibilityDelegate;
     private final TabSwitchingDelegate mTabSwitcher;
     private final Supplier<Integer> mBackgroundColorSupplier;
-    private final Supplier<Boolean> mIsLargeFormFactorSupplier;
     private final Profile mProfile;
     private final @Nullable ActionConfirmationDialog mDialog;
     private final ObserverList<KeyboardAccessoryVisualStateProvider.Observer> mVisualObservers =
@@ -117,7 +117,6 @@ class KeyboardAccessoryMediator
             TabSwitchingDelegate tabSwitcher,
             KeyboardAccessoryButtonGroupCoordinator.SheetOpenerCallbacks sheetOpenerCallbacks,
             Supplier<Integer> backgroundColorSupplier,
-            Supplier<Boolean> isLargeFormFactorSupplier,
             Runnable dismissRunnable) {
         mContext = context;
         mModel = model;
@@ -126,7 +125,6 @@ class KeyboardAccessoryMediator
         mSheetVisibilityDelegate = sheetVisibilityDelegate;
         mTabSwitcher = tabSwitcher;
         mBackgroundColorSupplier = backgroundColorSupplier;
-        mIsLargeFormFactorSupplier = isLargeFormFactorSupplier;
         mDialog =
                 modalDialogManager != null
                         ? new ActionConfirmationDialog(context, modalDialogManager)
@@ -674,7 +672,7 @@ class KeyboardAccessoryMediator
     }
 
     private boolean showFloatingKeyboardAccessory() {
-        return mIsLargeFormFactorSupplier.get()
+        return DeviceInfo.isDesktop()
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP);
     }

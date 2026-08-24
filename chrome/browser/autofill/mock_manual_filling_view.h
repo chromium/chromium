@@ -38,7 +38,6 @@ class MockManualFillingView : public ManualFillingViewInterface {
               ShowAccessorySheetTab,
               (const autofill::AccessoryTabType&),
               (override));
-  MOCK_METHOD(bool, IsLargeFormFactor, (), (const, override));
 };
 
 #endif  // CHROME_BROWSER_AUTOFILL_MOCK_MANUAL_FILLING_VIEW_H_

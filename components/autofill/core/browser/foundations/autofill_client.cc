@@ -267,10 +267,6 @@ const AutofillAblationStudy& AutofillClient::GetAblationStudy() const {
   return AutofillAblationStudy::disabled_study();
 }
 
-bool AutofillClient::IsAndroidLargeFormFactor() const {
-  return false;
-}
-
 #if BUILDFLAG(IS_ANDROID)
 bool AutofillClient::ShowAmbientAutoFillNotice(
     base::WeakPtr<TouchToFillAutofillDelegate> delegate) {

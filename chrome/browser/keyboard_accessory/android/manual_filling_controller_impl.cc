@@ -257,10 +257,6 @@ gfx::NativeView ManualFillingControllerImpl::container_view() const {
   return const_cast<content::WebContents&>(GetWebContents()).GetNativeView();
 }
 
-bool ManualFillingControllerImpl::IsLargeFormFactor() const {
-  return view_->IsLargeFormFactor();
-}
-
 // Returns a weak pointer for this object.
 base::WeakPtr<ManualFillingController>
 ManualFillingControllerImpl::AsWeakPtr() {

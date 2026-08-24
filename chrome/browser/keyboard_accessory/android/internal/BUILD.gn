@@ -60,6 +60,7 @@ android_library("java") {
   srcjar_deps = [ ":jni" ]
   deps = [
     ":java_resources",
+    "//base:build_info_java",
     "//base:callback_java",
     "//base:lifetime_java",
     "//base:metrics_java",

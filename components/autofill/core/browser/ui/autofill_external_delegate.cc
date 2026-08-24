@@ -33,6 +33,9 @@
 #include "base/types/optional_ref.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
 #include "components/autofill/core/browser/at_memory/at_memory_manager.h"
 #include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
@@ -98,6 +101,14 @@
 namespace autofill {
 
 namespace {
+
+bool IsAndroidDesktop() {
+#if BUILDFLAG(IS_ANDROID)
+  return base::android::device_info::is_desktop();
+#else
+  return false;
+#endif
+}
 
 // Fills the queried form with the provided credit card using the specified
 // trigger source. Used as a callback for asynchronous card fetches.
@@ -525,8 +536,9 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
   if (suggestions.empty() && !IsAtMemoryTriggerSource(trigger_source)) {
     OnAutofillAvailabilityEvent(
         mojom::AutofillSuggestionAvailability::kNoSuggestions);
-    // No suggestions, any popup currently showing is obsolete.
-    if (!manager_->client().IsAndroidLargeFormFactor() ||
+    // No suggestions, any popup currently showing is obsolete. On Android
+    // desktop with dynamic positioning, keep the accessory visible.
+    if (!IsAndroidDesktop() ||
         !base::FeatureList::IsEnabled(
             features::kAutofillAndroidKeyboardAccessoryDynamicPositioning)) {
       manager_->client().HideSuggestions(SuggestionHidingReason::kNoSuggestions,
