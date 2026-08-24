@@ -1155,6 +1155,20 @@ TEST_F(AccountTrackerServiceTest, SeedAccountInfo) {
   }));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(AccountTrackerServiceTest, SeedAccountInfoEmptyEmail) {
+  const GaiaId gaia_id = AccountKeyToGaiaId(kAccountKeyFooBar);
+  const CoreAccountId account_id =
+      account_tracker()->SeedAccountInfo(gaia_id, "");
+  EXPECT_FALSE(account_id.empty());
+  auto infos = account_tracker()->GetAccounts();
+  ASSERT_EQ(1u, infos.size());
+  EXPECT_EQ(account_id, infos[0].GetAccountId());
+  EXPECT_EQ(gaia_id, infos[0].GetGaiaId());
+  EXPECT_TRUE(infos[0].GetEmail().empty());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 TEST_F(AccountTrackerServiceTest, SeedAccountInfoFull) {
   AccountInfo info = AccountInfo::Builder(AccountKeyToGaiaId(kAccountKeyAlpha),
                                           AccountKeyToEmail(kAccountKeyAlpha))

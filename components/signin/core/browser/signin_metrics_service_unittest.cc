@@ -138,10 +138,15 @@ class SigninMetricsServiceTest : public ::testing::Test {
         identity_test_environment_.SetRefreshTokenForPrimaryAccount();
         break;
       case Resolution::kWebSignin: {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
         AccountInfo account_info =
-            identity_manager()->FindExtendedAccountInfo(core_account_info);
-        account_info.access_point = signin_metrics::AccessPoint::kWebSignin;
+            AccountInfo::Builder(
+                identity_manager()->FindExtendedAccountInfo(core_account_info))
+                .SetLastAuthenticationAccessPoint(
+                    signin_metrics::AccessPoint::kWebSignin)
+                .Build();
         identity_test_environment_.UpdateAccountInfoForAccount(account_info);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
         identity_test_environment_.SetRefreshTokenForPrimaryAccount();
         break;
       }

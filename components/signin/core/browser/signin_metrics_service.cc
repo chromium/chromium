@@ -438,31 +438,35 @@ void SigninMetricsService::HandleSigninErrors(
         profile_metrics_service_.get());
     pref_service_->ClearPref(kSigninPendingStartTimePref);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
     AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
         identity_manager_->GetPrimaryAccountInfo(
             signin::ConsentLevel::kSignin));
-    if (account_info.access_point.has_value()) {
+    if (std::optional<signin_metrics::AccessPoint> access_point =
+            account_info.GetLastAuthenticationAccessPoint();
+        access_point.has_value()) {
       // Only record `Started` from WEB_SIGNIN, since there is no way to
       // know that a WebSignin resolution has started until it was
       // completed. Other access points are client access points which can
       // be tracked at the real started event.
-      if (account_info.access_point ==
-          signin_metrics::AccessPoint::kWebSignin) {
+      if (access_point == signin_metrics::AccessPoint::kWebSignin) {
         base::UmaHistogramEnumeration(
             "Signin.SigninPending.ResolutionSourceStarted",
-            account_info.access_point.value());
+            access_point.value());
       }
       base::UmaHistogramEnumeration(
           "Signin.SigninPending.ResolutionSourceCompleted",
-          account_info.access_point.value());
+          access_point.value());
     }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   }
 }
 
 void SigninMetricsService::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (info.access_point == signin_metrics::AccessPoint::kWebSignin &&
+  if (info.GetLastAuthenticationAccessPoint() ==
+          signin_metrics::AccessPoint::kWebSignin &&
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     ScopedDictPrefUpdate update(&pref_service_.get(),
                                 kWebSigninAccountStartTimesPref);

@@ -34,6 +34,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #include "components/signin/internal/identity_manager/account_info_util.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -849,10 +850,15 @@ CoreAccountId AccountTrackerService::SeedAccountInfo(
     const GaiaId& gaia,
     const std::string& email,
     std::optional<signin_metrics::AccessPoint> access_point) {
-  AccountInfo account_info;
-  account_info.gaia = gaia;
-  account_info.email = email;
-  account_info.access_point = access_point;
+  // TODO(https://crbug.com/40283608): Stop seeding incomplete accounts.
+  AccountInfo::Builder builder =
+      AccountInfo::Builder::CreateWithPossiblyEmptyGaiaIdAndEmail(gaia, email);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (access_point.has_value()) {
+    builder.SetLastAuthenticationAccessPoint(*access_point);
+  }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+  AccountInfo account_info = builder.Build();
   CoreAccountId account_id = SeedAccountInfo(account_info);
 
   DVLOG(1) << "AccountTrackerService::SeedAccountInfo"

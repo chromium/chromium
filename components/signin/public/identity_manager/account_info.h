@@ -25,6 +25,8 @@
 #include "base/android/scoped_java_ref.h"
 #endif
 
+class AccountTrackerService;
+
 // Value representing no picture URL associated with an account.
 extern const char kNoPictureURLFound[];
 
@@ -211,15 +213,6 @@ struct AccountInfo : public CoreAccountInfo {
   bool CanHaveEmailAddressDisplayed() const;
 #endif
 
-  // The following struct members are going to be moved to the private section
-  // soon, do not use them directly.
-  // TODO(crbug.com/458409080): move all struct members to the private section.
-
-
-  // Deprecated: Use GetLastAuthenticationAccessPoint() instead.
-  // The value is set consistently only on DICE platforms.
-  std::optional<signin_metrics::AccessPoint> access_point;
-
  private:
   friend class Builder;
   friend class AccountCapabilitiesTestMutator;
@@ -235,6 +228,9 @@ struct AccountInfo : public CoreAccountInfo {
   signin::Tribool is_child_account_ = signin::Tribool::kUnknown;
   AccountCapabilities capabilities_;
   gfx::Image account_image_;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  std::optional<signin_metrics::AccessPoint> access_point_;
+#endif
 };
 
 // Builder class for constructing AccountInfo objects.
@@ -295,8 +291,10 @@ class AccountInfo::Builder {
   Builder& SetHostedDomain(std::string_view hosted_domain);
   Builder& SetAvatarUrl(std::string_view avatar_url);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   Builder& SetLastAuthenticationAccessPoint(
       signin_metrics::AccessPoint access_point);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   Builder& SetIsChildAccount(signin::Tribool is_child_account);
 
   Builder& UpdateAccountCapabilitiesWith(const AccountCapabilities& other);
@@ -304,6 +302,9 @@ class AccountInfo::Builder {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AccountInfoTest, CreateWithPossiblyEmptyGaiaId);
+  FRIEND_TEST_ALL_PREFIXES(AccountInfoTest,
+                           CreateWithPossiblyEmptyGaiaIdAndEmail);
+  friend class AccountTrackerService;
   friend std::optional<AccountInfo> signin::DeserializeAccountInfo(
       const base::DictValue& dict);
   // Default constructor is only available to support ongoing migrations.
@@ -316,6 +317,17 @@ class AccountInfo::Builder {
   // gaia id if kGaiaAccountIdEnforcement is enabled.
   // TODO(crbug.com/502237328): Remove after kGaiaAccountIdEnforcement launch.
   static AccountInfo::Builder CreateWithPossiblyEmptyGaiaId(
+      const GaiaId& gaia_id,
+      std::string_view email);
+  // Factory function that permits creating `AccountInfo` with an empty Gaia ID
+  // or empty email.
+  // It exists only to support an ongoing migration and shouldn't be used for
+  // other purposes.
+  // Please note that despite the name, this method still requires a non-empty
+  // gaia id if kGaiaAccountIdEnforcement is enabled.
+  // TODO(crbug.com/40283608): Remove after seeding incomplete accounts is
+  // stopped.
+  static AccountInfo::Builder CreateWithPossiblyEmptyGaiaIdAndEmail(
       const GaiaId& gaia_id,
       std::string_view email);
 

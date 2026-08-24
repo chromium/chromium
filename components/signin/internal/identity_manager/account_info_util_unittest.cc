@@ -433,8 +433,10 @@ TEST(AccountInfoUtilTest, SerializeAndDeserializeAccountInfo) {
           .SetIsChildAccount(signin::Tribool::kTrue)
           .SetLastDownloadedAvatarUrlWithSize(
               "https://example.com/picture_with_size.jpg")
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
           .SetLastAuthenticationAccessPoint(
               signin_metrics::AccessPoint::kAvatarBubbleSignIn)
+#endif
           .UpdateAccountCapabilitiesWith(capabilities)
           .Build();
 
@@ -461,7 +463,10 @@ TEST(AccountInfoUtilTest, SerializeAndDeserializeAccountInfo) {
             deserialized_account_info->IsChildAccount());
   EXPECT_EQ(account_info.GetLastDownloadedAvatarUrlWithSize(),
             deserialized_account_info->GetLastDownloadedAvatarUrlWithSize());
-  EXPECT_EQ(account_info.access_point, deserialized_account_info->access_point);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  EXPECT_EQ(account_info.GetLastAuthenticationAccessPoint(),
+            deserialized_account_info->GetLastAuthenticationAccessPoint());
+#endif
   EXPECT_EQ(
       account_info.GetAccountCapabilities().can_fetch_family_member_info(),
       Tribool::kUnknown);
