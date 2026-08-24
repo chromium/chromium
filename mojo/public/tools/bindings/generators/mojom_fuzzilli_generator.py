@@ -211,7 +211,7 @@ class Generator(generator.Generator):
       for param in method.parameters:
         self._CollectInterfaceAndTypes(param.kind, is_in_js)
 
-      if not method.response_parameters:
+      if not method.response_param_struct:
         continue
       name = self._FormatUniqueName(method.response_param_struct)
       self.response_structs[name] = method.response_param_struct

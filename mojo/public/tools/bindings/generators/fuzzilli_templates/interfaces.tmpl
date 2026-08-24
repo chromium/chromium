@@ -67,7 +67,7 @@ extension ObjectGroup {
                 whitespace is necessary to avoid a syntax error.
             #}
             ] => {{ "" }}
-            {%- if method.response_parameters -%}
+            {%- if method.response_param_struct -%}
                 {%- if method|is_synchronous_method -%}
                 .{{method.response_param_struct|format_il_type}}
                 {%- else -%}
