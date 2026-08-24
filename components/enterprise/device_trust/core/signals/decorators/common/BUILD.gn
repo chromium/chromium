@@ -5,9 +5,20 @@
 source_set("common") {
   configs += [ "//components/enterprise:extra_warnings" ]
 
-  public = [ "signals_decorator.h" ]
+  sources = [ "signals_aggregator_decorator.cc" ]
+
+  public = [
+    "signals_aggregator_decorator.h",
+    "signals_decorator.h",
+  ]
 
   public_deps = [ "//base" ]
+
+  deps = [
+    "//components/device_signals/core/browser",
+    "//components/device_signals/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+  ]
 }
 
 source_set("test_support") {
@@ -25,4 +36,24 @@ source_set("test_support") {
   ]
 
   deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
+  sources = [ "signals_aggregator_decorator_unittest.cc" ]
+
+  deps = [
+    ":common",
+    "//base",
+    "//base/test:test_support",
+    "//components/device_signals/core/browser",
+    "//components/device_signals/core/browser:test_support",
+    "//components/device_signals/core/common",
+    "//components/enterprise/connectors/core:constants",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }
