@@ -881,7 +881,8 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementSessionRestoreBrowserTest,
 }
 
 // TODO(crbug.com/541174985): Flaky on LSAN builders.
-#if defined(LEAK_SANITIZER)
+// TODO(crbug.com/551552509): Flaky on Linux.
+#if defined(LEAK_SANITIZER) || BUILDFLAG(IS_LINUX)
 #define MAYBE_RestoredSession_Playback_MEI DISABLED_RestoredSession_Playback_MEI
 #else
 #define MAYBE_RestoredSession_Playback_MEI RestoredSession_Playback_MEI
