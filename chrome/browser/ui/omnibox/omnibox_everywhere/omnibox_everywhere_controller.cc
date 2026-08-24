@@ -46,6 +46,11 @@ OmniboxEverywhereController::OmniboxEverywhereController(
                          : ui::GlobalAcceleratorListener::GetInstance()) {
   CHECK(base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere));
   if (g_browser_process && g_browser_process->local_state()) {
+    enabled_pref_member_.Init(
+        prefs::kOmniboxEverywhereEnabled, g_browser_process->local_state(),
+        base::BindRepeating(
+            &OmniboxEverywhereController::UpdateHotkeyRegistration,
+            base::Unretained(this)));
     hotkey_pref_member_.Init(
         prefs::kHotkeyEnabled, g_browser_process->local_state(),
         base::BindRepeating(
@@ -128,8 +133,7 @@ void OmniboxEverywhereController::OnProfileManagerDestroying() {
 }
 
 bool OmniboxEverywhereController::IsProfileEligible(Profile* profile) const {
-  return profile && !profile->IsOffTheRecord() &&
-         omnibox::IsOmniboxEverywhereEnabled(profile) &&
+  return omnibox::IsOmniboxEverywhereEligible(profile) &&
          OmniboxEverywhereServiceFactory::GetForProfile(profile);
 }
 
@@ -243,6 +247,14 @@ void OmniboxEverywhereController::PersistTargetProfilePath(
   }
 }
 
+bool OmniboxEverywhereController::IsEnabled() const {
+  return !enabled_pref_member_.prefs() || enabled_pref_member_.GetValue();
+}
+
+bool OmniboxEverywhereController::IsHotkeyEnabled() const {
+  return !hotkey_pref_member_.prefs() || hotkey_pref_member_.GetValue();
+}
+
 void OmniboxEverywhereController::UpdateHotkeyRegistration() {
   // `GlobalAcceleratorListener::GetInstance()` may return null on platforms
   // where global accelerators are not supported or unavailable (e.g. Wayland).
@@ -269,9 +281,7 @@ void OmniboxEverywhereController::UpdateHotkeyRegistration() {
 
   listener_->UnregisterAccelerators(this);
 
-  const bool is_enabled =
-      hotkey_pref_member_.prefs() && hotkey_pref_member_.GetValue();
-  if (is_enabled) {
+  if (IsEnabled() && IsHotkeyEnabled()) {
     PrefService* local_state =
         g_browser_process ? g_browser_process->local_state() : nullptr;
     const ui::Accelerator hotkey =
@@ -287,8 +297,22 @@ void OmniboxEverywhereController::UpdateHotkeyRegistration() {
 void OmniboxEverywhereController::OnInvoke(InvocationSource source,
                                            Profile* profile,
                                            gfx::NativeWindow context) {
+  if (!IsEnabled()) {
+    return;
+  }
+
   if (!IsProfileEligible(profile)) {
     return;
+  }
+
+  // Disabling the global hotkey in settings causes `UpdateHotkeyRegistration()`
+  // to unregister the accelerator with the OS listener. This check provides a
+  // defensive guard against in-flight keypress events queued right as the
+  // preference is toggled, as well as direct programmatic/test invocations.
+  if (source == InvocationSource::kGlobalHotkey) {
+    if (!IsHotkeyEnabled()) {
+      return;
+    }
   }
 
   SetTargetProfile(profile);

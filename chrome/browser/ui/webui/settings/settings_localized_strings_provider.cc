@@ -3208,8 +3208,11 @@ void AddSearchStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_OMNIBOX_EVERYWHERE_SHOW_SHORTCUTS_SUBLABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+  // The Omnibox Everywhere settings section is displayed whenever a profile is
+  // eligible, regardless of whether the user currently has the feature toggled
+  // on or off.
   html_source->AddBoolean("omniboxEverywhereSettingsEnabled",
-                          omnibox::IsOmniboxEverywhereEnabled(profile));
+                          omnibox::IsOmniboxEverywhereEligible(profile));
   html_source->AddString("omniboxEverywhereLearnMoreURL",
                          chrome::kOmniboxLearnMoreURL);
   html_source->AddString("searchExplanationLearnMoreURL",

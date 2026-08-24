@@ -14,7 +14,9 @@
 #include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 #include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -405,21 +407,37 @@ TEST_F(OmniboxNextAimEligibilityTest, ShouldShowAimContextMenuOption) {
   }
 }
 
-TEST_F(OmniboxNextAimEligibilityTest, IsOmniboxEverywhereEnabled) {
+TEST_F(OmniboxNextAimEligibilityTest, IsOmniboxEverywhereEligibleAndEnabled) {
   // Test with null profile.
+  EXPECT_FALSE(omnibox::IsOmniboxEverywhereEligible(nullptr));
   EXPECT_FALSE(omnibox::IsOmniboxEverywhereEnabled(nullptr));
 
   // Test with Google DSE and feature enabled.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(omnibox::kOmniboxEverywhere);
+    EXPECT_TRUE(omnibox::IsOmniboxEverywhereEligible(profile()));
     EXPECT_TRUE(omnibox::IsOmniboxEverywhereEnabled(profile()));
+
+    // When disabled via user preference, eligible remains true but enabled
+    // is false.
+    if (PrefService* local_state =
+            TestingBrowserProcess::GetGlobal()->local_state()) {
+      local_state->SetBoolean(
+          omnibox_everywhere::prefs::kOmniboxEverywhereEnabled, false);
+      EXPECT_TRUE(omnibox::IsOmniboxEverywhereEligible(profile()));
+      EXPECT_FALSE(omnibox::IsOmniboxEverywhereEnabled(profile()));
+      local_state->SetBoolean(
+          omnibox_everywhere::prefs::kOmniboxEverywhereEnabled, true);
+      EXPECT_TRUE(omnibox::IsOmniboxEverywhereEnabled(profile()));
+    }
   }
 
   // Test with Google DSE and feature disabled.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(omnibox::kOmniboxEverywhere);
+    EXPECT_FALSE(omnibox::IsOmniboxEverywhereEligible(profile()));
     EXPECT_FALSE(omnibox::IsOmniboxEverywhereEnabled(profile()));
   }
 
@@ -438,6 +456,7 @@ TEST_F(OmniboxNextAimEligibilityTest, IsOmniboxEverywhereEnabled) {
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(omnibox::kOmniboxEverywhere);
+    EXPECT_FALSE(omnibox::IsOmniboxEverywhereEligible(profile()));
     EXPECT_FALSE(omnibox::IsOmniboxEverywhereEnabled(profile()));
   }
 
@@ -445,6 +464,7 @@ TEST_F(OmniboxNextAimEligibilityTest, IsOmniboxEverywhereEnabled) {
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(omnibox::kOmniboxEverywhere);
+    EXPECT_FALSE(omnibox::IsOmniboxEverywhereEligible(profile()));
     EXPECT_FALSE(omnibox::IsOmniboxEverywhereEnabled(profile()));
   }
 }

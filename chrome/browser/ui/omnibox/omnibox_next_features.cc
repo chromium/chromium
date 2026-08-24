@@ -11,8 +11,11 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
@@ -20,6 +23,7 @@
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/search.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -273,8 +277,8 @@ bool IsAimPopupEnabled(Profile* profile) {
          aim_service->IsFuseboxEligible();
 }
 
-bool IsOmniboxEverywhereEnabled(Profile* profile) {
-  if (!profile) {
+bool IsOmniboxEverywhereEligible(Profile* profile) {
+  if (!profile || profile->IsOffTheRecord()) {
     return false;
   }
 
@@ -284,6 +288,19 @@ bool IsOmniboxEverywhereEnabled(Profile* profile) {
 
   return search::DefaultSearchProviderIsGoogle(
       TemplateURLServiceFactory::GetForProfile(profile));
+}
+
+bool IsOmniboxEverywhereEnabled(Profile* profile) {
+  if (!IsOmniboxEverywhereEligible(profile)) {
+    return false;
+  }
+
+  if (g_browser_process && g_browser_process->local_state()) {
+    return g_browser_process->local_state()->GetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEnabled);
+  }
+
+  return true;
 }
 
 bool IsContentSharingEnabled(

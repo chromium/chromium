@@ -35,9 +35,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       kOmniboxEverywhereShowShortcuts,
       static_cast<int>(ShowShortcutsPrefValue::kUnset));
-  // TODO(crbug.com/543458988): Update default value to reflect enablement /
-  // eligibility on rollout.
-  registry->RegisterBooleanPref(kOmniboxEverywhereEnabled, false);
+  registry->RegisterBooleanPref(kOmniboxEverywhereEnabled, true);
   registry->RegisterBooleanPref(kOmniboxEverywhereBackgroundMode, false);
 #if BUILDFLAG(IS_MAC)
   registry->RegisterBooleanPref(kOmniboxEverywhereEphemeralModel, true);

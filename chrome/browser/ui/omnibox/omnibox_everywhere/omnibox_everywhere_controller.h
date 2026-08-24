@@ -142,10 +142,17 @@ class OmniboxEverywhereController
   // Persists or clears the target profile path in Local State preferences.
   void PersistTargetProfilePath(const base::FilePath& path);
 
+  // Returns true if the Omnibox Everywhere master pref is enabled.
+  bool IsEnabled() const;
+
+  // Returns true if the Omnibox Everywhere global hotkey pref is enabled.
+  bool IsHotkeyEnabled() const;
+
   // Registers or unregisters the global hotkey accelerator according to feature
   // flag and preference settings.
   void UpdateHotkeyRegistration();
 
+  BooleanPrefMember enabled_pref_member_;
   BooleanPrefMember hotkey_pref_member_;
   StringPrefMember hotkey_string_pref_member_;
   std::unique_ptr<OmniboxEverywhereUIManager> ui_manager_;
