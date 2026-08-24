@@ -1051,7 +1051,8 @@ TEST_F(CastRunnerIntegrationTest,
 
 // Verifies that starting a component fails if CORS exempt headers cannot be
 // fetched.
-TEST_F(CastRunnerIntegrationTest, MissingCorsExemptHeaderProvider) {
+// TODO(crbug.com/551893385): Test fails flakily.
+TEST_F(CastRunnerIntegrationTest, DISABLED_MissingCorsExemptHeaderProvider) {
   // Prevent the FakeCastAgent from publishing the
   // chromium.cast.CorsExemptHeaderProvider service.
   cast_runner_launcher().fake_cast_agent().RegisterOnConnectClosure(
