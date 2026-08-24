@@ -1,0 +1,54 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/resources/tools/bundle_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+build_webui("build") {
+  grd_prefix = "geic"
+
+  ts_files = [ "geic_mojo_bindings_wrapper.ts" ]
+
+  mojo_files_deps = [ "//chrome/browser/geic:mojo_bindings_ts__generator" ]
+  mojo_files = [ "$root_gen_dir/chrome/browser/geic/geic.mojom-webui.ts" ]
+
+  webui_context_type = "trusted"
+  ts_deps = [
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  extra_grdp_deps = [ ":build_grdp" ]
+  extra_grdp_files = [ "$target_gen_dir/resources.grdp" ]
+
+  ts_composite = true
+}
+
+bundle_js("geic_mojo_bindings_rollup") {
+  # GEiC UI runs in a PrivilegedWebContents from a remote HTTPS origin rather
+  # than a chrome:// WebUI page. A placeholder host satisfies the bundle_js
+  # template's required host parameter without binding it to a WebUI URL.
+  host = "about:blank"
+  input = rebase_path("$target_gen_dir/tsc", root_build_dir)
+  js_module_in_files = [ "geic_mojo_bindings_wrapper.js" ]
+
+  deps = [ ":build_ts" ]
+
+  external_paths = [
+    "//resources/mojo/mojo/public/js/|" +
+        rebase_path("$root_gen_dir/mojo/public/js", root_build_dir),
+    "//resources/mojo/|" +
+        rebase_path("$root_gen_dir/ui/webui/resources/tsc/mojo",
+                    root_build_dir),
+  ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "geic"
+  out_grd = "$target_gen_dir/resources.grdp"
+  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
+  input_files = [ "geic_mojo_bindings_wrapper.rollup.js" ]
+  deps = [ ":geic_mojo_bindings_rollup" ]
+}

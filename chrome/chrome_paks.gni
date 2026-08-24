@@ -221,6 +221,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/drive_picker_host_untrusted_resources.pak",
         "$root_gen_dir/chrome/feedback_resources.pak",
         "$root_gen_dir/chrome/gaia_auth_host_resources.pak",
+        "$root_gen_dir/chrome/geic_resources.pak",
         "$root_gen_dir/chrome/glic_untrusted_resources.pak",
         "$root_gen_dir/chrome/history_resources.pak",
         "$root_gen_dir/chrome/indigo_resources.pak",
@@ -268,6 +269,7 @@ template("chrome_extra_paks") {
         "//chrome/browser/actor/resources:browser_resources",
         "//chrome/browser/indigo/resources:browser_resources",
         "//chrome/browser/resources/contextual_cueing/internals:resources",
+        "//chrome/browser/resources/geic:resources",
         "//components/headless/command_handler",
         "//content/browser/tracing:resources",
       ]
