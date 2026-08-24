@@ -679,6 +679,7 @@ source_set("browser_sources") {
     "//services/service_manager/public/cpp",
     "//skia",
     "//skia/public/mojom",
+    "//third_party/abseil-cpp:absl",
     "//third_party/blink/public/common",
     "//third_party/flatbuffers",
     "//third_party/re2",

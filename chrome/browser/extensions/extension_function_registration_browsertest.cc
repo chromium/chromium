@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <map>
+#include <set>
 
 #include "base/one_shot_event.h"
 #include "base/strings/string_util.h"
