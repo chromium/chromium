@@ -540,6 +540,7 @@ if (!is_android) {
       "//chrome/browser/ssl",
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",
+      "//chrome/browser/tab_contents",
       "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/task_manager",
       "//chrome/browser/themes",

@@ -25,6 +25,7 @@
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -56,8 +57,11 @@ const std::pair<ukm::SourceId, bool> GetActiveTabData() {
     content::WebContents* contents = browser->GetActiveWebContents();
     if (contents) {
       tab_id = contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
-      has_form_entry = FormInteractionTabHelper::FromWebContents(contents)
-                           ->had_form_interaction();
+      tabs::TabInterface* tab =
+          tabs::TabInterface::MaybeGetFromContents(contents);
+      FormInteractionTabHelper* helper =
+          tab ? FormInteractionTabHelper::From(tab) : nullptr;
+      has_form_entry = helper && helper->had_form_interaction();
     }
   }
   return std::pair<ukm::SourceId, bool>(tab_id, has_form_entry);
@@ -115,8 +119,9 @@ AdaptiveScreenBrightnessManager::~AdaptiveScreenBrightnessManager() = default;
 
 std::unique_ptr<AdaptiveScreenBrightnessManager>
 AdaptiveScreenBrightnessManager::CreateInstance() {
-  if (chromeos::GetDeviceType() != chromeos::DeviceType::kChromebook)
+  if (chromeos::GetDeviceType() != chromeos::DeviceType::kChromebook) {
     return nullptr;
+  }
 
   chromeos::PowerManagerClient* const power_manager_client =
       chromeos::PowerManagerClient::Get();
@@ -150,8 +155,9 @@ AdaptiveScreenBrightnessManager::CreateInstance() {
 
 void AdaptiveScreenBrightnessManager::OnUserActivity(
     const ui::Event* const event) {
-  if (!event)
+  if (!event) {
     return;
+  }
   const base::TimeDelta time_since_boot = boot_clock_.GetTimeSinceBoot();
   // Update |start_activity_time_since_boot_| if the time since the last
   // activity is at least kInactivityDuration. An absense of activity for this
@@ -291,15 +297,18 @@ void AdaptiveScreenBrightnessManager::OnReceiveScreenBrightnessPercent(
 const std::optional<int>
 AdaptiveScreenBrightnessManager::GetNightLightTemperaturePercent() const {
   const Profile* const profile = ProfileManager::GetActiveUserProfile();
-  if (!profile)
+  if (!profile) {
     return std::nullopt;
+  }
 
   const PrefService* const pref_service = profile->GetPrefs();
-  if (!pref_service)
+  if (!pref_service) {
     return std::nullopt;
+  }
 
-  if (!pref_service->GetBoolean(ash::prefs::kNightLightEnabled))
+  if (!pref_service->GetBoolean(ash::prefs::kNightLightEnabled)) {
     return std::nullopt;
+  }
   return std::floor(
       pref_service->GetDouble(ash::prefs::kNightLightTemperature) * 100);
 }

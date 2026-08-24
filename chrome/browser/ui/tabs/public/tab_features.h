@@ -44,6 +44,8 @@ class CookieControlsPageActionController;
 class FileSystemAccessPageActionController;
 class FocusTabAfterNavigationHelper;
 class FramebustBlockTabHelper;
+
+class FormInteractionTabHelper;
 class FromGWSNavigationAndKeepAliveRequestObserver;
 class HttpAuthCacheStatus;
 class IntentPickerTabHelper;
@@ -561,6 +563,9 @@ class TabFeatures {
 
   // Redirects cert-error loads of the help center to bundled help content.
   std::unique_ptr<ConnectionHelpTabHelper> connection_help_tab_helper_;
+
+  // Indicates if the tab contains forms that have been interacted with.
+  std::unique_ptr<FormInteractionTabHelper> form_interaction_tab_helper_;
 
   std::unique_ptr<FromGWSNavigationAndKeepAliveRequestObserver>
       from_gws_navigation_and_keep_alive_request_observer_;

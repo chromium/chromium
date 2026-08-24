@@ -47,6 +47,7 @@
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -519,6 +520,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       GetUserDataFactory().CreateInstance<ConnectionHelpTabHelper>(
           tab, tab, tab.GetContents());
 
+  form_interaction_tab_helper_ =
+      GetUserDataFactory().CreateInstance<FormInteractionTabHelper>(tab, tab);
+
   zero_suggest_prefetch_tab_helper_ =
       std::make_unique<ZeroSuggestPrefetchTabHelper>(tab.GetContents());
 
@@ -750,6 +754,14 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   connection_help_tab_helper_ =
       GetUserDataFactory().CreateInstance<ConnectionHelpTabHelper>(
           *tab, *tab, new_contents);
+
+  // Recreated to reset its state: the swapped-in contents has not had any
+  // form interactions. The reset() must happen first so that the old
+  // instance deregisters itself from the UnownedUserDataHost before the new
+  // instance registers itself.
+  form_interaction_tab_helper_.reset();
+  form_interaction_tab_helper_ =
+      GetUserDataFactory().CreateInstance<FormInteractionTabHelper>(*tab, *tab);
 
   zero_suggest_prefetch_tab_helper_ =
       std::make_unique<ZeroSuggestPrefetchTabHelper>(new_contents);

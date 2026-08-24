@@ -4,10 +4,13 @@
 
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
 
-#include "base/functional/bind.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/memory/weak_ptr.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace {
 
@@ -16,6 +19,8 @@ bool g_observer_exists = false;
 #endif
 
 }  // namespace
+
+DEFINE_USER_DATA(FormInteractionTabHelper);
 
 // Graph observer used to receive the page form interaction events.
 class FormInteractionTabHelper::GraphObserver
@@ -43,9 +48,14 @@ void FormInteractionTabHelper::GraphObserver::OnHadFormInteractionChanged(
   CHECK(contents);
   bool had_form_interaction = page_node->HadFormInteraction();
 
-  // Notifications can be emitted by extensions, ignore these.
-  if (auto* tab_helper =
-          FormInteractionTabHelper::FromWebContents(contents.get())) {
+  // Notifications can be emitted for non-tab contents (e.g. extensions),
+  // ignore these.
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(contents.get());
+  if (!tab) {
+    return;
+  }
+  if (auto* tab_helper = FormInteractionTabHelper::From(tab)) {
     // Sanity check against spurious changes.
     DCHECK_NE(tab_helper->had_form_interaction_, had_form_interaction);
     tab_helper->had_form_interaction_ = had_form_interaction;
@@ -76,11 +86,16 @@ FormInteractionTabHelper::CreateGraphObserver() {
   return std::make_unique<FormInteractionTabHelper::GraphObserver>();
 }
 
-FormInteractionTabHelper::FormInteractionTabHelper(
-    content::WebContents* contents)
-    : content::WebContentsUserData<FormInteractionTabHelper>(*contents) {}
+FormInteractionTabHelper::FormInteractionTabHelper(tabs::TabInterface& tab)
+    : scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
 
 FormInteractionTabHelper::~FormInteractionTabHelper() = default;
+
+// static
+FormInteractionTabHelper* FormInteractionTabHelper::From(
+    tabs::TabInterface* tab) {
+  return Get(tab->GetUnownedUserDataHost());
+}
 
 bool FormInteractionTabHelper::had_form_interaction() const {
 #if DCHECK_IS_ON()
@@ -91,5 +106,3 @@ bool FormInteractionTabHelper::had_form_interaction() const {
 #endif
   return had_form_interaction_;
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(FormInteractionTabHelper);

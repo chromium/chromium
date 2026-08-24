@@ -15,6 +15,7 @@ source_set("tab_contents") {
     "//base",
     "//components/content_settings/core/browser:cookie_settings",
     "//content/public/browser",
+    "//ui/base/unowned_user_data",
     "//url",
   ]
 }
@@ -38,6 +39,7 @@ source_set("impl") {
     "//components/performance_manager",
     "//components/profile_metrics",
     "//components/site_engagement/content",
+    "//components/tabs:public",
     "//extensions/buildflags",
   ]
 
@@ -60,10 +62,14 @@ source_set("unit_tests") {
     "//components/performance_manager",
     "//components/performance_manager/test_support",
     "//components/performance_manager/test_support:test_support_common",
+    "//components/tabs:public",
+    "//components/tabs:test_support",
     "//content/public/browser",
     "//content/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public/common:headers",
+    "//ui/base/unowned_user_data",
   ]
 }
 

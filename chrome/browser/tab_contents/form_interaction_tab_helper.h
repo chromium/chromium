@@ -5,42 +5,46 @@
 #ifndef CHROME_BROWSER_TAB_CONTENTS_FORM_INTERACTION_TAB_HELPER_H_
 #define CHROME_BROWSER_TAB_CONTENTS_FORM_INTERACTION_TAB_HELPER_H_
 
-#include "content/public/browser/web_contents_user_data.h"
+#include <memory>
+
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace performance_manager {
 class GraphOwned;
 }
 
-// Tab helper that indicates if a tab contains forms that have been interacted
-// with.
-class FormInteractionTabHelper
-    : public content::WebContentsUserData<FormInteractionTabHelper> {
- public:
-  // Must be called once to and passed to the PerformanceManager graph to start
-  // maintaining FormInteractionTabHelpers attached to WebContents.
-  static std::unique_ptr<performance_manager::GraphOwned> CreateGraphObserver();
+namespace tabs {
+class TabInterface;
+}
 
-  ~FormInteractionTabHelper() override;
+// Indicates if a tab contains forms that have been interacted with. Owned by
+// the tab's TabFeatures.
+class FormInteractionTabHelper {
+ public:
+  DECLARE_USER_DATA(FormInteractionTabHelper);
+
+  explicit FormInteractionTabHelper(tabs::TabInterface& tab);
+
+  ~FormInteractionTabHelper();
   FormInteractionTabHelper(const FormInteractionTabHelper& other) = delete;
   FormInteractionTabHelper& operator=(const FormInteractionTabHelper&) = delete;
+
+  static FormInteractionTabHelper* From(tabs::TabInterface* tab);
+
+  // Must be called once to and passed to the PerformanceManager graph to start
+  // maintaining FormInteractionTabHelpers attached to tabs.
+  static std::unique_ptr<performance_manager::GraphOwned> CreateGraphObserver();
 
   // Note: This function will always return false in tests that don't
   // instantiate PerformanceManager.
   bool had_form_interaction() const;
 
-  void OnHadFormInteractionChangedForTesting(bool had_form_interaction) {
-    had_form_interaction_ = had_form_interaction;
-  }
-
  private:
-  friend class content::WebContentsUserData<FormInteractionTabHelper>;
   class GraphObserver;
-
-  explicit FormInteractionTabHelper(content::WebContents* contents);
 
   bool had_form_interaction_ = false;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  ui::ScopedUnownedUserData<FormInteractionTabHelper> scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_TAB_CONTENTS_FORM_INTERACTION_TAB_HELPER_H_

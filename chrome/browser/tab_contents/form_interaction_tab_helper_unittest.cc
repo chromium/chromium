@@ -18,12 +18,16 @@
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "components/performance_manager/test_support/page_aggregator.h"
 #include "components/performance_manager/test_support/test_harness_helper.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 class FormInteractionTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -41,12 +45,17 @@ class FormInteractionTabHelperTest : public ChromeRenderViewHostTestHarness {
     performance_manager::Graph* graph =
         performance_manager::PerformanceManager::GetGraph();
     graph->PassToGraph(FormInteractionTabHelper::CreateGraphObserver());
+    ON_CALL(tab_, GetUnownedUserDataHost())
+        .WillByDefault(::testing::ReturnRef(user_data_host_));
+    helper_ = std::make_unique<FormInteractionTabHelper>(tab_);
   }
 
   std::unique_ptr<content::WebContents> CreateTestWebContents() {
     std::unique_ptr<content::WebContents> contents =
         ChromeRenderViewHostTestHarness::CreateTestWebContents();
-    FormInteractionTabHelper::CreateForWebContents(contents.get());
+    // Associate the contents with the tab so that the graph observer can find
+    // the helper. In production this association is maintained by TabModel.
+    tabs::TabLookupFromWebContents::CreateForWebContents(contents.get(), &tab_);
     // Simulate a navigation event to force the initialization of the main
     // frame.
     content::WebContentsTester::For(contents.get())
@@ -68,17 +77,23 @@ class FormInteractionTabHelperTest : public ChromeRenderViewHostTestHarness {
     frame_node->SetHadFormInteraction();
   }
 
+  FormInteractionTabHelper* helper() {
+    return FormInteractionTabHelper::From(&tab_);
+  }
+
  private:
   performance_manager::PerformanceManagerTestHarnessHelper pm_harness_;
+  ui::UnownedUserDataHost user_data_host_;
+  tabs::MockTabInterface tab_;
+  std::unique_ptr<FormInteractionTabHelper> helper_;
 };
 
 TEST_F(FormInteractionTabHelperTest, HadFormInteractionSingleFrame) {
   std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
-  auto* helper = FormInteractionTabHelper::FromWebContents(contents.get());
 
-  EXPECT_FALSE(helper->had_form_interaction());
+  EXPECT_FALSE(helper()->had_form_interaction());
   SetHadFormInteraction(contents->GetPrimaryMainFrame());
-  EXPECT_TRUE(helper->had_form_interaction());
+  EXPECT_TRUE(helper()->had_form_interaction());
 
   // A navigation event should reset the |had_form_interaction| for this page.
   content::WebContentsTester::For(contents.get())
@@ -87,7 +102,7 @@ TEST_F(FormInteractionTabHelperTest, HadFormInteractionSingleFrame) {
   // to complete.
   task_environment()->RunUntilIdle();
 
-  EXPECT_FALSE(helper->had_form_interaction());
+  EXPECT_FALSE(helper()->had_form_interaction());
 }
 
 enum class ChildFrameType {
@@ -136,16 +151,15 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(FormInteractionTabHelperWithChildTest, HadFormInteractionInChildFrame) {
   std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
-  auto* helper = FormInteractionTabHelper::FromWebContents(contents.get());
 
-  EXPECT_FALSE(helper->had_form_interaction());
+  EXPECT_FALSE(helper()->had_form_interaction());
 
   content::RenderFrameHost* child =
       content::NavigationSimulator::NavigateAndCommitFromDocument(
           GURL("https://foochild.com"), AppendChild(contents.get()));
 
   SetHadFormInteraction(child);
-  EXPECT_TRUE(helper->had_form_interaction());
+  EXPECT_TRUE(helper()->had_form_interaction());
 
   // A navigation event should reset the |had_form_interaction| for this page.
   content::NavigationSimulator::NavigateAndCommitFromDocument(
@@ -155,25 +169,24 @@ TEST_P(FormInteractionTabHelperWithChildTest, HadFormInteractionInChildFrame) {
   // to complete.
   task_environment()->RunUntilIdle();
 
-  EXPECT_FALSE(helper->had_form_interaction());
+  EXPECT_FALSE(helper()->had_form_interaction());
 }
 
 TEST_P(FormInteractionTabHelperWithChildTest,
        HadFormInteractionInBothMainAndChild) {
   std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
-  auto* helper = FormInteractionTabHelper::FromWebContents(contents.get());
 
-  EXPECT_FALSE(helper->had_form_interaction());
+  EXPECT_FALSE(helper()->had_form_interaction());
 
   SetHadFormInteraction(contents->GetPrimaryMainFrame());
-  EXPECT_TRUE(helper->had_form_interaction());
+  EXPECT_TRUE(helper()->had_form_interaction());
 
   content::RenderFrameHost* child =
       content::NavigationSimulator::NavigateAndCommitFromDocument(
           GURL("https://foochild.com"), AppendChild(contents.get()));
 
   SetHadFormInteraction(child);
-  EXPECT_TRUE(helper->had_form_interaction());
+  EXPECT_TRUE(helper()->had_form_interaction());
 
   // The |had_form_interaction| for this page should be still true even though
   // the navigation happens on the child frame, since the main frame have had an
@@ -185,5 +198,5 @@ TEST_P(FormInteractionTabHelperWithChildTest,
   // to complete.
   task_environment()->RunUntilIdle();
 
-  EXPECT_TRUE(helper->had_form_interaction());
+  EXPECT_TRUE(helper()->had_form_interaction());
 }

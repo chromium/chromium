@@ -30,7 +30,6 @@
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/resource_coordinator/utils.h"
-#include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -203,10 +202,11 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::MaybeLoad() {
 
 void TabLifecycleUnitSource::TabLifecycleUnit::SetRecentlyAudible(
     bool recently_audible) {
-  if (recently_audible)
+  if (recently_audible) {
     recently_audible_time_ = base::TimeTicks::Max();
-  else if (recently_audible_time_ == base::TimeTicks::Max())
+  } else if (recently_audible_time_ == base::TimeTicks::Max()) {
     recently_audible_time_ = NowTicks();
+  }
 }
 
 void TabLifecycleUnitSource::TabLifecycleUnit::UpdateLifecycleState(

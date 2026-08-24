@@ -55,6 +55,7 @@ static_library("ml") {
     "//components/prefs",
     "//components/session_manager:base",
     "//components/site_engagement/content",
+    "//components/tabs:public",
     "//components/viz/host",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
