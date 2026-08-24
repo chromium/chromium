@@ -14,13 +14,11 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/drag_window_from_shelf_controller.h"
-#include "ash/shelf/shelf_metrics.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -186,9 +184,6 @@ void SwipeHomeToOverviewController::FinalizeDragAndShowOverview() {
         contextual_tooltip::TooltipType::kHomeToOverview);
   }
 
-  UMA_HISTOGRAM_ENUMERATION(kEnterOverviewHistogramName,
-                            EnterOverviewFromHomeLauncher::kOverview);
-
   // NOTE: No need to update the home launcher opacity and scale here - the
   // AppListControllerImpl will update the home launcher state when it detects
   // that the overview is starting.
@@ -210,11 +205,6 @@ void SwipeHomeToOverviewController::FinalizeDragAndStayOnHomeScreen(
 
   if (go_back) {
     app_list_controller->Back();
-    UMA_HISTOGRAM_ENUMERATION(kEnterOverviewHistogramName,
-                              EnterOverviewFromHomeLauncher::kBack);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION(kEnterOverviewHistogramName,
-                              EnterOverviewFromHomeLauncher::kCanceled);
   }
 
   // Make sure the home launcher scale and opacity return to the initial state.

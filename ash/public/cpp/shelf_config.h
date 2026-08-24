@@ -257,9 +257,9 @@ class ASH_EXPORT ShelfConfig : public SessionObserver,
   // Size of the shelf in tablet mode.
   int GetSystemShelfSizeInTabletMode() const;
 
-  // Records the UMA of showing the stacked hotseat app bar and returns the size
-  // of the insets used in tablet mode to allocate space to the shelf.
-  int GetTabletModeShelfInsetsAndRecordUMA();
+  // Returns the size of the insets used in tablet mode to allocate space to
+  // the shelf.
+  int GetTabletModeShelfInsets() const;
 
   // Minimum size for the inline app bar.
   int GetMinimumInlineAppBarSize() const;
@@ -296,10 +296,6 @@ class ASH_EXPORT ShelfConfig : public SessionObserver,
   // keyboard visibility.
   bool CalculateIsInApp(bool app_list_visible,
                         bool virtual_keyboard_shown) const;
-
-  // Whether an elevated app bar has been rendered (stacked hotseat). This
-  // boolean is used for logging UMA metrics.
-  std::optional<bool> has_shown_elevated_app_bar_;
 
   // Whether tablet mode homecher should use elevated app bar.
   bool elevate_tablet_mode_app_bar_ = false;

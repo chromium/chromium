@@ -2679,12 +2679,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="5" label="Session exit due to converting to tablet mode"/>
 </enum>
 
-<enum name="SwipeHomeToOverviewResult">
-  <int value="0" label="Remained on the home screen"/>
-  <int value="1" label="Transitioned to overview"/>
-  <int value="2" label="Went back on the home screen"/>
-</enum>
-
 <enum name="TasksUserAction">
   <int value="0" label="Active task list changed"/>
   <int value="1" label="Task marked complete"/>

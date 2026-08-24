@@ -7939,16 +7939,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Shelf.ShowStackedHotseat" enum="Boolean"
-    expires_after="2024-09-24">
-  <owner>jiamingc@google.com</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    Show stacked hotseat app bar above the shelf button panels/system tray when
-    there is no enough space for the app bar.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Shelf.ShutdownConfirmationBubble.Action"
     enum="ShutdownConfirmationBubbleAction" expires_after="2027-02-07">
   <owner>antrim@google.com</owner>
@@ -8498,16 +8488,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether or not to use the kmeans algorithm to determine the user's color
     palette. This metric is recorded once per UMA upload.
-  </summary>
-</histogram>
-
-<histogram name="Ash.SwipeHomeToOverviewGesture"
-    enum="SwipeHomeToOverviewResult" expires_after="2024-09-22">
-  <owner>andrewxu@chromium.org</owner>
-  <owner>tbarzic@chromium.org</owner>
-  <summary>
-    Boolean indicating whether a swipe from hotseat on home screen resulted in a
-    transition to overview.
   </summary>
 </histogram>
 

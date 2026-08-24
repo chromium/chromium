@@ -1411,7 +1411,7 @@ int AppListControllerImpl::GetShelfSize() {
 }
 
 int AppListControllerImpl::GetSystemShelfInsetsInTabletMode() {
-  return ShelfConfig::Get()->GetTabletModeShelfInsetsAndRecordUMA();
+  return ShelfConfig::Get()->GetTabletModeShelfInsets();
 }
 
 bool AppListControllerImpl::IsInTabletMode() const {

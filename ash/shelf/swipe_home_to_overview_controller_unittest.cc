@@ -224,10 +224,6 @@ TEST_F(SwipeHomeToOverviewControllerTest, VerifyHomeLauncherMetrics) {
 TEST_F(SwipeHomeToOverviewControllerTest, BasicFlow) {
   const gfx::RectF shelf_bounds = GetShelfBoundsInFloat();
 
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(
-      kEnterOverviewHistogramName, EnterOverviewFromHomeLauncher::kOverview, 0);
-
   StartDrag();
   // Drag to a point within shelf bounds - verify that app list has not been
   // scaled, and the transition to overview transition timer has not started.
@@ -241,8 +237,6 @@ TEST_F(SwipeHomeToOverviewControllerTest, BasicFlow) {
             home_screen_window->layer()->GetTargetTransform());
   EXPECT_FALSE(OverviewTransitionTimerRunning());
   EXPECT_FALSE(OverviewStarted());
-  histogram_tester.ExpectBucketCount(
-      kEnterOverviewHistogramName, EnterOverviewFromHomeLauncher::kOverview, 0);
 
   const int transition_threshold =
       SwipeHomeToOverviewController::kVerticalThresholdForOverviewTransition;
@@ -258,8 +252,6 @@ TEST_F(SwipeHomeToOverviewControllerTest, BasicFlow) {
   EXPECT_TRUE(home_screen_window->transform().IsScaleOrTranslation());
   EXPECT_FALSE(home_screen_window->transform().IsIdentityOrTranslation());
   EXPECT_EQ(1.f, home_screen_window->layer()->opacity());
-  histogram_tester.ExpectBucketCount(
-      kEnterOverviewHistogramName, EnterOverviewFromHomeLauncher::kOverview, 0);
 
   // Move above the transition threshold - verify the overview transition timer
   // has started.
@@ -273,15 +265,11 @@ TEST_F(SwipeHomeToOverviewControllerTest, BasicFlow) {
 
   EXPECT_TRUE(OverviewTransitionTimerRunning());
   EXPECT_FALSE(OverviewStarted());
-  histogram_tester.ExpectBucketCount(
-      kEnterOverviewHistogramName, EnterOverviewFromHomeLauncher::kOverview, 0);
 
   // Fire overview transition timer, and verify the overview has started.
   FireOverviewTransitionTimer();
 
   EXPECT_TRUE(OverviewStarted());
-  histogram_tester.ExpectBucketCount(
-      kEnterOverviewHistogramName, EnterOverviewFromHomeLauncher::kOverview, 1);
 
   // Home screen is still scaled down, and not visible.
   EXPECT_EQ(home_screen_window->transform(),
@@ -296,8 +284,6 @@ TEST_F(SwipeHomeToOverviewControllerTest, BasicFlow) {
       1.f);
 
   EXPECT_TRUE(OverviewStarted());
-  histogram_tester.ExpectBucketCount(
-      kEnterOverviewHistogramName, EnterOverviewFromHomeLauncher::kOverview, 1);
 
   // Home screen is still scaled down, and not visible.
   EXPECT_EQ(home_screen_window->transform(),
