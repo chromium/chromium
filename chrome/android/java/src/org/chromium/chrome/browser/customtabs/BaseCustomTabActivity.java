@@ -563,6 +563,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                 getIntentDataProvider(),
                 getLifecycleDispatcher());
         new TrustedWebActivityDisclosureController(
+                getWindowAndroid(),
                 getTrustedWebActivityModel(),
                 getLifecycleDispatcher(),
                 getCurrentPageVerifier(),

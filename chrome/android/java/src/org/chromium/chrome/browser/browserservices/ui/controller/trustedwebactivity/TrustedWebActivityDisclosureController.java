@@ -12,7 +12,10 @@ import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUma
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.DisclosureController;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Controls when Trusted Web Activity disclosure should be shown and hidden, reacts to interaction
@@ -21,14 +24,19 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 @NullMarked
 public class TrustedWebActivityDisclosureController extends DisclosureController {
     private final ClientPackageNameProvider mClientPackageNameProvider;
+    private final CurrentPageVerifier mCurrentPageVerifier;
+    private final WindowAndroid mWindowAndroid;
 
     public TrustedWebActivityDisclosureController(
+            WindowAndroid windowAndroid,
             TrustedWebActivityModel model,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             CurrentPageVerifier currentPageVerifier,
             ClientPackageNameProvider clientPackageNameProvider) {
         super(model, lifecycleDispatcher, currentPageVerifier, clientPackageNameProvider.get());
+        mWindowAndroid = windowAndroid;
         mClientPackageNameProvider = clientPackageNameProvider;
+        mCurrentPageVerifier = currentPageVerifier;
     }
 
     @Override
@@ -45,6 +53,16 @@ public class TrustedWebActivityDisclosureController extends DisclosureController
         BrowserServicesStore.setUserSeenTwaDisclosureForPackage(
                 assertNonNull(mClientPackageNameProvider.get()));
         super.onDisclosureShown();
+    }
+
+    @Override
+    protected boolean shouldShowInCurrentState() {
+        if (!DeviceFormFactor.isWindowOnTablet(mWindowAndroid)
+                || !ChromeFeatureList.sDesktopAndroidTWADisclosures.isEnabled()) {
+            return super.shouldShowInCurrentState();
+        }
+        CurrentPageVerifier.VerificationState state = mCurrentPageVerifier.getState();
+        return state != null && state.status == CurrentPageVerifier.VerificationStatus.FAILURE;
     }
 
     @Override
