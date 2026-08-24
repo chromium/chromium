@@ -32,11 +32,11 @@ import {GlowAnimationState} from '//resources/cr_components/search/constants.js'
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import type {FuseboxAction} from '//resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
+import {InputSource, QueryActionOverride} from '//resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {InputSource, QueryActionOverride} from './fusebox_action.mojom-webui.js';
-import type {FuseboxAction} from './fusebox_action.mojom-webui.js';
 import {getCss} from './ntp_composebox.css.js';
 import {getHtml} from './ntp_composebox.html.js';
 

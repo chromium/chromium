@@ -4,8 +4,19 @@
 
 module fusebox_action.mojom;
 
-import "components/omnibox/browser/searchbox.mojom";
 import "components/omnibox/composebox/composebox_query.mojom";
+
+// This enum is mapped to third_party/omnibox_proto/suggest_inventory.proto.
+enum SuggestInventory {
+  kDefault = 0,
+  kTravel = 1,
+  kAimTakeover = 2,
+  kImageGenTakeover = 3,
+  kConversationStarters = 4,
+  kBrainstorm = 5,
+  kHelpMeLearn = 6,
+  kWriteOrEdit = 7,
+};
 
 // LINT.IfChange(QueryActionOverride)
 enum QueryActionOverride {
@@ -45,7 +56,7 @@ struct FuseboxAction {
   // The tool to preselect, if specified.
   composebox_query.mojom.ToolMode? preselected_tool;
   // The suggestion inventory to show, if specified.
-  searchbox.mojom.SuggestInventory? preferred_inventory;
+  SuggestInventory? preferred_inventory;
   // The model mode to preselect, if specified.
   composebox_query.mojom.ModelMode? preselected_model;
   // How to handle the suggestion query, if specified.

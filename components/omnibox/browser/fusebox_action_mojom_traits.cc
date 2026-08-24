@@ -2,62 +2,63 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/omnibox/browser/searchbox_mojom_traits.h"
+#include "components/omnibox/browser/fusebox_action_mojom_traits.h"
+
+#include <optional>
 
 namespace mojo {
 
 // static
-searchbox::mojom::SuggestInventory EnumTraits<
-    searchbox::mojom::SuggestInventory,
+fusebox_action::mojom::SuggestInventory EnumTraits<
+    fusebox_action::mojom::SuggestInventory,
     omnibox::SuggestInventory>::ToMojom(omnibox::SuggestInventory input) {
   switch (input) {
     case omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT:
-      return searchbox::mojom::SuggestInventory::kDefault;
+      return fusebox_action::mojom::SuggestInventory::kDefault;
     case omnibox::SuggestInventory::SUGGEST_INVENTORY_TRAVEL:
-      return searchbox::mojom::SuggestInventory::kTravel;
+      return fusebox_action::mojom::SuggestInventory::kTravel;
     case omnibox::SuggestInventory::SUGGEST_INVENTORY_AIM_IO_HP_TAKEOVER:
-      return searchbox::mojom::SuggestInventory::kAimTakeover;
+      return fusebox_action::mojom::SuggestInventory::kAimTakeover;
     case omnibox::SuggestInventory::SUGGEST_INVENTORY_IMG_GEN_IO_HP_TAKEOVER:
-      return searchbox::mojom::SuggestInventory::kImageGenTakeover;
+      return fusebox_action::mojom::SuggestInventory::kImageGenTakeover;
     case omnibox::SuggestInventory::SUGGEST_INVENTORY_AIM_CONVERSATION_STARTERS:
-      return searchbox::mojom::SuggestInventory::kConversationStarters;
+      return fusebox_action::mojom::SuggestInventory::kConversationStarters;
     case omnibox::SuggestInventory::SUGGEST_INVENTORY_BRAINSTORM:
-      return searchbox::mojom::SuggestInventory::kBrainstorm;
+      return fusebox_action::mojom::SuggestInventory::kBrainstorm;
     case omnibox::SuggestInventory::SUGGEST_INVENTORY_HELP_ME_LEARN:
-      return searchbox::mojom::SuggestInventory::kHelpMeLearn;
+      return fusebox_action::mojom::SuggestInventory::kHelpMeLearn;
     case omnibox::SuggestInventory::SUGGEST_INVENTORY_WRITE_OR_EDIT:
-      return searchbox::mojom::SuggestInventory::kWriteOrEdit;
+      return fusebox_action::mojom::SuggestInventory::kWriteOrEdit;
     default:
-      return searchbox::mojom::SuggestInventory::kDefault;
+      return fusebox_action::mojom::SuggestInventory::kDefault;
   }
 }
 
 // static
-omnibox::SuggestInventory
-EnumTraits<searchbox::mojom::SuggestInventory, omnibox::SuggestInventory>::
-    FromMojom(searchbox::mojom::SuggestInventory input) {
+std::optional<omnibox::SuggestInventory>
+EnumTraits<fusebox_action::mojom::SuggestInventory, omnibox::SuggestInventory>::
+    FromMojom(fusebox_action::mojom::SuggestInventory input) {
   switch (input) {
-    case searchbox::mojom::SuggestInventory::kDefault:
+    case fusebox_action::mojom::SuggestInventory::kDefault:
       return omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT;
-    case searchbox::mojom::SuggestInventory::kTravel:
+    case fusebox_action::mojom::SuggestInventory::kTravel:
       return omnibox::SuggestInventory::SUGGEST_INVENTORY_TRAVEL;
-    case searchbox::mojom::SuggestInventory::kAimTakeover:
+    case fusebox_action::mojom::SuggestInventory::kAimTakeover:
       return omnibox::SuggestInventory::SUGGEST_INVENTORY_AIM_IO_HP_TAKEOVER;
-    case searchbox::mojom::SuggestInventory::kImageGenTakeover:
+    case fusebox_action::mojom::SuggestInventory::kImageGenTakeover:
       return omnibox::SuggestInventory::
           SUGGEST_INVENTORY_IMG_GEN_IO_HP_TAKEOVER;
-    case searchbox::mojom::SuggestInventory::kConversationStarters:
+    case fusebox_action::mojom::SuggestInventory::kConversationStarters:
       return omnibox::SuggestInventory::
           SUGGEST_INVENTORY_AIM_CONVERSATION_STARTERS;
-    case searchbox::mojom::SuggestInventory::kBrainstorm:
+    case fusebox_action::mojom::SuggestInventory::kBrainstorm:
       return omnibox::SuggestInventory::SUGGEST_INVENTORY_BRAINSTORM;
-    case searchbox::mojom::SuggestInventory::kHelpMeLearn:
+    case fusebox_action::mojom::SuggestInventory::kHelpMeLearn:
       return omnibox::SuggestInventory::SUGGEST_INVENTORY_HELP_ME_LEARN;
-    case searchbox::mojom::SuggestInventory::kWriteOrEdit:
+    case fusebox_action::mojom::SuggestInventory::kWriteOrEdit:
       return omnibox::SuggestInventory::SUGGEST_INVENTORY_WRITE_OR_EDIT;
-    default:
-      return omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT;
   }
+  return std::nullopt;
 }
 
 }  // namespace mojo
