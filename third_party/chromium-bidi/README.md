@@ -1,12 +1,7 @@
+> [!NOTE]
+> If you are viewing this on GitHub, the source was moved to Chromium. Please contribute there.
+
 # WebDriver BiDi for Chromium [![chromium-bidi on npm](https://img.shields.io/npm/v/chromium-bidi)](https://www.npmjs.com/package/chromium-bidi)
-
-## CI status
-
-![E2E Tests](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/e2e.yml/badge.svg)
-![Unit Tests](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/unit.yml/badge.svg)
-![WPT Tests](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/wpt.yml/badge.svg)
-
-![Lint and Format Checks](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/pre-commit.yml/badge.svg)
 
 This is an implementation of the
 [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) protocol with some
@@ -372,93 +367,12 @@ Refer to [examples/README.md](examples/README.md).
 
 ## WPT (Web Platform Tests)
 
-WPT is added as
-a [git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules). To get run
-WPT tests:
+WPT tests for WebDriver BiDi are located in Chromium under `third_party/blink/web_tests/external/wpt/webdriver/tests/bidi/`.
 
-### Check out and setup WPT
-
-#### 1. Check out WPT
+To run WPT tests in Chromium:
 
 ```sh
-git submodule update --init
-```
-
-#### 2. Go to the WPT folder
-
-```sh
-cd wpt
-```
-
-#### 3. Set up virtualenv
-
-Follow the [_System
-Setup_](https://web-platform-tests.org/running-tests/from-local-system.html#system-setup)
-instructions.
-
-#### 4. Setup `hosts` file
-
-Follow
-the [`hosts` File Setup](https://web-platform-tests.org/running-tests/from-local-system.html#hosts-file-setup)
-instructions.
-
-##### 4.a On Linux, macOS or other UNIX-like system
-
-```sh
-./wpt make-hosts-file | sudo tee -a /etc/hosts
-```
-
-##### 4.b On **Windows**
-
-This must be run in a PowerShell session with Administrator privileges:
-
-```sh
-python wpt make-hosts-file | Out-File $env:SystemRoot\System32\drivers\etc\hosts -Encoding ascii -Append
-```
-
-If you are behind a proxy, you also need to make sure the domains above are excluded
-from your proxy lookups.
-
-#### 5. Set `BROWSER_BIN`
-
-Set the `BROWSER_BIN` environment variable to a Chrome, Edge or Chromium binary to launch.
-For example, on macOS:
-
-```sh
-# Chrome
-export BROWSER_BIN="/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"
-export BROWSER_BIN="/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev"
-export BROWSER_BIN="/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta"
-export BROWSER_BIN="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-export BROWSER_BIN="/Applications/Chromium.app/Contents/MacOS/Chromium"
-
-# Edge
-export BROWSER_BIN="/Applications/Microsoft Edge Canary.app/Contents/MacOS/Microsoft Edge Canary"
-export BROWSER_BIN="/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge"
-```
-
-### Run WPT tests
-
-#### 1. Make sure you have Chrome Dev installed
-
-https://www.google.com/chrome/dev/
-
-#### 2. Build Chromedriver BiDi
-
-```sh
-npm run build
-```
-
-#### 3. Run
-
-```sh
-npm run wpt -- webdriver/tests/bidi/
-```
-
-### Update WPT expectations if needed
-
-```sh
-UPDATE_EXPECTATIONS=true npm run wpt -- webdriver/tests/bidi/
+third_party/blink/tools/run_wpt_tests.py -t <target> webdriver/tests/bidi/
 ```
 
 ## How does it work?
@@ -476,51 +390,13 @@ There are 2 main modules:
 
 ## Contributing
 
-The BiDi commands are processed in the `src/bidiMapper/commandProcessor.ts`. To add a
-new command, add it to `_processCommand`, write and call processor for it.
+The `chromium-bidi` source code lives in the Chromium repository under `third_party/chromium-bidi`.
+Contributions should follow the [Chromium Contributing Guide](https://chromium.googlesource.com/chromium/src/+/main/docs/contributing.md).
+
+The BiDi commands are processed in `src/bidiMapper/CommandProcessor.ts`. To add a
+new command, add it to `_processCommand`, write and call the module processor for it.
 
 ### Publish new `npm` release
-
-#### Release branches
-
-`chromium-bidi` maintains release branches corresponding to Chrome releases. The
-branches are named using the following pattern: `releases/m$MAJOR_VERSION`.
-
-The new release branch is created as soon a new major browser version is
-published by the
-[update-browser-version](https://github.com/GoogleChromeLabs/chromium-bidi/blob/main/.github/workflows/update-browser-version.yml)
-job:
-
-- the PR created by this job should be marked as a feature and it should cause the
-  major package version to be bumped.
-- once the browser version is bumped, the commit preceding the version bump
-  should be used to create a release branch for major version pinned before the bump.
-
-Changes that need to be cherry-picked into the release branch should be marked
-as patches. Either major or minor version bumps are not allowed on the release
-branch.
-
-Example workflow:
-
-```mermaid
-gitGraph
-       commit id: "feat: featA"
-       commit id: "release: v0.5.0"
-       branch release/m129
-       checkout main
-       commit id: "feat: roll Chrome to M130 from 129"
-       commit id: "release: v0.6.0"
-       commit id: "fix: for m129"
-       checkout release/m129
-       cherry-pick id: "fix: for m129"
-       commit id: "release: v0.5.1 "
-```
-
-Currently, the releases from release branches are not automated.
-
-#### Automatic release
-
-We use [release-please](https://github.com/googleapis/release-please) to automate releases. When a release should be done, check for the release PR in our [pull requests](https://github.com/GoogleChromeLabs/chromium-bidi/pulls) and merge it.
 
 #### Manual release
 
@@ -530,7 +406,7 @@ We use [release-please](https://github.com/googleapis/release-please) to automat
    npm publish --dry-run
    ```
 
-1. Open a PR bumping the chromium-bidi version number in `package.json` for review:
+2. Bump the `chromium-bidi` version number in `package.json` and upload a Chromium CL for review:
 
    ```sh
    npm version patch -m 'chore: Release v%s' --no-git-tag-version
@@ -538,37 +414,8 @@ We use [release-please](https://github.com/googleapis/release-please) to automat
 
    Instead of `patch`, use `minor` or `major` [as needed](https://semver.org/).
 
-1. After the PR is reviewed, [create a GitHub release](https://github.com/GoogleChromeLabs/chromium-bidi/releases/new) specifying the tag name matching the bumped version.
-   Our CI then automatically publishes the new release to npm based on the tag name.
-
-#### Roll into Chromium
-
-This section assumes you already have a Chromium set-up locally,
-and knowledge on [how to submit changes to the repo](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/contributing.md).
-Otherwise submit an issue for a project maintainer.
-
-1. Create a new branch in chromium `src/`.
-2. Update the mapper version:
-
-```shell
-third_party/bidimapper/roll_bidimapper
-```
-
-3. Submit a CL with bug `42323268` ([link](https://crbug.com/42323268)).
-
-4. [Regenerate WPT expectations or baselines](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/run_web_platform_tests.md#test-expectations-and-baselines):
-
-   4.1. Trigger a build and test run:
-
-   ```shell
-   third_party/blink/tools/blink_tool.py rebaseline-cl --build="linux-blink-rel" --verbose
-   ```
-
-   4.2. Once the test completes on the builder, rerun that command to update the
-   baselines. Update test expectations if there are any crashes or timeouts.
-   Commit the changes (if any), and upload the new patch to the CL.
-
-5. Add appropriate reviewers or comment the CL link on the PR.
+3. After the CL lands, tag the commit in git matching the bumped version (`v<version>`).
+   CI will then automatically publish the new release to npm based on the tag.
 
 ## Adding new command
 
@@ -582,7 +429,7 @@ The WebDriver BiDi [module](https://w3c.github.io/webdriver-bidi/#protocol-modul
 
 #### WPT wdspec tests
 
-You'll need tests to prove your command works as expected. These tests should be written using [WPT wdspec](https://web-platform-tests.org/writing-tests/wdspec.html) and submitted along with the spec itself. Don't forget to roll the WPT repo into the Mapper ([dependabot](https://github.com/GoogleChromeLabs/chromium-bidi/network/updates/10663151/jobs) can help, and you will likely need to tweak some expectations afterward).
+You'll need tests to prove your command works as expected. These tests should be written using [WPT wdspec](https://web-platform-tests.org/writing-tests/wdspec.html) and submitted to Chromium under `third_party/blink/web_tests/external/wpt/webdriver/tests/bidi/` along with the spec itself.
 
 #### CDP implementation
 
@@ -590,11 +437,11 @@ Make sure Chromium already has the CDP methods your command will rely on.
 
 ### Update CDDL types
 
-1. Checkout a new branch.
-2. If your command lives in a separate spec, add a link to that spec in the [`tools/update-bidi-types.sh`](https://github.com/GoogleChromeLabs/chromium-bidi/blob/b2715a96faa2a6a48fd1f298b06be9f199293b01/tools/update-bidi-types.sh) script.
-3. Run the [`tools/update-bidi-types.sh`](https://github.com/GoogleChromeLabs/chromium-bidi/blob/b2715a96faa2a6a48fd1f298b06be9f199293b01/tools/update-bidi-types.sh) script.
+1. Checkout a new branch in Chromium `src/`.
+2. If your command lives in a separate spec, add a link to that spec in the `tools/update-bidi-types.sh` script.
+3. Run the `tools/update-bidi-types.sh` script.
 4. Run `npm run format`. If a new WebDriver BiDi command was added, this should fail with `error  Switch is not exhaustive. Cases not matched ...`.
-5. Add the new BiDi command to [`CommandProcessor.#processCommand`](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/bidiMapper/CommandProcessor.ts#L140). For now, just have it throw an UnknownErrorException (see the [example](https://github.com/GoogleChromeLabs/chromium-bidi/pull/2647/files#diff-7f06ce28b8514fd75b759d217bff9f5a471b657bcf78bd893cc291c7945c1cacR169) for how to do this).
+5. Add the new BiDi command to `CommandProcessor.#processCommand` in `src/bidiMapper/CommandProcessor.ts`. For now, just have it throw an UnknownErrorException.
 
 ```typescript
 case '{NEW_COMMAND_NAME}':
@@ -603,23 +450,23 @@ case '{NEW_COMMAND_NAME}':
   );
 ```
 
-6. Create a PR and have it merged through the standard PR process: create, review, merge.
+6. Upload a CL and have it reviewed and landed via Gerrit.
 
 ### Implement the new command
 
-[`CommandProcessor.#processCommand`](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/bidiMapper/CommandProcessor.ts#L140) handles parsing parameters and running your command.
+`CommandProcessor.#processCommand` in `src/bidiMapper/CommandProcessor.ts` handles parsing parameters and running your command.
 
 #### (only if the new command has non-empty parameters) parse command parameters
 
-If your command has parameters, update the [`BidiCommandParameterParser`](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/bidiMapper/BidiParser.ts#L31) and implement the parsing logic in [`BidiNoOpParser`](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/bidiMapper/BidiNoOpParser.ts#L209), [`BidiParser`](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/bidiTab/BidiParser.ts#L182) and [`protocol-parser`](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/protocol-parser/protocol-parser.ts#L386). Look at the [example](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/bidiMapper/BidiParser.ts#L97) for guidance.
+If your command has parameters, update the `BidiCommandParameterParser` interface in `src/bidiMapper/BidiParser.ts` and implement the parsing logic in `src/bidiMapper/BidiNoOpParser.ts`, `src/bidiTab/BidiParser.ts`, and `src/protocol-parser/protocol-parser.ts`.
 
 #### Implement the new command
 
-Write the core logic for your command in the appropriate domain processor. Again, [example](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/bidiMapper/modules/permissions/PermissionsProcessor.ts#L32) is your friend.
+Write the core logic for your command in the appropriate domain processor.
 
 #### Call the module processor's method
 
-Call your new module processor method from `CommandProcessor.#processCommand`, passing in the parsed parameters. [Example](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/bidiMapper/CommandProcessor.ts#L313).
+Call your new module processor method from `CommandProcessor.#processCommand`, passing in the parsed parameters.
 
 #### Add e2e tests
 
@@ -627,19 +474,8 @@ Write end-to-end tests for your command, including the happy path and any edge c
 
 #### Update WPT expectations
 
-Your WPT tests will probably fail now.
+If WPT expectations or baselines need to be updated, use Chromium's standard tooling (e.g. `third_party/blink/tools/blink_tool.py rebaseline-cl` or update test expectations in `third_party/blink/web_tests/`).
 
-> Tests with unexpected results: PASS [expected FAIL] ...
+#### Submit for review
 
-Update the expectations in a draft PR with the "update-expectations" label. This will trigger an automated PR "test: update the expectations for PR" that you'll need to merge to your branch.
-
-#### Merge it!
-
-Mark your PR as ready, get it reviewed, and merge it in.
-
-### Roll in ChromeDriver
-
-This bit usually involves the core devs:
-
-1. [Release](#automatic-release) your changes.
-2. [Roll the changes into ChromeDriver](#roll-into-chromium).
+Upload your change list via `git cl upload` and submit it for review.

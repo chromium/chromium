@@ -58,37 +58,21 @@ directory for errors.
 
 Note: E2E tests are slow, so run only the necessary tests.
 
-### Checking out a Pull Request
-
-To checkout a pull request:
-
-```bash
-git fetch origin pull/<PR_NUMBER>/head:<BRANCH_NAME>
-git checkout <BRANCH_NAME>
-```
-
-After each checkout, run `npm run clean`.
-
 ### Fixing the build after a new command is added
 
-When asked to fix a PR, get it's title. If it's title is something like
-`build(spec): update WebDriverBiDi types`, it means a new command was added to the
-WebDriver BiDi CDDL. Run the following steps to fix it:
+When a new command is added to the WebDriver BiDi CDDL (for instance after running `tools/update-bidi-types.sh`), run the following steps to fix the build:
 
-1.  **Check out the Pull Request.** The PR is usually created by
-    `browser-automation-bot`, and the branch name is usually `update-bidi-types`.
-2.  **Run `npm run clean && npm run format:eslint`**. This will fail with a
+1.  **Run `npm run clean && npm run format:eslint`**. This will fail with a
     `Switch is not exhaustive` error.
-3.  **Implement the parser for the new command's params:**
+2.  **Implement the parser for the new command's params:**
     1.  Add the new `parse...` method to the `BidiCommandParameterParser` interface
         in `src/bidiMapper/BidiParser.ts`.
     2.  Implement the new `parse...` method in `src/bidiMapper/BidiNoOpParser.ts`.
     3.  Implement the new `parse...` method in `src/bidiTab/BidiParser.ts`.
     4.  Add the new `parse...` function to the corresponding namespace in
         `src/protocol-parser/protocol-parser.ts`.
-4.  **Add the new command to `src/bidiMapper/CommandProcessor.ts`**. Add a new `case`
+3.  **Add the new command to `src/bidiMapper/CommandProcessor.ts`**. Add a new `case`
     for the new command in the `switch` statement. First parse the command parameters
     and then throw an exception.
-5.  **Run `npm run build` and `npm run format`** to verify the fix.
-6.  **Do not commit the changes.**
-7.  **Do not run e2e tests for this kind of fixes.**
+4.  **Run `npm run build` and `npm run format`** to verify the fix.
+5.  **Do not run e2e tests for this kind of fixes.**

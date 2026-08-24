@@ -24,10 +24,8 @@
     "rdb-e2e": "rdb stream -new -realm chromium:public -- npm run e2e",
     "rdb-unit": "rdb stream -new -realm chromium:public -- npm run unit",
     "server": "npm run build && ./tools/node.py tools/run-bidi-server.mjs",
-    "test": "npm run unit && npm run e2e && npm run wpt",
+    "test": "npm run unit && npm run e2e",
     "unit": "npm run build && ./tools/node.py --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=./tools/unit-resultsink-reporter.mjs --test-reporter-destination=stdout 'out/Default/gen/src/**/*.test.js'",
-    "wpt": "npm run build && ./tools/node.py tools/run-wpt.mjs",
-    "wpt:all": "npm run build && ./tools/node.py tools/run-wpt-all.mjs",
     "yapf": "yapf -i --parallel --recursive --exclude=wpt examples/ tests/"
   },
   "type": "module",

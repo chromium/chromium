@@ -1,27 +1,22 @@
+> [!NOTE]
+> If you are viewing this on GitHub, the source was moved to Chromium. Please contribute there.
+
 # How to Contribute
 
-We'd love to accept your patches and contributions to this project. There are
-just a few small guidelines you need to follow.
+The `chromium-bidi` source code lives in the Chromium repository under `third_party/chromium-bidi`.
+All active development and contributions take place in Chromium.
+
+## Contributing to Chromium
+
+Please follow the [Chromium Contributing Guide](https://chromium.googlesource.com/chromium/src/+/main/docs/contributing.md) to set up your environment, create changes, and upload code reviews (CLs).
 
 ## Contributor License Agreement
 
-Contributions to this project must be accompanied by a Contributor License
-Agreement (CLA). You (or your employer) retain the copyright to your
-contribution; this simply gives us permission to use and redistribute your
-contributions as part of the project. Head over to
-<https://cla.developers.google.com/> to see your current agreements on file or
-to sign a new one.
-
-You generally only need to submit a CLA once, so if you've already submitted one
-(even if it was for a different project), you probably don't need to do it
-again.
+Contributions to Chromium must be accompanied by a Contributor License Agreement (CLA). Head over to <https://cla.developers.google.com/> to see your current agreements on file or to sign a new one.
 
 ## Code Reviews
 
-All submissions, including submissions by project members, require review. We
-use GitHub pull requests for this purpose. Consult
-[GitHub Help](https://help.github.com/articles/about-pull-requests/) for more
-information on using pull requests.
+All submissions require review via Chromium's code review system (Gerrit). Use `git cl upload` to submit patches for review.
 
 ## Community Guidelines
 
@@ -30,5 +25,5 @@ This project follows
 
 ## Adding commands
 
-The BiDi commands are processed in the `src/bidiMapper/commandProcessor.ts`.
-To add a new command, add it to `_processCommand`, write and call processor for it.
+The BiDi commands are processed in `src/bidiMapper/CommandProcessor.ts`.
+To add a new command, add it to `_processCommand`, write and call the module processor for it.

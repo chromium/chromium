@@ -22,7 +22,6 @@ wptreport*.json
 MANIFEST.json
 coverage/
 *.cddl
-wpt-metadata/mapper/headful/webdriver/tests/bidi/
 *.tsbuildinfo
 **.code-workspace
 .agent/

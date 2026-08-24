@@ -1,4 +1,0 @@
-{
-  "properties": ["debug", "os", "processor"],
-  "dependents": {"os": ["version"], "processor": ["bits"]}
-}
