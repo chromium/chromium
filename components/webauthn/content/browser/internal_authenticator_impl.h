@@ -49,8 +49,8 @@ class InternalAuthenticatorImpl : public webauthn::InternalAuthenticator,
       override;
   bool IsGetMatchingCredentialIdsSupported() override;
   void GetMatchingCredentialIds(
-      const std::string& relying_party_id,
-      const std::vector<std::vector<uint8_t>>& credential_ids,
+      std::string_view relying_party_id,
+      base::span<const std::vector<uint8_t>> credential_ids,
       bool require_third_party_payment_bit,
       webauthn::GetMatchingCredentialIdsCallback callback) override;
   void Cancel() override;

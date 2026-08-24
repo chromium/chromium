@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_WEBAUTHN_CORE_BROWSER_INTERNAL_AUTHENTICATOR_H_
 #define COMPONENTS_WEBAUTHN_CORE_BROWSER_INTERNAL_AUTHENTICATOR_H_
 
+#include <string_view>
+#include <vector>
+
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/origin.h"
@@ -70,8 +74,8 @@ class InternalAuthenticator {
   // Optionally, can restrict to only match third-party payment enabled
   // credentials.
   virtual void GetMatchingCredentialIds(
-      const std::string& relying_party_id,
-      const std::vector<std::vector<uint8_t>>& credential_ids,
+      std::string_view relying_party_id,
+      base::span<const std::vector<uint8_t>> credential_ids,
       bool require_third_party_payment_bit,
       GetMatchingCredentialIdsCallback callback) = 0;
 
