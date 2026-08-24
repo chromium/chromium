@@ -33,3 +33,4 @@ crbug.com/525536478 virtual/webnn-service-with-gpu/external/wpt/webnn/conformanc
 crbug.com/525536478 virtual/webnn-service-with-gpu/external/wpt/webnn/validation_tests/pooling-and-reduction-keep-dims.https.any.html?gpu [ Crash Failure Skip ]
 crbug.com/489522225 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.html?gpu [ Failure Crash ]
 crbug.com/489392110 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/quantizeLinear.https.any.html?gpu [ Pass Failure Crash ]
+crbug.com/534973528 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/layer_normalization.https.any.html?gpu [ Crash Failure ]
