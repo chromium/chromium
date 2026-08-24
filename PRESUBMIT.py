@@ -3252,6 +3252,14 @@ def CheckNoDEPSGIT(input_api, output_api):
     return []
 
 
+def _IsIgnoredLine(line: str) -> bool:
+    """Returns True if the line is a full-line comment or marked with // nocheck.
+
+    Note that GN comments (#) are not ignored.
+    """
+    return line.lstrip().startswith('//') or line.endswith(' nocheck')
+
+
 def _GetMessageForMatchingType(input_api, affected_file, line_number, line,
                                ban_rule):
     """Helper method for checking for banned constructs.
@@ -3261,14 +3269,6 @@ def _GetMessageForMatchingType(input_api, affected_file, line_number, line,
     target type name matches the text inside the line passed as parameter.
     """
     result = []
-
-    # Ignore comments about banned types.
-    if input_api.re.search(r'^ *//', line):
-        return result
-    # A // nocheck comment will bypass this error.
-    if line.endswith(' nocheck'):
-        return result
-
     matched = False
     if ban_rule.pattern[0:1] == '/':
         regex = ban_rule.pattern[1:]
@@ -3350,6 +3350,8 @@ def CheckNoBannedPatterns(input_api, output_api):
             matching_ban_rules = MatchingBanRules(f, ban_rules)
             if matching_ban_rules:
                 for line_num, line in f.ChangedContents():
+                    if _IsIgnoredLine(line):
+                        continue
                     for ban_rule in matching_ban_rules:
                         CheckForMatch(f, line_num, line, ban_rule)
 
