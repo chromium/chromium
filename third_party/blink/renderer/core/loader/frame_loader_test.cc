@@ -300,14 +300,13 @@ TEST_F(FrameLoaderTest, PolicyContainerIsStoredOnCommitNavigation) {
 }
 
 TEST_F(FrameLoaderSimTest, DirectLaunchSchemeBlocked) {
-  const String kScheme("google-chrome");
+  const String kScheme("direct-launch-scheme");
   SchemeRegistry::RegisterURLSchemeAsDirectLaunch(kScheme);
 
   SimRequest main_request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
-  main_request.Complete(
-      "<a id='link' "
-      "href='google-chrome:https://example.com/dest.html'>link</a>");
+  main_request.Complete(StrCat({"<a id='link' href='", kScheme,
+                                ":https://example.com/dest.html'>link</a>"}));
 
   auto* anchor =
       To<HTMLAnchorElement>(GetDocument().getElementById(AtomicString("link")));
@@ -318,10 +317,34 @@ TEST_F(FrameLoaderSimTest, DirectLaunchSchemeBlocked) {
   // Verify navigation was synchronously blocked in Blink, logged a security
   // error, and did not initiate a provisional load.
   EXPECT_TRUE(ConsoleMessages().Contains(
-      "Not allowed to navigate to direct-launch scheme 'google-chrome' from "
-      "web contexts."));
+      StrCat({"Not allowed to navigate to direct-launch scheme '", kScheme,
+              "' from web contexts."})));
   EXPECT_FALSE(GetDocument().GetFrame()->Loader().HasProvisionalNavigation());
   EXPECT_EQ(GetDocument().Url(), KURL("https://example.com/test.html"));
+
+  SchemeRegistry::RemoveURLSchemeAsDirectLaunchForTest(kScheme);
+}
+
+TEST_F(FrameLoaderSimTest, DirectLaunchSchemeTargetBlankBlocked) {
+  const String kScheme("direct-launch-scheme");
+  SchemeRegistry::RegisterURLSchemeAsDirectLaunch(kScheme);
+
+  SimRequest main_request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  main_request.Complete(StrCat({"<a id='link' target='_blank' href='", kScheme,
+                                "://https://example.com/dest.html'>link</a>"}));
+
+  auto* anchor =
+      To<HTMLAnchorElement>(GetDocument().getElementById(AtomicString("link")));
+  ASSERT_NE(anchor, nullptr);
+
+  anchor->click();
+
+  // Verify navigation to new window was synchronously blocked in Blink and
+  // logged a security error.
+  EXPECT_TRUE(ConsoleMessages().Contains(
+      StrCat({"Not allowed to navigate to direct-launch scheme '", kScheme,
+              "' from web contexts."})));
 
   SchemeRegistry::RemoveURLSchemeAsDirectLaunchForTest(kScheme);
 }
