@@ -1119,6 +1119,7 @@
       valid_for_marker: true,
       is_animation_property: true,
       is_animation_affecting: true,
+      affected_by_zoom: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
     },

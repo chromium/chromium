@@ -349,7 +349,6 @@ CSSTransitionData::TransitionBehavior CSSToStyleMap::MapAnimationBehavior(
 
 StyleTimeline CSSToStyleMap::MapAnimationTimeline(StyleResolverState& state,
                                                   const CSSValue& value) {
-  DCHECK(value.IsScopedValue());
   if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK(ident->GetValueID() == CSSValueID::kAuto ||
            ident->GetValueID() == CSSValueID::kNone);
