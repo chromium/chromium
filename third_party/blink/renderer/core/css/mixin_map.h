@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MIXIN_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MIXIN_MAP_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -34,13 +36,21 @@ struct MixinMap {
   MediaQueryResultFlags media_query_result_flags;
   HeapVector<MediaQuerySetResult> media_query_set_results;
 
-  // See StyleSheetCollection::mixin_generation_. This is only
-  // set for the final (merged) MixinMaps for an entire scope,
-  // not when extracting mixins from a single stylesheet.
-  uint64_t generation = 0;
+  // See AllocateMapIdentifier(). This identifier is only set for finalized
+  // MixinMaps for an entire scope, not when extracting mixins from a
+  // single stylesheet. IDs are unique across all tree scopes and Documents
+  // on the renderer main thread.
+  std::optional<uint64_t> map_identifier;
 
-  // Add everything from “other” to this map, overwriting
-  // any mixins that may already exist. Does not touch “generation”.
+  static uint64_t AllocateMapIdentifier();
+
+  bool HasMixins() const {
+    return !mixins.empty() || !media_query_set_results.empty();
+  }
+
+  // Add everything from "other" to this map, overwriting any mixins that may
+  // already exist. Does not touch "map_identifier"; the caller is responsible
+  // for giving the combined map an appropriate identity.
   void Merge(const MixinMap& other);
 
   void Trace(Visitor* visitor) const {

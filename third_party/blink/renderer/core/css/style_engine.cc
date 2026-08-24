@@ -752,12 +752,22 @@ MixinMap StyleEngine::EffectiveMixinsForTreeScope(TreeScope& tree_scope) {
   }
 
   MixinMap inherited_mixins = EffectiveMixinsForTreeScope(*parent_scope);
-  if (inherited_mixins.mixins.empty() &&
-      inherited_mixins.media_query_set_results.empty()) {
+  if (!inherited_mixins.HasMixins()) {
     return collection->Mixins();
   }
 
-  inherited_mixins.Merge(collection->Mixins());
+  const MixinMap& local_mixins = collection->Mixins();
+  const std::optional<uint64_t> inherited_id = inherited_mixins.map_identifier;
+  inherited_mixins.Merge(local_mixins);
+  // Merge() deliberately leaves the identifier alone, so give the combined map
+  // an identity here. If this scope contributes mixins of its own, its
+  // identifier is used for the combination, since it is reallocated whenever
+  // this scope's active stylesheets are recomputed. Otherwise the combination
+  // is just the inherited map, and we can keep (and share) the inherited
+  // identifier.
+  inherited_mixins.map_identifier = local_mixins.map_identifier.has_value()
+                                        ? local_mixins.map_identifier
+                                        : inherited_id;
   return inherited_mixins;
 }
 

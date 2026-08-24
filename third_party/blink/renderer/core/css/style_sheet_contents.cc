@@ -864,28 +864,21 @@ static bool ExtractMixinsFromSheet(const StyleSheetContents& contents,
   return found;
 }
 
-MixinMap& StyleSheetContents::ExtractMixins(const MediaQueryEvaluator& medium,
-                                            uint64_t& mixin_generation) {
+MixinMap& StyleSheetContents::ExtractMixins(const MediaQueryEvaluator& medium) {
   if (has_cached_mixins_ &&
       !medium.DidResultsChange(mixins_.media_query_set_results)) {
     return mixins_;
   }
-  const bool used_to_have_at_least_one_mixin = !mixins_.mixins.empty();
   mixins_ = MixinMap();
   has_cached_mixins_ = true;
-  if (ExtractMixinsFromSheet(*this, medium, mixins_)) {
-    // We have at least one mixin.
-    ++mixin_generation;
-  } else if (used_to_have_at_least_one_mixin) {
-    // The last mixin was deleted, which is a change in itself.
-    ++mixin_generation;
-  }
+  ExtractMixinsFromSheet(*this, medium, mixins_);
   return mixins_;
 }
 
 RuleSet& StyleSheetContents::EnsureRuleSet(const MediaQueryEvaluator& medium,
                                            const MixinMap& mixins) {
-  if (rule_set_ && rule_set_->DependingOnOutdatedMixins(mixins.generation)) {
+  if (rule_set_ &&
+      rule_set_->DependingOnOutdatedMixins(mixins.map_identifier)) {
     rule_set_ = nullptr;
     if (rule_set_diff_) {
       rule_set_diff_->MarkUnrepresentable();

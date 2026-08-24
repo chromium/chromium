@@ -1200,6 +1200,18 @@ void RuleSet::ApplyMixin(StyleRule* parent_rule,
                          CascadeLayer* cascade_layer,
                          const StyleScope* style_scope,
                          ApplyMixinsStack& apply_mixins_stack) {
+  if (depends_on_mixins_) {
+    // A RuleSet is only ever built against a single mixin map.
+    CHECK(based_on_mixin_map_identifier_ == mixins.map_identifier);
+  } else {
+    // Mark that we saw an @apply rule, and the identifier of the mixin map it
+    // was resolved against, so that we can invalidate if anything should
+    // change. This must happen for every @apply, so we can distinguish RuleSets
+    // built in scopes with a different set of mixins.
+    depends_on_mixins_ = true;
+    based_on_mixin_map_identifier_ = mixins.map_identifier;
+  }
+
   auto it = mixins.mixins.find(apply_mixin_rule->GetName());
   if (it != mixins.mixins.end()) {
     StyleRuleMixin* mixin_rule = it->value;
@@ -1277,13 +1289,6 @@ void RuleSet::ApplyMixin(StyleRule* parent_rule,
     features_.MutableMediaQueryResultFlags().Add(
         mixins.media_query_result_flags);
     media_query_set_results_.append_range(mixins.media_query_set_results);
-
-    // Mark that we are using some mixin, and which generation of mixin map
-    // it came from, so that we can invalidate if anything should change.
-    if (based_on_mixin_generation_ != std::numeric_limits<uint64_t>::max()) {
-      CHECK_EQ(based_on_mixin_generation_, mixins.generation);
-    }
-    based_on_mixin_generation_ = mixins.generation;
   }
 }
 
@@ -1313,7 +1318,9 @@ void RuleSet::AddRulesFromSheet(const StyleSheetContents* sheet,
     }
   }
 
-  based_on_mixin_generation_ = std::numeric_limits<uint64_t>::max();
+  // NOTE: based_on_mixin_map_identifier_ is deliberately not reset here; this
+  // function is called recursively for @imported sheets, and resetting would
+  // drop a dependency recorded by an earlier @import.
 
   const HeapVector<Member<StyleRuleImport>>& import_rules =
       sheet->ImportRules();

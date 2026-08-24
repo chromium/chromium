@@ -198,13 +198,18 @@ void StyleSheetCollection::PrepareUpdateActiveStyleSheets(
     }
   }
 
+  const bool had_mixins = mixins_.HasMixins();
   mixins_ = MixinMap();
   for (auto& [css_sheet, rule_set] : new_active_style_sheets) {
-    mixins_.Merge(
-        css_sheet->Contents()->ExtractMixins(medium, mixin_generation_));
+    mixins_.Merge(css_sheet->Contents()->ExtractMixins(medium));
   }
-  mixins_.generation = mixin_generation_;
-
+  // Assign a fresh Mixin map identifier whenever the effective mixins were or
+  // are non-empty, so RuleSets flattened against a different set of mixins are
+  // recreated. An empty map keeps the identifier unset, which is fine because
+  // all empty maps are interchangeable.
+  if (had_mixins || mixins_.HasMixins()) {
+    mixins_.map_identifier = MixinMap::AllocateMapIdentifier();
+  }
   DCHECK(pending_active_style_sheets_.empty());
   pending_active_style_sheets_ = std::move(new_active_style_sheets);
 }
