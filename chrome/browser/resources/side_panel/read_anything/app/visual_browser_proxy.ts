@@ -17,6 +17,7 @@ export interface VisualBrowserProxy {
   isImagesEnabled(): boolean;
   isLinksEnabled(): boolean;
   isPdf(): boolean;
+  shouldShowUi(): boolean;
 
   getMaxLineWidth(): number;
 
@@ -55,6 +56,8 @@ export interface VisualBrowserProxy {
   requestImageData(nodeId: number): void;
 
   isLineFocusEnabled(): boolean;
+  isLineFocusOn(): boolean;
+  getLastNonDisabledLineFocus(): number;
   getLineFocusOff(): number;
   getLineFocusSmallStaticWindow(): number;
   getLineFocusMediumStaticWindow(): number;
@@ -79,6 +82,7 @@ export interface VisualBrowserProxy {
   togglePresentation(): void;
   togglePinState(): void;
   sendPinStateRequest(): void;
+  sendGetPresentationStateRequest(): void;
   close(): void;
 }
 
@@ -338,6 +342,22 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
 
   sendPinStateRequest(): void {
     chrome.readingMode.sendPinStateRequest();
+  }
+
+  sendGetPresentationStateRequest(): void {
+    chrome.readingMode.sendGetPresentationStateRequest();
+  }
+
+  shouldShowUi(): boolean {
+    return chrome.readingMode.shouldShowUi();
+  }
+
+  getLastNonDisabledLineFocus(): number {
+    return chrome.readingMode.lastNonDisabledLineFocus;
+  }
+
+  isLineFocusOn(): boolean {
+    return chrome.readingMode.isLineFocusOn;
   }
 
   static getInstance(): VisualBrowserProxy {

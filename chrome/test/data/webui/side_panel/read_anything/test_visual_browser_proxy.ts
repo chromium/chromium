@@ -34,6 +34,7 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   distillationTypeScreen2x: number = 0;
   distillationTypeReadability: number = 1;
   lineFocusEnabled: boolean = false;
+  lineFocusOn: boolean = false;
   lineFocusOff: number = 50;
   lineFocusSmallStaticWindow: number = 51;
   lineFocusMediumStaticWindow: number = 52;
@@ -114,6 +115,10 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
       'togglePresentation',
       'togglePinState',
       'sendPinStateRequest',
+      'sendGetPresentationStateRequest',
+      'shouldShowUi',
+      'getLastNonDisabledLineFocus',
+      'isLineFocusOn',
       'close',
       'isImmersiveEnabled',
       'isReadAnythingImprovedUiEnabled',
@@ -447,5 +452,24 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
 
   sendPinStateRequest(): void {
     this.methodCalled('sendPinStateRequest');
+  }
+
+  sendGetPresentationStateRequest(): void {
+    this.methodCalled('sendGetPresentationStateRequest');
+  }
+
+  shouldShowUi(): boolean {
+    this.methodCalled('shouldShowUi');
+    return true;
+  }
+
+  getLastNonDisabledLineFocus(): number {
+    this.methodCalled('getLastNonDisabledLineFocus');
+    return this.lineFocusLastNonDisabledValue;
+  }
+
+  isLineFocusOn(): boolean {
+    this.methodCalled('isLineFocusOn');
+    return this.lineFocusOn;
   }
 }

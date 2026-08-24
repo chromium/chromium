@@ -5,16 +5,18 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {BrowserProxy, LineFocusController, LineFocusMovement, LineFocusStyle, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AudioBrowserProxyImpl, BrowserProxy, LineFocusController, LineFocusMovement, LineFocusStyle, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VisualBrowserProxyImpl, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {hasStyle, microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createApp, createSpeechSynthesisVoice, emitEvent, mockMetrics, setContent, setupBasicSpeech} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
+import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
+import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('AppReceivesToolbarChanges', () => {
   let app: AppElement;
@@ -24,6 +26,8 @@ suite('AppReceivesToolbarChanges', () => {
   let speechController: SpeechController;
   let lineFocusController: LineFocusController;
   let readAloudModel: TestReadAloudModelBrowserProxy;
+  let visualBrowserProxy: TestVisualBrowserProxy;
+  let audioBrowserProxy: TestAudioBrowserProxy;
 
   function containerLetterSpacing(): number {
     return +window.getComputedStyle(app.$.container)
@@ -54,27 +58,27 @@ suite('AppReceivesToolbarChanges', () => {
   }
 
   function emitFont(fontName: string): void {
-    chrome.readingMode.fontName = fontName;
+    visualBrowserProxy.fontName = fontName;
     emitEvent(app, ToolbarEvent.FONT);
   }
 
   function emitFontSize(size: number): void {
-    chrome.readingMode.fontSize = size;
+    visualBrowserProxy.fontSize = size;
     emitEvent(app, ToolbarEvent.FONT_SIZE);
   }
 
   function emitLineSpacing(spacingEnumValue: number): void {
-    chrome.readingMode.onLineSpacingChange(spacingEnumValue);
+    visualBrowserProxy.onLineSpacingChange(spacingEnumValue);
     emitEvent(app, ToolbarEvent.LINE_SPACING);
   }
 
   function emitLetterSpacing(spacingEnumValue: number): void {
-    chrome.readingMode.onLetterSpacingChange(spacingEnumValue);
+    visualBrowserProxy.onLetterSpacingChange(spacingEnumValue);
     emitEvent(app, ToolbarEvent.LETTER_SPACING);
   }
 
   function emitColorTheme(colorEnumValue: number): void {
-    chrome.readingMode.onThemeChange(colorEnumValue);
+    visualBrowserProxy.onThemeChange(colorEnumValue);
     emitEvent(app, ToolbarEvent.THEME);
   }
 
@@ -89,6 +93,10 @@ suite('AppReceivesToolbarChanges', () => {
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
+    visualBrowserProxy = new TestVisualBrowserProxy();
+    VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
+    audioBrowserProxy = new TestAudioBrowserProxy();
+    AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     metrics = mockMetrics();
@@ -115,7 +123,7 @@ suite('AppReceivesToolbarChanges', () => {
     for (let lineSpacingEnum = 0; lineSpacingEnum < 4; lineSpacingEnum++) {
       emitLineSpacing(lineSpacingEnum);
       assertEquals(
-          chrome.readingMode.getLineSpacingValue(lineSpacingEnum),
+          visualBrowserProxy.getLineSpacingValue(lineSpacingEnum),
           containerLineSpacing());
     }
   });
@@ -154,28 +162,28 @@ suite('AppReceivesToolbarChanges', () => {
           '--color-read-anything-background-low-contrast-dark',
           'LowContrastDark');
 
-      emitColorTheme(chrome.readingMode.darkTheme);
+      emitColorTheme(visualBrowserProxy.darkTheme);
       assertTrue(
           hasStyle(app.$.container, '--background-color', 'DarkSlateGray'));
 
-      emitColorTheme(chrome.readingMode.lightTheme);
+      emitColorTheme(visualBrowserProxy.lightTheme);
       assertTrue(hasStyle(app.$.container, '--background-color', 'LightGray'));
 
-      emitColorTheme(chrome.readingMode.yellowTheme);
+      emitColorTheme(visualBrowserProxy.yellowTheme);
       assertTrue(hasStyle(app.$.container, '--background-color', 'yellow'));
 
-      emitColorTheme(chrome.readingMode.blueTheme);
+      emitColorTheme(visualBrowserProxy.blueTheme);
       assertTrue(hasStyle(app.$.container, '--background-color', 'blue'));
 
-      emitColorTheme(chrome.readingMode.highContrastTheme);
+      emitColorTheme(visualBrowserProxy.highContrastTheme);
       assertTrue(
           hasStyle(app.$.container, '--background-color', 'HighContrast'));
 
-      emitColorTheme(chrome.readingMode.lowContrastLightTheme);
+      emitColorTheme(visualBrowserProxy.lowContrastLightTheme);
       assertTrue(
           hasStyle(app.$.container, '--background-color', 'LowContrastLight'));
 
-      emitColorTheme(chrome.readingMode.lowContrastDarkTheme);
+      emitColorTheme(visualBrowserProxy.lowContrastDarkTheme);
       assertTrue(
           hasStyle(app.$.container, '--background-color', 'LowContrastDark'));
     });
@@ -184,7 +192,7 @@ suite('AppReceivesToolbarChanges', () => {
       // Set background color css variables. In prod code this is done in a
       // parent element.
       app.style.setProperty('--color-sys-base-container-elevated', 'grey');
-      emitColorTheme(chrome.readingMode.defaultTheme);
+      emitColorTheme(visualBrowserProxy.defaultTheme);
 
       assertTrue(hasStyle(app.$.container, '--background-color', 'grey'));
     });
@@ -201,7 +209,7 @@ suite('AppReceivesToolbarChanges', () => {
   });
 
   test('line focus style change updates line focus', async () => {
-    chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
     app.updateContent();
     await microtasksFinished();
     const lineFocus = app.$.lineFocus;
@@ -224,7 +232,7 @@ suite('AppReceivesToolbarChanges', () => {
   });
 
   test('line focus style change updates padding', async () => {
-    chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
     app.connectedCallback();
     emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
     emitEvent(
@@ -249,7 +257,7 @@ suite('AppReceivesToolbarChanges', () => {
   });
 
   test('line focus movement change updates line focus', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
 
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
@@ -267,7 +275,7 @@ suite('AppReceivesToolbarChanges', () => {
   });
 
   test('line focus movement change updates padding', async () => {
-    chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
     app.connectedCallback();
     emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
     emitEvent(
@@ -292,7 +300,7 @@ suite('AppReceivesToolbarChanges', () => {
   });
 
   test('line focus classes update line focus padding', async () => {
-    chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
     app.updateContent();
     await microtasksFinished();
     const lineFocus = app.$.lineFocus;
@@ -320,6 +328,7 @@ suite('AppReceivesToolbarChanges', () => {
 
   test('immersive view updates line focus padding', async () => {
     chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
     app = await createApp();
     app.isImmersiveMode = () => true;
     app.updateContent();
@@ -350,7 +359,7 @@ suite('AppReceivesToolbarChanges', () => {
   test(
       'line focus movement change does nothing with line focus off',
       async () => {
-        chrome.readingMode.isLineFocusEnabled = true;
+        visualBrowserProxy.lineFocusEnabled = true;
         emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: false}});
         // The app needs content so it has a non-zero height.
         app.updateContent();
@@ -371,7 +380,7 @@ suite('AppReceivesToolbarChanges', () => {
       });
 
   test('line focus change does nothing with flag disabled', async () => {
-    chrome.readingMode.isLineFocusEnabled = false;
+    visualBrowserProxy.lineFocusEnabled = false;
     const lineFocus = app.$.lineFocus;
     assertTrue(!!lineFocus);
 
@@ -386,7 +395,7 @@ suite('AppReceivesToolbarChanges', () => {
   });
 
   test('font size change updates line focus line height', async () => {
-    chrome.readingMode.isLineFocusEnabled = true;
+    visualBrowserProxy.lineFocusEnabled = true;
     app.updateContent();
     emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
     emitEvent(
@@ -395,7 +404,7 @@ suite('AppReceivesToolbarChanges', () => {
     await microtasksFinished();
     const startingHeight = app.style.getPropertyValue('--line-focus-height');
 
-    chrome.readingMode.fontSize = 4;
+    visualBrowserProxy.fontSize = 4;
     emitEvent(app, ToolbarEvent.FONT_SIZE);
     await microtasksFinished();
 
@@ -406,7 +415,7 @@ suite('AppReceivesToolbarChanges', () => {
 
   test(
       'font size change does not change line focus window height', async () => {
-        chrome.readingMode.isLineFocusEnabled = true;
+        visualBrowserProxy.lineFocusEnabled = true;
         emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_STYLE,
@@ -415,7 +424,7 @@ suite('AppReceivesToolbarChanges', () => {
         const startingHeight =
             app.style.getPropertyValue('--line-focus-height');
 
-        chrome.readingMode.fontSize = 4;
+        visualBrowserProxy.fontSize = 4;
         emitEvent(app, ToolbarEvent.FONT_SIZE);
         await microtasksFinished();
 
@@ -426,6 +435,8 @@ suite('AppReceivesToolbarChanges', () => {
   suite('line focus on empty page', () => {
     setup(() => {
       chrome.readingMode.isLineFocusEnabled = true;
+      visualBrowserProxy.lineFocusEnabled = true;
+      visualBrowserProxy.immersiveEnabled = true;
     });
 
     test('line focus is not shown on empty page', async () => {
@@ -495,13 +506,13 @@ suite('AppReceivesToolbarChanges', () => {
       const firstLanguage = 'en-us';
       emitLanguageToggle(firstLanguage);
       assertTrue(voiceLanguageController.isLangEnabled(firstLanguage));
-      assertTrue(chrome.readingMode.getLanguagesEnabledInPref().includes(
+      assertTrue(audioBrowserProxy.getLanguagesEnabledInPref().includes(
           firstLanguage));
 
       const secondLanguage = 'fr';
       emitLanguageToggle(secondLanguage);
       assertTrue(voiceLanguageController.isLangEnabled(secondLanguage));
-      assertTrue(chrome.readingMode.getLanguagesEnabledInPref().includes(
+      assertTrue(audioBrowserProxy.getLanguagesEnabledInPref().includes(
           secondLanguage));
     });
 
@@ -509,12 +520,12 @@ suite('AppReceivesToolbarChanges', () => {
       const firstLanguage = 'en-us';
       emitLanguageToggle(firstLanguage);
       assertTrue(voiceLanguageController.isLangEnabled(firstLanguage));
-      assertTrue(chrome.readingMode.getLanguagesEnabledInPref().includes(
+      assertTrue(audioBrowserProxy.getLanguagesEnabledInPref().includes(
           firstLanguage));
 
       emitLanguageToggle(firstLanguage);
       assertFalse(voiceLanguageController.isLangEnabled(firstLanguage));
-      assertFalse(chrome.readingMode.getLanguagesEnabledInPref().includes(
+      assertFalse(audioBrowserProxy.getLanguagesEnabledInPref().includes(
           firstLanguage));
     });
   });
@@ -528,17 +539,17 @@ suite('AppReceivesToolbarChanges', () => {
     await emitPlayPause();
 
     const speechRate1 = 2;
-    chrome.readingMode.speechRate = speechRate1;
+    audioBrowserProxy.speechRate = speechRate1;
     emitEvent(app, ToolbarEvent.RATE);
     assertEquals(2, speech.getCallCount('speak'));
 
     const speechRate2 = 0.5;
-    chrome.readingMode.speechRate = speechRate2;
+    audioBrowserProxy.speechRate = speechRate2;
     emitEvent(app, ToolbarEvent.RATE);
     assertEquals(3, speech.getCallCount('speak'));
 
     const speechRate3 = 4;
-    chrome.readingMode.speechRate = speechRate3;
+    audioBrowserProxy.speechRate = speechRate3;
     emitEvent(app, ToolbarEvent.RATE);
     assertEquals(4, speech.getCallCount('speak'));
 
@@ -607,7 +618,7 @@ suite('AppReceivesToolbarChanges', () => {
 
         assertFalse(speechController.isSpeechActive());
         assertEquals(
-            chrome.readingMode.keyboardShortcutStopSource,
+            audioBrowserProxy.keyboardShortcutStopSource,
             await metrics.whenCalled('recordSpeechStopSource'));
       });
 
@@ -629,7 +640,7 @@ suite('AppReceivesToolbarChanges', () => {
     }
 
     function emitHighlight(granularity: number) {
-      chrome.readingMode.onHighlightGranularityChanged(granularity);
+      audioBrowserProxy.onHighlightGranularityChanged(granularity);
       emitEvent(app, ToolbarEvent.HIGHLIGHT_CHANGE, {
         detail: {data: granularity},
       });
@@ -640,14 +651,14 @@ suite('AppReceivesToolbarChanges', () => {
     });
 
     test('new theme uses colored highlight with highlights on', () => {
-      emitHighlight(chrome.readingMode.wordHighlighting);
-      emitColorTheme(chrome.readingMode.blueTheme);
+      emitHighlight(audioBrowserProxy.wordHighlighting);
+      emitColorTheme(visualBrowserProxy.blueTheme);
       assertNotEquals('transparent', highlightColor());
     });
 
     test('new theme uses transparent highlight with highlights off', () => {
-      emitHighlight(chrome.readingMode.noHighlighting);
-      emitColorTheme(chrome.readingMode.yellowTheme);
+      emitHighlight(audioBrowserProxy.noHighlighting);
+      emitColorTheme(visualBrowserProxy.yellowTheme);
       assertEquals('transparent', highlightColor());
     });
   });

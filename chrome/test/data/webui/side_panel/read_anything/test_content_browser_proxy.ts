@@ -14,23 +14,24 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   hasValidSelectionVal: boolean = true;
   readabilityEnabled: boolean = true;
   isReadabilitySelectTextEnabledFlag: boolean = false;
-  textContentMap: {[key: number]: string} = {};
+  textContentMap: {[key: number]: string} = {2: 'some text content'};
   prefixText: string = '';
-  rootId: number = -1;
+  rootId: number = 1;
   htmlTitle: string = '';
   htmlContent: string = '';
   documentUrl: string = '';
   googleDocs: boolean = false;
+  docsLoadMoreButtonVisible: boolean = false;
   unexpectedUpdateContentStopSource: number = 0;
   axMapping: AxSegment[] = [];
-  htmlTagMap: {[key: number]: string} = {};
+  htmlTagMap: {[key: number]: string} = {1: 'div'};
   leafNodeSet: Set<number> = new Set();
   url: string = '';
   htmlId: string = '';
   textDirection: string = '';
   altText: string = '';
   language: string = '';
-  childrenMap: {[key: number]: number[]} = {};
+  childrenMap: {[key: number]: number[]} = {1: [2]};
   isOverlineVal: boolean = false;
   shouldBoldVal: boolean = false;
   imageBitmap: SkiaImageBitmap|null = null;
@@ -38,6 +39,7 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   activeDistillationMethod: number = 0;
   distillationTypeReadability: number = 1;
   distillationTypeScreen2x: number = 0;
+  requiresDistillationVal: boolean = false;
 
   constructor() {
     super([
@@ -56,6 +58,7 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
       'attemptLogEarlySelection',
       'onSelectionChange',
       'onScroll',
+      'onScrolledToBottom',
       'getTextContent',
       'getPrefixText',
       'getRootId',
@@ -63,6 +66,7 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
       'getHtmlContent',
       'getDocumentUrl',
       'isGoogleDocs',
+      'isDocsLoadMoreButtonVisible',
       'getUnexpectedUpdateContentStopSource',
       'getAxMapping',
       'getHtmlTag',
@@ -78,6 +82,9 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
       'getImageBitmap',
       'getAxTreeAnchors',
       'onNoTextContent',
+      'onCopy',
+      'requiresDistillation',
+      'onDistilled',
       'updateSelection',
       'onLinkClicked',
       'onRenderedTextBlocksAvailable',
@@ -277,5 +284,27 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   getDistillationTypeScreen2x(): number {
     this.methodCalled('getDistillationTypeScreen2x');
     return this.distillationTypeScreen2x;
+  }
+
+  isDocsLoadMoreButtonVisible(): boolean {
+    this.methodCalled('isDocsLoadMoreButtonVisible');
+    return this.docsLoadMoreButtonVisible;
+  }
+
+  onScrolledToBottom(): void {
+    this.methodCalled('onScrolledToBottom');
+  }
+
+  onCopy(): void {
+    this.methodCalled('onCopy');
+  }
+
+  requiresDistillation(): boolean {
+    this.methodCalled('requiresDistillation');
+    return this.requiresDistillationVal;
+  }
+
+  onDistilled(wordCount: number): void {
+    this.methodCalled('onDistilled', wordCount);
   }
 }

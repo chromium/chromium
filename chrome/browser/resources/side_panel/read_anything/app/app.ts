@@ -184,9 +184,9 @@ export class AppElement extends AppElementBase implements SpeechListener,
     if (this.contentBrowserProxy_.isReadabilityEnabled()) {
       this.contentController_.configureTrustedTypes();
     }
-    this.isImmersiveEnabled_ = chrome.readingMode.isImmersiveEnabled;
+    this.isImmersiveEnabled_ = this.visualBrowserProxy_.isImmersiveEnabled();
     this.isReadAnythingImprovedUiEnabled_ =
-        chrome.readingMode.isReadAnythingImprovedUiEnabled;
+        this.visualBrowserProxy_.isReadAnythingImprovedUiEnabled();
   }
 
   override connectedCallback() {
@@ -198,10 +198,10 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
     // Request the presentation state to determine whether we should use the UI
     // for immersive mode.
-    chrome.readingMode.sendGetPresentationStateRequest();
+    this.visualBrowserProxy_.sendGetPresentationStateRequest();
     // Push ShowUI() callback to the event queue to allow deferred rendering
     // to take place.
-    setTimeout(() => chrome.readingMode.shouldShowUi(), 0);
+    setTimeout(() => this.visualBrowserProxy_.shouldShowUi(), 0);
     this.styleUpdater_.setMaxLineWidth();
     if (this.visualBrowserProxy_.isLineFocusEnabled()) {
       window.addEventListener('resize', this.onWindowResize_.bind(this));
@@ -238,7 +238,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       imagesEnabled: this.visualBrowserProxy_.isImagesEnabled(),
     };
 
-    chrome.readingMode.sendPinStateRequest();
+    this.visualBrowserProxy_.sendPinStateRequest();
 
     document.onselectionchange = () => {
       // When Read Aloud is playing, user-selection is disabled on the Read
@@ -261,7 +261,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
     // Pass copy commands to main page. Copy commands will not work if they are
     // disabled on the main page.
     document.oncopy = () => {
-      chrome.readingMode.onCopy();
+      this.contentBrowserProxy_.onCopy();
       return false;
     };
 
@@ -343,7 +343,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
           this.presentationState_ = presentationState;
           this.logger_.setHidden(
               presentationState ===
-              chrome.readingMode.inHiddenPresentationState);
+              this.visualBrowserProxy_.getInHiddenPresentationState());
         };
 
     chrome.readingMode.onPinStateReceived = (pinState: boolean) => {
@@ -439,9 +439,9 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   updateContent() {
-    this.willDrawAgainSoon_ = chrome.readingMode.requiresDistillation;
+    this.willDrawAgainSoon_ = this.contentBrowserProxy_.requiresDistillation();
     this.isDocsLoadMoreButtonVisible_ =
-        chrome.readingMode.isDocsLoadMoreButtonVisible;
+        this.contentBrowserProxy_.isDocsLoadMoreButtonVisible();
     this.hasValidSelection_ = this.contentBrowserProxy_.hasValidSelection();
 
     // Remove all children from container. Use `replaceChildren` rather than
@@ -465,7 +465,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       const wordCount = (wordCountContainer && wordCountContainer.textContent) ?
           getWordCount(wordCountContainer.textContent) :
           0;
-      chrome.readingMode.onDistilled(wordCount);
+      this.contentBrowserProxy_.onDistilled(wordCount);
       if (wordCountContainer && wordCountContainer instanceof Element) {
         this.logger_.logDistilledPageStructure(wordCountContainer);
       }
@@ -498,7 +498,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   protected onDocsLoadMoreButtonClick_() {
-    chrome.readingMode.onScrolledToBottom();
+    this.contentBrowserProxy_.onScrolledToBottom();
   }
 
   protected onLanguageMenuOpen_() {
@@ -728,8 +728,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.styleUpdater_.setAllTextStyles();
     if (this.visualBrowserProxy_.isLineFocusEnabled()) {
       this.lineFocusController_.restoreFromPrefs(
-          chrome.readingMode.lastNonDisabledLineFocus,
-          chrome.readingMode.isLineFocusOn, this.$.container,
+          this.visualBrowserProxy_.getLastNonDisabledLineFocus(),
+          this.visualBrowserProxy_.isLineFocusOn(), this.$.container,
           this.$.appFlexParent.clientHeight);
       this.setLineFocusStyle_();
     }
@@ -772,8 +772,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   protected onThemeChange_(event: CustomEvent<{data: number}>) {
-    if (chrome.readingMode.isReadAnythingImprovedUiEnabled && event.detail &&
-        event.detail.data !== undefined) {
+    if (this.visualBrowserProxy_.isReadAnythingImprovedUiEnabled() &&
+        event.detail && event.detail.data !== undefined) {
       this.settingsPrefs_ = {
         ...this.settingsPrefs_,
         theme: event.detail.data,
