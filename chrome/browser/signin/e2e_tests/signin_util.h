@@ -83,6 +83,8 @@ class SignInFunctions {
 
   void TurnOffSync();
 
+  void SignOut();
+
  private:
   const base::RepeatingCallback<BrowserWindowInterface*()> browser_;
   const base::RepeatingCallback<bool(int, const GURL&, ui::PageTransition)>

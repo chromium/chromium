@@ -160,14 +160,18 @@ class LiveSignInTestFullSync : public LiveSignInTestBase {
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
 // See crbug.com/40107825.
-// Sings in an account through the settings page and checks that the account is
+// Signs in an account through the settings page and checks that the account is
 // added to Chrome. Sync should be disabled because the test doesn't pass
 // through the Sync confirmation dialog.
-IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_SimpleSignInFlow) {
+// Then, signs out from Chrome and checks that the account and cookies are
+// removed from Chrome and there is no longer any primary account.
+IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_ChromeSigninAndSignout) {
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
   CHECK(test_account.has_value());
-  sign_in_functions.SignInFromSettings(*test_account, 0);
+  sign_in_functions.SignInFromSettingsWithSyncChoice(
+      *test_account, 0,
+      SignInFunctions::SyncChoice::kRejectOptionalDateTypesSync);
 
   const AccountsInCookieJarInfo& accounts_in_cookie_jar =
       identity_manager()->GetAccountsInCookieJar();
@@ -181,6 +185,18 @@ IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_SimpleSignInFlow) {
   EXPECT_TRUE(gaia::AreEmailsSame(test_account->user, account.email));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account.id));
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
+
+  sign_in_functions.SignOut();
+
+  const AccountsInCookieJarInfo& accounts_in_cookie_jar_after_signout =
+      identity_manager()->GetAccountsInCookieJar();
+  EXPECT_TRUE(accounts_in_cookie_jar_after_signout.AreAccountsFresh());
+  EXPECT_TRUE(accounts_in_cookie_jar_after_signout
+                  .GetPotentiallyInvalidSignedInAccounts()
+                  .empty());
+  EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.

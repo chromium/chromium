@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/signin/features.gni")
+
 assert(!is_fuchsia)
 
 if (!is_android) {
@@ -25,6 +27,13 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/webui/signin:test_support_ui",
     ]
+
+    if (enable_dice_support) {
+      deps += [
+        "//chrome/browser/ui/webui/signin/signout_confirmation",
+        "//chrome/browser/ui/webui/signin/signout_confirmation:test_support",
+      ]
+    }
 
     public_deps = [
       "//base",

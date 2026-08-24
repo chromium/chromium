@@ -45,9 +45,6 @@ namespace content {
 class WebContents;
 }
 
-namespace login_ui_test_utils {
-class SigninViewControllerTestUtil;
-}
 
 namespace signin_metrics {
 enum class AccessPoint;
@@ -235,30 +232,15 @@ class SigninViewController {
 
   void TearDownPreBrowserWindowDestruction();
 
+  // Returns the web contents of the modal dialog.
+  content::WebContents* GetModalDialogWebContentsForTesting();
+
+  // Returns the currently displayed modal dialog, or nullptr if no modal dialog
+  // is currently displayed.
+  SigninModalDialog* GetModalDialogForTesting();
+
  private:
-  FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserTest,
-                           ErrorDialogDefaultFocus);
-  FRIEND_TEST_ALL_PREFIXES(SigninViewControllerDelegateViewsBrowserTest,
-                           CloseImmediately);
-  FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,
-                           CreateLocalProfile);
-  FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,
-                           CancelLocalProfileCreation);
-  FRIEND_TEST_ALL_PREFIXES(
-      ProfilePickerWithReducedFrictionRemoveSigninBrowserTest,
-      CreateLocalProfileWithoutSigninStep);
-  FRIEND_TEST_ALL_PREFIXES(SyncSettingsInteractiveTest,
-                           PressingSignOutButtonsSignsOutUser);
-  FRIEND_TEST_ALL_PREFIXES(ProfileManagementDisclaimerServiceBrowserTest,
-                           CancelFlowOnAccountRemoval);
   friend class ChromeSignoutConfirmationPromptPixelTest;
-  friend class login_ui_test_utils::SigninViewControllerTestUtil;
-  friend class SigninInterceptFirstRunExperienceDialogBrowserTestBase;
-  friend class SyncConfirmationUIDialogPixelTest;
-  friend class SigninViewControllerBrowserTestBase;
-  friend class ProfileMenuViewSignoutTest;
-  friend class DeviceSignalsDisclaimerInteractiveTest;
-  friend class DeviceSignalsDisclaimerModalPixelTest;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Shows the DICE-specific sign-in flow: opens a Gaia sign-in webpage in a new
@@ -294,13 +276,6 @@ class SigninViewController {
       size_t unsynced_data_count,
       SignoutConfirmationCallback callback);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-  // Returns the web contents of the modal dialog.
-  content::WebContents* GetModalDialogWebContentsForTesting();
-
-  // Returns the currently displayed modal dialog, or nullptr if no modal dialog
-  // is currently displayed.
-  SigninModalDialog* GetModalDialogForTesting();
 
   // Helper to create an on close callback for `SigninModalDialog`.
   base::OnceClosure GetOnModalDialogClosedCallback();

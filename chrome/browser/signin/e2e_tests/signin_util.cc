@@ -29,7 +29,14 @@
 #include "google_apis/gaia/gaia_urls.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"  // nogncheck
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_ui.h"
+#include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_ui.h"
+#include "chrome/browser/ui/webui/signin/signout_confirmation/test_signout_confirmation_handler_waiter.h"
+#include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
+#include "chrome/common/webui_url_constants.h"
+#include "components/signin/public/base/signin_metrics.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 namespace signin::test {
 
@@ -213,6 +220,42 @@ void SignInFunctions::TurnOffSync() {
           kSettingsScriptWrapperFormat,
           "settings.SyncBrowserProxyImpl.getInstance().signOut(false)")));
   observer.WaitForAccountChanges(0, PrimaryAccountWait::kWaitForCleared);
+}
+
+void SignInFunctions::SignOut() {
+#if !BUILDFLAG(ENABLE_DICE_SUPPORT)
+  NOTREACHED();
+#else
+  GURL url = GURL(chrome::kChromeUISignoutConfirmationURL);
+  content::TestNavigationObserver nav_observer(url);
+  nav_observer.StartWatchingNewWebContents();
+
+  auto* signin_view_controller =
+      browser_.Run()->GetFeatures().signin_view_controller();
+  signin_view_controller->SignoutOrReauthWithPrompt(
+      signin_metrics::AccessPoint::kProfileMenuSignoutConfirmationPrompt,
+      signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
+      signin_metrics::SourceForRefreshTokenOperation::
+          kUserMenu_SignOutAllAccounts);
+
+  nav_observer.Wait();
+
+  CHECK(signin_view_controller->ShowsModalDialog());
+  SignoutConfirmationUI* signout_confirmation_ui =
+      SignoutConfirmationUI::GetForTesting(  // IN-TEST
+          signin_view_controller
+              ->GetModalDialogWebContentsForTesting());  // IN-TEST
+  TestSignoutConfirmationHandlerWaiter handler_observer(
+      signout_confirmation_ui);
+  handler_observer.Wait();
+
+  SignInTestObserver clear_observer(identity_manager(browser_.Run()),
+                                    account_reconcilor(browser_.Run()),
+                                    ConsentLevel::kSignin);
+  signout_confirmation_ui->AcceptDialogForTesting();  // IN-TEST
+
+  clear_observer.WaitForAccountChanges(0, PrimaryAccountWait::kWaitForCleared);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
 }  // namespace signin::test
