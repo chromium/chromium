@@ -20,8 +20,11 @@ import static org.mockito.Mockito.when;
 import static org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils.isHighlighted;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.view.View;
+
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -107,10 +110,7 @@ public class AutofillSettingsSearchTest {
                 .perform(click());
 
         assertAutofillAndPasswordsOpened();
-        onView(
-                        allOf(
-                                hasDescendant(withText(R.string.password_manager_settings_title)),
-                                isHighlighted()))
+        onView(highlighted(withText(R.string.password_manager_settings_title)))
                 .check(matches(isDisplayed()));
     }
 
@@ -126,7 +126,7 @@ public class AutofillSettingsSearchTest {
                 .perform(click());
 
         assertAutofillAndPasswordsOpened();
-        onView(allOf(hasDescendant(withText(R.string.autofill_payments_title)), isHighlighted()))
+        onView(highlighted(withText(R.string.autofill_payments_title)))
                 .check(matches(isDisplayed()));
     }
 
@@ -141,18 +141,9 @@ public class AutofillSettingsSearchTest {
                                 withText(R.string.autofill_enable_credit_cards_toggle_label)))
                 .perform(click());
 
-        onView(
-                        allOf(
-                                withText(R.string.autofill_payments_title),
-                                withParent(withId(R.id.action_bar))))
+        onView(actionBarTitle(withText(R.string.autofill_payments_title)))
                 .check(matches(isDisplayed()));
-        onView(
-                        allOf(
-                                hasDescendant(
-                                        withText(
-                                                R.string
-                                                        .autofill_enable_credit_cards_toggle_label)),
-                                isHighlighted()))
+        onView(highlighted(withText(R.string.autofill_enable_credit_cards_toggle_label)))
                 .check(matches(isDisplayed()));
     }
 
@@ -173,13 +164,7 @@ public class AutofillSettingsSearchTest {
         onViewWaiting(withText(R.string.autofill_settings_page_bulk_remove_cvc_label))
                 .perform(click());
 
-        onView(
-                        allOf(
-                                hasDescendant(
-                                        withText(
-                                                R.string
-                                                        .autofill_settings_page_bulk_remove_cvc_label)),
-                                isHighlighted()))
+        onView(highlighted(withText(R.string.autofill_settings_page_bulk_remove_cvc_label)))
                 .check(matches(isDisplayed()));
     }
 
@@ -203,10 +188,7 @@ public class AutofillSettingsSearchTest {
                 .perform(click());
 
         assertAutofillAndPasswordsOpened();
-        onView(
-                        allOf(
-                                hasDescendant(withText(R.string.autofill_contact_info_title)),
-                                isHighlighted()))
+        onView(highlighted(withText(R.string.autofill_contact_info_title)))
                 .check(matches(isDisplayed()));
     }
 
@@ -227,10 +209,7 @@ public class AutofillSettingsSearchTest {
 
         onViewWaiting(withText(R.string.autofill_bnpl_settings_label)).perform(click());
 
-        onView(
-                        allOf(
-                                hasDescendant(withText(R.string.autofill_bnpl_settings_label)),
-                                isHighlighted()))
+        onView(highlighted(withText(R.string.autofill_bnpl_settings_label)))
                 .check(matches(isDisplayed()));
     }
 
@@ -272,16 +251,9 @@ public class AutofillSettingsSearchTest {
                                 withText(R.string.autofill_enable_profiles_toggle_label)))
                 .perform(click());
 
-        onView(
-                        allOf(
-                                withText(R.string.autofill_contact_info_title),
-                                withParent(withId(R.id.action_bar))))
+        onView(actionBarTitle(withText(R.string.autofill_contact_info_title)))
                 .check(matches(isDisplayed()));
-        onView(
-                        allOf(
-                                hasDescendant(
-                                        withText(R.string.autofill_enable_profiles_toggle_label)),
-                                isHighlighted()))
+        onView(highlighted(withText(R.string.autofill_enable_profiles_toggle_label)))
                 .check(matches(isDisplayed()));
     }
 
@@ -295,8 +267,7 @@ public class AutofillSettingsSearchTest {
                 .perform(click());
 
         assertAutofillAndPasswordsOpened();
-        onView(allOf(hasDescendant(withText(R.string.autofill_travel_title)), isHighlighted()))
-                .check(matches(isDisplayed()));
+        onView(highlighted(withText(R.string.autofill_travel_title))).check(matches(isDisplayed()));
     }
 
     @Test
@@ -310,13 +281,9 @@ public class AutofillSettingsSearchTest {
                                 withText(R.string.autofill_travel_opt_in_toggle_label)))
                 .perform(click());
 
-        onView(allOf(withText(R.string.autofill_travel_title), withParent(withId(R.id.action_bar))))
+        onView(actionBarTitle(withText(R.string.autofill_travel_title)))
                 .check(matches(isDisplayed()));
-        onView(
-                        allOf(
-                                hasDescendant(
-                                        withText(R.string.autofill_travel_opt_in_toggle_label)),
-                                isHighlighted()))
+        onView(highlighted(withText(R.string.autofill_travel_opt_in_toggle_label)))
                 .check(matches(isDisplayed()));
     }
 
@@ -332,10 +299,7 @@ public class AutofillSettingsSearchTest {
                 .perform(click());
 
         assertAutofillAndPasswordsOpened();
-        onView(
-                        allOf(
-                                hasDescendant(withText(R.string.autofill_identity_docs_title)),
-                                isHighlighted()))
+        onView(highlighted(withText(R.string.autofill_identity_docs_title)))
                 .check(matches(isDisplayed()));
     }
 
@@ -350,18 +314,9 @@ public class AutofillSettingsSearchTest {
                                 withText(R.string.autofill_identity_docs_opt_in_toggle_label)))
                 .perform(click());
 
-        onView(
-                        allOf(
-                                withText(R.string.autofill_identity_docs_title),
-                                withParent(withId(R.id.action_bar))))
+        onView(actionBarTitle(withText(R.string.autofill_identity_docs_title)))
                 .check(matches(isDisplayed()));
-        onView(
-                        allOf(
-                                hasDescendant(
-                                        withText(
-                                                R.string
-                                                        .autofill_identity_docs_opt_in_toggle_label)),
-                                isHighlighted()))
+        onView(highlighted(withText(R.string.autofill_identity_docs_opt_in_toggle_label)))
                 .check(matches(isDisplayed()));
     }
 
@@ -377,7 +332,7 @@ public class AutofillSettingsSearchTest {
                 .perform(click());
 
         assertAutofillAndPasswordsOpened();
-        onView(allOf(hasDescendant(withText(R.string.autofill_settings_title)), isHighlighted()))
+        onView(highlighted(withText(R.string.autofill_settings_title)))
                 .check(matches(isDisplayed()));
     }
 
@@ -395,7 +350,7 @@ public class AutofillSettingsSearchTest {
                 .perform(click());
 
         assertAutofillAndPasswordsOpened();
-        onView(allOf(hasDescendant(withText(R.string.autofill_shopping_title)), isHighlighted()))
+        onView(highlighted(withText(R.string.autofill_shopping_title)))
                 .check(matches(isDisplayed()));
     }
 
@@ -411,11 +366,7 @@ public class AutofillSettingsSearchTest {
                                 withText(R.string.autofill_shopping_opt_in_toggle_label)))
                 .perform(click());
 
-        onView(
-                        allOf(
-                                hasDescendant(
-                                        withText(R.string.autofill_shopping_opt_in_toggle_label)),
-                                isHighlighted()))
+        onView(highlighted(withText(R.string.autofill_shopping_opt_in_toggle_label)))
                 .check(matches(isDisplayed()));
     }
 
@@ -438,12 +389,10 @@ public class AutofillSettingsSearchTest {
                 .perform(click());
 
         onView(
-                        allOf(
-                                hasDescendant(
-                                        withText(
-                                                R.string
-                                                        .personal_context_autofill_settings_switch_title_android)),
-                                isHighlighted()))
+                        highlighted(
+                                withText(
+                                        R.string
+                                                .personal_context_autofill_settings_switch_title_android)))
                 .check(matches(isDisplayed()));
     }
 
@@ -504,7 +453,7 @@ public class AutofillSettingsSearchTest {
                 .perform(click());
 
         assertAutofillAndPasswordsOpened();
-        onView(allOf(hasDescendant(withText(R.string.autofill_options_title)), isHighlighted()))
+        onView(highlighted(withText(R.string.autofill_options_title)))
                 .check(matches(isDisplayed()));
     }
 
@@ -539,16 +488,9 @@ public class AutofillSettingsSearchTest {
                                 withText(R.string.settings_autofill_ai_page_title_v2)))
                 .perform(click());
 
-        onView(
-                        allOf(
-                                withText(R.string.autofill_settings_title),
-                                withParent(withId(R.id.action_bar))))
+        onView(actionBarTitle(withText(R.string.autofill_settings_title)))
                 .check(matches(isDisplayed()));
-        onView(
-                        allOf(
-                                hasDescendant(
-                                        withText(R.string.settings_autofill_ai_page_title_v2)),
-                                isHighlighted()))
+        onView(highlighted(withText(R.string.settings_autofill_ai_page_title_v2)))
                 .check(matches(isDisplayed()));
         histogramWatcher.assertExpected();
     }
@@ -561,13 +503,18 @@ public class AutofillSettingsSearchTest {
     }
 
     private void assertAutofillAndPasswordsOpened() {
-        onView(
-                        allOf(
-                                withText(R.string.autofill_and_passwords_settings_title),
-                                withParent(withId(R.id.action_bar))))
+        onView(actionBarTitle(withText(R.string.autofill_and_passwords_settings_title)))
                 .check(matches(isDisplayed()));
 
         mSettingsSearchHistogramWatcher.assertExpected();
+    }
+
+    private static Matcher<View> actionBarTitle(Matcher<View> matcher) {
+        return allOf(matcher, withParent(withId(R.id.action_bar)));
+    }
+
+    private static Matcher<View> highlighted(Matcher<View> childMatcher) {
+        return allOf(hasDescendant(childMatcher), isHighlighted());
     }
 
     private static void signInPromoDismissed(boolean value) {
