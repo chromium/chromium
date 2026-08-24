@@ -1935,6 +1935,11 @@
         "version": "1.17.6"
     },
     {
+        "name": "bc-jdk18on-bom",
+        "group": "org.bouncycastle",
+        "version": "1.85"
+    },
+    {
         "name": "bcprov-jdk18on",
         "group": "org.bouncycastle",
         "version": "1.85"
@@ -2162,17 +2167,17 @@
     {
         "name": "annotations",
         "group": "org.robolectric",
-        "version": "4.17-beta-3"
+        "version": "4.17-beta-4"
     },
     {
         "name": "junit",
         "group": "org.robolectric",
-        "version": "4.17-beta-3"
+        "version": "4.17-beta-4"
     },
     {
         "name": "nativeruntime",
         "group": "org.robolectric",
-        "version": "4.17-beta-3"
+        "version": "4.17-beta-4"
     },
     {
         "name": "nativeruntime-dist-compat",
@@ -2182,47 +2187,47 @@
     {
         "name": "pluginapi",
         "group": "org.robolectric",
-        "version": "4.17-beta-3"
+        "version": "4.17-beta-4"
     },
     {
         "name": "plugins-maven-dependency-resolver",
         "group": "org.robolectric",
-        "version": "4.17-beta-3"
+        "version": "4.17-beta-4"
     },
     {
         "name": "resources",
         "group": "org.robolectric",
-        "version": "4.17-beta-3"
+        "version": "4.17-beta-4"
     },
     {
         "name": "robolectric",
         "group": "org.robolectric",
-        "version": "4.17-beta-3"
+        "version": "4.17-beta-4"
     },
     {
         "name": "sandbox",
         "group": "org.robolectric",
-        "version": "4.17-beta-3"
+        "version": "4.17-beta-4"
     },
     {
         "name": "shadowapi",
         "group": "org.robolectric",
-        "version": "4.17-beta-3"
+        "version": "4.17-beta-4"
     },
     {
         "name": "shadows-framework",
         "group": "org.robolectric",
-        "version": "4.17-beta-3"
+        "version": "4.17-beta-4"
     },
     {
         "name": "utils",
         "group": "org.robolectric",
-        "version": "4.17-beta-3"
+        "version": "4.17-beta-4"
     },
     {
         "name": "utils-reflector",
         "group": "org.robolectric",
-        "version": "4.17-beta-3"
+        "version": "4.17-beta-4"
     },
     {
         "name": "snakeyaml",
